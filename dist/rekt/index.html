@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_rektindex = {"notAvailable":"no disponible","wipedAt":" liquidado a $","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener sponsored\" title=\"Operar ","liquidationForDetails":" - detalles de la liquidación\"></button><span class=\"tk-serial\">№ ","noLiquidationsMatchThis":"<div class=\"rk-empty\">Todavía no hay liquidaciones que coincidan con este filtro…</div>","openThisTicket":"Abrir este ticket","startOfTheDay":"- inicio del día (UTC) -","quietWaitingForLiquidation":"Tranquilo - esperando liquidaciones…","longsAreGettingRekt":"▼ LOS LONGS ESTÁN SIENDO LIQUIDADOS","shortsAreGettingRekt":"▲ LOS SHORTS ESTÁN SIENDO LIQUIDADOS","titleFilterTheTape":"\" title=\"Filtrar la cinta a ","liveCryptoFuturesLiquidati":"Liquidaciones de futuros cripto en vivo · mira a los traders quedar liquidados en marginpad.io/rekt","ticketImageSavedDrag":"Imagen del ticket guardada - arrástrala a tu publicación en X","liquidationPrice":"<div><div class=\"l\">Precio de liquidación</div><div class=\"v\">$","longForceClosed":"Long cerrado forzosamente","shortForceClosed":"Short cerrado forzosamente","inCryptoFuturesLiquidated":" en futuros cripto liquidados en la última hora. Mira a los traders quedar liquidados en vivo en MarginPad.","linkCopied":"Enlace copiado ✓","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño y más","liquidationPrice2":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","seeWhereTheDanger":"Descubre dónde están las zonas de peligro","claimEvery5Minutes":"Reclama cada 5 minutos"};
+function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_rektindex[k] != null) return __esD_rektindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -730,7 +736,7 @@
     list.sort(function(a,b){return (a.off?1:0)-(b.off?1:0);});
     var region='';try{region=(E.region&&E.region(cc))||'';}catch(_){}
     return list.slice(0,5).map(function(v){ // five keeps the ticket window short enough that the Share button stays near the fold
-      var note=v.off?('not available'+(region?' in '+region:'')):v.perk;
+      var note=v.off?(__esT_rektindex("notAvailable",'not available')+(region?' in '+region:'')):v.perk;
       return '<a class="rkm-ven'+(v.off?' off':'')+'" data-mpex="'+esc(v.n)+'" href="'+v.url+'" target="_blank" rel="noopener sponsored" style="--vc:'+v.c+'">'
         +'<span class="rkm-ven-d"></span><span class="rkm-ven-n">'+esc(v.n)+'</span>'
         +(note?'<span class="rkm-ven-p">'+esc(note)+'</span>':'')+'<span class="rkm-ven-go">→</span></a>';
@@ -743,15 +749,15 @@
     var mark=whale?'<span class="rk-whale">'+FL+'</span>':'';
     var mny=money(e.notional), um=mny.match(/[KMB]$/), unit=um?um[0]:'', num=unit?mny.slice(0,-1):mny;
     var cls='tk '+(lng?'long':'short')+(huge?' huge':'')+(fresh?' fresh':'');
-    var shareTxt=esc(e.symbol+' '+(lng?'LONG':'SHORT')+' liquidated - $'+money(e.notional)+' wiped at $'+px(e.price)+' on '+String(e.exchange).toUpperCase()+'. Live crypto liquidations on MarginPad:');
+    var shareTxt=esc(e.symbol+' '+(lng?'LONG':'SHORT')+' liquidated - $'+money(e.notional)+__esT_rektindex("wipedAt",' wiped at $')+px(e.price)+' on '+String(e.exchange).toUpperCase()+'. Live crypto liquidations on MarginPad:');
     return '<div class="'+cls+'" data-side="'+(lng?'long':'short')+'" data-n="'+e.notional+'" data-sym="'+esc(e.symbol)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-share="'+shareTxt+'"><div class="tk-paper">'
       +'<div class="tk-stub" title="Tap to share this liquidation"><span class="tk-dir">'+(lng?'LONG':'SHORT')+'</span><span class="tk-arrow">'+(lng?'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 5l8 13H4z"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 19 4 6h16z"/></svg>')+'</span><span class="tk-rekt">REKT</span></div>'
       +'<div class="tk-body">'
-        +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span></div>'
+        +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+__esT_rektindex("targetBlankRelNoopener",'" target="_blank" rel="noopener sponsored" title="Trade ')+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span></div>'
         +'<div class="tk-sub">@ <b>$'+px(e.price)+'</b></div>'
         +'<div class="tk-amt">'+mark+'<span class="d">$</span>'+num+(unit?'<span class="u">'+unit+'</span>':'')+'</div>'
         +'<div class="tk-foot">'
-          +'<div class="tk-code"><button class="tk-bars" type="button" data-scan title="Scan ticket - full details" style="--bcode:'+barcode(e.ts)+'" aria-label="Scan '+esc(e.symbol)+' liquidation for details"></button><span class="tk-serial">№ '+String(e.ts).slice(-6)+'</span></div>'
+          +'<div class="tk-code"><button class="tk-bars" type="button" data-scan title="Scan ticket - full details" style="--bcode:'+barcode(e.ts)+'" aria-label="Scan '+esc(e.symbol)+__esT_rektindex("liquidationForDetails",' liquidation for details"></button><span class="tk-serial">№ ')+String(e.ts).slice(-6)+'</span></div>'
           +'<span class="tk-ago" data-ts="'+e.ts+'">'+ago(e.ts)+' ago</span></div>'
       +'</div>'
       +'<span class="tk-stamp">REKT</span><span class="tk-perf"></span>'
@@ -765,7 +771,7 @@
     if(all.length)firstRender=false; // nothing animates on initial load; afterwards each new liquidation slams once
     if(deskOn())return; // ≥861px shows the liquidation terminal (#rkTerm) - skip the hidden mobile feed's innerHTML churn
     var list=all.filter(matchF).slice(0,60);
-    feed.innerHTML=list.length?list.map(row).join(''):'<div class="rk-empty">No liquidations match this filter yet…</div>';
+    feed.innerHTML=list.length?list.map(row).join(''):__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');
     // 24h headline stats now come from Coinglass (aggregated across ALL exchanges) via loadLiqStats() - not the partial session feed.
   }
   function matchF(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;if(fSym&&String(e.symbol).toUpperCase().indexOf(fSym)<0)return false;return true;}
@@ -857,9 +863,9 @@
     // Without this the window - which is now where the venues live - was reachable only from the phone feed's barcode.
     el.setAttribute('data-sym',e.symbol);el.setAttribute('data-side',lng?'long':'short');el.setAttribute('data-n',n);
     el.setAttribute('data-px',e.price);el.setAttribute('data-exch',String(e.exchange).toUpperCase());el.setAttribute('data-ts',e.ts);
-    el.title='Open this ticket';
+    el.title=__esT_rektindex("openThisTicket",'Open this ticket');
     var w=Math.min(100,Math.round(n/1e6*100)); // notional bar: full width = $1M
-    el.innerHTML='<span class="rkt-t">'+tm+'</span><span class="rkt-ex">'+esc(e.exchange)+'</span><span class="rkt-symw"><a class="rkt-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+'" target="_blank" rel="noopener sponsored" title="Trade '+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a></span><span class="rkt-side '+(lng?'l':'s')+'">'+(lng?'LONG REKT':'SHORT REKT')+'</span><span class="rkt-px">$'+px(e.price)+'</span><span class="rkt-n">$'+money(n)+'</span>'+(w>3?'<i class="rkt-nb" style="width:'+w+'%"></i>':'');
+    el.innerHTML='<span class="rkt-t">'+tm+'</span><span class="rkt-ex">'+esc(e.exchange)+'</span><span class="rkt-symw"><a class="rkt-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+__esT_rektindex("targetBlankRelNoopener",'" target="_blank" rel="noopener sponsored" title="Trade ')+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a></span><span class="rkt-side '+(lng?'l':'s')+'">'+(lng?'LONG REKT':'SHORT REKT')+'</span><span class="rkt-px">$'+px(e.price)+'</span><span class="rkt-n">$'+money(n)+'</span>'+(w>3?'<i class="rkt-nb" style="width:'+w+'%"></i>':'');
     return el;}
   function deskAgg(e){var n=+e.notional;
     sessEx[e.exchange]=(sessEx[e.exchange]||0)+n;
@@ -878,11 +884,11 @@
     var end=Math.min(tapeIdx+TCH,tapeList.length),frag=document.createDocumentFragment();
     for(var i=tapeIdx;i<end;i++)frag.appendChild(tRow(tapeList[i],false));
     tapeIdx=end;tapeEl.appendChild(frag);
-    if(tapeIdx>=tapeList.length){var fin=document.createElement('div');fin.className='rk-empty';fin.style.padding='18px 0';fin.textContent='- start of the day (UTC) -';tapeEl.appendChild(fin);}}
+    if(tapeIdx>=tapeList.length){var fin=document.createElement('div');fin.className='rk-empty';fin.style.padding='18px 0';fin.textContent=__esT_rektindex("startOfTheDay",'- start of the day (UTC) -');tapeEl.appendChild(fin);}}
   function deskRenderAll(){if(!deskOn()||!tapeEl)return;
     tapeList=dayAll.filter(matchF).sort(function(a,b){return b.ts-a.ts;});tapeIdx=0;
     tapeEl.innerHTML='';
-    if(!tapeList.length){tapeEl.innerHTML='<div class="rk-empty">No liquidations match this filter yet…</div>';}
+    if(!tapeList.length){tapeEl.innerHTML=__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');}
     else tapeMore();
     tapeEl.scrollTop=0;
     deskSide();}
@@ -892,7 +898,7 @@
     var sum=L+S,lp=sum>0?Math.round(L/sum*100):50;
     var pl=document.getElementById('rktPL'),ps=document.getElementById('rktPS');if(pl)pl.style.width=lp+'%';if(ps)ps.style.width=(100-lp)+'%';
     var a=document.getElementById('rktPLl'),b=document.getElementById('rktPSl');if(a)a.textContent='Longs $'+money(L);if(b)b.textContent='$'+money(S)+' Shorts';
-    var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?'Quiet - waiting for liquidations…':(lp>=62?'▼ LONGS ARE GETTING REKT':lp<=38?'▲ SHORTS ARE GETTING REKT':'BALANCED PAIN');
+    var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?__esT_rektindex("quietWaitingForLiquidation",'Quiet - waiting for liquidations…'):(lp>=62?__esT_rektindex("longsAreGettingRekt",'▼ LONGS ARE GETTING REKT'):lp<=38?__esT_rektindex("shortsAreGettingRekt",'▲ SHORTS ARE GETTING REKT'):'BALANCED PAIN');
     var rate=document.getElementById('rktRate');if(rate){var c60=0,s60=0;win10.forEach(function(x){if(x.t>=now-60000){c60++;s60+=x.n;}});rate.textContent=c60+' liq/min · $'+money(s60)+'/min';
       var hp=document.getElementById('rkhPace');if(hp)hp.innerHTML='$'+money(s60)+'<small>/min · '+c60+' liq</small>';}
     var hr=document.getElementById('rkhRec');if(hr&&sessBig)hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
@@ -909,7 +915,7 @@
   function deskCoins(d){var box=document.getElementById('rktCoins');if(!box||!d||!d.coins||!d.coins.length)return;
     box.innerHTML=d.coins.slice(0,8).map(function(c){var t=(+c.long||0)+(+c.short||0)||1,lp2=Math.round((+c.long||0)/t*100);var f=fund[c.s];
       var fh=(f!=null&&isFinite(f))?'<span class="cf'+(Math.abs(f)>=0.05?' hot':'')+'">fund '+(f>0?'+':'')+(+f).toFixed(3)+'%</span>':'';
-      return '<div class="rkt-coin'+(fSym===String(c.s).toUpperCase()?' on':'')+'" data-c="'+esc(c.s)+'" title="Filter the tape to '+esc(c.s)+'"><span class="cs">'+esc(c.s)+'</span><span class="cb"><i class="bl" style="width:'+lp2+'%"></i><i class="bs" style="width:'+(100-lp2)+'%"></i></span><span class="cv">$'+money(c.liq)+fh+'</span></div>';}).join('');}
+      return '<div class="rkt-coin'+(fSym===String(c.s).toUpperCase()?' on':'')+'" data-c="'+esc(c.s)+__esT_rektindex("titleFilterTheTape",'" title="Filter the tape to ')+esc(c.s)+'"><span class="cs">'+esc(c.s)+'</span><span class="cb"><i class="bl" style="width:'+lp2+'%"></i><i class="bs" style="width:'+(100-lp2)+'%"></i></span><span class="cv">$'+money(c.liq)+fh+'</span></div>';}).join('');}
   document.addEventListener('click',function(ev){var r=ev.target.closest&&ev.target.closest('.rkt-coin');if(!r||!rkQ)return;
     var c=String(r.getAttribute('data-c')||'').toUpperCase();
     rkQ.value=(fSym===c?'':c);fSym=rkQ.value;render();deskRenderAll();if(window.__cgLast)deskCoins(window.__cgLast);});
@@ -956,12 +962,12 @@
     x.textAlign='center';x.fillStyle=ac;x.font='800 210px Arial';x.fillText('$'+money(d.not),W/2,762);
     x.fillStyle='#9aa3ad';x.font='600 42px Arial';x.fillText('@ $'+px(d.px)+'   ·   '+d.exch+' PERP',W/2,842);x.textAlign='left';
     x.fillStyle='rgba(255,255,255,0.045)';rrx(x,72,902,W-144,106,20);x.fill();
-    x.textAlign='center';x.fillStyle='#7a828c';x.font='400 30px Arial';x.fillText('Live crypto futures liquidations · watch traders get rekt at marginpad.io/rekt',W/2,968);x.textAlign='left';
+    x.textAlign='center';x.fillStyle='#7a828c';x.font='400 30px Arial';x.fillText(__esT_rektindex("liveCryptoFuturesLiquidati",'Live crypto futures liquidations · watch traders get rekt at marginpad.io/rekt'),W/2,968);x.textAlign='left';
     return c;
   }
   function shareTextOnly(text,url){ if(navigator.share){navigator.share({text:text+' '+url}).catch(function(){});} else {window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text+' '+url),'_blank','noopener');} }
   function shareLiq(d){
-    var caption=d.sym+' '+(d.side==='long'?'LONG':'SHORT')+' liquidated - $'+money(d.not)+' wiped at $'+px(d.px)+' on '+d.exch+'. Live crypto liquidations on MarginPad';
+    var caption=d.sym+' '+(d.side==='long'?'LONG':'SHORT')+' liquidated - $'+money(d.not)+__esT_rektindex("wipedAt",' wiped at $')+px(d.px)+' on '+d.exch+'. Live crypto liquidations on MarginPad';
     var url='https://marginpad.io/rekt/';
     var c;try{c=buildLiqTicket(d);}catch(e){c=null;}
     if(!c||!c.toBlob){ shareTextOnly(caption,url); return; }
@@ -974,7 +980,7 @@
       // desktop: save the receipt image + open the X composer with the caption pre-filled
       try{ var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},6000); }catch(_){}
       window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(caption+' '+url),'_blank','noopener');
-      toast('Ticket image saved - drag it into your X post');
+      toast(__esT_rektindex("ticketImageSavedDrag",'Ticket image saved - drag it into your X post'));
     },'image/png');
   }
   function tkData(tk){return {sym:tk.getAttribute('data-sym')||'',side:tk.getAttribute('data-side')||'long',not:+tk.getAttribute('data-n')||0,px:+tk.getAttribute('data-px')||0,exch:tk.getAttribute('data-exch')||'',ts:+tk.getAttribute('data-ts')||0};}
@@ -991,10 +997,10 @@
     document.getElementById('rkmAmt').textContent='$'+money(d.not);
     var qty=d.px>0?d.not/d.px:0;
     document.getElementById('rkmGrid').innerHTML=
-      '<div><div class="l">Liquidation price</div><div class="v">$'+px(d.px)+'</div></div>'+
+      __esT_rektindex("liquidationPrice",'<div><div class="l">Liquidation price</div><div class="v">$')+px(d.px)+'</div></div>'+
       '<div><div class="l">Size (est.)</div><div class="v">'+fmtQty(qty)+' '+esc(d.sym)+'</div></div>'+
       '<div><div class="l">Exchange</div><div class="v">'+esc(d.exch)+' PERP</div></div>'+
-      '<div><div class="l">Direction</div><div class="v">'+(lng?'Long force-closed':'Short force-closed')+'</div></div>'+
+      '<div><div class="l">Direction</div><div class="v">'+(lng?__esT_rektindex("longForceClosed",'Long force-closed'):__esT_rektindex("shortForceClosed",'Short force-closed'))+'</div></div>'+
       '<div><div class="l">Notional wiped</div><div class="v">$'+money(d.not)+'</div></div>'+
       '<div><div class="l">Receipt №</div><div class="v">'+String(d.ts).slice(-6)+'</div></div>';
     var cta=document.getElementById('rkmCta');cta.href=affLink(d.exch,d.sym);cta.setAttribute('data-mpex',affName(d.exch));
@@ -1033,10 +1039,10 @@
   var shareBtn=document.getElementById('rkShare');
   if(shareBtn)shareBtn.addEventListener('click',function(){
     var tot=(document.getElementById('rkTot')||{}).textContent||'$0';
-    var text=tot+' in crypto futures liquidated in the last hour. Watch traders get rekt live on MarginPad.';
+    var text=tot+__esT_rektindex("inCryptoFuturesLiquidated",' in crypto futures liquidated in the last hour. Watch traders get rekt live on MarginPad.');
     var url='https://marginpad.io/rekt/';
     if(navigator.share){navigator.share({title:'Live Crypto Liquidations - MarginPad',text:text,url:url}).catch(function(){});}
-    else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text+' '+url).then(function(){toast('Link copied ✓');},function(){toast(url);});}
+    else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text+' '+url).then(function(){toast(__esT_rektindex("linkCopied",'Link copied ✓'));},function(){toast(url);});}
     else{toast(url);}
   });
 })();
@@ -1159,23 +1165,23 @@
   function row(open,close,ic,t,s,col,badge){return open+'<span class="browse-ic" style="color:'+col+';background:'+col+'22">'+ic+'</span><span class="browse-rt"><b>'+t+(badge?' <em class="browse-badge">'+badge+'</em>':'')+'</b><small>'+s+'</small></span>'+I.chev+close;}
   var html='<div class="browse-sheet"><div class="browse-head"><span class="browse-title">Browse</span><button type="button" class="browse-x" aria-label="Close">&#10005;</button></div><div class="browse-scroll">'
    +'<div class="browse-sec">Calculators</div>'
-   +row('<button type="button" class="browse-row browse-expand" data-expand="calc">','</button>',I.calc,'Calculators','Liquidation, PnL, size &amp; more','#c2f64a')
+   +row('<button type="button" class="browse-row browse-expand" data-expand="calc">','</button>',I.calc,'Calculators',__esT_rektindex("liquidationPnlSizeAmp",'Liquidation, PnL, size &amp; more'),'#c2f64a')
    +'<div class="browse-sub" data-sub="calc" hidden>'
-     +'<button type="button" class="browse-subrow" data-calc="liq">Liquidation price</button>'
-     +'<button type="button" class="browse-subrow" data-calc="size">Position size</button>'
+     +__esT_rektindex("liquidationPrice2",'<button type="button" class="browse-subrow" data-calc="liq">Liquidation price</button>')
+     +__esT_rektindex("positionSize",'<button type="button" class="browse-subrow" data-calc="size">Position size</button>')
      +'<button type="button" class="browse-subrow" data-calc="pnl">PnL / ROI</button>'
-     +'<button type="button" class="browse-subrow" data-calc="dca">DCA / average down</button>'
+     +__esT_rektindex("dcaAverageDown",'<button type="button" class="browse-subrow" data-calc="dca">DCA / average down</button>')
      +'<button type="button" class="browse-subrow" data-calc="tp">Take-profit</button>'
-     +'<button type="button" class="browse-subrow" data-calc="rr">Risk / reward</button>'
+     +__esT_rektindex("riskReward",'<button type="button" class="browse-subrow" data-calc="rr">Risk / reward</button>')
    +'</div>'
    +'<div class="browse-sec">Trade</div>'
-   +row('<button type="button" class="browse-row" data-go="plan">','</button>',I.plan,'Paper Trade','Practice at the live price · zero risk','#2ebd85')
+   +row('<button type="button" class="browse-row" data-go="plan">','</button>',I.plan,'Paper Trade',__esT_rektindex("practiceAtTheLive",'Practice at the live price · zero risk'),'#2ebd85')
    +row('<a class="browse-row" href="/screener">','</a>',I.scr,'Screener','Live markets · movers, funding, OI','#6aa3ff')
    +row('<a class="browse-row" href="/charts">','</a>',I.charts,'Charts','Multi-window chart workspace','#3fd8e6','Desktop')
-   +row('<button type="button" class="browse-row" data-go="heat">','</button>',I.heat,'Liquidation Heatmap','See where the danger zones are','#ffb347')
+   +row('<button type="button" class="browse-row" data-go="heat">','</button>',I.heat,'Liquidation Heatmap',__esT_rektindex("seeWhereTheDanger",'See where the danger zones are'),'#ffb347')
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258')
    +'<div class="browse-sec">Earn</div>'
-   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards','Claim every 5 minutes','#ffd75a')
+   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards',__esT_rektindex("claimEvery5Minutes",'Claim every 5 minutes'),'#ffd75a')
    +'<div class="browse-sec">More</div><div class="browse-more">'
      +'<a class="browse-mrow" href="/blog/">Blog</a>'
      +'<a class="browse-mrow" href="https://t.me/MarginPadBot" target="_blank" rel="noopener">Telegram bot</a>'
@@ -1199,9 +1205,9 @@
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!bp.hidden)close();});
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b622878d"></script>
-<script defer src="/assets/mp-profile.js?v=4e4826a7"></script>
-<script src="/assets/mp-trade.js?v=5e8cd494" defer></script>
+<script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
+<script defer src="/assets/mp-profile.js?v=ca254408"></script>
+<script src="/assets/mp-trade.js?v=85c0c63d" defer></script>
 <script>
 /* affiliate-click conversion signal (Google Ads + GA4 + admin dashboard) - delegated so it catches the dynamically-rendered liquidation-ticket trade links */
 (function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
@@ -1214,6 +1220,6 @@ if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
-<script defer src="/assets/mp-nav.js?v=956f7091"></script>
+<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
 </body>
 </html>

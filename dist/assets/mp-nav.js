@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpnav = {"startWhereToStart":"empezar por dónde empezar principiante nuevo primeros pasos cómo empezar básico cero","spotWalletMemecoinMeme":"spot wallet memecoin moneda meme tarjeta comprar vender swap solana cadena degen demo cuenta portafolio","screenerScannerMoversGaine":"screener escáner movimientos ganadores perdedores volumen funding interés abierto escanear filtrar mercados acciones bolsa forex fx índices sp500 nasdaq oro plata metales","seasonPassTiersDaily":"pase de temporada niveles pronóstico diario objetivos racha tablas clasificación posición premios","everySeasonBoardIn":"Cada tabla de temporada al completo, premios y reglas","leaderboardLeaderboardsSta":"clasificación clasificaciones posiciones ranking rango tabla tablas reglas premios mejores traders quién va ganando","competitionCompetitionsCon":"competición competiciones concurso torneo premio premios bolsa ganar dinero entrada gratis clasificación competir","arenaBotArenaBots":"arena arena de bots bots bot ranking api bots robot clasificación tasa de acierto","rewardsFaucetClaimFree":"recompensas faucet reclamar gratis usdt dinero retirar retiro pago cobrar misiones tareas ganar bono referido referir invitar","levelsLevelXpExperience":"niveles nivel xp experiencia bronce plata oro platino diamante prestigio rango rangos progreso","premiumSubscriptionSubscri":"premium suscripción suscribirse mejorar plan planes de pago founder pro miembro membresía precio","liquidationsLiquidatedRekt":"liquidaciones liquidado rekt feed en vivo barrido explotó cierre forzado mayor liquidación hoy","heatmapHeatMapLiquidation":"mapa de calor mapa de calor mapa de liquidaciones mapas niveles clústeres pools zonas imán btc bitcoin eth ethereum sol solana xrp por moneda hacia dónde va el precio","liquidationsTotals24hBy":"liquidaciones totales 24h por moneda por exchange cuánto se liquidó hoy récords","whaleWhalesBigPositions":"ballena ballenas grandes posiciones grandes operaciones hyperliquid dinero inteligente rastreador wallets millones","fundingFundingRateRates":"funding tasa de funding tasas perpetuos base costo de mantener negativo positivo","openInterestOiPositions":"interés abierto oi posiciones contratos vigentes apalancamiento en el mercado","fearGreedFearAnd":"miedo codicia índice de miedo y codicia sentimiento ánimo emoción fng extremo","coinsMarketsPricesMarket":"monedas mercados precios capitalización top 100 ranking altcoins lista precio de bitcoin","defiTvlTotalValue":"defi tvl valor total bloqueado cadenas protocolos stablecoins rendimiento préstamos dex","calculatorCalculatorsCompu":"calculadora calculadoras calcular hacer cálculos","liquidationPriceLiqPrice":"precio de liquidación precio liq dónde seré liquidado aislado","positionSizeHowMuch":"tamaño de posición cuánto comprar riesgo por operación tamaño del lote apuesta","dcaAverageDownAverage":"dca promediar a la baja precio de entrada promedio añadir a la posición martingala","takeProfitTargetTp":"take profit objetivo tp precio de salida dónde vender","riskRewardRatioRr":"riesgo beneficio ratio rr stop loss objetivo expectativa","journalTradingJournalLog":"diario diario de trading registro bitácora notas revisión exportar operaciones historial","riskOfRuinBankroll":"riesgo de ruina bankroll capital explotar reventar probabilidad de supervivencia kelly quebrar cuenta","alertAlertsAlarmNotify":"alerta alertas aviso notificar notificación alerta de precio telegram email aviso cuando el precio","guidesGuideHowTo":"guías guía cómo explicado liquidación explicada apalancamiento explicado funding explicado referencia","blogArticlesPostsRead":"blog artículos publicaciones leer escritos historias","newsHeadlinesLatestToday":"noticias titulares últimas hoy última hora","apiBotRestTrading":"api bot rest trading api clave api clave api webhook webhooks mcp sdk python javascript node planes límite de peticiones desarrollador automatizar algo","freeApiJsonNo":"api gratis json sin clave api pública api de precios datos de mercado endpoint","statusUptimeIncidentsHealt":"estado tiempo de actividad incidentes salud caído interrupción está funcionando","widgetWidgetsEmbedIframe":"widget widgets insertar iframe sitio web blog poner en mi sitio","exchangesExchangeCompareCo":"exchanges exchange comparar comparación comisiones comisión bybit binance okx mexc bitget hyperliquid moon apalancamiento bono referido registrarse mejor exchange","aboutWhoWeAre":"acerca de quiénes somos equipo historia","contactSupportHelpEmail":"contacto soporte ayuda escríbenos problema error","bestCryptoPaperTrading":"Las mejores plataformas de paper trading cripto","bestPaperTradingPlatforms":"mejores plataformas de paper trading comparadas","cryptoLiquidationsToday":"Liquidaciones de cripto hoy","liquidationsTodayTotal24h":"liquidaciones hoy total 24h récord","marginPad":"<a href=\"/\" class=\"mark\" aria-label=\"MarginPad - inicio\">MARGIN<b>PAD</b></a></div>","traderChatU2715":"<div id=\"chatBox\" hidden><div class=\"ct-head\"><span class=\"ct-title\">Chat de traders</span><span class=\"ct-online\" id=\"ctOnline\"></span><button class=\"ct-x\" id=\"ctClose\" type=\"button\" aria-label=\"Cerrar\">✕</button></div>","whichCoinToAnalyze":"Qué moneda analizar - cualquier par USDT (BTC, ETH, SOL, PEPE...).","candleTimeframeTheTool":"Temporalidad de las velas con la que trabaja la herramienta. Más corta = más señales pero más ruido.","theRuleSetBeing":"El conjunto de reglas que se está probando. Las reglas de entrada/salida se explican junto con los resultados de abajo.","startingCapitalForThe":"Capital inicial para la simulación, en USD.","exchangeTakerFeePer":"Comisión taker del exchange por lado de la operación, en %. Las comisiones reales importan mucho en estrategias frecuentes.","pivotPeriodDailyUses":"Periodo del pivote: Diario usa la vela de ayer, Semanal usa la de la semana pasada.","pivotFormulaClassicIs":"Fórmula del pivote. Classic es la escalera estándar de los floor traders; Fibonacci y Camarilla ponderan los niveles de forma diferente.","howManyRecentCandles":"Cuántas velas recientes alimentan la ventana de cálculo.","winRateThePercentage":"Tasa de acierto - el porcentaje de operaciones que gana tu sistema.","rewardToRiskAverage":"Beneficio/riesgo - ganancia media frente a pérdida media (2 significa que las ganancias son el doble de grandes que las pérdidas).","howMuchOfThe":"Qué porcentaje de la cuenta arriesgas en cada operación, en %.","howManyTradesTo":"Cuántas operaciones simular en cada ejecución.","whatIsThis":"¿Qué es esto?","cookiesSignInSecurity":"Cookies: inicio de sesión, seguridad y analítica anónima. Sin rastreo publicitario."};
+function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpnav[k] != null) return __esD_mpnav[k]; } catch (e) {} return en; }
 /* MarginPad shared desktop nav - injects a top-left hamburger that opens a searchable left drawer.
    Self-contained (own CSS), desktop-only (≥721px). Loaded on standalone pages; the homepage has its own Browse panel. */
 (function () {
@@ -214,61 +220,61 @@
     + '<div class="mpnav-sugg" id="mpnavSugg" hidden></div>'
     // Where to start sits ABOVE every section (owner 2026-09-17): the one row for a reader who does not yet know
     // which section to open. It belongs to no section, so the search filter and the E2E leave it uncounted.
-    + row('brWtsT', 'brWtsS', '/where-to-start/', '#c2f64a', 'compass', 'start where to start beginner new first steps how to begin basics zero', 'START')
+    + row('brWtsT', 'brWtsS', '/where-to-start/', '#c2f64a', 'compass', __esT_mpnav("startWhereToStart",'start where to start beginner new first steps how to begin basics zero'), 'START')
 
     + '<div class="mpnav-sec">' + TR('secTradeP') + '</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan', 'practice demo futures perpetual perps long short leverage position margin liquidation entry terminal trade paper testnet risk free')
-    + row('brSpotT', 'brSpotS', '/spot/', '#c2f64a', 'spot', 'spot wallet memecoin meme coin card buy sell swap solana chain degen demo account portfolio')
+    + row('brSpotT', 'brSpotS', '/spot/', '#c2f64a', 'spot', __esT_mpnav("spotWalletMemecoinMeme",'spot wallet memecoin meme coin card buy sell swap solana chain degen demo account portfolio'))
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts', 'chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis')
-    + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr', 'screener scanner movers gainers losers volume funding open interest scan filter markets stocks shares forex fx indices sp500 nasdaq gold silver metals')
+    + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr', __esT_mpnav("screenerScannerMoversGaine",'screener scanner movers gainers losers volume funding open interest scan filter markets stocks shares forex fx indices sp500 nasdaq gold silver metals'))
     // "Simulators" (the five SEO landing pages: stock / forex / index / leverage / no-sign-up) was REMOVED on
     // 2026-09-17 - owner: readers asked what the difference from Paper Trade is, and there is none; every one of
     // them opens the same terminal. The pages keep 15-21 static inbound links each (measured), so nothing orphans.
 
     + '<div class="mpnav-sec">' + TR('secCompete') + '</div>'
-    + row('brSeasonT', 'brSeasonS', '/season/', '#c2f64a', 'trophy', 'season pass tiers daily call goals streak boards standings rank prizes')
-    + row('Leaderboards', 'Every season board in full, prizes and rules', '/leaderboards/', '#ffd75a', 'ranks', 'leaderboard leaderboards standings ranking rank table tables rules prizes top traders who is winning')
-    + row('brCompT', 'brCompS', '/trading-competition/', '#ffd75a', 'podium', 'competition competitions contest tournament prize prizes pool win money free entry leaderboard compete')
-    + row('brArenaT', 'brArenaS', '/arena/', '#7cc4ff', 'arena', 'arena bot arena bots bot ranking api bots robot leaderboard win rate')
-    + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', 'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite')
+    + row('brSeasonT', 'brSeasonS', '/season/', '#c2f64a', 'trophy', __esT_mpnav("seasonPassTiersDaily",'season pass tiers daily call goals streak boards standings rank prizes'))
+    + row('Leaderboards', __esT_mpnav("everySeasonBoardIn",'Every season board in full, prizes and rules'), '/leaderboards/', '#ffd75a', 'ranks', __esT_mpnav("leaderboardLeaderboardsSta",'leaderboard leaderboards standings ranking rank table tables rules prizes top traders who is winning'))
+    + row('brCompT', 'brCompS', '/trading-competition/', '#ffd75a', 'podium', __esT_mpnav("competitionCompetitionsCon",'competition competitions contest tournament prize prizes pool win money free entry leaderboard compete'))
+    + row('brArenaT', 'brArenaS', '/arena/', '#7cc4ff', 'arena', __esT_mpnav("arenaBotArenaBots",'arena bot arena bots bot ranking api bots robot leaderboard win rate'))
+    + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', __esT_mpnav("rewardsFaucetClaimFree",'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite'))
     + row('brVaultT', 'brVaultS', '/vault/', '#c792ff', 'vault', 'vault cosmetics frames skins ticks shop store backgrounds ticket themes buy legendary')
-    + row('brLevelsT', 'brLevelsS', '/levels/', '#8b5cff', 'starr', 'levels level xp experience bronze silver gold platinum diamond prestige rank ranks progress')
-    + row('brPremT', 'brPremS', '/premium/', '#ffd75a', 'crown', 'premium subscription subscribe upgrade plan plans paid founder pro member membership price')
+    + row('brLevelsT', 'brLevelsS', '/levels/', '#8b5cff', 'starr', __esT_mpnav("levelsLevelXpExperience",'levels level xp experience bronze silver gold platinum diamond prestige rank ranks progress'))
+    + row('brPremT', 'brPremS', '/premium/', '#ffd75a', 'crown', __esT_mpnav("premiumSubscriptionSubscri",'premium subscription subscribe upgrade plan plans paid founder pro member membership price'))
 
     + '<div class="mpnav-sec">' + TR('secMarkets') + '</div>'
-    + row('navRekt', 'prodRektS', '/rekt/', '#ff6258', 'rekt', 'liquidations liquidated rekt feed live wipeout blown up forced closed biggest liquidation today')
+    + row('navRekt', 'prodRektS', '/rekt/', '#ff6258', 'rekt', __esT_mpnav("liquidationsLiquidatedRekt",'liquidations liquidated rekt feed live wipeout blown up forced closed biggest liquidation today'))
     // BROWSE SENDS PEOPLE TO THE LIVE CHART, NOT TO THE SEO PAGE (owner 2026-09-15: "ove stranice mogu da
     // postoje negde u pozadini ali iz browse, mozemo direktno da ih vodimo na heatmap chart"). The 32 per-coin
     // liquidation-map pages stay live and stay indexed - they just are not the door any more. Removing them
     // from here orphans nothing: measured, each carries 34-42 static inbound links (every map page links to
     // every other, plus the /liquidations/ hub), unlike the comparison pages which had 1-3 and had to be kept.
     // The heatmap takes no symbol from the URL, so no row pretends to open a particular coin.
-    + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', 'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes')
-    + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', 'liquidations totals 24h by coin by exchange how much was liquidated today records')
-    + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale', 'whale whales big positions large trades hyperliquid smart money tracker wallets millions')
+    + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes'))
+    + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today records'))
+    + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale', __esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
     // Funding, open interest and long/short are three readings of ONE question - what the crowd is holding and
     // what it pays - so they sit as a tight group rather than three full-width rows. They keep their own icon
     // and their own keywords; nothing is hidden, and the section drops from 11 rows to 8.
     + '<div class="mpnav-more">'
-    + mrow('/funding/', 'funding', 'brFundT', 'funding funding rate rates perpetual basis carry cost of holding negative positive')
-    + mrow('/open-interest/', 'oi', 'brOiT', 'open interest oi positions outstanding contracts leverage in the market')
+    + mrow('/funding/', 'funding', 'brFundT', __esT_mpnav("fundingFundingRateRates",'funding funding rate rates perpetual basis carry cost of holding negative positive'))
+    + mrow('/open-interest/', 'oi', 'brOiT', __esT_mpnav("openInterestOiPositions",'open interest oi positions outstanding contracts leverage in the market'))
     + mrow('/long-short/', 'ls', 'brLsT', 'long short ratio positioning longs shorts crowd sentiment accounts bias')
-    + mrow('/fear-greed/', 'fng', 'brFngT', 'fear greed fear and greed index sentiment mood emotion fng extreme')
+    + mrow('/fear-greed/', 'fng', 'brFngT', __esT_mpnav("fearGreedFearAnd",'fear greed fear and greed index sentiment mood emotion fng extreme'))
     + '</div>'
-    + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt', 'coins markets prices market cap top 100 ranking altcoins list price of bitcoin')
-    + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi', 'defi tvl total value locked chains protocols stablecoins yield lending dex')
+    + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt', __esT_mpnav("coinsMarketsPricesMarket",'coins markets prices market cap top 100 ranking altcoins list price of bitcoin'))
+    + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi', __esT_mpnav("defiTvlTotalValue",'defi tvl total value locked chains protocols stablecoins yield lending dex'))
     + row('brCycleT', 'brCycleS', '/bitcoin-cycle/', '#f7a600', 'cycle', 'cycle bitcoin cycle pi cycle rainbow chart halving top signal bull bear market top')
 
     + '<div class="mpnav-sec">' + TR('secCalc') + '</div>'
-    + xrow('calc', 'brCalcT', 'brCalcS', '#c2f64a', 'calc', 'calculator calculators compute work out')
+    + xrow('calc', 'brCalcT', 'brCalcS', '#c2f64a', 'calc', __esT_mpnav("calculatorCalculatorsCompu",'calculator calculators compute work out'))
     + '<div class="mpnav-sub" data-sub="calc" hidden>'
-    + sub('/calculators?c=liq', 'subLiq', 'liquidation price liq price where will i be liquidated isolated')
+    + sub('/calculators?c=liq', 'subLiq', __esT_mpnav("liquidationPriceLiqPrice",'liquidation price liq price where will i be liquidated isolated'))
     + sub('/calculators?c=cross', 'Cross margin liquidation', 'cross margin liquidation whole balance')
-    + sub('/calculators?c=size', 'subSize', 'position size how much to buy risk per trade lot size stake')
+    + sub('/calculators?c=size', 'subSize', __esT_mpnav("positionSizeHowMuch",'position size how much to buy risk per trade lot size stake'))
     + sub('/calculators?c=pnl', 'subPnl', 'pnl profit loss roi roe return how much did i make')
-    + sub('/calculators?c=dca', 'subDca', 'dca average down average entry add to position martingale')
-    + sub('/calculators?c=tp', 'subTp', 'take profit target tp exit price where to sell')
-    + sub('/calculators?c=rr', 'subRr', 'risk reward ratio rr stop loss target expectancy')
+    + sub('/calculators?c=dca', 'subDca', __esT_mpnav("dcaAverageDownAverage",'dca average down average entry add to position martingale'))
+    + sub('/calculators?c=tp', 'subTp', __esT_mpnav("takeProfitTargetTp",'take profit target tp exit price where to sell'))
+    + sub('/calculators?c=rr', 'subRr', __esT_mpnav("riskRewardRatioRr",'risk reward ratio rr stop loss target expectancy'))
     + sub('/crypto-tax-calculator/', 'Crypto tax calculator', 'tax taxes capital gains hmrc irs report income')
     + sub('/crypto-cost-basis-calculator/', 'Cost basis calculator (FIFO/LIFO)', 'cost basis fifo lifo hifo average cost accounting')
     + sub('/hyperliquid-liquidation-calculator/', 'Hyperliquid liquidation calculator', 'hyperliquid hl liquidation calculator')
@@ -276,40 +282,40 @@
     + '</div>'
 
     + '<div class="mpnav-sec">' + TR('secTools') + '</div>'
-    + row('brJrnT', 'brJrnS', '/trading-journal/', '#46e0e6', 'journal', 'journal trading journal log diary notes review export trades record')
+    + row('brJrnT', 'brJrnS', '/trading-journal/', '#46e0e6', 'journal', __esT_mpnav("journalTradingJournalLog",'journal trading journal log diary notes review export trades record'))
     + row('brBtT', 'brBtS', '/crypto-backtester/', '#46e0e6', 'backtest', 'backtest backtester strategy historical test strategy simulate past data')
     + row('brPivT', 'brPivS', '/pivot-point-calculator/', '#6aa3ff', 'pivot', 'pivot pivot points support resistance levels floor trader camarilla fibonacci')
-    + row('brRorT', 'brRorS', '/risk-of-ruin-calculator/', '#ff6258', 'ruin', 'risk of ruin bankroll blow up survival probability kelly bust account')
+    + row('brRorT', 'brRorS', '/risk-of-ruin-calculator/', '#ff6258', 'ruin', __esT_mpnav("riskOfRuinBankroll",'risk of ruin bankroll blow up survival probability kelly bust account'))
     + row('brCorrT', 'brCorrS', '/crypto-correlation-matrix/', '#c792ff', 'corr', 'correlation matrix correlated diversify pairs move together beta')
-    + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert', 'alert alerts alarm notify notification price alert telegram email ping when price')
+    + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert', __esT_mpnav("alertAlertsAlarmNotify",'alert alerts alarm notify notification price alert telegram email ping when price'))
     + row('brCalT', 'brCalS', '/calendar/', '#ffd75a', 'cal', 'calendar events dates fomc cpi fed nfp unlocks economic schedule countdown')
 
     + '<div class="mpnav-sec">' + TR('secLearn') + '</div>'
     + row('brAcadT', 'brAcadS', '/academy/', '#c2f64a', 'cap', 'academy learn course courses lesson lessons school class study tutorial teach certificate quiz', 'HOT')
-    + row('brGuidesT', 'brGuidesS', '/guides/', '#7fd957', 'book', 'guides guide how to explained liquidation explained leverage explained funding explained reference')
-    + row('navBlog', 'brBlogS', '/blog/', '#ff8c5a', 'pencil', 'blog articles posts read writing stories')
-    + row('brNewsT', 'brNewsS', '/news/', '#ff8c5a', 'news', 'news headlines latest today breaking')
+    + row('brGuidesT', 'brGuidesS', '/guides/', '#7fd957', 'book', __esT_mpnav("guidesGuideHowTo",'guides guide how to explained liquidation explained leverage explained funding explained reference'))
+    + row('navBlog', 'brBlogS', '/blog/', '#ff8c5a', 'pencil', __esT_mpnav("blogArticlesPostsRead",'blog articles posts read writing stories'))
+    + row('brNewsT', 'brNewsS', '/news/', '#ff8c5a', 'news', __esT_mpnav("newsHeadlinesLatestToday",'news headlines latest today breaking'))
     + row('brCommT', 'brCommS', '/community/', '#c2f64a', 'users', 'community forum posts discussion ideas talk people social feed')
 
     // Bot API keeps a full row - it is a product with a price. The other three are a reference, a JSON endpoint
     // and an uptime page: the label IS the description, so they take the compact two-column chip instead of
     // 63px each. Same for the More list. That is where the scroll budget above comes from.
     + '<div class="mpnav-sec">' + TR('secDev') + '</div>'
-    + row('brApiT', 'brApiS', '/trading-api/', '#3fd8e6', 'bot', 'api bot rest trading api key api key webhook webhooks mcp sdk python javascript node plans rate limit developer automate algo')
+    + row('brApiT', 'brApiS', '/trading-api/', '#3fd8e6', 'bot', __esT_mpnav("apiBotRestTrading",'api bot rest trading api key api key webhook webhooks mcp sdk python javascript node plans rate limit developer automate algo'))
     + '<div class="mpnav-more">'
     + mrow('/api-docs/', 'docs', 'brDocsT', 'docs documentation openapi swagger endpoints reference schema spec')
-    + mrow('/free-crypto-api/', 'braces', 'brFapiT', 'free api json no key public api price api market data endpoint')
-    + mrow('/status/', 'status', 'brStatT', 'status uptime incidents health down outage is it working')
-    + mrow('/widgets/', 'embed', 'navWidgets', 'widget widgets embed iframe website blog put on my site')
+    + mrow('/free-crypto-api/', 'braces', 'brFapiT', __esT_mpnav("freeApiJsonNo",'free api json no key public api price api market data endpoint'))
+    + mrow('/status/', 'status', 'brStatT', __esT_mpnav("statusUptimeIncidentsHealt",'status uptime incidents health down outage is it working'))
+    + mrow('/widgets/', 'embed', 'navWidgets', __esT_mpnav("widgetWidgetsEmbedIframe",'widget widgets embed iframe website blog put on my site'))
     + '</div>'
 
     + '<div class="mpnav-sec">' + TR('secMore') + '</div>'
-    + row('brExT', 'brExS', '/exchanges/', '#c2f64a', 'swap', 'exchanges exchange compare comparison fees fee bybit binance okx mexc bitget hyperliquid moon leverage bonus referral sign up best exchange')
+    + row('brExT', 'brExS', '/exchanges/', '#c2f64a', 'swap', __esT_mpnav("exchangesExchangeCompareCo",'exchanges exchange compare comparison fees fee bybit binance okx mexc bitget hyperliquid moon leverage bonus referral sign up best exchange'))
     + '<div class="mpnav-more">'
     + mrow('/', 'home', 'mnHome', 'home homepage main')
     + mrow('https://t.me/MarginPadBot', 'tg', 'Telegram', 'telegram tg bot channel group signals wrap', 1)
-    + mrow('/about/', 'info', 'navAbout', 'about who we are team story')
-    + mrow('/contact/', 'mail', 'navContact', 'contact support help email us problem bug')
+    + mrow('/about/', 'info', 'navAbout', __esT_mpnav("aboutWhoWeAre",'about who we are team story'))
+    + mrow('/contact/', 'mail', 'navContact', __esT_mpnav("contactSupportHelpEmail",'contact support help email us problem bug'))
     + '</div>'
     // The four comparison/alternative pages live behind a collapsed row (owner 2026-09-15: drop them from the
     // menu, but only if it costs nothing in SEO). It does not: they carry 1-3 static inbound links each, so
@@ -317,9 +323,9 @@
     + xrow('cmp', 'brCmpT', 'brCmpS', '#7f8893', 'scale', 'alternative alternatives compare comparison best vs versus coinglass')
     + '<div class="mpnav-sub" data-sub="cmp" hidden>'
     + sub('/coinglass-alternative/', 'Coinglass alternative', 'coinglass alternative free replacement')
-    + sub('/best-crypto-paper-trading-platforms/', 'Best crypto paper trading platforms', 'best paper trading platforms compared')
+    + sub('/best-crypto-paper-trading-platforms/', __esT_mpnav("bestCryptoPaperTrading",'Best crypto paper trading platforms'), __esT_mpnav("bestPaperTradingPlatforms",'best paper trading platforms compared'))
     + sub('/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools', 'best heatmap tools compared')
-    + sub('/crypto-liquidations-today/', 'Crypto liquidations today', 'liquidations today total 24h record')
+    + sub('/crypto-liquidations-today/', __esT_mpnav("cryptoLiquidationsToday",'Crypto liquidations today'), __esT_mpnav("liquidationsTodayTotal24h",'liquidations today total 24h record'))
     + '</div>'
     + '</div></div>';
 
@@ -355,7 +361,7 @@
     var cur = window.__mpLangCur || _NL;
     var lo = opts.map(function (o) { var code = o[0] === '/' ? 'en' : o[0].replace(/\//g, ''); return '<option value="' + o[0] + '"' + (code === cur ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
     return '<div class="brand"><button type="button" class="hmenu" id="mBurger" aria-label="' + TR('navMenu') + '"><span></span><span></span><span></span></button>'
-      + '<a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a></div>'
+      + __esT_mpnav("marginPad",'<a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a></div>')
       + '<nav class="hnav">'
       + '<a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>'
       + '<a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="' + TR('hTgTitle') + '" aria-label="' + TR('hTgAria') + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>'
@@ -580,10 +586,10 @@
     // the widget gets the same markup those pages carry (FAB + box) at load, its stylesheet, and mp-trade.js only on
     // the first click - the bundle bails on everything else it looks for (journal drawer) when the markup is absent.
     var CHAT_HTML = '<button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Chat</span></button>'
-      + '<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>'
+      + __esT_mpnav("traderChatU2715",'<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>')
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=5e8cd494', CHAT_CSS = '/assets/mp-trade.css?v=06633675', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=85c0c63d', CHAT_CSS = '/assets/mp-trade.css?v=06633675', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
     function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=06633675"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
@@ -612,8 +618,8 @@
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=b622878d', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=b622878d"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=5827d2bf', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=5827d2bf"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -626,7 +632,7 @@
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=4e4826a7', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=ca254408', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
       if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
@@ -708,18 +714,18 @@
 (function(){
   var labels=document.querySelectorAll('.toolbar .row label.f');if(!labels.length)return;
   var TIPS={
-    coin:"Which coin to analyze - any USDT pair (BTC, ETH, SOL, PEPE...).",
-    tf:"Candle timeframe the tool works on. Shorter = more signals but more noise.",
-    strat:"The rule set being tested. Entry/exit rules are explained with the results below.",
-    cap:"Starting capital for the simulation, in USD.",
-    fee:"Exchange taker fee per trade side, in %. Realistic fees matter a lot for frequent strategies.",
-    per:"Pivot period: Daily uses yesterday's candle, Weekly uses last week's.",
-    method:"Pivot formula. Classic is the standard floor-trader ladder; Fibonacci and Camarilla weight the levels differently.",
-    win:"How many recent candles feed the calculation window.",
-    wr:"Win rate - the percentage of trades your system wins.",
-    rr:"Reward-to-risk - average win vs average loss (2 means wins are twice as big as losses).",
-    risk:"How much of the account you risk on each trade, in %.",
-    n:"How many trades to simulate in each run."
+    coin:__esT_mpnav("whichCoinToAnalyze","Which coin to analyze - any USDT pair (BTC, ETH, SOL, PEPE...)."),
+    tf:__esT_mpnav("candleTimeframeTheTool","Candle timeframe the tool works on. Shorter = more signals but more noise."),
+    strat:__esT_mpnav("theRuleSetBeing","The rule set being tested. Entry/exit rules are explained with the results below."),
+    cap:__esT_mpnav("startingCapitalForThe","Starting capital for the simulation, in USD."),
+    fee:__esT_mpnav("exchangeTakerFeePer","Exchange taker fee per trade side, in %. Realistic fees matter a lot for frequent strategies."),
+    per:__esT_mpnav("pivotPeriodDailyUses","Pivot period: Daily uses yesterday's candle, Weekly uses last week's."),
+    method:__esT_mpnav("pivotFormulaClassicIs","Pivot formula. Classic is the standard floor-trader ladder; Fibonacci and Camarilla weight the levels differently."),
+    win:__esT_mpnav("howManyRecentCandles","How many recent candles feed the calculation window."),
+    wr:__esT_mpnav("winRateThePercentage","Win rate - the percentage of trades your system wins."),
+    rr:__esT_mpnav("rewardToRiskAverage","Reward-to-risk - average win vs average loss (2 means wins are twice as big as losses)."),
+    risk:__esT_mpnav("howMuchOfThe","How much of the account you risk on each trade, in %."),
+    n:__esT_mpnav("howManyTradesTo","How many trades to simulate in each run.")
   };
   var tip=null;
   function hideTip(){if(tip&&tip.parentNode)tip.parentNode.removeChild(tip);tip=null;}
@@ -733,7 +739,7 @@
     var t=TIPS[ctl.id];
     var span=document.createElement('span');span.className='fl';
     while(lb.firstChild&&lb.firstChild!==ctl){var node=lb.firstChild;lb.removeChild(node);span.appendChild(node);}
-    if(t){var i=document.createElement('button');i.type='button';i.className='inf';i.textContent='i';i.setAttribute('data-tip',t);i.setAttribute('aria-label','What is this?');span.appendChild(i);}
+    if(t){var i=document.createElement('button');i.type='button';i.className='inf';i.textContent='i';i.setAttribute('data-tip',t);i.setAttribute('aria-label',__esT_mpnav("whatIsThis",'What is this?'));span.appendChild(i);}
     lb.insertBefore(span,ctl);
   });
   document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.inf');if(b){e.preventDefault();if(tip){hideTip();}else showTip(b);return;}if(!e.target.closest||!e.target.closest('.inf-tip'))hideTip();});
@@ -759,7 +765,7 @@
     if(document.getElementById('mpCkBar'))return;
     var b=document.createElement('div');b.id='mpCkBar';
     b.style.cssText='position:relative;z-index:94;margin:0;display:flex;align-items:center;gap:9px;background:rgba(13,16,21,.97);border-bottom:1px solid #2b323b;padding:7px 12px;font-family:Familjen Grotesk,system-ui,sans-serif;font-size:12px;line-height:1.35;color:#aab2bd'; // one slim line (2026-09-07 UX pass): the four-line card sat above the brand on every first visit and covered drawer headers
-    b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">' + ((window.__mpTR && window.__mpTR('ckBar')) || 'Cookies: sign-in, security and anonymous analytics. No ad tracking.') + '</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:5px 11px;cursor:pointer">OK</button>';
+    b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">' + ((window.__mpTR && window.__mpTR('ckBar')) || __esT_mpnav("cookiesSignInSecurity",'Cookies: sign-in, security and anonymous analytics. No ad tracking.')) + '</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:5px 11px;cursor:pointer">OK</button>';
     document.body.insertBefore(b,document.body.firstChild); // in the document flow at the top (2026-09-02): the fixed bottom card covered the primary buttons on phones
     document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
   }

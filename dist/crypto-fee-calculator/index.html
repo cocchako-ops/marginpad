@@ -96,6 +96,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,t=+document.getElementById('taker').value/100,m=+document.getElementById('maker').value/100,n=+document.getElementById('trades').value;var r=document.getElementById('res');if(!(p>0)){r.innerHTML='';return;}var rtT=2*p*t,rtM=2*p*m,moT=rtT*n,moM=rtM*n;r.innerHTML='<div class="rrow"><span class="k">Round trip as taker</span><span class="v dn">-'+rtT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Round trip as maker</span><span class="v">-'+rtM.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Monthly cost ('+n+' trades, taker)</span><span class="v dn">-'+moT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Limit orders save</span><span class="v up">+'+(moT-moM).toFixed(2)+' USD / month</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=956f7091"></script>
+<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
 </body>
 </html>

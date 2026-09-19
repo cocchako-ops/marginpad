@@ -133,6 +133,14 @@ const DICTS = {
   'mp-nav.js': /var MPI = \{.*?\};\r?\n/s,
   'mp-auth.js': /AUTH_T\s*=\s*\{[\s\S]*?\};/,
 };
+// A ROUTED STRING AND ITS TABLE ARE NOT FINDINGS. The i18n-bundle routing leaves the English in place as the
+// helper's fallback argument, and the tables it writes are keyed by English on purpose (the Vault catalogue
+// table is keyed by the English sentence itself). Counting them reports work that is already done.
+// HT( is the bento homepage's own helper, written before the general tool existed. Not knowing about it made
+// the homepage report 62 strings of which a third were already done.
+const ROUTED = /(?:__esT?V?_[a-z0-9]+|HT)\(\s*'[^']*'\s*,\s*('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")\s*\)|(?:__esT?V?_[a-z0-9]+|HT)\(\s*"[^"]*"\s*,\s*('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")\s*\)/g;
+const TABLES = /var __es[VD]*D?_[a-z0-9]+ = \{[\s\S]*?\};\r?\n/g;
+const deRouted = s => s.replace(TABLES, m => ' '.repeat(m.length)).replace(ROUTED, m => ' '.repeat(m.length));
 const PACKED = new Set(['i18n.js']);                       // the loader itself: every string in it is a default
 // Pages that replace their own text at runtime from a translation pack of their own. They are reported apart,
 // because "2,314 English strings" on /es/academy/ is the EN master the page swaps out, not what a reader sees.
@@ -166,7 +174,7 @@ if (!BUNDLES_ONLY) {
     let html = ''; try { html = fs.readFileSync(p, 'utf8'); } catch (e) { continue; }
     const seen = new Map();
     for (const sc of scriptsOf(html)) {
-      for (const L of literals(sc.body)) {
+      for (const L of literals(deRouted(sc.body))) {
         if (!candidate(L.s)) continue;
         if (!isEnglish(L.s)) continue;
         const k = L.s.trim().replace(/\s+/g, ' ');
@@ -187,6 +195,7 @@ for (const f of bundles) {
   if (PACKED.has(f)) continue;
   let src = ''; try { src = fs.readFileSync(path.join(BUNDLE_DIR, f), 'utf8'); } catch (e) { continue; }
   if (DICTS[f]) src = src.replace(DICTS[f], ' ');
+  src = deRouted(src);
   const seen = new Map();
   for (const L of literals(src)) {
     if (!candidate(L.s)) continue;

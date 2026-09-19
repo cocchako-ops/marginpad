@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpmcharts = {"thisDeviceRanOut":"Este dispositivo se quedó sin espacio, así que se eliminaron de él las operaciones cerradas más antiguas. Las posiciones abiertas y tus estadísticas están a salvo - tus estadísticas viven en tu cuenta, no en este dispositivo.","myTrades":"Mis operaciones","demoTrade":"Operación demo","rotateYourPhoneFor":"↻ Gira el teléfono para un gráfico más ancho","rotateYourPhone":"Gira el teléfono","chartsWorkInLandscape":"Los gráficos funcionan en horizontal - gira el teléfono de lado y se abren al instante.","noEdge":"sin ventaja","upProj":"% arriba, proy. ","searchAnyTicker":"Busca cualquier ticker…","limitPrice":"Precio límite","stopLossOptional":"Stop-loss (opcional)","takeProfitOptional":"Take-profit (opcional)","breakEvenAtRoe":"Equilibrio en ROE","entryPrice":"Precio de entrada","positionSize":"Tamaño de posición","openDemoTrade":"Abrir operación demo","enterThePriceYou":"Introduce el precio al que quieres que se ejecute.","belowTheMarket":"por debajo del mercado","aboveTheMarket":"por encima del mercado","fillsIfItDrops":"se ejecuta si el precio cae hasta ahí","fillsIfItRises":"se ejecuta si el precio sube hasta ahí","placeLimitOrder":"Colocar orden límite","enterAnAmount":"Introduce un importe.","enterALimitPrice":"Introduce un precio límite.","waitingForALive":"Esperando un precio en vivo - inténtalo de nuevo en un segundo.","limitOrdersAreStill":"Las órdenes límite todavía se están cargando - inténtalo de nuevo en un segundo.","orderPlaced":"Orden colocada ✓","couldNotPlaceThe":"No se pudo colocar la orden - inténtalo de nuevo.","gettingLivePrice":"Obteniendo precio en vivo…","marketIsClosedYou":" tiene el mercado cerrado - podrás operarlo cuando reabra.","positionOpened":"Posición abierta ✓","chooseCoin":"Elige una moneda","sameIndicatorFamiliesAs":"Las mismas familias de indicadores que el espacio de trabajo de escritorio. Se aplica al gráfico seleccionado.","unlockThePremiumIndicators":"Desbloquea los indicadores premium","estimatedLiquidationPrice":"Precio de liquidación estimado","fromEntry":"desde la entrada","signInFreeTo":"Inicia sesión (gratis) para preguntarle a la IA sobre este gráfico.","signInFree":"Inicia sesión gratis","resetsIn":"se reinicia en ","tradeIt":"Operarlo","findMeTheBest":"Encuéntrame la mejor oportunidad en este gráfico ahora mismo - ¿dónde estaría una buena entrada y qué la convertiría en un error?","findAnOpportunity":"Buscar una oportunidad","whereWouldYouWant":"¿Dónde te gustaría que se ejecutara la orden, y por qué no al precio actual?","whatWouldMakeThis":"¿Qué convertiría esto en un error grave?","whatToAvoid":"Qué evitar","reReadNow":"Releer ahora","hiIAmYour":"Hola - soy tu asistente de gráficos.","iLookForThe":"Busco la oportunidad en la moneda y temporalidad que me indiques: dónde vale la pena tomar un setup, a qué precio, y qué lo convertiría en un error. Lo dibujo para que veas si encaja - tú decides. También te diré claramente cuando no hay nada aquí y esperar es la jugada.","youAreOn":"Estás en","movingAveragesAreSeparate":"las medias móviles son ids separados aquí: ema9 ema21 ema50 ema100 ema200 sma20 sma50 sma100 sma200","barsago0TheNewest":"barsAgo 0 = la vela más reciente; ","candlesAreLoadedNegative":" velas cargadas; un valor negativo proyecta hacia el futuro (máx. -30)","onlyAFewCandles":"Solo hay pocas velas cargadas - lectura limitada.","giveMeASharp":"Dame una lectura precisa y práctica de este gráfico ahora mismo.","thatIsYourAsk":"Esa era tu lectura de Ask AI de hoy - se reinicia a medianoche UTC. Premium Plus la sube a 50 al día.","pleaseSignInTo":"Inicia sesión para usar la IA.","askAiComesWith":"Ask AI viene incluido con MarginPad Premium ($11.99/mes) - una lectura al día, 50 al día con Premium Plus.","couldNotReachAi":"No se pudo contactar con la IA - inténtalo de nuevo.","streamingNotSupported":"Streaming no compatible.","noAnswerTryAgain":"Sin respuesta - inténtalo de nuevo.","networkErrorTryAgain":"Error de red - inténtalo de nuevo.","thoseDrawingsAreAlready":"Esos dibujos ya no están.","showOnChart":"Mostrar en el gráfico","onChart":"En el gráfico","switchedTo":"Cambiado a ","isLockedPremiumIndicator":" está bloqueado (indicador Premium)","zoomedTo":"Zoom a ","turnYourPhoneUpright":"Pon el teléfono en vertical","chartsClosedRotateBack":"Gráficos cerrados - vuelve a girar el teléfono para seguir navegando."};
+function __esT_mpmcharts(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpmcharts[k] != null) return __esD_mpmcharts[k]; } catch (e) {} return en; }
 /* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
    every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
    trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
@@ -15,7 +21,7 @@ window.mpJStore=window.mpJStore||function(a){
       keep=Math.floor(keep*0.7);
       try{
         localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
-        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast(__esT_mpmcharts("thisDeviceRanOut",'This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.'));}catch(_){}}
         return true;
       }catch(e2){}
     }
@@ -116,20 +122,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<button class="mfc-b" data-act="ind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>'+mcT('indBtn','Indicators')+'</button>'
       +'<button class="mfc-b" data-act="split"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span class="mfc-splitL">'+mcT('mc2charts','2 charts')+'</span></button>'
       +'<button class="mfc-b" data-act="draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/></svg>'+mcT('mcDraw','Draw')+'</button>'
-      +'<button class="mfc-b" data-act="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 7 3 12 8 17"/></svg>'+mcT('mtMyTrades','My trades')+'</button>'
+      +'<button class="mfc-b" data-act="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 7 3 12 8 17"/></svg>'+mcT('mtMyTrades',__esT_mpmcharts("myTrades",'My trades'))+'</button>'
       +'<button class="mfc-b" data-act="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/></svg>'+mcT('mcCalc','Calc')+'</button>'
-      +'<button class="mfc-b mfc-tradebtn" data-act="trade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'+mcT('mcDemoTrade','Demo trade')+'</button>'
+      +'<button class="mfc-b mfc-tradebtn" data-act="trade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'+mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade'))+'</button>'
       +'<span class="mfc-grow"></span>'
       +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>'+mcT('mcAi','AI')+'</button>'
       +'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
-      +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate','↻ Rotate your phone for a wider chart')+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss">✕</button></div>';
+      +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate',__esT_mpmcharts("rotateYourPhoneFor",'↻ Rotate your phone for a wider chart'))+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss">✕</button></div>';
     document.body.appendChild(ov);
     var rx=ov.querySelector('.mfc-rot-x');if(rx)rx.addEventListener('click',function(e){e.stopPropagation();var r=ov.querySelector('.mfc-rot');if(r)r.hidden=true;try{localStorage.setItem('mp_mfc_rot_off','1');}catch(_){}});
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
-      +'<h3>'+mcT('mcGateT2','Rotate your phone')+'</h3><p>'+mcT('mcGateS2','Charts work in landscape - turn your phone sideways and they open instantly.')+'</p>'
+      +'<h3>'+mcT('mcGateT2',__esT_mpmcharts("rotateYourPhone",'Rotate your phone'))+'</h3><p>'+mcT('mcGateS2',__esT_mpmcharts("chartsWorkInLandscape",'Charts work in landscape - turn your phone sideways and they open instantly.'))+'</p>'
       +'<button class="mfc-gate-go" data-gx style="background:none;border:1px solid #2c3540;color:#9aa3ad">'+mcT('mcClose','Close')+' ✕</button>';
     ov.appendChild(gate);
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
@@ -383,9 +389,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(vs){var vd=[];for(var vi=0;vi<p.bars.length;vi++){var vb=p.bars[vi],vv=+vb.vol;if(isFinite(vv)&&vv>0)vd.push({time:vb.time,value:vv,color:(+vb.close>=+vb.open)?'rgba(46,189,133,.45)':'rgba(255,98,88,.45)'});}try{vs.setData(vd);}catch(e){}if(p.sub)p.subSeries.push(vs);else p.indSeries.push(vs);}
       setScale('vol');}
     if(p.inds.casc&&p._casc){var _cl=p._casc.score[p._casc.score.length-1],_cd=(p._casc.dir&&p._casc.dir[p._casc.dir.length-1])||0;if(isFinite(_cl))p.legItems.push({raw:true,color:_cl>=90?'#ff6258':_cl>=70?'#ffb020':'#8fa3c4',label:'Cascade '+Math.round(_cl)+'/100 \u2014 '+(_cl>=90?'EXTREME':_cl>=70?'fragile':'calm')+(Math.abs(_cd)>=0.3?(_cd>0?' \u00b7 fuel below (longs)':' \u00b7 fuel above (shorts)'):'')});add(p._casc.score,{color:'#ffb020',lineWidth:1.6,priceScaleId:'casc'},{label:'CASCADE',dec:0});add(c.map(function(){return 90;}),{color:'rgba(255,215,90,.4)',lineStyle:2,priceScaleId:'casc'});setScale('casc');}
-    if(p.inds.brain&&p._brain){var _bl=p._brain.score[p._brain.score.length-1];if(isFinite(_bl))p.legItems.push({raw:true,color:_bl>=55?'#2ebd85':_bl<=-55?'#ff6258':'#8fa3c4',label:'Brain '+(_bl>=0?'+':'')+Math.round(_bl)+' \u2014 '+(_bl>=55?'bullish lean':_bl<=-55?'bearish lean':'no edge')});add(p._brain.score,{color:'#c2f64a',lineWidth:1.6,priceScaleId:'brain'},{label:'BRAIN',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'brain'});setScale('brain');try{if(p._brain.top&&p._brain.top.length)p.legItems.push({raw:true,color:'#c2f64a',label:'BRAIN: '+p._brain.top.join(' + ')});}catch(e){}}
+    if(p.inds.brain&&p._brain){var _bl=p._brain.score[p._brain.score.length-1];if(isFinite(_bl))p.legItems.push({raw:true,color:_bl>=55?'#2ebd85':_bl<=-55?'#ff6258':'#8fa3c4',label:'Brain '+(_bl>=0?'+':'')+Math.round(_bl)+' \u2014 '+(_bl>=55?'bullish lean':_bl<=-55?'bearish lean':__esT_mpmcharts("noEdge",'no edge'))});add(p._brain.score,{color:'#c2f64a',lineWidth:1.6,priceScaleId:'brain'},{label:'BRAIN',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'brain'});setScale('brain');try{if(p._brain.top&&p._brain.top.length)p.legItems.push({raw:true,color:'#c2f64a',label:'BRAIN: '+p._brain.top.join(' + ')});}catch(e){}}
     if(p.inds.memory&&p._mem){add(p._mem.forecast.map(function(v){return isFinite(v)?Math.max(-100,Math.min(100,v*30)):null;}),{color:'#b18cff',lineWidth:1.6,priceScaleId:'memory'},{label:'MEMORY',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'memory'});setScale('memory');
-      if(p._mem.proj){try{p.indLines.push(p.candle.createPriceLine({price:p._mem.proj.p,color:p._mem.proj.ret>=0?'#2ebd85':'#ff6258',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'MEM'}));}catch(e){}p.legItems.push({raw:true,color:'#c2f64a',label:'Memory: '+p._mem.proj.n+' analogs, '+Math.round(p._mem.proj.up*100)+'% up, proj '+(p._mem.proj.ret>=0?'+':'')+(p._mem.proj.ret*100).toFixed(2)+'%'});}}
+      if(p._mem.proj){try{p.indLines.push(p.candle.createPriceLine({price:p._mem.proj.p,color:p._mem.proj.ret>=0?'#2ebd85':'#ff6258',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'MEM'}));}catch(e){}p.legItems.push({raw:true,color:'#c2f64a',label:'Memory: '+p._mem.proj.n+' analogs, '+Math.round(p._mem.proj.up*100)+__esT_mpmcharts("upProj",'% up, proj ')+(p._mem.proj.ret>=0?'+':'')+(p._mem.proj.ret*100).toFixed(2)+'%'});}}
     if(p.inds.magnet&&p._mag&&S){var _mg=p._mag,_M=S.money;
       if(_mg.up)try{p.indLines.push(p.candle.createPriceLine({price:_mg.up.price,color:_mg.side==='up'?'#ff6258':'rgba(255,98,88,.55)',lineWidth:_mg.side==='up'?2:1,lineStyle:_mg.side==='up'?0:2,axisLabelVisible:true,title:'SHORT '+_M(_mg.up.w)}));}catch(e){}
       if(_mg.dn)try{p.indLines.push(p.candle.createPriceLine({price:_mg.dn.price,color:_mg.side==='down'?'#2ebd85':'rgba(46,189,133,.55)',lineWidth:_mg.side==='down'?2:1,lineStyle:_mg.side==='down'?0:2,axisLabelVisible:true,title:'LONG '+_M(_mg.dn.w)}));}catch(e){}
@@ -438,14 +444,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var old=ov.querySelector('.mfc-trbd');if(old){old.remove();return;}
     var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005,oType='market';
     var el=document.createElement('div');el.className='mfc-trbd';
-    el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade','Demo trade')+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
+    el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade'))+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
       +'<div class="mfc-trf-b">'
       +'<label class="mtr-lbl">'+mcT('mtCoin','Coin')+'</label>'
-      +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search" hidden></div>'
+      +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search" hidden></div>'
       +'<div class="mfc-sl mtr-syml" id="mtrSymL" hidden></div>'
       +'<div class="mtr-otype" id="mtrType"><button class="on" data-ot="market" type="button">'+mcT('otMarket','Market')+'</button><button data-ot="limit" type="button">'+mcT('otLimit','Limit')+'</button></div>'
       +'<div class="mtr-seg" id="mtrSeg"><button class="on" data-side="long" type="button">'+mcT('long','Long')+'</button><button data-side="short" type="button">'+mcT('short','Short')+'</button></div>'
-      +'<div id="mtrLimWrap" hidden><label class="mtr-lbl">'+mcT('lLimitPx','Limit price')+'</label><input class="mtr-in" id="mtrLim" type="number" inputmode="decimal" step="any" min="0" placeholder="-"><div class="mtr-limh" id="mtrLimH"></div></div>'
+      +'<div id="mtrLimWrap" hidden><label class="mtr-lbl">'+mcT('lLimitPx',__esT_mpmcharts("limitPrice",'Limit price'))+'</label><input class="mtr-in" id="mtrLim" type="number" inputmode="decimal" step="any" min="0" placeholder="-"><div class="mtr-limh" id="mtrLimH"></div></div>'
       +'<label class="mtr-lbl">'+mcT('lAmountIn','Amount (USD)')+'</label>'
       +'<input class="mtr-in" id="mtrAmt" type="number" inputmode="decimal" value="100" min="1" max="100000" step="any">'
       +'<label class="mtr-lbl">'+mcT('lLeverage','Leverage')+' <b id="mtrLevV" style="color:#c2f64a">20×</b></label>'
@@ -454,13 +460,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<div class="mtr-advbox" id="mtrAdv" hidden>'
       +  '<label class="mtr-lbl">'+mcT('lExchangePt','Exchange (sets margin rate)')+'</label>'
       +  '<select class="mtr-in" id="mtrEx"><option value="0.4">Binance - 0.4%</option><option value="0.5" selected>Bybit - 0.5%</option><option value="0.5">OKX - 0.5%</option><option value="0.5">Bitget - 0.5%</option><option value="0.5">KuCoin - 0.5%</option><option value="0.5">Gate - 0.5%</option><option value="0.6">Kraken - 0.6%</option></select>'
-      +  '<label class="mtr-lbl">'+mcT('lStopOpt','Stop-loss (optional)')+'</label><input class="mtr-in" id="mtrSL" type="number" inputmode="decimal" step="any" placeholder="-">'
-      +  '<label class="mtr-lbl">'+mcT('lTpOpt','Take-profit (optional)')+'</label><input class="mtr-in" id="mtrTP" type="number" inputmode="decimal" step="any" placeholder="-">'
+      +  '<label class="mtr-lbl">'+mcT('lStopOpt',__esT_mpmcharts("stopLossOptional",'Stop-loss (optional)'))+'</label><input class="mtr-in" id="mtrSL" type="number" inputmode="decimal" step="any" placeholder="-">'
+      +  '<label class="mtr-lbl">'+mcT('lTpOpt',__esT_mpmcharts("takeProfitOptional",'Take-profit (optional)'))+'</label><input class="mtr-in" id="mtrTP" type="number" inputmode="decimal" step="any" placeholder="-">'
       +  '<label class="mtr-lbl">'+mcT('lTrail','Trailing stop')+' (%)</label><input class="mtr-in" id="mtrTr" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
-      +  '<label class="mtr-lbl">'+mcT('lBreakEven','Break-even at ROE')+' (%)</label><input class="mtr-in" id="mtrBE" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
+      +  '<label class="mtr-lbl">'+mcT('lBreakEven',__esT_mpmcharts("breakEvenAtRoe",'Break-even at ROE'))+' (%)</label><input class="mtr-in" id="mtrBE" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
       +'</div>'
-      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">-</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">-</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">-</b></div></div>'
-      +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen','Open demo trade')+'</button>'
+      +'<div class="mtr-stats"><div><span>'+mcT('lEntry',__esT_mpmcharts("entryPrice",'Entry price'))+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">-</b></div><div><span>'+mcT('rPosSize',__esT_mpmcharts("positionSize",'Position size'))+'</span><b id="mtrSz">-</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">-</b></div></div>'
+      +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'))+'</button>'
       +'<div class="mtr-msg" id="mtrMsg"></div>'
       +'</div></div>';
     ov.appendChild(el);
@@ -510,14 +516,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function limHint(){var h=q('mtrLimH');if(!h)return;
       if(oType!=='limit'){h.textContent='';h.className='mtr-limh';return;}
       var p=livePx(),l=limPx(),long=side==='long';
-      if(!isFinite(l)||l<=0){h.textContent=mcT('otHintEmpty','Enter the price you want to be filled at.');h.className='mtr-limh';return;}
+      if(!isFinite(l)||l<=0){h.textContent=mcT('otHintEmpty',__esT_mpmcharts("enterThePriceYou",'Enter the price you want to be filled at.'));h.className='mtr-limh';return;}
       if(!(p>0)){h.textContent='';h.className='mtr-limh';return;}
-      var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?mcT('otBelow','below the market'):mcT('otAbove','above the market'))+' - '+(d<0?mcT('otDrops','fills if it drops there'):mcT('otRises','fills if it rises there'));h.className='mtr-limh';}
+      var d=(l-p)/p*100;h.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?mcT('otBelow',__esT_mpmcharts("belowTheMarket",'below the market')):mcT('otAbove',__esT_mpmcharts("aboveTheMarket",'above the market')))+' - '+(d<0?mcT('otDrops',__esT_mpmcharts("fillsIfItDrops",'fills if it drops there')):mcT('otRises',__esT_mpmcharts("fillsIfItRises",'fills if it rises there')));h.className='mtr-limh';}
     function setType(t){oType=(t==='limit')?'limit':'market';
       q('mtrType').setAttribute('data-t',oType);Array.prototype.forEach.call(q('mtrType').querySelectorAll('button'),function(x){x.classList.toggle('on',x.getAttribute('data-ot')===oType);});
       q('mtrLimWrap').hidden=oType!=='limit';
       var li=q('mtrLim');if(oType==='limit'&&li&&!(parseFloat(li.value)>0)){var p=livePx();if(p>0)li.value=String(+(p*(side==='long'?0.99:1.01)).toPrecision(8));}
-      q('mtrGo').textContent=(oType==='limit')?mcT('otPlace','Place limit order'):mcT('mtOpen','Open demo trade');
+      q('mtrGo').textContent=(oType==='limit')?mcT('otPlace',__esT_mpmcharts("placeLimitOrder",'Place limit order')):mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));
       upd();}
     q('mtrType').addEventListener('click',function(e){var b=e.target.closest('button[data-ot]');if(!b)return;setType(b.getAttribute('data-ot'));});
     var _mli=q('mtrLim');if(_mli)_mli.addEventListener('input',upd);
@@ -534,33 +540,33 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     q('mtrGo').addEventListener('click',function(){
       var msg=q('mtrMsg');
       var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
-      if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
+      if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt',__esT_mpmcharts("enterAnAmount",'Enter an amount.'));return;}
       if(window.mpTradeGate&&!window.mpTradeGate(tSym,side))return;
       if(oType==='limit'){ // rest the order - no fresh-price fetch needed: the server re-checks the side before accepting
         var _lp=limPx(),_mk=livePx(),_lg=side==='long';
-        if(!isFinite(_lp)||_lp<=0){msg.style.color='#ff6258';msg.textContent=mcT('otNoPx','Enter a limit price.');return;}
-        if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx','Waiting for a live price - try again in a second.');return;}
+        if(!isFinite(_lp)||_lp<=0){msg.style.color='#ff6258';msg.textContent=mcT('otNoPx',__esT_mpmcharts("enterALimitPrice",'Enter a limit price.'));return;}
+        if(!(_mk>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtWaitPx',__esT_mpmcharts("waitingForALive",'Waiting for a live price - try again in a second.'));return;}
         /* the level may sit either side of the market */
         var _s9=parseFloat(q('mtrSL').value),_t9=parseFloat(q('mtrTP').value);
         _s9=(isFinite(_s9)&&(_lg?_s9<_lp:_s9>_lp))?_s9:null;_t9=(isFinite(_t9)&&(_lg?_t9>_lp:_t9<_lp))?_t9:null; // side-checked against the LIMIT price
-        if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent='Limit orders are still loading - try again in a second.';return;}
+        if(!window.mpOrders){msg.style.color='#ff6258';msg.textContent=__esT_mpmcharts("limitOrdersAreStill",'Limit orders are still loading - try again in a second.');return;}
         window.mpOrders.add({sym:tSym,side:side,px:_lp,lev:lev,margin:amt,sl:_s9,tp:_t9},function(){
-          msg.style.color='#f0c35a';msg.textContent=mcT('otPlaced','Order placed ✓')+' - '+tSym+' '+side+' '+fp(_lp);
+          msg.style.color='#f0c35a';msg.textContent=mcT('otPlaced',__esT_mpmcharts("orderPlaced",'Order placed ✓'))+' - '+tSym+' '+side+' '+fp(_lp);
           try{window.mpBuzz&&window.mpBuzz([12]);}catch(e){}
           try{if(window.__mpTrack)window.__mpTrack('limitorder',tSym+' '+side+' @'+_lp);}catch(e){}
-        },function(m){msg.style.color='#ff6258';msg.textContent=m||mcT('otFail','Could not place the order - try again.');});
+        },function(m){msg.style.color='#ff6258';msg.textContent=m||mcT('otFail',__esT_mpmcharts("couldNotPlaceThe",'Could not place the order - try again.'));});
         return;
       }
       // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
       // already past its 100× liq distance → the trade "instantly liquidates" the moment the real price loads. Fetch at click.
       if(window._mcOpenBusy)return; /* a second tap while the price fetch + server open were in flight opened a SECOND real position (2026-09-12) */
       window._mcOpenBusy=true;var _mcDone=function(){window._mcOpenBusy=false;};setTimeout(_mcDone,12000);
-      msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');
+      msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx',__esT_mpmcharts("gettingLivePrice",'Getting live price…'));
       fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         var px=j&&+(j.price||j.p||0);if(!(px>0))px=livePx();
-        if(!(px>0)){_mcDone();msg.style.color='#ff6258';msg.textContent='Waiting for a live price - try again in a second.';return;}
+        if(!(px>0)){_mcDone();msg.style.color='#ff6258';msg.textContent=__esT_mpmcharts("waitingForALive",'Waiting for a live price - try again in a second.');return;}
         try{if(j&&j.state!=null&&window.mpMktState)window.mpMktState[String(tSym).toUpperCase()]=String(j.state);}catch(_){}
-        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){_mcDone();msg.style.color='#ff6258';msg.textContent=tSym+' market is closed - you can trade it when it reopens.';return;} // stocks: block while the exchange is shut (consistent with the plan form)
+        if(window.mpIsMktClosed&&window.mpIsMktClosed(tSym)){_mcDone();msg.style.color='#ff6258';msg.textContent=tSym+__esT_mpmcharts("marketIsClosedYou",' market is closed - you can trade it when it reopens.');return;} // stocks: block while the exchange is shut (consistent with the plan form)
         var long=side==='long';
         var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
         if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side - drop so it can't self-trigger
@@ -578,19 +584,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
         try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
         try{if(typeof updMT==='function')updMT();}catch(e){}
-        msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' - '+tSym+' '+side+' '+lev+'× · $'+amt;
-        var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
-        setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
+        msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened',__esT_mpmcharts("positionOpened",'Position opened ✓'))+' - '+tSym+' '+side+' '+lev+'× · $'+amt;
+        var g=q('mtrGo');g.textContent=mcT('mtOpened',__esT_mpmcharts("positionOpened",'Position opened ✓'));
+        setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
-        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen','Open demo trade');}catch(e){}return;}_locT.cid=_locT.id;_finMc(_locT);});} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
+        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));}catch(e){}return;}_locT.cid=_locT.id;_finMc(_locT);});} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
         else{_mcDone();_finMc(_locT);}
         panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
       });
     });
   }
   function openSheet(kind){closeSheet();var p=panes[activeI];sheet=document.createElement('div');sheet.className='mfc-sheet';
-    var title={sym:mcT('mcChooseCoin','Choose coin'),tf:mcT('mcTimeframe','Timeframe'),ind:mcT('indBtn','Indicators'),calc:mcT('mcCalcTitle','Liquidation calculator'),ai:mcT('mcAiTitle','AI chart assistant')}[kind]||'';
+    var title={sym:mcT('mcChooseCoin',__esT_mpmcharts("chooseCoin",'Choose coin')),tf:mcT('mcTimeframe','Timeframe'),ind:mcT('indBtn','Indicators'),calc:mcT('mcCalcTitle','Liquidation calculator'),ai:mcT('mcAiTitle','AI chart assistant')}[kind]||'';
     sheet.innerHTML='<div class="mfc-sheet-h"><b>'+title+'</b><button class="mfc-sheet-x" data-x>✕</button></div><div class="mfc-sheet-b" id="mfcSB"></div>';
     ov.appendChild(sheet);sheet.querySelector('[data-x]').addEventListener('click',closeSheet);
     var body=sheet.querySelector('#mfcSB');
@@ -602,27 +608,27 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function buildTf(body,p){body.innerHTML='<div class="mfc-sl">'+TFS.map(function(t){return '<button class="'+(t[0]===p.tf?'on':'')+'" data-tf="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
     body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;p.tf=b.getAttribute('data-tf');clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();mfcSave();});}
-  function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search"><div class="mfc-sl" id="mfcSyl"></div>';
+  function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search"><div class="mfc-sl" id="mfcSyl"></div>';
     var inp=body.querySelector('.mfc-ss'),list=body.querySelector('#mfcSyl');
     if(window.mpLoadTokens)window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;});
     function render(q){q=String(q||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var arr=q?(window.mpTokens||tokens).filter(function(t){return t.indexOf(q)===0;}).concat((window.mpTokens||tokens).filter(function(t){return t.indexOf(q)>0;})):tokens.slice(0,12);list.innerHTML=arr.slice(0,40).map(function(t){return '<button class="'+(t===p.sym?'on':'')+'" data-pick="'+t+'">'+t+'</button>';}).join('');}
     render('');inp.addEventListener('input',function(){render(this.value);});
     list.addEventListener('click',function(e){var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();mfcSave();});
     setTimeout(function(){inp.focus();},40);}
-  function buildInd(body,p){var al=mAllowed();body.innerHTML='<div class="mfc-indm">'+INDS.map(function(d){var lk=mEx(d[0])&&!al,st=mEx(d[0])?' style="color:#c2f64a;font-weight:700'+(lk?';opacity:.5':'')+'"':'';return '<button class="'+(p.inds[d[0]]?'on':'')+(lk?' locked':'')+'" data-ind="'+d[0]+'"'+st+'>'+d[1]+(lk?' LOCKED':'')+'</button>';}).join('')+'</div><p style="color:#9aa3ad;font-size:11.5px;margin-top:12px">'+mcT('mcIndNote','Same indicator families as the desktop workspace. Applies to the selected chart.')+'</p>';
-    body.addEventListener('click',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');if(mEx(k)&&!mAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock the premium indicators');return;}p.inds[k]=!p.inds[k];b.classList.toggle('on',!!p.inds[k]);applyInds(p);mfcSave();});}
+  function buildInd(body,p){var al=mAllowed();body.innerHTML='<div class="mfc-indm">'+INDS.map(function(d){var lk=mEx(d[0])&&!al,st=mEx(d[0])?' style="color:#c2f64a;font-weight:700'+(lk?';opacity:.5':'')+'"':'';return '<button class="'+(p.inds[d[0]]?'on':'')+(lk?' locked':'')+'" data-ind="'+d[0]+'"'+st+'>'+d[1]+(lk?' LOCKED':'')+'</button>';}).join('')+'</div><p style="color:#9aa3ad;font-size:11.5px;margin-top:12px">'+mcT('mcIndNote',__esT_mpmcharts("sameIndicatorFamiliesAs",'Same indicator families as the desktop workspace. Applies to the selected chart.'))+'</p>';
+    body.addEventListener('click',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');if(mEx(k)&&!mAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpmcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));return;}p.inds[k]=!p.inds[k];b.classList.toggle('on',!!p.inds[k]);applyInds(p);mfcSave();});}
   function buildCalc(body,p){var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;
     body.innerHTML='<div class="mfc-calc-grid"><div class="mfc-calc-seg" id="mfcCs"><button class="on" data-side="long">'+mcT('long','Long')+'</button><button data-side="short">'+mcT('short','Short')+'</button></div>'
-      +'<label>'+mcT('lEntry','Entry price')+' (USD)</label><input id="mfcCe" type="number" inputmode="decimal" value="'+(pr||'').toString()+'" step="any">'
+      +'<label>'+mcT('lEntry',__esT_mpmcharts("entryPrice",'Entry price'))+' (USD)</label><input id="mfcCe" type="number" inputmode="decimal" value="'+(pr||'').toString()+'" step="any">'
       +'<label>'+mcT('lLeverage','Leverage')+'</label><input id="mfcCl" type="number" inputmode="numeric" value="10" step="any">'
-      +'<div class="mfc-calc-out"><div class="big" id="mfcCo">-</div><div class="sub" id="mfcCd">'+mcT('rEstLiq','Estimated liquidation price')+'</div></div></div>';
+      +'<div class="mfc-calc-out"><div class="big" id="mfcCo">-</div><div class="sub" id="mfcCd">'+mcT('rEstLiq',__esT_mpmcharts("estimatedLiquidationPrice",'Estimated liquidation price'))+'</div></div></div>';
     var side='long';
-    function calc(){var e=+body.querySelector('#mfcCe').value,L=+body.querySelector('#mfcCl').value,mmr=0.005;if(!(e>0)||!(L>0)){body.querySelector('#mfcCo').textContent='-';return;}var liq=side==='long'?e*(1-(1-mmr)/L):e*(1+(1-mmr)/L);var dist=(1/L-mmr)*100;body.querySelector('#mfcCo').textContent=fp(liq);body.querySelector('#mfcCd').textContent=(side==='long'?mcT('long','Long'):mcT('short','Short'))+' '+mcT('mtLiq','liq')+' · '+dist.toFixed(2)+'% '+mcT('mcFromEntry','from entry');}
+    function calc(){var e=+body.querySelector('#mfcCe').value,L=+body.querySelector('#mfcCl').value,mmr=0.005;if(!(e>0)||!(L>0)){body.querySelector('#mfcCo').textContent='-';return;}var liq=side==='long'?e*(1-(1-mmr)/L):e*(1+(1-mmr)/L);var dist=(1/L-mmr)*100;body.querySelector('#mfcCo').textContent=fp(liq);body.querySelector('#mfcCd').textContent=(side==='long'?mcT('long','Long'):mcT('short','Short'))+' '+mcT('mtLiq','liq')+' · '+dist.toFixed(2)+'% '+mcT('mcFromEntry',__esT_mpmcharts("fromEntry",'from entry'));}
     body.querySelector('#mfcCs').addEventListener('click',function(e){var b=e.target.closest('[data-side]');if(!b)return;side=b.getAttribute('data-side');this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});calc();});
     body.querySelector('#mfcCe').addEventListener('input',calc);body.querySelector('#mfcCl').addEventListener('input',calc);calc();}
   function buildAi(body,p){
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
-    if(!me){body.innerHTML='<p style="color:#cfd4da;font-size:14px;line-height:1.5">'+mcT('mcAiSignin','Sign in (free) to ask the AI about this chart.')+'</p><button class="mfc-b on" data-auth-open style="margin-top:10px">'+mcT('mcSigninFree','Sign in free')+'</button>';return;}
+    if(!me){body.innerHTML='<p style="color:#cfd4da;font-size:14px;line-height:1.5">'+mcT('mcAiSignin',__esT_mpmcharts("signInFreeTo",'Sign in (free) to ask the AI about this chart.'))+'</p><button class="mfc-b on" data-auth-open style="margin-top:10px">'+mcT('mcSigninFree',__esT_mpmcharts("signInFree",'Sign in free'))+'</button>';return;}
     /* THE SAME THREAD AS THE DESKTOP (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): the sheet used to start empty on
        every open and sent history:[] - so a follow-up had no context and closing the sheet lost everything. It now reads and writes
        the per-symbol store mp-charts owns (localStorage + the server copy), sends the thread, executes the model's actions on the
@@ -632,7 +638,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var msgs=body.querySelector('#mfcAB'),chipsEl=body.querySelector('#mfcAC'),inp=body.querySelector('#mfcAI'),btn=body.querySelector('#mfcAS'),busy=false;
     /* the allowance, same as the desktop panel (2026-09-19, owner: "da pise 23/50" + "moze i resets at that time") */
     var qEl=body.querySelector('#mfcAQ');
-    function aiResetIn(){var d=new Date(),ms=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1)-d.getTime();var h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?('resets in '+h+'h'):('resets in '+Math.max(1,m)+'m');}
+    function aiResetIn(){var d=new Date(),ms=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1)-d.getTime();var h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?(__esT_mpmcharts("resetsIn",'resets in ')+h+'h'):(__esT_mpmcharts("resetsIn",'resets in ')+Math.max(1,m)+'m');}
     function setQ(used,limit){if(!qEl)return;if(used==null||!(limit>0)){qEl.textContent='';return;}qEl.textContent=used+'/'+limit+' today \u00b7 '+aiResetIn();qEl.className='mfc-ai-q'+((limit-used)<=2?' low':'');}
     fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d&&d.signedIn)setQ(d.used,d.limit);}).catch(function(){});
     function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -643,29 +649,29 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function aiHtml(m){var h=AI?AI.mdLite(m.text):esc(m.text);if(m.plan&&AI)h+=AI.planCard(m.plan,px());
       if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+esc(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';return h;}
     function row(m){return m.role==='user'?('<div class="mfc-ai-msg me">'+esc(m.text)+'</div>'):('<div class="mfc-ai-msg ai">'+aiHtml(m)+'</div>');}
-    function fixTrade(){/* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */Array.prototype.forEach.call(msgs.querySelectorAll('button.aipc-trade'),function(tb){try{var pl=JSON.parse(tb.getAttribute('data-plan')||'{}');var a=document.createElement('a');a.className='aipc-trade';a.href=tradeUrl(pl);a.textContent=tb.textContent||'Trade it';tb.parentNode.replaceChild(a,tb);}catch(e){}});}
+    function fixTrade(){/* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */Array.prototype.forEach.call(msgs.querySelectorAll('button.aipc-trade'),function(tb){try{var pl=JSON.parse(tb.getAttribute('data-plan')||'{}');var a=document.createElement('a');a.className='aipc-trade';a.href=tradeUrl(pl);a.textContent=tb.textContent||__esT_mpmcharts("tradeIt",'Trade it');tb.parentNode.replaceChild(a,tb);}catch(e){}});}
     function renderChips(){var arr=hist(),last=null;for(var i=arr.length-1;i>=0;i--){if(arr[i].role==='ai'){last=arr[i];break;}}
-      var chips=(last&&last.chips&&last.chips.length)?last.chips.map(function(c){return [c,c];}):[['Find me the best opportunity on this chart right now - where would a good entry be, and what would make it a mistake?',mcT('mcAiFind','Find an opportunity')],['Where would you want to be filled, and why not at the current price?',mcT('mcAiEntry','Best entry')],['What would make this a blunder?',mcT('mcAiAvoid','What to avoid')]];
-      if(arr.length)chips.push(['',mcT('mcAiReread','Re-read now')]);
+      var chips=(last&&last.chips&&last.chips.length)?last.chips.map(function(c){return [c,c];}):[[__esT_mpmcharts("findMeTheBest",'Find me the best opportunity on this chart right now - where would a good entry be, and what would make it a mistake?'),mcT('mcAiFind',__esT_mpmcharts("findAnOpportunity",'Find an opportunity'))],[__esT_mpmcharts("whereWouldYouWant",'Where would you want to be filled, and why not at the current price?'),mcT('mcAiEntry','Best entry')],[__esT_mpmcharts("whatWouldMakeThis",'What would make this a blunder?'),mcT('mcAiAvoid',__esT_mpmcharts("whatToAvoid",'What to avoid'))]];
+      if(arr.length)chips.push(['',mcT('mcAiReread',__esT_mpmcharts("reReadNow",'Re-read now'))]);
       chipsEl.innerHTML=chips.slice(0,5).map(function(c){return '<button class="cwin-ai-chip" type="button" data-q="'+esc(c[0])+'">'+esc(c[1])+'</button>';}).join('');}
-    function render(){var arr=hist();if(!arr.length)msgs.innerHTML='<div class="mfc-ai-msg ai"><b>'+mcT('mcAiHi','Hi - I am your chart assistant.')+'</b> '+mcT('mcAiIntro','I look for the opportunity on whatever coin and timeframe you give me: where a setup is worth taking, at what price, and what would make it a mistake. I draw it so you can see whether it lines up - you decide. I will also say plainly when there is nothing here and waiting is the trade.')+' '+mcT('mcAiNow','You are on')+' <b>'+esc(p.sym)+' '+tfLabel(p.tf)+'</b>.</div>';else msgs.innerHTML=arr.map(row).join('');fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();}
+    function render(){var arr=hist();if(!arr.length)msgs.innerHTML='<div class="mfc-ai-msg ai"><b>'+mcT('mcAiHi',__esT_mpmcharts("hiIAmYour",'Hi - I am your chart assistant.'))+'</b> '+mcT('mcAiIntro',__esT_mpmcharts("iLookForThe",'I look for the opportunity on whatever coin and timeframe you give me: where a setup is worth taking, at what price, and what would make it a mistake. I draw it so you can see whether it lines up - you decide. I will also say plainly when there is nothing here and waiting is the trade.'))+' '+mcT('mcAiNow',__esT_mpmcharts("youAreOn",'You are on'))+' <b>'+esc(p.sym)+' '+tfLabel(p.tf)+'</b>.</div>';else msgs.innerHTML=arr.map(row).join('');fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();}
     function ctx(){
       // use the desktop's rich analysis builder (price, swing highs/lows, EMA/SMA, RSI, MACD, ATR…) so the AI can actually read the chart
       try{if(window.__mpAiContext&&p.bars&&p.bars.length>10){var rc=window.__mpAiContext({sym:p.sym,tf:p.tf,bars:p.bars,inds:p.inds,dr:p.w&&p.w.dr,emaList:[],smaList:[]});if(rc){var al=mAllowed(),on=[],lk=[];INDS.forEach(function(d){if(p.inds[d[0]])on.push(d[0]);if(mEx(d[0])&&!al)lk.push(d[0]);});
-        rc.indicatorsShown=on;rc.chartTools={indicators:{ids:INDS.map(function(d){return d[0];}),on:on,locked:lk,note:'moving averages are separate ids here: ema9 ema21 ema50 ema100 ema200 sma20 sma50 sma100 sma200'},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','forecast','text'],timeframes:TFS.map(function(t){return t[0];}),currentTf:p.tf,currentTfLabel:tfLabel(p.tf),canSwitchSymbol:true,barsAgoNote:'barsAgo 0 = the newest candle; '+p.bars.length+' candles are loaded; negative projects into the future (max -30)'};return rc;}}}catch(e){}
-      var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;return {symbol:p.sym,timeframe:tfLabel(p.tf),price:pr||null,note:'Only a few candles loaded - limited read.'};
+        rc.indicatorsShown=on;rc.chartTools={indicators:{ids:INDS.map(function(d){return d[0];}),on:on,locked:lk,note:__esT_mpmcharts("movingAveragesAreSeparate",'moving averages are separate ids here: ema9 ema21 ema50 ema100 ema200 sma20 sma50 sma100 sma200')},shapes:['trend','ray','channel','zone','level','pattern','position','fib','fibext','forecast','text'],timeframes:TFS.map(function(t){return t[0];}),currentTf:p.tf,currentTfLabel:tfLabel(p.tf),canSwitchSymbol:true,barsAgoNote:__esT_mpmcharts("barsago0TheNewest",'barsAgo 0 = the newest candle; ')+p.bars.length+__esT_mpmcharts("candlesAreLoadedNegative",' candles are loaded; negative projects into the future (max -30)')};return rc;}}}catch(e){}
+      var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;return {symbol:p.sym,timeframe:tfLabel(p.tf),price:pr||null,note:__esT_mpmcharts("onlyAFewCandles",'Only a few candles loaded - limited read.')};
     }
-    function send(qIn){var q=String(qIn!=null?qIn:(inp.value||'')).trim();if(busy)return;if(!q)q='Give me a sharp, practical read on this chart right now.';busy=true;inp.value='';
+    function send(qIn){var q=String(qIn!=null?qIn:(inp.value||'')).trim();if(busy)return;if(!q)q=__esT_mpmcharts("giveMeASharp",'Give me a sharp, practical read on this chart right now.');busy=true;inp.value='';
       var uEntry={role:'user',text:q,ts:Date.now()};var h=hist();h.push(uEntry);save(h,true);
       var payloadHist=h.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+(AI?AI.actsNote(m):'')};});
       render();var bub=document.createElement('div');bub.className='mfc-ai-msg ai';bub.textContent='…';msgs.appendChild(bub);msgs.scrollTop=msgs.scrollHeight;
       fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
         try{var _u=resp.headers.get('x-ai-used'),_l=resp.headers.get('x-ai-limit');if(_u!=null&&_l!=null)setQ(+_u,+_l);}catch(e){}
-        if(!resp.ok){busy=false;bub.textContent=resp.status===429?'That is your Ask AI read for today - it resets at midnight UTC. Premium Plus raises it to 50 a day.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI comes with MarginPad Premium ($11.99/mo) - one read a day, 50 a day on Premium Plus.':'Could not reach AI - try again.'));return;}
-        if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
+        if(!resp.ok){busy=false;bub.textContent=resp.status===429?__esT_mpmcharts("thatIsYourAsk",'That is your Ask AI read for today - it resets at midnight UTC. Premium Plus raises it to 50 a day.'):(resp.status===401?__esT_mpmcharts("pleaseSignInTo",'Please sign in to use AI.'):(resp.status===402?__esT_mpmcharts("askAiComesWith",'Ask AI comes with MarginPad Premium ($11.99/mo) - one read a day, 50 a day on Premium Plus.'):__esT_mpmcharts("couldNotReachAi",'Could not reach AI - try again.')));return;}
+        if(!resp.body||!resp.body.getReader){busy=false;bub.textContent=__esT_mpmcharts("streamingNotSupported",'Streaming not supported.');return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';
         function show(){var sp=AI?AI.split(acc):{prose:acc};if(AI)bub.innerHTML=AI.mdLite(sp.prose||acc);else bub.textContent=sp.prose||acc;msgs.scrollTop=msgs.scrollHeight;}
-        function finish(){busy=false;if(!acc){bub.textContent='No answer - try again.';return;}var sp=AI?AI.split(acc):{prose:acc,plan:null,actions:null,chips:null};
+        function finish(){busy=false;if(!acc){bub.textContent=__esT_mpmcharts("noAnswerTryAgain",'No answer - try again.');return;}var sp=AI?AI.split(acc):{prose:acc,plan:null,actions:null,chips:null};
           var entry={role:'ai',text:sp.prose||acc,plan:sp.plan||undefined,chips:(sp.chips&&sp.chips.length)?sp.chips:undefined,ts:Date.now(),b:Date.now()};
           var h2=hist();h2.push(entry);save(h2,true);bub.innerHTML=aiHtml(entry);fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();
           if(sp.plan){mAiDraw(p,sp.plan);p._aiPlanObj=sp.plan;}
@@ -674,10 +680,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             else save(hist());
             if(String(p.sym).toUpperCase()!==String(WK.sym).toUpperCase()){var nk={sym:p.sym},hn=hist(nk);hn.push(uEntry,entry);save(hn,false,nk);WK=nk;inp.placeholder=mcT('mcAskPh','Ask about')+' '+p.sym+'…';render();}});}
         (function pump(){rd.read().then(function(res){if(res.done){finish();return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;show();}}catch(e){}}pump();}).catch(function(){finish();});})();
-      }).catch(function(){busy=false;bub.textContent='Network error - try again.';});}
+      }).catch(function(){busy=false;bub.textContent=__esT_mpmcharts("networkErrorTryAgain",'Network error - try again.');});}
     msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}
-      var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=(AI&&p.w)?AI.undo(p.w,+un.getAttribute('data-b')):0;un.remove();if(window.mpToast)window.mpToast({msg:k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):'Those drawings are already gone.',kind:'info',ms:3000});return;}
-      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent='Show on chart';}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent='On chart';}catch(_){}}}});
+      var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=(AI&&p.w)?AI.undo(p.w,+un.getAttribute('data-b')):0;un.remove();if(window.mpToast)window.mpToast({msg:k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):__esT_mpmcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'),kind:'info',ms:3000});return;}
+      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent=__esT_mpmcharts("showOnChart",'Show on chart');}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent=__esT_mpmcharts("onChart",'On chart');}catch(_){}}}});
     chipsEl.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cwin-ai-chip');if(c)send(c.getAttribute('data-q'));});
     btn.addEventListener('click',function(){send();});inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});
     render();if(AI)AI.histPull(WK,function(all){if(all&&!busy&&body.isConnected)render();});
@@ -687,19 +693,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      operations here; drawing, clearing and undo go through the shared engine helpers on p.w */
   function mAiExec(p,acts,batch){var out=[];if(!p||!Array.isArray(acts)||!acts.length)return Promise.resolve(out);acts=acts.slice(0,14);var reload=false,b0=p.bars;
     acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
-      if(a.a==='symbol'&&a.sym){var v=String(a.sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(v&&v!==p.sym){p.sym=v;clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();mfcSave();reload=true;out.push('Switched to '+v);}}
-      else if(a.a==='timeframe'&&a.tf){var tf=String(a.tf),ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(ok&&tf!==p.tf){p.tf=tf;clearPaneDraw(p);loadKlines(p);syncBar();mfcSave();reload=true;out.push('Switched to '+tfLabel(tf));}}
+      if(a.a==='symbol'&&a.sym){var v=String(a.sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(v&&v!==p.sym){p.sym=v;clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();mfcSave();reload=true;out.push(__esT_mpmcharts("switchedTo",'Switched to ')+v);}}
+      else if(a.a==='timeframe'&&a.tf){var tf=String(a.tf),ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(ok&&tf!==p.tf){p.tf=tf;clearPaneDraw(p);loadKlines(p);syncBar();mfcSave();reload=true;out.push(__esT_mpmcharts("switchedTo",'Switched to ')+tfLabel(tf));}}
     }catch(e){}});
     var pr=reload?new Promise(function(res){var t0=Date.now();(function poll(){if(p.dead){res(false);return;}if(p.bars!==b0&&p.bars&&p.bars.length){res(true);return;}if(Date.now()-t0>9000){res(false);return;}setTimeout(poll,120);})();}):Promise.resolve(true);
     return pr.then(function(){var drawn=0,cleared=0,AI=window.__mpAi||null,al=mAllowed();
       acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
         if(a.a==='indicator'&&a.id){var id=String(a.id).toLowerCase(),on=a.on!==false,ids=[];
           if((id==='ema'||id==='sma')&&Array.isArray(a.periods)&&a.periods.length)a.periods.forEach(function(per){ids.push(id+Math.round(+per));});else if(id==='ema'||id==='sma')ids.push(id==='ema'?'ema21':'sma50');else ids.push(id);
-          ids.forEach(function(k){var known=false;for(var i=0;i<INDS.length;i++)if(INDS[i][0]===k)known=true;if(!known)return;if(mEx(k)&&!al){out.push(mIndName(k)+' is locked (Premium indicator)');return;}p.inds[k]=on;out.push((on?'Opened ':'Closed ')+mIndName(k));try{if(on&&window.__mpTrack)window.__mpTrack('ind',mIndName(k)+' (ai)');}catch(_){}});
+          ids.forEach(function(k){var known=false;for(var i=0;i<INDS.length;i++)if(INDS[i][0]===k)known=true;if(!known)return;if(mEx(k)&&!al){out.push(mIndName(k)+__esT_mpmcharts("isLockedPremiumIndicator",' is locked (Premium indicator)'));return;}p.inds[k]=on;out.push((on?'Opened ':'Closed ')+mIndName(k));try{if(on&&window.__mpTrack)window.__mpTrack('ind',mIndName(k)+' (ai)');}catch(_){}});
           applyInds(p);mfcSave();}
         else if(a.a==='clear_ai'&&AI&&p.w){cleared+=AI.clearAi(p.w);}
         else if(a.a==='draw'&&AI&&p.w){drawn+=AI.draw(p.w,[a],batch);}
-        else if(a.a==='zoom'&&+a.bars>0&&p.chart&&p.bars&&p.bars.length){var n=p.bars.length,k2=Math.max(20,Math.min(600,Math.round(+a.bars)));p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k2),to:n+6});out.push('Zoomed to '+k2+' candles');}
+        else if(a.a==='zoom'&&+a.bars>0&&p.chart&&p.bars&&p.bars.length){var n=p.bars.length,k2=Math.max(20,Math.min(600,Math.round(+a.bars)));p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k2),to:n+6});out.push(__esT_mpmcharts("zoomedTo",'Zoomed to ')+k2+' candles');}
       }catch(e){}});
       if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
       if(drawn){out.push('Drew '+drawn+' shape'+(drawn===1?'':'s'));try{if(window.__mpTrack)window.__mpTrack('draw',(p.sym||'')+' (ai)');}catch(e){}}
@@ -733,7 +739,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var backEl=null,backWait=false,backBrowse=false;
   function showBack(){ if(!backEl){ backEl=document.createElement('div');backEl.className='mfc-back';
       backEl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 3v2M12 19v2"/></svg>'
-        +'<h3>'+mcT('mcBackT','Turn your phone upright')+'</h3><p>'+mcT('mcBackS','Charts closed - rotate back to keep browsing.')+'</p>'
+        +'<h3>'+mcT('mcBackT',__esT_mpmcharts("turnYourPhoneUpright",'Turn your phone upright'))+'</h3><p>'+mcT('mcBackS',__esT_mpmcharts("chartsClosedRotateBack",'Charts closed - rotate back to keep browsing.'))+'</p>'
         +'<button class="mfc-back-x" type="button">'+mcT('mcBackX','Exit anyway')+'</button>';
       ov.appendChild(backEl);
       backEl.addEventListener('click',function(){finishBack();}); /* the whole dark panel is the exit - no button hunting, zoom-proof */ }

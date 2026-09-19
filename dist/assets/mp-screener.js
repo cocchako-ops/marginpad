@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpscreener = {"loadingOnChainPools":"<div class=\"scr-loading\">Cargando pools on-chain…</div>","noPoolsRightNow":"<div class=\"scr-loading\">No hay pools por ahora - prueba la otra pestaña.</div>","technicalAnalysisNotAvaila":"<div class=\"scr-an-note\">El análisis técnico aún no está disponible para este par.</div>","openInt":"</b></div><div><span>Int. abierto</span><b>","noHighConvictionSetup":"<div class=\"scr-an-note\">Sin setup de alta convicción - zona neutral, espera confirmación.</div>","mostVolatile":"Más volátil","noPairsMatchClear":"Ningún par coincide - borra la búsqueda/filtro.","noDataRetryShortly":"Sin datos - vuelve a intentarlo en breve.","marketsUnavailableRetrySho":"<div class=\"scr-loading\">Mercados no disponibles - vuelve a intentarlo en breve.</div>","notIn":"No disponible en ","yourCountry":"tu país","tradeRarr":"Operar &rarr;","openInterest":"<div><span>Interés abierto</span><b>","liquidatedIn24hWatch":" liquidados en 24h - mira en vivo →</a>","loadingLiveDerivativesData":"<div class=\"scr-live-load\">Cargando datos de derivados en vivo…</div>"};
+function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpscreener[k] != null) return __esD_mpscreener[k]; } catch (e) {} return en; }
 ﻿/* Market Screener - live USDT-perp table (multi-exchange Bybit+OKX+Gate via /api/screener: aggregated volume, venue count, median-price cross-check), sortable, with a per-coin action sheet. Runs only on /screener. */
 (function(){
   var listEl=document.getElementById('scrList');if(!listEl)return;
@@ -25,9 +31,9 @@
         +(p.chg1!=null?'<span class="oc-box">1h <b class="'+(p.chg1>=0?'bs-b':'bs-s')+'">'+(p.chg1>=0?'+':'')+(+p.chg1).toFixed(1)+'%</b></span>':'')
       +'</span></a>';}
   function ocRender(){var el=document.getElementById('scrOcList');if(!el)return;
-    if(!OC){el.innerHTML='<div class="scr-loading">Loading on-chain pools…</div>';return;}
+    if(!OC){el.innerHTML=__esT_mpscreener("loadingOnChainPools",'<div class="scr-loading">Loading on-chain pools…</div>');return;}
     var list=(ocTab==='fresh'?OC.fresh:OC.trending)||[];
-    el.innerHTML=list.length?list.map(ocRow).join(''):'<div class="scr-loading">No pools right now - try the other tab.</div>';}
+    el.innerHTML=list.length?list.map(ocRow).join(''):__esT_mpscreener("noPoolsRightNow",'<div class="scr-loading">No pools right now - try the other tab.</div>');}
   function ocLoad(){fetch('/api/onchain').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&(d.trending||d.fresh)){OC=d;ocRender();}}).catch(function(){});}
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   (function(){var mode=document.getElementById('scrMode'),oc=document.getElementById('scrOnchain');if(!mode||!oc)return;
@@ -50,12 +56,12 @@
   function symColor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return 'hsl('+h+',60%,56%)';}
   function icHtml(s){return '<span class="scr-ic" style="--c:'+symColor(s)+'">'+s.charAt(0)+(LOGOS[s]?'<img src="'+LOGOS[s]+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+'</span>';}
   function loadLogos(){fetch('/api/gecko/markets?slim=1',{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(a){if(!a||!a.length)return;a.forEach(function(c){var sym=(c.symbol||'').toUpperCase();if(sym){if(c.image)LOGOS[sym]=c.image;if(c.name)NAMES[sym]=c.name;}});if(DATA.length)render();}).catch(function(){});}
-  function anHtml(e){if(e.score==null)return '<div class="scr-an-note">Technical analysis not available for this pair yet.</div>';
+  function anHtml(e){if(e.score==null)return __esT_mpscreener("technicalAnalysisNotAvaila",'<div class="scr-an-note">Technical analysis not available for this pair yet.</div>');
     var cls=scoreCls(e.score),h='<div class="scr-an"><div class="scr-an-top sc-'+cls+'"><div class="scr-an-num">'+e.score+'<small>/100</small></div><div class="scr-an-v"><b>'+(e.verdict||'')+'</b><span>technical score · 4h</span></div></div>';
-    h+='<div class="scr-an-grid"><div><span>Trend</span><b>'+trendTxt(e.trend)+'</b></div><div><span>RSI</span><b>'+(e.rsi!=null?e.rsi:'-')+'</b></div><div><span>MACD</span><b>'+(e.macd==='bull'?'Bullish':e.macd==='bear'?'Bearish':'-')+'</b></div><div><span>Funding</span><b class="'+((e.f||0)>=0?'up':'dn')+'">'+pct(e.f||0)+'</b></div><div><span>Volatility</span><b>'+(e.atrPct!=null?e.atrPct+'%':'-')+'</b></div><div><span>Open Int.</span><b>'+fmtBig(e.oi||0)+'</b></div></div>';
+    h+='<div class="scr-an-grid"><div><span>Trend</span><b>'+trendTxt(e.trend)+'</b></div><div><span>RSI</span><b>'+(e.rsi!=null?e.rsi:'-')+'</b></div><div><span>MACD</span><b>'+(e.macd==='bull'?'Bullish':e.macd==='bear'?'Bearish':'-')+'</b></div><div><span>Funding</span><b class="'+((e.f||0)>=0?'up':'dn')+'">'+pct(e.f||0)+'</b></div><div><span>Volatility</span><b>'+(e.atrPct!=null?e.atrPct+'%':'-')+__esT_mpscreener("openInt",'</b></div><div><span>Open Int.</span><b>')+fmtBig(e.oi||0)+'</b></div></div>';
     if(e.sig&&e.sig.length)h+='<div class="scr-an-sig">'+e.sig.map(function(s){var pos=/bullish|golden|oversold|above 200|breakout|negative fund|at support|spike \(up/i.test(s),neg=/bearish|death|overbought|below 200|high positive|spike \(down/i.test(s);return '<span class="'+(pos?'pos':neg?'neg':'')+'">'+s+'</span>';}).join('')+'</div>';
     if(e.setup){var su=e.setup,L=su.dir==='long';h+='<div class="scr-setup '+(L?'long':'short')+'"><div class="scr-setup-h">'+(L?'▲ LONG':'▼ SHORT')+' setup · '+su.lev+'–'+su.levAgg+'× · R:R '+su.rrr+'</div><div class="scr-setup-g"><span>Entry<b>'+fmtPx(su.entry)+'</b></span><span>Stop<b>'+fmtPx(su.sl)+'</b></span><span>TP1<b>'+fmtPx(su.tp1)+'</b></span><span>TP2<b>'+fmtPx(su.tp2)+'</b></span><span>TP3<b>'+fmtPx(su.tp3)+'</b></span></div></div>';}
-    else h+='<div class="scr-an-note">No high-conviction setup - neutral zone, wait for confirmation.</div>';
+    else h+=__esT_mpscreener("noHighConvictionSetup",'<div class="scr-an-note">No high-conviction setup - neutral zone, wait for confirmation.</div>');
     return h+'</div>';}
   function sorted(){var d=DATA.slice();
     if(query)d=d.filter(function(e){return e.s.indexOf(query)>=0||((NAMES[e.s]||'').toUpperCase().indexOf(query)>=0);});
@@ -92,8 +98,8 @@
     function pk(tag,cls,e,stat){return e?'<button type="button" class="scr-pick '+cls+'" data-pick="'+e.s+'"><i>'+tag+'</i><b>'+icHtml(e.s)+e.s+'</b><span>'+stat+'</span></button>':'';}
     el.innerHTML=(L||S||V)?(pk('Best long setup','pk-l',L,L?('score '+L.score+(L.setup.lev?' · '+L.setup.lev+'×':'')):'')
       +pk('Best short setup','pk-s',S,S?('score '+S.score+(S.setup.lev?' · '+S.setup.lev+'×':'')):'')
-      +pk('Most volatile','pk-v',V,V?((V._vv).toFixed(1)+'% range · 4h'):'')):'';}
-  function render(){var d=sorted();renderTop(d);renderPicks();if(!d.length){listEl.innerHTML='<div class="scr-loading">'+((query||filterKey!=='all')?'No pairs match - clear the search/filter.':'No data - retry shortly.')+'</div>';return;}
+      +pk(__esT_mpscreener("mostVolatile",'Most volatile'),'pk-v',V,V?((V._vv).toFixed(1)+'% range · 4h'):'')):'';}
+  function render(){var d=sorted();renderTop(d);renderPicks();if(!d.length){listEl.innerHTML='<div class="scr-loading">'+((query||filterKey!=='all')?__esT_mpscreener("noPairsMatchClear",'No pairs match - clear the search/filter.'):__esT_mpscreener("noDataRetryShortly",'No data - retry shortly.'))+'</div>';return;}
     listEl.innerHTML=d.map(function(e){var p=live(e.s,e.p),chgCls=e.chg>=0?'up':'dn',cls=(e.score==null?'na':scoreCls(e.score));
       var tr=e.trend==='up'?'<span class="scr-tag t-up">↗ up</span>':e.trend==='down'?'<span class="scr-tag t-dn">↘ down</span>':'<span class="scr-tag">→ side</span>';
       var lev=(e.setup&&e.setup.lev)?'<span class="scr-tag t-lev">'+e.setup.lev+'×</span>':'';
@@ -124,7 +130,7 @@
       if(j&&j.rows&&j.rows.length){
         if(cg&&cg.coins&&cg.coins.length){var cm={};cg.coins.forEach(function(c){cm[c.s]=c;});j.rows.forEach(function(e){var c=cm[e.s];if(c){if(c.funding!=null&&isFinite(c.funding))e.f=c.funding;if(c.oiUsd!=null&&isFinite(c.oiUsd))e.oi=c.oiUsd;e.agg=true;}});}/* overlay funding + OI aggregated across all exchanges (Coinglass) onto the majors - Bybit-only for the long tail */
         DATA=j.rows;render();
-      }else if(!DATA.length){listEl.innerHTML='<div class="scr-loading">Markets unavailable - retry shortly.</div>';}});}
+      }else if(!DATA.length){listEl.innerHTML=__esT_mpscreener("marketsUnavailableRetrySho",'<div class="scr-loading">Markets unavailable - retry shortly.</div>');}});}
   var fEl=document.getElementById('scrFilters');
   if(fEl)fEl.addEventListener('click',function(e){
     var f=e.target.closest('[data-filter]');
@@ -164,12 +170,12 @@
     var reg=(E&&cc)?E.region(cc):'';
     return '<div class="scr-exch-h">Trade '+sym+'USDT</div>'+list.map(function(x){
       var off=E?E.blocked(x.n,cc):false, href=(E&&E.url(x.n,sym))||x.u(sym);
-      return '<a class="scr-exch-a'+(off?' mp-ex-off':'')+'" href="'+href+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">'+(off?('Not in '+(reg||'your country')):'Trade &rarr;')+'</span></a>';}).join('');}
+      return '<a class="scr-exch-a'+(off?' mp-ex-off':'')+'" href="'+href+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">'+(off?(__esT_mpscreener("notIn",'Not in ')+(reg||__esT_mpscreener("yourCountry",'your country'))):__esT_mpscreener("tradeRarr",'Trade &rarr;'))+'</span></a>';}).join('');}
   function cgBn(x){if(x==null||!isFinite(x))return '-';var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function cgHtml(d){if(!d||d.error)return '';var fund=(d.funding!=null&&isFinite(d.funding))?((d.funding>=0?'+':'')+d.funding.toFixed(4)+'%'):'-';var oiCh=(d.oiChg24h!=null&&isFinite(d.oiChg24h))?((d.oiChg24h>=0?'+':'')+d.oiChg24h.toFixed(2)+'%'):'';var lp=(d.longPct!=null)?d.longPct:50,sp=(d.shortPct!=null)?d.shortPct:50;
  return '<div class="scr-live"><div class="scr-live-h">Live derivatives <span>· MarginPad · real-time</span></div>'
       +'<div class="scr-live-grid">'
-      +'<div><span>Open interest</span><b>'+cgBn(d.oiUsd)+(oiCh?' <i class="'+(d.oiChg24h>=0?'up':'dn')+'">'+oiCh+'</i>':'')+'</b></div>'
+      +__esT_mpscreener("openInterest",'<div><span>Open interest</span><b>')+cgBn(d.oiUsd)+(oiCh?' <i class="'+(d.oiChg24h>=0?'up':'dn')+'">'+oiCh+'</i>':'')+'</b></div>'
       +'<div><span>Funding rate</span><b class="'+((d.funding||0)>=0?'up':'dn')+'">'+fund+'</b></div>'
       +'<div><span>24h liq · longs</span><b class="dn">'+cgBn(d.longLiq24h)+'</b></div>'
       +'<div><span>24h liq · shorts</span><b class="up">'+cgBn(d.shortLiq24h)+'</b></div>'
@@ -179,12 +185,12 @@
   function openSheet(e){if(!sheet)buildSheet();curRow=e;var sym=e.s;document.getElementById('scrSheetSym').textContent=sym;document.getElementById('scrSheetPx').textContent=fmtPx(live(sym,e.p));document.getElementById('scrAn').innerHTML=anHtml(e);
     var _xl=XTRA.liq&&XTRA.liq[sym];
     var ab=document.getElementById('scrActs');if(ab)ab.innerHTML='<a class="scr-act a-alert" href="/alerts/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Set a price alert</a>'+((!window.mpIsBybit||window.mpIsBybit(sym))?('<a class="scr-act a-plan" href="/paper-trade?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Open in Paper Trade (demo)</a>'):('<span class="scr-act a-plan" style="opacity:.42;cursor:default" title="Not listed on Bybit - no live feed, so paper trade is unavailable for this token"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Not on Bybit · view only</span>'))+''
-      +(_xl&&_xl.liq>0?'<a class="scr-act" style="color:#ff8a80" href="/rekt/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'+fmtBig(_xl.liq)+' liquidated in 24h - watch live →</a>':'');
+      +(_xl&&_xl.liq>0?'<a class="scr-act" style="color:#ff8a80" href="/rekt/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'+fmtBig(_xl.liq)+__esT_mpscreener("liquidatedIn24hWatch",' liquidated in 24h - watch live →</a>'):'');
     // copy-trade prefill is intentionally OFF (owner's choice): just open the coin; the full setup (recommended leverage / SL / TP) stays visible on the screener sheet to read.
     var exb=document.getElementById('scrExch');if(exb)exb.innerHTML=exchHtml(sym);
     // the country lands within a few hundred ms on a first-ever visit; repaint the venue list once it does
     if(window.mpEx&&!window.mpEx.ccNow())try{window.mpEx.cc(function(){var b2=document.getElementById('scrExch');if(b2&&curRow===e)b2.innerHTML=exchHtml(sym);});}catch(e2){}
-    var lb=document.getElementById('scrLive');if(lb){lb.innerHTML='<div class="scr-live-load">Loading live derivatives data…</div>';fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
+    var lb=document.getElementById('scrLive');if(lb){lb.innerHTML=__esT_mpscreener("loadingLiveDerivativesData",'<div class="scr-live-load">Loading live derivatives data…</div>');fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
     // copy-trade to Paper Trade is turned off - the Paper Trade action is a disabled "Soon" item for now
     sheet.classList.add('on');}
   function closeSheet(){if(sheet){sheet.classList.remove('on');curRow=null;}}

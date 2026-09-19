@@ -39,7 +39,14 @@
      marker the worker sets on sign-in - mp-auth restores the account ~110-280 ms later, and until 2026-09-10 that
      was long enough to see the guest hero flash under the card on every refresh (owner report). If the session
      turns out to be dead, paint() takes the class off again and the hero comes back. -->
-<script>try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.className+=' mp-li';}catch(e){}</script>
+<script>
+
+/* Values the WORKER supplies at runtime - season goal names, their units, board names. The page cannot
+   key these by a literal because it never sees them in its own source; a finite value table is the
+   right shape, and an unknown string falls through to English. */
+var __esVD_srv = {"Close 20 trades": "Cierra 20 operaciones", "5 green days": "5 días verdes", "Finish 5 Academy lessons": "Termina 5 lecciones de la Academia", "Make 7 daily calls": "Haz 7 predicciones diarias", "Check in 10 days": "Regístrate 10 días", "Green Days": "Días verdes", "Green days": "Días verdes", "Highest ROE": "ROE más alto", "Best Win Rate": "Mejor tasa de acierto", "Win rate": "Tasa de acierto", "Season XP": "XP de temporada", "The Gold Room": "The Gold Room", "trades": "operaciones", "green days": "días verdes", "lessons": "lecciones", "calls": "predicciones", "days": "días"};
+function __esV_srv(s){try{if((document.documentElement.lang||"").slice(0,2).toLowerCase()==="es"&&__esVD_srv[s]!=null)return __esVD_srv[s];}catch(e){}return s;}
+try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.className+=' mp-li';}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -1549,12 +1556,12 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     el.innerHTML='<div class="lb-empty">Loading…</div>';
     fetch('/api/lb/following').then(function(r){return r.json();}).then(function(d){
       var f=(d&&d.following)||[];
-      lbSetFollowSet(f.map(function(x){return x.name;}));
+      lbSetFollowSet(f.map(function(x){return __esV_srv(x.name);}));
       if(!f.length){el.innerHTML='<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>';return;}
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
         var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this season';
-        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who"><span data-lvln="'+lbEsc(x.name)+'"></span>'+lbEsc(x.name)+'<span data-lpro="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
+        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(__esV_srv(x.name))+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who"><span data-lvln="'+lbEsc(__esV_srv(x.name))+'"></span>'+lbEsc(__esV_srv(x.name))+'<span data-lpro="'+lbEsc(__esV_srv(x.name))+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
       }).join('');
       lbAfter(el);
     }).catch(function(){el.innerHTML='<div class="lb-empty">Could not load your following list.</div>';});
@@ -1783,7 +1790,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     var SNAPK='mp_dash_snap';
     function snapGet(){try{var v=JSON.parse(localStorage.getItem(SNAPK)||'null');return (v&&Date.now()-(+v.ts||0)<864e5)?v:null;}catch(e){return null;}}
     function snapPut(o){try{o.ts=Date.now();localStorage.setItem(SNAPK,JSON.stringify(o));}catch(e){}}
-    var HES={seasonN:'Temporada ',dayS:' · día ',of14e:' de 14 · termina en ',notRanked:'sin clasificar aún',nextUp:'Siguiente',xpTo:' XP para ',closedS:'cerrado',wb:'Bienvenido de nuevo, ',season:'Temporada',day:' · día ',of14:' de 14 · termina en ',passTier:'Nivel del pass',toClaim:' por reclamar',xpNext:' XP al siguiente',claim:'Reclama ',passReward:' del pass',dailyCall:'Pronóstico diario',tmrw:'mañana 00:00 UTC',makeCall:'Haz tu pronóstico de BTC',goals:'Metas',pick:'elige ',more:' más',claimGoal:'Reclama la meta: ',pickGoal:'Elige tu meta de temporada',boards:'Tablas',green:'Días verdes',roe:'Mejor ROE',wr:'Tasa de acierto',sxp:'XP de temporada',loading:'cargando'};function HT(k,en){try{var L=String(document.documentElement.lang||'en').slice(0,2).toLowerCase();if(L==='es'&&HES[k]!=null)return HES[k];}catch(e){}return en;}var SKEL='<span class="dst sk"><b>-</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Boards</em><i>loading</i></span>';
+    var HES={close10:'Cierra 10 operaciones para entrar en las tablas',youAre:'Vas #',seasonN:'Temporada ',dayS:' · día ',of14e:' de 14 · termina en ',notRanked:'sin clasificar aún',nextUp:'Siguiente',xpTo:' XP para ',closedS:'cerrado',wb:'Bienvenido de nuevo, ',season:'Temporada',day:' · día ',of14:' de 14 · termina en ',passTier:'Nivel del pass',toClaim:' por reclamar',xpNext:' XP al siguiente',claim:'Reclama ',passReward:' del pass',dailyCall:'Pronóstico diario',tmrw:'mañana 00:00 UTC',makeCall:'Haz tu pronóstico de BTC',goals:'Metas',pick:'elige ',more:' más',claimGoal:'Reclama la meta: ',pickGoal:'Elige tu meta de temporada',boards:'Tablas',green:'Días verdes',roe:'Mejor ROE',wr:'Tasa de acierto',sxp:'XP de temporada',loading:'cargando'};function HT(k,en){try{var L=String(document.documentElement.lang||'en').slice(0,2).toLowerCase();if(L==='es'&&HES[k]!=null)return HES[k];}catch(e){}return en;}var SKEL='<span class="dst sk"><b>-</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Boards</em><i>loading</i></span>';
     function ident(m){ var L=m.level||{},col=L.col||'#c2f64a';
       document.getElementById('dashT').innerHTML=HT('wb','Welcome back, ')+'<b>@'+esc(m.username||'trader')+'</b>';
       var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';
@@ -1814,9 +1821,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         var ch=[],todo=[];
         if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/'+(P.n||40)+'</small></b><em>'+HT('passTier','Pass tier')+'</em><i>'+(P.claimable?P.claimable+HT('toClaim',' to claim'):P.tier>=(P.n||40)?'complete':int(P.next||0)+HT('xpNext',' XP to next'))+'</i></span>');if(P.claimable)todo.push(['ok',HT('claim','Claim ')+P.claimable+HT('passReward',' pass reward')+(P.claimable>1?'s':'')]);}
         if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>'+HT('dailyCall','Daily call')+'</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+' days in a row':''):D.open?'until '+D.cutoffH+':00 UTC':HT('tmrw','tomorrow 00:00 UTC'))+'</i></span>');if(!td&&D.open)todo.push(['hot','Make today\'s BTC call']);}
-        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>'+HT('goals','Goals')+'</em><i>'+(gd.length?gd.length+HT('toClaim',' to claim'):pk2.length<2?HT('pick','pick ')+(2-pk2.length)+HT('more',' more'):pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok',HT('claimGoal','Claim goal: ')+x.name]);});if(pk2.length<2)todo.push(['pro',HT('pickGoal','Pick your season goal')+(pk2.length?'':'s')]);}
+        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>'+HT('goals','Goals')+'</em><i>'+(gd.length?gd.length+HT('toClaim',' to claim'):pk2.length<2?HT('pick','pick ')+(2-pk2.length)+HT('more',' more'):pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok',HT('claimGoal','Claim goal: ')+__esV_srv(x.name)]);});if(pk2.length<2)todo.push(['pro',HT('pickGoal','Pick your season goal')+(pk2.length?'':'s')]);}
         if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen',HT('green','Green days'),'green'],['top',HT('roe','Highest ROE'),'roe'],['topWr',HT('wr','Win rate'),'wr'],['topXp',HT('sxp','Season XP'),'xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
-          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'-')+'</b><em>'+HT('boards','Boards')+'</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):HT('notRanked','not ranked yet'))+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' - $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
+          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'-')+'</b><em>'+HT('boards','Boards')+'</em><i>'+(best?__esV_srv(best.name)+(best.pay?' · $'+best.pay:''):HT('notRanked','not ranked yet'))+'</i></span>');if(best&&best.rank<=5)todo.push(['ok',HT('youAre','You are #')+best.rank+' on '+__esV_srv(best.name)+(best.pay?' - $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro',HT('close10','Close 10 trades to enter the boards')]);}
         if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
         /* keep whatever quick() already drew until real data exists - a fetch that has not answered yet must
            never blank a card the reader is looking at */
@@ -2029,7 +2036,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     document.getElementById('snTvlS').textContent=(d.chainCount||'-')+' chains';
     var ch=(d.topChains||[]).slice(0,3);if(!ch.length)return;
     var mx=+ch[0].tvl||1;
-    document.getElementById('chains').innerHTML=ch.map(function(x){return '<div class="cb"><span class="nm">'+String(x.name||'').replace(/</g,'&lt;')+'</span><span class="bar"><i style="width:'+Math.max(6,(+x.tvl/mx*100)).toFixed(0)+'%"></i></span><span class="v">$'+(+x.tvl/1e9).toFixed(1)+'B</span></div>';}).join('');
+    document.getElementById('chains').innerHTML=ch.map(function(x){return '<div class="cb"><span class="nm">'+String(__esV_srv(x.name)||'').replace(/</g,'&lt;')+'</span><span class="bar"><i style="width:'+Math.max(6,(+x.tvl/mx*100)).toFixed(0)+'%"></i></span><span class="v">$'+(+x.tvl/1e9).toFixed(1)+'B</span></div>';}).join('');
   }).catch(function(){});
 
   // ---- candles: hero chart (grid + area + last-dot) + PT tile chart + mock PnL ----
@@ -2237,9 +2244,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=5e8cd494"></script>
-<script defer src="/assets/mp-auth.js?v=b622878d"></script>
-<script defer src="/assets/mp-nav.js?v=956f7091"></script>
+<script defer src="/assets/mp-trade.js?v=85c0c63d"></script>
+<script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
+<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

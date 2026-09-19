@@ -745,6 +745,16 @@ function _hhmm() { const t = new Date(); return t.toISOString().slice(0, 10) + '
 // biggest JS-only mass (696 pages AI crawlers saw as empty shells). One template set per lang; {k} placeholders
 // filled by ssrCoinProseL10n below. EN keeps the richer variant-picking ssrCoinProse. sr deliberately absent
 // (no /sr/ coin pages). Keys mirror the EN sentence builder 1:1 so data gating stays identical.
+// THE SPANISH TWIN IS SERVED WITH url.pathname ALREADY REWRITTEN to the English path, so the language has to be
+// read off request.url - the same trap that left /es/coin/btc/ English for months (2026-09-14). esLang() is the
+// one place that reads it, and esT() is a value table for the handful of whole sentences the worker writes into
+// a page. Anything not in the table falls through to English, which is the right failure.
+function esLang(request) { try { return /^\/es(\/|$)/.test(new URL(request.url).pathname) ? 'es' : 'en'; } catch (e) { return 'en'; } }
+const SSR_ES = {
+  liqTotal: 'Las liquidaciones de futuros cripto suman {t} en las últimas 24 horas: {l} de largos y {s} de cortos en {n} monedas monitorizadas.',
+  whaleHold: 'Las ballenas de Hyperliquid mantienen ahora {t} en posiciones abiertas repartidas en {n} carteras monitorizadas - {l} en largos frente a {s} en cortos, {net} en conjunto.',
+  netLong: 'neto largo', netShort: 'neto corto', netFlat: 'prácticamente equilibrado',
+};
 const SSR_L10N = {
   de: { px: '{name} ({sym}) notiert aktuell bei {px}{ch}.', chFlat: ', kaum verändert in den letzten 24 Stunden', chUp: ', plus {v}% in den letzten 24 Stunden', chDn: ', minus {v}% in den letzten 24 Stunden',
     rank: 'Nach Marktkapitalisierung liegt der Coin auf Platz #{rank} mit {mcap}', rankVol: ', bei {vol} Handelsvolumen über alle Märkte am vergangenen Tag',
@@ -2064,7 +2074,9 @@ async function ssrHubSentences(page, sym, env) {
       S.push('Market-wide, crypto futures liquidations total ' + _susd(m.total) + ' over 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' coins.');
       return { S, links: [['/rekt/', 'Live liquidation feed'], [sym ? '/' + sym.toLowerCase() + '-liquidation-map/' : '/btc-liquidation-map/', sym + ' liquidation map']] };
     }
-    S.push('Crypto futures liquidations total ' + _susd(m.total) + ' over the past 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' tracked coins.');
+    S.push(esLang(request) === 'es'
+      ? SSR_ES.liqTotal.split('{t}').join(_susd(m.total, 'es')).split('{l}').join(_susd(m.long, 'es')).split('{s}').join(_susd(m.short, 'es')).split('{n}').join(m.count)
+      : 'Crypto futures liquidations total ' + _susd(m.total) + ' over the past 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' tracked coins.');
     const top = (j.coins || []).slice(0, 3).filter(c => c.liq > 0);
     if (top.length) S.push('Most liquidated right now: ' + top.map(c => c.s + ' (' + _susd(c.liq) + ')').join(', ') + '.');
     const _tc = (j.coins || []).filter(c => +c.liq > 0);
@@ -2178,7 +2190,9 @@ async function ssrHubSentences(page, sym, env) {
     const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
     if (!j || !j.active || !j.agg) return { S };
     const a = j.agg, net = a.longUsd >= a.shortUsd ? 'net long' : 'net short';
-    S.push('Hyperliquid whales currently hold ' + _susd(a.longUsd + a.shortUsd) + ' in open positions across ' + a.count + ' tracked wallets - ' + _susd(a.longUsd) + ' long vs ' + _susd(a.shortUsd) + ' short, ' + net + ' overall.');
+    S.push(esLang(request) === 'es'
+      ? SSR_ES.whaleHold.split('{t}').join(_susd(a.longUsd + a.shortUsd, 'es')).split('{n}').join(a.count).split('{l}').join(_susd(a.longUsd, 'es')).split('{s}').join(_susd(a.shortUsd, 'es')).split('{net}').join(/long/i.test(net) ? SSR_ES.netLong : /short/i.test(net) ? SSR_ES.netShort : SSR_ES.netFlat)
+      : 'Hyperliquid whales currently hold ' + _susd(a.longUsd + a.shortUsd) + ' in open positions across ' + a.count + ' tracked wallets - ' + _susd(a.longUsd) + ' long vs ' + _susd(a.shortUsd) + ' short, ' + net + ' overall.');
     if (isFinite(+a.upnl) && Math.abs(+a.upnl) > 0) S.push('Their combined unrealized PnL is ' + (a.upnl >= 0 ? '+' : '-') + _susd(Math.abs(a.upnl)) + '.');
     const p = j.positions && j.positions[0];
     if (p) S.push('Largest single position right now: ' + _susd(p.val) + ' ' + (p.long ? 'long' : 'short') + ' on ' + p.sym + (p.lev ? ' at ' + p.lev + 'x' : '') + (p.liq > 0 ? ', liquidation near ' + _spx(p.liq) : '') + '.');
@@ -6288,7 +6302,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8d46a488" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3ede4883" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14608,7 +14622,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '9e684271';
+const ASSET_V = '5827d2bf';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

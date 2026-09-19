@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpcalc = {"upTo30000":"Bono de depósito de hasta 30,000 USDT + 20% de descuento en comisiones","largestExchangeMostTrading":"El exchange más grande, con más pares de trading","20OffTradingFees":"20% de descuento de por vida en comisiones + bono de bienvenida","proToolsUnifiedTrading":"Herramientas pro, cuenta de trading unificada","upTo100Usdt":"Hasta 100 USDT en recompensas de registro + cajas misteriosas","copyTradingFastNew":"Copy trading, nuevos listados rápidos","upTo6200":"Paquete de bienvenida de hasta 6,200 USDT + 20% de descuento en comisiones","upTo11000":"Hasta 11,000 USDT en recompensas para nuevos usuarios","thousandsOfTokensListed":"Miles de tokens listados","upTo6666":"Bono de hasta 6,666 USDT + 20% de descuento en comisiones","socialTradingAppOne":"App de trading social, una sola comisión fija","flat005Per":"0.05% fijo por operación en perpetuos + $1 de MarginPad","securityFirstLongTrack":"Seguridad ante todo, largo historial","upTo200Bonus":"Bono de hasta $200 - regístrate y opera","highLeverageFastNew":"Alto apalancamiento, nuevos listados rápidos","upTo10000":"Bono de hasta 10,000 USDT en futuros + regalo de $20","trustedEasyFiatOn":"Confiable, entrada fácil a fiat","upTo50In":"Hasta $50 en CRO para nuevos usuarios","maxLeverage":"</b><span data-i18n=\"exMaxLev\">apalancamiento máximo</span></span></div>","noLiquidation":"Sin liquidación","noLiquidation2":"sin liquidación","tradeDemo":"\">Operar demo →</a>"};
+function __esT_mpcalc(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpcalc[k] != null) return __esD_mpcalc[k]; } catch (e) {} return en; }
 ﻿  const $ = id => document.getElementById(id);
   const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
   const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '-';
@@ -20,16 +26,16 @@
 
   // exchange comparison menu - single source of truth (max leverage = "up to", varies by market/region)
   const EXLIST = [
-    { name:'Bybit',   href:'https://partner.bybit.com/b/162071',                                                           accent:'#f7a600', fg:'#0a0b0d', letter:'B', lev:'100×', tag:'Deep liquidity, fast matching engine', bonus:'Up to 30,000 USDT deposit bonus + 20% off fees' },
-    { name:'Binance', href:'https://www.binance.com/register?ref=MAOZM9DS',                                                          accent:'#f0b90b', fg:'#181a20', letter:'B', lev:'125×', tag:'Largest exchange, most trading pairs', badge:'Hot', bonus:'20% off trading fees for life + welcome voucher' },
-    { name:'OKX',     href:'https://okx.com/join/96160298',                                                                          accent:'#e9e7df', fg:'#0a0b0d', letter:'O', lev:'125×', tag:'Pro tools, unified trading account', bonus:'Up to 100 USDT sign-up rewards + mystery boxes' },
-    { name:'Bitget',  href:'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', accent:'#00e7d8', fg:'#06231d', letter:'B', lev:'125×', tag:'Copy trading, fast new listings', bonus:'Up to 6,200 USDT welcome pack + 20% off fees' },
-    { name:'KuCoin',  href:'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   accent:'#23af91', fg:'#06231d', letter:'K', lev:'100×', tag:'Huge altcoin selection', bonus:'Up to 11,000 USDT in new-user rewards' },
-    { name:'Gate',    href:'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate',accent:'#3361ff', fg:'#ffffff', letter:'G', lev:'100×', tag:'Thousands of tokens listed', bonus:'Up to 6,666 USDT bonus + 20% off fees' },
-    { name:'Fomo',    href:'https://fomo.family/r/Marginpad',                                                              accent:'#ff4d8d', fg:'#0a0b0d', letter:'F', lev:'—',    tag:'Social trading app, one flat fee', bonus:'Flat 0.05% per trade on perps + $1 from MarginPad' },
-    { name:'Kraken',  href:'https://invite.kraken.com/JDNW/guj2tf28',                                                                accent:'#7b5cff', fg:'#ffffff', letter:'K', lev:'50×',  tag:'Security-first, long track record', bonus:'Up to $200 bonus - sign up & trade' },
-    { name:'MEXC',       href:'https://s.mexc.com/referral/YkL887dVgt',                                                         accent:'#0ac2d6', fg:'#06231d', letter:'M', lev:'500×', tag:'High leverage, fast new listings', bonus:'Up to 10,000 USDT futures bonus + $20 gift' },
-    { name:'Crypto.com', href:'https://crypto.com/app/sdf5hb6rkv',                                                                   accent:'#0b2e7a', fg:'#ffffff', letter:'C', lev:'100×', tag:'Trusted, easy fiat on-ramp', bonus:'Up to $50 in CRO for new users' }
+    { name:'Bybit',   href:'https://partner.bybit.com/b/162071',                                                           accent:'#f7a600', fg:'#0a0b0d', letter:'B', lev:'100×', tag:'Deep liquidity, fast matching engine', bonus:__esT_mpcalc("upTo30000",'Up to 30,000 USDT deposit bonus + 20% off fees') },
+    { name:'Binance', href:'https://www.binance.com/register?ref=MAOZM9DS',                                                          accent:'#f0b90b', fg:'#181a20', letter:'B', lev:'125×', tag:__esT_mpcalc("largestExchangeMostTrading",'Largest exchange, most trading pairs'), badge:'Hot', bonus:__esT_mpcalc("20OffTradingFees",'20% off trading fees for life + welcome voucher') },
+    { name:'OKX',     href:'https://okx.com/join/96160298',                                                                          accent:'#e9e7df', fg:'#0a0b0d', letter:'O', lev:'125×', tag:__esT_mpcalc("proToolsUnifiedTrading",'Pro tools, unified trading account'), bonus:__esT_mpcalc("upTo100Usdt",'Up to 100 USDT sign-up rewards + mystery boxes') },
+    { name:'Bitget',  href:'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', accent:'#00e7d8', fg:'#06231d', letter:'B', lev:'125×', tag:__esT_mpcalc("copyTradingFastNew",'Copy trading, fast new listings'), bonus:__esT_mpcalc("upTo6200",'Up to 6,200 USDT welcome pack + 20% off fees') },
+    { name:'KuCoin',  href:'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   accent:'#23af91', fg:'#06231d', letter:'K', lev:'100×', tag:'Huge altcoin selection', bonus:__esT_mpcalc("upTo11000",'Up to 11,000 USDT in new-user rewards') },
+    { name:'Gate',    href:'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate',accent:'#3361ff', fg:'#ffffff', letter:'G', lev:'100×', tag:__esT_mpcalc("thousandsOfTokensListed",'Thousands of tokens listed'), bonus:__esT_mpcalc("upTo6666",'Up to 6,666 USDT bonus + 20% off fees') },
+    { name:'Fomo',    href:'https://fomo.family/r/Marginpad',                                                              accent:'#ff4d8d', fg:'#0a0b0d', letter:'F', lev:'—',    tag:__esT_mpcalc("socialTradingAppOne",'Social trading app, one flat fee'), bonus:__esT_mpcalc("flat005Per",'Flat 0.05% per trade on perps + $1 from MarginPad') },
+    { name:'Kraken',  href:'https://invite.kraken.com/JDNW/guj2tf28',                                                                accent:'#7b5cff', fg:'#ffffff', letter:'K', lev:'50×',  tag:__esT_mpcalc("securityFirstLongTrack",'Security-first, long track record'), bonus:__esT_mpcalc("upTo200Bonus",'Up to $200 bonus - sign up & trade') },
+    { name:'MEXC',       href:'https://s.mexc.com/referral/YkL887dVgt',                                                         accent:'#0ac2d6', fg:'#06231d', letter:'M', lev:'500×', tag:__esT_mpcalc("highLeverageFastNew",'High leverage, fast new listings'), bonus:__esT_mpcalc("upTo10000",'Up to 10,000 USDT futures bonus + $20 gift') },
+    { name:'Crypto.com', href:'https://crypto.com/app/sdf5hb6rkv',                                                                   accent:'#0b2e7a', fg:'#ffffff', letter:'C', lev:'100×', tag:__esT_mpcalc("trustedEasyFiatOn",'Trusted, easy fiat on-ramp'), bonus:__esT_mpcalc("upTo50In",'Up to $50 in CRO for new users') }
   ];
   // LANDING-ONLY (2026-08-03): on every tool route (/paper-trade /charts /calculators /screener /heatmap /swap)
   // home.js hides .exchanges/.hotpairs - populating them was pure wasted work (E2E-proven hidden on all 6).
@@ -46,7 +52,7 @@
     a.rel = 'sponsored noopener noreferrer';
     a.innerHTML =
       '<div class="exh"><span class="exmark" style="background:'+ex.accent+';color:'+ex.fg+'">'+ex.letter+'</span><span class="exname">'+ex.name+'</span>'
-      + '<span class="exlev exlev-chip"><b>'+ex.lev+'</b><span data-i18n="exMaxLev">max leverage</span></span></div>'
+      + '<span class="exlev exlev-chip"><b>'+ex.lev+__esT_mpcalc("maxLeverage",'</b><span data-i18n="exMaxLev">max leverage</span></span></div>')
       + '<div class="extag">'+ex.tag+'</div>'
       + (ex.bonus ? '<div class="exbonus"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>'+ex.bonus+'</span></div>' : '')
       + '<span class="exgo" data-i18n="exTrade">Trade →</span>';
@@ -94,7 +100,7 @@
     const liqAt=b=>long ? (qty*entry-b)/(qty*(1-mmr)) : (b+qty*entry)/(qty*(1+mmr));
     const notional=qty*entry, effLev=bal>0?notional/bal:Infinity;
     const liq=liqAt(bal), covered=long&&liq<=0, dist=(liq-entry)/entry*100;
-    if(covered){ out.className='rvalue pos'; cancelAnimationFrame(out._raf); out.textContent='No liquidation'; out._cur=NaN; }
+    if(covered){ out.className='rvalue pos'; cancelAnimationFrame(out._raf); out.textContent=__esT_mpcalc("noLiquidation",'No liquidation'); out._cur=NaN; }
     else { out.className='rvalue '+(dist<0?'neg':'pos'); animateNum(out, liq, v=>'$'+fmtUSD(v)); }
     $('crDist').textContent=covered?'- fully backed':fmtPct(dist); $('crDist').className='v '+((covered||dist<0)?'neg':'pos');
     $('crEffLev').textContent=isFinite(effLev)?effLev.toFixed(2)+'×':'∞';
@@ -102,7 +108,7 @@
     if(lad){ const steps=[0.25,0.5,1,2].map(f=>bal>0?bal*f:notional*0.02*(f*4)).filter(a=>a>0);
       lad.innerHTML=steps.map(add=>{
         const l2=liqAt(bal+add), cov2=long&&l2<=0, d2=(l2-entry)/entry*100;
-        return '<tr><td>+$'+fmtUSD(add)+'</td><td><span class="p">'+(cov2?'no liquidation':'$'+fmtUSD(l2))+'</span></td><td>'+(cov2?'<span class="g">fully backed</span>':fmtPct(d2))+'</td></tr>';
+        return '<tr><td>+$'+fmtUSD(add)+'</td><td><span class="p">'+(cov2?__esT_mpcalc("noLiquidation2",'no liquidation'):'$'+fmtUSD(l2))+'</span></td><td>'+(cov2?'<span class="g">fully backed</span>':fmtPct(d2))+'</td></tr>';
       }).join(''); }
   }
   function calcSize(){
@@ -226,7 +232,7 @@
           + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'▲ +':'▼ ')+chg.toFixed(2)+'%</span></div>'
           + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'
           + '<svg class="hp-spark" data-spark="'+p.n+'" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d=""/></svg>'
-          + '<a class="hp-trade" href="/paper-trade?coin='+p.n+'">Trade demo →</a>'
+          + '<a class="hp-trade" href="/paper-trade?coin='+p.n+__esT_mpcalc("tradeDemo",'">Trade demo →</a>')
           + '</div>';
       }).join('');
       if (html) { grid.innerHTML = html; loaded = true;

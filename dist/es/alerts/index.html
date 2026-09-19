@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_alertsindex = {"weLlEmailYou":"Te enviaremos un correo cuando se active.","connectTelegramToGet":"<a href=\"#\" id=\"tgConnect\">Conecta Telegram</a> para recibir alertas en tu chat.","inTelegramTapStart":"En Telegram, toca <b>Start</b> - esperando el enlace… &nbsp;<a href=\"","signInFirstThen":"Inicia sesión primero y luego conecta Telegram.","couldNotStartLinking":"No se pudo iniciar la vinculación - inténtalo de nuevo.","networkErrorTryAgain":"Error de red - inténtalo de nuevo.","checkingPrice":"Comprobando precio…","isNow":" ahora está en <b>$","tapToUse":" - toca para usar","noMatchTypeAny":"<div class=\"coin-menu-empty\">Sin coincidencias - escribe cualquier ticker y configura tu alerta.</div>","noAlertsYetSet":"<div class=\"empty\">Todavía no hay alertas - configura una arriba.</div>","atTarget":"<b>EN OBJETIVO</b>","pickACoin":"Elige una moneda.","enterATargetPrice":"Ingresa un precio objetivo.","connectTelegramFirstTo":"Conecta Telegram primero para usarlo en las alertas.","alertSetWeLl":"Alerta configurada - te ","messageYouOnTelegram":"avisaremos por Telegram","emailYou":"enviaremos un correo","risesTo":"sube a","fallsTo":"baja a","pleaseSignIn":"Inicia sesión, por favor.","connectTelegramFirst":"Conecta Telegram primero.","youHaveHitThe":"Has alcanzado el límite de 25 alertas - elimina una primero.","checkTheCoinAnd":"Revisa la moneda y el precio.","couldNotSaveTry":"No se pudo guardar. Inténtalo de nuevo.","savedWatchingYourPositions":"Guardado - vigilando tus posiciones.","savedWatchingIsOff":"Guardado - la vigilancia está desactivada.","positionAlertsAreA":"Las alertas de posición son una función Premium."};
+function __esT_alertsindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_alertsindex[k] != null) return __esD_alertsindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -253,9 +259,9 @@
 
   var chSeg=document.getElementById('chSeg'),tgHint=document.getElementById('tgHint');
   function renderTgHint(){
-    if(channel!=='telegram'){tgHint.innerHTML='We’ll email you when it triggers.';return;}
+    if(channel!=='telegram'){tgHint.innerHTML=__esT_alertsindex("weLlEmailYou",'We’ll email you when it triggers.');return;}
     if(tgLinked){tgHint.innerHTML='<span style="color:#41e3a3">Telegram connected.</span> <a href="#" id="tgUnlink">Disconnect</a>';var ul=document.getElementById('tgUnlink');if(ul)ul.addEventListener('click',function(e){e.preventDefault();fetch('/api/alerts/tgunlink',{method:'POST'}).then(function(){tgLinked=false;renderTgHint();});});}
-    else{tgHint.innerHTML='<a href="#" id="tgConnect">Connect Telegram</a> to get alerts in your chat.';var c=document.getElementById('tgConnect');if(c)c.addEventListener('click',function(e){e.preventDefault();connectTg();});}
+    else{tgHint.innerHTML=__esT_alertsindex("connectTelegramToGet",'<a href="#" id="tgConnect">Connect Telegram</a> to get alerts in your chat.');var c=document.getElementById('tgConnect');if(c)c.addEventListener('click',function(e){e.preventDefault();connectTg();});}
   }
   var tgPoll=null;
   function stopTgPoll(){if(tgPoll){clearInterval(tgPoll);tgPoll=null;}}
@@ -269,13 +275,13 @@
       if(d.linked){if(w)try{w.close();}catch(e){};tgLinked=true;renderTgHint();return;}
       if(d.url){
         if(w){try{w.location.href=d.url;}catch(e){}}
-        tgHint.innerHTML='In Telegram tap <b>Start</b> - waiting for the link… &nbsp;<a href="'+d.url+'" target="_blank" rel="noopener" style="font-weight:700">Open Telegram</a>';
+        tgHint.innerHTML=__esT_alertsindex("inTelegramTapStart",'In Telegram tap <b>Start</b> - waiting for the link… &nbsp;<a href="')+d.url+'" target="_blank" rel="noopener" style="font-weight:700">Open Telegram</a>';
         startTgPoll();
       } else {
         if(w)try{w.close();}catch(e){}
-        tgHint.textContent=(d&&(d.error==='not_signed_in'||d.error==='login_required'))?'Sign in first, then connect Telegram.':'Could not start linking - try again.';
+        tgHint.textContent=(d&&(d.error==='not_signed_in'||d.error==='login_required'))?__esT_alertsindex("signInFirstThen",'Sign in first, then connect Telegram.'):__esT_alertsindex("couldNotStartLinking",'Could not start linking - try again.');
       }
-    }).catch(function(){if(w)try{w.close();}catch(e){};tgHint.textContent='Network error - try again.';});
+    }).catch(function(){if(w)try{w.close();}catch(e){};tgHint.textContent=__esT_alertsindex("networkErrorTryAgain",'Network error - try again.');});
   }
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&channel==='telegram'&&!tgLinked)load();});
   if(chSeg)chSeg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;channel=b.getAttribute('data-ch');Array.prototype.forEach.call(this.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});renderTgHint();});
@@ -283,14 +289,14 @@
   var pxTimer=null;
   function loadPrice(){var c=(coinIn.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!c){pxHint.textContent='';return;}
     if(lastPx[c]!=null){showPx(c,lastPx[c]);return;}
-    pxHint.textContent='Checking price…';
+    pxHint.textContent=__esT_alertsindex("checkingPrice",'Checking price…');
     fetch('/api/price?symbol='+c,{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var p=d&&(d.price||d.p);if(p){lastPx[c]=+p;showPx(c,+p);}else{pxHint.textContent='';}}).catch(function(){pxHint.textContent='';});}
-  function showPx(c,p){pxHint.innerHTML=c+' is now <b>$'+fmtP(p)+'</b>'+(target.value?'':' - tap to use');pxHint.style.cursor='pointer';pxHint.onclick=function(){if(!target.value)target.value=fmtP(p).replace(/,/g,'');};}
+  function showPx(c,p){pxHint.innerHTML=c+__esT_alertsindex("isNow",' is now <b>$')+fmtP(p)+'</b>'+(target.value?'':__esT_alertsindex("tapToUse",' - tap to use'));pxHint.style.cursor='pointer';pxHint.onclick=function(){if(!target.value)target.value=fmtP(p).replace(/,/g,'');};}
   // ---- custom dark pair dropdown with search (we list many pairs) ----
   var coinMenu=document.getElementById('coinMenu');
   var allPairs=PAIRS.slice();
   function pairList(){var q=(coinIn.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var arr=q?allPairs.filter(function(c){return c.indexOf(q)===0;}).concat(allPairs.filter(function(c){return c.indexOf(q)>0;})):allPairs;return arr.slice(0,80);}
-  function renderMenu(){var arr=pairList();if(!arr.length){coinMenu.innerHTML='<div class="coin-menu-empty">No match - type any ticker and set your alert.</div>';return;}coinMenu.innerHTML=arr.map(function(c){var px=lastPx[c];return '<div class="coin-menu-row" data-c="'+c+'"><b>'+c+'</b><small>'+(px!=null?'$'+fmtP(px):c+'USDT')+'</small></div>';}).join('');}
+  function renderMenu(){var arr=pairList();if(!arr.length){coinMenu.innerHTML=__esT_alertsindex("noMatchTypeAny",'<div class="coin-menu-empty">No match - type any ticker and set your alert.</div>');return;}coinMenu.innerHTML=arr.map(function(c){var px=lastPx[c];return '<div class="coin-menu-row" data-c="'+c+'"><b>'+c+'</b><small>'+(px!=null?'$'+fmtP(px):c+'USDT')+'</small></div>';}).join('');}
   function openMenu(){renderMenu();coinMenu.classList.add('on');}
   function closeMenu(){coinMenu.classList.remove('on');}
   coinIn.addEventListener('focus',openMenu);
@@ -304,7 +310,7 @@
   function renderList(arr){
     var active=arr.filter(function(a){return a.active;}),fired=arr.filter(function(a){return !a.active;}).slice(0,5);
     aCount.textContent=active.length?'('+active.length+' active)':'';
-    if(!arr.length){aList.innerHTML='<div class="empty">No alerts yet - set one above.</div>';return;}
+    if(!arr.length){aList.innerHTML=__esT_alertsindex("noAlertsYetSet",'<div class="empty">No alerts yet - set one above.</div>');return;}
     function row(a){var ch=(a.channel==='telegram')?'<span style="color:#3fa9f5;font-size:11px;font-weight:700">Telegram</span>':'<span style="color:#9aa3ad;font-size:11px;font-weight:700">Email</span>';return '<div class="alist-row'+(a.active?'':' a-fired')+'"><span class="a-coin">'+esc(a.sym)+'</span><span class="a-cond"><span class="a-dir '+(a.dir==='up'?'up':'down')+'">'+(a.dir==='up'?'ABOVE':'BELOW')+'</span> <b>$'+fmtP(a.target)+'</b> '+ch+(a.note?' · '+esc(a.note):'')+(a.active?'':' <span class="a-fired-tag">· sent</span>')+'</span>'+(a.active?'<button class="a-del" data-id="'+esc(a.id)+'">Delete</button>':'')+(a.active?'<span class="a-live" data-lsym="'+esc(a.sym)+'" data-lt="'+a.target+'" data-ld="'+(a.dir==='up'?'up':'down')+'"><span class="alb"><i></i></span><b class="alv">…</b></span>':'')+'</div>';}
     aList.innerHTML=active.map(row).join('')+(fired.length?'<div class="lbl" style="margin:14px 0 2px">Recently triggered</div>'+fired.map(row).join(''):'');
     try{liveBars();}catch(e){}
@@ -331,7 +337,7 @@
         var fill=crossed?100:Math.max(3,Math.min(100,100-Math.min(100,away*(away<10?9:1)*1)));
         if(away>10)fill=Math.max(3,100-away);                    // far targets: gentle scale so the bar still reads
         if(bar)bar.style.width=Math.max(3,Math.min(100,fill))+'%';
-        if(v)v.innerHTML=crossed?'<b>AT TARGET</b>':('now <b>$'+fmtP(now)+'</b> · '+away.toFixed(away<1?2:1)+'% away');
+        if(v)v.innerHTML=crossed?__esT_alertsindex("atTarget",'<b>AT TARGET</b>'):('now <b>$'+fmtP(now)+'</b> · '+away.toFixed(away<1?2:1)+'% away');
         r.classList.toggle('close',!crossed&&away<1);
       });
     });
@@ -342,19 +348,19 @@
   createBtn.addEventListener('click',function(){
     if(!signedIn){if(window.mpAuth)window.mpAuth.open();return;}
     var c=(coinIn.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''),t=parseFloat(target.value);
-    if(!c){coinIn.classList.add('invalid');msg('Pick a coin.','err');return;} coinIn.classList.remove('invalid');
-    if(!isFinite(t)||t<=0){target.classList.add('invalid');msg('Enter a target price.','err');return;} target.classList.remove('invalid');
-    if(channel==='telegram'&&!tgLinked){msg('Connect Telegram first to use it for alerts.','err');renderTgHint();connectTg();return;}
+    if(!c){coinIn.classList.add('invalid');msg(__esT_alertsindex("pickACoin",'Pick a coin.'),'err');return;} coinIn.classList.remove('invalid');
+    if(!isFinite(t)||t<=0){target.classList.add('invalid');msg(__esT_alertsindex("enterATargetPrice",'Enter a target price.'),'err');return;} target.classList.remove('invalid');
+    if(channel==='telegram'&&!tgLinked){msg(__esT_alertsindex("connectTelegramFirstTo",'Connect Telegram first to use it for alerts.'),'err');renderTgHint();connectTg();return;}
     createBtn.disabled=true;msg('Saving…','');
     fetch('/api/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:c,dir:dir,target:t,note:noteIn.value,channel:channel})})
       .then(function(r){return r.json();}).then(function(d){createBtn.disabled=false;
-        if(d.ok){msg('Alert set - we’ll '+(channel==='telegram'?'message you on Telegram':'email you')+' when '+c+' '+(dir==='up'?'rises to':'falls to')+' $'+fmtP(t)+'.','ok');target.value='';noteIn.value='';load();}
-        else if(d.error==='not_signed_in'){signedIn=false;updateGate();if(window.mpAuth)window.mpAuth.open();msg('Please sign in.','err');}
-        else if(d.error==='tg_not_linked'){tgLinked=false;channel='telegram';renderTgHint();msg('Connect Telegram first.','err');connectTg();}
-        else if(d.error==='too_many')msg('You have hit the 25-alert limit - delete one first.','err');
-        else if(d.error==='bad')msg('Check the coin and price.','err');
-        else msg('Could not save. Try again.','err');
-      }).catch(function(){createBtn.disabled=false;msg('Network error - try again.','err');});
+        if(d.ok){msg(__esT_alertsindex("alertSetWeLl",'Alert set - we’ll ')+(channel==='telegram'?__esT_alertsindex("messageYouOnTelegram",'message you on Telegram'):__esT_alertsindex("emailYou",'email you'))+' when '+c+' '+(dir==='up'?__esT_alertsindex("risesTo",'rises to'):__esT_alertsindex("fallsTo",'falls to'))+' $'+fmtP(t)+'.','ok');target.value='';noteIn.value='';load();}
+        else if(d.error==='not_signed_in'){signedIn=false;updateGate();if(window.mpAuth)window.mpAuth.open();msg(__esT_alertsindex("pleaseSignIn",'Please sign in.'),'err');}
+        else if(d.error==='tg_not_linked'){tgLinked=false;channel='telegram';renderTgHint();msg(__esT_alertsindex("connectTelegramFirst",'Connect Telegram first.'),'err');connectTg();}
+        else if(d.error==='too_many')msg(__esT_alertsindex("youHaveHitThe",'You have hit the 25-alert limit - delete one first.'),'err');
+        else if(d.error==='bad')msg(__esT_alertsindex("checkTheCoinAnd",'Check the coin and price.'),'err');
+        else msg(__esT_alertsindex("couldNotSaveTry",'Could not save. Try again.'),'err');
+      }).catch(function(){createBtn.disabled=false;msg(__esT_alertsindex("networkErrorTryAgain",'Network error - try again.'),'err');});
   });
   target.addEventListener('keydown',function(e){if(e.key==='Enter')createBtn.click();});
 
@@ -374,10 +380,10 @@
       body:JSON.stringify({on:paOn.checked?1:0,liq:+paLiq.value,sltp:+paSl.value,ord:+paOrd.value})})
       .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});})
       .then(function(x){ paSave.disabled=false;
-        if(x.d&&x.d.ok){ paFill({premium:true,cfg:x.d.cfg}); paMsg.textContent=x.d.cfg.on?'Saved - watching your positions.':'Saved - watching is off.'; paMsg.className='msg ok'; }
-        else if(x.s===402){ posGate.hidden=false; posOn.hidden=true; paMsg.textContent='Position alerts are a Premium feature.'; paMsg.className='msg err'; }
-        else { paMsg.textContent='Could not save. Try again.'; paMsg.className='msg err'; } })
-      .catch(function(){ paSave.disabled=false; paMsg.textContent='Network error - try again.'; paMsg.className='msg err'; });
+        if(x.d&&x.d.ok){ paFill({premium:true,cfg:x.d.cfg}); paMsg.textContent=x.d.cfg.on?__esT_alertsindex("savedWatchingYourPositions",'Saved - watching your positions.'):__esT_alertsindex("savedWatchingIsOff",'Saved - watching is off.'); paMsg.className='msg ok'; }
+        else if(x.s===402){ posGate.hidden=false; posOn.hidden=true; paMsg.textContent=__esT_alertsindex("positionAlertsAreA",'Position alerts are a Premium feature.'); paMsg.className='msg err'; }
+        else { paMsg.textContent=__esT_alertsindex("couldNotSaveTry",'Could not save. Try again.'); paMsg.className='msg err'; } })
+      .catch(function(){ paSave.disabled=false; paMsg.textContent=__esT_alertsindex("networkErrorTryAgain",'Network error - try again.'); paMsg.className='msg err'; });
   });
   function updateGate(){ if(signedIn){gateCard.hidden=true;formCard.hidden=false;listCard.hidden=false;paLoad();} else {gateCard.hidden=false;formCard.hidden=true;listCard.hidden=true;posCard.hidden=true;} }
   function onAuth(user){ signedIn=!!user; updateGate(); if(signedIn)load(); }
@@ -389,7 +395,7 @@
   if(qc){coinIn.value=qc.toUpperCase();loadPrice();}
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b622878d"></script>
-<script defer src="/assets/mp-nav.js?v=956f7091"></script>
+<script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
+<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
 </body>
 </html>

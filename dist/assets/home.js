@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_home = {"thisDeviceRanOut":"A este dispositivo se le acabó el almacenamiento, así que se eliminaron de él las operaciones cerradas más antiguas. Las posiciones abiertas y tus estadísticas están a salvo: tus estadísticas viven en tu cuenta, no en este dispositivo.","extremeLeverage":"Apalancamiento extremo","aMoveOfOnly":"un movimiento de solo ~","againstYouWipesThe":"en tu contra liquida toda la posición. Opera con menos tamaño.","againstYouWipesThe2":"en tu contra liquida toda la posición. Opera con poco tamaño.","sharesAreBoughtAnd":"Las acciones se compran y venden a través de una bolsa de valores, y las bolsas tienen horario de oficina. Cuando Nueva York cierra, no hay nadie al otro lado de una orden, así que el precio simplemente se detiene hasta que vuelve a abrir. El cripto no tiene una bolsa central, por eso nunca se detiene.","anIndexIsJust":"Un índice es solo un número calculado a partir de las acciones que lo componen. Cuando la bolsa donde cotizan esas acciones está cerrada, no hay precios nuevos con los que calcularlo, así que el índice se queda quieto.","goldAndSilverAre":"El oro y la plata se cotizan en bolsas de futuros que cierran por la noche y los fines de semana, igual que las bolsas de acciones.","currenciesAreTradedBetween":"Las divisas se negocian entre bancos en lugar de en una sola bolsa, así que el mercado funciona sin parar desde el domingo por la noche hasta el viernes por la noche, y luego se detiene el fin de semana mientras esas mesas están cerradas.","yourTime":" tu hora","isClosedTheExchange":" no cotiza - la bolsa abre en ","marketIsClosedRight":" no cotiza ahora mismo - podrás operarlo cuando la bolsa vuelva a abrir.","liveMarketDataUnavailable":"<div class=\"mp-load\">Datos de mercado en vivo no disponibles ahora mismo.</div>","mostRekt24h":"<div class=\"mp-card mp-top\"><div class=\"mp-k\">Más liquidado · 24h</div>","updatedJustNow":"actualizado justo ahora","liveDataUnavailableRight":"<div class=\"db-load\">Datos en vivo no disponibles ahora mismo.</div>","isClosed":" no cotiza</b>","opensIn":"<i>abre en ","nextOpen":"<div class=\"mw-w\">Próxima apertura: ","marketClosed":"Mercado cerrado","placeLimitOrder":"Colocar orden límite","openDemoTrade":"Abrir operación demo","maxLeverageFor":"Apalancamiento máx. para ","thisCoin":"esta moneda","enterThePriceYou":"Introduce el precio al que quieres que se ejecute la orden.","belowTheMarket":"por debajo del mercado","aboveTheMarket":"por encima del mercado","balanceModeOn":"<span class=\"mbn-dot\"></span>Balance Mode ACTIVADO","createAFreeAccount":"Crea una cuenta gratis para usar stop-loss y take-profit","slTpNeedsA":"SL/TP necesita una cuenta gratis - <a href=\"#\" data-auth-open style=\"color:#c2f64a\">inicia sesión</a>","stopLossIsOn":"<div class=\"pr-warn\">⚠ El stop-loss está en el lado equivocado de la entrada</div>","ifStopLossHits":"<div class=\"pr-sl\"><span>Si el stop-loss se activa</span><span class=\"v\"><b>−$","onForNewPositions":"activo para nuevas posiciones","atLiqAwaitingServer":" en liq, esperando al servidor","takeProfitHit":"Take-Profit alcanzado","stopLossHit":"Stop-Loss alcanzado","closedAt":"Cerrado a ","closeButtonDataAct":"\">Cerrar</button><button data-act=\"edit\" data-id=\"","greenArrowTrendJust":"Flecha verde = la tendencia acaba de girar HACIA ARRIBA (posible compra). Flecha roja = giró HACIA ABAJO (posible venta).","smoothAveragePriceRecent":"Precio medio suavizado; las velas recientes pesan más. Por encima de la línea = subiendo; por debajo = bajando.","thePlainAveragePrice":"El precio medio simple de las últimas 50 velas - una línea de tendencia sencilla.","theAveragePriceOver":"El precio medio de las últimas 200 velas - la gran línea de tendencia a largo plazo.","aSuperSmoothFast":"Una línea de precio medio superrápida y muy suavizada - menos vaivenes y menos retraso.","averagePriceWeightedBy":"Precio medio ponderado por cuánto se operó - la idea de precio justo de los grandes traders.","twoBandsAroundPrice":"Dos bandas alrededor del precio. Cerca de la de arriba = caro, cerca de la de abajo = barato. Anchas = volátil, estrechas = tranquilo.","bandsBasedOnHow":"Bandas basadas en cuánto suele moverse el precio. Salirse de ellas = un movimiento fuerte.","theHighestHighAnd":"El máximo más alto y el mínimo más bajo recientes. Romper por encima = una ruptura alcista.","howMuchWasTraded":"Cuánto se operó en cada vela. Barras altas = mucha actividad en ese momento.","showsIfTheTrend":"Muestra si la tendencia está acelerando o frenando. Por encima de 0 = los compradores mandan.","likeRsiForTiming":"Como el RSI pero para calcular giros. Por encima de 80 = sobrecompra, por debajo de 20 = sobreventa.","howMuchPriceUsually":"Cuánto suele moverse el precio por vela. ATR alto = volátil → usa stops más amplios.","williamsRUpsideDown":"Williams %R - el RSI al revés. Cerca de 0 = sobrecompra, cerca de −100 = sobreventa.","howFarPriceIs":"Qué tan lejos está el precio de su media. Por encima de +100 = fuerte subida; por debajo de −100 = fuerte bajada.","limitShort":"LÍMITE SHORT","limitLong":"LÍMITE LONG","closeIn":"cierra en ","levelFilledClosed":" nivel ejecutado - cerrado ","notClosedYetOnly":"Aún no cerrada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedBeforeThisSeason":"Abierta antes de esta temporada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedAndClosedThis":"Abierta y cerrada esta temporada","notFilledByThe":"No ejecutada por el servidor. Las entradas editadas o del diario local nunca cuentan","filledByTheServer":"Ejecutada por el servidor pero no cerrada por él. Las entradas del diario editadas nunca cuentan","filledAndClosedBy":"Ejecutada y cerrada por el servidor","filledByTheServer2":"Ejecutada por el servidor","cryptoPairsOnlyForex":"Solo pares cripto. Forex, metales, índices y stablecoins nunca puntúan","lossLossesAlwaysCount":"Pérdida. Las pérdidas siempre cuentan","notACopyOf":"No es una copia de otra posición","countsOnTheSeason":"Cuenta en las clasificaciones de temporada","notCountedOnThe":"No cuenta en las clasificaciones de temporada. Toca para ver qué reglas incumple","notCountedOnThe2":"No cuenta en las clasificaciones de temporada","shareToChat":"Compartir en el chat","whatThisTradeCost":"Cuánto costó esta operación","openFee":"Comisión de apertura","closeFee":"Comisión de cierre","inTheFillPrice":"(en el precio de ejecución)","alreadySettledIntoThis":"Ya incluido en este PnL — los mismos costes que cobra un exchange real.","youAreTradingAt":"Estás operando a las tasas de MEXC — este viaje de ida y vuelta costó","inFeesAt":"en comisiones, al","mexc0Maker0":"MEXC: 0% maker, ~0.02% taker en futuros — abrir","onMexcThisRound":"En MEXC este viaje de ida y vuelta costaría alrededor de","inFeesNotThe":"en comisiones, no el","youPaidU2014A":"que pagaste — una diferencia de","tapForTheFee":"Toca para ver el desglose de comisiones","premiumMember":"Miembro Premium · ","paperTradeNotFinancial":"Paper trade · no es asesoría financiera","sharedToChat":"Compartido en el chat","tooManySharesRight":"Demasiados compartidos ahora mismo - inténtalo de nuevo más tarde.","couldNotShareThe":"No se pudo compartir el ticket.","copyNotSupported":"Copiar no es compatible","linkCopied":"Enlace copiado","imageLinkCopied":"Imagen + enlace copiados","ariaLabelToggleBalance":"\" aria-label=\"Activar/desactivar Balance Mode\"><span class=\"bal-tgl-k\"></span></button>","inTrades":"En operaciones","fromMarket":"del mercado","thisDeviceOnly":"solo este dispositivo","cancelOrder":"Cancelar orden","winRate":"Tasa de acierto","noOrdersWaitingPlace":"No hay órdenes pendientes - coloca una desde Paper Trade con la pestaña Límite.","noOpenPositionsOpen":"No hay posiciones abiertas - abre una desde Paper Trade.","noClosedTradesYet":"Aún no hay operaciones cerradas.","theseOrdersLiveOn":"Estas órdenes viven en este dispositivo y solo se ejecutan mientras la página está abierta. Inicia sesión y quedarán pendientes en el servidor - se ejecutan incluso si no estás conectado.","showMore":"Mostrar más","newSeasonStatsRestarted":"Nueva temporada - las estadísticas se reiniciaron. Las operaciones anteriores quedan archivadas, tu XP y tu progreso no se tocan.","maxTradeSizeIs":"El tamaño máximo de operación es $100,000 - se limitó el monto.","enterAnAmountUsd":"Introduce un monto (USD) mayor a $0 para abrir una operación.","waitingForTheLive":"Esperando el precio en vivo - inténtalo de nuevo en un segundo.","balanceModeCappedTo":"Balance Mode: limitado a tu $ disponible","waitingForTheLive2":"Esperando el precio en vivo de ","tryAgainInA":" - inténtalo de nuevo en un segundo.","marketIsClosedRight2":" no cotiza ahora mismo.","enterALimitPrice":"Introduce un precio límite (el precio al que quieres que se ejecute).","thatPriceIsMore":"Ese precio está a más de 20x del mercado - revisa el punto decimal.","isOnTheWrong":" está en el lado equivocado del precio de entrada - corrígelo (o vacía el campo) para abrir la operación.","limitOrdersAreStill":"Las órdenes límite todavía se están cargando - inténtalo de nuevo en un segundo.","orderPlaced":"Orden colocada ✓","positionOpenedU2713":"Posición abierta ✓","thisMarketIsClosed":"Este mercado está cerrado ahora mismo.","areYouSureYou":"¿Seguro que quieres eliminar esta operación?","newStopLossPrice":"Nuevo precio de stop-loss:","newTakeProfitBlank":"Nuevo take-profit (vacío = ninguno):","openPositionLongShort":"Abrir posición (Long/Short)","myTradesHeader":"My Trades (encabezado)","closeMyTrades":"Cerrar My Trades","closeMyTradesTap":"Cerrar My Trades (tocar fuera)","leverageInput":"Campo de apalancamiento","stopLossInput":"Campo de stop-loss","takeProfitInput":"Campo de take-profit","myTradesInTerminal":"My Trades (en el terminal)","openChat":"Abrir chat","closeChat":"Cerrar chat","closePosition":"Cerrar posición","deleteTrade":"Eliminar operación","reopenTrade":"Reabrir operación","copyTicket":"Copiar ticket","markWin":"Marcar como ganada","markLoss":"Marcar como perdida","priceChart":"Gráfico de precio","tradeAction":"Acción de la operación: ","freeCryptoFuturesCalculato":" - calculadoras gratis de futuros cripto en marginpad.io","noTradesYetThis":"<div class=\"lbw-empty\">Aún no hay operaciones esta temporada - sé el primero.</div>","premiumLoungeVipsOnly":"Sala Premium - solo VIPs…","roleButtonTabindex0":"\" role=\"button\" tabindex=\"0\" title=\"Abrir ticket compartido\">operación:","deleteThisMessageFor":"¿Eliminar este mensaje para todos?","editYourMessage":"Edita tu mensaje","signInToReact":"Inicia sesión para reaccionar","greenDays":"Días en verde","bestWinRate":"Mejor tasa de acierto","seasonXp":"XP de temporada","thisSeason":" · esta temporada</b><br>","noOneOnThis":"<span style=\"color:#9aa3ad\">Nadie en esta tabla todavía - ¡sé el primero!</span>","greenDay":" día en verde","greenDays2":" días en verde","endsIn":" · termina en ","couldNotLoadThe":"<span style=\"color:#ff6258\">No se pudo cargar la clasificación. Inténtalo de nuevo.</span>","livePollTapTo":"ENCUESTA EN VIVO - toca para votar","signInToDo":"Inicia sesión para hacer eso","youCanOnlyChange":"Solo puedes cambiar tus propios mensajes","tooLateToEdit":"Ya es tarde para editar ese","thatMessageIsGone":"Ese mensaje ya no existe","yourAccountIsCurrently":"Tu cuenta tiene restringido el acceso al chat por ahora. Si crees que es un error, contacta a <b>support@marginpad.io</b>.","commandFailed":"El comando falló.","networkError":"Error de red.","justNow":"justo ahora","marginPad2":"<div class=\"mptk-top\"><span class=\"mptk-brand\">MARGIN<b>PAD</b></span><button class=\"mptk-x\" type=\"button\" aria-label=\"Cerrar\">✕</button></div>","sharedBy":"<div class=\"mptk-by\">Compartido por <b>@","tradeItForReal":"<div class=\"mprl\"><div class=\"mprl-t\">OPÉRALO DE VERDAD</div><div class=\"mprl-row\">","paperTradeNotFinancial2":"<div class=\"mptk-foot\">Paper trade · no es asesoría financiera</div></div>","loadingTicket":"<div class=\"mptk-err\">Cargando ticket…</div>","thisSharedTicketIs":"<div class=\"mptk-err\">Este ticket compartido ya no está disponible.</div>","couldNotLoadThe2":"<div class=\"mptk-err\">No se pudo cargar el ticket. Revisa tu conexión.</div>","tapShareThenAdd":"Toca Compartir, luego “Agregar a pantalla de inicio”.","fullScreenAppLike":"Acceso a pantalla completa, como una app, desde tu pantalla de inicio.","chartFailedToLoad":"<div class=\"heat-err\">No se pudo cargar el gráfico - revisa tu conexión.</div>","estimatedLevelsByLeverage":"Niveles estimados por apalancamiento · no son datos del libro de órdenes","liquidationsLast":" liquidaciones · últimas ","quietLiquidationsSpikeOn":" de calma - las liquidaciones se disparan con los movimientos</span>","noLiquidationsAbove50k":"<span class=\"tk-empty\">Todavía no hay liquidaciones por encima de $50k en esta vista.</span>","tradeItAgainAria":" - vuelve a operarlo\" aria-label=\"Cambiar a ","notOnBybitPaper":" - no disponible en Bybit (paper trade no disponible)","customTypeYourOwn":"<span class=\"csel-ex\"><i class=\"cx-m cx-custom\">%</i><b>Personalizado</b><small>escribe tu propia tasa</small></span>","clickToCopy":"Clic para copiar","theTradeLeagueIs":"The Trade League es para usuarios registrados.","signInFreeTo":"Inicia sesión gratis para unirte","youAreInThe":"Estás en la liga como","closeWinningTradesTo":"- cierra operaciones ganadoras para subir.","14DaySeason":"<div class=\"lg-ends\"> Temporada de 14 días · ","endsIn2":"termina en","tradeBehindThisRank":"Trader detrás de este puesto","openThisMarket":"Abrir este mercado","topPnlIsBragging":"El Top PnL es solo por presumir - las demás tablas pagan USDT real cada temporada de 14 días.","paysTheTop5":"Paga a los 5 primeros cada temporada de 14 días. Clasificado por tasa de acierto ponderada por operaciones jugadas - más partidas hacen que tu % cuente más (un 45G-3P puede superar a un % más alto con menos operaciones). Mínimo 20 operaciones cerradas.","thisBoardPaysThe":"Esta tabla paga a los 5 primeros en USDT real cada temporada de 14 días.","noOneHas20":"Todavía nadie tiene 20 operaciones cerradas esta semana - cierra 20+ operaciones y reclama la corona de tasa de acierto.","bestWinRateThis":"Mejor tasa de acierto esta temporada","noWinningTradesYet":"Aún no hay operaciones ganadoras esta temporada - cierra una en ganancia para liderar la tabla de ROE.","topRoeThisSeason":"Top ROE esta temporada","noWinningTradesYet2":"Aún no hay operaciones ganadoras esta semana - cierra una en ganancia para liderar la tabla de PnL.","topPnlThisSeason":"Top PnL esta temporada","noGreenDaysYet":"Aún no hay días en verde esta temporada - cierra un día en ganancia (3+ operaciones) y entrarás en la tabla.","mostGreenDaysThis":"Más días en verde esta temporada","yourTradingStats":"Tus estadísticas de trading","winStreak":"Racha de victorias","cryptoStocksForexUp":"cripto, acciones y forex · sube o baja · 24/7","100055TradesPracticed":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">5 operaciones practicadas</div><h3>¿Listo para operar de verdad?</h3><p>Ya abriste 5 operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).</p><div class=\"grad-ex\">","firstWinningTrade":"Primera operación ganadora","tradesPracticed":" operaciones practicadas","youJustClosedYour":"Acabas de cerrar tu primera operación ganadora en paper trade. Esa misma operación, en una cuenta real, habría sido ganancia real - futuros en Bybit, o predicciones de subida/bajada en Moon (los nuevos registros reciben bonos en ambos).","youHaveOpened":"Ya abriste ","paperTradesTheMechanics":" operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).","starCoinsOnThe":"<div class=\"cws-w-empty\">Marca monedas con estrella en la página principal para fijarlas aquí.</div>","noSignalsRightNow":"<div class=\"cws-w-empty\">No hay señales ahora mismo - el mercado está tranquilo. Actualizando…</div>","titleOpen":"\" title=\"Abrir ","withIndicatorsSetup":" con indicadores + configuración\">","getAFreeUsdt":"consigue un <b>USDT gratis</b> de bono de bienvenida","10005SaveYourProgress":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">Guarda tu progreso</div><h3>Guarda tus operaciones - crea una cuenta gratis</h3><p>Ya cerraste 2 operaciones en paper trade. Crea una cuenta gratis (solo un código por email, sin contraseña) para conservar tu diario en todos tus dispositivos, ","newHere":"<div class=\"browse-sec\" data-i18n=\"secNew\">¿Nuevo aquí?</div>","whereToStart":"Por dónde empezar","cryptoFromZeroA":"Cripto desde cero - una ruta gratis para principiantes","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño &amp; más","liquidationPrice":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\" data-i18n=\"subLiq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\" data-i18n=\"subSize\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\" data-i18n=\"subDca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\" data-i18n=\"subRr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","tradingTools":"Herramientas de trading","testYourTradingBot":"Prueba tu bot de trading - gratis","priceAlerts":"Alertas de precio","emailOrTelegramWhen":"Email o Telegram cuando una moneda llegue a tu precio","claimEvery5Minutes":"Reclama cada 5 minutos","noMatchesFor":"Sin resultados para","slowDown":"Más despacio - ","opensPerMinuteIs":" aperturas por minuto es el límite. Inténtalo de nuevo en un momento.","youAlreadyHoldThe":"Ya tienes el número máximo de posiciones abiertas","aMonthStraightAt":"Un mes seguido. A este punto el mercado te vigila a ti.","twoWeeksDeepThis":"Dos semanas seguidas - así se ve la disciplina.","aFullWeekMost":"Una semana completa. La mayoría abandona el miércoles.","backToBackDays":"Días consecutivos. El gráfico se dio cuenta.","setAPriceAlert":" Pon una alerta de precio para no perderte ningún movimiento.","welcomeBackShowUp":"Bienvenido de vuelta. Vuelve mañana y esto se convierte en una racha.","setAPriceAlert2":"<a class=\"mps-cta\" href=\"/alerts/\">Pon una alerta de precio →</a>","importedYourTelegramTrade":"Se importó tu operación de Telegram.","importedYourTelegramTrade2":"Se importó tu operación de Telegram - ábrela en <b>My Trades</b>.","limitReached":"Límite alcanzado - ","openTradesIsThe":" operaciones abiertas es el máximo. Cierra algunas para abrir nuevas.","youAlreadyHaveA":"Ya tienes una ","positionOpenCloseIt":" posición abierta - ciérrala antes de abrir una ","limitReachedMax":"Límite alcanzado - máx. ","tradesCloseOneTo":" operaciones. Cierra una para abrir otra.","closesTheWholePosition":"Cierra toda la posición a ","isClosed2":" no cotiza","yourPositionCannotMove":" Tu posición no puede moverse mientras la bolsa está cerrada, y las salidas se ejecutan cuando vuelve a abrir.","savedToMyTrades":" - guardado en My Trades.","inputTypeTextInputmode":"<div class=\"mpss-row\"><input type=\"text\" inputmode=\"decimal\" autocomplete=\"off\" class=\"p\" placeholder=\"precio\" value=\"","stopLossLevelsAdd":"<div class=\"mpss-sec\" data-k=\"sl\"><div class=\"mpss-lab\">Niveles de stop-loss</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar stop-loss</button></div>","takeProfitLevelsAdd":"<div class=\"mpss-sec\" data-k=\"tp\"><div class=\"mpss-lab\">Niveles de take-profit</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar take-profit</button></div>","eachLevelClosesIts":"<div class=\"mpss-hint\">Cada nivel cierra su % de la posición cuando el precio lo toca - el 100% lo cierra todo, un % menor cierra una parte y el resto queda abierto. ✕ elimina un nivel; sin niveles = ninguno.</div>","saveSlTp":"<button type=\"button\" class=\"mpcs-go up\">Guardar SL / TP</button>","u201dIsNotA":"” no es un precio. Usa dígitos, con . o , para los decimales.","stopLossPriceIs":"El precio de stop-loss no es un número.","longEveryStopLoss":"LONG: cada stop-loss debe estar POR DEBAJO de","shortEveryStopLoss":"SHORT: cada stop-loss debe estar POR ENCIMA de","theLivePrice":" el precio en vivo (","takeProfitPriceIs":"El precio de take-profit no es un número.","longEveryTakeProfit":"LONG: cada take-profit debe estar POR ENCIMA de","shortEveryTakeProfit":"SHORT: cada take-profit debe estar POR DEBAJO de","maxTradeSizeIs2":"El tamaño máximo de operación es $100,000.","newSignal":"<div class=\"ctsg-h\"><b>Nueva señal</b><button type=\"button\" class=\"ctsg-x\" aria-label=\"Cerrar\">×</button></div>","enterTheCoinE":"Introduce la moneda (ej. XRP).","fillEntryTp1Tp2":"Completa entrada, TP1, TP2 y SL (números).","maxLevMustBe":"El apalancamiento máx. debe ser 1-125.","forALongTp1":"Para un LONG: TP1 por encima de la entrada, TP2 por encima de TP1, SL por debajo de la entrada.","forAShortTp1":"Para un SHORT: TP1 por debajo de la entrada, TP2 por debajo de TP1, SL por encima de la entrada.","tooLongShortenThe":"Demasiado largo - acorta los números.","chatIsReconnectingTry":"El chat se está reconectando - inténtalo de nuevo en un segundo.","moonRealMarketsTrade":"<img src=\"/assets/moon.png\" alt=\"\"><span class=\"t\"><span class=\"k\">MOON · MERCADOS REALES</span>Opera <b>","forRealOnMoon":"</b> de verdad en Moon - ","thePriceAboveIs":"<div class=\"mw-a\">El precio de arriba es el último que imprimió el exchange, así que no se moverá hasta entonces. La cripto cotiza a toda hora, todos los días, si quieres operar mientras tanto.</div>","dayStreak":"-días de racha</b><br>","dayStreak2":"-días de racha</b><small>"};
+function __esT_home(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_home[k] != null) return __esD_home[k]; } catch (e) {} return en; }
 /* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
    every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
    trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
@@ -15,7 +21,7 @@ window.mpJStore=window.mpJStore||function(a){
       keep=Math.floor(keep*0.7);
       try{
         localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
-        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("thisDeviceRanOut",'This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.'));}catch(_){}}
         return true;
       }catch(e2){}
     }
@@ -108,10 +114,10 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
    teaches that the position liquidates ~0.1% from entry (why skyfall/whyme lost big wins instantly). */
 window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.now(),last=+(localStorage.getItem('mp_lev_warned')||0);if(now-last<216e5)return;localStorage.setItem('mp_lev_warned',String(now));
   var move=(100/lev).toFixed(lev>=500?2:1),T=function(k,d){return (window.mpT&&window.mpT(k))||d;};
-  if(window.mpToast){window.mpToast({mark:'⚠',kind:'warn',ms:6000,dismissible:true,key:'levwarn',html:'<b style="color:#ff6258;font-family:Familjen Grotesk,sans-serif;font-size:12.5px">'+T('levWarnT','Extreme leverage')+'</b><br>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2','a move of only ~')+move+'% '+T('levWarnB3','against you wipes the whole position. Trade smaller.')});return;} /* was a bottom-centre card over the form */
+  if(window.mpToast){window.mpToast({mark:'⚠',kind:'warn',ms:6000,dismissible:true,key:'levwarn',html:'<b style="color:#ff6258;font-family:Familjen Grotesk,sans-serif;font-size:12.5px">'+T('levWarnT',__esT_home("extremeLeverage",'Extreme leverage'))+'</b><br>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2',__esT_home("aMoveOfOnly",'a move of only ~'))+move+'% '+T('levWarnB3',__esT_home("againstYouWipesThe",'against you wipes the whole position. Trade smaller.'))});return;} /* was a bottom-centre card over the form */
   var d=document.createElement('div');d.className='mp-levwarn';
   d.style.cssText='position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:400;max-width:340px;width:calc(100% - 32px);background:rgba(22,7,7,.97);border:1px solid #ff5a4d;border-radius:14px;padding:12px 14px;color:#ffd9d4;font:500 12.5px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:3px';
-  d.innerHTML='<b style="color:#ff6258;font-size:13px">⚠ '+T('levWarnT','Extreme leverage')+'</b><span>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2','a move of only ~')+move+'% '+T('levWarnB3','against you wipes the whole position. Trade small.')+'</span>';
+  d.innerHTML='<b style="color:#ff6258;font-size:13px">⚠ '+T('levWarnT',__esT_home("extremeLeverage",'Extreme leverage'))+'</b><span>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2',__esT_home("aMoveOfOnly",'a move of only ~'))+move+'% '+T('levWarnB3',__esT_home("againstYouWipesThe2",'against you wipes the whole position. Trade small.'))+'</span>';
   document.body.appendChild(d);
   setTimeout(function(){d.style.transition='opacity .4s,transform .4s';d.style.opacity='0';d.style.transform='translateX(-50%) translateY(8px)';setTimeout(function(){try{d.remove();}catch(e){}},450);},4600);
 }catch(e){}};
@@ -144,10 +150,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   window.mpMktSess=window.mpMktSess||{};
   // Why each class stops. Written for someone whose only reference is crypto, which never closes.
   var MKT_WHY={
-    stock:'Shares are bought and sold through a stock exchange, and exchanges keep office hours. When New York closes there is nobody on the other side of an order, so the price simply stops until it opens again. Crypto has no central exchange, which is why it never stops.',
-    index:'An index is just a number calculated from the shares inside it. When the exchange those shares trade on is shut, there are no new prices to calculate it from, so the index sits still.',
-    metal:'Gold and silver are priced on futures exchanges that close overnight and at weekends, the same way share exchanges do.',
-    forex:'Currencies are traded between banks rather than on one exchange, so the market runs around the clock from Sunday evening to Friday evening and then stops for the weekend while those desks are shut.'
+    stock:__esT_home("sharesAreBoughtAnd",'Shares are bought and sold through a stock exchange, and exchanges keep office hours. When New York closes there is nobody on the other side of an order, so the price simply stops until it opens again. Crypto has no central exchange, which is why it never stops.'),
+    index:__esT_home("anIndexIsJust",'An index is just a number calculated from the shares inside it. When the exchange those shares trade on is shut, there are no new prices to calculate it from, so the index sits still.'),
+    metal:__esT_home("goldAndSilverAre",'Gold and silver are priced on futures exchanges that close overnight and at weekends, the same way share exchanges do.'),
+    forex:__esT_home("currenciesAreTradedBetween",'Currencies are traded between banks rather than on one exchange, so the market runs around the clock from Sunday evening to Friday evening and then stops for the weekend while those desks are shut.')
   };
   // Roll the exchange's regular session forward to the next weekday that has not already ended.
   window.mpNextOpen=function(sym){
@@ -185,7 +191,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       var tmr=new Date(now.getTime()+86400000).toDateString()===dt.toDateString();
       var t=dt.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
       var day=sameDay?'today':tmr?'tomorrow':dt.toLocaleDateString([], {weekday:'long'});
-      when=day+' at '+t+' your time';
+      when=day+' at '+t+__esT_home("yourTime",' your time');
     }
     return {open:open, when:when, until:open?window.mpUntil(open):'', why:MKT_WHY[cls]||MKT_WHY.stock,
       tz:ss.tz||''};
@@ -193,8 +199,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // One phrasing for every "you cannot open this now" message, so the toast and the panel never disagree.
   window.mpMktClosedMsg=function(sym){
     var ex=window.mpMktExplain&&window.mpMktExplain(sym);
-    if(ex&&ex.until) return sym+' is closed - the exchange opens in '+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
-    return sym+' market is closed right now - you can trade it when the exchange reopens.';
+    if(ex&&ex.until) return sym+__esT_home("isClosedTheExchange",' is closed - the exchange opens in ')+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
+    return sym+__esT_home("marketIsClosedRight",' market is closed right now - you can trade it when the exchange reopens.');
   };
   window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return (MKT[sym]||STK[sym])?true:_byb0(sym);};
       // Asset class of a symbol → realistic per-market fees + the class selector on Paper Trade
@@ -246,10 +252,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 
 ;/* ══════════ inline block from app/index.html line 2762 ══════════ */
 function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=true;try{fn();}catch(e){}}try{if(!el||!('IntersectionObserver' in window)){(window.requestIdleCallback||function(f){setTimeout(f,1500);})(go);return;}var io=new IntersectionObserver(function(en){for(var i=0;i<en.length;i++)if(en[i].isIntersecting){io.disconnect();go();return;}},{rootMargin:'240px'});io.observe(el);if(el.offsetParent)setTimeout(go,20000);}catch(e){go();}} /* below-the-fold sections used to fetch on idle within ~1.5s of load - 19 API calls in the first 3s on a cold mobile load, most for content nobody had scrolled to (measured 2026-09-02). Hidden containers (route isolation) never fire; a laid-out one has a 20s safety so nothing stays empty forever. */
-(function(){var grid=document.getElementById('mpGrid'),upd=document.getElementById('mpUpd');if(!grid)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fgc(v){return v<=24?'#ff5a4d':v<=44?'#ff9f43':v<=55?'#cfd3d8':v<=75?'#2ebd85':'#19d98a';}function render(d){if(!d||d.error){grid.innerHTML='<div class="mp-load">Live market data unavailable right now.</div>';return;}var fg=d.fearGreed,liq=d.liq24h,top=d.topLiq||[],h='';if(fg){var deg=Math.round(fg.value*3.6);var pv=(fg.prev!=null)?('Yesterday '+fg.prev+(fg.value>=fg.prev?' ▲':' ▼')):'';h+='<div class="mp-card mp-fg"><div class="mp-k">Fear &amp; Greed Index</div><div class="mp-fg-row"><div class="mp-gauge" style="background:conic-gradient('+fgc(fg.value)+' '+deg+'deg,#1a1f27 '+deg+'deg)"><span>'+fg.value+'</span></div><div class="mp-fg-info"><div class="mp-fg-lbl" style="color:'+fgc(fg.value)+'">'+fg.label+'</div><div class="mp-fg-prev">'+pv+'</div></div></div><div class="mp-fg-scale"><i style="left:'+fg.value+'%"></i></div><div class="mp-fg-ticks"><span>Extreme fear</span><span>Extreme greed</span></div></div>';}if(liq){var lp=liq.total?liq.long/liq.total*100:50,sp=100-lp;h+='<div class="mp-card mp-liq"><div class="mp-k">Liquidations · 24h</div><div class="mp-liq-v">'+bn(liq.total)+'</div><div class="mp-ls"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i></div><div class="mp-ls-l"><span class="up">Longs '+bn(liq.long)+'</span><span class="dn">'+bn(liq.short)+' Shorts</span></div></div>';}if(top.length){h+='<div class="mp-card mp-top"><div class="mp-k">Most rekt · 24h</div>'+top.slice(0,4).map(function(c){var lp2=c.liq?c.long/c.liq*100:50;return '<div class="mp-top-r"><span class="mp-top-s">'+c.s+'</span><span class="mp-top-bar"><i class="l" style="width:'+lp2.toFixed(0)+'%"></i><i class="s" style="width:'+(100-lp2).toFixed(0)+'%"></i></span><span class="mp-top-v">'+bn(c.liq)+'</span></div>';}).join('')+'</div>';}grid.innerHTML=h;if(upd)upd.textContent='updated just now';}function load(){fetch('/api/cg/pulse',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(grid,load);setInterval(load,120000);})();
+(function(){var grid=document.getElementById('mpGrid'),upd=document.getElementById('mpUpd');if(!grid)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fgc(v){return v<=24?'#ff5a4d':v<=44?'#ff9f43':v<=55?'#cfd3d8':v<=75?'#2ebd85':'#19d98a';}function render(d){if(!d||d.error){grid.innerHTML=__esT_home("liveMarketDataUnavailable",'<div class="mp-load">Live market data unavailable right now.</div>');return;}var fg=d.fearGreed,liq=d.liq24h,top=d.topLiq||[],h='';if(fg){var deg=Math.round(fg.value*3.6);var pv=(fg.prev!=null)?('Yesterday '+fg.prev+(fg.value>=fg.prev?' ▲':' ▼')):'';h+='<div class="mp-card mp-fg"><div class="mp-k">Fear &amp; Greed Index</div><div class="mp-fg-row"><div class="mp-gauge" style="background:conic-gradient('+fgc(fg.value)+' '+deg+'deg,#1a1f27 '+deg+'deg)"><span>'+fg.value+'</span></div><div class="mp-fg-info"><div class="mp-fg-lbl" style="color:'+fgc(fg.value)+'">'+fg.label+'</div><div class="mp-fg-prev">'+pv+'</div></div></div><div class="mp-fg-scale"><i style="left:'+fg.value+'%"></i></div><div class="mp-fg-ticks"><span>Extreme fear</span><span>Extreme greed</span></div></div>';}if(liq){var lp=liq.total?liq.long/liq.total*100:50,sp=100-lp;h+='<div class="mp-card mp-liq"><div class="mp-k">Liquidations · 24h</div><div class="mp-liq-v">'+bn(liq.total)+'</div><div class="mp-ls"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i></div><div class="mp-ls-l"><span class="up">Longs '+bn(liq.long)+'</span><span class="dn">'+bn(liq.short)+' Shorts</span></div></div>';}if(top.length){h+=__esT_home("mostRekt24h",'<div class="mp-card mp-top"><div class="mp-k">Most rekt · 24h</div>')+top.slice(0,4).map(function(c){var lp2=c.liq?c.long/c.liq*100:50;return '<div class="mp-top-r"><span class="mp-top-s">'+c.s+'</span><span class="mp-top-bar"><i class="l" style="width:'+lp2.toFixed(0)+'%"></i><i class="s" style="width:'+(100-lp2).toFixed(0)+'%"></i></span><span class="mp-top-v">'+bn(c.liq)+'</span></div>';}).join('')+'</div>';}grid.innerHTML=h;if(upd)upd.textContent=__esT_home("updatedJustNow",'updated just now');}function load(){fetch('/api/cg/pulse',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(grid,load);setInterval(load,120000);})();
 
 ;/* ══════════ inline block from app/index.html line 2785 ══════════ */
-(function(){var box=document.getElementById('derivBoard');if(!box)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}function fn(f){if(f==null||!isFinite(f))return '-';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}function render(d){if(!d||!d.coins||!d.coins.length){box.innerHTML='<div class="db-load">Live data unavailable right now.</div>';return;}box.innerHTML=d.coins.map(function(c){var up=(c.chg24h||0)>=0,lp=c.longPct!=null?c.longPct:50,sp=c.shortPct!=null?c.shortPct:50,fpos=(c.funding||0)>=0;return '<a class="db-card" href="/screener"><div class="db-top"><span class="db-sym">'+c.symbol+'</span><span class="db-chg '+(up?'up':'dn')+'">'+(up?'+':'')+(c.chg24h!=null?c.chg24h.toFixed(1):'0')+'%</span></div><div class="db-px">'+(c.price!=null?fpx(c.price):'-')+'</div><div class="db-ls" title="Long '+lp+'% / Short '+sp+'%"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="db-meta"><span class="'+(fpos?'up':'dn')+'">Fund '+fn(c.funding)+'</span><span>OI '+bn(c.oiUsd)+'</span></div></a>';}).join('');}function load(){fetch('/api/cg/board',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(box,load);setInterval(load,120000);})();
+(function(){var box=document.getElementById('derivBoard');if(!box)return;function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}function fn(f){if(f==null||!isFinite(f))return '-';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}function render(d){if(!d||!d.coins||!d.coins.length){box.innerHTML=__esT_home("liveDataUnavailableRight",'<div class="db-load">Live data unavailable right now.</div>');return;}box.innerHTML=d.coins.map(function(c){var up=(c.chg24h||0)>=0,lp=c.longPct!=null?c.longPct:50,sp=c.shortPct!=null?c.shortPct:50,fpos=(c.funding||0)>=0;return '<a class="db-card" href="/screener"><div class="db-top"><span class="db-sym">'+c.symbol+'</span><span class="db-chg '+(up?'up':'dn')+'">'+(up?'+':'')+(c.chg24h!=null?c.chg24h.toFixed(1):'0')+'%</span></div><div class="db-px">'+(c.price!=null?fpx(c.price):'-')+'</div><div class="db-ls" title="Long '+lp+'% / Short '+sp+'%"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="db-meta"><span class="'+(fpos?'up':'dn')+'">Fund '+fn(c.funding)+'</span><span>OI '+bn(c.oiUsd)+'</span></div></a>';}).join('');}function load(){fetch('/api/cg/board',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}mpWhenVisible(box,load);setInterval(load,120000);})();
 
 ;/* ══════════ inline block from app/index.html line 2955 ══════════ */
 /* Paper Trade: open a position at the live price, track it live in the Journal */
@@ -270,20 +276,20 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       (host.parentNode||host).insertBefore(box, host.nextSibling);
     }
     box.hidden=false;
-    box.innerHTML='<div class="mw-h"><b>'+sym+' is closed</b>'+(ex.until?'<i>opens in '+ex.until+'</i>':'')+'</div>'
-      +(ex.when?'<div class="mw-w">Next open: '+ex.when+'</div>':'')
+    box.innerHTML='<div class="mw-h"><b>'+sym+__esT_home("isClosed",' is closed</b>')+(ex.until?__esT_home("opensIn",'<i>opens in ')+ex.until+'</i>':'')+'</div>'
+      +(ex.when?__esT_home("nextOpen",'<div class="mw-w">Next open: ')+ex.when+'</div>':'')
       +'<div class="mw-y">'+ex.why+'</div>'
-      +'<div class="mw-a">The price above is the last one the exchange printed, so it will not move until then. Crypto trades every hour of every day if you want something live right now.</div>';
+      +__esT_home("thePriceAboveIs",'<div class="mw-a">The price above is the last one the exchange printed, so it will not move until then. Crypto trades every hour of every day if you want something live right now.</div>');
   }
   function updateMktGate(){var b=document.getElementById('planSave'),t=document.getElementById('planOpenTxt'),lbl=document.querySelector('.pt2-px-lbl');var closed=mktClosed();
-    try{mktPanel(((document.getElementById('planSym')||{}).value||'').toUpperCase(),closed);}catch(_){}if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){setBtn();/* reopening must restore the label the CURRENT order type wants (Market vs Limit), not always "Open demo trade" */}
+    try{mktPanel(((document.getElementById('planSym')||{}).value||'').toUpperCase(),closed);}catch(_){}if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||__esT_home("marketClosed",'Market closed');}else if(t&&!closed&&t.textContent===__esT_home("marketClosed",'Market closed')){setBtn();/* reopening must restore the label the CURRENT order type wants (Market vs Limit), not always "Open demo trade" */}
     if(lbl){var wasClosed=lbl.getAttribute('data-mkt')==='closed';if(closed!==wasClosed){lbl.setAttribute('data-mkt',closed?'closed':'open');lbl.childNodes.forEach&&Array.prototype.forEach.call(lbl.childNodes,function(n){if(n.nodeType===3)n.textContent=closed?'CLOSED':'LIVE';});}}}
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   function money(x){if(!isFinite(x))return '-';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=window._mpOpenWait?((window.mpT&&window.mpT('jOpening'))||'Opening…'):cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):(_lim?((window.mpT&&window.mpT('otPlace'))||'Place limit order'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade')); /* _mpOpenWait: a server open in flight (add() in the journal IIFE) keeps "Opening…" on the button across the 1 s tick */ if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
+  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();var _lim=window.mpPlanType==='limit';if(t)t.textContent=window._mpOpenWait?((window.mpT&&window.mpT('jOpening'))||'Opening…'):cl?((window.mpT&&window.mpT('mktClosed'))||__esT_home("marketClosed",'Market closed')):(_lim?((window.mpT&&window.mpT('otPlace'))||__esT_home("placeLimitOrder",'Place limit order')):((window.mpT&&window.mpT('mtOpen'))||__esT_home("openDemoTrade",'Open demo trade'))); /* _mpOpenWait: a server open in flight (add() in the journal IIFE) keeps "Opening…" on the button across the 1 s tick */ if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
   function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,'planLivePx',symPrec());}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
   // The price this ticket will actually be entered at: the live price for a market order, the typed level for a
   // limit order. Size, notional and the liquidation estimate must all be quoted off THAT - a limit ticket showing
@@ -327,9 +333,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function levRisk(){var l=document.getElementById('planLev'),f=l&&l.closest('.pt2-fields');if(f)f.classList.toggle('risky',num('planLev')>50);}
   var _levHT=0;
   function planCap(){var s=(document.getElementById('planSym')||{}).value||'';return (window.mpMaxLev?window.mpMaxLev(s):1000);}
-  function applyLevCap(loud){var cap=planCap();if(!levEl)return;if(parseFloat(levEl.value)>cap){levEl.value=String(cap);syncLevR();levRisk();try{calc();}catch(_){}var _n=Date.now();if(loud&&_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}var h=document.getElementById('planLevMax');if(h)h.textContent='max '+cap+'×';}
+  function applyLevCap(loud){var cap=planCap();if(!levEl)return;if(parseFloat(levEl.value)>cap){levEl.value=String(cap);syncLevR();levRisk();try{calc();}catch(_){}var _n=Date.now();if(loud&&_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast(__esT_home("maxLeverageFor",'Max leverage for ')+((document.getElementById('planSym')||{}).value||__esT_home("thisCoin",'this coin'))+' is '+cap+'×.');}}var h=document.getElementById('planLevMax');if(h)h.textContent='max '+cap+'×';}
   window.mpApplyLevCap=applyLevCap;
-  if(levEl)levEl.addEventListener('input',function(){var cap=planCap();if(parseFloat(levEl.value)>cap){levEl.value=String(cap);var _n=Date.now();if(_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}syncLevR();levRisk();});
+  if(levEl)levEl.addEventListener('input',function(){var cap=planCap();if(parseFloat(levEl.value)>cap){levEl.value=String(cap);var _n=Date.now();if(_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast(__esT_home("maxLeverageFor",'Max leverage for ')+((document.getElementById('planSym')||{}).value||__esT_home("thisCoin",'this coin'))+' is '+cap+'×.');}}syncLevR();levRisk();});
   var _levRaf=false;
   if(levR)levR.addEventListener('input',function(){if(!levEl)return;var _pv=levEl.value;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));if(levEl.value!==_pv&&window.mpHaptic)window.mpHaptic('step'); /* one tick per STEP of the ladder - the drag itself must never buzz */levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
   // the number field snaps on COMMIT, not on every keystroke: snapping while typing would turn "107" into 110 at the
@@ -357,11 +363,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(!limH)return;
     if(window.mpPlanType!=='limit'){limH.textContent='';limH.className='pt2-lim-h';return;}
     var p=window.mpPlanLimit;
-    if(!isFinite(p)||p<=0){limH.textContent=(window.mpT&&window.mpT('otHintEmpty'))||'Enter the price you want to be filled at.';limH.className='pt2-lim-h';return;}
+    if(!isFinite(p)||p<=0){limH.textContent=(window.mpT&&window.mpT('otHintEmpty'))||__esT_home("enterThePriceYou",'Enter the price you want to be filled at.');limH.className='pt2-lim-h';return;}
     if(!isFinite(live)||live<=0){limH.textContent='';limH.className='pt2-lim-h';return;}
     var d=(p-live)/live*100,sym=((document.getElementById('planSym')||{}).value||'').toUpperCase()||'it';
     var word=(d>=0)?((window.mpT&&window.mpT('otRisesTo'))||'fills if {s} rises to {p}'):((window.mpT&&window.mpT('otDropsTo'))||'fills if {s} drops to {p}');
-    limH.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?((window.mpT&&window.mpT('otBelow'))||'below the market'):((window.mpT&&window.mpT('otAbove'))||'above the market'))+' · '+word.replace('{s}',sym).replace('{p}',fmtPx(p));
+    limH.textContent=Math.abs(d).toFixed(2)+'% '+(d<0?((window.mpT&&window.mpT('otBelow'))||__esT_home("belowTheMarket",'below the market')):((window.mpT&&window.mpT('otAbove'))||__esT_home("aboveTheMarket",'above the market')))+' · '+word.replace('{s}',sym).replace('{p}',fmtPx(p));
     limH.className='pt2-lim-h ok';
   }
   function onLim(){window.mpPlanLimit=limIn?parseFloat(limIn.value):NaN;calc();try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(_){}}
@@ -384,7 +390,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   setType('market');limBadge();setTimeout(limBadge,1500);
   window.mpPlanSetType=setType; // the chart's "limit order here" affordance and the E2E both drive the form through this
   window.mpPlanCalc=calc; // the "Fees as on" picker lives in an earlier inline block where calc() is out of scope; without this hook the quoted round-trip fee only refreshed on the next price tick (measured on the phone 2026-09-12: 3 s with no change)
-  (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row - reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
+  (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML=__esT_home("balanceModeOn",'<span class="mbn-dot"></span>Balance Mode ON');row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row - reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
     if(advChk.checked){window._mpSltpHidden=false;try{ensureDrag();}catch(e){}var sl=document.getElementById('planSlOpt'),tp=document.getElementById('planTpOpt'),entry=(window.mpPlanLive&&+window.mpPlanLive.price)||0,seg=document.getElementById('planSeg'),onb=seg&&seg.querySelector('button.on'),lng=!(onb&&onb.getAttribute('data-side')==='short'),dp=(entry>=1?2:6);
@@ -401,9 +407,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     function isGuest(){try{return !(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me());}catch(e){return true;}}
     function gate(){ var g=isGuest();
       advChk.disabled=g;
-      if(lbl){lbl.style.opacity=g?'.55':'';lbl.title=g?'Create a free account to use stop-loss and take-profit':'';}
+      if(lbl){lbl.style.opacity=g?'.55':'';lbl.title=g?__esT_home("createAFreeAccount",'Create a free account to use stop-loss and take-profit'):'';}
       var n=document.getElementById('advGateNote');
-      if(g&&!n&&lbl&&lbl.parentNode){n=document.createElement('span');n.id='advGateNote';n.style.cssText='font-size:10.5px;color:#8a94a1;margin-left:8px;line-height:1.3';n.innerHTML='SL/TP needs a free account - <a href="#" data-auth-open style="color:#c2f64a">sign in</a>';lbl.parentNode.insertBefore(n,lbl.nextSibling);}
+      if(g&&!n&&lbl&&lbl.parentNode){n=document.createElement('span');n.id='advGateNote';n.style.cssText='font-size:10.5px;color:#8a94a1;margin-left:8px;line-height:1.3';n.innerHTML=__esT_home("slTpNeedsA",'SL/TP needs a free account - <a href="#" data-auth-open style="color:#c2f64a">sign in</a>');lbl.parentNode.insertBefore(n,lbl.nextSibling);}
       if(!g&&n)n.parentNode.removeChild(n);
       if(g&&advChk.checked){advChk.checked=false;advChk.dispatchEvent(new Event('change',{bubbles:true}));}
     }
@@ -424,8 +430,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     // SL readout - directly under the stop-loss field
     var hs='';
     if(sl>0){var wrong=lng?(sl>=entry):(sl<=entry);
-      if(wrong){hs='<div class="pr-warn">⚠ Stop-loss is on the wrong side of entry</div>';}
-      else{var lossFrac=Math.min(1,lev*Math.abs(entry-sl)/entry);hs='<div class="pr-sl"><span>If stop-loss hits</span><span class="v"><b>−$'+(margin*lossFrac).toFixed(2)+'</b> ('+Math.round(lossFrac*100)+'%)</span></div>';}}
+      if(wrong){hs=__esT_home("stopLossIsOn",'<div class="pr-warn">⚠ Stop-loss is on the wrong side of entry</div>');}
+      else{var lossFrac=Math.min(1,lev*Math.abs(entry-sl)/entry);hs=__esT_home("ifStopLossHits",'<div class="pr-sl"><span>If stop-loss hits</span><span class="v"><b>−$')+(margin*lossFrac).toFixed(2)+'</b> ('+Math.round(lossFrac*100)+'%)</span></div>';}}
     setBox(rs,hs);
     // TP readout - directly under the take-profit field
     var ht='';
@@ -446,7 +452,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var px=document.getElementById('planEx');
     var cs=document.getElementById('planRzSlip'),ct=document.getElementById('planRzTier'),st=document.getElementById('planRzSt');
     function vKey(){try{var o=px&&px.options[px.selectedIndex];if(!o)return '';var k=String(o.textContent||'').split('-')[0].trim().toLowerCase().replace(/[^a-z]/g,'');return (k==='marginpad')?'':k;}catch(e){return '';}}
-    function say(){if(!st)return;var on=(cs&&cs.checked)||(ct&&ct.checked);st.className='rz-st'+(on?' on':'');st.textContent=on?'on for new positions':'engine defaults';}
+    function say(){if(!st)return;var on=(cs&&cs.checked)||(ct&&ct.checked);st.className='rz-st'+(on?' on':'');st.textContent=on?__esT_home("onForNewPositions",'on for new positions'):'engine defaults';}
     var _busy=0;
     function push(){ /* fire-and-forget: a settings write must never block or fail a trade */
       if(!window.fetch)return; var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}
@@ -557,7 +563,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
          The heal existed and worked; it was curing a symptom. For srv/bot rows we now show the position as it is
          (deep red, at the level) and let the sweep settle it - which the very next /positions poll triggers, so
          this costs seconds, not the 10-minute cron. A client sync could never close these rows anyway. */
-      if(e.src==='srv'||e.src==='bot'){try{if(window.__mpTrack)window.__mpTrack('cliqhold',e.sym+' at liq, awaiting server');}catch(_){}window.__mpSrvLiq=1;
+      if(e.src==='srv'||e.src==='bot'){try{if(window.__mpTrack)window.__mpTrack('cliqhold',e.sym+__esT_home("atLiqAwaitingServer",' at liq, awaiting server'));}catch(_){}window.__mpSrvLiq=1;
         /* ASK THE SERVER TO LOOK, NOW (2026-09-16). This branch is right to refuse to close a server-owned position -
            the client cannot confirm a liquidation - but until today it only set window.__mpSrvLiq, and NOTHING IN THE
            CODEBASE EVER READ THAT FLAG. The comment above promises "the very next /positions poll triggers" the sweep;
@@ -583,18 +589,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
  function buzz(p){try{if(navigator.vibrate)(navigator.userActivation&&navigator.userActivation.hasBeenActive)&&navigator.vibrate(p);}catch(e){}}
   if(!window.mpBuzz)window.mpBuzz=buzz; // mp-auth owns the global now (it loads on every page); this local copy is the fallback for the tick before it parses
   function notify(e,kind){if(notified[e.id])return;notified[e.id]=true;
-    var t=kind==='tp'?'Take-Profit hit':(kind==='liq'?'LIQUIDATED':'Stop-Loss hit');
+    var t=kind==='tp'?__esT_home("takeProfitHit",'Take-Profit hit'):(kind==='liq'?'LIQUIDATED':__esT_home("stopLossHit",'Stop-Loss hit'));
     var sym=(e.sym||'Trade'),side=String(e.side||'').toUpperCase();
     buzz(kind==='liq'?[50,45,50,45,95]:(kind==='tp'?[18,55,18]:[35]));   // distinct haptic per outcome (liq = strongest)
     var pnl=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?'+$':'−$')+Math.abs(e.pnl).toFixed(2)):'';
-    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' - '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
+    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' - '+t,{body:__esT_home("closedAt",'Closed at ')+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
     try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' - liquidated':kind==='tp'?' - take-profit':' - stop-loss')+(pnl?' '+pnl:''));}catch(_){}
     try{if(window.mpGuestNudge)window.mpGuestNudge(kind,e.sym,(e.pnl!=null&&isFinite(e.pnl))?+e.pnl:null);}catch(_){} /* guest activation card (mp-auth.js): liquidation / TP / SL closes */}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'-')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'-')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'-'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'-'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
-      +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
+      +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+__esT_home("closeButtonDataAct",'">Close</button><button data-act="edit" data-id="')+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
@@ -854,7 +860,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var PT_INDS=[['sig','Buy / Sell signals'],['ema','EMA 21'],['sma','SMA 50'],['sma2','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['vol','Volume'],['rsi','RSI 14'],['macd','MACD'],['stoch','Stochastic'],['atr','ATR 14'],['wr','Williams %R'],['cci','CCI']];
   var ptIndMenu=null;
   function updIndN(){var n=0,k;for(k in inds)if(inds[k])n++;var el=document.getElementById('ptIndN');if(el)el.textContent=n?String(n):'';var btn=document.getElementById('ptInd');if(btn)btn.classList.toggle('on',n>0);}
-  var PTIPS={sig:'Green arrow = trend just flipped UP (possible buy). Red arrow = flipped DOWN (possible sell).',ema:'Smooth average price, recent bars count more. Above the line = going up; below = going down.',sma:'The plain average price over the last 50 bars - a simple trend line.',sma2:'The average price over 200 bars - the big long-term trend line.',hma:'A super-smooth, fast average price line - less wobble and less lag.',vwap:'Average price weighted by how much was traded - big traders’ idea of fair price.',bb:'Two bands around price. Near the top = pricey, near the bottom = cheap. Wide = wild, tight = calm.',kc:'Bands based on how much price usually moves. Popping outside = a strong move.',dc:'The highest high and lowest low recently. Breaking above = an upside breakout.',vol:'How much was traded each bar. Tall bars = lots of trading right then.',rsi:'A 0–100 meter. Above 70 = maybe too high (overbought); below 30 = too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above 0 = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild → use wider stops.',wr:'Williams %R - upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'How far price is from its average. Above +100 = strong up; below −100 = strong down.'};
+  var PTIPS={sig:__esT_home("greenArrowTrendJust",'Green arrow = trend just flipped UP (possible buy). Red arrow = flipped DOWN (possible sell).'),ema:__esT_home("smoothAveragePriceRecent",'Smooth average price, recent bars count more. Above the line = going up; below = going down.'),sma:__esT_home("thePlainAveragePrice",'The plain average price over the last 50 bars - a simple trend line.'),sma2:__esT_home("theAveragePriceOver",'The average price over 200 bars - the big long-term trend line.'),hma:__esT_home("aSuperSmoothFast",'A super-smooth, fast average price line - less wobble and less lag.'),vwap:__esT_home("averagePriceWeightedBy",'Average price weighted by how much was traded - big traders’ idea of fair price.'),bb:__esT_home("twoBandsAroundPrice",'Two bands around price. Near the top = pricey, near the bottom = cheap. Wide = wild, tight = calm.'),kc:__esT_home("bandsBasedOnHow",'Bands based on how much price usually moves. Popping outside = a strong move.'),dc:__esT_home("theHighestHighAnd",'The highest high and lowest low recently. Breaking above = an upside breakout.'),vol:__esT_home("howMuchWasTraded",'How much was traded each bar. Tall bars = lots of trading right then.'),rsi:'A 0–100 meter. Above 70 = maybe too high (overbought); below 30 = too low (oversold).',macd:__esT_home("showsIfTheTrend",'Shows if the trend is speeding up or slowing down. Above 0 = buyers in control.'),stoch:__esT_home("likeRsiForTiming",'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.'),atr:__esT_home("howMuchPriceUsually",'How much price usually moves per bar. Big ATR = wild → use wider stops.'),wr:__esT_home("williamsRUpsideDown",'Williams %R - upside-down RSI. Near 0 = overbought, near −100 = oversold.'),cci:__esT_home("howFarPriceIs",'How far price is from its average. Above +100 = strong up; below −100 = strong down.')};
   function buildIndMenu(){ptIndMenu=document.createElement('div');ptIndMenu.className='ptt-ind-menu';ptIndMenu.hidden=true;ptIndMenu.innerHTML='<div class="ptt-ind-h">Indicators</div>'+PT_INDS.map(function(t){return '<button type="button" class="ptt-ind-item" data-ind="'+t[0]+'" title="'+(PTIPS[t[0]]||'').replace(/"/g,'&quot;')+'"><span class="ptt-ind-ck"></span>'+t[1]+'</button>';}).join('');document.body.appendChild(ptIndMenu);
     ptIndMenu.addEventListener('click',function(e){var b=e.target.closest('.ptt-ind-item');if(!b)return;var k=b.getAttribute('data-ind');inds[k]=!inds[k];b.classList.toggle('on',!!inds[k]);try{localStorage.setItem('mp_pt_inds',JSON.stringify(inds));}catch(_){}applyInds();updIndN();});
     document.addEventListener('pointerdown',function(e){if(ptIndMenu&&!ptIndMenu.hidden&&!(e.target.closest&&(e.target.closest('.ptt-ind-menu')||e.target.closest('#ptInd'))))ptIndMenu.hidden=true;},true);
@@ -981,7 +987,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       else if(e.tp!=null)_gAdd(+e.tp,'TP','#6b7280',1,2);
       if(e.sls&&e.sls.length)e.sls.forEach(function(L){if(+L.p>0)_gAdd(+L.p,'SL'+(+L.pct<100?' '+(+L.pct)+'%':''),'#6b7280',1,2);});
       else if(e.stop!=null)_gAdd(+e.stop,'SL','#6b7280',1,2);});
-    ords.forEach(function(o){_gAdd(+o.px,(o.side==='short'?'LIMIT SHORT':'LIMIT LONG'),'#f0c35a',1,1);}); // dashed amber: waiting, not held
+    ords.forEach(function(o){_gAdd(+o.px,(o.side==='short'?__esT_home("limitShort",'LIMIT SHORT'):__esT_home("limitLong",'LIMIT LONG')),'#f0c35a',1,1);}); // dashed amber: waiting, not held
     for(var gk in _grp){var g=_grp[gk];var t=g.label+(g.n>1?' ×'+g.n:'');
       _openMarks.push({p:g.p,label:t,color:(g.label.slice(0,2)==='TP'||g.label.slice(0,2)==='SL')?'#9aa3ad':g.color});
       if(isFinite(g.p))try{plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}catch(e){}}
@@ -1003,7 +1009,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var ivMin=+chartTf||15;if(!(ivMin>0)||ivMin>=10080){_cdEl.textContent='';return;}
     var ivMs=ivMin*60000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock - the countdown must be right even on a skewed device
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
-    _cdEl.textContent='close in '+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
+    _cdEl.textContent=__esT_home("closeIn",'close in ')+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
   setInterval(tickCd,1000);
   function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
     updateEdges();
@@ -1082,7 +1088,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(+part.margin>0&&pnl<-(+part.margin))pnl=-(+part.margin);
       part.status=pnl>=0?'win':'loss';part.exit=exitPx;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
-      try{if(window.mpLimitToast)window.mpLimitToast((isTp?'Take-profit':'Stop-loss')+' level filled - closed '+Math.round(f*100)+'% of '+String(e.sym||'')+' at '+fp(exitPx)+' · '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
+      try{if(window.mpLimitToast)window.mpLimitToast((isTp?'Take-profit':'Stop-loss')+__esT_home("levelFilledClosed",' level filled - closed ')+Math.round(f*100)+'% of '+String(e.sym||'')+' at '+fp(exitPx)+' · '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
       try{buzz(isTp?[18,55,18]:[35]);}catch(_){}}
     function proc(arr,isTp){if(!arr||!arr.length)return arr;
       return arr.filter(function(L){var p=+L.p,pct=+L.pct||100;
@@ -1209,30 +1215,30 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var srv=e.src==='srv'||e.src==='bot'||/^(srv|bot)/.test(String(e.id||''));
     var closed=e.status==='win'||e.status==='loss',ss=window.mpSsnStart?window.mpSsnStart():0,openTs=eligOpenTs(e),inSeason=!ss||openTs>=ss;
     var margin=+e.margin||0,lev=(+e.lev>0)?+e.lev:1,sym=String(e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),pnl=(e.pnl!=null&&isFinite(+e.pnl))?+e.pnl:null;
-    if(!closed)add(false,MT('eligR1open','Not closed yet. Only trades opened and closed this season count'));
-    else if(!inSeason)add(false,MT('eligR1pre','Opened before this season. Only trades opened and closed this season count'));
-    else add(true,MT('eligR1ok','Opened and closed this season'));
+    if(!closed)add(false,MT('eligR1open',__esT_home("notClosedYetOnly",'Not closed yet. Only trades opened and closed this season count')));
+    else if(!inSeason)add(false,MT('eligR1pre',__esT_home("openedBeforeThisSeason",'Opened before this season. Only trades opened and closed this season count')));
+    else add(true,MT('eligR1ok',__esT_home("openedAndClosedThis",'Opened and closed this season')));
     var srvOk=srv&&(!closed||!!e.sc);
-    add(srvOk,!srv?MT('eligR2no','Not filled by the server. Edited or local journal entries never count'):(closed&&!e.sc?MT('eligR2half','Filled by the server but not closed by it. Edited journal entries never count'):(closed?MT('eligR2ok','Filled and closed by the server'):MT('eligR2open','Filled by the server'))));
-    add(!ELIG_EXCL[sym],!ELIG_EXCL[sym]?MT('eligR3ok','Crypto pair'):MT('eligR3no','Crypto pairs only. Forex, metals, indices and stablecoins never rank'));
+    add(srvOk,!srv?MT('eligR2no',__esT_home("notFilledByThe",'Not filled by the server. Edited or local journal entries never count')):(closed&&!e.sc?MT('eligR2half',__esT_home("filledByTheServer",'Filled by the server but not closed by it. Edited journal entries never count')):(closed?MT('eligR2ok',__esT_home("filledAndClosedBy",'Filled and closed by the server')):MT('eligR2open',__esT_home("filledByTheServer2",'Filled by the server')))));
+    add(!ELIG_EXCL[sym],!ELIG_EXCL[sym]?MT('eligR3ok','Crypto pair'):MT('eligR3no',__esT_home("cryptoPairsOnlyForex",'Crypto pairs only. Forex, metals, indices and stablecoins never rank')));
     var mOk=margin>=1&&margin<=100000;add(mOk,mOk?MT('eligR4ok','At least $1 of margin'):MT('eligR4no','Under $1 of margin. Dust positions are not counted'));
     if(closed&&pnl!=null){if(pnl>0){var roe=margin>0?pnl/margin*100:0,mv=roe/lev,q=roe>=5&&mv>=0.2;
         add(q,(q?MT('eligR5ok','Counted win: +{r}% ROE on a {m}% price move'):MT('eligR5no','Not a counted win: +{r}% ROE on a {m}% price move. A win only counts at +5% ROE or better on a real price move of at least 0.2%; smaller profits count as neither')).replace('{r}',roe.toFixed(1)).replace('{m}',mv.toFixed(2)));}
-      else add(true,MT('eligR5loss','Loss. Losses always count'),true);}
+      else add(true,MT('eligR5loss',__esT_home("lossLossesAlwaysCount",'Loss. Losses always count')),true);}
     /* Rule 6 mirrors the server's dedupe of CLOSE events (same user+symbol+side within a 10-minute chain): closed rows compare close times, open rows the open time; the slices of one partially-closed position share a root id and are never each other's copy (2026-09-12 - every partial close used to wear the "copies count once" badge). MIRROR in mp-trade.js */
     var twins=0,_ei=String(e.id||''),_eT=(closed&&+e.closeTs>0)?+e.closeTs:openTs;for(var i=0;i<all.length;i++){var o=all[i];if(!o||o===e||o.id===e.id)continue;var _oi=String(o.id||'');if(_ei&&_oi&&(_oi.indexOf(_ei)===0||_ei.indexOf(_oi)===0))continue;if(String(o.sym||'').toUpperCase()!==String(e.sym||'').toUpperCase()||(o.side==='short')!==(e.side==='short'))continue;var _oT=((o.status==='win'||o.status==='loss')&&+o.closeTs>0)?+o.closeTs:eligOpenTs(o);if(Math.abs(_oT-_eT)<=600000)twins++;}
     if(twins)add(false,MT('eligR6no','Copies count once: {n} identical position(s) (same coin, same direction) opened together count as one trade').replace('{n}',twins));
-    else add(true,MT('eligR6ok','Not a copy of another position'));
+    else add(true,MT('eligR6ok',__esT_home("notACopyOf",'Not a copy of another position')));
     return {ok:ok,rows:rows};}
   var ELIG_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
-  function eligBadge(e){var r=tradeElig(e);var t=r.ok?MT('eligYes','Counts on the season leaderboards'):MT('eligNo','Not counted on the season leaderboards. Tap to see which rules it misses');return '<button type="button" class="pp-elig '+(r.ok?'ok':'no')+'" data-act="elig" data-id="'+e.id+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+ELIG_SVG+'</button>';}
-  function eligPanel(e){var r=tradeElig(e);return '<div class="pp-eligh '+(r.ok?'ok':'no')+'">'+esc(r.ok?MT('eligYes','Counts on the season leaderboards'):MT('eligNoH','Not counted on the season leaderboards'))+'</div>'+r.rows.map(function(x){return '<div class="pp-eligr '+(x.info?'info':(x.met?'met':'unmet'))+'"><i></i><span>'+esc(x.text)+'</span></div>';}).join('')+'<div class="pp-eligf"><a href="/rewards/">'+esc(MT('eligRules','Leaderboard rules'))+'</a></div>';}
+  function eligBadge(e){var r=tradeElig(e);var t=r.ok?MT('eligYes',__esT_home("countsOnTheSeason",'Counts on the season leaderboards')):MT('eligNo',__esT_home("notCountedOnThe",'Not counted on the season leaderboards. Tap to see which rules it misses'));return '<button type="button" class="pp-elig '+(r.ok?'ok':'no')+'" data-act="elig" data-id="'+e.id+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+ELIG_SVG+'</button>';}
+  function eligPanel(e){var r=tradeElig(e);return '<div class="pp-eligh '+(r.ok?'ok':'no')+'">'+esc(r.ok?MT('eligYes',__esT_home("countsOnTheSeason",'Counts on the season leaderboards')):MT('eligNoH',__esT_home("notCountedOnThe2",'Not counted on the season leaderboards')))+'</div>'+r.rows.map(function(x){return '<div class="pp-eligr '+(x.info?'info':(x.met?'met':'unmet'))+'"><i></i><span>'+esc(x.text)+'</span></div>';}).join('')+'<div class="pp-eligf"><a href="/rewards/">'+esc(MT('eligRules','Leaderboard rules'))+'</a></div>';}
   function eligClose(){if(!_eligPop)return;var p=_eligPop;_eligPop=null;try{p.el.parentNode.removeChild(p.el);}catch(_){}document.removeEventListener('click',p.onDoc,true);document.removeEventListener('keydown',p.onKey,true);window.removeEventListener('scroll',eligClose,true);window.removeEventListener('resize',eligClose);}
   function eligToggle(btn,e){if(_eligPop&&_eligPop.btn===btn){eligClose();return;}eligClose();var el=document.createElement('div');el.className='pp-eligp';el.setAttribute('role','dialog');el.innerHTML=eligPanel(e);document.body.appendChild(el);
     var vw=window.innerWidth,vh=window.innerHeight,w=Math.min(340,vw-24);el.style.width=w+'px';var r=btn.getBoundingClientRect(),h=el.offsetHeight;var left=Math.max(12,Math.min(r.left-8,vw-w-12)),top=r.bottom+8;if(top+h>vh-12)top=Math.max(12,r.top-8-h);el.style.left=left+'px';el.style.top=top+'px';
     var onDoc=function(ev){if(el.contains(ev.target)||btn.contains(ev.target))return;eligClose();},onKey=function(ev){if(ev.key==='Escape')eligClose();};
     _eligPop={el:el,btn:btn,onDoc:onDoc,onKey:onKey};setTimeout(function(){if(_eligPop&&_eligPop.el===el){document.addEventListener('click',onDoc,true);document.addEventListener('keydown',onKey,true);window.addEventListener('scroll',eligClose,true);window.addEventListener('resize',eligClose);}},0);}
-  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat','Share to chat')+'" aria-label="'+MT('jShareChat','Share to chat')+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
+  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat',__esT_home("shareToChat",'Share to chat'))+'" aria-label="'+MT('jShareChat',__esT_home("shareToChat",'Share to chat'))+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -1271,13 +1277,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function feeHas(e){return (e.status==='win'||e.status==='loss')&&((+e.feeRate>0)||(+e.fund));}
   function feeLbl(e){var b=feeBrk(e);return (b.total<0?'+':'\u2212')+feeF(b.total);}
   function feeBdHtml(e){var b=feeBrk(e);var _fp=((+e.feeRate>0?+e.feeRate:0.00055)*100).toFixed(4).replace(/0+$/,'').replace(/\.$/,''); /* the label prints the rate this trade was actually charged (forex 0.008%, stocks 0.02%, venue rates) \u2014 it was a hardcoded "0.055%" next to a number computed at another rate (2026-09-12). MIRROR in mp-trade.js */
-    return '<div class="pp-feebd" data-fbwrap><div class="fb-h">'+MT('jFeeBd','What this trade cost')+'<span class="fb-x" data-fbx role="button" aria-label="Close">\u2715</span></div>'
-      +'<div class="fb-r"><span>'+MT('jFeeOpen','Open fee')+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fo)+'</b></div>'
-      +'<div class="fb-r"><span>'+MT('jFeeClose','Close fee')+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fc)+'</b></div>'
+    return '<div class="pp-feebd" data-fbwrap><div class="fb-h">'+MT('jFeeBd',__esT_home("whatThisTradeCost",'What this trade cost'))+'<span class="fb-x" data-fbx role="button" aria-label="Close">\u2715</span></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeOpen',__esT_home("openFee",'Open fee'))+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fo)+'</b></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeClose',__esT_home("closeFee",'Close fee'))+' <i>('+_fp+'%)</i></span><b>\u2212'+feeF(b.fc)+'</b></div>'
       +(b.fu?'<div class="fb-r"><span>'+MT('jFeeFund','Funding')+' <i>(8h)</i></span><b'+(b.fu<0?' class="fb-rec"':'')+'>'+(b.fu<0?'+'+feeF(b.fu)+' '+MT('jFeeRec','received'):'\u2212'+feeF(b.fu))+'</b></div>':'')
-      +((b.slip!=null&&b.slip>0)?'<div class="fb-r fb-dim"><span>'+MT('jFeeSlip','Entry slippage')+'</span><b>\u2248 \u2212'+feeF(b.slip)+' <i>'+MT('jFeeSlipN','(in the fill price)')+'</i></b></div>':'')
+      +((b.slip!=null&&b.slip>0)?'<div class="fb-r fb-dim"><span>'+MT('jFeeSlip','Entry slippage')+'</span><b>\u2248 \u2212'+feeF(b.slip)+' <i>'+MT('jFeeSlipN',__esT_home("inTheFillPrice",'(in the fill price)'))+'</i></b></div>':'')
       +'<div class="fb-t"><span>'+MT('jFeeTot','Total costs')+'</span><b'+(b.total<0?' class="fb-rec"':'')+'>'+(b.total<0?'+':'\u2212')+feeF(b.total)+'</b></div>'
-      +'<div class="fb-n">'+MT('jFeeNote','Already settled into this P&L \u2014 the same costs a real exchange charges.')+'</div>'
+      +'<div class="fb-n">'+MT('jFeeNote',__esT_home("alreadySettledIntoThis",'Already settled into this P&L \u2014 the same costs a real exchange charges.'))+'</div>'
       /* WHERE THAT MONEY WOULD NOT HAVE GONE (owner 2026-09-10). The panel already itemises what the round trip
          cost; this says where the same trade is cheaper and links straight to the pair. Only for readers MEXC can
          actually onboard - mpEx.blocked() keeps it away from the US, the same rule the partner cards follow. The
@@ -1332,13 +1338,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       if(!(_legs>0))return '';
       var _rp=(_rt*100).toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
       return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
-        +'<b>'+MT('jFeeMxF','You are trading at MEXC rates \u2014 this round trip cost')+' '+feeF(_legs)+' '+MT('jFeeMxG','in fees, at')+' '+_rp+'% '+MT('jFeeMxH','per side')+'</b>'
-        +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
+        +'<b>'+MT('jFeeMxF',__esT_home("youAreTradingAt",'You are trading at MEXC rates \u2014 this round trip cost'))+' '+feeF(_legs)+' '+MT('jFeeMxG',__esT_home("inFeesAt",'in fees, at'))+' '+_rp+'% '+MT('jFeeMxH','per side')+'</b>'
+        +'<span>'+MT('jFeeMxD',__esT_home("mexc0Maker0",'MEXC: 0% maker, ~0.02% taker on futures \u2014 open'))+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
     }
     var _mx=_legs*(_mxT/_rt),_save=_legs-_mx; if(!(_legs>0)||!(_save>0))return '';
     return '<a class="fb-mx" data-mpex="MEXC" target="_blank" rel="sponsored noopener noreferrer" href="'+window.mpEx.url('MEXC',sym)+'">'
-      +'<b>'+MT('jFeeMxA','On MEXC this round trip would cost about')+' '+feeF(_mx)+' '+MT('jFeeMxB','in fees, not the')+' '+feeF(_legs)+' '+MT('jFeeMxC','you paid \u2014 a difference of')+' '+feeF(_save)+'</b>'
-      +'<span>'+MT('jFeeMxD','MEXC: 0% maker, ~0.02% taker on futures \u2014 open')+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
+      +'<b>'+MT('jFeeMxA',__esT_home("onMexcThisRound",'On MEXC this round trip would cost about'))+' '+feeF(_mx)+' '+MT('jFeeMxB',__esT_home("inFeesNotThe",'in fees, not the'))+' '+feeF(_legs)+' '+MT('jFeeMxC',__esT_home("youPaidU2014A",'you paid \u2014 a difference of'))+' '+feeF(_save)+'</b>'
+      +'<span>'+MT('jFeeMxD',__esT_home("mexc0Maker0",'MEXC: 0% maker, ~0.02% taker on futures \u2014 open'))+' '+sym+' '+MT('jFeeMxE','there')+' \u2192</span></a>';
   }catch(_){return '';} }
   if(!window._mpFeeWired){window._mpFeeWired=1;
     document.addEventListener('click',function(ev){
@@ -1368,7 +1374,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'-')+'</b></div>'
         +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'-')+'</b></div>'
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
-        +(feeHas(e)?'<div><span>'+MT('jFees','Fees')+'</span><b class="pp-fee" role="button" tabindex="0" title="'+MT('jFeeTip','Tap for the fee breakdown')+'">'+feeLbl(e)+'</b></div>':'')
+        +(feeHas(e)?'<div><span>'+MT('jFees','Fees')+'</span><b class="pp-fee" role="button" tabindex="0" title="'+MT('jFeeTip',__esT_home("tapForTheFee",'Tap for the fee breakdown'))+'">'+feeLbl(e)+'</b></div>':'')
       +'</div>'
       +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
@@ -1400,7 +1406,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     x.fillStyle=prem?'rgba(240,195,90,0.05)':'rgba(255,255,255,0.04)';rr(x,70,800,W-140,168,20);x.fill();if(prem){x.strokeStyle='rgba(240,195,90,0.25)';x.lineWidth=1.5;rr(x,70,800,W-140,168,20);x.stroke();}
     function kv(lbl,val,cx){x.fillStyle=prem?'#9a865a':'#6b7682';x.font='400 29px Arial';x.fillText(lbl,cx,856);x.fillStyle='#fff';x.font='700 44px Arial';x.fillText(val,cx,914);}
     kv(MT('jEntry','Entry'),fp(entry),110);kv(closed?MT('jExit','Exit'):MT('jMark','Mark'),fp(markpx),470);kv(MT('jStatus','Status'),closed?(win?'WIN':'LOSS'):'OPEN',830);
-    x.fillStyle=prem?'#8a7a52':'#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText((prem?'Premium member · ':'')+MT('jPaperDisc','Paper trade · not financial advice'),W/2,1020);x.textAlign='left';
+    x.fillStyle=prem?'#8a7a52':'#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText((prem?__esT_home("premiumMember",'Premium member · '):'')+MT('jPaperDisc',__esT_home("paperTradeNotFinancial",'Paper trade · not financial advice')),W/2,1020);x.textAlign='left';
     return c;
   }
   /* build the safe, self-contained snapshot posted to /api/tshare so a shared ticket resolves for ANYONE in chat */
@@ -1415,11 +1421,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     fetch('/api/tshare',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ticket:tShareSnap(e)})})
       .then(function(r){return r.json();})
       .then(function(d){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}
-        if(d&&d.id){try{closeJr();}catch(_){}if(window.mpChatSay)window.mpChatSay('trade:'+d.id);toast(MT('jSharedChat','Shared to chat'));}
+        if(d&&d.id){try{closeJr();}catch(_){}if(window.mpChatSay)window.mpChatSay('trade:'+d.id);toast(MT('jSharedChat',__esT_home("sharedToChat",'Shared to chat')));}
         else if(d&&d.error==='login_required'){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}}
-        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit','Too many shares right now - try again later.'));}
-        else{toast(MT('jShareFail','Could not share the ticket.'));}})
-      .catch(function(){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}toast(MT('jShareFail','Could not share the ticket.'));});
+        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit',__esT_home("tooManySharesRight",'Too many shares right now - try again later.')));}
+        else{toast(MT('jShareFail',__esT_home("couldNotShareThe",'Could not share the ticket.')));}})
+      .catch(function(){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}toast(MT('jShareFail',__esT_home("couldNotShareThe",'Could not share the ticket.')));});
   }
   function shareTicket(e){
     try{window.__mpTrack&&window.__mpTrack('share',(e.sym||'')+' ticket');}catch(_){}
@@ -1435,13 +1441,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
   function copyTicket(e){
     var url='https://marginpad.io/paper-trade';
-    if(!navigator.clipboard){toast(MT('jCopyFail','Copy not supported'));return;}
-    if(!window.ClipboardItem){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});return;}
+    if(!navigator.clipboard){toast(MT('jCopyFail',__esT_home("copyNotSupported",'Copy not supported')));return;}
+    if(!window.ClipboardItem){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied',__esT_home("linkCopied",'Link copied')));},function(){});return;}
     try{
       var blobP=new Promise(function(res){var c=buildTicket(e);c.toBlob(function(b){res(b);},'image/png');});
       var item=new ClipboardItem({'image/png':blobP,'text/plain':new Blob([url],{type:'text/plain'})});
-      navigator.clipboard.write([item]).then(function(){toast(MT('jImgLinkCopied','Image + link copied'));},function(){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});});
-    }catch(_){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});}
+      navigator.clipboard.write([item]).then(function(){toast(MT('jImgLinkCopied',__esT_home("imageLinkCopied",'Image + link copied')));},function(){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied',__esT_home("linkCopied",'Link copied')));},function(){});});
+    }catch(_){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied',__esT_home("linkCopied",'Link copied')));},function(){});}
   }
   function balCfg(){return (window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false,start:10000,since:0,sid:''};}
   function balTags(){try{return JSON.parse(localStorage.getItem('mp_bal_tags')||'{}')||{};}catch(e){return {};}} // id -> sid map, survives ANY server journal sync (the e.bal field can be stripped when the server rewrites the journal for signed-in/premium users)
@@ -1453,7 +1459,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-baltgl]');if(!t)return;e.preventDefault();e.stopPropagation();var c=(window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false};if(!c.on&&window._mpPrem!==true){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Balance Mode');return;}if(window.mpBal&&window.mpBal.setCfg)window.mpBal.setCfg(!c.on);try{if(window.mpBuzz)window.mpBuzz([12]);}catch(_){}}); // My Trades Balance-Mode on/off toggle
   function balHasTagged(){var bm=balCfg();if(!bm.on||!bm.sid)return false;var t=balTags(),d=load();for(var i=0;i<d.length;i++)if(balMine(d[i],bm.sid,t))return true;return false;} // has this Balance Mode session actually opened any trade yet? (load() = this IIFE's journal loader; jload() lives in OTHER IIFEs and was undefined here → threw → dead open button whenever Balance Mode was ON)
   function balStrip(open,closed,unreal){var bm=balCfg();var prem=(window._mpPrem===true)||bm.on;if(!prem)return '';// show the card (with the on/off toggle) to premium members; hidden for everyone else
-    var _tgl='<button type="button" class="bal-tgl'+(bm.on?' on':'')+'" data-baltgl="1" title="Balance Mode '+(bm.on?'ON':'OFF')+'" aria-label="Toggle Balance Mode"><span class="bal-tgl-k"></span></button>';
+    var _tgl='<button type="button" class="bal-tgl'+(bm.on?' on':'')+'" data-baltgl="1" title="Balance Mode '+(bm.on?'ON':'OFF')+__esT_home("ariaLabelToggleBalance",'" aria-label="Toggle Balance Mode"><span class="bal-tgl-k"></span></button>');
     if(!bm.on)return '<div class="jr-bal jr-bal-gold jr-bal-off"><div class="jrb-row" style="display:flex;align-items:center;gap:9px"><span style="font:700 9px \'Space Mono\',monospace;letter-spacing:.14em;color:#f0c35a">BALANCE MODE</span><span style="font-size:10.5px;color:#8a7a52;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">trade a real portfolio</span>'+_tgl+'</div></div>';
     var _t=balTags(),realized=balRealized(closed,bm.sid,_t),openMargin=balOpenMargin(open,bm.sid,_t),myUnreal=open.reduce(function(s,e){if(!balMine(e,bm.sid,_t))return s;var mm=metrics(e);return s+(mm.pnl||0);},0),equity=bm.start+realized+myUnreal,pl=equity-bm.start,plc=pl>=0?'#34d99a':'#ff7b72';// only Balance-Mode-tagged trades count toward realized/margin/equity
     function mK(n){n=+n||0;var g=n<0?'-':'',a=Math.abs(n);if(a>=1e12)return g+'$'+(a/1e12).toFixed(2).replace(/\.?0+$/,'')+'T';if(a>=1e9)return g+'$'+(a/1e9).toFixed(2).replace(/\.?0+$/,'')+'B';if(a>=1e6)return g+'$'+(a/1e6).toFixed(2).replace(/\.?0+$/,'')+'M';if(a>=1e4)return g+'$'+(a/1e3).toFixed(1).replace(/\.0$/,'')+'K';return g+'$'+a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}// K/M/B/T so nothing overflows
@@ -1462,7 +1468,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="jrb-row" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px"><span style="display:inline-flex;align-items:center;gap:8px;font:700 9px \'Space Mono\',monospace;letter-spacing:.14em;color:#f0c35a">BALANCE MODE'+_tgl+'</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="font:11px \'Space Mono\',monospace;color:#5c6b84">all-time</span><span style="font:700 11px \'Space Mono\',monospace;color:'+plc+';background:'+(pl>=0?'rgba(52,217,154,.12)':'rgba(255,123,114,.13)')+';border-radius:20px;padding:2px 9px;white-space:nowrap">'+(pl>=0?'+':'')+(bm.start>0?(pl/bm.start*100).toFixed(1):'0')+'%</span></span></div>'
       +'<div class="jrb-row" style="font:800 26px \'Space Mono\',monospace;color:#f4cf7a;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;text-shadow:0 0 18px rgba(240,195,90,.28)">'+mK(equity)+'</div>'
       +'<div class="jrb-row" style="font:11px \'Space Mono\',monospace;color:#8a7a52;margin:0 0 10px">from '+mK(bm.start)+'</div>'
-      +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell('In trades',mK(openMargin))+cell('Available',mK(bm.start+realized-openMargin))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
+      +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell(__esT_home("inTrades",'In trades'),mK(openMargin))+cell('Available',mK(bm.start+realized-openMargin))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
   /* A resting limit order is not a position, so it gets its own tab rather than a fake row among open trades:
      nothing here has a P&L, a liquidation price or a close button - only a price it is waiting for and a Cancel. */
   function orderCard(o){
@@ -1470,15 +1476,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var away=(lp>0)?((+o.px-lp)/lp*100):null;
     return '<div class="pp pp-ord" data-oid="'+esc(o.id)+'">'
       +'<div class="pp-h"><span class="pp-sym">'+esc(o.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-ordtag">'+MT('otLimit','Limit')+'</span><span class="pp-live">'+(o.lev||1)+'×'+(lp>0?' · '+fp(lp):'')+'</span></div>'
-      +'<div class="pp-pnl"><span class="big">'+fp(+o.px)+'</span><span class="roe">'+(away==null?MT('otWaiting','waiting'):((away>=0?'+':'')+away.toFixed(2)+'% '+MT('otFromMkt','from market')))+'</span></div>'
+      +'<div class="pp-pnl"><span class="big">'+fp(+o.px)+'</span><span class="roe">'+(away==null?MT('otWaiting','waiting'):((away>=0?'+':'')+away.toFixed(2)+'% '+MT('otFromMkt',__esT_home("fromMarket",'from market'))))+'</span></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+money(+o.margin)+'</b></div>'
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+money((+o.margin||0)*((+o.lev>0)?+o.lev:1))+'</b></div>'
         +'<div><span>SL</span><b>'+(o.sl!=null?fp(+o.sl):'-')+'</b></div>'
         +'<div><span>TP</span><b>'+(o.tp!=null?fp(+o.tp):'-')+'</b></div>'
       +'</div>'
-      +'<div class="pp-foot">'+dur(Date.now()-(+o.ts||Date.now()))+' '+MT('otWaiting','waiting')+(o.local?' · '+MT('otLocalNote','this device only'):'')+'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="ordchart" data-oid="'+esc(o.id)+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel','Cancel order')+'</button></div>'
+      +'<div class="pp-foot">'+dur(Date.now()-(+o.ts||Date.now()))+' '+MT('otWaiting','waiting')+(o.local?' · '+MT('otLocalNote',__esT_home("thisDeviceOnly",'this device only')):'')+'</div>'
+      +'<div class="pp-btns"><button class="ch" data-act="ordchart" data-oid="'+esc(o.id)+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel',__esT_home("cancelOrder",'Cancel order'))+'</button></div>'
       +'<div class="pp-times">'+MT('otPlacedAt','Placed')+' '+tsf(+o.ts)+'</div></div>';}
   function ordersNow(){try{return (window.mpOrders&&window.mpOrders.list())||[];}catch(e){return [];}}
   function render(){
@@ -1496,7 +1502,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     function stat(v,l,col){return '<div class="jr-stat"><div class="v"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
     statsEl.innerHTML=stat(open.length,MT('jOpenN','Open'))
       +stat((unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>=0?'#34d99a':'#ff7b72')
-      +stat(wr==null?'-':wr+'%',MT('jWinRate','Win rate'))
+      +stat(wr==null?'-':wr+'%',MT('jWinRate',__esT_home("winRate",'Win rate')))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var ords=ordersNow();
     var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
@@ -1506,10 +1512,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
        (owner 2026-09-09: "put the ads back on the winning tickets"). MIRROR in mp-trade.js. */
     _glIdx=-1;
     if(jrTab!=='orders'&&jrTab!=='open')for(var _gi=0;_gi<_vis.length;_gi++){if(_vis[_gi]&&(+_vis[_gi].pnl)>0){_glIdx=_gi;break;}}
-    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone','No orders waiting - place one from Paper Trade with the Limit tab.'):(jrTab==='open'?MT('jNoOpen','No open positions - open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.')))+'</span></div>';
-    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote','These orders live on this device and fill only while the page is open. Sign in and they rest on the server - they fill even when you are away.')+'</div>';
-    if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore','Show more')+' ('+_rest+')</button>';
-    if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
+    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone',__esT_home("noOrdersWaitingPlace",'No orders waiting - place one from Paper Trade with the Limit tab.')):(jrTab==='open'?MT('jNoOpen',__esT_home("noOpenPositionsOpen",'No open positions - open one from Paper Trade.')):MT('jNoClosed',__esT_home("noClosedTradesYet",'No closed trades yet.'))))+'</span></div>';
+    if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote',__esT_home("theseOrdersLiveOn",'These orders live on this device and fill only while the page is open. Sign in and they rest on the server - they fill even when you are away.'))+'</div>';
+    if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore',__esT_home("showMore",'Show more'))+' ('+_rest+')</button>';
+    if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch',__esT_home("newSeasonStatsRestarted",'New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.'))+'</div>';
     listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
@@ -1520,24 +1526,24 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
     var _say=function(m){if(window.mpLimitToast)window.mpLimitToast(m);}; // honest micro-feedback: never swallow a click silently (UX audit: "enabled button that does nothing")
-    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say('Max trade size is $100,000 - the amount was capped.');} // hard cap: max $100k per trade (owner rule)
-    if(!isFinite(amt)||amt<=0){_say('Enter an amount (USD) above $0 to open a trade.');return;}
-    if(!isFinite(entry)||entry<=0){_say('Waiting for the live price - try again in a second.');return;}
-    var _bav=balAvail(); if(_bav!=null&&balHasTagged()&&_bav>0.5&&amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say('Balance Mode: capped to your available $'+amt.toLocaleString()+'.');} // Balance Mode only CAPS the size to what's left - it NEVER blocks the open button. A used-up balance just drives equity negative (shown red on the strip), like a real blow-up. Fixes the "nothing happens" dead-button for good.
+    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say(__esT_home("maxTradeSizeIs",'Max trade size is $100,000 - the amount was capped.'));} // hard cap: max $100k per trade (owner rule)
+    if(!isFinite(amt)||amt<=0){_say(__esT_home("enterAnAmountUsd",'Enter an amount (USD) above $0 to open a trade.'));return;}
+    if(!isFinite(entry)||entry<=0){_say(__esT_home("waitingForTheLive",'Waiting for the live price - try again in a second.'));return;}
+    var _bav=balAvail(); if(_bav!=null&&balHasTagged()&&_bav>0.5&&amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say(__esT_home("balanceModeCappedTo",'Balance Mode: capped to your available $')+amt.toLocaleString()+'.');} // Balance Mode only CAPS the size to what's left - it NEVER blocks the open button. A used-up balance just drives equity negative (shown red on the strip), like a real blow-up. Fixes the "nothing happens" dead-button for good.
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     // the live price MUST be a fresh reading for THIS exact symbol - a stale mpPlanLive, or one still holding the
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
-    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' - try again in a second.');add._busy=false;return;}
+    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say(__esT_home("waitingForTheLive2",'Waiting for the live price for ')+(sym||__esT_home("thisCoin",'this coin'))+__esT_home("tryAgainInA",' - try again in a second.'));add._busy=false;return;}
     entry=+pl.price;
-    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
+    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+__esT_home("marketIsClosedRight2",' market is closed right now.')));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
     /* LIMIT MODE: everything below (size, notional, liq, the SL/TP side checks) is computed against the price this
        ticket will actually be entered at - so `entry` becomes the limit price here, and the marketable case is
        refused rather than quietly turned into a market order. */
     var _isLim=(window.mpPlanType==='limit'), _limPx=+window.mpPlanLimit, _mktPx=entry;
     if(_isLim){
-      if(!isFinite(_limPx)||_limPx<=0){_say('Enter a limit price (the price you want to be filled at).');add._busy=false;return;}
-      if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say('That price is more than 20x away from the market - check the decimal point.');add._busy=false;return;}
+      if(!isFinite(_limPx)||_limPx<=0){_say(__esT_home("enterALimitPrice",'Enter a limit price (the price you want to be filled at).'));add._busy=false;return;}
+      if(_limPx>_mktPx*20||_limPx<_mktPx/20){_say(__esT_home("thatPriceIsMore",'That price is more than 20x away from the market - check the decimal point.'));add._busy=false;return;}
       entry=_limPx; // the level may sit either side of the market - below it is a classic limit, above it a breakout entry
     }
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
@@ -1554,17 +1560,17 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _bad=[];
     if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry)))_bad.push('stop-loss');
     if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))_bad.push('take-profit');
-    if(_bad.length){_say('Your '+_bad.join(' and ')+' is on the wrong side of the entry price - fix it (or clear the field) to open the trade.');try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
+    if(_bad.length){_say('Your '+_bad.join(' and ')+__esT_home("isOnTheWrong",' is on the wrong side of the entry price - fix it (or clear the field) to open the trade.'));try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
     if(_isLim){ // rest the order instead of opening: mpOrders owns it from here (server-side when signed in)
-      if(!window.mpOrders){_say('Limit orders are still loading - try again in a second.');add._busy=false;return;}
+      if(!window.mpOrders){_say(__esT_home("limitOrdersAreStill",'Limit orders are still loading - try again in a second.'));add._busy=false;return;}
       var _btnL=document.getElementById('planSave'),_spL=_btnL&&_btnL.querySelector('span');
       window.mpOrders.add({sym:sym,side:side,px:entry,lev:L,margin:amt,sl:stop,tp:(isFinite(tp)?tp:null)},function(){
-        if(_btnL&&_spL){var _o=_spL.textContent;_btnL.classList.add('saved','cooldown');_spL.textContent=MT('otPlaced','Order placed ✓');setTimeout(function(){_btnL.classList.remove('cooldown');},1000);setTimeout(function(){_spL.textContent=_o;_btnL.classList.remove('saved');},1400);}
+        if(_btnL&&_spL){var _o=_spL.textContent;_btnL.classList.add('saved','cooldown');_spL.textContent=MT('otPlaced',__esT_home("orderPlaced",'Order placed ✓'));setTimeout(function(){_btnL.classList.remove('cooldown');},1000);setTimeout(function(){_spL.textContent=_o;_btnL.classList.remove('saved');},1400);}
         if(window.mpBuzz)window.mpBuzz([12]);
         try{if(window.__mpTrack)window.__mpTrack('limitorder',sym+' '+side+' @'+entry);}catch(e){}
         try{if(window.mpDrawLines)window.mpDrawLines();}catch(e){} // drawLines lives in the chart IIFE - reach it through the global, not a bare name
@@ -1587,7 +1593,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(window.mpHaptic)window.mpHaptic('ok'); // the position is open - the one confirmation worth feeling
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
-    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved','cooldown');sp.textContent=MT('jOpened','Position opened \u2713');setTimeout(function(){btn.classList.remove('cooldown');},1000);setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1120);}
+    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved','cooldown');sp.textContent=MT('jOpened',__esT_home("positionOpenedU2713",'Position opened \u2713'));setTimeout(function(){btn.classList.remove('cooldown');},1000);setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1120);}
     try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
       try{drawLines();}catch(e){} // async server path finishes after add() returns - draw lines here too
     };
@@ -1600,7 +1606,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||'This market is closed right now.');return;} _finishOpen(_tLocal);});
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;} _finishOpen(_tLocal);});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
@@ -1622,10 +1628,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();closeJr();if(window.matchMedia&&window.matchMedia('(max-width:880px)').matches){if(window.mpOpenMobileCharts){window.mpOpenMobileCharts(_cs);}else{try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}location.href='/charts';}return;}try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}    if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');closeJr();if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;}
-    if(act==='del'){ if(!confirm(MT('jDelConfirm','Are you sure you want to delete this trade?')))return; data.splice(i,1); }
+    if(act==='del'){ if(!confirm(MT('jDelConfirm',__esT_home("areYouSureYou",'Are you sure you want to delete this trade?'))))return; data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;} var m=metrics(e); var _pN=(m.pnlNet!=null?Math.round(m.pnlNet*100)/100:null); e.status=(_pN!=null?(_pN>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(_pN!=null?_pN:0); if(window.mpBuzz)window.mpBuzz([22]); try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){} }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
-    else if(act==='edit'){ var ns=prompt(MT('jNewSL','New stop-loss price:'),e.stop); if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;} var nt=prompt(MT('jNewTP','New take-profit (blank = none):'),e.tp!=null?e.tp:''); if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;} }
+    else if(act==='edit'){ var ns=prompt(MT('jNewSL',__esT_home("newStopLossPrice",'New stop-loss price:')),e.stop); if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;} var nt=prompt(MT('jNewTP',__esT_home("newTakeProfitBlank",'New take-profit (blank = none):')),e.tp!=null?e.tp:''); if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;} }
     store(data); render(); if(window.mpDrawLines)window.mpDrawLines();
   });
   // look up the drawer lazily so it works no matter when this script ran relative to the markup
@@ -1873,27 +1879,27 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // time on page - bucketed, sent once when the tab is hidden/closed
   (function(){var t0=Date.now(),sent=false;function leave(){if(sent)return;sent=true;var x=Math.round((Date.now()-t0)/1000);send('time',x<10?'0-10s':x<30?'10-30s':x<60?'30-60s':x<180?'1-3m':x<600?'3-10m':'10m+');}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')leave();});window.addEventListener('pagehide',leave);})();
   // human-readable label for whatever was clicked, so the stats dashboard reads clearly
-  var ID2NAME={planSave:'Open position (Long/Short)',jrOpen:'My Trades (header)',jrClose:'Close My Trades',jrBackdrop:'Close My Trades (tap-away)',planSym:'Symbol picker',planLev:'Leverage input',planAmt:'Amount input',ptSig:'Signals toggle',planAdvChk:'Advanced toggle',planSlOpt:'Stop-loss input',planTpOpt:'Take-profit input',ptMtCount:'My Trades (in terminal)',chatOpen:'Open chat',chatClose:'Close chat'};
-  var ACT2NAME={close:'Close position',del:'Delete trade',edit:'Edit SL/TP',reopen:'Reopen trade',share:'Share ticket',copy:'Copy ticket',win:'Mark win',loss:'Mark loss'};
+  var ID2NAME={planSave:__esT_home("openPositionLongShort",'Open position (Long/Short)'),jrOpen:__esT_home("myTradesHeader",'My Trades (header)'),jrClose:__esT_home("closeMyTrades",'Close My Trades'),jrBackdrop:__esT_home("closeMyTradesTap",'Close My Trades (tap-away)'),planSym:'Symbol picker',planLev:__esT_home("leverageInput",'Leverage input'),planAmt:'Amount input',ptSig:'Signals toggle',planAdvChk:'Advanced toggle',planSlOpt:__esT_home("stopLossInput",'Stop-loss input'),planTpOpt:__esT_home("takeProfitInput",'Take-profit input'),ptMtCount:__esT_home("myTradesInTerminal",'My Trades (in terminal)'),chatOpen:__esT_home("openChat",'Open chat'),chatClose:__esT_home("closeChat",'Close chat')};
+  var ACT2NAME={close:__esT_home("closePosition",'Close position'),del:__esT_home("deleteTrade",'Delete trade'),edit:'Edit SL/TP',reopen:__esT_home("reopenTrade",'Reopen trade'),share:'Share ticket',copy:__esT_home("copyTicket",'Copy ticket'),win:__esT_home("markWin",'Mark win'),loss:__esT_home("markLoss",'Mark loss')};
   function describe(t){
     if(!t||!t.closest) return 'Empty space / background';
-    if(t.closest('#ptChart')) return 'Price chart';
+    if(t.closest('#ptChart')) return __esT_home("priceChart",'Price chart');
     if(t.closest('.mobnav')) return 'Mobile nav bar';
     var m=t.closest('a,button,input,select,label,[data-mytrades],[data-act],.prod,.pp-ic,.ptt-sig')||t;
     if(m.id&&ID2NAME[m.id]) return ID2NAME[m.id];
     if(m.getAttribute){
       if(m.getAttribute('data-mytrades')!=null) return 'My Trades';
-      var act=m.getAttribute('data-act'); if(act) return ACT2NAME[act]||('Trade action: '+act);
+      var act=m.getAttribute('data-act'); if(act) return ACT2NAME[act]||(__esT_home("tradeAction",'Trade action: ')+act);
     }
     if(m.classList){
       if(m.classList.contains('prod')){var b=m.querySelector('.pt b'); return 'Product card: '+((b&&b.textContent.trim().slice(0,24))||'?');}
-      if(m.classList.contains('pp-ic')) return m.getAttribute&&m.getAttribute('data-act')==='copy'?'Copy ticket':'Share ticket';
+      if(m.classList.contains('pp-ic')) return m.getAttribute&&m.getAttribute('data-act')==='copy'?__esT_home("copyTicket",'Copy ticket'):'Share ticket';
       if(m.classList.contains('ptt-sig')) return 'Signals toggle';
       if(t.closest('.ptt-tf')) return 'Chart timeframe';
       if(t.closest('.pt2-side')) return 'Long / Short toggle';
     }
     var tag=m.tagName?m.tagName.toLowerCase():'';
-    if(tag==='canvas') return 'Price chart';
+    if(tag==='canvas') return __esT_home("priceChart",'Price chart');
     if(/^(body|html|section|div|main|header|footer|span|em|i|small|p|h1|h2|h3|ul|li|nav|svg|path|img|aside)$/.test(tag)) return 'Empty space / background';
     var txt=(m.textContent||'').trim().replace(/\s+/g,' ').slice(0,26);
     if(txt&&(tag==='a'||tag==='button'||tag==='label')) return (tag==='a'?'Link: ':'Button: ')+txt;
@@ -1946,7 +1952,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var lbl=rm.querySelector('.rlabel'), val=rm.querySelector('.rvalue');
       var lt=lbl?lbl.textContent.trim():'', vt=val?val.textContent.trim():'';
       if(!vt||vt==='-') return;
-      var msg=''+lt+': '+vt+' - free crypto futures calculators at marginpad.io';
+      var msg=''+lt+': '+vt+__esT_home("freeCryptoFuturesCalculato",' - free crypto futures calculators at marginpad.io');
       var url='https://marginpad.io'+panelState(rm.closest('.panel'));
       send('share', lt);
       if(navigator.share){ navigator.share({title:'MarginPad', text:msg, url:url}).catch(function(){}); }
@@ -1960,7 +1966,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var LB='/api/reward/lb';
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){return [];}}
   function getAddr(){try{var a=localStorage.getItem('mp_reward_addr')||'';return /^0x[0-9a-fA-F]{40}$/.test(a)?a:'';}catch(e){return '';}}
-  function render(){var list=document.getElementById('lbList');if(!list)return;fetch(LB).then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[];list.innerHTML=t.length?t.slice(0,6).map(function(x){return '<div class="lbw-row"><span class="lbw-rank">'+x.rank+'</span><span class="lbw-who">'+x.who+'</span><span class="lbw-roe">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</span></div>';}).join(''):'<div class="lbw-empty">No trades yet this season - be the first.</div>';}).catch(function(){});}
+  function render(){var list=document.getElementById('lbList');if(!list)return;fetch(LB).then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[];list.innerHTML=t.length?t.slice(0,6).map(function(x){return '<div class="lbw-row"><span class="lbw-rank">'+x.rank+'</span><span class="lbw-who">'+x.who+'</span><span class="lbw-roe">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</span></div>';}).join(''):__esT_home("noTradesYetThis",'<div class="lbw-empty">No trades yet this season - be the first.</div>');}).catch(function(){});}
   function sync(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return;/* Trade League is account-based: signed in = eligible, no wallet needed (server keys by the account) */var sub={};try{sub=JSON.parse(localStorage.getItem('mp_lb_sub')||'{}');}catch(e){}var d=jload(),changed=false;d.forEach(function(e){if((e.status==='win'||e.status==='loss')&&e.id&&!sub[e.id]){var margin=(+e.margin>0)?+e.margin:0,pnl=+e.pnl;if(margin>0&&isFinite(pnl)){var roe=pnl/margin*100;sub[e.id]=1;changed=true;try{fetch(LB,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:me.username||'',symbol:e.sym||'',side:e.side||'long',roe:roe,pnl:pnl})});}catch(_){}}}});if(changed){try{localStorage.setItem('mp_lb_sub',JSON.stringify(sub));}catch(e){}setTimeout(render,900);}}
   var tog=document.getElementById('lbToggle'),w=document.getElementById('lbWidget');
   if(tog&&w)tog.addEventListener('click',function(){w.classList.toggle('open');});
@@ -2006,11 +2012,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
   window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
-  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge - VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
+  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   /* escape first (XSS-safe), THEN turn `trade:<id>` tokens into clickable links that open the shared ticket */
-  function linkifyMsg(t){return esc(t).replace(/\btrade:([a-z0-9]{6,16})\b/gi,function(mm,id){id=id.toLowerCase();return '<a class="ct-trade" data-trade="'+id+'" role="button" tabindex="0" title="Open shared ticket">trade:'+id+'</a>';});}
+  function linkifyMsg(t){return esc(t).replace(/\btrade:([a-z0-9]{6,16})\b/gi,function(mm,id){id=id.toLowerCase();return '<a class="ct-trade" data-trade="'+id+__esT_home("roleButtonTabindex0",'" role="button" tabindex="0" title="Open shared ticket">trade:')+id+'</a>';});}
   /* @name -> the same clickable trader chip the chat already knows how to open. Applied ONLY to MarginPad's
      own lines (welcome, gift announcements), where every name is one the server just resolved. */
   function mentionify(h){return h.replace(/(^|\s)@([a-zA-Z0-9_]{2,20})/g,function(mm,p,n){return p+'<b class="ct-user" data-lbu="'+n+'" role="button" tabindex="0" style="color:'+colorFor(n)+'">@'+n+'</b>';});}
@@ -2040,8 +2046,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       canEdit:own&&(Date.now()-(+row.getAttribute('data-ts')||0))<editMs,canDelete:own,
       onReact:function(e2){actSend({type:'react',id:mid,e:e2});},
       onCopy:function(){chatNote('Copied');},
-      onDelete:function(){if(window.confirm('Delete this message for everyone?'))actSend({type:'del',id:mid});},
-      onEdit:function(){var nt=window.prompt('Edit your message',txt);if(nt==null)return;nt=String(nt).replace(/\s+/g,' ').trim();if(!nt||nt===txt)return;actSend({type:'edit',id:mid,t:nt.slice(0,280)});}});
+      onDelete:function(){if(window.confirm(__esT_home("deleteThisMessageFor",'Delete this message for everyone?')))actSend({type:'del',id:mid});},
+      onEdit:function(){var nt=window.prompt(__esT_home("editYourMessage",'Edit your message'),txt);if(nt==null)return;nt=String(nt).replace(/\s+/g,' ').trim();if(!nt||nt===txt)return;actSend({type:'edit',id:mid,t:nt.slice(0,280)});}});
   }
   if(msgs&&!msgs._mpActs){msgs._mpActs=1;
     if(window.mpLongPress)window.mpLongPress(msgs,'[data-mid]',openSheet);
@@ -2049,7 +2055,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     msgs.addEventListener('click',function(e){
       var rb=e.target.closest&&e.target.closest('.ct-rxb');
       if(rb){e.preventDefault();e.stopPropagation();
-        if(!myWho){chatNote('Sign in to react');return;}
+        if(!myWho){chatNote(__esT_home("signInToReact",'Sign in to react'));return;}
         actSend({type:'react',id:rb.getAttribute('data-rxm'),e:rb.getAttribute('data-rx')});}
     },true);
   }
@@ -2078,23 +2084,23 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  var LB_META={1:{t:'Green days',k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:'Best win rate',k:'topWr'},3:{t:'Season XP',k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
+  var LB_META={1:{t:__esT_home("greenDays",'Green days'),k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:__esT_home("bestWinRate",'Best win rate'),k:'topWr'},3:{t:__esT_home("seasonXp",'Season XP'),k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
   function showLeaderboard(board){board=(board===2||board===3||board===4||board===5)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['','',''];
-      var html='<b style="color:#c2f64a">'+meta.t+' · this season</b><br>';
-      if(!t.length)html+='<span style="color:#9aa3ad">No one on this board yet - be the first!</span>';
+      var html='<b style="color:#c2f64a">'+meta.t+__esT_home("thisSeason",' · this season</b><br>');
+      if(!t.length)html+=__esT_home("noOneOnThis",'<span style="color:#9aa3ad">No one on this board yet - be the first!</span>');
       else html+=t.slice(0,10).map(function(x,i){var val;
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
         else if(board===4)val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
-        else if(board===5){var _gp=+x.pts||0;val='<b style="color:'+(_gp>=0?'#ffcf3f':'#ff7b72')+'">'+(_gp>0?'+':'')+_gp+' pts</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';}else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?' green day':' green days')+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
+        else if(board===5){var _gp=+x.pts||0;val='<b style="color:'+(_gp>=0?'#ffcf3f':'#ff7b72')+'">'+(_gp>0?'+':'')+_gp+' pts</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';}else val='<b style="color:#2ebd85">'+(+x.days||0)+(((+x.days||0)===1)?__esT_home("greenDay",' green day'):__esT_home("greenDays2",' green days'))+'</b>'+((+x.trades)?' <span style="color:#7f8893">('+(+x.trades)+' trades)</span>':'');
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> - '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
- html+='<br><span style="color:#ffce8a;font-size:11.5px"> 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
+ html+='<br><span style="color:#ffce8a;font-size:11.5px"> 14-day season (UTC)'+(_es?__esT_home("endsIn",' · ends in ')+_es:'')+'</span>';
  html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> green days · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · <b>/leaderboard4</b> ROE · <b>/leaderboard5</b> Gold Room · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
-    }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
+    }).catch(function(){lbMsg.innerHTML=__esT_home("couldNotLoadThe",'<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>');});
   }
   function connect(){
     if(ws)return;
@@ -2105,12 +2111,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
        the session behind the socket regardless. */
     window.__mpChatAct=function(o){try{if(!o||['edit','del','react'].indexOf(o.type)<0)return false;if(!ws||ws.readyState!==1)return false;ws.send(JSON.stringify(o));return true;}catch(e){return false;}};
     ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
-      if(d.type==='poll'||d.type==='pollv'){try{var pb=document.getElementById('ctPollBox');if(!pb){pb=document.createElement('div');pb.id='ctPollBox';msgs.parentNode.insertBefore(pb,msgs);}if(d.type==='poll'&&!d.poll){pb.innerHTML='';window.__ctPoll=null;}else{var P=d.type==='poll'?d.poll:(window.__ctPoll?Object.assign(window.__ctPoll,{votes:d.votes}):null);if(P){window.__ctPoll=P;var tot=0;P.votes.forEach(function(v){tot+=v;});var oh=P.opts.map(function(o,i){var pc=tot?Math.round(P.votes[i]/tot*100):0;var mi=window.__ctPollMy&&window.__ctPollMy.id===P.id?window.__ctPollMy.i:null;return '<button type="button" data-pvi="'+i+'" '+(P.closed?'disabled':'')+' style="display:block;width:100%;text-align:left;margin:4px 0;padding:7px 9px;background:'+(mi===i?'#1a2413':'#12161d')+';border:1px solid '+(mi===i?'#c2f64a':'#232b3a')+';border-radius:8px;color:#dbe4f5;font-size:12px;cursor:'+(P.closed?'default':'pointer')+';position:relative;overflow:hidden;font-family:inherit"><span style="position:absolute;left:0;top:0;bottom:0;width:'+pc+'%;background:rgba(194,246,74,.12)"></span><span style="position:relative">'+o+' <b style="float:right;color:#c2f64a">'+pc+'%</b></span></button>';}).join('');pb.innerHTML='<div style="background:#0d1014;border:1px solid #2a3345;border-radius:10px;padding:10px 12px;margin:8px 10px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:5px">'+(P.closed?'POLL · FINAL RESULTS':'LIVE POLL - tap to vote')+'</div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">'+P.q+'</div>'+oh+'<div style="font-size:10px;color:#5c6b84;margin-top:4px">'+tot+' vote'+(tot===1?'':'s')+'</div></div>';if(!P.closed&&!pb._pw){pb._pw=1;pb.addEventListener('click',function(ev){var b=ev.target.closest('[data-pvi]');if(!b||!window.__ctPoll||window.__ctPoll.closed)return;var i=+b.getAttribute('data-pvi');window.__ctPollMy={id:window.__ctPoll.id,i:i};try{ws.send(JSON.stringify({type:'vote',id:window.__ctPoll.id,i:i,u:user}));}catch(e){}});}}}}catch(e){}}
+      if(d.type==='poll'||d.type==='pollv'){try{var pb=document.getElementById('ctPollBox');if(!pb){pb=document.createElement('div');pb.id='ctPollBox';msgs.parentNode.insertBefore(pb,msgs);}if(d.type==='poll'&&!d.poll){pb.innerHTML='';window.__ctPoll=null;}else{var P=d.type==='poll'?d.poll:(window.__ctPoll?Object.assign(window.__ctPoll,{votes:d.votes}):null);if(P){window.__ctPoll=P;var tot=0;P.votes.forEach(function(v){tot+=v;});var oh=P.opts.map(function(o,i){var pc=tot?Math.round(P.votes[i]/tot*100):0;var mi=window.__ctPollMy&&window.__ctPollMy.id===P.id?window.__ctPollMy.i:null;return '<button type="button" data-pvi="'+i+'" '+(P.closed?'disabled':'')+' style="display:block;width:100%;text-align:left;margin:4px 0;padding:7px 9px;background:'+(mi===i?'#1a2413':'#12161d')+';border:1px solid '+(mi===i?'#c2f64a':'#232b3a')+';border-radius:8px;color:#dbe4f5;font-size:12px;cursor:'+(P.closed?'default':'pointer')+';position:relative;overflow:hidden;font-family:inherit"><span style="position:absolute;left:0;top:0;bottom:0;width:'+pc+'%;background:rgba(194,246,74,.12)"></span><span style="position:relative">'+o+' <b style="float:right;color:#c2f64a">'+pc+'%</b></span></button>';}).join('');pb.innerHTML='<div style="background:#0d1014;border:1px solid #2a3345;border-radius:10px;padding:10px 12px;margin:8px 10px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:5px">'+(P.closed?'POLL · FINAL RESULTS':__esT_home("livePollTapTo",'LIVE POLL - tap to vote'))+'</div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px">'+P.q+'</div>'+oh+'<div style="font-size:10px;color:#5c6b84;margin-top:4px">'+tot+' vote'+(tot===1?'':'s')+'</div></div>';if(!P.closed&&!pb._pw){pb._pw=1;pb.addEventListener('click',function(ev){var b=ev.target.closest('[data-pvi]');if(!b||!window.__ctPoll||window.__ctPoll.closed)return;var i=+b.getAttribute('data-pvi');window.__ctPollMy={id:window.__ctPoll.id,i:i};try{ws.send(JSON.stringify({type:'vote',id:window.__ctPoll.id,i:i,u:user}));}catch(e){}});}}}}catch(e){}}
       if(d.type==='history'){if(typeof d.me==='string')myWho=d.me;if(Array.isArray(d.rx)&&d.rx.length)rxSet=d.rx;if(+d.editMs>0)editMs=+d.editMs;msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
       else if(d.type==='edited'){var _r=msgById(d.id);if(_r){var _b=_r.querySelector('.ct-body');if(_b)_b.innerHTML=(window._mpParseSig&&window._mpParseSig(d.t))?window._mpSigCardHtml(window._mpParseSig(d.t)):linkifyMsg(d.t);if(!_r.querySelector('.ct-ed')&&_b)_b.insertAdjacentHTML('afterend','<span class="ct-ed" title="edited">edited</span>');}}
       else if(d.type==='deleted'){var _r2=msgById(d.id);if(_r2&&_r2.parentNode)_r2.parentNode.removeChild(_r2);try{if(window.mpMsgSheetClose)window.mpMsgSheetClose();}catch(_){}}
       else if(d.type==='react'){paintRx(d.id,d.rx);}
-      else if(d.type==='actfail'){chatNote(d.why==='signin'?'Sign in to do that':d.why==='notyours'?'You can only change your own messages':d.why==='late'?'Too late to edit that one':'That message is gone');}
+      else if(d.type==='actfail'){chatNote(d.why==='signin'?__esT_home("signInToDo",'Sign in to do that'):d.why==='notyours'?__esT_home("youCanOnlyChange",'You can only change your own messages'):d.why==='late'?__esT_home("tooLateToEdit",'Too late to edit that one'):__esT_home("thatMessageIsGone",'That message is gone'));}
       else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(d.message&&d.message.u===user){markChatSeen();}else if(box.hidden&&d.message){chatAlert(true);}}
       else if(d.type==='presence'){setOnline(d.online);}};
  ws.onclose=function(ev){ws=null;if(ev&&ev.code===4001)return;/* replaced by a newer tab - reconnect only when this tab is visible again */if(joined)setTimeout(connect,3000);};
@@ -2121,7 +2127,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
  window.addEventListener('pagehide',function(){if(ws){try{ws.onclose=null;ws.close(1000);}catch(e){}ws=null;}});
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&joined&&!ws)connect();});
  window.addEventListener('pageshow',function(){if(joined&&!ws)connect();});
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge - VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg(__esT_home("yourAccountIsCurrently",'Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.'));return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing - on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
@@ -2150,7 +2156,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   input.addEventListener('input',function(){var v=(input.value||'');if(v.charAt(0)==='/'){ccProbe();ccRender();}else ccHide();});
   input.addEventListener('keyup',function(){var v=(input.value||'');if(v.charAt(0)!=='/')ccHide();});
   input.addEventListener('blur',function(){setTimeout(ccHide,160);});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([12345])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(t.charAt(0)==='/'){input.value='';fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:t})}).then(function(r){return r.json();}).then(function(j){window.__mpCcSys((j&&j.reply)||'Command failed.');}).catch(function(){window.__mpCcSys('Network error.');});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([12345])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(t.charAt(0)==='/'){input.value='';fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:t})}).then(function(r){return r.json();}).then(function(j){window.__mpCcSys((j&&j.reply)||__esT_home("commandFailed",'Command failed.'));}).catch(function(){window.__mpCcSys(__esT_home("networkError",'Network error.'));});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
   /* post a message into chat programmatically (used by "Share to chat" on a ticket): open the chat, ensure the WS is
      up, queue the send until it connects. Returns false if the user isn't signed in (chat requires login). */
   window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
@@ -2212,7 +2218,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   function fp(x){x=+x;if(!isFinite(x))return '-';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function money(x){var n=x<0;x=Math.abs(+x||0);var s;if(x>=1e9)s=(x/1e9).toFixed(2)+'B';else if(x>=1e6)s=(x/1e6).toFixed(2)+'M';else if(x>=1e5)s=(x/1e3).toFixed(1)+'K';else s=x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;}
-  function ago(t){t=+t;if(!t)return '';var s=Math.floor((Date.now()-t)/1000);if(s<60)return 'just now';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+  function ago(t){t=+t;if(!t)return '';var s=Math.floor((Date.now()-t)/1000);if(s<60)return __esT_home("justNow",'just now');var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
   var curOv=null;
   function closeOv(){if(!curOv)return;var o=curOv;curOv=null;o.classList.remove('on');document.removeEventListener('keydown',onKey);setTimeout(function(){if(o&&o.parentNode)o.parentNode.removeChild(o);},220);}
   function onKey(e){if(e.key==='Escape')closeOv();}
@@ -2221,7 +2227,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(curOv){var c=curOv.querySelector('.mptk');if(c){c.innerHTML=inner;wire(curOv);return curOv;}}
     var ov=document.createElement('div');ov.className='mptk-ov';ov.innerHTML='<div class="mptk" role="dialog" aria-modal="true">'+inner+'</div>';
     document.body.appendChild(ov);curOv=ov;ov.addEventListener('click',function(e){if(e.target===ov)closeOv();});document.addEventListener('keydown',onKey);wire(ov);requestAnimationFrame(function(){ov.classList.add('on');});return ov;}
-  function top(){return '<div class="mptk-top"><span class="mptk-brand">MARGIN<b>PAD</b></span><button class="mptk-x" type="button" aria-label="Close">✕</button></div>';}
+  function top(){return __esT_home("marginPad2",'<div class="mptk-top"><span class="mptk-brand">MARGIN<b>PAD</b></span><button class="mptk-x" type="button" aria-label="Close">✕</button></div>');}
   function body(h){return '<div class="mptk-in">'+top()+h+'</div>';}
   function render(t){
     var long=t.side!=='short',closed=(t.status==='win'||t.status==='loss');
@@ -2244,24 +2250,24 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +'<div class="mptk-cell"><div class="l">Size</div><div class="v">'+(margin!=null?money(margin):'-')+'</div></div>'
         +'<div class="mptk-cell"><div class="l">Value</div><div class="v">'+(val!=null?money(val):'-')+'</div></div>'
       +'</div>'
-      +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
+      +__esT_home("sharedBy",'<div class="mptk-by">Shared by <b>@')+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
       +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
-      +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
+      +__esT_home("tradeItForReal",'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">')
       +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Bybit\')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
       +'<i class="mprl-cut"></i>'
       +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Moon\')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
       +'</div></div>'
-      +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
+      +__esT_home("paperTradeNotFinancial2",'<div class="mptk-foot">Paper trade · not financial advice</div></div>');
     shell(inner);
     try{if(t.skin){var _sc=document.querySelector('.mptk-ov .mptk');if(_sc)_sc.className+=' tsk-'+String(t.skin).replace(/[^a-z0-9_]/g,'');}}catch(_){}
   }
   window.mpOpenTrade=function(id){
     id=String(id||'').replace(/[^a-z0-9]/gi,'').slice(0,16);if(!id)return;
-    shell(body('<div class="mptk-err">Loading ticket…</div>'));
+    shell(body(__esT_home("loadingTicket",'<div class="mptk-err">Loading ticket…</div>')));
     fetch('/api/tshare?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       if(d&&d.ok&&d.ticket)render(d.ticket);
-      else shell(body('<div class="mptk-err">This shared ticket is no longer available.</div>'));
-    }).catch(function(){shell(body('<div class="mptk-err">Could not load the ticket. Check your connection.</div>'));});
+      else shell(body(__esT_home("thisSharedTicketIs",'<div class="mptk-err">This shared ticket is no longer available.</div>')));
+    }).catch(function(){shell(body(__esT_home("couldNotLoadThe2",'<div class="mptk-err">Could not load the ticket. Check your connection.</div>')));});
   };
 })();
 
@@ -2356,7 +2362,7 @@ window.addEventListener('load', function () {
       var guard=setInterval(function(){if(banner.hidden){clearInterval(guard);return;}if(overlayOpen())banner.hidden=true;},800);}
     setTimeout(attempt,delay);}
   if(isIOS){
-    msg.textContent=(window.mpT&&window.mpT('pwaIos'))||'Tap Share, then “Add to Home Screen”.';
+    msg.textContent=(window.mpT&&window.mpT('pwaIos'))||__esT_home("tapShareThenAdd",'Tap Share, then “Add to Home Screen”.');
     act.textContent=(window.mpT&&window.mpT('pwaHow'))||'How';
     act.addEventListener('click',function(){sheet.hidden=false;});
     sheetClose.addEventListener('click',function(){sheet.hidden=true;dismiss();});
@@ -2364,7 +2370,7 @@ window.addEventListener('load', function () {
     showLater(function(){banner.hidden=false;});
   } else {
     var deferred=null;
-    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;msg.textContent=(window.mpT&&window.mpT('pwaDesc'))||'Full-screen, app-like access from your home screen.';act.textContent=(window.mpT&&window.mpT('pwaInstall'))||'Install';showLater(function(){banner.hidden=false;});});
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;msg.textContent=(window.mpT&&window.mpT('pwaDesc'))||__esT_home("fullScreenAppLike",'Full-screen, app-like access from your home screen.');act.textContent=(window.mpT&&window.mpT('pwaInstall'))||'Install';showLater(function(){banner.hidden=false;});});
     act.addEventListener('click',function(){if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null;dismiss();});}else dismiss();});
   }
 })();
@@ -2377,7 +2383,7 @@ window.addEventListener('load', function () {
   var chart=null, candle=null, plines=[], libBusy=false;
   function ensureLib(cb){ if(window.LightweightCharts){cb();return;} if(libBusy)return; libBusy=true;
     var s=document.createElement('script'); s.src='/assets/lightweight-charts-4.2.0.js?v=46fc6953';
-    s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load - check your connection.</div>';};
+    s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML=__esT_home("chartFailedToLoad",'<div class="heat-err">Chart failed to load - check your connection.</div>');};
     document.head.appendChild(s); }
   function initChart(){ if(chart||!window.LightweightCharts)return;
     chart=mpCreateChart(stage,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono', monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,0.4)'},horzLines:{color:'rgba(35,41,50,0.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1,vertLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'},horzLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'}},autoSize:true});
@@ -2438,7 +2444,7 @@ window.addEventListener('load', function () {
     // footer / brand
     ctx.fillStyle='#f5f5f2';ctx.font='bold 39px "Bricolage Grotesque",sans-serif';ctx.textAlign='left';ctx.fillText('MARGIN',44,H-44);var mw=ctx.measureText('MARGIN').width;ctx.fillStyle='#c2f64a';ctx.fillText('PAD',44+mw,H-44);
     ctx.fillStyle='#9aa3ad';ctx.font='25px "Space Mono",monospace';ctx.textAlign='right';ctx.fillText('marginpad.io',W-44,H-44);
-    ctx.fillStyle='#5c656f';ctx.font='18px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText('Estimated levels by leverage · not order-book data',44,H-16);
+    ctx.fillStyle='#5c656f';ctx.font='18px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText(__esT_home("estimatedLevelsByLeverage",'Estimated levels by leverage · not order-book data'),44,H-16);
   }
   // ============ LIVE LIQUIDATION LAYER (real data via /api/v1, graceful fallback to theoretical) ============
   var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,dispBins=[],levLines=[],realMode=false,showReal=true,showClusters=false,showTheo=false,win='1D',sideMode='all',levSet={5:false,10:false,25:true,50:false,100:true},pollT=null,drawQ=false,subd=false,loadedKlines=false;
@@ -2505,10 +2511,10 @@ window.addEventListener('load', function () {
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
     var cnt=0,nl=0,ns=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;nl+=liqBuckets[i].long||0;ns+=liqBuckets[i].short||0;}
     var not=sideMode==='long'?nl:sideMode==='short'?ns:nl+ns, sl=sideMode==='long'?' long':sideMode==='short'?' short':'';
-    el.innerHTML = (not>0) ? cur.coin+sl+' liquidations · last '+WIN[win].lbl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet - liquidations spike on moves</span>'; }
+    el.innerHTML = (not>0) ? cur.coin+sl+__esT_home("liquidationsLast",' liquidations · last ')+WIN[win].lbl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+__esT_home("quietLiquidationsSpikeOn",' quiet - liquidations spike on moves</span>'); }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
-    el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }
+    el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : __esT_home("noLiquidationsAbove50k",'<span class="tk-empty">No liquidations above $50k in view yet.</span>'); }
   function fetchLiq(){ if(MOCK){ mock(); return; } var c=cur.coin;
     Promise.all([
       fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+WIN[win].mins).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
@@ -2560,13 +2566,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=079ed249
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=4743be86
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=079ed249';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=4743be86';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -2685,7 +2691,7 @@ window.addEventListener('load', function () {
       var h='';
       for(var i=0;i<syms.length;i++){ var s=syms[i], letters=s.length>4?s.slice(0,4):s, ic=icon(s);
         var isImg=!ic&&!NONCRYPTO[s];
-        h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+' - trade it again" aria-label="Switch to '+s+'">'
+        h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+__esT_home("tradeItAgainAria",' - trade it again" aria-label="Switch to ')+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
           +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
           +'</button>'; }
@@ -2868,7 +2874,7 @@ window.addEventListener('load', function () {
     function close(){ panel.hidden=true; trig.classList.remove('open'); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
     function useVal(v){ v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16); if(!v)return; var f=false; for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.toUpperCase()===v){f=true;break;} } if(!f){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } var ch=sel.value!==v; sel.value=v; sync(); if(ch)sel.dispatchEvent(new Event('change',{bubbles:true})); close(); }
     function filter(q){ q=(q||'').toLowerCase(); var exact=false,o=list.children; for(var i=0;i<o.length;i++){ if(o[i].classList.contains('csel-add'))continue; var t=o[i].textContent.toLowerCase(); o[i].style.display=t.indexOf(q)>=0?'':'none'; if(t===q)exact=true; }
-      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+' - not on Bybit (paper trade unavailable)'; add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
+      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+__esT_home("notOnBybitPaper",' - not on Bybit (paper trade unavailable)'); add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
     trig.addEventListener('click',function(e){ e.stopPropagation(); if(panel.hidden){open();}else{close();} });
     if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var _q=(search.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!window.mpIsBybit||window.mpIsBybit(_q))useVal(search.value); } }); }
     document.addEventListener('click',function(e){ if(!wrap.contains(e.target)&&!panel.contains(e.target)) close(); });
@@ -2923,7 +2929,7 @@ window.addEventListener('load', function () {
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
     var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d'],'Coinbase':['#0052ff','#ffffff']};
     function exDeco(o){var t=o.textContent||'',m=t.split('-'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
-      if(!rate&&/custom/i.test(name))return '<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>';
+      if(!rate&&/custom/i.test(name))return __esT_home("customTypeYourOwn",'<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>');
       var c=EXCOL[name]||['#3a4450','#e9e7df'];
       return '<span class="csel-ex"><i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i><b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
     ['liqEx','crEx','planEx','planFeeVenue'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}}); // planFeeVenue = the "Fees as on" picker in Advanced, same rows as the margin-rate picker beside it
@@ -2975,7 +2981,7 @@ window.addEventListener('load', function () {
 (function(){var b=document.getElementById('toTop');if(!b)return;function upd(){b.classList.toggle('on',(window.scrollY||window.pageYOffset||0)>520);}window.addEventListener('scroll',upd,{passive:true});upd();b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
 /* click-to-copy on the calculator result + Paper Trade price */
 (function(){
-  document.querySelectorAll('.rvalue').forEach(function(el){el.classList.add('copynum');if(!el.title)el.title='Click to copy';});
+  document.querySelectorAll('.rvalue').forEach(function(el){el.classList.add('copynum');if(!el.title)el.title=__esT_home("clickToCopy",'Click to copy');});
   function tip(x,y,msg){var t=document.createElement('div');t.className='copied-tip';t.textContent=msg;t.style.left=x+'px';t.style.top=y+'px';document.body.appendChild(t);setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';},750);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},1100);}
   document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.copynum');if(!el)return;var txt=(el.textContent||'').trim();if(!txt||txt==='…'||txt==='-')return;var r=el.getBoundingClientRect();function ok(){tip(r.left+r.width/2,r.top,'Copied ✓');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){});}else{ok();}});
 })();
@@ -3082,7 +3088,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=0e29bb28'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=4343f984'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3119,9 +3125,9 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var _gateKey='';
   function renderGate(){if(!gate)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     var _k=me?('in:'+(me.username||me.email||'1')):'out'; if(_k===_gateKey)return; _gateKey=_k;
-    if(!me){gate.className='lg-gate locked';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+LT('lgGateAnon','The Trade League is for registered users.')+' <button type="button" class="lg-signin" data-auth-open>'+LT('lgGateBtn','Sign in free to join')+'</button>';return;}
-    gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','- close winning trades to climb.');}
- function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends"> 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
+    if(!me){gate.className='lg-gate locked';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+LT('lgGateAnon',__esT_home("theTradeLeagueIs",'The Trade League is for registered users.'))+' <button type="button" class="lg-signin" data-auth-open>'+LT('lgGateBtn',__esT_home("signInFreeTo",'Sign in free to join'))+'</button>';return;}
+    gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs',__esT_home("youAreInThe",'You are in the league as'))+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb',__esT_home("closeWinningTradesTo",'- close winning trades to climb.'));}
+ function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return __esT_home("14DaySeason",'<div class="lg-ends"> 14-day season · ')+LT('lgEndsIn',__esT_home("endsIn2",'ends in'))+' <b>'+t+'</b></div>';}
  var lgMode='roe',lgLast=null,lgRoeRows=[];
  // Ticket view for the Top-ROE board (owner 2026-08-20): each row gets a small icon that opens the trade
  // behind the rank. Icon, not a "Ticket" label - usernames on this board run long and a text button pushed
@@ -3131,14 +3137,14 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
  if(!x)return;
  var up=(+x.roe>=0),side=String(x.side||'').toUpperCase();
  var w=document.createElement('div');w.className='lg-tkm';
- w.innerHTML='<div class="lg-tkm-c" role="dialog" aria-modal="true" aria-label="'+LT('lgTkHead','Trade behind this rank')+'">'
+ w.innerHTML='<div class="lg-tkm-c" role="dialog" aria-modal="true" aria-label="'+LT('lgTkHead',__esT_home("tradeBehindThisRank",'Trade behind this rank'))+'">'
  +'<button type="button" class="lg-tkm-x" aria-label="'+LT('close','Close')+'">&#215;</button>'
- +'<div class="lg-tkm-h">'+LT('lgTkHead','Trade behind this rank')+'</div>'
+ +'<div class="lg-tkm-h">'+LT('lgTkHead',__esT_home("tradeBehindThisRank",'Trade behind this rank'))+'</div>'
  +'<div class="lg-tkm-who"><span class="r">#'+(x.rank||'')+'</span> '+esc(x.who||'anon')+'</div>'
  +'<div class="lg-tkm-sym"><span class="s">'+esc(x.symbol||'')+'</span><span class="sd '+(side==='SHORT'?'dn':'up')+'">'+esc(side)+'</span></div>'
  +'<div class="lg-tkm-roe '+(up?'up':'dn')+'">'+(up?'+':'')+(+x.roe).toFixed(2)+'%</div>'
  +'<div class="lg-tkm-pnl">'+LT('lgTkPnl','Profit')+' <b class="'+(up?'up':'dn')+'">'+lgMoneyH(x.pnl)+'</b></div>'
- +'<a class="lg-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(x.symbol||'BTC'))+'">'+LT('lgTkCta','Open this market')+' &rarr;</a>'
+ +'<a class="lg-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(x.symbol||'BTC'))+'">'+LT('lgTkCta',__esT_home("openThisMarket",'Open this market'))+' &rarr;</a>'
  +'</div>';
  function close(){try{w.remove();}catch(e){}document.removeEventListener('keydown',onKey);}
  function onKey(e){if(e.key==='Escape')close();}
@@ -3151,35 +3157,35 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
  if(!b)return;
  lgTicket(lgRoeRows[+b.getAttribute('data-lgtk')]);
  });
-  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgGreenDays','Green days')+'</button><button type="button" class="lg-pill'+(lgMode==='roe2'?' on':'')+'" data-lgm="roe2">'+LT('lgTopRoe2','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
-  function lgNote(){if(lgMode==='pnl')return '<div class="lg-wr-note">'+LT('lgPnlNoPay','Top PnL is bragging rights - the other boards pay real USDT each 14-day season.')+'</div>';if(lgMode==='wr')return '<div class="lg-wr-note pay">'+LT('lgWrRank','Pays the top 5 each 14-day season. Ranked by win rate weighted by trades played - more games make your % count for more (a 45W-3L can rank above a higher % on fewer trades). Min 20 closed trades.')+'</div>';return '<div class="lg-wr-note pay">'+LT('lgPayAll','This board pays the top 5 in real USDT every 14-day season.')+'</div>';}
+  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgGreenDays',__esT_home("greenDays",'Green days'))+'</button><button type="button" class="lg-pill'+(lgMode==='roe2'?' on':'')+'" data-lgm="roe2">'+LT('lgTopRoe2','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr',__esT_home("bestWinRate",'Best win rate'))+'</button></div>';}
+  function lgNote(){if(lgMode==='pnl')return '<div class="lg-wr-note">'+LT('lgPnlNoPay',__esT_home("topPnlIsBragging",'Top PnL is bragging rights - the other boards pay real USDT each 14-day season.'))+'</div>';if(lgMode==='wr')return '<div class="lg-wr-note pay">'+LT('lgWrRank',__esT_home("paysTheTop5",'Pays the top 5 each 14-day season. Ranked by win rate weighted by trades played - more games make your % count for more (a 45W-3L can rank above a higher % on fewer trades). Min 20 closed trades.'))+'</div>';return '<div class="lg-wr-note pay">'+LT('lgPayAll',__esT_home("thisBoardPaysThe",'This board pays the top 5 in real USDT every 14-day season.'))+'</div>';}
   function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){
       var wt=(d&&d.topWr)||[];
-      if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 20 closed trades this week yet - close 20+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
-      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
+      if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty',__esT_home("noOneHas20",'No one has 20 closed trades this week yet - close 20+ trades and claim the win-rate crown.'))+'</div>'+ends;wireLgPills();return;}
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead',__esT_home("bestWinRateThis",'Best win rate this season'))+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span><span class="lg-tr">'+(+x.w||0)+'W-'+(+x.l||0)+'L</span><span class="lg-roe up">'+(+x.wr||0).toFixed(0)+'%</span></div>';}).join('')
         +ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     if(lgMode==='roe2'){
  var rt=((d&&d.top)||[]).filter(function(x){return +x.roe>0;}).slice(0,5);lgRoeRows=rt;
       var rz=(d&&d.boardPrizes&&d.boardPrizes.roe)||[10,8,6,4,2];
-      if(!rt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgRoeEmpty','No winning trades yet this season - close one in profit to top the ROE board.')+'</div>'+ends;wireLgPills();return;}
-      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgRoeHead','Top ROE this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+rt.map(function(x,i){var rk=i+1,roe=+x.roe,prize=(rz[i]!=null&&+rz[i]>0)?('$'+rz[i]):'';
- return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(x.symbol?'<button type="button" class="lg-tk" data-lgtk="'+i+'" title="'+LT('lgTkHead','Trade behind this rank')+'" aria-label="'+LT('lgTkHead','Trade behind this rank')+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v2M14 11v2M14 16v2"/></svg></button>':'')+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
+      if(!rt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgRoeEmpty',__esT_home("noWinningTradesYet",'No winning trades yet this season - close one in profit to top the ROE board.'))+'</div>'+ends;wireLgPills();return;}
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgRoeHead',__esT_home("topRoeThisSeason",'Top ROE this season'))+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+rt.map(function(x,i){var rk=i+1,roe=+x.roe,prize=(rz[i]!=null&&+rz[i]>0)?('$'+rz[i]):'';
+ return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(x.symbol?'<button type="button" class="lg-tk" data-lgtk="'+i+'" title="'+LT('lgTkHead',__esT_home("tradeBehindThisRank",'Trade behind this rank'))+'" aria-label="'+LT('lgTkHead',__esT_home("tradeBehindThisRank",'Trade behind this rank'))+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v2M14 11v2M14 16v2"/></svg></button>':'')+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     if(lgMode==='pnl'){
       var pt=(d&&d.topPnl)||[];
-      if(!pt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgPnlEmpty','No winning trades yet this week - close one in profit to top the PnL board.')+'</div>'+ends;wireLgPills();return;}
-      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgPnlHead','Top PnL this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+pt.slice(0,5).map(function(x,i){var rk=i+1,p=+x.pnl;
+      if(!pt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgPnlEmpty',__esT_home("noWinningTradesYet2",'No winning trades yet this week - close one in profit to top the PnL board.'))+'</div>'+ends;wireLgPills();return;}
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgPnlHead',__esT_home("topPnlThisSeason",'Top PnL this season'))+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+pt.slice(0,5).map(function(x,i){var rk=i+1,p=+x.pnl;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(p>=0?'up':'dn')+'">'+lgMoneyH(p)+'</span></div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     var t=(d&&d.topGreen)||[];
     var pz=(d&&d.boardPrizes&&d.boardPrizes.green)||[10,6,4,3,2];
     try{var sub=document.querySelector('.lg-sub');if(sub&&pz.length>=3){var k=0;sub.innerHTML=sub.innerHTML.replace(/\$\d+/g,function(m){k++;return k<=3?('$'+pz[k-1]):m;});}}catch(e){}
-    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgGreenEmpty','No green days yet this season - close a day in profit (3+ trades) and you are on the board.')+'</div>'+ends;wireLgPills();return;}
-    board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgGreenHead','Most green days this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,days=+x.days||0,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
+    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgGreenEmpty',__esT_home("noGreenDaysYet",'No green days yet this season - close a day in profit (3+ trades) and you are on the board.'))+'</div>'+ends;wireLgPills();return;}
+    board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgGreenHead',__esT_home("mostGreenDaysThis",'Most green days this season'))+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,days=+x.days||0,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
       return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+((+x.trades)?'<span class="lg-tr">'+(+x.trades)+' trades</span>':'')+'<span class="lg-roe up">'+days+(days===1?' day':' days')+'</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
     if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();}
   function wireLgPills(){board.querySelectorAll('[data-lgm]').forEach(function(b){b.addEventListener('click',function(){lgMode=b.getAttribute('data-lgm');lgDraw();});});}
@@ -3191,7 +3197,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     for(var i=closed.length-1;i>=0;i--){if(closed[i].status==='win')streak++;else break;}
     if(!total){you.innerHTML='';return;}
     function stat(v,l,win){return '<div class="lg-yc'+(win?' win':'')+'"><div class="lg-yv">'+v+'</div><div class="lg-yl">'+l+'</div></div>';}
-    you.innerHTML='<div class="lg-you-h">'+LT('lgYouStats','Your trading stats')+'</div><div class="lg-you-grid">'+stat(total,LT('jTrades','Trades'))+stat(wr+'%',LT('jWinRate','Win rate'),wr>=50)+stat('+'+bestRoe.toFixed(0)+'%',LT('lgBestRoe','Best ROE'),bestRoe>0)+stat(streak,LT('lgWinStreak','Win streak'),streak>=3)+'</div>';}
+    you.innerHTML='<div class="lg-you-h">'+LT('lgYouStats',__esT_home("yourTradingStats",'Your trading stats'))+'</div><div class="lg-you-grid">'+stat(total,LT('jTrades','Trades'))+stat(wr+'%',LT('jWinRate',__esT_home("winRate",'Win rate')),wr>=50)+stat('+'+bestRoe.toFixed(0)+'%',LT('lgBestRoe','Best ROE'),bestRoe>0)+stat(streak,LT('lgWinStreak',__esT_home("winStreak",'Win streak')),streak>=3)+'</div>';}
   renderGate(); // gate is cheap + can be above the fold once signed in - keep it instant
   // the leaderboard board + your-stats are below the fold and do a /lb fetch + DOM build → defer off the load critical path (weak-phone perf)
   mpWhenVisible(board,function(){renderBoard();renderYou();}); /* was: idle + 1.8s + 4.5s = THREE /api/reward/lb fetches in the first 5s of every load (measured 2026-09-02); the repaints below now redraw from the cached response */
@@ -3209,15 +3215,15 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
   /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here - the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
   var EX=[{n:'Bybit',h:'https://partner.bybit.com/b/162071',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
-          {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
+          {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:__esT_home("cryptoStocksForexUp",'crypto, stocks & forex · up or down · 24/7')}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
-    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
+    elm.innerHTML=__esT_home("100055TradesPracticed",'<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">')+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}}); }
   function show(){if(!elm)build();var n=window.__gradN||count();
-    try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=window.__gradFW?'First winning trade':(n+' trades practiced');
-        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).':'You have opened '+n+' paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
+    try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=window.__gradFW?__esT_home("firstWinningTrade",'First winning trade'):(n+__esT_home("tradesPracticed",' trades practiced'));
+        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?__esT_home("youJustClosedYour",'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).'):__esT_home("youHaveOpened",'You have opened ')+n+__esT_home("paperTradesTheMechanics",' paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).');}catch(e){}
     elm.hidden=false;}
   function wins(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(t){return t&&(t.status==='win'||(+t.pnl>0));}).length;}catch(e){return 0;}}
   /* funnel tuning (owner 2026-08-14): first offer at 8 opened trades (20 was measured too late - /paper-trade converts ~2%),
@@ -3262,7 +3268,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function fmtChg(v){return (v>=0?'+':'')+(+v).toFixed(1)+'%';}
   function openSym(s){try{if(window.mpCharts&&window.mpCharts.openSymbol)window.mpCharts.openSymbol(s);}catch(e){}}
   function renderWatch(){ if(!watch)return; var list=[];try{list=JSON.parse(localStorage.getItem('mp_watchlist')||'[]')||[];}catch(e){}
-    if(!list.length){watch.innerHTML='<div class="cws-w-empty">Star coins on the homepage to pin them here.</div>';return;}
+    if(!list.length){watch.innerHTML=__esT_home("starCoinsOnThe",'<div class="cws-w-empty">Star coins on the homepage to pin them here.</div>');return;}
     watch.innerHTML=list.slice(0,12).map(function(s){var ch=CHG[s];return '<button type="button" class="cws-wcoin" data-sym="'+s+'"><span class="sym">'+s+'</span>'+(ch!=null?'<span class="chg '+(ch>=0?'up':'dn')+'">'+fmtChg(ch)+'</span>':'')+'</button>';}).join(''); }
   function scoreColor(sc){return sc>=75?'#2ebd85':sc>=55?'#c2f64a':sc>=45?'#ffb347':'#ff6258';}
   function renderScr(rows){ if(!scr)return; rows=rows||[];
@@ -3270,8 +3276,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var withSetup=rows.filter(function(r){return r&&r.setup&&typeof r.score==='number';}).sort(function(a,b){return Math.abs(b.score-50)-Math.abs(a.score-50);});
     var top=withSetup.slice(0,8);
     if(top.length<8){var rest=rows.filter(function(r){return r&&typeof r.score==='number'&&!r.setup;}).sort(function(a,b){return b.score-a.score;});top=top.concat(rest.slice(0,8-top.length));}
-    if(!top.length){scr.innerHTML='<div class="cws-w-empty">No signals right now - markets are quiet. Refreshing…</div>';return;}
-    scr.innerHTML=top.map(function(r){var dir=r.setup?(r.setup.dir==='long'?'<span class="sd up">▲</span>':'<span class="sd dn">▼</span>'):'';return '<button type="button" class="cws-wcoin" data-sym="'+r.s+'" title="Open '+r.s+' with indicators + setup">'+dir+'<span class="sym">'+r.s+'</span><span class="chg '+(r.chg>=0?'up':'dn')+'">'+fmtChg(r.chg)+'</span><span class="sc" style="background:'+scoreColor(r.score)+'">'+r.score+'</span></button>';}).join(''); }
+    if(!top.length){scr.innerHTML=__esT_home("noSignalsRightNow",'<div class="cws-w-empty">No signals right now - markets are quiet. Refreshing…</div>');return;}
+    scr.innerHTML=top.map(function(r){var dir=r.setup?(r.setup.dir==='long'?'<span class="sd up">▲</span>':'<span class="sd dn">▼</span>'):'';return '<button type="button" class="cws-wcoin" data-sym="'+r.s+__esT_home("titleOpen",'" title="Open ')+r.s+__esT_home("withIndicatorsSetup",' with indicators + setup">')+dir+'<span class="sym">'+r.s+'</span><span class="chg '+(r.chg>=0?'up':'dn')+'">'+fmtChg(r.chg)+'</span><span class="sc" style="background:'+scoreColor(r.score)+'">'+r.score+'</span></button>';}).join(''); }
   var scrLoaded=false,scrTimer=null,scrInflight=false;
   function scheduleScr(ms){clearTimeout(scrTimer);scrTimer=setTimeout(loadScr,ms);}
   function scrRetry(){ if(!scrLoaded&&scr){var em=scr.querySelector('.cws-w-empty');if(em)em.innerHTML='Loading live signals… <span style="opacity:.55">retrying</span>';} scheduleScr(scrLoaded?120000:7000); }
@@ -3296,9 +3302,9 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function closedCount(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(e){return e&&(e.status==='win'||e.status==='loss');}).length;}catch(e){return 0;}}
   function signedIn(){try{return !!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me());}catch(e){return false;}}
   var elm=null,welcome=0,busy=false;
-  function bonusBit(){return 'get a <b>free USDT</b> welcome bonus';} // amount stays hidden until they sign in (per owner)
+  function bonusBit(){return __esT_home("getAFreeUsdt",'get a <b>free USDT</b> welcome bonus');} // amount stays hidden until they sign in (per owner)
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
-    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">Save your progress</div><h3>Save your trades - sign up free</h3><p>You have closed 2 paper trades. Create a free account (just an email code, no password) to keep your journal across devices, '+bonusBit()+', and set price alerts on any coin.</p><button class="grad-go" type="button" style="display:block;width:100%;margin:4px 0 6px;padding:13px;border:none;border-radius:11px;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:14px;cursor:pointer">Sign up free &#8594;</button><button class="grad-later" type="button">Maybe later</button></div>';
+    elm.innerHTML=__esT_home("10005SaveYourProgress",'<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">Save your progress</div><h3>Save your trades - sign up free</h3><p>You have closed 2 paper trades. Create a free account (just an email code, no password) to keep your journal across devices, ')+bonusBit()+', and set price alerts on any coin.</p><button class="grad-go" type="button" style="display:block;width:100%;margin:4px 0 6px;padding:13px;border:none;border-radius:11px;background:#c2f64a;color:#0a0b0d;font-weight:800;font-size:14px;cursor:pointer">Sign up free &#8594;</button><button class="grad-later" type="button">Maybe later</button></div>';
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-go')){elm.hidden=true;try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}return;}if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;}}); }
   function show(){if(!elm)build();elm.hidden=false;}
@@ -3330,35 +3336,35 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function row(open,close,ic,t,s,col,badge,tk,sk,bk){return open+'<span class="browse-ic" style="color:'+col+';background:'+col+'22">'+ic+'</span><span class="browse-rt"><b><span'+(tk?' data-i18n="'+tk+'"':'')+'>'+t+'</span>'+(badge?' <em class="browse-badge"'+(bk?' data-i18n="'+bk+'"':'')+'>'+badge+'</em>':'')+'</b><small'+(sk?' data-i18n="'+sk+'"':'')+'>'+s+'</small></span>'+I.chev+close;}
   var html='<div class="browse-sheet"><div class="browse-head"><span class="browse-title" data-i18n="brBrowse">Browse</span><button type="button" class="browse-x" aria-label="Close">&#10005;</button></div><div class="browse-searchwrap"><input type="text" class="browse-search" placeholder="Search pages, guides, coins…" data-ph="brSearch" autocomplete="off" aria-label="Search"></div><div class="browse-scroll">'
    +'<div class="browse-sugg" id="browseSugg" hidden></div>'
-   +'<div class="browse-sec" data-i18n="secNew">New here?</div>'
-   +row('<a class="browse-row" href="/where-to-start/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>','Where to start','Crypto from zero - a free beginner path','#c2f64a','START','brWtsT','brWtsS','brStart')
+   +__esT_home("newHere",'<div class="browse-sec" data-i18n="secNew">New here?</div>')
+   +row('<a class="browse-row" href="/where-to-start/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>',__esT_home("whereToStart",'Where to start'),__esT_home("cryptoFromZeroA",'Crypto from zero - a free beginner path'),'#c2f64a','START','brWtsT','brWtsS','brStart')
    +'<div class="browse-sec" data-i18n="secCalc">Calculators</div>'
-   +row('<button type="button" class="browse-row browse-expand" data-expand="calc">','</button>',I.calc,'Calculators','Liquidation, PnL, size &amp; more','#c2f64a','','brCalcT','brCalcS')
+   +row('<button type="button" class="browse-row browse-expand" data-expand="calc">','</button>',I.calc,'Calculators',__esT_home("liquidationPnlSizeAmp",'Liquidation, PnL, size &amp; more'),'#c2f64a','','brCalcT','brCalcS')
    +'<div class="browse-sub" data-sub="calc" hidden>'
-     +'<button type="button" class="browse-subrow" data-calc="liq" data-i18n="subLiq">Liquidation price</button>'
-     +'<button type="button" class="browse-subrow" data-calc="size" data-i18n="subSize">Position size</button>'
+     +__esT_home("liquidationPrice",'<button type="button" class="browse-subrow" data-calc="liq" data-i18n="subLiq">Liquidation price</button>')
+     +__esT_home("positionSize",'<button type="button" class="browse-subrow" data-calc="size" data-i18n="subSize">Position size</button>')
      +'<button type="button" class="browse-subrow" data-calc="pnl" data-i18n="subPnl">PnL / ROI</button>'
-     +'<button type="button" class="browse-subrow" data-calc="dca" data-i18n="subDca">DCA / average down</button>'
+     +__esT_home("dcaAverageDown",'<button type="button" class="browse-subrow" data-calc="dca" data-i18n="subDca">DCA / average down</button>')
      +'<button type="button" class="browse-subrow" data-calc="tp" data-i18n="subTp">Take-profit</button>'
-     +'<button type="button" class="browse-subrow" data-calc="rr" data-i18n="subRr">Risk / reward</button>'
+     +__esT_home("riskReward",'<button type="button" class="browse-subrow" data-calc="rr" data-i18n="subRr">Risk / reward</button>')
    +'</div>'
    +'<div class="browse-sec" data-i18n="secTrade">Trade</div>'
-   +row('<button type="button" class="browse-row" data-go="plan">','</button>',I.plan,'Paper Trade','Practice at the live price · zero risk','#2ebd85','','prodPaper','brPaperS')
+   +row('<button type="button" class="browse-row" data-go="plan">','</button>',I.plan,'Paper Trade',__esT_home("practiceAtTheLive",'Practice at the live price · zero risk'),'#2ebd85','','prodPaper','brPaperS')
    +row('<a class="browse-row" href="/charts" data-mcharts>','</a>',I.charts,'Charts','Full-screen charts · landscape · 1–2 panes, indicators, AI','#3fd8e6','NEW','prodCharts','brChartsS','brNew')
    +row('<a class="browse-row" href="/screener">','</a>',I.scr,'Screener','Live markets · movers, funding, OI','#6aa3ff','','prodScreener','brScrS')
    +row('<a class="browse-row" href="/calendar/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>','Calendar','FOMC, CPI &amp; key crypto dates · countdowns','#ffd75a','NEW','','','brNew')
    +row('<a class="browse-row" href="/news/">','</a>',I.news,'Crypto News','Latest headlines · live','#ff8c5a','','brNewsT','brNewsS')
    +row('<a class="browse-row" href="/community/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>','Community','Trader posts, ideas &amp; discussion','#c2f64a','NEW','brCommT','brCommS')
-   +row('<a class="browse-row" href="/tools/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>','Trading Tools','Backtester · journal · pivots · risk','#46e0e6','NEW','brToolsT','brToolsS','brNew')
-      +row('<a class="browse-row" href="/trading-api/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>','Bot API','Test your trading bot - free','#3fd8e6','NEW','','')
+   +row('<a class="browse-row" href="/tools/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>',__esT_home("tradingTools",'Trading Tools'),'Backtester · journal · pivots · risk','#46e0e6','NEW','brToolsT','brToolsS','brNew')
+      +row('<a class="browse-row" href="/trading-api/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>','Bot API',__esT_home("testYourTradingBot",'Test your trading bot - free'),'#3fd8e6','NEW','','')
    +row('<a class="browse-row" href="/coins/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>','Markets','Top 100 coins · prices &amp; market cap','#16c2d6','','brMktsT','brMktsS')
    +row('<a class="browse-row" href="/defi/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>','DeFi','TVL, chains, protocols &amp; stablecoins','#9d7bff','','brDefiT','brDefiS')
    +row('<a class="browse-row" href="/fear-greed/">','</a>',I.fng,'Fear &amp; Greed','Live market sentiment','#7fd957','','brFngT','brFngS')
    +row('<a class="browse-row" href="/heatmap">','</a>',I.heat,'Liquidation Heatmap','Liquidation pools & real liqs - live','#ffb347','','brHeatT','brHeatS')
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258','','navRekt','prodRektS')
-   +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,'Price Alerts','Email or Telegram when a coin hits your price','#c2f64a','','brAlertsT','brAlertsS')
+   +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,__esT_home("priceAlerts",'Price Alerts'),__esT_home("emailOrTelegramWhen",'Email or Telegram when a coin hits your price'),'#c2f64a','','brAlertsT','brAlertsS')
    +'<div class="browse-sec" data-i18n="secEarn">Earn</div>'
-   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards','Claim every 5 minutes','#ffd75a','','brFreeT','brFreeS')
+   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards',__esT_home("claimEvery5Minutes",'Claim every 5 minutes'),'#ffd75a','','brFreeT','brFreeS')
    +'<div class="browse-sec" data-i18n="secMore">More</div><div class="browse-more">'
      +'<a class="browse-mrow" href="/blog/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span data-i18n="navBlog">Blog</span></a>'
      +'<a class="browse-mrow" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Telegram</a>'
@@ -3386,7 +3392,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     renderSugg(q);
     var sg=document.getElementById('browseSugg');var hasSugg=sg&&!sg.hidden&&sg.children.length;
     var nores=scrollEl.querySelector('.browse-nores');var anyShown=Array.prototype.some.call(scrollEl.querySelectorAll('.browse-row,.browse-mrow,.browse-subrow'),function(it){return it.style.display!=='none';});
-    if(!anyShown&&!hasSugg&&q){if(!nores){nores=document.createElement('div');nores.className='browse-nores';scrollEl.appendChild(nores);}nores.textContent=((window.mpT&&window.mpT('brNoRes'))||'No matches for')+' “'+q+'”.';nores.style.display='';}
+    if(!anyShown&&!hasSugg&&q){if(!nores){nores=document.createElement('div');nores.className='browse-nores';scrollEl.appendChild(nores);}nores.textContent=((window.mpT&&window.mpT('brNoRes'))||__esT_home("noMatchesFor",'No matches for'))+' “'+q+'”.';nores.style.display='';}
     else if(nores){nores.style.display='none';}
   }
   // Browse search → live content suggestions from the whole site (lazy-loads /search-index.json on first use)
@@ -3432,7 +3438,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=4174bf81';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=0bce47ac';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -3456,9 +3462,9 @@ window.mpSrvOpen=function(payload,ok,fail){
       .then(function(r){return r.json();})
       .then(function(d){clearTimeout(to);
         if(d&&d.ok&&d.position&&d.position.id)ok(d.position);
-        else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}
+        else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));}catch(e){}fail({blocked:true,message:d.message||''});}
         else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open - that let the 20/min and open-cap rules through the back door */
-          var _lm=d.error==='rate_limited'?'Slow down - '+(d.max||20)+' opens per minute is the limit. Try again in a moment.':'You already hold the maximum number of open positions'+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
+          var _lm=d.error==='rate_limited'?__esT_home("slowDown",'Slow down - ')+(d.max||20)+__esT_home("opensPerMinuteIs",' opens per minute is the limit. Try again in a moment.'):__esT_home("youAlreadyHoldThe",'You already hold the maximum number of open positions')+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
           try{if(window.mpLimitToast)window.mpLimitToast(_lm);}catch(e){}fail({blocked:true,message:_lm,error:d.error});}
         else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
         else retry();})
@@ -3477,14 +3483,14 @@ window.mpSrvOpen=function(payload,ok,fail){
   if(!returning)return; // only nudge on a real return visit (new day), never on first-ever visit or same-day reloads
   var n=s.d||1,el=document.getElementById('mpStreak');if(!el)return;
   var line;
-  if(n>=30)line='A month straight. At this point the market checks on YOU.';
-  else if(n>=14)line='Two weeks deep - this is what discipline looks like.';
-  else if(n>=7)line='A full week. Most people quit by Wednesday.';
+  if(n>=30)line=__esT_home("aMonthStraightAt",'A month straight. At this point the market checks on YOU.');
+  else if(n>=14)line=__esT_home("twoWeeksDeepThis",'Two weeks deep - this is what discipline looks like.');
+  else if(n>=7)line=__esT_home("aFullWeekMost",'A full week. Most people quit by Wednesday.');
   else if(n>=3)line='Day '+n+'. Habits beat hunches - keep stacking.';
-  else line='Back-to-back days. The chart noticed.';
-  var sub=n>=2?(line+' Set a price alert so you never miss a move.'):'Welcome back. Show up tomorrow and this becomes a streak.';
-  if(window.mpToast){window.mpToast({mark:String(n),kind:'record',ms:8500,dismissible:true,key:'streak',html:'<b style="color:#e9e7df">'+n+'-day streak</b><br>'+sub,action:(n>=2?{label:'Alerts',href:'/alerts/'}:null)});return;} /* the last card that lived in its own corner (bottom-LEFT) - one stack now */
-  el.innerHTML='<div style="flex:1"><b>'+n+'-day streak</b><small>'+sub+'</small>'+(n>=2?'<a class="mps-cta" href="/alerts/">Set a price alert →</a>':'')+'</div><span class="mps-x">×</span>';
+  else line=__esT_home("backToBackDays",'Back-to-back days. The chart noticed.');
+  var sub=n>=2?(line+__esT_home("setAPriceAlert",' Set a price alert so you never miss a move.')):__esT_home("welcomeBackShowUp",'Welcome back. Show up tomorrow and this becomes a streak.');
+  if(window.mpToast){window.mpToast({mark:String(n),kind:'record',ms:8500,dismissible:true,key:'streak',html:'<b style="color:#e9e7df">'+n+__esT_home("dayStreak",'-day streak</b><br>')+sub,action:(n>=2?{label:'Alerts',href:'/alerts/'}:null)});return;} /* the last card that lived in its own corner (bottom-LEFT) - one stack now */
+  el.innerHTML='<div style="flex:1"><b>'+n+__esT_home("dayStreak2",'-day streak</b><small>')+sub+'</small>'+(n>=2?__esT_home("setAPriceAlert2",'<a class="mps-cta" href="/alerts/">Set a price alert →</a>'):'')+'</div><span class="mps-x">×</span>';
   function hide(){el.classList.remove('show');setTimeout(function(){el.hidden=true;},400);}
   // Only the explicit CTA link navigates. Tapping anywhere else on the toast just dismisses it - it must NEVER hijack a tap meant for the page underneath (e.g. the trade button) and send it to /alerts.
   el.addEventListener('click',function(e){if(e.target.closest('.mps-cta'))return;hide();});
@@ -3499,8 +3505,8 @@ window.mpSrvOpen=function(payload,ok,fail){
     var u=new URL(location.href);var tok=u.searchParams.get('claim');if(!tok||!/^[a-z0-9]{6,48}$/i.test(tok))return;
     function cleanUrl(){try{u.searchParams.delete('claim');history.replaceState(null,'',u.pathname+(u.searchParams.toString()?'?'+u.searchParams.toString():'')+u.hash);}catch(e){}}
     function toast(){var go0=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};
-      if(window.mpToast){window.mpToast({mark:'✓',kind:'good',ms:6000,key:'tgclaim',msg:'Imported your Telegram trade.',action:{label:'My Trades',onClick:go0}});setTimeout(go0,700);return;}
-      var t=document.createElement('div');t.innerHTML='Imported your Telegram trade - open in <b>My Trades</b>.';t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
+      if(window.mpToast){window.mpToast({mark:'✓',kind:'good',ms:6000,key:'tgclaim',msg:__esT_home("importedYourTelegramTrade",'Imported your Telegram trade.'),action:{label:'My Trades',onClick:go0}});setTimeout(go0,700);return;}
+      var t=document.createElement('div');t.innerHTML=__esT_home("importedYourTelegramTrade2",'Imported your Telegram trade - open in <b>My Trades</b>.');t.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:120;background:#0a0b0d;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #c2f64a;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.35s;max-width:90vw;cursor:pointer';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});var go=function(){var b=document.querySelector('[data-mytrades]');if(b)b.click();};t.addEventListener('click',go);setTimeout(go,700);setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},400);},6000);}
     fetch('/api/tgclaim?token='+encodeURIComponent(tok)).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!j||!j.ok||!j.pos)return;var p=j.pos;
       var arr;try{arr=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){arr=[];}
@@ -3535,15 +3541,15 @@ window.mpSrvOpen=function(payload,ok,fail){
   // returns true if a new `side` trade on `sym` is allowed; otherwise shows the limit toast and returns false
   window.mpTradeGate=function(sym,side){
     var open=openTrades();
-    if(open.length>=MAX_TOTAL){window.mpLimitToast('Limit reached - '+MAX_TOTAL+' open trades is the max. Close some to open new ones.');return false;}
+    if(open.length>=MAX_TOTAL){window.mpLimitToast(__esT_home("limitReached",'Limit reached - ')+MAX_TOTAL+__esT_home("openTradesIsThe",' open trades is the max. Close some to open new ones.'));return false;}
     if(sym){var s=String(sym).toUpperCase();
       if(side){ // one-way mode: can't open the OPPOSITE direction on a pair you already hold open (no long+short hedge on the same coin)
         var want=(side==='short')?'short':'long';
         var hasOpp=open.some(function(e){return String(e.sym||'').toUpperCase()===s&&((e.side==='short'?'short':'long')!==want);});
-        if(hasOpp){window.mpLimitToast('You already have a '+(want==='long'?'SHORT':'LONG')+' '+s+' position open - close it before opening a '+(want==='long'?'LONG':'SHORT')+'.');return false;}
+        if(hasOpp){window.mpLimitToast(__esT_home("youAlreadyHaveA",'You already have a ')+(want==='long'?'SHORT':'LONG')+' '+s+__esT_home("positionOpenCloseIt",' position open - close it before opening a ')+(want==='long'?'LONG':'SHORT')+'.');return false;}
       }
       var n=open.filter(function(e){return String(e.sym||'').toUpperCase()===s;}).length;
-      if(n>=MAX_PAIR){window.mpLimitToast('Limit reached - max '+MAX_PAIR+' open '+s+' trades. Close one to open another.');return false;}}
+      if(n>=MAX_PAIR){window.mpLimitToast(__esT_home("limitReachedMax",'Limit reached - max ')+MAX_PAIR+' open '+s+__esT_home("tradesCloseOneTo",' trades. Close one to open another.'));return false;}}
     return true;
   };
 })();
@@ -3562,7 +3568,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=3aa4c7b3'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=c8306020'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }
@@ -3662,7 +3668,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     ov.querySelector('.mpcs-pnl').innerHTML='<span class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'−')+fm(Math.abs(pnl)).replace('-','')+'</span><small>ROE '+((m.roeNet*100)>=0?'+':'')+(m.roeNet*100).toFixed(2)+'%</small>';
     var f=pct/100,part=pnl*f,keepM=(m.margin||0)*(1-f);
     ov.querySelector('.mpcs-prev').innerHTML= pct>=100
-      ? 'Closes the whole position at '+fm(m.live)+'.'
+      ? __esT_home("closesTheWholePosition",'Closes the whole position at ')+fm(m.live)+'.'
       : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).';
     var go=ov.querySelector('.mpcs-go');go.textContent='Close '+pct+'%';go.className='mpcs-go '+(pnl>=0?'up':'dn');
   }
@@ -3671,8 +3677,8 @@ window.mpSrvOpen=function(payload,ok,fail){
     var d=jload(),tgt=null;for(var i=0;i<d.length;i++)if(d[i].id===id){tgt=d[i];break;}
     if(!tgt||tgt.status!=='open')return;
     if(tgt&&window.mpIsMktClosed&&window.mpIsMktClosed(tgt.sym)){
-      var _m=(window.mpMktClosedMsg?window.mpMktClosedMsg(String(tgt.sym||'').toUpperCase()):(tgt.sym+' is closed'));
-      try{(window.mpLimitToast||window.alert)(_m+' Your position cannot move while the exchange is shut, and exits fill when it reopens.');}catch(e){}
+      var _m=(window.mpMktClosedMsg?window.mpMktClosedMsg(String(tgt.sym||'').toUpperCase()):(tgt.sym+__esT_home("isClosed2",' is closed')));
+      try{(window.mpLimitToast||window.alert)(_m+__esT_home("yourPositionCannotMove",' Your position cannot move while the exchange is shut, and exits fill when it reopens.'));}catch(e){}
       return;
     }
     // legacy entries without qty AND margin can't be split meaningfully → close in full immediately (old behaviour)
@@ -3718,7 +3724,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(_tear)_tear();
     // confirm the close - the card just vanishing left users asking "where did my trade go?" (UX audit)
     try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
-      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' - saved to My Trades.');}catch(_){}
+      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+__esT_home("savedToMyTrades",' - saved to My Trades.'));}catch(_){}
   }
   // DESKTOP receipt-tear animation: on a FULL close, clone the just-closed ticket, tear off its bottom stub
   // along the perforation, then fly the top toward My Trades - so the close reads as "filed away", not "vanished".
@@ -3795,17 +3801,17 @@ window.mpSrvOpen=function(payload,ok,fail){
       var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
     var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'-';};
   var ov=null,curId=null,after=null,MAXL=3;
-  function rowHtml(p,pct){return '<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="price" value="'+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
+  function rowHtml(p,pct){return __esT_home("inputTypeTextInputmode",'<div class="mpss-row"><input type="text" inputmode="decimal" autocomplete="off" class="p" placeholder="price" value="')+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
       +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
       +'<div class="mpss-live"></div>'
-      +'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">Stop-loss levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add stop-loss</button></div>'
-      +'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">Take-profit levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add take-profit</button></div>'
-      +'<div class="mpss-hint">Each level closes its % of the position when the price touches it - 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>'
+      +__esT_home("stopLossLevelsAdd",'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">Stop-loss levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add stop-loss</button></div>')
+      +__esT_home("takeProfitLevelsAdd",'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">Take-profit levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add take-profit</button></div>')
+      +__esT_home("eachLevelClosesIts",'<div class="mpss-hint">Each level closes its % of the position when the price touches it - 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>')
       +'<div class="mpss-warn" hidden></div>'
-      +'<button type="button" class="mpcs-go up">Save SL / TP</button>'
+      +__esT_home("saveSlTp",'<button type="button" class="mpcs-go up">Save SL / TP</button>')
       +'</div>';
     document.body.appendChild(ov);
     ov.addEventListener('click',function(e){ if(e.target===ov){hide();return;}
@@ -3857,15 +3863,15 @@ window.mpSrvOpen=function(payload,ok,fail){
   function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
     var long=e.side!=='short',lv=live(e);
     var bad=[];var sls=collect(false,bad),tps=collect(true,bad);
-    if(bad.length){warn('\u201c'+bad[0]+'\u201d is not a price. Use digits, with . or , for the decimals.');return;} // never drop a level the trader cannot see was rejected
+    if(bad.length){warn('\u201c'+bad[0]+__esT_home("u201dIsNotA",'\u201d is not a price. Use digits, with . or , for the decimals.'));return;} // never drop a level the trader cannot see was rejected
     var had=(e.stop!=null||e.tp!=null||(e.sls&&e.sls.length)||(e.tps&&e.tps.length));
     if(!sls.length&&!tps.length&&!had){hide();return;} // nothing typed and nothing to clear: closing is not an instruction to wipe
     for(var i=0;i<sls.length;i++){var s=sls[i];
-      if(!isFinite(s.p)||!(s.p>0)){warn('Stop-loss price is not a number.');return;}
-      if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?'LONG every stop-loss must be BELOW':'SHORT every stop-loss must be ABOVE')+' the live price ('+fp(lv)+') - otherwise it would trigger instantly.');return;}}
+      if(!isFinite(s.p)||!(s.p>0)){warn(__esT_home("stopLossPriceIs",'Stop-loss price is not a number.'));return;}
+      if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?__esT_home("longEveryStopLoss",'LONG every stop-loss must be BELOW'):__esT_home("shortEveryStopLoss",'SHORT every stop-loss must be ABOVE'))+__esT_home("theLivePrice",' the live price (')+fp(lv)+') - otherwise it would trigger instantly.');return;}}
     for(var j=0;j<tps.length;j++){var t=tps[j];
-      if(!isFinite(t.p)||!(t.p>0)){warn('Take-profit price is not a number.');return;}
-      if(long?t.p<=lv:t.p>=lv){warn('For a '+(long?'LONG every take-profit must be ABOVE':'SHORT every take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}}
+      if(!isFinite(t.p)||!(t.p>0)){warn(__esT_home("takeProfitPriceIs",'Take-profit price is not a number.'));return;}
+      if(long?t.p<=lv:t.p>=lv){warn('For a '+(long?__esT_home("longEveryTakeProfit",'LONG every take-profit must be ABOVE'):__esT_home("shortEveryTakeProfit",'SHORT every take-profit must be BELOW'))+__esT_home("theLivePrice",' the live price (')+fp(lv)+').');return;}}
     function put(list,isTp){
       if(!list.length){ if(isTp){e.tp=null;delete e.tps;} else {e.stop=null;delete e.sls;} return; }
       if(list.length===1&&+list[0].pct>=100){ if(isTp){e.tp=+list[0].p;delete e.tps;} else {e.stop=+list[0].p;delete e.sls;} return; }
@@ -3899,7 +3905,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 })();
 
 ;/* $100k cap directly on the amount input (typing 250000 snaps to 100000; add() re-checks as a backstop) */
-(function(){var MAXT=100000,a=document.getElementById("planAmt"),_hT=0;if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT){a.value=String(MAXT);var n=Date.now();if(n-_hT>4000){_hT=n;if(window.mpLimitToast)window.mpLimitToast('Max trade size is $100,000.');}}});})(); /* explain the snap instead of changing the number under the user's fingers (UX audit) */
+(function(){var MAXT=100000,a=document.getElementById("planAmt"),_hT=0;if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT){a.value=String(MAXT);var n=Date.now();if(n-_hT>4000){_hT=n;if(window.mpLimitToast)window.mpLimitToast(__esT_home("maxTradeSizeIs2",'Max trade size is $100,000.'));}}});})(); /* explain the snap instead of changing the number under the user's fingers (UX audit) */
 
 ;/* ══════════ iOS leftover-zoom shield for the Browse panel (owner: "zumirani browse 10-20% posle charts") ══════════
    If the visual viewport is still scaled after a rotation, counter-transform the panel into the real on-screen
@@ -4016,7 +4022,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(!ctx||!ctx.anchor)return;
     var old=document.querySelector('.ctsg');if(old)old.remove();
     var p=document.createElement('div');p.className='ctsg';
-    p.innerHTML='<div class="ctsg-h"><b>New signal</b><button type="button" class="ctsg-x" aria-label="Close">×</button></div>'
+    p.innerHTML=__esT_home("newSignal",'<div class="ctsg-h"><b>New signal</b><button type="button" class="ctsg-x" aria-label="Close">×</button></div>')
       +'<div class="ctsg-seg"><button type="button" class="ctsg-side lg on" data-s="LONG">LONG</button><button type="button" class="ctsg-side sh" data-s="SHORT">SHORT</button></div>'
       +'<div class="ctsg-row2"><input class="ctsg-in" data-f="sym" placeholder="Coin (e.g. XRP)" maxlength="10" autocapitalize="characters" spellcheck="false"><select class="ctsg-in" data-f="tf"><option>15m</option><option selected>1h</option><option>4h</option><option>1d</option></select></div>'
       +'<div class="ctsg-grid">'
@@ -4044,15 +4050,15 @@ window.mpSrvOpen=function(payload,ok,fail){
       var err=q('.ctsg-err');err.textContent='';
       var sym=val('sym').toUpperCase().replace(/[^A-Z0-9]/g,'');
       var e=num('e'),tp1=num('tp1'),tp2=num('tp2'),sl=num('sl'),lev=Math.round(num('lev')||0);
-      if(sym.length<2){err.textContent='Enter the coin (e.g. XRP).';return;}
-      if(!e||!tp1||!tp2||!sl){err.textContent='Fill entry, TP1, TP2 and SL (numbers).';return;}
-      if(!(lev>=1&&lev<=125)){err.textContent='Max lev must be 1-125.';return;}
+      if(sym.length<2){err.textContent=__esT_home("enterTheCoinE",'Enter the coin (e.g. XRP).');return;}
+      if(!e||!tp1||!tp2||!sl){err.textContent=__esT_home("fillEntryTp1Tp2",'Fill entry, TP1, TP2 and SL (numbers).');return;}
+      if(!(lev>=1&&lev<=125)){err.textContent=__esT_home("maxLevMustBe",'Max lev must be 1-125.');return;}
       var long=side==='LONG';
-      if(long&&!(tp1>e&&tp2>=tp1&&sl<e)){err.textContent='For a LONG: TP1 above entry, TP2 above TP1, SL below entry.';return;}
-      if(!long&&!(tp1<e&&tp2<=tp1&&sl>e)){err.textContent='For a SHORT: TP1 below entry, TP2 below TP1, SL above entry.';return;}
+      if(long&&!(tp1>e&&tp2>=tp1&&sl<e)){err.textContent=__esT_home("forALongTp1",'For a LONG: TP1 above entry, TP2 above TP1, SL below entry.');return;}
+      if(!long&&!(tp1<e&&tp2<=tp1&&sl>e)){err.textContent=__esT_home("forAShortTp1",'For a SHORT: TP1 below entry, TP2 below TP1, SL above entry.');return;}
       var txt='[SIGNAL] '+side+' '+sym+'/USDT '+val('tf')+' | E '+e+' | TP1 '+tp1+' | TP2 '+tp2+' | SL '+sl+' | LEV '+lev;
-      if(txt.length>278){err.textContent='Too long - shorten the numbers.';return;}
-      if(!ctx.send(txt)){err.textContent='Chat is reconnecting - try again in a second.';return;}
+      if(txt.length>278){err.textContent=__esT_home("tooLongShortenThe",'Too long - shorten the numbers.');return;}
+      if(!ctx.send(txt)){err.textContent=__esT_home("chatIsReconnectingTry",'Chat is reconnecting - try again in a second.');return;}
       p.remove();
     });
     setTimeout(function(){var f=q('[data-f="sym"]');if(f)f.focus();},40);
@@ -4094,7 +4100,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     var n=ensure();if(!n)return;
     if(cls==='crypto'){n.classList.remove('on');return;}
     var nm=(window.mpMarketName&&window.mpMarketName(sym))||sym;
-    n.innerHTML='<img src="/assets/moon.png" alt=""><span class="t"><span class="k">MOON · REAL MARKETS</span>Trade <b>'+nm+'</b> for real on Moon - '+(CLSW[cls]||'markets')+', up or down, 24/7</span><span class="a">→</span>';
+    n.innerHTML=__esT_home("moonRealMarketsTrade",'<img src="/assets/moon.png" alt=""><span class="t"><span class="k">MOON · REAL MARKETS</span>Trade <b>')+nm+__esT_home("forRealOnMoon",'</b> for real on Moon - ')+(CLSW[cls]||'markets')+', up or down, 24/7</span><span class="a">→</span>';
     n.classList.add('on');
   };
   function wire(){var ps=document.getElementById('planSym');if(!ps)return;ps.addEventListener('change',function(){setTimeout(window._mpMoonNudge,0);});window._mpMoonNudge();}

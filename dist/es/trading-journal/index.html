@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_tradingjournalindex = {"thisWeek":"esta semana","thisMonth":"este mes","thisYear":"este año","allTime":"todo el tiempo","closedTrade":" operación cerrada","noTradesInThe":"<b>No hay operaciones en el período seleccionado.</b> Elige un rango más amplio arriba.","tooEarlyToTell":"<b>Aún es pronto para saberlo.</b> ","positiveEdgeYourExpectancy":"<b>Ventaja positiva.</b> Tu expectativa es ","perTradeAndYour":" por operación y tu profit factor es ","overThisSampleYour":" - en esta muestra, tus operaciones generan ganancias.","roughlyBreakEvenExpectancy":"<b>Prácticamente en el punto de equilibrio.</b> La expectativa es ","tradeAndProfitFactor":"/operación y profit factor ","noEdgeYetExpectancy":"<b>Aún sin ventaja.</b> La expectativa es ","perTradeAndProfit":" por operación y profit factor ","thisSampleLosesMoney":" - esta muestra pierde dinero. Revisa tus peores operaciones abajo.","noEdgeYet":"Aún sin ventaja","winRate":"Tasa de acierto","bestTrade":"Mejor operación","closedTrades":"Operaciones cerradas","expectancyTrade":"Expectativa / operación","avgWin":"Ganancia media","avgLoss":"Pérdida media","worstTrade":"Peor operación","maxWinStreak":"Racha máx. de victorias","maxLossStreak":"Racha máx. de pérdidas","mostTraded":"Más operado","winBClass":"% de aciertos · <b class=\"","coinTradesWinRate":"<thead><tr><th>Moneda</th><th>Operaciones</th><th>Tasa de acierto</th><th>P&amp;L neto</th></tr></thead><tbody>","allCoins":"<option value=\"\">Todas las monedas</option>","profitFactor":" · factor de beneficio ","profitFactor2":"Factor de beneficio"};
+function __esT_tradingjournalindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_tradingjournalindex[k] != null) return __esD_tradingjournalindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -331,7 +337,7 @@
   master.forEach(function(e){e._pnl=+e.pnl||0;e._roe=(+e.margin>0)?e._pnl/(+e.margin)*100:0;e._long=(e.side!=='short');e._ts=(+e.closeTs||+e.closedTs||+e.ts||0);});
   $('out').hidden=false;
   var period='all';
-  var PERIOD_LBL={day:'today',week:'this week',month:'this month',year:'this year',all:'all time'};
+  var PERIOD_LBL={day:'today',week:__esT_tradingjournalindex("thisWeek",'this week'),month:__esT_tradingjournalindex("thisMonth",'this month'),year:__esT_tradingjournalindex("thisYear",'this year'),all:__esT_tradingjournalindex("allTime",'all time')};
   function durS(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
   function periodStart(p){var d=new Date();
     if(p==='day'){d.setHours(0,0,0,0);return d.getTime();}
@@ -341,10 +347,10 @@
     return 0;}
   function rebuild(){
   var all=master.filter(function(e){return e._ts>=periodStart(period);});
-  var _c=$('jpCount');if(_c)_c.textContent=all.length+' of '+master.length+' closed trade'+(master.length===1?'':'s');
+  var _c=$('jpCount');if(_c)_c.textContent=all.length+' of '+master.length+__esT_tradingjournalindex("closedTrade",' closed trade')+(master.length===1?'':'s');
   if(!all.length){
     $('kpis').innerHTML='<div class="kpi" style="grid-column:1/-1;text-align:center"><div class="l" style="font-size:13px;padding:12px 8px">No closed trades in this period - pick a wider range.</div></div>';
-    $('verdict').className='verdict flat';$('verdictTxt').innerHTML='<b>No trades in the selected period.</b> Choose a wider range above.';
+    $('verdict').className='verdict flat';$('verdictTxt').innerHTML=__esT_tradingjournalindex("noTradesInThe",'<b>No trades in the selected period.</b> Choose a wider range above.');
     ['eq','hist','dd','bySide','form','bySym','trades'].forEach(function(_id){var _e=$(_id);if(_e)_e.innerHTML='';});
     var _ev=$('eqVal');if(_ev)_ev.innerHTML='';var _dl=$('ddLegend');if(_dl)_dl.innerHTML='';
     return;
@@ -373,10 +379,10 @@
   // edge verdict - below 10 trades a verdict is statistically meaningless (and "you're a loser" at n=1 is just mean)
   var posEdge=exp>0&&pf>1;
   var vEl=$('verdict'),vTxt=$('verdictTxt');
-  if(all.length<10){vEl.className='verdict flat';vTxt.innerHTML='<b>Too early to tell.</b> '+all.length+' closed trade'+(all.length===1?'':'s')+' isn\'t enough to judge an edge - most metrics need 10+ trades to mean anything. Keep practicing; the verdict unlocks as your sample grows.';}
-  else if(posEdge){vEl.className='verdict good';vTxt.innerHTML='<b>Positive edge.</b> Your expectancy is '+money(exp)+' per trade and your profit factor is '+(isFinite(pf)?pf.toFixed(2):'∞')+' - over this sample, your trades make money.';}
-  else if(exp>=0||pf>=1){vEl.className='verdict flat';vTxt.innerHTML='<b>Roughly break-even.</b> Expectancy is '+money(exp)+'/trade and profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+'. The edge is marginal - tighten your losers or let winners run.';}
-  else{vEl.className='verdict bad';vTxt.innerHTML='<b>No edge yet.</b> Expectancy is '+money(exp)+' per trade and profit factor '+pf.toFixed(2)+' - this sample loses money. Review your worst trades below.';}
+  if(all.length<10){vEl.className='verdict flat';vTxt.innerHTML=__esT_tradingjournalindex("tooEarlyToTell",'<b>Too early to tell.</b> ')+all.length+__esT_tradingjournalindex("closedTrade",' closed trade')+(all.length===1?'':'s')+' isn\'t enough to judge an edge - most metrics need 10+ trades to mean anything. Keep practicing; the verdict unlocks as your sample grows.';}
+  else if(posEdge){vEl.className='verdict good';vTxt.innerHTML=__esT_tradingjournalindex("positiveEdgeYourExpectancy",'<b>Positive edge.</b> Your expectancy is ')+money(exp)+__esT_tradingjournalindex("perTradeAndYour",' per trade and your profit factor is ')+(isFinite(pf)?pf.toFixed(2):'∞')+__esT_tradingjournalindex("overThisSampleYour",' - over this sample, your trades make money.');}
+  else if(exp>=0||pf>=1){vEl.className='verdict flat';vTxt.innerHTML=__esT_tradingjournalindex("roughlyBreakEvenExpectancy",'<b>Roughly break-even.</b> Expectancy is ')+money(exp)+__esT_tradingjournalindex("tradeAndProfitFactor",'/trade and profit factor ')+(isFinite(pf)?pf.toFixed(2):'∞')+'. The edge is marginal - tighten your losers or let winners run.';}
+  else{vEl.className='verdict bad';vTxt.innerHTML=__esT_tradingjournalindex("noEdgeYetExpectancy",'<b>No edge yet.</b> Expectancy is ')+money(exp)+__esT_tradingjournalindex("perTradeAndProfit",' per trade and profit factor ')+pf.toFixed(2)+__esT_tradingjournalindex("thisSampleLosesMoney",' - this sample loses money. Review your worst trades below.');}
 
   // extra headline stats
   var totalVol=all.reduce(function(s,e){return s+((+e.margin||0)*((+e.lev>0)?+e.lev:1));},0);
@@ -390,13 +396,13 @@
     var sc=$('sumScope');if(sc)sc.textContent='· '+PERIOD_LBL[period];
     var netEl=$('sumNet');if(netEl){netEl.textContent=(net>=0?'+':'−')+money(Math.abs(net)).replace('-','');netEl.style.color=net>=0?'var(--up)':'var(--red)';}
     var js=$('jSummary');if(js)js.className='jsum '+(net>=0?'pos':'neg');
-    var sub=$('sumSub');if(sub)sub.textContent=wins.length+' win'+(wins.length===1?'':'s')+' / '+losses.length+' loss'+(losses.length===1?'':'es')+' · profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+' · '+all.length+' closed';
-    var bd=$('sumBadge');if(bd){if(all.length<10){bd.className='jsum-badge flat';bd.textContent='Building sample';}else if(posEdge){bd.className='jsum-badge good';bd.textContent='Positive edge';}else if(exp>=0||pf>=1){bd.className='jsum-badge flat';bd.textContent='Break-even';}else{bd.className='jsum-badge bad';bd.textContent='No edge yet';}}
+    var sub=$('sumSub');if(sub)sub.textContent=wins.length+' win'+(wins.length===1?'':'s')+' / '+losses.length+' loss'+(losses.length===1?'':'es')+__esT_tradingjournalindex("profitFactor",' · profit factor ')+(isFinite(pf)?pf.toFixed(2):'∞')+' · '+all.length+' closed';
+    var bd=$('sumBadge');if(bd){if(all.length<10){bd.className='jsum-badge flat';bd.textContent='Building sample';}else if(posEdge){bd.className='jsum-badge good';bd.textContent='Positive edge';}else if(exp>=0||pf>=1){bd.className='jsum-badge flat';bd.textContent='Break-even';}else{bd.className='jsum-badge bad';bd.textContent=__esT_tradingjournalindex("noEdgeYet",'No edge yet');}}
     function sst(v,l,c){return '<div class="jsum-st"><div class="v"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
     var st=$('sumStats');if(st)st.innerHTML=
-      sst(wr.toFixed(0)+'%','Win rate',wr>=50?'var(--up)':'')
+      sst(wr.toFixed(0)+'%',__esT_tradingjournalindex("winRate",'Win rate'),wr>=50?'var(--up)':'')
       +sst(String(all.length),'Trades','')
-      +sst((best._pnl>=0?'+':'−')+money(Math.abs(best._pnl)).replace('-',''),'Best trade','var(--up)')
+      +sst((best._pnl>=0?'+':'−')+money(Math.abs(best._pnl)).replace('-',''),__esT_tradingjournalindex("bestTrade",'Best trade'),'var(--up)')
       +sst(pct(avgRoe),'Avg ROE',avgRoe>=0?'var(--up)':'var(--red)')
       +sst(durS(avgHold),'Avg hold','')
       +sst(money(totalVol),'Volume','');
@@ -405,21 +411,21 @@
   // KPIs
   function kpi(v,l,cls){return '<div class="kpi '+(cls||'')+'"><div class="v '+(cls==='pos'?'pos':cls==='neg'?'neg':'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
   $('kpis').innerHTML=
-    kpi(all.length,'Closed trades','')
-    +kpi(wr.toFixed(0)+'%','Win rate',wr>=50?'pos':'')
+    kpi(all.length,__esT_tradingjournalindex("closedTrades",'Closed trades'),'')
+    +kpi(wr.toFixed(0)+'%',__esT_tradingjournalindex("winRate",'Win rate'),wr>=50?'pos':'')
     +kpi(money(net),'Net P&amp;L',net>=0?'pos':'neg')
-    +kpi(isFinite(pf)?pf.toFixed(2):'∞','Profit factor',pf>=1?'pos':'neg')
-    +kpi(money(exp),'Expectancy / trade',exp>=0?'pos':'neg')
+    +kpi(isFinite(pf)?pf.toFixed(2):'∞',__esT_tradingjournalindex("profitFactor2",'Profit factor'),pf>=1?'pos':'neg')
+    +kpi(money(exp),__esT_tradingjournalindex("expectancyTrade",'Expectancy / trade'),exp>=0?'pos':'neg')
     +kpi(pct(avgRoe),'Avg ROE',avgRoe>=0?'pos':'neg')
-    +kpi(money(avgW),'Avg win','pos')
-    +kpi(money(avgL),'Avg loss','neg')
-    +kpi(money(best._pnl),'Best trade','pos')
-    +kpi(money(worst._pnl),'Worst trade','neg')
-    +kpi(maxW,'Max win streak','pos')
-    +kpi(maxL,'Max loss streak','neg')
+    +kpi(money(avgW),__esT_tradingjournalindex("avgWin",'Avg win'),'pos')
+    +kpi(money(avgL),__esT_tradingjournalindex("avgLoss",'Avg loss'),'neg')
+    +kpi(money(best._pnl),__esT_tradingjournalindex("bestTrade",'Best trade'),'pos')
+    +kpi(money(worst._pnl),__esT_tradingjournalindex("worstTrade",'Worst trade'),'neg')
+    +kpi(maxW,__esT_tradingjournalindex("maxWinStreak",'Max win streak'),'pos')
+    +kpi(maxL,__esT_tradingjournalindex("maxLossStreak",'Max loss streak'),'neg')
     +kpi(durS(avgHold),'Avg hold time','')
     +kpi(money(totalVol),'Total volume','')
-    +kpi(topSym+(topSymN?' ·'+topSymN:''),'Most traded','');
+    +kpi(topSym+(topSymN?' ·'+topSymN:''),__esT_tradingjournalindex("mostTraded",'Most traded'),'');
 
   // ===== equity curve =====
   (function(){
@@ -498,7 +504,7 @@
     var L=stat(true),S=stat(false);
     function bar(nm,st,col){
       return '<div class="sbar"><div class="top"><span class="nm" style="color:'+col+'">'+nm+'</span>'
-        +'<span class="meta">'+st.n+' trades · '+st.wr.toFixed(0)+'% win · <b class="'+(st.p>=0?'pos':'neg')+'">'+money(st.p)+'</b></span></div>'
+        +'<span class="meta">'+st.n+' trades · '+st.wr.toFixed(0)+__esT_tradingjournalindex("winBClass",'% win · <b class="')+(st.p>=0?'pos':'neg')+'">'+money(st.p)+'</b></span></div>'
         +'<div class="track"><i style="width:'+(st.n?st.wr:0).toFixed(0)+'%;background:'+col+'"></i></div></div>';
     }
     $('bySide').innerHTML=bar('LONG',L,'#37d398')+bar('SHORT',S,'#ff6258');
@@ -517,7 +523,7 @@
     var sym={};
     all.forEach(function(e){var s=e.sym||'?';var o=sym[s]=sym[s]||{n:0,w:0,p:0};o.n++;if(e._pnl>0)o.w++;o.p+=e._pnl;});
     var keys=Object.keys(sym).sort(function(a,b){return sym[b].p-sym[a].p;});
-    var rows='<thead><tr><th>Coin</th><th>Trades</th><th>Win rate</th><th>Net P&amp;L</th></tr></thead><tbody>';
+    var rows=__esT_tradingjournalindex("coinTradesWinRate",'<thead><tr><th>Coin</th><th>Trades</th><th>Win rate</th><th>Net P&amp;L</th></tr></thead><tbody>');
     keys.forEach(function(s){var o=sym[s];var w=o.n?o.w/o.n*100:0;
       rows+='<tr><td>'+s+'</td><td>'+o.n+'</td><td class="'+(w>=50?'pos':'')+'">'+w.toFixed(0)+'%</td><td class="'+(o.p>=0?'pos':'neg')+'">'+money(o.p)+'</td></tr>';});
     rows+='</tbody>';
@@ -533,7 +539,7 @@
     var sortKey='date',sortDir=-1,fSym='',fSide='';
     // fill the coin filter
     var syms={};all.forEach(function(e){if(e.sym)syms[e.sym]=1;});
-    var fs=$('trFsym');fs.innerHTML='<option value="">All coins</option>';Object.keys(syms).sort().forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;fs.appendChild(o);});
+    var fs=$('trFsym');fs.innerHTML=__esT_tradingjournalindex("allCoins",'<option value="">All coins</option>');Object.keys(syms).sort().forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;fs.appendChild(o);});
     function view(){var v=all.filter(function(e){return (!fSym||e.sym===fSym)&&(!fSide||(fSide==='long')===!!e._long);});
       var col=COLS.filter(function(c){return c[0]===sortKey;})[0];
       v.sort(function(a,b){var x=col[2](a),y=col[2](b);return (x<y?-1:x>y?1:0)*sortDir;});return v;}
@@ -574,7 +580,7 @@
   rebuild();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b622878d"></script>
-<script defer src="/assets/mp-nav.js?v=956f7091"></script>
+<script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
+<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
 </body>
 </html>

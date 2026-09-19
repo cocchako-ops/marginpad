@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpauth = {"bronzeIn":"</span><div class=\"pb-t\">Bronce en <b>","lesson25CheckIn":"<div class=\"pb-src\"><span>lección <b>+25</b></span><span>check-in <b>+20</b></span><span>operación cerrada <b>+3</b></span><span>cierre en verde <b>+15</b> más</span></div>","bronzeUnlocksTheFaucet":"<div class=\"pb-why\">Bronce desbloquea el faucet, las misiones diarias y los retiros. <a href=\"/academy/\">Academia</a> es el camino más rápido.</div>","welcomeAboard":"Bienvenido a bordo","signedIn":"Sesión iniciada","yourGuestTradeCame":"Tu operación como invitado te acompañó.","guestTradesCameWith":" operaciones como invitado te acompañaron.","theyAreInYour":"<div class=\"mpco-b\">Ya están en tu diario y cuentan: el XP, los récords y las tablas de temporada empiezan desde aquí.</div>","seeMyTradesGot":"<div class=\"mpco-a\"><button type=\"button\" class=\"mpco-go\">Ver My Trades</button><button type=\"button\" class=\"mpco-no\">Entendido</button></div>","supportLoadingYourConversa":"<h3 class=\"mpa-h\">Soporte</h3><p class=\"mpa-sub\">Cargando tus conversaciones…</p>","u2190BackToProfile":"<button class=\"mpa-link\" id=\"mpaSupBack\" type=\"button\">← Volver al perfil</button>","u2190AllConversations":"<button class=\"mpa-link\" id=\"mpaSupBack\" type=\"button\">← Todas las conversaciones</button>","failedU2014TryAgain":"<span style=\"color:#ffb347\">Error — inténtalo de nuevo.</span>","networkError":"<span style=\"color:#ffb347\">Error de red.</span>","imageTooBigOr":"<span style=\"color:#ffb347\">Imagen demasiado grande o no compatible.</span>","newConversationTellUs":"<h3 class=\"mpa-h\">Nueva conversación</h3><p class=\"mpa-sub\">Cuéntanos qué pasó — te respondemos a <b>","yourEmail":"tu correo","usuallyWithinADay":"</b>, normalmente en menos de un día.</p>","allConversations":"Todas las conversaciones","writeSomethingFirst":"Escribe algo primero.","failedU2014TryAgain2":"Error — inténtalo de nuevo.","networkError2":"Error de red.","tradeClosed":"Operación cerrada","winningTrade":"Operación ganadora","dailyCheckIn":"Check-in diario","streakBonus":"Bono de racha","faucetClaim":"Reclamo del faucet","exchangeSignUp":"Registro en exchange","competitionPrize":"Premio de la competencia","usernameSet":"Nombre de usuario establecido","signedUp":"Cuenta creada","duelWon":"Duelo ganado","duelPot":"Bolsa del duelo","duelStake":"Apuesta del duelo","backToProfile":"<button class=\"mpa-link\" id=\"mpaXpBack\" type=\"button\">← Volver al perfil</button>","pleaseSignInAgain":"<div class=\"mpa-xp-empty\">Vuelve a iniciar sesión.</div>","xpBalance":"</b> saldo de XP","noXpYetClose":"<div class=\"mpa-xp-empty\">Aún no tienes XP - cierra una operación ganadora en simulado, termina una lección de la Academia, mantén una racha diaria o reclama una recompensa para empezar a ganar.</div>","couldNotLoadYour":"<div class=\"mpa-xp-empty\">No se pudo cargar tu historial de XP - inténtalo de nuevo.</div>","messagesLoadingBackTo":"<h3 class=\"mpa-h\">Mensajes</h3><div class=\"mpa-ib\" id=\"mpaIb\"><div class=\"mpa-xp-empty\">Cargando…</div></div><button class=\"mpa-link\" id=\"mpaIbBack\" type=\"button\">← Volver al perfil</button>","noMessagesYetOpen":"<div class=\"mpa-xp-empty\">Aún no tienes mensajes. Abre el perfil de un trader y toca <b>Message</b> para iniciar un chat - puedes escribir a personas que sigues (o que te siguen).</div>","couldNotLoadYour2":"<div class=\"mpa-xp-empty\">No se pudieron cargar tus mensajes.</div>","youCanOnlyChange":"Solo puedes modificar tus propios mensajes","tooLateToEdit":"Ya no puedes editar ese mensaje","thatMessageIsGone":"Ese mensaje ya no existe","thatDidNotGo":"Eso no se envió","inputClassMpaIn":"<div class=\"mpa-dm-form\"><input class=\"mpa-in\" id=\"mpaDmIn\" placeholder=\"Mensaje a @","maxlength1000AutocompleteO":"…\" maxlength=\"1000\" autocomplete=\"off\"><button class=\"mpa-dm-send\" id=\"mpaDmSend\" type=\"button\">Enviar</button></div></div>","deleteThisMessage":"¿Eliminar este mensaje?","editYourMessage":"Edita tu mensaje","noMessagesYetSay":"<div class=\"mpa-dm-empty\">Aún no hay mensajes - saluda</div>","userNotFound":"Usuario no encontrado.","couldNotLoadThis":"No se pudo cargar este chat.","youCanMessageThis":"<div class=\"mpa-dm-warn\">Puedes escribir a este trader cuando lo sigas (o él te siga a ti). Abre su perfil y toca Seguir primero.</div>","couldNotLoadThis2":"<div class=\"mpa-dm-empty\">No se pudo cargar este chat.</div>","followThisTraderFirst":"Sigue a este trader primero para poder escribirle.","slowDownAMoment":"Espera un momento.","youVeHitToday":"Alcanzaste el límite de mensajes de hoy.","yourAccountCanT":"Tu cuenta no puede enviar mensajes ahora mismo.","setAUsernameFirst":"Elige un nombre de usuario primero (en tu perfil).","couldNotSendTry":"No se pudo enviar - inténtalo de nuevo.","networkErrorTryAgain":"<div class=\"mpa-dm-warn\">Error de red - inténtalo de nuevo.</div>","partiallyClosed":"<b>Cerrada parcialmente</b> ","liquidatedOn":"<b class=\"fd-liq\">Liquidado</b> en ","wonOn":"<b class=\"fd-win\">Ganó</b> en ","noTradesYetFrom":"Aún no hay operaciones de los traders que sigues - vuelve pronto.","youReNotFollowing":"Todavía no sigues a nadie. Abre el perfil de un trader desde la clasificación y toca <b>Seguir</b> para ver sus operaciones aquí.","titleMessage":"\" title=\"Mensaje\"></button></div></div>","couldNotLoadYour3":"<div class=\"mpa-xp-empty\">No se pudo cargar tu feed.</div>","winRate":"Tasa de acierto","biggestWin":"Mayor ganancia","roeDuel":"Duelo de ROE","highestSingleTradeRoe":"Gana el mayor ROE% en una sola operación","profitDuel":"Duelo de Ganancias","mostRealizedProfitWins":"Gana quien realice más ganancia ($)","higherEndingBalanceWins":"Gana el mayor saldo final - si vuelas la cuenta, quedas fuera","longestRunOfWinning":"Gana la racha más larga de operaciones ganadoras","bestRoeInsideYour":"Mejor ROE en tus primeras operaciones","bestWinRateWins":"Gana la mejor tasa de acierto (mín. 5 operaciones)","biggestSingleWinningTrade":"Gana la operación ganadora más grande","mostRealizedProfitWins2":"Gana quien realice más ganancia","higherEndingBalanceWins2":"Gana el mayor saldo final - volar la cuenta te elimina","bestRoeInYour":"Gana el mejor ROE en tus primeras operaciones","loadingBackToProfile":"<div class=\"mpa-du\" id=\"mpaDu\"><div class=\"mpa-xp-empty\">Cargando…</div></div><button class=\"mpa-link\" id=\"mpaDuBack\" type=\"button\">← Volver al perfil</button>","challengedYou":" te retó</b><span>","runsFor":"<div class=\"mpa-di-terms\"><span class=\"mpa-di-tm\"><i>Dura</i>","anyCoin":"Cualquier moneda","noStake":"<span>Sin apuesta</span>","youChallenged":"<div class=\"mpa-du-r\"><div class=\"mpa-du-b\"><div class=\"mpa-du-nm\">Retaste a @","youVs":"<div class=\"mpa-du-r\"><div class=\"mpa-du-b\"><div class=\"mpa-du-nm\">Tú vs @","duelFirstTaker":" duelo - primero en aceptar</span></div></div>","yourOpenChallenge":"<div class=\"mpa-du-r\"><div class=\"mpa-du-b\"><div class=\"mpa-du-nm\">Tu reto abierto</div><div class=\"mpa-du-met\">","waitingForATaker":" · esperando a que alguien acepte</div></div><button class=\"mpa-du-n\" data-ducxl=\"","noDuelsYetOpen":"<div class=\"mpa-xp-empty\">Aún no tienes duelos. Abre el perfil de un trader desde la clasificación y toca <b style=\"color:#f5a623\">Duelo</b> para desafiarlo.</div>","openChallengesFirstTaker":"Retos abiertos - el primero en aceptar se queda el lugar","yourOpenPosts":"Tus publicaciones abiertas","waitingForReply":"Esperando respuesta","alreadyTaken":"Ya fue aceptado","liveDuelWithThem":"Duelo en vivo con ellos","tryAgain":"Inténtalo de nuevo","alreadyLive":"Ya está en curso","atDuelLimit":"Límite de duelos alcanzado","couldNotLoadYour4":"<div class=\"mpa-xp-empty\">No se pudieron cargar tus duelos.</div>","onFormPutThat":"En racha. Pon esa racha en juego - reta a alguien a un duelo.","youAlreadyHaveA":"Ya tienes un duelo en vivo con este trader.","challengeLimitForToday":"Límite de retos por hoy (","premiumRaisesItTo":" - Premium lo sube a 20 por día","youAlreadyHaveAn":"Ya tienes un reto abierto en la tabla","premiumAllows3At":" - Premium permite 3 a la vez","followThisTraderFirst2":"Sigue a este trader primero para poder retarlo.","setAUsernameFirst2":"Elige un nombre de usuario primero.","youAreAtYour":"Alcanzaste tu límite de duelos en vivo","premiumRaisesItTo2":" - Premium lo sube a 10","notEnoughTicksYou":"No tienes suficientes Ticks - necesitas ","butHave":" pero tienes ","yourFreePremiumFormat":"Ya usaste tu duelo gratuito en formato Premium de esta semana. Premium los hace ilimitados.","thatIsAPremium":"Ese es un tipo de duelo Premium.","yourAccountCannotStart":"Tu cuenta no puede iniciar duelos en este momento.","couldNotSendThe":"No se pudo enviar el reto.","noStake2":"Sin apuesta","yourXp":"<div class=\"mpa-stk-info\"><span>Tu XP: <b>","postToTheBoard":"Publicar en la tabla","sendChallenge":"Enviar reto","fasterDuelRounds":"Rondas de duelo más rápidas","postedItIsOn":"Publicado. Ya está en la tabla - el primero en aceptar pone en marcha el reloj.","challengeSentTo":"Reto enviado a @","networkErrorTryAgain2":"<span style=\"color:#ffb347\">Error de red - inténtalo de nuevo.</span>","imageIsTooLarge":"La imagen es demasiado grande (máx. 12 MB).","couldNotCompressThat":"No se pudo comprimir esa imagen - prueba con una más simple.","couldNotReadThat":"No se pudo leer esa imagen.","couldNotReadThat2":"No se pudo leer ese archivo.","balanceModeCheckingYour":"<h3 class=\"mpa-h\">Balance Mode</h3><p class=\"mpa-sub\">Comprobando tu membresía…</p>","unlockBalanceMode":"Desbloquea Balance Mode","balanceModeIsOn":"Balance Mode está <b>ACTIVADO</b> - estás operando con un <b>$","portfolioItShowsAt":"</b> de portafolio. Aparece en la parte superior de <b>My Trades</b>.","balanceModeIsOff":"Balance Mode está <b>DESACTIVADO</b> - operar en simulado normal, sin límite de saldo.","howYourBalanceGrows":"<div class=\"bal-econ\"><div class=\"bal-econ-h\">Cómo crece tu saldo</div><div class=\"bal-econ-r\"><b>$10,000</b><span>para empezar - solo por ser VIP</span></div><div class=\"bal-econ-r\"><b>+$10,000</b><span>cada nuevo día que te presentas y operas</span></div><div class=\"bal-econ-r\"><b>+ bono</b><span>por completar tus misiones diarias</span></div></div>","resetBalanceTo10":"Reiniciar saldo a $10,000</button>","resetYourBalanceBack":"¿Reiniciar tu saldo a $10,000? Tus operaciones abiertas en Balance Mode seguirán abiertas.","7DayStreak":"Racha de 7 días","30DayStreak":"Racha de 30 días","100DayStreak":"Racha de 100 días","10hOnSite":"10h en el sitio","100hOnSite":"100h en el sitio","theCloser":"El Cerrador","6MonthsOnMarginpad":"6 meses en MarginPad","500hOnSite":"500h en el sitio","giftedByTheHouse":"Regalo de la casa","season1HighestRoe":"Temporada #1 - Mayor ROE","season1WinRate":"Temporada #1 - Tasa de acierto","season1Xp":"Temporada #1 - XP","season1GreenDays":"Temporada #1 - Green Days","frameForYourPublic":"<div class=\"mpa-frhead\"><p class=\"mpa-sub\">Marco para tu tarjeta pública de trader.</p>","yoursAll":"<span class=\"mpa-frseg\" id=\"mpaFrSeg\"><button type=\"button\" data-frv=\"mine\">TUYOS</button><button type=\"button\" data-frv=\"all\">TODOS</button></span></div>","changeProfilePicture":"<span>Cambiar foto de perfil</span>","onlyTheClassicFrame":"<div class=\"mpa-frnone\">Por ahora solo tienes el marco Classic. Sube de nivel, hazte Premium o abre The Vault para desbloquear más - cambia a TODOS para ver lo que hay.</div>","frameEquippedYourTrader":"<span style=\"color:#34d99a\">¡Marco equipado! Tu tarjeta de trader está actualizada.</span>","youDoNotOwn":"Todavía no tienes ese marco.","couldNotEquipTry":"No se pudo equipar - inténtalo de nuevo.","profilePictureSquareWorks":"<div class=\"mpa-avside\"><div class=\"mpa-avttl\">Foto de perfil</div><div class=\"mpa-avsub\">Lo ideal es cuadrada · JPG/PNG/WebP</div><div class=\"mpa-avbtns\"><button type=\"button\" class=\"mpa-avbtn\" id=\"mpaAvPick\">Subir</button><button type=\"button\" class=\"mpa-avbtn ghost\" id=\"mpaAvClear\"","savedYourTraderCard":"<span style=\"color:#34d99a\">¡Guardado! Tu tarjeta de trader está actualizada.</span>","couldNotSaveTry":"<span style=\"color:#ffb347\">No se pudo guardar - inténtalo de nuevo.</span>","notificationsLoadingBackTo":"<h3 class=\"mpa-h\">Notificaciones</h3><div class=\"mpa-nf\" id=\"mpaNf\"><div class=\"mpa-xp-empty\">Cargando…</div></div><button class=\"mpa-link\" id=\"mpaNfBack\" type=\"button\">← Volver al perfil</button>","noNotificationsYetFollows":"<div class=\"mpa-xp-empty\">Aún no tienes notificaciones. Aquí aparecerán nuevos seguidores, mensajes, menciones @ y resultados de duelos.</div>","couldNotLoadNotifications":"<div class=\"mpa-xp-empty\">No se pudieron cargar las notificaciones.</div>","todaySMarketYour":"El mercado de hoy, tus posiciones y tu temporada en una sola tarjeta","withinTheHour":" dentro de la hora","justNow":"justo ahora","accountSuspendedYourMargin":"<h3 class=\"mpa-h\">Cuenta suspendida</h3><p class=\"mpa-sub\">Tu cuenta de MarginPad ha sido suspendida. Si crees que es un error, contacta a <b>support@marginpad.io</b>.</p>","seasonPAmpL":"P&amp;L de temporada","editProfile":"Editar perfil","signOut":"Cerrar sesión</button>","320LettersNumbers":"3–20 letras, números o _","thatUsernameIsTaken":"Ese nombre de usuario ya está en uso.","pleaseSignInAgain2":"Vuelve a iniciar sesión.","couldNotSave":"No se pudo guardar.","signInOrSign":"Inicia sesión o crea una cuenta","enterYourEmailAnd":"Ingresa tu correo y te enviaremos un código de 6 dígitos. Sin contraseña.","sendCode":"Enviar código","optionalMarginpadWorksWith":"Opcional - MarginPad funciona sin necesidad de cuenta. Usamos tu correo solo para guardar tu progreso.","enterAValidEmail":"Ingresa un correo válido.","sBeforeRequestingAnother":"s antes de poder pedir otro código.","tooManyCodesToday":"Demasiados códigos hoy - inténtalo de nuevo mañana.","signInIsNot":"El inicio de sesión no está disponible en este momento.","couldNotSendThe2":"No se pudo enviar el código. Inténtalo de nuevo.","networkErrorTryAgain3":"Error de red - inténtalo de nuevo.","checkYourInbox":"Revisa tu correo","weSentA6":"Enviamos un código de 6 dígitos a","noEmailCheckYour":"¿No te llegó el correo? Revisa tu carpeta de <b>spam / correo no deseado</b> - a veces nuestros códigos llegan ahí.","useADifferentEmail":"← usar otro correo","enterThe6Digit":"Ingresa el código de 6 dígitos.","accountCreated":"Cuenta creada ✓","signedIn2":"Sesión iniciada ✓","wrongCode":"Código incorrecto","triesLeft":" intentos restantes","codeExpiredRequestA":"El código expiró - solicita uno nuevo.","tooManyTriesRequest":"Demasiados intentos - solicita un nuevo código.","couldNotVerifyTry":"No se pudo verificar. Inténtalo de nuevo.","signIn":"Iniciar sesión","cascadeRadarLiquidationMag":"Cascade Radar, Liquidation Magnet, Market Brain y Market Memory - lecturas construidas sobre nuestros propios datos de liquidaciones que ningún otro gráfico tiene, cada una con su propia tasa de acierto.","theFullInteractiveMap":"El mapa interactivo completo de dónde se liquidan las posiciones apalancadas - en escritorio y móvil, sin límites.","askAiOnYour":"Ask AI en tus gráficos","aBuiltInAnalyst":"Un analista integrado que lee el gráfico frente a ti y dibuja la operación sobre él - una lectura al día en Premium, 50 en Premium Plus.","giveYourselfAPortfolio":"Date un saldo de portafolio y opéralo como una cuenta real. Tu saldo, tu equity y tus estadísticas viven en My Trades.","premiumDuelsLounge":"Duelos Premium y lounge","everyDuelFormatWith":"Todos los formatos de duelo con apuestas en Ticks, hasta 10 retos abiertos y el lounge de chat exclusivo para Premium.","premiumIsOnWelcome":"Premium está activo - bienvenido","activeUntil":"Activo hasta ","notEnoughBalanceYou":"Saldo insuficiente - tienes $","youAreAlreadyPremium":"Ya eres Premium. Gracias.","alreadyProcessingOneMoment":"Ya se está procesando - un momento.","couldNotActivatePlease":"No se pudo activar. Inténtalo de nuevo.","networkErrorPleaseTry":"Error de red. Inténtalo de nuevo.","cryptoCheckoutIsBeing":"El pago con cripto se está activando - vuelve a intentarlo muy pronto.","couldNotStartCheckout":"No se pudo iniciar el pago. Inténtalo de nuevo.","unlockTheFullToolkit":"Desbloquea todas las herramientas","everythingTheProsUse":"<div class=\"mpprem-sub\">Todo lo que usan los profesionales para leer el mercado - una sola membresía.</div>","payWithCrypto3":"<button class=\"mpprem-buy\" type=\"button\">Pagar con cripto - $3.99 / mes</button>","payInBtcUsdt":"<div class=\"mpprem-note\">Paga en BTC, USDT o cualquier moneda importante a través de NOWPayments. Cancela cuando quieras - simplemente no se renovará.</div>","payFromMyRewards":"Pagar con mi saldo de recompensas - $11.99 (tienes $","dailyBriefReadingThe":"<div class=\"mpb\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Daily Brief\"><button class=\"mpprem-x\" type=\"button\" aria-label=\"Cerrar\">×</button><div class=\"mpb-head\"><span class=\"mpprem-tag\">DAILY BRIEF</span><span class=\"mpb-when\" id=\"mpbWhen\"></span></div><div id=\"mpbBody\"><div class=\"mpb-load\">Leyendo el mercado…</div></div></div>","withinTheHour2":"dentro de la hora","marketIsMixed":"El mercado está MIXTO","marketDataMeasuredBy":"<div class=\"mpb-foot\">Datos de mercado medidos por MarginPad. Solo con fines educativos - no es asesoría financiera.</div>","couldNotLoadThe":"<div class=\"mpb-load\">No se pudo cargar el brief - inténtalo de nuevo.</div>","marketPictureComputedAt":"Panorama del mercado calculado a las ","utcRefreshedEveryHour":" UTC, actualizado cada hora. Tus posiciones y tu semana se leen en vivo.","yourPositions":"Tus posiciones","fundingAgainstYou":"<span class=\"mpb-c w\">funding en tu contra</span>","fundingWithYou":"<span class=\"mpb-c g\">funding a tu favor</span>","noOpenPositionsOpen":"<div class=\"mpb-note\">No tienes posiciones abiertas. <a href=\"/paper-trade\">Abre el terminal</a> cuando alguna operación de abajo te convenza.</div>","winRateBClass":"</b><span>Tasa de acierto</span></div><div class=\"mpb-k\"><b class=\"","seasonPAmpL2":"</b><span>P&amp;L de temporada</span></div><div class=\"mpb-k\"><b class=\"","closesThisWeekToo":" cierres esta semana - muy pocos para identificar un patrón. Opera, y el brief empezará a leerte.","noCostlyPatternThis":"Ningún patrón costoso esta semana. <a href=\"/trading-report/\">Abre el informe completo</a> para ver los últimos 30 días.","day1OfThe":"día 1 de la temporada","seasonDay":"temporada, día ","yourSeason":"Tu temporada","nextUp":"Lo siguiente","checkingYourSeason":"<div class=\"mpb-todo\" id=\"mpbTodo\"><div class=\"mpb-note\">Revisando tu temporada…</div></div>","whereTheSetupsAre":"Dónde están las oportunidades","noCleanSetupOn":"<div class=\"mpb-note\">No hay ninguna operación clara en las principales ahora mismo - la mejor jugada es tener paciencia.</div>","openInterest":"<span>Interés abierto</span></div>","its110DayAverage":" su promedio de 110 días</div>","onTheCalendar":"En el calendario","ofTheBookIs":"%</b> del libro está en long","positionSpanClassNum":" posición</span><span class=\"num ","everyMorningOneLine":"<section class=\"mpb-s\"><h4>Cada mañana<small>una línea · push o Telegram</small></h4><div class=\"mpb-dl-row\"><label class=\"mpb-tg\"><input type=\"checkbox\" id=\"mpbPush\"","connectInMarginpadbot":" <small>conéctalo en @MarginPadBot</small>","setupsFromSupertrend10":"<div class=\"mpb-foot\">Operaciones a partir de la alineación de Supertrend(10,3) + RSI(14) en 1H/4H; funding, interés abierto, liquidaciones y ballenas medidos por MarginPad. Solo con fines educativos - no es asesoría financiera.</div>","passReward":" recompensa del pase","makeTodaySBtc":"Haz tu pronóstico de BTC de hoy","claimGoal":"Reclamar objetivo: ","pickYourSeasonGoal":"Elige tu objetivo de temporada","allCaughtUpGo":"Todo al día - a operar","marketBiasSetupsThe":" · sesgo del mercado, operaciones, el próximo evento y tu libro abierto, con un enlace de vuelta aquí.","offTurnOnPush":"Desactivado. Activa las notificaciones push o Telegram para recibir una línea al día con un enlace de vuelta aquí.","couldNotSaveTry2":"No se pudo guardar - inténtalo de nuevo.","thisBrowserCannotReceive":"Este navegador no puede recibir notificaciones push - usa Telegram en su lugar.","askingTheBrowserFor":"Pidiendo permiso al navegador…","pushIsBlockedFor":"Las notificaciones push están bloqueadas para este sitio en la configuración del navegador.","couldNotEnablePush":"No se pudieron activar las notificaciones push aquí - prueba con Telegram.","liquidationMapRead":"Lectura del mapa de liquidaciones","xpHappyHour2":"¡XP Happy Hour!","showedUpToday":"Te presentaste hoy","streakPays":"La racha paga","nameOnTheBoard":"Tu nombre en la tabla","duelPotWon":"Ganaste la bolsa del duelo","duelStakeLocked":"Apuesta del duelo bloqueada","winStreak":"Racha de victorias","closesInADay":"Cierra en un día","inARow":" seguidas","newFollower":"Nuevo seguidor<br>","someoneIsWatchingYour":"Alguien está siguiendo tus operaciones","someoneSWatchingYour":"Alguien está viendo tus operaciones","levelUp":"</div><div class=\"mpxp-up\">Subiste de nivel</div><div class=\"mpxp-nm\">","youClimbedTo":"</div><div class=\"mpxp-sub\">Llegaste a <b>","earnedNotGiven":"</b> - te lo ganaste, no te lo regalaron.","nextStop":" Próxima parada: ","topOfTheMountain":" La cima de la montaña. La vista es P&L en verde.","rewardsTheVaultUnlocked":"Recompensas + The Vault desbloqueados","silverFrameBiggerClaims":"Marco Plata + reclamos más grandes desbloqueados","goldFrameBiggerClaims":"Marco Oro + reclamos más grandes desbloqueados","platinumFrameUnlocked":"Marco Platino desbloqueado","diamondFrameWithdrawalBonu":"Marco Diamante + bono de retiro desbloqueados","legendaryFrameMaxPerks":"Marco Legendario + beneficios máximos desbloqueados","openTheVault":" - abre The Vault →</a>","backToWork":"<button class=\"mpxp-x\" type=\"button\">De vuelta al trabajo</button></div>","askAiOnYour2":"Ask AI en tus gráficos - 1 lectura al día","balanceModeRealPortfolio":"Balance Mode - trading de portafolio real","premiumDuelsAll5":"Duelos Premium - los 5 formatos","premiumChatLoungeVips":"Lounge de chat Premium (solo VIPs)","premiumUnlockedMarginpadPr":"</div><div class=\"mpxp-up\">Premium desbloqueado</div><div class=\"mpxp-nm mp-progold\">MarginPad Premium</div><div class=\"mpxp-sub\">Ahora eres <b>miembro Premium</b>. Esto es todo lo que acabas de desbloquear:</div>","seeEverythingYouGot":"<a class=\"mpxp-x mpxp-see\" href=\"/premium\" target=\"_blank\" rel=\"noopener\">Ve todo lo que obtuviste →</a><button class=\"mpxp-x mpxp-x2\" type=\"button\">Empieza a operar</button></div>","youGotPaid":"Recibiste un pago","sentYou":" te envió ","moneyLandedOnYour":"El dinero llegó a tu saldo","youGotAGift":"Recibiste un regalo","openRewardsSeeYour":"Abrir recompensas - ver tu saldo","openTheVaultEquip":"Abrir The Vault - equípalo","newFollowers":" nuevos seguidores","liquidatedThatIsWhat":"Liquidado. Para eso está la práctica.","niceCloseOn":"Buen cierre en ","thatOne":"esa","threeTradesInKeep":"Tres operaciones hechas. Sigue así.","withAFreeAccount":"Con una cuenta gratuita, cada operación queda en tu historial, así puedes ver exactamente qué salió mal e intentarlo de nuevo.","aFreeAccountKeeps":"Una cuenta gratuita conserva tu historial, tu XP y tu racha, y te pone en la tabla de temporada de 14 días. Diez segundos, sin tarjeta.","createAFreeAccount":"Crea una cuenta gratuita","notNow":"Ahora no","youAlreadyHave20":"Ya tienes 20 órdenes pendientes - cancela una primero.","youAlreadyHaveAn2":"Ya tienes una posición opuesta abierta en esta moneda - ciérrala primero (modo unidireccional).","thisMarketIsClosed":"Este mercado está cerrado en este momento.","tooManyOrdersIn":"Demasiadas órdenes en un minuto - espera un momento.","yourStopLossIs":"Tu stop-loss está del lado equivocado del precio límite.","yourTakeProfitIs":"Tu take-profit está del lado equivocado del precio límite.","thatPriceIsMore":"Ese precio está a más de 20x de distancia del mercado - revisa el punto decimal.","signInAgainTo":"Vuelve a iniciar sesión para colocar la orden.","enterALimitPrice":"Ingresa un precio límite.","enterAnAmountUsd":"Ingresa un monto (USD) mayor a $0.","waitingForTheLive":"Esperando el precio en vivo - inténtalo de nuevo en un segundo.","couldNotPlaceThe":"No se pudo colocar la orden - inténtalo de nuevo.","networkProblemTheOrder":"Problema de red - la orden no se colocó.","limitOrderFilled":"Orden límite ejecutada","4OffFeesWith":"4% de descuento en comisiones con el código MARGINPAD","socialTrading":"trading social","theUs":"EE. UU.","notAvailableIn":"no disponible en ","yourCountry":"tu país","onPaperTrade":"</i> en simulado - opera <b>","forRealOn":"</b> de verdad en <b>","thisPageIsRunning":"Esta página está usando una versión anterior del sitio."};
+function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpauth[k] != null) return __esD_mpauth[k]; } catch (e) {} return en; }
 /* MarginPad - optional passwordless sign-in (email → 6-digit code).
    Self-contained: injects its own modal + styles, wires any [data-auth-open] trigger,
    updates any [data-auth-status] label, and exposes window.mpAuth. Anonymous use is unaffected. */
@@ -56,10 +62,10 @@
     var xp = Math.max(0, +d.xp || 0), need = +L.nextMin || 500, left = Math.max(0, need - xp), pct = Math.min(100, Math.round(xp / need * 100));
     var fmt = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
     if (!host.firstChild) {
-      host.innerHTML = '<div class="pb-top"><span class="pb-badge">' + (window.mpLvlSvg ? window.mpLvlSvg('bronze', '#c97f4a') : '') + '</span><div class="pb-t">Bronze in <b>' + fmt(left) + ' XP</b></div><span class="pb-n">' + fmt(xp) + ' / ' + fmt(need) + '</span></div>'
+      host.innerHTML = '<div class="pb-top"><span class="pb-badge">' + (window.mpLvlSvg ? window.mpLvlSvg('bronze', '#c97f4a') : '') + __esT_mpauth("bronzeIn",'</span><div class="pb-t">Bronze in <b>') + fmt(left) + ' XP</b></div><span class="pb-n">' + fmt(xp) + ' / ' + fmt(need) + '</span></div>'
         + '<div class="pb-bar"><i style="width:' + pct + '%"></i></div>'
-        + '<div class="pb-src"><span>lesson <b>+25</b></span><span>check-in <b>+20</b></span><span>closed trade <b>+3</b></span><span>green close <b>+15</b> more</span></div>'
-        + '<div class="pb-why">Bronze unlocks the faucet, daily missions and withdrawals. <a href="/academy/">Academy</a> is the fastest road.</div>';
+        + __esT_mpauth("lesson25CheckIn",'<div class="pb-src"><span>lesson <b>+25</b></span><span>check-in <b>+20</b></span><span>closed trade <b>+3</b></span><span>green close <b>+15</b> more</span></div>')
+        + __esT_mpauth("bronzeUnlocksTheFaucet",'<div class="pb-why">Bronze unlocks the faucet, daily missions and withdrawals. <a href="/academy/">Academy</a> is the fastest road.</div>');
     } else { // live update without rebuilding: the bar animates, the numbers just change
       var t = host.querySelector('.pb-t b'), n = host.querySelector('.pb-n'), bar = host.querySelector('.pb-bar i');
       if (t) t.textContent = fmt(left) + ' XP'; if (n) n.textContent = fmt(xp) + ' / ' + fmt(need); if (bar) bar.style.width = pct + '%';
@@ -84,10 +90,10 @@
       if (document.getElementById('mpCo')) return true;
       if (!document.getElementById('mpco-css')) { var st = document.createElement('style'); st.id = 'mpco-css'; st.textContent = '#mpCo{position:fixed;right:18px;bottom:18px;z-index:1450;width:min(360px,calc(100vw - 24px));background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid #c2f64a;border-radius:14px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.55);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#e8ecf1;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}#mpCo.on{opacity:1;transform:none}.mpco-k{font:700 10px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#c2f64a;margin-bottom:5px}.mpco-t{font-weight:800;font-size:14.5px;margin-bottom:8px}.mpco-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 9px}.mpco-g div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:7px 6px;text-align:center;min-width:0}.mpco-g b{display:block;font:700 14px "Space Mono",monospace;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpco-g span{display:block;font-size:9.5px;color:#7c8794;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}.mpco-b{font-size:12.5px;line-height:1.5;color:#b7c0ca}.mpco-a{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}.mpco-go{background:#c2f64a;color:#0a0b0d;border:0;border-radius:9px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer}.mpco-no{background:transparent;color:#9aa3ad;border:1px solid #2a323c;border-radius:9px;padding:9px 12px;font-weight:600;font-size:13px;cursor:pointer}'; document.head.appendChild(st); }
       var box = document.createElement('div'); box.id = 'mpCo';
-      box.innerHTML = '<div class="mpco-k">' + (isNew ? 'Welcome aboard' : 'Signed in') + '</div><div class="mpco-t">' + (closed.length === 1 ? 'Your guest trade came with you.' : 'Your ' + closed.length + ' guest trades came with you.') + '</div>'
+      box.innerHTML = '<div class="mpco-k">' + (isNew ? __esT_mpauth("welcomeAboard",'Welcome aboard') : __esT_mpauth("signedIn",'Signed in')) + '</div><div class="mpco-t">' + (closed.length === 1 ? __esT_mpauth("yourGuestTradeCame",'Your guest trade came with you.') : 'Your ' + closed.length + __esT_mpauth("guestTradesCameWith",' guest trades came with you.')) + '</div>'
         + '<div class="mpco-g"><div><b style="color:' + (net >= 0 ? '#34d99a' : '#ff6c5c') + '">' + money(net) + '</b><span>net</span></div><div><b>' + wins + ' / ' + closed.length + '</b><span>wins</span></div><div><b' + (best != null && best > 0 ? ' style="color:#34d99a"' : '') + '>' + (best == null ? '-' : (best > 0 ? '+' : '') + Math.round(best) + '%') + '</b><span>best ROE</span></div></div>'
-        + '<div class="mpco-b">They are in your journal now and they count: XP, records and the season boards start from here.</div>'
-        + '<div class="mpco-a"><button type="button" class="mpco-go">See My Trades</button><button type="button" class="mpco-no">Got it</button></div>';
+        + __esT_mpauth("theyAreInYour",'<div class="mpco-b">They are in your journal now and they count: XP, records and the season boards start from here.</div>')
+        + __esT_mpauth("seeMyTradesGot",'<div class="mpco-a"><button type="button" class="mpco-go">See My Trades</button><button type="button" class="mpco-no">Got it</button></div>');
       try { box.style.bottom = (window.mpBottomInset ? window.mpBottomInset() : 18) + 'px'; } catch (e) {} // clear the phone tab bar (it was pinned at 18px, i.e. on top of it)
     document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
       var close = function () { box.classList.remove('on'); setTimeout(function () { try { box.remove(); } catch (e) {} }, 300); };
@@ -779,7 +785,7 @@
   // ---- support: the user's conversations with the team (each conv = a separate thread; reply in-thread or start a new one) ----
   var _supCache = null;
   function renderSup() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Support</h3><p class="mpa-sub">Loading your conversations\u2026</p>';
+    bodyEl.innerHTML = __esT_mpauth("supportLoadingYourConversa",'<h3 class="mpa-h">Support</h3><p class="mpa-sub">Loading your conversations\u2026</p>');
     fetch('/api/reward/support/mine').then(function (r) { return r.json(); }).then(function (d) {
       var convs = (d && d.conversations) || []; _supCache = convs;
       if (!convs.length) { renderSupNew(true); return; }
@@ -787,7 +793,7 @@
         + '<button class="mpa-btn" id="mpaSupNew" type="button" style="margin-bottom:13px">+ New conversation</button>'
         + '<div class="mpa-cvlist">' + convs.map(function (c) { var last = c.messages[c.messages.length - 1] || {}; var who = last.dir === 'out' ? 'MarginPad: ' : 'You: ';
           return '<button class="mpa-cv" type="button" data-conv="' + esc(c.conv) + '"><div class="mpa-cv-top"><span class="mpa-cv-ttl">' + esc(c.title || 'Conversation') + '</span>' + (c.closed ? '<span class="mpa-cv-st closed">Closed</span>' : '<span class="mpa-cv-st open">Open</span>') + '</div><div class="mpa-cv-last">' + esc(who) + esc((last.body || '').slice(0, 72)) + '</div><div class="mpa-cv-ago">' + xpAgo(c.lastTs) + '</div></button>'; }).join('') + '</div>'
-        + '<button class="mpa-link" id="mpaSupBack" type="button">\u2190 Back to profile</button>';
+        + __esT_mpauth("u2190BackToProfile",'<button class="mpa-link" id="mpaSupBack" type="button">\u2190 Back to profile</button>');
       bodyEl.querySelector('#mpaSupNew').addEventListener('click', function () { renderSupNew(false); });
       bodyEl.querySelector('#mpaSupBack').addEventListener('click', function () { render(); });
       Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-conv]'), function (b) { b.addEventListener('click', function () { renderSupThread(b.getAttribute('data-conv')); }); });
@@ -804,59 +810,59 @@
       + '</div>' + (c.closed ? '<div class="mpa-dm-warn" style="margin-top:8px">This conversation was closed \u2014 sending a message reopens it.</div>' : '')
       + '<div id="mpaSupPrev" style="margin:6px 0 0"></div><div class="mpa-dm-form"><button class="mpa-dm-send" id="mpaSupPic" type="button" title="Attach screenshot" style="padding:0 11px"></button><input class="mpa-in" id="mpaSupReply" placeholder="Reply\u2026" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaSupSend" type="button">Send</button><input type="file" accept="image/*" id="mpaSupFile" style="display:none"></div></div>'
       + '<div class="mpa-du-msg" id="mpaSupSt"></div>'
-      + '<button class="mpa-link" id="mpaSupBack" type="button">\u2190 All conversations</button>';
+      + __esT_mpauth("u2190AllConversations",'<button class="mpa-link" id="mpaSupBack" type="button">\u2190 All conversations</button>');
     var sc = bodyEl.querySelector('#mpaSupScroll'); if (sc) sc.scrollTop = sc.scrollHeight;
     bodyEl.querySelector('#mpaSupBack').addEventListener('click', renderSup);
     var inp = bodyEl.querySelector('#mpaSupReply'), send = bodyEl.querySelector('#mpaSupSend'), st = bodyEl.querySelector('#mpaSupSt');
     var _supBusy = false; // the Enter key bypassed the disabled button \u2192 mashing Enter while a send was in flight posted the same message 2-8x (the "These x4" tickets)
     function doSend() { if (_supBusy) return; var v = (inp.value || '').trim(); if (!v && !_supImg) return; _supBusy = true; send.disabled = true; if (st) st.innerHTML = '<span style="color:#8b97a5">Sending\u2026</span>';
       fetch('/api/reward/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: (ME && ME.email) || '', message: v, conv: conv, img: _supImg }) })
-        .then(function (r) { return r.json(); }).then(function (d) { _supBusy = false; send.disabled = false; if (d && d.ok) { inp.value = ''; _supImg = ''; supReopen(conv); } else { if (st) st.innerHTML = '<span style="color:#ffb347">Failed \u2014 try again.</span>'; } })
-        .catch(function () { _supBusy = false; send.disabled = false; if (st) st.innerHTML = '<span style="color:#ffb347">Network error.</span>'; }); }
+        .then(function (r) { return r.json(); }).then(function (d) { _supBusy = false; send.disabled = false; if (d && d.ok) { inp.value = ''; _supImg = ''; supReopen(conv); } else { if (st) st.innerHTML = __esT_mpauth("failedU2014TryAgain",'<span style="color:#ffb347">Failed \u2014 try again.</span>'); } })
+        .catch(function () { _supBusy = false; send.disabled = false; if (st) st.innerHTML = __esT_mpauth("networkError",'<span style="color:#ffb347">Network error.</span>'); }); }
     if (send) send.addEventListener('click', doSend);
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
     var pic = bodyEl.querySelector('#mpaSupPic'), file = bodyEl.querySelector('#mpaSupFile'), prev = bodyEl.querySelector('#mpaSupPrev');
-    if (pic && file) { pic.addEventListener('click', function () { file.click(); }); file.addEventListener('change', function () { var f = file.files && file.files[0]; if (!f) return; if (st) st.innerHTML = '<span style="color:#8b97a5">Processing image…</span>'; supResize(f, function (d) { if (!d) { if (st) st.innerHTML = '<span style="color:#ffb347">Image too big or unsupported.</span>'; return; } _supImg = d; if (prev) prev.innerHTML = '<img src="' + d + '" style="max-height:84px;border-radius:8px;vertical-align:middle"> <button class="mpa-link" id="mpaSupRm" type="button">remove</button>'; var rm = bodyEl.querySelector('#mpaSupRm'); if (rm) rm.addEventListener('click', function () { _supImg = ''; if (prev) prev.innerHTML = ''; file.value = ''; }); if (st) st.innerHTML = ''; }); }); }
+    if (pic && file) { pic.addEventListener('click', function () { file.click(); }); file.addEventListener('change', function () { var f = file.files && file.files[0]; if (!f) return; if (st) st.innerHTML = '<span style="color:#8b97a5">Processing image…</span>'; supResize(f, function (d) { if (!d) { if (st) st.innerHTML = __esT_mpauth("imageTooBigOr",'<span style="color:#ffb347">Image too big or unsupported.</span>'); return; } _supImg = d; if (prev) prev.innerHTML = '<img src="' + d + '" style="max-height:84px;border-radius:8px;vertical-align:middle"> <button class="mpa-link" id="mpaSupRm" type="button">remove</button>'; var rm = bodyEl.querySelector('#mpaSupRm'); if (rm) rm.addEventListener('click', function () { _supImg = ''; if (prev) prev.innerHTML = ''; file.value = ''; }); if (st) st.innerHTML = ''; }); }); }
   }
   function supReopen(conv) { // re-fetch conversations then reopen the same thread so the new message shows
     fetch('/api/reward/support/mine').then(function (r) { return r.json(); }).then(function (d) { _supCache = (d && d.conversations) || []; renderSupThread(conv); }).catch(function () { renderSupThread(conv); });
   }
   function renderSupNew(first) {
-    bodyEl.innerHTML = '<h3 class="mpa-h">New conversation</h3><p class="mpa-sub">Tell us what happened \u2014 we reply to <b>' + esc((ME && ME.email) || 'your email') + '</b>, usually within a day.</p>'
+    bodyEl.innerHTML = __esT_mpauth("newConversationTellUs",'<h3 class="mpa-h">New conversation</h3><p class="mpa-sub">Tell us what happened \u2014 we reply to <b>') + esc((ME && ME.email) || __esT_mpauth("yourEmail",'your email')) + __esT_mpauth("usuallyWithinADay",'</b>, usually within a day.</p>')
       + '<textarea class="mpa-in" id="mpaSupMsg" maxlength="1000" rows="5" placeholder="Describe the problem or question\u2026" style="resize:vertical;min-height:110px;height:auto"></textarea>'
       + '<button class="mpa-btn" id="mpaSupSend" type="button" style="margin-top:10px">Send message</button>'
       + '<div class="mpa-msg"></div>'
-      + '<button class="mpa-link" id="mpaSupBack2" type="button">\u2190 ' + (first ? 'Back' : 'All conversations') + '</button>';
+      + '<button class="mpa-link" id="mpaSupBack2" type="button">\u2190 ' + (first ? 'Back' : __esT_mpauth("allConversations",'All conversations')) + '</button>';
     bodyEl.querySelector('#mpaSupBack2').addEventListener('click', function () { if (first) render(); else renderSup(); });
     var sb = bodyEl.querySelector('#mpaSupSend');
     sb.addEventListener('click', function () {
       var v = (bodyEl.querySelector('#mpaSupMsg').value || '').trim();
-      if (!v) { setMsg('Write something first.', 'err'); return; }
+      if (!v) { setMsg(__esT_mpauth("writeSomethingFirst",'Write something first.'), 'err'); return; }
       sb.disabled = true; setMsg('Sending\u2026', '');
       fetch('/api/reward/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: (ME && ME.email) || '', message: v }) }) // no conv \u2192 brand-new conversation
-        .then(function (r) { return r.json(); }).then(function (d) { sb.disabled = false; if (d && d.ok) { if (d.conv) supReopen(d.conv); else renderSup(); } else { setMsg('Failed \u2014 try again.', 'err'); } })
-        .catch(function () { sb.disabled = false; setMsg('Network error.', 'err'); });
+        .then(function (r) { return r.json(); }).then(function (d) { sb.disabled = false; if (d && d.ok) { if (d.conv) supReopen(d.conv); else renderSup(); } else { setMsg(__esT_mpauth("failedU2014TryAgain2",'Failed \u2014 try again.'), 'err'); } })
+        .catch(function () { sb.disabled = false; setMsg(__esT_mpauth("networkError2",'Network error.'), 'err'); });
     });
   }
   // ---- XP history (header profile → what XP you earned, when and why) ----
-  var XPN = { trade: 'Trade closed', trade_win: 'Winning trade', trade_hh: 'XP Happy Hour', trade_promo: 'XP promo', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Daily mission', faucet: 'Faucet claim', promo: 'Promo post', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy lesson', charts: 'Chart analysis', heatmap: 'Liquidation map', admin: 'Manual adjustment', backfill: 'Loyalty bonus', signup: 'Signed up', duel: 'Duel won', duel_pot: 'Duel pot', duel_stake: 'Duel stake' };
+  var XPN = { trade: __esT_mpauth("tradeClosed",'Trade closed'), trade_win: __esT_mpauth("winningTrade",'Winning trade'), trade_hh: 'XP Happy Hour', trade_promo: 'XP promo', checkin: __esT_mpauth("dailyCheckIn",'Daily check-in'), streak: __esT_mpauth("streakBonus",'Streak bonus'), mission: 'Daily mission', faucet: __esT_mpauth("faucetClaim",'Faucet claim'), promo: 'Promo post', exsign: __esT_mpauth("exchangeSignUp",'Exchange sign-up'), lbprize: __esT_mpauth("competitionPrize",'Competition prize'), username: __esT_mpauth("usernameSet",'Username set'), academy: 'Academy lesson', charts: 'Chart analysis', heatmap: 'Liquidation map', admin: 'Manual adjustment', backfill: 'Loyalty bonus', signup: __esT_mpauth("signedUp",'Signed up'), duel: __esT_mpauth("duelWon",'Duel won'), duel_pot: __esT_mpauth("duelPot",'Duel pot'), duel_stake: __esT_mpauth("duelStake",'Duel stake') };
   function xpAgo(ts) { var s = Math.round((Date.now() - ts) / 1000); if (s < 60) return s + 's ago'; var m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; var h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; var d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return d + 'd ago'; } }
   function renderXpHistory() {
     bodyEl.innerHTML = '<h3 class="mpa-h">XP history</h3>'
       + '<div class="mpa-xp-tot" id="mpaXpTot">…</div>'
       + '<div class="mpa-xp-sum" id="mpaXpSum"></div>'
       + '<div class="mpa-xp-list" id="mpaXpList"><div class="mpa-xp-empty">Loading…</div></div>'
-      + '<button class="mpa-link" id="mpaXpBack" type="button">← Back to profile</button>';
+      + __esT_mpauth("backToProfile",'<button class="mpa-link" id="mpaXpBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaXpBack'); if (bk) bk.addEventListener('click', render);
     fetch('/api/auth/xphistory').then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = '<div class="mpa-xp-empty">Please sign in again.</div>'; return; }
-      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> XP balance'; // NET balance (duel stakes now move Ticks, not XP, so this is simply earned XP) - was labeled "total XP earned", which read as "my earned total went DOWN" after staking a duel
+      if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = __esT_mpauth("pleaseSignInAgain",'<div class="mpa-xp-empty">Please sign in again.</div>'); return; }
+      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + __esT_mpauth("xpBalance",'</b> XP balance'); // NET balance (duel stakes now move Ticks, not XP, so this is simply earned XP) - was labeled "total XP earned", which read as "my earned total went DOWN" after staking a duel
       var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4), sp = (d.spent || []).slice(0, 3); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join('') + sp.map(function (x) { return '<span class="mpa-xp-chip neg">' + esc(XPN[x.src] || x.src) + ' <b>' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
       var list = bodyEl.querySelector('#mpaXpList'); if (!list) return;
       var log = (d.log || []);
-      if (!log.length) { list.innerHTML = '<div class="mpa-xp-empty">No XP yet - close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'; return; }
+      if (!log.length) { list.innerHTML = __esT_mpauth("noXpYetClose",'<div class="mpa-xp-empty">No XP yet - close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'); return; }
       list.innerHTML = log.map(function (e) { var amt = +e.amt || 0, pos = amt >= 0; var lbl = XPN[e.src] || e.src || 'XP'; return '<div class="mpa-xp-r"><span class="mpa-xp-amt ' + (pos ? 'pos' : 'neg') + '">' + (pos ? '+' : '') + amt + '</span><span class="mpa-xp-b"><span class="mpa-xp-lbl">' + esc(lbl) + '</span>' + (e.note ? '<span class="mpa-xp-note">' + esc(e.note) + '</span>' : '') + '</span><span class="mpa-xp-ago">' + xpAgo(e.ts) + '</span></div>'; }).join('');
-    }).catch(function () { var l = bodyEl.querySelector('#mpaXpList'); if (l) l.innerHTML = '<div class="mpa-xp-empty">Could not load your XP history - try again.</div>'; });
+    }).catch(function () { var l = bodyEl.querySelector('#mpaXpList'); if (l) l.innerHTML = __esT_mpauth("couldNotLoadYour",'<div class="mpa-xp-empty">Could not load your XP history - try again.</div>'); });
   }
   // ---- Direct messages (user↔user) ----
   function dmCol(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return 'hsl(' + (h % 360) + ',55%,55%)'; }
@@ -878,15 +884,15 @@
     return (sp > 18 ? cut.slice(0, sp) : cut).replace(/[\s.,;:!?-]+$/, '') + '\u2026';
   }
   function renderDmInbox() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Messages</h3><div class="mpa-ib" id="mpaIb"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaIbBack" type="button">← Back to profile</button>';
+    bodyEl.innerHTML = __esT_mpauth("messagesLoadingBackTo",'<h3 class="mpa-h">Messages</h3><div class="mpa-ib" id="mpaIb"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaIbBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaIbBack'); if (bk) bk.addEventListener('click', render);
     fetch('/api/dm/inbox').then(function (r) { return r.json(); }).then(function (d) {
       var ib = bodyEl.querySelector('#mpaIb'); if (!ib) return;
       var th = (d && d.threads) || [];
-      if (!th.length) { ib.innerHTML = '<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat - you can message people you follow (or who follow you).</div>'; return; }
+      if (!th.length) { ib.innerHTML = __esT_mpauth("noMessagesYetOpen",'<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat - you can message people you follow (or who follow you).</div>'); return; }
       ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + dmCol(t.name) + '">' + esc((t.name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
-    }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = '<div class="mpa-xp-empty">Could not load your messages.</div>'; });
+    }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = __esT_mpauth("couldNotLoadYour2",'<div class="mpa-xp-empty">Could not load your messages.</div>'); });
   }
   /* ── direct-message actions (2026-09-14) ───────────────────────────────────────────────────────────────────────
      The gesture and the sheet are the shared ones above; this is only what is specific to a DM: the sender may edit
@@ -908,7 +914,7 @@
       .then(function (d) {
         if (d && d.ok) { if (d.who) dmWho = d.who; if (after) after(); return; }
         var why = d && d.error;
-        try { if (window.mpToast) window.mpToast({ msg: why === 'notyours' ? 'You can only change your own messages' : why === 'late' ? 'Too late to edit that one' : why === 'gone' ? 'That message is gone' : 'That did not go through', ms: 2400, key: 'dmact' }); } catch (e) {}
+        try { if (window.mpToast) window.mpToast({ msg: why === 'notyours' ? __esT_mpauth("youCanOnlyChange",'You can only change your own messages') : why === 'late' ? __esT_mpauth("tooLateToEdit",'Too late to edit that one') : why === 'gone' ? __esT_mpauth("thatMessageIsGone",'That message is gone') : __esT_mpauth("thatDidNotGo",'That did not go through'), ms: 2400, key: 'dmact' }); } catch (e) {}
       }).catch(function () {});
   }
   function renderDmThread(name) {
@@ -916,7 +922,7 @@
     if (!name) { renderDmInbox(); return; }
     bodyEl.innerHTML = '<div class="mpa-dmh"><button class="mpa-link" id="mpaDmBack" type="button" style="margin:0;padding:0;font-size:20px">←</button><span class="mpa-ib-av" id="mpaDmAv" style="background:' + dmCol(name) + '">' + esc((name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-nm" id="mpaDmNm">' + esc(name) + '</span></div>'
       + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaDmScroll"><div class="mpa-dm-empty">Loading…</div></div><div id="mpaDmWarn"></div>'
-      + '<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @' + esc(name) + '…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>';
+      + __esT_mpauth("inputClassMpaIn",'<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @') + esc(name) + __esT_mpauth("maxlength1000AutocompleteO",'…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>');
     var bk = bodyEl.querySelector('#mpaDmBack'); if (bk) bk.addEventListener('click', renderDmInbox);
     (function () {
       var sc = bodyEl.querySelector('#mpaDmScroll'); if (!sc) return;
@@ -928,8 +934,8 @@
         window.mpMsgSheet({ row: row, text: txt, reactions: DM_RX,
           canEdit: own && (Date.now() - (+row.getAttribute('data-ts') || 0)) < 900000, canDelete: own,
           onReact: function (e2) { dmAct({ id: id, act: 'react', e: e2 }, reload); },
-          onDelete: function () { if (window.confirm('Delete this message?')) dmAct({ id: id, act: 'del' }, reload); },
-          onEdit: function () { var nt = window.prompt('Edit your message', txt); if (nt == null) return; nt = String(nt).trim(); if (!nt || nt === txt) return; dmAct({ id: id, act: 'edit', txt: nt.slice(0, 1000) }, reload); } });
+          onDelete: function () { if (window.confirm(__esT_mpauth("deleteThisMessage",'Delete this message?'))) dmAct({ id: id, act: 'del' }, reload); },
+          onEdit: function () { var nt = window.prompt(__esT_mpauth("editYourMessage",'Edit your message'), txt); if (nt == null) return; nt = String(nt).trim(); if (!nt || nt === txt) return; dmAct({ id: id, act: 'edit', txt: nt.slice(0, 1000) }, reload); } });
       });
       sc.addEventListener('click', function (e) {
         var b2 = e.target.closest && e.target.closest('.mpa-rxb'); if (!b2) return;
@@ -939,7 +945,7 @@
     })();
     var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), send = bodyEl.querySelector('#mpaDmSend'), warn = bodyEl.querySelector('#mpaDmWarn');
     var lastKey = '';
-    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet - say hi</div>'; lastKey = ''; return; }
+    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = __esT_mpauth("noMessagesYetSay",'<div class="mpa-dm-empty">No messages yet - say hi</div>'); lastKey = ''; return; }
       // re-render only when the thread changed; keep the reader's place unless they were already at the bottom (2026-09-12: the thread loaded ONCE and a reply never appeared until the chat was closed and reopened)
       // an edit or a reaction changes no count and no timestamp, so they join the key or the poll would never redraw
       var key = msgs.length + ':' + (msgs[msgs.length - 1].ts || '') + ':' + (msgs[msgs.length - 1].txt || '').length
@@ -953,22 +959,22 @@
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? 'User not found.' : 'Could not load this chat.') + '</div>'; return; }
+      if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? __esT_mpauth("userNotFound",'User not found.') : __esT_mpauth("couldNotLoadThis",'Could not load this chat.')) + '</div>'; return; }
       if (d.me) dmWho = d.me;
       if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); var av = bodyEl.querySelector('#mpaDmAv'); if (av) av.style.background = dmCol(d.other.name); }
       var canDm = d.canDm !== false;
-      if (!canDm && !(d.messages && d.messages.length)) { if (warn) warn.innerHTML = '<div class="mpa-dm-warn">You can message this trader once you follow them (or they follow you). Open their profile and tap Follow first.</div>'; if (inp) inp.disabled = true; if (send) send.disabled = true; }
+      if (!canDm && !(d.messages && d.messages.length)) { if (warn) warn.innerHTML = __esT_mpauth("youCanMessageThis",'<div class="mpa-dm-warn">You can message this trader once you follow them (or they follow you). Open their profile and tap Follow first.</div>'); if (inp) inp.disabled = true; if (send) send.disabled = true; }
       draw(d.messages || []);
       try { if (window.mpXpCheck) window.mpXpCheck(); } catch (e) {} // seen was marked → refresh the unread badge
-    }).catch(function () { scroll.innerHTML = '<div class="mpa-dm-empty">Could not load this chat.</div>'; });
+    }).catch(function () { scroll.innerHTML = __esT_mpauth("couldNotLoadThis2",'<div class="mpa-dm-empty">Could not load this chat.</div>'); });
     function doSend() {
       var v = (inp.value || '').trim(); if (!v) return;
       send.disabled = true; var old = inp.value; inp.value = '';
       fetch('/api/dm/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, text: v }) }).then(function (r) { return r.json(); }).then(function (d) {
         send.disabled = false;
         if (d && d.ok) { if (scroll.querySelector('.mpa-dm-empty')) scroll.innerHTML = ''; var b = document.createElement('div'); b.className = 'mpa-dbub me'; b.innerHTML = esc(v) + '<span class="t">now</span>'; scroll.appendChild(b); scroll.scrollTop = scroll.scrollHeight; if (warn) warn.innerHTML = ''; if (inp) inp.focus(); }
-        else { inp.value = old; var m = d && d.error === 'not_connected' ? 'Follow this trader first to message them.' : d && d.error === 'rate_limit' ? 'Slow down a moment.' : d && d.error === 'daily_limit' ? 'You’ve hit today’s message limit.' : d && d.error === 'restricted' ? 'Your account can’t send messages right now.' : d && d.error === 'need_username' ? 'Set a username first (in your profile).' : d && d.error === 'no_recipient' ? 'User not found.' : 'Could not send - try again.'; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">' + m + '</div>'; }
-      }).catch(function () { send.disabled = false; inp.value = old; if (warn) warn.innerHTML = '<div class="mpa-dm-warn">Network error - try again.</div>'; });
+        else { inp.value = old; var m = d && d.error === 'not_connected' ? __esT_mpauth("followThisTraderFirst",'Follow this trader first to message them.') : d && d.error === 'rate_limit' ? __esT_mpauth("slowDownAMoment",'Slow down a moment.') : d && d.error === 'daily_limit' ? __esT_mpauth("youVeHitToday",'You’ve hit today’s message limit.') : d && d.error === 'restricted' ? __esT_mpauth("yourAccountCanT",'Your account can’t send messages right now.') : d && d.error === 'need_username' ? __esT_mpauth("setAUsernameFirst",'Set a username first (in your profile).') : d && d.error === 'no_recipient' ? __esT_mpauth("userNotFound",'User not found.') : __esT_mpauth("couldNotSendTry",'Could not send - try again.'); if (warn) warn.innerHTML = '<div class="mpa-dm-warn">' + m + '</div>'; }
+      }).catch(function () { send.disabled = false; inp.value = old; if (warn) warn.innerHTML = __esT_mpauth("networkErrorTryAgain",'<div class="mpa-dm-warn">Network error - try again.</div>'); });
     }
     if (send) send.addEventListener('click', doSend);
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
@@ -977,11 +983,11 @@
   function feedLine(e) {
     var sym = esc(e.sym || ''), side = (e.side === 'short' || e.side === 'sell') ? 'SHORT' : 'LONG', lev = e.lev ? (e.lev + '×') : '';
     if (e.kind === 'open') return '<b class="fd-op">Opened</b> ' + '<span class="fd-' + side.toLowerCase() + '">' + side + '</span> ' + sym + ' ' + lev;
-    if (e.kind === 'trim') return '<b>Partially closed</b> ' + sym;
+    if (e.kind === 'trim') return __esT_mpauth("partiallyClosed",'<b>Partially closed</b> ') + sym;
     // close
     var pnl = +e.pnl, roe = +e.roe, money = (isFinite(pnl) ? (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toLocaleString(undefined, { maximumFractionDigits: 2 }) : ''), rt = isFinite(roe) ? ' (' + (roe >= 0 ? '+' : '') + Math.round(roe) + '%)' : '';
-    if (e.liq) return '<b class="fd-liq">Liquidated</b> on ' + sym + (money ? ' <span class="fd-neg">' + money + '</span>' : '');
-    if (isFinite(pnl) && pnl >= 0) return '<b class="fd-win">Won</b> on ' + sym + ' <span class="fd-pos">' + money + rt + '</span>';
+    if (e.liq) return __esT_mpauth("liquidatedOn",'<b class="fd-liq">Liquidated</b> on ') + sym + (money ? ' <span class="fd-neg">' + money + '</span>' : '');
+    if (isFinite(pnl) && pnl >= 0) return __esT_mpauth("wonOn",'<b class="fd-win">Won</b> on ') + sym + ' <span class="fd-pos">' + money + rt + '</span>';
     return '<b>Closed</b> ' + sym + (money ? ' <span class="fd-neg">' + money + rt + '</span>' : '');
   }
   function renderFeed() {
@@ -990,22 +996,22 @@
     fetch('/api/lb/feed').then(function (r) { return r.json(); }).then(function (d) {
       var fd = bodyEl.querySelector('#mpaFd'); if (!fd) return;
       var ev = (d && d.feed) || [];
-      if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? 'No trades yet from the traders you follow - check back soon.' : 'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.') + '</div>'; return; }
+      if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? __esT_mpauth("noTradesYetFrom",'No trades yet from the traders you follow - check back soon.') : __esT_mpauth("youReNotFollowing",'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.')) + '</div>'; return; }
       fd.innerHTML = ev.map(function (e) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
         return '<div class="mpa-fd-r"><span class="mpa-ib-av" style="width:30px;height:30px;font-size:13px;background:' + dmCol(e.name) + '">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</span>'
           + '<div class="mpa-fd-b"><div class="mpa-fd-nm">' + badge + esc(e.name) + '</div><div class="mpa-fd-act">' + feedLine(e) + '</div></div>'
-          + '<div class="mpa-fd-meta">' + xpAgo(e.ts) + '<button class="mpa-fd-dm" type="button" data-fddm="' + esc(e.name) + '" title="Message"></button></div></div>'; }).join('');
+          + '<div class="mpa-fd-meta">' + xpAgo(e.ts) + '<button class="mpa-fd-dm" type="button" data-fddm="' + esc(e.name) + __esT_mpauth("titleMessage",'" title="Message"></button></div></div>'); }).join('');
       Array.prototype.forEach.call(fd.querySelectorAll('[data-fddm]'), function (btn) { btn.addEventListener('click', function () { renderDmThread(btn.getAttribute('data-fddm')); }); });
-    }).catch(function () { var fd = bodyEl.querySelector('#mpaFd'); if (fd) fd.innerHTML = '<div class="mpa-xp-empty">Could not load your feed.</div>'; });
+    }).catch(function () { var fd = bodyEl.querySelector('#mpaFd'); if (fd) fd.innerHTML = __esT_mpauth("couldNotLoadYour3",'<div class="mpa-xp-empty">Could not load your feed.</div>'); });
   }
   // ---- Friend duels (weekly stat challenges) ----
-  var DMET = { roe: 'ROE', wr: 'Win rate', win: 'Biggest win', pnl: 'Profit', survival: 'Survival', streak: 'Streak', sniper: 'Sniper' };
+  var DMET = { roe: 'ROE', wr: __esT_mpauth("winRate",'Win rate'), win: __esT_mpauth("biggestWin",'Biggest win'), pnl: 'Profit', survival: 'Survival', streak: 'Streak', sniper: 'Sniper' };
   var DTYPES = [
-    { k: 'roe', nm: 'ROE Duel', ds: 'Highest single-trade ROE% wins', prem: false },
-    { k: 'pnl', nm: 'Profit Duel', ds: 'Most realized profit ($) wins', prem: true },
-    { k: 'survival', nm: 'Survival', ds: 'Higher ending balance wins - blow up and you are out', prem: true },
-    { k: 'streak', nm: 'Streak', ds: 'Longest run of winning trades wins', prem: true },
-    { k: 'sniper', nm: 'Sniper', ds: 'Best ROE inside your first few trades', prem: true }
+    { k: 'roe', nm: __esT_mpauth("roeDuel",'ROE Duel'), ds: __esT_mpauth("highestSingleTradeRoe",'Highest single-trade ROE% wins'), prem: false },
+    { k: 'pnl', nm: __esT_mpauth("profitDuel",'Profit Duel'), ds: __esT_mpauth("mostRealizedProfitWins",'Most realized profit ($) wins'), prem: true },
+    { k: 'survival', nm: 'Survival', ds: __esT_mpauth("higherEndingBalanceWins",'Higher ending balance wins - blow up and you are out'), prem: true },
+    { k: 'streak', nm: 'Streak', ds: __esT_mpauth("longestRunOfWinning",'Longest run of winning trades wins'), prem: true },
+    { k: 'sniper', nm: 'Sniper', ds: __esT_mpauth("bestRoeInsideYour",'Best ROE inside your first few trades'), prem: true }
   ];
   var DDUR = [{ v: 3600000, l: '1h' }, { v: 86400000, l: '24h' }, { v: 259200000, l: '3d' }, { v: 604800000, l: '7d' }];
   var DSTK = [0, 50, 100, 250, 500];
@@ -1018,7 +1024,7 @@
   };
   function dico(k) { return DICO[k] || (k === 'wr' ? DICO.roe : k === 'win' ? DICO.pnl : DICO.roe); }
   function durShort(ms) { return ({ '3600000': '1h', '86400000': '24h', '259200000': '3d', '604800000': '7d' })[String(ms)] || '7d'; }
-  var DRULE = { roe: 'Highest single-trade ROE% wins', wr: 'Best win rate wins (min 5 trades)', win: 'Biggest single winning trade wins', pnl: 'Most realized profit wins', survival: 'Higher ending balance wins - a blow-up loses', streak: 'Longest run of winning trades wins', sniper: 'Best ROE in your first few trades wins' };
+  var DRULE = { roe: __esT_mpauth("highestSingleTradeRoe",'Highest single-trade ROE% wins'), wr: __esT_mpauth("bestWinRateWins",'Best win rate wins (min 5 trades)'), win: __esT_mpauth("biggestSingleWinningTrade",'Biggest single winning trade wins'), pnl: __esT_mpauth("mostRealizedProfitWins2",'Most realized profit wins'), survival: __esT_mpauth("higherEndingBalanceWins2",'Higher ending balance wins - a blow-up loses'), streak: __esT_mpauth("longestRunOfWinning",'Longest run of winning trades wins'), sniper: __esT_mpauth("bestRoeInYour",'Best ROE in your first few trades wins') };
   function _dm(v) { var a = Math.abs(+v || 0); return a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'K' : a.toFixed(a < 100 ? 2 : 0); } // compact money so a big score can never overflow the card
   function duelScoreTxt(metric, v) { if (v == null) return '-';
     if (metric === 'win' || metric === 'pnl') return (v >= 0 ? '+$' : '-$') + _dm(v);
@@ -1036,29 +1042,29 @@
       + (hhOn ? '<div style="font:700 11px \'Space Mono\',monospace;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#c2f64a);border-radius:8px;padding:6px 10px;margin:0 0 10px">HAPPY HOUR - duel win bonus is DOUBLED right now</div>' : '')
       + '<p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader - or post an open challenge and let anyone take it. Best stat when the clock ends takes the pot.</p>'
       + '<button class="mpa-send" id="mpaDuOpenPost" type="button" style="margin:0 0 12px">Post an open challenge</button>'
-      + '<div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
+      + __esT_mpauth("loadingBackToProfile",'<div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaDuBack'); if (bk) bk.addEventListener('click', render);
     var op0 = bodyEl.querySelector('#mpaDuOpenPost'); if (op0) op0.addEventListener('click', function () { renderDuelChallenge('', true); });
     var sec = function (t) { return '<div class="mpa-du-sec">' + t + '</div>'; };
     var incCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
       return '<div class="mpa-di">'
-        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.opp) + ' challenged you</b><span>' + DMET[x.metric] + ' duel</span></div></div>'
+        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.opp) + __esT_mpauth("challengedYou",' challenged you</b><span>') + DMET[x.metric] + ' duel</span></div></div>'
         + '<div class="mpa-di-rule">' + DRULE[x.metric] + '</div>'
-        + '<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>' + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : 'Any coin') + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' T' : 'None') + '</span></div>'
+        + __esT_mpauth("runsFor",'<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>') + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : __esT_mpauth("anyCoin",'Any coin')) + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' T' : 'None') + '</span></div>'
         + '<div class="mpa-di-acts"><button class="mpa-du-y" data-duacc="' + esc(x.id) + '">Accept' + (x.stake > 0 ? ' · stake ' + x.stake + ' T' : '') + '</button><button class="mpa-du-n" data-dudec="' + esc(x.id) + '">Decline</button></div></div>'; };
     var vsCard = function (x) { var mine = x.myScore, opp = x.oppScore, lead = (mine != null && (opp == null || mine >= opp)), oLead = (opp != null && (mine == null || opp > mine)); var el = (x.dur > 0 && x.start > 0) ? Math.min(1, Math.max(0, (Date.now() - x.start) / x.dur)) : 0;
       return '<div class="mpa-dv" data-end="' + (x.end || 0) + '" data-start="' + (x.start || 0) + '" data-dur="' + (x.dur || 0) + '"><div class="mpa-dv-top"><div class="mpa-dv-ty">' + dico(x.metric) + '<span>' + DMET[x.metric] + '</span>' + (x.sym ? '<span class="mpa-dtag">' + esc(x.sym) + '</span>' : '') + '</div><div class="mpa-dv-tl">' + duelTimeLeft(x.end) + '</div></div>'
         + '<div class="mpa-dv-vs"><div class="mpa-dv-side' + (lead ? ' w' : '') + '"><div class="mpa-dv-nm">You</div><div class="mpa-dv-val">' + duelScoreTxt(x.metric, mine) + '</div></div><div class="mpa-dv-mid">VS</div><div class="mpa-dv-side' + (oLead ? ' w' : '') + '"><div class="mpa-dv-nm">@' + esc(x.opp) + '</div><div class="mpa-dv-val">' + duelScoreTxt(x.metric, opp) + '</div></div></div>'
         + '<div class="mpa-dv-bar"><i style="width:' + (el * 100).toFixed(1) + '%"></i></div>'
-        + '<div class="mpa-dv-ft"><span>' + DRULE[x.metric] + '</span>' + (x.stake > 0 ? '<span class="mpa-pot">Pot ' + (x.stake * 2) + ' T</span>' : '<span>No stake</span>') + '</div></div>'; };
-    var pendCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You challenged @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' T staked' : '') + '</div></div><div class="mpa-du-wait">…</div></div>'; };
-    var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' T</b>' : ''; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '<button class="mpa-du-y" data-durem="' + esc(x.id) + '" style="flex:0 0 auto;margin-left:8px" title="Same terms, straight back at them">Rematch</button></div>'; };
+        + '<div class="mpa-dv-ft"><span>' + DRULE[x.metric] + '</span>' + (x.stake > 0 ? '<span class="mpa-pot">Pot ' + (x.stake * 2) + ' T</span>' : __esT_mpauth("noStake",'<span>No stake</span>')) + '</div></div>'; };
+    var pendCard = function (x) { return __esT_mpauth("youChallenged",'<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You challenged @') + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' T staked' : '') + '</div></div><div class="mpa-du-wait">…</div></div>'; };
+    var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' T</b>' : ''; return __esT_mpauth("youVs",'<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @') + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '<button class="mpa-du-y" data-durem="' + esc(x.id) + '" style="flex:0 0 auto;margin-left:8px" title="Same terms, straight back at them">Rematch</button></div>'; };
     var lobbyCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
       return '<div class="mpa-di">'
-        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.name) + (x.prem ? ' <span style="font:700 8px \'Space Mono\',monospace;color:#c2f64a">PREMIUM</span>' : '') + '</b><span>Open ' + DMET[x.metric] + ' duel - first taker</span></div></div>'
-        + '<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>' + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : 'Any coin') + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' T' : 'None') + '</span></div>'
+        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.name) + (x.prem ? ' <span style="font:700 8px \'Space Mono\',monospace;color:#c2f64a">PREMIUM</span>' : '') + '</b><span>Open ' + DMET[x.metric] + __esT_mpauth("duelFirstTaker",' duel - first taker</span></div></div>')
+        + __esT_mpauth("runsFor",'<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>') + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : __esT_mpauth("anyCoin",'Any coin')) + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' T' : 'None') + '</span></div>'
         + '<div class="mpa-di-acts"><button class="mpa-du-y" data-dutake="' + esc(x.id) + '">Take it' + (x.stake > 0 ? ' · stake ' + x.stake + ' T' : '') + '</button></div></div>'; };
-    var myOpenCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">Your open challenge</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' T staked' : '') + ' · waiting for a taker</div></div><button class="mpa-du-n" data-ducxl="' + esc(x.id) + '" style="flex:0 0 auto">Cancel</button></div>'; };
+    var myOpenCard = function (x) { return __esT_mpauth("yourOpenChallenge",'<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">Your open challenge</div><div class="mpa-du-met">') + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' T staked' : '') + __esT_mpauth("waitingForATaker",' · waiting for a taker</div></div><button class="mpa-du-n" data-ducxl="') + esc(x.id) + '" style="flex:0 0 auto">Cancel</button></div>'; };
     function load() {
       Promise.all([
         fetch('/api/duel/mine').then(function (r) { return r.json(); }),
@@ -1068,16 +1074,16 @@
         var du = bodyEl.querySelector('#mpaDu'); if (!du) return;
         var all = (d && d.duels) || [];
         if (!all.length && !lobby.length) {
-          du.innerHTML = '<div class="mpa-xp-empty">No duels yet. Open a trader’s profile from the leaderboard and tap <b style="color:#f5a623">Duel</b> to throw down.</div>' + (window._mpPrem === false ? '<div class="mpa-ups" style="margin-top:12px"><b>Premium duels</b><p>Free duels are a 7-day ROE race. Premium unlocks Profit, Survival, Streak and Sniper formats, Tick stakes and faster rounds.</p><button type="button" id="mpaDuUps0">Go Premium</button></div>' : '');
+          du.innerHTML = __esT_mpauth("noDuelsYetOpen",'<div class="mpa-xp-empty">No duels yet. Open a trader’s profile from the leaderboard and tap <b style="color:#f5a623">Duel</b> to throw down.</div>') + (window._mpPrem === false ? '<div class="mpa-ups" style="margin-top:12px"><b>Premium duels</b><p>Free duels are a 7-day ROE race. Premium unlocks Profit, Survival, Streak and Sniper formats, Tick stakes and faster rounds.</p><button type="button" id="mpaDuUps0">Go Premium</button></div>' : '');
           var u0 = du.querySelector('#mpaDuUps0'); if (u0) u0.addEventListener('click', function () { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show('Duels'); } }); return;
         }
         var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), mineOpen = all.filter(function (x) { return x.status === 'open'; }), done = all.filter(function (x) { return x.status === 'done'; });
         var html = '';
         if (inc.length) html += sec('Incoming challenges') + inc.map(incCard).join('');
-        if (lobby.length) html += sec('Open challenges - first taker wins the spot') + lobby.map(lobbyCard).join('');
+        if (lobby.length) html += sec(__esT_mpauth("openChallengesFirstTaker",'Open challenges - first taker wins the spot')) + lobby.map(lobbyCard).join('');
         if (act.length) html += sec('Active') + act.map(vsCard).join('');
-        if (mineOpen.length) html += sec('Your open posts') + mineOpen.map(myOpenCard).join('');
-        if (pend.length) html += sec('Waiting for reply') + pend.map(pendCard).join('');
+        if (mineOpen.length) html += sec(__esT_mpauth("yourOpenPosts",'Your open posts')) + mineOpen.map(myOpenCard).join('');
+        if (pend.length) html += sec(__esT_mpauth("waitingForReply",'Waiting for reply')) + pend.map(pendCard).join('');
         if (done.length) html += sec('Results') + done.map(resCard).join('');
         du.innerHTML = html;
         Array.prototype.forEach.call(du.querySelectorAll('[data-duacc]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-duacc'), 'accept', b); }); });
@@ -1086,7 +1092,7 @@
           b.disabled = true;
           fetch('/api/duel/accept', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: b.getAttribute('data-dutake') }) }).then(function (r) { return r.json(); }).then(function (jd) {
             if (jd && jd.ok) { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }
-            else { b.disabled = false; b.textContent = jd && jd.error === 'need_ticks' ? ('Need ' + jd.need + ' T') : jd && jd.error === 'gone' ? 'Already taken' : jd && jd.error === 'exists' ? 'Live duel with them' : 'Try again'; }
+            else { b.disabled = false; b.textContent = jd && jd.error === 'need_ticks' ? ('Need ' + jd.need + ' T') : jd && jd.error === 'gone' ? __esT_mpauth("alreadyTaken",'Already taken') : jd && jd.error === 'exists' ? __esT_mpauth("liveDuelWithThem",'Live duel with them') : __esT_mpauth("tryAgain",'Try again'); }
           }).catch(function () { b.disabled = false; });
         }); });
         Array.prototype.forEach.call(du.querySelectorAll('[data-ducxl]'), function (b) { b.addEventListener('click', function () {
@@ -1097,10 +1103,10 @@
           b.disabled = true; b.textContent = '…';
           fetch('/api/duel/rematch', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: b.getAttribute('data-durem') }) }).then(function (r) { return r.json(); }).then(function (jd) {
             if (jd && jd.ok) { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }
-            else { b.disabled = false; b.textContent = jd && jd.error === 'exists' ? 'Already live' : jd && jd.error === 'need_ticks' ? ('Need ' + jd.need + ' T') : jd && jd.error === 'too_many' ? 'At duel limit' : 'Rematch'; }
+            else { b.disabled = false; b.textContent = jd && jd.error === 'exists' ? __esT_mpauth("alreadyLive",'Already live') : jd && jd.error === 'need_ticks' ? ('Need ' + jd.need + ' T') : jd && jd.error === 'too_many' ? __esT_mpauth("atDuelLimit",'At duel limit') : 'Rematch'; }
           }).catch(function () { b.disabled = false; b.textContent = 'Rematch'; });
         }); });
-      }).catch(function () { var du = bodyEl.querySelector('#mpaDu'); if (du && !du.querySelector('.mpa-dv,.mpa-di,.mpa-du-r')) du.innerHTML = '<div class="mpa-xp-empty">Could not load your duels.</div>'; });
+      }).catch(function () { var du = bodyEl.querySelector('#mpaDu'); if (du && !du.querySelector('.mpa-dv,.mpa-di,.mpa-du-r')) du.innerHTML = __esT_mpauth("couldNotLoadYour4",'<div class="mpa-xp-empty">Could not load your duels.</div>'); });
     }
     load();
     window._mpDuelT2 = setInterval(function () { var du = bodyEl.querySelector('#mpaDu'); if (!du) { clearInterval(window._mpDuelT2); if (window._mpDuelT1) clearInterval(window._mpDuelT1); return; } if (!document.hidden) load(); }, 30000); // fresh scores
@@ -1109,13 +1115,13 @@
   function duelRespond(id, action, btn) {
     if (btn) { btn.disabled = true; }
     fetch('/api/duel/respond', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id, action: action }) }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.error) { if (btn) { btn.disabled = false; btn.textContent = d.error === 'need_ticks' ? ('Need ' + d.need + ' T') : 'Try again'; } return; }
+      if (d && d.error) { if (btn) { btn.disabled = false; btn.textContent = d.error === 'need_ticks' ? ('Need ' + d.need + ' T') : __esT_mpauth("tryAgain",'Try again'); } return; }
       renderDuels(); if (window.mpXpCheck) window.mpXpCheck();
     }).catch(function () { if (btn) btn.disabled = false; });
   }
   function duelNudge() { /* post-win momentum nudge -> duels (max 1/day) */
     try {
-      if (window.mpToast) { window.mpToast({ mark: '⚔', msg: 'On form. Put that streak on the line - challenge someone to a duel.', kind: 'record', ms: 9000, dismissible: true, key: 'duelnudge', action: { label: 'Duel', onClick: function () { try { open(); renderDuels(); } catch (e) {} } } }); return; }
+      if (window.mpToast) { window.mpToast({ mark: '⚔', msg: __esT_mpauth("onFormPutThat",'On form. Put that streak on the line - challenge someone to a duel.'), kind: 'record', ms: 9000, dismissible: true, key: 'duelnudge', action: { label: 'Duel', onClick: function () { try { open(); renderDuels(); } catch (e) {} } } }); return; }
       var n = document.createElement('div');
       n.style.cssText = 'position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(8px);z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#151a12,#0d1014);border:1px solid rgba(245,166,35,.5);border-radius:14px;padding:11px 14px;box-shadow:0 18px 50px -18px rgba(0,0,0,.85),0 0 30px -14px rgba(245,166,35,.5);opacity:0;transition:opacity .3s,transform .3s;max-width:92vw';
       n.innerHTML = '<span style="font:700 12.5px Familjen Grotesk,sans-serif;color:#e9e7df">On form. Put that streak on the line - challenge someone to a duel.</span><button type="button" style="flex:0 0 auto;background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:8px 13px;font:800 12px Familjen Grotesk,sans-serif;cursor:pointer">Duels</button><button type="button" aria-label="Dismiss" style="flex:0 0 auto;background:none;border:none;color:#5c656f;font-size:15px;cursor:pointer;padding:2px 4px">&#215;</button>';
@@ -1127,7 +1133,7 @@
       setTimeout(kill, 9000);
     } catch (e) {}
   }
-  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'daily_limit' ? ('Challenge limit for today (' + (d.cap || 5) + '). Back tomorrow' + (d.cap === 5 ? ' - Premium raises it to 20/day' : '') + '.') : e === 'open_cap' ? ('You already have an open challenge on the board' + (d.cap === 1 ? ' - Premium allows 3 at once' : '') + '. Cancel it or wait for a taker.') : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' - Premium raises it to 10' : '') + '.') : e === 'need_ticks' ? ('Not enough Ticks - you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? (d && d.teaser ? 'Your free premium-format duel for this week is used. Premium makes them unlimited.' : 'That is a Premium duel type.') : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
+  function duelErr(d) { var e = d && d.error; return e === 'exists' ? __esT_mpauth("youAlreadyHaveA",'You already have a live duel with this trader.') : e === 'daily_limit' ? (__esT_mpauth("challengeLimitForToday",'Challenge limit for today (') + (d.cap || 5) + '). Back tomorrow' + (d.cap === 5 ? __esT_mpauth("premiumRaisesItTo",' - Premium raises it to 20/day') : '') + '.') : e === 'open_cap' ? (__esT_mpauth("youAlreadyHaveAn",'You already have an open challenge on the board') + (d.cap === 1 ? __esT_mpauth("premiumAllows3At",' - Premium allows 3 at once') : '') + '. Cancel it or wait for a taker.') : e === 'not_connected' ? __esT_mpauth("followThisTraderFirst2",'Follow this trader first to challenge them.') : e === 'need_username' ? __esT_mpauth("setAUsernameFirst2",'Set a username first.') : e === 'too_many' ? (__esT_mpauth("youAreAtYour",'You are at your live-duel limit') + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? __esT_mpauth("premiumRaisesItTo2",' - Premium raises it to 10') : '') + '.') : e === 'need_ticks' ? (__esT_mpauth("notEnoughTicksYou",'Not enough Ticks - you need ') + d.need + __esT_mpauth("butHave",' but have ') + d.have + '.') : e === 'premium_required' ? (d && d.teaser ? __esT_mpauth("yourFreePremiumFormat",'Your free premium-format duel for this week is used. Premium makes them unlimited.') : __esT_mpauth("thatIsAPremium",'That is a Premium duel type.')) : e === 'no_recipient' ? __esT_mpauth("userNotFound",'User not found.') : e === 'restricted' ? __esT_mpauth("yourAccountCannotStart",'Your account cannot start duels right now.') : __esT_mpauth("couldNotSendThe",'Could not send the challenge.'); }
   function renderDuelChallenge(name, isOpen) {
     name = String(name || '').replace(/[^a-zA-Z0-9_]/g, ''); if (!name && !isOpen) { renderDuels(); return; }
     ensurePrem(function (prem) {
@@ -1138,19 +1144,19 @@
         var typeCards = DTYPES.map(function (t) { var locked = t.prem && !prem, on = C.type === t.k;
           return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '"' + '>' + (locked ? '<span class="mpa-dt-pro">PRO · 1 free/wk</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join(''); /* premium formats stay pickable for free users - every account gets ONE premium-format duel a week (server enforces) */
         var durSeg = DDUR.map(function (dd) { var locked = dd.v !== 604800000 && !prem; return '<b data-dur="' + dd.v + '" class="' + (C.dur === dd.v ? 'on' : '') + (locked ? ' lk' : '') + '" data-lk="' + (locked ? 1 : '') + '">' + dd.l + '</b>'; }).join('');
-        var stkChips = DSTK.map(function (s) { var locked = !prem && s !== 0 && s !== 50; return '<button class="c' + (C.stake === s ? ' on' : '') + (locked ? ' lk' : '') + '" data-stk="' + s + '" data-lk="' + (locked ? 1 : '') + '">' + (s === 0 ? 'No stake' : s + ' T') + '</button>'; }).join('');
+        var stkChips = DSTK.map(function (s) { var locked = !prem && s !== 0 && s !== 50; return '<button class="c' + (C.stake === s ? ' on' : '') + (locked ? ' lk' : '') + '" data-stk="' + s + '" data-lk="' + (locked ? 1 : '') + '">' + (s === 0 ? __esT_mpauth("noStake2",'No stake') : s + ' T') + '</button>'; }).join('');
         var html = isOpen ? '<h3 class="mpa-h">Open challenge</h3><p class="mpa-sub" style="margin:-4px 0 12px">No target - it goes on the board and the FIRST trader to take it is in. Winner locked when the clock runs out.</p>' : '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
         html += '<div class="mpa-fld-l" style="margin-bottom:8px">Format</div><div class="mpa-dt-grid">' + typeCards + '</div>';
         html += '<div class="mpa-fld"><div class="mpa-fld-l">Duration' + (!prem ? ' <em>Premium unlocks faster rounds</em>' : '') + '</div><div class="mpa-seg">' + durSeg + '</div></div>';
-        html += '<div class="mpa-fld"><div class="mpa-fld-l">XP wager' + (!prem ? ' <em>Premium sets any amount</em>' : '') + '</div><div class="mpa-stk">' + stkChips + '</div>' + (C.stake > 0 ? '<div class="mpa-stk-info"><span>Your XP: <b>' + xp.toLocaleString() + '</b></span><span>Winner takes <b>' + (C.stake * 2) + ' T</b></span></div>' : '') + '</div>';
+        html += '<div class="mpa-fld"><div class="mpa-fld-l">XP wager' + (!prem ? ' <em>Premium sets any amount</em>' : '') + '</div><div class="mpa-stk">' + stkChips + '</div>' + (C.stake > 0 ? __esT_mpauth("yourXp",'<div class="mpa-stk-info"><span>Your XP: <b>') + xp.toLocaleString() + '</b></span><span>Winner takes <b>' + (C.stake * 2) + ' T</b></span></div>' : '') + '</div>';
         if (C.type === 'sniper') html += '<div class="mpa-fld"><div class="mpa-fld-l">Shots <em>first N trades count</em></div><div class="mpa-seg">' + [1, 2, 3, 4, 5].map(function (n) { return '<b data-mt="' + n + '" class="' + (C.maxTrades === n ? 'on' : '') + '">' + n + '</b>'; }).join('') + '</div></div>';
         if (prem) html += '<div class="mpa-fld"><div class="mpa-fld-l">Lock to one coin <em>optional</em></div><input class="mpa-symin" id="mpaDuSym" maxlength="12" placeholder="e.g. BTC - blank = any coin" value="' + esc(C.sym) + '"></div>';
-        html += '<button class="mpa-send" id="mpaDuSend">' + (isOpen ? 'Post to the board' : 'Send challenge') + '</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
+        html += '<button class="mpa-send" id="mpaDuSend">' + (isOpen ? __esT_mpauth("postToTheBoard",'Post to the board') : __esT_mpauth("sendChallenge",'Send challenge')) + '</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
         if (!prem) html += '<div class="mpa-ups"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, Tick stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type="button" id="mpaDuUps">Go Premium</button></div>';
         html += '<button class="mpa-link" id="mpaDuCancel" type="button" style="margin-top:10px">Cancel</button>';
         bodyEl.innerHTML = html;
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dt]'), function (b) { b.addEventListener('click', function () { C.type = b.getAttribute('data-dt'); draw(); }); });
-        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dur]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Faster duel rounds'); return; } C.dur = +b.getAttribute('data-dur'); draw(); }); });
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dur]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell(__esT_mpauth("fasterDuelRounds",'Faster duel rounds')); return; } C.dur = +b.getAttribute('data-dur'); draw(); }); });
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-stk]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Custom Tick stakes'); return; } C.stake = +b.getAttribute('data-stk'); draw(); }); });
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-mt]'), function (b) { b.addEventListener('click', function () { C.maxTrades = +b.getAttribute('data-mt'); draw(); }); });
         var sy = bodyEl.querySelector('#mpaDuSym'); if (sy) sy.addEventListener('input', function () { var p = sy.selectionStart; C.sym = sy.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); sy.value = C.sym; try { sy.setSelectionRange(p, p); } catch (e) {} });
@@ -1159,9 +1165,9 @@
         var snd = bodyEl.querySelector('#mpaDuSend'); if (snd) snd.addEventListener('click', function () {
           snd.disabled = true; var msg = bodyEl.querySelector('#mpaDuMsg'); if (msg) msg.innerHTML = 'Sending…';
           fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, open: isOpen ? 1 : 0, metric: C.type, dur: C.dur, stake: C.stake, sym: C.sym, maxTrades: C.maxTrades }) }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">' + (isOpen ? 'Posted. It is on the board - first taker starts the clock.' : 'Challenge sent to @' + esc(name) + '. It is waiting in their Duels.') + '</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
+            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">' + (isOpen ? __esT_mpauth("postedItIsOn",'Posted. It is on the board - first taker starts the clock.') : __esT_mpauth("challengeSentTo",'Challenge sent to @') + esc(name) + '. It is waiting in their Duels.') + '</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
             else { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">' + duelErr(d) + '</span>'; }
-          }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
+          }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = __esT_mpauth("networkErrorTryAgain2",'<span style="color:#ffb347">Network error - try again.</span>'); });
         });
       }
       draw();
@@ -1172,7 +1178,7 @@
   // resize an uploaded image to a square avatar (cover), compressed to a small data URI
   function makeAvatar(file, cb) {
     if (!file || !/^image\//.test(file.type)) { cb(null, 'That’s not an image file.'); return; }
-    if (file.size > 12 * 1024 * 1024) { cb(null, 'Image is too large (max 12MB).'); return; }
+    if (file.size > 12 * 1024 * 1024) { cb(null, __esT_mpauth("imageIsTooLarge",'Image is too large (max 12MB).')); return; }
     var fr = new FileReader();
     fr.onload = function () { var img = new Image(); img.onload = function () {
       var S = 160, cv = document.createElement('canvas'); cv.width = S; cv.height = S; var ctx = cv.getContext('2d');
@@ -1182,17 +1188,17 @@
       var out = ''; try { out = cv.toDataURL('image/webp', 0.72); } catch (e) {}
       if (!out || out.indexOf('data:image/webp') !== 0) out = cv.toDataURL('image/jpeg', 0.78);
       if (out.length > 58000) out = cv.toDataURL('image/jpeg', 0.6);
-      if (out.length > 58000) { cb(null, 'Could not compress that image - try a simpler one.'); return; }
+      if (out.length > 58000) { cb(null, __esT_mpauth("couldNotCompressThat",'Could not compress that image - try a simpler one.')); return; }
       cb(out, null);
-    }; img.onerror = function () { cb(null, 'Could not read that image.'); }; img.src = fr.result; };
-    fr.onerror = function () { cb(null, 'Could not read that file.'); };
+    }; img.onerror = function () { cb(null, __esT_mpauth("couldNotReadThat",'Could not read that image.')); }; img.src = fr.result; };
+    fr.onerror = function () { cb(null, __esT_mpauth("couldNotReadThat2",'Could not read that file.')); };
     fr.readAsDataURL(file);
   }
   function renderBalance() {
     if (!bodyEl) return;
-    bodyEl.innerHTML = '<h3 class="mpa-h">Balance Mode</h3><p class="mpa-sub">Checking your membership…</p>';
+    bodyEl.innerHTML = __esT_mpauth("balanceModeCheckingYour",'<h3 class="mpa-h">Balance Mode</h3><p class="mpa-sub">Checking your membership…</p>');
     fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) {
-      if (!st || !st.premium) { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show('Unlock Balance Mode'); render(); return; }
+      if (!st || !st.premium) { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show(__esT_mpauth("unlockBalanceMode",'Unlock Balance Mode')); render(); return; }
       if (!document.getElementById('mpaBalCss')) { var s2 = document.createElement('style'); s2.id = 'mpaBalCss'; s2.textContent = '.bal-seg{display:flex;gap:0;background:#0a0d11;border:1px solid #232b36;border-radius:12px;padding:4px;margin:2px 0 12px}.bal-seg button{flex:1;padding:13px;border:none;background:none;color:#8b97a5;font-size:14px;font-weight:800;letter-spacing:.08em;border-radius:9px;cursor:pointer;transition:.15s;-webkit-appearance:none;appearance:none}.bal-seg button.off{background:#2a2f38;color:#e9e7df}.bal-seg button.on{background:#c2f64a;color:#0a0b0d}.bal-status{font-size:12.5px;color:#8b97a5;line-height:1.55;padding:11px 13px;background:#0a0d11;border:1px solid #232b36;border-radius:11px}.bal-status.on{border-color:rgba(194,246,74,.3);color:#c7cdd4}.bal-status b{color:#c2f64a}.bal-econ{margin-top:14px;background:linear-gradient(158deg,rgba(194,246,74,.06),#0a0d11);border:1px solid #232b36;border-radius:12px;padding:12px 14px}.bal-econ-h{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7f8893;margin-bottom:9px}.bal-econ-r{display:flex;align-items:baseline;gap:10px;padding:5px 0}.bal-econ-r b{flex:none;width:90px;color:#c2f64a;font-family:ui-monospace,Consolas,monospace;font-size:14px;font-weight:800}.bal-econ-r span{font-size:12px;color:#a9b3bf;line-height:1.35}'; document.head.appendChild(s2); }
       function draw(on) {
         var cc = window.mpBal.cfg();
@@ -1200,12 +1206,12 @@
           + '<h3 class="mpa-h">Balance Mode <span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px;vertical-align:2px">PREMIUM</span></h3>'
           + '<p class="mpa-sub" style="margin:-2px 0 14px">Trade a real portfolio instead of unlimited paper money. Every trade draws its margin from your balance - blow it up and you feel it, exactly like a real account.</p>'
           + '<div class="bal-seg"><button type="button" data-balset="0" class="' + (on ? '' : 'off') + '">OFF</button><button type="button" data-balset="1" class="' + (on ? 'on' : '') + '">ON</button></div>'
-          + '<div class="bal-status ' + (on ? 'on' : '') + '">' + (on ? 'Balance Mode is <b>ON</b> - you\'re trading a <b>$' + cc.start.toLocaleString() + '</b> portfolio. It shows at the top of <b>My Trades</b>.' : 'Balance Mode is <b>OFF</b> - normal paper trading with no balance limit.') + '</div>'
-          + (on ? '<div class="bal-econ"><div class="bal-econ-h">How your balance grows</div><div class="bal-econ-r"><b>$10,000</b><span>to start - just for being VIP</span></div><div class="bal-econ-r"><b>+$10,000</b><span>every new day you show up and trade</span></div><div class="bal-econ-r"><b>+ bonus</b><span>from completing your daily missions</span></div></div>' : '')
-          + (on ? '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:14px">' + ic('spark') + 'Reset balance to $10,000</button>' : '');
+          + '<div class="bal-status ' + (on ? 'on' : '') + '">' + (on ? __esT_mpauth("balanceModeIsOn",'Balance Mode is <b>ON</b> - you\'re trading a <b>$') + cc.start.toLocaleString() + __esT_mpauth("portfolioItShowsAt",'</b> portfolio. It shows at the top of <b>My Trades</b>.') : __esT_mpauth("balanceModeIsOff",'Balance Mode is <b>OFF</b> - normal paper trading with no balance limit.')) + '</div>'
+          + (on ? __esT_mpauth("howYourBalanceGrows",'<div class="bal-econ"><div class="bal-econ-h">How your balance grows</div><div class="bal-econ-r"><b>$10,000</b><span>to start - just for being VIP</span></div><div class="bal-econ-r"><b>+$10,000</b><span>every new day you show up and trade</span></div><div class="bal-econ-r"><b>+ bonus</b><span>from completing your daily missions</span></div></div>') : '')
+          + (on ? '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:14px">' + ic('spark') + __esT_mpauth("resetBalanceTo10",'Reset balance to $10,000</button>') : '');
         var bk = bodyEl.querySelector('#mpaBalBack'); if (bk) bk.addEventListener('click', render);
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-balset]'), function (b) { b.addEventListener('click', function () { var want = b.getAttribute('data-balset') === '1'; window.mpBal.setCfg(want); draw(want); }); });
-        var rs = bodyEl.querySelector('#mpaBalReset'); if (rs) rs.addEventListener('click', function () { if (!confirm('Reset your balance back to $10,000? Your open Balance-Mode trades stay open.')) return; window.mpBal.setCfg(true, true); draw(true); });
+        var rs = bodyEl.querySelector('#mpaBalReset'); if (rs) rs.addEventListener('click', function () { if (!confirm(__esT_mpauth("resetYourBalanceBack",'Reset your balance back to $10,000? Your open Balance-Mode trades stay open.'))) return; window.mpBal.setCfg(true, true); draw(true); });
       }
       draw(window.mpBal.cfg().on);
     }).catch(function () { render(); });
@@ -1232,27 +1238,27 @@
     { k: 'void', name: 'Void', by: 'Vault' },
     { k: 'sovereign', name: 'Sovereign', by: 'Vault' },
     { k: 'eclipse', name: 'Eclipse', by: 'Vault - limited' },
-    { k: 'streak7', name: 'Kindling', by: '7-day streak' },
-    { k: 'streak30', name: 'Wildfire', by: '30-day streak' },
-    { k: 'streak100', name: 'Eternal Flame', by: '100-day streak' },
+    { k: 'streak7', name: 'Kindling', by: __esT_mpauth("7DayStreak",'7-day streak') },
+    { k: 'streak30', name: 'Wildfire', by: __esT_mpauth("30DayStreak",'30-day streak') },
+    { k: 'streak100', name: 'Eternal Flame', by: __esT_mpauth("100DayStreak",'100-day streak') },
     { k: 'inferno', name: 'Inferno', by: 'Vault' },
-    { k: 'dwell10', name: 'Local', by: '10h on site' },
-    { k: 'dwell100', name: 'Resident', by: '100h on site' },
-    { k: 'closer', name: 'The Closer', by: '500 closes' },
+    { k: 'dwell10', name: 'Local', by: __esT_mpauth("10hOnSite",'10h on site') },
+    { k: 'dwell100', name: 'Resident', by: __esT_mpauth("100hOnSite",'100h on site') },
+    { k: 'closer', name: __esT_mpauth("theCloser",'The Closer'), by: '500 closes' },
     { k: 'operative', name: 'Operative', by: '100 missions' },
     { k: 'mission500', name: 'Quartermaster', by: '500 missions' },
-    { k: 'og180', name: 'OG', by: '6 months on MarginPad' },
+    { k: 'og180', name: 'OG', by: __esT_mpauth("6MonthsOnMarginpad",'6 months on MarginPad') },
     { k: 'xp100k', name: 'Centurion', by: '100k lifetime XP' },
     { k: 'closer2k', name: 'Overclock', by: '2,000 closes' },
-    { k: 'dwell500', name: 'Furniture', by: '500h on site' },
+    { k: 'dwell500', name: 'Furniture', by: __esT_mpauth("500hOnSite",'500h on site') },
     { k: 'dragonfire', name: 'Dragonfire', by: 'Vault' },
     { k: 'singularity', name: 'Singularity', by: 'Vault' },
     { k: 'midas', name: 'Midas', by: 'Vault' },
-    { k: 'realtrader', name: 'Real Trader', by: 'Gifted by the house' },
-    { k: 'champion', name: 'Champion', by: 'Season #1 - Highest ROE' },
-    { k: 'deadeye', name: 'Deadeye', by: 'Season #1 - Win-Rate' },
-    { k: 'overdrive', name: 'Overdrive', by: 'Season #1 - XP' },
-    { k: 'tycoon', name: 'Tycoon', by: 'Season #1 - Green Days' },
+    { k: 'realtrader', name: 'Real Trader', by: __esT_mpauth("giftedByTheHouse",'Gifted by the house') },
+    { k: 'champion', name: 'Champion', by: __esT_mpauth("season1HighestRoe",'Season #1 - Highest ROE') },
+    { k: 'deadeye', name: 'Deadeye', by: __esT_mpauth("season1WinRate",'Season #1 - Win-Rate') },
+    { k: 'overdrive', name: 'Overdrive', by: __esT_mpauth("season1Xp",'Season #1 - XP') },
+    { k: 'tycoon', name: 'Tycoon', by: __esT_mpauth("season1GreenDays",'Season #1 - Green Days') },
     { k: 'nat_ng', name: 'Nigeria', by: 'Vault - Nations' },
     { k: 'nat_pk', name: 'Pakistan', by: 'Vault - Nations' },
     { k: 'nat_us', name: 'United States', by: 'Vault - Nations' },
@@ -1306,10 +1312,10 @@
   ];
   function renderCustomize() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3>'
-      + '<div class="mpa-frhead"><p class="mpa-sub">Frame for your public trader card.</p>'
-      + '<span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>'
+      + __esT_mpauth("frameForYourPublic",'<div class="mpa-frhead"><p class="mpa-sub">Frame for your public trader card.</p>')
+      + __esT_mpauth("yoursAll",'<span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>')
       + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
-      + '<button class="mpa-row2" id="mpaFrPic" type="button" style="margin-top:10px">' + ic('cam') + '<span>Change profile picture</span>' + ic('chev') + '</button>'
+      + '<button class="mpa-row2" id="mpaFrPic" type="button" style="margin-top:10px">' + ic('cam') + __esT_mpauth("changeProfilePicture",'<span>Change profile picture</span>') + ic('chev') + '</button>'
       + '<div class="mpa-du-msg" id="mpaFrMsg" style="margin-top:8px"></div>'
       + '<button class="mpa-link" id="mpaFrBack" type="button">← Back</button>';
     var bk = bodyEl.querySelector('#mpaFrBack'); if (bk) bk.addEventListener('click', render);
@@ -1335,7 +1341,7 @@
             + '<div class="mpa-fr-nm">' + f.name + '</div>'
             + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
             + '</button>';
-        }).join('') || '<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more - switch to ALL to see what is out there.</div>';
+        }).join('') || __esT_mpauth("onlyTheClassicFrame",'<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more - switch to ALL to see what is out there.</div>');
         var seg = bodyEl.querySelector('#mpaFrSeg');
         if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
         wire();
@@ -1360,9 +1366,9 @@
                   var k = x.getAttribute('data-frame'); x.classList.toggle('on', k === rd.frame);
                   if (owned.indexOf(k) >= 0) { var by = x.querySelector('.mpa-fr-by'); if (by) by.textContent = (k === rd.frame ? 'Equipped' : 'Owned'); }
                 });
-                if (msg) msg.innerHTML = '<span style="color:#34d99a">Frame equipped! Your trader card is updated.</span>';
-              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip - try again.') + '</span>';
-            }).catch(function () { if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
+                if (msg) msg.innerHTML = __esT_mpauth("frameEquippedYourTrader",'<span style="color:#34d99a">Frame equipped! Your trader card is updated.</span>');
+              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? __esT_mpauth("youDoNotOwn",'You do not own that frame yet.') : __esT_mpauth("couldNotEquipTry",'Could not equip - try again.')) + '</span>';
+            }).catch(function () { if (msg) msg.innerHTML = __esT_mpauth("networkErrorTryAgain2",'<span style="color:#ffb347">Network error - try again.</span>'); });
         });
       });
       }
@@ -1374,7 +1380,7 @@
     function avInner(a) { return a ? avatarHtml(a) : ic('cam'); }
     bodyEl.innerHTML = '<h3 class="mpa-h">Edit profile</h3><p class="mpa-sub" style="margin:-4px 0 14px">This shows on your public trader card.</p>'
       + '<div class="mpa-avedit"><button type="button" class="mpa-avdrop' + (avState ? ' has' : '') + '" id="mpaAvDrop">' + avInner(avState) + '<span class="mpa-avcam">' + ic('cam') + '</span></button>'
-      + '<div class="mpa-avside"><div class="mpa-avttl">Profile picture</div><div class="mpa-avsub">Square works best · JPG/PNG/WebP</div><div class="mpa-avbtns"><button type="button" class="mpa-avbtn" id="mpaAvPick">Upload</button><button type="button" class="mpa-avbtn ghost" id="mpaAvClear"' + (avState ? '' : ' hidden') + '>Remove</button></div></div>'
+      + __esT_mpauth("profilePictureSquareWorks",'<div class="mpa-avside"><div class="mpa-avttl">Profile picture</div><div class="mpa-avsub">Square works best · JPG/PNG/WebP</div><div class="mpa-avbtns"><button type="button" class="mpa-avbtn" id="mpaAvPick">Upload</button><button type="button" class="mpa-avbtn ghost" id="mpaAvClear"') + (avState ? '' : ' hidden') + '>Remove</button></div></div>'
       + '<input type="file" accept="image/*" id="mpaAvFile" hidden></div>'
       + '<label class="mpa-pl" style="margin-top:16px">Accent colour</label><div class="mpa-pacc" id="mpaPacc">' + ACCENTS.map(function (c) { return '<button type="button" class="mpa-pc' + (c === ac ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>'
       + '<label class="mpa-pl" style="margin-top:14px">Bio <span style="color:#5c656f">(160 chars)</span></label><textarea class="mpa-in" id="mpaPbio" maxlength="160" rows="3" placeholder="Swing trader. BTC maxi. Risk 1% per trade." style="resize:vertical;min-height:64px">' + esc(bio) + '</textarea>'
@@ -1397,9 +1403,9 @@
       var payload = { bio: bodyEl.querySelector('#mpaPbio').value, avatar: avState, accent: accSel, coins: bodyEl.querySelector('#mpaPco').value };
       fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(function (r) { return r.json(); }).then(function (d) {
         sv.disabled = false;
-        if (d && d.ok) { if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } if (msg) msg.innerHTML = '<span style="color:#34d99a">Saved! Your trader card is updated.</span>'; setTimeout(render, 1100); }
-        else { if (msg) msg.innerHTML = '<span style="color:#ffb347">Could not save - try again.</span>'; }
-      }).catch(function () { sv.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
+        if (d && d.ok) { if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } if (msg) msg.innerHTML = __esT_mpauth("savedYourTraderCard",'<span style="color:#34d99a">Saved! Your trader card is updated.</span>'); setTimeout(render, 1100); }
+        else { if (msg) msg.innerHTML = __esT_mpauth("couldNotSaveTry",'<span style="color:#ffb347">Could not save - try again.</span>'); }
+      }).catch(function () { sv.disabled = false; if (msg) msg.innerHTML = __esT_mpauth("networkErrorTryAgain2",'<span style="color:#ffb347">Network error - try again.</span>'); });
     });
   }
   // ---- Notifications center ----
@@ -1407,30 +1413,30 @@
   window.mpNotifBadge = notifSetBadge;
   function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user', gift: 'gift' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
   function renderNotifs() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>';
+    bodyEl.innerHTML = __esT_mpauth("notificationsLoadingBackTo",'<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
     fetch('/api/auth/notifs').then(function (r) { return r.json(); }).then(function (d) {
       var nf = bodyEl.querySelector('#mpaNf'); if (!nf) return;
       var list = (d && d.notifs) || [];
-      if (!list.length) { nf.innerHTML = '<div class="mpa-xp-empty">No notifications yet. Follows, messages, @mentions and duel results will show up here.</div>'; }
+      if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">No notifications yet. Follows, messages, @mentions and duel results will show up here.</div>'); }
       else { nf.innerHTML = list.map(function (n) { var link = n.link || ''; return '<div class="mpa-nf-r' + (n.seen ? '' : ' unseen') + '"' + (link ? ' data-nflink="' + esc(link) + '" role="button"' : '') + '><span class="mpa-nf-ic">' + notifIcon(n.kind) + '</span><div class="mpa-nf-b">' + esc(n.body) + '<span class="mpa-nf-ago">' + xpAgo(n.ts) + '</span></div></div>'; }).join('');
         Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
       }
       // mark all read (clears the bell) once viewed
       fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
-    }).catch(function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = '<div class="mpa-xp-empty">Could not load notifications.</div>'; });
+    }).catch(function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = __esT_mpauth("couldNotLoadNotifications",'<div class="mpa-xp-empty">Could not load notifications.</div>'); });
   }
   // Daily Brief teaser for the profile card: public market-only line, cached 5 min per browser so opening the card costs no request most of the time
   function briefTeaserLine(t) {
-    if (!t || !t.bias) return 'Today’s market, your positions and your season in one card';
+    if (!t || !t.bias) return __esT_mpauth("todaySMarketYour",'Today’s market, your positions and your season in one card');
     var b = t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a';
     var parts = ['<b style="color:' + col + '">' + (b === 'bullish' ? 'Leans bullish' : b === 'bearish' ? 'Leans bearish' : 'Mixed market') + '</b>'];
     if (t.setups) parts.push(t.setups + ' setup' + (t.setups === 1 ? '' : 's'));
-    if (t.next && t.next.title) { var h = +t.next.inH; parts.push(esc(String(t.next.title).slice(0, 28)) + (h < 1 ? ' within the hour' : h < 24 ? ' in ' + Math.round(h) + ' h' : ' in ' + Math.round(h / 24) + ' d')); }
+    if (t.next && t.next.title) { var h = +t.next.inH; parts.push(esc(String(t.next.title).slice(0, 28)) + (h < 1 ? __esT_mpauth("withinTheHour",' within the hour') : h < 24 ? ' in ' + Math.round(h) + ' h' : ' in ' + Math.round(h / 24) + ' d')); }
     else if (t.fng != null) parts.push('Fear &amp; Greed ' + t.fng);
     return parts.join(' · ');
   }
-  function briefAgoText(t) { if (!t || !t.at) return ''; var m = Math.max(0, Math.round((Date.now() - +t.at) / 60000)); return 'updated ' + (m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'); } // freshness on the card itself (owner: builds trust)
+  function briefAgoText(t) { if (!t || !t.at) return ''; var m = Math.max(0, Math.round((Date.now() - +t.at) / 60000)); return 'updated ' + (m < 1 ? __esT_mpauth("justNow",'just now') : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'); } // freshness on the card itself (owner: builds trust)
   function briefTeaserCached() { try { var c = JSON.parse(localStorage.getItem('mp_brief_tz') || 'null'); return c && c.d ? c.d : null; } catch (e) { return null; } }
   function briefTeaserGet(cb) {
     var c = null; try { c = JSON.parse(localStorage.getItem('mp_brief_tz') || 'null'); } catch (e) {}
@@ -1439,7 +1445,7 @@
   }
   function render() {
     if (BANNED) {
-      bodyEl.innerHTML = '<h3 class="mpa-h">Account suspended</h3><p class="mpa-sub">Your MarginPad account has been suspended. If you believe this is a mistake, contact <b>support@marginpad.io</b>.</p>';
+      bodyEl.innerHTML = __esT_mpauth("accountSuspendedYourMargin",'<h3 class="mpa-h">Account suspended</h3><p class="mpa-sub">Your MarginPad account has been suspended. If you believe this is a mistake, contact <b>support@marginpad.io</b>.</p>');
       return;
     }
     if (ME) {
@@ -1473,8 +1479,8 @@
       bodyEl.innerHTML = head
         + (hasU ? '<div class="mpa-kpi" title="This season">'
             + kpi('mpaKTr', '…', 'Trades', 'mute')
-            + kpi('mpaKWr', '…', 'Win rate', 'mute')
-            + kpi('mpaKPnl', '…', 'Season P&amp;L', 'mute')
+            + kpi('mpaKWr', '…', __esT_mpauth("winRate",'Win rate'), 'mute')
+            + kpi('mpaKPnl', '…', __esT_mpauth("seasonPAmpL",'Season P&amp;L'), 'mute')
             + kpi('mpaFollowers', (xpLast && typeof xpLast.followers === 'number') ? String(xpLast.followers) : '…', 'Followers', '')
           + '</div>'
           /* Daily Brief as a TODAY card with a live teaser (2026-09-12) - it was a bare "Daily Brief PREMIUM" row: 327 card opens, 5 brief opens in a day */
@@ -1489,13 +1495,13 @@
         + '</div>'
         + '<div class="mpa-menu">'
           + mi('mpaBal', svgWallet, 'Balance Mode', 'PREMIUM')
-          + mi('mpaEdit', ic('edit'), 'Edit profile', '')
+          + mi('mpaEdit', ic('edit'), __esT_mpauth("editProfile",'Edit profile'), '')
           + mi('mpaFrames', svgFrame, 'Customize card', '')
           + mi('mpaXp', ic('spark'), 'XP history', '')
         + '</div>' : '')
         + '<div class="mpa-foot3">'
           + '<button class="mpa-fl" id="mpaSup" type="button">' + ic('help') + 'Support</button>'
-          + '<button class="mpa-fl out" id="mpaLogout" type="button">' + ic('out') + 'Sign out</button>'
+          + '<button class="mpa-fl out" id="mpaLogout" type="button">' + ic('out') + __esT_mpauth("signOut",'Sign out</button>')
         + '</div>';
       if (hasU) { try { fetch('/api/lb/user?name=' + encodeURIComponent(ME.username)).then(function (r) { return r.json(); }).then(function (d) {
         d = d || {}; var st = d.stats || {}, n = +st.closed || 0, tr = +st.trades || 0;
@@ -1511,18 +1517,18 @@
         var sv = bodyEl.querySelector('#mpaSaveU'), ui = bodyEl.querySelector('#mpaUname');
         var saveU = function () {
           var v = (ui.value || '').trim();
-          if (!/^[a-zA-Z0-9_]{3,20}$/.test(v)) { setMsg('3–20 letters, numbers or _', 'err'); return; }
+          if (!/^[a-zA-Z0-9_]{3,20}$/.test(v)) { setMsg(__esT_mpauth("320LettersNumbers",'3–20 letters, numbers or _'), 'err'); return; }
           sv.disabled = true; setMsg('Saving…', '');
           fetch('/api/auth/username', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: v }) })
             .then(function (r) { return r.json(); }).then(function (d) {
               sv.disabled = false;
               if (d.ok) { ME.username = d.username; reflect(); setMsg('Saved ✓', 'ok'); setTimeout(render, 700); }
-              else if (d.error === 'taken') setMsg('That username is taken.', 'err');
-              else if (d.error === 'bad_username') setMsg('3–20 letters, numbers or _', 'err');
+              else if (d.error === 'taken') setMsg(__esT_mpauth("thatUsernameIsTaken",'That username is taken.'), 'err');
+              else if (d.error === 'bad_username') setMsg(__esT_mpauth("320LettersNumbers",'3–20 letters, numbers or _'), 'err');
               else if (d.error === 'already_set') { if (d.username) ME.username = d.username; render(); }
-              else if (d.error === 'not_signed_in') setMsg('Please sign in again.', 'err');
-              else setMsg('Could not save.', 'err');
-            }).catch(function () { sv.disabled = false; setMsg('Network error.', 'err'); });
+              else if (d.error === 'not_signed_in') setMsg(__esT_mpauth("pleaseSignInAgain2",'Please sign in again.'), 'err');
+              else setMsg(__esT_mpauth("couldNotSave",'Could not save.'), 'err');
+            }).catch(function () { sv.disabled = false; setMsg(__esT_mpauth("networkError2",'Network error.'), 'err'); });
         };
         sv.addEventListener('click', saveU);
         ui.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveU(); });
@@ -1544,26 +1550,26 @@
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);
       return;
     }
-    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('t', 'Sign in or sign up') + '</h3><p class="mpa-sub">' + authT('h', 'Enter your email and we’ll send a 6-digit code. No password.') + '</p>'
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('t', __esT_mpauth("signInOrSign",'Sign in or sign up')) + '</h3><p class="mpa-sub">' + authT('h', __esT_mpauth("enterYourEmailAnd",'Enter your email and we’ll send a 6-digit code. No password.')) + '</p>'
       + '<input class="mpa-in" id="mpaEmail" type="email" inputmode="email" autocomplete="email" placeholder="' + authT('ph', 'you@email.com') + '">'
-      + '<button class="mpa-btn" id="mpaSend" type="button">' + authT('send', 'Send code') + '</button><div class="mpa-msg"></div>'
-      + '<p class="mpa-foot">' + authT('opt', 'Optional - MarginPad works without an account. We use email only to save your progress.') + '</p>';
+      + '<button class="mpa-btn" id="mpaSend" type="button">' + authT('send', __esT_mpauth("sendCode",'Send code')) + '</button><div class="mpa-msg"></div>'
+      + '<p class="mpa-foot">' + authT('opt', __esT_mpauth("optionalMarginpadWorksWith",'Optional - MarginPad works without an account. We use email only to save your progress.')) + '</p>';
     var em = bodyEl.querySelector('#mpaEmail'), sb = bodyEl.querySelector('#mpaSend');
     setTimeout(function () { em.focus(); }, 40);
     function send() {
       var v = (em.value || '').trim().toLowerCase();
-      if (!emailOk(v)) { setMsg(authT('bad', 'Enter a valid email.'), 'err'); return; }
+      if (!emailOk(v)) { setMsg(authT('bad', __esT_mpauth("enterAValidEmail",'Enter a valid email.')), 'err'); return; }
       sb.disabled = true; setMsg(authT('sending', 'Sending…'), '');
       fetch('/api/auth/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: v }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           sb.disabled = false;
           if (d.ok) codeStep(v);
-          else if (d.error === 'cooldown') setMsg('Wait ' + (d.wait || 30) + 's before requesting another code.', 'err');
-          else if (d.error === 'too_many') setMsg('Too many codes today - try again tomorrow.', 'err');
-          else if (d.error === 'email_not_configured') setMsg('Sign-in is not available right now.', 'err');
-          else if (d.error === 'bad_email') setMsg('Enter a valid email.', 'err');
-          else setMsg('Could not send the code. Try again.', 'err');
-        }).catch(function () { sb.disabled = false; setMsg('Network error - try again.', 'err'); });
+          else if (d.error === 'cooldown') setMsg('Wait ' + (d.wait || 30) + __esT_mpauth("sBeforeRequestingAnother",'s before requesting another code.'), 'err');
+          else if (d.error === 'too_many') setMsg(__esT_mpauth("tooManyCodesToday",'Too many codes today - try again tomorrow.'), 'err');
+          else if (d.error === 'email_not_configured') setMsg(__esT_mpauth("signInIsNot",'Sign-in is not available right now.'), 'err');
+          else if (d.error === 'bad_email') setMsg(__esT_mpauth("enterAValidEmail",'Enter a valid email.'), 'err');
+          else setMsg(__esT_mpauth("couldNotSendThe2",'Could not send the code. Try again.'), 'err');
+        }).catch(function () { sb.disabled = false; setMsg(__esT_mpauth("networkErrorTryAgain3",'Network error - try again.'), 'err'); });
     }
     sb.addEventListener('click', send);
     em.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
@@ -1587,26 +1593,26 @@
   };
   function authT(k, en) { var L = String(window.__mpLangCur || window.mpLang || (document.documentElement.lang || 'en')).slice(0, 2).toLowerCase(); var d = AUTH_T[L]; return (d && d[k]) || en; }
   function codeStep(email) {
-    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('inbox', 'Check your inbox') + '</h3><p class="mpa-sub">' + authT('sent', 'We sent a 6-digit code to') + ' <b>' + esc(email) + '</b>.</p>'
-      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">' + authT('spam', 'No email? Check your <b>spam / junk</b> folder - our codes sometimes land there.') + '</p>'
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + authT('inbox', __esT_mpauth("checkYourInbox",'Check your inbox')) + '</h3><p class="mpa-sub">' + authT('sent', __esT_mpauth("weSentA6",'We sent a 6-digit code to')) + ' <b>' + esc(email) + '</b>.</p>'
+      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">' + authT('spam', __esT_mpauth("noEmailCheckYour",'No email? Check your <b>spam / junk</b> folder - our codes sometimes land there.')) + '</p>'
       + '<input class="mpa-in mpa-code" id="mpaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">'
       + '<button class="mpa-btn" id="mpaVerify" type="button">' + authT('verify', 'Verify') + '</button><div class="mpa-msg"></div>'
-      + '<button class="mpa-link" id="mpaBack" type="button">' + authT('back', '← use a different email') + '</button>';
+      + '<button class="mpa-link" id="mpaBack" type="button">' + authT('back', __esT_mpauth("useADifferentEmail",'← use a different email')) + '</button>';
     var ci = bodyEl.querySelector('#mpaCode'), vb = bodyEl.querySelector('#mpaVerify');
     setTimeout(function () { ci.focus(); }, 40);
     function verify() {
       var c = (ci.value || '').replace(/\D/g, '');
-      if (c.length !== 6) { setMsg(authT('code6', 'Enter the 6-digit code.'), 'err'); return; }
+      if (c.length !== 6) { setMsg(authT('code6', __esT_mpauth("enterThe6Digit",'Enter the 6-digit code.')), 'err'); return; }
       vb.disabled = true; setMsg(authT('verifying', 'Verifying…'), '');
       fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode(), src: landingSrc() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
-          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
-          else if (d.error === 'bad_code') setMsg('Wrong code' + (d.left != null ? ' - ' + d.left + ' tries left' : '') + '.', 'err');
-          else if (d.error === 'expired' || d.error === 'no_code') setMsg('Code expired - request a new one.', 'err');
-          else if (d.error === 'too_many_attempts') setMsg('Too many tries - request a new code.', 'err');
-          else setMsg('Could not verify. Try again.', 'err');
-        }).catch(function () { vb.disabled = false; setMsg('Network error - try again.', 'err'); });
+          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? __esT_mpauth("accountCreated",'Account created ✓') : __esT_mpauth("signedIn2",'Signed in ✓'), 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
+          else if (d.error === 'bad_code') setMsg(__esT_mpauth("wrongCode",'Wrong code') + (d.left != null ? ' - ' + d.left + __esT_mpauth("triesLeft",' tries left') : '') + '.', 'err');
+          else if (d.error === 'expired' || d.error === 'no_code') setMsg(__esT_mpauth("codeExpiredRequestA",'Code expired - request a new one.'), 'err');
+          else if (d.error === 'too_many_attempts') setMsg(__esT_mpauth("tooManyTriesRequest",'Too many tries - request a new code.'), 'err');
+          else setMsg(__esT_mpauth("couldNotVerifyTry",'Could not verify. Try again.'), 'err');
+        }).catch(function () { vb.disabled = false; setMsg(__esT_mpauth("networkErrorTryAgain3",'Network error - try again.'), 'err'); });
     }
     vb.addEventListener('click', verify);
     ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') verify(); });
@@ -1615,7 +1621,7 @@
 
   function reflect() {
     var on = !!ME;
-    Array.prototype.forEach.call(document.querySelectorAll('[data-auth-status]'), function (e) { e.textContent = BANNED ? authT('susp', 'Suspended') : (on ? (ME.username || ME.email.split('@')[0]) : authT('signin', 'Sign in')); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-auth-status]'), function (e) { e.textContent = BANNED ? authT('susp', 'Suspended') : (on ? (ME.username || ME.email.split('@')[0]) : authT('signin', __esT_mpauth("signIn",'Sign in'))); });
     document.body.classList.toggle('mpa-authed', on);
     if (on) { if (!window._mpaPulled) { window._mpaPulled = true; try { pullTrades(); } catch (_) {} } } else { window._mpaPulled = false; } // cross-device: pull the account's journal once per sign-in so trades show on every device
     try { window.dispatchEvent(new CustomEvent('mp-auth-change', { detail: { user: ME, banned: BANNED } })); } catch (_) {} // let pages (e.g. /rewards) react to sign-in/out
@@ -1761,11 +1767,11 @@
   /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
   (function () {
     var FEATS = [
-      ['4 exclusive AI indicators', 'Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - readouts built on our own liquidation data that no other chart has, each grading its own hit-rate.'],
-      ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.'],
-      ['Ask AI on your charts', 'A built-in analyst that reads the chart in front of you and draws the setup on it - one read a day on Premium, 50 on Premium Plus.'],
-      ['Balance Mode', 'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.'],
- ['Premium duels & lounge', 'Every duel format with Ticks stakes, up to 10 open challenges, and the Premium-only chat lounge.']
+      ['4 exclusive AI indicators', __esT_mpauth("cascadeRadarLiquidationMag",'Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - readouts built on our own liquidation data that no other chart has, each grading its own hit-rate.')],
+      ['Live liquidation heatmap', __esT_mpauth("theFullInteractiveMap",'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.')],
+      [__esT_mpauth("askAiOnYour",'Ask AI on your charts'), __esT_mpauth("aBuiltInAnalyst",'A built-in analyst that reads the chart in front of you and draws the setup on it - one read a day on Premium, 50 on Premium Plus.')],
+      ['Balance Mode', __esT_mpauth("giveYourselfAPortfolio",'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.')],
+ [__esT_mpauth("premiumDuelsLounge",'Premium duels & lounge'), __esT_mpauth("everyDuelFormatWith",'Every duel format with Ticks stakes, up to 10 open challenges, and the Premium-only chat lounge.')]
     ];
     function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
     var ov = null;
@@ -1773,10 +1779,10 @@
     function payFromBalance(btn, note) { // one tap: the ledger debits $11.99 and Premium is on - no invoice, no redirect (owner 2026-09-02)
     var label = btn && btn.textContent; if (btn) { btn.disabled = true; btn.textContent = 'Activating...'; }
     fetch('/api/premium/paybalance', { method: 'POST', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
-      if (j && j.ok) { if (btn) btn.textContent = 'Premium is on - welcome'; if (note) note.textContent = 'Active until ' + new Date(j.until).toISOString().slice(0, 10) + '. Reloading...'; setTimeout(function () { location.reload(); }, 1400); return; }
+      if (j && j.ok) { if (btn) btn.textContent = __esT_mpauth("premiumIsOnWelcome",'Premium is on - welcome'); if (note) note.textContent = __esT_mpauth("activeUntil",'Active until ') + new Date(j.until).toISOString().slice(0, 10) + '. Reloading...'; setTimeout(function () { location.reload(); }, 1400); return; }
       if (btn) { btn.disabled = false; btn.textContent = label; }
-      if (note) note.textContent = (j && j.error === 'insufficient') ? ('Not enough balance - you have $' + (+j.balance || 0).toFixed(2) + '.') : (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'in_progress') ? 'Already processing - one moment.' : 'Could not activate. Please try again.';
-    }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = 'Network error. Please try again.'; });
+      if (note) note.textContent = (j && j.error === 'insufficient') ? (__esT_mpauth("notEnoughBalanceYou",'Not enough balance - you have $') + (+j.balance || 0).toFixed(2) + '.') : (j && j.error === 'already_premium') ? __esT_mpauth("youAreAlreadyPremium",'You are already Premium. Thank you.') : (j && j.error === 'in_progress') ? __esT_mpauth("alreadyProcessingOneMoment",'Already processing - one moment.') : __esT_mpauth("couldNotActivatePlease",'Could not activate. Please try again.');
+    }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = __esT_mpauth("networkErrorPleaseTry",'Network error. Please try again.'); });
   }
   function checkoutPlan(plan, btn, note) {
       if (!(window.mpAuth && window.mpAuth.me && window.mpAuth.me())) { close(); open(); return; }
@@ -1785,8 +1791,8 @@
       fetch('/api/premium/checkout' + (plan === 'founder' ? '?plan=founder' : ''), { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.invoice_url) { location.href = j.invoice_url; return; }
         if (btn) { btn.disabled = false; btn.textContent = label; }
-        if (note) note.textContent = (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'unconfigured') ? 'Crypto checkout is being switched on - please check back very soon.' : 'Could not start checkout. Please try again.';
-      }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = 'Network error. Please try again.'; });
+        if (note) note.textContent = (j && j.error === 'already_premium') ? __esT_mpauth("youAreAlreadyPremium",'You are already Premium. Thank you.') : (j && j.error === 'unconfigured') ? __esT_mpauth("cryptoCheckoutIsBeing",'Crypto checkout is being switched on - please check back very soon.') : __esT_mpauth("couldNotStartCheckout",'Could not start checkout. Please try again.');
+      }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = __esT_mpauth("networkErrorPleaseTry",'Network error. Please try again.'); });
     }
     function show(reason) {
       close();
@@ -1807,15 +1813,15 @@
       var card = el('div', 'mpprem');
       var h = '<button class="mpprem-x" type="button" aria-label="Close">×</button>' +
         '<span class="mpprem-tag">MARGINPAD PREMIUM</span>' +
-        '<h3>' + (reason || 'Unlock the full toolkit') + '</h3>' +
-        '<div class="mpprem-sub">Everything the pros use to read the market - one membership.</div>';
+        '<h3>' + (reason || __esT_mpauth("unlockTheFullToolkit",'Unlock the full toolkit')) + '</h3>' +
+        __esT_mpauth("everythingTheProsUse",'<div class="mpprem-sub">Everything the pros use to read the market - one membership.</div>');
       FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
       h += '<div class="mpprem-price"><b>$3.99</b> / month</div>' +
-        '<button class="mpprem-buy" type="button">Pay with crypto - $3.99 / month</button>' +
+        __esT_mpauth("payWithCrypto3",'<button class="mpprem-buy" type="button">Pay with crypto - $3.99 / month</button>') +
         '<button class="mpprem-bal" type="button" hidden style="display:block;width:100%;margin-top:8px;background:#151b23;border:1px solid #c2f64a66;color:#c2f64a;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer">Pay from my rewards balance - $3.99</button>' +
         '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder - lifetime access, $35 once</button>' +
         '<div style="text-align:center;font:700 11px \'Space Mono\',monospace;color:#ffd75a;margin-top:9px">The first 5 members lock in lifetime Premium.</div>' +
-        '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime - it simply won’t renew.</div>';
+        __esT_mpauth("payInBtcUsdt",'<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime - it simply won’t renew.</div>');
       card.innerHTML = h;
       ov.appendChild(card); document.body.appendChild(ov);
       card.querySelector('.mpprem-x').addEventListener('click', close);
@@ -1824,7 +1830,7 @@
       card.querySelector('.mpprem-buy').addEventListener('click', function () { checkoutPlan('monthly', this, note); });
       card.querySelector('.mpprem-founder').addEventListener('click', function () { checkoutPlan('founder', this, note); });
       var balBtn = card.querySelector('.mpprem-bal');
-      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 11.99) { balBtn.hidden = false; balBtn.textContent = 'Pay from my rewards balance - $11.99 (you have $' + bal.toFixed(2) + ')'; } }).catch(function () {}); }
+      if (balBtn && window.mpAuth && window.mpAuth.me && window.mpAuth.me()) { fetch('/api/reward/account', { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (a) { var bal = a && (a.balanceUsd != null ? +a.balanceUsd : (a.balance != null ? +a.balance / 100 : 0)); if (bal >= 11.99) { balBtn.hidden = false; balBtn.textContent = __esT_mpauth("payFromMyRewards",'Pay from my rewards balance - $11.99 (you have $') + bal.toFixed(2) + ')'; } }).catch(function () {}); }
       if (balBtn) balBtn.addEventListener('click', function () { payFromBalance(this, note); });
     }
     window.mpPremium = { show: function (reason) { try { location.href = '/premium'; } catch (e) {} }, showModal: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };
@@ -1929,7 +1935,7 @@
     try { localStorage.setItem('mp_brief_seen', briefDay()); } catch (e) {}
     try { var nd0 = document.getElementById('mpaTdyNew'); if (nd0) nd0.hidden = true; } catch (e) {}
     var ov = document.createElement('div'); ov.className = 'mpprem-ov mpb-ov';
-    ov.innerHTML = '<div class="mpb" role="dialog" aria-modal="true" aria-label="Daily Brief"><button class="mpprem-x" type="button" aria-label="Close">×</button><div class="mpb-head"><span class="mpprem-tag">DAILY BRIEF</span><span class="mpb-when" id="mpbWhen"></span></div><div id="mpbBody"><div class="mpb-load">Reading the market…</div></div></div>';
+    ov.innerHTML = __esT_mpauth("dailyBriefReadingThe",'<div class="mpb" role="dialog" aria-modal="true" aria-label="Daily Brief"><button class="mpprem-x" type="button" aria-label="Close">×</button><div class="mpb-head"><span class="mpprem-tag">DAILY BRIEF</span><span class="mpb-when" id="mpbWhen"></span></div><div id="mpbBody"><div class="mpb-load">Reading the market…</div></div></div>');
     document.body.appendChild(ov);
     var panel = ov.querySelector('.mpb'); requestAnimationFrame(function () { panel.classList.add('in'); });
     function kill() { ov.remove(); }
@@ -1939,16 +1945,16 @@
     var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     function pad(n) { return (n < 10 ? '0' : '') + n; }
     function whenTxt(ts) { var d = new Date(ts || Date.now()); return MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + ' · ' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ' UTC'; }
-    function agoTxt(ts) { var m = Math.max(0, Math.round((Date.now() - (+ts || Date.now())) / 60000)); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; }
+    function agoTxt(ts) { var m = Math.max(0, Math.round((Date.now() - (+ts || Date.now())) / 60000)); return m < 1 ? __esT_mpauth("justNow",'just now') : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago'; }
     function whenHtml(ts) { return 'Updated <b>' + whenTxt(ts) + '</b> · ' + agoTxt(ts); } // owner 2026-09-12: "put last updated at, so people know how fresh it is - that builds trust"
     function pxf(v) { v = +v; if (!isFinite(v)) return '-'; return v >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 0 }) : v >= 1 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : v.toPrecision(3); }
     function sg(c, dp) { c = +c; return (c >= 0 ? '+' : '') + c.toFixed(dp == null ? 1 : dp) + '%'; }
     function usd(v) { v = +v; var a = Math.abs(v); var s = a >= 1e12 ? (a / 1e12).toFixed(2) + 'T' : a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(1) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'k' : a.toFixed(0); return (v < 0 ? '-' : '') + '$' + s; }
     function money(v) { v = +v; return (v < 0 ? '−' : '+') + '$' + Math.abs(v).toFixed(2); }
     function ud(v) { return v > 0 ? 'up' : v < 0 ? 'dn' : ''; }
-    function inTxt(ts) { var h = (ts - Date.now()) / 3600e3; return h < 1 ? 'within the hour' : h < 24 ? 'in ' + Math.round(h) + ' h' : h < 48 ? 'tomorrow' : 'in ' + Math.round(h / 24) + ' days'; }
+    function inTxt(ts) { var h = (ts - Date.now()) / 3600e3; return h < 1 ? __esT_mpauth("withinTheHour2",'within the hour') : h < 24 ? 'in ' + Math.round(h) + ' h' : h < 48 ? 'tomorrow' : 'in ' + Math.round(h / 24) + ' days'; }
     function sec(title, inner, cls, note) { return '<section class="mpb-s' + (cls ? ' ' + cls : '') + '"><h4>' + title + (note ? '<small>' + note + '</small>' : '') + '</h4>' + inner + '</section>'; }
-    function biasHtml(t) { var b = t && t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a'; var txt = b === 'bullish' ? 'Market leans BULLISH' : b === 'bearish' ? 'Market leans BEARISH' : 'Market is MIXED'; return '<div class="mpb-bias" style="--bc:' + col + '"><i></i><b>' + txt + '</b>' + (t && t.biasNote ? '<span>' + esc(t.biasNote) + '</span>' : '') + '</div>'; }
+    function biasHtml(t) { var b = t && t.bias, col = b === 'bullish' ? '#2ebd85' : b === 'bearish' ? '#ff6258' : '#ffd75a'; var txt = b === 'bullish' ? 'Market leans BULLISH' : b === 'bearish' ? 'Market leans BEARISH' : __esT_mpauth("marketIsMixed",'Market is MIXED'); return '<div class="mpb-bias" style="--bc:' + col + '"><i></i><b>' + txt + '</b>' + (t && t.biasNote ? '<span>' + esc(t.biasNote) + '</span>' : '') + '</div>'; }
     function chipsHtml(M, t) { var c = []; var fng = M && M.fng ? M.fng : (t && t.fng != null ? { v: t.fng } : null); if (fng) c.push('<span class="mpb-chip">Fear &amp; Greed <b>' + fng.v + '</b>' + (fng.c ? ' ' + esc(fng.c) : '') + '</span>'); var liq = M && M.liq ? M.liq.total : (t ? t.liq : null); if (liq > 0) c.push('<span class="mpb-chip">Liquidated 24h <b>' + usd(liq) + '</b>' + (M && M.liq ? ' · ' + Math.round(M.liq.long / M.liq.total * 100) + '% longs' : '') + '</span>'); var ev = M ? (M.events || []).filter(function (e) { return e.ts > Date.now(); })[0] : (t && t.next ? { title: t.next.title, ts: Date.now() + t.next.inH * 3600e3 } : null); if (ev) c.push('<span class="mpb-chip">' + esc(ev.title) + ' <b>' + inTxt(ev.ts) + '</b></span>'); if (M && M.global && M.global.cap > 0) c.push('<span class="mpb-chip">Total cap <b>' + usd(M.global.cap) + '</b>' + (isFinite(M.global.chg) ? ' <b class="' + ud(M.global.chg) + '">' + sg(M.global.chg) + '</b>' : '') + ' · ' + (+M.global.btcDom).toFixed(0) + '% BTC</span>'); return c.length ? '<div class="mpb-chips">' + c.join('') + '</div>' : ''; }
     var todoP = Promise.all([fetch('/api/pass', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }), fetch('/api/goals', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }), fetch('/api/predict', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })]);
     fetch('/api/brief', { cache: 'no-store' }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (o) {
@@ -1958,42 +1964,42 @@
         var t = j.teaser || null; when.innerHTML = whenHtml(t && t.at);
         body.innerHTML = biasHtml(t) + chipsHtml(null, t)
           + '<div class="mpb-lock"><b>The full brief is a Premium benefit</b><ul><li>Your open positions: live P&amp;L, how far liquidation sits, whether funding runs against you</li><li>Your week from the trade ledger, with the pattern that costs you most</li><li>Where the setups are on the majors, derivatives, liquidations, movers, the calendar</li><li>Delivered every morning by push or Telegram, if you want it</li></ul><button type="button" id="mpbGo">Go Premium - $3.99 / month</button></div>'
-          + '<div class="mpb-foot">Market data measured by MarginPad. Educational only - not financial advice.</div>';
+          + __esT_mpauth("marketDataMeasuredBy",'<div class="mpb-foot">Market data measured by MarginPad. Educational only - not financial advice.</div>');
         var gb = body.querySelector('#mpbGo'); if (gb) gb.addEventListener('click', function () { kill(); if (window.mpPremium) window.mpPremium.show('Daily Brief'); });
         return;
       }
-      if (!j.ok) { body.innerHTML = '<div class="mpb-load">Could not load the brief - please try again.</div>'; return; }
+      if (!j.ok) { body.innerHTML = __esT_mpauth("couldNotLoadThe",'<div class="mpb-load">Could not load the brief - please try again.</div>'); return; }
       var M = j.market || {}, mine = j.mine || [], you = j.you, prefs = j.prefs || { push: false, tg: false, h: 8 };
-      when.innerHTML = whenHtml(M.at || j.at); when.title = 'Market picture computed at ' + new Date(M.at || j.at).toISOString().replace('T', ' ').slice(0, 16) + ' UTC, refreshed every hour. Your positions and your week are read live.';
+      when.innerHTML = whenHtml(M.at || j.at); when.title = __esT_mpauth("marketPictureComputedAt",'Market picture computed at ') + new Date(M.at || j.at).toISOString().replace('T', ' ').slice(0, 16) + __esT_mpauth("utcRefreshedEveryHour",' UTC, refreshed every hour. Your positions and your week are read live.');
       var h = biasHtml(M) + chipsHtml(M, j.teaser);
       // 1. your positions
       if (mine.length) {
         var open9 = mine.reduce(function (a, p) { return a + (+p.pnl || 0); }, 0);
-        h += sec('Your positions', mine.map(function (p, i) { // two lines: what and how much on top, the risk facts as chips that wrap under it (one line clipped at 390 px)
+        h += sec(__esT_mpauth("yourPositions",'Your positions'), mine.map(function (p, i) { // two lines: what and how much on top, the risk facts as chips that wrap under it (one line clipped at 390 px)
           var lng = p.side === 'long';
           return '<div class="mpb-p' + (i ? '' : ' first') + '"><div class="mpb-p-top"><b class="sym">' + esc(p.symbol) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">$' + Math.round(p.margin) + ' margin</span><span class="num ' + ud(p.pnl) + '">' + (p.pnl == null ? '-' : money(p.pnl)) + (p.roe != null ? '<small>' + sg(p.roe) + ' ROE</small>' : '') + '</span></div><div class="mpb-p-sub">'
             + (p.entry > 0 ? '<span class="mpb-c">in at $' + pxf(p.entry) + '</span>' : '')
             + (p.liqDist != null ? '<span class="mpb-c' + (p.liqDist < 2 ? ' d' : p.liqDist < 5 ? ' w' : '') + '">liq ' + p.liqDist + '% away</span>' : '')
-            + (p.fundingAgainst === true ? '<span class="mpb-c w">funding against you</span>' : p.fundingAgainst === false ? '<span class="mpb-c g">funding with you</span>' : '')
+            + (p.fundingAgainst === true ? __esT_mpauth("fundingAgainstYou",'<span class="mpb-c w">funding against you</span>') : p.fundingAgainst === false ? __esT_mpauth("fundingWithYou",'<span class="mpb-c g">funding with you</span>') : '')
             + (p.sl == null && p.tp == null ? '<span class="mpb-c">no SL/TP</span>' : (p.sl != null ? '<span class="mpb-c">SL $' + pxf(p.sl) + '</span>' : '') + (p.tp != null ? '<span class="mpb-c">TP $' + pxf(p.tp) + '</span>' : ''))
             + '</div></div>';
         }).join(''), 'mine', mine.length + ' open · ' + money(open9));
-      } else h += sec('Your positions', '<div class="mpb-note">No open positions. <a href="/paper-trade">Open the terminal</a> when a setup below fits.</div>', 'mine');
+      } else h += sec(__esT_mpauth("yourPositions",'Your positions'), __esT_mpauth("noOpenPositionsOpen",'<div class="mpb-note">No open positions. <a href="/paper-trade">Open the terminal</a> when a setup below fits.</div>'), 'mine');
       // 2. your week
       if (you && you.week) {
         var W = you.week, Y = you.yesterday;
-        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '-') + '</b><span>Win rate</span></div><div class="mpb-k"><b class="' + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '-') + '</b><span>Season P&amp;L</span></div><div class="mpb-k"><b class="' + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '-') + '</b><span>Yesterday</span></div></div>';
+        var k4 = '<div class="mpb-k4"><div class="mpb-k"><b>' + (W.n || 0) + '</b><span>Closes</span></div><div class="mpb-k"><b class="' + (W.n >= 5 ? '' : 'g') + '">' + (W.n >= 5 && W.wr != null ? Math.round(W.wr) + '%' : '-') + __esT_mpauth("winRateBClass",'</b><span>Win rate</span></div><div class="mpb-k"><b class="') + ud(W.pnl) + '">' + (W.n ? money(W.pnl) : '-') + __esT_mpauth("seasonPAmpL2",'</b><span>Season P&amp;L</span></div><div class="mpb-k"><b class="') + (Y ? ud(Y.pnl) : '') + '">' + (Y ? money(Y.pnl) : '-') + '</b><span>Yesterday</span></div></div>';
         var fnd = (you.findings || []).map(function (f) { return '<div class="mpb-find">' + esc(f.text) + '</div>'; }).join('');
-        if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + ' closes this week - too few to name a pattern. Trade, and the brief starts reading you.' : 'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.') + '</div>';
+        if (!fnd) fnd = '<div class="mpb-note" style="margin-top:8px">' + (you.thin ? 'Fewer than ' + (you.minN || 8) + __esT_mpauth("closesThisWeekToo",' closes this week - too few to name a pattern. Trade, and the brief starts reading you.') : __esT_mpauth("noCostlyPatternThis",'No costly pattern this week. <a href="/trading-report/">Open the full report</a> for the 30-day view.')) + '</div>';
         // the window is the season, not a rolling week - say which, so a one-day number is not read as seven
-        var dayN = (you.days || 1), dayTxt = dayN === 1 ? 'day 1 of the season' : 'season, day ' + dayN;
-        h += sec('Your season', k4 + fnd, 'you', (j.streak ? j.streak + '-day streak · ' : '') + dayTxt + ' · <a href="/trading-report/">full report</a>'); // the report link is permanent (owner 2026-09-17) - it used to exist only in the no-findings fallback
+        var dayN = (you.days || 1), dayTxt = dayN === 1 ? __esT_mpauth("day1OfThe",'day 1 of the season') : __esT_mpauth("seasonDay",'season, day ') + dayN;
+        h += sec(__esT_mpauth("yourSeason",'Your season'), k4 + fnd, 'you', (j.streak ? j.streak + '-day streak · ' : '') + dayTxt + ' · <a href="/trading-report/">full report</a>'); // the report link is permanent (owner 2026-09-17) - it used to exist only in the no-findings fallback
       }
       // 3. next up (filled once the season endpoints answer)
-      h += sec('Next up', '<div class="mpb-todo" id="mpbTodo"><div class="mpb-note">Checking your season…</div></div>', 'next');
+      h += sec(__esT_mpauth("nextUp",'Next up'), __esT_mpauth("checkingYourSeason",'<div class="mpb-todo" id="mpbTodo"><div class="mpb-note">Checking your season…</div></div>'), 'next');
       // 4. setups
       var ops = M.setups || [];
-      h += sec('Where the setups are', ops.length ? ops.map(function (op, i) { var lng = op.dir === 'long'; return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(op.sym) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + esc(op.kind) + ' ' + (lng ? 'LONG' : 'SHORT') + '</span><span class="fill">' + esc(op.note) + '</span><span class="num' + (op.rsi >= 70 ? ' dn' : op.rsi <= 30 ? ' up' : '') + '">' + (op.rsi == null ? '' : 'RSI ' + op.rsi) + '<small>$' + pxf(op.price) + '</small></span></div>'; }).join('') : '<div class="mpb-note">No clean setup on the majors right now - the best trade is patience.</div>', '', 'Supertrend 1H + 4H · RSI 14');
+      h += sec(__esT_mpauth("whereTheSetupsAre",'Where the setups are'), ops.length ? ops.map(function (op, i) { var lng = op.dir === 'long'; return '<div class="mpb-r' + (i ? '' : ' first') + '"><b class="sym">' + esc(op.sym) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + esc(op.kind) + ' ' + (lng ? 'LONG' : 'SHORT') + '</span><span class="fill">' + esc(op.note) + '</span><span class="num' + (op.rsi >= 70 ? ' dn' : op.rsi <= 30 ? ' up' : '') + '">' + (op.rsi == null ? '' : 'RSI ' + op.rsi) + '<small>$' + pxf(op.price) + '</small></span></div>'; }).join('') : __esT_mpauth("noCleanSetupOn",'<div class="mpb-note">No clean setup on the majors right now - the best trade is patience.</div>'), '', 'Supertrend 1H + 4H · RSI 14');
       // 5. majors (paired with derivatives on a desktop: the card was 1,637 px tall in one column)
       var sMaj = '', sDv = '', sMv = '', sCal = '';
       var pair = function (a, b) { return (a && b) ? '<div class="mpb-two">' + a + b + '</div>' : (a || b); };
@@ -2002,7 +2008,7 @@
       { var cells = [], D = M.deriv || {}, ob = D.oi && D.oi.BTC, oe = D.oi && D.oi.ETH, lb = D.ls && D.ls.BTC, le = D.ls && D.ls.ETH;
         var mj = function (s) { return (M.majors || []).filter(function (x) { return x.s === s; })[0]; }, fb = mj('BTC'), fe = mj('ETH');
         var two = function (a, b) { return '<span class="two">' + (a || '') + (a && b ? '<br>' : '') + (b || '') + '</span>'; };
-        if (ob || oe) cells.push('<div class="mpb-k">' + two(ob ? '<i>BTC</i>' + usd(ob.v) + (ob.chg != null ? ' <em class="' + ud(ob.chg) + '">' + sg(ob.chg) + '</em>' : '') : '', oe ? '<i>ETH</i>' + usd(oe.v) + (oe.chg != null ? ' <em class="' + ud(oe.chg) + '">' + sg(oe.chg) + '</em>' : '') : '') + '<span>Open interest</span></div>');
+        if (ob || oe) cells.push('<div class="mpb-k">' + two(ob ? '<i>BTC</i>' + usd(ob.v) + (ob.chg != null ? ' <em class="' + ud(ob.chg) + '">' + sg(ob.chg) + '</em>' : '') : '', oe ? '<i>ETH</i>' + usd(oe.v) + (oe.chg != null ? ' <em class="' + ud(oe.chg) + '">' + sg(oe.chg) + '</em>' : '') : '') + __esT_mpauth("openInterest",'<span>Open interest</span></div>'));
         if (lb || le) cells.push('<div class="mpb-k">' + two(lb ? '<i>BTC</i>' + Math.round(lb) + '% long' : '', le ? '<i>ETH</i>' + Math.round(le) + '% long' : '') + '<span>Accounts</span></div>');
         if ((fb && fb.f != null) || (fe && fe.f != null)) cells.push('<div class="mpb-k">' + two(fb && fb.f != null ? '<i>BTC</i><em class="' + ud(fb.f) + '">' + sg(fb.f, 4) + '</em>' : '', fe && fe.f != null ? '<i>ETH</i><em class="' + ud(fe.f) + '">' + sg(fe.f, 4) + '</em>' : '') + '<span>Funding 8h</span></div>');
         var q = M.liq; if (q && q.total > 0) cells.push('<div class="mpb-k"><b>' + usd(q.total) + '<small>' + Math.round(q.long / q.total * 100) + '% longs</small></b><span>Liq 24h</span></div>');
@@ -2013,14 +2019,14 @@
       // 8. calendar + whales + cycle
       { var cal = (M.events || []).filter(function (e) { return e.ts > Date.now(); }).slice(0, 3).map(function (e, i) { return '<div class="mpb-r' + (i ? '' : ' first') + '"><span class="fill wr" style="color:#e9e7df">' + esc(e.title) + '</span><span class="num">' + inTxt(e.ts) + '</span></div>'; }).join('');
         var extra = '';
-        if (M.cycle && M.cycle.ma110 > 0) { var pc = (M.cycle.px / M.cycle.ma110 - 1) * 100; extra += '<div class="mpb-note" style="margin-top:' + (cal ? 8 : 0) + 'px">Cycle: BTC ' + Math.abs(pc).toFixed(1) + '% ' + (pc >= 0 ? 'above' : 'below') + ' its 110-day average</div>'; }
-        if (cal || extra) sCal = sec('On the calendar', (cal || '') + extra); }
+        if (M.cycle && M.cycle.ma110 > 0) { var pc = (M.cycle.px / M.cycle.ma110 - 1) * 100; extra += '<div class="mpb-note" style="margin-top:' + (cal ? 8 : 0) + 'px">Cycle: BTC ' + Math.abs(pc).toFixed(1) + '% ' + (pc >= 0 ? 'above' : 'below') + __esT_mpauth("its110DayAverage",' its 110-day average</div>'); }
+        if (cal || extra) sCal = sec(__esT_mpauth("onTheCalendar",'On the calendar'), (cal || '') + extra); }
       h += pair(sMv, sCal);
       // 9. Hyperliquid whales: the book, then the three largest positions with the price each whale got in at (owner 2026-09-12)
       if (M.whales) { var W = M.whales, tot = (+W.long || 0) + (+W.short || 0), lp = tot > 0 ? Math.round(W.long / tot * 100) : null;
-        var wh = '<div class="mpb-note">' + usd(W.long) + ' long vs ' + usd(W.short) + ' short' + (lp != null ? ' · <b style="color:' + (lp >= 50 ? '#2ebd85' : '#ff5a4d') + '">' + lp + '%</b> of the book is long' : '') + '</div>' + (lp != null ? '<div class="mpb-ls"><i style="width:' + lp + '%"></i></div>' : '');
+        var wh = '<div class="mpb-note">' + usd(W.long) + ' long vs ' + usd(W.short) + ' short' + (lp != null ? ' · <b style="color:' + (lp >= 50 ? '#2ebd85' : '#ff5a4d') + '">' + lp + __esT_mpauth("ofTheBookIs",'%</b> of the book is long') : '') + '</div>' + (lp != null ? '<div class="mpb-ls"><i style="width:' + lp + '%"></i></div>' : '');
         (W.top || []).forEach(function (p, i) { var lng = p.long;
-          wh += '<div class="mpb-p' + (i ? '' : ' first') + '"' + (i ? '' : ' style="margin-top:4px"') + '><div class="mpb-p-top"><b class="sym">' + esc(p.s) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">' + usd(p.val) + ' position</span><span class="num ' + ud(p.pnl) + '">' + (p.pnl >= 0 ? '+' : '−') + usd(Math.abs(p.pnl)) + '<small>unrealized</small></span></div><div class="mpb-p-sub">'
+          wh += '<div class="mpb-p' + (i ? '' : ' first') + '"' + (i ? '' : ' style="margin-top:4px"') + '><div class="mpb-p-top"><b class="sym">' + esc(p.s) + '</b><span class="mpb-tag ' + (lng ? 'l' : 's') + '">' + (lng ? 'LONG' : 'SHORT') + ' ' + p.lev + 'x</span><span class="fill">' + usd(p.val) + __esT_mpauth("positionSpanClassNum",' position</span><span class="num ') + ud(p.pnl) + '">' + (p.pnl >= 0 ? '+' : '−') + usd(Math.abs(p.pnl)) + '<small>unrealized</small></span></div><div class="mpb-p-sub">'
             + (p.entry > 0 ? '<span class="mpb-c">in at <b>$' + pxf(p.entry) + '</b></span>' : '')
             + '<span class="mpb-c">now $' + pxf(p.mark) + (p.move != null ? ' <b class="' + ud(p.move) + '">' + sg(p.move) + '</b>' : '') + '</span>'
             + (p.liq > 0 ? '<span class="mpb-c' + (p.liqDist != null && p.liqDist < 5 ? ' d' : p.liqDist != null && p.liqDist < 15 ? ' w' : '') + '">liq $' + pxf(p.liq) + (p.liqDist != null ? ' · ' + p.liqDist.toFixed(1) + '% away' : '') + '</span>' : '')
@@ -2028,37 +2034,37 @@
             + '</div></div>'; });
         h += sec('Hyperliquid whales', wh, '', (W.tracked || W.n) + ' tracked'); }
       // 9. delivery
-      h += '<section class="mpb-s"><h4>Every morning<small>one line · push or Telegram</small></h4><div class="mpb-dl-row"><label class="mpb-tg"><input type="checkbox" id="mpbPush"' + (prefs.push ? ' checked' : '') + '> Browser push</label><label class="mpb-tg' + (j.tgLinked ? '' : ' off') + '"><input type="checkbox" id="mpbTg"' + (prefs.tg ? ' checked' : '') + (j.tgLinked ? '' : ' disabled') + '> Telegram' + (j.tgLinked ? '' : ' <small>connect in @MarginPadBot</small>') + '</label><span class="mpb-seg" id="mpbSeg"><b data-h="8"' + (prefs.h !== 16 ? ' class="on"' : '') + '>08:00 UTC</b><b data-h="16"' + (prefs.h === 16 ? ' class="on"' : '') + '>16:00 UTC</b></span></div><div class="mpb-dl-note" id="mpbDlNote"></div></section>';
-      h += '<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only - not financial advice.</div>';
+      h += __esT_mpauth("everyMorningOneLine",'<section class="mpb-s"><h4>Every morning<small>one line · push or Telegram</small></h4><div class="mpb-dl-row"><label class="mpb-tg"><input type="checkbox" id="mpbPush"') + (prefs.push ? ' checked' : '') + '> Browser push</label><label class="mpb-tg' + (j.tgLinked ? '' : ' off') + '"><input type="checkbox" id="mpbTg"' + (prefs.tg ? ' checked' : '') + (j.tgLinked ? '' : ' disabled') + '> Telegram' + (j.tgLinked ? '' : __esT_mpauth("connectInMarginpadbot",' <small>connect in @MarginPadBot</small>')) + '</label><span class="mpb-seg" id="mpbSeg"><b data-h="8"' + (prefs.h !== 16 ? ' class="on"' : '') + '>08:00 UTC</b><b data-h="16"' + (prefs.h === 16 ? ' class="on"' : '') + '>16:00 UTC</b></span></div><div class="mpb-dl-note" id="mpbDlNote"></div></section>';
+      h += __esT_mpauth("setupsFromSupertrend10",'<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only - not financial advice.</div>');
       body.innerHTML = h;
       // next up: same rules as the homepage member card
       todoP.then(function (arr) {
         var P = arr[0], G = arr[1], D = arr[2], todo = [], el = body.querySelector('#mpbTodo'); if (!el) return;
-        if (P && P.claimable) todo.push(['ok', 'Claim ' + P.claimable + ' pass reward' + (P.claimable > 1 ? 's' : ''), '/season/#pass']);
-        if (D && D.day) { var td = D.me && D.me.today; if (!td && D.open) todo.push(['hot', 'Make today’s BTC call', '/season/#today']); }
-        if (G && G.catalogue) { var pk = G.picks || []; pk.filter(function (x) { return x.done && !x.paid; }).forEach(function (x) { todo.push(['ok', 'Claim goal: ' + x.name, '/season/#today']); }); if (pk.length < 2) todo.push(['', 'Pick your season goal' + (pk.length ? '' : 's'), '/season/#today']); }
-        if (!todo.length) todo.push(['ok', 'All caught up - go trade', '/paper-trade']);
+        if (P && P.claimable) todo.push(['ok', 'Claim ' + P.claimable + __esT_mpauth("passReward",' pass reward') + (P.claimable > 1 ? 's' : ''), '/season/#pass']);
+        if (D && D.day) { var td = D.me && D.me.today; if (!td && D.open) todo.push(['hot', __esT_mpauth("makeTodaySBtc",'Make today’s BTC call'), '/season/#today']); }
+        if (G && G.catalogue) { var pk = G.picks || []; pk.filter(function (x) { return x.done && !x.paid; }).forEach(function (x) { todo.push(['ok', __esT_mpauth("claimGoal",'Claim goal: ') + x.name, '/season/#today']); }); if (pk.length < 2) todo.push(['', __esT_mpauth("pickYourSeasonGoal",'Pick your season goal') + (pk.length ? '' : 's'), '/season/#today']); }
+        if (!todo.length) todo.push(['ok', __esT_mpauth("allCaughtUpGo",'All caught up - go trade'), '/paper-trade']);
         el.innerHTML = todo.slice(0, 3).map(function (t, i) { return '<a class="' + t[0] + '" href="' + t[2] + '"><i>' + (i + 1) + '</i><span>' + esc(t[1]) + '</span>' + ic('chev') + '</a>'; }).join('');
       });
       // delivery switches
       var cur = { push: !!prefs.push, tg: !!prefs.tg, h: prefs.h === 16 ? 16 : 8 }, note = body.querySelector('#mpbDlNote');
-      function say() { if (!note) return; note.className = 'mpb-dl-note'; note.textContent = (cur.push || cur.tg) ? 'On · ' + pad(cur.h) + ':00 UTC · ' + [cur.push ? 'push' : '', cur.tg ? 'Telegram' : ''].filter(Boolean).join(' + ') + ' · market bias, setups, the next event and your open book, with a link back here.' : 'Off. Turn on push or Telegram to get one line a day with a link back here.'; }
-      function save() { fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cur) }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { cur.push = !!d.prefs.push; cur.tg = !!d.prefs.tg; cur.h = d.prefs.h; say(); if (note) { note.className = 'mpb-dl-note ok'; note.textContent = 'Saved. ' + note.textContent; } } else if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Could not save - try again.'; } }).catch(function () { if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'Network error - try again.'; } }); }
+      function say() { if (!note) return; note.className = 'mpb-dl-note'; note.textContent = (cur.push || cur.tg) ? 'On · ' + pad(cur.h) + ':00 UTC · ' + [cur.push ? 'push' : '', cur.tg ? 'Telegram' : ''].filter(Boolean).join(' + ') + __esT_mpauth("marketBiasSetupsThe",' · market bias, setups, the next event and your open book, with a link back here.') : __esT_mpauth("offTurnOnPush",'Off. Turn on push or Telegram to get one line a day with a link back here.'); }
+      function save() { fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cur) }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) { cur.push = !!d.prefs.push; cur.tg = !!d.prefs.tg; cur.h = d.prefs.h; say(); if (note) { note.className = 'mpb-dl-note ok'; note.textContent = 'Saved. ' + note.textContent; } } else if (note) { note.className = 'mpb-dl-note err'; note.textContent = __esT_mpauth("couldNotSaveTry2",'Could not save - try again.'); } }).catch(function () { if (note) { note.className = 'mpb-dl-note err'; note.textContent = __esT_mpauth("networkErrorTryAgain3",'Network error - try again.'); } }); }
       say();
       var pushCb = body.querySelector('#mpbPush'), tgCb = body.querySelector('#mpbTg'), seg = body.querySelector('#mpbSeg');
       if (pushCb) pushCb.addEventListener('change', function () {
-        if (pushCb.checked) { if (!(window.mpPush && window.mpPush.supported && window.mpPush.supported())) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = 'This browser cannot receive push - use Telegram instead.'; } return; } if (note) { note.className = 'mpb-dl-note'; note.textContent = 'Asking the browser for permission…'; }
-          window.mpPush.enable().then(function () { cur.push = true; save(); }).catch(function (e2) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = e2 === 'denied' ? 'Push is blocked for this site in the browser settings.' : 'Could not enable push here - try Telegram.'; } }); }
+        if (pushCb.checked) { if (!(window.mpPush && window.mpPush.supported && window.mpPush.supported())) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = __esT_mpauth("thisBrowserCannotReceive",'This browser cannot receive push - use Telegram instead.'); } return; } if (note) { note.className = 'mpb-dl-note'; note.textContent = __esT_mpauth("askingTheBrowserFor",'Asking the browser for permission…'); }
+          window.mpPush.enable().then(function () { cur.push = true; save(); }).catch(function (e2) { pushCb.checked = false; if (note) { note.className = 'mpb-dl-note err'; note.textContent = e2 === 'denied' ? __esT_mpauth("pushIsBlockedFor",'Push is blocked for this site in the browser settings.') : __esT_mpauth("couldNotEnablePush",'Could not enable push here - try Telegram.'); } }); }
         else { cur.push = false; save(); }
       });
       if (tgCb) tgCb.addEventListener('change', function () { cur.tg = !!tgCb.checked; save(); });
       if (seg) seg.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-h]'); if (!b) return; cur.h = +b.getAttribute('data-h') === 16 ? 16 : 8; Array.prototype.forEach.call(seg.querySelectorAll('[data-h]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-h') === cur.h); }); if (cur.push || cur.tg) save(); else say(); });
-    }).catch(function () { body.innerHTML = '<div class="mpb-load">Could not load the brief - please try again.</div>'; });
+    }).catch(function () { body.innerHTML = __esT_mpauth("couldNotLoadThe",'<div class="mpb-load">Could not load the brief - please try again.</div>'); });
   } };
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
-    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour!', trade_promo: 'XP Promo!', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won', duel_pot: 'Duel pot won', duel_stake: 'Duel stake locked' };
+    var SRCN = { heatmap: __esT_mpauth("liquidationMapRead",'Liquidation map read'), trade_hh: __esT_mpauth("xpHappyHour2",'XP Happy Hour!'), trade_promo: 'XP Promo!', trade_win: 'Winner, banked', trade: __esT_mpauth("tradeClosed",'Trade closed'), checkin: __esT_mpauth("showedUpToday",'Showed up today'), streak: __esT_mpauth("streakPays",'Streak pays'), mission: 'Mission cleared', faucet: __esT_mpauth("faucetClaim",'Faucet claim'), promo: 'Promo post approved', exsign: __esT_mpauth("exchangeSignUp",'Exchange sign-up'), lbprize: 'Podium money', username: __esT_mpauth("nameOnTheBoard",'Name on the board'), academy: 'Brain gains', charts: 'Chart time', admin: 'Bonus', backfill: 'Loyalty bonus', duel: __esT_mpauth("duelWon",'Duel won'), duel_pot: __esT_mpauth("duelPotWon",'Duel pot won'), duel_stake: __esT_mpauth("duelStakeLocked",'Duel stake locked') };
     var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
@@ -2092,8 +2098,8 @@
     }
     // Personal record broken (2026-09-06): same toast channel as XP, gold, one card per record, shown once per
     // device (dedup by the server's new_ts). The label is the number that was beaten and what it was before.
-    var PBN = { roe: 'Best ROE', pnl: 'Biggest win', streak: 'Win streak', day: 'Closes in a day' };
-    function pbFmt(k, v) { return k === 'roe' ? ('+' + v + '%') : k === 'pnl' ? ('+$' + Number(v).toFixed(2)) : k === 'streak' ? (v + ' in a row') : (v + ' trades'); }
+    var PBN = { roe: 'Best ROE', pnl: __esT_mpauth("biggestWin",'Biggest win'), streak: __esT_mpauth("winStreak",'Win streak'), day: __esT_mpauth("closesInADay",'Closes in a day') };
+    function pbFmt(k, v) { return k === 'roe' ? ('+' + v + '%') : k === 'pnl' ? ('+$' + Number(v).toFixed(2)) : k === 'streak' ? (v + __esT_mpauth("inARow",' in a row')) : (v + ' trades'); }
     function pbToast(it) {
       if (window.mpToast) return window.mpToast({ mark: 'REC', html: (PBN[it.k] || it.k) + ' <b style="color:#e9e7df">' + pbFmt(it.k, it.v) + '</b>' + (it.prev != null && it.prev !== 0 ? '<br>was ' + pbFmt(it.k, it.prev) : ''), kind: 'record', ms: 4800, key: 'pb' + it.k + it.v });
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
@@ -2103,10 +2109,10 @@
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4800);
     }
     function followToast(name) {
-      if (window.mpToast) { window.mpToast({ mark: '★', html: 'New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone is watching your trades'), kind: 'follow', ms: 4600, key: 'fol' + (name || '') }); try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {} return; }
+      if (window.mpToast) { window.mpToast({ mark: '★', html: __esT_mpauth("newFollower",'New follower<br>') + (name ? '@' + esc(String(name).slice(0, 20)) : __esT_mpauth("someoneIsWatchingYour",'Someone is watching your trades')), kind: 'follow', ms: 4600, key: 'fol' + (name || '') }); try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {} return; }
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#38bdf8');
-      el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone’s watching your trades') + '</span>';
+      el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : __esT_mpauth("someoneSWatchingYour",'Someone’s watching your trades')) + '</span>';
       host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4600);
       try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {}
@@ -2116,9 +2122,9 @@
       var col = lv.col || '#c2f64a';
       var conf = ''; for (var n = 0; n < 60; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c2f64a', col, '#ffd75a', '#38bdf8', '#ff6a3d'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> - earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div>'
-        + (function(){var UN={bronze:'Rewards + The Vault unlocked',silver:'Silver frame + bigger claims unlocked',gold:'Gold frame + bigger claims unlocked',platinum:'Platinum frame unlocked',diamond:'Diamond frame + withdrawal bonus unlocked',legendary:'Legendary frame + max perks unlocked'}[lv.k];return UN?('<a class="mpxp-unlock" href="/vault/" style="display:block;margin:10px auto 0;max-width:280px;padding:9px 14px;border:1px solid rgba(194,246,74,.4);border-radius:11px;background:rgba(194,246,74,.08);color:#c2f64a;font-size:12.5px;font-weight:700;text-decoration:none">'+UN+' - open The Vault →</a>'):'';})()
-        + '<button class="mpxp-x" type="button">Back to work</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + __esT_mpauth("levelUp",'</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">') + esc(lv.name || '') + __esT_mpauth("youClimbedTo",'</div><div class="mpxp-sub">You climbed to <b>') + esc(lv.name || '') + __esT_mpauth("earnedNotGiven",'</b> - earned, not given.') + (lv.next ? __esT_mpauth("nextStop",' Next stop: ') + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : __esT_mpauth("topOfTheMountain",' Top of the mountain. The view is P&L-green.')) + '</div>'
+        + (function(){var UN={bronze:__esT_mpauth("rewardsTheVaultUnlocked",'Rewards + The Vault unlocked'),silver:__esT_mpauth("silverFrameBiggerClaims",'Silver frame + bigger claims unlocked'),gold:__esT_mpauth("goldFrameBiggerClaims",'Gold frame + bigger claims unlocked'),platinum:__esT_mpauth("platinumFrameUnlocked",'Platinum frame unlocked'),diamond:__esT_mpauth("diamondFrameWithdrawalBonu",'Diamond frame + withdrawal bonus unlocked'),legendary:__esT_mpauth("legendaryFrameMaxPerks",'Legendary frame + max perks unlocked')}[lv.k];return UN?('<a class="mpxp-unlock" href="/vault/" style="display:block;margin:10px auto 0;max-width:280px;padding:9px 14px;border:1px solid rgba(194,246,74,.4);border-radius:11px;background:rgba(194,246,74,.08);color:#c2f64a;font-size:12.5px;font-weight:700;text-decoration:none">'+UN+__esT_mpauth("openTheVault",' - open The Vault →</a>')):'';})()
+        + __esT_mpauth("backToWork",'<button class="mpxp-x" type="button">Back to work</button></div>');
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       ov.querySelector('.mpxp-x').addEventListener('click', close9);
@@ -2133,9 +2139,9 @@
       var crown = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none"><defs><linearGradient id="mpPgc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset="0.5" stop-color="#ffd75a"/><stop offset="1" stop-color="#e0a52a"/></linearGradient></defs><path d="M2.6 8.2l4.4 3.3L12 4l5 7.5 4.4-3.3-1.9 11.3H4.5L2.6 8.2z" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.5" stroke-linejoin="round"/><rect x="4.5" y="18.4" width="15" height="2.3" rx="0.7" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.4"/><circle cx="2.6" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="21.4" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="12" cy="4" r="1.6" fill="#ffe98a"/></svg>';
       ov.style.setProperty('--lc', col);
       var ck = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ffd75a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-      var perks = ['4 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts - 1 read a day', 'Balance Mode - real portfolio trading', 'Premium duels - all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
+      var perks = ['4 exclusive AI indicators', 'Live liquidation heatmap', __esT_mpauth("askAiOnYour2",'Ask AI on your charts - 1 read a day'), __esT_mpauth("balanceModeRealPortfolio",'Balance Mode - real portfolio trading'), __esT_mpauth("premiumDuelsAll5",'Premium duels - all 5 formats'), __esT_mpauth("premiumChatLoungeVips",'Premium chat lounge (VIPs only)'), 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
       var perksHtml = '<ul class="mpxp-perks">' + perks.map(function (p) { return '<li>' + ck + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + crown + '</div><div class="mpxp-up">Premium unlocked</div><div class="mpxp-nm mp-progold">MarginPad Premium</div><div class="mpxp-sub">You are now a <b>Premium member</b>. Here is everything you just unlocked:</div>' + perksHtml + '<a class="mpxp-x mpxp-see" href="/premium" target="_blank" rel="noopener">See everything you got →</a><button class="mpxp-x mpxp-x2" type="button">Start trading</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + crown + __esT_mpauth("premiumUnlockedMarginpadPr",'</div><div class="mpxp-up">Premium unlocked</div><div class="mpxp-nm mp-progold">MarginPad Premium</div><div class="mpxp-sub">You are now a <b>Premium member</b>. Here is everything you just unlocked:</div>') + perksHtml + __esT_mpauth("seeEverythingYouGot",'<a class="mpxp-x mpxp-see" href="/premium" target="_blank" rel="noopener">See everything you got →</a><button class="mpxp-x mpxp-x2" type="button">Start trading</button></div>');
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       var xb = ov.querySelector('button.mpxp-x'); if (xb) xb.addEventListener('click', close9);
@@ -2154,7 +2160,7 @@
       var conf = ''; for (var n = 0; n < 70; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c792ff', '#c2f64a', '#ffd75a', '#38bdf8', '#e6d1ff'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       var box = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none" stroke="#c792ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M4 10h16M12 10v10M8 10c-2 0-3-1.2-3-2.6C5 6 6.3 5 7.6 5 9.6 5 12 7.5 12 10c0-2.5 2.4-5 4.4-5C17.7 5 19 6 19 7.4 19 8.8 18 10 16 10"/></svg>';
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">' + (cash9 ? 'You got paid' : 'Gift received') + '</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + ' sent you ' + (cash9 ? 'money' : 'a gift') : (cash9 ? 'Money landed on your balance' : 'You got a gift')) + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="' + (cash9 ? '/rewards/' : '/vault/') + '">' + (cash9 ? 'Open rewards - see your balance' : 'Open The Vault - equip it') + ' →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + box + '</div><div class="mpxp-up">' + (cash9 ? __esT_mpauth("youGotPaid",'You got paid') : 'Gift received') + '</div><div class="mpxp-nm" style="font-size:27px">' + (fromUn ? '@' + esc(String(fromUn).slice(0, 20)) + __esT_mpauth("sentYou",' sent you ') + (cash9 ? 'money' : 'a gift') : (cash9 ? __esT_mpauth("moneyLandedOnYour",'Money landed on your balance') : __esT_mpauth("youGotAGift",'You got a gift'))) + '</div><div class="mpxp-sub">' + esc(body9 || '') + '</div><a class="mpxp-x mpxp-see" href="' + (cash9 ? '/rewards/' : '/vault/') + '">' + (cash9 ? __esT_mpauth("openRewardsSeeYour",'Open rewards - see your balance') : __esT_mpauth("openTheVaultEquip",'Open The Vault - equip it')) + ' →</a><button class="mpxp-x mpxp-x2" type="button">Later</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       var xb = ov.querySelector('.mpxp-x2'); if (xb) xb.addEventListener('click', close9);
@@ -2226,7 +2232,7 @@
         if (typeof d.followers === 'number') { try {
           var fk = 'mp_foll_' + uid, fseen = null; try { fseen = JSON.parse(localStorage.getItem(fk)); } catch (e) {}
           if (fseen === null || typeof fseen !== 'number') { localStorage.setItem(fk, JSON.stringify(d.followers)); } // seed silently
-          else if (d.followers > fseen) { var nm = d.lastFollower && d.lastFollower.name, dn = d.followers - fseen; setTimeout(function () { followToast(dn === 1 ? nm : (dn + ' new followers')); }, fresh.length ? 900 : 300); localStorage.setItem(fk, JSON.stringify(d.followers)); }
+          else if (d.followers > fseen) { var nm = d.lastFollower && d.lastFollower.name, dn = d.followers - fseen; setTimeout(function () { followToast(dn === 1 ? nm : (dn + __esT_mpauth("newFollowers",' new followers'))); }, fresh.length ? 900 : 300); localStorage.setItem(fk, JSON.stringify(d.followers)); }
           else if (d.followers !== fseen) { localStorage.setItem(fk, JSON.stringify(d.followers)); } // unfollow → keep in sync, no toast
         } catch (e) {} }
       }).catch(function () {});
@@ -2271,10 +2277,10 @@
   function show(kind, sym, pnl) {
     if (document.getElementById('mpGn')) return; css();
     var win = pnl != null && +pnl > 0;
-    var title = kind === 'liq' ? T('gnLiqT', 'Liquidated. That is what practice is for.') : win ? T('gnWinT', 'Nice close on ' + (sym || 'that one') + '.') : T('gnT', 'Three trades in. Keep them.');
-    var body = kind === 'liq' ? T('gnLiqB', 'With a free account every trade stays in your history, so you can see exactly what went wrong and try again.') : T('gnB', 'A free account keeps your history, XP and streak, and puts you on the 14-day season board. Ten seconds, no card.');
+    var title = kind === 'liq' ? T('gnLiqT', __esT_mpauth("liquidatedThatIsWhat",'Liquidated. That is what practice is for.')) : win ? T('gnWinT', __esT_mpauth("niceCloseOn",'Nice close on ') + (sym || __esT_mpauth("thatOne",'that one')) + '.') : T('gnT', __esT_mpauth("threeTradesInKeep",'Three trades in. Keep them.'));
+    var body = kind === 'liq' ? T('gnLiqB', __esT_mpauth("withAFreeAccount",'With a free account every trade stays in your history, so you can see exactly what went wrong and try again.')) : T('gnB', __esT_mpauth("aFreeAccountKeeps",'A free account keeps your history, XP and streak, and puts you on the 14-day season board. Ten seconds, no card.'));
     var box = document.createElement('div'); box.id = 'mpGn';
-    box.innerHTML = '<div class="mpgn-t">' + esc(title) + '</div><div class="mpgn-b">' + esc(body) + '</div><div class="mpgn-a"><button type="button" class="mpgn-go">' + esc(T('gnGo', 'Create a free account')) + '</button><button type="button" class="mpgn-no">' + esc(T('gnNo', 'Not now')) + '</button></div>';
+    box.innerHTML = '<div class="mpgn-t">' + esc(title) + '</div><div class="mpgn-b">' + esc(body) + '</div><div class="mpgn-a"><button type="button" class="mpgn-go">' + esc(T('gnGo', __esT_mpauth("createAFreeAccount",'Create a free account'))) + '</button><button type="button" class="mpgn-no">' + esc(T('gnNo', __esT_mpauth("notNow",'Not now'))) + '</button></div>';
     document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
     LS('n', (+LS('n') || 0) + 1); LS('last', Date.now()); track('shown:' + (kind === 'liq' ? 'liq' : win ? 'win' : 'third'));
     var hide = function () { box.classList.remove('on'); setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 260); };
@@ -2308,7 +2314,7 @@
 (function () {
   var LSK = 'mp_orders', MAX = 20, TTL = 30 * 86400000;
   var open = [], done = [], subs = [], lastPull = 0, pulling = false, sweepT = null, sweepAt = 0, sweepGap = 3000;
-  var ORDERR = { too_many_orders: 'You already have 20 orders waiting - cancel one first.', opposite_open: 'You already have an opposite position open on this coin - close it first (one-way mode).', market_closed: 'This market is closed right now.', rate_limited: 'Too many orders in a minute - wait a moment.', sl_wrong_side: 'Your stop-loss is on the wrong side of the limit price.', tp_wrong_side: 'Your take-profit is on the wrong side of the limit price.', price_far: 'That price is more than 20x away from the market - check the decimal point.', login_required: 'Sign in again to place the order.' };
+  var ORDERR = { too_many_orders: __esT_mpauth("youAlreadyHave20",'You already have 20 orders waiting - cancel one first.'), opposite_open: __esT_mpauth("youAlreadyHaveAn2",'You already have an opposite position open on this coin - close it first (one-way mode).'), market_closed: __esT_mpauth("thisMarketIsClosed",'This market is closed right now.'), rate_limited: __esT_mpauth("tooManyOrdersIn",'Too many orders in a minute - wait a moment.'), sl_wrong_side: __esT_mpauth("yourStopLossIs",'Your stop-loss is on the wrong side of the limit price.'), tp_wrong_side: __esT_mpauth("yourTakeProfitIs",'Your take-profit is on the wrong side of the limit price.'), price_far: __esT_mpauth("thatPriceIsMore",'That price is more than 20x away from the market - check the decimal point.'), login_required: __esT_mpauth("signInAgainTo",'Sign in again to place the order.') };
   function T(k, d) { try { return (window.mpT && window.mpT(k)) || d; } catch (e) { return d; } }
   function me() { try { return (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null; } catch (e) { return null; } }
   function lsGet() { try { var a = JSON.parse(localStorage.getItem(LSK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
@@ -2337,15 +2343,15 @@
   function add(o, ok, err) {
     var sym = String(o.sym || '').toUpperCase(), long = o.side !== 'short', px = +o.px, lv = Math.max(1, +o.lev || 1), mg = +o.margin || 0;
     var fail = function (m) { try { if (window.mpLimitToast) window.mpLimitToast(m); } catch (e) {} if (err) err(m); };
-    if (!(px > 0)) return fail(T('otNoPx', 'Enter a limit price.'));
-    if (!(mg > 0)) return fail(T('otNoAmt', 'Enter an amount (USD) above $0.'));
+    if (!(px > 0)) return fail(T('otNoPx', __esT_mpauth("enterALimitPrice",'Enter a limit price.')));
+    if (!(mg > 0)) return fail(T('otNoAmt', __esT_mpauth("enterAnAmountUsd",'Enter an amount (USD) above $0.')));
     var lp = live(sym);
     // A LEVEL, NOT A SIDE: the price may sit above or below the market. Below = classic limit, above = breakout
     // entry ("buy if it gets to 83.80"). `dir` records which way the market has to move; the server stamps its own.
     var dir = (lp > 0 && px > lp) ? 'up' : 'down';
-    if (open.length >= MAX) return fail(T('otMax', 'You already have 20 orders waiting - cancel one first.'));
+    if (open.length >= MAX) return fail(T('otMax', __esT_mpauth("youAlreadyHave20",'You already have 20 orders waiting - cancel one first.')));
     if (!me()) { // guest: the order lives on this device and fills while the page is open
-      if (!(lp > 0)) return fail(T('mtWaitPx', 'Waiting for the live price - try again in a second.')); // dir is derived from the live price; without one a breakout level above the market would be filed as "down" and fill the moment a price arrived (2026-09-12)
+      if (!(lp > 0)) return fail(T('mtWaitPx', __esT_mpauth("waitingForTheLive",'Waiting for the live price - try again in a second.'))); // dir is derived from the live price; without one a breakout level above the market would be filed as "down" and fill the moment a price arrived (2026-09-12)
       var g = { id: 'lg' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: sym, side: long ? 'long' : 'short', px: px, lev: lv, margin: mg, sl: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp), expTs: Date.now() + TTL, status: 'open', local: 1, dir: dir };
       setOpen(open.concat([g]));
       if (ok) ok(g);
@@ -2355,9 +2361,9 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (d && d.ok && d.order) { setOpen(open.filter(function (x) { return x.id !== d.order.id; }).concat([d.order])); if (ok) ok(d.order); return; }
-        fail((d && d.message) || ORDERR[d && d.error] || T('otFail', 'Could not place the order - try again.'));
+        fail((d && d.message) || ORDERR[d && d.error] || T('otFail', __esT_mpauth("couldNotPlaceThe",'Could not place the order - try again.')));
       })
-      .catch(function () { fail(T('otNet', 'Network problem - the order was not placed.')); });
+      .catch(function () { fail(T('otNet', __esT_mpauth("networkProblemTheOrder",'Network problem - the order was not placed.'))); });
   }
 
   function cancel(id, cb) {
@@ -2405,9 +2411,9 @@
     try { if (window.mpBuzz) window.mpBuzz([15, 40, 15]); } catch (e) {}
   }
   function toastFill(f) {
-    if (window.mpToast) { try { var m9 = T('otFilled', 'Limit order filled') + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 }); window.mpToast({ mark: '✓', msg: m9, kind: 'good', ms: 5000, key: 'fill' + f.sym + f.px }); } catch (e) {} return; }
+    if (window.mpToast) { try { var m9 = T('otFilled', __esT_mpauth("limitOrderFilled",'Limit order filled')) + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 }); window.mpToast({ mark: '✓', msg: m9, kind: 'good', ms: 5000, key: 'fill' + f.sym + f.px }); } catch (e) {} return; }
     try {
-      var m = T('otFilled', 'Limit order filled') + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 });
+      var m = T('otFilled', __esT_mpauth("limitOrderFilled",'Limit order filled')) + ': ' + String(f.side || '').toUpperCase() + ' ' + f.sym + ' @ ' + (+f.px).toLocaleString('en-US', { maximumFractionDigits: 8 });
       var t = document.createElement('div'); t.textContent = m;
       t.style.cssText = 'position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);z-index:131;background:#0e1a14;color:#c9f7e2;border:1px solid #2ebd85;border-left:3px solid #2ebd85;border-radius:12px;padding:13px 17px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;font-family:inherit;text-align:center;';
       document.body.appendChild(t); requestAnimationFrame(function () { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)'; });
@@ -2534,14 +2540,14 @@
     // Hyperliquid (2026-09-11): on-chain perps DEX, API-first. The join link carries the referral; a /trade deep link would
     // lose it, so every click goes through /join. Its terms exclude US persons and the app geoblocks the US - a US
     // click is a dead click, so it goes last there like Bybit does. Users get 4% off fees with code MARGINPAD.
-    Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: '4% off fees with code MARGINPAD', code: 'MARGINPAD' },
+    Hyperliquid: { c: '#5ee6c8', no: 'US', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', deep: null, perk: __esT_mpauth("4OffFeesWith",'4% off fees with code MARGINPAD'), code: 'MARGINPAD' },
     // Fomo (2026-09-15): social-first trading app - spot across six chains plus perpetuals on crypto, equities,
     // indices, commodities and pre-IPO, powered by Hyperliquid and Trade[XYZ]. Its own Terms state a flat
     // "fee of 0.05% per transaction" on perps, with no maker/taker split - that is the reason to link it.
     // NOT flagged `no:'US'`: Fomo's terms exclude U.S. Persons from PERPETUALS, not from the app, so the card
     // is honest in the US and simply ranks low there - our reader arrives wanting futures. Accent is ours:
     // Fomo's own theme-color is #060510, which is invisible on our dark cards.
-    Fomo: { c: '#ff4d8d', no: '', ref: 'https://fomo.family/r/Marginpad', deep: null, perk: 'social trading' },
+    Fomo: { c: '#ff4d8d', no: '', ref: 'https://fomo.family/r/Marginpad', deep: null, perk: __esT_mpauth("socialTrading",'social trading') },
     Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
     // MEXC (2026-09-18): the old `promote.mexc.com/r/GND4jI97o0` resolved to inviteCode 41aeB - a DIFFERENT MEXC
     // account ("65****35 invites you") - so every MEXC sign-up we sent was credited elsewhere. The owner's link
@@ -2556,7 +2562,7 @@
     Coinbase: { c: '#0052ff', no: '', ref: 'https://base.app/invite/chakko/FHSFNY5H', deep: null, perk: 'US-regulated' },
     'Crypto.com': { c: '#0b2e7a', no: '', ref: 'https://crypto.com/app/sdf5hb6rkv', deep: null, perk: 'easy fiat' }
   };
-  var REGION = { US: 'the US', CA: 'Canada' };
+  var REGION = { US: __esT_mpauth("theUs",'the US'), CA: 'Canada' };
   // Display order per region. Outside the US this is OUR OWN measured click order (30 days: NG Bybit 70 / Moon 23 /
   // Binance 6, PK Moon 29 / Bybit 24, IN Bybit 6 / Moon 5, DE Binance 3 / Bybit 2) - not an opinion about quality.
   var WEST = 'GB,IE,DE,FR,NL,BE,ES,IT,PT,AT,CH,SE,NO,DK,FI,PL,CZ,SK,HU,RO,BG,GR,HR,SI,EE,LV,LT,LU,MT,CY,IS,AU,NZ,JP,KR,SG'.split(',');
@@ -2643,7 +2649,7 @@
           // note is only added when nobody else did, so the message can never appear twice on one card
           var labelled = false;
           if (typeof onEach === 'function') { try { labelled = onEach(x.el, x.n, x.off, country, reg, sorted.indexOf(x)) === true; } catch (e) {} }
-          if (x.off && !labelled && !x.el.querySelector('.mp-ex-na')) { var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = 'not available in ' + (reg || 'your country'); x.el.appendChild(s); }
+          if (x.off && !labelled && !x.el.querySelector('.mp-ex-na')) { var s = document.createElement('span'); s.className = 'mp-ex-na'; s.textContent = __esT_mpauth("notAvailableIn",'not available in ') + (reg || __esT_mpauth("yourCountry",'your country')); x.el.appendChild(s); }
         });
       });
     } catch (e) {}
@@ -2668,7 +2674,7 @@
       css();
       return '<a class="mp-gl" style="--mpgl:' + p.c + '" data-mpex="' + name + '" href="' + mpEx.url(name, sym) + '" target="_blank" rel="sponsored noopener noreferrer">'
         + '<span class="mp-gl-d"></span>'
-        + '<span class="mp-gl-t"><i>+' + pct + '</i> on paper - trade <b>' + sym + '</b> for real on <b>' + name + '</b>' + (p.perk ? ', ' + p.perk : '') + '</span>'
+        + '<span class="mp-gl-t"><i>+' + pct + __esT_mpauth("onPaperTrade",'</i> on paper - trade <b>') + sym + __esT_mpauth("forRealOn",'</b> for real on <b>') + name + '</b>' + (p.perk ? ', ' + p.perk : '') + '</span>'
         + '<span class="mp-gl-go">&rarr;</span>'
         + '<button type="button" class="mp-gl-x" data-mpex-x="1" aria-label="Hide this">&#10005;</button></a>';
     } catch (e) { return ''; }
@@ -2805,7 +2811,7 @@
       var say = function () {
         if (!window.mpToast) { setTimeout(say, 1500); return; } // the channel lives further down this file / may still be parsing
         window.mpToast({ mark: "\u21bb", kind: "info", ms: 20000, dismissible: true, key: "stalever",
-          msg: "This page is running an older version of the site.",
+          msg: __esT_mpauth("thisPageIsRunning","This page is running an older version of the site."),
           action: { label: "Reload", onClick: function () { try { location.reload(); } catch (e) {} } } });
       };
       say();

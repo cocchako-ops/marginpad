@@ -1,3 +1,9 @@
+
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_mpheatmap = {"yourEntry":"TU ENTRADA ","yourLiq":"TU LIQ ","heavierThanATypical":"</b> más pesado que un nivel típico","heavierThanATypical2":"</b> más pesado que un nivel típico en esta pantalla.","lighterThanATypical":"más ligero que un nivel típico <b>(","lighterThanATypical2":"Más ligero que un nivel típico en esta pantalla <b>(","aboutAsHeavyAs":"aproximadamente tan pesado como un nivel típico","aboutAsHeavyAs2":"Aproximadamente tan pesado como un nivel típico en esta pantalla.","titleShowThisZone":"\" title=\"Mostrar esta zona en el mapa\">","targetsU2014WhereLiquidity":"<div class=\"hm-tg-h\">OBJETIVOS — dónde la liquidez atrae el precio</div>","theNearestLevelsWhere":"<div class=\"hm-tg-exp\">Los niveles más cercanos donde se liquidan las posiciones apalancadas - <span style=\"color:#66d3a5\">verde</span> es donde van los longs, <span style=\"color:#ff8f86\">rojo</span> es donde van los shorts. Estimado a partir del historial de precios, no un registro de lo que realmente se ha liquidado. Toca uno para mostrarlo en el mapa.</div>","getLiquidated":"</span> se liquidan","reallyLiquidatedHereIn":"</b> realmente liquidado aquí en 24h","nothingReallyLiquidatedHer":"<span style=\"color:#8b95a1\">nada se liquidó realmente aquí en las últimas 24h</span>","priceAlreadyWentThrough":"el precio ya pasó por este nivel - las <span class=\"","hereAreGone":"</span> de aquí ya no existen","wasLiquidatedOn":" se liquidó en ","moreClickToList":" más - haz clic para listarlas</span>","justNow":"justo ahora","liquidationsStackedHere":" liquidaciones</b> acumuladas aquí · <b>","totalPickOne":"</b> en total - elige una:</span><div class=\"hm-cl-list\">","moreZoomInTo":" más (haz zoom para separar el grupo)</div>","wasLiquidatedAt":"</b> se liquidó a <b>","alreadySwept":"<span class=\"k\">YA BARRIDO</span>","priceWentThrough":"El precio pasó por <b>","anySpanClass":"Cualquier <span class=\"","sittingHereWouldHave":"</span> que estuviera aquí se habría liquidado entonces. ","thisWasOurEstimate":"<span style=\"color:#8b95a1\">Esta fue nuestra estimación de dónde estaban, no un registro de lo que se cerró.</span>","liquidationLevel":"<span class=\"k\">NIVEL DE LIQUIDACIÓN</span>","getLiquidated2":"</span> se liquidan.<br>","priceHasTo":"El precio tiene que ","toReachIt":"%</b> para llegar a él.<br>","thatIsOurEstimate":" <span style=\"color:#8b95a1\">Esa es nuestra estimación a partir del historial de precios, no una cifra en dólares.</span><br>","reallyWasLiquidatedHere":"</b> realmente se liquidó aquí en las últimas 24 horas.","nothingHasActuallyBeen":"<span style=\"color:#8b95a1\">En realidad no se ha liquidado nada aquí en las últimas 24 horas.</span>","buildingFor":"<br><span style=\"color:#8b95a1\">Recopilando datos desde hace ","dragToZoomThe":"Arrastra para hacer zoom en el eje de precios","uSTariffHike":"Subida de aranceles de EE. UU. a China","everyCoinAllVenues":"todas las monedas · todos los exchanges · órdenes ≥ $1K · en vivo","totalLiquidationsByCoin":"LIQUIDACIONES TOTALES POR MONEDA","top10LiquidationEvents":"<div class=\"hm-t10-h\">TOP 10 EVENTOS DE LIQUIDACIÓN DE TODOS LOS TIEMPOS</div>","onTheLiquidationMap":" en el mapa de liquidaciones</button>","zoneMapCoversThe":"<span class=\"hm-nomap\">El mapa de zonas cubre las 10 principales, ","isNotOneOf":" todavía no es una de ellas</span>","paperTrade":"\">Operar en simulado ","coinPrice":"<div class=\"hm-ct-hd\"><span>#</span><span>Moneda</span><span>Precio</span>","liquidationOrdersTotaling":"</b> órdenes de liquidación por un total de <b>","acrossOurTrackedVenues":"</b> en los exchanges que monitoreamos. La orden individual más grande alcanzó <b>","noLiquidationOrders1k":"Todavía no se han registrado órdenes de liquidación ≥ $1K en esta ventana.","liquidatedInTheLast":" liquidado en las últimas ","unlockTheLiveLiquidation":"<div style=\"font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22\">Desbloquea el mapa de calor de liquidaciones en vivo</div>","last4Hours":"Últimas 4 horas","last12Hours":"Últimas 12 horas","last24Hours":"Últimas 24 horas","last3Days":"Últimos 3 días","last7Days":"Últimos 7 días","allLiqs":"Todas las liqs","noLiqDots":"Sin puntos liq","hideLiquidationsBelowThis":"Ocultar liquidaciones menores a este tamaño","shareOnX":"Compartir en X","liquidationHeatmapLiveReal":"<div class=\"hm-mast-l\"><div class=\"hm-mast-t\">MAPA DE CALOR DE LIQUIDACIONES</div><div class=\"hm-mast-b\"><span class=\"hm-live\"><i></i>EN VIVO</span><span class=\"hm-mast-s\">Liquidaciones reales de 9 exchanges, transmitidas en el segundo en que ocurren — las bandas brillantes muestran dónde mueren las próximas posiciones apalancadas.</span></div></div><div class=\"hm-mast-r\"></div>","dragWithOneFinger":" Arrastra con un dedo para desplazarte, pellizca con dos para hacer zoom en el tiempo, arrastra la columna de zonas para hacer zoom en el precio, toca dos veces para restablecer.","dragToPanAny":" Arrastra para desplazarte (en cualquier dirección), usa el scroll para hacer zoom en el tiempo, Shift+scroll para hacer zoom en el precio, doble clic para restablecer.","howToReadIt":"><summary class=\"hm-foot-h\">CÓMO LEERLO</summary>Las bandas brillantes son multitudes de traders cuyos precios de liquidación de <span class=\"l\">long</span>/<span class=\"s\">short</span> se acumulan ahí — el precio tiende a barrer las más brillantes, y una banda desaparece en el momento en que el precio la atraviesa. ","realLiquidationsLiveFrom":"Liquidaciones reales, en vivo desde 9 exchanges - las bandas brillantes son donde se acumulan las próximas","liquidationHeatmapLiveFrom":" mapa de calor de liquidaciones - en vivo desde 9 exchanges. El precio caza las bandas brillantes.\nhttps://marginpad.io/heatmap"};
+function __esT_mpheatmap(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpheatmap[k] != null) return __esD_mpheatmap[k]; } catch (e) {} return en; }
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 - DELETE with the pxtag round */
 /* mp-heatmap.js - Liquidation Heatmap v2.1 (simplified + full-bleed, owner pass 2026-07-24).
    ONE idea on screen: bright horizontal bands = standing crowds of liquidation prices (est. from every
@@ -278,13 +284,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           ctx.setLineDash([2, 3]); ctx.strokeStyle = 'rgba(56,189,248,.85)'; ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(0, ey2); ctx.lineTo(W, ey2); ctx.stroke(); ctx.setLineDash([]);
           ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ey2 - 13, 118, 12);
-          ctx.fillStyle = '#38bdf8'; ctx.fillText('YOUR ENTRY ' + (mp.long ? 'L' : 'S') + mp.lev + 'x', 7, ey2 - 4);
+          ctx.fillStyle = '#38bdf8'; ctx.fillText(__esT_mpheatmap("yourEntry",'YOUR ENTRY ') + (mp.long ? 'L' : 'S') + mp.lev + 'x', 7, ey2 - 4);
         }
         if (mp.liq > pLo && mp.liq < pHi) { var ly2 = Y(mp.liq);
           ctx.setLineDash([5, 3]); ctx.strokeStyle = 'rgba(160,107,255,.9)'; ctx.lineWidth = 1.2;
           ctx.beginPath(); ctx.moveTo(0, ly2); ctx.lineTo(W, ly2); ctx.stroke(); ctx.setLineDash([]);
           var inPool = false; for (var pi2 = 0; pi2 < P.alive.length; pi2++) { if (Math.abs(P.alive[pi2].price - mp.liq) < P.binH * 1.5 && P.alive[pi2].w > (P.alive[0] ? P.alive[0].w * 0.2 : 0)) { inPool = true; break; } }
-          var lqTxt = 'YOUR LIQ ' + fpx(mp.liq) + (inPool ? ' - INSIDE A POOL' : '');
+          var lqTxt = __esT_mpheatmap("yourLiq",'YOUR LIQ ') + fpx(mp.liq) + (inPool ? ' - INSIDE A POOL' : '');
           var lw2 = ctx.measureText(lqTxt).width;
           ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ly2 - 13, lw2 + 8, 12);
           ctx.fillStyle = inPool ? '#ffd75a' : '#a06bff'; ctx.fillText(lqTxt, 7, ly2 - 4);
@@ -441,9 +447,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function relTxt(r) { return (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
   function relPhrase(r, sh) {
     var t = relTxt(r);
-    if (r >= 1.15) return (sh ? 'about <b>' + t + '</b> heavier than a typical level' : 'About <b>' + t + '</b> heavier than a typical level on this screen.');
-    if (r <= 0.85) return (sh ? 'lighter than a typical level <b>(' + t + ')</b>' : 'Lighter than a typical level on this screen <b>(' + t + ')</b>.');
-    return (sh ? 'about as heavy as a typical level' : 'About as heavy as a typical level on this screen.');
+    if (r >= 1.15) return (sh ? 'about <b>' + t + __esT_mpheatmap("heavierThanATypical",'</b> heavier than a typical level') : 'About <b>' + t + __esT_mpheatmap("heavierThanATypical2",'</b> heavier than a typical level on this screen.'));
+    if (r <= 0.85) return (sh ? __esT_mpheatmap("lighterThanATypical",'lighter than a typical level <b>(') + t + ')</b>' : __esT_mpheatmap("lighterThanATypical2",'Lighter than a typical level on this screen <b>(') + t + ')</b>.');
+    return (sh ? __esT_mpheatmap("aboutAsHeavyAs",'about as heavy as a typical level') : __esT_mpheatmap("aboutAsHeavyAs2",'About as heavy as a typical level on this screen.'));
   }
   // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
   // from price so one stray far-out band can never flatten the candles into a hairline.
@@ -602,14 +608,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     S._tg = up.slice(0, 3).concat(dn.slice(0, 3)); // the chips address these by index, so a tap can move the view to one
     var cell = function (x) {
       var d = ((x.price - px) / px * 100), i = S._tg.indexOf(x);
-      return '<button type="button" class="hm-tgb ' + (x.long ? 'l' : 's') + '" data-tg="' + i + '" title="Show this zone on the map">' +
+      return '<button type="button" class="hm-tgb ' + (x.long ? 'l' : 's') + '" data-tg="' + i + __esT_mpheatmap("titleShowThisZone",'" title="Show this zone on the map">') +
         '<b>' + fpx(x.price) + '</b><i>' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></button>';
     };
     var side = function (arr, cls, lab) {
       return '<div class="hm-tg-r"><span class="hm-tg-d ' + cls + '">' + lab + '</span><div class="hm-tg-c">' +
         (arr.length ? arr.slice(0, 3).map(cell).join('') : '<span class="hm-tg-none">none within 12%</span>') + '</div></div>';
     };
-    var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
+    var h = __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>');
     h += '<div class="hm-tg-g">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + '</div>';
     // squeeze: strong pools close on BOTH sides
     var wMax = P.alive.length ? P.alive[0].w : 0;
@@ -618,7 +624,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += '<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>';
+    h += __esT_mpheatmap("theNearestLevelsWhere",'<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>');
     S.tgEl.innerHTML = h;
   }
 
@@ -661,12 +667,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
       var h = '';
       if (best) { var s2 = best.s, r2 = relOf(s2);
-        h += '<b>' + fpx(s2.price) + '</b> - where <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs' : 'shorts') + '</span> get liquidated';
+        h += '<b>' + fpx(s2.price) + '</b> - where <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs' : 'shorts') + __esT_mpheatmap("getLiquidated",'</span> get liquidated');
         if (r2 > 0) h += '<br>' + relPhrase(r2, 1) + ' <span style="color:#8b95a1">(our estimate)</span>';
-        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + '</b> really liquidated here in 24h' : '<span style="color:#8b95a1">nothing really liquidated here in 24h</span>');
+        h += '<br>' + (s2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(s2.obs) + __esT_mpheatmap("reallyLiquidatedHereIn",'</b> really liquidated here in 24h') : __esT_mpheatmap("nothingReallyLiquidatedHer",'<span style="color:#8b95a1">nothing really liquidated here in 24h</span>'));
       }
-      if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + 'price already went through this level - the <span class="' + (sw3.long ? 'l' : 's') + '">' + (sw3.long ? 'longs' : 'shorts') + '</span> here are gone'; }
-      else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + 'a <span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'long' : 'short') + '</span> worth ' + money(e2.notional) + ' was liquidated on ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more - click to list them</span>' : ''); }
+      if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + __esT_mpheatmap("priceAlreadyWentThrough",'price already went through this level - the <span class="') + (sw3.long ? 'l' : 's') + '">' + (sw3.long ? 'longs' : 'shorts') + __esT_mpheatmap("hereAreGone",'</span> here are gone'); }
+      else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + 'a <span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'long' : 'short') + '</span> worth ' + money(e2.notional) + __esT_mpheatmap("wasLiquidatedOn",' was liquidated on ') + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + __esT_mpheatmap("moreClickToList",' more - click to list them</span>') : ''); }
       tip.innerHTML = h; tip.style.display = 'block';
       var tx = mx + 14, ty = my + 12;
       if (tx + tip.offsetWidth > r.width - 4) tx = mx - tip.offsetWidth - 12;
@@ -676,19 +682,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
     });
     cv.addEventListener('mouseleave', function () { tip.style.display = 'none'; S.drag = null; });
-    function ago2(t) { var m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 2880 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; }
+    function ago2(t) { var m = Math.round((Date.now() - t) / 60000); return m < 1 ? __esT_mpheatmap("justNow",'just now') : m < 60 ? m + 'm ago' : m < 2880 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; }
     function showSel() {
       var el2 = S.selBox; if (!el2) return;
       if (!S.sel) { el2.style.display = 'none'; return; }
       var h = '<span class="k">SELECTED</span>';
       if (S.sel.type === 'clu') {
         var refs = S.sel.refs, totC = 0; refs.forEach(function (x) { totC += x.notional; });
-        h = '<span class="k">CLUSTER</span><span class="hm-cl-h"><b>' + refs.length + ' liquidations</b> stacked here · <b>' + money(totC) + '</b> total - pick one:</span><div class="hm-cl-list">';
+        h = '<span class="k">CLUSTER</span><span class="hm-cl-h"><b>' + refs.length + __esT_mpheatmap("liquidationsStackedHere",' liquidations</b> stacked here · <b>') + money(totC) + __esT_mpheatmap("totalPickOne",'</b> total - pick one:</span><div class="hm-cl-list">');
         refs.slice(0, 30).forEach(function (x, ci) {
           var lg2 = x.side === 'long_liquidated';
           h += '<div class="hm-cl-it" data-ci="' + ci + '"><span class="' + (lg2 ? 'l' : 's') + '">' + (lg2 ? 'LONG' : 'SHORT') + '</span><b>' + money(x.notional) + '</b><span>@ ' + fpx(x.price) + '</span><span>' + String(x.exchange).toUpperCase() + '</span><span class="ag">' + ago2(x.ts) + '</span></div>';
         });
-        if (refs.length > 30) h += '<div class="hm-cl-it" style="cursor:default;color:#5c6b84">+ ' + (refs.length - 30) + ' more (zoom in to split the cluster)</div>';
+        if (refs.length > 30) h += '<div class="hm-cl-it" style="cursor:default;color:#5c6b84">+ ' + (refs.length - 30) + __esT_mpheatmap("moreZoomInTo",' more (zoom in to split the cluster)</div>');
         h += '</div>';
         el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">\u00d7</button>';
         el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
@@ -700,22 +706,22 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       }
       if (S.sel.type === 'ev') { var e = S.sel.ref, lg = e.side === 'long_liquidated';
         h = '<span class="k">REAL LIQUIDATION</span>'
-          + 'A <span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'long' : 'short') + '</span> worth <b>' + money(e.notional) + '</b> was liquidated at <b>' + fpx(e.price) + '</b>.<br>'
+          + 'A <span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'long' : 'short') + '</span> worth <b>' + money(e.notional) + __esT_mpheatmap("wasLiquidatedAt",'</b> was liquidated at <b>') + fpx(e.price) + '</b>.<br>'
           + 'On ' + String(e.exchange).toUpperCase() + ', ' + ago2(e.ts) + '.';
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
-        h = '<span class="k">ALREADY SWEPT</span>'
-          + 'Price went through <b>' + fpx(sw.p) + '</b> ' + ago2(sw.t) + '.<br>'
-          + 'Any <span class="' + (sw.long ? 'l' : 's') + '">' + (sw.long ? 'longs' : 'shorts') + '</span> sitting here would have been liquidated then. '
-          + '<span style="color:#8b95a1">This was our estimate of where they sat, not a record of what closed.</span>';
+        h = __esT_mpheatmap("alreadySwept",'<span class="k">ALREADY SWEPT</span>')
+          + __esT_mpheatmap("priceWentThrough",'Price went through <b>') + fpx(sw.p) + '</b> ' + ago2(sw.t) + '.<br>'
+          + __esT_mpheatmap("anySpanClass",'Any <span class="') + (sw.long ? 'l' : 's') + '">' + (sw.long ? 'longs' : 'shorts') + __esT_mpheatmap("sittingHereWouldHave",'</span> sitting here would have been liquidated then. ')
+          + __esT_mpheatmap("thisWasOurEstimate",'<span style="color:#8b95a1">This was our estimate of where they sat, not a record of what closed.</span>');
       } else { var pl2 = S.sel.ref, dPct = S.price > 0 ? (pl2.price - S.price) / S.price * 100 : null;
-        h = '<span class="k">LIQUIDATION LEVEL</span>'
-          + '<b>' + fpx(pl2.price) + '</b> - where <span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'longs' : 'shorts') + '</span> get liquidated.<br>'
-          + (dPct != null ? 'Price has to ' + (dPct >= 0 ? 'rise' : 'fall') + ' <b>' + Math.abs(dPct).toFixed(2) + '%</b> to reach it.<br>' : '')
-          + (relOf(pl2) > 0 ? relPhrase(relOf(pl2)) + ' <span style="color:#8b95a1">That is our estimate from price history, not a dollar figure.</span><br>' : '')
+        h = __esT_mpheatmap("liquidationLevel",'<span class="k">LIQUIDATION LEVEL</span>')
+          + '<b>' + fpx(pl2.price) + '</b> - where <span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'longs' : 'shorts') + __esT_mpheatmap("getLiquidated2",'</span> get liquidated.<br>')
+          + (dPct != null ? __esT_mpheatmap("priceHasTo",'Price has to ') + (dPct >= 0 ? 'rise' : 'fall') + ' <b>' + Math.abs(dPct).toFixed(2) + __esT_mpheatmap("toReachIt",'%</b> to reach it.<br>') : '')
+          + (relOf(pl2) > 0 ? relPhrase(relOf(pl2)) + __esT_mpheatmap("thatIsOurEstimate",' <span style="color:#8b95a1">That is our estimate from price history, not a dollar figure.</span><br>') : '')
           + (pl2.obs > 0
-              ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> really was liquidated here in the last 24 hours.'
-              : '<span style="color:#8b95a1">Nothing has actually been liquidated here in the last 24 hours.</span>')
-          + '<br><span style="color:#8b95a1">Building for ' + ago2(pl2.t0 * 1000).replace(' ago', '') + '.</span>';
+              ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + __esT_mpheatmap("reallyWasLiquidatedHere",'</b> really was liquidated here in the last 24 hours.')
+              : __esT_mpheatmap("nothingHasActuallyBeen",'<span style="color:#8b95a1">Nothing has actually been liquidated here in the last 24 hours.</span>'))
+          + __esT_mpheatmap("buildingFor",'<br><span style="color:#8b95a1">Building for ') + ago2(pl2.t0 * 1000).replace(' ago', '') + '.</span>';
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
@@ -792,7 +798,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       function yr() { return { lo: S.yView ? S.yView.lo : S.yLo, hi: S.yView ? S.yView.hi : S.yHi }; }
       function apply(dy) { if (Math.abs(dy) > 4) moved = 1; var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
       function pfPick(cy) { var r = pf.getBoundingClientRect(); selAt(cy - r.top, S.plotH || r.height); var s = poolHit(cy - r.top, S.plotH || r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
-      pf.style.cursor = 'ns-resize'; pf.title = 'Drag to zoom the price axis';
+      pf.style.cursor = 'ns-resize'; pf.title = __esT_mpheatmap("dragToZoomThe",'Drag to zoom the price axis');
       pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; moved = 0; ev.preventDefault(); });
       pf.addEventListener('click', function (ev) { if (moved) { moved = 0; return; } pfPick(ev.clientY); });
       window.addEventListener('mousemove', function (ev) { if (g && S) apply(ev.clientY - g.y); });
@@ -815,7 +821,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
 
   // ===== Liquidation market pulse (below the map): treemap by coin + window totals + per-exchange split + all-time top 10 =====
   var MKT_TOP10 = [
-    ['2025-10-10', '$19.16B', 'U.S. tariff hike on China'],
+    ['2025-10-10', '$19.16B', __esT_mpheatmap("uSTariffHike",'U.S. tariff hike on China')],
     ['2021-04-18', '$9.94B', 'AML crackdown rumor + mining halt'],
     ['2021-05-19', '$9.01B', 'Tesla stance reversal + regulatory tightening'],
     ['2021-02-22', '$4.10B', 'Overheated rally correction'],
@@ -930,7 +936,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var WINH = { '1H': 'h1', '4H': 'h4', '12H': 'h12', '24H': 'h24' };
     var head = el('div', 'hm-mkt-head');
     head.appendChild(el('b', '', 'LIQUIDATION MARKET PULSE'));
-    head.appendChild(el('span', 'hm-mkt-sub', 'every coin · all venues · orders ≥ $1K · live'));
+    head.appendChild(el('span', 'hm-mkt-sub', __esT_mpheatmap("everyCoinAllVenues",'every coin · all venues · orders ≥ $1K · live')));
     var chips = el('div', 'hm-mkt-chips');
     Object.keys(WINH).forEach(function (k) { var b = el('button', k === M.win ? 'on' : '', k.toLowerCase()); b.type = 'button'; b.setAttribute('data-w', k); chips.appendChild(b); });
     head.appendChild(chips); host.appendChild(head);
@@ -941,12 +947,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     right.appendChild(tots); right.appendChild(story); right.appendChild(t10);
     grid.appendChild(left); grid.appendChild(right); host.appendChild(grid);
     var ct = el('div', 'hm-ct');
-    var ctH = el('div', 'hm-ct-h'); ctH.appendChild(el('b', '', 'TOTAL LIQUIDATIONS BY COIN'));
+    var ctH = el('div', 'hm-ct-h'); ctH.appendChild(el('b', '', __esT_mpheatmap("totalLiquidationsByCoin",'TOTAL LIQUIDATIONS BY COIN')));
     var ctN = el('span', 'hm-ct-n', ''); ctH.appendChild(ctN);
     var ctQ = el('input', ''); ctQ.type = 'text'; ctQ.placeholder = 'Search coin'; ctH.appendChild(ctQ);
     var ctTb = el('div', 'hm-ct-tw');
     ct.appendChild(ctH); ct.appendChild(ctTb); host.appendChild(ct);
-    var h10 = '<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>';
+    var h10 = __esT_mpheatmap("top10LiquidationEvents",'<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>');
     MKT_TOP10.forEach(function (r, i) { h10 += '<div class="hm-t10-r"><span class="rk rk' + (i + 1) + '">' + (i + 1) + '</span><span class="dt">' + r[0] + '</span><b>' + r[1] + '</b><span class="why">' + r[2] + '</span></div>'; });
     t10.innerHTML = h10;
     chips.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b) return; M.win = b.getAttribute('data-w'); chips.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render(); });
@@ -977,9 +983,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         h += '<div class="hm-tmd-c"><span class="tw">' + wd[0] + ' rekt</span><b>' + money(x.l + x.s) + '</b><span class="tl">Long ' + money(x.l) + '</span><span class="ts">Short ' + money(x.s) + '</span></div>';
       });
       h += '</div><div class="hm-tmd-cta">';
-      if (COINS.indexOf(sym) >= 0) h += '<button type="button" data-map="' + sym + '">View ' + sym + ' on the liquidation map</button>';
-      else if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<span class="hm-nomap">Zone map covers the 10 majors, ' + sym + ' is not one of them yet</span>'; // saying so beats a button that is simply absent
-      if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<a href="/paper-trade?coin=' + sym + '">Paper trade ' + sym + '</a>';
+      if (COINS.indexOf(sym) >= 0) h += '<button type="button" data-map="' + sym + '">View ' + sym + __esT_mpheatmap("onTheLiquidationMap",' on the liquidation map</button>');
+      else if (sym.indexOf(':') < 0 && sym !== 'Others') h += __esT_mpheatmap("zoneMapCoversThe",'<span class="hm-nomap">Zone map covers the 10 majors, ') + sym + __esT_mpheatmap("isNotOneOf",' is not one of them yet</span>'); // saying so beats a button that is simply absent
+      if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<a href="/paper-trade?coin=' + sym + __esT_mpheatmap("paperTrade",'">Paper trade ') + sym + '</a>';
       h += '</div>';
       det.innerHTML = h; det.style.display = 'block';
       det.querySelector('.hm-tmd-x').addEventListener('click', function () { det.style.display = 'none'; });
@@ -1020,7 +1026,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       // already selected - which is what those chips are for - and the other three windows are one tap away in
       // the coin sheet.
       var WK = WINH[M.win];
-      var h = '<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>' + (NAR
+      var h = __esT_mpheatmap("coinPrice",'<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>') + (NAR
         ? hcell(WK + 'l', M.win.toLowerCase() + ' Long') + hcell(WK + 's', M.win.toLowerCase() + ' Short')
         : hcell('h1l', '1h Long') + hcell('h1s', '1h Short') + hcell('h4l', '4h Long') + hcell('h4s', '4h Short') +
           hcell('h12l', '12h Long') + hcell('h12s', '12h Short') + hcell('h24l', '24h Long') + hcell('h24s', '24h Short')) + '</div>';
@@ -1044,8 +1050,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       tots.innerHTML = th;
       var A = M.p[WINH[M.win]] || {}, T = A.tot || { n: 0, v: 0, l: 0 };
       if (T.n && A.big) {
-        story.innerHTML = 'Past ' + M.win.toLowerCase() + ': <b>' + (+T.n).toLocaleString('en-US') + '</b> liquidation orders totaling <b>' + money(T.v) + '</b> across our tracked venues. The largest single order hit <b>' + String(A.big.exchange).replace('binance-coin', 'Binance COIN-M').toUpperCase() + '</b> - <b>' + A.big.symbol + '</b> ' + (A.big.side === 'long_liquidated' ? '<span class="tl">LONG</span>' : '<span class="ts">SHORT</span>') + ' worth <b>' + money(A.big.notional) + '</b>.';
-      } else story.innerHTML = 'No liquidation orders ≥ $1K captured in this window yet.';
+        story.innerHTML = 'Past ' + M.win.toLowerCase() + ': <b>' + (+T.n).toLocaleString('en-US') + __esT_mpheatmap("liquidationOrdersTotaling",'</b> liquidation orders totaling <b>') + money(T.v) + __esT_mpheatmap("acrossOurTrackedVenues",'</b> across our tracked venues. The largest single order hit <b>') + String(A.big.exchange).replace('binance-coin', 'Binance COIN-M').toUpperCase() + '</b> - <b>' + A.big.symbol + '</b> ' + (A.big.side === 'long_liquidated' ? '<span class="tl">LONG</span>' : '<span class="ts">SHORT</span>') + ' worth <b>' + money(A.big.notional) + '</b>.';
+      } else story.innerHTML = __esT_mpheatmap("noLiquidationOrders1k",'No liquidation orders ≥ $1K captured in this window yet.');
       var items = (A.bySym || []).map(function (r) { return { sym: r.s, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
       var top = items.slice(0, 18), rest = items.slice(18);
       if (rest.length) { var rv = 0, rl = 0, rs = 0; rest.forEach(function (r) { rv += r.v; rl += r.l; rs += r.s; }); top.push({ sym: 'Others', v: rv, l: rl, s: rs }); }
@@ -1057,7 +1063,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         d.style.cssText = 'left:' + r.x.toFixed(1) + 'px;top:' + r.y.toFixed(1) + 'px;width:' + Math.max(0, r.w - 2).toFixed(1) + 'px;height:' + Math.max(0, r.h - 2).toFixed(1) + 'px;cursor:pointer;background:' + (lsh >= 0.5 ? 'rgba(210,68,58,' : 'rgba(32,146,100,') + (0.55 + dom * 0.4).toFixed(2) + ')';
         d.setAttribute('data-sym', r.it.sym);
         if (r.w > 46 && r.h > 26) d.innerHTML = '<b>' + r.it.sym + '</b>' + (r.h > 46 ? '<span>' + money(r.it.v) + '</span>' : '');
-        d.title = r.it.sym + ' - ' + money(r.it.v) + ' liquidated in the last ' + M.win.toLowerCase() + ': longs ' + money(r.it.l) + ' · shorts ' + money(r.it.s) + '. Click for details.';
+        d.title = r.it.sym + ' - ' + money(r.it.v) + __esT_mpheatmap("liquidatedInTheLast",' liquidated in the last ') + M.win.toLowerCase() + ': longs ' + money(r.it.l) + ' · shorts ' + money(r.it.s) + '. Click for details.';
         tm.appendChild(d);
       });
       var exr = (A.byEx || []).map(function (r) { return { ex: r.e, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
@@ -1119,7 +1125,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           backIn = mins >= 60 ? (Math.round(mins / 60) + 'h') : (mins + ' min'); } // a wall with no way forward should at least say when the door reopens
         var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:9px;cursor:pointer';
         ov.innerHTML = '<div style="font:700 11px Space Mono,monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
-          '<div style="font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
+          __esT_mpheatmap("unlockTheLiveLiquidation",'<div style="font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>') +
           '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped - plus 4 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$11.99/mo</b>.</div>' +
           '<span class="hm-pw-btn" style="margin-top:8px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>' +
           (signedIn ? '' : '<span class="hm-pw-in" style="color:#8fa3c4;font-size:12.5px;margin-top:2px">Already have Premium? <b style="color:#c2f64a;text-decoration:underline">Sign in</b></span>') +
@@ -1164,18 +1170,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var wrap = el('div', 'hm-wrap');
     var bar = el('div', 'hm-bar');
     var selC = el('select', 'hm-sel'); COINS.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; if (c === coin) o.selected = true; selC.appendChild(o); });
-    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? 'Last 4 hours' : wk === '12H' ? 'Last 12 hours' : wk === '1D' ? 'Last 24 hours' : wk === '3D' ? 'Last 3 days' : 'Last 7 days'; if (wk === win0) o.selected = true; selW.appendChild(o); });
+    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? __esT_mpheatmap("last4Hours",'Last 4 hours') : wk === '12H' ? __esT_mpheatmap("last12Hours",'Last 12 hours') : wk === '1D' ? __esT_mpheatmap("last24Hours",'Last 24 hours') : wk === '3D' ? __esT_mpheatmap("last3Days",'Last 3 days') : __esT_mpheatmap("last7Days",'Last 7 days'); if (wk === win0) o.selected = true; selW.appendChild(o); });
     var seg = el('div', 'hm-seg');
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
     // Dots used to be an all-or-nothing toggle. It is a SIZE now, because the noise is not the dots, it is the
     // thousand-dollar ones (measured: median event $994, 506 of 1000 under $1K). Off is still one pick away.
-    var DOTMIN = [['10000', '$10K+ liqs'], ['0', 'All liqs'], ['50000', '$50K+ liqs'], ['250000', '$250K+ liqs'], ['-1', 'No liq dots']];
+    var DOTMIN = [['10000', '$10K+ liqs'], ['0', __esT_mpheatmap("allLiqs",'All liqs')], ['50000', '$50K+ liqs'], ['250000', '$250K+ liqs'], ['-1', __esT_mpheatmap("noLiqDots",'No liq dots')]];
     var dotMin0 = 10000; try { var _dm = localStorage.getItem('mp_hm_dotmin'); if (_dm != null) dotMin0 = +_dm; else if (localStorage.getItem('mp_hm_dots') === '0') dotMin0 = -1; } catch (e) {}
     var selD = el('select', 'hm-sel'); selD.setAttribute('aria-label', 'Liquidation dot size');
     DOTMIN.forEach(function (d) { var o = document.createElement('option'); o.value = d[0]; o.textContent = d[1]; if (+d[0] === dotMin0) o.selected = true; selD.appendChild(o); });
-    selD.title = 'Hide liquidations below this size';
+    selD.title = __esT_mpheatmap("hideLiquidationsBelowThis",'Hide liquidations below this size');
     var dl = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>'); dl.type = 'button'; dl.title = 'Download PNG';
-    var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = 'Share on X';
+    var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = __esT_mpheatmap("shareOnX",'Share on X');
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
     // Two named groups, so the bar breaks where it MEANS to break. It used to be six siblings in a wrapping flex
@@ -1186,7 +1192,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
-    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 9 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>';
+    mast.innerHTML = __esT_mpheatmap("liquidationHeatmapLiveReal",'<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP</div><div class="hm-mast-b"><span class="hm-live"><i></i>LIVE</span><span class="hm-mast-s">Real liquidations from 9 exchanges, streamed the second they happen — bright bands show where leveraged positions die next.</span></div></div><div class="hm-mast-r"></div>');
     var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
@@ -1199,10 +1205,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // telling a thumb about Shift+scroll was help written for somebody else.
     var FOPEN = window.innerWidth > 980 ? ' open' : '';
     var GEST = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
-      ? ' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.'
-      : ' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.';
+      ? __esT_mpheatmap("dragWithOneFinger",' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.')
+      : __esT_mpheatmap("dragToPanAny",' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.');
     var foot = el('div', 'hm-foot',
-      '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. ' + GEST + '</details>' +
+      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. ') + GEST + '</details>' +
       '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over 24 hours - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>';
@@ -1251,11 +1257,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ox.textAlign = 'right'; ox.fillStyle = '#8fa3c4'; ox.font = '700 17px "Space Mono",monospace';
       ox.fillText('marginpad.io/heatmap', W - 22, HEAD / 2 + 1);
       ox.textAlign = 'left'; ox.fillStyle = '#5c6b84'; ox.font = '13px "Space Mono",monospace';
-      ox.fillText('Real liquidations, live from 9 exchanges - the bright bands are where they stack next', 22, H - FOOT / 2);
+      ox.fillText(__esT_mpheatmap("realLiquidationsLiveFrom",'Real liquidations, live from 9 exchanges - the bright bands are where they stack next'), 22, H - FOOT / 2);
       return out;
     }
     sh.addEventListener('click', function () { try {
-      var txt = '$' + S.coin + ' liquidation heatmap - live from 9 exchanges. Price hunts the bright bands.\nhttps://marginpad.io/heatmap';
+      var txt = '$' + S.coin + __esT_mpheatmap("liquidationHeatmapLiveFrom",' liquidation heatmap - live from 9 exchanges. Price hunts the bright bands.\nhttps://marginpad.io/heatmap');
       shotX().toBlob(function (bl) { try {
         var f = bl ? new File([bl], 'marginpad-liqmap-' + S.coin + '.png', { type: 'image/png' }) : null;
         if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: txt }).catch(function () {}); return; }
