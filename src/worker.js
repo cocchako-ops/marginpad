@@ -18386,6 +18386,25 @@ export default {
       }
       return J({ ...(out || {}), username: who.user.username, usd: cents / 100 });
     }
+    // TELL A MEMBER SOMETHING, WITHOUT SENDING THEM MONEY (2026-09-19, owner: "nek imaju proslavu i da im se kaze
+    // da je pomoc da se lakse snadju"). Until now the only way to reach a member with the bell row and the
+    // full-screen celebration was to credit their balance (/api/admin/gift) or approve an exchange sign-up - so a
+    // plain "here is why we did this for you" could not be delivered at all. Money and a message are different
+    // acts and this one moves nothing: no ledger call, no cents, no XP.
+    if (url.pathname === '/api/admin/notify' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const body = String(b.body || '').trim().slice(0, 200);
+      if (!body) return J({ error: 'no_body', hint: 'body is the sentence the member reads' }, 400);
+      const who = await usersDO(env, '/xpdiag', { uid: String(b.uid || ''), username: String(b.username || '').replace(/^@/, ''), email: String(b.email || '') });
+      if (!who || !who.user || !who.user.id) return J({ error: 'not_found' }, 404);
+      const kind = ['gift', 'follow', 'mention', 'duel', 'system'].indexOf(String(b.kind || 'gift')) >= 0 ? String(b.kind || 'gift') : 'gift'; // 'gift' is the kind that fires the celebration
+      const link = String(b.link || '/rewards/').slice(0, 120);
+      let pushed = false;
+      try { const r = await usersDO(env, '/notify', { uid: String(who.user.id), kind, body, link }); pushed = !!(r && !r.error); } catch (e) {}
+      if (!pushed) return J({ error: 'push_failed', username: who.user.username }, 503); // never answer ok on a silent failure - that is what the read hook exists to catch
+      try { await tgAdmin(env, '<b>Message sent</b> to @' + (who.user.username || String(who.user.id).slice(0, 8)) + ': ' + body.slice(0, 120), { kind: 'member message', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, uid: String(who.user.id), username: who.user.username || '', kind, link, body });
+    }
     if (url.pathname === '/api/admin/xpdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only XP-credit audit: user + xp log + trade closes + promo config in one response - every "boost didn't credit" ticket becomes checkable against the exact predicate inputs
       const out = await usersDO(env, '/xpdiag', { uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' });
       try { out.promosRaw = JSON.parse(await env.STATS.get('xp:promos') || '[]'); } catch (e) { out.promosRaw = []; }
