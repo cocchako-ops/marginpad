@@ -1,0 +1,303 @@
+[
+  {
+    "file": "ai-setup",
+    "sym": "BTC",
+    "tf": "60",
+    "shapes": [
+      "ray:Resistance shelf",
+      "hray:4H resistance",
+      "zone:Short zone",
+      "pos",
+      "text:Bear scenario"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 62,
+      "reason": "Overbought bounce into 1H/4H resistance with thin volume behind it",
+      "entry": 81415.6,
+      "stop": 81796,
+      "targets": [
+        80188.1,
+        78890.3
+      ],
+      "invalidation": "a close above 82540 liquidation pool would break the downtrend read",
+      "horizonBars": 20,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 81415.6,
+          "label": "Entry/last call",
+          "kind": "resistance"
+        },
+        {
+          "price": 80188.1,
+          "label": "4H resistance",
+          "kind": "resistance"
+        },
+        {
+          "price": 82540.4,
+          "label": "Short liq pool",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 80188.1,
+        "to": 81415.6,
+        "label": "Short zone"
+      }
+    },
+    "prose": "**The short I flagged 4 minutes ago just got touched** — price is at 81,160.7, right at the 81,415.6 entry zone I called out, on the 1-hour BTC chart. - RSI (momentum meter) is overbought at 70.6 and already turning down — buyers are stretched. - Both the 4-hour and 16-hour frames are still in a downtrend, with resistance at 80,188 and 79,910 above — this bounce is happening under bigger-picture pressure. - Volume is unusually thin on this push up, so trust it less — a rally on weak volume tends to fade. - Liquidation pool of $932M in short liquidations sits at 82,540 — that's the level that would blow the short up, so the stop belongs beyond it, not tight underneath current price. Nothing has broken this call yet — it still stands. I'm drawing the range structure, the resistance level, and the short setup now. Not financial advice - learn and decide for yourself."
+  },
+  {
+    "file": "ai-opportunity",
+    "sym": "ETH",
+    "tf": "240",
+    "shapes": [
+      "hray:Swing high/stop",
+      "hray:Resistance x3",
+      "zone:Target zone",
+      "pos",
+      "text:Downside path"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 62,
+      "reason": "liquidity sweep of 2615 high plus overbought RSI on 4H downtrend structure",
+      "entry": 2612.34,
+      "stop": 2670.98,
+      "targets": [
+        2478.93,
+        2403.09
+      ],
+      "invalidation": "a 4H close above 2670.98 (the swing high) voids the short",
+      "horizonBars": 15,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 2536.02,
+          "label": "Resistance x3",
+          "kind": "resistance"
+        },
+        {
+          "price": 2478.93,
+          "label": "Long liq pool $174M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 2403.09,
+          "label": "Support x3",
+          "kind": "support"
+        },
+        {
+          "price": 2670.98,
+          "label": "Swing high/stop",
+          "kind": "resistance"
+        }
+      ],
+      "zone": {
+        "from": 2597.56,
+        "to": 2615,
+        "label": "Sweep zone"
+      }
+    },
+    "prose": "**Your entry is here** — the short I flagged a minute ago at 2612.34 just got hit, and nothing since has changed my mind on it. 4-hour ETH is stretched: RSI at 69, price 95% up the Bollinger band, sitting 4.8% above the 50-EMA, and it just swept the 2615 high before closing back under — classic stop-run setup. - Stop stays at 2670.98 (above the swing high) — a close over that kills the idea. - First target 2478.93 pays roughly 2.6x the risk; that's also where the anchored VWAP from the swing low (2466.65) sits, adding weight. - Caution: open interest is up 8.5% in 24h with mild positive funding — new leverage flowing in, so a squeeze toward the short-liq pools at 2713-2765 is the real risk if this fails. Keep the stop where it is, don't tighten it. Volatility is in \"expansion\" mode (82nd percentile ATR) — expect this to move fast either way, which is exactly why the stop needs room. Not "
+  },
+  {
+    "file": "ai-risk",
+    "sym": "SOL",
+    "tf": "15",
+    "shapes": [
+      "hray:Swing high",
+      "zone:Pullback zone",
+      "hray:Short liq $35M",
+      "hray:Long liq $12M"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 55,
+      "reason": "Price is stretched near the swing high with fading momentum and thin volume; better to wait for a pullback into VWAP support",
+      "entry": 110.879,
+      "stop": 109.5,
+      "targets": [
+        114.31,
+        120.957
+      ],
+      "invalidation": "a clean close below 109.5 breaks the pullback thesis and long liquidation pool support",
+      "horizonBars": 20,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 114.31,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 110.879,
+          "label": "VWAP from low",
+          "kind": "support"
+        },
+        {
+          "price": 109.642,
+          "label": "Long liq pool",
+          "kind": "liquidity"
+        },
+        {
+          "price": 120.957,
+          "label": "Short liq pool",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 109.642,
+        "to": 110.879,
+        "label": "Pullback buy zone"
+      }
+    },
+    "prose": "**15-minute SOL: uptrend intact, but price is stretched right under the recent high - not a place to chase a long.** - Price (113.15) sits just under the swing high (114.31) and near the top of its recent range, while momentum (MACD) just crossed bearish and volume on the last candle is unusually thin - that's a weak push, not a breakout worth buying now. - The better long entry is on a pullback into the anchored VWAP from the last swing low (~110.88), which is the average price buyers since that low actually paid and tends to get defended. Below that, the next real floor is the 109.64 liquidation pool (long liquidations sit there - don't put your stop right on top of it). - Above, resistance is the 114.31 swing high, then a big short-liquidation pool near 120.96 - a real magnet if price breaks out cleanly. One idea to remember: a move on thin volume (like this last bar) is a break to di"
+  },
+  {
+    "file": "ai-structure",
+    "sym": "XRP",
+    "tf": "60",
+    "shapes": [
+      "ray:Uptrend line",
+      "hray:4H resistance",
+      "hray:Short liq pool",
+      "zone:Buy zone",
+      "pos"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 55,
+      "reason": "uptrend intact but current push is on thin volume, better entry is on a pullback to the EMA50/VWAP zone",
+      "entry": 1.373,
+      "stop": 1.3463,
+      "targets": [
+        1.433,
+        1.491
+      ],
+      "invalidation": "a close below 1.3463 (ema50) breaks the pullback thesis",
+      "horizonBars": 20,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 1.433,
+          "label": "4H resistance",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.491,
+          "label": "Short liq pool $88M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 1.3463,
+          "label": "EMA50/VWAP zone",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 1.348,
+        "to": 1.373,
+        "label": "Pullback buy zone"
+      }
+    },
+    "prose": "**1-hour XRP: uptrend structure, but this bounce is running on thin volume, so mark the levels and wait for a real pullback.** - Structure: rising lows from 1.2458 → 1.2636 → 1.2862 confirms an uptrend on the hourly. I'll draw a ray connecting those two most recent higher lows. - Overhead resistance sits at 1.4330 (the 4H level) and then the big one at 1.491, right where $88M+ of short liquidations sit — that's the magnet if buyers break through. - Below, the market's real \"fair value\" is the anchored VWAP zone around 1.348-1.356 and the EMA50 at 1.3463 — that's the area a real pullback should land on, not the current 1.3976. - Warning sign: last candle's volume is only 31% of the 20-bar median. A push higher on volume this thin is a break to distrust, not to chase. Best trade here isn't at market — it's a long triggered by a bounce back into the 1.346-1.373 zone (EMA50/VWAP), not by buy"
+  },
+  {
+    "file": "ai-liquidity",
+    "sym": "LINK",
+    "tf": "240",
+    "shapes": [
+      "zone:Buy zone/long liqs",
+      "hray:Short liq pool",
+      "hray:Resistance x2"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 55,
+      "reason": "Price is overbought and thin-volume near resistance; wait for a flush into the 11.898-11.46 zone before longing",
+      "entry": 11.898,
+      "stop": 11.6978,
+      "targets": [
+        12.506,
+        12.8737
+      ],
+      "invalidation": "a clean close below 11.6978 breaks the pullback-long idea",
+      "horizonBars": 12,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 11.96,
+          "label": "Resistance x2 fail",
+          "kind": "resistance"
+        },
+        {
+          "price": 11.898,
+          "label": "Long liq pool",
+          "kind": "liquidity"
+        },
+        {
+          "price": 12.506,
+          "label": "Short liq pool",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 11.6978,
+        "to": 11.898,
+        "label": "Pullback buy zone"
+      }
+    },
+    "prose": "**LINK 4-hour: leaning long into resistance, but the setup isn't clean yet.** Price is 12.249, sitting right under a stack of overhead levels. Here's the liquidation map: - **Above:** short liquidation pools at 12.506 (2.1% away), 12.874 (5.1%), and 12.996 (6.1%) — that's where forced short-covering buying would hit if price pushes up. These act as magnets pulling price higher once triggered. - **Below:** long liquidation pools at 11.898 (-2.9%) and 11.698 (-4.5%) — a dip into there could snap price down fast as longs get force-closed, then bounce. Context: RSI is 69.6 (overbought-ish), price is stretched 6% above the 50-EMA, and volume on this last push is \"unusually thin\" — that's a break to distrust. The 11.96 resistance already failed twice recently (a liquidity sweep, per the setups list), so chasing this candle into 12.5+ resistance is risky. Better plan: wait for a pullback toward"
+  },
+  {
+    "file": "ai-wait",
+    "sym": "DOGE",
+    "tf": "60",
+    "shapes": [
+      "hray:Support x4",
+      "hray:Support x3",
+      "zone:Pullback zone",
+      "zone:Short liq fuel",
+      "pos"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 45,
+      "reason": "Price is mid-range on thin volume, no clean trigger yet at support or resistance",
+      "entry": 0.0846,
+      "stop": 0.0827,
+      "targets": [
+        0.08866,
+        0.09199
+      ],
+      "invalidation": "A close below 0.0827 breaks the support case; a volume-backed close above 0.08866 shifts this to a breakout long instead",
+      "horizonBars": 20,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 0.0846,
+          "label": "Support x4 holds",
+          "kind": "support"
+        },
+        {
+          "price": 0.08307,
+          "label": "Support x3",
+          "kind": "support"
+        },
+        {
+          "price": 0.09199,
+          "label": "Short liq magnet",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 0.08307,
+        "to": 0.0846,
+        "label": "Pullback buy zone"
+      }
+    },
+    "prose": "**DOGE 1-hour: no trade right now — this is a wait, with a clear level to watch.** - Price (0.08736) is drifting mid-range under the recent swing high (0.08866) on volume that's only 35% of the last 20-bar median — a push higher on this little volume is a break to distrust, not chase. - The bigger picture disagrees with the bounce: both the 4-hour and 16-hour frames still read downtrend, with resistance sitting right around 0.0864-0.0882 — exactly where price is stalling now. - Below, 0.0846 is a well-respected support (held 4 of 7 tests, ~2% average bounce) and lines up with the EMA50 (0.08464) — that's the spot worth waiting for, not the current price. - Above, there's a big short-liquidation magnet cluster near 0.0920-0.0936 — if price closes back above 0.08866 with real volume, that's where it likely gets pulled. The short I flagged 10 minutes ago hasn't hit its trigger yet, and this"
+  }
+]
