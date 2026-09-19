@@ -624,9 +624,15 @@
     var bym = d.by_model_usd || {}, bys = d.by_surface_usd || {};
     var pairs = function (o) { return Object.keys(o).map(function (k) { return { k: k, v: o[k] }; }).sort(function (a, b) { return b.v - a.v; }); };
     var barRow = function (r, tot) { var pct = tot ? Math.round(r.v / tot * 100) : 0; return '<div class="row"><span class="who">' + esc(r.k) + '</span><span class="grow"><span class="bar" style="width:' + Math.max(2, pct) + '%"></span></span><span class="meta">' + USD(r.v) + ' &middot; ' + pct + '%</span></div>'; };
-    var tm = (d.total_usd || 0);
-    var modelHtml = pairs(bym).map(function (r) { return barRow(r, tm); }).join('') || '<div class="empty">nothing yet</div>';
-    var surfHtml = pairs(bys).map(function (r) { return barRow(r, tm); }).join('') || '<div class="empty">nothing yet</div>';
+    // A BAR IS A SHARE OF WHAT IS DRAWN BESIDE IT, never of a total computed somewhere else. These were measured
+    // against total_usd, which has test spend taken out of it while the bars still carried it - the surface bar read
+    // $6.48 against a $1.11 total and printed 584%. The worker subtracts it per surface now; this denominator makes
+    // the percentages honest on the older days too, where it cannot.
+    var sum = function (o) { var s = 0; Object.keys(o).forEach(function (k) { s += +o[k] || 0; }); return s; };
+    var modelHtml = pairs(bym).map(function (r) { return barRow(r, sum(bym)); }).join('') || '<div class="empty">nothing yet</div>';
+    var surfHtml = pairs(bys).map(function (r) { return barRow(r, sum(bys)); }).join('') || '<div class="empty">nothing yet</div>';
+    var unsplit = +d.unsplit_test_usd || 0;
+    var unsplitHtml = unsplit > 0.005 ? '<div class="line meta">' + USD(unsplit) + ' of these two splits is test spend from days recorded before test rows were separated per model and surface - it is already out of the total and out of the account list.</div>' : '';
     var who = acc.length ? '<table class="tbl"><thead><tr><th>account</th><th>spent</th><th>share</th></tr></thead><tbody>'
       + acc.map(function (a) { var nm = a.username ? userLink(a.username) : '<span class="mono meta" title="account id">' + esc(String(a.uid).slice(0, 12)) + '</span>'; return '<tr><td>' + nm + (a.test ? ' <span class="meta">test</span>' : '') + '</td><td>' + USD(a.usd) + '</td><td>' + (a.share_pct || 0) + '%</td></tr>'; }).join('')
       + '</tbody></table>' : '<div class="empty">nobody has used Ask AI in this window</div>';
@@ -634,7 +640,7 @@
     var testHtml = (d.test_usd > 0) ? '<div class="line meta">Test accounts spent ' + USD(d.test_usd) + ' in this window and are excluded from every figure above.</div>' : '';
     return '<div class="grid g4">' + tiles + '</div>'
       + card('Who is spending it', who, 'measured per call from the usage Anthropic returns - not estimated from prompt sizes')
-      + '<div class="grid g2">' + card('By model', modelHtml, 'the chart panel runs claude-sonnet-5') + card('By surface', surfHtml, 'panel = Ask AI on the charts') + '</div>'
+      + '<div class="grid g2">' + card('By model', modelHtml + unsplitHtml, 'the chart panel runs claude-sonnet-5') + card('By surface', surfHtml, 'panel = Ask AI on the charts') + '</div>'
       + card('What the caps allow', capHtml + testHtml, 'the exposure, not the bill');
   } });
   simple('money/revenue', { urls: ['/api/admin/revenue', '/api/admin/funnel'], every: 120000, html: function (d, fn) {

@@ -171,6 +171,29 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
         bs.skip ? true : (!!bs.sent && body.manual === be.uid + ',424242.42' && body.text == null && /live on \/season\//i.test(bs.st) && bs.back === be.was), { sent: bs.sent, st: bs.st, back: bs.back, was: bs.was });
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-settings-rewards.png') }); } catch (e) {}
     }
+    // AI SPEND IS READ BY NAME, AND A BAR IS A SHARE OF ITS OWN CARD (owner 2026-09-19: "ne vidim po username vec po
+    // nekom hashovanom userID"). resolveProfiles FILTERS to keys starting with 'u:' and was being fed bare account
+    // ids, so it resolved nothing and every row on this money view printed a truncated account hash. The second half
+    // guards a bug found in the same minute: test spend was taken out of the total and left inside the model and
+    // surface splits, so "By surface" printed $6.48 of a $1.11 total - 584%.
+    if (!only.length || only.includes('money/aiusage')) {
+      await page.evaluate(() => { location.hash = 'money/aiusage'; }); for (let w = 0; w < 24; w++) { await sleep(500); if (await page.evaluate(() => /spending it|Ask AI/i.test((document.getElementById('view') || {}).innerText || ''))) break; }
+      const aiu = await page.evaluate(async () => {
+        const d = await fetch('/api/admin/aicost?days=30').then(r => r.json()).catch(() => null);
+        const t = document.getElementById('view').innerText;
+        const named = ((d && d.by_account) || []).filter(a => a.username);
+        const pcts = [...document.querySelectorAll('#view .row .meta')].map(e => +((e.innerText.match(/(\d+)%/) || [])[1] || 0));
+        return {
+          accounts: ((d && d.by_account) || []).length, named: named.length,
+          shown: named.every(a => t.indexOf(a.username) >= 0),
+          hashes: (t.match(/\b[0-9a-f]{12}\b/g) || []).length,
+          empty: /nobody has used Ask AI/i.test(t),
+          bars: pcts.length, maxPct: Math.max.apply(null, pcts.concat([0])),
+        };
+      });
+      chk('AI usage: who is spending it is named, never an account hash, and no bar claims more than 100% of its card',
+        (aiu.accounts ? (aiu.named > 0 && aiu.shown && aiu.hashes === 0) : aiu.empty) && aiu.bars > 0 && aiu.maxPct <= 100, aiu);
+    }
     if (!only.length || only.includes('inbox/chat')) {
       await page.evaluate(() => { location.hash = 'inbox/chat'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.chatrow').length > 0)) break; }
       const ch = await page.evaluate(() => ({ rows: document.querySelectorAll('.chatrow').length, del: document.querySelectorAll('[data-del]').length, composer: !!document.getElementById('chatSend'), poll: !!document.getElementById('pollStart'), tg: !!document.getElementById('tgBcSend') }));

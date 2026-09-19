@@ -12781,6 +12781,14 @@ function aiUsageLog(env, ctx, o) {
       r.byModel = r.byModel || {}; r.byModel[o.model] = (+r.byModel[o.model] || 0) + micros;
       r.bySurface = r.bySurface || {}; r.bySurface[o.surface] = (+r.bySurface[o.surface] || 0) + micros;
       if (o.uid) { r.byUid = r.byUid || {}; r.byUid[o.uid] = (+r.byUid[o.uid] || 0) + micros; }
+      // A TEST ACCOUNT'S SPEND MUST BE SUBTRACTABLE FROM THE MODEL AND SURFACE SPLITS TOO (2026-09-19), not only from
+      // the per-account list: it was taken out of the total and left inside the bars, so "By surface" read $6.48
+      // against a $1.11 total - 584% of itself. The rollup has no uid dimension on those splits, so the test half is
+      // recorded beside them and the endpoint takes it back out.
+      if (/^e2e/i.test(String(o.uid || ''))) {
+        r.tModel = r.tModel || {}; r.tModel[o.model] = (+r.tModel[o.model] || 0) + micros;
+        r.tSurface = r.tSurface || {}; r.tSurface[o.surface] = (+r.tSurface[o.surface] || 0) + micros;
+      }
       await env.STATS.put(k, JSON.stringify(r), { expirationTtl: 100 * 86400 });
     } catch (e) {}
   };
@@ -18633,7 +18641,7 @@ export default {
     }
     if (url.pathname === '/api/admin/aicost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.min(100, Math.max(1, parseInt(url.searchParams.get('days') || '14', 10) || 14));
-      const out = [], tot = { micros: 0, calls: 0, inTok: 0, outTok: 0 }, byModel = {}, bySurface = {}, byUid = {};
+      const out = [], tot = { micros: 0, calls: 0, inTok: 0, outTok: 0 }, byModel = {}, bySurface = {}, byUid = {}, tModel = {}, tSurface = {};
       for (let i = 0; i < days; i++) {
         const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
         let r = null; try { r = await env.STATS.get('ai:spend:' + d, 'json'); } catch (e) {}
@@ -18642,6 +18650,8 @@ export default {
         for (const k in (r.byModel || {})) byModel[k] = (byModel[k] || 0) + r.byModel[k];
         for (const k in (r.bySurface || {})) bySurface[k] = (bySurface[k] || 0) + r.bySurface[k];
         for (const k in (r.byUid || {})) byUid[k] = (byUid[k] || 0) + r.byUid[k];
+        for (const k in (r.tModel || {})) tModel[k] = (tModel[k] || 0) + r.tModel[k];
+        for (const k in (r.tSurface || {})) tSurface[k] = (tSurface[k] || 0) + r.tSurface[k];
         out.push({ day: d, usd: +((+r.micros || 0) / 1e6).toFixed(4), calls: +r.calls || 0, inTok: +r.inTok || 0, outTok: +r.outTok || 0 });
       }
       const usd = (m) => +((m || 0) / 1e6).toFixed(4);
@@ -18656,7 +18666,13 @@ export default {
       if (!showE2e) {
         for (const k of Object.keys(byUid)) if (isTest(k)) { testMicros += byUid[k]; delete byUid[k]; }
         tot.micros = Math.max(0, tot.micros - testMicros);
+        for (const k in tModel) { byModel[k] = Math.max(0, (byModel[k] || 0) - tModel[k]); if (!byModel[k]) delete byModel[k]; }
+        for (const k in tSurface) { bySurface[k] = Math.max(0, (bySurface[k] || 0) - tSurface[k]); if (!bySurface[k]) delete bySurface[k]; }
       }
+      // Days recorded BEFORE the split above know a test account spent the money but not on which model or surface,
+      // so the bars can still carry it. State the remainder rather than let the percentages quietly exceed 100.
+      const sumOf = (o) => { let s = 0; for (const k in o) s += o[k]; return s; };
+      const unsplit = Math.max(0, sumOf(bySurface) - tot.micros);
       // The ceiling the caps allow today, priced per model - the number a subscription has to cover.
       let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); } catch (e) {}
       const perMember = Number.isFinite(cfg.limit) ? Math.max(cfg.limit, 50) : 50;
@@ -18667,11 +18683,15 @@ export default {
       return J({
         days, total_usd: usd(tot.micros), calls: tot.calls, avg_call_usd: avg,
         tokens: { input: tot.inTok, output: tot.outTok },
-        by_model_usd: dollars(byModel), by_surface_usd: dollars(bySurface),
+        by_model_usd: dollars(byModel), by_surface_usd: dollars(bySurface), split_sum_usd: usd(sumOf(bySurface)), unsplit_test_usd: usd(unsplit),
         test_usd: usd(testMicros), test_note: showE2e ? 'test rows INCLUDED in every figure above' : 'spend by e2e test accounts, excluded from every figure above',
         by_account: await (async () => {
           const top = Object.entries(byUid).sort((a, b) => b[1] - a[1]).slice(0, 40);
-          let prof = {}; try { prof = await resolveProfiles(env, top.map(([u]) => u)); } catch (e) {}
+          // resolveProfiles FILTERS to keys starting with 'u:' and answers keyed by the bare id. Passing the bare id
+          // in means it resolves nothing at all and answers {} - so every row on this money view printed a truncated
+          // account hash instead of a name (owner 2026-09-19: "treba da mi pise username"). Same trap as the bylog
+          // ring, which is why the Bybit desk maps 'u:' + uid on the way in.
+          let prof = {}; try { prof = await resolveProfiles(env, top.map(([u]) => 'u:' + u)); } catch (e) {}
           return top.map(([uid, m]) => {
             const p = prof[uid] || prof['u:' + uid] || null;
             return { uid, username: (p && p.username) || null, usd: usd(m), share_pct: tot.micros ? +((m / tot.micros) * 100).toFixed(1) : 0, test: isTest(uid) };
