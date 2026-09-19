@@ -73,9 +73,9 @@
  },
  {
   "rel": "ai-indicators/index.html",
-  "cover": 0.96,
-  "hit": 120,
-  "missing": 5
+  "cover": 1,
+  "hit": 125,
+  "missing": 0
  },
  {
   "rel": "alerts/index.html",
@@ -1094,37 +1094,37 @@
  {
   "rel": "coin/bnb/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "coin/btc/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "coin/doge/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "coin/eth/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "coin/sol/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "coin/xrp/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
@@ -1142,7 +1142,7 @@
  {
   "rel": "community/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 51,
   "missing": 0
  },
  {
@@ -1622,7 +1622,7 @@
  {
   "rel": "index.html",
   "cover": 1,
-  "hit": 222,
+  "hit": 224,
   "missing": 0
  },
  {
@@ -1736,13 +1736,13 @@
  {
   "rel": "liquidation-statistics/index.html",
   "cover": 1,
-  "hit": 75,
+  "hit": 79,
   "missing": 0
  },
  {
   "rel": "liquidations/by-exchange/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 71,
   "missing": 0
  },
  {
@@ -1940,7 +1940,7 @@
  {
   "rel": "premium/index.html",
   "cover": 1,
-  "hit": 114,
+  "hit": 147,
   "missing": 0
  },
  {
@@ -1958,7 +1958,7 @@
  {
   "rel": "rewards/index.html",
   "cover": 1,
-  "hit": 186,
+  "hit": 203,
   "missing": 0
  },
  {
@@ -2036,7 +2036,7 @@
  {
   "rel": "spot/index.html",
   "cover": 1,
-  "hit": 101,
+  "hit": 102,
   "missing": 0
  },
  {
@@ -2119,15 +2119,15 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 0.9934497816593887,
-  "hit": 455,
-  "missing": 3
+  "cover": 1,
+  "hit": 449,
+  "missing": 0
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 0.9900990099009901,
-  "hit": 100,
-  "missing": 1
+  "cover": 1,
+  "hit": 114,
+  "missing": 0
  },
  {
   "rel": "trading-journal/index.html",

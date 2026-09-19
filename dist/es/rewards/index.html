@@ -289,6 +289,38 @@
   .rwd-cards>.card.aff{order:8}     /* 2-col */
   .rwd-cards>#exchanges{order:20}
   @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard{grid-row:auto;grid-column:auto}}
+  /* ═══════ WHAT'S ON THE TABLE (2026-09-18) ═══════
+     A page about money that showed no money. The first screen said "Stack free USDT every 5 minutes" and named
+     no amount at all, while the two biggest rewards on the site - $1.00 for a Moon account and $1.00 for a Fomo
+     one - sat in cards marked hidden for anybody not signed in. So the page led with its SMALLEST reward (the
+     $0.02 faucet, implied by "every 5 minutes") and hid its largest behind the sign-in it was asking for.
+     Four rows, one per cadence, with the amounts in a right-aligned column so they can actually be compared.
+     Every figure comes from /api/reward/me, which a guest can already read. */
+  body:not(.rwd-in) #lvlCard{display:none}
+  /* the stream card's glow is 440px wide and was the one thing on this page overflowing a 390px screen */
+  #streamCard{overflow:hidden}
+  /* the welcome hook was a bordered, tinted panel inside a bordered card - one frame is enough */
+  #welcomeHook>div{background:none!important;border:0!important;padding:0 0 4px!important}
+  .rwd-table{margin:0 0 20px;border:1px solid var(--line2);border-radius:18px;background:linear-gradient(170deg,var(--panel2),var(--panel));overflow:hidden}
+  .et-h{padding:18px 20px 0}
+  .et-h h2{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-size:19px;letter-spacing:-.02em;margin:0 0 5px;color:var(--ink)}
+  .et-h p{margin:0 0 14px;font-size:13.5px;line-height:1.55;color:var(--dim)}
+  .et-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:baseline;
+    padding:13px 20px;border-top:1px solid var(--line)}
+  .et-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);grid-column:1;grid-row:1}
+  .et-v{grid-column:2;grid-row:1 / span 2;text-align:right;white-space:nowrap}
+  .eamt{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--lime);display:inline-block;line-height:1}
+  .eamt::first-letter{font-size:.56em;font-weight:700;vertical-align:.42em;opacity:.78}
+  .et-v i{display:block;font-style:normal;font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);margin-top:4px}
+  .et-d{grid-column:1;grid-row:2;font-size:13.5px;line-height:1.6;color:var(--dim);min-width:0}
+  .et-d b{color:var(--ink);font-weight:700}
+  .et-d a{color:var(--lime)}
+  .et-gate{margin:0;padding:12px 20px;border-top:1px solid var(--line);font-size:13px;line-height:1.6;color:var(--dim);background:rgba(194,246,74,.045)}
+  .et-gate b{color:var(--lime);font-weight:700}.et-gate a{color:var(--lime)}
+  .et-f{margin:0;padding:13px 20px 16px;border-top:1px solid var(--line);font-size:12px;line-height:1.65;color:var(--faint);background:rgba(0,0,0,.18)}
+  .et-f b{color:var(--dim)}
+  @media(max-width:560px){.et-r{grid-template-columns:minmax(0,1fr) auto;padding:12px 15px;gap:3px 12px}
+    .eamt{font-size:22px}.et-h{padding:15px 15px 0}.et-f,.et-gate{padding:12px 15px 14px}.et-d{font-size:13px}}
   /* ═══════ CLEAN SINGLE COLUMN (2026-08-05): the 2-col masonry left ragged gaps + lonely half-cards
      (Moon card sat alone, mismatched heights) - owner: "rastureno, bez alignment-a". One aligned column,
      every card same width, logical order. Visual layer only; no JS/ID/markup touched. ═══════ */
@@ -343,8 +375,37 @@
   <div class="rwd-hero">
     <span class="pill">● USDT gratis · Sin depósito</span>
     <h1>Acumula <span>USDT gratis</span> cada 5 minutos.</h1>
-    <p class="sub">Usa el sitio, completa misiones, acumula USDT - y luego retíralo a tu cuenta de Bybit o Moon. Tu centro diario de recompensas.</p>
+    <p class="sub">Usa el sitio, completa las misiones diarias, acumula USDT - y luego retíralo a tu cuenta de Bybit o Moon.</p>
   </div>
+
+  <section class="rwd-table" id="earnBoard" aria-label="Lo que puedes ganar en MarginPad">
+    <div class="et-h">
+      <h2>Qué hay sobre la mesa</h2>
+      <p>Todas las formas de ganar aquí, y con qué frecuencia paga cada una. Ningún depósito en toda esta lista.</p>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Una vez, al empezar</div>
+      <div class="et-v"><span class="eamt" id="eaOnce">$2.50</span><i>en total</i></div>
+      <div class="et-d"><b id="eaWel">$0.50</b> de bono de bienvenida, más <b id="eaMoon">$1.00</b> por abrir una cuenta de Moon con nosotros y <b id="eaFomo">$1.00</b> por una de Fomo.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Cada día</div>
+      <div class="et-v"><span class="eamt" id="eaDay">$0.20</span><i>al día</i></div>
+      <div class="et-d">Reclama <b id="eaAmt">$0.02</b> del faucet cada pocos minutos y completa las misiones diarias. Se reinicia a las 00:00 UTC.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Cada vez que lo hagas</div>
+      <div class="et-v"><span class="eamt">$0.50</span><i>por amigo</i></div>
+      <div class="et-d"><b>$0.50</b> para ti y <b>$0.50</b> para ellos en cuanto un amigo realmente opere, y <b id="eaPost">$0.10</b> por una publicación sobre MarginPad en X.</div>
+    </div>
+    <div class="et-r">
+      <div class="et-k">Cada temporada</div>
+      <div class="et-v"><span class="eamt">$350</span><i>bolsa de premios</i></div>
+      <div class="et-d">Siete clasificaciones pagan a sus cinco primeros cada catorce días. <a href="/es/trading-competition/">Cómo funciona la competencia</a>.</div>
+    </div>
+    <p class="et-gate">El faucet, las misiones, los referidos y los retiros se desbloquean en <b>Bronze - 500 XP</b>, que puedes ganar gratis en la <a href="/es/academy/">Academia</a> y en <a href="/es/paper-trade">Paper Trade</a>. El bono de bienvenida y los bonos de registro no esperan por eso.</p>
+    <p class="et-f">Se paga en USDT a tu saldo de MarginPad. Retira desde <b id="eaMin">$5.00</b> a una cuenta de Bybit o Moon. Uso justo: un saldo por persona, con límite de frecuencia, pagado desde una bolsa diaria - es un agradecimiento por usar el sitio, no un ingreso.</p>
+  </section>
 
   <div class="rwd-cards">
 
@@ -391,7 +452,7 @@
            It was already in this text, but as bare prose with no tracking at all - measured 4,178 pageviews and 1 click a
            week on this whole page. Now it is one readable line plus one button, and data-mpex makes mp-auth.js count it. -->
       <div class="note wd-note" id="wdNoteBybit" style="--wdc:#ffd75a;--wdb:rgba(255,215,90,.45);--wdg:rgba(255,215,90,.08)">Los pagos se envían a tu cuenta de <b>Bybit</b> por UID - debes haberte registrado en Bybit a través de nuestro enlace.
-        <div class="wd-row"><a class="wd-go" data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer">Crea tu cuenta de Bybit &rarr;</a><a class="wd-alt" href="https://marginpad.io/es/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">¿Ya tienes una? Pregunta a soporte</a></div></div>
+        <div class="wd-row"><a class="wd-go" data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer">Crea tu cuenta de Bybit &rarr;</a><a class="wd-alt" href="https://marginpad.io/es/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">¿Ya tienes una? Contacta a soporte</a></div></div>
       <div class="note wd-note" id="wdNoteMoon" hidden style="--wdc:#7fd6ff;--wdb:rgba(127,214,255,.4);--wdg:rgba(127,214,255,.07)">El USDT se envía a tu cuenta de <b>Moon</b> por nombre de usuario. Abrir una toma un minuto, y paga un bono de $1.
         <div class="wd-row"><a class="wd-go" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Crea tu cuenta de Moon &rarr;</a></div></div>
       <div class="addr-row">
@@ -633,7 +694,7 @@
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Inicia sesión con correo</h3><p>Solo tu correo - sin contraseña, sin UID todavía. Tu saldo se guarda en tu cuenta.</p></div>
       <div class="step"><div class="n">02</div><h3>Reclama cada 5 min</h3><p>Cada reclamo suma <span class="tAmt">0.02</span> USDT, hasta $<span class="tPer">0.20</span> al día (más en niveles superiores). Vuelve y acumúlalo.</p></div>
-      <div class="step"><div class="n">03</div><h3>Retira a partir de $<span class="tMin">5</span></h3><p>Llega a $<span class="tMin">5</span> y solicita un pago. El USDT llega a tu cuenta de Bybit por UID. <a data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" style="color:#ffd75a;font-weight:700;white-space:nowrap">¿Aún sin UID? &rarr;</a></p></div>
+      <div class="step"><div class="n">03</div><h3>Retira a partir de $<span class="tMin">5</span></h3><p>Llega a $<span class="tMin">5</span> y solicita un pago. El USDT llega a tu cuenta de Bybit por UID. <a data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" style="color:#ffd75a;font-weight:700;white-space:nowrap">¿Todavía no tienes UID? &rarr;</a></p></div>
     </div>
   </div>
 
@@ -662,7 +723,7 @@
 
   </div>
 
-  <p class="note">Uso justo: un saldo por dirección, con límite de tasa y una bolsa diaria. Los bots y el multi-cuenteo no reciben nada. Las recompensas son un agradecimiento por pasarte por aquí, no un ingreso.</p>
+  <p class="note">Los bots y el multi-cuentas no reciben nada.</p>
 
   <footer>© MarginPad · <a href="/es/">Herramientas</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a> · <a href="/es/rekt/">Rekt</a> · Herramientas gratis de futuros cripto</footer>
 </div>
@@ -764,7 +825,20 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
+  function earnBoard(j){
+    var usd=function(v){return '$'+(+v).toFixed(2);};
+    var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+    var wel=j.welcomeAmt!=null?+j.welcomeAmt:0.5;
+    var moon=(j.moonEnabled===false)?0:(j.moonUsd!=null?+j.moonUsd:1);
+    var fomo=(j.fomoEnabled===false)?0:(j.fomoUsd!=null?+j.fomoUsd:1);
+    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+fomo));
+    if(moon)set('eaMoon',usd(moon)); if(fomo)set('eaFomo',usd(fomo));
+    if(j.perDay!=null)set('eaDay',usd(j.perDay));
+    if(j.amount!=null)set('eaAmt',usd(j.amount));
+    if(j.minWd!=null)set('eaMin',usd(j.minWd));
+    if(j.promoUsd!=null&&j.promoEnabled!==false)set('eaPost',usd(j.promoUsd));
+  }
+  function applyCfg(j){try{earnBoard(j);}catch(e){}if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
     window.__moonOff=(j.moonEnabled===false);
     var mc=document.getElementById('moonCard');
     if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
@@ -953,6 +1027,7 @@
   }
   function onAuth(user){
     signedIn=!!user;
+    try{document.body.classList.toggle('rwd-in',signedIn);}catch(e){}
     rewardsLocked=isUnranked(user);
     paintLock(user);
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
@@ -1072,7 +1147,7 @@
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Diario de trading">
   <button class="jr-grab" data-jr-close type="button" aria-label="Volver"><span>Atrás</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</span><a class="jr-stats-lnk" href="/es/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Estadísticas</a><button id="jrClose" class="jr-x" type="button" aria-label="Cerrar">✕</button></div>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</span><a class="jr-stats-lnk" href="/es/trading-journal/" title="Estadísticas completas de trading"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Estadísticas</a><button id="jrClose" class="jr-x" type="button" aria-label="Cerrar">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
   <p class="jr-empty" id="jrEmpty">Todavía no hay tickets. Abre uno desde <a href="/es/paper-trade" style="color:#c2f64a;text-decoration:none">Paper Trade</a>.</p>

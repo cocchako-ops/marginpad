@@ -98,7 +98,11 @@
   .you b{color:var(--lime);}
   .you a{font-weight:700;text-decoration:none;}
   .you[hidden]{display:none;}
-  .tw{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+  .tw{overflow:auto;max-height:620px;margin-top:14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  .tw thead th{position:sticky;top:0;z-index:1;background:linear-gradient(180deg,var(--panel),var(--panel));}
+  @media(max-width:620px){.tw{max-height:70vh;}}
+  .bcount{font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-top:9px;}
+  .bcount b{color:var(--dim);}
   table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
   th{text-align:left;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:0 10px 9px 0;white-space:nowrap;}
   td{padding:10px 10px 10px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap;}
@@ -193,7 +197,8 @@
   <section class="board" id="board">
     <div class="bh"><h2 id="bT">ROE más alto<small id="bS">el mejor retorno en una sola operación cerrada esta temporada</small></h2><div class="prizes" id="bPz"></div></div>
     <div class="you" id="bYou" hidden></div>
-    <div class="tw"><table id="bTbl"><thead id="bHead"></thead><tbody id="bBody"><tr><td class="empty" colspan="6">Cargando las posiciones…</td></tr></tbody></table></div>
+    <p class="bcount" id="bCount"></p>
+    <div class="tw" id="bTw"><table id="bTbl"><thead id="bHead"></thead><tbody id="bBody"><tr><td class="empty" colspan="6">Cargando las posiciones…</td></tr></tbody></table></div>
     <div class="rules"><p class="lbl">Cómo se puntúa esta tabla</p><ul id="bRules"></ul></div>
   </section>
 
@@ -283,6 +288,11 @@
     $('bBody').innerHTML=rows.length?rows.map(function(r){var isMe=mine&&String(r.who||'').toLowerCase()===mine; if(isMe)myRow=r; var paid=r.rank<=pz.length;
       return '<tr class="'+(r.rank<=3?'t'+r.rank:'')+(paid?' paid':'')+(isMe?' me':'')+'"><td class="rk">'+r.rank+'</td><td class="who"><a href="/community/u/'+encodeURIComponent(r.who)+'">'+esc(r.who)+'</a></td>'+b.row(r)+'<td class="prz">'+(paid?'$'+int(pz[r.rank-1]):'')+'</td></tr>';}).join('')
       :'<tr><td class="empty" colspan="6">'+(CUR==='bybit'?'No registered Bybit account has traded this season yet.':CUR==='moon'?(MC?'Nobody has wagered on Moon since the contest opened on '+dayS(MC.start)+'. The first Moon report after someone does fills this table.':'The contest has not opened yet.'):'Nobody qualifies yet - ten closed trades this season put you here.')+'</td></tr>';
+    var EK={roe:'top',green:'green',wr:'wr',xp:'xp',gold:'gold',bybit:'bybit',moon:'moon'};
+    var n=(LB&&LB.entrants&&LB.entrants[EK[CUR]]!=null)?LB.entrants[EK[CUR]]:rows.length;
+    $('bCount').innerHTML=n?('<b>'+n+'</b> ranked on this board'+((LB&&LB.people)?(' · <b>'+LB.people+'</b> people competing this season'):'')):'';
+    // a member ranked #87 should not have to hunt for themselves in a scroll box
+    try{var tw=$('bTw');if(tw)tw.scrollTop=0;if(myRow&&myRow.rank>12){var mr=$('bBody').querySelector('tr.me');if(mr&&tw)tw.scrollTop=Math.max(0,mr.offsetTop-tw.clientHeight/2);}}catch(e){}
     $('bRules').innerHTML=b.rules.map(function(x){return '<li>'+x+'</li>';}).join('');
     var y=$('bYou');
     if(mine){ y.hidden=false;
@@ -297,7 +307,7 @@
   }
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.tab[data-b]');if(!t)return;CUR=t.getAttribute('data-b');[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x===t);});paintBoard();try{history.replaceState(null,'','#'+CUR);}catch(_){ }});
   (function(){var h=(location.hash||'').slice(1);if(B[h]){CUR=h;[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x.getAttribute('data-b')===h);});}})();
-  function load(){fetch('/api/reward/lb',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.weekStart)return;LB=j;paintSeason();paintBoard();}).catch(function(){});}
+  function load(){fetch('/api/reward/lb?full=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.weekStart)return;LB=j;paintSeason();paintBoard();}).catch(function(){});}
   load(); setInterval(function(){if(!document.hidden)load();},120000);
   window.addEventListener('mp-auth-change',function(){MOONME=null;if(LB)paintBoard();});
   window.__lbPage={get:function(){return LB;},cur:function(){return CUR;}};
