@@ -17748,9 +17748,12 @@ export default {
       return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), ipClusters, didClusters, vpnCount, authlog: authRows, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/indexnow' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // force IndexNow submit (Bing/Yandex/Seznam/Naver): ?urls=a,b,c pings those, else re-diffs the sitemaps now
+      if (url.searchParams.get('peek')) { let last = null; try { last = await env.STATS.get('inow:last', 'json'); } catch (e) {} return J({ ok: true, peek: true, last: last }); }
       const raw = url.searchParams.get('urls');
       if (raw) { const list = raw.split(',').map(s => s.trim()).filter(u => /^https:\/\/marginpad\.io\//.test(u)).slice(0, 1000); await indexNowPing(list); return J({ ok: true, pinged: list.length, urls: list }); }
-      await checkIndexNow(env, true); return J({ ok: true, mode: 'sitemap-diff' });
+      await checkIndexNow(env, true);
+      let last = null; try { last = await env.STATS.get('inow:last', 'json'); } catch (e) {}
+      return J({ ok: true, mode: 'sitemap-diff', last: last });
     }
     if (url.pathname === '/api/admin/setchatphoto' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // set a Telegram chat/channel photo via the bot (bot must be admin with "change info"). POST the raw image bytes, or ?path=/assets/... (read via ASSETS binding to avoid a self-fetch loop)
       const chat = url.searchParams.get('chat') || (await env.STATS.get('csig:chat'));
@@ -26084,16 +26087,23 @@ async function indexNowPing(urls) {
     });
   } catch (e) {}
 }
-// Daily cron: diff the sitemaps against the last-seen URL set and ping only NEW urls (new blog posts,
-// new pages after a build+deploy - anything that lands in a sitemap gets announced within a day).
+// Daily cron: announce (a) every NEW url - a new blog post, anything that lands in a sitemap after a deploy -
+// and (b) every url the sitemap declares daily or hourly, because those really did change since yesterday.
+// Announcing only new URLs, which is what this did until 2026-09-19, tells Bing about a page once in its life.
 async function checkIndexNow(env, force) {
   try {
     const day = new Date().toISOString().slice(0, 10);
     if (!force && (await env.STATS.get('inow:day')) === day) return; // once per UTC day (force bypasses)
     await env.STATS.put('inow:day', day);
     let urls = [];
-    for (const sm of ['https://marginpad.io/sitemap.xml', 'https://marginpad.io/sitemap-i18n.xml', 'https://marginpad.io/community/sitemap.xml']) {
-      try { const t = await (await fetch(sm)).text(); urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim())); } catch (e) {}
+    // env.ASSETS, never fetch() - a Worker cannot fetch its own zone, which is why this had been silently
+    // announcing nothing for however long. Keep smText around; the daily-cadence pass below reuses it.
+    const smText = async (p) => { try { const r = await env.ASSETS.fetch(new Request('https://marginpad.io' + p)); return r.ok ? await r.text() : ''; } catch (e) { return ''; } };
+    let smMain = '';
+    for (const p of ['/sitemap.xml', '/sitemap-i18n.xml', '/sitemap-es.xml', '/sitemap-recaps.xml']) {
+      const t = await smText(p);
+      if (p === '/sitemap.xml') smMain = t;
+      if (t) urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()));
     }
     urls = [...new Set(urls)].filter(u => u.startsWith('https://marginpad.io'));
     if (!urls.length) return;
@@ -26101,7 +26111,20 @@ async function checkIndexNow(env, force) {
     if (!seenRaw) { await env.STATS.put('inow:seen', JSON.stringify(urls)); return; } // first run seeds only (full set was submitted manually 2026-07-16)
     const seen = new Set(JSON.parse(seenRaw));
     const fresh = urls.filter(u => !seen.has(u));
-    if (fresh.length) await indexNowPing(fresh);
+    // inow:daily - the pages that really did change since yesterday. Read straight out of the sitemap the
+    // worker just served, so the two signals can never disagree: whatever is declared daily/hourly there is
+    // what gets announced here. Announcing an UNCHANGED page would be the harmful kind of noise, which is
+    // why the evergreen calculators are declared monthly and never appear in this list.
+    let daily = [];
+    try {
+      daily = [...smMain.matchAll(/<url>(?:(?!<\/url>)[\s\S])*?<\/url>/g)].map(m => m[0])
+        .filter(u => /<changefreq>(?:daily|hourly)<\/changefreq>/.test(u))
+        .map(u => (u.match(/<loc>([^<]+)<\/loc>/) || [])[1])
+        .filter(Boolean);
+    } catch (e) {}
+    const submit = [...new Set(fresh.concat(daily))];
+    if (submit.length) await indexNowPing(submit);
+    try { await env.STATS.put('inow:last', JSON.stringify({ day, fresh: fresh.length, daily: daily.length, sent: submit.length })); } catch (e) {}
     await env.STATS.put('inow:seen', JSON.stringify(urls));
   } catch (e) {}
 }

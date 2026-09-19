@@ -58,6 +58,23 @@ const LIVE = [
   const bad = LIVE.slice(0, 8).filter((p, i) => codes[i] !== 200);
   ok(bad.length === 0, 'every page it promises daily answers 200', bad);
 
+  // ---- and the cadence has to reach Bing, which is 74% of all crawling we get -----------------------------
+  // checkIndexNow had been calling fetch() on our OWN zone, which a Worker cannot do, so it fell out at
+  // `if (!urls.length) return` inside a swallowing try/catch and announced nothing at all. peek is read-only:
+  // it reports the last run without submitting, so this test never pings anyone.
+  try {
+    const fs = require('fs'), path = require('path');
+    const KEY = fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').split('\n')[1].replace('\r', '').trim();
+    const pk = await fetch(ORIGIN + '/api/admin/indexnow?peek=1', { headers: { 'x-admin-key': KEY } }).then(r => r.json());
+    const last = pk && pk.last;
+    ok(!!last, 'IndexNow reports its last run instead of a bare ok', pk);
+    if (last) {
+      const dailyCount = blocks.filter(b => /<changefreq>(daily|hourly)<\/changefreq>/.test(b)).length;
+      ok(last.daily === dailyCount, 'and it announced every daily page the sitemap declares', { announced: last.daily, declared: dailyCount });
+      ok(last.day === today, 'and it ran today', last.day);
+    }
+  } catch (e) { console.log('  skip  IndexNow peek (' + String(e.message).slice(0, 60) + ')'); }
+
   console.log('\n' + (pass + fail) + ' checks, ' + fail + ' failed');
   process.exitCode = fail ? 1 : 0;   // never process.exit - it aborts mid-teardown and the shell sees 127
 })().catch(e => { console.error('fatal ' + e.message); process.exitCode = 1; });
