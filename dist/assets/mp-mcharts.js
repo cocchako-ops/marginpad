@@ -628,8 +628,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        the per-symbol store mp-charts owns (localStorage + the server copy), sends the thread, executes the model's actions on the
        pane and offers the chips the model proposes. */
     var AI=window.__mpAi||null,WK={sym:p.sym};
-    body.innerHTML='<div class="mfc-ai-body" id="mfcAB"></div><div class="mfc-ai-chips" id="mfcAC"></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
+    body.innerHTML='<div class="mfc-ai-q" id="mfcAQ"></div><div class="mfc-ai-body" id="mfcAB"></div><div class="mfc-ai-chips" id="mfcAC"></div><div class="mfc-ai-in"><input id="mfcAI" placeholder="'+mcT('mcAskPh','Ask about')+' '+p.sym+'…"><button id="mfcAS">'+mcT('mcSend','Send')+'</button></div>';
     var msgs=body.querySelector('#mfcAB'),chipsEl=body.querySelector('#mfcAC'),inp=body.querySelector('#mfcAI'),btn=body.querySelector('#mfcAS'),busy=false;
+    /* the allowance, same as the desktop panel (2026-09-19, owner: "da pise 23/50" + "moze i resets at that time") */
+    var qEl=body.querySelector('#mfcAQ');
+    function aiResetIn(){var d=new Date(),ms=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1)-d.getTime();var h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?('resets in '+h+'h'):('resets in '+Math.max(1,m)+'m');}
+    function setQ(used,limit){if(!qEl)return;if(used==null||!(limit>0)){qEl.textContent='';return;}qEl.textContent=used+'/'+limit+' today \u00b7 '+aiResetIn();qEl.className='mfc-ai-q'+((limit-used)<=2?' low':'');}
+    fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d&&d.signedIn)setQ(d.used,d.limit);}).catch(function(){});
     function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
     function hist(k){return AI?AI.histLoad(k||WK):[];}
     function save(arr,noPush,k){if(AI)AI.histSave(k||WK,arr,noPush);}
@@ -655,6 +660,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var payloadHist=h.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+(AI?AI.actsNote(m):'')};});
       render();var bub=document.createElement('div');bub.className='mfc-ai-msg ai';bub.textContent='…';msgs.appendChild(bub);msgs.scrollTop=msgs.scrollHeight;
       fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:ctx(),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
+        try{var _u=resp.headers.get('x-ai-used'),_l=resp.headers.get('x-ai-limit');if(_u!=null&&_l!=null)setQ(+_u,+_l);}catch(e){}
         if(!resp.ok){busy=false;bub.textContent=resp.status===429?'That is your Ask AI read for today - it resets at midnight UTC. Premium Plus raises it to 50 a day.':(resp.status===401?'Please sign in to use AI.':(resp.status===402?'Ask AI comes with MarginPad Premium ($11.99/mo) - one read a day, 50 a day on Premium Plus.':'Could not reach AI - try again.'));return;}
         if(!resp.body||!resp.body.getReader){busy=false;bub.textContent='Streaming not supported.';return;}
         var rd=resp.body.getReader(),dec=new TextDecoder(),buf='',acc='';

@@ -1450,6 +1450,9 @@
   .cwin-ai-h>svg{flex-shrink:0;filter:drop-shadow(0 0 5px rgba(127,182,255,.5));}
   .cwin-ai-h b{font-size:13px;color:#eef3fa;font-weight:800;letter-spacing:.01em;}
   .cwin-ai-sym{font-family:'Space Mono',monospace;color:#7fb6ff;font-size:11.5px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+  .mfc-ai-q{font-family:'Space Mono',monospace;font-size:10.5px;color:#5c656f;padding:0 2px 7px;white-space:nowrap}
+  .mfc-ai-q.low{color:#ffb020}
+  .cwin-ai-quota.low{color:#ffb020}
   .cwin-ai-quota{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:#5c656f;white-space:nowrap;}
   .cwin-ai-quota.low{color:#ffb347;}
   .cwin-ai-clear,.cwin-ai-x{background:none;border:none;color:#5c656f;cursor:pointer;padding:2px 3px;line-height:1;display:inline-flex;}

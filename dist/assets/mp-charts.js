@@ -761,7 +761,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       higherTimeframes:_htfs&&_htfs.length>1?{frames:_htfs,note:'the two frames above the one in view, from the same candles. Read all three together: the frame in view is the entry, the next one says whether the move has room, the highest says which way the whole thing leans. When they disagree, say so and let it lower your confidence.'}:null, fairValueGaps:_fvg, setups:_setups, session:_sess
     };
   }
-  function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+' / '+limit+' today';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}
+  function aiResetIn(){var d=new Date(),ms=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1)-d.getTime();var h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?('resets in '+h+'h'):('resets in '+Math.max(1,m)+'m');}
+  function aiSetQuota(used,limit){var q=aiEl&&aiEl.querySelector('.cwin-ai-quota');if(q&&used!=null){q.textContent=used+'/'+limit+' today \u00b7 '+aiResetIn();q.title='Ask AI reads used today. The allowance resets at 00:00 UTC.';q.classList.toggle('low',(limit-used)<=2);}if(limit)aiLimit=limit;}
   /* HISTORY IS PER SYMBOL, NOT PER WINDOW (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): the key used to be the
      window id, so closing the window - or opening the same coin in another window, or the phone - started from nothing. One thread
      per coin now: localStorage `mp_ai_s_<SYM>` (instant paint) mirrored to the server (`/api/ai/chart?hist=SYM`, KV per account),

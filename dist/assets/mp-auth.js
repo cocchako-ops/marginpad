@@ -1763,7 +1763,7 @@
     var FEATS = [
       ['4 exclusive AI indicators', 'Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - readouts built on our own liquidation data that no other chart has, each grading its own hit-rate.'],
       ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped - desktop & mobile, unlimited.'],
-      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words - 50 questions a day.'],
+      ['Ask AI on your charts', 'A built-in analyst that reads the chart in front of you and draws the setup on it - one read a day on Premium, 50 on Premium Plus.'],
       ['Balance Mode', 'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.'],
  ['Premium duels & lounge', 'Every duel format with Ticks stakes, up to 10 open challenges, and the Premium-only chat lounge.']
     ];
@@ -2133,7 +2133,7 @@
       var crown = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none"><defs><linearGradient id="mpPgc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset="0.5" stop-color="#ffd75a"/><stop offset="1" stop-color="#e0a52a"/></linearGradient></defs><path d="M2.6 8.2l4.4 3.3L12 4l5 7.5 4.4-3.3-1.9 11.3H4.5L2.6 8.2z" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.5" stroke-linejoin="round"/><rect x="4.5" y="18.4" width="15" height="2.3" rx="0.7" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.4"/><circle cx="2.6" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="21.4" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="12" cy="4" r="1.6" fill="#ffe98a"/></svg>';
       ov.style.setProperty('--lc', col);
       var ck = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ffd75a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-      var perks = ['4 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts - 50/day', 'Balance Mode - real portfolio trading', 'Premium duels - all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
+      var perks = ['4 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts - 1 read a day', 'Balance Mode - real portfolio trading', 'Premium duels - all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
       var perksHtml = '<ul class="mpxp-perks">' + perks.map(function (p) { return '<li>' + ck + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
       ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + crown + '</div><div class="mpxp-up">Premium unlocked</div><div class="mpxp-nm mp-progold">MarginPad Premium</div><div class="mpxp-sub">You are now a <b>Premium member</b>. Here is everything you just unlocked:</div>' + perksHtml + '<a class="mpxp-x mpxp-see" href="/premium" target="_blank" rel="noopener">See everything you got →</a><button class="mpxp-x mpxp-x2" type="button">Start trading</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
