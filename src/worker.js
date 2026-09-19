@@ -19115,6 +19115,7 @@ export default {
 
       if (request.method === 'GET') {
         const sizes = await doJ('/campaign/sizes', {});
+        let lastErr = null; try { const er = (await env.STATS.get('camp:err', 'json')) || []; lastErr = er[0] || null; } catch (e) {}
         let hist = []; try { hist = (await env.STATS.get('camp:log', 'json')) || []; } catch (e) {}
         return jr({
           ok: true,
@@ -19122,6 +19123,7 @@ export default {
           templates: CAMPAIGN_TPLS.map(t => ({ id: t.id, name: t.name, group: t.group, needs: t.needs, subject: t.subject, lead: t.lead })),
           optedOut: (sizes && sizes.optedOut) || 0,
           history: hist.slice(0, 40),
+          errors: await (async () => { try { return ((await env.STATS.get('camp:err', 'json')) || []).slice(0, 8); } catch (e) { return []; } })(),
         });
       }
       if (request.method !== 'POST') return jr({ error: 'method' }, 405);
@@ -19139,6 +19141,21 @@ export default {
 
       if (!env.RESEND_API_KEY) return jr({ error: 'no_resend' }, 500);
       const FROM = mailFrom(cb.from || 'hello');
+      // WHY THIS IS A BATCH (2026-09-19). The first cut sent one API request per recipient, six at a time with
+      // no pacing. Resend's documented limit is 10 requests per second per team and anything over it is a 429:
+      // a real 296-person campaign came back 112 sent, 184 failed. The batch endpoint takes up to 100 emails in
+      // ONE request, so the same 296 people cost 3 requests instead of 296 and the limit stops being reachable.
+      // Failures are RECORDED now too - the first version called a helper that does not exist (aeWrite), threw
+      // inside its own try/catch and left 184 failures with no reason attached anywhere.
+      const campErr = async (why, detail) => {
+        try { mailFail(env, 'campaign', why); } catch (e) {}
+        try {
+          let ring = (await env.STATS.get('camp:err', 'json')) || [];
+          ring.unshift({ ts: Date.now(), why: String(why), detail: String(detail || '').slice(0, 200) });
+          await env.STATS.put('camp:err', JSON.stringify(ring.slice(0, 40)));
+        } catch (e) {}
+      };
+      // one email, used by the test button only
       const send1 = async (to, subject, html) => {
         try {
           const rr = await fetch('https://api.resend.com/emails', {
@@ -19146,9 +19163,24 @@ export default {
             body: JSON.stringify(refTagEmail({ from: 'MarginPad <' + FROM.addr + '>', to: [to], reply_to: mailFrom('support').addr, subject, html })),
           });
           if (rr.ok) return true;
-          try { await aeWrite(env, 'mailerr', { blob1: 'campaign', blob2: String(rr.status) }); } catch (e) {}
+          await campErr(rr.status, await rr.text().catch(() => ''));
           return false;
-        } catch (e) { return false; }
+        } catch (e) { await campErr('exception', e && e.message); return false; }
+      };
+      // up to 100 at a time; returns how many of THIS chunk were accepted
+      const sendBatch = async (items) => {
+        if (!items.length) return 0;
+        try {
+          const rr = await fetch('https://api.resend.com/emails/batch', {
+            method: 'POST', headers: { authorization: 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
+            body: JSON.stringify(items.map(it => refTagEmail({ from: 'MarginPad <' + FROM.addr + '>', to: [it.to], reply_to: mailFrom('support').addr, subject: it.subject, html: it.html }))),
+          });
+          if (!rr.ok) { await campErr(rr.status, await rr.text().catch(() => '')); return 0; }
+          const jj = await rr.json().catch(() => null);
+          const n = (jj && Array.isArray(jj.data)) ? jj.data.length : items.length; // the docs return one id per email, in order
+          if (n < items.length) await campErr('partial', n + ' of ' + items.length + ' accepted');
+          return Math.min(n, items.length);
+        } catch (e) { await campErr('exception', e && e.message); return 0; }
       };
 
       if (op === 'test') {
@@ -19176,22 +19208,20 @@ export default {
         const batch = Math.max(1, Math.min(300, parseInt(cb.limit, 10) || 100));
         const slice = todo.slice(0, batch);
         let okN = 0, failN = 0;
-        for (let i = 0; i < slice.length; i += 6) {
-          const part = slice.slice(i, i + 6);
-          const res = await Promise.all(part.map(async (u) => {
-            const r = campRender(tplId, vars, u);
-            const good = await send1(u.email, r.subject, r.html);
-            if (good) already.add(u.id);
-            return good;
-          }));
-          res.forEach(x => { if (x) okN++; else failN++; });
+        for (let i = 0; i < slice.length; i += 100) {
+          const part = slice.slice(i, i + 100);
+          const items = part.map(u => { const r = campRender(tplId, vars, u); return { to: u.email, subject: r.subject, html: r.html }; });
+          const accepted = await sendBatch(items);
+          // the batch is accepted or refused as a whole, so a partial count marks the first N as sent
+          part.forEach((u, k) => { if (k < accepted) { already.add(u.id); okN++; } else failN++; });
         }
         try { await env.STATS.put('camp:sent:' + camp, JSON.stringify([...already].slice(0, 20000))); } catch (e) {}
+        let lastErr = null; try { const er = (await env.STATS.get('camp:err', 'json')) || []; lastErr = er[0] || null; } catch (e) {}
         let hist = []; try { hist = (await env.STATS.get('camp:log', 'json')) || []; } catch (e) {}
         hist.unshift({ ts: Date.now(), campaign: camp, tpl: tplId, seg, sent: okN, failed: failN, remaining: Math.max(0, todo.length - slice.length) });
         try { await env.STATS.put('camp:log', JSON.stringify(hist.slice(0, 60))); } catch (e) {}
         try { await tgAdmin(env, 'Campaign ' + camp + ': ' + okN + ' sent to ' + seg + ' (' + tplId + ')' + (failN ? ', ' + failN + ' failed' : '') + (todo.length - slice.length > 0 ? ', ' + (todo.length - slice.length) + ' left' : ''), { kind: 'campaign sent', sev: 'info' }); } catch (e) {}
-        return jr({ ok: true, campaign: camp, seg, tpl: tplId, audience: aud.total, eligible: todo.length, sent: okN, failed: failN, remaining: Math.max(0, todo.length - slice.length) });
+        return jr({ ok: true, campaign: camp, seg, tpl: tplId, audience: aud.total, eligible: todo.length, sent: okN, failed: failN, remaining: Math.max(0, todo.length - slice.length), lastError: failN ? lastErr : null });
       }
 
       if (op === 'reset') { // let a campaign id be reused deliberately
