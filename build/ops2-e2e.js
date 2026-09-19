@@ -101,6 +101,27 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       });
       chk('Bybit: Apply is reachable, refuses an empty list and refuses to patch while a file is pasted, and volumes print in full',
         !bv.none && bv.reachable && /nothing typed/i.test(bv.empty) && /paste box/i.test(bv.guarded) && /\$12\.34/.test(bv.chip), bv);
+      // ADD SHOWS THE PERSON IN THE TABLE BEFORE ANYTHING IS SAVED (owner 2026-09-19: "kad stisnem dugme add,
+      // korisnik se pojavi na mp-ops tabeli sa uid i volumenom koji sam uneo"). Nothing here writes: Add is local
+      // until Apply. The second half is the invariant that was actually broken - EVERY UID in the report is a row,
+      // including one no member has registered, which used to be a bare number in a sentence under the table.
+      const bp = await page.evaluate(async () => {
+        const el = id => document.getElementById(id), wait = ms => new Promise(r => setTimeout(r, ms));
+        if (!el('bvAdd')) return { none: 1 };
+        const d = await fetch('/api/admin/bybitvol').then(r => r.json()).catch(() => null);
+        const before = document.querySelectorAll('#bvTable tbody tr').length;
+        el('bvUid').value = '987654321'; el('bvVol').value = '12.34'; el('bvAdd').click(); await wait(250);
+        const pend = [...document.querySelectorAll('#bvTable tr.pend')];
+        const row = pend.length ? pend[0].innerText.replace(/\s+/g, ' ') : '';
+        const seen = !!pend.length && /987654321/.test(row) && /\$12\.34/.test(row) && /not saved yet/i.test(row);
+        const withPend = document.querySelectorAll('#bvTable tbody tr').length;
+        const c = el('bvManClr'); if (c) c.click(); await wait(250);           // leave the desk exactly as we found it
+        const after = document.querySelectorAll('#bvTable tbody tr').length;
+        const want = d ? (d.matched || []).length + (d.unmatched || []).length : -1;
+        return { seen, row: row.slice(0, 120), before, withPend, after, want, unmatched: d ? (d.unmatched || []).length : -1 };
+      });
+      chk('Bybit: Add puts the typed pair in the table as an unsaved row, and every UID in the report is a row (a UID nobody registered included)',
+        !bp.none && bp.seen && bp.withPend === bp.before + 1 && bp.after === bp.before && bp.before === bp.want, bp);
       // THE TABLE IS THE EDITOR (owner 2026-09-15): type over a volume, press Enter, the public board follows.
       // Nothing here WRITES - a commit would patch the live season. Both no-write paths are asserted instead:
       // a value that is not a number is refused and the cell snaps back, and Esc abandons an edit. If the season

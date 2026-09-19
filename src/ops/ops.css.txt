@@ -181,6 +181,7 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
 .tbl td.bvv:focus{outline:none;box-shadow:inset 0 0 0 1px var(--lime);background:#0a0d12}
 .tbl td.bvv.busy{opacity:.55;cursor:progress}
 .tbl tr.off td{color:var(--dim)}.tbl tr.off td.bvv{color:var(--ink)}
+.tbl tr.pend td{background:rgba(255,179,71,.08);border-top:1px solid rgba(255,179,71,.28);border-bottom:1px solid rgba(255,179,71,.28)}
 @media(max-width:760px){.tbl td.bvv{min-width:104px}}
 /* Inbox > milan@ (2026-09-08): two panes on the support grid, the body as readable text */
 .sup.pm{grid-template-columns:320px minmax(0,1fr)}.pm-body{white-space:pre-wrap;word-break:break-word;font:13.5px/1.65 -apple-system,system-ui,'Segoe UI',sans-serif;color:var(--dim);margin:0}

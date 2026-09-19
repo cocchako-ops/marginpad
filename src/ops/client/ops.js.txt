@@ -2031,7 +2031,7 @@
           + '<div class="line" style="margin:8px 0 4px"><b>Two ways in.</b> Pick the file Bybit gave you, or type the lines yourself below - one <span class="mono">UID volume</span> per line. Either way, press <b>Preview</b> first: it shows exactly which columns were read and which lines were dropped, and changes nothing.</div>'
           + '<textarea class="in" id="bvText" rows="6" placeholder="580090490,1234567.89&#10;579447222,98765.40&#10;&#10;(a header row is understood, and so are tabs or semicolons)"></textarea>'
           + '<div class="bar" style="margin-top:8px;flex-wrap:wrap"><input type="file" id="bvFile" accept=".csv,.txt,.tsv,.xls,.xlsx" style="font:inherit;max-width:220px"><span class="meta" style="font-size:12px">or type the pairs one at a time below</span></div>'
-          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press Add, then <b>Apply</b>. This does NOT replace the report: a UID already on the board is updated, a new one is added, and everybody else is left exactly as they are. Leave the box above empty when you do this. A UID that is already in the table below is quicker to fix <b>in the table itself</b> - type over its volume and press Enter.</div>'
+          + '<div class="line" style="margin:14px 0 4px"><b>One at a time.</b> Type a UID and its volume and press <b>Add</b>: the row appears in the table below in amber, with the member it belongs to and what it will do - nothing is saved yet. When it looks right, press <b>Apply to the board</b>. This does NOT replace the report: a UID already in it is updated, a new one is added, and everybody else is left exactly as they are. Leave the paste box above empty when you do this. A UID already in the table is quicker to fix <b>in the table itself</b> - type over its volume and press Enter.</div>'
           + '<div class="bar" style="flex-wrap:wrap;gap:8px"><input class="in" id="bvUid" placeholder="Bybit UID" inputmode="numeric" autocomplete="off" style="flex:0 1 170px"><input class="in" id="bvVol" placeholder="Volume in USD" inputmode="decimal" autocomplete="off" style="flex:0 1 170px"><button class="btn" id="bvAdd">Add</button><button class="btn lime" id="bvApply">Apply to the board</button><span class="stat" id="bvAddSt"></span></div>'
           + '<div id="bvManual" style="margin-top:8px"></div>'
           + '<div class="bar" style="margin-top:12px;flex-wrap:wrap"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px"><input type="checkbox" id="bvFinal"> final for this season</label><button class="btn" id="bvPreview">Preview</button><button class="btn lime" id="bvUpload">Upload report</button><button class="btn" id="bvClear">Clear season</button><span class="stat" id="bvSt"></span></div>'
@@ -2114,7 +2114,7 @@
         T.addEventListener('paste', function (ev) { var c = ev.target.closest && ev.target.closest('.bvv'); if (!c) return; ev.preventDefault(); var t = ((ev.clipboardData || window.clipboardData) || { getData: function () { return ''; } }).getData('text') || ''; try { document.execCommand('insertText', false, t.replace(/[\r\n\t]+/g, ' ').trim()); } catch (e) { c.textContent = t.replace(/[\r\n\t]+/g, ' ').trim(); } });
       })();
       (function bybitUi() { // Bybit volume board: report upload + the joined view (2026-09-13)
-        var st = $('bvStatus'); if (!st) return; var bvCol = '', bvMan = [];   // bvMan = the hand-typed pairs, kept apart from the pasted export
+        var st = $('bvStatus'); if (!st) return; var bvCol = '', bvMan = [], D = null;   // bvMan = the hand-typed pairs, kept apart from the pasted export; D = the last loaded desk
         // volumes in a real export are small decimals ($9.23), not round millions - rounding them to whole dollars
         // printed the season's only trader as "$9" and everyone else as "$0". Show cents below $1,000.
         // EXACT, NOT COMPACT (owner 2026-09-15: "mozemo da prestavimo vrednosti cak i u decimale jer ih tako unosim
@@ -2143,23 +2143,54 @@
         // from `matched` - everything in the report that a member registered - and NOT from `board`, which is only the
         // rows the public sees. The correction the owner makes most often is a trader sitting at $0, and a $0 row is
         // deliberately off the public board, so a board-only table could never edit the one row that needs it.
+        // EVERY UID THE SEASON KNOWS ABOUT IS A ROW (owner 2026-09-19: "kad stisnem dugme add, korisnik se pojavi na
+        // mp-ops tabeli sa uid i volumenom koji sam uneo. Kad mi to sve deluje okej onda idem apply to the board").
+        // Two things used to be invisible here and both read as "Add does nothing":
+        //   1. a TYPED pair only became a chip under the box - the table was untouched until a commit, so there was
+        //      nothing to check before pressing Apply. It is a pending row at the top of the table now, amber, saying
+        //      what it will do, and it is not saved until Apply.
+        //   2. a UID in the report that NO member has registered was not a row at all - only a bare number in a grey
+        //      sentence below. That is exactly what happened on 2026-09-19: 588866604 went into the report and the
+        //      owner saw "5 UIDs, 4 on the board" and no trace of the fifth. Those are full rows now, editable like
+        //      any other, saying why they cannot reach the public board.
         function boardHtml(d) {
           var rank = {}; (d.board || []).forEach(function (r) { rank[r.buid] = r.rank; });
+          var reg = {}; (d.regs || []).forEach(function (r) { reg[String(r.buid)] = r; });
+          var have = {}; (d.matched || []).forEach(function (r) { have[String(r.buid)] = +r.vol || 0; }); (d.unmatched || []).forEach(function (u) { have[String(u.uid)] = +u.vol || 0; });
+          var pend = bvMan.map(function (m) {
+            var w = reg[m.uid], had = Object.prototype.hasOwnProperty.call(have, m.uid) ? have[m.uid] : null;
+            var note = !w ? '<span class="badge red">no member has this UID</span>' : !w.listed ? '<span class="badge amber">UID not on the withdrawal list</span>' : !(m.vol > 0) ? '<span class="badge amber">no volume - stays off the board</span>' : '<span class="badge ok">will go on the board</span>';
+            return '<tr class="pend"><td><span class="meta">-</span></td>'
+              + '<td>' + (w ? esc(w.name || w.uid) : '<span class="meta">nobody registered it</span>') + '</td>'
+              + '<td class="mono">' + esc(m.uid) + '</td>'
+              + '<td class="mono">' + (had == null ? '' : '<span class="meta">' + fmt(had) + ' &rarr; </span>') + '<b>' + fmt(m.vol) + '</b></td>'
+              + '<td><span class="badge amber">typed - not saved yet</span> ' + note + '</td></tr>';
+          }).join('');
           var rows = (d.matched || []).slice().sort(function (a, b) { return (+b.vol || 0) - (+a.vol || 0); });
-          var tail = (d.unmatched || []).length ? '<div class="line" style="margin-top:6px">in the report, registered by nobody (they cannot reach the board until that member registers the UID on /season/): <span class="mono">' + d.unmatched.slice(0, 60).map(function (u) { return esc(u.uid); }).join(' ') + (d.unmatched.length > 60 ? ' …' : '') + '</span></div>' : '';
-          if (!rows.length) return '<div class="line">nothing to edit yet' + (d.upload ? ' - no UID in the report has been registered by a member' : ' - no report for this season') + '</div>' + tail;
+          var orph = (d.unmatched || []).slice().sort(function (a, b) { return (+b.vol || 0) - (+a.vol || 0); });
+          if (!rows.length && !orph.length && !bvMan.length) return '<div class="line">nothing to edit yet' + (d.upload ? ' - no UID in the report has been registered by a member' : ' - no report for this season') + '</div>';
           return '<div class="line" style="margin-bottom:6px"><b>Type straight into the Volume column</b> and press Enter - it patches this season\'s report, everybody else is left alone, and the public board is rebuilt at once. Esc undoes. <span class="stat' + (bvMsg ? (bvMsg.ok === true ? ' ok' : bvMsg.ok === false ? ' bad' : '') : '') + '" id="bvRowSt">' + (bvMsg ? esc(bvMsg.txt) : '') + '</span></div>'
             + '<div class="tblwrap"><table class="tbl"><thead><tr><th>#</th><th>Trader</th><th>Bybit UID</th><th>Volume</th><th>on the public board</th></tr></thead><tbody>'
+            + pend
             + rows.map(function (r) {
               var why = r.e2e ? 'test account' : !r.listed ? 'UID not on the withdrawal list' : !(+r.vol > 0) ? 'no volume yet' : '';
               return '<tr' + (why ? ' class="off"' : '') + '><td>' + (rank[r.buid] ? rank[r.buid] : '<span class="meta">-</span>') + '</td>'
                 + '<td>' + esc(r.name || r.uid) + '</td><td class="mono">' + esc(r.buid) + '</td>'
                 + '<td class="mono bvv" contenteditable="true" spellcheck="false" data-uid="' + esc(r.buid) + '" data-v0="' + (+r.vol || 0) + '" title="type a new volume and press Enter">' + fmt(r.vol) + '</td>'
                 + '<td>' + (why ? '<span class="badge amber">' + why + '</span>' : '<span class="badge ok">yes</span>') + '</td></tr>';
-            }).join('') + '</tbody></table></div>' + tail;
+            }).join('')
+            + orph.map(function (u) {
+              return '<tr class="off"><td><span class="meta">-</span></td>'
+                + '<td><span class="meta">nobody registered it</span></td><td class="mono">' + esc(u.uid) + '</td>'
+                + '<td class="mono bvv" contenteditable="true" spellcheck="false" data-uid="' + esc(u.uid) + '" data-v0="' + (+u.vol || 0) + '" title="type a new volume and press Enter">' + fmt(u.vol) + '</td>'
+                + '<td><span class="badge red">no member has registered this UID</span></td></tr>';
+            }).join('')
+            + '</tbody></table></div>'
+            + (orph.length ? '<div class="line" style="margin-top:6px">' + N(orph.length) + ' UID' + (orph.length > 1 ? 's' : '') + ' in the report that no member has registered. The volume is stored and it is yours to edit, but it cannot reach the public board until that member registers the UID on <span class="mono">/season/</span> - see <a href="#money/bybit">Money › Bybit UIDs</a>.</div>' : '');
         }
-        function load() { J('/api/admin/bybitvol').then(function (d) { if (!d || d.error) { st.textContent = 'could not load'; return; } var up = d.upload;
-          st.innerHTML = (up ? ('report: <b>' + up.n + '</b> UIDs, uploaded ' + new Date(up.ts).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' + (up.final ? ' · <b>FINAL</b>' : ' · not final')) : 'no report for this season yet') + ' · registered UIDs: <b>' + (d.registered || 0) + '</b> · on the board: <b>' + (d.board || []).length + '</b> · in the report but registered by nobody: <b>' + (d.unmatched || []).length + '</b>' + (d.paid ? ' · <b>paid</b>' : '');
+        function paintTable() { var t = $('bvTable'); if (t && D) t.innerHTML = boardHtml(D); }
+        function load() { J('/api/admin/bybitvol').then(function (d) { if (!d || d.error) { st.textContent = 'could not load'; return; } D = d; var up = d.upload;
+          st.innerHTML = (up ? ('report: <b>' + up.n + '</b> UIDs, uploaded ' + new Date(up.ts).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' + (up.final ? ' · <b>FINAL</b>' : ' · not final')) : 'no report for this season yet') + ' · registered UIDs: <b>' + (d.registered || 0) + '</b> · on the board: <b>' + (d.board || []).length + '</b>' + ((d.unmatched || []).length ? ' · <span class="badge red">' + d.unmatched.length + ' in the report that nobody registered</span>' : '') + (d.paid ? ' · <b>paid</b>' : '');
           $('bvTable').innerHTML = boardHtml(d); }); }
         load();
         // The hand-typed pairs. They are sent as `manual` and merged on top of the file by the worker - never pasted
@@ -2167,10 +2198,13 @@
         // bybitParseReport drops it (correctly) as malformed.
         function manText() { return bvMan.map(function (r) { return r.uid + ',' + r.vol; }).join(String.fromCharCode(10)); }
         function manPaint() {
-          var w = $('bvManual'); if (!w) return;
+          var w = $('bvManual');
+          paintTable();   // the typed pairs are rows in the table now, not only chips - repaint it on every change
+          if (!w) return;
           if (!bvMan.length) { w.innerHTML = ''; return; }
           var tot = bvMan.reduce(function (a, r) { return a + (+r.vol || 0); }, 0);
-          w.innerHTML = '<div class="line" style="margin-bottom:4px">' + N(bvMan.length) + ' typed by hand · total ' + fmt(tot)
+          w.innerHTML = '<div class="line" style="margin-bottom:4px">' + N(bvMan.length) + ' typed by hand, not saved yet · total ' + fmt(tot)
+            + ' - check the amber rows in the table below, then press <b>Apply to the board</b>'
             + ' <button class="btn sm" id="bvManClr">Clear the list</button></div>'
             + '<div class="chips">' + bvMan.map(function (r, i) {
               return '<span class="chip on" data-rm="' + i + '" title="click to remove"><span class="mono">' + esc(r.uid) + '</span> ' + fmt(r.vol) + ' &times;</span>';
@@ -2185,8 +2219,8 @@
           var vol = parseVol(vEl.value);
           if (vol == null) { setStat('bvAddSt', 'volume must be a number (1234.56, or 1.2M)', false); vEl.focus(); return false; }
           var at = -1; bvMan.forEach(function (r, i) { if (r.uid === uid) at = i; });
-          if (at >= 0) { bvMan[at].vol = vol; setStat('bvAddSt', uid + ' updated to ' + fmt(vol)); }
-          else { bvMan.push({ uid: uid, vol: vol }); setStat('bvAddSt', 'added ' + uid + ' · ' + fmt(vol)); }
+          if (at >= 0) { bvMan[at].vol = vol; setStat('bvAddSt', uid + ' changed to ' + fmt(vol) + ' - see the amber row, then Apply'); }
+          else { bvMan.push({ uid: uid, vol: vol }); setStat('bvAddSt', uid + ' · ' + fmt(vol) + ' is in the table below (amber) - check it, then Apply'); }
           uEl.value = ''; vEl.value = ''; uEl.focus(); manPaint(); return true;
         }
         $('bvAdd').onclick = bvAdd;

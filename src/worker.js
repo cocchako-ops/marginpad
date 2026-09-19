@@ -12492,7 +12492,11 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
     matched.push(row); if (!row.e2e && row.listed && row.vol > 0) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
-  return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
+  // regs = every UID a member holds, whether or not it is in this report. The desk needs it to NAME a UID the owner
+  // has only just typed (2026-09-19): a pending row that cannot say who it belongs to is the same blank he complained
+  // about. Small by construction - one entry per registration, 22 of them the day this was added.
+  const regs = [...reg.entries()].map(([buid, w]) => ({ buid: String(buid), uid: w.uid, name: w.name, listed: allow.has(String(buid)), e2e: !!w.e2e }));
+  return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, regs, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
 }
 async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volume only) → KV, and the /lb edge copy is dropped
   const b = await bybitVolBoard(env, ws);
@@ -18223,7 +18227,7 @@ export default {
         return J({ ok: true, n: rows.length, patch, added, updated, snapshot: snap });
       }
       const b = await bybitVolBoard(env, ws); let paidFlag = false; try { paidFlag = !!(await env.STATS.get('lbpaid:bybit:' + ws)); } catch (e) {}
-      return J({ ws, we: ws + LB_PERIOD, upload: b.upload, registered: b.registered, matched: b.matched, unmatched: b.unmatched, board: b.rows.map(r => ({ rank: r.rank, who: r.name, uid: r.uid, buid: r.buid, vol: r.vol })), paid: paidFlag });
+      return J({ ws, we: ws + LB_PERIOD, upload: b.upload, registered: b.registered, matched: b.matched, unmatched: b.unmatched, regs: b.regs, board: b.rows.map(r => ({ rank: r.rank, who: r.name, uid: r.uid, buid: r.buid, vol: r.vol })), paid: paidFlag });
     }
     // WHO REGISTERED A BYBIT UID, AND WHO TRIED (owner 2026-09-13) → mp-ops › Money › Bybit UIDs.
     // Joins three sources the board already keeps: the registrations themselves (uprefs bybit_uid, plus UIDs a payout has
