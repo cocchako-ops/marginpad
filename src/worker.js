@@ -16670,7 +16670,7 @@ export default {
     // Read via /api/admin/aibots. Unsampled (volume is tiny vs pageviews); GET+HEAD only, non-API paths only.
     try { if ((request.method === 'GET' || request.method === 'HEAD') && env.AE && url.pathname.indexOf('/api/') !== 0 && url.pathname.indexOf('/assets/') !== 0) {
       const ua9 = request.headers.get('user-agent') || '';
-      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Google-Extended|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot/i);
+      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot/i);
       if (m9) env.AE.writeDataPoint({ blobs: ['aibot', m9[0].toLowerCase(), url.pathname.slice(0, 96)], doubles: [1], indexes: ['aibot'] });
     } } catch (e) {}
     // MEASUREMENT (temporary, read-only telemetry): unsampled per-invocation counter by route family → AE. AE has no
@@ -16949,6 +16949,28 @@ export default {
     // 28,308, and an agent that wants to USE the API had nothing to probe - /openapi.json, /.well-known/ai-plugin.json
     // and /.well-known/mcp.json all 404'd, which are the three paths tooling actually tries before reading prose.
     // They are aliases over what already exists; nothing here is a second source of truth.
+    if (url.pathname === '/sitemap.xml') {
+      /* SITEMAP_FRESH (2026-09-19): keep <lastmod> true on the entries declared daily/hourly.
+         Measured across 455 sitemap entries against 30 days of crawler hits: a url declared `daily` took
+         600 crawls against 15 for one declared `monthly` - roughly 40x - and every live-number page we
+         own sat in the monthly bucket with no lastmod at all, which is why the six one-question pages
+         took ZERO crawler hits in 30 days while /liquidations/, which links them, took 6,099.
+         The static file is stamped at build time, so without this every `daily` entry would age between
+         deploys - and a crawler that keeps arriving to find nothing new learns to discount the file. */
+      const smRes = await env.ASSETS.fetch(new Request('https://marginpad.io/sitemap.xml'));
+      if (!smRes.ok) return smRes;
+      let smXml = await smRes.text();
+      const smDay = new Date().toISOString().slice(0, 10);
+      let smN = 0;
+      smXml = smXml.replace(/<url>(?:(?!<\/url>)[\s\S])*?<\/url>/g, function (u) {
+        if (!/<changefreq>(?:daily|hourly)<\/changefreq>/.test(u)) return u;
+        smN++;
+        return u.indexOf('<lastmod>') >= 0
+          ? u.replace(/<lastmod>[^<]*<\/lastmod>/, '<lastmod>' + smDay + '</lastmod>')
+          : u.replace('</loc>', '</loc><lastmod>' + smDay + '</lastmod>');
+      });
+      return new Response(smXml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600', 'x-mp-sitemap-fresh': String(smN) } });
+    }
     if (url.pathname === '/openapi.json') return handleOpenApi();
     if (url.pathname === '/.well-known/ai-plugin.json' || url.pathname === '/.well-known/openapi.json' || url.pathname === '/.well-known/mcp.json') return handleAgentManifest(url);
     if (url.pathname === '/api/changelog.xml' || url.pathname === '/api/changelog.json') { // Bot API changelog as a feed (Phase 0, 2026-09-12): a builder subscribes once and learns about every change
