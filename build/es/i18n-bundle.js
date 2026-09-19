@@ -221,8 +221,28 @@ function regions(s) {
   return out;
 }
 
+// A TRANSLATION TABLE IS NOT A CALL SITE, and one of them is keyed BY THE ENGLISH STRING. Routing inside it
+// turned '"Close 20 trades":' into a helper CALL where an object key must be, and /season/ plus the homepage
+// stopped parsing in both languages (2026-09-19). Mark every table as non-code so no pass can reach into one.
+function maskTables(text) {
+  const spans = [];
+  const re = /var __es[A-Z]*D?_[a-z0-9]+ = \{[\s\S]*?\};\r?\n/g; let m;
+  while ((m = re.exec(text))) spans.push([m.index, m.index + m[0].length]);
+  return spans;
+}
+
 let routed = 0; const skipped = [];
-const parts = regions(src).map(r => ({ text: src.slice(r.s, r.e), code: r.code }));
+let parts = regions(src).map(r => ({ text: src.slice(r.s, r.e), code: r.code }));
+// split each code region around any table it contains, and mark the table parts as not-code
+parts = parts.flatMap(p => {
+  if (!p.code) return [p];
+  const sp = maskTables(p.text);
+  if (!sp.length) return [p];
+  const out = []; let at = 0;
+  for (const [s, e] of sp) { if (s > at) out.push({ text: p.text.slice(at, s), code: true }); out.push({ text: p.text.slice(s, e), code: false }); at = e; }
+  if (at < p.text.length) out.push({ text: p.text.slice(at), code: true });
+  return out;
+});
 const codeOf = () => parts.filter(p => p.code).map(p => p.text).join('\n/*|*/\n');
 
 for (const it of items) {
