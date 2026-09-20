@@ -1957,9 +1957,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
+  "cover": 0.9902439024390244,
   "hit": 203,
-  "missing": 0
+  "missing": 2
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",

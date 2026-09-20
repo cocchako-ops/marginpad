@@ -12528,11 +12528,14 @@ async function bybitAffSign(env, qs) {
   return { 'X-BAPI-API-KEY': key, 'X-BAPI-TIMESTAMP': ts, 'X-BAPI-RECV-WINDOW': recv,
     'X-BAPI-SIGN': Array.from(new Uint8Array(sig)).map(x => x.toString(16).padStart(2, '0')).join('') };
 }
-// Every referred account, paged. days>0 asks for a window, which is what makes Bybit return commission.
-async function bybitAffList(env, days) {
+// Every referred account, paged. A WINDOW is what makes Bybit return commission at all, so pass either
+// days (a rolling window ending today) or an explicit {startDate, endDate} - the weekly rebate needs an
+// exact CLOSED week, not "the last 7 days", or a settled week would drift every time the cron ran.
+async function bybitAffList(env, days, range) {
   const out = []; let cursor = '';
   const day = n => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
-  const base = days > 0 ? { size: '100', startDate: day(days), endDate: day(0) }
+  const base = (range && range.startDate) ? { size: '100', startDate: range.startDate, endDate: range.endDate }
+             : days > 0 ? { size: '100', startDate: day(days), endDate: day(0) }
                         : { size: '100', need30: 'true', need365: 'false', needDeposit: 'true' };
   for (let i = 0; i < 20; i++) {
     const qs = new URLSearchParams(cursor ? { ...base, cursor } : base).toString();
@@ -12578,6 +12581,213 @@ async function bybitAffStats(env, days) {
     note: 'volume updates at T+1 and is NOT the commission settlement record - the Affiliate Portal is',
     users: users.sort((a, b) => b.vol - a.vol)
   };
+}
+/* ---- Bybit weekly rebate (2026-09-20, owner: "bonus nek ne bude vise od 33% od mojih 100%")
+
+   THE RULE IS THE OWNER'S AND IT IS MECHANICAL, NOT A SETTING: a trader may be paid at most a third of
+   the commission THEIR OWN trading earned us. Not a third of the total, not a third of some tier - a
+   third of their own line. That makes the whole thing self-limiting: it can never cost more than it
+   brings in, whatever anyone types later, and it is fair in the one way a flat tier is not.
+
+   WHY PER-TRADER AND NOT A VOLUME TIER. Measured 2026-09-20 over the real five: 1.67, 1.69, 1.77 bps
+   for the taker-only accounts against 0.64 for the one running 8% maker flow. Maker volume pays us a
+   third as much, so two traders with the same volume can be worth very different money. A volume
+   threshold would pay them the same and quietly lose on one of them; a share of their own commission
+   cannot. Volume is what we SHOW them, commission is what we PAY from.
+
+   BYBIT_BONUS_MIN_C exists because a percentage of a small week is a rude message. At the measured
+   rate a $5,000 week earns us $0.74 and owes them $0.24 - telling somebody to come and claim 24 cents
+   is worse than saying nothing. Under the floor the row is computed and recorded but never announced,
+   and it is not lost: nothing is carried, the next week stands on its own.
+
+   AND THE MONEY IS NOT LIVE MONEY. Bybit's own docs say the volume on this endpoint "has nothing to do
+   with commission settlement" - the Affiliate Portal is the record for what we are actually paid. A
+   week is therefore settled from a CLOSED window (T+1 data, settled the Tuesday after it ends) and the
+   owner reconciles against the portal. Never pay from the current, still-moving week. */
+const BYBIT_BONUS_SHARE = 0.33;      // owner's cap: at most a third of what that trader earned us
+const BYBIT_BONUS_MIN_C = 25;        // under 25c we do not announce it - see above
+const BYBIT_BONUS_MAX_C = 5000;      // $50 a week to one person needs a human look; the ledger caps at $5 per /gift anyway
+const BYBIT_BONUS_START = Date.UTC(2026, 8, 21);  // 2026-09-21, the first Monday this exists - never settle a week before it
+
+// Monday 00:00 UTC of the week a timestamp falls in.
+function bybitWeekStart(ts) {
+  const d = new Date(+ts || Date.now());
+  const dow = (d.getUTCDay() + 6) % 7;   // 0 = Monday
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dow * 86400000;
+}
+const bybitWeekKey = ws => new Date(ws).toISOString().slice(0, 10);
+
+/* Build (do not pay) one week's rebate from the affiliate feed. Pure-ish: reads Bybit + the
+   registration map, writes nothing. Returns every row, including the ones under the floor and the
+   ones nobody has registered - the owner's desk needs to see those to know who to chase. */
+async function bybitBonusBuild(env, ws) {
+  const we = ws + 7 * 86400000;
+  const day = t => new Date(t).toISOString().slice(0, 10);
+  const r = await bybitAffList(env, 0, { startDate: day(ws), endDate: day(we - 86400000) });
+  if (r.error) return { error: r.error, detail: r.detail || '', ws, we };
+  const reg = await bybitRegistrations(env);
+  const rows = [];
+  let comTotal = 0, volTotal = 0;
+  for (const u of r.list) {
+    const vol = +u.tradeVol || 0, com = bybitAffCommission(u);
+    if (!(vol > 0) && !(com > 0)) continue;
+    comTotal += com; volTotal += vol;
+    const who = reg.get(String(u.userId));
+    const cents = Math.min(BYBIT_BONUS_MAX_C, Math.floor(com * BYBIT_BONUS_SHARE * 100));
+    rows.push({
+      buid: String(u.userId), uid: who ? who.uid : '', name: who ? who.name : '',
+      e2e: !!(who && who.e2e), vol: Math.round(vol * 100) / 100,
+      maker: Math.round((+u.makerVol || 0) * 100) / 100,
+      com: Math.round(com * 10000) / 10000, cents,
+      // why a row cannot be paid, in the row itself - the desk should never make the owner guess
+      skip: !who ? 'not_registered' : (who.e2e ? 'test_account' : (cents < BYBIT_BONUS_MIN_C ? 'under_floor' : ''))
+    });
+  }
+  rows.sort((a, b) => b.com - a.com);
+  const payable = rows.filter(x => !x.skip);
+  return {
+    ws, we, week: bybitWeekKey(ws), builtTs: Date.now(),
+    share: BYBIT_BONUS_SHARE, minCents: BYBIT_BONUS_MIN_C,
+    volumeUsd: Math.round(volTotal * 100) / 100,
+    commissionUsd: Math.round(comTotal * 10000) / 10000,
+    bpsOfVolume: volTotal > 0 ? Math.round(comTotal / volTotal * 1000000) / 100 : null,
+    payoutCents: payable.reduce((s, x) => s + x.cents, 0),
+    payableN: payable.length, rows
+  };
+}
+async function bybitBonusGet(env, ws) { try { return JSON.parse((await env.STATS.get('bybonus:' + bybitWeekKey(ws))) || 'null'); } catch (e) { return null; } }
+async function bybitBonusPut(env, b) { try { await env.STATS.put('bybonus:' + b.week, JSON.stringify(b), { expirationTtl: 400 * 86400 }); return true; } catch (e) { return false; } }
+
+/* THE GUARD THAT MATTERS: never hand out more than a third of the week's commission, in total.
+   The per-row cap already does this row by row, but a rounding or a future edit could still drift, so
+   the sum is checked before anything is announced or paid. Over the cap, the week is held and the
+   owner is told - we do not silently scale people down. */
+function bybitBonusSane(b) {
+  if (!b || b.error) return { ok: false, why: 'no data' };
+  const maxC = Math.floor((+b.commissionUsd || 0) * BYBIT_BONUS_SHARE * 100);
+  if (b.payoutCents > maxC) return { ok: false, why: 'payout ' + b.payoutCents + 'c exceeds the ' + Math.round(BYBIT_BONUS_SHARE * 100) + '% cap of ' + maxC + 'c' };
+  return { ok: true, maxC };
+}
+
+/* Settle the most recent COMPLETE week, once. Volume is T+1, so a week that ended Sunday is only
+   trustworthy from Tuesday - the cron simply refuses earlier. */
+async function checkBybitBonus(env) {
+  if (!env.STATS || !env.BYBIT_AFF_KEY) return;
+  const now = Date.now(), thisWeek = bybitWeekStart(now), ws = thisWeek - 7 * 86400000;
+  if (ws < BYBIT_BONUS_START) return;
+  if (now - thisWeek < 36 * 3600000) return;     // Tuesday 12:00 UTC at the earliest: T+1 plus a margin
+  const done = await bybitBonusGet(env, ws);
+  if (done && done.announcedTs) return;
+  const b = done && !done.error ? done : await bybitBonusBuild(env, ws);
+  if (b.error) { try { await tgAdmin(env, '<b>Bybit rebate:</b> could not read the affiliate feed for the week of ' + bybitWeekKey(ws) + ' (' + b.error + '). Will retry.', { kind: 'bybit rebate', sev: 'amber' }); } catch (e) {} return; }
+  const sane = bybitBonusSane(b);
+  if (!sane.ok) { try { await tgAdmin(env, '<b>Bybit rebate HELD</b> for ' + b.week + ': ' + sane.why + '. Nothing announced; look at mp-ops before this pays.', { kind: 'bybit rebate', sev: 'red' }); } catch (e) {} return; }
+  b.announcedTs = now;
+  await bybitBonusPut(env, b);
+  const payable = b.rows.filter(x => !x.skip);
+  const link = 'https://marginpad.io/bybit-bonus/';
+  // the channel line: one post, one link, the same link for everybody (the page identifies the reader)
+  const head = '<b>Bybit weekly rebate - week of ' + b.week + '</b>\n' +
+    'Traded on Bybit under the MarginPad code last week? A third of what your trading earned us is yours.\n' +
+    payable.length + ' trader' + (payable.length === 1 ? '' : 's') + ' qualified, $' + (b.payoutCents / 100).toFixed(2) + ' on the table.\n' +
+    '<a href="' + link + '">Claim your bonus</a>';
+  try { await tgBroadcastBonus(env, head); } catch (e) {}
+  // and a direct message to each qualifying member who has linked Telegram
+  let dm = 0;
+  if (env.TELEGRAM_TOKEN) {
+    const uids = payable.map(x => x.uid).filter(Boolean);
+    let chats = {};
+    try { const r = await usersDO(env, '/tgchats', { uids }); chats = (r && r.chats) || {}; } catch (e) {}
+    for (const x of payable) {
+      const chat = chats[x.uid]; if (!chat) continue;
+      try {
+        await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true,
+          text: '<b>Your Bybit rebate is ready</b>\nWeek of ' + b.week + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' - your rebate is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
+        dm++;
+      } catch (e) {}
+    }
+  }
+  // the bell + the celebration on their next visit, for everyone qualifying, TG or not
+  for (const x of payable) {
+    if (!x.uid) continue;
+    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your Bybit rebate for the week of ' + b.week + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
+  }
+  try {
+    await tgAdmin(env, '<b>Bybit rebate announced</b> - week of ' + b.week + '\n' +
+      'volume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) +
+      ' (' + Math.round(b.payoutCents / Math.max(1, b.commissionUsd * 100) * 100) + '% of commission, cap ' + Math.round(BYBIT_BONUS_SHARE * 100) + '%)\n' +
+      payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID · ' + dm + ' direct messages sent',
+      { kind: 'bybit rebate', sev: 'green' });
+  } catch (e) {}
+}
+// Post the weekly line to the rebate channel if one is configured, else fall back to the owner's chat.
+async function tgBroadcastBonus(env, html) {
+  if (!env.TELEGRAM_TOKEN) return;
+  let chan = '';
+  try { chan = (await env.STATS.get('cfg:bybitchan')) || ''; } catch (e) {}
+  const to = chan || env.TG_ADMIN_CHAT;
+  if (!to) return;
+  await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: to, parse_mode: 'HTML', disable_web_page_preview: true, text: html });
+}
+
+/* The key is not IP-bound, so Bybit expires it 90 days after it was made (2026-12-20 for the current
+   one). An expiry would stop the board and the rebate SILENTLY, which is the only really dangerous
+   failure here - so it is watched, and the warning starts far enough out to be ignorable twice. */
+async function checkBybitKey(env) {
+  if (!env.STATS || !env.BYBIT_AFF_KEY) return;
+  const h = await bybitAffSign(env, '');
+  if (!h) return;
+  let j = null;
+  try { const r = await fetch('https://api.bybit.com/v5/user/query-api', { headers: h, signal: AbortSignal.timeout(8000) }); j = await r.json(); } catch (e) { return; }
+  if (!j || j.retCode !== 0 || !j.result) {
+    const k = 'bybitkey:dead'; let seen = false; try { seen = !!(await env.STATS.get(k)); } catch (e) {}
+    if (!seen) { try { await tgAdmin(env, '<b>Bybit affiliate key is not working</b> - retCode ' + ((j && j.retCode) || '?') + ' ' + ((j && j.retMsg) || '') + '. The volume board and the weekly rebate both read through it.', { kind: 'bybit key', sev: 'red' }); await env.STATS.put(k, '1', { expirationTtl: 6 * 3600 }); } catch (e) {} }
+    return;
+  }
+  try { await env.STATS.delete('bybitkey:dead'); } catch (e) {}
+  const exp = +Date.parse(j.result.expiredAt || '') || 0;
+  if (!exp) return;                                   // IP-bound keys do not expire; nothing to watch
+  const days = Math.floor((exp - Date.now()) / 86400000);
+  if (days > 14) return;
+  const k = 'bybitkey:warn:' + Math.max(0, days > 7 ? 14 : days > 3 ? 7 : days > 1 ? 3 : 1);
+  let sent = false; try { sent = !!(await env.STATS.get(k)); } catch (e) {}
+  if (sent) return;
+  try {
+    await tgAdmin(env, '<b>Bybit affiliate key expires in ' + days + ' day' + (days === 1 ? '' : 's') + '</b> (' + String(j.result.expiredAt).slice(0, 10) + ').\n' +
+      'It is not bound to an IP, which is why it expires at all. Extending is one click and KEEPS the same key and secret: Bybit > API > edit the key > IP Address > No IP restriction > Submit.\n' +
+      'If it lapses, the Bybit volume board and the weekly rebate both stop with no other symptom.', { kind: 'bybit key', sev: days <= 3 ? 'red' : 'amber' });
+    await env.STATS.put(k, '1', { expirationTtl: 20 * 86400 });
+  } catch (e) {}
+}
+
+/* Keep the season's volume report fed from Bybit instead of from a pasted CSV.
+   Writes the SAME KV shape the paste writes (lb:bybitup:<season>), so the board, the desk and the
+   payout all read it unchanged and a manual paste still works exactly as before.
+   TWO THINGS IT WILL NOT DO:
+     - it never touches a report already marked FINAL; payBybitPrizes reads that flag and pays from it
+     - a UID in the stored report that the feed does NOT return is KEPT, not dropped. That is how a
+       hand-typed correction survives (the 2026-09-15 "typing one pair is a patch" rule), and it means
+       this can only ever add information. */
+async function bybitAffSync(env) {
+  if (!env.STATS || !env.BYBIT_AFF_KEY) return null;
+  const ws = lbPeriodStart(Date.now()), we = ws + LB_PERIOD;
+  const prev = await bybitUpload(env, ws);
+  if (prev && prev.final) return { skipped: 'final' };
+  const day = t => new Date(t).toISOString().slice(0, 10);
+  const r = await bybitAffList(env, 0, { startDate: day(ws), endDate: day(Math.min(Date.now(), we - 86400000)) });
+  if (r.error) return { error: r.error, detail: r.detail || '' };
+  const fresh = new Map();
+  for (const u of r.list) { const v = +u.tradeVol || 0; if (v > 0) fresh.set(String(u.userId), Math.round(v * 100) / 100); }
+  const rows = [];
+  const kept = [];
+  for (const old of (prev && Array.isArray(prev.rows)) ? prev.rows : []) {
+    if (!fresh.has(String(old.uid))) { rows.push({ uid: String(old.uid), vol: +old.vol || 0 }); kept.push(String(old.uid)); }
+  }
+  for (const [uid, vol] of fresh) rows.push({ uid, vol });
+  const up = { ts: Date.now(), rows, final: !!(prev && prev.final), by: 'bybit-api' };
+  try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv' }; }
+  await bybitSnapshotRebuild(env, ws);
+  return { ok: true, n: rows.length, fromApi: fresh.size, keptManual: kept.length, ws };
 }
 async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no test accounts), matched: everything the report hit, unmatched, upload, registered}
   const up = await bybitUpload(env, ws); const reg = await bybitRegistrations(env); const allow = await bybitUidSet(env);
@@ -16907,6 +17117,10 @@ export default {
     const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };
     if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
     if (/^\/pass\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/season/#pass', 301); // 2026-09-06: the pass lives on the season page now (the old static page was removed so this is reached)
+    // The link in the weekly Telegram message. ONE short URL for everybody - a broadcast cannot carry
+    // an identity, so the page works out who the reader is from their session and the Bybit UID that
+    // account has registered. 302, not 301: this is a destination we may well move.
+    if (/^\/bybit-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/#bybonus', 302);
     if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
     // /api/ was a hub listing the three API surfaces. Measured 2026-09-15 over 30 days: ZERO crawls, zero
     // assistant visits and zero US pageviews, while /trading-api/ took 35 and /free-crypto-api/ 13 - the hub
@@ -18409,8 +18623,102 @@ export default {
     }
     // Bybit affiliate feed, read straight from Bybit instead of a pasted CSV. ?days= sets the window
     // (a window is what makes Bybit return commission at all). Read-only: it never writes a board.
+    /* The weekly Bybit rebate, member side. GET tells them where they stand, POST claims it.
+       THE CLAIM NEVER TRUSTS THE CALLER: the amount comes from the settled week in KV, matched to
+       the Bybit UID this ACCOUNT has registered. A body can say anything; it is read for the week
+       key and nothing else. And a week is only claimable once - the ledger's own `once` window is a
+       retry guard measured in seconds, not an idempotency key for something paid weekly, so the
+       claim is marked in KV BEFORE the credit and rolled back only if the ledger refuses. */
+    if (url.pathname === '/api/bybit/bonus') {
+      const tok0 = getCookie(request, SESS_COOKIE);
+      const su0 = tok0 ? await sessionUser(env, tok0) : null;
+      if (!su0 || !su0.id) return J({ error: 'login_required' }, 401);
+      const uid0 = String(su0.id);
+      let buid0 = '';
+      try { const pg = await usersDO(env, '/prefsget', { uid: uid0, keys: ['bybit_uid'] }); buid0 = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
+      // the most recent settled week, and the one before it (a claim is not lost if they miss a week)
+      const wks = [];
+      for (let i = 1; i <= 2; i++) { const ws0 = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (ws0 >= BYBIT_BONUS_START) wks.push(ws0); }
+      const weeks = [];
+      for (const ws0 of wks) {
+        const b0 = await bybitBonusGet(env, ws0);
+        if (!b0 || b0.error || !b0.announcedTs) continue;
+        const row = buid0 ? (b0.rows || []).find(r => String(r.buid) === buid0) : null;
+        let claimed = false; try { claimed = !!(await env.STATS.get('bybonus:claim:' + b0.week + ':' + buid0)); } catch (e) {}
+        weeks.push({ week: b0.week, from: b0.ws, to: b0.we,
+          vol: row ? row.vol : 0, cents: row && !row.skip ? row.cents : 0,
+          why: row ? (row.skip || '') : 'no_trades', claimed });
+      }
+      if (request.method !== 'POST') {
+        return J({ ok: true, registered: !!buid0, buid: buid0 ? ('***' + buid0.slice(-3)) : '',
+          share: BYBIT_BONUS_SHARE, minUsd: BYBIT_BONUS_MIN_C / 100, weeks });
+      }
+      if (!buid0) return J({ error: 'no_uid', hint: 'Register the Bybit UID you opened through MarginPad first' }, 400);
+      let bb0 = {}; try { bb0 = await request.json(); } catch (e) {}
+      const wantWeek = String((bb0 && bb0.week) || (weeks[0] && weeks[0].week) || '');
+      const target = weeks.find(x => x.week === wantWeek);
+      if (!target) return J({ error: 'no_week' }, 400);
+      if (target.claimed) return J({ error: 'already_claimed' }, 409);
+      if (!(target.cents > 0)) return J({ error: 'nothing_to_claim', why: target.why || '' }, 400);
+      const ck = 'bybonus:claim:' + target.week + ':' + buid0;
+      try { await env.STATS.put(ck, String(Date.now()), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+      let out0 = null;
+      try {
+        const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+        const r0 = await led0.fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ acct: 'u:' + uid0, cents: target.cents, from: 'bybit-rebate', once: 600 }) }));
+        out0 = await r0.json();
+      } catch (e) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: 'ledger_unavailable' }, 503); }
+      if (!out0 || out0.error) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: (out0 && out0.error) || 'ledger' }, 400); }
+      try { await evPush(env, request, 'bybitrebate', '$' + (target.cents / 100).toFixed(2) + ' week ' + target.week, '/rewards/'); } catch (e) {}
+      try { await tgAdmin(env, '<b>Bybit rebate claimed</b> @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for the week of ' + target.week, { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, week: target.week, usd: target.cents / 100, balance: (out0 && out0.balance != null) ? out0.balance : undefined });
+    }
+    /* The owner's rebate desk. ?week=YYYY-MM-DD reads a settled week; ?build=1 computes one WITHOUT
+       announcing or paying anything (so a week can be looked at before it is ever sent), and
+       ?run=1 forces the settle+announce pass the cron would do. Claims are read back per row, so
+       the desk answers the only two questions that matter: who is owed, and who has taken it. */
+    if (url.pathname === '/api/admin/bybitbonus' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      if (url.searchParams.get('run') === '1') { await checkBybitBonus(env); }
+      const qw = String(url.searchParams.get('week') || '');
+      const ws1 = qw ? Date.parse(qw + 'T00:00:00Z') : (bybitWeekStart(Date.now()) - 7 * 86400000);
+      let b1 = await bybitBonusGet(env, ws1);
+      if ((!b1 || url.searchParams.get('build') === '1')) { const fresh = await bybitBonusBuild(env, ws1); if (!fresh.error) { fresh.announcedTs = (b1 && b1.announcedTs) || 0; b1 = fresh; } else if (!b1) b1 = fresh; }
+      if (!b1) return J({ error: 'no_week', week: new Date(ws1).toISOString().slice(0, 10) }, 404);
+      if (b1.error) return J(b1);
+      const rows1 = [];
+      for (const r of b1.rows || []) {
+        let claimedTs = 0; try { const v = await env.STATS.get('bybonus:claim:' + b1.week + ':' + r.buid); claimedTs = +v || 0; } catch (e) {}
+        rows1.push({ ...r, claimed: !!claimedTs, claimedTs });
+      }
+      const sane1 = bybitBonusSane(b1);
+      const claimedC = rows1.filter(r => r.claimed).reduce((s, r) => s + r.cents, 0);
+      // every week we have on file, so the desk can be paged back through without guessing keys
+      const hist = [];
+      for (let i = 1; i <= 12; i++) {
+        const wsX = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (wsX < BYBIT_BONUS_START) break;
+        const bX = await bybitBonusGet(env, wsX); if (!bX || bX.error) continue;
+        hist.push({ week: bX.week, volumeUsd: bX.volumeUsd, commissionUsd: bX.commissionUsd, payoutCents: bX.payoutCents, payableN: bX.payableN, announced: !!bX.announcedTs });
+      }
+      return J({ ...b1, rows: rows1, capOk: sane1.ok, capWhy: sane1.why || '', capCents: sane1.maxC || 0,
+        claimedCents: claimedC, unclaimedCents: Math.max(0, b1.payoutCents - claimedC),
+        shareOfCommissionPct: b1.commissionUsd > 0 ? Math.round(b1.payoutCents / (b1.commissionUsd * 100) * 1000) / 10 : 0,
+        announced: !!b1.announcedTs, history: hist });
+    }
     if (url.pathname === '/api/admin/bybitaff' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
-      return J(await bybitAffStats(env, +url.searchParams.get('days') || 7));
+      // ?sync=1 runs the season-report refresh now instead of waiting for the cron; ?key=1 reports
+      // what Bybit says about the key itself, which is the only way to see the expiry before it bites.
+      const extra = {};
+      if (url.searchParams.get('sync') === '1') extra.sync = await bybitAffSync(env);
+      if (url.searchParams.get('key') === '1') {
+        const kh = await bybitAffSign(env, '');
+        try { const kr = await fetch('https://api.bybit.com/v5/user/query-api', { headers: kh, signal: AbortSignal.timeout(8000) }); const kj = await kr.json();
+          extra.key = (kj && kj.result) ? { note: kj.result.note, readOnly: kj.result.readOnly, ips: kj.result.ips, expiredAt: kj.result.expiredAt || null,
+            daysLeft: kj.result.expiredAt ? Math.floor((Date.parse(kj.result.expiredAt) - Date.now()) / 86400000) : null,
+            permissions: Object.keys(kj.result.permissions || {}).filter(k => (kj.result.permissions[k] || []).length) } : { error: (kj && kj.retMsg) || 'unreadable' };
+        } catch (e) { extra.key = { error: String(e).slice(0, 80) }; }
+      }
+      return J({ ...(await bybitAffStats(env, +url.searchParams.get('days') || 7)), ...extra });
     }
     if (url.pathname === '/api/admin/bybitlinks' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
@@ -20165,6 +20473,12 @@ export default {
     bg(nightlyBackup, 'backup'); // P0.5 - once per UTC day (stamped), retries on failure each */10
     bg(ledgerBackup6h, 'backup6');
     bg(spotStuckNudge, 'spotnudge');
+    // Bybit affiliate: keep the season's volume report fed from the API instead of a pasted CSV,
+    // settle the weekly rebate once a closed week is trustworthy, and watch the key's own expiry -
+    // it is not IP-bound, so it lapses after 90 days and would stop both of the above in silence.
+    bg(bybitAffSync, 'bybitaff');
+    bg(checkBybitBonus, 'bybitbonus');
+    bg(checkBybitKey, 'bybitkey');
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
@@ -23241,6 +23555,18 @@ export class UserStore {
         if (h && +h.fails >= WH_PAUSE_AFTER) { sql.exec('UPDATE botwh SET ok=0 WHERE id=?', hook); sql.exec('DELETE FROM botwhq WHERE hook=?', hook); this._whUids = null; paused++; this._opsEv(h.uid, 'admin', 'webhook paused after ' + h.fails + ' failures: ' + err, '/trading-api/', { by: 'system', webhook: 1 }); }
       }
       return this.j({ ok: true, paused });
+    }
+    // uid -> linked Telegram chat, for the weekly Bybit rebate DM. Chunked like every other IN in
+    // this file: a large IN silently returns 0 rows in DO SQLite, which here would read as "nobody
+    // linked Telegram" rather than as a bug.
+    if (path === '/tgchats') {
+      const out = {};
+      const uids = (Array.isArray(b.uids) ? b.uids : []).map(String).filter(Boolean).slice(0, 300);
+      for (let i = 0; i < uids.length; i += 20) {
+        const part = uids.slice(i, i + 20);
+        try { this.rows("SELECT id, tg_chat FROM users WHERE tg_chat IS NOT NULL AND tg_chat!='' AND id IN (" + part.map(() => '?').join(',') + ')', ...part).forEach(u => { out[u.id] = String(u.tg_chat); }); } catch (e) {}
+      }
+      return this.j({ chats: out });
     }
     if (path === '/presence/names') { // ops Here now: uid -> username and Telegram chat -> linked account, in one hop (chunked IN: a large IN silently returns 0 rows at scale)
       const out = { users: {}, chats: {} };

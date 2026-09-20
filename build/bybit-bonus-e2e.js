@@ -1,0 +1,127 @@
+/* E2E for the weekly Bybit rebate (2026-09-20).
+
+   THE LOAD-BEARING CHECK IS THE CAP. The owner's rule is "not more than 33% of my 100%", and the only
+   way that rule survives a future edit is if a test fails when it is broken. Two checks enforce it:
+   the total payout against 33% of the week's commission, and EVERY ROW against 33% of that row's own
+   commission - because a per-row breach can hide inside a total that still looks fine.
+   Falsify by raising BYBIT_BONUS_SHARE in worker.js and deploying: both go red.
+
+   NOTHING HERE ANNOUNCES OR PAYS. ?build=1 computes a week without announcing it; ?run=1 is the cron
+   pass that DMs real traders and is never called from a test.
+
+   Run: node build/bybit-bonus-e2e.js
+*/
+const fs = require('fs');
+const path = require('path');
+const { withBrowser } = require('./e2e-browser.js');
+
+const ROOT = path.resolve(__dirname, '..');
+const BASE = 'https://marginpad.io';
+const KEY = (fs.readFileSync(path.join(ROOT, 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('bybit-bonus-e2e: no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
+const H = { 'x-admin-key': KEY };
+
+let pass = 0, fail = 0;
+const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { fail++; console.log('  FAIL ' + m + (x !== undefined ? '  -> ' + x : '')); } };
+const jget = (u, h) => fetch(u, { headers: h || {} }).then(r => r.json());
+const jpost = (u, b, h) => fetch(u, { method: 'POST', headers: { 'content-type': 'application/json', ...(h || {}) }, body: JSON.stringify(b) });
+
+// Monday 00:00 UTC of the week a timestamp is in - mirrors bybitWeekStart in the worker
+function weekStart(ts) { const d = new Date(ts); const dow = (d.getUTCDay() + 6) % 7; return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dow * 86400000; }
+const wkey = ws => new Date(ws).toISOString().slice(0, 10);
+
+(async () => {
+  console.log('bybit-bonus-e2e');
+
+  console.log('\n-- the affiliate feed the whole thing stands on');
+  const aff = await jget(BASE + '/api/admin/bybitaff?days=7', H);
+  ok(!aff.error, 'the feed reads from production', aff.error);
+  if (aff.error) { console.log('\n' + pass + ' passed, ' + fail + ' failed'); process.exitCode = 1; return; }
+  ok(aff.referred > 0, 'it returns referred accounts', aff.referred);
+  ok(aff.bpsOfVolume === null || aff.bpsOfVolume > 0, 'it reports a measured rate rather than assuming one', aff.bpsOfVolume);
+  // the caveat has to travel WITH the data, or the next reader treats it as a payment record
+  ok(/T\+1/.test(aff.note || '') && /NOT the commission settlement/i.test(aff.note || ''),
+    'and it carries the caveat: late by a day, and not the payment record', aff.note);
+
+  console.log('\n-- building a week (computes, announces nothing, pays nothing)');
+  // the week that is running now has the volume; last week is what the cron would settle
+  const thisWk = weekStart(Date.now());
+  for (const ws of [thisWk, thisWk - 7 * 86400000]) {
+    const b = await jget(BASE + '/api/admin/bybitbonus?build=1&week=' + wkey(ws), H);
+    if (b.error) { ok(false, 'week ' + wkey(ws) + ' built', b.error); continue; }
+    console.log('   .... ' + b.week + ': volume $' + Math.round(b.volumeUsd).toLocaleString('en-US') +
+      ', commission $' + b.commissionUsd.toFixed(4) + ', rebate $' + (b.payoutCents / 100).toFixed(2) +
+      ' (' + b.shareOfCommissionPct + '% of commission), ' + b.payableN + ' payable');
+    ok(b.week === wkey(ws), 'week ' + wkey(ws) + ' builds and names itself');
+    ok(b.announced === false || b.announced === true, 'it reports whether it was announced', b.announced);
+    ok(b.share === 0.33, 'the share is the owner\'s 33%', b.share);
+
+    // THE RULE, as a total
+    const maxC = Math.floor(b.commissionUsd * 0.33 * 100);
+    ok(b.payoutCents <= maxC, 'total payout is within 33% of the week\'s commission', b.payoutCents + 'c vs ' + maxC + 'c');
+    ok(b.capOk === true, 'and the worker agrees it is within the cap', b.capWhy);
+
+    // THE RULE, row by row - a breach can hide inside a total that still passes
+    const over = (b.rows || []).filter(r => r.cents > Math.floor(r.com * 0.33 * 100));
+    ok(over.length === 0, 'no single row is paid more than 33% of its own commission', over.map(r => r.buid + ' ' + r.cents + 'c vs com $' + r.com).join(', '));
+
+    // a row that cannot be paid must say why, in the row
+    const bad = (b.rows || []).filter(r => !r.skip && !r.uid);
+    ok(bad.length === 0, 'every payable row names a registered account', bad.map(r => r.buid).join(', '));
+    const skips = (b.rows || []).filter(r => r.skip);
+    ok(skips.every(r => ['not_registered', 'test_account', 'under_floor'].indexOf(r.skip) >= 0), 'every skipped row gives a reason we recognise', skips.map(r => r.skip).join(','));
+    // and nothing under the floor is ever payable
+    ok(!(b.rows || []).some(r => !r.skip && r.cents < 25), 'nothing under the 25c floor is offered to anyone');
+    ok(b.payoutCents === (b.rows || []).filter(r => !r.skip).reduce((s, r) => s + r.cents, 0), 'the total is the sum of the payable rows');
+  }
+
+  console.log('\n-- the claim link and the member route');
+  const red = await fetch(BASE + '/bybit-bonus/', { redirect: 'manual' });
+  ok(red.status === 302, '/bybit-bonus/ redirects', red.status);
+  ok(/\/rewards\/#bybonus$/.test(red.headers.get('location') || ''), 'and it lands on the card', red.headers.get('location'));
+
+  const anon = await fetch(BASE + '/api/bybit/bonus');
+  ok(anon.status === 401, 'a signed-out reader gets 401, not a number', anon.status);
+  const anonPost = await jpost(BASE + '/api/bybit/bonus', { week: wkey(thisWk) });
+  ok(anonPost.status === 401, 'and cannot claim', anonPost.status);
+
+  console.log('\n-- a real member with no Bybit UID');
+  const uid = 'e2e-byb' + Date.now();
+  const mk = await (await jpost(BASE + '/api/admin/e2euser', { uid, op: 'mk' }, H)).json();
+  if (!mk.ok) { ok(false, 'could not mint a test member', JSON.stringify(mk)); }
+  else {
+    const sess = await (await jpost(BASE + '/api/admin/e2euser', { uid, op: 'sess' }, H)).json();
+    const C = { cookie: 'mp_sess=' + sess.token + '; mp_uid=' + uid };
+    try {
+      const me = await jget(BASE + '/api/bybit/bonus', C);
+      ok(me.ok === true, 'the member route answers', JSON.stringify(me).slice(0, 120));
+      ok(me.registered === false, 'it says they have no UID registered yet');
+      ok(me.share === 0.33, 'it publishes the same 33% share the engine uses', me.share);
+      const cl = await (await jpost(BASE + '/api/bybit/bonus', { week: wkey(thisWk) }, C)).json();
+      ok(cl.error === 'no_uid' || cl.error === 'no_week', 'claiming without a registered UID is refused', cl.error);
+    } finally {
+      await jpost(BASE + '/api/admin/e2euser', { uid, op: 'rm' }, H).catch(() => {});
+      console.log('   .... test member removed');
+    }
+  }
+
+  console.log('\n-- the card on /rewards/, in a browser at 390px');
+  await withBrowser(async (browser) => {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+    const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 140)));
+    await page.goto(BASE + '/rewards/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 50000 });
+    await new Promise(r => setTimeout(r, 2500));
+    const v = await page.evaluate(() => {
+      const c = document.getElementById('bybonus');
+      return { exists: !!c, hidden: c ? c.hidden : null, txt: c ? c.innerText.slice(0, 160) : '' };
+    });
+    ok(v.exists, 'the card is in the markup');
+    ok(v.hidden === true, 'and stays hidden for a signed-out reader - it never flashes an empty promise', v.hidden);
+    ok(errs.length === 0, 'no page errors', errs.join(' | '));
+    await page.close();
+  });
+
+  console.log('\n' + pass + ' passed, ' + fail + ' failed');
+  process.exitCode = fail ? 1 : 0;   // never process.exit() mid-teardown
+})();
