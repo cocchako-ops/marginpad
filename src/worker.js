@@ -12499,6 +12499,86 @@ async function bybitLinkLog(env, request, row) {
     }, 500);
   } catch (e) {}
 }
+/* ---- Bybit affiliate feed (2026-09-20)
+   Until today the Bybit volume board was fed by hand: the owner exported a CSV from the affiliate
+   portal and pasted it in, several times a day (see bybitParseReport). Bybit does publish the data -
+   GET /v5/affiliate/aff-user-list - it just needed a key with ONLY the Affiliate permission on the
+   master UID. Measured on the first real call: 36 referred accounts, 5 with volume.
+
+   TWO THINGS THIS FEED IS NOT:
+   1. It is NOT the payment record. Bybit's own docs say the volume here "has nothing to do with
+      commission settlement" - the Affiliate Portal is the truth for money. We use this for the
+      BOARD and for BONUS THRESHOLDS; anything we actually pay out is still reconciled against the
+      portal.
+   2. It is NOT live. Volume updates at T+1, so a trade made today shows up tomorrow. Never promise
+      a reader an instant figure from it.
+
+   The commission fields only appear when startDate/endDate are sent, and they arrive as a map of
+   coin -> amount (commissionsVol: {BTC, ETH, MNT, USDC, USDT}), so they are summed, not read from
+   one currency. MEASURED 2026-09-20 over 30 days: $97,411 volume -> $14.47 commission = 1.486 basis
+   points. A trader whose flow is maker-heavy pays us far less (0.64 bps at 8% maker vs 1.68 bps at
+   0% maker), which is why any bonus threshold must be priced off the MEASURED rate and re-measured,
+   never off Bybit's headline percentage. */
+async function bybitAffSign(env, qs) {
+  const key = env.BYBIT_AFF_KEY, sec = env.BYBIT_AFF_SECRET;
+  if (!key || !sec) return null;
+  const ts = String(Date.now()), recv = '20000';
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(sec), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(ts + key + recv + qs));
+  return { 'X-BAPI-API-KEY': key, 'X-BAPI-TIMESTAMP': ts, 'X-BAPI-RECV-WINDOW': recv,
+    'X-BAPI-SIGN': Array.from(new Uint8Array(sig)).map(x => x.toString(16).padStart(2, '0')).join('') };
+}
+// Every referred account, paged. days>0 asks for a window, which is what makes Bybit return commission.
+async function bybitAffList(env, days) {
+  const out = []; let cursor = '';
+  const day = n => new Date(Date.now() - n * 86400000).toISOString().slice(0, 10);
+  const base = days > 0 ? { size: '100', startDate: day(days), endDate: day(0) }
+                        : { size: '100', need30: 'true', need365: 'false', needDeposit: 'true' };
+  for (let i = 0; i < 20; i++) {
+    const qs = new URLSearchParams(cursor ? { ...base, cursor } : base).toString();
+    const h = await bybitAffSign(env, qs);
+    if (!h) return { error: 'no_key', list: [] };
+    let j = null;
+    try {
+      const r = await fetch('https://api.bybit.com/v5/affiliate/aff-user-list?' + qs, { headers: h, signal: AbortSignal.timeout(9000) });
+      j = await r.json();
+    } catch (e) { return { error: 'unreachable', detail: String(e).slice(0, 90), list: out }; }
+    if (!j || j.retCode !== 0) return { error: 'bybit_' + ((j && j.retCode) || '?'), detail: (j && j.retMsg) || '', list: out };
+    const l = (j.result && j.result.list) || [];
+    out.push(...l);
+    cursor = (j.result && j.result.nextPageCursor) || '';
+    if (!cursor || !l.length) break;
+  }
+  return { list: out };
+}
+// commissionsVol is a coin -> amount map; sum it rather than reading USDT alone.
+function bybitAffCommission(row) {
+  let n = 0;
+  for (const m of [row && row.commissionsVol]) { if (m) for (const k in m) n += (+m[k] || 0); }
+  return n;
+}
+// One shaped read: volume + commission per referred UID, plus the measured rate the bonus math needs.
+async function bybitAffStats(env, days) {
+  const d = Math.max(1, Math.min(365, +days || 7));
+  const r = await bybitAffList(env, d);
+  if (r.error) return { error: r.error, detail: r.detail || '', days: d };
+  const users = r.list.map(u => ({
+    uid: String(u.userId || ''), reg: String(u.registerTime || '').slice(0, 10), kyc: !!u.isKyc,
+    vol: +u.tradeVol || 0, taker: +u.takerVol || 0, maker: +u.makerVol || 0,
+    vol30: +u.tradeVol30Day || 0, dep30: +u.depositAmount30Day || 0,
+    com: bybitAffCommission(u)
+  }));
+  const vol = users.reduce((s, u) => s + u.vol, 0), com = users.reduce((s, u) => s + u.com, 0);
+  return {
+    days: d, referred: users.length, traded: users.filter(u => u.vol > 0).length,
+    volumeUsd: Math.round(vol * 100) / 100, commissionUsd: Math.round(com * 10000) / 10000,
+    // the ONE number every bonus threshold is priced from - measured, never assumed
+    bpsOfVolume: vol > 0 ? Math.round(com / vol * 1000000) / 100 : null,
+    usdPer1000: vol > 0 ? Math.round(com / vol * 1000 * 10000) / 10000 : null,
+    note: 'volume updates at T+1 and is NOT the commission settlement record - the Affiliate Portal is',
+    users: users.sort((a, b) => b.vol - a.vol)
+  };
+}
 async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no test accounts), matched: everything the report hit, unmatched, upload, registered}
   const up = await bybitUpload(env, ws); const reg = await bybitRegistrations(env); const allow = await bybitUidSet(env);
   const rows = [], matched = [], unmatched = [];
@@ -18326,6 +18406,11 @@ export default {
       try { await bybitLinkLog(env, request, { uid: auid, un: who.user.username || '', buid, err: '', ok: 1, admin: 1 }); } catch (e) {}
       try { await tgAdmin(env, '<b>Bybit UID set by admin</b> @' + (who.user.username || auid.slice(0, 8)) + ' → ' + (buid || '(cleared)'), { kind: 'bybit uid admin', sev: 'info' }); } catch (e) {}
       return J({ ok: true, username: who.user.username || '', uid: auid, buid });
+    }
+    // Bybit affiliate feed, read straight from Bybit instead of a pasted CSV. ?days= sets the window
+    // (a window is what makes Bybit return commission at all). Read-only: it never writes a board.
+    if (url.pathname === '/api/admin/bybitaff' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      return J(await bybitAffStats(env, +url.searchParams.get('days') || 7));
     }
     if (url.pathname === '/api/admin/bybitlinks' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
