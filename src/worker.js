@@ -6314,7 +6314,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a2993c11" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0c474ba8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15103,7 +15103,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '7c8f3816';
+const ASSET_V = '8406bb91';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -15712,9 +15712,9 @@ async function handleAuth(url, request, env, ctx) {
   if (path === '/profile') { // user edits their own public profile personalization
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ error: 'not_signed_in' }, 401);
-    const r = await stub.fetch(new Request('https://do/setprofile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, bio: b.bio, avatar: b.avatar, accent: b.accent, coins: b.coins }) }));
+    const r = await stub.fetch(new Request('https://do/setprofile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, bio: b.bio, avatar: b.avatar, coins: b.coins }) }));
     const pd9 = await r.json();
-    if (pd9 && pd9.ok) { try { const ch = []; if (b.bio != null) ch.push('bio'); if (b.avatar != null) ch.push('avatar'); if (b.accent != null) ch.push('accent'); if (b.coins != null) ch.push('coins'); const pp = evPush(env, request, 'profile_edit', ch.join(', ') || 'profile', '/', {}); if (ctx && ctx.waitUntil) ctx.waitUntil(pp); } catch (e) {} }
+    if (pd9 && pd9.ok) { try { const ch = []; if (b.bio != null) ch.push('bio'); if (b.avatar != null) ch.push('avatar'); if (b.coins != null) ch.push('coins'); const pp = evPush(env, request, 'profile_edit', ch.join(', ') || 'profile', '/', {}); if (ctx && ctx.waitUntil) ctx.waitUntil(pp); } catch (e) {} }
     return jr(pd9, 200);
   }
   if (path === '/shop') { // The Vault: catalog + my ownership/equip + balance - one call for the whole page
@@ -24506,13 +24506,13 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,accent,coins,premium,prem_seen,tktskin FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,coins,premium,prem_seen,tktskin FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
       // SLIDING expiry (2026-09-09): a session read more than 7 days after its last extension is pushed back to the full lifetime - one write a
       // week per session at most; the worker's /me re-issues the cookie on `renew` so the browser's own expiry slides with it.
       let renew = false; if (+s.expires - now < SESS_MAXAGE * 1000 - 7 * 86400000) { try { this.state.storage.sql.exec('UPDATE sessions SET expires=? WHERE token=?', now + SESS_MAXAGE * 1000, token); renew = true; } catch (e) {} }
-      return this.j({ renew, user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
+      return this.j({ renew, user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
     }
     if (path === '/premseen') { // premium-celebration-seen flag. {uid|username, seen} sets it (ack=1, mp-ops-cohort reset=0); {uid|username, read:1} reads it (persistence proof). COLLATE NOCASE so 'Chako'==='chako'.
       let u; try { if (b.uid) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE id=?', String(b.uid))[0]; else if (b.username) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE username COLLATE NOCASE=?', String(b.username).slice(0, 24))[0]; } catch (e) {}
@@ -25275,7 +25275,7 @@ export class UserStore {
       sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id); try { this._grantXp(String(s.user_id), 'username', 50, { once: true, note: 'set a username' }); } catch (ue) {}
       return this.j({ ok: true, username: uname });
     }
-    if (path === '/setprofile') { // user edits their own public profile personalization (bio/avatar/accent/coins)
+    if (path === '/setprofile') { // user edits their own public profile personalization (bio/avatar/coins)
       const token = String(b.token || '');
       const s = this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', token, now)[0];
       if (!s) return this.j({ error: 'not_signed_in' }, 401);
@@ -25285,11 +25285,11 @@ export class UserStore {
       let avatar = String(b.avatar == null ? '' : b.avatar);
       if (/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(avatar)) { if (avatar.length > 60000) avatar = ''; } // ~45KB decoded cap; oversized → drop
       else { avatar = avatar.replace(/[<>&"'`]/g, '').replace(/[a-zA-Z0-9]/g, '').trim().slice(0, 8); } // emoji fallback
-      const ACC = ['#c2f64a', '#38bdf8', '#ff9640', '#c78bff', '#34d99a', '#ff6c5c', '#ffd75a', '#f472b6'];
-      let accent = String(b.accent || '').toLowerCase(); if (ACC.indexOf(accent) < 0) accent = '';
       const coins = String(b.coins == null ? '' : b.coins).toUpperCase().replace(/[^A-Z0-9, ]/g, '').split(/[, ]+/).filter(Boolean).slice(0, 6).join(',');
-      sql.exec('UPDATE users SET bio=?, avatar=?, accent=?, coins=? WHERE id=?', bio, avatar, accent, coins, uid);
-      return this.j({ ok: true, bio, avatar, accent, coins });
+      // `accent` is left untouched in the row on purpose - nothing reads it any more, and dropping a
+      // column is a migration for a field that costs nothing where it sits.
+      sql.exec('UPDATE users SET bio=?, avatar=?, coins=? WHERE id=?', bio, avatar, coins, uid);
+      return this.j({ ok: true, bio, avatar, coins });
     }
     if (path === '/control') { // admin moderation actions
       const email = String(b.email || '').toLowerCase(), id0 = String(b.id || '');
@@ -25563,7 +25563,7 @@ export class UserStore {
       const tradeSummary = tr ? { n: _life, journal: tr.n || 0, wins: Math.max(+tr.wins || 0, +tr.life_wins || 0), losses: Math.max(+tr.losses || 0, +tr.life_losses || 0), opens: tr.opens || 0, pnl: +tr.life_seed ? (+tr.life_pnl || 0) : (tr.pnl || 0), season: { start: _ws, trades: (_sOk ? (+tr.s_closes || 0) : 0) + _sOpen, closes: _sOk ? (+tr.s_closes || 0) : 0, wins: _sOk ? (+tr.s_wins || 0) : 0, losses: _sOk ? (+tr.s_losses || 0) : 0, pnl: _sOk ? (+tr.s_pnl || 0) : 0, opens: _sOpen } } : { n: 0, journal: 0, wins: 0, losses: 0, opens: 0, pnl: 0, season: { start: _ws, trades: 0, closes: 0, wins: 0, losses: 0, pnl: 0, opens: 0 } };
       const dwell = this.rows('SELECT path,secs,hits,last FROM udwell WHERE user_id=? ORDER BY secs DESC LIMIT 40', u.id);
       const dwellTotal = (this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', u.id)[0] || { s: 0 }).s;
-      return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', accent: u.accent || '', bio: u.bio || '' }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card
+      return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', bio: u.bio || '' }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card
     }
     if (path === '/counters') { // public site counters, MEASURED - see the /api/stats/counters worker route for why
       const since30 = Date.now() - 30 * 86400000;
@@ -26127,7 +26127,7 @@ export class UserStore {
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
-      const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      const u = this.rows('SELECT id, username, xp, created, bio, avatar, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const records = this._pbSeason(u.id) || this._pbGet(u.id); // the public card shows SEASON records (close ledger), upb stays the toast/all-time source
@@ -26179,7 +26179,7 @@ export class UserStore {
       }
       return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
         iFollow, followsMe, mutual,
-        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
+        bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },

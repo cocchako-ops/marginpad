@@ -356,7 +356,6 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-di-terms{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}.mpa-di-tm{flex:1 1 30%;min-width:0;background:#0a0d11;border:1px solid #232b36;border-radius:9px;padding:7px 9px;font-size:12px;font-weight:700;color:#e9e7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpa-di-tm i{display:block;font-style:normal;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#7f8893;margin-bottom:2px}.mpa-di-stake{color:#c2f64a;border-color:rgba(194,246,74,.32)}'
     + '.mpa-di-acts{display:flex;gap:8px}.mpa-di-acts .mpa-du-y{flex:1;padding:10px}.mpa-di-acts .mpa-du-n{flex:none;padding:10px 14px}'
     + '.mpa-pl{display:block;font-size:11px;color:#9aa3ad;margin:0 0 5px;font-weight:600}'
-    + '.mpa-pacc{display:flex;gap:8px;flex-wrap:wrap}.mpa-pc{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .1s}.mpa-pc:hover{transform:scale(1.1)}.mpa-pc.on{border-color:#fff;box-shadow:0 0 0 2px #0a0d11,0 0 0 4px currentColor}'
     + '.mpa-nf{display:flex;flex-direction:column;max-height:min(58vh,460px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
     + '.mpa-nf::-webkit-scrollbar{width:9px}.mpa-nf::-webkit-scrollbar-track{background:#0a0d11}.mpa-nf::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
@@ -527,9 +526,18 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-cdnm{font:800 12.5px system-ui,sans-serif;color:#f2f0e9;max-width:106px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:9}'
     + '.mpa-cdlv{font:700 9.5px monospace;letter-spacing:.08em;text-transform:uppercase;color:#8b97a5;z-index:9}'
     + '.mpa-cdside{flex:1;min-width:0}'
-    + '.mpa-cdfr{display:flex;align-items:center;gap:10px;width:100%;background:#0f131a;border:1px solid #1e2530;border-radius:11px;padding:8px 11px;cursor:pointer;text-align:left;transition:border-color .12s}'
+    + '.mpa-cdfr{display:flex;align-items:center;gap:0;width:100%;background:#0f131a;border:1px solid #1e2530;border-radius:11px;padding:8px 11px;cursor:pointer;text-align:left;transition:border-color .12s}'
     + '.mpa-cdfr:hover{border-color:#33404f}.mpa-cdfr.open{border-color:#2c3644;border-bottom-left-radius:0;border-bottom-right-radius:0}'
-    + '.mpa-cdfr .mpa-fr-sw{width:34px;height:26px;flex:none}'
+    /* A NATION BADGE IS PINNED IN PIXELS WRITTEN FOR A 380px CARD (top:-12px, 22px wide). `.mpa-fr-sw`
+       got its own smaller copy on 2026-09-13; `.prev` never did, so on a 129px preview the pennant was
+       three times too big for the card and hung over the heading beside it. */
+    + '.prev.lbm-card[class*="frame-nat_"]::before{top:-5px;right:7px;width:11px;height:11px}'
+    /* and clearance, so whatever a frame paints outside its own box lands on nothing */
+    + '.mpa-panel .mpa-cdprev.lbm-card{margin:11px 13px 13px 11px}'
+    /* mp-profile draws a level-coloured top bar as .lbm-card::before and then kills it on any framed
+       card (.lbm-card[class*="frame-"]::before{background:none}) - a frame owns that edge. The preview
+       has to obey the same rule or it shows a grey line inside the band that the real card never has. */
+    + '.mpa-cdprev[class*="frame-"]:not(.frame-default) .mpa-cdbar{display:none}'
     + '.mpa-cdfr-b{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}'
     + '.mpa-cdfr-b em{font:700 9.5px monospace;letter-spacing:.09em;text-transform:uppercase;color:#7f8893;font-style:normal}'
     + '.mpa-cdfr-b b{font-size:13px;color:#e7ecf2;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
@@ -1238,7 +1246,6 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     });
   }
   // ---- Profile personalization editor ----
-  var ACCENTS = ['#c2f64a', '#38bdf8', '#ff9640', '#c78bff', '#34d99a', '#ff6c5c', '#ffd75a', '#f472b6'];
   // resize an uploaded image to a square avatar (cover), compressed to a small data URI
   function makeAvatar(file, cb) {
     if (!file || !/^image\//.test(file.type)) { cb(null, 'That’s not an image file.'); return; }
@@ -1390,7 +1397,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      off at thumbnail size - a new class of my own would have reproduced the 2026-09-13 bug where the
      ring collapses into a stray coloured line above the tile. Only the box size is new. */
   function renderCard() {
-    var S = { av: (ME && ME.avatar) || '', acc: (ME && ME.accent) || '', frame: (ME && ME.frame) || 'default', bio: (ME && ME.bio) || '', coins: (ME && ME.coins) || '' };
+    var S = { av: (ME && ME.avatar) || '', frame: (ME && ME.frame) || 'default', bio: (ME && ME.bio) || '', coins: (ME && ME.coins) || '' };
     var BASE = JSON.stringify(S), owned = ['default'], view = 'mine';
     try { view = localStorage.getItem('mp_frview') === 'all' ? 'all' : 'mine'; } catch (e) {}
     var frName = function (k) { for (var i = 0; i < FRAMES.length; i++) if (FRAMES[i].k === k) return FRAMES[i].name; return 'Classic'; };
@@ -1408,12 +1415,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           + '<div class="mpa-avttl">Profile picture</div>'
           + '<div class="mpa-avsub">Square works best. JPG, PNG or WebP.</div>'
           + '<div class="mpa-avbtns"><button type="button" class="mpa-avbtn" id="mpaAvPick">Upload</button><button type="button" class="mpa-avbtn ghost" id="mpaAvClear"' + (S.av ? '' : ' hidden') + '>Remove</button></div>'
-          + '<label class="mpa-pl" style="margin:12px 0 5px">Accent colour</label>'
-          + '<div class="mpa-pacc" id="mpaPacc">' + ACCENTS.map(function (c) { return '<button type="button" class="mpa-pc' + (c === S.acc ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>'
         + '</div>'
       + '<input type="file" accept="image/*" id="mpaAvFile" hidden></div>'
       + '<button class="mpa-cdfr" id="mpaCdFrBtn" type="button" aria-expanded="false">'
-        + '<span class="mpa-fr-sw frame-' + S.frame + '" id="mpaCdFrSw"></span>'
         + '<span class="mpa-cdfr-b"><em>Frame</em><b id="mpaCdFrNm">' + esc(frName(S.frame)) + '</b></span>'
         + '<span class="mpa-cdfr-c">' + ic('chev') + '</span>'
       + '</button>'
@@ -1430,18 +1434,16 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       + '<button class="mpa-link" id="mpaPback" type="button">← Back</button>';
 
     var msg = bodyEl.querySelector('#mpaPmsg'), sv = bodyEl.querySelector('#mpaPsave');
-    var prev = bodyEl.querySelector('#mpaCdPrev'), swat = bodyEl.querySelector('#mpaCdFrSw');
+    var prev = bodyEl.querySelector('#mpaCdPrev');
     function dirty() { return JSON.stringify(S) !== BASE; }
     function reflectSave() { if (!sv) return; var d = dirty(); sv.disabled = !d; sv.textContent = d ? 'Save card' : 'Saved'; }
     function paintPrev() {
       var av = bodyEl.querySelector('#mpaCdAv'); if (av) av.innerHTML = S.av ? avatarHtml(S.av) : esc(((ME && ME.username) || 'y').slice(0, 1).toUpperCase());
-      if (av) av.style.background = S.acc || '#1a2028';
-      var bar = bodyEl.querySelector('#mpaCdBar'); if (bar) bar.style.background = S.acc || ((lvl && lvl.col) || '#c2f64a');
-      // the frame class is the only thing that may change on the preview - swap just that token
-      [prev, swat].forEach(function (el) {
-        if (!el) return;
-        el.className = el.className.replace(/\s*frame-[a-z0-9_]+/gi, '') + ' frame-' + S.frame;
-      });
+      if (av) av.style.background = '#1a2028';
+      var bar = bodyEl.querySelector('#mpaCdBar'); if (bar) bar.style.background = (lvl && lvl.col) || '#c2f64a';
+      // the frame class is the only thing that may change on the preview - swap just that token.
+      // ONE preview: the disclosure row below names the frame, it does not draw it a second time.
+      if (prev) prev.className = prev.className.replace(/\s*frame-[a-z0-9_]+/gi, '') + ' frame-' + S.frame;
       var nm = bodyEl.querySelector('#mpaCdFrNm'); if (nm) nm.textContent = frName(S.frame);
       if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} }   // JS-driven cosmetics, not @keyframes
       reflectSave();
@@ -1462,14 +1464,6 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (prev) prev.addEventListener('click', function () { fileIn.click(); });
     if (fileIn) fileIn.addEventListener('change', function () { if (fileIn.files && fileIn.files[0]) onFile(fileIn.files[0]); fileIn.value = ''; });
     if (clr) clr.addEventListener('click', function () { S.av = ''; clr.hidden = true; paintPrev(); });
-    // ---- accent
-    Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (b) {
-      b.addEventListener('click', function () {
-        var v = b.getAttribute('data-acc'); S.acc = (S.acc === v) ? '' : v;
-        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (x) { x.classList.toggle('on', x.getAttribute('data-acc') === S.acc); });
-        paintPrev();
-      });
-    });
     // ---- bio + coins
     var bioEl = bodyEl.querySelector('#mpaPbio'), coEl = bodyEl.querySelector('#mpaPco');
     if (bioEl) bioEl.addEventListener('input', function () { S.bio = bioEl.value; reflectSave(); });
@@ -1522,9 +1516,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       sv.disabled = true; sv.textContent = 'Saving…'; if (msg) msg.innerHTML = '';
       if (S.frame !== was.frame) jobs.push(fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: S.frame }) })
         .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error(d && d.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip that frame.'); if (ME) ME.frame = d.frame; }));
-      if (S.av !== was.av || S.acc !== was.acc || S.bio !== was.bio || S.coins !== was.coins)
-        jobs.push(fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ bio: S.bio, avatar: S.av, accent: S.acc, coins: S.coins }) })
-          .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error('Could not save - try again.'); if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } }));
+      if (S.av !== was.av || S.bio !== was.bio || S.coins !== was.coins)
+        jobs.push(fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ bio: S.bio, avatar: S.av, coins: S.coins }) })
+          .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error('Could not save - try again.'); if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.coins = d.coins; } }));
       Promise.all(jobs).then(function () {
         BASE = JSON.stringify(S); reflectSave();
         if (msg) msg.innerHTML = '<span style="color:#34d99a">Saved. Your trader card is updated.</span>';
@@ -1724,7 +1718,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
  var lv = ME.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a', xp: ME.xp || 0, pct: 0, next: 'Silver', toNext: 2500 };
       var col = lv.col || '#c97f4a';
       var rgbaOf = function (h, a) { h = String(h || '').replace('#', ''); if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); var n = parseInt(h, 16); if (!isFinite(n) || h.length !== 6) return 'rgba(194,246,74,' + a + ')'; return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; };
-      var glowCol = (/^#[0-9a-fA-F]{6}$/.test(ME.accent || '') ? ME.accent : (lv.k === 'unranked' ? '#c2f64a' : col)); // the reader's own accent when they picked one, else the level colour; Unranked grey would read as broken
+      var glowCol = (lv.k === 'unranked' ? '#c2f64a' : col); // the level colour; Unranked grey would read as broken
       var dispName = hasU ? ME.username : (ME.email || '').split('@')[0];
       var avIn = ME.avatar ? avatarHtml(ME.avatar) : '<span class="mpa-id-ini">' + esc(String(dispName || '?').charAt(0).toUpperCase()) + '</span>';
       var chip0 = (window._mpPrem === true) ? '<i class="mpa-chip">PREMIUM</i>' : ''; // instant from the last XP poll; /api/lb/user refines (Founder / owner tag)

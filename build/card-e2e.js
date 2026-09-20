@@ -53,6 +53,19 @@ async function openPanel(page, rowId) {
     {
       const src = fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'mp-auth.js'), 'utf8');
       ok(src.indexOf('renderEditProfile') < 0 && src.indexOf('renderCustomize') < 0, 'Edit profile and Customize card are gone, not merely hidden');
+
+      /* ACCENT COLOUR IS GONE (owner, 2026-09-21: "izbaci ga svuda gde ga ima ... i kao kod"). It
+         tinted the bio border and the coin chips on the public card and competed with the two things
+         there that mean something - the level colour and the frame. Removed as a setting, as paint,
+         and as code. The DO column stays unread on purpose; nothing writes it. */
+      const prof = fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'mp-profile.js'), 'utf8');
+      const wk = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8');
+      ok(!/ACCENTS|data-acc|mpa-pacc|mpa-pc\b/.test(src), 'no accent picker, palette or styling left in mp-auth');
+      ok(!/ME\.accent|accent: S\./.test(src), 'and nothing reads or sends it');
+      ok(!/accent/.test(prof), 'the public trader card paints no accent');
+      ok(!/accent: u\.accent|b\.accent|SET bio=\?, avatar=\?, accent/.test(wk), 'the worker neither stores nor returns it');
+      // the column is deliberately left in place - a migration for a field nothing reads is a risk with no gain
+      ok(/'accent TEXT'/.test(wk), 'the unread column is left alone rather than migrated away');
       ok(src.indexOf('function renderCard(') > 0, 'one renderCard replaces them');
       ok(src.indexOf('function renderCompetitions(') > 0, 'renderCompetitions exists');
       // Browse's rule, applied here: a row sharing another row's icon is a row nobody can pick out
@@ -90,11 +103,13 @@ async function openPanel(page, rowId) {
             hasPic: !!p.querySelector('#mpaAvPick'), hasAcc: p.querySelectorAll('[data-acc]').length,
             hasBio: !!p.querySelector('#mpaPbio'), hasCoins: !!p.querySelector('#mpaPco'),
             frameBoxOpen: !!(p.querySelector('#mpaCdFrBox') && !p.querySelector('#mpaCdFrBox').hidden),
-            panelW: Math.round(p.getBoundingClientRect().width)
+            panelW: Math.round(p.getBoundingClientRect().width),
+            accentWord: /accent/i.test(p.textContent || '')
           };
         });
         ok(v && v.title === 'Your card', 'it opens one panel titled "Your card"', v && v.title);
-        ok(v.hasPic && v.hasAcc > 0 && v.hasBio && v.hasCoins, 'picture, accent, bio and coins all live in it', JSON.stringify({ acc: v.hasAcc }));
+        ok(v.hasPic && v.hasBio && v.hasCoins, 'picture, bio and coins all live in it');
+        ok(v.hasAcc === 0 && !v.accentWord, 'and accent colour is not offered at all', v.hasAcc + ' swatches');
         ok(v.previewW > 100 && v.previewW < 160, 'the live preview is card-sized, not stretched to the panel', v.previewW + 'x' + v.previewH);
         ok(Math.abs(v.previewW / v.previewH - 0.81) < 0.06, 'and keeps the trader card\'s shape', (v.previewW / v.previewH).toFixed(2));
         ok(v.previewReachable, 'the preview is reachable at its centre');
@@ -149,6 +164,27 @@ async function openPanel(page, rowId) {
         const pv = await page.evaluate(() => (document.querySelector('.mpa-cdprev') || {}).className || '');
         ok(pv.indexOf('frame-' + picked) >= 0, 'the preview wears it at once - which is what makes a pending save safe', picked);
         ok((pv.match(/frame-/g) || []).length === 1, 'and only one frame class is on the preview', pv);
+
+        /* THE FRAME IS PREVIEWED ONCE (owner, 2026-09-21). The disclosure row used to carry a second,
+           smaller copy of the tried frame, sitting on the seam between the button and the tile grid with
+           its ornament band reaching across it. That row names the frame; the card above draws it.
+           And whatever a frame paints outside its own box must land on nothing. */
+        const geo = await page.evaluate(() => {
+          const p = document.querySelector('.mpa-panel');
+          const outside = [].filter.call(p.querySelectorAll('[class*="frame-"]'), e => !e.closest('#mpaFrGrid'));
+          const prev = document.querySelector('.mpa-cdprev').getBoundingClientRect();
+          const btn = document.querySelector('#mpaCdFrBtn').getBoundingClientRect();
+          const cs = getComputedStyle(document.querySelector('.mpa-cdprev'), '::after');
+          const bf = getComputedStyle(document.querySelector('.mpa-cdprev'), '::before');
+          const reach = Math.max(Math.abs(parseFloat(cs.inset) || 0), bf.content === 'none' ? 0 : Math.abs(parseFloat(bf.inset) || 0));
+          return { copies: outside.length, gap: Math.round(btn.top - prev.bottom), reach: Math.round(reach * 10) / 10,
+            ids: outside.map(e => e.id || e.className.split(' ')[0]) };
+        });
+        ok(geo.copies === 1, 'exactly one frame preview outside the grid - the duplicate on the picker seam is gone', JSON.stringify(geo.ids));
+        ok(geo.gap > geo.reach, 'and its ornament cannot reach the row below it', 'reaches ' + geo.reach + 'px into a ' + geo.gap + 'px gap');
+        // mp-profile kills its own top bar on a framed card; the preview has to obey the same rule
+        ok(await page.evaluate(() => { const b = document.querySelector('#mpaCdBar'); return !b || getComputedStyle(b).display === 'none'; }),
+          'a framed preview draws no level bar under the band, exactly as the real card does not');
 
         // ---- one press, both endpoints
         await page.evaluate(() => document.querySelector('#mpaPsave').click());
