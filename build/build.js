@@ -116,6 +116,10 @@ run('Hyperliquid partner card on its pages', 'node build/add-hyperliquid-card.js
 // 11f) hub links for pages nothing linked to (per-coin maps/calculators, comparisons, translated hubs/posts) + og:image fallback - both idempotent, both before the charset pass.
 run('Hub links for orphan pages', 'node build/add-hub-links.js');
 run('share cards', 'node build/add-og-image.js');
+// 11g) the language switcher, rebuilt from the same LANGS that decides which homepages exist. The
+// hand-written option list had gone stale and offered /it/ /pl/ /hi/ /vi/ - all 404 - while hiding
+// zh, ja, ko and ar, which are real. Search Console found it; a reader picking Italian found a 404.
+run('Language switcher options', 'node build/fix-lang-select.js');
 // the feed injects <link rel=alternate> into every head, so it runs BEFORE fix-charset like the rest
 run('rss + json feed', 'node build/gen-feed.js');
 
