@@ -89,7 +89,7 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
   console.log('\n-- the claim link and the member route');
   const red = await fetch(BASE + '/bybit-bonus/', { redirect: 'manual' });
   ok(red.status === 302, '/bybit-bonus/ redirects', red.status);
-  ok(/\/rewards\/#bybonus$/.test(red.headers.get('location') || ''), 'and it lands on the card', red.headers.get('location'));
+  ok(/\/rewards\/\?byw=/.test(red.headers.get('location') || ''), 'and it lands on the claim itself, not on a page with a second button to press', red.headers.get('location'));
 
   const anon = await fetch(BASE + '/api/bybit/bonus');
   ok(anon.status === 401, 'a signed-out reader gets 401, not a number', anon.status);
@@ -123,12 +123,19 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
     const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 140)));
     await page.goto(BASE + '/rewards/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 50000 });
     await new Promise(r => setTimeout(r, 2500));
+    /* THERE IS NO CARD ANY MORE, and that is the assertion. The channel post already says "Claim your
+       bonus", so a page that then asks for a second press is a step that exists only because the page
+       was built before the link was. /rewards/ opened normally must be completely untouched by this. */
     const v = await page.evaluate(() => {
-      const c = document.getElementById('bybonus');
-      return { exists: !!c, hidden: c ? c.hidden : null, txt: c ? c.innerText.slice(0, 160) : '' };
+      const card = document.getElementById('bybonus');
+      const win = document.getElementById('bybWin');
+      return { card: !!card, win: !!win, winOpen: !!(win && win.classList.contains('on')),
+               locked: document.body.style.overflow === 'hidden' };
     });
-    ok(v.exists, 'the card is in the markup');
-    ok(v.hidden === true, 'and stays hidden for a signed-out reader - it never flashes an empty promise', v.hidden);
+    ok(!v.card, 'no bonus card on /rewards/ - the link is the button');
+    ok(v.win, 'the claim window is in the markup, ready for an arrival');
+    ok(!v.winOpen, 'but it stays shut when the page is opened normally');
+    ok(!v.locked, 'and nothing scroll-locks the page behind it');
     ok(errs.length === 0, 'no page errors', errs.join(' | '));
     await page.close();
   });

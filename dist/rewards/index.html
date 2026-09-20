@@ -496,16 +496,9 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div id="wdHistList"></div>
   </div>
 
-<div class="bybwin" id="bybWin" role="dialog" aria-modal="true" aria-labelledby="bybWinV" hidden>  <div class="bybwin-c">    <div class="bybwin-k">Bonus claimed</div>    <div class="bybwin-v" id="bybWinV">$0.00</div>    <p class="bybwin-s" id="bybWinS">It is on your MarginPad balance.</p>    <p class="bybwin-n" id="bybWinN"></p>    <button type="button" class="btn btn-lime bybwin-b" id="bybWinX">Close</button>  </div></div>
+<div class="bybwin" id="bybWin" role="dialog" aria-modal="true" aria-labelledby="bybWinV" hidden>  <div class="bybwin-c">    <div class="bybwin-k" id="bybWinK">Bonus claimed</div>    <div class="bybwin-v" id="bybWinV">$0.00</div>    <p class="bybwin-s" id="bybWinS">It is on your MarginPad balance.</p>    <p class="bybwin-n" id="bybWinN"></p>    <button type="button" class="btn btn-lime bybwin-b" id="bybWinX">Close</button>  </div></div>
 
-  <div class="card" id="bybonus" hidden>
-    <div class="lbl" style="display:flex;align-items:center;gap:9px">MarginPad weekly bonus</div>
-    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Trade on Bybit with the account you opened through MarginPad and you earn a <b>bonus on your MarginPad balance every week</b>. Nothing to opt into: register your Bybit UID once and it is worked out for you - the more you trade, the bigger it is.</p>
-    <div id="bybRows"></div>
-    <p class="note" id="bybNote" style="text-align:left;margin:10px 0 0;line-height:1.55;color:var(--dim)"></p>
-  </div>
-
-  <div class="card" id="moonCard" hidden>
+    <div class="card" id="moonCard" hidden>
     <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/moon.png" alt="Moon" width="22" height="22" style="border-radius:6px;background:#fff;padding:2px">Moon sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="moonAmt">1</span></span></div>
     <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Moon</b> account through our link, then enter your Moon username below. After a quick manual check we add <b style="color:#c2f64a">$<span id="moonAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
     <a class="btn btn-lime" id="moonRefBtn" href="https://moon.com/?offer=marginpad" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Moon account</a>
@@ -976,82 +969,58 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   })();
   (function(){var d=document.getElementById('stDot');if(!d)return;var on=true;setInterval(function(){on=!on;d.style.opacity=on?'1':'.25';},650);})(); /* LIVE dot pulse via JS+transition - visible under reduced-motion too */
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Earn free USDT</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in free with just your email. The faucet, missions and withdrawals unlock at <b style="color:#c97f4a">Bronze - 500 XP</b>, which is quick and free to earn on the <a href="/academy/" style="color:#c2f64a">Academy</a> and <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a> - then claim free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent=__esT_rewardsindex("signInFreeTo",'Sign in free to start earning');}else{wh.hidden=true;}}
-  /* The claim confirmation. A dialog, not a toast: somebody arriving from the Telegram link is here
-     for exactly this, and a notice that fades can be missed on a phone that was still loading. */
+  /* The Bybit weekly bonus, claimed by arriving. The link in the Telegram channel already said
+     "Claim your bonus", so the click is the press: this fires on ?byw= and reports every outcome
+     in one window, because the window is the only surface there is. */
   (function(){
     var win=document.getElementById("bybWin"); if(!win) return;
+    var V=document.getElementById("bybWinV"), K=document.getElementById("bybWinK"),
+        S=document.getElementById("bybWinS"), NOTE=document.getElementById("bybWinN"),
+        X=document.getElementById("bybWinX");
     var close=function(){ win.classList.remove("on"); win.hidden=true; document.body.style.overflow=""; };
-    document.getElementById("bybWinX").addEventListener("click",close);
+    X.addEventListener("click",function(){ if(X.getAttribute("data-signin")){ close(); var t=document.querySelector("[data-auth-open]"); if(t)t.click(); return; } close(); });
     win.addEventListener("click",function(e){ if(e.target===win) close(); });
     document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&win.classList.contains("on")) close(); });
-    window.mpBybWin=function(usd,label,ranked){
-      document.getElementById("bybWinV").textContent="$"+(+usd).toFixed(2);
-      document.getElementById("bybWinS").textContent=(label?label+" - ":"")+"added to your MarginPad balance.";
-      // the next thing they will wonder, answered before they go looking for it
-      document.getElementById("bybWinN").innerHTML=ranked
-        ? "Cash out any time from $5.00 on this page."
-        : "Withdrawals open at <b>Bronze</b> (500 XP) - free to earn on the Academy. Your balance keeps growing until then.";
+    function show(kicker,big,line,note,btn,signin){
+      K.textContent=kicker; V.textContent=big; V.style.display=big?"":"none";
+      S.textContent=line; NOTE.innerHTML=note||""; NOTE.style.display=note?"":"none";
+      X.textContent=btn||"Close"; if(signin)X.setAttribute("data-signin","1"); else X.removeAttribute("data-signin");
       win.hidden=false; win.classList.add("on"); document.body.style.overflow="hidden";
-      try{ document.getElementById("bybWinX").focus(); }catch(e){}
-    };
-  })();
-  /* Bybit weekly rebate. The card is the landing spot for the Telegram claim link (/bybit-bonus/
-     302s to #bybonus). It shows only what the SERVER says is owed - the page never computes an
-     amount, and the claim posts a week key, never a number. */
-  (function(){
-    var card=document.getElementById('bybonus'), rows=document.getElementById('bybRows'), note=document.getElementById('bybNote');
-    if(!card) return;
-    function usd(c){ return '$'+(c/100).toFixed(2); }
-    function draw(j){
-      if(!j || j.error){ card.hidden=true; return; }
-      var any=(j.weeks||[]).some(function(w){ return w.cents>0; });
-      // show the card to anyone who has registered a UID, or who has something waiting
-      if(!j.registered && !any){ card.hidden=true; return; }
-      card.hidden=false;
-      // gate on whether there is MONEY, not on whether a UID is on file. A row can name this account
-      // without the pref being set (the admin rehearsal, a cleared pref), and telling somebody to go
-      // and register while their bonus sits unclaimed underneath is the same bug the server had.
-      if(!j.registered && !any){
-        rows.innerHTML='';
-        note.innerHTML='Register the Bybit UID of the account you opened through us - the box is under the withdrawal method above - and your bonus appears here every Tuesday.';
-        return;
-      }
-      if(!(j.weeks||[]).length){
-        rows.innerHTML='';
-        note.innerHTML='UID '+j.buid+' registered. The first settled week appears here on a Tuesday; a week is only worked out once Bybit\'s figures for it are final.';
-        return;
-      }
-      var html='';
-      (j.weeks||[]).forEach(function(w){
-        var right;
-        if(w.claimed) right='<span style="color:var(--dim)">claimed</span>';
-        else if(w.cents>0) right='<button type="button" class="btn btn-lime bybClaim" data-week="'+w.week+'" style="padding:7px 14px;font-size:13px">Claim '+usd(w.cents)+'</button>';
-        else if(w.why==='under_floor') right='<span style="color:var(--dim)">under the minimum</span>';
-        else if(w.why==='not_registered') right='<span style="color:var(--dim)">UID not registered</span>';
-        else right='<span style="color:var(--dim)">no trades</span>';
-        html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)">'
-          +'<div><div style="font-weight:700">'+(w.label||('Week of '+w.week))+'</div><div class="note" style="margin:2px 0 0;text-align:left">You traded $'+Math.round(w.vol).toLocaleString('en-US')+'</div></div>'
-          +'<div>'+right+'</div></div>';
-      });
-      rows.innerHTML=html;
-      note.innerHTML='A weekly bonus that grows with how much you trade. Volume comes from Bybit and settles a day late, so a week is worked out the Tuesday after it ends.';
+      try{ X.focus(); }catch(e){}
     }
-    function load(){
-      fetch('/api/bybit/bonus',{credentials:'include'}).then(function(r){return r.json();}).then(draw).catch(function(){});
-    }
-    rows.addEventListener('click',function(e){
-      var b=e.target.closest('.bybClaim'); if(!b) return;
-      b.disabled=true; var old=b.textContent; b.textContent='Claiming…';
-      fetch('/api/bybit/bonus',{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({week:b.getAttribute('data-week')})})
-        .then(function(r){return r.json();}).then(function(j){
-          if(j && j.ok){ if(window.mpBybWin)window.mpBybWin(j.usd, j.label||'', !!j.ranked); else if(window.mpToast)window.mpToast({msg:'Weekly bonus claimed: $'+j.usd.toFixed(2),kind:'good'}); load(); if(window.refreshBal)window.refreshBal(); }
-          else { b.disabled=false; b.textContent=old; if(window.mpToast)window.mpToast({msg:(j&&j.error==='already_claimed')?'Already claimed':'Could not claim - try again',kind:'warn'}); }
-        }).catch(function(){ b.disabled=false; b.textContent=old; });
-    });
-    load();
-    window.addEventListener('mp-auth-change',load);
-    // the Telegram link lands on #bybonus; bring it into view once the card exists
-    if(location.hash==='#bybonus'){ setTimeout(function(){ try{ if(!card.hidden) card.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} },900); }
+    window.mpBybWin=show;
+    var want=new URLSearchParams(location.search).get("byw");
+    if(want===null) return;   // nobody arrived from the link; the page has nothing to say
+    // clean the parameter out straight away so a reload is not a second attempt
+    try{ history.replaceState(null,"",location.pathname+location.hash); }catch(e){}
+    fetch("/api/bybit/bonus",{credentials:"include"}).then(function(r){return r.json();}).then(function(j){
+      if(j && j.error==="login_required"){
+        show("Weekly bonus","","Sign in to claim it - email only, no password.","Your bonus is held on your MarginPad account until you do.","Sign in",1); return;
+      }
+      var weeks=(j&&j.weeks)||[];
+      var t=want?weeks.filter(function(x){return x.week===want;})[0]:null;
+      if(!t) t=weeks.filter(function(x){return x.cents>0&&!x.claimed;})[0]||weeks[0];
+      if(!t){ show("Weekly bonus","","Nothing to claim yet.","Bonuses are worked out every Tuesday for the week before. Trade on Bybit with an account opened through MarginPad and yours appears here."); return; }
+      if(t.claimed){ show(t.label||"Weekly bonus","$"+(t.cents/100).toFixed(2),"Already claimed - it is on your MarginPad balance.",""); return; }
+      if(!(t.cents>0)){
+        var why=t.why==="under_floor"?"Your bonus for that week was under the minimum, so it was not paid out."
+          :t.why==="not_registered"?"No Bybit UID is registered on this account yet. Register it on this page and every week from then on counts."
+          :"No Bybit trading was recorded on your account for that week.";
+        show(t.label||"Weekly bonus","","Nothing to claim for "+(t.label||"that week")+".",why); return;
+      }
+      fetch("/api/bybit/bonus",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({week:t.week})})
+        .then(function(r){return r.json();}).then(function(c){
+          if(c && c.ok){
+            show(c.label||t.label||"Weekly bonus","$"+(+c.usd).toFixed(2),"Added to your MarginPad balance.",
+              c.ranked?"Cash out any time from $5.00 on this page.":"Withdrawals open at <b>Bronze</b> (500 XP) - free to earn on the Academy. Your balance keeps growing until then.");
+            if(window.refreshBal)window.refreshBal();
+          } else if(c && c.error==="already_claimed"){
+            show(t.label||"Weekly bonus","$"+(t.cents/100).toFixed(2),"Already claimed - it is on your MarginPad balance.","");
+          } else {
+            show(t.label||"Weekly bonus","","Could not claim it just now.","Nothing was lost - try the link again in a minute.");
+          }
+        }).catch(function(){ show(t.label||"Weekly bonus","","Could not claim it just now.","Nothing was lost - try the link again in a minute."); });
+    }).catch(function(){});
   })();
 
   var wdMethod='bybit';

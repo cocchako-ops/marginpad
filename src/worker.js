@@ -12830,7 +12830,7 @@ async function checkBybitBonus(env) {
   // the bell + the celebration on their next visit, for everyone qualifying, TG or not
   for (const x of payable) {
     if (!x.uid) continue;
-    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for ' + bybitWeekLabel(b.ws).toLowerCase() + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
+    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for ' + bybitWeekLabel(b.ws).toLowerCase() + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/?byw=' + b.week }); } catch (e) {}
   }
   try {
     await tgAdmin(env, '<b>Bybit rebate announced</b> - ' + bybitWeekLabel(b.ws) + ' (' + b.week + ')\n' +
@@ -17275,9 +17275,11 @@ export default {
       const tk = url.pathname.replace(/\/$/, '').split('/').pop();
       const wsTok = await bybitWeekFromToken(env, tk);
       try { await evPush(env, request, 'bybitclick', wsTok ? bybitWeekKey(wsTok) : 'unknown', '/bybit-bonus/'); } catch (e) {}
-      return Response.redirect(url.origin + '/rewards/?byw=' + (wsTok ? bybitWeekKey(wsTok) : '') + '#bybonus', 302);
+      // ?byw= is what makes the page claim; there is no card to anchor to any more
+      return Response.redirect(url.origin + '/rewards/?byw=' + (wsTok ? bybitWeekKey(wsTok) : ''), 302);
     }
-    if (/^\/bybit-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/#bybonus', 302);
+    // the bare link (an old post, or somebody typing it): still claims, just without a known week
+    if (/^\/bybit-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/?byw=', 302);
     if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
     // /api/ was a hub listing the three API surfaces. Measured 2026-09-15 over 30 days: ZERO crawls, zero
     // assistant visits and zero US pageviews, while /trading-api/ took 35 and /free-crypto-api/ 13 - the hub
