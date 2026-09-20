@@ -48,9 +48,9 @@ ${extra || ''}
 const WIDE = BASE(1200, 630, `
   <div class="logo">MARGIN<b>PAD</b></div>
   <div style="margin:auto 0">
-    <div class="eyebrow"><span class="dot"></span>Bybit weekly rebate</div>
-    <div class="h">A third of what<br>you earn us,<br>back to you.</div>
-    <div class="sub mono">Every week, worked out from Bybit&rsquo;s own figures for your UID.</div>
+    <div class="eyebrow"><span class="dot"></span>Weekly bonus</div>   <!-- the logo already says MarginPad; saying it twice in two lines is just noise -->
+    <div class="h">Trade on Bybit.<br>Get paid here,<br>every week.</div>
+    <div class="sub mono">A bonus on your MarginPad balance. The more you trade, the bigger it is.</div>
   </div>
   <div class="foot mono"><span class="bar"></span><span class="site">marginpad.io</span></div>
 `, `
@@ -75,7 +75,7 @@ const PFP = BASE(640, 640, `
   <div class="mid">
     <div class="mark mono">%</div>
     <div class="wm">MARGIN<b>PAD</b></div>
-    <div class="tag mono">WEEKLY REBATE</div>
+    <div class="tag mono">WEEKLY BONUS</div>
   </div>
 `, `
 .glow{width:760px;height:760px;top:-250px;left:-60px}

@@ -11543,6 +11543,39 @@ async function handleTelegram(request, env) {
   const token = env.TELEGRAM_TOKEN;
   const base = { parse_mode: 'HTML', disable_web_page_preview: true };
 
+  /* JOIN REQUESTS FOR THE BONUS CHANNEL - our own version of the Bybit bot's referral check.
+     Answered before anything else in this webhook because it is time-sensitive: the person is
+     staring at a "request sent" spinner. */
+  if (update.chat_join_request) {
+    const jr = update.chat_join_request;
+    const chatId = String((jr.chat && jr.chat.id) || '');
+    const uid = String((jr.from && jr.from.id) || '');
+    let want = ''; try { want = (await env.STATS.get('cfg:bybitchan')) || ''; } catch (e) {}
+    if (!chatId || !uid || (want && chatId !== want)) return new Response('ok');
+    const dm = async t => { try { await tgApi(token, 'sendMessage', { chat_id: uid, parse_mode: 'HTML', disable_web_page_preview: true, text: t }); } catch (e) {} };
+    const no = async (why, t) => {
+      try { await tgApi(token, 'declineChatJoinRequest', { chat_id: chatId, user_id: uid }); } catch (e) {}
+      await dm(t);
+      try { await evPush(env, null, 'bybitjoin', 'declined: ' + why + ' (@' + ((jr.from && jr.from.username) || uid) + ')', ''); } catch (e) {}
+      return new Response('ok');
+    };
+    // 1. is this Telegram account linked to a MarginPad account at all?
+    let acct = null;
+    try { const r = await usersDO(env, '/presence/names', { chats: [uid] }); acct = (r && r.chats && r.chats[uid]) || null; } catch (e) {}
+    if (!acct || !acct.id) return no('no_account', '<b>MarginPad weekly bonus</b>\n\nThis channel is for traders using a Bybit account opened through MarginPad.\n\nTo get in:\n1. Open <a href="https://marginpad.io/rewards/">marginpad.io/rewards</a> and sign in (email only, free)\n2. Link this Telegram to your account there\n3. Register your Bybit UID\n\nThen ask to join again - you will be let in straight away.');
+    // 2. has that account registered a Bybit UID?
+    let buid = '';
+    try { const pg = await usersDO(env, '/prefsget', { uid: String(acct.id), keys: ['bybit_uid'] }); buid = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
+    if (!buid) return no('no_uid', '<b>MarginPad weekly bonus</b>\n\nYou are signed in as <b>@' + (acct.username || 'your account') + '</b>, but no Bybit UID is registered on it yet.\n\nRegister it on <a href="https://marginpad.io/rewards/">marginpad.io/rewards</a> - it takes one number - then ask to join again.\n\nNo Bybit account through us yet? Open one at <a href="https://partner.bybit.com/b/162071">this link</a> first; an account opened any other way cannot be counted.');
+    // 3. is that UID really one of ours? The allowlist is fed from Bybit's own affiliate list.
+    let ours = false; try { ours = (await bybitUidSet(env)).has(buid); } catch (e) {}
+    if (!ours) return no('not_ours', '<b>MarginPad weekly bonus</b>\n\nThe Bybit UID on your account (<code>' + buid + '</code>) is not one that was opened through MarginPad, so Bybit does not report it to us and we cannot count it.\n\nIf you believe that is wrong, reply here and we will check it by hand.');
+    try { await tgApi(token, 'approveChatJoinRequest', { chat_id: chatId, user_id: uid }); } catch (e) {}
+    await dm('<b>You are in.</b>\n\nBybit UID <code>' + buid + '</code> checked against our referral list - welcome to the MarginPad weekly bonus channel.\n\nYour bonus is worked out every Tuesday for the week before, and grows with how much you trade. Claim it at <a href="https://marginpad.io/rewards/#bybonus">marginpad.io/rewards</a>.');
+    try { await evPush(env, null, 'bybitjoin', 'approved @' + ((jr.from && jr.from.username) || uid) + ' UID ' + buid, ''); } catch (e) {}
+    return new Response('ok');
+  }
+
   // Auto-capture the announcement channel id the moment the bot sees any activity there
   // (added as admin, or a post). Lets the owner broadcast with no manual config / no secret.
   const chEv = update.channel_post || update.edited_channel_post
@@ -11562,8 +11595,17 @@ async function handleTelegram(request, env) {
       return new Response('ok');
     }
     try {
-      await env.STATS.put('tg:channel', String(chChat.id));
-      await env.STATS.put('tg:channel_name', chChat.username ? '@' + chChat.username : (chChat.title || String(chChat.id)));
+      /* FIRST CHANNEL WINS. This used to overwrite tg:channel with whatever channel the bot last saw,
+         so adding the bot to a SECOND channel silently repointed /announce at it - which is exactly
+         what happened on 2026-09-20 when the weekly-bonus channel was created and quietly took the
+         announcement channel over from MarginPad News. The rolling seenchans list below still records
+         every channel, which is what /bind and the ops readout use; only the default stops moving.
+         Clear tg:channel to re-capture deliberately. */
+      const haveChan = await env.STATS.get('tg:channel');
+      if (!haveChan) {
+        await env.STATS.put('tg:channel', String(chChat.id));
+        await env.STATS.put('tg:channel_name', chChat.username ? '@' + chChat.username : (chChat.title || String(chChat.id)));
+      }
       // also keep a rolling list of recently-seen channels so multiple can be mapped to signal tiers
       let list = []; try { list = JSON.parse(await env.STATS.get('tg:seenchans') || '[]') || []; } catch (e) {}
       list = list.filter(x => x.id !== chChat.id); list.unshift({ id: chChat.id, title: chChat.title || '', un: chChat.username || '', ts: Date.now() });
@@ -12759,13 +12801,12 @@ async function checkBybitBonus(env) {
   const payable = b.rows.filter(x => !x.skip);
   const link = 'https://marginpad.io/bybit-bonus/' + b.token;   // this week's own link - see bybitWeekToken
   // the channel line: one post, one link, the same link for everybody (the page identifies the reader)
-  const head = '<b>BYBIT WEEKLY REBATE</b>\n' +
+  const head = '<b>MARGINPAD WEEKLY BONUS</b>\n' +
     '<i>Week of ' + b.week + ' - ' + new Date(b.we - 86400000).toISOString().slice(0, 10) + '</i>\n\n' +
-    'If you trade on Bybit with an account opened through MarginPad, <b>a third of the commission your trading earns us comes back to you</b>. Every week, automatically.\n\n' +
-    'Your rebate is worked out from Bybit\u2019s own figures for your UID - not from a promise and not from a tier. Trade more, get more; trade nothing, get nothing.\n\n' +
-    'Last week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> is waiting for ' + payable.length + ' of them.\n\n' +
-    '<a href="' + link + '">Claim your rebate</a>\n\n' +
-    '<i>Not on the list? Register your Bybit UID once on the rewards page and every week after this one counts. New here: open Bybit through marginpad.io and you are in.</i>';
+    'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. No sign-up, no form - it is worked out for you every week, and the more you trade the bigger it is.\n\n' +
+    'This week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting for ' + payable.length + ' of them.\n\n' +
+    '<a href="' + link + '">Claim your bonus</a>\n\n' +
+    '<i>Not getting one yet? Register your Bybit UID once on the MarginPad rewards page and every week from then on counts. New here: open Bybit through marginpad.io first.</i>';
   try { await tgBroadcastBonus(env, head); } catch (e) {}
   // and a direct message to each qualifying member who has linked Telegram
   let dm = 0;
@@ -12777,7 +12818,7 @@ async function checkBybitBonus(env) {
       const chat = chats[x.uid]; if (!chat) continue;
       try {
         await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true,
-          text: '<b>Your Bybit rebate is ready</b>\nWeek of ' + b.week + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' - your rebate is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
+          text: '<b>Your weekly bonus is ready</b>\nWeek of ' + b.week + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' on Bybit - your bonus is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
         dm++;
       } catch (e) {}
     }
@@ -12785,7 +12826,7 @@ async function checkBybitBonus(env) {
   // the bell + the celebration on their next visit, for everyone qualifying, TG or not
   for (const x of payable) {
     if (!x.uid) continue;
-    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your Bybit rebate for the week of ' + b.week + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
+    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for the week of ' + b.week + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
   }
   try {
     await tgAdmin(env, '<b>Bybit rebate announced</b> - week of ' + b.week + '\n' +
@@ -18844,11 +18885,11 @@ export default {
         const linkT = 'https://marginpad.io/bybit-bonus/' + bT.token;
         const payT = bT.rows.filter(r => !r.skip);
         const capT = '<b>TEST - this went to you only</b>\n\n' +
-          '<b>BYBIT WEEKLY REBATE</b>\n' +
+          '<b>MARGINPAD WEEKLY BONUS</b>\n' +
           '<i>Week of ' + bT.week + '</i>\n\n' +
-          'If you trade on Bybit with an account opened through MarginPad, <b>a third of the commission your trading earns us comes back to you</b>. Every week, automatically.\n\n' +
+          'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. The more you trade, the bigger it is.\n\n' +
           'Last week: <b>$' + Math.round(bT.volumeUsd).toLocaleString('en-US') + '</b> traded. <b>$' + (bT.payoutCents / 100).toFixed(2) + '</b> waiting for ' + payT.length + '.\n\n' +
-          '<a href="' + linkT + '">Claim your rebate</a>\n\n' +
+          '<a href="' + linkT + '">Claim your bonus</a>\n\n' +
           '<i>Your test row is $' + (BYBIT_BONUS_MIN_C / 100).toFixed(2) + ' on UID ' + testBuid + '. Nothing was posted to the channel and nobody else was messaged. Clear it with ?test=clear.</i>';
         let sent = false;
         if (env.TELEGRAM_TOKEN && env.TG_ADMIN_CHAT) {
@@ -18897,6 +18938,55 @@ export default {
         announced: !!b1.announcedTs, history: hist });
     }
     // the earned metric on its own route, so the ops desk and the money line can both read it
+    /* Which channel is which. The bot auto-captures any channel it sees activity in as tg:channel,
+       and /bind <tier> maps one to a signal tier or to the rebate - so after adding a bot to a new
+       channel it is genuinely unclear from the outside what points where. This says it plainly,
+       and can set the picture and post a line, because a private channel gives the owner no id to
+       paste anywhere.
+         ?photo=/assets/x.jpg  set the rebate channel's picture
+         ?say=<text>           post one line to it (HTML, no photo)
+         ?bind=<chat_id>       point the rebate channel at an id by hand */
+    if (url.pathname === '/api/admin/tgchans' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const g = async k => { try { return (await env.STATS.get(k)) || ''; } catch (e) { return ''; } };
+      const bindTo = String(url.searchParams.get('bind') || '').trim();
+      if (bindTo) { try { await env.STATS.put('cfg:bybitchan', bindTo); } catch (e) {} }
+      let chan = await g('cfg:bybitchan');
+      let seen = []; try { seen = JSON.parse(await g('tg:seenchans') || '[]') || []; } catch (e) {}
+      const out = {
+        rebateChannel: chan || null, signalsChannel: await g('tg:channel'), signalsName: await g('tg:channel_name'),
+        tiers: { fast: await g('csig:chat:fast'), balanced: await g('csig:chat:balanced'), premium: await g('csig:chat:premium'), free: await g('csig:chat:free') },
+        seen
+      };
+      // what Telegram itself says about the rebate channel, including whether we can act in it
+      if (chan && env.TELEGRAM_TOKEN) {
+        try { const r = await tgApi(env.TELEGRAM_TOKEN, 'getChat', { chat_id: chan }); if (r && r.ok) out.chat = { id: r.result.id, title: r.result.title, type: r.result.type, hasPhoto: !!r.result.photo, joinByRequest: !!r.result.join_by_request, inviteLink: r.result.invite_link || '' }; else out.chatError = (r && r.description) || 'unreadable'; } catch (e) { out.chatError = String(e).slice(0, 80); }
+        try { const me = await tgApi(env.TELEGRAM_TOKEN, 'getMe', {}); const r2 = me && me.ok ? await tgApi(env.TELEGRAM_TOKEN, 'getChatMember', { chat_id: chan, user_id: me.result.id }) : null;
+          if (r2 && r2.ok) out.bot = { status: r2.result.status, canPost: !!r2.result.can_post_messages, canChangeInfo: !!r2.result.can_change_info, canInvite: !!r2.result.can_invite_users }; } catch (e) {}
+      }
+      const photo = String(url.searchParams.get('photo') || '').replace(/[^a-zA-Z0-9._\/-]/g, '');
+      if (photo && chan && env.TELEGRAM_TOKEN) {
+        let buf = null;
+        try { const ir = await env.ASSETS.fetch(new Request(url.origin + photo)); if (ir.ok) buf = await ir.arrayBuffer(); } catch (e) {}
+        if (!buf || buf.byteLength < 500) out.photo = { error: 'no_image', bytes: buf ? buf.byteLength : 0 };
+        else {
+          const fd = new FormData(); fd.append('chat_id', String(chan)); fd.append('photo', new Blob([buf], { type: 'image/jpeg' }), 'channel.jpg');
+          try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); out.photo = { ok: !!j.ok, desc: j.description || '', bytes: buf.byteLength }; } catch (e) { out.photo = { error: String(e).slice(0, 80) }; }
+        }
+      }
+      /* ?invite=1 mints the link that makes the gate work at all: an ordinary invite link lets
+         anybody straight in, while one created with creates_join_request turns every Join into a
+         chat_join_request the bot answers. This is the link to publish. */
+      if (url.searchParams.get('invite') === '1' && chan && env.TELEGRAM_TOKEN) {
+        try { const r = await tgApi(env.TELEGRAM_TOKEN, 'createChatInviteLink', { chat_id: chan, name: 'MarginPad weekly bonus', creates_join_request: true });
+          if (r && r.ok) { out.invite = { link: r.result.invite_link, joinRequest: !!r.result.creates_join_request };
+            try { await env.STATS.put('cfg:bybitinvite', r.result.invite_link); } catch (e) {} }
+          else out.invite = { error: (r && r.description) || 'failed' }; } catch (e) { out.invite = { error: String(e).slice(0, 80) }; }
+      }
+      try { out.publishedInvite = (await env.STATS.get('cfg:bybitinvite')) || ''; } catch (e) {}
+      const say = String(url.searchParams.get('say') || '');
+      if (say && chan && env.TELEGRAM_TOKEN) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chan, parse_mode: 'HTML', disable_web_page_preview: true, text: say.slice(0, 3500) }); out.said = { ok: !!(r && r.ok), desc: (r && r.description) || '' }; } catch (e) { out.said = { error: String(e).slice(0, 80) }; } }
+      return J(out);
+    }
     if (url.pathname === '/api/admin/bybitearned' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       return J(await bybitEarned(env, url.searchParams.get('fresh') === '1'));
     }
@@ -20028,7 +20118,7 @@ export default {
       if (!env.TG_WEBHOOK_SECRET) return new Response(JSON.stringify({ error: 'no_secret', hint: 'wrangler secret put TG_WEBHOOK_SECRET first' }), { status: 400, headers: jh });
       let ok = false, desc = '';
       try {
-        const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: jh, body: JSON.stringify({ url: url.origin + '/telegram/webhook', secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: ['message', 'callback_query', 'inline_query', 'channel_post', 'my_chat_member', 'chat_member'] }) });
+        const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: jh, body: JSON.stringify({ url: url.origin + '/telegram/webhook', secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: ['message', 'callback_query', 'inline_query', 'channel_post', 'my_chat_member', 'chat_member', 'chat_join_request'] }) });
         const j = await r.json(); ok = !!j.ok; desc = j.description || '';
         // also register the command menu (the ≡ list users see in the Telegram UI)
         const cmds = [

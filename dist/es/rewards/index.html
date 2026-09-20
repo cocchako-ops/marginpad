@@ -494,8 +494,8 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   </div>
 
   <div class="card" id="bybonus" hidden>
-    <div class="lbl" style="display:flex;align-items:center;gap:9px">Bybit weekly rebate</div>
-    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Trade on Bybit with the account you opened through MarginPad and <b>a third of what your trading earns us comes back to you</b>, every week. Nothing to opt into: register your Bybit UID once and the rebate is worked out from Bybit's own figures.</p>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px">MarginPad weekly bonus</div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Trade on Bybit with the account you opened through MarginPad and you earn a <b>bonus on your MarginPad balance every week</b>. Nothing to opt into: register your Bybit UID once and it is worked out for you - the more you trade, the bigger it is.</p>
     <div id="bybRows"></div>
     <p class="note" id="bybNote" style="text-align:left;margin:10px 0 0;line-height:1.55;color:var(--dim)"></p>
   </div>
@@ -981,7 +981,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       card.hidden=false;
       if(!j.registered){
         rows.innerHTML='';
-        note.innerHTML='Register the Bybit UID of the account you opened through us - the box is under the withdrawal method above - and your rebate appears here every Tuesday.';
+        note.innerHTML='Register the Bybit UID of the account you opened through us - the box is under the withdrawal method above - and your bonus appears here every Tuesday.';
         return;
       }
       if(!(j.weeks||[]).length){
@@ -1002,7 +1002,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
           +'<div>'+right+'</div></div>';
       });
       rows.innerHTML=html;
-      note.innerHTML='A third of the commission your own trading earns us, every week. Volume comes from Bybit and settles a day late, so a week is worked out the Tuesday after it ends.';
+      note.innerHTML='A weekly bonus that grows with how much you trade. Volume comes from Bybit and settles a day late, so a week is worked out the Tuesday after it ends.';
     }
     function load(){
       fetch('/api/bybit/bonus',{credentials:'include'}).then(function(r){return r.json();}).then(draw).catch(function(){});
@@ -1012,7 +1012,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       b.disabled=true; var old=b.textContent; b.textContent='Claiming…';
       fetch('/api/bybit/bonus',{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({week:b.getAttribute('data-week')})})
         .then(function(r){return r.json();}).then(function(j){
-          if(j && j.ok){ if(window.mpToast)window.mpToast({msg:'Bybit rebate claimed: $'+j.usd.toFixed(2),kind:'good'}); load(); if(window.refreshBal)window.refreshBal(); }
+          if(j && j.ok){ if(window.mpToast)window.mpToast({msg:'Weekly bonus claimed: $'+j.usd.toFixed(2),kind:'good'}); load(); if(window.refreshBal)window.refreshBal(); }
           else { b.disabled=false; b.textContent=old; if(window.mpToast)window.mpToast({msg:(j&&j.error==='already_claimed')?'Already claimed':'Could not claim - try again',kind:'warn'}); }
         }).catch(function(){ b.disabled=false; b.textContent=old; });
     });
