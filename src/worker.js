@@ -18886,6 +18886,12 @@ export default {
        the desk answers the only two questions that matter: who is owed, and who has taken it. */
     if (url.pathname === '/api/admin/bybitbonus' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       if (url.searchParams.get('run') === '1') { await checkBybitBonus(env); }
+      // ?ready=1 answers the only question worth asking while waiting: has Bybit settled the last
+      // day of that week yet? Volume is live, commission is not - so this is what decides the cron.
+      if (url.searchParams.get('ready') === '1') {
+        const wsR = url.searchParams.get('week') ? Date.parse(url.searchParams.get('week') + 'T00:00:00Z') : (bybitWeekStart(Date.now()) - 7 * 86400000);
+        return J({ week: bybitWeekKey(wsR), label: bybitWeekLabel(wsR), ...(await bybitWeekReady(env, wsR)) });
+      }
       /* ?test=1 - the whole flow, to the owner alone. Builds the RUNNING week, marks it announced,
          adds one claimable 25c row for the owner's own account and sends the real post with the real
          tokenised link to the admin chat only: no channel, no direct messages, no bell for anybody
