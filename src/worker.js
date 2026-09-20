@@ -11551,10 +11551,13 @@ async function handleTelegram(request, env) {
   if (chChat && chChat.type === 'channel' && env.STATS) {
     // Owner posts "/bind fast|balanced|premium|free" INSIDE a channel → map that channel to a signal tier (only channel admins can post, so it's safe)
     const cpText = (((update.channel_post || update.edited_channel_post) || {}).text || '').trim();
-    const bm = /^\/bind(?:@\w+)?\s+(fast|balanced|premium|free)\b/i.exec(cpText);
+    // "bybit" joins the signal tiers here so the owner never has to find a numeric chat id: a private
+    // channel has no @username, and t.me/+HASH is an invite link, not an id. Only channel admins can
+    // post, which is what makes binding from inside the channel safe.
+    const bm = /^\/bind(?:@\w+)?\s+(fast|balanced|premium|free|bybit)\b/i.exec(cpText);
     if (bm) {
       const tier = bm[1].toLowerCase();
-      try { await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
+      try { if (tier === 'bybit') await env.STATS.put('cfg:bybitchan', String(chChat.id)); else await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
       try { await tgApi(token, 'sendMessage', { chat_id: chChat.id, parse_mode: 'HTML', text: 'Bound <b>' + tier + '</b> signals to this channel (<code>' + chChat.id + '</code>). Signals will post here.' }); } catch (e) {}
       return new Response('ok');
     }
@@ -12655,6 +12658,36 @@ async function bybitBonusBuild(env, ws) {
     payableN: payable.length, rows
   };
 }
+/* EACH WEEK GETS ITS OWN LINK (owner 2026-09-20: "mozda ne bi bilo lose da svake nedelje bude neki
+   hashovan link jer svaka nedelja je razlicita"). The token is DERIVED, not stored: an HMAC of the
+   week key under the admin secret, truncated. No KV row to write and none to lose, and an old link
+   keeps resolving to the week it was minted for instead of quietly following the newest one - which
+   is the whole point, because a channel post is permanent and people scroll back.
+   It is NOT a password. Anyone may open any week's link; the page still only ever shows what the
+   reader's OWN registered UID is owed. The token makes the links distinct and the clicks countable,
+   nothing more, and it is checked against the recent weeks rather than trusted. */
+async function bybitWeekToken(env, ws) {
+  const sec = adminKeyOf(env) || env.TG_WEBHOOK_SECRET || 'mp';
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(sec), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode('bybonus:' + bybitWeekKey(ws)));
+  return Array.from(new Uint8Array(sig)).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 10);
+}
+// token -> week, by trying the weeks a link could plausibly be for. An unknown token is not an error:
+// the page simply opens on whatever the reader is owed.
+async function bybitWeekFromToken(env, tok) {
+  const t = String(tok || '').toLowerCase().replace(/[^a-f0-9]/g, '');
+  if (t.length !== 10) return 0;
+  const nw = bybitWeekStart(Date.now());
+  for (let i = 0; i <= 26; i++) { const ws = nw - i * 7 * 86400000; if (ws < BYBIT_BONUS_START) break; if ((await bybitWeekToken(env, ws)) === t) return ws; }
+  return 0;
+}
+/* THE ANNOUNCED FIGURE IS THE CAP (owner: "cap mora da ima i da bude isti kao cifra koja se pusta").
+   Whatever a week's rows say afterwards, the total that can ever be claimed for that week is the
+   number that was published when it was announced - stamped as capCents at announce time and never
+   recomputed. Every claim adds to bybonus:paid:<week> and is refused if it would cross it, so a
+   rebuild, a re-run or a bug in the row maths cannot hand out more than the channel post promised. */
+async function bybitPaidCents(env, week) { try { return +(await env.STATS.get('bybonus:paid:' + week)) || 0; } catch (e) { return 0; } }
+
 async function bybitBonusGet(env, ws) { try { return JSON.parse((await env.STATS.get('bybonus:' + bybitWeekKey(ws))) || 'null'); } catch (e) { return null; } }
 async function bybitBonusPut(env, b) { try { await env.STATS.put('bybonus:' + b.week, JSON.stringify(b), { expirationTtl: 400 * 86400 }); return true; } catch (e) { return false; } }
 
@@ -12683,14 +12716,20 @@ async function checkBybitBonus(env) {
   const sane = bybitBonusSane(b);
   if (!sane.ok) { try { await tgAdmin(env, '<b>Bybit rebate HELD</b> for ' + b.week + ': ' + sane.why + '. Nothing announced; look at mp-ops before this pays.', { kind: 'bybit rebate', sev: 'red' }); } catch (e) {} return; }
   b.announcedTs = now;
+  // the cap is the figure we are about to publish, frozen here and never recomputed
+  b.capCents = b.payoutCents;
+  b.token = await bybitWeekToken(env, ws);
   await bybitBonusPut(env, b);
   const payable = b.rows.filter(x => !x.skip);
-  const link = 'https://marginpad.io/bybit-bonus/';
+  const link = 'https://marginpad.io/bybit-bonus/' + b.token;   // this week's own link - see bybitWeekToken
   // the channel line: one post, one link, the same link for everybody (the page identifies the reader)
-  const head = '<b>Bybit weekly rebate - week of ' + b.week + '</b>\n' +
-    'Traded on Bybit under the MarginPad code last week? A third of what your trading earned us is yours.\n' +
-    payable.length + ' trader' + (payable.length === 1 ? '' : 's') + ' qualified, $' + (b.payoutCents / 100).toFixed(2) + ' on the table.\n' +
-    '<a href="' + link + '">Claim your bonus</a>';
+  const head = '<b>BYBIT WEEKLY REBATE</b>\n' +
+    '<i>Week of ' + b.week + ' - ' + new Date(b.we - 86400000).toISOString().slice(0, 10) + '</i>\n\n' +
+    'If you trade on Bybit with an account opened through MarginPad, <b>a third of the commission your trading earns us comes back to you</b>. Every week, automatically.\n\n' +
+    'Your rebate is worked out from Bybit\u2019s own figures for your UID - not from a promise and not from a tier. Trade more, get more; trade nothing, get nothing.\n\n' +
+    'Last week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> is waiting for ' + payable.length + ' of them.\n\n' +
+    '<a href="' + link + '">Claim your rebate</a>\n\n' +
+    '<i>Not on the list? Register your Bybit UID once on the rewards page and every week after this one counts. New here: open Bybit through marginpad.io and you are in.</i>';
   try { await tgBroadcastBonus(env, head); } catch (e) {}
   // and a direct message to each qualifying member who has linked Telegram
   let dm = 0;
@@ -12720,14 +12759,24 @@ async function checkBybitBonus(env) {
       { kind: 'bybit rebate', sev: 'green' });
   } catch (e) {}
 }
-// Post the weekly line to the rebate channel if one is configured, else fall back to the owner's chat.
-async function tgBroadcastBonus(env, html) {
-  if (!env.TELEGRAM_TOKEN) return;
+// The weekly post. A picture, because a channel full of plain text is scrolled past, and Telegram
+// gives a photo caption 1024 characters - plenty for what this has to say and a hard stop on padding.
+const BYBIT_REBATE_IMG = 'https://marginpad.io/assets/bybit-rebate.jpg';
+async function tgBroadcastBonus(env, caption) {
+  if (!env.TELEGRAM_TOKEN) return false;
   let chan = '';
   try { chan = (await env.STATS.get('cfg:bybitchan')) || ''; } catch (e) {}
   const to = chan || env.TG_ADMIN_CHAT;
-  if (!to) return;
-  await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: to, parse_mode: 'HTML', disable_web_page_preview: true, text: html });
+  if (!to) return false;
+  const cap = String(caption).slice(0, 1024);
+  try {
+    const r = await tgApi(env.TELEGRAM_TOKEN, 'sendPhoto', { chat_id: to, photo: BYBIT_REBATE_IMG, parse_mode: 'HTML', caption: cap });
+    if (r && r.ok) return true;
+  } catch (e) {}
+  // a photo can fail for reasons the message will not (fetch timeout, a bad cache at Telegram) -
+  // never let the picture be the reason nobody hears about their money
+  try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: to, parse_mode: 'HTML', disable_web_page_preview: false, text: cap }); return true; } catch (e) {}
+  return false;
 }
 
 /* The key is not IP-bound, so Bybit expires it 90 days after it was made (2026-12-20 for the current
@@ -12784,6 +12833,25 @@ async function bybitAffSync(env) {
     if (!fresh.has(String(old.uid))) { rows.push({ uid: String(old.uid), vol: +old.vol || 0 }); kept.push(String(old.uid)); }
   }
   for (const [uid, vol] of fresh) rows.push({ uid, vol });
+  /* THE WITHDRAWAL ALLOWLIST FEEDS ITSELF TOO (owner 2026-09-20: "UIDs treba automatski da se update
+     u nasem sistemu i za WDs"). KV bybit:uids gates BOTH registering a UID and being PAID to one, and
+     it was a list the owner pasted by hand - which is why 22 of 71 registration attempts were refused
+     as uid_not_ours. Bybit's affiliate list IS the authoritative set of our referrals, so it is merged
+     in on every sync.
+     UNION, NEVER REPLACE: a UID added by hand stays. The API is the fastest way to be right about who
+     is ours, but it is not the only way somebody legitimately got on that list, and this list decides
+     whether a person can be paid. Adding is safe; removing is not, so this never removes. */
+  try {
+    const have = await bybitUidSet(env);
+    const before = have.size;
+    for (const u of r.list) { const id = String(u.userId || '').trim(); if (/^[0-9]{5,15}$/.test(id)) have.add(id); }
+    if (have.size !== before) {
+      await env.STATS.put('bybit:uids', [...have].join('\n'));
+      await env.STATS.put('bybit:uids:ts', String(Date.now()));
+      await env.STATS.put('bybit:uids:api', String(Date.now()));
+      try { await tgAdmin(env, '<b>Bybit UID list</b> +' + (have.size - before) + ' from the affiliate API (' + have.size + ' total). Withdrawals and UID registration both read this list.', { kind: 'bybit uids', sev: 'info' }); } catch (e) {}
+    }
+  } catch (e) {}
   const up = { ts: Date.now(), rows, final: !!(prev && prev.final), by: 'bybit-api' };
   try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv' }; }
   await bybitSnapshotRebuild(env, ws);
@@ -17120,6 +17188,14 @@ export default {
     // The link in the weekly Telegram message. ONE short URL for everybody - a broadcast cannot carry
     // an identity, so the page works out who the reader is from their session and the Bybit UID that
     // account has registered. 302, not 301: this is a destination we may well move.
+    // /bybit-bonus/<token> - one link per week, so an old channel post opens on ITS week and a click on
+    // this week's post can be told from a click on a month-old one. An unknown token is not an error.
+    if (/^\/bybit-bonus\/([a-f0-9]{10})\/?$/.test(url.pathname)) {
+      const tk = url.pathname.replace(/\/$/, '').split('/').pop();
+      const wsTok = await bybitWeekFromToken(env, tk);
+      try { await evPush(env, request, 'bybitclick', wsTok ? bybitWeekKey(wsTok) : 'unknown', '/bybit-bonus/'); } catch (e) {}
+      return Response.redirect(url.origin + '/rewards/?byw=' + (wsTok ? bybitWeekKey(wsTok) : '') + '#bybonus', 302);
+    }
     if (/^\/bybit-bonus\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/rewards/#bybonus', 302);
     if (/^\/(es\/)?api-builder\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/trading-api/#plans', 301); // 2026-09-15: that page asked whether people WOULD pay for a $12 API plan. The plans now exist - leaving a "coming plan" page live is the exact confusion this split was meant to remove. Static page deleted so the request reaches here.
     // /api/ was a hub listing the three API surfaces. Measured 2026-09-15 over 30 days: ZERO crawls, zero
@@ -18660,6 +18736,11 @@ export default {
       if (!target) return J({ error: 'no_week' }, 400);
       if (target.claimed) return J({ error: 'already_claimed' }, 409);
       if (!(target.cents > 0)) return J({ error: 'nothing_to_claim', why: target.why || '' }, 400);
+      // THE CAP: the total claimed for a week can never pass the figure announced for that week.
+      const wkRec = await bybitBonusGet(env, Date.parse(target.week + 'T00:00:00Z'));
+      const capC = (wkRec && +wkRec.capCents) || 0;
+      const paidC = await bybitPaidCents(env, target.week);
+      if (capC && paidC + target.cents > capC) return J({ error: 'week_cap', hint: 'This week is fully claimed' }, 409);
       const ck = 'bybonus:claim:' + target.week + ':' + buid0;
       try { await env.STATS.put(ck, String(Date.now()), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
       let out0 = null;
@@ -18670,6 +18751,8 @@ export default {
         out0 = await r0.json();
       } catch (e) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: 'ledger_unavailable' }, 503); }
       if (!out0 || out0.error) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: (out0 && out0.error) || 'ledger' }, 400); }
+      try { await env.STATS.put('bybonus:paid:' + target.week, String(paidC + target.cents), { expirationTtl: 400 * 86400 }); } catch (e) {}
+      try { await env.STATS.put('bybonus:log:' + target.week + ':' + buid0, JSON.stringify({ ts: Date.now(), uid: uid0, un: su0.username || '', buid: buid0, cents: target.cents, vol: target.vol }), { expirationTtl: 400 * 86400 }); } catch (e) {}
       try { await evPush(env, request, 'bybitrebate', '$' + (target.cents / 100).toFixed(2) + ' week ' + target.week, '/rewards/'); } catch (e) {}
       try { await tgAdmin(env, '<b>Bybit rebate claimed</b> @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for the week of ' + target.week, { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
       return J({ ok: true, week: target.week, usd: target.cents / 100, balance: (out0 && out0.balance != null) ? out0.balance : undefined });
@@ -18680,8 +18763,11 @@ export default {
        the desk answers the only two questions that matter: who is owed, and who has taken it. */
     if (url.pathname === '/api/admin/bybitbonus' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       if (url.searchParams.get('run') === '1') { await checkBybitBonus(env); }
+      // DEFAULT TO THE WEEK THAT IS RUNNING, not the one that just ended. Six days out of seven the
+      // owner is watching this week build; the settled one is one click back in `history`, and opening
+      // on a finished quiet week made the desk read as broken the first time it was looked at.
       const qw = String(url.searchParams.get('week') || '');
-      const ws1 = qw ? Date.parse(qw + 'T00:00:00Z') : (bybitWeekStart(Date.now()) - 7 * 86400000);
+      const ws1 = qw ? Date.parse(qw + 'T00:00:00Z') : bybitWeekStart(Date.now());
       let b1 = await bybitBonusGet(env, ws1);
       if ((!b1 || url.searchParams.get('build') === '1')) { const fresh = await bybitBonusBuild(env, ws1); if (!fresh.error) { fresh.announcedTs = (b1 && b1.announcedTs) || 0; b1 = fresh; } else if (!b1) b1 = fresh; }
       if (!b1) return J({ error: 'no_week', week: new Date(ws1).toISOString().slice(0, 10) }, 404);
@@ -18695,12 +18781,15 @@ export default {
       const claimedC = rows1.filter(r => r.claimed).reduce((s, r) => s + r.cents, 0);
       // every week we have on file, so the desk can be paged back through without guessing keys
       const hist = [];
-      for (let i = 1; i <= 12; i++) {
+      for (let i = 0; i <= 12; i++) {   // from 0: the running week belongs in the list too
         const wsX = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (wsX < BYBIT_BONUS_START) break;
         const bX = await bybitBonusGet(env, wsX); if (!bX || bX.error) continue;
         hist.push({ week: bX.week, volumeUsd: bX.volumeUsd, commissionUsd: bX.commissionUsd, payoutCents: bX.payoutCents, payableN: bX.payableN, announced: !!bX.announcedTs });
       }
-      return J({ ...b1, rows: rows1, capOk: sane1.ok, capWhy: sane1.why || '', capCents: sane1.maxC || 0,
+      // TWO DIFFERENT CEILINGS, so they get two different names. capMaxCents is the 33% rule applied
+      // to this week's commission; capCents is the figure FROZEN when the week was announced, which is
+      // what a claim is actually checked against. Calling both 'cap' is how one silently becomes the other.
+      return J({ ...b1, rows: rows1, capOk: sane1.ok, capWhy: sane1.why || '', capMaxCents: sane1.maxC || 0,
         claimedCents: claimedC, unclaimedCents: Math.max(0, b1.payoutCents - claimedC),
         shareOfCommissionPct: b1.commissionUsd > 0 ? Math.round(b1.payoutCents / (b1.commissionUsd * 100) * 1000) / 10 : 0,
         announced: !!b1.announcedTs, history: hist });

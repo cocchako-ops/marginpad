@@ -49,7 +49,7 @@
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'campaigns', title: 'Campaigns' }, { id: 'tgbot', title: 'Telegram bot' }] },
-    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
@@ -674,6 +674,66 @@
   // joins the registrations (uprefs bybit_uid + UIDs a payout already went to), the affiliate allowlist that decides
   // eligibility, and this season's uploaded volume report; `attempts` is the OpsLog ring the /bybitlink route writes -
   // a refusal exists nowhere else, and "uid_not_ours" is the one support question this board generates.
+  /* Money › Bybit rebate. The owner's question every Tuesday is two-part: who is owed, and who has
+     taken it - so both are in one table and the header carries the money. `?build=1` means the week
+     is computed live rather than read from a stale snapshot, and NOTHING here announces or pays:
+     the only button that sends anything is Announce, and it says so.
+     The cap is shown beside the payout on purpose. The rule is that we never hand out more than a
+     third of the commission, and a number nobody can see is a rule nobody can check. */
+  simple('money/rebate', { url: '/api/admin/bybitbonus?build=1', every: 120000, html: function (d) {
+    if (d.error) return '<div class="card"><h2>Bybit rebate</h2><div class="empty">Could not build the week: <b>' + esc(d.error) + '</b> ' + esc(d.detail || '') + '</div></div>';
+    var rows = d.rows || [], hist = d.history || [];
+    var usd = function (c) { return '$' + (c / 100).toFixed(2); };
+    var WHY = { not_registered: 'traded, but no MarginPad account has registered this UID', test_account: 'test account', under_floor: 'under the ' + usd(d.minCents || 25) + ' minimum' };
+    var body = rows.map(function (r) {
+      var right = r.skip
+        ? '<span class="meta">' + esc(WHY[r.skip] || r.skip) + '</span>'
+        : (r.claimed ? '<span class="ok">claimed ' + usd(r.cents) + '</span><span class="meta"> · ' + agoT(r.claimedTs) + '</span>'
+                     : '<span class="warn">owed ' + usd(r.cents) + '</span>');
+      return '<div class="row">'
+        + '<span class="who">' + (r.name ? userLink(r.name) : '<span class="meta">unregistered</span>') + '</span>'
+        + '<span class="mono meta">UID ' + esc(r.buid) + '</span>'
+        + '<span class="mono">$' + Math.round(r.vol).toLocaleString('en-US') + '</span>'
+        + '<span class="mono meta">commission $' + (+r.com).toFixed(2) + (r.vol > 0 ? ' · ' + Math.round(r.maker / r.vol * 100) + '% maker' : '') + '</span>'
+        + '<span style="margin-left:auto">' + right + '</span></div>';
+    }).join('');
+    var pct = d.shareOfCommissionPct || 0;
+    var tiles = '<div class="grid g4">'
+      + tile('$' + Math.round(d.volumeUsd || 0).toLocaleString('en-US'), 'Volume, this week')
+      + tile('$' + (+(d.commissionUsd || 0)).toFixed(2), 'Our commission')
+      + tile(usd(d.payoutCents || 0), 'Rebate · ' + pct + '% of it')
+      + tile(usd(d.claimedCents || 0), 'Claimed', '', usd(d.unclaimedCents || 0) + ' still out')
+      + '</div>';
+    var capLine = d.capOk
+      ? '<div class="sl">Cap respected: at most <b>33%</b> of what each trader earned us, which for this week is ' + usd(d.capMaxCents || 0) + '. ' + (d.capCents ? 'Announced ceiling <b>' + usd(d.capCents) + '</b> - claims can never sum past that figure.' : 'Not announced yet, so no ceiling is frozen.') + '</div>'
+      : '<div class="sl warn">CAP BREACHED: ' + esc(d.capWhy || '') + ' - nothing will be announced until this is fixed.</div>';
+    var act = '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'
+      + '<button class="btn" data-byb-run="1">Announce this week (posts to the channel and DMs)</button>'
+      + '<button class="btn" data-byb-reload="1">Rebuild</button></div>';
+    var histHtml = hist.length ? ('<div class="card"><h2>Earlier weeks</h2>' + hist.map(function (h) {
+      return '<div class="row"><span class="who mono">' + esc(h.week) + '</span>'
+        + '<span class="mono meta">$' + Math.round(h.volumeUsd).toLocaleString('en-US') + ' traded</span>'
+        + '<span class="mono meta">commission $' + (+h.commissionUsd).toFixed(2) + '</span>'
+        + '<span style="margin-left:auto" class="mono">' + usd(h.payoutCents) + ' to ' + h.payableN + '</span>'
+        + '<span class="' + (h.announced ? 'ok' : 'meta') + '">' + (h.announced ? 'announced' : 'not announced') + '</span></div>';
+    }).join('') + '</div>') : '';
+    return '<div class="card"><h2>Bybit rebate <span>week of ' + esc(d.week || '') + (d.announced ? ' · announced' : ' · not announced yet') + '</span></h2>'
+      + tiles + capLine + act
+      + (body || '<div class="empty">Nobody traded under our code this week.</div>')
+      + '<div class="sl">Volume comes from Bybit and updates a day late, so a week is only worked out from the Tuesday after it ends. The Affiliate Portal, not this feed, is the record of what we are actually paid.</div>'
+      + '</div>' + histHtml;
+  }, wire: function (el) {
+    el.addEventListener('click', function (e) {
+      var r = e.target.closest('[data-byb-run]'), rl = e.target.closest('[data-byb-reload]');
+      if (rl) { show('money/rebate'); return; }
+      if (!r) return;
+      // this one really does send - say so before it goes
+      if (!confirm('Announce this week? It posts to the Telegram channel and direct-messages every qualifying trader who linked Telegram. This cannot be unsent.')) return;
+      r.disabled = true; r.textContent = 'Announcing…';
+      fetch('/api/admin/bybitbonus?run=1', { credentials: 'include' }).then(function (x) { return x.json(); }).then(function () { show('money/rebate'); }).catch(function () { r.disabled = false; r.textContent = 'Announce this week'; });
+    });
+  } });
+
   simple('money/bybit', { url: '/api/admin/bybitlinks', every: 90000, html: function (d) {
     var c = d.counts || {}, reg = d.registered || [], att = d.attempts || [];
     var ERR = { '': 'registered', uid_not_ours: 'UID not opened through our link', uid_taken: 'UID already on another account', bad_uid: 'not a valid UID', unavailable: 'server error' };

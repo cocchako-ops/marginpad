@@ -75,6 +75,17 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
     ok(b.payoutCents === (b.rows || []).filter(r => !r.skip).reduce((s, r) => s + r.cents, 0), 'the total is the sum of the payable rows');
   }
 
+  console.log('\n-- the two ceilings are two different numbers, and stay that way');
+  {
+    const b = await jget(BASE + '/api/admin/bybitbonus?build=1&week=' + wkey(thisWk), H);
+    // capMaxCents = the 33% rule applied to this week. capCents = the figure FROZEN when the week was
+    // announced, which is what a claim is checked against. They were one field named capCents, which
+    // is precisely how one rule silently becomes a different rule.
+    ok(typeof b.capMaxCents === 'number', 'the desk reports the 33% ceiling for the week', b.capMaxCents);
+    ok(b.capMaxCents === Math.floor(b.commissionUsd * 0.33 * 100), 'and it really is 33% of the commission', b.capMaxCents + ' vs ' + Math.floor(b.commissionUsd * 0.33 * 100));
+    ok(b.announced ? b.capCents > 0 : !b.capCents, 'the frozen ceiling exists only once a week is announced', 'announced=' + b.announced + ' capCents=' + b.capCents);
+  }
+
   console.log('\n-- the claim link and the member route');
   const red = await fetch(BASE + '/bybit-bonus/', { redirect: 'manual' });
   ok(red.status === 302, '/bybit-bonus/ redirects', red.status);
