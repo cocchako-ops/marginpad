@@ -110,7 +110,7 @@
       return '<span class="rz rz-off" title="Easy mode: filled at the live price with no slippage and a flat 0.5% maintenance margin - easier than any real venue, and more so the bigger the position. Realism was off for every close.">easy mode</span>';}
     $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');
       var op=r.open_positions||0,un=r.open_unrealized_usd,bk=r.pnl_incl_open_usd,perfect=(r.win_rate_pct>=100&&op>0);
-      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'">'+who[0]+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
+      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'"><a data-lbu="'+esc(r.who)+'">'+who[0]+'</a>'+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
         +'<td class="'+(perfect?'flagwr':(r.closes<20?'mid':''))+'"'+(perfect?' title="Every closed trade is a win while '+op+' position'+(op===1?' is':'s are')+' still open. Read the next two columns."':'')+'>'+r.win_rate_pct+'%'+(perfect?'<sup>*</sup>':'')+'</td>'
         +'<td class="'+(op?'mid':'')+'">'+(op||'-')+'</td>'
         +'<td class="'+(un==null?'':(un>=0?'up':'dn'))+'">'+(un==null?'-':usd(un))+'</td>'
@@ -124,6 +124,6 @@
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
-<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
+<script defer src="/assets/mp-nav.js?v=2e871550"></script>
 </body>
 </html>

@@ -13,6 +13,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   var _NL=_mpLang();
   function TR(k){var o=MPI[_NL]||MPI.en;return (o&&o[k]!=null)?o[k]:(MPI.en[k]!=null?MPI.en[k]:k);} try{window.__mpTR=TR;}catch(e){}
   var css = ''
+    /* A leaderboard name is an <a> with no href - it opens the profile card through the delegated listener
+       below - so it gets none of the browser's link affordances. Say it is clickable. */
+    + '[data-lbu]{cursor:pointer}[data-lbu]:hover{text-decoration:underline}'
     /* cross-page crossfade: DESKTOP-only. On phones the old-page snapshot lingers while the new page renders
        (reads as "the previous page flashes back" on slow devices) and the snapshot compositing costs GPU on
        weak phones - so mobile navigates instantly instead. Desktop gets a short .15s fade. */
@@ -632,12 +635,27 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=ca254408', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=245952d4', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
       if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
       profLoading.then(function () { setTimeout(cb, 20); });
     };
+    /* A name on ANY leaderboard opens the profile card (owner 2026-09-20). One delegated listener, so a new
+       board only has to mark its name with data-lbu. mpEnsureProfile pulls mp-profile.js on the first click;
+       the bento homepage answers with its own lbOpenProfile, which is why both are accepted. */
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('[data-lbu]');
+      if (!t) return;
+      var name = t.getAttribute('data-lbu');
+      if (!name) return;
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+      e.preventDefault();
+      window.mpEnsureProfile(function () {
+        var open = window.mpOpenProfile || window.lbOpenProfile;
+        if (open) { try { open(name); } catch (err) {} }
+      });
+    });
     if (chatWanted()) { try { chatCss(); chatMarkup(); document.addEventListener('click', function (e) { var f = e.target.closest && e.target.closest('#chatFab'); if (!f || window.mpOpenChat) return; e.preventDefault(); e.stopImmediatePropagation(); ensureChat(function () { if (window.mpOpenChat) window.mpOpenChat(); else { var f2 = document.getElementById('chatFab'); if (f2) f2.click(); } }); }, true); } catch (e) {} }
     // Trades → the live My-Trades drawer (mp-trade.js / home.js) · Chat → the page's chat widget.
     document.addEventListener('click', function (e) {

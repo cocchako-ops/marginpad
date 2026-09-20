@@ -292,7 +292,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     $('bHead').innerHTML='<tr>'+b.head.map(function(h,i){return '<th'+(i>=2?' class="'+(i===b.head.length-1?'r':'')+'"':'')+'>'+h+'</th>';}).join('')+'</tr>';
     var mine=me(), myRow=null;
     $('bBody').innerHTML=rows.length?rows.map(function(r){var isMe=mine&&String(r.who||'').toLowerCase()===mine; if(isMe)myRow=r; var paid=r.rank<=pz.length;
-      return '<tr class="'+(r.rank<=3?'t'+r.rank:'')+(paid?' paid':'')+(isMe?' me':'')+'"><td class="rk">'+r.rank+'</td><td class="who"><a href="/community/u/'+encodeURIComponent(r.who)+'">'+esc(r.who)+'</a></td>'+b.row(r)+'<td class="prz">'+(paid?'$'+int(pz[r.rank-1]):'')+'</td></tr>';}).join('')
+      return '<tr class="'+(r.rank<=3?'t'+r.rank:'')+(paid?' paid':'')+(isMe?' me':'')+'"><td class="rk">'+r.rank+'</td><td class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a></td>'+b.row(r)+'<td class="prz">'+(paid?'$'+int(pz[r.rank-1]):'')+'</td></tr>';}).join('')
       :'<tr><td class="empty" colspan="6">'+(CUR==='bybit'?__esT_leaderboardsindex("noRegisteredBybitAccount",'No registered Bybit account has traded this season yet.'):CUR==='moon'?(MC?__esT_leaderboardsindex("nobodyHasWageredOn",'Nobody has wagered on Moon since the contest opened on ')+dayS(MC.start)+'. The first Moon report after someone does fills this table.':__esT_leaderboardsindex("theContestHasNot",'The contest has not opened yet.')):__esT_leaderboardsindex("nobodyQualifiesYetTen",'Nobody qualifies yet - ten closed trades this season put you here.'))+'</td></tr>';
     var EK={roe:'top',green:'green',wr:'wr',xp:'xp',gold:'gold',bybit:'bybit',moon:'moon'};
     var n=(LB&&LB.entrants&&LB.entrants[EK[CUR]]!=null)?LB.entrants[EK[CUR]]:rows.length;
@@ -320,6 +320,6 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=5827d2bf"></script>
-<script defer src="/assets/mp-nav.js?v=3ede4883"></script>
+<script defer src="/assets/mp-nav.js?v=2e871550"></script>
 </body>
 </html>
