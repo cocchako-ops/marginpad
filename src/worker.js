@@ -12661,6 +12661,10 @@ function bybitWeekStart(ts) {
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - dow * 86400000;
 }
 const bybitWeekKey = ws => new Date(ws).toISOString().slice(0, 10);
+// Week 1 is the week BYBIT_BONUS_START falls in. Derived, never stored - moving the start moves
+// every label at once instead of leaving old rows saying a number that no longer means anything.
+const bybitWeekNo = ws => Math.max(1, Math.round((ws - bybitWeekStart(BYBIT_BONUS_START)) / (7 * 86400000)) + 1);
+const bybitWeekLabel = ws => 'Week ' + bybitWeekNo(ws);
 
 /* Build (do not pay) one week's rebate from the affiliate feed. Pure-ish: reads Bybit + the
    registration map, writes nothing. Returns every row, including the ones under the floor and the
@@ -12802,7 +12806,7 @@ async function checkBybitBonus(env) {
   const link = 'https://marginpad.io/bybit-bonus/' + b.token;   // this week's own link - see bybitWeekToken
   // the channel line: one post, one link, the same link for everybody (the page identifies the reader)
   const head = '<b>MARGINPAD WEEKLY BONUS</b>\n' +
-    '<i>Week of ' + b.week + ' - ' + new Date(b.we - 86400000).toISOString().slice(0, 10) + '</i>\n\n' +
+    '<i>' + bybitWeekLabel(b.ws) + '</i>\n\n' +
     'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. No sign-up, no form - it is worked out for you every week, and the more you trade the bigger it is.\n\n' +
     'This week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting for ' + payable.length + ' of them.\n\n' +
     '<a href="' + link + '">Claim your bonus</a>\n\n' +
@@ -12818,7 +12822,7 @@ async function checkBybitBonus(env) {
       const chat = chats[x.uid]; if (!chat) continue;
       try {
         await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true,
-          text: '<b>Your weekly bonus is ready</b>\nWeek of ' + b.week + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' on Bybit - your bonus is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
+          text: '<b>Your weekly bonus is ready</b>\n' + bybitWeekLabel(b.ws) + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' on Bybit - your bonus is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
         dm++;
       } catch (e) {}
     }
@@ -12826,10 +12830,10 @@ async function checkBybitBonus(env) {
   // the bell + the celebration on their next visit, for everyone qualifying, TG or not
   for (const x of payable) {
     if (!x.uid) continue;
-    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for the week of ' + b.week + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
+    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for ' + bybitWeekLabel(b.ws).toLowerCase() + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/#bybonus' }); } catch (e) {}
   }
   try {
-    await tgAdmin(env, '<b>Bybit rebate announced</b> - week of ' + b.week + '\n' +
+    await tgAdmin(env, '<b>Bybit rebate announced</b> - ' + bybitWeekLabel(b.ws) + ' (' + b.week + ')\n' +
       'volume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) +
       ' (' + Math.round(b.payoutCents / Math.max(1, b.commissionUsd * 100) * 100) + '% of commission, cap ' + Math.round(BYBIT_BONUS_SHARE * 100) + '%)\n' +
       payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID · ' + dm + ' direct messages sent',
@@ -18791,7 +18795,7 @@ export default {
       try { const pg = await usersDO(env, '/prefsget', { uid: uid0, keys: ['bybit_uid'] }); buid0 = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
       // the most recent settled week, and the one before it (a claim is not lost if they miss a week)
       const wks = [];
-      for (let i = 1; i <= 2; i++) { const ws0 = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (ws0 >= BYBIT_BONUS_START) wks.push(ws0); }
+      for (let i = 0; i <= 2; i++) { const ws0 = bybitWeekStart(Date.now()) - i * 7 * 86400000; if (ws0 >= BYBIT_BONUS_START) wks.push(ws0); }
       const weeks = [];
       for (const ws0 of wks) {
         const b0 = await bybitBonusGet(env, ws0);
@@ -18803,7 +18807,7 @@ export default {
         const row = (b0.rows || []).find(r => (r.uid && String(r.uid) === uid0) || (buid0 && String(r.buid) === buid0)) || null;
         const rowKey = row ? String(row.buid) : buid0;
         let claimed = false; try { claimed = rowKey ? !!(await env.STATS.get('bybonus:claim:' + b0.week + ':' + rowKey)) : false; } catch (e) {}
-        weeks.push({ week: b0.week, from: b0.ws, to: b0.we, key: rowKey,
+        weeks.push({ week: b0.week, label: bybitWeekLabel(b0.ws), n: bybitWeekNo(b0.ws), from: b0.ws, to: b0.we, key: rowKey,
           vol: row ? row.vol : 0, cents: row && !row.skip ? row.cents : 0,
           why: row ? (row.skip || '') : 'no_trades', claimed });
       }
@@ -18838,8 +18842,8 @@ export default {
       try { await env.STATS.put('bybonus:paid:' + target.week, String(paidC + target.cents), { expirationTtl: 400 * 86400 }); } catch (e) {}
       try { await env.STATS.put('bybonus:log:' + target.week + ':' + (target.key || buid0), JSON.stringify({ ts: Date.now(), uid: uid0, un: su0.username || '', buid: target.key || buid0, cents: target.cents, vol: target.vol }), { expirationTtl: 400 * 86400 }); } catch (e) {}
       try { await evPush(env, request, 'bybitrebate', '$' + (target.cents / 100).toFixed(2) + ' week ' + target.week, '/rewards/'); } catch (e) {}
-      try { await tgAdmin(env, '<b>Bybit rebate claimed</b> @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for the week of ' + target.week, { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
-      return J({ ok: true, week: target.week, usd: target.cents / 100, balance: (out0 && out0.balance != null) ? out0.balance : undefined });
+      try { await tgAdmin(env, '<b>Bybit bonus claimed</b> @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for ' + bybitWeekLabel(target.from).toLowerCase(), { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, week: target.week, label: target.label || '', usd: target.cents / 100, ranked: rewardsUnlocked(+su0.xp || 0), balance: (out0 && out0.balance != null) ? out0.balance : undefined });
     }
     /* The owner's rebate desk. ?week=YYYY-MM-DD reads a settled week; ?build=1 computes one WITHOUT
        announcing or paying anything (so a week can be looked at before it is ever sent), and
@@ -18886,7 +18890,7 @@ export default {
         const payT = bT.rows.filter(r => !r.skip);
         const capT = '<b>TEST - this went to you only</b>\n\n' +
           '<b>MARGINPAD WEEKLY BONUS</b>\n' +
-          '<i>Week of ' + bT.week + '</i>\n\n' +
+          '<i>' + bybitWeekLabel(wsT) + '</i>\n\n' +
           'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. The more you trade, the bigger it is.\n\n' +
           'Last week: <b>$' + Math.round(bT.volumeUsd).toLocaleString('en-US') + '</b> traded. <b>$' + (bT.payoutCents / 100).toFixed(2) + '</b> waiting for ' + payT.length + '.\n\n' +
           '<a href="' + linkT + '">Claim your bonus</a>\n\n' +

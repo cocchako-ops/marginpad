@@ -355,7 +355,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   .bal{font-size:54px}
   @media(max-width:560px){.bal{font-size:42px}}
 .ref-camp{background:#12161d;border:1px solid #2a323d;color:#cdd3da;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}.ref-camp:hover{border-color:#c2f64a;color:#e9e7df}.msn-go{color:#c2f64a;font-weight:700;text-decoration:none;font-size:12px;margin-left:6px}.msn-go:hover{text-decoration:underline}
-</style>
+.bybwin{position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.74);backdrop-filter:blur(3px)}.bybwin.on{display:flex}.bybwin-c{width:100%;max-width:360px;background:var(--panel,#12161d);border:1px solid var(--line,#232932);border-radius:18px;padding:26px 22px 20px;text-align:center;box-shadow:0 22px 60px rgba(0,0,0,.6)}.bybwin-k{font:700 11px/1 var(--mono,monospace);letter-spacing:.16em;text-transform:uppercase;color:#f0b90b}.bybwin-v{font:800 44px/1.05 var(--mono,monospace);color:var(--lime,#c2f64a);margin:14px 0 6px;letter-spacing:-.02em}.bybwin-s{font-size:13.5px;line-height:1.6;color:var(--dim,#8b93a0);margin:0 0 4px}.bybwin-n{font-size:12px;line-height:1.55;color:var(--faint,#6b7480);margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line,#232932)}.bybwin-b{margin-top:16px;width:100%}</style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Faucet de USDT Gratis - Bono de Bienvenida + Reclama Cada 5 Minutos","url":"https://marginpad.io/es/rewards/","dateModified":"2026-09-11T11:28:06.190Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
@@ -492,6 +492,8 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="lbl">Historial de retiros</div>
     <div id="wdHistList"></div>
   </div>
+
+<div class="bybwin" id="bybWin" role="dialog" aria-modal="true" aria-labelledby="bybWinV" hidden>  <div class="bybwin-c">    <div class="bybwin-k">Bonus claimed</div>    <div class="bybwin-v" id="bybWinV">$0.00</div>    <p class="bybwin-s" id="bybWinS">It is on your MarginPad balance.</p>    <p class="bybwin-n" id="bybWinN"></p>    <button type="button" class="btn btn-lime bybwin-b" id="bybWinX">Cerrar</button>  </div></div>
 
   <div class="card" id="bybonus" hidden>
     <div class="lbl" style="display:flex;align-items:center;gap:9px">MarginPad weekly bonus</div>
@@ -966,6 +968,25 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   })();
   (function(){var d=document.getElementById('stDot');if(!d)return;var on=true;setInterval(function(){on=!on;d.style.opacity=on?'1':'.25';},650);})(); /* LIVE dot pulse via JS+transition - visible under reduced-motion too */
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Earn free USDT</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in free with just your email. The faucet, missions and withdrawals unlock at <b style="color:#c97f4a">Bronze - 500 XP</b>, which is quick and free to earn on the <a href="/es/academy/" style="color:#c2f64a">Academy</a> and <a href="/es/paper-trade" style="color:#c2f64a">Paper Trade</a> - then claim free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent=__esT_rewardsindex("signInFreeTo",'Sign in free to start earning');}else{wh.hidden=true;}}
+  /* The claim confirmation. A dialog, not a toast: somebody arriving from the Telegram link is here
+     for exactly this, and a notice that fades can be missed on a phone that was still loading. */
+  (function(){
+    var win=document.getElementById("bybWin"); if(!win) return;
+    var close=function(){ win.classList.remove("on"); win.hidden=true; document.body.style.overflow=""; };
+    document.getElementById("bybWinX").addEventListener("click",close);
+    win.addEventListener("click",function(e){ if(e.target===win) close(); });
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&win.classList.contains("on")) close(); });
+    window.mpBybWin=function(usd,label,ranked){
+      document.getElementById("bybWinV").textContent="$"+(+usd).toFixed(2);
+      document.getElementById("bybWinS").textContent=(label?label+" - ":"")+"added to your MarginPad balance.";
+      // the next thing they will wonder, answered before they go looking for it
+      document.getElementById("bybWinN").innerHTML=ranked
+        ? "Cash out any time from $5.00 on this page."
+        : "Withdrawals open at <b>Bronze</b> (500 XP) - free to earn on the Academy. Your balance keeps growing until then.";
+      win.hidden=false; win.classList.add("on"); document.body.style.overflow="hidden";
+      try{ document.getElementById("bybWinX").focus(); }catch(e){}
+    };
+  })();
   /* Bybit weekly rebate. The card is the landing spot for the Telegram claim link (/bybit-bonus/
      302s to #bybonus). It shows only what the SERVER says is owed - the page never computes an
      amount, and the claim posts a week key, never a number. */
@@ -979,7 +1000,10 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       // show the card to anyone who has registered a UID, or who has something waiting
       if(!j.registered && !any){ card.hidden=true; return; }
       card.hidden=false;
-      if(!j.registered){
+      // gate on whether there is MONEY, not on whether a UID is on file. A row can name this account
+      // without the pref being set (the admin rehearsal, a cleared pref), and telling somebody to go
+      // and register while their bonus sits unclaimed underneath is the same bug the server had.
+      if(!j.registered && !any){
         rows.innerHTML='';
         note.innerHTML='Register the Bybit UID of the account you opened through us - the box is under the withdrawal method above - and your bonus appears here every Tuesday.';
         return;
@@ -998,7 +1022,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
         else if(w.why==='not_registered') right='<span style="color:var(--dim)">UID not registered</span>';
         else right='<span style="color:var(--dim)">no trades</span>';
         html+='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)">'
-          +'<div><div style="font-weight:700">Week of '+w.week+'</div><div class="note" style="margin:2px 0 0;text-align:left">You traded $'+Math.round(w.vol).toLocaleString('en-US')+'</div></div>'
+          +'<div><div style="font-weight:700">'+(w.label||('Week of '+w.week))+'</div><div class="note" style="margin:2px 0 0;text-align:left">You traded $'+Math.round(w.vol).toLocaleString('en-US')+'</div></div>'
           +'<div>'+right+'</div></div>';
       });
       rows.innerHTML=html;
@@ -1012,7 +1036,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       b.disabled=true; var old=b.textContent; b.textContent='Claiming…';
       fetch('/api/bybit/bonus',{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({week:b.getAttribute('data-week')})})
         .then(function(r){return r.json();}).then(function(j){
-          if(j && j.ok){ if(window.mpToast)window.mpToast({msg:'Weekly bonus claimed: $'+j.usd.toFixed(2),kind:'good'}); load(); if(window.refreshBal)window.refreshBal(); }
+          if(j && j.ok){ if(window.mpBybWin)window.mpBybWin(j.usd, j.label||'', !!j.ranked); else if(window.mpToast)window.mpToast({msg:'Weekly bonus claimed: $'+j.usd.toFixed(2),kind:'good'}); load(); if(window.refreshBal)window.refreshBal(); }
           else { b.disabled=false; b.textContent=old; if(window.mpToast)window.mpToast({msg:(j&&j.error==='already_claimed')?'Already claimed':'Could not claim - try again',kind:'warn'}); }
         }).catch(function(){ b.disabled=false; b.textContent=old; });
     });

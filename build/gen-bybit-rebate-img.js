@@ -73,7 +73,13 @@ const WIDE = BASE(1200, 630, `
    Telegram keeps. Nothing is allowed within ~90px of a corner. */
 const PFP = BASE(640, 640, `
   <div class="mid">
-    <div class="mark mono">%</div>
+    <svg class="mark" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+      <rect x="14" y="44" width="92" height="62" rx="7" fill="#f0b90b"/>
+      <rect x="6" y="28" width="108" height="24" rx="6" fill="#ffd24a"/>
+      <rect x="51" y="28" width="18" height="78" fill="#0a0b0d" opacity=".82"/>
+      <path d="M60 28c-10-2-22-6-26-14-3-6 1-12 8-12 9 0 15 12 18 26z" fill="#ffd24a"/>
+      <path d="M60 28c10-2 22-6 26-14 3-6-1-12-8-12-9 0-15 12-18 26z" fill="#ffd24a"/>
+    </svg>
     <div class="wm">MARGIN<b>PAD</b></div>
     <div class="tag mono">WEEKLY BONUS</div>
   </div>
@@ -81,7 +87,7 @@ const PFP = BASE(640, 640, `
 .glow{width:760px;height:760px;top:-250px;left:-60px}
 .card{padding:0;align-items:center;justify-content:center}
 .mid{display:flex;flex-direction:column;align-items:center;gap:0}
-.mark{font-weight:700;font-size:250px;line-height:.86;color:${GOLD};letter-spacing:-12px}
+.mark{width:216px;height:216px;display:block}
 .wm{font-family:'Space Mono',monospace;font-weight:700;font-size:44px;letter-spacing:2px;color:#e8eaed;margin-top:26px}
 .wm b{color:${LIME}}
 .tag{font-size:21px;font-weight:700;letter-spacing:5px;color:#8b93a0;margin-top:14px}
