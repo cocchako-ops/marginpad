@@ -140,6 +140,26 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
     await page.close();
   });
 
+  /* THE ANNOUNCEMENT HAS TO REACH THEM. Measured 2026-09-21: 13 of 600 accounts have ever linked
+     Telegram, so the channel post and the direct message speak to 2% of the base and the bell waits
+     for a visit that may never come. Email is the channel every one of these accounts has. */
+  console.log('\n-- the announcement reaches people who are not on Telegram');
+  {
+    const src = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8');
+    const cron = src.slice(src.indexOf('async function checkBybitBonus'));
+    const body = cron.slice(0, cron.indexOf('\nasync function', 10));
+    ok(/sendBybitBonusEmail\(env, u\.email/.test(body), 'the announcement also goes out by email');
+    const markAt = body.indexOf("'bybonus:mail:'"), putAt = body.indexOf('bybonus:mail:', body.indexOf("'bybonus:mail:'") + 5), sendAt = body.indexOf('sendBybitBonusEmail(env, u.email');
+    ok(markAt > 0 && markAt < sendAt, 'the once-per-week mark is written BEFORE the send, so a cron retry cannot mail twice');
+
+    const tpl = src.slice(src.indexOf('async function sendBybitBonusEmail'));
+    const tplBody = tpl.slice(0, tpl.indexOf('\nasync function', 10));
+    // the owner's framing rule, stated twice: a bonus MarginPad pays, never a share of fees coming back
+    ok(!/%|rebate|fee|commission/i.test(tplBody.replace(/\/\*[\s\S]*?\*\//g, '')), 'the mail never mentions fees, commission or a percentage');
+    ok(/Claim your bonus/.test(tplBody), 'it carries one button, and the click is the claim');
+    ok(/info\.link/.test(tplBody), 'pointed at the week\'s own tokenised link, the same one Telegram sends');
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exitCode = fail ? 1 : 0;   // never process.exit() mid-teardown
 })();

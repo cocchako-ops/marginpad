@@ -12663,8 +12663,8 @@ function bybitWeekStart(ts) {
 const bybitWeekKey = ws => new Date(ws).toISOString().slice(0, 10);
 // Week 1 is the week BYBIT_BONUS_START falls in. Derived, never stored - moving the start moves
 // every label at once instead of leaving old rows saying a number that no longer means anything.
-const bybitWeekNo = ws => Math.max(1, Math.round((ws - bybitWeekStart(BYBIT_BONUS_START)) / (7 * 86400000)) + 1);
-const bybitWeekLabel = ws => 'Week ' + bybitWeekNo(ws);
+const bybitWeekNo = ws => Math.round((ws - bybitWeekStart(BYBIT_BONUS_START)) / (7 * 86400000)) + 1;
+const bybitWeekLabel = ws => { const n = bybitWeekNo(ws); return n >= 1 ? 'Week ' + n : 'Week of ' + bybitWeekKey(ws); };
 
 /* Build (do not pay) one week's rebate from the affiliate feed. Pure-ish: reads Bybit + the
    registration map, writes nothing. Returns every row, including the ones under the floor and the
@@ -12811,6 +12811,38 @@ function bybitBonusSane(b) {
 
 /* Settle the most recent COMPLETE week, once. Volume is T+1, so a week that ended Sunday is only
    trustworthy from Tuesday - the cron simply refuses earlier. */
+/* The weekly bonus mail. Same tokenised link as Telegram, so one click claims it.
+   Deliberately says nothing about fees or percentages: to the reader this is a bonus MarginPad
+   pays for trading on Bybit through us, which is what the owner asked it to read as. */
+async function sendBybitBonusEmail(env, to, info) {
+  if (!env.RESEND_API_KEY || !to) return { ok: false };
+  const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  const amt = '$' + (info.cents / 100).toFixed(2);
+  const vol = '$' + Math.round(info.vol || 0).toLocaleString('en-US');
+  const hi = info.username ? ('@' + esc(info.username)) : 'trader';
+  const link = String(info.link || "https://marginpad.io/rewards/");
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
+      body: JSON.stringify(refTagEmail({
+        from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
+        subject: 'Your MarginPad weekly bonus is ready - ' + amt,
+        text: 'Hi ' + hi + ',\n\nYou traded ' + vol + ' on Bybit during ' + info.week + '.\n\nYour MarginPad weekly bonus is ' + amt + '. Claim it here:\n' + link + '\n\nIt lands on your Rewards balance straight away.\n\n\u2014 MarginPad',
+        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">'
+          + '<p style="font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8b4a;margin:0 0 6px">MarginPad weekly bonus</p>'
+          + '<p style="font-size:22px;font-weight:800;margin:0 0 10px">Your bonus is ready</p>'
+          + '<p style="margin:0 0 14px">Hi ' + hi + ' \u2014 you traded <b>' + vol + '</b> on Bybit during ' + esc(info.week) + '.</p>'
+          + '<p style="margin:0 0 16px;background:#f2fbdf;border:1px solid #c2f64a;border-radius:12px;padding:14px 16px;text-align:center"><span style="font-size:32px;font-weight:800;letter-spacing:-1px">' + amt + '</span><br><span style="color:#555;font-size:13px">waiting for you</span></p>'
+          + '<p style="margin:0 0 18px"><a href="' + link + '" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Claim your bonus &rarr;</a></p>'
+          + '<p style="margin:0 0 4px;color:#444">It lands on your Rewards balance straight away. Keep trading on Bybit through MarginPad and there is a new one every week.</p>'
+          + '<p style="margin:0;color:#999;font-size:13px">MarginPad \u2014 not financial advice</p>' + MAIL_AFF_HTML + '</div>'
+      }))
+    });
+    if (!r.ok) { try { await mailFail(env, 'bybonus', r.status); } catch (e) {} }
+    return { ok: r.ok };
+  } catch (e) { try { await mailFail(env, 'bybonus', 0); } catch (e2) {} return { ok: false }; }
+}
+
 async function checkBybitBonus(env) {
   if (!env.STATS || !env.BYBIT_AFF_KEY) return;
   const now = Date.now(), thisWeek = bybitWeekStart(now), ws = thisWeek - 7 * 86400000;
@@ -12879,11 +12911,32 @@ async function checkBybitBonus(env) {
     if (!x.uid) continue;
     try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for ' + bybitWeekLabel(b.ws).toLowerCase() + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/?byw=' + b.week }); } catch (e) {}
   }
+  /* AND AN EMAIL, WHICH IS THE ONLY CHANNEL THAT ACTUALLY REACHES THEM. Measured the day this was
+     written: 13 of 600 accounts have Telegram, so the channel post and the direct message speak to
+     2% of the base, and the bell waits for a visit that may never come. One mail per account per
+     week - the KV mark is written BEFORE the send, so a cron retry after a partial failure cannot
+     mail anyone twice; a bonus announced twice is worse than one announced late. */
+  let mailed = 0;
   try {
-    await tgAdmin(env, '<b>Bybit rebate announced</b> - ' + bybitWeekLabel(b.ws) + ' (' + b.week + ')\n' +
+    const prof = await resolveProfiles(env, payable.map(x => x.uid).filter(Boolean));
+    for (const x of payable) {
+      if (!x.uid) continue;
+      const u = prof[String(x.uid).replace(/^u:/, '')];
+      if (!u || !u.email) continue;
+      const mk = 'bybonus:mail:' + b.week + ':' + x.uid;
+      try { if (await env.STATS.get(mk)) continue; } catch (e) {}
+      try { await env.STATS.put(mk, '1', { expirationTtl: 400 * 86400 }); } catch (e) {}
+      try {
+        const r = await sendBybitBonusEmail(env, u.email, { cents: x.cents, vol: x.vol, username: u.username || x.name || '', week: bybitWeekLabel(b.ws), link });
+        if (r && r.ok) mailed++;
+      } catch (e) {}
+    }
+  } catch (e) {}
+  try {
+    await tgAdmin(env, '<b>Weekly bonus announced</b> - ' + bybitWeekLabel(b.ws) + ' (' + b.week + ')\n' +
       'volume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) +
       ' (' + Math.round(b.payoutCents / Math.max(1, b.commissionUsd * 100) * 100) + '% of commission, cap ' + Math.round(BYBIT_BONUS_SHARE * 100) + '%)\n' +
-      payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID · ' + dm + ' direct messages sent',
+      payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID · ' + dm + ' direct messages · ' + mailed + ' emails',
       { kind: 'bybit rebate', sev: 'green' });
   } catch (e) {}
 }
@@ -18936,6 +18989,22 @@ export default {
          their money, and it is why the row is flagged `test` and the week `testOnly` - checkBybitBonus
          refuses to treat a testOnly week as announced, so the real Tuesday settle still happens even
          if this is left lying around. ?test=clear removes it. */
+      /* Send ONE real bonus email, rendered from a real week, to an address of your choosing.
+         Sending it to milan@ is the cheap full-path check: template -> Resend -> delivery -> our own
+         pmail inbox. It writes no claim mark and mails no member. */
+      if (url.searchParams.get('mailtest') === '1') {
+        const toM = String(url.searchParams.get('to') || 'milan@marginpad.io');
+        const wsM = url.searchParams.get('week') ? Date.parse(url.searchParams.get('week') + 'T00:00:00Z') : (bybitWeekStart(Date.now()) - 7 * 86400000);
+        const bM = await bybitBonusBuild(env, wsM);
+        if (bM.error) return J(bM, 503);
+        const payM = (bM.rows || []).filter(r => !r.skip);
+        if (!payM.length) return J({ error: 'no_payable_row', week: bybitWeekKey(wsM) }, 400);
+        const top = payM.slice().sort((a, c) => c.cents - a.cents)[0];
+        const tok = await bybitWeekToken(env, wsM);
+        const r = await sendBybitBonusEmail(env, toM, { cents: top.cents, vol: top.vol, username: top.name || 'trader', week: bybitWeekLabel(wsM), link: 'https://marginpad.io/bybit-bonus/' + tok });
+        return J({ ok: !!(r && r.ok), to: toM, week: bybitWeekKey(wsM), label: bybitWeekLabel(wsM),
+          rendered: { amount: '$' + (top.cents / 100).toFixed(2), volume: Math.round(top.vol), name: top.name || '' } });
+      }
       if (url.searchParams.get('test') === 'clear') {
         const wsT = bybitWeekStart(Date.now());
         // clear the claim marks too, or a cleared rehearsal still blocks the same rows next time
