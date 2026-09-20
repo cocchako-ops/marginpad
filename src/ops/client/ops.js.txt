@@ -680,7 +680,35 @@
      the only button that sends anything is Announce, and it says so.
      The cap is shown beside the payout on purpose. The rule is that we never hand out more than a
      third of the commission, and a number nobody can see is a rule nobody can check. */
-  simple('money/rebate', { url: '/api/admin/bybitbonus?build=1', every: 120000, html: function (d) {
+  /* WHAT BYBIT HAS ACTUALLY PAID US. Everywhere else on this dashboard affiliate money is an
+     ESTIMATE - clicks x $0.45 - because no partner would tell us what a click was worth. Bybit does,
+     per referred UID, so this block is the measured figure and should be read as replacing the guess
+     for Bybit. It sits ABOVE the rebate because the rebate is a share of it: you cannot judge what is
+     being given away without the number it is taken from. */
+  simple('money/rebate', { urls: ['/api/admin/bybitbonus?build=1', '/api/admin/bybitearned'], every: 120000, html: function (d, e) {
+    e = e || {};
+    var W = e.windows || {};
+    var earned = (function () {
+      var row = function (k, label) {
+        var x = W[k]; if (!x) return '';
+        return '<div class="row"><span class="who">' + label + '</span>'
+          + '<span class="mono">$' + Math.round(x.volumeUsd).toLocaleString('en-US') + ' traded</span>'
+          + '<span class="mono meta">' + x.traders + ' of ' + x.referred + ' referred accounts</span>'
+          + '<span class="mono meta">' + (x.bps == null ? '-' : x.bps + ' bps') + '</span>'
+          + '<span style="margin-left:auto" class="mono ok">$' + (+x.commissionUsd).toFixed(2) + '</span></div>';
+      };
+      if (!W.d7 && !W.d30) return '<div class="card"><h2>Commission earned</h2><div class="empty">' + esc(e.error || 'no reading yet') + '</div></div>';
+      var m = W.d30 || {};
+      return '<div class="card"><h2>Commission earned <span>measured from Bybit, not estimated from clicks</span></h2>'
+        + '<div class="grid g3">'
+        + tile('$' + (+((W.d7 || {}).commissionUsd || 0)).toFixed(2), 'Last 7 days')
+        + tile('$' + (+(m.commissionUsd || 0)).toFixed(2), 'Last 30 days', '', '$' + (+(m.perDayUsd || 0)).toFixed(2) + ' a day')
+        + tile('$' + (+((W.d90 || {}).commissionUsd || 0)).toFixed(2), 'Last 90 days')
+        + '</div>'
+        + row('d7', 'Last 7 days') + row('d30', 'Last 30 days') + row('d90', 'Last 90 days')
+        + '<div class="sl">Every other affiliate figure on this dashboard is clicks times $0.45. This one is what Bybit reports it paid us, per referred UID. The Affiliate Portal remains the settlement record.</div>'
+        + '</div>';
+    })();
     if (d.error) return '<div class="card"><h2>Bybit rebate</h2><div class="empty">Could not build the week: <b>' + esc(d.error) + '</b> ' + esc(d.detail || '') + '</div></div>';
     var rows = d.rows || [], hist = d.history || [];
     var usd = function (c) { return '$' + (c / 100).toFixed(2); };
@@ -717,7 +745,7 @@
         + '<span style="margin-left:auto" class="mono">' + usd(h.payoutCents) + ' to ' + h.payableN + '</span>'
         + '<span class="' + (h.announced ? 'ok' : 'meta') + '">' + (h.announced ? 'announced' : 'not announced') + '</span></div>';
     }).join('') + '</div>') : '';
-    return '<div class="card"><h2>Bybit rebate <span>week of ' + esc(d.week || '') + (d.announced ? ' · announced' : ' · not announced yet') + '</span></h2>'
+    return earned + '<div class="card"><h2>Bybit rebate <span>week of ' + esc(d.week || '') + (d.announced ? ' · announced' : ' · not announced yet') + '</span></h2>'
       + tiles + capLine + act
       + (body || '<div class="empty">Nobody traded under our code this week.</div>')
       + '<div class="sl">Volume comes from Bybit and updates a day late, so a week is only worked out from the Tuesday after it ends. The Affiliate Portal, not this feed, is the record of what we are actually paid.</div>'
