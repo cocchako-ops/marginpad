@@ -12768,6 +12768,21 @@ async function bybitEarned(env, force) {
   return out;
 }
 
+/* Is this week final? Asks Bybit for its LAST DAY alone and looks for a commission figure.
+   Volume is live; commission appears once the day has closed - measured, see the comment on
+   checkBybitBonus. A week whose last day still reports no commission is not finished being
+   reported, however long ago it ended. */
+async function bybitWeekReady(env, ws) {
+  const last = new Date(ws + 6 * 86400000).toISOString().slice(0, 10);
+  const r = await bybitAffList(env, 0, { startDate: last, endDate: last });
+  if (r.error) return { ready: false, why: r.error };
+  let vol = 0, com = 0;
+  for (const u of r.list) { vol += +u.tradeVol || 0; com += bybitAffCommission(u); }
+  // no trading at all on the last day is a complete answer too - there is nothing to wait for
+  if (!(vol > 0)) return { ready: true, why: "no trading on the last day", lastDay: last, vol: 0, com: 0 };
+  return { ready: com > 0, why: com > 0 ? "" : "the last day has volume but no commission yet", lastDay: last, vol: Math.round(vol * 100) / 100, com: Math.round(com * 10000) / 10000 };
+}
+
 async function bybitBonusGet(env, ws) { try { return JSON.parse((await env.STATS.get('bybonus:' + bybitWeekKey(ws))) || 'null'); } catch (e) { return null; } }
 async function bybitBonusPut(env, b) { try { await env.STATS.put('bybonus:' + b.week, JSON.stringify(b), { expirationTtl: 400 * 86400 }); return true; } catch (e) { return false; } }
 
@@ -12788,7 +12803,22 @@ async function checkBybitBonus(env) {
   if (!env.STATS || !env.BYBIT_AFF_KEY) return;
   const now = Date.now(), thisWeek = bybitWeekStart(now), ws = thisWeek - 7 * 86400000;
   if (ws < BYBIT_BONUS_START) return;
-  if (now - thisWeek < 36 * 3600000) return;     // Tuesday 12:00 UTC at the earliest: T+1 plus a margin
+  /* WAIT FOR THE DATA, NOT FOR THE CLOCK. Measured 2026-09-20: volume for the current day is
+     already complete, but COMMISSION only appears once the day has closed - and the bonus is a
+     share of commission. A fixed wait is either too early (pays the last day at zero) or too late
+     (money sits unannounced). So: a short floor so a week cannot settle before it has ended, then
+     ask Bybit whether the week's last day has a commission figure yet. */
+  if (now - thisWeek < 2 * 3600000) return;
+  const rdy = await bybitWeekReady(env, ws);
+  const waited = now - thisWeek;
+  if (!rdy.ready && waited < 5 * 86400000) {
+    // one nudge a day while we wait, so a silent stall is visible instead of looking like nothing happened
+    const nk = 'bybonus:wait:' + bybitWeekKey(ws) + ':' + new Date(now).toISOString().slice(0, 10);
+    let told = false; try { told = !!(await env.STATS.get(nk)); } catch (e) {}
+    if (!told) { try { await tgAdmin(env, '<b>Bybit bonus waiting</b> - ' + bybitWeekLabel(ws) + ' is not final yet: ' + (rdy.why || '') + ' (last day ' + (rdy.lastDay || '') + ', volume $' + Math.round(rdy.vol || 0).toLocaleString('en-US') + ', commission $' + (rdy.com || 0) + '). Nothing announced; it goes out by itself the moment Bybit reports it.', { kind: 'bybit rebate', sev: 'info' }); await env.STATS.put(nk, '1', { expirationTtl: 3 * 86400 }); } catch (e) {} }
+    return;
+  }
+  if (!rdy.ready) { try { await tgAdmin(env, '<b>Bybit bonus settled anyway</b> - ' + bybitWeekLabel(ws) + ' waited five days and the last day still reports no commission. Paying on what Bybit does report; the last day may be light.', { kind: 'bybit rebate', sev: 'amber' }); } catch (e) {} }
   const done = await bybitBonusGet(env, ws);
   // a rehearsal does not count as the announcement - otherwise a forgotten ?test=1 would silently
   // swallow the week that was supposed to reach real traders
@@ -18990,6 +19020,16 @@ export default {
           if (r && r.ok) { out.invite = { link: r.result.invite_link, joinRequest: !!r.result.creates_join_request };
             try { await env.STATS.put('cfg:bybitinvite', r.result.invite_link); } catch (e) {} }
           else out.invite = { error: (r && r.description) || 'failed' }; } catch (e) { out.invite = { error: String(e).slice(0, 80) }; }
+      }
+      /* ?revoke=<link> kills an invite that bypasses the gate. An ungated link is not a small leak:
+         it lets anybody into a channel whose whole premise is that everybody in it is our referral,
+         and the join gate never even runs for them. A bot can only revoke a link it created itself -
+         the primary link belongs to the channel owner, and only the channel setting "Approve new
+         members" gates that one. */
+      const rev = String(url.searchParams.get('revoke') || '');
+      if (rev && chan && env.TELEGRAM_TOKEN) {
+        try { const r = await tgApi(env.TELEGRAM_TOKEN, 'revokeChatInviteLink', { chat_id: chan, invite_link: rev });
+          out.revoked = { ok: !!(r && r.ok), link: rev, desc: (r && r.description) || '' }; } catch (e) { out.revoked = { error: String(e).slice(0, 90) }; }
       }
       try { out.publishedInvite = (await env.STATS.get('cfg:bybitinvite')) || ''; } catch (e) {}
       const say = String(url.searchParams.get('say') || '');
