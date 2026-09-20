@@ -48,7 +48,7 @@ const GOALS = [
   {
     id: 'learn', t: 'Understand how any of this works', s: 'Words first, money later',
     steps: [
-      { u: '/academy/', t: 'The Academy', why: '16 courses and 140 lessons, free. This is the only place lessons live - start with the basics course.', lv: ALL3 },
+      { u: '/academy/', t: 'The Academy', why: '17 courses and 147 lessons, free. This is the only place lessons live - start with course 0, a tour of MarginPad itself.', lv: ALL3 },
       { u: '/guides/', t: 'Guides', why: '13 short explainers, one question each: liquidation, leverage, funding, mark price, margin.', lv: ALL3 },
       { u: '/guides/what-is-leverage-in-crypto/', t: 'What leverage actually is', why: 'The one idea that decides whether the rest of this hurts you.', lv: ['new', 'some'] },
       { u: '/guides/what-is-liquidation-price/', t: 'What a liquidation price is', why: 'The number the exchange is watching while you are watching the chart.', lv: ['new', 'some'] },
@@ -114,7 +114,7 @@ const GOALS = [
 ];
 
 const FAQ = [
-  ['Where are the lessons?', 'Every lesson lives in the Academy - 16 courses and 140 lessons, free, with quizzes and XP. This page does not teach; it points you at the right page, and for learning that page is the Academy.'],
+  ['Where are the lessons?', 'Every lesson lives in the Academy - 17 courses and 147 lessons, free, with quizzes and XP. This page does not teach; it points you at the right page, and for learning that page is the Academy.'],
   ['Do I need an account?', 'No. Paper Trade, the calculators, the charts, the screener and every market page work without signing in. An account is only needed to keep your history, appear on a board or withdraw rewards.'],
   ['Does any of this cost money?', 'No. The tools, the Academy and the market data are free, and the Bot API has a free plan. We are paid by exchanges when someone opens an account through our links.'],
   ['Is the trading real?', 'No - MarginPad is paper trading. Prices are live and fills are settled on our server, but no money moves. That is the point: you can be wrong here for free.'],

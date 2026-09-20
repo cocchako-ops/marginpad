@@ -55,9 +55,9 @@
  },
  {
   "rel": "academy/index.html",
-  "cover": 1,
-  "hit": 209,
-  "missing": 0
+  "cover": 0.926605504587156,
+  "hit": 202,
+  "missing": 16
  },
  {
   "rel": "ada-liquidation-calculator/index.html",
@@ -2185,9 +2185,9 @@
  },
  {
   "rel": "where-to-start/index.html",
-  "cover": 1,
-  "hit": 65,
-  "missing": 0
+  "cover": 0.9538461538461539,
+  "hit": 62,
+  "missing": 3
  },
  {
   "rel": "widgets/index.html",
