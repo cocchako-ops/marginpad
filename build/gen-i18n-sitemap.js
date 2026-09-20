@@ -46,19 +46,44 @@ for (const lang of LANGS) {
   }
 }
 
-const xml = `<?xml version="1.0" encoding="UTF-8"?>
+// AN EMPTY SITEMAP IS NOT A HARMLESS SITEMAP (2026-09-20). With LANGS emptied on 2026-08-18 this
+// script kept writing `<urlset>` with nothing inside it, robots.txt kept advertising it, and Google
+// read it every time and reported "Sitemap can be read, but has errors - Missing XML tag: url,
+// line 4" with 0 discovered pages. That error sat in Search Console for a month and two days.
+// So: no URLs means no file and no Sitemap: line. Restoring LANGS restores both.
+const SM = path.join(DIST, 'sitemap-i18n.xml');
+const ROB = path.join(DIST, 'robots.txt');
+const LINE = 'Sitemap: https://marginpad.io/sitemap-i18n.xml';
+
+if (!urls.length) {
+  let removed = false;
+  if (fs.existsSync(SM)) { fs.unlinkSync(SM); removed = true; }
+  if (fs.existsSync(ROB)) {
+    const r = fs.readFileSync(ROB, 'utf8');
+    if (r.indexOf(LINE) >= 0) {
+      const out = r.split(/\r?\n/).filter(l => l.trim() !== LINE).join(r.indexOf('\r\n') >= 0 ? '\r\n' : '\n');
+      fs.writeFileSync(ROB + '.tmp', out); fs.renameSync(ROB + '.tmp', ROB);
+      console.log('robots.txt: -Sitemap sitemap-i18n.xml (nothing left to list)');
+    }
+  }
+  console.log('sitemap-i18n.xml: 0 URLs - ' + (removed ? 'file deleted' : 'already absent') + ' (LANGS is empty; an empty sitemap is a Search Console error, not a no-op)');
+} else {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
 </urlset>
 `;
-fs.writeFileSync(path.join(DIST, 'sitemap-i18n.xml'), xml);
-console.log(`sitemap-i18n.xml: ${urls.length} URLs (compares ${nCmp}, calculators ${nCalc}, guides ${nGuide}, best-for ${nBest}, simulators ${nSim})`);
+  fs.writeFileSync(SM, xml);
+  console.log(`sitemap-i18n.xml: ${urls.length} URLs (compares ${nCmp}, calculators ${nCalc}, guides ${nGuide}, best-for ${nBest}, simulators ${nSim})`);
+}
 
-// reference it from robots.txt (idempotent)
+// reference it from robots.txt (idempotent) - but only when the file exists. Without this guard the
+// block above deletes the line and this one puts it straight back, which is how an empty sitemap
+// stayed advertised for a month.
 try {
   const rp = path.join(DIST, 'robots.txt');
   let r = fs.readFileSync(rp, 'utf8');
-  if (!r.includes('sitemap-i18n.xml')) {
+  if (urls.length && !r.includes('sitemap-i18n.xml')) {
     r = r.replace(/(Sitemap:\s*https:\/\/marginpad\.io\/sitemap\.xml)/, '$1\nSitemap: https://marginpad.io/sitemap-i18n.xml');
     fs.writeFileSync(rp, r);
     console.log('robots.txt: +Sitemap sitemap-i18n.xml');

@@ -87,7 +87,7 @@ const REDIR = [
 })(DIST);
 if (n3) console.log('  ' + n3 + ' pages had a link to a redirect rewritten to the final URL');
 
-for (const sm of ['sitemap.xml', 'sitemap-i18n.xml', 'sitemap-extras.xml']) {
+for (const sm of ['sitemap.xml', 'sitemap-extras.xml']) {
   const p = path.join(DIST, sm);
   if (!fs.existsSync(p)) continue;
   const h = fs.readFileSync(p, 'utf8');

@@ -98,7 +98,10 @@ run('Inject font preconnect', 'node build/add-preconnect.js');
 // 11b) re-add hand-maintained pages the sitemap generator doesn't know about
 run('Sitemap extras (hand-made pages)', 'node build/add-sitemap-extras.js');
 
-// 11c) dedicated sitemap for the translated SEO pages (compares/guides/best-for) → dist/sitemap-i18n.xml
+// 11c) the translated-SEO sitemap. LANGS in that script has been empty since 2026-08-18 (those 1,008
+// pages were removed), so this step now DELETES dist/sitemap-i18n.xml and its robots.txt line rather
+// than writing an empty <urlset> - which Google read as an error, with 0 discovered pages, on every
+// read for a month. Putting languages back into LANGS restores the file and the robots line together.
 run('i18n sitemap (translated SEO pages)', 'node build/gen-i18n-sitemap.js');
 
 // 11d) honest freshness: bump dateModified + visible "Updated" + sitemap lastmod ONLY on pages whose

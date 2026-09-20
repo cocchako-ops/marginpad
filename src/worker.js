@@ -26609,7 +26609,7 @@ async function checkIndexNow(env, force) {
     // announcing nothing for however long. Keep smText around; the daily-cadence pass below reuses it.
     const smText = async (p) => { try { const r = await env.ASSETS.fetch(new Request('https://marginpad.io' + p)); return r.ok ? await r.text() : ''; } catch (e) { return ''; } };
     let smMain = '';
-    for (const p of ['/sitemap.xml', '/sitemap-i18n.xml', '/sitemap-es.xml', '/sitemap-recaps.xml']) {
+    for (const p of ['/sitemap.xml', '/sitemap-es.xml', '/sitemap-recaps.xml']) {   // sitemap-i18n.xml was deleted 2026-09-20 - it had been an empty urlset since 2026-08-18 and Google reported it as an error on every read
       const t = await smText(p);
       if (p === '/sitemap.xml') smMain = t;
       if (t) urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim()));
