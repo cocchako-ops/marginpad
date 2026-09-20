@@ -1621,9 +1621,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 224,
-  "missing": 0
+  "cover": 0.9955357142857143,
+  "hit": 223,
+  "missing": 1
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1994,7 +1994,7 @@
  {
   "rel": "season/index.html",
   "cover": 1,
-  "hit": 78,
+  "hit": 96,
   "missing": 0
  },
  {

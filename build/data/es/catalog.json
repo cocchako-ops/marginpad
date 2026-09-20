@@ -1,13 +1,12 @@
 {
  "meta": {
-  "generated": "2026-09-19T18:59:56.973Z",
+  "generated": "2026-09-20T10:27:31.645Z",
   "pages": 376,
-  "occurrences": 25569,
-  "unique": 13530,
-  "words": 255622,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-09-19T19:10:04.295Z"
+  "occurrences": 25587,
+  "unique": 13548,
+  "words": 255896,
+  "untranslated": 2,
+  "untranslatedWords": 96
  },
  "items": {
   "WoSdEAxlcr": {
@@ -141611,9 +141610,9 @@
    "n": 1,
    "w": 2
   },
-  "pSVwfBnqnh": {
-   "en": "<a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a>",
-   "es": "<a href=\"#today\" data-s=\"today\">Hoy</a><a href=\"#pass\" data-s=\"pass\">Pase<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Tablas</a><a href=\"#floor\" data-s=\"floor\">Piso en vivo</a>",
+  "s7exkOLCOP": {
+   "en": "<span class=\"eb\" data-hw=\"eb\">Start here</span>",
+   "es": "<span class=\"eb\" data-hw=\"eb\">Empieza aquí</span>",
    "kind": [
     "html"
    ],
@@ -141621,7 +141620,223 @@
     "/season/"
    ],
    "n": 1,
-   "w": 5
+   "w": 2
+  },
+  "LBMxM5q0ba": {
+   "en": "How MarginPad works",
+   "es": "Cómo funciona MarginPad",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "zNbo7zyNJH": {
+   "en": "<span data-hw=\"langLabel\">Read this in</span>",
+   "es": "<span data-hw=\"langLabel\">Leer en</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "a5B3hxbxyB": {
+   "en": "Four things, and only the first one is a gate.",
+   "es": "Cuatro cosas, y solo la primera es una barrera.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "AKtaRqzvxr": {
+   "en": "Sign in, free, with an email code and this card will show how far you are.",
+   "es": "Inicia sesión, gratis, con un código por email y esta tarjeta mostrará cuánto te falta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "A-JZJVR3Fg": {
+   "en": "Bronze opens the money",
+   "es": "Bronze abre el dinero",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "VBdmUYYrn7": {
+   "en": "The faucet, the daily missions, withdrawals and referrals all unlock at Bronze, which is 500 XP. It costs nothing. It is the only thing between you and the rewards.",
+   "es": "El faucet, las misiones diarias, los retiros y las referencias se desbloquean todos en Bronze, que son 500 XP. No cuesta nada. Es lo único que hay entre tú y las recompensas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "lLQ_FaEb2I": {
+   "en": "The Academy is the fastest way there",
+   "es": "La Academy es el camino más rápido",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "FzOoEQLegF": {
+   "en": "Every lesson pays +25 XP and finishing a course pays +50 more. Twenty lessons is Bronze, which is about one evening. Trading earns XP too, but far more slowly.",
+   "es": "Cada lección da +25 XP y terminar un curso da +50 más. Veinte lecciones son Bronze, que es más o menos una tarde. Operar también da XP, pero mucho más despacio.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 28
+  },
+  "uovk9ZGw37": {
+   "en": "<a class=\"btn\" href=\"/academy/\" data-hw=\"s2btn\">Open the Academy</a>",
+   "es": "<a class=\"btn\" href=\"/academy/\" data-hw=\"s2btn\">Abrir la Academy</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "wBN2mKsS11": {
+   "en": "Watch your progress here",
+   "es": "Sigue tu progreso aquí",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "WJ5bfuDPQ-": {
+   "en": "Your XP and your level sit at the top of this page and in your account menu. The bar below moves as you earn.",
+   "es": "Tu XP y tu nivel están arriba de esta página y en el menú de tu cuenta. La barra de abajo avanza a medida que ganas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 24
+  },
+  "jMDsrN2C06": {
+   "en": "At Bronze you are on the boards",
+   "es": "En Bronze ya estás en las tablas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "qh_0JNNb-U": {
+   "en": "Four boards open at Bronze and pay real USDT every fourteen days, with no deposit and no exchange account. The fifth, The Gold Room, is for Gold members at 12,000 XP.",
+   "es": "Cuatro tablas se abren en Bronze y pagan USDT real cada catorce días, sin depósito y sin cuenta en un exchange. La quinta, The Gold Room, es para miembros Gold con 12,000 XP.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 31
+  },
+  "VdxmLvaK2s": {
+   "en": "<a class=\"btn\" href=\"#boards\" data-hw=\"s4btn\">See the boards</a>",
+   "es": "<a class=\"btn\" href=\"#boards\" data-hw=\"s4btn\">Ver las tablas</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "I7m64EYkm5": {
+   "en": "Two boards are scored on a real exchange account",
+   "es": "Dos tablas se puntúan con una cuenta real de exchange",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "QFUkDF1cd0": {
+   "en": "Bybit volume ranks you on the real futures volume you trade on Bybit: you register that account's UID on this page, once. King of the Moon ranks you on what you really wager on Moon: your Moon sign-up bonus has to be approved, which is how we know which account is yours. Both read the figures from the exchange's own affiliate report, a few times a day.",
+   "es": "Bybit volume te clasifica por el volumen real de futuros que operas en Bybit: registras el UID de esa cuenta en esta página, una sola vez. King of the Moon te clasifica por lo que realmente apuestas en Moon: tu bono de registro en Moon tiene que estar aprobado, así es como sabemos qué cuenta es tuya. Ambas leen las cifras del propio informe de afiliados del exchange, varias veces al día.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 65
+  },
+  "V8re2nHzfv": {
+   "en": "One account per person. Prizes land on your rewards balance and can be withdrawn. The paper boards are scored server-side from trades you actually closed.",
+   "es": "Una cuenta por persona. Los premios llegan a tu saldo de recompensas y se pueden retirar. Las tablas de simulado se puntúan en el servidor a partir de operaciones que realmente cerraste.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 25
+  },
+  "yxLb3IFeYJ": {
+   "en": "<a href=\"#howto\" data-s=\"howto\">How it works</a><a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a>",
+   "es": "<a href=\"#howto\" data-s=\"howto\">Cómo funciona</a><a href=\"#today\" data-s=\"today\">Hoy</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Tablas</a><a href=\"#floor\" data-s=\"floor\">Piso en vivo</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 8
   },
   "q63N6wn6mw": {
    "en": "<span class=\"eb\">Resets at 00:00 UTC</span>",
