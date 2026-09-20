@@ -12734,6 +12734,18 @@ async function bybitWeekFromToken(env, tok) {
    number that was published when it was announced - stamped as capCents at announce time and never
    recomputed. Every claim adds to bybonus:paid:<week> and is refused if it would cross it, so a
    rebuild, a re-run or a bug in the row maths cannot hand out more than the channel post promised. */
+/* Remove a week's ACCOUNTING - the running paid total and every per-row claim mark - so a
+   rehearsal leaves nothing behind that a real settle would inherit. Row keys are read from the
+   stored week rather than listed from KV, because a KV list is eventually consistent and this
+   runs immediately before money is announced. */
+async function bybitBonusWipe(env, wk, rec) {
+  try { await env.STATS.delete('bybonus:paid:' + wk); } catch (e) {}
+  for (const r of ((rec && rec.rows) || [])) {
+    try { await env.STATS.delete('bybonus:claim:' + wk + ':' + r.buid); } catch (e) {}
+    try { await env.STATS.delete('bybonus:log:' + wk + ':' + r.buid); } catch (e) {}
+  }
+}
+
 async function bybitPaidCents(env, week) { try { return +(await env.STATS.get('bybonus:paid:' + week)) || 0; } catch (e) { return 0; } }
 
 /* WHAT WE HAVE ACTUALLY EARNED (owner 2026-09-20: "hocu da imam na mp-ops metriku koliko sam
@@ -12823,7 +12835,12 @@ async function checkBybitBonus(env) {
   // a rehearsal does not count as the announcement - otherwise a forgotten ?test=1 would silently
   // swallow the week that was supposed to reach real traders
   if (done && done.announcedTs && !done.testOnly) return;
-  const b = done && !done.error ? done : await bybitBonusBuild(env, ws);
+  /* NEVER PAY OUT A REHEARSAL. A testOnly week holds a row injected by hand with no trading behind
+     it; reusing the stored copy here would publish and pay that row as if it had been earned - and
+     its accounting would be inherited too, so a rehearsal claim of 25c would quietly eat 25c of the
+     real week's cap and refuse the last real trader with "this week is fully claimed". */
+  if (done && done.testOnly) await bybitBonusWipe(env, bybitWeekKey(ws), done);
+  const b = (done && !done.error && !done.testOnly) ? done : await bybitBonusBuild(env, ws);
   if (b.error) { try { await tgAdmin(env, '<b>Bybit rebate:</b> could not read the affiliate feed for the week of ' + bybitWeekKey(ws) + ' (' + b.error + '). Will retry.', { kind: 'bybit rebate', sev: 'amber' }); } catch (e) {} return; }
   const sane = bybitBonusSane(b);
   if (!sane.ok) { try { await tgAdmin(env, '<b>Bybit rebate HELD</b> for ' + b.week + ': ' + sane.why + '. Nothing announced; look at mp-ops before this pays.', { kind: 'bybit rebate', sev: 'red' }); } catch (e) {} return; }
@@ -18858,10 +18875,22 @@ export default {
       const target = weeks.find(x => x.week === wantWeek);
       if (!target) return J({ error: 'no_week' }, 400);
       if (target.claimed) return J({ error: 'already_claimed' }, 409);
-      if (!(target.cents > 0)) return J({ error: 'nothing_to_claim', why: target.why || '' }, 400);
+      if (!(target.cents > 0)) return J({ error: 'nothing_to_claim', why: target.why || '', usd: 0 }, 400);
+      // ONE read of the stored week, used by the cap check and by the row re-read below.
+      const wkRec0 = await bybitBonusGet(env, Date.parse(target.week + 'T00:00:00Z'));
+      /* THE LAST GATE BEFORE MONEY. Re-read the row from the stored week instead of trusting the
+         summary assembled above, and refuse anything with no trading behind it. Nothing should reach
+         here - bybitBonusBuild will not create a row without volume or commission - but this is the
+         line that releases a payment, and one lookup makes "no volume, no bonus" true by construction
+         rather than by convention. It also catches a week that was re-settled between the page being
+         drawn and the button being pressed: a changed amount is refused, not paid. */
+      const srcRow = (wkRec0 && (wkRec0.rows || []).find(r => String(r.buid) === String(target.key || buid0))) || null;
+      if (!srcRow || srcRow.skip || !(srcRow.cents > 0) || !((+srcRow.vol > 0) || (+srcRow.com > 0))) {
+        return J({ error: 'nothing_to_claim', why: 'no Bybit trading recorded for that week', usd: 0 }, 400);
+      }
+      if (srcRow.cents !== target.cents) return J({ error: 'resettled', hint: 'That week was recalculated - open the link again', usd: 0 }, 409);
       // THE CAP: the total claimed for a week can never pass the figure announced for that week.
-      const wkRec = await bybitBonusGet(env, Date.parse(target.week + 'T00:00:00Z'));
-      const capC = (wkRec && +wkRec.capCents) || 0;
+      const capC = (wkRec0 && +wkRec0.capCents) || 0;
       const paidC = await bybitPaidCents(env, target.week);
       if (capC && paidC + target.cents > capC) return J({ error: 'week_cap', hint: 'This week is fully claimed' }, 409);
       const ck = 'bybonus:claim:' + target.week + ':' + (target.key || buid0);
@@ -18870,14 +18899,22 @@ export default {
       try {
         const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
         const r0 = await led0.fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ acct: 'u:' + uid0, cents: target.cents, from: 'bybit-rebate', once: 600 }) }));
+          /* big:true - the ledger silently clamps a gift to $5 unless it is set (Math.min(gcap,cents)),
+             and our own per-week cap is $50. Without it the first bonus over $5 is paid at $5 and the
+             row is still marked fully claimed, with no error anywhere. The current maximum is $2.57,
+             so this has never fired; it fires on its own the week volume doubles.
+             `from` carries the WEEK because `once` is a retry guard keyed on (account, from, amount):
+             two different weeks owing the same cents would otherwise read as one retry and the second
+             would be swallowed - marked claimed, never paid. */
+          body: JSON.stringify({ acct: 'u:' + uid0, cents: target.cents, big: true, from: 'byb-' + target.week, once: 600 }) }));
         out0 = await r0.json();
       } catch (e) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: 'ledger_unavailable' }, 503); }
       if (!out0 || out0.error) { try { await env.STATS.delete(ck); } catch (e2) {} return J({ error: (out0 && out0.error) || 'ledger' }, 400); }
       try { await env.STATS.put('bybonus:paid:' + target.week, String(paidC + target.cents), { expirationTtl: 400 * 86400 }); } catch (e) {}
       try { await env.STATS.put('bybonus:log:' + target.week + ':' + (target.key || buid0), JSON.stringify({ ts: Date.now(), uid: uid0, un: su0.username || '', buid: target.key || buid0, cents: target.cents, vol: target.vol }), { expirationTtl: 400 * 86400 }); } catch (e) {}
       try { await evPush(env, request, 'bybitrebate', '$' + (target.cents / 100).toFixed(2) + ' week ' + target.week, '/rewards/'); } catch (e) {}
-      try { await tgAdmin(env, '<b>Bybit bonus claimed</b> @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for ' + bybitWeekLabel(target.from).toLowerCase(), { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
+      // a rehearsal claim is real money leaving the ledger; it must never look like earned money in the books
+      try { await tgAdmin(env, '<b>Bybit bonus claimed</b>' + (srcRow.test ? ' <i>(rehearsal row, no trading behind it)</i>' : '') + ' @' + (su0.username || uid0.slice(0, 8)) + ' $' + (target.cents / 100).toFixed(2) + ' for ' + bybitWeekLabel(target.from).toLowerCase(), { kind: 'bybit rebate', sev: 'info' }); } catch (e) {}
       return J({ ok: true, week: target.week, label: target.label || '', usd: target.cents / 100, ranked: rewardsUnlocked(+su0.xp || 0), balance: (out0 && out0.balance != null) ? out0.balance : undefined });
     }
     /* The owner's rebate desk. ?week=YYYY-MM-DD reads a settled week; ?build=1 computes one WITHOUT
@@ -18901,9 +18938,11 @@ export default {
          if this is left lying around. ?test=clear removes it. */
       if (url.searchParams.get('test') === 'clear') {
         const wsT = bybitWeekStart(Date.now());
+        // clear the claim marks too, or a cleared rehearsal still blocks the same rows next time
+        const recT = await bybitBonusGet(env, wsT);
+        await bybitBonusWipe(env, bybitWeekKey(wsT), recT);
         try { await env.STATS.delete('bybonus:' + bybitWeekKey(wsT)); } catch (e) {}
-        try { await env.STATS.delete('bybonus:paid:' + bybitWeekKey(wsT)); } catch (e) {}
-        return J({ ok: true, cleared: bybitWeekKey(wsT) });
+        return J({ ok: true, cleared: bybitWeekKey(wsT), rows: ((recT && recT.rows) || []).length });
       }
       if (url.searchParams.get('test') === '1') {
         const wsT = bybitWeekStart(Date.now());

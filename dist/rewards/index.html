@@ -1000,13 +1000,13 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       var weeks=(j&&j.weeks)||[];
       var t=want?weeks.filter(function(x){return x.week===want;})[0]:null;
       if(!t) t=weeks.filter(function(x){return x.cents>0&&!x.claimed;})[0]||weeks[0];
-      if(!t){ show("Weekly bonus","","Nothing to claim yet.","Bonuses are worked out every Tuesday for the week before. Trade on Bybit with an account opened through MarginPad and yours appears here."); return; }
+      if(!t){ show("Weekly bonus","/usr/bin/bash.00","No Bybit trading recorded on your account.","A bonus is worked out from what you trade on Bybit through MarginPad. Trade this week and yours appears here."); return; }
       if(t.claimed){ show(t.label||"Weekly bonus","$"+(t.cents/100).toFixed(2),"Already claimed - it is on your MarginPad balance.",""); return; }
       if(!(t.cents>0)){
         var why=t.why==="under_floor"?"Your bonus for that week was under the minimum, so it was not paid out."
           :t.why==="not_registered"?"No Bybit UID is registered on this account yet. Register it on this page and every week from then on counts."
           :"No Bybit trading was recorded on your account for that week.";
-        show(t.label||"Weekly bonus","","Nothing to claim for "+(t.label||"that week")+".",why); return;
+        show(t.label||"Weekly bonus","/usr/bin/bash.00","Nothing to claim for "+(t.label||"that week")+".",why); return;
       }
       fetch("/api/bybit/bonus",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({week:t.week})})
         .then(function(r){return r.json();}).then(function(c){
