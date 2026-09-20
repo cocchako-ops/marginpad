@@ -12842,7 +12842,10 @@ async function checkBybitBonus(env) {
 }
 // The weekly post. A picture, because a channel full of plain text is scrolled past, and Telegram
 // gives a photo caption 1024 characters - plenty for what this has to say and a hard stop on padding.
-const BYBIT_REBATE_IMG = 'https://marginpad.io/assets/bybit-rebate.jpg';
+// VERSIONED ON PURPOSE. Telegram caches a photo by its URL, so new bytes at the same path leave
+// every existing post and the channel avatar on the OLD picture while every API call still answers
+// ok. Change the art -> change this filename (and run build/gen-bybit-rebate-img.js).
+const BYBIT_REBATE_IMG = 'https://marginpad.io/assets/bybit-bonus-v2.jpg';
 async function tgBroadcastBonus(env, caption) {
   if (!env.TELEGRAM_TOKEN) return false;
   let chan = '';
