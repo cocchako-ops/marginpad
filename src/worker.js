@@ -2678,7 +2678,7 @@ const COMP_BOARDS = [
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v4'); // v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
+  const ck = new Request('https://marginpad.io/__competition_v5'); // v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -2697,11 +2697,18 @@ async function handleCompetition(url, request, env, ctx) {
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
       entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : 'free_paper',
-      // FREE IS NOT THE SAME AS OPEN (2026-09-20). The Gold Room costs nothing but is Gold-level only
-      // (12,000 XP), so `entry: free_paper` alone reads as an invitation to a Bronze member - and this
-      // response is what an assistant quotes. A new field, not a changed value: nothing that already
-      // parses this breaks.
-      requires: b.id === 'gold' ? { level: 'gold', xp: 12000 } : null,
+      /* FREE IS NOT THE SAME AS OPEN (2026-09-20), AND NEITHER IS "OPEN" THE SAME AS "PAID" (2026-09-21).
+         `requires` was on the Gold Room alone; the other six read as asking nothing, which is how a
+         member comes to believe a board is open to them when it is not. And the opposite error was live
+         on /season/ ("At Bronze you are on the boards"): MEASURED, the board query has no XP condition
+         and 2 of 25 listed traders are below Bronze. Ranking and being paid are two questions, so they
+         are two fields - `requires` to rank, `payout` to take the money off the site. */
+      requires: b.id === 'gold' ? { level: 'gold', xp: 12000, what: 'Gold - 12,000 XP' }
+        : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
+        : b.id === 'moon' ? { link: 'moon_signup', xp: REWARDS_MIN_XP, what: 'an approved Moon sign-up bonus claim (claiming one needs Bronze)' }
+        : { what: 'a username and at least one closed trade this season' },
+      // what it takes to KEEP what you win - the same on every board, and the thing Bronze actually gates
+      payout: { level: 'bronze', xp: REWARDS_MIN_XP, what: 'Bronze - ' + REWARDS_MIN_XP + ' XP - to withdraw' },
       period_days: b.id === 'moon' && lb && lb.moonContest && lb.moonContest.days ? lb.moonContest.days : (b.days || Math.round(LB_PERIOD / 86400000)),
       ...(b.id === 'moon' && lb && lb.moonContest ? { contest: { starts: lb.moonContest.start ? new Date(lb.moonContest.start).toISOString() : null, ends: lb.moonContest.end ? new Date(lb.moonContest.end).toISOString() : null, updated: lb.moonContest.updated ? new Date(lb.moonContest.updated).toISOString() : null } } : {}),
     };
@@ -6307,7 +6314,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=2e871550" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a2993c11" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12468,7 +12475,7 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v10')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v10')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v4')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v5')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
 async function payMoonPrizes(env) { // */10 cron: the active contest, once its 28 days are over AND the END paste is marked FINAL; paid once (flag lbpaid:moon:<id>)
@@ -12811,38 +12818,6 @@ function bybitBonusSane(b) {
 
 /* Settle the most recent COMPLETE week, once. Volume is T+1, so a week that ended Sunday is only
    trustworthy from Tuesday - the cron simply refuses earlier. */
-/* The weekly bonus mail. Same tokenised link as Telegram, so one click claims it.
-   Deliberately says nothing about fees or percentages: to the reader this is a bonus MarginPad
-   pays for trading on Bybit through us, which is what the owner asked it to read as. */
-async function sendBybitBonusEmail(env, to, info) {
-  if (!env.RESEND_API_KEY || !to) return { ok: false };
-  const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
-  const amt = '$' + (info.cents / 100).toFixed(2);
-  const vol = '$' + Math.round(info.vol || 0).toLocaleString('en-US');
-  const hi = info.username ? ('@' + esc(info.username)) : 'trader';
-  const link = String(info.link || "https://marginpad.io/rewards/");
-  try {
-    const r = await fetch('https://api.resend.com/emails', {
-      method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify(refTagEmail({
-        from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
-        subject: 'Your MarginPad weekly bonus is ready - ' + amt,
-        text: 'Hi ' + hi + ',\n\nYou traded ' + vol + ' on Bybit during ' + info.week + '.\n\nYour MarginPad weekly bonus is ' + amt + '. Claim it here:\n' + link + '\n\nIt lands on your Rewards balance straight away.\n\n\u2014 MarginPad',
-        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">'
-          + '<p style="font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8b4a;margin:0 0 6px">MarginPad weekly bonus</p>'
-          + '<p style="font-size:22px;font-weight:800;margin:0 0 10px">Your bonus is ready</p>'
-          + '<p style="margin:0 0 14px">Hi ' + hi + ' \u2014 you traded <b>' + vol + '</b> on Bybit during ' + esc(info.week) + '.</p>'
-          + '<p style="margin:0 0 16px;background:#f2fbdf;border:1px solid #c2f64a;border-radius:12px;padding:14px 16px;text-align:center"><span style="font-size:32px;font-weight:800;letter-spacing:-1px">' + amt + '</span><br><span style="color:#555;font-size:13px">waiting for you</span></p>'
-          + '<p style="margin:0 0 18px"><a href="' + link + '" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Claim your bonus &rarr;</a></p>'
-          + '<p style="margin:0 0 4px;color:#444">It lands on your Rewards balance straight away. Keep trading on Bybit through MarginPad and there is a new one every week.</p>'
-          + '<p style="margin:0;color:#999;font-size:13px">MarginPad \u2014 not financial advice</p>' + MAIL_AFF_HTML + '</div>'
-      }))
-    });
-    if (!r.ok) { try { await mailFail(env, 'bybonus', r.status); } catch (e) {} }
-    return { ok: r.ok };
-  } catch (e) { try { await mailFail(env, 'bybonus', 0); } catch (e2) {} return { ok: false }; }
-}
-
 async function checkBybitBonus(env) {
   if (!env.STATS || !env.BYBIT_AFF_KEY) return;
   const now = Date.now(), thisWeek = bybitWeekStart(now), ws = thisWeek - 7 * 86400000;
@@ -12887,56 +12862,15 @@ async function checkBybitBonus(env) {
   const head = '<b>MARGINPAD WEEKLY BONUS</b>\n' +
     '<i>' + bybitWeekLabel(b.ws) + '</i>\n\n' +
     'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. No sign-up, no form - it is worked out for you every week, and the more you trade the bigger it is.\n\n' +
-    'This week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting for ' + payable.length + ' of them.\n\n' +
+    'This week: <b>$' + Math.round(b.volumeUsd).toLocaleString('en-US') + '</b> traded across ' + b.rows.length + ' account' + (b.rows.length === 1 ? '' : 's') + '. <b>$' + (b.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting to be claimed.\n\n' +
     '<a href="' + link + '">Claim your bonus</a>\n\n' +
     '<i>Not getting one yet? Register your Bybit UID once on the MarginPad rewards page and every week from then on counts. New here: open Bybit through marginpad.io first.</i>';
   try { await tgBroadcastBonus(env, head); } catch (e) {}
-  // and a direct message to each qualifying member who has linked Telegram
-  let dm = 0;
-  if (env.TELEGRAM_TOKEN) {
-    const uids = payable.map(x => x.uid).filter(Boolean);
-    let chats = {};
-    try { const r = await usersDO(env, '/tgchats', { uids }); chats = (r && r.chats) || {}; } catch (e) {}
-    for (const x of payable) {
-      const chat = chats[x.uid]; if (!chat) continue;
-      try {
-        await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true,
-          text: '<b>Your weekly bonus is ready</b>\n' + bybitWeekLabel(b.ws) + '\nYou traded $' + Math.round(x.vol).toLocaleString('en-US') + ' on Bybit - your bonus is <b>$' + (x.cents / 100).toFixed(2) + '</b>.\n<a href="' + link + '">Claim it</a>' });
-        dm++;
-      } catch (e) {}
-    }
-  }
-  // the bell + the celebration on their next visit, for everyone qualifying, TG or not
-  for (const x of payable) {
-    if (!x.uid) continue;
-    try { await usersDO(env, '/notify', { uid: x.uid, kind: 'gift', body: 'Your weekly Bybit bonus for ' + bybitWeekLabel(b.ws).toLowerCase() + ' is ready: $' + (x.cents / 100).toFixed(2) + '. Claim it on Rewards.', link: '/rewards/?byw=' + b.week }); } catch (e) {}
-  }
-  /* AND AN EMAIL, WHICH IS THE ONLY CHANNEL THAT ACTUALLY REACHES THEM. Measured the day this was
-     written: 13 of 600 accounts have Telegram, so the channel post and the direct message speak to
-     2% of the base, and the bell waits for a visit that may never come. One mail per account per
-     week - the KV mark is written BEFORE the send, so a cron retry after a partial failure cannot
-     mail anyone twice; a bonus announced twice is worse than one announced late. */
-  let mailed = 0;
-  try {
-    const prof = await resolveProfiles(env, payable.map(x => x.uid).filter(Boolean));
-    for (const x of payable) {
-      if (!x.uid) continue;
-      const u = prof[String(x.uid).replace(/^u:/, '')];
-      if (!u || !u.email) continue;
-      const mk = 'bybonus:mail:' + b.week + ':' + x.uid;
-      try { if (await env.STATS.get(mk)) continue; } catch (e) {}
-      try { await env.STATS.put(mk, '1', { expirationTtl: 400 * 86400 }); } catch (e) {}
-      try {
-        const r = await sendBybitBonusEmail(env, u.email, { cents: x.cents, vol: x.vol, username: u.username || x.name || '', week: bybitWeekLabel(b.ws), link });
-        if (r && r.ok) mailed++;
-      } catch (e) {}
-    }
-  } catch (e) {}
   try {
     await tgAdmin(env, '<b>Weekly bonus announced</b> - ' + bybitWeekLabel(b.ws) + ' (' + b.week + ')\n' +
       'volume $' + Math.round(b.volumeUsd).toLocaleString('en-US') + ' · commission $' + b.commissionUsd.toFixed(2) + ' · rebate $' + (b.payoutCents / 100).toFixed(2) +
       ' (' + Math.round(b.payoutCents / Math.max(1, b.commissionUsd * 100) * 100) + '% of commission, cap ' + Math.round(BYBIT_BONUS_SHARE * 100) + '%)\n' +
-      payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID · ' + dm + ' direct messages · ' + mailed + ' emails',
+      payable.length + ' payable · ' + b.rows.filter(x => x.skip === 'not_registered').length + ' traded but never registered a UID',
       { kind: 'bybit rebate', sev: 'green' });
   } catch (e) {}
 }
@@ -15169,7 +15103,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '5827d2bf';
+const ASSET_V = '7c8f3816';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18989,22 +18923,6 @@ export default {
          their money, and it is why the row is flagged `test` and the week `testOnly` - checkBybitBonus
          refuses to treat a testOnly week as announced, so the real Tuesday settle still happens even
          if this is left lying around. ?test=clear removes it. */
-      /* Send ONE real bonus email, rendered from a real week, to an address of your choosing.
-         Sending it to milan@ is the cheap full-path check: template -> Resend -> delivery -> our own
-         pmail inbox. It writes no claim mark and mails no member. */
-      if (url.searchParams.get('mailtest') === '1') {
-        const toM = String(url.searchParams.get('to') || 'milan@marginpad.io');
-        const wsM = url.searchParams.get('week') ? Date.parse(url.searchParams.get('week') + 'T00:00:00Z') : (bybitWeekStart(Date.now()) - 7 * 86400000);
-        const bM = await bybitBonusBuild(env, wsM);
-        if (bM.error) return J(bM, 503);
-        const payM = (bM.rows || []).filter(r => !r.skip);
-        if (!payM.length) return J({ error: 'no_payable_row', week: bybitWeekKey(wsM) }, 400);
-        const top = payM.slice().sort((a, c) => c.cents - a.cents)[0];
-        const tok = await bybitWeekToken(env, wsM);
-        const r = await sendBybitBonusEmail(env, toM, { cents: top.cents, vol: top.vol, username: top.name || 'trader', week: bybitWeekLabel(wsM), link: 'https://marginpad.io/bybit-bonus/' + tok });
-        return J({ ok: !!(r && r.ok), to: toM, week: bybitWeekKey(wsM), label: bybitWeekLabel(wsM),
-          rendered: { amount: '$' + (top.cents / 100).toFixed(2), volume: Math.round(top.vol), name: top.name || '' } });
-      }
       if (url.searchParams.get('test') === 'clear') {
         const wsT = bybitWeekStart(Date.now());
         // clear the claim marks too, or a cleared rehearsal still blocks the same rows next time
@@ -19041,7 +18959,7 @@ export default {
           '<b>MARGINPAD WEEKLY BONUS</b>\n' +
           '<i>' + bybitWeekLabel(wsT) + '</i>\n\n' +
           'Trade on Bybit with an account you opened through MarginPad and you earn a <b>weekly bonus on your MarginPad balance</b>. The more you trade, the bigger it is.\n\n' +
-          'Last week: <b>$' + Math.round(bT.volumeUsd).toLocaleString('en-US') + '</b> traded. <b>$' + (bT.payoutCents / 100).toFixed(2) + '</b> waiting for ' + payT.length + '.\n\n' +
+          'Last week: <b>$' + Math.round(bT.volumeUsd).toLocaleString('en-US') + '</b> traded. <b>$' + (bT.payoutCents / 100).toFixed(2) + '</b> in bonuses is waiting to be claimed.\n\n' +
           '<a href="' + linkT + '">Claim your bonus</a>\n\n' +
           '<i>Your test row is $' + (BYBIT_BONUS_MIN_C / 100).toFixed(2) + ' on UID ' + testBuid + '. Nothing was posted to the channel and nobody else was messaged. Clear it with ?test=clear.</i>';
         let sent = false;

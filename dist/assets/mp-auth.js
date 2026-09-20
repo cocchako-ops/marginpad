@@ -37,7 +37,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     cal: '<rect x="3" y="4.5" width="18" height="16.5" rx="2.2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
     trades: '<path d="M3 16.5l6-6 4 4 7-7.5"/><path d="M16.5 6.5H21v4.5"/>',
     people: '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20v-.5a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v.5"/><path d="M16.5 4.4a3.4 3.4 0 0 1 0 6.6"/><path d="M21.5 20v-.5a5 5 0 0 0-3.4-4.7"/>',
-    gift: '<rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M4 10h16M12 10v10M8 10c-2 0-3-1.2-3-2.6C5 6 6.3 5 7.6 5 9.6 5 12 7.5 12 10c0-2.5 2.4-5 4.4-5C17.7 5 19 6 19 7.4 19 8.8 18 10 16 10"/>'
+    gift: '<rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M4 10h16M12 10v10M8 10c-2 0-3-1.2-3-2.6C5 6 6.3 5 7.6 5 9.6 5 12 7.5 12 10c0-2.5 2.4-5 4.4-5C17.7 5 19 6 19 7.4 19 8.8 18 10 16 10"/>',
+    cup: '<path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4.5A2.5 2.5 0 0 0 7 9.5"/><path d="M17 6h2.5A2.5 2.5 0 0 1 17 9.5"/><path d="M12 14v3"/><path d="M8.5 20h7"/><path d="M10 20l.5-3h3l.5 3"/>'
   };
   function ic(name, cls) { return '<svg class="mpa-svg' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>'; }
   function tileBtn(id, icon, label, badgeId) { return '<button class="mpa-tile" id="' + id + '" type="button">' + ic(icon) + '<span class="mpa-tile-l">' + label + '</span>' + (badgeId ? '<span class="mpa-tile-dot" id="' + badgeId + '" hidden></span>' : '') + '</button>'; }
@@ -514,6 +515,69 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-fr-sw{height:30px;border-radius:7px;border:1px solid #2a3340;background:linear-gradient(150deg,#141922,#0d1017)}'
     + '.mpa-fr-nm{font:700 11px monospace;color:#e7ecf2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.mpa-fr-by{font-size:10px;color:#8b97a5;line-height:1.2}.mpa-fr.on .mpa-fr-by{color:#c2f64a}'
+    /* ---- Your card: the preview and the frame disclosure (2026-09-21) */
+    + '.mpa-cdtop{display:flex;gap:13px;align-items:flex-start;margin:0 0 12px}'
+    /* the preview wears `prev lbm-card` so it inherits --fs:.34 AND the rule that kills the outer
+       silhouette ring at thumbnail size; only the box is defined here. 132/380 = the same .35 scale. */
+    + '.mpa-panel .mpa-cdprev.lbm-card{position:relative;flex:none;width:132px;max-width:132px;height:162px;padding:0;border-radius:18px;background:linear-gradient(170deg,#171c24,#0d1117);border:1px solid #232b36;cursor:pointer;overflow:visible;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;transition:transform .12s}'
+    + '.mpa-panel .mpa-cdprev.lbm-card:active{transform:scale(.985)}'
+    + '.mpa-cdbar{position:absolute;top:0;left:14px;right:14px;height:2px;border-radius:0 0 3px 3px;background:#c2f64a;z-index:9}'
+    + '.mpa-cdav{width:52px;height:52px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font:800 20px/1 system-ui,sans-serif;color:#0a0b0d;background:#1a2028;z-index:9}'
+    + '.mpa-cdav img{width:100%;height:100%;object-fit:cover;display:block}'
+    + '.mpa-cdnm{font:800 12.5px system-ui,sans-serif;color:#f2f0e9;max-width:106px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;z-index:9}'
+    + '.mpa-cdlv{font:700 9.5px monospace;letter-spacing:.08em;text-transform:uppercase;color:#8b97a5;z-index:9}'
+    + '.mpa-cdside{flex:1;min-width:0}'
+    + '.mpa-cdfr{display:flex;align-items:center;gap:10px;width:100%;background:#0f131a;border:1px solid #1e2530;border-radius:11px;padding:8px 11px;cursor:pointer;text-align:left;transition:border-color .12s}'
+    + '.mpa-cdfr:hover{border-color:#33404f}.mpa-cdfr.open{border-color:#2c3644;border-bottom-left-radius:0;border-bottom-right-radius:0}'
+    + '.mpa-cdfr .mpa-fr-sw{width:34px;height:26px;flex:none}'
+    + '.mpa-cdfr-b{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}'
+    + '.mpa-cdfr-b em{font:700 9.5px monospace;letter-spacing:.09em;text-transform:uppercase;color:#7f8893;font-style:normal}'
+    + '.mpa-cdfr-b b{font-size:13px;color:#e7ecf2;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.mpa-cdfr-c{display:flex;color:#7f8893;transition:transform .15s}.mpa-cdfr.open .mpa-cdfr-c{transform:rotate(90deg)}'
+    + '.mpa-cdfrbox{background:#0c1016;border:1px solid #2c3644;border-top:none;border-radius:0 0 11px 11px;padding:9px 10px 4px}'
+    + '.mpa-cdfrbox .mpa-frhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 7px}'
+    /* ---- Competitions (2026-09-21) */
+    + '.mpa-cpsum{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}'
+    + '.mpa-cpsum b{font:800 26px/1 system-ui,sans-serif;color:#f2f0e9;letter-spacing:-.02em}'
+    + '.mpa-cpsum span{font-size:12.5px;color:#8b97a5}'
+    + '.mpa-cppay{background:#0f131a;border:1px solid #1e2530;border-left:2px solid #ffcf3f;border-radius:10px;padding:10px 12px;margin:0 0 13px;font-size:12.5px;line-height:1.5;color:#9aa3ad}'
+    + '.mpa-cppay.ok{border-left-color:#2ebd85}'
+    + '.mpa-cppay b{color:#e7ecf2;font-weight:700}'
+    + '.mpa-cpbar{display:block;height:4px;border-radius:3px;background:#1b2230;margin:8px 0 2px;overflow:hidden}'
+    + '.mpa-cppay .mpa-cpb{margin-top:8px}'
+    + '.mpa-cpbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#8a7a2e,#ffcf3f)}'
+    + '.mpa-cpg{margin:0 0 11px}'
+    + '.mpa-cpg-h{display:flex;align-items:baseline;gap:7px;margin:0 0 6px;padding:0 2px}'
+    + '.mpa-cpg-h b{font:700 9.5px monospace;letter-spacing:.11em;text-transform:uppercase;color:#7f8893;font-weight:700}'
+    + '.mpa-cpg-h em{font-size:10.5px;color:#5c656f;font-style:normal}'
+    /* a row is a grid so the name, the pool and the verdict line up down the column and the reason can
+       span the full width underneath - as a flex row they wrapped into ragged half-sentences (the same
+       thing the ops attention strip hit at 390px) */
+    + '.mpa-cpr{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:4px 9px;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:9px 11px;margin:0 0 5px}'
+    + '.mpa-cpr.in{border-color:#1d3a2c;background:linear-gradient(180deg,#0f1a15,#0d1117)}'
+    + '.mpa-cpr-n{font-size:13.5px;font-weight:700;color:#e7ecf2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.mpa-cpr-p{font:700 12px monospace;color:#8b97a5}'
+    + '.mpa-cpr.in .mpa-cpr-p{color:#c2f64a}'
+    + '.mpa-cpr-s{font:700 9.5px monospace;letter-spacing:.06em;text-transform:uppercase;color:#7f8893;background:#161c25;border-radius:5px;padding:3px 6px;white-space:nowrap}'
+    + '.mpa-cpr.in .mpa-cpr-s{color:#0a0b0d;background:#2ebd85}'
+    + '.mpa-cpr-w{grid-column:1/-1;font-size:11.5px;line-height:1.45;color:#8b97a5}'
+    + '.mpa-cpr-a{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:3px}'
+    + '.mpa-cpb{display:inline-block;background:#1c2430;color:#e7ecf2;border:1px solid #2c3644;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer}'
+    + '.mpa-cpb:hover{border-color:#3a4757}'
+    + '.mpa-cpb.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}'
+    + '.mpa-cpb.go:disabled{opacity:.6;cursor:default}'
+    + '.mpa-cpin{flex:1;min-width:104px;background:#0a0d11;border:1px solid #2f3742;border-radius:8px;padding:6px 9px;color:#f2f0e9;font:600 12.5px monospace;outline:none}'
+    + '.mpa-cpin:focus{border-color:#c2f64a}'
+    + '.mpa-cplink{flex-basis:100%;font-size:11.5px;color:#7f8893;text-decoration:underline}'
+    + '.mpa-cpmsg{flex-basis:100%;font-size:11.5px;line-height:1.45}'
+    + '.mpa-cpfoot{font-size:11.5px;color:#7f8893;margin:10px 0 0;line-height:1.5}'
+    + '.mpa-cpfoot a{color:#c2f64a;text-decoration:none}'
+    + '.mpa-cpshared{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#0c1016;border:1px dashed #262f3c;border-radius:9px;padding:8px 11px;margin:0 0 6px}'
+    + '.mpa-cpshared span{flex:1;min-width:150px;font-size:11.5px;line-height:1.45;color:#8b97a5}'
+    + '.mpa-cpshared .mpa-cpr-a{grid-column:auto;margin:0;flex:none}'
+    + '.mpa-cpr.slim{padding:7px 11px}'
+    + '#mpaPsave:disabled{background:#161c25;color:#6c7684;border:1px solid #232b36;opacity:1}'
+    + '@media(max-width:400px){.mpa-panel .mpa-cdprev.lbm-card{width:116px;max-width:116px;height:143px}.mpa-cdav{width:46px;height:46px}}'
     // PRO members: glossy gold name (replaces the old "PRO" chip - fits everywhere, never clipped on mobile)
     + '.mp-progold{background:linear-gradient(100deg,#e0a52a 0%,#ffe07a 18%,#fff6c8 30%,#ffd75a 46%,#e0a52a 68%,#ffe98a 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;color:transparent !important;font-weight:800 !important;text-shadow:none !important;animation:mpGold 3.2s linear infinite}'
     + '@keyframes mpGold{to{background-position:200% center}}'
@@ -1310,104 +1374,309 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     { k: 'nat_cn', name: 'China', by: 'Vault - Nations' },
     { k: 'nat_ge', name: 'Georgia', by: 'Vault - Nations' }
   ];
-  function renderCustomize() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3>'
-      + __esT_mpauth("frameForYourPublic",'<div class="mpa-frhead"><p class="mpa-sub">Frame for your public trader card.</p>')
-      + __esT_mpauth("yoursAll",'<span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>')
-      + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
-      + '<button class="mpa-row2" id="mpaFrPic" type="button" style="margin-top:10px">' + ic('cam') + __esT_mpauth("changeProfilePicture",'<span>Change profile picture</span>') + ic('chev') + '</button>'
-      + '<div class="mpa-du-msg" id="mpaFrMsg" style="margin-top:8px"></div>'
-      + '<button class="mpa-link" id="mpaFrBack" type="button">← Back</button>';
-    var bk = bodyEl.querySelector('#mpaFrBack'); if (bk) bk.addEventListener('click', render);
-    var pc = bodyEl.querySelector('#mpaFrPic'); if (pc) pc.addEventListener('click', function () { renderEditProfile(); });
-    var msg = bodyEl.querySelector('#mpaFrMsg');
-    fetch('/api/auth/frames').then(function (r) { return r.json(); }).then(function (d) {
-      var owned = (d && d.owned) || ['default']; var eq = (d && d.equipped) || 'default';
-      var grid = bodyEl.querySelector('#mpaFrGrid'); if (!grid) return;
-      // yours first - equipped, then the rest you own, then everything still locked. The list you scroll
-      // starts with the frames you can actually wear instead of burying them in catalogue order.
+  /* ---------------------------------------------------------------- YOUR CARD (2026-09-21)
+     Owner: "edit profile i customize card ... sto mozemo da spojimo u jedno". They were two rows in the
+     menu and one subject - what other traders see. The split showed in the old code itself: "Customize
+     card" carried a "Change profile picture" button whose only job was to jump to the other panel.
+
+     ONE SAVE FOR EVERYTHING, THE FRAME INCLUDED. The frame used to write to its own endpoint on click
+     while the four other fields waited for a button, so one panel had two save models - which is the
+     clutter, not the row count. The live preview is what makes a pending frame safe: you see it the
+     instant you pick it, so nothing is lost by waiting for Save. The button stays disabled until
+     something has actually changed, so "did that save?" never has to be asked.
+
+     THE PREVIEW WEARS `prev lbm-card`, THE VAULT'S OWN COMBINATION, ON PURPOSE. Those two classes carry
+     the frame scale (--fs:.34) and, more importantly, the rule that switches the outer silhouette ring
+     off at thumbnail size - a new class of my own would have reproduced the 2026-09-13 bug where the
+     ring collapses into a stray coloured line above the tile. Only the box size is new. */
+  function renderCard() {
+    var S = { av: (ME && ME.avatar) || '', acc: (ME && ME.accent) || '', frame: (ME && ME.frame) || 'default', bio: (ME && ME.bio) || '', coins: (ME && ME.coins) || '' };
+    var BASE = JSON.stringify(S), owned = ['default'], view = 'mine';
+    try { view = localStorage.getItem('mp_frview') === 'all' ? 'all' : 'mine'; } catch (e) {}
+    var frName = function (k) { for (var i = 0; i < FRAMES.length; i++) if (FRAMES[i].k === k) return FRAMES[i].name; return 'Classic'; };
+    var lvl = window.mpLvlNow || (xpLast && xpLast.level) || null;
+
+    bodyEl.innerHTML = '<h3 class="mpa-h">Your card</h3><p class="mpa-sub" style="margin:-4px 0 14px">This is what every other trader sees when they tap your name.</p>'
+      + '<div class="mpa-cdtop">'
+        + '<div class="mpa-cdprev prev lbm-card frame-' + S.frame + '" id="mpaCdPrev">'
+          + '<span class="mpa-cdbar" id="mpaCdBar"></span>'
+          + '<span class="mpa-cdav" id="mpaCdAv"></span>'
+          + '<span class="mpa-cdnm">' + esc((ME && ME.username) || 'you') + '</span>'
+          + '<span class="mpa-cdlv" id="mpaCdLv">' + esc((lvl && lvl.name) || 'Unranked') + '</span>'
+        + '</div>'
+        + '<div class="mpa-cdside">'
+          + '<div class="mpa-avttl">Profile picture</div>'
+          + '<div class="mpa-avsub">Square works best. JPG, PNG or WebP.</div>'
+          + '<div class="mpa-avbtns"><button type="button" class="mpa-avbtn" id="mpaAvPick">Upload</button><button type="button" class="mpa-avbtn ghost" id="mpaAvClear"' + (S.av ? '' : ' hidden') + '>Remove</button></div>'
+          + '<label class="mpa-pl" style="margin:12px 0 5px">Accent colour</label>'
+          + '<div class="mpa-pacc" id="mpaPacc">' + ACCENTS.map(function (c) { return '<button type="button" class="mpa-pc' + (c === S.acc ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>'
+        + '</div>'
+      + '<input type="file" accept="image/*" id="mpaAvFile" hidden></div>'
+      + '<button class="mpa-cdfr" id="mpaCdFrBtn" type="button" aria-expanded="false">'
+        + '<span class="mpa-fr-sw frame-' + S.frame + '" id="mpaCdFrSw"></span>'
+        + '<span class="mpa-cdfr-b"><em>Frame</em><b id="mpaCdFrNm">' + esc(frName(S.frame)) + '</b></span>'
+        + '<span class="mpa-cdfr-c">' + ic('chev') + '</span>'
+      + '</button>'
+      + '<div class="mpa-cdfrbox" id="mpaCdFrBox" hidden>'
+        + '<div class="mpa-frhead"><p class="mpa-sub" style="margin:0">Frames you own are first.</p><span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>'
+        + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
+      + '</div>'
+      + '<label class="mpa-pl" style="margin-top:14px">Bio <span style="color:#5c656f">(160 characters)</span></label>'
+      + '<textarea class="mpa-in" id="mpaPbio" maxlength="160" rows="3" placeholder="Swing trader. BTC maxi. Risk 1% per trade." style="resize:vertical;min-height:62px">' + esc(S.bio) + '</textarea>'
+      + '<label class="mpa-pl" style="margin-top:12px">Favourite coins <span style="color:#5c656f">(up to 6, comma-separated)</span></label>'
+      + '<input class="mpa-in" id="mpaPco" placeholder="BTC, ETH, SOL" value="' + esc(S.coins) + '">'
+      + '<div class="mpa-du-msg" id="mpaPmsg"></div>'
+      + '<button class="mpa-btn" id="mpaPsave" type="button" disabled>Saved</button>'
+      + '<button class="mpa-link" id="mpaPback" type="button">← Back</button>';
+
+    var msg = bodyEl.querySelector('#mpaPmsg'), sv = bodyEl.querySelector('#mpaPsave');
+    var prev = bodyEl.querySelector('#mpaCdPrev'), swat = bodyEl.querySelector('#mpaCdFrSw');
+    function dirty() { return JSON.stringify(S) !== BASE; }
+    function reflectSave() { if (!sv) return; var d = dirty(); sv.disabled = !d; sv.textContent = d ? 'Save card' : 'Saved'; }
+    function paintPrev() {
+      var av = bodyEl.querySelector('#mpaCdAv'); if (av) av.innerHTML = S.av ? avatarHtml(S.av) : esc(((ME && ME.username) || 'y').slice(0, 1).toUpperCase());
+      if (av) av.style.background = S.acc || '#1a2028';
+      var bar = bodyEl.querySelector('#mpaCdBar'); if (bar) bar.style.background = S.acc || ((lvl && lvl.col) || '#c2f64a');
+      // the frame class is the only thing that may change on the preview - swap just that token
+      [prev, swat].forEach(function (el) {
+        if (!el) return;
+        el.className = el.className.replace(/\s*frame-[a-z0-9_]+/gi, '') + ' frame-' + S.frame;
+      });
+      var nm = bodyEl.querySelector('#mpaCdFrNm'); if (nm) nm.textContent = frName(S.frame);
+      if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} }   // JS-driven cosmetics, not @keyframes
+      reflectSave();
+    }
+    paintPrev();
+
+    var bk = bodyEl.querySelector('#mpaPback'); if (bk) bk.addEventListener('click', render);
+    // ---- picture
+    var fileIn = bodyEl.querySelector('#mpaAvFile'), pick = bodyEl.querySelector('#mpaAvPick'), clr = bodyEl.querySelector('#mpaAvClear');
+    function onFile(f) {
+      if (msg) msg.innerHTML = '<span style="color:#8b97a5">Processing image…</span>';
+      makeAvatar(f, function (data, err) {
+        if (err) { if (msg) msg.innerHTML = '<span style="color:#ffb347">' + err + '</span>'; return; }
+        S.av = data; if (clr) clr.hidden = false; paintPrev(); if (msg) msg.innerHTML = '';
+      });
+    }
+    if (pick) pick.addEventListener('click', function () { fileIn.click(); });
+    if (prev) prev.addEventListener('click', function () { fileIn.click(); });
+    if (fileIn) fileIn.addEventListener('change', function () { if (fileIn.files && fileIn.files[0]) onFile(fileIn.files[0]); fileIn.value = ''; });
+    if (clr) clr.addEventListener('click', function () { S.av = ''; clr.hidden = true; paintPrev(); });
+    // ---- accent
+    Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-acc'); S.acc = (S.acc === v) ? '' : v;
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (x) { x.classList.toggle('on', x.getAttribute('data-acc') === S.acc); });
+        paintPrev();
+      });
+    });
+    // ---- bio + coins
+    var bioEl = bodyEl.querySelector('#mpaPbio'), coEl = bodyEl.querySelector('#mpaPco');
+    if (bioEl) bioEl.addEventListener('input', function () { S.bio = bioEl.value; reflectSave(); });
+    if (coEl) coEl.addEventListener('input', function () { S.coins = coEl.value; reflectSave(); });
+    // ---- frame, behind a disclosure so 30-odd tiles do not become the panel
+    var frBtn = bodyEl.querySelector('#mpaCdFrBtn'), frBox = bodyEl.querySelector('#mpaCdFrBox'), grid = bodyEl.querySelector('#mpaFrGrid');
+    var gridLoaded = false;
+    function paintGrid() {
+      if (!grid) return;
       var ordered = FRAMES.slice().sort(function (a, b) {
-        var ra = (a.k === eq ? 0 : owned.indexOf(a.k) >= 0 ? 1 : 2);
-        var rb = (b.k === eq ? 0 : owned.indexOf(b.k) >= 0 ? 1 : 2);
+        var ra = (a.k === S.frame ? 0 : owned.indexOf(a.k) >= 0 ? 1 : 2), rb = (b.k === S.frame ? 0 : owned.indexOf(b.k) >= 0 ? 1 : 2);
         return ra - rb || FRAMES.indexOf(a) - FRAMES.indexOf(b);
       });
-      var view = 'mine'; try { view = localStorage.getItem('mp_frview') === 'all' ? 'all' : 'mine'; } catch (e) {}
-      function paint() {
-        var list = view === 'all' ? ordered : ordered.filter(function (f) { return owned.indexOf(f.k) >= 0; });
-        grid.innerHTML = list.map(function (f) {
-          var own = owned.indexOf(f.k) >= 0; var isEq = f.k === eq;
-          return '<button class="mpa-fr' + (isEq ? ' on' : '') + (own ? '' : ' lock') + '" data-frame="' + f.k + '"' + (own ? '' : ' disabled') + '>'
-            + '<div class="mpa-fr-sw frame-' + f.k + '"></div>'
-            + '<div class="mpa-fr-nm">' + f.name + '</div>'
-            + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
-            + '</button>';
-        }).join('') || __esT_mpauth("onlyTheClassicFrame",'<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more - switch to ALL to see what is out there.</div>');
-        var seg = bodyEl.querySelector('#mpaFrSeg');
-        if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
-        wire();
-      }
-      var seg0 = bodyEl.querySelector('#mpaFrSeg');
-      if (seg0) seg0.addEventListener('click', function (e2) {
-        var b3 = e2.target.closest && e2.target.closest('[data-frv]'); if (!b3) return;
-        view = b3.getAttribute('data-frv'); try { localStorage.setItem('mp_frview', view); } catch (e3) {}
-        paint();
-      });
-      paint();
-      function wire() {
+      var list = view === 'all' ? ordered : ordered.filter(function (f) { return owned.indexOf(f.k) >= 0; });
+      grid.innerHTML = list.map(function (f) {
+        var own = owned.indexOf(f.k) >= 0, on = f.k === S.frame;
+        return '<button class="mpa-fr' + (on ? ' on' : '') + (own ? '' : ' lock') + '" data-frame="' + f.k + '"' + (own ? '' : ' disabled') + '>'
+          + '<div class="mpa-fr-sw frame-' + f.k + '"></div><div class="mpa-fr-nm">' + f.name + '</div>'
+          + '<div class="mpa-fr-by">' + (own ? (on ? 'On your card' : 'Owned') : f.by) + '</div></button>';
+      }).join('') || '<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more - switch to ALL to see what is out there.</div>';
+      var seg = bodyEl.querySelector('#mpaFrSeg');
+      if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
       Array.prototype.forEach.call(grid.querySelectorAll('[data-frame]:not([disabled])'), function (b) {
-        b.addEventListener('click', function () {
-          var fr = b.getAttribute('data-frame');
-          if (msg) msg.innerHTML = '<span style="color:#8b97a5">Saving…</span>';
-          fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: fr }) })
-            .then(function (r) { return r.json(); }).then(function (rd) {
-              if (rd && rd.ok) {
-                if (ME) ME.frame = rd.frame;
-                Array.prototype.forEach.call(grid.querySelectorAll('.mpa-fr'), function (x) {
-                  var k = x.getAttribute('data-frame'); x.classList.toggle('on', k === rd.frame);
-                  if (owned.indexOf(k) >= 0) { var by = x.querySelector('.mpa-fr-by'); if (by) by.textContent = (k === rd.frame ? 'Equipped' : 'Owned'); }
-                });
-                if (msg) msg.innerHTML = __esT_mpauth("frameEquippedYourTrader",'<span style="color:#34d99a">Frame equipped! Your trader card is updated.</span>');
-              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? __esT_mpauth("youDoNotOwn",'You do not own that frame yet.') : __esT_mpauth("couldNotEquipTry",'Could not equip - try again.')) + '</span>';
-            }).catch(function () { if (msg) msg.innerHTML = __esT_mpauth("networkErrorTryAgain2",'<span style="color:#ffb347">Network error - try again.</span>'); });
-        });
+        b.addEventListener('click', function () { S.frame = b.getAttribute('data-frame'); paintGrid(); paintPrev(); });
       });
+      if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} }
+    }
+    var seg0 = bodyEl.querySelector('#mpaFrSeg');
+    if (seg0) seg0.addEventListener('click', function (e2) {
+      var b3 = e2.target.closest && e2.target.closest('[data-frv]'); if (!b3) return;
+      view = b3.getAttribute('data-frv'); try { localStorage.setItem('mp_frview', view); } catch (e3) {}
+      paintGrid();
+    });
+    if (frBtn) frBtn.addEventListener('click', function () {
+      var openNow = frBox.hidden; frBox.hidden = !openNow; frBtn.setAttribute('aria-expanded', openNow ? 'true' : 'false');
+      frBtn.classList.toggle('open', openNow);
+      if (openNow && !gridLoaded) {
+        gridLoaded = true;
+        fetch('/api/auth/frames').then(function (r) { return r.json(); }).then(function (d) {
+          owned = (d && d.owned) || ['default'];
+          if (d && d.equipped && JSON.stringify(S) === BASE) { S.frame = d.equipped; BASE = JSON.stringify(S); paintPrev(); }
+          paintGrid();
+        }).catch(function () { if (grid) grid.innerHTML = '<div class="mpa-xp-empty" style="grid-column:1/-1">Could not load frames.</div>'; });
       }
-    }).catch(function () { var grid = bodyEl.querySelector('#mpaFrGrid'); if (grid) grid.innerHTML = '<div class="mpa-xp-empty" style="grid-column:1/-1">Could not load frames.</div>'; });
-  }
-  function renderEditProfile() {
-    var bio = (ME && ME.bio) || '', av = (ME && ME.avatar) || '', ac = (ME && ME.accent) || '', co = (ME && ME.coins) || '';
-    var avState = av; // current avatar (data URI or emoji), updated on upload
-    function avInner(a) { return a ? avatarHtml(a) : ic('cam'); }
-    bodyEl.innerHTML = '<h3 class="mpa-h">Edit profile</h3><p class="mpa-sub" style="margin:-4px 0 14px">This shows on your public trader card.</p>'
-      + '<div class="mpa-avedit"><button type="button" class="mpa-avdrop' + (avState ? ' has' : '') + '" id="mpaAvDrop">' + avInner(avState) + '<span class="mpa-avcam">' + ic('cam') + '</span></button>'
-      + __esT_mpauth("profilePictureSquareWorks",'<div class="mpa-avside"><div class="mpa-avttl">Profile picture</div><div class="mpa-avsub">Square works best · JPG/PNG/WebP</div><div class="mpa-avbtns"><button type="button" class="mpa-avbtn" id="mpaAvPick">Upload</button><button type="button" class="mpa-avbtn ghost" id="mpaAvClear"') + (avState ? '' : ' hidden') + '>Remove</button></div></div>'
-      + '<input type="file" accept="image/*" id="mpaAvFile" hidden></div>'
-      + '<label class="mpa-pl" style="margin-top:16px">Accent colour</label><div class="mpa-pacc" id="mpaPacc">' + ACCENTS.map(function (c) { return '<button type="button" class="mpa-pc' + (c === ac ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>'; }).join('') + '</div>'
-      + '<label class="mpa-pl" style="margin-top:14px">Bio <span style="color:#5c656f">(160 chars)</span></label><textarea class="mpa-in" id="mpaPbio" maxlength="160" rows="3" placeholder="Swing trader. BTC maxi. Risk 1% per trade." style="resize:vertical;min-height:64px">' + esc(bio) + '</textarea>'
-      + '<label class="mpa-pl" style="margin-top:14px">Favourite coins <span style="color:#5c656f">(up to 6, comma-separated)</span></label><input class="mpa-in" id="mpaPco" placeholder="BTC, ETH, SOL" value="' + esc(co) + '">'
-      + '<div class="mpa-du-msg" id="mpaPmsg"></div>'
-      + '<button class="mpa-btn" id="mpaPsave" type="button" style="margin-top:8px">Save profile</button><button class="mpa-link" id="mpaPback" type="button">← Back</button>';
-    var bk = bodyEl.querySelector('#mpaPback'); if (bk) bk.addEventListener('click', render);
-    var drop = bodyEl.querySelector('#mpaAvDrop'), fileIn = bodyEl.querySelector('#mpaAvFile'), pick = bodyEl.querySelector('#mpaAvPick'), clr = bodyEl.querySelector('#mpaAvClear'), pmsg = bodyEl.querySelector('#mpaPmsg');
-    function paintAv() { drop.innerHTML = avInner(avState) + '<span class="mpa-avcam">' + ic('cam') + '</span>'; drop.classList.toggle('has', !!avState); if (clr) clr.hidden = !avState; }
-    function onFile(f) { if (pmsg) pmsg.innerHTML = '<span style="color:#8b97a5">Processing image…</span>'; makeAvatar(f, function (data, err) { if (err) { if (pmsg) pmsg.innerHTML = '<span style="color:#ffb347">' + err + '</span>'; return; } avState = data; paintAv(); if (pmsg) pmsg.innerHTML = ''; }); }
-    if (pick) pick.addEventListener('click', function () { fileIn.click(); });
-    if (drop) drop.addEventListener('click', function () { fileIn.click(); });
-    if (fileIn) fileIn.addEventListener('change', function () { if (fileIn.files && fileIn.files[0]) onFile(fileIn.files[0]); fileIn.value = ''; });
-    if (clr) clr.addEventListener('click', function () { avState = ''; paintAv(); });
-    var accSel = ac;
-    Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (b) { b.addEventListener('click', function () { accSel = (accSel === b.getAttribute('data-acc')) ? '' : b.getAttribute('data-acc'); Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-acc]'), function (x) { x.classList.toggle('on', x.getAttribute('data-acc') === accSel); }); }); });
-    var sv = bodyEl.querySelector('#mpaPsave');
+    });
+    // ---- one save, both endpoints
     if (sv) sv.addEventListener('click', function () {
-      sv.disabled = true; var msg = bodyEl.querySelector('#mpaPmsg'); if (msg) msg.innerHTML = 'Saving…';
-      var payload = { bio: bodyEl.querySelector('#mpaPbio').value, avatar: avState, accent: accSel, coins: bodyEl.querySelector('#mpaPco').value };
-      fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(function (r) { return r.json(); }).then(function (d) {
-        sv.disabled = false;
-        if (d && d.ok) { if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } if (msg) msg.innerHTML = __esT_mpauth("savedYourTraderCard",'<span style="color:#34d99a">Saved! Your trader card is updated.</span>'); setTimeout(render, 1100); }
-        else { if (msg) msg.innerHTML = __esT_mpauth("couldNotSaveTry",'<span style="color:#ffb347">Could not save - try again.</span>'); }
-      }).catch(function () { sv.disabled = false; if (msg) msg.innerHTML = __esT_mpauth("networkErrorTryAgain2",'<span style="color:#ffb347">Network error - try again.</span>'); });
+      if (!dirty()) return;
+      var was = JSON.parse(BASE), jobs = [];
+      sv.disabled = true; sv.textContent = 'Saving…'; if (msg) msg.innerHTML = '';
+      if (S.frame !== was.frame) jobs.push(fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: S.frame }) })
+        .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error(d && d.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip that frame.'); if (ME) ME.frame = d.frame; }));
+      if (S.av !== was.av || S.acc !== was.acc || S.bio !== was.bio || S.coins !== was.coins)
+        jobs.push(fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ bio: S.bio, avatar: S.av, accent: S.acc, coins: S.coins }) })
+          .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error('Could not save - try again.'); if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.accent = d.accent; ME.coins = d.coins; } }));
+      Promise.all(jobs).then(function () {
+        BASE = JSON.stringify(S); reflectSave();
+        if (msg) msg.innerHTML = '<span style="color:#34d99a">Saved. Your trader card is updated.</span>';
+        setTimeout(function () { if (msg) msg.innerHTML = ''; }, 2600);
+      }).catch(function (e) {
+        reflectSave();
+        if (msg) msg.innerHTML = '<span style="color:#ffb347">' + esc((e && e.message) || 'Could not save - try again.') + '</span>';
+      });
     });
   }
+
+  /* ---------------------------------------------------------------- COMPETITIONS (2026-09-21)
+     Owner: "gde ce korisnik ukratko da vidi za sta je eligable a za sta nije i zbog cega nije ... treba
+     da resi zabludu korisnicima". Until now the only way to learn where you stood on seven boards was
+     to open /season/, switch to each board in turn, and read a different box each time - and two of the
+     seven said nothing at all about whether you were in.
+
+     EVERYTHING HERE COMES FROM /api/competition, the same table the site and any assistant quote, joined
+     to the reader's own XP, Bybit registration and Moon sign-up. Nothing about a board is written twice,
+     so a board added tomorrow appears here by itself, with its own prize and its own condition.
+
+     RANKING AND BEING PAID ARE TWO DIFFERENT QUESTIONS, and this card is where that finally had to be
+     said out loud. MEASURED on the live board the day this shipped: the leaderboard query joins users on
+     active status and closed trades and has NO XP condition, and 2 of the 25 traders then listed on the
+     three paper boards were below Bronze. You rank without Bronze. What Bronze gates - REWARDS_MIN_XP,
+     on /claim, /withdraw and every /..sign/submit - is taking the money off the site. Telling a member
+     "four boards open at Bronze" was the confusion, not the cure. */
+  function renderCompetitions() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">Competitions</h3><p class="mpa-sub" style="margin:-4px 0 12px">Where you stand on every board, and what is in the way.</p>'
+      + '<div id="mpaCpBody"><div class="mpa-xp-empty">Checking…</div></div>'
+      + '<button class="mpa-link" id="mpaCpBack" type="button">← Back</button>';
+    var bk = bodyEl.querySelector('#mpaCpBack'); if (bk) bk.addEventListener('click', render);
+    var box = bodyEl.querySelector('#mpaCpBody');
+    var J = function (u) { return fetch(u).then(function (r) { return r.json(); }).catch(function () { return null; }); };
+    Promise.all([
+      J('/api/competition'),
+      J('/api/auth/xp'),
+      J('/api/reward/bybitlink'),
+      J('/api/reward/moonsign/mine'),
+      (ME && ME.username) ? J('/api/lb/user?name=' + encodeURIComponent(ME.username)) : Promise.resolve(null)
+    ]).then(function (r) { paint(r[0], r[1], r[2], r[3], r[4]); })
+      .catch(function () { if (box) box.innerHTML = '<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'; });
+
+    function paint(comp, xp, byb, moon, me2) {
+      if (!box) return;
+      if (!comp || !comp.boards) { box.innerHTML = '<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'; return; }
+      var XP = +((xp && xp.xp) || 0);
+      var payXp = +(((comp.boards[0] || {}).payout || {}).xp || 500);
+      var ranked = XP >= payXp;
+      var bybUid = String((byb && byb.uid) || '');
+      var mlist = (moon && moon.signups) || [];
+      var mApp = mlist.filter(function (x) { return x.status === 'approved'; })[0];
+      var mPend = mlist.filter(function (x) { return x.status === 'pending'; })[0];
+      var trades = +(((me2 && me2.stats) || {}).trades || 0);
+      var money = function (v) { return '$' + Math.round(+v || 0); };
+
+      /* One verdict per board, and the reason is the thing being computed - not a label chosen after the
+         fact. `why` answers "why not", `act` is what can be done about it right here. */
+      var rows = comp.boards.map(function (b) {
+        var req = b.requires || {}, id = b.id;
+        var o = { id: id, name: b.name, pool: b.prize_pool_usd, real: b.entry === 'real_money', in: false, why: '', act: '' };
+        if (id === 'gold') {
+          o.in = XP >= (+req.xp || 12000);
+          o.why = o.in ? '' : 'Needs Gold - ' + (+req.xp || 12000).toLocaleString('en-US') + ' XP. You have ' + XP.toLocaleString('en-US') + '.';
+        } else if (id === 'bybit') {
+          o.in = !!bybUid;
+          o.why = bybUid ? '' : 'Register the UID of a Bybit account opened through MarginPad.';
+          o.act = bybUid ? '' : 'bybit';
+        } else if (id === 'moon') {
+          o.in = !!mApp;
+          o.why = mApp ? '' : mPend ? 'Your Moon sign-up is being reviewed.' : (ranked ? 'Claim the Moon sign-up bonus - that is what registers you.' : 'Claim the Moon sign-up bonus. Claiming one needs Bronze, so that comes first.');
+          o.act = (mApp || mPend) ? '' : 'moon';
+        } else {
+          o.in = trades > 0;
+          o.why = trades > 0 ? '' : 'Close one trade this season and you are on it.';
+          o.act = trades > 0 ? '' : 'trade';
+        }
+        return o;
+      });
+      var nIn = rows.filter(function (r) { return r.in; }).length;
+
+      var actHtml = function (act) {
+        return act === 'bybit' ? bybForm()
+          : act === 'moon' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/rewards/#moonCard">Claim the Moon bonus</a></span>'
+          : act === 'trade' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/paper-trade">Open a trade</a></span>' : '';
+      };
+      var grp = function (ttl, note, list) {
+        if (!list.length) return '';
+        /* ONE CONDITION IS DRAWN ONCE. The four paper boards share a single reason and a single
+           action; as a per-row sentence that was the same line and the same button four times over
+           400px. Hoisted only when every locked board in the group genuinely agrees. */
+        var out = list.filter(function (r) { return !r.in; });
+        var shared = out.length > 1 && out.every(function (r) { return r.why === out[0].why && r.act === out[0].act; }) ? out[0] : null;
+        return '<div class="mpa-cpg"><div class="mpa-cpg-h"><b>' + ttl + '</b>' + (note ? '<em>' + note + '</em>' : '') + '</div>'
+          + (shared ? '<div class="mpa-cpshared"><span>' + esc(shared.why) + '</span>' + actHtml(shared.act) + '</div>' : '')
+          + list.map(function (r) {
+            var own = !shared && !r.in;
+            return '<div class="mpa-cpr' + (r.in ? ' in' : '') + (shared ? ' slim' : '') + '">'
+              + '<span class="mpa-cpr-n">' + esc(r.name) + '</span>'
+              + '<span class="mpa-cpr-p">' + money(r.pool) + '</span>'
+              + '<span class="mpa-cpr-s">' + (r.in ? 'you are in' : 'not yet') + '</span>'
+              + (own && r.why ? '<span class="mpa-cpr-w">' + esc(r.why) + '</span>' : '')
+              + (own ? actHtml(r.act) : '')
+              + '</div>';
+          }).join('') + '</div>';
+      };
+      function bybForm() {
+        return '<span class="mpa-cpr-a mpa-cpbyb">'
+          + '<input class="mpa-cpin" id="mpaCpByb" inputmode="numeric" maxlength="16" placeholder="Bybit UID" autocomplete="off">'
+          + '<button class="mpa-cpb go" id="mpaCpBybGo" type="button">Register</button>'
+          + '<a class="mpa-cplink" href="' + esc((byb && byb.ref) || 'https://partner.bybit.com/b/162071') + '" target="_blank" rel="noopener sponsored" data-mpex="Bybit">No account yet? Open one with our link</a>'
+          + '<span class="mpa-cpmsg" id="mpaCpBybMsg"></span></span>';
+      }
+
+      box.innerHTML =
+        '<div class="mpa-cpsum"><b>' + nIn + ' of ' + rows.length + '</b><span>boards you are on right now</span></div>'
+        /* THE ONE FACT THE SITE HAD BACKWARDS. Bronze does not put you on a board - it lets you take the
+           money off the site. Said here, next to the boards, where the question is actually asked. */
+        + '<div class="mpa-cppay' + (ranked ? ' ok' : '') + '">'
+          + (ranked
+            ? '<b>Bronze reached.</b> Anything you win can be withdrawn.'
+            : '<b>You can win on these boards now.</b> To withdraw what you win you need Bronze - ' + payXp.toLocaleString('en-US') + ' XP. You have ' + XP.toLocaleString('en-US') + '.')
+          + (ranked ? '' : '<span class="mpa-cpbar"><i style="width:' + Math.max(2, Math.min(100, Math.round(XP / payXp * 100))) + '%"></i></span>'
+            + '<a class="mpa-cpb" href="/season/#howto">How to get there</a>')
+        + '</div>'
+        + grp('Free to enter', 'paper trading', rows.filter(function (r) { return !r.real && r.id !== 'gold'; }))
+        + grp('Free, but Gold only', '', rows.filter(function (r) { return r.id === 'gold'; }))
+        + grp('Trade for real', 'your own exchange account', rows.filter(function (r) { return r.real; }))
+        + '<p class="mpa-cpfoot">Every board pays out at the end of the season. <a href="/leaderboards/">See the full standings</a></p>';
+
+      var go = bodyEl.querySelector('#mpaCpBybGo');
+      if (go) go.addEventListener('click', function () {
+        var inp = bodyEl.querySelector('#mpaCpByb'), m = bodyEl.querySelector('#mpaCpBybMsg');
+        var v = (inp.value || '').replace(/[^0-9]/g, '');
+        if (!v) { m.innerHTML = '<span style="color:#ffb347">Enter the UID of your Bybit account.</span>'; return; }
+        go.disabled = true; m.innerHTML = '<span style="color:#8b97a5">Checking…</span>';
+        fetch('/api/reward/bybitlink', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: v }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            go.disabled = false;
+            if (d && d.ok) { m.innerHTML = '<span style="color:#34d99a">Registered. You are on the Bybit board.</span>'; setTimeout(renderCompetitions, 1200); return; }
+            var e = (d && d.error) || '';
+            m.innerHTML = '<span style="color:#ffb347">' + (
+              e === 'uid_not_ours' ? 'That UID is not on our affiliate list. Only an account opened through our link counts - open one below, then come back.'
+              : e === 'uid_taken' ? 'That UID is already registered to another account.'
+              : e === 'bad_uid' ? 'That does not look like a Bybit UID.'
+              : e === 'need_xp' ? 'Registering needs Bronze - 500 XP.'
+              : 'Could not register that UID. Try again in a moment.') + '</span>';
+          }).catch(function () { go.disabled = false; m.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
+      });
+    }
+  }
+
   // ---- Notifications center ----
   function notifSetBadge(n) { n = +n || 0; window._mpNotifUnread = n; setDot('mpaNotifBadge', n); refreshTrigDot(); }
   window.mpNotifBadge = notifSetBadge;
@@ -1495,8 +1764,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         + '</div>'
         + '<div class="mpa-menu">'
           + mi('mpaBal', svgWallet, 'Balance Mode', 'PREMIUM')
-          + mi('mpaEdit', ic('edit'), __esT_mpauth("editProfile",'Edit profile'), '')
-          + mi('mpaFrames', svgFrame, 'Customize card', '')
+          + mi('mpaCard', svgFrame, 'Your card', '')
+          + mi('mpaComp', ic('cup'), 'Competitions', '')
           + mi('mpaXp', ic('spark'), 'XP history', '')
         + '</div>' : '')
         + '<div class="mpa-foot3">'
@@ -1543,8 +1812,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var msgB = bodyEl.querySelector('#mpaMsg'); if (msgB) msgB.addEventListener('click', function () { renderDmInbox(); });
       var fdB = bodyEl.querySelector('#mpaFeed'); if (fdB) fdB.addEventListener('click', function () { renderFeed(); });
       var duB = bodyEl.querySelector('#mpaDuel'); if (duB) duB.addEventListener('click', function () { renderDuels(); });
-      var edB = bodyEl.querySelector('#mpaEdit'); if (edB) edB.addEventListener('click', function () { renderEditProfile(); });
-      var frB = bodyEl.querySelector('#mpaFrames'); if (frB) frB.addEventListener('click', function () { renderCustomize(); });
+      var cdB = bodyEl.querySelector('#mpaCard'); if (cdB) cdB.addEventListener('click', function () { renderCard(); });
+      var cpB = bodyEl.querySelector('#mpaComp'); if (cpB) cpB.addEventListener('click', function () { renderCompetitions(); });
       var blB = bodyEl.querySelector('#mpaBal'); if (blB) blB.addEventListener('click', function () { renderBalance(); });
       var brB = bodyEl.querySelector('#mpaBrief'); if (brB) brB.addEventListener('click', function () { close(); if (window.mpBrief) window.mpBrief.show(); });
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);

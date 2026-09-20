@@ -140,24 +140,27 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
     await page.close();
   });
 
-  /* THE ANNOUNCEMENT HAS TO REACH THEM. Measured 2026-09-21: 13 of 600 accounts have ever linked
-     Telegram, so the channel post and the direct message speak to 2% of the base and the bell waits
-     for a visit that may never come. Email is the channel every one of these accounts has. */
-  console.log('\n-- the announcement reaches people who are not on Telegram');
+  /* ONE CHANNEL, AND NOTHING ELSE (owner, 2026-09-21). The bonus is announced in the Telegram channel;
+     a member learns the programme exists from the notice under the Bybit board on /season/. No direct
+     message, no bell, no email - an unclaimed week stays claimable for 400 days, so nothing is lost by
+     letting them find it. These checks fail if any of those channels is quietly reintroduced. */
+  console.log('\n-- the bonus is announced in exactly one place');
   {
     const src = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8');
     const cron = src.slice(src.indexOf('async function checkBybitBonus'));
-    const body = cron.slice(0, cron.indexOf('\nasync function', 10));
-    ok(/sendBybitBonusEmail\(env, u\.email/.test(body), 'the announcement also goes out by email');
-    const markAt = body.indexOf("'bybonus:mail:'"), putAt = body.indexOf('bybonus:mail:', body.indexOf("'bybonus:mail:'") + 5), sendAt = body.indexOf('sendBybitBonusEmail(env, u.email');
-    ok(markAt > 0 && markAt < sendAt, 'the once-per-week mark is written BEFORE the send, so a cron retry cannot mail twice');
+    const body = cron.slice(0, cron.indexOf('\nasync function', 10)).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    ok(/tgBroadcastBonus\(env, head\)/.test(body), 'the channel post goes out');
+    ok(!/\/tgchats/.test(body), 'no direct message to a member');
+    ok(!/'\/notify'/.test(body), 'no bell notification');
+    ok(!/sendBybitBonusEmail|resend/i.test(body), 'no email');
+    // tgAdmin is the owner's own ops line, not a member notification - it must survive
+    ok(/tgAdmin\(env, '<b>Weekly bonus announced/.test(body), 'the owner still gets his ops line');
 
-    const tpl = src.slice(src.indexOf('async function sendBybitBonusEmail'));
-    const tplBody = tpl.slice(0, tpl.indexOf('\nasync function', 10));
-    // the owner's framing rule, stated twice: a bonus MarginPad pays, never a share of fees coming back
-    ok(!/%|rebate|fee|commission/i.test(tplBody.replace(/\/\*[\s\S]*?\*\//g, '')), 'the mail never mentions fees, commission or a percentage');
-    ok(/Claim your bonus/.test(tplBody), 'it carries one button, and the click is the claim');
-    ok(/info\.link/.test(tplBody), 'pointed at the week\'s own tokenised link, the same one Telegram sends');
+    // "waiting for 5" - a count with no noun, and spelled out it tells a public channel how few
+    // people are in the programme. Neither post carries it any more.
+    const posts = src.split('in bonuses is waiting').length - 1;
+    ok(posts === 2, 'both the live post and the rehearsal say "waiting to be claimed"', posts);
+    ok(!/waiting for ' \+ (payable|payT)\.length/.test(src), 'neither post counts its recipients');
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
