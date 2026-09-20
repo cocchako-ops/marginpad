@@ -1,12 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-20T10:27:31.645Z",
+  "generated": "2026-09-20T13:12:26.448Z",
   "pages": 376,
-  "occurrences": 25587,
-  "unique": 13548,
-  "words": 255896,
-  "untranslated": 2,
-  "untranslatedWords": 96
+  "occurrences": 25593,
+  "unique": 13554,
+  "words": 255971,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-09-20T13:12:48.112Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -112335,9 +112336,9 @@
    "n": 1,
    "w": 5
   },
-  "EfgiruXf7b": {
-   "en": "<b id=\"cpPool\">$350</b><span id=\"cpPoolS\">a season, paid in USD to your rewards balance. Five paper boards free to enter, plus two scored on real accounts - Bybit volume and King of the Moon.</span>",
-   "es": "<b id=\"cpPool\">$350</b><span id=\"cpPoolS\">por temporada, pagados en USD a tu saldo de recompensas. Cinco tablas de paper trading de entrada gratis, más dos puntuadas con cuentas reales: volumen en Bybit y King of the Moon.</span>",
+  "90rDAQg6kL": {
+   "en": "<b id=\"cpPool\">$350</b><span id=\"cpPoolS\">a season, paid in USD to your rewards balance. Four boards open at Bronze, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span>",
+   "es": "<b id=\"cpPool\">$350</b><span id=\"cpPoolS\">por temporada, pagados en USD a tu saldo de recompensas. Cuatro tablas se abren en Bronze, la Gold Room en Gold, y dos se puntúan en cuentas reales: Bybit volume y King of the Moon.</span>",
    "kind": [
     "html"
    ],
@@ -112345,7 +112346,7 @@
     "/"
    ],
    "n": 1,
-   "w": 28
+   "w": 33
   },
   "yQoImNITtr": {
    "en": "<span class=\"cp-left\" id=\"cpLeft\">14-day seasons</span>",
@@ -141825,6 +141826,78 @@
    ],
    "n": 1,
    "w": 25
+  },
+  "mOyGpqQDF_": {
+   "en": "<span class=\"eb\">Your road to Bronze</span>",
+   "es": "<span class=\"eb\">Tu camino a Bronze</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "zK97DCwmE0": {
+   "en": "Nine steps to 500 XP",
+   "es": "Nueve pasos hasta 500 XP",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "t82lN2CSaS": {
+   "en": "<b id=\"bzXp\">0</b><span>of 500 XP</span>",
+   "es": "<b id=\"bzXp\">0</b><span>de 500 XP</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "XLX38cxG6n": {
+   "en": "0 of 9 done",
+   "es": "0 de 9 hechas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "AzkH0MAfBT": {
+   "en": "These nine are worth 400 XP together. Tap one to go and do it; when it is finished, tap it again to bank the XP.",
+   "es": "Estas nueve valen 400 XP en total. Toca una para ir a hacerla; cuando esté terminada, tócala otra vez para cobrar el XP.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 25
+  },
+  "BGsF1sy4Vq": {
+   "en": "They pay XP only, never money. At 500 XP the faucet, the daily missions, withdrawals and referrals all open, you count on the boards, and this card is done with you.",
+   "es": "Solo pagan XP, nunca dinero. Al llegar a 500 XP se abren el faucet, las misiones diarias, los retiros y las referencias, cuentas en las tablas, y esta tarjeta ya no te hace falta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 31
   },
   "yxLb3IFeYJ": {
    "en": "<a href=\"#howto\" data-s=\"howto\">How it works</a><a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a>",

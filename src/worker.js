@@ -19770,6 +19770,7 @@ export default {
     }
     if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
+    if (url.pathname === '/api/bronze') return handleBronze(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
     if (url.pathname === '/api/latam/ar' || url.pathname === '/api/latam/br') { // public: the LATAM live pages refresh from here every 60 s (edge-cached 60 s; CORS for embeds). Sits BEFORE the calculator catch-all, which 404s every other /api/ path.
       let d = null; try { d = url.pathname.endsWith('/ar') ? await latamAr(env) : await latamBr(env); } catch (e) { d = null; }
@@ -22425,6 +22426,7 @@ export class UserStore {
       }
     } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS missions(user_id TEXT, day TEXT, mid TEXT, ts INTEGER, PRIMARY KEY(user_id,day,mid))');
+    s.exec('CREATE TABLE IF NOT EXISTS btask(user_id TEXT, tid TEXT, ts INTEGER, PRIMARY KEY(user_id,tid))'); // Road to Bronze: one row per starter task, claimed once for life
     s.exec('CREATE TABLE IF NOT EXISTS tradeev(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, lev REAL, margin REAL, pnl REAL, roe REAL, liq INTEGER DEFAULT 0)'); // persistent open/close trade events (diffed on journal sync - real pnl on closes)
     // Personal records (2026-09-06): the four numbers a trader beats over months, kept forever and updated on every
     // close. new_json/new_ts remember the last record broken so the /xp poll can toast it once.
@@ -24093,6 +24095,45 @@ export class UserStore {
       try { this._grantTicks(uid, 'mission', 4, { dayCap: TICK_CAP.mission, note: 'mission claimed' }); } catch (me2) {}
       return this.j({ ok: true, fresh: true, xp: mxp });
     }
+    if (path === '/bronze/state') { // ROAD TO BRONZE: verified LIFETIME (no dayStart) from the same tables the
+      // daily missions read. uevents is a 500-row ring per user, which is exactly the window this audience
+      // lives in - every task here is done in the first days of an account.
+      const uid = String(b.uid || '');
+      const defs = Array.isArray(b.defs) ? b.defs.slice(0, 16) : [];
+      const done = {}, prog = {};
+      for (const d of defs) {
+        let c = 0;
+        try {
+          if (d.vt === 'ev') c = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=? AND type=?', uid, String(d.va))[0] || {}).n || 0;
+          else if (d.vt === 'pv') c = (this.rows("SELECT COUNT(*) n FROM uevents WHERE user_id=? AND type='pageview' AND path LIKE ?", uid, String(d.va) + '%')[0] || {}).n || 0;
+          else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND lesson NOT LIKE 'course:%'", uid)[0] || {}).n || 0;
+          else if (d.vt === 'win') { // same both-sources rule as the daily win mission: tradeev's per-sync insert
+            // cap keeps logging losses after it stops logging wins, so never under-credit a real win.
+            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0", uid)[0] || {}).n || 0;
+            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (t && t.status === 'win' && (+t.pnl || 0) > 0) _jw++; } } catch (e2) {}
+            c = Math.max(_tv, _jw);
+          }
+          // "came back" is DISTINCT DAYS, never the streak. A streak RESETS, so a task you lose by returning on
+          // the third day instead of the second is a worse promise than no task at all.
+          else if (d.vt === 'days') c = (this.rows('SELECT COUNT(DISTINCT ts/86400000) n FROM uevents WHERE user_id=?', uid)[0] || {}).n || 0;
+        } catch (e) {}
+        prog[d.tid] = c; done[d.tid] = c >= (d.n || 1);
+      }
+      const claimed = {};
+      this.rows('SELECT tid FROM btask WHERE user_id=?', uid).forEach(r => { claimed[r.tid] = true; });
+      const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ done, prog, claimed, xp: u ? (+u.xp || 0) : 0 });
+    }
+    if (path === '/bronze/claim') { // the btask row IS the dedup, exactly as the missions row is for a daily
+      const uid = String(b.uid || ''), tid = String(b.tid || '').replace(/[^a-z0-9]/gi, ''), amt = Math.max(0, Math.min(200, Math.round(+b.xp || 0)));
+      if (!uid || !tid || !amt) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      if (this.rows('SELECT 1 FROM btask WHERE user_id=? AND tid=?', uid, tid)[0]) return this.j({ ok: true, fresh: false });
+      sql.exec('INSERT INTO btask(user_id,tid,ts) VALUES(?,?,?)', uid, tid, now);
+      let g = 0; try { g = this._grantXp(uid, 'bronze', amt, { lifeCap: 600, note: 'road to Bronze: ' + tid }); } catch (e) {}
+      const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, fresh: true, xp: g, total: u ? (+u.xp || 0) : 0, level: xpLevelOf(u ? u.xp : 0) });
+    }
     if (path === '/missions/history') { // admin earnings view: every daily mission this user has claimed (mid+day+ts); cents mapped in the worker
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');
       if (!uid) return this.j({ rows: [] });
@@ -25028,7 +25069,7 @@ export class UserStore {
       // as no_match noise), in xpseason/xpday, and - worse - a live row in `sessions`, so a deleted account's token
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
-        const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev'];
+        const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
         const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs'];
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -26408,6 +26449,59 @@ async function handleAcademy(url, request, env) {
     } catch (e) { return jr({ error: 'busy' }, 503); }
   }
   return jr({ error: 'method' }, 405);
+}
+/* ROAD TO BRONZE (2026-09-20, owner: "jel mozemo da stavimo neke misije da budu lakse za njih unranked").
+   MEASURED before building: 471 of 598 accounts are below Bronze and 216 of them ALREADY TRADE; the median
+   unranked account sits at 103 XP of 500, and 265 of the last month's signups never came back for a second
+   session. Every XP source on the site is already open to them - checkin 20, charts 25, academy 25 a lesson -
+   so the XP was never the blocker. What is hidden is the LIST: handleMissions answers `locked:true` with an
+   EMPTY missions array under 500 XP, i.e. the one surface that tells you what to do next is withheld from the
+   only people who need telling.
+   This is a FIXED one-time ladder, not the daily random pool: a newcomer needs a sequence with a visible end,
+   and a fixed set cannot be farmed. It pays XP ONLY - never a cent - so the anti-abuse gate on the faucet,
+   withdrawals and referrals is exactly where it was. 400 of the 500 is here; the last 100 comes from simply
+   using the site, which is the point. */
+const BRONZE_TASKS = [
+  { tid: 'trade',   xp: 40, vt: 'ev',      va: 'paper',    n: 1, title: 'Open your first paper trade',      desc: 'Nothing at risk. In here the market cannot hurt you',   url: '/paper-trade' },
+  { tid: 'sltp',    xp: 40, vt: 'ev',      va: 'sltp',     n: 1, title: 'Set a stop-loss or take-profit',   desc: 'Pick your exit before the market picks one for you',    url: '/paper-trade' },
+  { tid: 'win',     xp: 50, vt: 'win',     va: '',         n: 1, title: 'Close a trade in the green',       desc: 'Banked beats brilliant. Take one profit',               url: '/paper-trade' },
+  { tid: 'lesson',  xp: 50, vt: 'academy', va: '',         n: 1, title: 'Finish your first Academy lesson', desc: 'The fastest XP on the site, and it costs nothing',      url: '/academy/' },
+  { tid: 'lesson4', xp: 70, vt: 'academy', va: '',         n: 4, title: 'Finish four Academy lessons',      desc: 'Four in one sitting is a proper study session',         url: '/academy/' },
+  { tid: 'charts',  xp: 25, vt: 'pv',      va: '/charts',  n: 1, title: 'Open the charts workspace',        desc: 'Eight windows, indicators, drawings and the AI',        url: '/charts' },
+  { tid: 'heat',    xp: 25, vt: 'pv',      va: '/heatmap', n: 1, title: 'Read the liquidation map',         desc: 'See where the stop-hunts are loaded before you trade',  url: '/heatmap' },
+  { tid: 'chat',    xp: 25, vt: 'ev',      va: 'chat',     n: 1, title: 'Say hello in the trader chat',     desc: 'The floor is better when you talk. Lurking earns nothing', url: '/community/' },
+  { tid: 'back',    xp: 75, vt: 'days',    va: '',         n: 2, title: 'Come back tomorrow',               desc: 'The one that matters most. Two days is where a habit starts', url: '' },
+];
+const BRONZE_XP_TOTAL = BRONZE_TASKS.reduce((a, t) => a + t.xp, 0); // 400 of the 500
+async function handleBronze(url, request, env) {
+  const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+  const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
+  if (!env.USERS) return jr({ error: 'unavailable' }, 503);
+  const pubTasks = BRONZE_TASKS.map(t => ({ tid: t.tid, xp: t.xp, title: t.title, desc: t.desc, n: t.n, url: t.url || undefined }));
+  const tok = getCookie(request, SESS_COOKIE);
+  const su = tok ? await sessionUser(env, tok) : null;
+  const uid = su && su.id ? String(su.id) : '';
+  if (!uid) return jr({ signedIn: false, need: REWARDS_MIN_XP, totalXp: BRONZE_XP_TOTAL, tasks: pubTasks });
+  const stub = env.USERS.get(env.USERS.idFromName('main'));
+  let st = { done: {}, prog: {}, claimed: {}, xp: 0 };
+  try { const r = await stub.fetch(new Request('https://do/bronze/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, defs: BRONZE_TASKS.map(t => ({ tid: t.tid, vt: t.vt, va: t.va, n: t.n })) }) })); st = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+  const ranked = rewardsUnlocked(st.xp);
+  if (request.method === 'POST') {
+    if (ranked) return jr({ error: 'already_bronze', ranked: true }, 400); // the card is over; nothing left to claim
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    const t = BRONZE_TASKS.find(x => x.tid === String(b.tid || ''));
+    if (!t) return jr({ error: 'bad_task' }, 400);
+    if (!st.done[t.tid]) return jr({ error: 'not_done' }, 400);
+    if (st.claimed[t.tid]) return jr({ error: 'already_claimed' }, 400);
+    let d = {};
+    try { const r = await stub.fetch(new Request('https://do/bronze/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, tid: t.tid, xp: t.xp }) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    if (d.error) return jr({ error: d.error }, 400);
+    if (!d.fresh) return jr({ error: 'already_claimed' }, 400);
+    try { await evPush(env, request, 'bronze', t.tid + ' +' + (d.xp || t.xp) + ' XP', '/season/#bronze'); } catch (e) {}
+    return jr({ ok: true, gained: +d.xp || 0, xp: +d.total || 0, level: d.level, ranked: rewardsUnlocked(+d.total || 0) });
+  }
+  return jr({ signedIn: true, ranked, xp: +st.xp || 0, need: REWARDS_MIN_XP, totalXp: BRONZE_XP_TOTAL,
+    tasks: pubTasks.map(t => ({ ...t, done: !!st.done[t.tid], claimed: !!st.claimed[t.tid], prog: +st.prog[t.tid] || 0 })) });
 }
 async function handleMissions(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
