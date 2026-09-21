@@ -1309,7 +1309,7 @@
     function prep(rows) { lastPvTs = {}; var asc = rows.slice().sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); }); asc.forEach(function (e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; lastPvTs[k] = e.ts; }); }
     function prepOne(e) { if (e.t !== 'pv') return; var k = keyFor(e), prev = lastPvTs[k] || 0; e._arr = !e.f || (e.ts - prev) > 1800000; if (e.ts > prev) lastPvTs[k] = e.ts; }
     var PH = (innerWidth <= 760); // phone: fewer rows, folded filters, no hover wording
-    var data = null, rendered = {}, MAXROWS = (PH ? 150 : 800), onlineN = 0, paused = false, pending = [], lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
+    var data = null, rendered = {}, MAXROWS = (PH ? 150 : 800), onlineN = 0, lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
     function actorName(k) { if (!k) return ''; return k.indexOf('u:') === 0 ? '@' + k.slice(2) : k.indexOf('v:') === 0 ? 'guest ' + k.slice(2) : k.indexOf('d:') === 0 ? 'device ' + k.slice(2) : k.indexOf('ip:') === 0 ? 'ip ' + k.slice(3) : k; }
     function actorBtn(k, label) { return k ? '<button type="button" class="lnk" data-actor="' + esc(k) + '">' + (label || esc(actorName(k))) + '</button>' : ''; }
     function save() { remember('people/activity', st, FIELDS); }
@@ -1323,7 +1323,7 @@
         + '<label class="chip ' + (st.nopv ? '' : 'on') + '" id="acpv" title="pageviews in the stream: an arrival in bold, every hop as a quiet row">pageviews</label>'
         + '<span class="chip lv ' + (st.live ? 'on' : '') + '" id="aclive" title="rows are pushed over a WebSocket the moment they are stored; click to pause"><i class="ldot"></i><span id="acLv">live</span></span></div>';
     }
-    function setLive() { var c = $('aclive'), t = $('acLv'); if (!c) return; c.classList.toggle('on', st.live); c.classList.toggle('ok', st.live && wsOk); c.classList.toggle('warn', st.live && !wsOk); if (t) t.textContent = !st.live ? 'paused' : wsOk ? (paused ? 'live · held' : 'live') : 'connecting…'; }
+    function setLive() { var c = $('aclive'), t = $('acLv'); if (!c) return; c.classList.toggle('on', st.live); c.classList.toggle('ok', st.live && wsOk); c.classList.toggle('warn', st.live && !wsOk); if (t) t.textContent = !st.live ? 'paused' : wsOk ? 'live' : 'connecting…'; }
     function shell() {
       el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div id="acOnline"></div><div class="jm" style="margin-top:12px"><div>' + card('<span id="acTitle">' + (st.lay === 'visitors' ? 'Visitors' : 'Activity') + '</span> <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', st.lay === 'visitors' ? 'one card per person, latest first · the path is every page in order · click a card for the full timeline' : (PH ? 'newest first · tap a guest id or @user for everything that person did' : 'newest first · hover to hold the stream · click a guest id or @user for everything that person did')) + '</div><div class="jm-rail" id="acRail"></div></div>';
       var GN = { all: 'All', pages: 'Pages', trades: 'Trades', money: 'Money', social: 'Social', account: 'Account', progress: 'Progress', spot: 'Spot', problems: 'Problems', system: 'System' };
@@ -1339,7 +1339,7 @@
       var hs = $('ach'); if (hs) hs.onchange = function () { st.h = +hs.value || 24; save(); load(true); };
       var pvb = $('acpv'); if (pvb) pvb.onclick = function () { st.nopv = !st.nopv; save(); pvb.classList.toggle('on', !st.nopv); paintBody(true); };
       var lv = $('aclive'); if (lv) lv.onclick = function () { st.live = !st.live; save(); if (st.live) { wsOpen(); load(false); } else wsClose(); setLive(); };
-      var box = $('acStream'); if (box) { box.onmouseenter = function () { if (st.lay !== 'stream') return; paused = true; setLive(); }; box.onmouseleave = function () { paused = false; release(); setLive(); }; }
+      // the stream used to pause on hover and queue rows behind a pill; it runs live now (owner, 2026-09-21)
       setLive();
     }
     function paintTiles() { var d = data; if (!d || !$('acTiles')) return; var users = d.actors.filter(function (a) { return a.key.indexOf('u:') === 0; }).length, guests = d.actors.filter(function (a) { return a.key.indexOf('v:') === 0; }).length, red = d.radar.filter(function (r) { return r.sev === 'red'; }).length, amber = d.radar.filter(function (r) { return r.sev === 'amber'; }).length;
@@ -1350,8 +1350,8 @@
       var mem = list.filter(function (o) { return o.u; }); var pages = {}; list.forEach(function (o) { var p = o.p || '?'; pages[p] = (pages[p] || 0) + 1; }); var top = Object.keys(pages).sort(function (a, b) { return pages[b] - pages[a]; }).slice(0, 6);
       box.innerHTML = '<div class="card acon"><div class="acon-h">Here now <span class="meta">' + list.length + ' · ' + mem.length + ' signed in</span><a href="#people/online" class="acon-go">full view: pages, sources, API, Telegram</a></div><div class="acon-l">' + mem.slice(0, 16).map(function (o) { return '<button type="button" class="acon-i" data-actor="' + esc(o.k) + '" title="' + esc(dtFull(o.ts)) + '"><b>@' + esc(o.u) + '</b>' + (o.nv ? ' <span class="badge lime">new</span>' : '') + ' <span class="meta">' + esc(o.p || '?') + '</span> ' + flag(o.cc) + '</button>'; }).join('') + (mem.length > 16 ? '<span class="acon-i dimp">+' + (mem.length - 16) + ' members</span>' : '') + top.map(function (p) { return '<span class="acon-i dimp" title="people on this page now">' + esc(p) + ' <b>' + pages[p] + '</b></span>'; }).join('') + '</div></div>'; }
     function paintStream(full) { var box = $('acStream'); if (!box || !data) return; var list = data.rows.filter(pass);
-      if (full) { rendered = {}; pending = []; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
-      else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) { if (paused) { pending = pending.concat(fresh); pending.forEach(function (e) { rendered[rowKey(e)] = 1; }); paintPending(); } else insertRows(fresh); } }
+      if (full) { rendered = {}; var top = list.slice(0, MAXROWS); box.innerHTML = top.map(function (e) { return rowHtml(e, false); }).join('') || '<div class="empty">nothing matches in this window</div>'; top.forEach(function (e) { rendered[rowKey(e)] = 1; }); }
+      else { var fresh = list.filter(function (e) { return !rendered[rowKey(e)]; }); if (fresh.length) insertRows(fresh); }
       countN(list.length);
       if (full) { var mb = $('acMore'); if (mb) mb.remove();
         if (st.lay === 'stream' && list.length > MAXROWS) { var b = document.createElement('button'); b.type = 'button'; b.id = 'acMore'; b.className = 'btn wide'; b.style.marginTop = '8px';
@@ -1361,11 +1361,9 @@
     }
     function insertRows(fresh) { var box = $('acStream'); if (!box) return; var emp = box.querySelector('.empty'); if (emp) emp.remove();
       // a row that arrives late carries its REAL time - it is slotted where it belongs by timestamp, never pinned to the top out of order
-      fresh.slice(0, 400).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }).forEach(function (e) { var tmp = document.createElement('div'); tmp.innerHTML = rowHtml(e, true); var node = tmp.firstChild, ts = +e.ts || 0, kids = box.children, at = null; for (var i = 0; i < kids.length; i++) { if (kids[i].classList.contains('acpend')) continue; if ((+kids[i].getAttribute('data-ts') || 0) <= ts) { at = kids[i]; break; } } box.insertBefore(node, at); rendered[rowKey(e)] = 1; });
+      fresh.slice(0, 400).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); }).forEach(function (e) { var tmp = document.createElement('div'); tmp.innerHTML = rowHtml(e, true); var node = tmp.firstChild, ts = +e.ts || 0, kids = box.children, at = null; for (var i = 0; i < kids.length; i++) { if ((+kids[i].getAttribute('data-ts') || 0) <= ts) { at = kids[i]; break; } } box.insertBefore(node, at); rendered[rowKey(e)] = 1; });
       while (box.children.length > MAXROWS + 200) box.removeChild(box.lastChild);
       setTimeout(function () { box.querySelectorAll('.row.new').forEach(function (r) { r.classList.remove('new'); }); }, 2500); }
-    function paintPending() { var box = $('acStream'); if (!box) return; var p = box.querySelector('.acpend'); if (!pending.length) { if (p) p.remove(); return; } if (!p) { p = document.createElement('button'); p.type = 'button'; p.className = 'acpend'; p.onclick = function () { release(); }; box.insertBefore(p, box.firstChild); } p.textContent = pending.length + ' new row' + (pending.length === 1 ? '' : 's') + ' waiting - click to show'; }
-    function release() { if (!pending.length) { paintPending(); return; } var l = pending; pending = []; paintPending(); insertRows(l); }
     function countN(n) { var c = $('acN'); if (c) c.textContent = N(n) + (st.lay === 'stream' && n > MAXROWS ? ' (showing ' + N(MAXROWS) + ')' : ''); }
     function summary(a) { var ts = Object.keys(a.types).map(function (k) { return [k, a.types[k]]; }).sort(function (x, y) { return y[1] - x[1]; }).slice(0, 5).map(function (p) { return '<span class="meta">' + p[1] + ' ' + esc(p[0]) + '</span>'; }); if (a.money) ts.unshift('<span class="gold">' + a.money + ' money</span>'); if (a.problems) ts.unshift('<span class="dn">' + a.problems + ' problems</span>'); return ts.join(' · ') || '<span class="meta">only pageviews</span>'; }
     function span(a) { var s = Math.round((a.last - a.first) / 60000); return s < 1 ? 'one hit' : s < 60 ? s + ' min on site' : Math.floor(s / 60) + 'h ' + (s % 60) + 'm on site'; }
@@ -1402,7 +1400,7 @@
     function ingest(k, items) { if (!data) return; if (k === 'authlog') return; var fresh = [];
       items.forEach(function (it) { if (!it || (!E2E && (it.e2 || /^e2e_/i.test(it.u || '')))) return; var e = k === 'pvlog' ? Object.assign({ t: 'pv' }, it) : it; if (!e.ts) e.ts = Date.now(); e.k = keyFor(e); var rk = rowKey(e); if (rendered[rk]) return; for (var i = 0; i < Math.min(60, data.rows.length); i++) if (rowKey(data.rows[i]) === rk) return; prepOne(e); data.rows.unshift(e); fresh.push(e); });
       if (!fresh.length) return; if (data.rows.length > 6000) data.rows.length = 6000; data.rows.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
-      if (st.lay === 'stream') { var show = fresh.filter(pass); if (!show.length) return; if (paused) { pending = pending.concat(show); show.forEach(function (e) { rendered[rowKey(e)] = 1; }); paintPending(); } else insertRows(show); countN(data.rows.filter(pass).length); }
+      if (st.lay === 'stream') { var show = fresh.filter(pass); if (!show.length) return; insertRows(show); countN(data.rows.filter(pass).length); }
       else { visDirty = true; var known = {}; (data.actors || []).forEach(function (a) { known[a.key] = 1; }); if (fresh.some(function (e) { return !known[e.k]; }) && Date.now() - lastPoll > 3000) load(false); } }
     function wsOpen() { if (!st.live || ws || !document.body.contains(el)) return;
       try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/api/admin/activity/ws'); } catch (e) { ws = null; wsRetry(); return; }

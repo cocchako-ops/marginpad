@@ -116,14 +116,19 @@ const beacon = (did, q) => fetch(ORIGIN + '/api/track?' + q, { headers: { cookie
     let hop = null; for (let w = 0; w < 16; w++) { await sleep(250); hop = await page.evaluate(() => { const r = Array.from(document.querySelectorAll('#acStream .row.ev.hop')).filter(x => x.textContent.indexOf('/paper-trade') >= 0)[0]; return r ? r.textContent.replace(/\s+/g, ' ').trim() : null; }); if (hop) break; }
     chk('browser: the second page is a quiet hop row "→ /paper-trade"', !!hop && /→ \/paper-trade/.test(hop), hop);
     // hover holds the stream
+    /* THE STREAM NEVER HOLDS A ROW BACK (owner, 2026-09-21: "bilo bi dobro da to uopste ne postoji i da
+       svi logovi odma izlaze"). Hovering used to pause it and queue new rows behind a pill that had to be
+       clicked - a live feed with a manual step in it. These two checks asserted that hold; they assert its
+       absence now, with the cursor ON the list, which is the only place the old behaviour showed. */
     await page.hover('#acStream'); await sleep(300);
+    const heldLabel = await page.evaluate(() => ((document.querySelector('#acLv') || {}).textContent || ''));
+    chk('browser: the cursor on the list does not put the stream on hold', heldLabel.indexOf('held') < 0, { heldLabel });
     await beacon(D4, 't=paper&e=ETH%20long%203x&p=%2Fpaper-trade');
-    let pill = null; for (let w = 0; w < 16; w++) { await sleep(250); pill = await page.evaluate(() => { const p = document.querySelector('#acStream .acpend'); return p ? p.textContent : null; }); if (pill) break; }
-    const heldRow = await page.evaluate(() => Array.from(document.querySelectorAll('#acStream .row.ev')).some(x => x.textContent.indexOf('ETH long 3x') >= 0));
-    chk('browser: hovering holds the stream - the new row waits in a pill instead of moving under the cursor', !!pill && /\d+ new row/.test(pill) && !heldRow, { pill, heldRow });
+    let arrived = false; for (let w = 0; w < 24; w++) { await sleep(250); arrived = await page.evaluate(() => Array.from(document.querySelectorAll('#acStream .row.ev')).some(x => x.textContent.indexOf('ETH long 3x') >= 0)); if (arrived) break; }
+    const anyPill = await page.evaluate(() => !!document.querySelector('#acStream .acpend'));
+    chk('browser: a row that arrives while hovering goes straight into the stream', arrived, { arrived });
+    chk('browser: and no "new rows waiting" pill is ever rendered', !anyPill, { anyPill });
     await page.mouse.move(5, 5); await sleep(400);
-    const released = await page.evaluate(() => ({ pill: !!document.querySelector('#acStream .acpend'), row: Array.from(document.querySelectorAll('#acStream .row.ev')).some(x => x.textContent.indexOf('ETH long 3x') >= 0) }));
-    chk('browser: leaving releases the held rows into the stream', !released.pill && released.row, released);
     // visitors layout
     await page.click('[data-lay="visitors"]');
     let vc = { n: 0 }; for (let w = 0; w < 24; w++) { await sleep(500); vc = await page.evaluate((d4) => { const cards = Array.from(document.querySelectorAll('#acStream .vc.guest')); const c = cards.filter(x => x.querySelector('.vc-path') && x.querySelector('.vc-path').textContent.indexOf('/bitcoin-hoje/') >= 0)[0]; return c ? { path: c.querySelector('.vc-path').textContent.replace(/\s+/g, ' '), head: c.querySelector('.vc-h').textContent.replace(/\s+/g, ' ').trim(), sum: c.querySelector('.vc-s').textContent, n: cards.length } : { n: cards.length }; }, d4); if (vc.path) break; }
