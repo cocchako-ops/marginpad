@@ -6134,9 +6134,25 @@ async function sweepServerPositions(env) {
             try { const dr = await usersDO(env, '/delist', { sym: k, reason: 'no price from any source for ' + Math.floor((Date.now() - first) / 86400000) + ' days' });
               if (dr && dr.ok) { await env.STATS.delete(ffk); await tgAdmin(env, '<b>DELISTED: ' + k + '</b> - no source has quoted it for ' + Math.floor((Date.now() - first) / 86400000) + ' days; ' + (dr.positions || 0) + ' open position' + (dr.positions === 1 ? '' : 's') + ' of ' + (dr.users || 0) + ' trader' + (dr.users === 1 ? '' : 's') + ' settled at entry (P&amp;L 0, no board or XP effect). Undo is not possible; the tickets carry the note.', { kind: 'delisted-settled', sev: 'warn' }); }
             } catch (e) {}
-          } else if (!(await env.STATS.get('alrt:deadfeed:' + k + ':' + dfday))) { await env.STATS.put('alrt:deadfeed:' + k + ':' + dfday, '1', { expirationTtl: 172800 });
+          } else if (!(await env.STATS.get('alrt:deadfeed:' + k + ':' + dfday))) { await env.STATS.put('alrt:deadfeed:' + k + ':' + dfday, '1', { expirationTtl: 172800 }); try { await env.STATS.put('deadfeed:told:' + k, String(Date.now()), { expirationTtl: 30 * 86400 }); } catch (e) {}
             await tgAdmin(env, '<b>DEAD FEED: ' + k + '</b> - open positions exist but no source returns a price or klines (' + dfn + ' consecutive sweeps, dead since ' + new Date(first).toISOString().slice(0, 10) + '). If it stays dead for 7 days the positions settle at entry automatically; to settle now: /api/admin/delist?sym=' + k + '&run=1'); } }
-      } else { try { await env.STATS.delete('deadfeed:first:' + k); } catch (e) {} } } catch (e) {}
+      } else {
+        /* AN ALARM WITH NO ALL-CLEAR IS A WORRY THAT NEVER CLOSES. DEAD FEED fires after six misses,
+           and a thin altcoin whose only source hiccups for an hour looks exactly like a delisting -
+           which is why the threshold was already raised from three to six. The missing half was the
+           other direction: when the price came back nothing said so, so every transient gap left a red
+           line standing with no way to know it had resolved. NIULAI paged this morning and was quoting
+           0.113 by midday, and only a hand check could tell. */
+        try {
+          const _told = await env.STATS.get('deadfeed:told:' + k);
+          if (_told) {
+            await env.STATS.delete('deadfeed:told:' + k);
+            const _m = (+_told) ? Math.max(1, Math.round((Date.now() - (+_told)) / 60000)) : 0;
+            await tgAdmin(env, '<b>FEED BACK: ' + k + '</b> - it is quoting again' + (_m ? ' after ' + (_m < 90 ? _m + ' min' : Math.round(_m / 60) + ' h') : '') + '. The earlier DEAD FEED line for it is closed and nothing was settled.', { kind: 'feed-recovered', sev: 'info' });
+          }
+        } catch (e) {}
+        try { await env.STATS.delete('deadfeed:first:' + k); } catch (e) {}
+      } } catch (e) {}
       await new Promise(r => setTimeout(r, 50));
     }
     let rates = null;

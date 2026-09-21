@@ -126,93 +126,6 @@ async function openPanel(page, rowId) {
         v = await page.evaluate(() => { const sv = document.querySelector('#mpaPsave'); return { d: sv.disabled, t: sv.textContent }; });
         ok(!v.d && /Save card/.test(v.t), 'typing arms it', v.t);
 
-        /* ---- the frame: the one behaviour that actually changed.
-           A throwaway account owns only the classic frame, so the grid it would really load has nothing
-           to pick. The OWNED LIST is stubbed to give the picker a second tile - what is under test here
-           is the client half (a pick is pending, the preview shows it at once, Save sends it) and, just
-           as usefully, the SERVER half: /api/auth/frame must refuse a frame this account does not own,
-           and the panel must say so in words. Both are asserted against the real endpoint. */
-        const calls = [];
-        await page.setRequestInterception(true);
-        const onReq = r => {
-          const u = r.url();
-          if (/\/api\/auth\/frames(\?|$)/.test(u) && r.method() === 'GET') {
-            return r.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ owned: ['default', 'gold'], equipped: 'default' }) });
-          }
-          if (/\/api\/auth\/(frame|profile)$/.test(u) && r.method() === 'POST') calls.push(u.split('/api/auth/')[1]);
-          return r.continue();
-        };
-        page.on('request', onReq);
-
-        await page.evaluate(() => { document.querySelector('#mpaCdFrBtn').click(); });
-        await wait(page, 2600);
-        const fr = await page.evaluate(() => {
-          const box = document.querySelector('#mpaCdFrBox');
-          const tiles = box ? box.querySelectorAll('[data-frame]:not([disabled])') : [];
-          return { open: !!(box && !box.hidden), n: tiles.length };
-        });
-        ok(fr.open, 'the disclosure opens the frame grid');
-        ok(fr.n >= 2, 'it lists the frames the account owns', fr.n);
-
-        const picked = await page.evaluate(() => {
-          const t = document.querySelectorAll('#mpaCdFrBox [data-frame]:not([disabled])');
-          for (const el of t) { if (!el.classList.contains('on')) { el.click(); return el.getAttribute('data-frame'); } }
-          return '';
-        });
-        await wait(page, 500);
-        ok(!!picked, 'a frame can be picked', picked);
-        const pv = await page.evaluate(() => (document.querySelector('.mpa-cdprev') || {}).className || '');
-        ok(pv.indexOf('frame-' + picked) >= 0, 'the preview wears it at once - which is what makes a pending save safe', picked);
-        ok((pv.match(/frame-/g) || []).length === 1, 'and only one frame class is on the preview', pv);
-
-        /* THE FRAME IS PREVIEWED ONCE (owner, 2026-09-21). The disclosure row used to carry a second,
-           smaller copy of the tried frame, sitting on the seam between the button and the tile grid with
-           its ornament band reaching across it. That row names the frame; the card above draws it.
-           And whatever a frame paints outside its own box must land on nothing. */
-        const geo = await page.evaluate(() => {
-          const p = document.querySelector('.mpa-panel');
-          const outside = [].filter.call(p.querySelectorAll('[class*="frame-"]'), e => !e.closest('#mpaFrGrid'));
-          const prev = document.querySelector('.mpa-cdprev').getBoundingClientRect();
-          const btn = document.querySelector('#mpaCdFrBtn').getBoundingClientRect();
-          const cs = getComputedStyle(document.querySelector('.mpa-cdprev'), '::after');
-          const bf = getComputedStyle(document.querySelector('.mpa-cdprev'), '::before');
-          const reach = Math.max(Math.abs(parseFloat(cs.inset) || 0), bf.content === 'none' ? 0 : Math.abs(parseFloat(bf.inset) || 0));
-          return { copies: outside.length, gap: Math.round(btn.top - prev.bottom), reach: Math.round(reach * 10) / 10,
-            ids: outside.map(e => e.id || e.className.split(' ')[0]) };
-        });
-        ok(geo.copies === 1, 'exactly one frame preview outside the grid - the duplicate on the picker seam is gone', JSON.stringify(geo.ids));
-        ok(geo.gap > geo.reach, 'and its ornament cannot reach the row below it', 'reaches ' + geo.reach + 'px into a ' + geo.gap + 'px gap');
-        // mp-profile kills its own top bar on a framed card; the preview has to obey the same rule
-        ok(await page.evaluate(() => { const b = document.querySelector('#mpaCdBar'); return !b || getComputedStyle(b).display === 'none'; }),
-          'a framed preview draws no level bar under the band, exactly as the real card does not');
-
-        // ---- one press, both endpoints
-        await page.evaluate(() => document.querySelector('#mpaPsave').click());
-        await wait(page, 3400);
-        ok(calls.indexOf('profile') >= 0, 'Save writes the profile', JSON.stringify(calls));
-        ok(calls.indexOf('frame') >= 0, 'and the frame, in the same press', JSON.stringify(calls));
-        v = await page.evaluate(() => {
-          const sv = document.querySelector('#mpaPsave'), m = document.querySelector('#mpaPmsg');
-          return { d: sv.disabled, t: sv.textContent, msg: (m && m.textContent) || '' };
-        });
-        // the server owns the truth: this account does NOT own that frame, so the save must fail loudly
-        ok(/do not own that frame/i.test(v.msg), 'the server refuses a frame the account does not own, in a sentence', v.msg);
-        ok(!v.d, 'and the button stays armed, so the change is not silently dropped', v.t);
-
-        page.off('request', onReq);
-        await page.setRequestInterception(false);
-
-        // ---- it really stuck: close everything and come back
-        await page.reload({ waitUntil: 'networkidle2', timeout: 60000 });
-        await wait(page, 2400);
-        await openPanel(page, 'mpaCard');
-        const after = await page.evaluate(() => ({
-          bio: (document.querySelector('#mpaPbio') || {}).value || '',
-          frame: ((document.querySelector('.mpa-cdprev') || {}).className || '').match(/frame-[a-z0-9_]+/i)
-        }));
-        ok(/^e2e bio /.test(after.bio), 'the bio survived a reload - the profile half of the save really landed', after.bio.slice(0, 22));
-        ok(after.frame && after.frame[0] === 'frame-default', 'and the refused frame did NOT stick', after.frame && after.frame[0]);
-
         // ---------------------------------------------------------------- Competitions
         await page.evaluate(() => { const b = document.querySelector('#mpaPback'); if (b) b.click(); });
         await wait(page, 900);
@@ -270,6 +183,65 @@ async function openPanel(page, rowId) {
   } finally {
     await post('/api/admin/e2euser', { uid, op: 'rm' }).catch(() => {});
     console.log('\n  .... test member removed');
+  }
+
+
+  /* ---------------------------------------------------------------- the frame applies ON CLICK
+     It was folded into the one Save button on 2026-09-21 and the owner lost a pick the same day: the
+     preview changes under your finger, so it reads as done, and closing the panel threw it away in
+     silence. A control that looks finished and is not is a broken control.
+
+     Its own account, lifted to Gold so it genuinely owns silver and gold - the earlier version stubbed
+     the owned list client-side, which the server then refused, so it could only ever test the refusal. */
+  console.log('\n-- the frame applies on click, with no Save');
+  {
+    const fUid = 'e2e-cardf' + Date.now();
+    await post('/api/admin/e2euser', { uid: fUid, op: 'mk' });
+    const fs2 = await post('/api/admin/e2euser', { uid: fUid, op: 'sess' });
+    const fCookie = 'mp_sess=' + fs2.token + '; mp_uid=' + fUid;
+    try {
+      const d = await fetch(BASE + '/api/admin/xpdiag?u=' + encodeURIComponent('e2e_' + fUid), { headers: H }).then(r => r.json()).catch(() => null);
+      const lifted = (d && d.user) ? await fetch(BASE + '/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), {
+        method: 'POST', headers: H, body: JSON.stringify({ uid: d.user.id, level: 'gold', note: 'card-e2e' })
+      }).then(r => r.json()).catch(() => null) : null;
+      ok(!!(lifted && lifted.ok), 'the member really owns more than one frame before this is judged', JSON.stringify(lifted).slice(0, 70));
+
+      let picked = '';
+      await withBrowser(async (browser) => {
+        const page = await browser.newPage();
+        await page.setViewport({ width: 1366, height: 940 });
+        await page.setCookie({ name: 'mp_sess', value: fs2.token, domain: 'marginpad.io', path: '/' },
+          { name: 'mp_uid', value: fUid, domain: 'marginpad.io', path: '/' },
+          { name: 'mp_li', value: '1', domain: 'marginpad.io', path: '/' });
+        await page.goto(BASE + '/season/', { waitUntil: 'networkidle2', timeout: 60000 });
+        await wait(page, 2200);
+        await openPanel(page, 'mpaCard');
+        await page.evaluate(() => document.querySelector('#mpaCdFrBtn').click());
+        await wait(page, 2800);
+        const n = await page.evaluate(() => document.querySelectorAll('#mpaCdFrBox [data-frame]:not([disabled])').length);
+        ok(n >= 2, 'the grid lists the frames the account really owns', n);
+        picked = await page.evaluate(() => {
+          const t = document.querySelectorAll('#mpaCdFrBox [data-frame]:not([disabled])');
+          for (const el of t) if (!el.classList.contains('on')) { el.click(); return el.getAttribute('data-frame'); }
+          return '';
+        });
+        await wait(page, 3200);
+        ok(!!picked, 'a frame can be picked', picked);
+        const pv = await page.evaluate(() => (document.querySelector('.mpa-cdprev') || {}).className || '');
+        ok(pv.indexOf('frame-' + picked) >= 0, 'the preview wears it', picked + ' / ' + pv.slice(-34));
+        ok((pv.match(/frame-/g) || []).length === 1, 'and only one frame class is on it', pv.slice(-34));
+        ok(await page.evaluate(() => { const bar = document.querySelector('#mpaCdBar'); return !bar || getComputedStyle(bar).display === 'none'; }),
+          'a framed preview draws no level bar under the band, as the real card does not');
+        ok(await page.evaluate(() => (document.querySelector('#mpaPsave') || {}).disabled),
+          'and Save stays settled, because a saved frame is not a pending change');
+        // THE LOAD-BEARING ONE: leave without pressing Save
+        await page.evaluate(() => { const x = document.querySelector('.mpa-x'); if (x) x.click(); });
+        await wait(page, 800);
+        await page.close();
+      });
+      const srv = await fetch(BASE + '/api/auth/frames', { headers: { cookie: fCookie } }).then(r => r.json()).catch(() => ({}));
+      ok(srv.equipped === picked, 'the pick is on the server after closing WITHOUT Save - the bug this fixes', srv.equipped + ' vs ' + picked);
+    } finally { await post('/api/admin/e2euser', { uid: fUid, op: 'rm' }).catch(() => {}); }
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
