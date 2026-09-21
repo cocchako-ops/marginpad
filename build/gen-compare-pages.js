@@ -16,13 +16,20 @@ const EX = {
   kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection', founded: 2017, us: false, safety: 'settled US regulatory action and wound down US access; carries one of the largest altcoin listing bases in the industry' },
   kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',                                                                lev: 50,  mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust', founded: 2011, us: true, safety: 'one of the oldest exchanges still running, US-regulated with a strong security record, favouring conservative leverage over headline numbers' },
   bitget:  { name: 'Bitget',  ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK', lev: 125, mmr: 0.5, maker: 0.02, taker: 0.06, accent: '#00e5d0', fg: '#04231f', known: 'copy trading and one of the largest futures order books', founded: 2018, us: false, safety: 'publishes a protection fund, ranks top-five by futures volume, and centres its product on copy trading; not available to US residents' },
-  gate:    { name: 'Gate',    ref: 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures', founded: 2013, us: false, safety: 'has one of the longest track records in the industry, publishes proof-of-reserves, and lists an enormous catalogue of long-tail markets' }
+  gate:    { name: 'Gate',    ref: 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures', founded: 2013, us: false, safety: 'has one of the longest track records in the industry, publishes proof-of-reserves, and lists an enormous catalogue of long-tail markets' },
+  // 2026-09-21. The only on-chain venue in this table, and the one gap that mattered: "hyperliquid vs bybit" is a
+  // live commercial query with no large publisher defending it, /hyperliquid-whales/ is already our second-best
+  // page for assistant referrals, and not one of the 21 existing comparison pages mentioned Hyperliquid at all.
+  // Numbers verified from Hyperliquid's own docs: taker 0.045% / maker 0.015% at the base tier, and maintenance
+  // margin is HALF the maximum initial margin fraction - so 1.25% at the 40x BTC tier, which is exactly the rate
+  // our own engine already charges a paper position opened on the Hyperliquid fee venue.
+  hyperliquid: { name: 'Hyperliquid', ref: 'https://app.hyperliquid.xyz/join/MARGINPAD', lev: 40, mmr: 1.25, maker: 0.015, taker: 0.045, accent: '#50d2c1', fg: '#05221e', known: 'an on-chain order book with perp liquidity that rivals the big centralised venues', founded: 2023, us: false, safety: 'runs entirely on-chain on its own L1, so positions and the order book are publicly auditable and you keep custody of your funds in your own wallet - there is no exchange balance to withdraw from and no proof-of-reserves needed, but equally no support desk and no recourse if you lose your keys; its terms exclude US persons' }
 };
 
 // Exchanges our collector actually subscribes to. KuCoin, Kraken and Bitget publish no public liquidation
 // websocket, so a pair of two of them has nothing to measure - those pages skip the measured section
 // entirely rather than shipping a "loading…" box that never resolves.
-const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1 };
+const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1, hyperliquid: 1 };
 
 const PAIRS = [
   ['bybit', 'binance'], ['binance', 'okx'], ['bybit', 'okx'],
@@ -33,6 +40,10 @@ const PAIRS = [
   ['bybit', 'gate'], ['binance', 'gate'], ['bitget', 'gate'], ['gate', 'okx'], ['gate', 'kucoin'],
   // complete the matrix - remaining high-intent pairs
   ['bitget', 'kraken'], ['gate', 'kraken'],
+  // 2026-09-21: the on-chain question, and the least defended commercial SERP found in the market research -
+  // no large publisher ranks for it, only small crypto blogs. Hyperliquid first in the slug because that is
+  // the order people type it in.
+  ['hyperliquid', 'bybit'], ['hyperliquid', 'binance'], ['hyperliquid', 'okx'], ['hyperliquid', 'bitget'],
 ];
 
 // 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
