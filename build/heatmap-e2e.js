@@ -69,6 +69,10 @@ const LAYOUT = () => {
     bkSegs: document.querySelectorAll('.hm-ob-row .vs em').length,
     bkTapeCols: (function () { var r = document.querySelector('.hm-tp-row'); return r ? r.children.length : 0; })(),
     bkHeads: [...document.querySelectorAll('.hm-col-h')].map(function (h) { return h.innerText.replace(/s+/g, ' '); }),
+    helpQ: document.querySelectorAll('.hm-q').length,
+    tgH: (function () { var t = document.querySelector('.hm-targets'); return t ? Math.round(t.getBoundingClientRect().height) : 0; })(),
+    tgCut: [...document.querySelectorAll('.hm-tgb b')].filter(function (b) { return b.scrollWidth > b.clientWidth + 1; }).length,
+    wins: [...document.querySelectorAll('.hm-bar select')].map(function (s2) { return [...s2.options].map(function (o) { return o.text; }).join('/'); }).join(' | '),
     // A LADDER THAT IS CROSSED IS A BROKEN LADDER, and merging five venues by absolute price produces one
     // (measured: Hyperliquid traded $73 above the other four). This reads the prices off the DOM.
     bkCross: (function () {
@@ -209,6 +213,7 @@ const LAYOUT = () => {
     ok('the map gets the screen (canvas >= 300px of 390)', L.cv.w >= 300, 'canvas=' + L.cv.w);
     ok('the stage runs edge to edge', L.stage.x <= 1 && L.stage.w >= L.vw - 1, JSON.stringify(L.stage));
     ok('the whole map clears the fixed tab bar', L.stage.bottom <= L.vh - L.navH, 'bottom=' + L.stage.bottom + ' limit=' + (L.vh - L.navH));
+    ok('TARGETS stays compact on a phone', L.tgH > 0 && L.tgH <= 170, 'targets=' + L.tgH + 'px');
     ok('every control is at least 29px tall', L.taps.length > 0 && L.taps.every(t => t.h >= 29), JSON.stringify(L.taps.filter(t => t.h < 29)));
     ok('no control is narrower than 29px', L.taps.every(t => t.w >= 29), JSON.stringify(L.taps.filter(t => t.w < 29)));
     ok('the title keeps one line, with LIVE on the row below it', L.mastTitleH > 0 && L.mastTitleH < 30, 'title h=' + L.mastTitleH);
@@ -225,6 +230,12 @@ const LAYOUT = () => {
     // and prints that are far bigger than the rest standing out without being hunted for.
     ok('each ladder row shows WHICH exchanges hold that price', L.bkSegs >= L.bkAsks + L.bkBids, 'segments=' + L.bkSegs + ' rows=' + (L.bkAsks + L.bkBids));
     ok('every print carries its dollar value and its venue', L.bkTapeCols >= 5, 'tape columns=' + L.bkTapeCols);
+    // Every term a beginner could stumble on carries a '?' that explains it in plain words - the owner
+    // asked for it, and it is what lets the page be dense without being hostile.
+    ok('the jargon explains itself', L.helpQ >= 6, 'help marks=' + L.helpQ);
+    // TARGETS keeps all six chips and every price readable, in half the height it used to take on a phone.
+    ok('no target price is cut off', L.tgCut === 0, 'truncated=' + L.tgCut);
+    ok('a live order-flow page offers a short window too', /Last hour/.test(L.wins), L.wins.slice(0, 120));
     ok('the three columns say what they answer', L.bkHeads.length === 3 && /ORDER BOOK/.test(L.bkHeads[0]) && /TAPE/.test(L.bkHeads[1]) && /READ/.test(L.bkHeads[2]), L.bkHeads.join(' / '));
     ok('the page never scrolls sideways', L.scrollW <= L.vw, 'scrollW=' + L.scrollW);
     ok('nothing in the section is wider than the screen', L.wide === 0, 'wide=' + L.wide);

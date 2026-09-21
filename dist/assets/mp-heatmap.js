@@ -15,7 +15,69 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   if (window.mpHeatmap) return;
   var MMR = 0.005, LEVS = [2, 3, 5, 10, 25, 50, 100], LEVW = { 2: 0.08, 3: 0.10, 5: 0.16, 10: 0.26, 25: 0.20, 50: 0.12, 100: 0.08 };
   var COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
-  var WINS = { '4H': { iv: '5', mins: 240 }, '12H': { iv: '15', mins: 720 }, '1D': { iv: '15', mins: 1440 }, '3D': { iv: '60', mins: 4320 }, '7D': { iv: '240', mins: 10080 } };
+  // ---- PLAIN WORDS FOR EVERY TERM ON THIS PAGE (2026-09-22) ----------------------------------------
+  // Owner: "mozemo za pojmove da pravimo onaj '?' i da korisnik hover (desktop) ili klick (mobile) i da
+  // vidi sta je tacno to, objasnjeno i uprosteno za pocetnika da ukapira."
+  //
+  // One dictionary, one delegated listener, one floating card - so a term explained here is explained the
+  // same way everywhere it appears, and adding a new term costs one line rather than a new tooltip.
+  // Every entry answers the same two questions in order: WHAT it is, then WHY a trader should care.
+  var HELP = {
+    spread: ['Spread', 'The gap between the best price a buyer will pay and the cheapest a seller will take. Cross it and you pay it: it is the toll for wanting something right now instead of waiting. On a busy coin it is a hundredth of a percent; on a quiet one it can be ten times that.'],
+    bps: ['Basis points (bps)', 'A hundredth of one percent. 1 bps = 0.01%, 100 bps = 1%. Traders use it because "the spread moved from 0.01% to 0.02%" is a mouthful, while "1 to 2 bps" is not.'],
+    resting: ['Resting orders', 'Money sitting in the order book at a chosen price, waiting. Nobody has spent it yet, and it can be pulled at any second - which is exactly why a wall held by one exchange alone is less trustworthy than the same wall shared by four.'],
+    sum: ['Sum', 'The running total as you walk away from the price. The row three ticks down does not show what sits at that price alone - it shows everything between the current price and there, so it answers "how much would I have to eat through to get that far".'],
+    venuestrip: ['Who holds it', 'The thin coloured line under each row, split by exchange. One colour means a single venue is holding that price on its own; four colours mean four books agree. A wall nobody else supports can disappear between two blinks.'],
+    aggressor: ['Aggressor', 'Every trade has a patient side and an impatient one. Whoever crossed the spread to make it happen is the aggressor: an arrow up means a buyer paid the asking price, an arrow down means a seller accepted the bid. The candle records the price; only the tape records who was in a hurry.'],
+    slippage: ['Slippage', 'A large order eats the best price first, then the next, then the next - so the average price it actually gets is worse than the one on screen. This is that difference, measured by walking our real book, not estimated.'],
+    netflow: ['Net flow', 'Aggressive buying minus aggressive selling, in dollars, over the last few minutes. Positive means buyers were the impatient ones. Read it against the price: price grinding up while sellers are the aggressors means somebody is quietly absorbing them.'],
+    bigprint: ['Bright rows', 'A trade far larger than the rest of what is on screen - eight times the middle-sized print. Size alone does not predict anything, but a cluster of them on one side, at one price, is the market telling you where somebody with real money is working.'],
+    tick: ['Rows of', 'How wide each row of the book is in price. Five exchanges quote to a fraction of a cent, so their prices are grouped into rows of this size - otherwise the ladder would be forty rows of dust instead of eight rows of size.'],
+    lined: ['Lined up', 'Exchanges do not trade at exactly the same price - measured on Bitcoin, one venue sat $73 above the other four. When you look at all of them together each book is shifted onto the shared middle price first, so a row means "this far from the price" rather than a number that crosses itself.'],
+    zone: ['Liquidation zone', 'A price where a crowd of leveraged positions would be force-closed. It is a MODEL, not a record: the exchange never publishes who is leveraged where, so this is estimated from price history. Price is often pulled toward the heavy ones, because a forced close is an order that has to happen.'],
+    targets: ['Targets', 'The nearest modelled liquidation zones above and below the price - green where longs get closed out, red where shorts do. Tap one to show it on the map. They are estimates from price history, never a record of money that has changed hands.'],
+    measured: ['Measured, not modelled', 'Everything in this panel is something that really exists right now: orders standing in five books, trades that really printed. The map above it is a model of where leverage probably sits. We keep the two apart on purpose, and never put a dollar figure on the model.'],
+  };
+  var _hq = null;
+  function helpClose() { if (_hq) { _hq.remove(); _hq = null; } }
+  function helpOpen(btn) {
+    helpClose();
+    var e = HELP[btn.getAttribute('data-q')];
+    if (!e) return;
+    var d = document.createElement('div');
+    d.className = 'hm-qc';
+    d.innerHTML = '<b>' + e[0] + '</b><span>' + e[1] + '</span>';
+    document.body.appendChild(d);
+    var r = btn.getBoundingClientRect(), w = Math.min(300, innerWidth - 24);
+    d.style.width = w + 'px';
+    var left = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2));
+    var top = r.bottom + 8, hh = d.getBoundingClientRect().height;
+    if (top + hh > innerHeight - 8) top = Math.max(8, r.top - hh - 8);
+    d.style.left = (left + scrollX) + 'px'; d.style.top = (top + scrollY) + 'px';
+    _hq = d;
+  }
+  // ONE listener for the whole page. Hover on a real pointer, tap on a touch screen - and a tap must not
+  // also fire the thing behind it, which on a Targets chip would move the map while trying to read a word.
+  (function () {
+    var coarse = false; try { coarse = matchMedia('(pointer:coarse)').matches; } catch (e) {}
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('.hm-q');
+      if (b) { ev.preventDefault(); ev.stopPropagation(); if (_hq && _hq._for === b) helpClose(); else { helpOpen(b); if (_hq) _hq._for = b; } return; }
+      if (!ev.target.closest || !ev.target.closest('.hm-qc')) helpClose();
+    }, true);
+    if (!coarse) {
+      document.addEventListener('mouseover', function (ev) {
+        var b = ev.target.closest && ev.target.closest('.hm-q');
+        if (b) { helpOpen(b); if (_hq) _hq._for = b; }
+        else if (_hq && !(ev.target.closest && ev.target.closest('.hm-qc'))) helpClose();
+      });
+    }
+    addEventListener('scroll', helpClose, { passive: true });
+    addEventListener('keydown', function (ev) { if (ev.key === 'Escape') helpClose(); });
+  })();
+  function q(key) { return '<b class="hm-q" data-q="' + key + '" role="button" tabindex="0" aria-label="What is this?">?</b>'; }
+
+  var WINS = { '1H': { iv: '1', mins: 60 }, '4H': { iv: '5', mins: 240 }, '12H': { iv: '15', mins: 720 }, '1D': { iv: '15', mins: 1440 }, '3D': { iv: '60', mins: 4320 }, '7D': { iv: '240', mins: 10080 } };
   var BINS = 200;
   var S = null;
 
@@ -52,7 +114,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-ob-hd,.hm-ob-row{display:grid;grid-template-columns:1fr .78fr .78fr;gap:6px;padding:0 4px}' +
     '.hm-tp-hd,.hm-tp-row{display:grid;grid-template-columns:.62fr 1fr .6fr .62fr .42fr;gap:5px;padding:0 4px}' +
     '.hm-ob-hd,.hm-tp-hd{font:9.5px "Space Mono",monospace;color:#5c6b84;letter-spacing:.06em;padding-bottom:3px}' +
-    '.hm-ob-hd span+span,.hm-tp-hd span+span,.hm-ob-row .s,.hm-ob-row .t,.hm-tp-row .s,.hm-tp-row .u,.hm-tp-row .v{text-align:right}' +
+    '.hm-ob-hd span+span,.hm-ob-row .s,.hm-ob-row .t{text-align:right}' +
+    '.hm-tp-hd span:nth-child(3),.hm-tp-hd span:nth-child(4),.hm-tp-hd span:nth-child(5),.hm-tp-row .s,.hm-tp-row .u,.hm-tp-row .v{text-align:right}' +
     '.hm-ob-row,.hm-tp-row{position:relative;font:11.5px/1.66 "Space Mono",monospace;white-space:nowrap}' +
     '.hm-ob-row>span,.hm-tp-row>span{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis}' +
     '.hm-ob-row .bar{position:absolute;right:0;top:1px;bottom:4px;border-radius:2px;z-index:0;transition:width .38s cubic-bezier(.4,0,.2,1)}' +
@@ -71,7 +134,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-ob-r i,.hm-ob-r u{height:5px;border-radius:3px;text-decoration:none;min-width:2px;transition:width .38s ease}' +
     '.hm-ob-r i{background:#2ebd85}.hm-ob-r u{background:#ff5a4d}' +
     '.hm-vk{display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:7px;font:9.5px "Space Mono",monospace;color:#8fa3c4}' +
-    '.hm-vk span{display:inline-flex;align-items:center;gap:4px}.hm-vk span.off{opacity:.3}' +
+    '.hm-vk span{display:inline-flex;align-items:center;gap:4px}.hm-vk span.lbl{color:#5c6b84;margin-left:auto}' +
+    '.hm-vk span.solo{color:#5c6b84}' +
     '.hm-vk i{width:7px;height:7px;border-radius:2px;display:inline-block}' +
     '.hm-tp-row .tm{color:#5c6b84}.hm-tp-row .v{color:#5c6b84}' +
     '.hm-tp-row.a .p{color:#66d3a5}.hm-tp-row.b .p{color:#ff8f86}' +
@@ -86,6 +150,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-bk-n>b:first-child{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
     '.hm-bk-n b.k{color:#c9d4e6;font-weight:600}.hm-bk-n em{font-style:normal;color:#c9d4e6}' +
     '.hm-bk-n .g{color:#66d3a5}.hm-bk-n .r{color:#ff8f86}' +
+    '.hm-tp-row{cursor:pointer;border-radius:3px}.hm-tp-row:hover{background:rgba(255,255,255,.045)}' +
+    '.hm-tp-row .vb{position:absolute;right:0;top:2px;bottom:2px;border-radius:2px;z-index:0;opacity:.13;transition:width .3s ease}' +
+    '.hm-tp-row.a .vb{background:#2ebd85}.hm-tp-row.b .vb{background:#ff5a4d}' +
+    '.hm-tc{position:absolute;z-index:2147483000;background:#0e1420;border:1px solid #2a3547;border-radius:11px;padding:10px 12px 11px;box-shadow:0 12px 40px rgba(0,0,0,.66)}' +
+    '.hm-tc-h{display:flex;align-items:center;gap:8px;padding-bottom:7px;margin-bottom:7px;border-bottom:1px solid #1c2230}' +
+    '.hm-tc-h b{font:700 11px "Space Mono",monospace}.hm-tc-h b.g{color:#66d3a5}.hm-tc-h b.r{color:#ff8f86}' +
+    '.hm-tc-h i{font:italic 10.5px system-ui,sans-serif;color:#5c6b84}' +
+    '.hm-tc-h u{margin-left:auto;text-decoration:none;color:#5c6b84;cursor:pointer;font-size:15px;line-height:1;padding:0 2px}' +
+    '.hm-tc-r{display:flex;justify-content:space-between;gap:10px;font:11.5px/1.8 system-ui,sans-serif;color:#8fa3c4}' +
+    '.hm-tc-r b{font:12px "Space Mono",monospace;color:#e9e7df}.hm-tc-r b.g{color:#66d3a5}.hm-tc-r b.r{color:#ff8f86}' +
+    '.hm-tc-n{font:11px/1.5 system-ui,sans-serif;color:#7a8caa;margin-top:8px;padding-top:7px;border-top:1px solid #1c2230}' +
+    '.hm-q{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;border:1px solid #33405a;color:#7f8fa8;font:700 9px system-ui,sans-serif;cursor:help;vertical-align:1px;margin-left:4px;flex:none;user-select:none}' +
+    '.hm-q:hover,.hm-q:focus{border-color:#c2f64a;color:#c2f64a;outline:none}' +
+    '@media(pointer:coarse){.hm-q{width:18px;height:18px;font-size:10px;cursor:pointer}}' +
+    '.hm-qc{position:absolute;z-index:2147483000;background:#0e1420;border:1px solid #2a3547;border-radius:10px;padding:10px 12px;box-shadow:0 10px 34px rgba(0,0,0,.6)}' +
+    '.hm-qc b{display:block;font:700 10px "Space Mono",monospace;letter-spacing:.1em;color:#c2f64a;text-transform:uppercase;margin-bottom:5px}' +
+    '.hm-qc span{display:block;font:12px/1.55 system-ui,sans-serif;color:#c9d4e6}' +
     '.hm-stage.hm-j{border-radius:0;border-bottom:0}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:3px 21px 3px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;height:25px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
@@ -137,7 +218,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     'details.hm-foot-c[open]>summary.hm-foot-h{margin-bottom:6px}' +
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
-    '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
+    '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tg-c{gap:5px}.hm-tg-d{width:30px;font-size:9px}.hm-tgb{display:flex;align-items:baseline;gap:4px;padding:6px 6px}.hm-tgb i{display:inline;margin-top:0;margin-left:auto;font-size:9px;flex:none}.hm-tgb b{display:inline;flex:none;overflow:visible;font-size:11.5px}.hm-foot{order:5}}' +
     '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:8px 10px 9px}'+'.hm-bk-g{grid-template-columns:minmax(0,1fr);gap:13px}'+'.hm-bk-seg{margin-left:0;width:100%}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
@@ -672,7 +753,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       return '<div class="hm-tg-r"><span class="hm-tg-d ' + cls + '">' + lab + '</span><div class="hm-tg-c">' +
         (arr.length ? arr.slice(0, 3).map(cell).join('') : '<span class="hm-tg-none">none within 12%</span>') + '</div></div>';
     };
-    var h = __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>');
+    var h = __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>') .replace('</div>', q('targets') + '</div>');
     h += '<div class="hm-tg-g">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + '</div>';
     // squeeze: strong pools close on BOTH sides
     var wMax = P.alive.length ? P.alive[0].w : 0;
@@ -1232,7 +1313,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var wrap = el('div', 'hm-wrap');
     var bar = el('div', 'hm-bar');
     var selC = el('select', 'hm-sel'); COINS.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; if (c === coin) o.selected = true; selC.appendChild(o); });
-    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? __esT_mpheatmap("last4Hours",'Last 4 hours') : wk === '12H' ? __esT_mpheatmap("last12Hours",'Last 12 hours') : wk === '1D' ? __esT_mpheatmap("last24Hours",'Last 24 hours') : wk === '3D' ? __esT_mpheatmap("last3Days",'Last 3 days') : __esT_mpheatmap("last7Days",'Last 7 days'); if (wk === win0) o.selected = true; selW.appendChild(o); });
+    var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '1H' ? 'Last hour' : wk === '4H' ? __esT_mpheatmap("last4Hours",'Last 4 hours') : wk === '12H' ? __esT_mpheatmap("last12Hours",'Last 12 hours') : wk === '1D' ? __esT_mpheatmap("last24Hours",'Last 24 hours') : wk === '3D' ? __esT_mpheatmap("last3Days",'Last 3 days') : __esT_mpheatmap("last7Days",'Last 7 days'); if (wk === win0) o.selected = true; selW.appendChild(o); });
     var seg = el('div', 'hm-seg');
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
     // Dots used to be an all-or-nothing toggle. It is a SIZE now, because the noise is not the dots, it is the
@@ -1295,14 +1376,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       '<div class="hm-bk-h"><span class="hm-bk-t">LIVE ORDER FLOW</span><span class="hm-bk-m"></span>'
       + '<span class="hm-seg hm-bk-seg"></span></div>'
       + '<div class="hm-bk-g">'
-      + '  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i></div>'
-      + '    <div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum</span></div>'
+      + '  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i>' + q('resting') + '</div>'
+      + '    <div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum' + q('sum') + '</span></div>'
       + '    <div class="hm-ob-a"></div><div class="hm-ob-px"></div><div class="hm-ob-b"></div>'
       + '    <div class="hm-ob-r"><b></b><i></i><u></u><s></s></div><div class="hm-vk"></div></div>'
-      + '  <div class="hm-col hm-tp"><div class="hm-col-h"><b>TAPE</b><i>what just happened</i></div>'
+      + '  <div class="hm-col hm-tp"><div class="hm-col-h"><b>TAPE</b><i>what just happened</i>' + q('aggressor') + '</div>'
       + '    <div class="hm-tp-hd"><span>Time</span><span>Price</span><span>Size</span><span>Value</span><span>On</span></div>'
       + '    <div class="hm-tp-l"></div></div>'
-      + '  <div class="hm-col hm-sm"><div class="hm-col-h"><b>THE READ</b><i>what it means</i></div>'
+      + '  <div class="hm-col hm-sm"><div class="hm-col-h"><b>THE READ</b><i>what it means</i>' + q('measured') + '</div>'
       + '    <div class="hm-sm-l"></div></div>'
       + '</div><div class="hm-bk-n"></div>';
     var bkH = bk.querySelector('.hm-bk-h'), bkMeta = bk.querySelector('.hm-bk-m'), bkSeg = bk.querySelector('.hm-bk-seg');
@@ -1330,7 +1411,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function tickDp(t) { var d = 0, x = t; while (x < 1 && d < 8) { x *= 10; d++; } return d; }
     function fmtSz(v) {
       return v >= 1000 ? Math.round(v).toLocaleString('en-US') : v >= 1 ? v.toFixed(2)
-        : v >= 0.01 ? v.toFixed(3) : v > 0 ? v.toFixed(4) : '0';
+        : v >= 0.01 ? v.toFixed(3) : v >= 0.0001 ? v.toFixed(4) : v > 0 ? v.toPrecision(2) : '0';
     }
     // Merge every selected book onto one price grid, KEEPING who contributed what. Each venue is aligned on
     // its own mid first: measured, Hyperliquid traded $73 above the other four on BTC, enough that merging by
@@ -1413,6 +1494,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var bTot = sum, mx = Math.max(aTot, bTot) || 1;
       var nf = { minimumFractionDigits: dp, maximumFractionDigits: dp };
 
+      var one = list.length < 2;
       var paint = function (host, rows, cls) {
         var ch = ensure(host, rows.length, cls);
         for (var k = 0; k < rows.length; k++) {
@@ -1423,8 +1505,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           var bar = e.querySelector('.bar'), vs = e.querySelector('.vs');
           bar.style.width = (r.cum / mx * 100).toFixed(1) + '%';
           vs.style.width = (r.sz / mx * 100).toFixed(1) + '%';
+          vs.style.display = one ? 'none' : '';
           var sig = Object.keys(r.v).sort().join(',');
-          if (vs.getAttribute('data-v') !== sig) { vs.setAttribute('data-v', sig); vs.innerHTML = barHtml(r.v, r.sz, 0); }
+          if (one) { /* a single book has nothing to compose */ }
+          else if (vs.getAttribute('data-v') !== sig) { vs.setAttribute('data-v', sig); vs.innerHTML = barHtml(r.v, r.sz, 0); }
           else { var segs = vs.children, kk = Object.keys(r.v).sort(function (a, b2) { return r.v[b2] - r.v[a]; });
             for (var q = 0; q < segs.length && q < kk.length; q++) segs[q].style.width = (r.v[kk[q]] / r.sz * 100).toFixed(1) + '%'; }
           if (moved) flash(e);
@@ -1436,13 +1520,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var spr = null;
       for (i = 0; i < list.length; i++) { var sp = +list[i].spreadBps; if (sp > 0 && (spr === null || sp < spr)) spr = sp; }
       obPx.innerHTML = '<b>' + fpx(mid) + '</b><small>' + (spr != null ? (list.length > 1 ? 'tightest spread ' : 'spread ') + spr.toFixed(2) + ' bps' : '') + '</small>'
-        + '<small class="tk">rows of ' + t.toLocaleString('en-US', nf) + '</small>';
+        + '<small class="tk">rows of ' + t.toLocaleString('en-US', nf) + q('tick') + '</small>';
       var bp = bTot + aTot > 0 ? bTot / (bTot + aTot) * 100 : 50;
       obR.innerHTML = '<b>B ' + bp.toFixed(1) + '%</b><i style="width:' + bp.toFixed(1) + '%"></i>'
         + '<u style="width:' + (100 - bp).toFixed(1) + '%"></u><s>' + (100 - bp).toFixed(1) + '% S</s>';
-      obVk.innerHTML = names.map(function (n) {
-        return '<span' + (pick !== 'all' && n !== pick ? ' class="off"' : '') + '><i style="background:' + (BKC[n] || '#8fa3c4') + '"></i>' + (BKN[n] || n) + '</span>';
-      }).join('');
+      obVk.innerHTML = one
+        ? '<span class="solo">showing ' + (BKN[pick] || pick) + ' only &mdash; the colour strip returns when you pick All</span>'
+        : names.map(function (n) {
+          return '<span><i style="background:' + (BKC[n] || '#8fa3c4') + '"></i>' + (BKN[n] || n) + '</span>';
+        }).join('') + '<span class="lbl">who holds each row' + q('venuestrip') + '</span>';
 
       // ---- TAPE ----
       var tr = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
@@ -1450,16 +1536,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       // eight. On BTC the median print is about $750, so a $6,000 order is genuinely unusual and lights up.
       var vals = tr.map(function (x) { return +x.usd || 0; }).sort(function (a, b2) { return a - b2; });
       var med = vals.length ? vals[Math.floor(vals.length / 2)] : 0, big = med * 8;
+      var bigMax = vals.length ? vals[vals.length - 1] : 0;
       tr = tr.slice(Math.max(0, tr.length - 18)).reverse();
       var ch2 = ensure(tpL, tr.length, 'hm-tp-row');
       for (i = 0; i < tr.length; i++) {
         var x = tr[i], e2 = ch2[i], dt = new Date(x.ts);
         e2.className = 'hm-tp-row ' + (x.side === 'buy' ? 'a' : 'b') + ((big > 0 && +x.usd >= big) ? ' big' : '');
+        var vb = e2.querySelector('.vb') || (function () { var z = document.createElement('i'); z.className = 'vb'; e2.insertBefore(z, e2.firstChild); return z; })();
+        vb.style.width = (bigMax > 0 ? Math.min(100, (+x.usd || 0) / bigMax * 100) : 0).toFixed(1) + '%';
         setTxt(e2.querySelector('.tm'), ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2));
         setTxt(e2.querySelector('.p'), (x.side === 'buy' ? '▲ ' : '▼ ') + fpx(x.px));
         setTxt(e2.querySelector('.s'), fmtSz(x.qty));
         setTxt(e2.querySelector('.u'), usdShort(+x.usd || 0));
         setTxt(e2.querySelector('.v'), (BKN[x.venue] || x.venue || '').slice(0, 3).toUpperCase());
+        e2._t = x; e2._med = med; e2._mid = mid; e2._mx = bigMax;
       }
 
       // ---- THE READ ----
@@ -1479,14 +1569,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       bkSm.innerHTML =
         rowS('Buyers waiting', usdShort(bidU), 'g')
         + rowS('Sellers waiting', usdShort(askU), 'r')
-        + '<div class="hm-sm-s">resting within 0.25% of the price</div>'
+        + '<div class="hm-sm-s">resting within 0.25% of the price' + q('resting') + '</div>'
         + (sl !== null ? rowS('$250k buy costs', sl.toFixed(2) + ' bps') : '')
         + (ss !== null ? rowS('$250k sell costs', ss.toFixed(2) + ' bps') : '')
-        + '<div class="hm-sm-s">what the book would really charge you</div>'
+        + '<div class="hm-sm-s">what the book would really charge you' + q('slippage') + '</div>'
         + rowS('Aggressive buying', usdShort(buyU), 'g')
         + rowS('Aggressive selling', usdShort(selU), 'r')
         + rowS('Net, last ' + span, (dl >= 0 ? '+' : '−') + usdShort(Math.abs(dl)), dl >= 0 ? 'g' : 'r')
-        + '<div class="hm-sm-s">who was in a hurry, in dollars</div>'
+        + '<div class="hm-sm-s">who was in a hurry, in dollars' + q('netflow') + '</div>'
         + rowS('Books read', list.length + ' of ' + names.length, '');
       bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + ' exchanges, lined up' : BKN[pick] || pick) + '</i>';
     }
@@ -1495,6 +1585,56 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       for (i = 0; i < list.length; i++) { var v = list[i].depthUsd; if (v) s += +v[side + '_25'] || 0; }
       return s;
     }
+    // ---- EVERYTHING ABOUT ONE PRINT, ON A CLICK (2026-09-22) ----------------------------------------
+    // Owner: "ako moze da se napravi da dobijamo jos brdo informacija na klik onda i to jos bolje".
+    // A tape row is five short columns by necessity. Everything that does not fit but is worth knowing
+    // lives here: the exact moment to the millisecond, how big this print was against the rest of the
+    // tape, where it landed relative to the price right now, and how long it took to reach us - which is
+    // the one number that says whether you are reading the market or reading a delay.
+    function tradeCard(row) {
+      var x = row._t; if (!x) return;
+      helpClose();
+      var old = document.querySelector('.hm-tc'); if (old) old.remove();
+      var d = document.createElement('div'); d.className = 'hm-tc';
+      var dt = new Date(x.ts), ms = ('00' + dt.getMilliseconds()).slice(-3);
+      var vs = +x.usd || 0, med = row._med || 0, mid = row._mid || 0;
+      var rel = med > 0 ? vs / med : 0;
+      var off = mid > 0 ? (x.px - mid) / mid * 10000 : null;
+      var lag = (+x.rxAt && +x.ts) ? (+x.rxAt - +x.ts) : null;
+      var r2 = function (k, v, c) { return '<div class="hm-tc-r"><span>' + k + '</span><b' + (c ? ' class="' + c + '"' : '') + '>' + v + '</b></div>'; };
+      var buy = x.side === 'buy';
+      d.innerHTML = '<div class="hm-tc-h"><b class="' + (buy ? 'g' : 'r') + '">' + (buy ? '▲ BUYER took the offer' : '▼ SELLER hit the bid') + '</b>'
+        + '<i>' + (BKN[x.venue] || x.venue) + '</i><u class="x">×</u></div>'
+        + r2('Price', fpx(x.px))
+        + r2('Size', fmtSz(x.qty) + ' ' + (x.sym || ''))
+        + r2('Value', '&#36;' + Math.round(vs).toLocaleString('en-US'), buy ? 'g' : 'r')
+        + r2('Time', ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2) + '.' + ms)
+        + (rel > 0 ? r2('Against the tape', rel >= 1 ? rel.toFixed(1) + '× the middling print' : 'a fraction of the middling print') : '')
+        + (off !== null ? r2('From the price', (off >= 0 ? '+' : '') + off.toFixed(2) + ' bps') : '')
+        + (lag !== null && lag >= 0 && lag < 60000 ? r2('Reached us in', lag + ' ms') : '')
+        + (x.id ? r2('Exchange id', String(x.id).slice(0, 22)) : '')
+        + '<div class="hm-tc-n">' + (buy
+          ? 'Somebody wanted this filled now and paid the asking price for it. A run of these on one side is buyers lifting offers - the market being taken, not offered.'
+          : 'Somebody wanted out now and accepted the standing bid. A run of these is sellers hitting bids, which is what a slide looks like from the inside.') + '</div>';
+      document.body.appendChild(d);
+      var rr = row.getBoundingClientRect(), w = Math.min(292, innerWidth - 24);
+      d.style.width = w + 'px';
+      var left = Math.max(12, Math.min(innerWidth - w - 12, rr.left + rr.width / 2 - w / 2));
+      var hh = d.getBoundingClientRect().height, top = rr.bottom + 6;
+      if (top + hh > innerHeight - 8) top = Math.max(8, rr.top - hh - 6);
+      d.style.left = (left + scrollX) + 'px'; d.style.top = (top + scrollY) + 'px';
+    }
+    tpL.addEventListener('click', function (ev) {
+      var r = ev.target.closest && ev.target.closest('.hm-tp-row');
+      if (r) { ev.stopPropagation(); tradeCard(r); }
+    });
+    document.addEventListener('click', function (ev) {
+      if (ev.target.closest && ev.target.closest('.hm-tc')) {
+        if (ev.target.classList.contains('x')) { var c = document.querySelector('.hm-tc'); if (c) c.remove(); }
+        return;
+      }
+      var c2 = document.querySelector('.hm-tc'); if (c2) c2.remove();
+    });
     function bkChips(names) {
       var h = '<button type="button" data-bv="all" class="on">All</button>', i;
       for (i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '">' + (BKN[names[i]] || names[i]) + '</button>';
