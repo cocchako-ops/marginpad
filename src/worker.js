@@ -6991,11 +6991,26 @@ async function checkOpsAlerts(env) {
 async function collectorStatusInfo(env) {
   const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
   if (!base) return { state: 'UNCONFIG', reason: 'COLLECTOR_URL not set', anyRecent: false };
+  // ONE MISSED PROBE IS NOT AN OUTAGE (2026-09-21). Every other branch below carries a false-alarm guard -
+  // a booting grace window, a per-venue cadence, a thinner rule for thin venues - but the unreachable path
+  // had none, so a `pm2 restart` (the collector is unbound for about four seconds) paged the owner RED.
+  // Measured that day: the process came up at 19:20:29 and the alert fired at 19:20:33, on a collector that
+  // never crashed. This is the most important alarm on the site - the collector was once down for seven days
+  // and took Rekt with it - and an alarm that cries wolf on every restart is one he learns to ignore. A real
+  // outage outlives a retry by hours, so the second probe costs nothing in detection and removes the whole class.
+  let st = null, probeFail = '';
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt) await new Promise((res) => setTimeout(res, 2500));
+    try {
+      const r = await fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 } });
+      if (!r.ok) { probeFail = 'HTTP ' + r.status; continue; }
+      const j = await r.json();
+      if (!j || !Array.isArray(j.exchanges)) { probeFail = 'bad status'; continue; }
+      st = j; break;
+    } catch (e) { probeFail = 'unreachable'; }
+  }
+  if (!st) return { state: 'UNREACHABLE', reason: probeFail || 'unreachable', anyRecent: false };
   try {
-    const r = await fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 } });
-    if (!r.ok) return { state: 'UNREACHABLE', reason: 'HTTP ' + r.status, anyRecent: false };
-    const st = await r.json();
-    if (!st || !Array.isArray(st.exchanges)) return { state: 'UNREACHABLE', reason: 'bad status', anyRecent: false };
     const now = Date.now();
  // FALSE-ALARM FIX (2026-08-22, owner got "Collector je PAO" while everything worked): the old
  // basket watched only bybit/okx/bitmex/bitfinex - not even binance, the busiest source - so one
@@ -7024,7 +7039,7 @@ async function collectorStatusInfo(env) {
  return (!e.connected && noMsg) || (e.connected && noEvent);
  }).map((e) => ({ name: e.name, connected: !!e.connected, sinceH: Math.round((now - (e.connected ? (e.lastEventAt || since0) : (e.lastMsgAt || since0))) / 360000) / 10 }));
  return { state, reason: '', anyRecent, conn, total, uptimeSec: st.uptimeSec || 0, silent };
-  } catch (e) { return { state: 'UNREACHABLE', reason: 'unreachable', anyRecent: false }; }
+  } catch (e) { return { state: 'UNREACHABLE', reason: 'status parse', anyRecent: false }; }
 }
 async function collectorHealth(env) {
   const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
