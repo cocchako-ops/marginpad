@@ -94,7 +94,10 @@ const pct = (a, b) => (!a || !b) ? Infinity : Math.abs(a - b) / ((a + b) / 2) * 
         { rungs: s.ladderBps && s.ladderBps.length, bid: lb && lb.length, ask: la && la.length });
       const cum = (a) => a.filter((v) => v != null).every((v, i, arr) => !i || v >= arr[i - 1]);
       chk(`${c.venue}/${sym}: the ladder only ever grows (it is cumulative)`, cum(lb) && cum(la), { bid: lb, ask: la });
-      if (i25 >= 0 && lb[i25] != null) {
+      // Both sides must be non-null to be compared. Past the book's own reach the ladder deliberately says
+      // null - "we cannot see further" - while depthUsd reports the total it does hold, which is a different
+      // and equally correct answer. The invariant is that they agree WHEN BOTH ANSWER, not that both answer.
+      if (i25 >= 0 && lb[i25] != null && la[i25] != null) {
         chk(`${c.venue}/${sym}: ladder and depthUsd agree at 25bp (two separate walks)`,
           Math.abs(lb[i25] - s.depthUsd.bid_25) <= 2 && Math.abs(la[i25] - s.depthUsd.ask_25) <= 2,
           { ladderBid: lb[i25], depthBid: s.depthUsd.bid_25, ladderAsk: la[i25], depthAsk: s.depthUsd.ask_25 });

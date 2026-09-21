@@ -355,13 +355,15 @@ export class BookCollector extends BaseCollector {
       this.dropped++; return;
     }
 
-    // THE ONE TOLERATED ATTACHMENT, and it is bounded and recorded. A book accepted straight from a REST
-    // snapshot has no event chaining it to the stream yet, so the very next delta legitimately fails the
-    // prev-link test. It is allowed through exactly once, and only if it is genuinely NEWER than the
-    // snapshot - an older one would still be a hole. After that the chain is proved like every other venue's.
-    if (b.softSeq) {
-      b.softSeq = false;
-      if (u.seq > b.seq) {
+    // THE LINK A FRESH SNAPSHOT IS STILL OWED. A book accepted straight from REST is correct at its own id
+    // but has no event tying it to the stream yet. Exactly two events can tie it: one that STRADDLES the
+    // snapshot id (its own [U, u] range contains it) or one that CONTINUES from it (pu equals it). The
+    // second is what gapOk already tests, so only the first needs saying here. Anything else is a hole and
+    // falls through to the gap path, which invalidates the book and demands a new snapshot - which is the
+    // whole point: the previous version accepted any newer event and left two of three books crossed.
+    if (b.needLink) {
+      b.needLink = false;
+      if (u.firstSeq <= b.seq && u.seq >= b.seq) {
         applySide(b.bids, u.bids); applySide(b.asks, u.asks);
         b.seq = u.seq; b.ts = u.ts; b.rxAt = Date.now(); b.ok = true;
         this._skew(u.ts); this.applied++; this.lastEventAt = b.rxAt;
@@ -432,7 +434,13 @@ export class BookCollector extends BaseCollector {
     let seq = snap.seq, started = false, ts = 0;
     for (const x of buf) {
       if (!started) {
-        if (!(x.firstSeq <= snap.seq && x.seq >= snap.seq)) continue;
+        // TWO WAYS TO MEET THE SNAPSHOT, and only allowing the first is why this never booted at all.
+        // An event STRADDLES it when the snapshot id falls inside the event's own [U, u] range. But a
+        // snapshot taken BETWEEN two events is straddled by neither - the next event simply starts one id
+        // later - and that is the ordinary case on a 500ms stream. Binance publishes `pu`, the previous
+        // event's final id, for exactly this: an event whose `pu` equals the snapshot id continues from it
+        // with nothing in between. Both are proofs of continuity; neither is a guess.
+        if (!(x.firstSeq <= snap.seq && x.seq >= snap.seq) && x.prevSeq !== snap.seq) continue;
         started = true;
       } else if (x.prevSeq !== seq) {
         // The chain broke inside the replay. Applying the rest would build on a missing change, so the
@@ -445,19 +453,19 @@ export class BookCollector extends BaseCollector {
       seq = x.seq; ts = x.ts;
     }
     if (!started) {
-      // TWO DIFFERENT SITUATIONS LOOK THE SAME HERE, AND TREATING THEM ALIKE COST BTC AND ETH THEIR BOOKS.
-      //  - the buffer still holds events after the filter but none straddles the snapshot: the snapshot is
-      //    OLDER than the stream we hold, so a change in between is missing. That is a real hole: retry.
-      //  - the filter emptied the buffer: the snapshot is NEWER than everything that arrived during the
-      //    request, which is the ordinary outcome on a busy symbol. Nothing is missing at all - the snapshot
-      //    IS the book, and the next live event continues from it. Measured: SOL booted first time this way
-      //    while BTC and ETH, which move far faster, never found a straddling event and retried for ever.
-      if (buf.length) { this.bootFails++; b.bootTries = (b.bootTries || 0) + 1; b.booting = false; b.buf = []; return; }
-      // Accept the snapshot and let ONE live event attach to it, verified below rather than assumed.
-      b.softSeq = true;
+      // MEASURED, not reasoned about - the third attempt at this, and the first with evidence. A probe
+      // buffered 12 real events, took a real snapshot, and printed the ids: the REST call took 342 ms and
+      // the snapshot came back 32,300 ids NEWER than the newest buffered event. The event that continues
+      // from it had not been sent yet; it arrives up to 500 ms later. So judging the buffer once and
+      // giving up can never succeed on this stream, which is exactly what it did - zero books, twice.
+      //
+      // The snapshot IS a valid book at its own id. It is accepted, and the NEXT event must prove the
+      // chain before anything is applied on top of it. That is a proof, not the "trust one event" shortcut
+      // that came before it and left two of three books crossed.
+      b.needLink = true;
     }
-
     b.bids = bids; b.asks = asks; b.seq = seq; b.ts = ts || Date.now(); b.rxAt = Date.now(); b.ok = true;
+    if (started) b.needLink = false;
     b.buf = []; b.booting = false; b.bootTries = 0;
     this.boots++;
     this.applied++; this.lastEventAt = b.rxAt;

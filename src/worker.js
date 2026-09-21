@@ -147,11 +147,12 @@ async function handleV1(url, request, env, ctx) {
   // applies. That is the whole "data API tier": one header, no new endpoint, and a bot behind a shared NAT stops
   // sharing its 60 with strangers.
   const vkey = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
-  let rl, rlh;
+  let rl, rlh, vTier = 0;
   if (vkey && env.USERS) {
     const a = await usersDO(env, '/botauth', { key: vkey, ep: 'data' });
     if (!a || a.error === 'bad_key') return v1err('invalid_api_key', 'This key does not exist. Drop the X-API-Key header to use the keyless limit, or mint one at https://marginpad.io/trading-api/', 401);
     if (a.error === 'revoked_key') return v1err('revoked_key', 'This key was revoked.', 401);
+    vTier = +a.tier || 0;   // what this key is allowed to see - only the raw order-book ladder reads it
     rlh = { 'x-ratelimit-limit': String(a.limit || 0), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || ''), 'x-ratelimit-scope': 'key' };
     if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 5000 ? ' API Pro raises every key to 600/minute, Max to 2000 and Business to 5000: ' + API_UPGRADE : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
     rl = { limited: false };
@@ -184,6 +185,11 @@ async function handleV1(url, request, env, ctx) {
     'calc/risk-reward': () => handleApi(v1remap(url, '/api/risk-reward')),
     'calc/take-profit': () => handleApi(v1remap(url, '/api/take-profit')),
   };
+  // BOOK IS A PASSTHROUGH AND MUST STAY ONE. Routing it through the M map above put it through v1Unwrap,
+  // which wraps the body in { ok, data, ts } - and every consumer of this endpoint, our own heatmap
+  // terminal included, reads `venues` off the top level. The panel vanished within a minute of that deploy.
+  // The four liquidation passthroughs have always returned raw for exactly this reason; this is the fifth.
+  if (sub === 'book') return handleV1Book(url, request, env, vTier);
   const fn = M[sub];
   if (!fn) return handleCollectorProxy(url, request, env); // unknown /api/v1/* → collector proxy (recent/feed/clusters/…): never break existing consumers
   let resp; try { resp = await fn(); } catch (e) { return v1err('upstream_error', 'Upstream data source failed. Please retry shortly.', 502, rlh); }
@@ -5178,6 +5184,48 @@ async function leanKlines(sym, ivMin, n, env) {
 // stays same-origin + versioned, aggregates are edge-cached, and the page degrades gracefully if it's down.
 // Set COLLECTOR_URL (wrangler var/secret) to the service base, e.g. https://collector.marginpad.io.
 // While unset/unreachable, returns {fallback:true} 503 -> the frontend shows theoretical lines + a notice.
+// THE SUMMARY IS FREE; THE LADDER IS THE PRODUCT (2026-09-22).
+// The consolidated book - spread, resting dollars at bp distances, the slippage curve, top of book - stays
+// keyless for everybody, because that is the figure assistants quote and it is deliberately not for sale.
+// What a paid plan buys is `?levels=`: every price level, per venue, which is the part a bot builds on.
+//
+// A caller below the tier is NOT refused. They get the same answer they would have got anyway, plus a
+// `depth` object saying in one sentence what is missing and where to get it - a 402 on a request that has a
+// perfectly good answer teaches a developer that the endpoint is unreliable rather than that a plan exists.
+//
+// HISTORICAL depth is not sold at any tier and the object says so out loud. We are not archiving the book
+// yet, and a page that implies otherwise would be selling something that does not exist.
+async function handleV1Book(url, request, env, tier) {
+  // A PLAN BUYS DEPTH, NOT THE DATA. The first cut of this deleted `levels` outright below the tier - and
+  // within a minute the ladder on our own heatmap page was empty, because that page is a keyless caller
+  // like any other. Gating the data would also throw away the reason assistants cite us at all.
+  // So everybody gets a ladder deep enough to build a terminal on, and a plan raises the ceiling.
+  const wants = Math.max(0, +url.searchParams.get('levels') || 0);
+  const allowed = (+tier || 0) >= API_BOOK_TIER;
+  const capped = wants > BOOK_LEVELS_FREE && !allowed;
+  const u2 = new URL(url.toString());
+  if (capped) u2.searchParams.set('levels', String(BOOK_LEVELS_FREE));
+  const r = await handleCollectorProxy(u2, request, env);
+  let body;
+  try { body = await r.json(); } catch (e) { return r; }
+  if (body && !body.error) {
+    body.depth = {
+      levels: wants ? (capped ? BOOK_LEVELS_FREE : wants) : 0,
+      max_levels: allowed ? BOOK_LEVELS_MAX : BOOK_LEVELS_FREE,
+      capped: capped,
+      history: false,
+      note: capped
+        ? 'Keyless and starter plans read up to ' + BOOK_LEVELS_FREE + ' levels a side, which is enough to draw a full order-book ladder. ' + (API_PLANS.filter((p) => p.book)[0] || {}).label + ' and above read up to ' + BOOK_LEVELS_MAX + '. ' + API_UPGRADE
+        : 'The consolidated summary is free and keyless for everyone. `levels=N` adds the raw per-venue ladder.',
+      historical_note: 'Historical order-book depth is NOT offered, on any plan. Everything here is live state read from the exchanges seconds ago - we do not sell a depth archive and do not pretend to have one.',
+    };
+  }
+  return new Response(JSON.stringify(body), {
+    status: r.status,
+    headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'cache-control': r.headers.get('cache-control') || 'public, max-age=2' },
+  });
+}
+
 async function handleCollectorProxy(url, request, env) {
   const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
   if (!base) return J({ error: 'collector_unconfigured', fallback: true }, 503);
@@ -14887,18 +14935,35 @@ async function syncBotTiers(env) {
 // buys nothing here. The only account that carries both is the one member who bought Founder before the split; his row
 // is an ordinary api:sub grant (src 'founder'), not a special case in the code.
 // The tier NUMBER is what every hot path reads (botkeys2.tier, denormalised) - 0 free, 1 pro, 2 max. Keep them ordered.
+// REPRICED 2026-09-22, and the reason is the product, not the sales. Since these numbers were set the API
+// gained a consolidated ORDER BOOK across five venues and a trade tape carrying the aggressor side - data
+// no free source publishes and the paid comparables do not sell at all. Measured from coinglass.com/pricing
+// on 19 Sep 2026: Hobbyist $29, Startup $79, Standard $299, Professional $699, and no AI on any tier and no
+// paper engine anywhere. Sitting at 39 / 99 / 199 puts us above their entry and well under their Standard,
+// which is the honest place for a product that carries their kind of data plus an execution engine.
+//
+// `book` is DEPTH, not the book itself: the consolidated summary stays keyless for everyone, because that
+// is what assistants cite and it is deliberately not for sale. What a plan buys is the RAW LADDER - every
+// price level, per venue - which is the part a bot actually builds on.
 const API_PLANS = [
-  { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0 },
-  { id: 'pro', tier: 1, cents: 2900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0 },
-  { id: 'max', tier: 2, cents: 7900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0 },
-  { id: 'business', tier: 3, cents: 15900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0 },
+  { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0, book: 0 },
+  { id: 'pro', tier: 1, cents: 3900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0, book: 0 },
+  { id: 'max', tier: 2, cents: 9900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1 },
+  { id: 'business', tier: 3, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0, book: 1 },
 ];
+// The tier at which the raw order-book ladder unlocks. Read it, never write the number 2 anywhere else -
+// that literal is exactly how a new plan silently collapses into the one below it.
+const API_BOOK_TIER = API_PLANS.filter((p) => p.book)[0].tier;
+// How deep the raw ladder goes. 40 a side is a full terminal - our own heatmap draws on exactly that - so
+// it stays open to everyone; a plan raises the ceiling to what the collector itself will serve.
+const BOOK_LEVELS_FREE = 40;
+const BOOK_LEVELS_MAX = 60;
 const API_TIER_MAX = API_PLANS.length - 1;
 const API_PLAN_BY_ID = (id) => API_PLANS.filter((p) => p.id === String(id || '').toLowerCase())[0] || null;
 function BOT_TIER_LIMITS(tier) {
   const t = Math.max(0, Math.min(API_PLANS.length - 1, Math.round(+tier || 0)));
   const p = API_PLANS[t];
-  return { rpm: p.rpm, maxKeys: p.maxKeys, maxOpen: p.maxOpen, maxBooks: p.maxBooks, hooks: p.hooks, ai: p.ai, name: p.id, label: p.label, price_usd: p.cents / 100 };
+  return { rpm: p.rpm, maxKeys: p.maxKeys, maxOpen: p.maxOpen, maxBooks: p.maxBooks, hooks: p.hooks, ai: p.ai, book: p.book || 0, name: p.id, label: p.label, price_usd: p.cents / 100 };
 }
 // The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
