@@ -60,14 +60,20 @@ const LAYOUT = () => {
     cv: bb('.hm-cv'), pf: bb('.hm-prof'), stage: bb('.hm-stage'), bar: bb('.hm-bar'),
     // BOOK & FLOW: the measured panel joined under the map (2026-09-21). It also carries the map's legend,
     // which used to be a row of its own above the chart - so the legend check moved here with it.
-    bk: bb('.hm-bk'), bkCv: bb('.hm-bk-cv'), bkNote: bb('.hm-bk-n'),
+    bk: bb('.hm-bk'), bkNote: bb('.hm-bk-n'),
     bkChips: [...document.querySelectorAll('[data-bv]')].map(function (b) { return b.textContent; }),
     bkNoteTxt: (document.querySelector('.hm-bk-n') || {}).innerText || '',
-    bkPainted: (function () {
-      var c = document.querySelector('.hm-bk-cv'); if (!c || !c.width) return 0;
-      var d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, n = 0;
-      for (var i = 3; i < d.length; i += 4 * 89) if (d[i] > 8) n++;
-      return n;
+    bkAsks: document.querySelectorAll('.hm-ob-a .hm-ob-row').length,
+    bkBids: document.querySelectorAll('.hm-ob-b .hm-ob-row').length,
+    bkTrades: document.querySelectorAll('.hm-tp-row').length,
+    // A LADDER THAT IS CROSSED IS A BROKEN LADDER, and merging five venues by absolute price produces one
+    // (measured: Hyperliquid traded $73 above the other four). This reads the prices off the DOM.
+    bkCross: (function () {
+      var n = function (e) { return +String(e.querySelector('.p').textContent).replace(/,/g, ''); };
+      var a = [...document.querySelectorAll('.hm-ob-a .hm-ob-row')].map(n);
+      var b2 = [...document.querySelectorAll('.hm-ob-b .hm-ob-row')].map(n);
+      if (!a.length || !b2.length) return null;
+      return { lowAsk: a[a.length - 1], highBid: b2[0], asksDown: a.every(function (v, i, r) { return !i || v < r[i - 1]; }), bidsDown: b2.every(function (v, i, r) { return !i || v < r[i - 1]; }) };
     })(),
     navH: nav ? Math.round(nav.getBoundingClientRect().height) : 0,
     taps,
@@ -204,12 +210,14 @@ const LAYOUT = () => {
     ok('no control is narrower than 29px', L.taps.every(t => t.w >= 29), JSON.stringify(L.taps.filter(t => t.w < 29)));
     ok('the title keeps one line, with LIVE on the row below it', L.mastTitleH > 0 && L.mastTitleH < 30, 'title h=' + L.mastTitleH);
     ok('TARGETS is joined to the map, not floating beside it', L.tgGap === 0, 'gap=' + L.tgGap);
-    // The panel is the measured half of this page and it must never look like part of the model above it.
-    ok('the book panel is there and joined under the map', !!L.bk && L.bk.w >= L.vw - 2, JSON.stringify(L.bk));
-    ok('its canvas actually paints something', L.bkPainted > 20, 'painted=' + L.bkPainted);
-    ok('it offers all four views', L.bkChips.join(',') === 'All,Book,Venues,Flow', L.bkChips.join(','));
-    ok('the map legend survived the move into the panel', /real liquidation/.test(L.bkNoteTxt) && /already swept/.test(L.bkNoteTxt) && /estimated level/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 80));
-    ok('and it says which half is modelled and which is measured', /modelled/.test(L.bkNoteTxt) && /measured/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 120));
+    // The panel is the measured half of this page and must never look like part of the model above it.
+    ok('the order-book panel is there and joined under the map', !!L.bk && L.bk.w >= L.vw - 2, JSON.stringify(L.bk));
+    ok('the ladder has rows on both sides', L.bkAsks >= 5 && L.bkBids >= 5, 'asks=' + L.bkAsks + ' bids=' + L.bkBids);
+    ok('and the tape has prints', L.bkTrades >= 5, 'trades=' + L.bkTrades);
+    ok('the ladder is NOT crossed and runs high to low', !!L.bkCross && L.bkCross.highBid < L.bkCross.lowAsk && L.bkCross.asksDown && L.bkCross.bidsDown, JSON.stringify(L.bkCross));
+    ok('every exchange can be picked, and all of them together', L.bkChips[0] === 'All' && L.bkChips.length >= 5, L.bkChips.join(','));
+    ok('it explains how to read itself', /How to read it/i.test(L.bkNoteTxt) && /Sum/.test(L.bkNoteTxt) && /crossed the spread/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 90));
+    ok('and says it is measured, not modelled', /none of it is modelled/i.test(L.bkNoteTxt));
     ok('the page never scrolls sideways', L.scrollW <= L.vw, 'scrollW=' + L.scrollW);
     ok('nothing in the section is wider than the screen', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is stacked, not a clipped grid', L.extStacked > 0 && L.extGrid === 0, 'stacked=' + L.extStacked + ' grid=' + L.extGrid);

@@ -39,7 +39,39 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-tg-exp{display:none;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
-    '.hm-bk{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;padding:7px 12px 8px;margin:0!important;display:none}' +'.hm-bk-h{display:flex;align-items:center;gap:6px 11px;flex-wrap:wrap;margin-bottom:5px}' +'.hm-bk-t{font:700 9.5px "Space Mono",monospace;letter-spacing:.14em;color:#c2f64a;flex:none}' +'.hm-bk-m{font:11px "Space Mono",monospace;color:#8fa3c4;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +'.hm-bk-m i,.hm-bk-m em{font-style:normal;color:#5c6b84}' +'.hm-bk-seg{margin-left:auto;flex:none}' +'.hm-bk-cv{display:block;width:100%;height:158px}' +'.hm-bk-n{display:flex;flex-wrap:wrap;gap:3px 13px;align-items:center;font:10px "Space Mono",monospace;color:#5c6b84;margin-top:5px}' +'.hm-bk-n b{color:#8fa3c4;font-weight:400}' +'.hm-bk-w{color:#7a8caa}' +'.hm-stage.hm-j{border-radius:0;border-bottom:0}' +
+    '.hm-bk{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;padding:8px 12px 9px;margin:0!important;display:none}' +
+    '.hm-bk-h{display:flex;align-items:center;gap:6px 11px;flex-wrap:wrap;margin-bottom:7px}' +
+    '.hm-bk-t{font:700 9.5px "Space Mono",monospace;letter-spacing:.14em;color:#c2f64a;flex:none}' +
+    '.hm-bk-m{font:11px "Space Mono",monospace;color:#5c6b84;min-width:0}.hm-bk-m i{font-style:normal}' +
+    '.hm-bk-seg{margin-left:auto;flex:none;flex-wrap:wrap}' +
+    '.hm-bk-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,.9fr);gap:14px;align-items:start}' +
+    '.hm-ob,.hm-tp{min-width:0}' +
+    '.hm-ob-hd{display:grid;grid-template-columns:1fr .8fr .8fr;gap:6px;font:9.5px "Space Mono",monospace;color:#5c6b84;padding:0 4px 3px;letter-spacing:.06em}' +
+    '.hm-ob-hd span:nth-child(2),.hm-ob-hd span:nth-child(3),.hm-tp-row .s,.hm-tp-row .t,.hm-ob-row .s,.hm-ob-row .t{text-align:right}' +
+    '.hm-ob-row{position:relative;display:grid;grid-template-columns:1fr .8fr .8fr;gap:6px;font:11.5px/1.62 "Space Mono",monospace;padding:0 4px;white-space:nowrap}' +
+    '.hm-tp .hm-ob-hd,.hm-tp-row{display:grid;grid-template-columns:1fr .66fr 1fr;gap:6px;font:11.5px/1.62 "Space Mono",monospace;padding:0 4px;white-space:nowrap}' +
+    '.hm-tp-row .t em{font-style:normal;color:#5c6b84}' +
+        '.hm-ob-row i{position:absolute;right:0;top:1px;bottom:1px;border-radius:2px;z-index:0}' +
+    '.hm-ob-row.a i{background:rgba(255,90,77,.16)}.hm-ob-row.b i{background:rgba(46,189,133,.16)}' +
+    '.hm-ob-row span{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-ob-row.a .p,.hm-tp-row.b .p{color:#ff8f86}.hm-ob-row.b .p,.hm-tp-row.a .p{color:#66d3a5}' +
+    '.hm-ob-row .s,.hm-ob-row .t,.hm-tp-row .s,.hm-tp-row .t{color:#c9d4e6}' +
+    '.hm-ob-px{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;padding:5px 4px;border-top:1px solid #1c2230;border-bottom:1px solid #1c2230;margin:3px 0}' +
+    '.hm-ob-px b{font:700 16px "Space Mono",monospace;color:#c2f64a}.hm-ob-px small{font:10px "Space Mono",monospace;color:#5c6b84}' +
+    '.hm-ob-px .tk{margin-left:auto}' +
+    '.hm-ob-r{display:flex;align-items:center;gap:6px;margin-top:6px;font:9.5px "Space Mono",monospace}' +
+    '.hm-ob-r b{color:#66d3a5;font-weight:700;white-space:nowrap}.hm-ob-r s{color:#ff8f86;text-decoration:none;white-space:nowrap}' +
+    '.hm-ob-r i,.hm-ob-r u{height:5px;border-radius:3px;text-decoration:none;min-width:2px}' +
+    '.hm-ob-r i{background:#2ebd85}.hm-ob-r u{background:#ff5a4d}' +
+    '.hm-tp-none{font:11px "Space Mono",monospace;color:#3a465c;padding:6px 4px}' +
+    '.hm-sm{min-width:0;border-left:1px solid #1c2230;padding-left:13px}' +
+    '.hm-sm-r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font:11px/1.9 system-ui,sans-serif;color:#8fa3c4}' +
+    '.hm-sm-r b{font:12.5px "Space Mono",monospace;color:#e9e7df}.hm-sm-r b.g{color:#66d3a5}.hm-sm-r b.r{color:#ff8f86}' +
+    '.hm-sm-n{font:10.5px/1.5 system-ui,sans-serif;color:#5c6b84;margin-top:7px}' +
+    '.hm-bk-n{font:11px/1.6 system-ui,sans-serif;color:#7a8caa;margin-top:9px;padding-top:8px;border-top:1px solid #1c2230}' +
+    '.hm-bk-n b{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
+    '.hm-bk-n em{font-style:normal;color:#c9d4e6}.hm-bk-n .g{color:#66d3a5}.hm-bk-n .r{color:#ff8f86}' +
+    '.hm-stage.hm-j{border-radius:0;border-bottom:0}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:3px 21px 3px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;height:25px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
     '.hm-seg{display:flex;background:#12161d;border:1px solid #232b3a;border-radius:8px;overflow:hidden;height:25px}' +
@@ -91,7 +123,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
-    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:7px 10px 8px}'+'.hm-bk-cv{height:126px}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:8px 10px 9px}'+'.hm-bk-g{grid-template-columns:minmax(0,1fr);gap:10px}'+'.hm-sm{border-left:0;border-top:1px solid #1c2230;padding-left:0;padding-top:8px}'+'.hm-tp .hm-ob-hd{border-top:1px solid #1c2230;padding-top:6px}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -1222,284 +1254,196 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ? __esT_mpheatmap("dragWithOneFinger",' Drag with one finger to pan, pinch with two to zoom time, drag the zones column to zoom price, double-tap to reset.')
       : __esT_mpheatmap("dragToPanAny",' Drag to pan (any direction), scroll to zoom time, Shift+scroll to zoom price, double-click to reset.');
     var foot = el('div', 'hm-foot',
-      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. ') + GEST + '</details>' +
+      '<details class="hm-foot-c"' + FOPEN + __esT_mpheatmap("howToReadIt",'><summary class="hm-foot-h">HOW TO READ IT</summary>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. On the map itself: a <b>dot</b> is a liquidation that really happened, a <b>diamond</b> is a level price has already swept, and a <b>bar</b> is an estimated liquidation level. ') + GEST + '</details>' +
       '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over 24 hours - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>';
-    // ============ BOOK & FLOW - the measured half, joined under the map (2026-09-21) ============
-    // Owner: "knjiga moze da izgleda mnogo lepse ispod mape (spojena sa njom) i lepo izduzena kao i sama
-    // mapa ... korisnik treba da ima opciju da gleda sve zajedno ili da bira koju ce da gleda."
+    // ============ ORDER BOOK & TRADES - the measured half, joined under the map (2026-09-21) ============
+    // Owner, after the first attempt: "ovaj novi chart ja ne znam da citam i verujem da nikome nije jasno
+    // sta je ... hocu nesto ovako ... da moze da se bira koju menjacnicu gledam ili ako hocu da gledam sve",
+    // with a screenshot of an exchange terminal. He was right. The first cut drew a depth CURVE, which is a
+    // correct picture that has to be taught; this is a LADDER, which every trader can already read: price,
+    // size, running total, asks above the price and bids below it, with the bar behind each row showing how
+    // the total builds. It is DOM rather than canvas for the same reason - crisp text that can be selected.
     //
-    // The map above is a MODEL of where leverage sits. This is its opposite and must never blur into it:
-    // real resting limit orders standing on four exchange books, and real trades carrying the side that
-    // crossed the spread. It gets its OWN axes because it lives at a completely different scale - a book
-    // reaches about a quarter of one percent from the price while the map frames whole percents, so sharing
-    // the map's price axis would squash the entire book into two percent of the height.
-    //
-    // It also carries the map's legend. That used to cost a row of its own above the chart; a caption
-    // belongs under the figure it explains, and the map gets the height back.
+    // The map above is a MODEL of where leverage sits. This is the opposite and the footnote says so.
     var bk = el('div', 'hm-bk');
     var bkH = el('div', 'hm-bk-h');
-    bkH.innerHTML = '<span class="hm-bk-t">BOOK &amp; FLOW</span>'
+    bkH.innerHTML = '<span class="hm-bk-t">ORDER BOOK &amp; TRADES</span>'
       + '<span class="hm-bk-m"></span>'
-      + '<span class="hm-seg hm-bk-seg">'
-      + '<button type="button" data-bv="all" class="on">All</button>'
-      + '<button type="button" data-bv="book">Book</button>'
-      + '<button type="button" data-bv="venues">Venues</button>'
-      + '<button type="button" data-bv="flow">Flow</button></span>';
-    var bkCv = el('canvas', 'hm-bk-cv');
+      + '<span class="hm-seg hm-bk-seg"></span>';
+    var bkG = el('div', 'hm-bk-g');
+    bkG.innerHTML = '<div class="hm-ob">'
+      + '<div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum</span></div>'
+      + '<div class="hm-ob-a"></div>'
+      + '<div class="hm-ob-px"></div>'
+      + '<div class="hm-ob-b"></div>'
+      + '<div class="hm-ob-r"><b></b><i></i><u></u><s></s></div>'
+      + '</div>'
+      + '<div class="hm-tp">'
+      + '<div class="hm-ob-hd"><span>Price</span><span>Amount</span><span>Time</span></div>'
+      + '<div class="hm-tp-l"></div>'
+      + '</div>'
+      + '<div class="hm-sm"></div>';
     var bkN = el('div', 'hm-bk-n');
-    // The map's legend, now a caption, plus the one sentence that keeps the two halves apart.
-    bkN.innerHTML = '<span><b>&#9679;</b> real liquidation</span><span><b>&#9671;</b> already swept</span>'
-      + '<span><b>&#9644;</b> estimated level</span>'
-      + '<span class="hm-bk-w">the map above is modelled &mdash; this panel is measured</span>';
-    bk.appendChild(bkH); bk.appendChild(bkCv); bk.appendChild(bkN);
-    var bkMeta = bkH.querySelector('.hm-bk-m');
+    bkN.innerHTML = '<b>How to read it</b> &mdash; <span class="r">Red</span> above the price is sellers waiting, '
+      + '<span class="g">green</span> below is buyers waiting. <em>Size</em> is how much sits at that exact price; '
+      + '<em>Sum</em> adds it up as you walk away from the price, and the bar behind each row is that running '
+      + 'total. A long bar close to the price is real money standing in the way of a move. The list on the '
+      + 'right is what just happened: <span class="g">green</span> means the buyer crossed the spread, '
+      + '<span class="r">red</span> the seller. Pick one exchange to see only its book, or All to stack them '
+      + 'together &mdash; and when you do, each book is lined up on its own mid price first, because exchanges '
+      + 'genuinely differ by a few dollars. Everything here is happening now: unlike the map above, none of it is modelled.';
+    bk.appendChild(bkH); bk.appendChild(bkG); bk.appendChild(bkN);
+    var bkMeta = bkH.querySelector('.hm-bk-m'), bkSeg = bkH.querySelector('.hm-bk-seg');
+    var obA = bkG.querySelector('.hm-ob-a'), obB = bkG.querySelector('.hm-ob-b'),
+        obPx = bkG.querySelector('.hm-ob-px'), obR = bkG.querySelector('.hm-ob-r'),
+        tpL = bkG.querySelector('.hm-tp-l'), bkSm = bkG.querySelector('.hm-sm');
 
-    var BKV = { bybit: '#4da3ff', okx: '#c2f64a', bitget: '#ff9f43', hyperliquid: '#b18cff' };
-    function bkCap(ctx, alts, cx, y, w) {
-      for (var i = 0; i < alts.length; i++) {
-        var t = alts[i], tw = ctx.measureText(t).width;
-        if (tw + 12 <= w) {
-          ctx.textAlign = 'center';
-          ctx.fillStyle = 'rgba(7,9,12,.82)'; ctx.fillRect(cx - tw / 2 - 5, y - 9, tw + 10, 12);
-          ctx.fillStyle = 'rgba(122,140,170,.72)'; ctx.fillText(t, cx, y);
-          return;
+    var BKN = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', bitget: 'Bitget', hyperliquid: 'HL' };
+    var ROWS = 7;
+
+    // A CONSOLIDATED LADDER NEEDS A TICK, or five venues quoting to a tenth of a cent produce forty rows of
+    // dust instead of eight rows of size. The step is derived from the price itself and printed, so nobody
+    // has to guess what a row spans: about one thousandth of a percent, rounded to 1, 2 or 5.
+    function niceTick(px) {
+      if (!(px > 0)) return 0.01;
+      var raw = px * 1e-5, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), n = raw / mag;
+      return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag;
+    }
+    function tickDp(t) { var d = 0, x = t; while (x < 1 && d < 8) { x *= 10; d++; } return d; }
+    // Merge every selected venue's levels onto one price grid. Bucketed DOWN for bids and UP for asks, so a
+    // row never claims size that sits on the wrong side of its own price.
+    function merge(vens, side) {
+      var t = niceTick(vens.mid), m = new Map(), i, j;
+      for (i = 0; i < vens.list.length; i++) {
+        var vn = vens.list[i], lv = vn.top && vn.top[side];
+        if (!lv) continue;
+        // EACH BOOK IS ALIGNED ON ITS OWN MID BEFORE MERGING. Measured on BTC the day this shipped:
+        // Hyperliquid was trading $73 above the other four (0.084%) while those four sat within $6 of
+        // each other - far enough that merging by absolute price put HL's bids ABOVE another venue's
+        // asks and produced a crossed ladder. That crossing is a true fact about arbitrage and a
+        // useless one in a price column. Shifted onto the consolidated mid, every venue keeps its own
+        // shape and the column answers what a reader actually means: how much is resting THIS FAR from
+        // the price. With one venue picked the shift is zero, so nothing moves.
+        var off = (+vn.mid > 0) ? (vens.mid - +vn.mid) : 0;
+        for (j = 0; j < lv.length; j++) {
+          var px = +lv[j][0] + off, sz = +lv[j][1];
+          if (!(px > 0) || !(sz > 0)) continue;
+          var k = side === 'bid' ? Math.floor(px / t) * t : Math.ceil(px / t) * t;
+          k = Math.round(k / t) * t;
+          m.set(k, (m.get(k) || 0) + sz);
         }
       }
+      var out = [];
+      m.forEach(function (sz, px) { out.push([px, sz]); });
+      out.sort(function (a, b) { return side === 'bid' ? b[0] - a[0] : a[0] - b[0]; });
+      return { rows: out.slice(0, ROWS), tick: t };
     }
-    function bkFit() {
-      var dpr = window.devicePixelRatio || 1, W = bkCv.clientWidth, H = bkCv.clientHeight;
-      if (!W || !H) return null;
-      if (bkCv.width !== Math.round(W * dpr)) { bkCv.width = Math.round(W * dpr); bkCv.height = Math.round(H * dpr); }
-      var ctx = bkCv.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      return { ctx: ctx, W: W, H: H };
+    function fmtSz(v) {
+      return v >= 1000 ? Math.round(v).toLocaleString('en-US')
+        : v >= 1 ? v.toFixed(2)
+          : v >= 0.01 ? v.toFixed(3)
+            : v > 0 ? v.toFixed(4) : '0';   // most prints are small; 0.000 says nothing at all
     }
-    // Consolidate the per-venue ladders. A venue's rung is null past the point its own book ends, so the
-    // sum beyond that is a LOWER BOUND, not a total - `fullTo` is the last rung where every venue still
-    // reported, and everything past it is drawn dashed and labelled rather than passed off as complete.
-    function bkCons(b) {
-      // The venue NAME is the key of this map, not a field inside it - reading it as a field gave every
-      // curve the same fallback grey and an empty legend, which looked like four books with no identity.
-      var ven = [], k; for (k in (b.venues || {})) { b.venues[k].venue = k; ven.push(b.venues[k]); }
-      if (!ven.length) return null;
-      var rb = ven[0].ladderBps || [], n = rb.length, i, j, out = { bps: rb, bid: [], ask: [], fullTo: -1, maxBp: 0, venues: ven };
-      for (i = 0; i < n; i++) {
-        var sb = 0, sa = 0, ob = 0, oa = 0;
-        for (j = 0; j < ven.length; j++) {
-          var L = ven[j].ladderUsd; if (!L) continue;
-          if (L.bid[i] != null) { sb += L.bid[i]; ob++; }
-          if (L.ask[i] != null) { sa += L.ask[i]; oa++; }
-        }
-        out.bid.push(ob ? sb : null); out.ask.push(oa ? sa : null);
-        // BOTH sides, not either: the two books rarely end at the same distance, and an axis drawn to
-        // the longer one leaves the shorter curve stopping in mid-air, which reads as a rendering fault
-        // rather than as the asymmetry it really is.
-        if (ob && oa) out.maxBp = rb[i];
-        if (ob === ven.length && oa === ven.length) out.fullTo = i;
-      }
-      return out;
-    }
-    function bkDepth(ctx, x0, y0, w, h, perVenue) {
-      var b = S.bk && S.bk.book; if (!b) return;
-      var C = bkCons(b); if (!C || !(C.maxBp > 0)) return;
+
+    function bkRender() {
+      var d = S.bk || {}, b = d.book;
+      if (!b) { bk.style.display = 'none'; stage.classList.remove('hm-j'); return; }
+      var pick = d.venue || 'all', names = Object.keys(b.venues || {});
+      var list = names.filter(function (n) { return pick === 'all' || n === pick; }).map(function (n) { return b.venues[n]; });
+      if (!list.length) { list = names.map(function (n) { return b.venues[n]; }); pick = 'all'; }
       var mid = 0, nv = 0, i;
-      for (i = 0; i < C.venues.length; i++) { if (C.venues[i].mid > 0) { mid += C.venues[i].mid; nv++; } }
+      for (i = 0; i < list.length; i++) if (list[i].mid > 0) { mid += list[i].mid; nv++; }
       mid = nv ? mid / nv : 0;
-      var top = 0;
-      for (i = 0; i < C.bid.length; i++) { if (C.bid[i] > top) top = C.bid[i]; if (C.ask[i] > top) top = C.ask[i]; }
-      if (perVenue) {
-        top = 0;
-        for (var q = 0; q < C.venues.length; q++) {
-          var LV = C.venues[q].ladderUsd; if (!LV) continue;
-          for (i = 0; i < LV.bid.length; i++) { if (LV.bid[i] > top) top = LV.bid[i]; if (LV.ask[i] > top) top = LV.ask[i]; }
-        }
-      }
-      if (!(top > 0)) return;
-      // COMPARING VENUES PAST THE SHALLOWEST BOOK COMPARES PUBLISHING DEPTH, NOT LIQUIDITY - Bitget streams
-      // 1000 levels and Hyperliquid 40, so further out Bitget towers over it purely by still having rungs to
-      // report. Capping the axis at the shallowest book was tried and is worse: it collapsed the window to
-      // 0.02% and the chart said nothing at all. Each line is drawn to its OWN end with a DOT there instead,
-      // so both facts are visible at once - who is thick against the price, and who publishes furthest.
-      // Measured on BTC the day this shipped: within 2 bps Hyperliquid held .92M against Bybit's /usr/bin/bash.55M,
-      // while Bitget reached ten times further. Neither of those is the other's answer.
-      var axBp = C.maxBp;
-      var cx = x0 + w / 2, half = w / 2 - 1;
-      // X is LINEAR IN BASIS POINTS out to whatever this book really reaches, so the panel is always full
-      // and the axis always means the same thing. Y is linear dollars - a log axis would flatter a thin book.
-      var X = function (bp, up) { return cx + (up ? 1 : -1) * Math.min(1, bp / axBp) * half; };
-      // LINEAR HIDES THREE OF THE FOUR. Measured on BTC: Bitget carries $57M out at its reach while
-      // Hyperliquid's whole book is $2.9M, a twentyfold spread that squashes three venues into the floor.
-      // The per-venue view is therefore LOG, which is the ordinary tool for comparing quantities across two
-      // orders of magnitude - and it is labelled on the chart, because an unlabelled log axis is a lie.
-      // The consolidated view stays linear: there, the shape of one curve is the whole point.
-      var LO = Math.log(2e5), HI = Math.log(Math.max(top, 1e6));
-      var Y = function (v) {
-        if (!perVenue) return y0 + h - (v / top) * (h - 4);
-        var t = (Math.log(Math.max(v, 2e5)) - LO) / (HI - LO);
-        return y0 + h - Math.max(0, Math.min(1, t)) * (h - 4);
+      if (!(mid > 0)) { bk.style.display = 'none'; stage.classList.remove('hm-j'); return; }
+      bk.style.display = 'block'; stage.classList.add('hm-j');
+
+      var V = { mid: mid, list: list };
+      var asks = merge(V, 'ask'), bids = merge(V, 'bid'), t = bids.tick, dp = tickDp(t);
+      // Both sides share ONE scale, or the bar behind a bid row and the bar behind an ask row mean different
+      // things while sitting one above the other - which is exactly how a depth bar becomes decoration.
+      var sum = 0, aRows = asks.rows.map(function (r) { sum += r[1]; return [r[0], r[1], sum]; });
+      var aTot = sum; sum = 0;
+      var bRows = bids.rows.map(function (r) { sum += r[1]; return [r[0], r[1], sum]; });
+      var bTot = sum, mx = Math.max(aTot, bTot) || 1;
+
+      var row = function (r, up) {
+        return '<div class="hm-ob-row' + (up ? ' a' : ' b') + '">'
+          + '<i style="width:' + (r[2] / mx * 100).toFixed(1) + '%"></i>'
+          + '<span class="p">' + r[0].toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }) + '</span>'
+          + '<span class="s">' + fmtSz(r[1]) + '</span>'
+          + '<span class="t">' + fmtSz(r[2]) + '</span></div>';
       };
+      obA.innerHTML = aRows.slice().reverse().map(function (r) { return row(r, true); }).join('');
+      obB.innerHTML = bRows.map(function (r) { return row(r, false); }).join('');
 
-      ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, w, h); ctx.clip();
-      // grid: two dollar rungs, quiet
-      ctx.strokeStyle = 'rgba(255,255,255,.055)'; ctx.lineWidth = 1;
-      [0.5, 1].forEach(function (f) { var gy = Math.round(Y(top * f)) + 0.5; ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x0 + w, gy); ctx.stroke(); });
+      // The spread of the TIGHTEST book shown, never the gap between one venue's bid and another's ask -
+      // that is an arbitrage number, and across five venues it comes out negative, which reads as broken.
+      var spr = null;
+      for (i = 0; i < list.length; i++) { var sp = +list[i].spreadBps; if (sp > 0 && (spr === null || sp < spr)) spr = sp; }
+      obPx.innerHTML = '<b>' + fpx(mid) + '</b><small>' + (spr != null ? (list.length > 1 ? 'tightest spread ' : 'spread ') + spr.toFixed(2) + ' bps' : '') + '</small>'
+        + '<small class="tk">rows of ' + t.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }) + '</small>';
 
-      // A DEPTH CURVE STARTS AT ZERO ON THE MID. Without that anchor the line begins partway up the panel
-      // at the first rung and reads as a floating fragment instead of a book opening out from the price.
-      // And the dashed tail stays FILLED and continuous: it is the same curve, just a floor rather than a
-      // total past the rung where the shallowest venue stops reporting. Drawn as a broken line it looked
-      // like a rendering fault, which is the opposite of what an honesty marker is for.
-      function curve(vals, up, col, fill, endDot) {
-        var pts = [[cx, Y(0), -1]], j2;
-        for (j2 = 0; j2 < vals.length; j2++) if (vals[j2] != null) pts.push([X(C.bps[j2], up), Y(vals[j2]), j2]);
-        if (pts.length < 3) return;
-        var cut = 0, z;
-        for (z = 0; z < pts.length; z++) if (pts[z][2] <= C.fullTo) cut = z;
-        if (fill) {
-          var g = ctx.createLinearGradient(0, y0, 0, y0 + h);
-          g.addColorStop(0, col.replace("rgb(", "rgba(").replace(")", ",.34)"));
-          g.addColorStop(1, col.replace("rgb(", "rgba(").replace(")", ",.02)"));
-          function area(from, to, alpha) {
-            if (to <= from) return;
-            ctx.beginPath(); ctx.moveTo(pts[from][0], y0 + h);
-            for (z = from; z <= to; z++) ctx.lineTo(pts[z][0], pts[z][1]);
-            ctx.lineTo(pts[to][0], y0 + h); ctx.closePath();
-            ctx.globalAlpha = alpha; ctx.fillStyle = g; ctx.fill(); ctx.globalAlpha = 1;
-          }
-          area(0, cut, 1); area(cut, pts.length - 1, 0.42);
-        }
-        function stroke(from, to, dash) {
-          if (to <= from) return;
-          ctx.beginPath(); ctx.setLineDash([]);
-          ctx.moveTo(pts[from][0], pts[from][1]);
-          for (z = from + 1; z <= to; z++) ctx.lineTo(pts[z][0], pts[z][1]);
-          ctx.strokeStyle = col; ctx.lineWidth = 1.8; ctx.globalAlpha = dash ? 0.72 : 1; ctx.stroke();
-          ctx.setLineDash([]); ctx.globalAlpha = 1;
-        }
-        stroke(0, cut, false);
-        stroke(cut, pts.length - 1, true);
-        if (endDot) {
-          var lp = pts[pts.length - 1];
-          ctx.beginPath(); ctx.arc(lp[0], lp[1], 2.6, 0, 6.2832);
-          ctx.fillStyle = col; ctx.fill();
-        }
-      }
-      if (perVenue) {
-        for (var p2 = 0; p2 < C.venues.length; p2++) {
-          var V = C.venues[p2], nm = V.venue || '', cc = BKV[nm] || '#8fa3c4';
-          if (!V.ladderUsd) continue;
-          curve(V.ladderUsd.bid, false, cc, false, true); curve(V.ladderUsd.ask, true, cc, false, true);
-        }
-      } else {
-        curve(C.bid, false, 'rgb(46,189,133)', true);
-        curve(C.ask, true, 'rgb(255,90,77)', true);
-      }
-      ctx.restore();
+      // The same buy/sell pressure bar an exchange shows, from the sizes actually on screen.
+      var bp = bTot + aTot > 0 ? bTot / (bTot + aTot) * 100 : 50;
+      obR.innerHTML = '<b>B ' + bp.toFixed(1) + '%</b>'
+        + '<i style="width:' + bp.toFixed(1) + '%"></i><u style="width:' + (100 - bp).toFixed(1) + '%"></u>'
+        + '<s>' + (100 - bp).toFixed(1) + '% S</s>';
 
-      // mid line + the price it is centred on
-      ctx.strokeStyle = 'rgba(194,246,74,.5)'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(cx, y0); ctx.lineTo(cx, y0 + h); ctx.stroke(); ctx.setLineDash([]);
-      ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(7,9,12,.85)'; var pl = fpx(mid), pw = ctx.measureText(pl).width;
-      ctx.fillRect(cx - pw / 2 - 4, y0 + 1, pw + 8, 12);
-      ctx.fillStyle = '#c2f64a'; ctx.fillText(pl, cx, y0 + 10);
-      // axis: what the ends mean, in the reader's units - percent from the price
-      ctx.fillStyle = 'rgba(122,140,170,.9)'; ctx.textAlign = 'left';
-      ctx.fillText('-' + (axBp / 100).toFixed(2) + '%', x0 + 2, y0 + h - 3);
-      ctx.textAlign = 'right'; ctx.fillText('+' + (axBp / 100).toFixed(2) + '%', x0 + w - 2, y0 + h - 3);
-      // the scale, on its own ground so it never sits on the curve it describes
-      ctx.textAlign = 'left'; var tl = usdShort(top) + ' resting', tw2 = ctx.measureText(tl).width;
-      ctx.fillStyle = 'rgba(7,9,12,.8)'; ctx.fillRect(x0 + 1, y0 + 1, tw2 + 7, 12);
-      ctx.fillStyle = 'rgba(122,140,170,.85)'; ctx.fillText(tl, x0 + 4, y0 + 10);
-      if (!perVenue && C.fullTo >= 0 && C.fullTo < C.bps.length - 1) {
-        // Mark WHERE every book still reports, on both sides, and say what lies past it. All of it is
-        // measured; past the mark fewer venues reach, so the number is a floor rather than a total.
-        var bx = C.bps[C.fullTo];
-        [X(bx, false), X(bx, true)].forEach(function (mx) {
-          ctx.strokeStyle = 'rgba(143,163,196,.38)'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(mx, y0 + 16); ctx.lineTo(mx, y0 + h - 12); ctx.stroke(); ctx.setLineDash([]);
-        });
-        bkCap(ctx, ['inside the marks all ' + C.venues.length + ' books report · outside, fewer do, so it is a floor',
-          'inside the marks all ' + C.venues.length + ' books report', 'outside the marks: a floor'], cx, y0 + 24, w);
-      }
-      if (perVenue) {
-        ctx.textAlign = 'left'; var lx = x0 + 4, ly = y0 + 24;
-        for (var r2 = 0; r2 < C.venues.length; r2++) {
-          var nm2 = C.venues[r2].venue || '', t2 = nm2.toUpperCase();
-          ctx.fillStyle = BKV[nm2] || '#8fa3c4'; ctx.fillText(t2, lx, ly); lx += ctx.measureText(t2).width + 10;
-        }
-        bkCap(ctx, ['each line ends where that book ends · height is resting dollars, log scale',
-          'each line ends where that book ends · log scale', 'log scale'], cx, y0 + 24, w);
-      }
+      // ---- trades ----
+      var tr = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
+      tr = tr.slice(Math.max(0, tr.length - 16)).reverse();
+      tpL.innerHTML = tr.length ? tr.map(function (x) {
+        var dt = new Date(x.ts);
+        return '<div class="hm-tp-row ' + (x.side === 'buy' ? 'a' : 'b') + '">'
+          + '<span class="p">' + fpx(x.px) + '</span>'
+          + '<span class="s">' + fmtSz(x.qty) + '</span>'
+          + '<span class="t"><em>' + (BKN[x.venue] || x.venue || '').slice(0, 3).toUpperCase() + '</em> '
+          + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2) + '</span></div>';
+      }).join('') : '<div class="hm-tp-none">no prints yet</div>';
+
+      // ---- the numbers, in words ----
+      var cd = b.consolidatedDepthUsd, sl = null;
+      for (i = 0; i < list.length; i++) { var q = list[i].slipBps && +list[i].slipBps.buy_250000; if (q > 0 && (sl === null || q < sl)) sl = q; }
+      bkSm.innerHTML = '<div class="hm-sm-r"><span>Resting bids</span><b class="g">' + usdShort(pick === 'all' && cd ? +cd.bidUsd['25'] : sideUsd(list, 'bid')) + '</b></div>'
+        + '<div class="hm-sm-r"><span>Resting offers</span><b class="r">' + usdShort(pick === 'all' && cd ? +cd.askUsd['25'] : sideUsd(list, 'ask')) + '</b></div>'
+        + '<div class="hm-sm-r"><span>within 0.25% of price</span><b></b></div>'
+        + (sl !== null ? '<div class="hm-sm-r"><span>A $250k market buy costs</span><b>' + sl.toFixed(2) + ' bps</b></div>' : '')
+        + '<div class="hm-sm-r"><span>Books read</span><b>' + list.length + ' of ' + names.length + '</b></div>'
+        + '<div class="hm-sm-n">Real limit orders standing right now, not a model. Numbers move every second.</div>';
+
+      bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + ' exchanges together' : BKN[pick] || pick) + '</i>';
     }
-    function bkFlow(ctx, x0, y0, w, h) {
-      var ms = S.bk && S.bk.tape; if (!ms || ms.length < 2) return;
-      var n = ms.length, i, top = 1;
-      for (i = 0; i < n; i++) top = Math.max(top, Math.abs(ms[i].deltaUsd));
-      var bw = Math.max(2, Math.min(14, w / n - 2)), mid = y0 + h / 2;
-      ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.beginPath(); ctx.moveTo(x0, Math.round(mid) + 0.5); ctx.lineTo(x0 + w, Math.round(mid) + 0.5); ctx.stroke();
-      var cum = 0, cmax = 1, cums = [];
-      for (i = 0; i < n; i++) { cum += ms[i].deltaUsd; cums.push(cum); cmax = Math.max(cmax, Math.abs(cum)); }
-      for (i = 0; i < n; i++) {
-        var x = x0 + (i + 0.5) / n * w, d = ms[i].deltaUsd;
-        var bh = Math.abs(d) / top * (h / 2 - 3);
-        ctx.fillStyle = d >= 0 ? 'rgba(46,189,133,.85)' : 'rgba(255,90,77,.85)';
-        if (ms[i].partial) ctx.globalAlpha = 0.5;
-        ctx.fillRect(x - bw / 2, d >= 0 ? mid - bh : mid, bw, Math.max(1, bh));
-        ctx.globalAlpha = 1;
-      }
-      ctx.beginPath(); ctx.strokeStyle = '#c2f64a'; ctx.lineWidth = 1.4;
-      for (i = 0; i < n; i++) {
-        var cxp = x0 + (i + 0.5) / n * w, cyp = mid - (cums[i] / cmax) * (h / 2 - 3);
-        if (!i) ctx.moveTo(cxp, cyp); else ctx.lineTo(cxp, cyp);
-      }
-      ctx.stroke();
-      ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(122,140,170,.85)';
-      ctx.fillText('AGGRESSOR FLOW · ' + n + ' min · net ' + (cum >= 0 ? '+' : '-') + usdShort(Math.abs(cum)), x0 + 2, y0 + 10);
+    function sideUsd(list, side) {
+      var s = 0, i;
+      for (i = 0; i < list.length; i++) { var v = list[i].depthUsd; if (v) s += +v[side + '_25'] || 0; }
+      return s;
     }
-    function bkDraw() {
-      var f = bkFit(); if (!f) return;
-      var v = (S.bk && S.bk.view) || 'all';
-      var hasB = !!(S.bk && S.bk.book), hasF = !!(S.bk && S.bk.tape && S.bk.tape.length > 1);
-      if (!hasB && !hasF) return;
-      if (v === 'flow') { if (hasF) bkFlow(f.ctx, 0, 0, f.W, f.H); return; }
-      if (v === 'book' || v === 'venues') { if (hasB) bkDepth(f.ctx, 0, 0, f.W, f.H, v === 'venues'); return; }
-      var fh = hasF ? Math.min(58, Math.round(f.H * 0.38)) : 0;
-      if (hasB) bkDepth(f.ctx, 0, 0, f.W, f.H - fh - (fh ? 6 : 0), false);
-      if (fh) {
-        f.ctx.strokeStyle = 'rgba(255,255,255,.07)'; f.ctx.beginPath();
-        f.ctx.moveTo(0, f.H - fh - 3.5); f.ctx.lineTo(f.W, f.H - fh - 3.5); f.ctx.stroke();
-        bkFlow(f.ctx, 0, f.H - fh, f.W, fh);
-      }
+
+    function bkChips(names) {
+      var h = '<button type="button" data-bv="all" class="on">All</button>';
+      for (var i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '">' + (BKN[names[i]] || names[i]) + '</button>';
+      bkSeg.innerHTML = h;
     }
-    // One fetch pair on its own beat: the book moves in seconds, the map refreshes on sixty. Both endpoints
-    // are edge-cached, so a room full of readers still costs the droplet one fetch per PoP.
     function bkLoad() {
       if (!S) return;
       var coin = S.coin;
       Promise.all([
-        fetch('/api/v1/book?symbol=' + encodeURIComponent(coin)).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=1').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        fetch('/api/v1/book?symbol=' + encodeURIComponent(coin) + '&levels=40').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=120').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       ]).then(function (res) {
         if (!S || S.coin !== coin) return;  // a slow answer must never paint onto the coin they switched to
-        var b = res[0], t = res[1];
-        S.bk.book = (b && b.consolidatedDepthUsd && +b.consolidatedDepthUsd.bidUsd['25'] > 0) ? b : null;
-        S.bk.tape = (t && Array.isArray(t.minutes)) ? t.minutes : [];
-        // No book for this coin is an honest answer, not an empty chart: 29 of the 32 coins have none today.
-        if (!S.bk.book && S.bk.tape.length < 2) { bk.style.display = 'none'; stage.classList.remove('hm-j'); return; }
-        bk.style.display = 'block'; stage.classList.add('hm-j');
-        var cd = S.bk.book && S.bk.book.consolidatedDepthUsd, nv = S.bk.book ? Object.keys(S.bk.book.venues || {}).length : 0;
-        bkMeta.innerHTML = cd
-          ? '<b style="color:#66d3a5">' + usdShort(+cd.bidUsd['25']) + '</b> bid <b style="color:#ff8f86">' + usdShort(+cd.askUsd['25']) + '</b> ask'
-            + ' <i>within 0.25%</i> <em>' + nv + ' venues</em>'
-          : '<i>no order book for ' + coin + ' yet</i>';
-        bkDraw();
+        var b = res[0], tp = res[1];
+        S.bk.book = (b && b.venues && Object.keys(b.venues).length) ? b : null;
+        S.bk.tape = (tp && Array.isArray(tp.trades)) ? tp.trades : [];
+        if (S.bk.book) {
+          var names = Object.keys(S.bk.book.venues);
+          if (bkSeg.childNodes.length !== names.length + 1) { bkChips(names); if (names.indexOf(S.bk.venue) < 0) S.bk.venue = 'all'; }
+        }
+        bkRender();
       });
     }
-
     wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(bk); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
@@ -1560,18 +1504,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); if (!S._tgT || Date.now() - S._tgT > 5000) { S._tgT = Date.now(); updTargets(); } sched(); } };
     window.addEventListener('mp:price', S.onPrice);
     try { if (window.mpWS) window.mpWS.sub(coin); } catch (e) {}
-    // the view chips - one delegated handler, the same shape as the All/Longs/Shorts control above
+    // the venue chips - one delegated handler, the same shape as the All/Longs/Shorts control above
     bkH.addEventListener('click', function (ev) {
       var t = ev.target.closest('[data-bv]'); if (!t || !S) return;
-      S.bk.view = t.getAttribute('data-bv');
-      var bs = bkH.querySelectorAll('[data-bv]'), i;
+      S.bk.venue = t.getAttribute('data-bv');
+      var bs = bkSeg.querySelectorAll('[data-bv]'), i;
       for (i = 0; i < bs.length; i++) bs[i].className = bs[i] === t ? 'on' : '';
-      bkDraw();
+      bkRender();
     });
     S.bkLoad = bkLoad;
     bkLoad();
-    S.timers.push(setInterval(function () { if (!document.hidden) bkLoad(); }, 20000));
-    try { var bkRO; new ResizeObserver(function () { clearTimeout(bkRO); bkRO = setTimeout(bkDraw, 160); }).observe(bkCv); } catch (e) {}
+    // A terminal that updates every twenty seconds is not a terminal. Both endpoints are edge-cached for
+    // five seconds, so a room full of readers still costs the droplet one fetch per PoP per five seconds.
+    S.timers.push(setInterval(function () { if (!document.hidden) bkLoad(); }, 4000));
     S.timers.push(setInterval(function () { loadMyPos(); }, 15000));
     S.timers.push(setInterval(pollEvents, 6000));
     S.timers.push(setInterval(function () { if (S && !document.hidden) loadAll(false); }, 60000));
