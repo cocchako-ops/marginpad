@@ -15623,7 +15623,14 @@ async function handleAuth(url, request, env, ctx) {
     if (d.error) { try { const rp = evPush(env, request, 'ratelimit', 'sign-in code ' + d.error + ' ' + maskEmail(email), '/', { email: maskEmail(email) }); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); } catch (e) {} return jr(d, 429); }
     try { const op = evPush(env, request, 'otp', maskEmail(email), '/', { email: maskEmail(email) }); if (ctx && ctx.waitUntil) ctx.waitUntil(op); } catch (e) {} // ops feed: who is trying to get in, before the code is even typed
     const sent = await sendAuthCode(env, email, d.code);
-    if (!sent.ok) return jr({ error: 'send_failed', detail: sent.detail }, 502);
+    if (!sent.ok) {
+      /* The caller is anonymous and can do nothing with the provider's answer; somebody mapping our
+         stack can. The detail goes where it is useful - mailFail feeds the ops alerts and mailstat -
+         and the caller gets a sentence they can act on. */
+      try { await mailFail(env, 'authcode', 0); } catch (e) {}
+      try { const ep = evPush(env, request, 'otpfail', 'code could not be sent to ' + maskEmail(email) + ' (' + String(sent.detail || '').slice(0, 60) + ')', '/', { email: maskEmail(email) }); if (ctx && ctx.waitUntil) ctx.waitUntil(ep); } catch (e) {}
+      return jr({ error: 'send_failed', hint: 'We could not send a code to that address. Check it and try again.' }, 502);
+    }
     return jr({ ok: true });
   }
   if (path === '/verify') {
