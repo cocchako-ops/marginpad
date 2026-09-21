@@ -1,7 +1,11 @@
 // Prove the whole loop: a member uploads, the URL we hand back really serves the bytes back,
 // and a broken external image degrades to a readable link instead of the browser's placeholder.
 const { withBrowser, newPage } = require('D:/part1/money-mission/build/e2e-browser.js');
-const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 const BASE = 'https://marginpad.io';
 const uid = 'e2eimg1';
 

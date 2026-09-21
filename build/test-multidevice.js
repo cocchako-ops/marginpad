@@ -3,7 +3,11 @@
 // the DO merge invariants: closed-beats-stale-open, union-merge (a stale device can't delete), qty
 // can only shrink, and a client cannot fabricate pnl on a server-filled trade (recomputed from exit).
 //   node build/test-multidevice.js
-const KEY = 'mpadm_43bf150d4778e4f0e72f717f69f82d3acb326e9a';
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 const UID = 'e2e-multidev';
 const BASE = 'https://marginpad.io';
 const HDR = { 'content-type': 'application/json', cookie: 'mp_uid=' + UID };

@@ -3,7 +3,11 @@
 // Covers: validations, open math (slippage/liq/qty), SL/TP side checks, partial split (margin/notional/partial/fund
 // scaling), partial-of-partial, double-close race, fee math to the cent, sub-penny liq precision. Cleans up after itself.
 //   node build/test-trading.js
-const KEY = 'mpadm_43bf150d4778e4f0e72f717f69f82d3acb326e9a'; // local-use only (file lives in a public repo path but key is already used by load-test.js - E3 will rotate)
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 const UID = 'e2e-trading-suite';
 const BASE = 'https://marginpad.io/api/trade';
 const q = '?uid=' + UID + '&key=' + KEY;

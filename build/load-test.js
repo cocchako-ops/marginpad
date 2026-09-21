@@ -4,7 +4,11 @@
 // 100 streams ≈ ~2.5k online ≈ 10-15k DAU peak. SAFETY: aborts a stage if p95 > 3s or errors > 5%.
 //   node build/load-test.js            (default stages 10,30,60,100)
 //   node build/load-test.js 150        (add a custom max stage)
-const KEY = 'mpadm_43bf150d4778e4f0e72f717f69f82d3acb326e9a'; // gitignored file would be nicer; repo-public risk accepted: this key is already local-only usage
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 const UID = 'e2e-srv-probe';
 const BASE = 'https://marginpad.io';
 const STAGE_SEC = 20;

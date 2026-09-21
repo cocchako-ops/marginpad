@@ -212,7 +212,7 @@ function robots(txt) {
     /* MEASURED: of four pages fetched as a crawler, only /liquidations/ recorded - in production
        run_worker_first is a LIST, so a static page never reaches the Worker. The endpoint has to admit
        that, or a zero on a static page gets read as "nobody crawled it". */
-    ok(r && r.coverage && /floor/.test(r.coverage.meaning || ''), 'and it states what it is blind to');
+    ok(r && r.coverage && /did not come/.test(r.coverage.meaning || ''), 'and it states its coverage honestly');
   }
 
   console.log('\nseo-surface-e2e: pass ' + pass + '  fail ' + fail);

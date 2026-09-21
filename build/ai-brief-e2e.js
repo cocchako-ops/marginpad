@@ -38,6 +38,11 @@ function grab(name) {
 }
 const _p6 = (x) => (x != null && isFinite(x)) ? +(+x).toPrecision(6) : null;
 const tfWords = (t) => String(t) + 'm';
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 for (const fn of ['pivotsOf', 'levelsOf', 'volOf', 'aggBars', 'htfOf', 'fvgOf', 'volRegimeOf', 'setupsOf', 'sessionOf']) eval(grab(fn));
 
 const bar = (o, h, l, c, v) => ({ time: 0, open: o, high: h, low: l, close: c, vol: v == null ? 100 : v });
@@ -174,7 +179,6 @@ console.log('\nPURE - the brief packer (an over-cap brief must be SMALLER, never
 // has them - if the merge breaks, the assistant simply says it cannot see them and nobody would ever notice.
 console.log('\nLIVE - the half of the brief the server adds');
 async function derivCheck() {
-  const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
   const brief = {
     symbol: 'BTC', timeframe: '1-hour', price: 81000, barsLoaded: 1000,
     swingPivots: [{ barsAgo: 4, price: 81390, kind: 'high' }],
@@ -204,7 +208,6 @@ async function derivCheck() {
 // record; a real member with a real history is used, and the figures are checked against /api/trade/report so a
 // silently empty dossier cannot pass.
 async function recordCheck() {
-  const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
   const UID = 'df9952f897f92aaeb74e48990da23dca';
   let rep = null;
   try { rep = await (await fetch('https://marginpad.io/api/trade/report?days=60&uid=' + UID, { headers: { 'x-admin-key': KEY } })).json(); } catch (e) {}

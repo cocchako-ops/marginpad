@@ -18,7 +18,14 @@ binding = "ASSETS"
 # SSR live-data injection (2026-08-03): ONLY these paths go worker-first (everything else keeps the fast
 # static path). The worker injects a crawler-visible live-data block; on any data gap it serves the static
 # file unchanged. See handleSsrCoin/handleSsrBlog in worker.js.
-run_worker_first = ["/sitemap.xml", "/coin/*", "/de/coin/*", "/pt/coin/*", "/fr/coin/*", "/nl/coin/*", "/ru/coin/*", "/tr/coin/*", "/zh/coin/*", "/ja/coin/*", "/ko/coin/*", "/ar/coin/*", "/id/coin/*", "/blog/what-is-funding-rate/*", "/blog/funding-rate-arbitrage/*", "/blog/what-is-liquidation-in-crypto/*", "/blog/how-to-avoid-liquidation-crypto/*", "/blog/long-short-ratio-explained/*", "/blog/crypto-leverage-explained/*", "/blog/what-leverage-to-use-crypto/*", "/blog/btc-dominance-altcoin-season/*", "/blog/crypto-options-expiry-btc/*", "/*-liquidation-calculator/*", "/*-liquidation-map/*", "/blog/cpi-week-crypto-playbook/*", "/blog/nfp-bitcoin-jobs-report/*", "/blog/pce-inflation-crypto/*", "/blog/fomc-july-2026-bitcoin/*", "/blog/crypto-economic-calendar-guide/*", "/liquidations/*", "/liquidation-statistics/*", "/etf-flows/*", "/fear-greed/*", "/funding/*", "/open-interest/*", "/long-short/*", "/hyperliquid-whales/*", "/hyperliquid-liquidations/*", "/rekt/*", "/crypto-liquidations-today/*", "/how-many-traders-liquidated-today/*", "/longs-or-shorts-liquidated-more/*", "/biggest-liquidation-today/*", "/is-funding-positive-or-negative/*", "/where-can-i-test-a-trading-bot/*", "/mcp-server-for-crypto-trading/*", "/trading-competition/*", "/dolar-cripto/*", "/bitcoin-hoje/*", "/*-vs-*", "/calendar/*", "/de/liquidations/*", "/pt/liquidations/*", "/fr/liquidations/*", "/nl/liquidations/*", "/ru/liquidations/*", "/tr/liquidations/*", "/zh/liquidations/*", "/ja/liquidations/*", "/ko/liquidations/*", "/ar/liquidations/*", "/id/liquidations/*", "/es/*"]
+# 2026-09-21 security review: this was a LIST of path patterns, so a plain static page was served
+# straight from assets and the Worker never ran. That silently disabled THREE things on every static
+# page at once: the security headers, the crawler telemetry (so every "this page took ZERO crawls"
+# reading on a static page really meant "never seen"), and the datacentre bot gate.
+# MEASURED before flipping: a worker-handled page and a static one both answer in 42-63ms, so the cost
+# is request count, not latency. The router ends in env.ASSETS.fetch(request), so anything the Worker
+# does not handle still falls through to the file exactly as before.
+run_worker_first = true
 
 [triggers]
 crons = ["*/10 * * * *", "* * * * *"]

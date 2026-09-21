@@ -17303,8 +17303,57 @@ function sentryWorker(err, request, epath, emethod) {
   } catch (e) { return Promise.resolve(); }
 }
 
+/* Security headers, added to every response on the way out (2026-09-21). The site had none.
+   Only headers that cannot break a working page are ENFORCED; the CSP rides along report-only with a
+   collector at /api/csp, because this site carries inline script on nearly every hand-made page and a
+   policy guessed in advance would take it down. Reports tell us what the enforcing policy must allow. */
+const SEC_ENFORCED = {
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'x-frame-options': 'SAMEORIGIN',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), midi=()',
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+  'cross-origin-opener-policy': 'same-origin-allow-popups'
+};
+/* Everything the site genuinely loads today, named rather than wildcarded, so the report tells us about
+   anything new. 'unsafe-inline' for script is a statement of where we are, not where we stop: the inline
+   blocks on the hand-made pages have to move or carry a nonce before this can enforce. */
+const CSP_REPORT = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://mc.yandex.ru https://cdnjs.cloudflare.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "img-src 'self' data: blob: https://flagcdn.com https://www.google-analytics.com https://mc.yandex.ru https://*.marginpad.io",
+  "connect-src 'self' https://api.bybit.com wss://stream.bybit.com https://www.google-analytics.com https://mc.yandex.ru https://collector.marginpad.io wss://marginpad.io",
+  "frame-src 'self' https://www.youtube-nocookie.com",
+  "frame-ancestors 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "report-uri /api/csp"
+].join('; ');
+function secureResponse(res, request) {
+  try {
+    // a 101 (websocket) has no headers to rewrite, and an immutable body must not be re-wrapped
+    if (!res || res.status === 101 || res.webSocket) return res;
+    const h = new Headers(res.headers);
+    for (const k in SEC_ENFORCED) if (!h.has(k)) h.set(k, SEC_ENFORCED[k]);
+    const ct = (h.get('content-type') || '');
+    if (ct.indexOf('text/html') >= 0 && !h.has('content-security-policy') && !h.has('content-security-policy-report-only')) {
+      h.set('content-security-policy-report-only', CSP_REPORT);
+    }
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+  } catch (e) { return res; }
+}
+
 export default {
+  /* Every response leaves through here so the security headers cannot be forgotten on a new route.
+     The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
+    const res = await this._fetchInner(request, env, ctx);
+    return secureResponse(res, request);
+  },
+  async _fetchInner(request, env, ctx) {
    try {
     try { if (request.cf && request.cf.colo && !globalThis.__mpColo) globalThis.__mpColo = request.cf.colo; } catch (e) {} // capture the edge colo once - constant per isolate; used to tag DO round-trip latency in AE
     if (env.ENVIRONMENT === 'staging') { // STAGING ONLY (no-op on prod - prod never sets ENVIRONMENT)
@@ -17425,6 +17474,43 @@ export default {
     } } catch (e) {}
     // MEASUREMENT (temporary, read-only telemetry): unsampled per-invocation counter by route family → AE. AE has no
     // write quota and SUM(_sample_interval) corrects any internal down-sampling, so the SHARE per family is accurate.
+    /* CSP violation reports. The policy is report-only, so this is the whole point of it: a week of
+       real traffic tells us exactly what an enforcing policy has to allow. Counted per directive and
+       per blocked origin - never stored as rows, because one broken page would write thousands. */
+    if (url.pathname === '/api/csp' && request.method === 'POST') {
+      try {
+        const b = await request.json().catch(() => null);
+        const r = (b && (b['csp-report'] || b)) || {};
+        const d = String(r['violated-directive'] || r.effectiveDirective || '?').split(' ')[0].slice(0, 32);
+        let o = String(r['blocked-uri'] || r.blockedURL || '?').slice(0, 120);
+        try { if (/^https?:/.test(o)) o = new URL(o).origin; } catch (e) {}
+        const day = new Date().toISOString().slice(0, 10);
+        if (env.STATS) ctx.waitUntil((async () => {
+          for (const k of ['csp:day:' + day, 'csp:d:' + d + ':' + day, 'csp:o:' + o.replace(/[^\x20-\x7e]/g, '').slice(0, 60) + ':' + day]) {
+            try { await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 2592000 }); } catch (e) {}
+          }
+        })());
+      } catch (e) {}
+      return new Response('', { status: 204, headers: { ...CORS } });
+    }
+    if (url.pathname === '/api/admin/csp' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // what a strict policy would break, read before turning it on
+      const dN = Math.min(30, Math.max(1, +url.searchParams.get('days') || 7));
+      const days = []; for (let i = 0; i < dN; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+      let keys = []; try { keys = (await env.STATS.list({ prefix: 'csp:', limit: 1000 })).keys.map(k => k.name); } catch (e) {}
+      const want = keys.filter(k => days.indexOf(k.slice(k.lastIndexOf(":") + 1)) >= 0);
+      const vals = await Promise.all(want.map(k => env.STATS.get(k).catch(() => null)));
+      const total = {}, byDirective = {}, byOrigin = {};
+      want.forEach((k, i) => {
+        const n = +vals[i] || 0, p = k.split(':');
+        if (p[1] === 'day') total[p[2]] = n;
+        else if (p[1] === 'd') byDirective[p[2]] = (byDirective[p[2]] || 0) + n;
+        else if (p[1] === 'o') byOrigin[p.slice(2, -1).join(':')] = (byOrigin[p.slice(2, -1).join(':')] || 0) + n;
+      });
+      const srt = o => Object.entries(o).map(([k, n]) => ({ k, n })).sort((a, b) => b.n - a.n).slice(0, 30);
+      return J({ days: dN, mode: "report-only", byDay: total, byDirective: srt(byDirective), byOrigin: srt(byOrigin),
+        note: "nothing is blocked while the policy is report-only. Turn it into content-security-policy once byOrigin holds nothing we do not recognise." });
+    }
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
@@ -18636,13 +18722,12 @@ export default {
         audits: rows.filter(r => AUDIT.test(r.tool)),
         wide: rows.filter(r => !AUDIT.test(r.tool)),
         note: 'an audit tool has no web-wide mode - each row is somebody who entered marginpad.io into it, and it messages Telegram once per tool per day. The wide crawlers visit everybody and never message.',
-        /* SAY WHAT THIS CANNOT SEE. Measured with a real crawl: of four pages fetched as Sitebulb,
-           only /liquidations/ recorded. In production run_worker_first is a LIST, so a static page is
-           served from assets and the Worker never runs - it cannot count what it never handles. The
-           counts below are a FLOOR, and a zero on a static page means "not seen", not "not crawled". */
-        coverage: { seenOn: 'pages the Worker handles (run_worker_first in wrangler.toml)',
-          blindTo: 'plain static pages - the homepage, /season/, /rewards/, /trading-api/, most of the blog',
-          meaning: 'these counts are a floor; a zero on a static page means not seen, not not-crawled' } });
+        /* The blind spot this used to carry is closed. Until 2026-09-21 `run_worker_first` was a LIST,
+           so a static page never reached the Worker and could not be counted - measured then, four pages
+           fetched as a crawler recorded one. It is `true` now and the same four record four. */
+        coverage: { seenOn: 'every page - run_worker_first is true since 2026-09-21',
+          blindTo: 'nothing on this origin; a request that never reaches Cloudflare is still invisible',
+          meaning: 'a zero here now means the tool did not come' } });
     }
 
     if (url.pathname === '/api/admin/aiseo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {

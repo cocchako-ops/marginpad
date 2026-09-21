@@ -68,7 +68,11 @@ ok(aiCallSettle(LONG, [bar(104, 99)]).state === 'win' && aiCallSettle(LONG, [bar
 
 console.log('\nLIVE - the desk that reads it');
 (async () => {
-  const KEY = 'mpadm_20ca118e2de368204c82ea9a97a6fca4';
+// The admin key is read from the gitignored ADMIN_KEY.local.txt - NEVER hardcoded. On 2026-09-21 the
+// live key was found sitting in six files in a public repository, answering 200. Anything that opens
+// the money routes belongs in a file git cannot see.
+const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
+if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
   try {
     const r = await fetch('https://marginpad.io/api/admin/aicalls?days=30', { headers: { 'x-admin-key': KEY } });
     const j = await r.json();
