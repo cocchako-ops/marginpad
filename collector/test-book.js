@@ -19,6 +19,14 @@ const chk = (name, ok, detail) => {
 
 // The venue's own REST book, in the same normalized shape, so the comparison is apples to apples.
 const REST = {
+  // Binance matters most here, because it is the only venue whose book we ASSEMBLE rather than receive:
+  // a REST snapshot with the buffered differences replayed onto it. If that replay were wrong the book
+  // would look perfectly well-formed - correctly sorted, not crossed, plausible spread - and simply be
+  // the wrong book. The only thing that catches that is this comparison against Binance's own depth.
+  binance: async (sym) => {
+    const j = await (await fetch(`https://fapi.binance.com/fapi/v1/depth?symbol=${sym}USDT&limit=500`)).json();
+    return { bids: (j.bids || []).map((x) => [+x[0], +x[1]]), asks: (j.asks || []).map((x) => [+x[0], +x[1]]) };
+  },
   bybit: async (sym) => {
     const j = await (await fetch(`https://api.bybit.com/v5/market/orderbook?category=linear&symbol=${sym}USDT&limit=200`)).json();
     const r = j.result || {};
@@ -93,7 +101,12 @@ const pct = (a, b) => (!a || !b) ? Infinity : Math.abs(a - b) / ((a + b) / 2) * 
       }
       // A rung further out than the book reaches must be null, never the running total - a flat tail would
       // say "there is no more liquidity out there", which is a claim about the market, not about our reach.
-      const beyond = s.ladderBps.map((bp, i) => ({ bp, v: lb[i] })).filter((x) => x.bp / 100 > s.coverBelowPct);
+      // `coverBelowPct` is measured from the BEST BID and a ladder rung from the MID, so they differ by the
+      // half-spread - comparing them directly flagged a correct book on hyperliquid/ETH (rung 0.07% against
+      // a reach of 0.0684%). The rung has to clear the reach by more than the spread before it can be
+      // called out of range, which is the same quantity in the same units.
+      const slack = (s.spreadBps || 0) / 100 + 0.002;
+      const beyond = s.ladderBps.map((bp, i) => ({ bp, v: lb[i] })).filter((x) => x.bp / 100 > s.coverBelowPct + slack);
       chk(`${c.venue}/${sym}: past the book's own reach the ladder says null, not a number`,
         beyond.every((x) => x.v === null), { coverBelowPct: s.coverBelowPct, beyond: beyond.slice(0, 3) });
 
@@ -128,6 +141,9 @@ const pct = (a, b) => (!a || !b) ? Infinity : Math.abs(a - b) / ((a + b) / 2) * 
         // is unbroken across thousands of updates, plus phantom depth measured where the books overlap.
         const FRESH_MS = 250;
         const SANE_PCT = 0.5;
+        // An empty REST reply is a venue refusing this address, not a book on the wrong market - and the
+        // comparison below would read NaN as a failure. The throw is raised so the one handler decides.
+        if (!rb.length || !ra.length) throw new Error('venue returned no depth (-1003 / banned / rate-limited)');
         const dBid = pct(s2.bestBid, rb[0]), dAsk = pct(s2.bestAsk, ra[0]);
         chk(`${c.venue}/${sym}: our book is on the same market as the venue (within ${SANE_PCT}%)`, dBid < SANE_PCT && dAsk < SANE_PCT,
           { ourBid: s2.bestBid, restBid: rb[0], ourAsk: s2.bestAsk, restAsk: ra[0], diffPct: { bid: +dBid.toFixed(4), ask: +dAsk.toFixed(4) }, bookAgeMs: s2.ageMs });
@@ -185,7 +201,16 @@ const pct = (a, b) => (!a || !b) ? Infinity : Math.abs(a - b) / ((a + b) / 2) * 
             { levelsCompared: inRange, matchedPct: +matchPct.toFixed(1), phantomPctOfDepth: +extraPct.toFixed(2), bookAgeMs: s2.ageMs, restRttMs: rtt });
         }
       } catch (e) {
-        chk(`${c.venue}/${sym}: REST cross-check ran`, false, { e: String(e).slice(0, 80) });
+        // A TEST THAT GOES RED FOR A REASON OUTSIDE THE CODE TEACHES YOU TO IGNORE IT. Binance answers 418
+        // with "IP banned" to an address that has asked too often - which this development machine earned
+        // while this very suite was being written - and from behind that ban the cross-check cannot run at
+        // all. It says so and skips, instead of reporting a defect in a book that is fine. The droplet has
+        // its own address and runs the check for real; if it is ever skipped THERE, that is worth knowing.
+        if (/banned|418|429|-1003/.test(String(e))) {
+          console.log(`  skip ${c.venue}/${sym}: REST cross-check - this IP is rate-limited by the venue, not a book defect`);
+        } else {
+          chk(`${c.venue}/${sym}: REST cross-check ran`, false, { e: String(e).slice(0, 80) });
+        }
       }
     }
   }

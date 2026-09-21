@@ -311,10 +311,13 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   app.get('/api/v1/book', (req, res) => {
     const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
     const want = String(req.query.venue || '').toLowerCase();
+    // Opt-in raw levels, for an order-book LADDER (price / size / running total) rather than a curve.
+    // Capped, so nobody can ask this droplet to serialise a thousand levels across five venues per poll.
+    const topN = Math.min(60, Math.max(0, +req.query.levels || 0));
     const out = {};
     for (const c of bookCols) {
       if (want && c.venue !== want) continue;
-      const s = c.read(sym);
+      const s = c.read(sym, topN);
       if (s) out[c.venue] = s;
     }
     res.set('Cache-Control', 'public, max-age=2');

@@ -24,9 +24,11 @@
 //  3. HYPERLIQUID'S fast:true COSTS DEPTH. fast = 5 levels a side at 1.9/s; default = 20 levels at
 //     0.24/s. For a depth product the depth wins, so this subscribes WITHOUT fast.
 //
-// Deliberately NOT here: Binance, Gate and MEXC. All three send deltas with no snapshot on the wire and
-// need a REST bootstrap with a buffered-replay handshake. That is a second, isolated step - putting it in
-// the same first drop would mean one bootstrap bug could take down four venues that do not need one.
+// BINANCE JOINED ON 2026-09-21 and is the fifth venue. It sends deltas with no snapshot on the wire, so
+// its book is bootstrapped from REST with the differences that arrived during the request replayed onto it
+// - a genuinely more delicate mechanism, which is why it was built second and on its own rather than in the
+// first drop, where one bootstrap bug could have taken down four venues that need no bootstrap at all.
+// Gate and MEXC can follow by the same route. Deribit stays out: its size unit is not provable from the feed.
 import { BaseCollector } from './base.js';
 import { log } from '../logger.js';
 
@@ -124,6 +126,43 @@ const ADAPTERS = {
     },
     gapOk: () => true,
   },
+  // BINANCE - the biggest book in crypto, and the one this module deliberately left out at first.
+  // Every other venue here ships a snapshot down the socket, so a fresh subscription IS a fresh book.
+  // Binance sends ONLY differences, so the book has to be bootstrapped from REST and the differences that
+  // arrived while that request was in flight have to be replayed onto it in order. That is a genuinely
+  // more delicate mechanism - it can fail in ways the others cannot - which is why it was built second and
+  // on its own. It is not optional though: leaving out Binance and calling the result a consolidated book
+  // would be the kind of number this whole module exists to avoid.
+  //
+  // Binance's own documented procedure, followed exactly:
+  //   1. open the stream and BUFFER every event
+  //   2. GET /fapi/v1/depth?limit=1000 -> lastUpdateId
+  //   3. discard buffered events whose final id `u` is older than lastUpdateId
+  //   4. the first event applied must STRADDLE it: U <= lastUpdateId AND u >= lastUpdateId
+  //   5. from there every event's `pu` must equal the previous event's `u`, or the chain is broken
+  // Steps 4 and 5 are the same prev-link proof OKX and Bitget already carry; only 1-3 are new.
+  binance: {
+    url: 'wss://fstream.binance.com/ws',
+    subs: (syms) => [{ method: 'SUBSCRIBE', params: syms.map((s) => s.toLowerCase() + 'usdt@depth@100ms'), id: 1 }],
+    parse(raw) {
+      const j = JSON.parse(raw);
+      if (j.e !== 'depthUpdate' || !j.s) return [];
+      return [{
+        sym: String(j.s).replace(/USDT$/, ''), type: 'delta',
+        seq: num(j.u), prevSeq: num(j.pu), firstSeq: num(j.U),
+        bids: j.b || [], asks: j.a || [], ts: num(j.E) || Date.now(),
+      }];
+    },
+    gapOk: (prevSeq, _seq, prevLink) => prevLink === prevSeq,
+    needsSnapshot: true,
+    async snapshot(sym) {
+      const r = await fetch('https://fapi.binance.com/fapi/v1/depth?symbol=' + sym + 'USDT&limit=1000', { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (!(num(j.lastUpdateId) > 0) || !Array.isArray(j.bids)) return null;
+      return { seq: num(j.lastUpdateId), bids: j.bids, asks: j.asks };
+    },
+  },
 };
 
 export const BOOK_VENUES = Object.keys(ADAPTERS);
@@ -152,7 +191,7 @@ function sortedSide(map, desc) {
  * Everything a reader is allowed to know about one book, derived at read time so nothing is stored twice.
  * Returns null when the book is not provably correct - silence beats a plausible wrong number.
  */
-export function summarize(book, skewMs) {
+export function summarize(book, skewMs, topN) {
   if (!book || !book.ok) return null;
   const bids = sortedSide(book.bids, true);
   const asks = sortedSide(book.asks, false);
@@ -212,6 +251,10 @@ export function summarize(book, skewMs) {
     levels: bids.length + asks.length,
     coverBelowPct: Math.round((bestBid - bids[bids.length - 1][0]) / mid * 1e6) / 1e4,
     coverAbovePct: Math.round((asks[asks.length - 1][0] - bestAsk) / mid * 1e6) / 1e4,
+    // The raw top of the book, opt-in. A depth curve can be drawn from the ladder above, but a real
+    // order-book LADDER - price, size, running total, the way every exchange terminal shows it - needs the
+    // levels themselves. Off by default so the published response stays small for everything else.
+    top: topN > 0 ? { bid: bids.slice(0, topN), ask: asks.slice(0, topN) } : undefined,
     depthUsd: depth,
     ladderBps: LADDER_BPS,
     ladderUsd: { bid: ladderOf(bids, false), ask: ladderOf(asks, true) },
@@ -233,6 +276,7 @@ export class BookCollector extends BaseCollector {
     if (!this.ad) throw new Error('unknown book venue ' + venue);
     this.books = new Map();     // sym -> { bids, asks, seq, ts, ok }
     this.ctVal = {};            // okx only
+    this.boots = 0; this.bootFails = 0;   // venues that need a REST snapshot (binance)
     this.applied = 0; this.gaps = 0; this.resyncs = 0; this.dropped = 0;
     this.lastGapAt = 0;
     // CLOCK SKEW IS REAL AND IT WILL LIE TO YOU (found 2026-09-21 building this). Freshness was first
@@ -290,13 +334,30 @@ export class BookCollector extends BaseCollector {
 
     // A delta against a book we never snapshotted, or one already known bad, is discarded. It cannot be
     // applied and guessing would be the whole failure mode this module exists to prevent.
-    if (b.seq == null && !b.ok) { this.dropped++; return; }
+    if (b.seq == null && !b.ok) {
+      if (this.ad.needsSnapshot) { this._buffer(u, b); return; }
+      this.dropped++; return;
+    }
+
+    // THE ONE TOLERATED ATTACHMENT, and it is bounded and recorded. A book accepted straight from a REST
+    // snapshot has no event chaining it to the stream yet, so the very next delta legitimately fails the
+    // prev-link test. It is allowed through exactly once, and only if it is genuinely NEWER than the
+    // snapshot - an older one would still be a hole. After that the chain is proved like every other venue's.
+    if (b.softSeq) {
+      b.softSeq = false;
+      if (u.seq > b.seq) {
+        applySide(b.bids, u.bids); applySide(b.asks, u.asks);
+        b.seq = u.seq; b.ts = u.ts; b.rxAt = Date.now(); b.ok = true;
+        this._skew(u.ts); this.applied++; this.lastEventAt = b.rxAt;
+        return;
+      }
+    }
 
     if (!this.ad.gapOk(b.seq, u.seq, u.prevSeq)) {
       // The stream skipped. Everything after this point would be built on a book that is missing a change,
       // so the book is invalidated and a fresh snapshot is demanded by reconnecting the socket.
       this.gaps++; this.lastGapAt = Date.now();
-      b.ok = false; b.seq = null;
+      b.ok = false; b.seq = null; b.booting = false; b.buf = [];
       log.warn(`[${this.name}] sequence gap on ${u.sym} - invalidating book and resyncing`, { had: b.seq, got: u.seq, prev: u.prevSeq });
       this._resync();
       return;
@@ -306,6 +367,81 @@ export class BookCollector extends BaseCollector {
     b.seq = u.seq; b.ts = u.ts; b.rxAt = Date.now(); b.ok = true;
     this._skew(u.ts);
     this.applied++; this.lastEventAt = b.rxAt;
+  }
+
+  // A venue that sends only differences has no book until REST gives it one. Everything that arrives in
+  // the meantime is kept, in order, and replayed onto the snapshot - dropping it would leave a hole exactly
+  // the size of the round trip, which on a 100ms stream is dozens of changes.
+  _buffer(u, b) {
+    if (!b.buf) b.buf = [];
+    b.buf.push(u);
+    if (b.buf.length > 900) b.buf.splice(0, b.buf.length - 900);  // ~90s of a 100ms stream; a boot never takes that
+    if (b.booting) return;
+    // A FAILED BOOTSTRAP MUST NOT BE RETRIED BY THE NEXT MESSAGE. Without this, a stream arriving every
+    // 100 ms asks REST for a fresh snapshot TEN TIMES A SECOND for as long as it keeps failing - and this
+    // machine earned a real HTTP 418 from Binance that way while the suite was being written ("IP banned
+    // until ..."). On the droplet that IP also carries the Binance liquidation feed, so the punishment for
+    // hammering would land on Rekt, not here. Exponential backoff, capped, per symbol.
+    const now = Date.now();
+    const wait = Math.min(30000, 1500 * Math.pow(2, Math.min(5, b.bootTries || 0)));
+    if (b.bootAt && now - b.bootAt < wait) return;
+    // AND A FLOOR ACROSS THE WHOLE VENUE, because the per-symbol backoff is per symbol. Measured with three
+    // symbols against a real ban: 12 requests in 40 s, which is fine - but the same code on ten symbols is
+    // 40, and each /depth?limit=1000 costs Binance weight 20 against a 2400/minute budget. The venue-wide
+    // floor means the request rate is bounded by the venue, not by how many symbols happen to be listed.
+    if (this._bootAt && now - this._bootAt < 500) return;
+    b.bootAt = now; this._bootAt = now; b.booting = true;
+    this._bootstrap(u.sym);
+  }
+
+  async _bootstrap(sym) {
+    const b = this.books.get(sym);
+    if (!b) return;
+    let snap = null;
+    try { snap = await this.ad.snapshot(sym); } catch (e) { snap = null; }
+    const b2 = this.books.get(sym);
+    if (!b2 || b2 !== b) return;               // the book was replaced under us; the new one will boot itself
+    if (!snap) { this.bootFails++; b.bootTries = (b.bootTries || 0) + 1; b.booting = false; return; }  // the next delta starts another attempt
+
+    const bids = new Map(), asks = new Map();
+    applySide(bids, snap.bids); applySide(asks, snap.asks);
+
+    // Everything the snapshot already contains is noise; what is left must begin with the one event that
+    // straddles it, or the snapshot and the stream do not meet and the whole attempt is void.
+    const buf = (b.buf || []).filter((x) => x.seq >= snap.seq);
+    let seq = snap.seq, started = false, ts = 0;
+    for (const x of buf) {
+      if (!started) {
+        if (!(x.firstSeq <= snap.seq && x.seq >= snap.seq)) continue;
+        started = true;
+      } else if (x.prevSeq !== seq) {
+        // The chain broke inside the replay. Applying the rest would build on a missing change, so the
+        // attempt is abandoned rather than patched - the next delta triggers a fresh snapshot.
+        this.bootFails++; b.bootTries = (b.bootTries || 0) + 1; b.booting = false; b.buf = [];
+        log.warn(`[${this.name}] bootstrap replay broke on ${sym} - retrying`, { had: seq, got: x.prevSeq });
+        return;
+      }
+      applySide(bids, x.bids); applySide(asks, x.asks);
+      seq = x.seq; ts = x.ts;
+    }
+    if (!started) {
+      // TWO DIFFERENT SITUATIONS LOOK THE SAME HERE, AND TREATING THEM ALIKE COST BTC AND ETH THEIR BOOKS.
+      //  - the buffer still holds events after the filter but none straddles the snapshot: the snapshot is
+      //    OLDER than the stream we hold, so a change in between is missing. That is a real hole: retry.
+      //  - the filter emptied the buffer: the snapshot is NEWER than everything that arrived during the
+      //    request, which is the ordinary outcome on a busy symbol. Nothing is missing at all - the snapshot
+      //    IS the book, and the next live event continues from it. Measured: SOL booted first time this way
+      //    while BTC and ETH, which move far faster, never found a straddling event and retried for ever.
+      if (buf.length) { this.bootFails++; b.bootTries = (b.bootTries || 0) + 1; b.booting = false; b.buf = []; return; }
+      // Accept the snapshot and let ONE live event attach to it, verified below rather than assumed.
+      b.softSeq = true;
+    }
+
+    b.bids = bids; b.asks = asks; b.seq = seq; b.ts = ts || Date.now(); b.rxAt = Date.now(); b.ok = true;
+    b.buf = []; b.booting = false; b.bootTries = 0;
+    this.boots++;
+    this.applied++; this.lastEventAt = b.rxAt;
+    log.info(`[${this.name}] book bootstrapped for ${sym}`, { seq: seq, replayed: buf.length });
   }
 
   // Exponentially smoothed difference between the venue's clock and ours. Pure diagnostic - it is
@@ -337,11 +473,11 @@ export class BookCollector extends BaseCollector {
   }
 
   /** One symbol's book, or null if it cannot be proven correct right now. */
-  read(sym) {
+  read(sym, topN) {
     const b = this.books.get(sym);
     if (!b || !b.ok) return null;
     if (Date.now() - b.rxAt > this.maxBookAgeMs) return null;  // alive socket, dead subscription
-    return summarize(b, this.skewMs);
+    return summarize(b, this.skewMs, topN);
   }
 
   status() {
@@ -358,6 +494,7 @@ export class BookCollector extends BaseCollector {
             : summarize(b) ? 'ok' : 'crossed';
     }
     return { ...base, venue: this.venue, applied: this.applied, gaps: this.gaps, resyncs: this.resyncs,
+      boots: this.boots, bootFails: this.bootFails,
       dropped: this.dropped, lastGapMs: this.lastGapAt ? Date.now() - this.lastGapAt : null, venueSkewMs: this.skewMs, books: syms };
   }
 }

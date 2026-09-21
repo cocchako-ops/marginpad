@@ -63,9 +63,10 @@ export const config = {
   book: {
     enabled: process.env.MP_BOOK !== '0',
     symbols: (process.env.MP_BOOK_SYMBOLS || 'BTC,ETH,SOL').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
-    // Venues whose book ships a snapshot on the wire and whose sequence can be proven. Binance, Gate and
-    // MEXC need a REST bootstrap and join later, deliberately separately.
-    bookVenues: (process.env.MP_BOOK_VENUES || 'bybit,okx,bitget,hyperliquid').split(',').map((s) => s.trim()).filter(Boolean),
+    // Binance joined on 2026-09-21. The other four ship a snapshot down the socket, so a subscription is a
+    // book; Binance sends only differences, so its book is bootstrapped from REST with the differences that
+    // arrived during that request replayed onto it. Gate and MEXC can follow the same way when they are wanted.
+    bookVenues: (process.env.MP_BOOK_VENUES || 'binance,bybit,okx,bitget,hyperliquid').split(',').map((s) => s.trim()).filter(Boolean),
     // A trade needs no snapshot and no sequence, so Binance is here from the start.
     tapeVenues: (process.env.MP_TAPE_VENUES || 'bybit,okx,bitget,hyperliquid,binance').split(',').map((s) => s.trim()).filter(Boolean),
   },
