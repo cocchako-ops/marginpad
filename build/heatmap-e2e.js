@@ -62,14 +62,28 @@ const LAYOUT = () => {
     // which used to be a row of its own above the chart - so the legend check moved here with it.
     bk: bb('.hm-bk'), bkNote: bb('.hm-bk-n'),
     bkChips: [...document.querySelectorAll('[data-bv]')].map(function (b) { return b.textContent; }),
-    bkNoteTxt: (document.querySelector('.hm-bk-n') || {}).innerText || '',
+    // textContent, NOT innerText: a closed <details> hides its body from innerText, so on a phone - where
+    // these are deliberately collapsed - the check would only ever see the four headings and call the
+    // explanation missing. textContent reads the prose whether it is on screen or one tap away.
+    bkNoteTxt: [...document.querySelectorAll('.hm-foot-c')].map(function (d) { return d.textContent; }).join(' '),
     bkAsks: document.querySelectorAll('.hm-ob-a .hm-ob-row').length,
     bkBids: document.querySelectorAll('.hm-ob-b .hm-ob-row').length,
     bkTrades: document.querySelectorAll('.hm-tp-row').length,
     bkSegs: document.querySelectorAll('.hm-ob-row .vs em').length,
     bkTapeCols: (function () { var r = document.querySelector('.hm-tp-row'); return r ? r.children.length : 0; })(),
-    bkHeads: [...document.querySelectorAll('.hm-col-h')].map(function (h) { return h.innerText.replace(/s+/g, ' '); }),
+    bkHeads: [...document.querySelectorAll('.hm-col-h')].map(function (h) { return h.textContent.replace(/\s+/g, ' ').trim(); }),
     helpQ: document.querySelectorAll('.hm-q').length,
+    readTxt: (document.querySelector('.hm-sm-l') || {}).innerText || '',
+    readGroups: document.querySelectorAll('.hm-sm-t').length,
+    foldCount: document.querySelectorAll('.hm-foot-c').length,
+    panelNote: !!document.querySelector('.hm-bk-n'),
+    shades: (function () {
+      var out = {};
+      ['.hm-wrap', '.hm-targets', '.hm-bk', '.hm-foot-c'].forEach(function (q2) {
+        var e = document.querySelector(q2); if (e) out[q2] = getComputedStyle(e).backgroundColor;
+      });
+      return out;
+    })(),
     tgH: (function () { var t = document.querySelector('.hm-targets'); return t ? Math.round(t.getBoundingClientRect().height) : 0; })(),
     tgCut: [...document.querySelectorAll('.hm-tgb b')].filter(function (b) { return b.scrollWidth > b.clientWidth + 1; }).length,
     wins: [...document.querySelectorAll('.hm-bar select')].map(function (s2) { return [...s2.options].map(function (o) { return o.text; }).join('/'); }).join(' | '),
@@ -166,7 +180,7 @@ const LAYOUT = () => {
     ok('the whole map is visible without scrolling', L.stage.bottom <= L.vh, 'stage bottom=' + L.stage.bottom + ' vh=' + L.vh);
     ok('the control bar is two named groups', L.barGroups === 2, 'groups=' + L.barGroups);
     ok('the masthead states the measured venue count', /9 exchanges/.test(L.mastTxt), L.mastTxt.slice(0, 80));
-    ok('the foot cards are open on a desktop', L.footTotal === 3 && L.footOpen === 3, L.footOpen + '/' + L.footTotal);
+    ok('the foot cards are open on a desktop', L.footTotal >= 4 && L.footOpen === L.footTotal, L.footOpen + '/' + L.footTotal);
     ok('nothing in the section overflows the viewport', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is a grid on a desktop', L.extGrid > 0 && L.extStacked === 0, 'grid=' + L.extGrid + ' stacked=' + L.extStacked);
     ok('the coin table shows all four windows on a desktop', L.ctCols === 11, 'cols=' + L.ctCols);
@@ -224,7 +238,7 @@ const LAYOUT = () => {
     ok('and the tape has prints', L.bkTrades >= 5, 'trades=' + L.bkTrades);
     ok('the ladder is NOT crossed and runs high to low', !!L.bkCross && L.bkCross.highBid < L.bkCross.lowAsk && L.bkCross.asksDown && L.bkCross.bidsDown, JSON.stringify(L.bkCross));
     ok('every exchange can be picked, and all of them together', L.bkChips[0] === 'All' && L.bkChips.length >= 5, L.bkChips.join(','));
-    ok('it explains how to read itself', /How to read it/i.test(L.bkNoteTxt) && /Sum/.test(L.bkNoteTxt) && /crossed the spread/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 90));
+    ok('it explains how to read itself, at the bottom with the rest of the prose', /READING THE ORDER BOOK/i.test(L.bkNoteTxt) && /Sum/.test(L.bkNoteTxt) && /crossed the spread/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 120));
     ok('and says which half of the page is measured', /not modelled|none of (this|it) is modelled/i.test(L.bkNoteTxt), L.bkNoteTxt.slice(-110));
     // The three additions the owner asked for: the venue strip under each row, the value of every print,
     // and prints that are far bigger than the rest standing out without being hunted for.
@@ -232,6 +246,26 @@ const LAYOUT = () => {
     ok('every print carries its dollar value and its venue', L.bkTapeCols >= 5, 'tape columns=' + L.bkTapeCols);
     // Every term a beginner could stumble on carries a '?' that explains it in plain words - the owner
     // asked for it, and it is what lets the page be dense without being hostile.
+    // THE READ is the page's own analysis, and the whole point is that every line is derived from what we
+    // hold rather than guessed. These four are the ones nobody else publishes.
+    ok('it says what it costs in dollars to move the price',
+      L.readTxt.indexOf('To lift it 0.1%') >= 0 && L.readTxt.indexOf('of buying') >= 0 && L.readTxt.indexOf('To drop it 0.1%') >= 0,
+      L.readTxt.slice(0, 90));
+    ok('it names the single heaviest resting block', L.readTxt.indexOf('Heaviest block') >= 0);
+    ok('it weighs the big prints instead of counting them', L.readTxt.indexOf('Of the big prints') >= 0);
+    ok('it says how far apart the five books are', /They agree within[\s\S]{0,24}bps/.test(L.readTxt));
+    // The flow comes from minute buckets and the price from the chart's candles; on the day view those are
+    // fifteen minutes each, so asking for "five minutes ago" landed inside the current candle and printed
+    // +0.00% beside a real flow figure. Both sides must name the SAME span or they are two afternoons.
+    ok('and the flow and the price cover the SAME window', (function () {
+      var a = /last (\d+) min/.exec(L.readTxt), b2 = /Price, same (\d+) min/.exec(L.readTxt);
+      return !a || !b2 || a[1] === b2[1];
+    })(), L.readTxt.replace(/\n/g, ' | ').slice(0, 160));
+    ok('it is grouped, not one long list', L.readGroups >= 3, 'groups=' + L.readGroups);
+    // Every explanation lives at the bottom now, folded, instead of a paragraph under the panel.
+    ok('the long explanations are folded away at the bottom', L.foldCount >= 4 && !L.panelNote, 'folds=' + L.foldCount + ' noteStillInPanel=' + L.panelNote);
+    // The page was one flat black; the windows now sit on shades that differ.
+    ok('the windows are not all the same colour', new Set(Object.values(L.shades)).size >= 3, JSON.stringify(L.shades));
     ok('the jargon explains itself', L.helpQ >= 6, 'help marks=' + L.helpQ);
     // TARGETS keeps all six chips and every price readable, in half the height it used to take on a phone.
     ok('no target price is cut off', L.tgCut === 0, 'truncated=' + L.tgCut);
@@ -241,7 +275,7 @@ const LAYOUT = () => {
     ok('nothing in the section is wider than the screen', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is stacked, not a clipped grid', L.extStacked > 0 && L.extGrid === 0, 'stacked=' + L.extStacked + ' grid=' + L.extGrid);
     ok('the coin table shows the selected window only', L.ctCols === 5, 'cols=' + L.ctCols);
-    ok('the prose is collapsed behind disclosures', L.footTotal === 3 && L.footOpen === 0, L.footOpen + '/' + L.footTotal);
+    ok('the prose is collapsed behind disclosures', L.footTotal >= 4 && L.footOpen === 0, L.footOpen + '/' + L.footTotal);
     ok('the Premium countdown is in the masthead, not over the map', L.prevInMast);
     ok('the plot leaves a strip for the time axis', S.plotH < S.canvasH && S.canvasH - S.plotH >= 10, 'plotH=' + S.plotH + ' canvasH=' + S.canvasH);
     ok('the heat field occupies more than one level', [S.bandsFaint, S.bandsMid, S.bandsStrong].filter(n => n > 0).length >= 2,
