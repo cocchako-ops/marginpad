@@ -124,6 +124,7 @@ const ADAPTERS = {
 export const TAPE_VENUES = Object.keys(ADAPTERS);
 
 const RING = 500;     // trades kept per venue+symbol for live reads
+const MIN_KEEP = 45;  // completed minutes kept per symbol - enough to draw three quarters of an hour of flow
 const DEDUP = 4000;   // recent trade ids kept per venue, to drop a repeat without unbounded memory
 
 export class TapeCollector extends BaseCollector {
@@ -135,7 +136,10 @@ export class TapeCollector extends BaseCollector {
     this.onTrade = onTrade || null;
     this.ctVal = {};
     this.rings = new Map();     // sym -> trade[]
-    this.minute = new Map();    // sym -> { m, buyUsd, sellUsd, n }
+    this.minute = new Map();    // sym -> { m, buyUsd, sellUsd, n } - the minute in progress
+    // COMPLETED minutes, kept so a reader can see the SHAPE of the flow rather than a single number that
+    // is meaningless three seconds into a minute. Pure memory, MIN_KEEP entries of four numbers per symbol.
+    this.mins = new Map();      // sym -> [{ m, buyUsd, sellUsd, n }] oldest first
     this.seen = new Map();      // sym -> Set of recent ids
     this.seenOrder = new Map(); // sym -> id[] (FIFO for trimming)
     this.trades = 0; this.dupes = 0; this.bad = 0; this.skipped = 0;
@@ -197,7 +201,13 @@ export class TapeCollector extends BaseCollector {
     // who was the aggressor, and that difference is the entire signal.
     const m = Math.floor(t.ts / 60000);
     let b = this.minute.get(t.sym);
-    if (!b || b.m !== m) { b = { m, buyUsd: 0, sellUsd: 0, n: 0 }; this.minute.set(t.sym, b); }
+    if (!b || b.m !== m) {
+      if (b) { // the minute just ended - file it before starting the next
+        let h = this.mins.get(t.sym); if (!h) { h = []; this.mins.set(t.sym, h); }
+        h.push(b); if (h.length > MIN_KEEP) h.splice(0, h.length - MIN_KEEP);
+      }
+      b = { m, buyUsd: 0, sellUsd: 0, n: 0 }; this.minute.set(t.sym, b);
+    }
     if (row.side === 'buy') b.buyUsd += row.usd; else b.sellUsd += row.usd;
     b.n++;
 
@@ -220,6 +230,17 @@ export class TapeCollector extends BaseCollector {
     return { minute: b.m * 60000, trades: b.n,
       buyUsd: Math.round(b.buyUsd), sellUsd: Math.round(b.sellUsd),
       deltaUsd: Math.round(b.buyUsd - b.sellUsd) };
+  }
+
+  /** The last completed minutes, oldest first, plus the one in progress. A page draws the flow from this. */
+  minutes(sym, n = 30) {
+    const h = this.mins.get(sym) || [];
+    const out = h.slice(Math.max(0, h.length - n)).map(function (b) {
+      return { minute: b.m * 60000, trades: b.n, buyUsd: Math.round(b.buyUsd), sellUsd: Math.round(b.sellUsd), deltaUsd: Math.round(b.buyUsd - b.sellUsd) };
+    });
+    const cur = this.delta(sym);
+    if (cur) out.push(Object.assign({ partial: true }, cur));
+    return out;
   }
 
   status() {

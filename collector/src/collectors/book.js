@@ -40,6 +40,11 @@ export const DEPTH_BPS = [1, 2, 5, 10, 25];
 // use - the paper engine's whole point is that a $250k order should not fill like a $10k one.
 export const SLIP_USD = [10000, 50000, 250000];
 
+// A DEPTH CURVE NEEDS RUNGS, NOT FIVE POINTS (2026-09-21). `depthUsd` keeps answering "how much within
+// 25 bps" for every consumer the published API already has and does not move. This is the same walk on a
+// much finer grid, so a page can draw the SHAPE of a book instead of a bar chart of five numbers.
+export const LADDER_BPS = [0.5, 1, 1.5, 2, 3, 4, 5, 7, 10, 14, 18, 25, 35, 50, 75, 100];
+
 const num = (v) => { const n = +v; return Number.isFinite(n) ? n : NaN; };
 
 // ---------------------------------------------------------------------------------------------------
@@ -186,6 +191,20 @@ export function summarize(book, skewMs) {
     slip['sell_' + usd] = walk(bids, usd);
   }
 
+  // Cumulative dollars per side at each rung, in ONE pass over the already-sorted side. A rung further
+  // out than the book itself reaches is **null**, never the running total: a flat tail would read as "no
+  // more liquidity out there", which is a claim about the market when it is only a fact about our coverage.
+  const ladderOf = (side, up) => {
+    const out = []; let acc = 0, i = 0;
+    const edge = side.length ? side[side.length - 1][0] : mid;
+    for (const bp of LADDER_BPS) {
+      const lim = up ? mid * (1 + bp / 10000) : mid * (1 - bp / 10000);
+      while (i < side.length && (up ? side[i][0] <= lim : side[i][0] >= lim)) { acc += side[i][0] * side[i][1]; i++; }
+      out.push((up ? lim > edge : lim < edge) ? null : Math.round(acc));
+    }
+    return out;
+  };
+
   return {
     mid: Math.round(mid * 1e6) / 1e6,
     bestBid, bestAsk,
@@ -194,6 +213,8 @@ export function summarize(book, skewMs) {
     coverBelowPct: Math.round((bestBid - bids[bids.length - 1][0]) / mid * 1e6) / 1e4,
     coverAbovePct: Math.round((asks[asks.length - 1][0] - bestAsk) / mid * 1e6) / 1e4,
     depthUsd: depth,
+    ladderBps: LADDER_BPS,
+    ladderUsd: { bid: ladderOf(bids, false), ask: ladderOf(asks, true) },
     slipBps: slip,
     seq: book.seq,
     venueTs: book.ts,                 // the venue's own clock, for provenance only

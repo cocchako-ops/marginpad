@@ -357,6 +357,22 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       note: 'side is the AGGRESSOR - the taker that crossed the spread.',
       trades: trades.slice(Math.max(0, trades.length - n)),
       deltaByVenue: delta,
+      // The COMPLETED minutes, so a page can draw the shape of the flow. deltaThisMinute alone is
+      // meaningless three seconds into a minute, which is most of the time somebody looks at it.
+      minutes: (function () {
+        const by = new Map();
+        for (const c of tapeCols) {
+          if (want && c.venue !== want) continue;
+          for (const m of (c.minutes ? c.minutes(sym, 30) : [])) {
+            const k = m.minute;
+            let a = by.get(k);
+            if (!a) { a = { minute: k, trades: 0, buyUsd: 0, sellUsd: 0, deltaUsd: 0, partial: !!m.partial }; by.set(k, a); }
+            a.trades += m.trades; a.buyUsd += m.buyUsd; a.sellUsd += m.sellUsd; a.deltaUsd += m.deltaUsd;
+            if (m.partial) a.partial = true;
+          }
+        }
+        return [...by.values()].sort((x, y) => x.minute - y.minute);
+      })(),
       deltaThisMinute: { ...tot, deltaUsd: Math.round(tot.buyUsd - tot.sellUsd) },
     });
   });

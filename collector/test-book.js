@@ -74,6 +74,29 @@ const pct = (a, b) => (!a || !b) ? Infinity : Math.abs(a - b) / ((a + b) / 2) * 
       const mono = (sl.buy_250000 == null) || (sl.buy_10000 != null && sl.buy_250000 >= sl.buy_10000);
       chk(`${c.venue}/${sym}: bigger orders slip more (or do not fill)`, mono, sl);
 
+      // THE LADDER (2026-09-21), the finer grid a depth curve is drawn from.
+      // The strongest check available here is that TWO INDEPENDENT WALKS OF THE SAME BOOK AGREE: depthUsd
+      // recomputes from scratch per rung, the ladder accumulates in one pass, and both claim the dollars
+      // within 25 bps. If either ever drifts, one of them is wrong and the page would draw a curve that
+      // disagrees with the number printed beside it.
+      const lb = s.ladderUsd && s.ladderUsd.bid, la = s.ladderUsd && s.ladderUsd.ask;
+      const i25 = s.ladderBps ? s.ladderBps.indexOf(25) : -1;
+      chk(`${c.venue}/${sym}: the ladder is there, on both sides, one value per rung`,
+        !!(lb && la && s.ladderBps && lb.length === s.ladderBps.length && la.length === s.ladderBps.length),
+        { rungs: s.ladderBps && s.ladderBps.length, bid: lb && lb.length, ask: la && la.length });
+      const cum = (a) => a.filter((v) => v != null).every((v, i, arr) => !i || v >= arr[i - 1]);
+      chk(`${c.venue}/${sym}: the ladder only ever grows (it is cumulative)`, cum(lb) && cum(la), { bid: lb, ask: la });
+      if (i25 >= 0 && lb[i25] != null) {
+        chk(`${c.venue}/${sym}: ladder and depthUsd agree at 25bp (two separate walks)`,
+          Math.abs(lb[i25] - s.depthUsd.bid_25) <= 2 && Math.abs(la[i25] - s.depthUsd.ask_25) <= 2,
+          { ladderBid: lb[i25], depthBid: s.depthUsd.bid_25, ladderAsk: la[i25], depthAsk: s.depthUsd.ask_25 });
+      }
+      // A rung further out than the book reaches must be null, never the running total - a flat tail would
+      // say "there is no more liquidity out there", which is a claim about the market, not about our reach.
+      const beyond = s.ladderBps.map((bp, i) => ({ bp, v: lb[i] })).filter((x) => x.bp / 100 > s.coverBelowPct);
+      chk(`${c.venue}/${sym}: past the book's own reach the ladder says null, not a number`,
+        beyond.every((x) => x.v === null), { coverBelowPct: s.coverBelowPct, beyond: beyond.slice(0, 3) });
+
       // THE LOAD-BEARING CHECK: our book, built from deltas, against the venue's own REST book.
       // The two are never simultaneous, and at 1bp from mid the top of a BTC book churns several times a
       // second - so the book is re-read RIGHT BEFORE the REST reply lands, and the comparison runs over the
