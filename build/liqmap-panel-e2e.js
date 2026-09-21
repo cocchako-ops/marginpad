@@ -81,8 +81,14 @@ const colourBefore = (html, i, prop) => {
     // SHORTS die. Invert either one and a reader meets the same zone in two colours one tap apart.
     chk(P('  ABOVE (shorts) is RED, like the live map it links to'), colourBefore(h, iAbove, 'color') === RED, { got: colourBefore(h, iAbove, 'color') });
     chk(P('  BELOW (longs) is GREEN, like the live map it links to'), colourBefore(h, iBelow, 'color') === GRN, { got: colourBefore(h, iBelow, 'color') });
+    // The ladder ENDS where the measured book block begins, and that block legitimately carries a red bar
+    // (resting offers). Scanning a fixed 4,000 characters past the BELOW header swept it up and reported the
+    // ladder as two-coloured the moment the book shipped - the check was right to notice a change and wrong
+    // about what it meant. Bound the scan at the block that follows it.
+    const iBook = h.indexOf('The real book right now', iBelow);
+    const dnEnd = iBook > iBelow ? iBook : iBelow + 4000;
     const barsUp = [...h.slice(iAbove, iBelow).matchAll(/background:(#[0-9a-fA-F]{6});opacity/g)].map((m) => m[1].toLowerCase());
-    const barsDn = [...h.slice(iBelow, iBelow + 4000).matchAll(/background:(#[0-9a-fA-F]{6});opacity/g)].map((m) => m[1].toLowerCase());
+    const barsDn = [...h.slice(iBelow, dnEnd).matchAll(/background:(#[0-9a-fA-F]{6});opacity/g)].map((m) => m[1].toLowerCase());
     chk(P('  every bar above the price is red'), barsUp.length > 0 && barsUp.every((x) => x === RED), { barsUp: [...new Set(barsUp)], n: barsUp.length });
     chk(P('  every bar below the price is green'), barsDn.length > 0 && barsDn.every((x) => x === GRN), { barsDn: [...new Set(barsDn)], n: barsDn.length });
 
@@ -94,6 +100,34 @@ const colourBefore = (html, i, prop) => {
     const money = [...ladder.matchAll(/\$[\d,.]+\s*(million|billion|[MB])\b/g)].map((m) => m[0]);
     chk(P('  the modelled ladder carries no dollar figure, only multiples'), money.length === 0, { money: money.slice(0, 4) });
     chk(P('  and it says which numbers are measured and which are modelled'), /modelled/i.test(h.slice(iBelow, iBelow + 5000)) && /collector watched/i.test(h.slice(iBelow, iBelow + 5000)));
+
+    // ---- THE MEASURED BOOK (2026-09-21) ----
+    // The first real dollar figure about liquidity these pages have ever carried. Everything above it is a
+    // model; this is resting limit orders read off four exchange books. The two must never blur into each
+    // other, so the block has to say it is measured AND has to say what it cannot see.
+    chk(P('  the measured order book is server-rendered too'), iBook > 0);
+    if (iBook > 0) {
+      const bSeg = h.slice(iBook, iBook + 4000);
+      const txt = bSeg.replace(/<[^>]+>/g, ' ').replace(/&mdash;/g, '-').replace(/&middot;/g, '.').replace(/\s+/g, ' ');
+      const bk = await (await fetch(ORIGIN + '/api/v1/book?symbol=' + C + '&cb=' + Date.now())).json().catch(() => null);
+      const cd = bk && bk.consolidatedDepthUsd;
+      const said = [...txt.matchAll(/\$([\d.]+)\s*(million|billion)/g)].map((m) => +m[1] * (m[2] === 'billion' ? 1e9 : 1e6));
+      const real = cd ? [+cd.bidUsd['25'], +cd.askUsd['25']] : [];
+      // Depth moves between the cached page and this fetch, so the assertion is that each figure it printed
+      // is recognisably one of the two real sums, not that it equals it to the dollar.
+      chk(P('  its dollars are the real resting depth, within 35%'),
+        said.length >= 2 && said.every((v) => real.some((r) => r > 0 && v >= r * 0.65 && v <= r * 1.35)), { said, real: real.map(Math.round) });
+      chk(P('  it names itself measured, and says how many books it read'), /measured/i.test(txt) && /\d+ exchange order books/i.test(txt), { head: txt.slice(0, 90) });
+      // `[^.]` EXCLUDES THE DECIMAL POINT, and every figure in this block is decimal: "0.27%" stops such a
+      // match dead at "reaches 0". Both patterns here matched nothing for that reason alone, against a page
+      // that was perfectly correct - the second time in one session a character class quietly ate a decimal.
+      chk(P('  it quotes the real cost of a $250,000 order'), /\$250,000 (buy|sell)[^%]{0,70}bps/i.test(txt));
+      // The honesty clause. A book shows orders somebody chose to place; a liquidation zone is where leverage
+      // is closed whether its owner likes it or not, and no book shows that at any distance. Losing this
+      // sentence would turn a measured block into an implied claim about the modelled bands above it.
+      chk(P('  it says a book is NOT a liquidation zone'), /different question/i.test(txt) && /whether its owner likes it or not/i.test(txt));
+      chk(P('  and it admits how far the book actually reaches'), /reaches[^%]{0,40}%/i.test(txt), { m: (txt.match(/reaches[^%]{0,60}%/i) || [])[0] });
+    }
 
     // ---- where it sends the reader ----
     chk(P('  the CTA opens the live map for THIS coin'), h.indexOf('/heatmap?coin=' + C) > 0);

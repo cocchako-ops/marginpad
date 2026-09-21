@@ -2769,6 +2769,18 @@
    physically covering the CTA and a position card's Close button (real-browser audit: elementFromPoint at
    CLOSE's center hit #jrFab). Dock them bottom-LEFT on this route - the left column's underside is free. */
 body[data-prod="plan"] #chatFab,body[data-prod="plan"] #jrFab{right:auto;left:20px;}
+/* THE MAP IS THE PAGE, SO THE CHROME GETS OUT OF ITS WAY (2026-09-21, owner: "pomeri to sto smeta").
+   Measured at 1366px: the heatmap stage is 1250 wide inside a 58px gutter, while these two pills are 133
+   and 96 wide - so My Trades covered 8.2% of the levels column and Chat another 4.8%, and the levels
+   column is the one that answers "how heavy is this cluster". Growing the gutter or shrinking the canvas
+   would have cost about 18% of the chart height to protect 13% of a 104px column, which is the wrong
+   trade. They become icon-only circles here instead: 46px at right:8 puts their left edge at 1312, clear
+   of the stage's 1308, and both keep their aria-label so a screen reader loses nothing. The vertical
+   stack (jrFab bottom:20, chatFab bottom:72) is untouched, and so are phones - there the map already
+   clears the tab bar and these pills are not drawn over it. */
+body[data-prod="heat"] #chatFab,body[data-prod="heat"] #jrFab{right:8px;width:46px;height:46px;padding:0;gap:0;justify-content:center;}
+body[data-prod="heat"] #chatFab>span,body[data-prod="heat"] #jrFab>span{display:none;}
+body[data-prod="heat"] #chatFab>svg,body[data-prod="heat"] #jrFab>svg{margin-right:0!important;width:18px;height:18px;}
 body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 /* charts: explicit dark background under the transparent LWC canvas - with no container bg the plot area could
    render WHITE inside the dark app on some mobile paths (UX audit, mobile paper-trade). */

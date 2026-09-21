@@ -49,7 +49,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:25px;height:25px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
     '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
-    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 344px);max-height:820px}' +
+    '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 364px);max-height:820px}' +
     '.hm-cv{flex:1;min-width:0;display:block;border-radius:10px 0 0 10px;background:#07090c;cursor:crosshair}' +
     '.hm-prof{width:104px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
     '.hm-tip{position:absolute;pointer-events:none;background:rgba(10,12,16,.97);border:1px solid #2a3345;border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.55;color:#dbe4f5;z-index:5;display:none;font-family:"Space Mono",monospace;white-space:nowrap}' +
@@ -90,7 +90,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
-    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -1225,7 +1225,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over 24 hours - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>';
-    wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
+    // THE ONE MEASURED DOLLAR FIGURE ON THIS MAP (2026-09-21, owner: "sad imamo procene a kad ubacimo knjige
+    // znacemo tacno koliko"). Every band on the canvas is MODELLED, and a dollar figure on a band stays
+    // forbidden - open interest overstated an average BTC band by about 30x what has ever really liquidated
+    // there. This is the opposite: real limit orders standing on four exchange books seconds ago, in dollars.
+    // It is a LINE rather than a drawing on purpose. A real book reaches only about 0.25% from the price while
+    // this map frames whole percents, so painted on the canvas it would be a sliver two percent of the height
+    // tall - present, unreadable, and easy to mistake for a band. Only BTC, ETH and SOL have a book on our
+    // collector today; every other coin gets no row at all rather than a row of zeros.
+    var bookEl = el('div', 'hm-book');
+    // IT PAYS FOR ITS OWN HEIGHT. As a new row it pushed the stage 18px below the fold and heatmap-e2e's
+    // 'the whole map is visible without scrolling' went red - the map fitting the first screen is a measured
+    // promise from the 2026-09-18 pass, not a preference. Riding inside the legend strip was tried first and
+    // was worse: the combined text wrapped to two lines on a desktop anyway and overflowed on a phone. So the
+    // row keeps its own line and the stage's height constant goes 344 -> 364px to pay for it. New content on a
+    // screen that is already full takes its space from somewhere; the only question is whether you choose where.
+    bookEl.style.cssText = 'order:2;display:none;flex-wrap:wrap;gap:4px 13px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-4px 0 7px';
+    wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(bookEl); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
@@ -1235,7 +1251,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       try { var u = new URL(location.href); u.searchParams.set('coin', S.coin); if (S.win === '1D') u.searchParams.delete('win'); else u.searchParams.set('win', S.win); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
     }
     S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; urlSync(); if (S.loadBook) S.loadBook(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; urlSync(); S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
     selD.addEventListener('change', function () { if (!S) return; var v = +selD.value; S.showDots = v >= 0; S.dotMin = Math.max(0, v);
       try { localStorage.setItem('mp_hm_dotmin', String(v)); } catch (e) {}
@@ -1285,6 +1301,31 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); if (!S._tgT || Date.now() - S._tgT > 5000) { S._tgT = Date.now(); updTargets(); } sched(); } };
     window.addEventListener('mp:price', S.onPrice);
     try { if (window.mpWS) window.mpWS.sub(coin); } catch (e) {}
+    // The book moves in seconds, so it is read on its own beat rather than on the 60 s map refresh. The
+    // endpoint is edge-cached 5 s, so a room full of readers still costs the droplet one fetch per PoP.
+    function loadBook() {
+      if (!S || !bookEl) return;
+      var coin = S.coin;
+      fetch('/api/v1/book?symbol=' + encodeURIComponent(coin)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!S || S.coin !== coin) return; // a slow answer must never paint onto the coin the reader switched to
+        var cd = j && j.consolidatedDepthUsd;
+        if (!cd || !cd.bidUsd || !(+cd.bidUsd['25'] > 0)) { bookEl.style.display = 'none'; return; }
+        var ven = [], k; for (k in (j.venues || {})) ven.push(j.venues[k]);
+        if (!ven.length) { bookEl.style.display = 'none'; return; }
+        var bid = +cd.bidUsd['25'] || 0, ask = +cd.askUsd['25'] || 0, buy = null, i, v;
+        for (i = 0; i < ven.length; i++) { v = ven[i].slipBps && +ven[i].slipBps.buy_250000; if (v > 0 && (buy === null || v < buy)) buy = v; }
+        bookEl.innerHTML = '<b style="color:#c2f64a;font-weight:700;letter-spacing:.04em">BOOK NOW</b>'
+          + '<span><b style="color:#66d3a5">' + usdShort(bid) + '</b> resting bids</span>'
+          + '<span><b style="color:#ff8f86">' + usdShort(ask) + '</b> resting offers</span>'
+          + '<span>within 0.25% of price</span>'
+          + (buy !== null ? '<span>$250k costs <b style="color:#e9e7df">' + buy.toFixed(2) + ' bps</b></span>' : '')
+          + '<span style="color:#5c6b84">measured &middot; ' + ven.length + ' venues &middot; not the modelled bands</span>';
+        bookEl.style.display = 'flex';
+      }).catch(function () {});
+    }
+    S.loadBook = loadBook;
+    loadBook();
+    S.timers.push(setInterval(function () { if (!document.hidden) loadBook(); }, 20000));
     S.timers.push(setInterval(function () { loadMyPos(); }, 15000));
     S.timers.push(setInterval(pollEvents, 6000));
     S.timers.push(setInterval(function () { if (S && !document.hidden) loadAll(false); }, 60000));

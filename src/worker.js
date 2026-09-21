@@ -2138,6 +2138,71 @@ async function ssrLiqSentences(mode, param, env) {
 //      outside the range on screen and made every bar the reader could see look empty.
 // Deep link verified live the same day: /heatmap?coin=ETH selects ETH and ?win=4H selects the window. The old note
 // forbidding /heatmap?sym=BTC was about the wrong PARAMETER NAME, not about deep-linking at all.
+// THE ONE FIGURE ON THESE PAGES THAT IS NOT A MODEL (2026-09-21, owner: "sad imamo procene a kad ubacimo
+// knjige znacemo tacno koliko"). Everything in the zone ladder is modelled - our accumulation of where
+// leverage probably sits - and a dollar figure on it stays forbidden, because open interest overstated an
+// average BTC band by about 30x what has ever really liquidated there. This block is the opposite: real
+// resting limit orders, read from four exchange books seconds ago, priced in dollars because that is finally
+// measurable.
+//
+// IT ALSO STATES THE LIMIT THAT MAKES THE MODEL HONEST, and that sentence is the most valuable thing here.
+// A real order book barely reaches a quarter of one percent from the price - measured on BTC the same day,
+// Bybit's 400 levels cover +/-0.04%, OKX's 800 cover +/-0.07%, Bitget's 1000 cover +/-0.24% - while
+// liquidation zones sit whole percents out. So NOBODY can tell you what is really resting at a zone 6% away,
+// and the reason those zones are modelled is that there is no book out there to read. Saying that out loud
+// costs nothing and is worth more than another confident number.
+//
+// Absent, never zeroed, for a coin with no book on our collector: a zero would read as "no liquidity".
+async function ssrBookBlock(S, px, env, col, nearestPct) {
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
+  if (!base || !(px > 0)) return '';
+  let bk = null;
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 1300);
+    const r = await fetch(base + '/api/v1/book?symbol=' + encodeURIComponent(S), { signal: ctl.signal, cf: { cacheTtl: 5, cacheEverything: true } });
+    clearTimeout(to);
+    if (r.ok) bk = await r.json();
+  } catch (e) { return ''; }
+  const cd = bk && bk.consolidatedDepthUsd;
+  if (!cd || !cd.bidUsd || !(+cd.bidUsd['25'] > 0)) return '';
+  const ven = Object.values(bk.venues || {});
+  if (!ven.length) return '';
+  const bid = +cd.bidUsd['25'] || 0, ask = +cd.askUsd['25'] || 0, top = Math.max(bid, ask) || 1;
+  const nums = (f) => ven.map(f).filter((v) => v > 0);
+  const lo = (a) => (a.length ? Math.min.apply(null, a) : null);
+  const hi = (a) => (a.length ? Math.max.apply(null, a) : null);
+  const buy = lo(nums((v) => v.slipBps && +v.slipBps.buy_250000));
+  const sell = lo(nums((v) => v.slipBps && +v.slipBps.sell_250000));
+  const reach = hi(nums((v) => Math.max(+v.coverBelowPct || 0, +v.coverAbovePct || 0)));
+  const ageS = Math.max(0, Math.round((Date.now() - (+bk.ts || Date.now())) / 1000));
+  const bar = (v, c2) => '<span style="display:block;height:9px;background:#15181c;border-radius:2px;overflow:hidden">'
+    + '<span style="display:block;height:100%;width:' + Math.max(6, Math.round(v / top * 100)) + '%;background:' + c2 + ';opacity:.85"></span></span>';
+  const row = (k, v, c2) => '<div style="display:grid;grid-template-columns:minmax(96px,120px) 1fr minmax(78px,auto);gap:10px;align-items:center;padding:3px 0">'
+    + '<span style="font:11.5px/1.3 system-ui,sans-serif;color:#c9cfd6">' + k + '</span>' + bar(v, c2)
+    + '<span style="font:12.5px/1 ui-monospace,monospace;color:#e9e7df;text-align:right">' + _susd(v) + '</span></div>';
+  const slip = (buy != null || sell != null)
+    ? '<div style="display:flex;flex-wrap:wrap;gap:6px 18px;margin:9px 0 0;font:12px/1.5 system-ui,sans-serif;color:#c9cfd6">'
+      + (buy != null ? '<span>A $250,000 buy would really cost <strong style="color:#e9e7df">' + buy.toFixed(2) + ' bps</strong> in slippage</span>' : '')
+      + (sell != null ? '<span>a $250,000 sell, <strong style="color:#e9e7df">' + sell.toFixed(2) + ' bps</strong></span>' : '')
+      + '</div>' : '';
+  // The limit, stated with the numbers behind it. Without a ladder to compare against we still say the reach.
+  const reachTxt = reach > 0 ? reach.toFixed(2) + '%' : 'a fraction of a percent';
+  const why = '<p style="margin:10px 0 0;font:12px/1.55 system-ui,sans-serif;color:' + col.dim + '">'
+    + 'This is <strong style="color:#c9cfd6">measured</strong>, not modelled: real limit orders standing on '
+    + ven.length + ' exchange order books ' + (ageS <= 1 ? 'a second' : ageS + ' seconds') + ' ago. '
+    + 'It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders '
+    + 'somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed '
+    + 'whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. '
+    + 'On top of which the deepest book we can read only reaches <strong style="color:#c9cfd6">' + reachTxt + '</strong> from the price'
+    + (nearestPct > 0 ? ', while the nearest zone above sits ' + nearestPct.toFixed(1) + '% away' : '')
+    + ': past that, even the resting orders are out of sight.</p>';
+  return '<div style="padding:14px 16px;border-top:1px solid ' + col.line + '">'
+    + '<div style="font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:' + col.lime + ';margin:0 0 8px">The real book right now &middot; measured</div>'
+    + row('Bids resting', bid, col.grn) + row('Offers resting', ask, col.red)
+    + '<div style="font:11.5px/1.5 system-ui,sans-serif;color:' + col.dim + ';margin-top:4px">within 0.25% of the price, summed across ' + ven.length + ' venues</div>'
+    + slip + why + '</div>';
+}
+
 async function ssrLiqMapPanel(sym, env, c) {
   const S = String(sym || '').toUpperCase();
   const px = c && +c.price > 0 ? +c.price : 0;
@@ -2162,7 +2227,7 @@ async function ssrLiqMapPanel(sym, env, c) {
 
   // Standing zones from our own accumulation (HM_COINS only - the cron walks ten majors, and a page for a coin it
   // does not walk gets the tiles and the prose without inventing a ladder).
-  let ladder = '';
+  let ladder = '', nearestPct = null;
   try {
     const raw = await env.STATS.get('hmp:pub:' + S);
     const pool = raw ? JSON.parse(raw) : null;
@@ -2172,6 +2237,8 @@ async function ssrLiqMapPanel(sym, env, c) {
       const up = near.filter(z => +z.p > px).sort((a, b) => b.w - a.w).slice(0, 4).sort((a, b) => b.p - a.p);
       const dn = near.filter(z => +z.p < px).sort((a, b) => b.w - a.w).slice(0, 4).sort((a, b) => b.p - a.p);
       const shown = up.concat(dn);
+      // how far the book would have to reach to say anything about the nearest zone - it cannot, and says so
+      if (up.length) nearestPct = Math.min.apply(null, up.map(function (z) { return Math.abs(+z.p / px - 1) * 100; }));
       if (shown.length >= 4) {
         const maxW = Math.max.apply(null, shown.map(z => +z.w));
         const avgAll = near.reduce((s, z) => s + (+z.w), 0) / Math.max(1, near.length);
@@ -2210,6 +2277,8 @@ async function ssrLiqMapPanel(sym, env, c) {
   // A panel carrying one lonely tile and no ladder reads as broken chrome. Below that it is not worth drawing and
   // the sentence box alone does the job.
   const tileN = (tiles.match(/border-right/g) || []).length;
+  let book = '';
+  try { book = await ssrBookBlock(S, px, env, { grn: grn, red: red, lime: lime, dim: dim, line: line }, nearestPct); } catch (e) {}
   if (tileN < 2 && !ladder) return '';
   const hmLink = HM_COINS.indexOf(S) >= 0 ? '/heatmap?coin=' + S : '/heatmap';
   const cta = '<div style="padding:14px 16px;border-top:1px solid ' + line + ';display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:9px">'
@@ -2221,7 +2290,7 @@ async function ssrLiqMapPanel(sym, env, c) {
   return '<div data-ssr="liqmap" style="margin:22px 0;border:1px solid ' + line + ';border-radius:14px;overflow:hidden;background:#0d0f12;color:#e9e7df">'
     + '<div style="padding:11px 16px;border-bottom:1px solid ' + line + ';font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:' + lime + '">LIVE ' + S + ' LIQUIDATION MAP &middot; UPDATED ' + _hhmm() + ' UTC</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr))">' + tiles + '</div>'
-    + ladder + cta + '</div>\n    ';
+    + ladder + book + cta + '</div>\n    ';
 }
 async function handleSsrLiq(request, url, env, mode, param) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
