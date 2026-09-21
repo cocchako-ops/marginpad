@@ -161,6 +161,60 @@ function robots(txt) {
     ok(twice.length === 0, 'and none carries the hub-link stylesheet twice', twice.slice(0, 6));
   }
 
+  /* WHO IS STUDYING US (2026-09-21, owner: "identifikator ako neko koristi Ahrefs ... da mi javi na tg").
+
+     THE WHOLE VALUE IS IN ONE DISTINCTION. AhrefsBot, SemrushBot, MJ12bot and DotBot crawl the entire
+     web against everybody, continuously - alerting on those is a daily message that means nothing, and
+     an alert that cries wolf gets ignored. AhrefsSiteAudit, SemrushBot-SA, Screaming Frog and Sitebulb
+     have NO web-wide mode: each one runs because a person typed our domain into it. Only those message.
+
+     Both halves are asserted, because getting either wrong ruins it: a missed auditor is a missed
+     signal, and a web-wide crawler that alerts turns the channel into noise. */
+  console.log('\n-- SEO tooling: the auditors are named, the web-wide crawlers are not');
+  {
+    const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const i = src.indexOf('SEO tooling, and the distinction that makes it worth reporting');
+    const blk = i > 0 ? src.slice(i, i + 2600) : '';
+    ok(i > 0, 'the detector exists');
+    /* Run the REAL regexes against REAL User-Agent strings, in the real order. Comparing where a name
+       appears in the source would have lied here: "SemrushBot-SA" contains "SemrushBot", so a position
+       test calls the auditor a background crawler while the code classifies it correctly. */
+    const rxOf = n => { const m = blk.match(new RegExp('const ' + n + ' = [^\\n]*?(/[^/]+/i)')); return m ? new RegExp(m[1].slice(1, -2), 'i') : null; };
+    const RX_AUDIT = rxOf('seoOnDemand'), RX_WIDE = rxOf('seoWide');
+    ok(!!RX_AUDIT && !!RX_WIDE, 'both classifiers are readable');
+    const classify = ua => (RX_AUDIT && RX_AUDIT.test(ua)) ? 'audit' : ((RX_WIDE && RX_WIDE.test(ua)) ? 'wide' : 'none');
+    const AUDIT_UA = {
+      'AhrefsSiteAudit': 'Mozilla/5.0 (compatible; AhrefsSiteAudit/6.1; +http://ahrefs.com/robot/site-audit/)',
+      'SemrushBot-SA': 'Mozilla/5.0 (compatible; SemrushBot-SA/7.1; +http://www.semrush.com/bot.html)',
+      'Screaming Frog': 'Screaming Frog SEO Spider/21.3',
+      'Sitebulb': 'Mozilla/5.0 (compatible; Sitebulb/6.0; +https://sitebulb.com/bot)',
+      'rogerbot': 'rogerbot/1.0 (http://moz.com/help/pro/what-is-rogerbot-)'
+    };
+    const WIDE_UA = {
+      'AhrefsBot': 'Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)',
+      'SemrushBot': 'Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)',
+      'MJ12bot': 'Mozilla/5.0 (compatible; MJ12bot/v1.4.8; http://mj12bot.com/)',
+      'DotBot': 'Mozilla/5.0 (compatible; DotBot/1.2; +https://opensiteexplorer.org/dotbot)'
+    };
+    for (const [n, ua] of Object.entries(AUDIT_UA)) ok(classify(ua) === 'audit', n + ' reads as somebody auditing us', classify(ua));
+    for (const [n, ua] of Object.entries(WIDE_UA)) ok(classify(ua) === 'wide', n + ' reads as web-wide background and must never message', classify(ua));
+    // and a real reader must never be mistaken for either
+    ok(classify('Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1') === 'none', 'a person is neither');
+    ok(classify('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)') === 'none', 'and a search engine is left to the crawler telemetry beside it');
+    ok(/if \(!seoOnDemand\) return;/.test(blk), 'only the on-demand tools reach Telegram');
+    ok(/seo:told:/.test(blk) && blk.indexOf("env.STATS.put(fk") < blk.indexOf('tgAdmin'),
+      'the once-a-day flag is written BEFORE the send, so a thousand-page crawl is one message');
+    // it lives on the request path because these bots never run JavaScript and so never fire the beacon
+    ok(blk.indexOf('env.AE.writeDataPoint') > 0, 'every hit is recorded even when it does not alert');
+
+    const r = await fetch(S + '/api/admin/seobots?days=1', { headers: { 'x-admin-key': (fs.readFileSync(path.join(__dirname,'..','ADMIN_KEY.local.txt'),'utf8').match(/mpadm_[A-Za-z0-9]+/)||[''])[0] } }).then(x => x.json()).catch(() => null);
+    ok(r && Array.isArray(r.audits) && Array.isArray(r.wide), 'the desk reads them back as two lists, never one total');
+    /* MEASURED: of four pages fetched as a crawler, only /liquidations/ recorded - in production
+       run_worker_first is a LIST, so a static page never reaches the Worker. The endpoint has to admit
+       that, or a zero on a static page gets read as "nobody crawled it". */
+    ok(r && r.coverage && /floor/.test(r.coverage.meaning || ''), 'and it states what it is blind to');
+  }
+
   console.log('\nseo-surface-e2e: pass ' + pass + '  fail ' + fail);
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });

@@ -17392,6 +17392,36 @@ export default {
       const ua9 = request.headers.get('user-agent') || '';
       const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot/i);
       if (m9) env.AE.writeDataPoint({ blobs: ['aibot', m9[0].toLowerCase(), url.pathname.slice(0, 96)], doubles: [1], indexes: ['aibot'] });
+      /* SEO tooling, and the distinction that makes it worth reporting. The web-wide crawlers are
+         background noise - they visit everyone, always. The site-audit crawlers have no web-wide
+         mode at all: each one only runs because somebody pointed it at this domain. */
+      const seoOnDemand = ua9.match(/AhrefsSiteAudit|SemrushBot-SA|SiteAuditBot|rogerbot|Screaming Frog|Sitebulb|SEOlyt|JamesBOT|Seekport/i);
+      const seoWide = seoOnDemand ? null : ua9.match(/AhrefsBot|SemrushBot|MJ12bot|DotBot|BLEXBot|Barkrowler|SEOkicks|DataForSeoBot|serpstatbot|linkdexbot|SiteCheckerBot/i);
+      const seoHit = seoOnDemand || seoWide;
+      if (seoHit) {
+        const tool = seoHit[0].replace(/[^A-Za-z0-9 -]/g, '').slice(0, 24);
+        env.AE.writeDataPoint({ blobs: ['seobot', tool.toLowerCase(), url.pathname.slice(0, 96)], doubles: [1], indexes: ['seobot'] });
+        if (env.STATS) ctx.waitUntil((async () => {
+          try {
+            const day = new Date().toISOString().slice(0, 10);
+            const ck = 'seo:' + (seoOnDemand ? 'audit' : 'wide') + ':' + tool + ':' + day;
+            const n = (+(await env.STATS.get(ck)) || 0) + 1;
+            await env.STATS.put(ck, String(n), { expirationTtl: 3456000 });
+            /* ONE LINE PER TOOL PER DAY. Screaming Frog pulls a thousand pages in minutes; the owner
+               needs to know it happened, not to watch it happen. The flag is written BEFORE the send,
+               so a burst of parallel requests cannot each decide it is the first. */
+            if (!seoOnDemand) return;
+            const fk = 'seo:told:' + tool + ':' + day;
+            if (await env.STATS.get(fk)) return;
+            await env.STATS.put(fk, '1', { expirationTtl: 172800 });
+            const cc9 = (request.cf && request.cf.country) || '?';
+            await tgAdmin(env, '<b>Somebody is auditing the site</b>\n' + tool + ' is crawling marginpad.io right now (from ' + cc9 + ').\n'
+              + 'First page: ' + url.pathname.slice(0, 80) + '\n\n'
+              + '<i>This tool has no web-wide mode - it only runs when a person enters our domain into it. Ahrefs/Semrush background crawling is counted separately and never messages you.</i>',
+              { kind: 'seo audit', sev: 'info' });
+          } catch (e) {}
+        })());
+      }
     } } catch (e) {}
     // MEASUREMENT (temporary, read-only telemetry): unsampled per-invocation counter by route family → AE. AE has no
     // write quota and SUM(_sample_interval) corrects any internal down-sampling, so the SHARE per family is accurate.
@@ -18578,6 +18608,43 @@ export default {
     // hits, 2,481 assistant-referred visits (3.56% of all pageviews, two thirds of Google organic), and /coin/btc/ was
     // the most-crawled page on the site (4,838 hits) while sending nobody at all. `gap` is that table, sorted by how
     // much a page is read relative to what it returns.
+    if (url.pathname === '/api/admin/seobots' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      /* Two classes, never one total. `audits` is somebody deliberately taking the site apart - those
+         tools have no web-wide mode, so each row is a person who typed our domain into one. `wide` is
+         Ahrefs and friends indexing the whole internet, which says nothing about us and is here only
+         so an audit can be read against a baseline.
+         Counts come from AE: a KV counter under a crawl burst reads and writes the same value from
+         every parallel request and reported three pages as one. */
+      const dN = Math.min(90, Math.max(1, +url.searchParams.get('days') || 30));
+      const D = "timestamp > now() - INTERVAL '" + dN + "' DAY";
+      const [byTool, byPath, byDay] = await Promise.all([
+        aeQuery(env, `SELECT blob2 AS tool, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='seobot' AND ${D} GROUP BY tool ORDER BY n DESC LIMIT 40`),
+        aeQuery(env, `SELECT blob2 AS tool, blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='seobot' AND ${D} GROUP BY tool, path ORDER BY n DESC LIMIT 200`),
+        aeQuery(env, `SELECT blob2 AS tool, toDate(timestamp) AS d, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='seobot' AND ${D} GROUP BY tool, d ORDER BY d DESC LIMIT 400`)
+      ]);
+      if (!byTool) return J({ error: 'ae_unavailable', hint: 'CF_API_TOKEN is what reads Analytics Engine' }, 503);
+      const AUDIT = /ahrefssiteaudit|semrushbot-sa|siteauditbot|rogerbot|screaming frog|sitebulb|seolyt|jamesbot|seekport/i;
+      const firstSeen = {}, lastSeen = {};
+      for (const r of (byDay || [])) { const t = r.tool, d = String(r.d).slice(0, 10);
+        if (!firstSeen[t] || d < firstSeen[t]) firstSeen[t] = d;
+        if (!lastSeen[t] || d > lastSeen[t]) lastSeen[t] = d; }
+      const top = {};
+      for (const r of (byPath || [])) { if (!top[r.tool]) top[r.tool] = []; if (top[r.tool].length < 5) top[r.tool].push({ path: r.path, n: +r.n || 0 }); }
+      const rows = (byTool || []).map(r => ({ tool: r.tool, pages: +r.n || 0,
+        firstSeen: firstSeen[r.tool] || null, lastSeen: lastSeen[r.tool] || null, topPages: top[r.tool] || [] }));
+      return J({ days: dN,
+        audits: rows.filter(r => AUDIT.test(r.tool)),
+        wide: rows.filter(r => !AUDIT.test(r.tool)),
+        note: 'an audit tool has no web-wide mode - each row is somebody who entered marginpad.io into it, and it messages Telegram once per tool per day. The wide crawlers visit everybody and never message.',
+        /* SAY WHAT THIS CANNOT SEE. Measured with a real crawl: of four pages fetched as Sitebulb,
+           only /liquidations/ recorded. In production run_worker_first is a LIST, so a static page is
+           served from assets and the Worker never runs - it cannot count what it never handles. The
+           counts below are a FLOOR, and a zero on a static page means "not seen", not "not crawled". */
+        coverage: { seenOn: 'pages the Worker handles (run_worker_first in wrangler.toml)',
+          blindTo: 'plain static pages - the homepage, /season/, /rewards/, /trading-api/, most of the blog',
+          meaning: 'these counts are a floor; a zero on a static page means not seen, not not-crawled' } });
+    }
+
     if (url.pathname === '/api/admin/aiseo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
       const AI = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%' OR blob4 LIKE '%you.com%' OR blob4 LIKE '%phind%')";
