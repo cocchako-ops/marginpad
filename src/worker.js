@@ -566,9 +566,20 @@ async function cgCoinAgg(sym, env) {
   try {
  const [fu, ls, oi, lq] = await Promise.all([J(handleCgFunding, '/api/cg/funding'), J(handleCgLongShort, '/api/cg/longshort'), J(handleCgOpenInterest, '/api/cg/openinterest'), J(handleCgLiquidations, '/api/cg/liquidations')]);
  const f = find(fu), l = find(ls), o = find(oi), q = find(lq);
- if (!f && !o && !q) return null;
  const num = (v) => (v != null && isFinite(+v)) ? +v : null;
- return { symbol: sym, price: num(f && f.price) ?? num(o && o.price), chg24h: num(f && f.chg24h) ?? num(o && o.chg24h),
+ // THE SUB-CENT COINS TRADE AS A 1000x CONTRACT AND THAT SILENTLY KILLED FIVE PAGES (2026-09-21). The funding and
+ // open-interest boards list 1000PEPE, 1000SHIB, 1000BONK and 1000FLOKI, so a lookup for PEPE matched the
+ // liquidations board (our collector normalises to the plain symbol) but never a price - and because
+ // handleSsrLiq needs two sentences to inject anything, /pepe-liquidation-map/, /shib-, /bonk-, /floki- and
+ // /ton- served NO live block at all, with no error anywhere. The live price cascade knows the plain symbol:
+ // /api/price?symbol=PEPE answers 0.000005001 while this aggregate answered null. Measured: 27 of 32 map pages
+ // had a price, 5 did not.
+ // DELIBERATELY NOT reading the 1000x row and dividing by a thousand: a price that is wrong by three orders of
+ // magnitude is far worse than an absent one, and this figure feeds liquidation levels people act on.
+ let price = num(f && f.price) ?? num(o && o.price);
+ if (price == null) { try { const lp = await fetchPriceCached(sym); if (lp && +lp.price > 0) price = +lp.price; } catch (e) {} }
+ if (!f && !o && !q && price == null) return null; // nothing measured anywhere - say nothing rather than guess
+ return { symbol: sym, price, chg24h: num(f && f.chg24h) ?? num(o && o.chg24h),
  oiUsd: num(o && o.oiUsd) ?? num(f && f.oiUsd) ?? 0, oiChg24h: num(o && o.oiChg24h), funding: num(f && f.funding),
  longLiq24h: num(q && q.long) ?? 0, shortLiq24h: num(q && q.short) ?? 0, vol24h: null,
  longPct: num(l && l.longPct), shortPct: num(l && l.shortPct) };
@@ -2076,9 +2087,102 @@ async function ssrLiqSentences(mode, param, env) {
       else S.push('Funding is negative (' + f.toFixed(4) + '%) - the crowd is short, and short clusters above the price are the first targets.');
     }
     if (c.price != null) S.push(sym + ' trades at ' + _spx(c.price) + (ch != null && Math.abs(ch) >= 0.5 ? (', ' + (ch > 0 ? 'up ' : 'down ') + Math.abs(ch).toFixed(2) + '% in 24 hours') : '') + '.');
-    return { S, links: [['/rekt/', 'Live liquidation feed'], ['/liquidations/', '24h totals by coin']] };
+    return { S, c, links: [['/rekt/', 'Live liquidation feed'], ['/liquidations/', '24h totals by coin']] };
   }
   return { S };
+}
+// THE LIQUIDATION-MAP PANEL (2026-09-21, owner: "moze da se uradi mnogo bolje, ne ovako klot stranica samo tekst").
+// These 32 pages were 806 words of prose with five plain links to /heatmap, no live figure and no venue anywhere.
+// They take thousands of crawls each. This puts the market ON the page before the prose: measured 24h liquidations
+// for that coin, and the standing zones our own model is holding, drawn to scale.
+//
+// TWO RULES THIS PANEL MUST NOT BREAK, both learned on the heatmap itself:
+//   1. NO DOLLAR FIGURE FOR THE MODEL. Open interest overstated an average BTC band by ~30x what has ever really
+//      liquidated in one, so a standing zone is published as a RATIO - x the average standing band - and never as
+//      money. The measured 24h totals beside it ARE money, because the collector watched them happen.
+//   2. SCALE AGAINST THE VISIBLE SET, never against the heaviest band in the whole model, which usually sits far
+//      outside the range on screen and made every bar the reader could see look empty.
+// Deep link verified live the same day: /heatmap?coin=ETH selects ETH and ?win=4H selects the window. The old note
+// forbidding /heatmap?sym=BTC was about the wrong PARAMETER NAME, not about deep-linking at all.
+async function ssrLiqMapPanel(sym, env, c) {
+  const S = String(sym || '').toUpperCase();
+  const px = c && +c.price > 0 ? +c.price : 0;
+  if (!px) return '';
+  const L = +(c.longLiq24h || 0), Sh = +(c.shortLiq24h || 0), T = L + Sh;
+  const ch = isFinite(+c.chg24h) ? +c.chg24h : null;
+  const grn = '#2ebd85', red = '#ff5a4d', lime = '#c2f64a', dim = '#8b939d', line = '#1e2227';
+  const esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]));
+
+  const tile = (k, v, col) => '<div style="padding:11px 14px;border-right:1px solid ' + line + ';min-width:0">'
+    + '<div style="font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:' + dim + ';margin-bottom:6px">' + k + '</div>'
+    + '<div style="font:700 19px/1.15 system-ui,sans-serif;color:' + (col || '#e9e7df') + ';word-break:break-word">' + v + '</div></div>';
+
+  let tiles = tile('Price', _spx(px));
+  if (ch != null) tiles += tile('24h', (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%', ch >= 0 ? grn : red);
+  if (T >= 1000) {
+    tiles += tile('Liquidated 24h', _susd(T));
+    // "15% / 85%" does not say which number is which. Naming the side costs two characters.
+    const lp = Math.round(L / T * 100);
+    tiles += tile('Long vs short', lp + '% longs', lp >= 60 ? red : lp <= 40 ? grn : '#e9e7df');
+  }
+
+  // Standing zones from our own accumulation (HM_COINS only - the cron walks ten majors, and a page for a coin it
+  // does not walk gets the tiles and the prose without inventing a ladder).
+  let ladder = '';
+  try {
+    const raw = await env.STATS.get('hmp:pub:' + S);
+    const pool = raw ? JSON.parse(raw) : null;
+    const alive = (pool && pool.alive) || [];
+    if (alive.length > 12) {
+      const near = alive.filter(z => +z.w > 0 && Math.abs(+z.p / px - 1) <= 0.12);
+      const up = near.filter(z => +z.p > px).sort((a, b) => b.w - a.w).slice(0, 4).sort((a, b) => b.p - a.p);
+      const dn = near.filter(z => +z.p < px).sort((a, b) => b.w - a.w).slice(0, 4).sort((a, b) => b.p - a.p);
+      const shown = up.concat(dn);
+      if (shown.length >= 4) {
+        const maxW = Math.max.apply(null, shown.map(z => +z.w));
+        const avgAll = near.reduce((s, z) => s + (+z.w), 0) / Math.max(1, near.length);
+        const row = (z) => {
+          const d = (+z.p / px - 1) * 100, above = d > 0, col = above ? grn : red;
+          const w = Math.max(6, Math.round(+z.w / maxW * 100));
+          const rel = avgAll > 0 ? (+z.w / avgAll) : 0;
+          return '<div style="display:grid;grid-template-columns:minmax(72px,88px) 1fr minmax(86px,auto);gap:10px;align-items:center;padding:3px 0">'
+            + '<span style="font:12.5px/1 ui-monospace,monospace;color:#e9e7df">' + _spx(+z.p) + '</span>'
+            + '<span style="display:block;height:9px;background:#15181c;border-radius:2px;overflow:hidden"><span style="display:block;height:100%;width:' + w + '%;background:' + col + ';opacity:.85"></span></span>'
+            + '<span style="font:11.5px/1 ui-monospace,monospace;color:' + dim + ';text-align:right">' + (above ? '+' : '') + d.toFixed(1) + '% · ' + (rel >= 1 ? rel.toFixed(1) : rel.toFixed(2)) + 'x</span></div>';
+        };
+        const hdr = (t, col) => '<div style="font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:' + col + ';margin:0 0 6px">' + t + '</div>';
+        ladder = '<div style="padding:14px 16px;border-top:1px solid ' + line + '">'
+          + (up.length ? hdr('Above &mdash; where shorts get liquidated', grn) + up.map(row).join('') : '')
+          + '<div style="display:flex;align-items:center;gap:10px;margin:9px 0;padding:5px 0;border-top:1px dashed #2d333b;border-bottom:1px dashed #2d333b">'
+          + '<span style="font:700 11px/1 ui-monospace,monospace;color:' + lime + '">' + S + ' ' + _spx(px) + '</span>'
+          + '<span style="font:11px/1 system-ui,sans-serif;color:' + dim + '">trading now</span></div>'
+          + (dn.length ? hdr('Below &mdash; where longs get liquidated', red) + dn.map(row).join('') : '')
+          + '<p style="margin:10px 0 0;font:12px/1.55 system-ui,sans-serif;color:' + dim + '">Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are <strong style="color:#c9cfd6">modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.</p>'
+          + '</div>';
+      }
+    }
+  } catch (e) {}
+
+  const btn = (href, label, sub, primary, mpex) => '<a href="' + href + '"' + (mpex ? ' data-mpex="' + esc(mpex) + '" target="_blank" rel="nofollow sponsored noopener"' : '')
+    + ' style="display:block;padding:11px 14px;border-radius:10px;text-decoration:none;border:1px solid ' + (primary ? lime : '#2d333b') + ';background:' + (primary ? lime : 'transparent') + ';color:' + (primary ? '#0a0b0d' : '#e9e7df') + '">'
+    + '<span style="display:block;font:700 13.5px/1.25 system-ui,sans-serif">' + label + '</span>'
+    + '<span style="display:block;font:11.5px/1.35 system-ui,sans-serif;opacity:.72;margin-top:2px">' + sub + '</span></a>';
+
+  // A panel carrying one lonely tile and no ladder reads as broken chrome. Below that it is not worth drawing and
+  // the sentence box alone does the job.
+  const tileN = (tiles.match(/border-right/g) || []).length;
+  if (tileN < 2 && !ladder) return '';
+  const hmLink = HM_COINS.indexOf(S) >= 0 ? '/heatmap?coin=' + S : '/heatmap';
+  const cta = '<div style="padding:14px 16px;border-top:1px solid ' + line + ';display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:9px">'
+    + btn(hmLink, 'Open the live ' + S + ' heatmap', 'Zoom, hover a band, read the clusters', true)
+    + btn('/go?ex=bybit&sym=' + S, 'Trade ' + S + ' on Bybit', 'Deep perpetual liquidity', false, 'Bybit')
+    + btn('/go?ex=moon', 'Moon', '3.5% of your trading fees back', false, 'Moon')
+    + '</div>';
+
+  return '<div data-ssr="liqmap" style="margin:22px 0;border:1px solid ' + line + ';border-radius:14px;overflow:hidden;background:#0d0f12;color:#e9e7df">'
+    + '<div style="padding:11px 16px;border-bottom:1px solid ' + line + ';font:700 10px/1 ui-monospace,monospace;letter-spacing:.16em;color:' + lime + '">LIVE ' + S + ' LIQUIDATION MAP &middot; UPDATED ' + _hhmm() + ' UTC</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr))">' + tiles + '</div>'
+    + ladder + cta + '</div>\n    ';
 }
 async function handleSsrLiq(request, url, env, mode, param) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
@@ -2097,7 +2201,23 @@ async function handleSsrLiq(request, url, env, mode, param) {
   try { res = await ssrLiqSentences(mode, param, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
   const kick = mode === 'lev' ? 'LIVE - ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
-  const out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
+  // The map pages lead with the market drawn, then the sentences. Prose-only was the complaint, and a page that takes
+  // thousands of crawls a month should not open on a paragraph. A panel that cannot be built falls through silently.
+  let panel = '';
+  if (mode === 'map' && res.c) { try { panel = await ssrLiqMapPanel(param, env, res.c); } catch (e) { panel = ''; } }
+  // WHERE the panel goes decided whether it was seen at all. Injected at the first <h2> like the sentence box, it
+  // landed BELOW the "What this is" paragraph and started at y=860 on a 390x844 phone - one pixel past the fold, so
+  // the live market was off screen on the device most of this audience reads on. It goes directly under the existing
+  // top CTA instead, which is the page's own "data before prose" rule applied to the data that was missing.
+  let out;
+  if (panel) {
+    const cta = html.indexOf('class="liqmap-cta top"');
+    const end = cta >= 0 ? html.indexOf('</div>', cta) : -1;
+    const at = end >= 0 ? end + 6 : anchor;
+    out = ssrStampDate(html.slice(0, at) + panel + html.slice(at, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
+  } else {
+    out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
+  }
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'liq-' + mode } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
