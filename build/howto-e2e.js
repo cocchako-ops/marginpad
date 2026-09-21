@@ -212,6 +212,43 @@ const api = async (op, uid, extra) => (await fetch(B + '/api/admin/e2euser', { m
     }, { timeoutMs: 900000 });
   } finally { await api('rm', UID); }
 
+  /* THE PRECONDITION THE CARD NEVER STATED (owner, 2026-09-21). It explained that Bybit ranks you on
+     real volume and that you register the UID once, and that Moon needs an approved sign-up - but not
+     that the exchange account has to have been OPENED THROUGH A MARGINPAD LINK. An account somebody
+     already had comes back `uid_not_ours`, which is the one support question this board generates.
+     Checked in EVERY language the card offers, because `paint()` silently leaves a key it cannot find
+     in English - a missing translation would look like a working card. */
+  {
+    const { withBrowser } = require(require('path').join(__dirname, 'e2e-browser.js'));
+    await withBrowser(async (browser) => {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1280, height: 950 });
+      await page.goto(B + '/season/?nc=1&cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+      await page.evaluate(() => new Promise(r => setTimeout(r, 2500)));
+      const rows = await page.evaluate(async () => {
+        const box = document.getElementById('hwLang');
+        const codes = box ? [].map.call(box.querySelectorAll('button[data-l]'), b => b.getAttribute('data-l')) : [];
+        const res = [];
+        for (const c of codes) {
+          box.querySelector('button[data-l="' + c + '"]').click();
+          await new Promise(r => setTimeout(r, 140));
+          const el = document.querySelector('#howto [data-hw="rlink"]');
+          res.push({ c, txt: el ? el.textContent.trim() : '', dir: document.getElementById('howto').getAttribute('dir') || 'ltr' });
+        }
+        return res;
+      });
+      chk('the card offers its fifteen languages', rows.length === 15, rows.length);
+      chk('every one of them states that the account must be opened through our link',
+        rows.length > 0 && rows.every(r => r.txt.length > 40 && r.txt.indexOf('MarginPad') >= 0),
+        JSON.stringify(rows.filter(r => r.txt.length <= 40).map(r => r.c)));
+      const en = (rows.find(r => r.c === 'en') || {}).txt;
+      const stuck = rows.filter(r => r.c !== 'en' && r.txt === en).map(r => r.c);
+      chk('and none of them is silently left in English', stuck.length === 0, stuck.join(','));
+      const rtl = rows.filter(r => ['ar', 'ur', 'fa'].indexOf(r.c) >= 0);
+      chk('the right-to-left languages set the direction on the card', rtl.length === 3 && rtl.every(r => r.dir === 'rtl'), JSON.stringify(rtl.map(r => r.c + ':' + r.dir)));
+      await page.close();
+    });
+  }
   console.log(out.join('\n'));
   const fail = out.filter(l => l.startsWith('FAIL')).length;
   console.log('\nhowto-e2e: ' + (out.length - fail) + ' passed, ' + fail + ' failed');
