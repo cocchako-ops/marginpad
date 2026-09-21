@@ -5455,6 +5455,10 @@ async function handleTrack(url, request, env, ctx) {
       try {
         { const k = 'dc:day:' + _d; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
         { const k = 'dc:org:' + _o; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
+        // AND THE USER-AGENT - the only identifying mark a machine leaves. Keyed by the string itself so
+        // a fleet that switches tools appears as a second key instead of overwriting the first.
+        { const _ua = String(request.headers.get('user-agent') || '(none)').replace(/[^ -~]/g, '').slice(0, 110);
+          const k = 'dc:ua:' + _ua; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
       } catch (e) {}
       return new Response('', { status: 204, headers: okHeaders });
     }
@@ -19794,11 +19798,15 @@ export default {
       try { // rented machines (2026-09-21): counted at the beacon, never rows - one line says how many and whose cloud
         const _dd = +(await env.STATS.get('dc:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
         if (_dd) { let orgs = [];
+          let uas = [];
+          try { const uk = (await env.STATS.list({ prefix: 'dc:ua:', limit: 20 })).keys.map(k => k.name.slice(6));
+                const uv = await Promise.all(uk.map(k => env.STATS.get('dc:ua:' + k)));
+                uas = uk.map((k, i) => ({ k, n: +uv[i] || 0 })).sort((a, b) => b.n - a.n).slice(0, 2); } catch (e) {}
           try { const ks = (await env.STATS.list({ prefix: 'dc:org:', limit: 40 })).keys.map(k => k.name.slice(7));
                 const vs = await Promise.all(ks.map(k => env.STATS.get('dc:org:' + k)));
                 orgs = ks.map((k, i) => ({ k, n: +vs[i] || 0 })).sort((a, b) => b.n - a.n).slice(0, 4); } catch (e) {}
           push9('datacentre', 'info', 'Cloud machines, not readers: ' + _dd + ' beacon' + (_dd === 1 ? '' : 's') + ' today, counted and dropped',
-            orgs.map(o => o.k + ' ' + o.n).join(' · ') || '', '', _dd, now); }
+            (orgs.map(o => o.k + ' ' + o.n).join(' · ') + (uas.length ? '  |  claims to be: ' + uas.map(u => u.k.slice(0, 64) + ' x' + u.n).join(' · ') : '')) || '', '', _dd, now); }
       } catch (e) {}
       try { // click-outs that name no partner we work with (2026-09-14): counted, never shown as rows - one line says how many
         const _ad = +(await env.STATS.get('affjunk:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
