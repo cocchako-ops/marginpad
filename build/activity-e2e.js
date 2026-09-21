@@ -134,6 +134,31 @@ const act = (q) => get('/api/admin/activity?e2e=1&' + q).then(r => r.body);
   // ---- cleanup
   const rm = await post('/api/admin/e2euser', { uid: UID, op: 'rm' });
   chk('cleanup: member scrubbed', rm.body.ok, rm.body);
+
+  /* A RENTED MACHINE IS NOT A VISITOR (2026-09-21). 301 Alibaba Cloud instances walked the site
+     overnight, 2 pages each so no single actor looked heavy, and were counted as readers - Singapore
+     went ahead of Nigeria in the country ranking and 134 of 147 "people online" were those machines.
+     Counted and dropped now, like the injection probes before them.
+
+     THE LOAD-BEARING HALF IS THE EXEMPTION: a signed-in account is always a person, whatever network
+     it sits on, or the first member on a VPN disappears from his own stats. */
+  {
+    const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const i = src.indexOf('A RENTED MACHINE IS NOT A VISITOR. An anonymous beacon');
+    const blk = i > 0 ? src.slice(i, i + 1600) : '';
+    chk('datacentre gate exists', i > 0);
+    chk('it reads the network from Cloudflare, not from a header the caller controls', /request\.cf && request\.cf\.asOrganization/.test(blk));
+    chk('a signed-in account is never gated', /_signedIn = !!\(getCookie\(request, 'mp_uid'\) \|\| getCookie\(request, 'mp_sess'\)\)/.test(blk) && /&& !_signedIn/.test(blk));
+    chk('an admin-key beacon is never gated, so an E2E still measures itself', /&& !_adm/.test(blk));
+    chk('it counts before it drops', /dc:day:/.test(blk) && /dc:org:/.test(blk));
+    // and it has to run BEFORE the heartbeat, or the machines keep filling "Here now"
+    const hb = src.indexOf("if (type === 'hb')", src.indexOf('async function handleTrack'));
+    chk('the gate runs before the presence heartbeat', i > 0 && i < hb, 'gate ' + i + ' hb ' + hb);
+    const rad = await get('/api/admin/activity?h=2&n=50');
+    const line = ((rad.body && rad.body.radar) || []).find(x => x.k === 'datacentre');
+    chk('the radar reports them as one line rather than a row each', !line || /counted and dropped/.test(line.title), line && line.title);
+  }
+
   out.forEach(l => console.log(l));
   const bad = out.filter(l => l.indexOf('FAIL') === 0).length;
   console.log('\n' + out.length + ' checks, ' + bad + ' failed  (uid ' + UID + ')');

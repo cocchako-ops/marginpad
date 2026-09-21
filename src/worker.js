@@ -5439,6 +5439,26 @@ async function handleTrack(url, request, env, ctx) {
       // them) - the mission credit now comes server-side from the ChatRoom quality gate (→ UserStore /chatcredit).
     }
   } catch (e) {}
+  /* A RENTED MACHINE IS NOT A VISITOR. An anonymous beacon from a hosting network is counted and
+     dropped - no pageview, no ring row, no presence - so 300 cloud instances cannot move the daily
+     number or fill "Here now". A SIGNED-IN ACCOUNT IS ALWAYS A PERSON, whatever network it is on:
+     a member on a VPN exits through a datacentre and must never be filtered. An admin-key beacon
+     is counted but never dropped, so an E2E run still measures itself. */
+  {
+    const _org = String((request.cf && request.cf.asOrganization) || '');
+    const _dcRe = /alibaba|amazon|aws\b|google cloud|microsoft|azure|digitalocean|linode|hetzner|ovh\b|vultr|contabo|oracle cloud|tencent|huawei cloud|scaleway|choopa|leaseweb|m247|datacamp|clouvider|servers\.com|colocrossing|hostinger|namecheap|gcore/i;
+    const _signedIn = !!(getCookie(request, 'mp_uid') || getCookie(request, 'mp_sess'));
+    const _adm = !!adminKeyFrom(request, url) && isAdminKey(env, adminKeyFrom(request, url));
+    if (_org && _dcRe.test(_org) && !_signedIn && !_adm && env.STATS) {
+      const _d = new Date().toISOString().slice(0, 10);
+      const _o = _org.replace(/[^a-zA-Z0-9 ._-]/g, '').slice(0, 28);
+      try {
+        { const k = 'dc:day:' + _d; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
+        { const k = 'dc:org:' + _o; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1), { expirationTtl: 3456000 }); }
+      } catch (e) {}
+      return new Response('', { status: 204, headers: okHeaders });
+    }
+  }
   if (type === 'hb') { // presence heartbeat (60s, samo vidljiv tab) - osvezava "online now" BEZ brojanja kao pageview/event
     try {
       const hIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
@@ -19770,6 +19790,15 @@ export default {
         const _pd = +(await env.STATS.get('probe:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
         if (_pd) { let muted = []; try { muted = (await env.STATS.list({ prefix: 'probe:ip:', limit: 50 })).keys.map(k => k.name.slice(9)); } catch (e) {}
           push9('probe', 'info', 'Injection scanner: ' + _pd + ' probe' + (_pd === 1 ? '' : 's') + ' today, counted and dropped (not SQL here)', muted.length ? muted.length + ' address' + (muted.length === 1 ? '' : 'es') + ' muted 24 h: ' + muted.map(ip => ip.replace(/\.\d+$/, '.x')).join(', ') : 'no address reached the mute threshold', '', _pd, now); }
+      } catch (e) {}
+      try { // rented machines (2026-09-21): counted at the beacon, never rows - one line says how many and whose cloud
+        const _dd = +(await env.STATS.get('dc:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
+        if (_dd) { let orgs = [];
+          try { const ks = (await env.STATS.list({ prefix: 'dc:org:', limit: 40 })).keys.map(k => k.name.slice(7));
+                const vs = await Promise.all(ks.map(k => env.STATS.get('dc:org:' + k)));
+                orgs = ks.map((k, i) => ({ k, n: +vs[i] || 0 })).sort((a, b) => b.n - a.n).slice(0, 4); } catch (e) {}
+          push9('datacentre', 'info', 'Cloud machines, not readers: ' + _dd + ' beacon' + (_dd === 1 ? '' : 's') + ' today, counted and dropped',
+            orgs.map(o => o.k + ' ' + o.n).join(' · ') || '', '', _dd, now); }
       } catch (e) {}
       try { // click-outs that name no partner we work with (2026-09-14): counted, never shown as rows - one line says how many
         const _ad = +(await env.STATS.get('affjunk:day:' + new Date(now).toISOString().slice(0, 10))) || 0;
