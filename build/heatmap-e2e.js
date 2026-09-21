@@ -66,6 +66,9 @@ const LAYOUT = () => {
     bkAsks: document.querySelectorAll('.hm-ob-a .hm-ob-row').length,
     bkBids: document.querySelectorAll('.hm-ob-b .hm-ob-row').length,
     bkTrades: document.querySelectorAll('.hm-tp-row').length,
+    bkSegs: document.querySelectorAll('.hm-ob-row .vs em').length,
+    bkTapeCols: (function () { var r = document.querySelector('.hm-tp-row'); return r ? r.children.length : 0; })(),
+    bkHeads: [...document.querySelectorAll('.hm-col-h')].map(function (h) { return h.innerText.replace(/s+/g, ' '); }),
     // A LADDER THAT IS CROSSED IS A BROKEN LADDER, and merging five venues by absolute price produces one
     // (measured: Hyperliquid traded $73 above the other four). This reads the prices off the DOM.
     bkCross: (function () {
@@ -217,7 +220,12 @@ const LAYOUT = () => {
     ok('the ladder is NOT crossed and runs high to low', !!L.bkCross && L.bkCross.highBid < L.bkCross.lowAsk && L.bkCross.asksDown && L.bkCross.bidsDown, JSON.stringify(L.bkCross));
     ok('every exchange can be picked, and all of them together', L.bkChips[0] === 'All' && L.bkChips.length >= 5, L.bkChips.join(','));
     ok('it explains how to read itself', /How to read it/i.test(L.bkNoteTxt) && /Sum/.test(L.bkNoteTxt) && /crossed the spread/.test(L.bkNoteTxt), L.bkNoteTxt.slice(0, 90));
-    ok('and says it is measured, not modelled', /none of it is modelled/i.test(L.bkNoteTxt));
+    ok('and says which half of the page is measured', /not modelled|none of (this|it) is modelled/i.test(L.bkNoteTxt), L.bkNoteTxt.slice(-110));
+    // The three additions the owner asked for: the venue strip under each row, the value of every print,
+    // and prints that are far bigger than the rest standing out without being hunted for.
+    ok('each ladder row shows WHICH exchanges hold that price', L.bkSegs >= L.bkAsks + L.bkBids, 'segments=' + L.bkSegs + ' rows=' + (L.bkAsks + L.bkBids));
+    ok('every print carries its dollar value and its venue', L.bkTapeCols >= 5, 'tape columns=' + L.bkTapeCols);
+    ok('the three columns say what they answer', L.bkHeads.length === 3 && /ORDER BOOK/.test(L.bkHeads[0]) && /TAPE/.test(L.bkHeads[1]) && /READ/.test(L.bkHeads[2]), L.bkHeads.join(' / '));
     ok('the page never scrolls sideways', L.scrollW <= L.vw, 'scrollW=' + L.scrollW);
     ok('nothing in the section is wider than the screen', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is stacked, not a clipped grid', L.extStacked > 0 && L.extGrid === 0, 'stacked=' + L.extStacked + ' grid=' + L.extGrid);

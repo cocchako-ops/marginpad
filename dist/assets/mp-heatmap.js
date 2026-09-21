@@ -39,38 +39,53 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-tg-exp{display:none;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-bar-a,.hm-bar-b{display:flex;gap:6px;align-items:center;min-width:0}' +
-    '.hm-bk{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;padding:8px 12px 9px;margin:0!important;display:none}' +
-    '.hm-bk-h{display:flex;align-items:center;gap:6px 11px;flex-wrap:wrap;margin-bottom:7px}' +
+    '.hm-bk{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-radius:0 0 12px 12px;padding:9px 12px 10px;margin:0!important;display:none}' +
+    '.hm-bk-h{display:flex;align-items:center;gap:6px 11px;flex-wrap:wrap;margin-bottom:8px}' +
     '.hm-bk-t{font:700 9.5px "Space Mono",monospace;letter-spacing:.14em;color:#c2f64a;flex:none}' +
-    '.hm-bk-m{font:11px "Space Mono",monospace;color:#5c6b84;min-width:0}.hm-bk-m i{font-style:normal}' +
+    '.hm-bk-m{font:11px "Space Mono",monospace;color:#5c6b84}.hm-bk-m i{font-style:normal}' +
     '.hm-bk-seg{margin-left:auto;flex:none;flex-wrap:wrap}' +
-    '.hm-bk-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,.9fr);gap:14px;align-items:start}' +
-    '.hm-ob,.hm-tp{min-width:0}' +
-    '.hm-ob-hd{display:grid;grid-template-columns:1fr .8fr .8fr;gap:6px;font:9.5px "Space Mono",monospace;color:#5c6b84;padding:0 4px 3px;letter-spacing:.06em}' +
-    '.hm-ob-hd span:nth-child(2),.hm-ob-hd span:nth-child(3),.hm-tp-row .s,.hm-tp-row .t,.hm-ob-row .s,.hm-ob-row .t{text-align:right}' +
-    '.hm-ob-row{position:relative;display:grid;grid-template-columns:1fr .8fr .8fr;gap:6px;font:11.5px/1.62 "Space Mono",monospace;padding:0 4px;white-space:nowrap}' +
-    '.hm-tp .hm-ob-hd,.hm-tp-row{display:grid;grid-template-columns:1fr .66fr 1fr;gap:6px;font:11.5px/1.62 "Space Mono",monospace;padding:0 4px;white-space:nowrap}' +
-    '.hm-tp-row .t em{font-style:normal;color:#5c6b84}' +
-        '.hm-ob-row i{position:absolute;right:0;top:1px;bottom:1px;border-radius:2px;z-index:0}' +
-    '.hm-ob-row.a i{background:rgba(255,90,77,.16)}.hm-ob-row.b i{background:rgba(46,189,133,.16)}' +
-    '.hm-ob-row span{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis}' +
-    '.hm-ob-row.a .p,.hm-tp-row.b .p{color:#ff8f86}.hm-ob-row.b .p,.hm-tp-row.a .p{color:#66d3a5}' +
-    '.hm-ob-row .s,.hm-ob-row .t,.hm-tp-row .s,.hm-tp-row .t{color:#c9d4e6}' +
-    '.hm-ob-px{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;padding:5px 4px;border-top:1px solid #1c2230;border-bottom:1px solid #1c2230;margin:3px 0}' +
-    '.hm-ob-px b{font:700 16px "Space Mono",monospace;color:#c2f64a}.hm-ob-px small{font:10px "Space Mono",monospace;color:#5c6b84}' +
+    '.hm-bk-g{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1.15fr) minmax(0,.82fr);gap:16px;align-items:start}' +
+    '.hm-col{min-width:0}' +
+    '.hm-col-h{display:flex;align-items:baseline;gap:8px;padding-bottom:5px;margin-bottom:5px;border-bottom:1px solid #222b3a}' +
+    '.hm-col-h b{font:700 10px "Space Mono",monospace;letter-spacing:.13em;color:#c9d4e6}' +
+    '.hm-col-h i{font:italic 10.5px system-ui,sans-serif;color:#5c6b84}' +
+    '.hm-ob-hd,.hm-ob-row{display:grid;grid-template-columns:1fr .78fr .78fr;gap:6px;padding:0 4px}' +
+    '.hm-tp-hd,.hm-tp-row{display:grid;grid-template-columns:.62fr 1fr .6fr .62fr .42fr;gap:5px;padding:0 4px}' +
+    '.hm-ob-hd,.hm-tp-hd{font:9.5px "Space Mono",monospace;color:#5c6b84;letter-spacing:.06em;padding-bottom:3px}' +
+    '.hm-ob-hd span+span,.hm-tp-hd span+span,.hm-ob-row .s,.hm-ob-row .t,.hm-tp-row .s,.hm-tp-row .u,.hm-tp-row .v{text-align:right}' +
+    '.hm-ob-row,.hm-tp-row{position:relative;font:11.5px/1.66 "Space Mono",monospace;white-space:nowrap}' +
+    '.hm-ob-row>span,.hm-tp-row>span{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-ob-row .bar{position:absolute;right:0;top:1px;bottom:4px;border-radius:2px;z-index:0;transition:width .38s cubic-bezier(.4,0,.2,1)}' +
+    '.hm-ob-row.a .bar{background:rgba(255,90,77,.17)}.hm-ob-row.b .bar{background:rgba(46,189,133,.17)}' +
+    '.hm-ob-row .vs{position:absolute;right:0;bottom:0;height:3px;border-radius:2px;z-index:0;display:flex;overflow:hidden;opacity:.85;transition:width .38s cubic-bezier(.4,0,.2,1)}' +
+    '.hm-ob-row .vs em{display:block;height:100%}' +
+    '.hm-ob-row.a .p{color:#ff8f86}.hm-ob-row.b .p{color:#66d3a5}' +
+    '.hm-ob-row .s,.hm-ob-row .t{color:#c9d4e6}' +
+    '.hm-ob-row.fx>span{animation:hmfx .55s ease-out}' +
+    '@keyframes hmfx{0%{color:#fff;text-shadow:0 0 9px rgba(255,255,255,.55)}100%{}}' +
+    '.hm-ob-px{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;padding:6px 4px;border-top:1px solid #1c2230;border-bottom:1px solid #1c2230;margin:4px 0}' +
+    '.hm-ob-px b{font:700 17px "Space Mono",monospace;color:#c2f64a}.hm-ob-px small{font:10px "Space Mono",monospace;color:#5c6b84}' +
     '.hm-ob-px .tk{margin-left:auto}' +
-    '.hm-ob-r{display:flex;align-items:center;gap:6px;margin-top:6px;font:9.5px "Space Mono",monospace}' +
+    '.hm-ob-r{display:flex;align-items:center;gap:6px;margin-top:7px;font:9.5px "Space Mono",monospace}' +
     '.hm-ob-r b{color:#66d3a5;font-weight:700;white-space:nowrap}.hm-ob-r s{color:#ff8f86;text-decoration:none;white-space:nowrap}' +
-    '.hm-ob-r i,.hm-ob-r u{height:5px;border-radius:3px;text-decoration:none;min-width:2px}' +
+    '.hm-ob-r i,.hm-ob-r u{height:5px;border-radius:3px;text-decoration:none;min-width:2px;transition:width .38s ease}' +
     '.hm-ob-r i{background:#2ebd85}.hm-ob-r u{background:#ff5a4d}' +
-    '.hm-tp-none{font:11px "Space Mono",monospace;color:#3a465c;padding:6px 4px}' +
-    '.hm-sm{min-width:0;border-left:1px solid #1c2230;padding-left:13px}' +
-    '.hm-sm-r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font:11px/1.9 system-ui,sans-serif;color:#8fa3c4}' +
+    '.hm-vk{display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:7px;font:9.5px "Space Mono",monospace;color:#8fa3c4}' +
+    '.hm-vk span{display:inline-flex;align-items:center;gap:4px}.hm-vk span.off{opacity:.3}' +
+    '.hm-vk i{width:7px;height:7px;border-radius:2px;display:inline-block}' +
+    '.hm-tp-row .tm{color:#5c6b84}.hm-tp-row .v{color:#5c6b84}' +
+    '.hm-tp-row.a .p{color:#66d3a5}.hm-tp-row.b .p{color:#ff8f86}' +
+    '.hm-tp-row .s,.hm-tp-row .u{color:#c9d4e6}' +
+    '.hm-tp-row.big{border-radius:3px}.hm-tp-row.big .u{font-weight:700}' +
+    '.hm-tp-row.big.a{background:rgba(46,189,133,.14)}.hm-tp-row.big.a .p,.hm-tp-row.big.a .u{color:#7ee2b8}' +
+    '.hm-tp-row.big.b{background:rgba(255,90,77,.14)}.hm-tp-row.big.b .p,.hm-tp-row.big.b .u{color:#ffa39b}' +
+    '.hm-sm-r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font:11.5px/1.72 system-ui,sans-serif;color:#8fa3c4}' +
     '.hm-sm-r b{font:12.5px "Space Mono",monospace;color:#e9e7df}.hm-sm-r b.g{color:#66d3a5}.hm-sm-r b.r{color:#ff8f86}' +
-    '.hm-sm-n{font:10.5px/1.5 system-ui,sans-serif;color:#5c6b84;margin-top:7px}' +
-    '.hm-bk-n{font:11px/1.6 system-ui,sans-serif;color:#7a8caa;margin-top:9px;padding-top:8px;border-top:1px solid #1c2230}' +
-    '.hm-bk-n b{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
-    '.hm-bk-n em{font-style:normal;color:#c9d4e6}.hm-bk-n .g{color:#66d3a5}.hm-bk-n .r{color:#ff8f86}' +
+    '.hm-sm-s{font:10px/1.45 system-ui,sans-serif;color:#4d5a70;margin:1px 0 8px;padding-bottom:7px;border-bottom:1px dotted #222b3a}' +
+    '.hm-bk-n{font:11px/1.62 system-ui,sans-serif;color:#7a8caa;margin-top:10px;padding-top:9px;border-top:1px solid #1c2230}' +
+    '.hm-bk-n>b:first-child{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
+    '.hm-bk-n b.k{color:#c9d4e6;font-weight:600}.hm-bk-n em{font-style:normal;color:#c9d4e6}' +
+    '.hm-bk-n .g{color:#66d3a5}.hm-bk-n .r{color:#ff8f86}' +
     '.hm-stage.hm-j{border-radius:0;border-bottom:0}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:3px 21px 3px 9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;height:25px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
@@ -123,7 +138,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-t{font-size:12px;letter-spacing:.08em;gap:7px}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0b0e13;border:1px solid #1c2230;border-top:0;border-left:0;border-right:0;border-radius:0;padding:9px 12px;margin:0 -22px!important}.hm-tg-h,.hm-tg-exp{display:block}.hm-tg-g{grid-template-columns:1fr;gap:7px}.hm-tgb{padding:7px 9px}.hm-tgb b{font-size:12.5px}.hm-foot{order:5}}' +
-    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:8px 10px 9px}'+'.hm-bk-g{grid-template-columns:minmax(0,1fr);gap:10px}'+'.hm-sm{border-left:0;border-top:1px solid #1c2230;padding-left:0;padding-top:8px}'+'.hm-tp .hm-ob-hd{border-top:1px solid #1c2230;padding-top:6px}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
+    '@media(max-width:980px){'+'#heatmap.hm-full{width:auto!important;margin-left:0!important;padding:0;border:0;border-radius:0}'+'.hm-wrap{padding:8px 6px 7px;border-left:0;border-right:0;border-radius:0}'+'.hm-stage{margin-left:-22px;margin-right:-22px;border-left:0;border-right:0;border-radius:0;border-top:1px solid #1c2230}'+'.hm-bar{gap:6px;margin-bottom:6px}'+'.hm-bar-a,.hm-bar-b{flex:1 1 100%;margin-left:0;gap:6px}'+'.hm-bar-a>.hm-sel{flex:1 1 0;min-width:0;text-overflow:ellipsis}'+'.hm-bar-b>.hm-seg{flex:1 1 auto}.hm-bar-b>.hm-seg button{flex:1 1 0;padding:0 6px;font-size:12.5px}'+'.hm-sel{height:31px;padding:2px 20px 2px 9px;font-size:12px;border-radius:9px;background-position:right 7px center}'+'.hm-seg{height:31px;border-radius:9px}'+'.hm-btn{width:31px;height:31px;border-radius:9px;flex:none}.hm-btn svg{width:14px;height:14px}'+'.hm-px{font-size:13px}.hm-px small{font-size:10px;margin-left:4px}'+'.hm-legend{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:12px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}'+'.hm-legend>b{display:none;}'+'.hm-book{flex-wrap:nowrap!important;overflow-x:auto;overscroll-behavior-x:contain;white-space:nowrap;gap:11px!important;font-size:10px!important;margin:0 0 7px!important;padding-bottom:2px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}'+'.hm-bk{order:4;margin:0 -22px!important;border-left:0;border-right:0;border-radius:0;padding:8px 10px 9px}'+'.hm-bk-g{grid-template-columns:minmax(0,1fr);gap:13px}'+'.hm-bk-seg{margin-left:0;width:100%}'+'.hm-bk-seg button{padding:0 7px;font-size:11.5px}'+'.hm-bk-h{gap:4px 8px}'+'.hm-bk-t{order:0}'+'.hm-bk-seg{order:1;margin-left:auto}'+'.hm-bk-m{order:2;flex:1 1 100%;white-space:normal}'+'.hm-stage{height:50vh;min-height:300px}.hm-prof{width:72px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
@@ -904,7 +919,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-story{margin-top:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:11px 14px;font:12px/1.65 "Familjen Grotesk",sans-serif;color:#8fa3c4}' +
     '.hm-story b{color:#fff}' +
     '.hm-t10{margin-top:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:8px 14px 6px;font:11.5px "Space Mono",monospace}' +
-    '.hm-t10-h{font:700 10.5px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;padding:5px 0 7px;border-bottom:1px solid #10151f}' +
+    '.hm-t10-h{font:700 10.5px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;padding:5px 0 7px;border-bottom:1px solid #10151f;cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:9px}' +
+    '.hm-t10-h::-webkit-details-marker{display:none}' +
+    '.hm-t10-h i{font:italic 10px system-ui,sans-serif;color:#5c6b84;letter-spacing:0}' +
+    '.hm-t10-h::after{content:"+";margin-left:auto;color:#5c6b84;font-size:13px}' +
+    'details.hm-t10[open] .hm-t10-h::after{content:"\2212"}' +
     '.hm-t10-r{display:grid;grid-template-columns:24px 86px 62px minmax(0,1fr);gap:8px;align-items:center;padding:6.5px 0;border-bottom:1px solid #10151f}' +
     '.hm-t10-r:last-child{border-bottom:0}' +
     '.hm-t10-r .rk{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#141a26;color:#8fa3c4;font-size:10px;font-weight:700}' +
@@ -994,9 +1013,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ctQ = el('input', ''); ctQ.type = 'text'; ctQ.placeholder = 'Search coin'; ctH.appendChild(ctQ);
     var ctTb = el('div', 'hm-ct-tw');
     ct.appendChild(ctH); ct.appendChild(ctTb); host.appendChild(ct);
-    var h10 = __esT_mpheatmap("top10LiquidationEvents",'<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>');
+    var h10 = '<summary class="hm-t10-h">' + __esT_mpheatmap("top10LiquidationEvents",'<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>').replace(/<[^>]*>/g, '') + '<i>records, not live</i></summary>';
     MKT_TOP10.forEach(function (r, i) { h10 += '<div class="hm-t10-r"><span class="rk rk' + (i + 1) + '">' + (i + 1) + '</span><span class="dt">' + r[0] + '</span><b>' + r[1] + '</b><span class="why">' + r[2] + '</span></div>'; });
     t10.innerHTML = h10;
+    if (t10.tagName !== 'DETAILS') { var dt10 = document.createElement('details'); dt10.className = t10.className; dt10.innerHTML = h10; t10.parentNode.replaceChild(dt10, t10); t10 = dt10; }
     chips.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b) return; M.win = b.getAttribute('data-w'); chips.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render(); });
     ctQ.addEventListener('input', function () { M.ctQ = (ctQ.value || '').trim().toUpperCase(); ctRender(); });
     function winsOf(sym) {
@@ -1258,99 +1278,125 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">WHAT THE NUMBERS MEAN</summary>Tap any level for two numbers that mean different things. <b style="color:#c2f64a">What really liquidated</b> is what our collector recorded actually being liquidated in that price band over 24 hours - observed events, no estimate. The <b>x typical</b> figure is our estimate: how heavy that level is against a typical one on the same screen. It is a multiple and not a dollar amount on purpose - exchanges do not publish open positions, so every liquidation map reconstructs the crowd from price history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x). That shows where size stacks relative to itself, not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC level by roughly thirty times what has ever actually been liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright level as "there is probably size here", and trust the measured figure when the two disagree.</details>' + '<details class="hm-foot-c"' + FOPEN + '><summary class="hm-foot-h">DATA</summary>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</details>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> level already swept</span><span><b style="color:#e9e7df">▬</b> estimated liquidation level</span>';
-    // ============ ORDER BOOK & TRADES - the measured half, joined under the map (2026-09-21) ============
-    // Owner, after the first attempt: "ovaj novi chart ja ne znam da citam i verujem da nikome nije jasno
-    // sta je ... hocu nesto ovako ... da moze da se bira koju menjacnicu gledam ili ako hocu da gledam sve",
-    // with a screenshot of an exchange terminal. He was right. The first cut drew a depth CURVE, which is a
-    // correct picture that has to be taught; this is a LADDER, which every trader can already read: price,
-    // size, running total, asks above the price and bids below it, with the bar behind each row showing how
-    // the total builds. It is DOM rather than canvas for the same reason - crisp text that can be selected.
+    // ============ THE TERMINAL - order book, tape and the read (2026-09-22) ============
+    // Owner: "ne znam tacno gde je trades, nije mi jasno ... jel mozemo da znamo po kojoj ceni ... sto vise
+    // informacija to bolje ... treba mi neki pristup koji je originalan i koji ce korisnika da ostavi u cudu
+    // ... mora da bude detaljno za nekog ko je majstor ... ali takodje mora da bude i lako za citanje."
     //
-    // The map above is a MODEL of where leverage sits. This is the opposite and the footnote says so.
+    // Three columns, each with a headline that says what it answers, because the previous cut had three
+    // unlabelled grids side by side and he could not tell which one was the tape. WAITING / HAPPENED / MEANS.
+    //
+    // THE ORIGINAL PART is the bar behind every ladder row: it is not one block of colour, it is SEGMENTED BY
+    // EXCHANGE. At a glance you see that the wall at 86,610 is mostly Binance, or that the bid three ticks
+    // down is Bitget alone. Nobody publishes that, because nobody else is holding five books open at once -
+    // and it costs no extra column, which is the only way to add information to a page that is already full.
     var bk = el('div', 'hm-bk');
-    var bkH = el('div', 'hm-bk-h');
-    bkH.innerHTML = '<span class="hm-bk-t">ORDER BOOK &amp; TRADES</span>'
-      + '<span class="hm-bk-m"></span>'
-      + '<span class="hm-seg hm-bk-seg"></span>';
-    var bkG = el('div', 'hm-bk-g');
-    bkG.innerHTML = '<div class="hm-ob">'
-      + '<div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum</span></div>'
-      + '<div class="hm-ob-a"></div>'
-      + '<div class="hm-ob-px"></div>'
-      + '<div class="hm-ob-b"></div>'
-      + '<div class="hm-ob-r"><b></b><i></i><u></u><s></s></div>'
-      + '</div>'
-      + '<div class="hm-tp">'
-      + '<div class="hm-ob-hd"><span>Price</span><span>Amount</span><span>Time</span></div>'
-      + '<div class="hm-tp-l"></div>'
-      + '</div>'
-      + '<div class="hm-sm"></div>';
-    var bkN = el('div', 'hm-bk-n');
-    bkN.innerHTML = '<b>How to read it</b> &mdash; <span class="r">Red</span> above the price is sellers waiting, '
-      + '<span class="g">green</span> below is buyers waiting. <em>Size</em> is how much sits at that exact price; '
-      + '<em>Sum</em> adds it up as you walk away from the price, and the bar behind each row is that running '
-      + 'total. A long bar close to the price is real money standing in the way of a move. The list on the '
-      + 'right is what just happened: <span class="g">green</span> means the buyer crossed the spread, '
-      + '<span class="r">red</span> the seller. Pick one exchange to see only its book, or All to stack them '
-      + 'together &mdash; and when you do, each book is lined up on its own mid price first, because exchanges '
-      + 'genuinely differ by a few dollars. Everything here is happening now: unlike the map above, none of it is modelled.';
-    bk.appendChild(bkH); bk.appendChild(bkG); bk.appendChild(bkN);
-    var bkMeta = bkH.querySelector('.hm-bk-m'), bkSeg = bkH.querySelector('.hm-bk-seg');
-    var obA = bkG.querySelector('.hm-ob-a'), obB = bkG.querySelector('.hm-ob-b'),
-        obPx = bkG.querySelector('.hm-ob-px'), obR = bkG.querySelector('.hm-ob-r'),
-        tpL = bkG.querySelector('.hm-tp-l'), bkSm = bkG.querySelector('.hm-sm');
+    bk.innerHTML =
+      '<div class="hm-bk-h"><span class="hm-bk-t">LIVE ORDER FLOW</span><span class="hm-bk-m"></span>'
+      + '<span class="hm-seg hm-bk-seg"></span></div>'
+      + '<div class="hm-bk-g">'
+      + '  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i></div>'
+      + '    <div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum</span></div>'
+      + '    <div class="hm-ob-a"></div><div class="hm-ob-px"></div><div class="hm-ob-b"></div>'
+      + '    <div class="hm-ob-r"><b></b><i></i><u></u><s></s></div><div class="hm-vk"></div></div>'
+      + '  <div class="hm-col hm-tp"><div class="hm-col-h"><b>TAPE</b><i>what just happened</i></div>'
+      + '    <div class="hm-tp-hd"><span>Time</span><span>Price</span><span>Size</span><span>Value</span><span>On</span></div>'
+      + '    <div class="hm-tp-l"></div></div>'
+      + '  <div class="hm-col hm-sm"><div class="hm-col-h"><b>THE READ</b><i>what it means</i></div>'
+      + '    <div class="hm-sm-l"></div></div>'
+      + '</div><div class="hm-bk-n"></div>';
+    var bkH = bk.querySelector('.hm-bk-h'), bkMeta = bk.querySelector('.hm-bk-m'), bkSeg = bk.querySelector('.hm-bk-seg');
+    var obA = bk.querySelector('.hm-ob-a'), obB = bk.querySelector('.hm-ob-b'), obPx = bk.querySelector('.hm-ob-px');
+    var obR = bk.querySelector('.hm-ob-r'), obVk = bk.querySelector('.hm-vk');
+    var tpL = bk.querySelector('.hm-tp-l'), bkSm = bk.querySelector('.hm-sm-l'), bkN = bk.querySelector('.hm-bk-n');
+    bkN.innerHTML = '<b>How to read it</b> &mdash; The <b class="k">order book</b> is money that has not moved yet: '
+      + '<span class="r">red</span> above the price is sellers waiting, <span class="g">green</span> below is buyers. '
+      + '<em>Size</em> sits at that exact price, <em>Sum</em> adds it up as you walk away, and the bar behind each row '
+      + 'is the total so far. The <b class="k">thin line under each row shows WHICH EXCHANGES hold that price</b> &mdash; '
+      + 'a wall that is one venue alone can vanish in a second, one that four venues share will not. The <b class="k">tape</b> is money that just moved: an arrow up means the buyer '
+      + 'crossed the spread and paid the offer, down means the seller hit the bid. Bright rows are prints far larger than '
+      + 'the rest. Pick one exchange or All &mdash; and on All each book is lined up on its own mid first, because exchanges '
+      + 'genuinely differ by a few dollars. None of this is modelled; the map above is.';
 
     var BKN = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', bitget: 'Bitget', hyperliquid: 'HL' };
-    var ROWS = 7;
+    var BKC = { binance: '#f0b90b', bybit: '#f7a600', okx: '#4da3ff', bitget: '#00e0c7', hyperliquid: '#b18cff' };
+    var ROWS = 8;
 
-    // A CONSOLIDATED LADDER NEEDS A TICK, or five venues quoting to a tenth of a cent produce forty rows of
-    // dust instead of eight rows of size. The step is derived from the price itself and printed, so nobody
-    // has to guess what a row spans: about one thousandth of a percent, rounded to 1, 2 or 5.
     function niceTick(px) {
       if (!(px > 0)) return 0.01;
       var raw = px * 1e-5, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), n = raw / mag;
       return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag;
     }
     function tickDp(t) { var d = 0, x = t; while (x < 1 && d < 8) { x *= 10; d++; } return d; }
-    // Merge every selected venue's levels onto one price grid. Bucketed DOWN for bids and UP for asks, so a
-    // row never claims size that sits on the wrong side of its own price.
-    function merge(vens, side) {
-      var t = niceTick(vens.mid), m = new Map(), i, j;
-      for (i = 0; i < vens.list.length; i++) {
-        var vn = vens.list[i], lv = vn.top && vn.top[side];
+    function fmtSz(v) {
+      return v >= 1000 ? Math.round(v).toLocaleString('en-US') : v >= 1 ? v.toFixed(2)
+        : v >= 0.01 ? v.toFixed(3) : v > 0 ? v.toFixed(4) : '0';
+    }
+    // Merge every selected book onto one price grid, KEEPING who contributed what. Each venue is aligned on
+    // its own mid first: measured, Hyperliquid traded $73 above the other four on BTC, enough that merging by
+    // absolute price put its bids above another venue's asks and crossed the whole ladder.
+    function merge(V, side) {
+      var t = niceTick(V.mid), m = new Map(), i, j;
+      for (i = 0; i < V.list.length; i++) {
+        var vn = V.list[i], lv = vn.top && vn.top[side];
         if (!lv) continue;
-        // EACH BOOK IS ALIGNED ON ITS OWN MID BEFORE MERGING. Measured on BTC the day this shipped:
-        // Hyperliquid was trading $73 above the other four (0.084%) while those four sat within $6 of
-        // each other - far enough that merging by absolute price put HL's bids ABOVE another venue's
-        // asks and produced a crossed ladder. That crossing is a true fact about arbitrage and a
-        // useless one in a price column. Shifted onto the consolidated mid, every venue keeps its own
-        // shape and the column answers what a reader actually means: how much is resting THIS FAR from
-        // the price. With one venue picked the shift is zero, so nothing moves.
-        var off = (+vn.mid > 0) ? (vens.mid - +vn.mid) : 0;
+        var off = (+vn.mid > 0) ? (V.mid - +vn.mid) : 0, nm = vn.venue;
         for (j = 0; j < lv.length; j++) {
           var px = +lv[j][0] + off, sz = +lv[j][1];
           if (!(px > 0) || !(sz > 0)) continue;
-          var k = side === 'bid' ? Math.floor(px / t) * t : Math.ceil(px / t) * t;
-          k = Math.round(k / t) * t;
-          m.set(k, (m.get(k) || 0) + sz);
+          var k = Math.round((side === 'bid' ? Math.floor(px / t) : Math.ceil(px / t)));
+          var r = m.get(k);
+          if (!r) { r = { t: 0, v: {} }; m.set(k, r); }
+          r.t += sz; r.v[nm] = (r.v[nm] || 0) + sz;
         }
       }
       var out = [];
-      m.forEach(function (sz, px) { out.push([px, sz]); });
-      out.sort(function (a, b) { return side === 'bid' ? b[0] - a[0] : a[0] - b[0]; });
+      m.forEach(function (r, k) { out.push({ px: k * t, sz: r.t, v: r.v }); });
+      out.sort(function (a, b) { return side === 'bid' ? b.px - a.px : a.px - b.px; });
       return { rows: out.slice(0, ROWS), tick: t };
     }
-    function fmtSz(v) {
-      return v >= 1000 ? Math.round(v).toLocaleString('en-US')
-        : v >= 1 ? v.toFixed(2)
-          : v >= 0.01 ? v.toFixed(3)
-            : v > 0 ? v.toFixed(4) : '0';   // most prints are small; 0.000 says nothing at all
+
+    // ---- SMOOTH: rows are kept and updated in place. Rebuilding innerHTML four times a minute is what made
+    // the old panel blink; a ladder is meant to breathe, so the elements persist, the numbers change, the
+    // bars transition, and a row whose size really moved flashes for a moment.
+    function ensure(host, n, cls) {
+      while (host.children.length > n) host.removeChild(host.lastChild);
+      while (host.children.length < n) {
+        var d = document.createElement('div'); d.className = cls;
+        d.innerHTML = cls.indexOf('hm-ob-row') >= 0
+          ? '<i class="bar"></i><i class="vs"></i><span class="p"></span><span class="s"></span><span class="t"></span>'
+          : '<span class="tm"></span><span class="p"></span><span class="s"></span><span class="u"></span><span class="v"></span>';
+        host.appendChild(d);
+      }
+      return host.children;
+    }
+    function setTxt(el2, v) { if (el2.textContent !== v) { el2.textContent = v; return true; } return false; }
+    function flash(row) {
+      row.classList.remove('fx');
+      // reading offsetWidth restarts the transition; without it a row that changes twice in a row flashes once
+      void row.offsetWidth;
+      row.classList.add('fx');
+    }
+    // The bar is a row of segments, one per venue, widths in proportion to what that venue holds there.
+    function barHtml(v, total, w) {
+      var keys = Object.keys(v), h = '', i;
+      keys.sort(function (a, b) { return v[b] - v[a]; });
+      for (i = 0; i < keys.length; i++) {
+        h += '<em style="width:' + (v[keys[i]] / total * 100).toFixed(1) + '%;background:' + (BKC[keys[i]] || '#8fa3c4') + '"></em>';
+      }
+      return h;
     }
 
     function bkRender() {
       var d = S.bk || {}, b = d.book;
       if (!b) { bk.style.display = 'none'; stage.classList.remove('hm-j'); return; }
       var pick = d.venue || 'all', names = Object.keys(b.venues || {});
+      // THE VENUE NAME IS THE KEY OF THIS MAP, NOT A FIELD IN IT - the second time that has bitten here.
+      // Without this the segmented bar merged every exchange under the key 'undefined', drew one grey block
+      // per row, and the whole point of the design was invisible while the data underneath was perfect.
+      // Measured on BTC at a $1 row: 4 to 5 of the five books quote into the same row, so there is always
+      // something to show.
+      names.forEach(function (n) { b.venues[n].venue = n; });
       var list = names.filter(function (n) { return pick === 'all' || n === pick; }).map(function (n) { return b.venues[n]; });
       if (!list.length) { list = names.map(function (n) { return b.venues[n]; }); pick = 'all'; }
       var mid = 0, nv = 0, i;
@@ -1361,69 +1407,97 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
 
       var V = { mid: mid, list: list };
       var asks = merge(V, 'ask'), bids = merge(V, 'bid'), t = bids.tick, dp = tickDp(t);
-      // Both sides share ONE scale, or the bar behind a bid row and the bar behind an ask row mean different
-      // things while sitting one above the other - which is exactly how a depth bar becomes decoration.
-      var sum = 0, aRows = asks.rows.map(function (r) { sum += r[1]; return [r[0], r[1], sum]; });
+      var sum = 0, aRows = asks.rows.map(function (r) { sum += r.sz; return { px: r.px, sz: r.sz, cum: sum, v: r.v }; });
       var aTot = sum; sum = 0;
-      var bRows = bids.rows.map(function (r) { sum += r[1]; return [r[0], r[1], sum]; });
+      var bRows = bids.rows.map(function (r) { sum += r.sz; return { px: r.px, sz: r.sz, cum: sum, v: r.v }; });
       var bTot = sum, mx = Math.max(aTot, bTot) || 1;
+      var nf = { minimumFractionDigits: dp, maximumFractionDigits: dp };
 
-      var row = function (r, up) {
-        return '<div class="hm-ob-row' + (up ? ' a' : ' b') + '">'
-          + '<i style="width:' + (r[2] / mx * 100).toFixed(1) + '%"></i>'
-          + '<span class="p">' + r[0].toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }) + '</span>'
-          + '<span class="s">' + fmtSz(r[1]) + '</span>'
-          + '<span class="t">' + fmtSz(r[2]) + '</span></div>';
+      var paint = function (host, rows, cls) {
+        var ch = ensure(host, rows.length, cls);
+        for (var k = 0; k < rows.length; k++) {
+          var r = rows[k], e = ch[k];
+          var moved = setTxt(e.querySelector('.p'), r.px.toLocaleString('en-US', nf));
+          moved = setTxt(e.querySelector('.s'), fmtSz(r.sz)) || moved;
+          setTxt(e.querySelector('.t'), fmtSz(r.cum));
+          var bar = e.querySelector('.bar'), vs = e.querySelector('.vs');
+          bar.style.width = (r.cum / mx * 100).toFixed(1) + '%';
+          vs.style.width = (r.sz / mx * 100).toFixed(1) + '%';
+          var sig = Object.keys(r.v).sort().join(',');
+          if (vs.getAttribute('data-v') !== sig) { vs.setAttribute('data-v', sig); vs.innerHTML = barHtml(r.v, r.sz, 0); }
+          else { var segs = vs.children, kk = Object.keys(r.v).sort(function (a, b2) { return r.v[b2] - r.v[a]; });
+            for (var q = 0; q < segs.length && q < kk.length; q++) segs[q].style.width = (r.v[kk[q]] / r.sz * 100).toFixed(1) + '%'; }
+          if (moved) flash(e);
+        }
       };
-      obA.innerHTML = aRows.slice().reverse().map(function (r) { return row(r, true); }).join('');
-      obB.innerHTML = bRows.map(function (r) { return row(r, false); }).join('');
+      paint(obA, aRows.slice().reverse(), 'hm-ob-row a');
+      paint(obB, bRows, 'hm-ob-row b');
 
-      // The spread of the TIGHTEST book shown, never the gap between one venue's bid and another's ask -
-      // that is an arbitrage number, and across five venues it comes out negative, which reads as broken.
       var spr = null;
       for (i = 0; i < list.length; i++) { var sp = +list[i].spreadBps; if (sp > 0 && (spr === null || sp < spr)) spr = sp; }
       obPx.innerHTML = '<b>' + fpx(mid) + '</b><small>' + (spr != null ? (list.length > 1 ? 'tightest spread ' : 'spread ') + spr.toFixed(2) + ' bps' : '') + '</small>'
-        + '<small class="tk">rows of ' + t.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp }) + '</small>';
-
-      // The same buy/sell pressure bar an exchange shows, from the sizes actually on screen.
+        + '<small class="tk">rows of ' + t.toLocaleString('en-US', nf) + '</small>';
       var bp = bTot + aTot > 0 ? bTot / (bTot + aTot) * 100 : 50;
-      obR.innerHTML = '<b>B ' + bp.toFixed(1) + '%</b>'
-        + '<i style="width:' + bp.toFixed(1) + '%"></i><u style="width:' + (100 - bp).toFixed(1) + '%"></u>'
-        + '<s>' + (100 - bp).toFixed(1) + '% S</s>';
+      obR.innerHTML = '<b>B ' + bp.toFixed(1) + '%</b><i style="width:' + bp.toFixed(1) + '%"></i>'
+        + '<u style="width:' + (100 - bp).toFixed(1) + '%"></u><s>' + (100 - bp).toFixed(1) + '% S</s>';
+      obVk.innerHTML = names.map(function (n) {
+        return '<span' + (pick !== 'all' && n !== pick ? ' class="off"' : '') + '><i style="background:' + (BKC[n] || '#8fa3c4') + '"></i>' + (BKN[n] || n) + '</span>';
+      }).join('');
 
-      // ---- trades ----
+      // ---- TAPE ----
       var tr = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
-      tr = tr.slice(Math.max(0, tr.length - 16)).reverse();
-      tpL.innerHTML = tr.length ? tr.map(function (x) {
-        var dt = new Date(x.ts);
-        return '<div class="hm-tp-row ' + (x.side === 'buy' ? 'a' : 'b') + '">'
-          + '<span class="p">' + fpx(x.px) + '</span>'
-          + '<span class="s">' + fmtSz(x.qty) + '</span>'
-          + '<span class="t"><em>' + (BKN[x.venue] || x.venue || '').slice(0, 3).toUpperCase() + '</em> '
-          + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2) + '</span></div>';
-      }).join('') : '<div class="hm-tp-none">no prints yet</div>';
+      // "Big" is measured against THIS tape, not against a number somebody picked: the median print, times
+      // eight. On BTC the median print is about $750, so a $6,000 order is genuinely unusual and lights up.
+      var vals = tr.map(function (x) { return +x.usd || 0; }).sort(function (a, b2) { return a - b2; });
+      var med = vals.length ? vals[Math.floor(vals.length / 2)] : 0, big = med * 8;
+      tr = tr.slice(Math.max(0, tr.length - 18)).reverse();
+      var ch2 = ensure(tpL, tr.length, 'hm-tp-row');
+      for (i = 0; i < tr.length; i++) {
+        var x = tr[i], e2 = ch2[i], dt = new Date(x.ts);
+        e2.className = 'hm-tp-row ' + (x.side === 'buy' ? 'a' : 'b') + ((big > 0 && +x.usd >= big) ? ' big' : '');
+        setTxt(e2.querySelector('.tm'), ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2) + ':' + ('0' + dt.getSeconds()).slice(-2));
+        setTxt(e2.querySelector('.p'), (x.side === 'buy' ? '▲ ' : '▼ ') + fpx(x.px));
+        setTxt(e2.querySelector('.s'), fmtSz(x.qty));
+        setTxt(e2.querySelector('.u'), usdShort(+x.usd || 0));
+        setTxt(e2.querySelector('.v'), (BKN[x.venue] || x.venue || '').slice(0, 3).toUpperCase());
+      }
 
-      // ---- the numbers, in words ----
-      var cd = b.consolidatedDepthUsd, sl = null;
-      for (i = 0; i < list.length; i++) { var q = list[i].slipBps && +list[i].slipBps.buy_250000; if (q > 0 && (sl === null || q < sl)) sl = q; }
-      bkSm.innerHTML = '<div class="hm-sm-r"><span>Resting bids</span><b class="g">' + usdShort(pick === 'all' && cd ? +cd.bidUsd['25'] : sideUsd(list, 'bid')) + '</b></div>'
-        + '<div class="hm-sm-r"><span>Resting offers</span><b class="r">' + usdShort(pick === 'all' && cd ? +cd.askUsd['25'] : sideUsd(list, 'ask')) + '</b></div>'
-        + '<div class="hm-sm-r"><span>within 0.25% of price</span><b></b></div>'
-        + (sl !== null ? '<div class="hm-sm-r"><span>A $250k market buy costs</span><b>' + sl.toFixed(2) + ' bps</b></div>' : '')
-        + '<div class="hm-sm-r"><span>Books read</span><b>' + list.length + ' of ' + names.length + '</b></div>'
-        + '<div class="hm-sm-n">Real limit orders standing right now, not a model. Numbers move every second.</div>';
-
-      bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + ' exchanges together' : BKN[pick] || pick) + '</i>';
+      // ---- THE READ ----
+      var cd = b.consolidatedDepthUsd, sl = null, ss = null;
+      for (i = 0; i < list.length; i++) {
+        var q1 = list[i].slipBps && +list[i].slipBps.buy_250000; if (q1 > 0 && (sl === null || q1 < sl)) sl = q1;
+        var q2 = list[i].slipBps && +list[i].slipBps.sell_250000; if (q2 > 0 && (ss === null || q2 < ss)) ss = q2;
+      }
+      var bidU = pick === 'all' && cd ? +cd.bidUsd['25'] : sideUsd(list, 'bid');
+      var askU = pick === 'all' && cd ? +cd.askUsd['25'] : sideUsd(list, 'ask');
+      var buyU = 0, selU = 0, mins = (d.minutes || []).slice(-5), useMin = mins.length >= 2 && pick === 'all';
+      if (useMin) { mins.forEach(function (m2) { buyU += +m2.buyUsd || 0; selU += +m2.sellUsd || 0; }); }
+      else { (d.tape || []).forEach(function (x2) { if (pick !== 'all' && x2.venue !== pick) return; if (x2.side === 'buy') buyU += +x2.usd || 0; else selU += +x2.usd || 0; }); }
+      var dl = buyU - selU;
+      var span = useMin ? mins.length + ' min' : ((d.tape && d.tape.length > 1) ? Math.round((d.tape[d.tape.length - 1].ts - d.tape[0].ts) / 1000) + 's' : 'prints');
+      var rowS = function (k, v, c) { return '<div class="hm-sm-r"><span>' + k + '</span><b' + (c ? ' class="' + c + '"' : '') + '>' + v + '</b></div>'; };
+      bkSm.innerHTML =
+        rowS('Buyers waiting', usdShort(bidU), 'g')
+        + rowS('Sellers waiting', usdShort(askU), 'r')
+        + '<div class="hm-sm-s">resting within 0.25% of the price</div>'
+        + (sl !== null ? rowS('$250k buy costs', sl.toFixed(2) + ' bps') : '')
+        + (ss !== null ? rowS('$250k sell costs', ss.toFixed(2) + ' bps') : '')
+        + '<div class="hm-sm-s">what the book would really charge you</div>'
+        + rowS('Aggressive buying', usdShort(buyU), 'g')
+        + rowS('Aggressive selling', usdShort(selU), 'r')
+        + rowS('Net, last ' + span, (dl >= 0 ? '+' : '−') + usdShort(Math.abs(dl)), dl >= 0 ? 'g' : 'r')
+        + '<div class="hm-sm-s">who was in a hurry, in dollars</div>'
+        + rowS('Books read', list.length + ' of ' + names.length, '');
+      bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + ' exchanges, lined up' : BKN[pick] || pick) + '</i>';
     }
     function sideUsd(list, side) {
       var s = 0, i;
       for (i = 0; i < list.length; i++) { var v = list[i].depthUsd; if (v) s += +v[side + '_25'] || 0; }
       return s;
     }
-
     function bkChips(names) {
-      var h = '<button type="button" data-bv="all" class="on">All</button>';
-      for (var i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '">' + (BKN[names[i]] || names[i]) + '</button>';
+      var h = '<button type="button" data-bv="all" class="on">All</button>', i;
+      for (i = 0; i < names.length; i++) h += '<button type="button" data-bv="' + names[i] + '">' + (BKN[names[i]] || names[i]) + '</button>';
       bkSeg.innerHTML = h;
     }
     function bkLoad() {
@@ -1431,12 +1505,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var coin = S.coin;
       Promise.all([
         fetch('/api/v1/book?symbol=' + encodeURIComponent(coin) + '&levels=40').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=120').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=140').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       ]).then(function (res) {
-        if (!S || S.coin !== coin) return;  // a slow answer must never paint onto the coin they switched to
+        if (!S || S.coin !== coin) return;
         var b = res[0], tp = res[1];
         S.bk.book = (b && b.venues && Object.keys(b.venues).length) ? b : null;
         S.bk.tape = (tp && Array.isArray(tp.trades)) ? tp.trades : [];
+        S.bk.minutes = (tp && Array.isArray(tp.minutes)) ? tp.minutes : [];
         if (S.bk.book) {
           var names = Object.keys(S.bk.book.venues);
           if (bkSeg.childNodes.length !== names.length + 1) { bkChips(names); if (names.indexOf(S.bk.venue) < 0) S.bk.venue = 'all'; }
