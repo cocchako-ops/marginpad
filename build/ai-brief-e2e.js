@@ -43,6 +43,15 @@ const tfWords = (t) => String(t) + 'm';
 // the money routes belongs in a file git cannot see.
 const KEY = (require('fs').readFileSync(require('path').join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[A-Za-z0-9]+/) || [])[0];
 if (!KEY) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
+// THE SPANISH INLINE-i18n PASS KILLED THIS SUITE AND NOTHING SAID SO (found 2026-09-21). Since 2026-09-19 every
+// user-facing literal in the shipped bundles is routed through `__esT_mpcharts(key, english)`, so a detector
+// lifted out of mp-charts.js now calls a helper that does not exist in this eval scope - the whole file died on
+// `ReferenceError: __esT_mpcharts is not defined` two days ago and simply stopped being run. The helper's real
+// contract is "the Spanish string when the page is Spanish, otherwise the English fallback", and these checks
+// read English, so returning the fallback is not a stub: it is what the helper itself does here.
+// Any future bundle-lifting suite needs the same shim the day another bundle is routed.
+globalThis.__esT_mpcharts = (k, en) => en;
+globalThis.__esD_mpcharts = {};
 for (const fn of ['pivotsOf', 'levelsOf', 'volOf', 'aggBars', 'htfOf', 'fvgOf', 'volRegimeOf', 'setupsOf', 'sessionOf']) eval(grab(fn));
 
 const bar = (o, h, l, c, v) => ({ time: 0, open: o, high: h, low: l, close: c, vol: v == null ? 100 : v });
