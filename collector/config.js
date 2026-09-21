@@ -52,6 +52,23 @@ export const config = {
   mmr: 0.005,
   clusterBucketPct: 0.001,   // 0.1% of price
   clusterHalfLifeDays: 7,
+
+  // ORDER BOOK + TRADE TAPE (2026-09-21). Phase 00: these keep state in memory and write NOTHING to the
+  // database. They are off unless explicitly enabled, and `MP_BOOK=0` turns them off again with a single
+  // pm2 restart and no deploy - the collector was once down for seven days and took the whole liquidation
+  // feed with it, and the book is roughly ten times that traffic. It earns its place by proving it costs
+  // nothing first.
+  //
+  // Start narrow. Measured 2026-09-21: three venues and three symbols is 12.5 GB/day raw, 2.13 gzipped.
+  book: {
+    enabled: process.env.MP_BOOK !== '0',
+    symbols: (process.env.MP_BOOK_SYMBOLS || 'BTC,ETH,SOL').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
+    // Venues whose book ships a snapshot on the wire and whose sequence can be proven. Binance, Gate and
+    // MEXC need a REST bootstrap and join later, deliberately separately.
+    bookVenues: (process.env.MP_BOOK_VENUES || 'bybit,okx,bitget,hyperliquid').split(',').map((s) => s.trim()).filter(Boolean),
+    // A trade needs no snapshot and no sequence, so Binance is here from the start.
+    tapeVenues: (process.env.MP_TAPE_VENUES || 'bybit,okx,bitget,hyperliquid,binance').split(',').map((s) => s.trim()).filter(Boolean),
+  },
 };
 
 export function bucketSizeFor(symbol, price) {

@@ -34,7 +34,7 @@ function resolveWindow(q) {
 }
 function validSymbol(s) { return typeof s === 'string' && /^[A-Z0-9]{2,20}$/.test(s.toUpperCase()); } // any captured ticker
 
-export function createApiServer({ storage, getStatus, bus }) {
+export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCols = [] }) {
   const app = express();
   app.disable('x-powered-by');
 
@@ -303,6 +303,62 @@ export function createApiServer({ storage, getStatus, bus }) {
   app.get('/api/v1/whales', (req, res) => {
     try { res.set('Cache-Control', 'public, max-age=60'); res.json(getWhales()); }
     catch (e) { res.status(500).json({ error: 'server' }); }
+  });
+
+  // ORDER BOOK (2026-09-21). Live only - nothing is stored yet, by design. A book that cannot be proven
+  // correct is not served at all: the collector returns null for it and this answers 404 rather than
+  // handing back a plausible wrong number, which is the entire discipline of the module behind it.
+  app.get('/api/v1/book', (req, res) => {
+    const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const want = String(req.query.venue || '').toLowerCase();
+    const out = {};
+    for (const c of bookCols) {
+      if (want && c.venue !== want) continue;
+      const s = c.read(sym);
+      if (s) out[c.venue] = s;
+    }
+    res.set('Cache-Control', 'public, max-age=2');
+    if (!Object.keys(out).length) return res.status(404).json({ error: 'no_valid_book', symbol: sym });
+    // Depth summed across venues. A trader does not care which exchange holds the bid - what matters is
+    // how much is standing in total within reach of the price.
+    const agg = { bidUsd: {}, askUsd: {} };
+    for (const v of Object.values(out)) {
+      for (const [k, val] of Object.entries(v.depthUsd)) {
+        const side = k.startsWith('bid') ? 'bidUsd' : 'askUsd';
+        const bp = k.split('_')[1];
+        agg[side][bp] = (agg[side][bp] || 0) + val;
+      }
+    }
+    res.json({ symbol: sym, ts: Date.now(), venues: out, consolidatedDepthUsd: agg });
+  });
+
+  // TRADE TAPE. The book says what is standing; this says what was executed, and `side` is always the
+  // AGGRESSOR - the side that crossed the spread - never merely "a buyer existed".
+  app.get('/api/v1/tape', (req, res) => {
+    const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const want = String(req.query.venue || '').toLowerCase();
+    const n = Math.min(500, Math.max(1, +req.query.limit || 100));
+    const trades = [], delta = {};
+    for (const c of tapeCols) {
+      if (want && c.venue !== want) continue;
+      const rows = c.read(sym, n);
+      if (rows) trades.push(...rows);
+      const d = c.delta(sym);
+      if (d) delta[c.venue] = d;
+    }
+    res.set('Cache-Control', 'public, max-age=2');
+    if (!trades.length) return res.status(404).json({ error: 'no_trades', symbol: sym });
+    trades.sort((a, b) => a.ts - b.ts);
+    const tot = Object.values(delta).reduce((s, d) => ({
+      buyUsd: s.buyUsd + d.buyUsd, sellUsd: s.sellUsd + d.sellUsd, trades: s.trades + d.trades,
+    }), { buyUsd: 0, sellUsd: 0, trades: 0 });
+    res.json({
+      symbol: sym, ts: Date.now(),
+      note: 'side is the AGGRESSOR - the taker that crossed the spread.',
+      trades: trades.slice(Math.max(0, trades.length - n)),
+      deltaByVenue: delta,
+      deltaThisMinute: { ...tot, deltaUsd: Math.round(tot.buyUsd - tot.sellUsd) },
+    });
   });
 
   // Health - per-exchange socket state, last event, events/min. Check it from your phone.

@@ -19,6 +19,8 @@ import { BitfinexCollector } from './collectors/bitfinex.js';
 import { BinanceCoinCollector } from './collectors/binancecoin.js';
 import { GateLiqCollector, HtxLiqCollector, DydxLiqCollector } from './collectors/restpoll.js'; // REST-polled public liq feeds (2026-07-25)
 import { HyperliquidLiqCollector } from './collectors/hyperliquid.js'; // counterparty-harvest detection (no public liq stream exists)
+import { BookCollector } from './collectors/book.js';   // order book state (2026-09-21) - memory only, phase 00
+import { TapeCollector } from './collectors/tape.js';   // trade tape - memory only, phase 00
 import { startPhase2 } from './phase2.js';
 import { startWhales } from './whales.js';
 
@@ -54,6 +56,17 @@ const collectors = [
   new HyperliquidLiqCollector({ symbols: config.symbols, onEvent }),
 ];
 
+// ORDER BOOK AND TRADE TAPE - PHASE 00: they live entirely in memory and touch neither storage nor the
+// bus. The point of this first cut is to prove they cost the existing feed nothing; `MP_BOOK=0` plus a pm2
+// restart removes them without a deploy. They are also built as SEPARATE collectors on separate sockets,
+// so a book problem can never take a liquidation subscription with it.
+const bookCols = config.book.enabled
+  ? config.book.bookVenues.map((v) => new BookCollector(v, { symbols: config.book.symbols }))
+  : [];
+const tapeCols = config.book.enabled
+  ? config.book.tapeVenues.map((v) => new TapeCollector(v, { symbols: config.book.symbols }))
+  : [];
+
 // Event-loop stall detector: a 1s heartbeat measures how late it fires. Exposed on /status so a
 // "silent socket" can be told apart from a process that could not read its sockets at the time.
 const loopLag = { maxMs: 0, max5mMs: 0, stalls: 0, lastStallAt: 0 };
@@ -78,6 +91,15 @@ function getStatus() {
     symbols: config.symbols, inserted, deduped,
     loopLag, slowCalls: slowStorageCalls(),
     exchanges, // db: filled by the /status handler from the reader thread (never a main-thread scan)
+    // Everything needed to tell a healthy book from a quietly wrong one, without opening a shell: how many
+    // updates were applied, how many sequence gaps were seen, how many resyncs followed, and the state of
+    // every symbol's book. venueSkewMs is the venue's clock minus ours - if that number starts drifting,
+    // the host's NTP is the problem and every latency figure downstream is about to become fiction.
+    book: config.book.enabled ? {
+      enabled: true, symbols: config.book.symbols,
+      books: bookCols.map((c) => c.status()),
+      tape: tapeCols.map((c) => c.status()),
+    } : { enabled: false },
   };
 }
 
@@ -89,6 +111,13 @@ async function main() {
   await Promise.allSettled(collectors.map((c) => c.init()));
   collectors.forEach((c) => c.start());
   const okx = collectors.find((c) => c.name === 'okx');
+  // Started AFTER the liquidation feed is already up, and each one guarded on its own: a book venue that
+  // throws on init must not stop the tape, and neither must ever stop the feed that is already working.
+  if (config.book.enabled) {
+    log.info('starting book + tape', { symbols: config.book.symbols, books: config.book.bookVenues, tape: config.book.tapeVenues });
+    await Promise.allSettled([...bookCols, ...tapeCols].map((c) => c.init()));
+    for (const c of [...bookCols, ...tapeCols]) { try { c.start(); } catch (e) { log.error('book/tape start failed', { name: c.name, e: String(e) }); } }
+  } else log.info('book + tape disabled (MP_BOOK=0)');
 startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
@@ -111,13 +140,14 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
   }
   oiSnapTick();
   const oiSnapTimer = setInterval(oiSnapTick, 3600000);
-  const api = createApiServer({ storage, getStatus, bus });
+  const api = createApiServer({ storage, getStatus, bus, bookCols, tapeCols });
 
   function shutdown(sig) {
     log.info('shutting down', { sig });
     clearInterval(aggTimer); clearInterval(pruneTimer); clearInterval(oiSnapTimer);
     try { p2 && p2.stop(); } catch (e) {}
     collectors.forEach((c) => c.shutdown());
+    [...bookCols, ...tapeCols].forEach((c) => { try { c.shutdown(); } catch (e) {} });
     try { aggregateTick(); } catch {}
     try { api.close(() => {}); } catch {}
     try { storage.close(); } catch {}
