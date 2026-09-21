@@ -100,6 +100,45 @@ const wkey = ws => new Date(ws).toISOString().slice(0, 10);
   ok(/!done\.testOnly\) \? done/.test(src), 'a rehearsal week is rebuilt before a real announcement, never paid as it stands');
   ok(/no Bybit trading recorded for that week/.test(src), 'and the claim re-reads the stored row before releasing money');
 
+  /* THE LINK IS PUBLIC (owner, 2026-09-21: "jel smo sigurni da nema veze ko klikne na link iz grupe?").
+     It is posted in a Telegram channel anyone can join, and the click IS the claim - so the only thing
+     between a stranger and the money is the claim itself. Everything above proves that through the API;
+     this proves it through the door people actually use, by fetching the real token link for the live
+     week and following it as a guest.
+
+     The token names a WEEK and nothing else. It carries no identity, no amount and no authority: the
+     row is found from the caller's session -> their registered Bybit UID -> that week's stored report. */
+  console.log('\n-- the public link itself confers nothing');
+  {
+    const wk = wkey(weekStart(Date.now()) - 7 * 86400000);
+    const built = await jget(BASE + '/api/admin/bybitbonus?build=1&week=' + wk, H);
+    const tok = built && built.token;
+    ok(/^[a-f0-9]{10}$/.test(String(tok || '')), 'the live week has a token link', tok);
+    if (tok) {
+      const claimedBefore = built.claimedCents || 0;
+      const red = await fetch(BASE + '/bybit-bonus/' + tok, { redirect: 'manual' });
+      const loc = red.headers.get('location') || '';
+      ok(red.status === 302, 'it redirects rather than paying anything itself', red.status);
+      ok(loc.indexOf('/rewards/?byw=' + wk) >= 0, 'and names only the week it belongs to', loc);
+      ok(!/token|uid|amount|cents|sig/i.test(loc), 'the destination carries no identity and no amount', loc);
+
+      // a stranger following it with no cookies at all
+      const page = await fetch(BASE + '/rewards/?byw=' + wk);
+      ok(page.status === 200, 'a stranger can open the page', page.status);
+      const anon = await post(BASE + '/api/bybit/bonus', { week: wk });   // no session
+      ok(anon.status === 401, 'but the claim behind it is 401 without an account', anon.status);
+
+      // an unknown token is not an error and is not a week
+      const bogus = await fetch(BASE + '/bybit-bonus/deadbeef00', { redirect: 'manual' });
+      const bl = bogus.headers.get('location') || '';
+      ok(bogus.status === 302 && /\/rewards\/\?byw=$/.test(bl), 'a made-up token resolves to no week at all', bogus.status + ' ' + bl);
+
+      const after = await jget(BASE + '/api/admin/bybitbonus?build=1&week=' + wk, H);
+      ok((after.claimedCents || 0) === claimedBefore, 'and none of this moved the week\'s claimed total',
+        '$' + (claimedBefore / 100).toFixed(2) + ' -> $' + ((after.claimedCents || 0) / 100).toFixed(2));
+    }
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exitCode = fail ? 1 : 0;
 })();
