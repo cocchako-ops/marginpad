@@ -193,8 +193,18 @@ function sortedSide(map, desc) {
  */
 export function summarize(book, skewMs, topN) {
   if (!book || !book.ok) return null;
-  const bids = sortedSide(book.bids, true);
-  const asks = sortedSide(book.asks, false);
+  // SORT ONCE PER CHANGE, NOT ONCE PER READER. Both sides were re-sorted on every API read, and the
+  // terminal above this now polls every two seconds across five venues and a thousand levels each. The
+  // sorted arrays are cached on the book itself and thrown away by _apply the moment anything moves, so
+  // a hundred readers in the same second cost one sort rather than a hundred - and the cache can never
+  // serve a stale order, because the thing that would make it stale is what clears it.
+  if (!book._sb || book._sv !== book.seq || book._st !== book.rxAt) {
+    book._sb = sortedSide(book.bids, true);
+    book._sa = sortedSide(book.asks, false);
+    book._sv = book.seq; book._st = book.rxAt;
+  }
+  const bids = book._sb;
+  const asks = book._sa;
   if (!bids.length || !asks.length) return null;
   const bestBid = bids[0][0], bestAsk = asks[0][0];
   if (!(bestBid > 0) || !(bestAsk > 0) || bestAsk <= bestBid) return null; // a crossed book is a broken book
