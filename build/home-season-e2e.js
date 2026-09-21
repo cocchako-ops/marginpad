@@ -113,6 +113,40 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       chk('Browse drawer links Your season', nav);
       await ctx.close();
     }
+
+    /* THE DUEL WINNER HAS TO BE VISIBLE ON A GOLD NAME (owner, 2026-09-21: two Premium members duel,
+       'won' is written, and nothing says which of them). A Premium name is painted with
+       -webkit-background-clip:text and a transparent fill, so it carries no colour - and that clip
+       takes the text DECORATION with it, which is why an underline failed silently. A pseudo-element
+       bar below the box failed too, clipped by `.fr .w{overflow:hidden}`. Only a BORDER survives both.
+       Asserted from COMPUTED style on a real gold winner, because every earlier attempt was present
+       in the stylesheet and invisible on the page. */
+    {
+      const ctx2 = await browser.createBrowserContext ? await browser.createBrowserContext() : null;
+      const page = ctx2 ? await ctx2.newPage() : await browser.newPage();
+      await page.setViewport({ width: 1280, height: 900 });
+      await page.goto(ORIGIN + '/season/?nc=1&cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+      await page.evaluate(() => new Promise(r => setTimeout(r, 5000)));
+      const d = await page.evaluate(() => {
+        const wins = [].map.call(document.querySelectorAll('#duelFeed .w.win'), n => {
+          const cs = getComputedStyle(n);
+          return { gold: n.className.indexOf('mp-progold') >= 0, border: cs.borderBottomWidth + ' ' + cs.borderBottomStyle, col: cs.borderBottomColor };
+        });
+        const plain = document.querySelectorAll('#duelFeed .w:not(.win)').length;
+        return { wins, plain };
+      });
+      chk('the duel feed has winners to judge', d.wins.length > 0, d.wins.length);
+      if (d.wins.length) {
+        chk('every winner carries a visible border, not a decoration the gold gradient can clip',
+          d.wins.every(w => parseFloat(w.border) >= 1 && w.border.indexOf('none') < 0), JSON.stringify(d.wins.slice(0, 3)));
+        const golds = d.wins.filter(w => w.gold);
+        if (golds.length) chk('and a GOLD Premium winner carries it too - the case that had no marker at all',
+          golds.every(w => parseFloat(w.border) >= 1), JSON.stringify(golds.slice(0, 2)));
+        else out.push('.... no gold Premium winner in the feed right now; the general check above still ran');
+      }
+      chk('a name that did not win carries no marker', d.plain > 0);
+      if (ctx2) await ctx2.close(); else await page.close();
+    }
   });
   out.forEach(l => console.log(l));
   const bad = out.filter(l => l.indexOf('FAIL') === 0).length;

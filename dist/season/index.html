@@ -277,7 +277,7 @@ h1 b{color:var(--lime)}
 /* fixed columns sized for the longest REAL values (measured 2026-09-06): symbol "RAYDIUM x1000" 13 ch, result "-$999.99M · -99.9k%" 19 ch at 12 px mono */
 .fr{display:grid;grid-template-columns:minmax(0,1fr) 128px 144px 42px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px;white-space:nowrap;min-height:38px}
 .fr.duel{grid-template-columns:minmax(0,1fr) 124px 52px} /* "survival · 1000T" 16 ch */
-.fr .pair .w.win{color:var(--sky);text-decoration:underline;text-decoration-color:var(--sky);text-decoration-thickness:1.5px;text-underline-offset:3px}.fr .pair i.open{color:var(--amber);letter-spacing:.04em}
+.fr .pair .w.win{color:var(--sky);display:inline-block;border-bottom:2px solid var(--sky);padding-bottom:1px;line-height:1.1}.fr .pair i.open{color:var(--amber);letter-spacing:.04em}
 .fr .take{background:var(--amber);color:#1a1200;border:0;border-radius:8px;padding:6px 0;font:800 11px 'Bricolage Grotesque',sans-serif;cursor:pointer;width:100%;transition:filter .14s}.fr .take:hover{filter:brightness(1.08)}.fr .take[disabled]{opacity:.5;cursor:default}
 .fr .p small{font-size:11px;font-weight:600;color:var(--dim)}.fr .p.liq small{font-size:inherit;font-weight:inherit;color:inherit;letter-spacing:inherit}.fr .p.liq .sep{font-style:normal}
 .fr:first-child{border-top:0}
