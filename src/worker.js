@@ -6338,7 +6338,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0c474ba8" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c1343e45" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12639,11 +12639,23 @@ async function bybitAffList(env, days, range) {
     const qs = new URLSearchParams(cursor ? { ...base, cursor } : base).toString();
     const h = await bybitAffSign(env, qs);
     if (!h) return { error: 'no_key', list: [] };
-    let j = null;
-    try {
-      const r = await fetch('https://api.bybit.com/v5/affiliate/aff-user-list?' + qs, { headers: h, signal: AbortSignal.timeout(9000) });
-      j = await r.json();
-    } catch (e) { return { error: 'unreachable', detail: String(e).slice(0, 90), list: out }; }
+    /* READ THE BODY, THEN PARSE. Wrapping the fetch and the .json() in one catch called a non-JSON
+       answer 'unreachable' - a network word for something that is not a network problem. Measured
+       2026-09-21: the request reaches Bybit and comes back with a body that will not parse, and the
+       wrong label sent every look in the wrong direction for as long as it did. Two retries with a
+       short backoff, because a shedding edge is exactly what a second attempt fixes. */
+    let j = null, lastBody = '', lastStatus = 0, threw = '';
+    for (let att = 0; att < 3 && !j; att++) {
+      if (att) await new Promise(res => setTimeout(res, 400 * att));
+      try {
+        const r = await fetch('https://api.bybit.com/v5/affiliate/aff-user-list?' + qs, { headers: h, signal: AbortSignal.timeout(9000) });
+        lastStatus = r.status;
+        const txt = await r.text();
+        lastBody = String(txt || '').replace(/s+/g, ' ').slice(0, 70);
+        try { j = JSON.parse(txt); } catch (pe) { j = null; }
+      } catch (e) { threw = String((e && e.message) || e).slice(0, 60); }
+    }
+    if (!j) return { error: threw ? 'unreachable' : 'bad_body', detail: (threw || ('HTTP ' + lastStatus + ' body: ' + lastBody)).slice(0, 90), list: out };
     if (!j || j.retCode !== 0) return { error: 'bybit_' + ((j && j.retCode) || '?'), detail: (j && j.retMsg) || '', list: out };
     const l = (j.result && j.result.list) || [];
     out.push(...l);
@@ -15149,7 +15161,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '8406bb91';
+const ASSET_V = '57dacf3f';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18739,9 +18751,15 @@ export default {
         if (!by[t].last || String(r.last) > by[t].last) by[t].last = String(r.last);
         by[t].p95ms = Math.max(by[t].p95ms, Math.round(+r.p95ms || 0));
       }
+      /* The raw result strings, because folding them into ok/error throws away the one thing that
+         says WHY - a task that fails where the same call succeeds by hand is telling us something
+         specific, and 'error' on its own is not it. */
+      const messages = rows.filter(r => String(r.result || '').indexOf('err:') === 0)
+        .map(r => ({ task: r.task, message: String(r.result).slice(4), n: +r.n || 0, last: String(r.last) }))
+        .sort((a, b) => b.n - a.n).slice(0, 20);
       const list = Object.values(by).map(x => ({ ...x, runsPerHour: Math.round((x.ok + x.error) / hrs * 10) / 10 }))
         .sort((a, b) => a.runsPerHour - b.runsPerHour);
-      return J({ hours: hrs, tasks: list,
+      return J({ hours: hrs, tasks: list, messages,
         neverCompleted: list.filter(x => x.ok === 0).map(x => x.task),
         note: 'the ten-minute trigger fires six times an hour. A task with a low runsPerHour either returns early most runs (normal) or is being killed by the invocation budget (not normal) - compare it against what the task is supposed to do.' });
     }
@@ -21019,24 +21037,30 @@ export default {
        completed for two and a half hours while every alarm stayed green, because a killed task
        throws nothing. It runs here instead, on the trigger that does almost no work, paced by its
        own stamp so it still costs one Bybit call every ten minutes rather than sixty an hour. */
+    /* BYBIT HAS ITS OWN TRIGGER, AND THEREFORE ITS OWN BUDGET. Everything here used to run inside a
+       crowded invocation and was killed before it finished - silently, because a killed task throws
+       nothing. Measured: the affiliate report sat two and a half hours stale while every alarm stayed
+       green. Awaited in sequence, not fired at once: sharing a budget and hoping is what broke it. */
+    if (event.cron === '4,14,24,34,44,54 * * * *') {
+      ctx.waitUntil((async () => {
+        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey']]) {
+          const t0 = Date.now();
+          try {
+            const r = await fn(env);
+            // the DETAIL is the whole point: 'unreachable' says the fetch threw, not why it threw
+            const _res = (r && r.error) ? ('err:' + String(r.error) + ' | ' + String((r && r.detail) || '').slice(0, 60)).slice(0, 90) : 'ok';
+            if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', label, _res], doubles: [Date.now() - t0] });
+          } catch (e) {
+            const m = String((e && e.message) || e).slice(0, 84);
+            try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', label, 'err:' + m], doubles: [Date.now() - t0] }); } catch (_) {}
+          }
+        }
+      })());
+      return;
+    }
     if (event.cron === '* * * * *') {
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
-      ctx.waitUntil((async () => {
-        try {
-          const k = 'cron:bybitaff:last';
-          const last = +(await env.STATS.get(k) || 0);
-          if (Date.now() - last < 9 * 60000) return;
-          await env.STATS.put(k, String(Date.now()), { expirationTtl: 86400 });
-          const r = await bybitAffSync(env);
-          if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', 'bybitaff', (r && r.error) ? 'error' : 'ok'], doubles: [0] });
-        } catch (e) {
-          // carry the MESSAGE, not just the fact - a cron that throws where the same call succeeds by
-          // hand is telling us something specific, and 'error' on its own does not say what.
-          const _m = String((e && e.stack) || (e && e.message) || e).slice(0, 88);
-          try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', 'bybitaff', 'err:' + _m], doubles: [0] }); } catch (_) {}
-        }
-      })());
       return;
     }
     // DEAD-MAN (2026-09-02): every */10 run stamps cron:hb; /api/health turns 503 when the stamp is >25 min old, and an EXTERNAL
@@ -21116,8 +21140,6 @@ export default {
     // settle the weekly rebate once a closed week is trustworthy, and watch the key's own expiry -
     // it is not IP-bound, so it lapses after 90 days and would stop both of the above in silence.
     // bybitAffSync now runs on the one-minute trigger - see the note there. It lost this race every time.
-    bg(checkBybitBonus, 'bybitbonus');
-    bg(checkBybitKey, 'bybitkey');
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set

@@ -28,7 +28,11 @@ binding = "ASSETS"
 run_worker_first = true
 
 [triggers]
-crons = ["*/10 * * * *", "* * * * *"]
+# The Bybit jobs have their OWN pattern, and therefore their own invocation budget. Inside the
+# ten-minute run they were 3 of 53 tasks behind a sweep with a p95 of 144s and were killed before
+# finishing - silently, because a killed waitUntil throws nothing. Offset by 4 so they never share
+# a minute with the ten-minute trigger.
+crons = ["*/10 * * * *", "* * * * *", "4,14,24,34,44,54 * * * *"]
 
 # Persisted, searchable logs (Workers Logs) so console.error('srverr', …) is queryable in the
 # Cloudflare dashboard after the fact — not just in a live `wrangler tail`. head_sampling_rate=1 = keep all.

@@ -95,6 +95,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var r=document.getElementById('res');var tot=0,qty=0;for(var i=1;i<=4;i++){var p=+document.getElementById('p'+i).value,a=+document.getElementById('a'+i).value;if(p>0&&a>0){tot+=a;qty+=a/p;}}if(!(qty>0)){r.innerHTML='';return;}var avg=tot/qty;r.innerHTML='<div class="rrow"><span class="k">Total invested</span><span class="v">'+tot.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Total coins</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow big"><span class="k">Average entry (break-even)</span><span class="v">'+avg.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=0c474ba8"></script>
+<script defer src="/assets/mp-nav.js?v=c1343e45"></script>
 </body>
 </html>

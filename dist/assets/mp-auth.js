@@ -1435,6 +1435,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
 
     var msg = bodyEl.querySelector('#mpaPmsg'), sv = bodyEl.querySelector('#mpaPsave');
     var prev = bodyEl.querySelector('#mpaCdPrev');
+    /* The frame is saved the moment it is picked, so it must not sit in the dirty set - otherwise the
+       button reads 'Save card' forever after a pick that is already on the server. */
+    function bumpFrame(base, fr) { try { var o = JSON.parse(base); o.frame = fr; return JSON.stringify(o); } catch (e) { return base; } }
     function dirty() { return JSON.stringify(S) !== BASE; }
     function reflectSave() { if (!sv) return; var d = dirty(); sv.disabled = !d; sv.textContent = d ? 'Save card' : 'Saved'; }
     function paintPrev() {
@@ -1487,7 +1490,27 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var seg = bodyEl.querySelector('#mpaFrSeg');
       if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
       Array.prototype.forEach.call(grid.querySelectorAll('[data-frame]:not([disabled])'), function (b) {
-        b.addEventListener('click', function () { S.frame = b.getAttribute('data-frame'); paintGrid(); paintPrev(); });
+        b.addEventListener('click', function () {
+          /* A FRAME APPLIES ON CLICK. It used to wait for Save, and a pick that changes the preview
+             under your finger reads as done - so closing the panel threw it away in silence. */
+          var fr = b.getAttribute('data-frame'), was = S.frame;
+          if (fr === was) return;
+          S.frame = fr; paintGrid(); paintPrev();
+          if (msg) msg.innerHTML = '<span style="color:#8b97a5">Applying\u2026</span>';
+          fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: fr }) })
+            .then(function (r) { return r.json(); }).then(function (d) {
+              if (d && d.ok) {
+                if (ME) ME.frame = d.frame;
+                S.frame = d.frame; BASE = bumpFrame(BASE, d.frame);   // it is saved, so it is no longer a pending change
+                paintGrid(); paintPrev();
+                if (msg) msg.innerHTML = '<span style="color:#34d99a">' + frName(d.frame) + ' is on your card.</span>';
+                setTimeout(function () { if (msg && msg.innerHTML.indexOf('on your card') >= 0) msg.innerHTML = ''; }, 2600);
+              } else {
+                S.frame = was; paintGrid(); paintPrev();
+                if (msg) msg.innerHTML = '<span style="color:#ffb347">' + ((d && d.error === 'locked') ? 'You do not own that frame yet.' : 'Could not equip that frame - try again.') + '</span>';
+              }
+            }).catch(function () { S.frame = was; paintGrid(); paintPrev(); if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error - try again.</span>'; });
+        });
       });
       if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} }
     }
@@ -1514,8 +1537,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!dirty()) return;
       var was = JSON.parse(BASE), jobs = [];
       sv.disabled = true; sv.textContent = 'Saving…'; if (msg) msg.innerHTML = '';
-      if (S.frame !== was.frame) jobs.push(fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: S.frame }) })
-        .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error(d && d.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip that frame.'); if (ME) ME.frame = d.frame; }));
+      // the frame is already saved - it writes on click, see the grid handler
       if (S.av !== was.av || S.bio !== was.bio || S.coins !== was.coins)
         jobs.push(fetch('/api/auth/profile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ bio: S.bio, avatar: S.av, coins: S.coins }) })
           .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.ok) throw new Error('Could not save - try again.'); if (ME) { ME.bio = d.bio; ME.avatar = d.avatar; ME.coins = d.coins; } }));
