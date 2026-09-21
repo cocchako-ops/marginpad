@@ -1,3 +1,13 @@
+/* EVERY TOOL ROUTE WAS ANCHORED TO THE START OF THE PATH, so /es/heatmap served the Spanish shell with a
+   correct Spanish h1 and then never activated a product - the page had no heatmap in it at all, and the
+   same held for every other tool under /es/. This strips the language prefix for ROUTE MATCHING only;
+   links and navigation are untouched, so a reader on the Spanish site stays on it.
+   A top-level function declaration on purpose: this file is a stack of sibling IIFEs, and a helper defined
+   inside one of them is invisible to the others - which is exactly how mp-nav's cookie bar broke in both
+   languages on 2026-09-19. */
+function _mpPath() {
+  try { return location.pathname.replace(/^\/es(?=\/|$)/, '') || '/'; } catch (e) { return location.pathname; }
+}
 
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
@@ -2566,13 +2576,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=a358f52c
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=ec87e3d9
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=a358f52c';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=ec87e3d9';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -2594,7 +2604,7 @@ window.addEventListener('load', function () {
   // product switcher
   var heatmap=document.getElementById('heatmap'),swapEl=document.getElementById('swap'),tabsEl=document.querySelector('.tabs'),cardEl=document.querySelector('.card'),loaded=false,swapInit=false;
   // Mobile: hide the calculator/product content on the landing (Browse is the entry point) - show it only on a tool route/tab.
-  if(!/^\/(charts|calculators)\/?$/.test(location.pathname)&&window.matchMedia&&window.matchMedia('(max-width:680px)').matches){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';}
+  if(!/^\/(charts|calculators)\/?$/.test(_mpPath())&&window.matchMedia&&window.matchMedia('(max-width:680px)').matches){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';}
   function showPlan(){var ps=document.querySelectorAll('.panel');for(var q=0;q<ps.length;q++)ps[q].classList.toggle('active',ps[q].id==='plan');}
   function initSwap(){
     if(swapInit)return;swapInit=true;
@@ -2628,7 +2638,7 @@ window.addEventListener('load', function () {
     else if(p==='charts'){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';window.mpLoadCharts(function(){window.mpCharts&&window.mpCharts.activate();});}
     else{if(tabsEl)tabsEl.style.display='';if(cardEl)cardEl.style.display='';var tb=document.querySelector('.tab[data-tab="liq"]');if(tb)tb.click();}
   });}
-  if(/^\/charts\/?$/.test(location.pathname)){document.body.classList.add('charts-page');document.body.setAttribute('data-prod','charts');var _cs0=document.getElementById('chartspace');if(_cs0){var _wrap0=_cs0.parentNode;Array.prototype.forEach.call(_wrap0.children,function(ch){if(ch!==_cs0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cs0.style.display='';}}
+  if(/^\/charts\/?$/.test(_mpPath())){document.body.classList.add('charts-page');document.body.setAttribute('data-prod','charts');var _cs0=document.getElementById('chartspace');if(_cs0){var _wrap0=_cs0.parentNode;Array.prototype.forEach.call(_wrap0.children,function(ch){if(ch!==_cs0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cs0.style.display='';}}
   /* Reward XP for genuinely using the charts workspace: first real interaction on the board per session → +25 XP
      (server grants once/day via dayCap, so it can't be farmed). Signed-in only; toast comes from the /api/auth/xp poll. */
   (function(){var done=false;function fire(){if(done)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me());if(!me||!me.id)return;done=true;try{fetch('/api/auth/chartxp',{method:'POST',credentials:'same-origin'}).catch(function(){});}catch(_){}}
@@ -2710,7 +2720,7 @@ window.addEventListener('load', function () {
     setInterval(function(){if(!document.hidden)render();},10000);
     setTimeout(render,600);
   })();
-  if(/^\/paper-trade\/?$/.test(location.pathname)){document.body.classList.add('paper-page');var _pt=document.querySelector('.prod[data-prod="plan"]');if(_pt)_pt.click();var _cd=document.querySelector('.card'),_wp=document.querySelector('.wrap');if(_cd&&_wp){Array.prototype.forEach.call(_wp.children,function(ch){if(ch!==_cd&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cd.style.display='';}var _pc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pc){var _ps=document.getElementById('planSym');if(_ps){var _u=_pc.toUpperCase(),_ok=false;for(var _k=0;_k<_ps.options.length;_k++)if(_ps.options[_k].value.toUpperCase()===_u){_ok=true;break;}if(!_ok){var _o=document.createElement('option');_o.value=_u;_o.textContent=_u;_ps.appendChild(_o);}_ps.value=_u;_ps.dispatchEvent(new Event('change',{bubbles:true}));}}else{window.mpPtRestoreSym();}
+  if(/^\/paper-trade\/?$/.test(_mpPath())){document.body.classList.add('paper-page');var _pt=document.querySelector('.prod[data-prod="plan"]');if(_pt)_pt.click();var _cd=document.querySelector('.card'),_wp=document.querySelector('.wrap');if(_cd&&_wp){Array.prototype.forEach.call(_wp.children,function(ch){if(ch!==_cd&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cd.style.display='';}var _pc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pc){var _ps=document.getElementById('planSym');if(_ps){var _u=_pc.toUpperCase(),_ok=false;for(var _k=0;_k<_ps.options.length;_k++)if(_ps.options[_k].value.toUpperCase()===_u){_ok=true;break;}if(!_ok){var _o=document.createElement('option');_o.value=_u;_o.textContent=_u;_ps.appendChild(_o);}_ps.value=_u;_ps.dispatchEvent(new Event('change',{bubbles:true}));}}else{window.mpPtRestoreSym();}
     // copy-trade from the screener: also pre-fill side / leverage / SL / TP from the setup
     setTimeout(function(){var _q=location.search;function _g(k){var m=_q.match(new RegExp('[?&]'+k+'=([^&]+)'));return m?decodeURIComponent(m[1]):'';}
       var _side=_g('side'),_lev=_g('lev'),_sl=_g('sl'),_tp=_g('tp');
@@ -2720,8 +2730,8 @@ window.addEventListener('load', function () {
       if(_sl||_tp){var _ac=document.getElementById('planAdvChk');if(_ac&&!_ac.checked&&!_ac.disabled){_ac.checked=true;_ac.dispatchEvent(new Event('change',{bubbles:true}));}if(_sl){var _se=document.getElementById('planSlOpt');if(_se){_se.value=String(+_sl);_se.dispatchEvent(new Event('input',{bubbles:true}));}}if(_tp){var _te=document.getElementById('planTpOpt');if(_te){_te.value=String(+_tp);_te.dispatchEvent(new Event('input',{bubbles:true}));}}}
       try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}
     },300);}
-  if(/^\/calculators\/?$/.test(location.pathname)){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
-  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly - the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
+  if(/^\/calculators\/?$/.test(_mpPath())){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
+  if(/^\/(heatmap|swap)\/?$/.test(_mpPath())){var _pid=/heatmap/.test(_mpPath())?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly - the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
   var _pq=(location.search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
   var _coin=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];
   if(_pq){var hb=document.querySelector('.prod[data-prod="'+_pq+'"]');if(hb)hb.click();
@@ -3037,7 +3047,7 @@ window.addEventListener('load', function () {
 /* Paper Trade always opens the dedicated full-screen /paper-trade page (homepage prodnav card + hero CTA). The in-page .prod[data-prod=plan].click() is still used internally by the router when already on /paper-trade - so only intercept a USER click made elsewhere. */
 (function(){var pc=document.querySelector('.prod[data-prod="plan"]');if(!pc)return;
   pc.addEventListener('click',function(e){
-    if(/^\/paper-trade\/?$/.test(location.pathname))return; // on the dedicated page → let the in-page activation proceed
+    if(/^\/paper-trade\/?$/.test(_mpPath()))return; // on the dedicated page → let the in-page activation proceed
     e.preventDefault();e.stopPropagation();
     if(window.mpGo){window.mpGo('/paper-trade');}else{location.href='/paper-trade';}
   },true);
@@ -3092,7 +3102,7 @@ window.mpLoadCharts=function(cb){
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
-if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct /charts landing → load + the module self-activates */
+if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts landing → load + the module self-activates */
 
 ;/* the mobile "living terminal" IIFE (#mtpGo, ~115 lines) was removed 2026-09-12: its markup showed only on the tool-less landing, which no route reaches (every app-shell route opens a tool and hides .mterm) - dead code that still carried its own local-open path */
 
@@ -3287,7 +3297,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       scrLoaded=true; SCR={}; j.rows.forEach(function(r){if(r&&r.s){if(typeof r.chg==='number')CHG[r.s]=r.chg;SCR[r.s]=r;}});
       renderScr(j.rows); renderWatch(); scheduleScr(120000);
     }).catch(function(){scrInflight=false;scrRetry();}); }
-  if((watch||scr)&&/^\/charts\/?$/.test(location.pathname)){ renderWatch(); loadScr();
+  if((watch||scr)&&/^\/charts\/?$/.test(_mpPath())){ renderWatch(); loadScr();
     document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cws-wcoin[data-sym]');if(!c)return;var sym=c.getAttribute('data-sym');
       if(scr&&scr.contains(c)&&SCR[sym]&&window.mpCharts&&window.mpCharts.openSetup){window.mpCharts.openSetup(sym,SCR[sym]);}
       else openSym(sym);});
@@ -3438,7 +3448,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=0bce47ac';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=0bce47ac';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -3578,7 +3588,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(isMob()){e.preventDefault();e.stopPropagation();ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts();});}
   },true);
   window.mpOpenMobileCharts=function(sym){ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(sym);});};
-  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(function(){var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}}ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(_fc||undefined);});},250);});}
+  if(isMob()&&/^\/charts\/?$/.test(_mpPath())){window.addEventListener('load',function(){setTimeout(function(){var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}}ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(_fc||undefined);});},250);});}
 })();
 
 ;/* ══════════ service worker registration (added 2026-07) ══════════

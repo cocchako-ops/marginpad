@@ -35,7 +35,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     tick: ['Rows of', 'How wide each row of the book is in price. Five exchanges quote to a fraction of a cent, so their prices are grouped into rows of this size - otherwise the ladder would be forty rows of dust instead of eight rows of size.'],
     lined: ['Lined up', 'Exchanges do not trade at exactly the same price - measured on Bitcoin, one venue sat $73 above the other four. When you look at all of them together each book is shifted onto the shared middle price first, so a row means "this far from the price" rather than a number that crosses itself.'],
     zone: ['Liquidation zone', 'A price where a crowd of leveraged positions would be force-closed. It is a MODEL, not a record: the exchange never publishes who is leveraged where, so this is estimated from price history. Price is often pulled toward the heavy ones, because a forced close is an order that has to happen.'],
-    targets: ['Targets', 'The nearest modelled liquidation zones above and below the price - green where longs get closed out, red where shorts do. Tap one to show it on the map. They are estimates from price history, never a record of money that has changed hands.'],
+    crowded: ['How crowded', 'The column beside the map ranks each level against the OTHERS YOU CAN SEE, not against a dollar amount. 2.3x means we estimate roughly twice as many leveraged traders would be closed out at that price as at an average level on this screen; 0.8x means fewer than average. It is a comparison on purpose - exchanges never publish who is leveraged where, so a dollar figure there would be invented. Use it to rank the levels in front of you, and trust the measured 24h figure in the tooltip when the two disagree.'],
+    targets: ['Targets', 'The nearest modelled liquidation zones above and below the price - the same crowds the column beside the map ranks - green where longs get closed out, red where shorts do. Tap one to show it on the map. They are estimates from price history, never a record of money that has changed hands.'],
     costmove: ['What it costs to move it', 'The dollars of resting orders inside a tenth of a percent of the price. To lift the price that far, a buyer has to eat all of them - so this is the price of moving the market, in the only unit anybody thinks in. When one side is far cheaper than the other, that is the direction of least resistance right now. It is a fact about the book this second, not a forecast: the orders can be pulled.'],
     measured: ['Measured, not modelled', 'Everything in this panel is something that really exists right now: orders standing in five books, trades that really printed. The map above it is a model of where leverage probably sits. We keep the two apart on purpose, and never put a dollar figure on the model.'],
   };
@@ -151,6 +152,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-sm-l>.hm-sm-t:first-child{margin-top:0}' +
     '.hm-sm-v{font:11px/1.5 system-ui,sans-serif;color:#8fa3c4;margin:5px 0 2px;padding-left:11px;border-left:2px solid #2a3547}' +
     '.hm-sm-v.g{border-left-color:#2ebd85;color:#a8d8c2}.hm-sm-v.r{border-left-color:#ff5a4d;color:#e3b0ab}' +
+    '.hm-bk-say{flex:1 1 100%;order:9;font:13px/1.55 system-ui,sans-serif;color:#c9d4e6;background:#0b0f16;border:1px solid #161d28;border-radius:9px;padding:8px 11px;margin-top:2px}' +
+    '.hm-bk-say b{color:#e9e7df;font-weight:600}.hm-bk-say b.lead{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase;margin-right:5px}' +
     '.hm-bk-n{font:11px/1.62 system-ui,sans-serif;color:#7a8caa;margin-top:10px;padding-top:9px;border-top:1px solid #1c2230}' +
     '.hm-bk-n>b:first-child{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
     '.hm-bk-n b.k{color:#c9d4e6;font-weight:600}.hm-bk-n em{font-style:normal;color:#c9d4e6}' +
@@ -506,7 +509,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // whose whole job is to say what its numbers mean. A canvas can measure its own text, so the rule is the
     // longest form that actually fits. The separator is a middle dot; a hyphen in front of "x TYPICAL" read
     // as a minus sign with a missing number, which is what the column is trying not to be.
-    var zt = '', _zc = ['LEVELS · x TYPICAL', 'x TYPICAL', 'xTYP'];
+    var zt = '', _zc = ['HOW CROWDED', 'CROWDED', 'CROWD'];
     for (var _zi = 0; _zi < _zc.length; _zi++) { if (ctx.measureText(_zc[_zi]).width + 10 <= W) { zt = _zc[_zi]; break; } }
     if (zt) {
       var zw = ctx.measureText(zt).width;
@@ -587,12 +590,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function dotR(e) { var d = Math.max(0.55, Math.min(1, (S.cv ? S.cv.clientWidth : 900) / 900)); return Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * d); }
   function dotNear(e, mx, my, slack, floor) { var d = Math.hypot(S.X(e.ts / 1000) - mx, S.Y(e.price) - my); return d <= Math.max(floor, dotR(e) + slack) ? d : -1; }
   function relOf(x) { return (S && S._wAvgVis > 0) ? (+x.w || 0) / S._wAvgVis : (+x.rel || 0); }
-  function relTxt(r) { return (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
+  function relTxt(r) { return r > 0 && r < 0.1 ? 'under 0.1x' : (r >= 10 ? Math.round(r) : r.toFixed(1)) + 'x'; }
+  // "HEAVIER THAN A TYPICAL LEVEL" MEANT NOTHING (owner, 2026-09-22): heavier than WHAT, lighter than WHAT?
+  // The thing being compared was never named. It is a CROWD - the model estimates how many leveraged
+  // positions would be closed out at each price, and this ratio is one price against the average of the
+  // others you can currently see. "Crowded" is also the word the page already uses for it at the bottom,
+  // so the column, the readout and the explanation finally say the same thing.
+  // New i18n keys on purpose: the old Spanish strings translate the old sentence and would now disagree.
   function relPhrase(r, sh) {
     var t = relTxt(r);
-    if (r >= 1.15) return (sh ? 'about <b>' + t + __esT_mpheatmap("heavierThanATypical",'</b> heavier than a typical level') : 'About <b>' + t + __esT_mpheatmap("heavierThanATypical2",'</b> heavier than a typical level on this screen.'));
-    if (r <= 0.85) return (sh ? __esT_mpheatmap("lighterThanATypical",'lighter than a typical level <b>(') + t + ')</b>' : __esT_mpheatmap("lighterThanATypical2",'Lighter than a typical level on this screen <b>(') + t + ')</b>.');
-    return (sh ? __esT_mpheatmap("aboutAsHeavyAs",'about as heavy as a typical level') : __esT_mpheatmap("aboutAsHeavyAs2",'About as heavy as a typical level on this screen.'));
+    if (r >= 1.15) return sh
+      ? __esT_mpheatmap("crowdedShort", "about <b>") + t + __esT_mpheatmap("crowdedShort2", "</b> as crowded as an average price here")
+      : __esT_mpheatmap("crowdedLong", "About <b>") + t + __esT_mpheatmap("crowdedLong2", "</b> as crowded as an average price on this screen — that many more traders would be closed out here.");
+    if (r <= 0.85) return sh
+      ? __esT_mpheatmap("quietShort", "quieter than an average price here <b>(") + t + ")</b>"
+      : __esT_mpheatmap("quietLong", "Quieter than an average price on this screen <b>(") + t + __esT_mpheatmap("quietLong2", ")</b> — fewer traders would be closed out here than at an average price you can see.");
+    return sh
+      ? __esT_mpheatmap("evenShort", "about as crowded as an average price here")
+      : __esT_mpheatmap("evenLong", "About as crowded as an average price on this screen.");
   }
   // Widen a candle-derived price range until the zone price is hunting on each side is inside it. Capped at 15%
   // from price so one stray far-out band can never flatten the candles into a hairline.
@@ -1380,6 +1395,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     bk.innerHTML =
       '<div class="hm-bk-h"><span class="hm-bk-t">LIVE ORDER FLOW</span><span class="hm-bk-m"></span>'
       + '<span class="hm-seg hm-bk-seg"></span></div>'
+      + '<div class="hm-bk-say"></div>'
       + '<div class="hm-bk-g">'
       + '  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i>' + q('resting') + '</div>'
       + '    <div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum' + q('sum') + '</span></div>'
@@ -1391,6 +1407,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       + '  <div class="hm-col hm-sm"><div class="hm-col-h"><b>THE READ</b><i>what it means</i>' + q('measured') + '</div>'
       + '    <div class="hm-sm-l"></div></div>'
       + '</div><div class="hm-bk-n"></div>';
+    var bkSay = bk.querySelector('.hm-bk-say');
     var bkH = bk.querySelector('.hm-bk-h'), bkMeta = bk.querySelector('.hm-bk-m'), bkSeg = bk.querySelector('.hm-bk-seg');
     var obA = bk.querySelector('.hm-ob-a'), obB = bk.querySelector('.hm-ob-b'), obPx = bk.querySelector('.hm-ob-px');
     var obR = bk.querySelector('.hm-ob-r'), obVk = bk.querySelector('.hm-vk');
@@ -1682,6 +1699,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         + (far ? verdict(far + ' — the gap between venues is where arbitrage lives.', '') : '')
         + rowS('Books read', list.length + ' of ' + names.length);
 
+      // ---- ONE SENTENCE FOR SOMEBODY WHO DOES NOT READ LADDERS -------------------------------------
+      // Owner: "jos kul i korisnih stvari koje ce ljudi koji manje razumeju trejdovanje da cene".
+      // Everything else in this panel is precise and therefore demanding. This is the same three
+      // measurements - who is WAITING, who is CROSSING, how FAST - said the way you would say them out
+      // loud. It states facts and stops; it never says what happens next, because none of this knows.
+      var sayA = lean >= 1.15 ? ["more money is waiting to <b>buy</b> than to sell", "g"]
+        : lean > 0 && lean <= 0.87 ? ["more money is waiting to <b>sell</b> than to buy", "r"]
+        : ["buyers and sellers are waiting in about equal size", ""];
+      var sayB = Math.abs(dl) > 0 ? (dl > 0
+        ? "and <b>buyers</b> are the impatient ones, crossing the spread to get filled"
+        : "and <b>sellers</b> are the impatient ones, hitting bids to get out") : "";
+      var sayC = pace && pace >= 1.4 ? " The tape is running <b>" + pace.toFixed(1) + "×</b> its usual pace."
+        : pace && pace <= 0.6 ? " The tape is quieter than usual." : "";
+      bkSay.innerHTML = "<b class=\"lead\">Right now</b> " + sayA[0] + (sayB ? " " + sayB : "") + "." + sayC
+        + (absorb ? " " + absorb[0] : "");
       bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + ' exchanges, lined up' : BKN[pick] || pick) + '</i>';
     }
     function sideUsd(list, side) {
