@@ -143,7 +143,13 @@ const ADAPTERS = {
   // Steps 4 and 5 are the same prev-link proof OKX and Bitget already carry; only 1-3 are new.
   binance: {
     url: 'wss://fstream.binance.com/ws',
-    subs: (syms) => [{ method: 'SUBSCRIBE', params: syms.map((s) => s.toLowerCase() + 'usdt@depth@100ms'), id: 1 }],
+    // 500ms, NOT 100ms. MEASURED on the droplet, which has ONE vCPU: with the book and tape live the
+    // SQLite reader thread's slow reads on the public liquidation API went from ~115 an hour to ~250 - the
+    // main thread was taking the core away from it. Binance is the busiest book of the five, and the page
+    // above polls every two seconds, so a tenth-of-a-second stream buys nothing a reader can see while
+    // costing five times the messages. The venue does the aggregating for us and the book stays exact -
+    // every delta in the slower stream is still complete and still sequence-checked.
+    subs: (syms) => [{ method: 'SUBSCRIBE', params: syms.map((s) => s.toLowerCase() + 'usdt@depth@500ms'), id: 1 }],
     parse(raw) {
       const j = JSON.parse(raw);
       if (j.e !== 'depthUpdate' || !j.s) return [];
@@ -366,9 +372,13 @@ export class BookCollector extends BaseCollector {
     if (!this.ad.gapOk(b.seq, u.seq, u.prevSeq)) {
       // The stream skipped. Everything after this point would be built on a book that is missing a change,
       // so the book is invalidated and a fresh snapshot is demanded by reconnecting the socket.
+      //  is read BEFORE the book is invalidated. It used to be printed after b.seq was already set
+      // to null, so every gap in the log claimed we had been holding nothing - which hides the one number
+      // that says whether the stream skipped by one or by thousands.
+      const had = b.seq;
       this.gaps++; this.lastGapAt = Date.now();
       b.ok = false; b.seq = null; b.booting = false; b.buf = [];
-      log.warn(`[${this.name}] sequence gap on ${u.sym} - invalidating book and resyncing`, { had: b.seq, got: u.seq, prev: u.prevSeq });
+      log.warn(`[${this.name}] sequence gap on ${u.sym} - invalidating book and resyncing`, { had: had, got: u.seq, prev: u.prevSeq });
       this._resync();
       return;
     }
