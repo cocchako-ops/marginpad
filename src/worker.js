@@ -12165,7 +12165,29 @@ async function sessionUser(env, tok) {
       if (kv && (!kv.exp || kv.exp > now)) { aeDO(env, 'session', 0, 'kv'); _sessCache.set(tok, { user: kv.u || null, exp: kv.exp ? Math.min(now + 30000, kv.exp) : now + 30000 }); return kv.u || null; } } } catch (e) {}
   }
   let user = null; const t0 = Date.now();
-  try { const sr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); const sd = await sr.json(); if (sd && sd.user && sd.user.id) user = sd.user; } catch (e) { aeDO(env, 'session', Date.now() - t0, 'err'); return hit ? hit.user : null; } // DO hiccup → serve stale rather than logging everyone out
+  /* THE STATUS MATTERS. A UserStore that resets under load answers 503 with a JSON body: it parses,
+     `sd.user` is undefined, and without this the member is treated as signed out AND that negative is
+     written to KV, which every isolate shares - signing them out worldwide for fifteen seconds. One
+     retry first, because these resets are brief; then serve stale, and cache nothing. */
+  let ok2 = false;
+  for (let attempt = 0; attempt < 2 && !ok2; attempt++) {
+    try {
+      const sr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=' + encodeURIComponent(tok)));
+      if (!sr.ok) {
+        aeDO(env, 'session', Date.now() - t0, 'unavail');   // counted on its own: errRate only ever saw thrown errors
+        if (attempt === 0) continue;
+        return hit ? hit.user : null;                       // stale beats a false sign-out, and nothing is cached
+      }
+      const sd = await sr.json();
+      if (sd && sd.user && sd.user.id) user = sd.user;
+      ok2 = true;                                           // a real 200 - "no user" here genuinely means no session
+    } catch (e) {
+      aeDO(env, 'session', Date.now() - t0, 'err');
+      if (attempt === 0) continue;
+      return hit ? hit.user : null;                         // DO hiccup - serve stale rather than logging everyone out
+    }
+  }
+  if (!ok2) return hit ? hit.user : null;
   aeDO(env, 'session', Date.now() - t0, 'do');
   _sessCache.set(tok, { user, exp: now + (user ? 30000 : 15000) }); // negative result gets the short 15s isolate TTL too (matches the KV logical TTL) - not promoted to 30s
   if (_sessCache.size > 2000) _sessCache.clear();
@@ -18701,6 +18723,28 @@ export default {
     // hits, 2,481 assistant-referred visits (3.56% of all pageviews, two thirds of Google organic), and /coin/btc/ was
     // the most-crawled page on the site (4,838 hits) while sending nobody at all. `gap` is that table, sorted by how
     // much a page is read relative to what it returns.
+    if (url.pathname === '/api/admin/cronhealth' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      /* Which scheduled jobs are actually finishing. A job that is being killed by the invocation
+         budget throws nothing and alerts nothing, so the only way to see it is to record completions
+         and look for the ones that stopped. `runsPerHour` is the honest figure: the ten-minute trigger fires
+         six times an hour, so a healthy task that always has work shows 6. */
+      const hrs = Math.min(168, Math.max(1, +url.searchParams.get('hours') || 24));
+      const D = "timestamp > now() - INTERVAL '" + hrs + "' HOUR";
+      const rows = await aeQuery(env, `SELECT blob2 AS task, blob3 AS result, count() AS n, max(timestamp) AS last, quantileWeighted(0.95)(double1, _sample_interval) AS p95ms FROM marginpad_events WHERE blob1='cronrun' AND ${D} GROUP BY task, result ORDER BY n DESC LIMIT 200`);
+      if (!rows) return J({ error: 'ae_unavailable', hint: 'CF_API_TOKEN reads Analytics Engine' }, 503);
+      const by = {};
+      for (const r of rows) {
+        const t = r.task; by[t] = by[t] || { task: t, ok: 0, error: 0, last: null, p95ms: 0 };
+        by[t][r.result === 'error' ? 'error' : 'ok'] += (+r.n || 0);
+        if (!by[t].last || String(r.last) > by[t].last) by[t].last = String(r.last);
+        by[t].p95ms = Math.max(by[t].p95ms, Math.round(+r.p95ms || 0));
+      }
+      const list = Object.values(by).map(x => ({ ...x, runsPerHour: Math.round((x.ok + x.error) / hrs * 10) / 10 }))
+        .sort((a, b) => a.runsPerHour - b.runsPerHour);
+      return J({ hours: hrs, tasks: list,
+        neverCompleted: list.filter(x => x.ok === 0).map(x => x.task),
+        note: 'the ten-minute trigger fires six times an hour. A task with a low runsPerHour either returns early most runs (normal) or is being killed by the invocation budget (not normal) - compare it against what the task is supposed to do.' });
+    }
     if (url.pathname === '/api/admin/seobots' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       /* Two classes, never one total. `audits` is somebody deliberately taking the site apart - those
          tools have no web-wide mode, so each row is a person who typed our domain into one. `wide` is
@@ -20969,7 +21013,32 @@ export default {
     if (env.ENVIRONMENT === 'staging') return; // BELT: staging never runs cron (payouts, Telegram signals, emails, IPN follow-ups). Suspenders = [env.staging.triggers] crons = [] in wrangler.toml. (belt PROVEN 2026-07-25: temp cron → tail showed STAGING_CRON_GUARD_HIT + zero downstream work)
     // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
     // still fire on candle close but detected within ~1 min instead of ~10). Everything else stays on */10.
-    if (event.cron === '* * * * *') { ctx.waitUntil(checkChartSignals(env)); ctx.waitUntil(pricesKvWarm(env)); return; }
+    /* The ten-minute handler fires 53 tasks at once and Cloudflare kills whatever has not finished.
+       Measured 2026-09-21: 13 of them completed, `sweep` alone has a p95 of 144 seconds, and the
+       Bybit affiliate sync - an external call plus KV writes plus a snapshot rebuild - had not
+       completed for two and a half hours while every alarm stayed green, because a killed task
+       throws nothing. It runs here instead, on the trigger that does almost no work, paced by its
+       own stamp so it still costs one Bybit call every ten minutes rather than sixty an hour. */
+    if (event.cron === '* * * * *') {
+      ctx.waitUntil(checkChartSignals(env));
+      ctx.waitUntil(pricesKvWarm(env));
+      ctx.waitUntil((async () => {
+        try {
+          const k = 'cron:bybitaff:last';
+          const last = +(await env.STATS.get(k) || 0);
+          if (Date.now() - last < 9 * 60000) return;
+          await env.STATS.put(k, String(Date.now()), { expirationTtl: 86400 });
+          const r = await bybitAffSync(env);
+          if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', 'bybitaff', (r && r.error) ? 'error' : 'ok'], doubles: [0] });
+        } catch (e) {
+          // carry the MESSAGE, not just the fact - a cron that throws where the same call succeeds by
+          // hand is telling us something specific, and 'error' on its own does not say what.
+          const _m = String((e && e.stack) || (e && e.message) || e).slice(0, 88);
+          try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', 'bybitaff', 'err:' + _m], doubles: [0] }); } catch (_) {}
+        }
+      })());
+      return;
+    }
     // DEAD-MAN (2026-09-02): every */10 run stamps cron:hb; /api/health turns 503 when the stamp is >25 min old, and an EXTERNAL
     // monitor polls that URL. Every alarm above lives inside this worker and cannot report the worker (or this cron) being dead.
     try { ctx.waitUntil(env.STATS.put('cron:hb', String(Date.now()), { expirationTtl: 86400 }).catch(() => {})); } catch (e) {}
@@ -21027,7 +21096,15 @@ export default {
           await tgAdmin(env, body, { kind: 'cron-failed-' + nm, sev: 'warn' });
         })()); } catch (_) {}
       };
-      try { const p = fn(env); if (p && typeof p.then === 'function') ctx.waitUntil(p.catch(onErr)); } catch (e) { onErr(e); }
+      /* RECORD THE COMPLETION, not just the failure. A task Cloudflare kills mid-flight throws
+         nothing, so onErr never fires and a starved job is indistinguishable from an idle one -
+         which is how the Bybit report sat two hours stale with every alarm green. */
+      const t0 = Date.now();
+      const done = (r) => {
+        try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', label || '?', String(r && r.error ? 'error' : 'ok').slice(0, 12)], doubles: [Date.now() - t0] }); } catch (_) {}
+        return r;
+      };
+      try { const p = fn(env); if (p && typeof p.then === 'function') ctx.waitUntil(p.then(done).catch(onErr)); else done(p); } catch (e) { onErr(e); }
     };
     bg(postSignalDigest, 'sigdigest'); // daily 18:00-UTC liveness digest to the signal channels
     bg(checkFreeSignals, 'freesig'); // screener-based signals → FREE channel (paced: fsig:daily/gap), loud guard on a missing chat id
@@ -21038,7 +21115,7 @@ export default {
     // Bybit affiliate: keep the season's volume report fed from the API instead of a pasted CSV,
     // settle the weekly rebate once a closed week is trustworthy, and watch the key's own expiry -
     // it is not IP-bound, so it lapses after 90 days and would stop both of the above in silence.
-    bg(bybitAffSync, 'bybitaff');
+    // bybitAffSync now runs on the one-minute trigger - see the note there. It lost this race every time.
     bg(checkBybitBonus, 'bybitbonus');
     bg(checkBybitKey, 'bybitkey');
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
