@@ -203,6 +203,12 @@
     <div class="rules"><p class="lbl">How this board is scored</p><ul id="bRules"></ul></div>
   </section>
 
+  <section class="board" id="funded">
+    <div class="bh"><h2>Who here would pass a funded-account challenge<small>the same traders, scored against a real one-step prop-firm rule set instead of against each other</small></h2></div>
+    <p class="bcount" id="fCount">Every closed trade on these boards is also replayed against the rules a prop firm sells: <b>+10% profit target, 4% maximum daily loss, 6% maximum drawdown from peak equity, five trading days minimum</b>, on a $10,000 book. A verdict is decided the moment a rule breaks, so this is a different question from who is top of a board - the board rewards the trade that came back, a challenge does not. <a href="/practice-for-a-funded-account/">How it is measured, and the live number</a>.</p>
+    <div class="tw" id="fTw" hidden><table><thead><tr><th>Trader</th><th>Return at pass</th><th>Max drawdown</th><th>Days</th></tr></thead><tbody id="fBody"></tbody></table></div>
+  </section>
+
   <h3>Rules every board shares</h3>
   <div class="grid">
     <div class="rc"><b>Fourteen-day seasons</b><p>A season starts every other Monday at 00:00 UTC and ends fourteen days later. Standings reset; nothing carries over except your account, your XP and your history. King of the Moon is the one exception: a single contest spanning two seasons, ending when the season after the one it opened in ends.</p></div>
@@ -316,6 +322,22 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   (function(){var h=(location.hash||'').slice(1);if(B[h]){CUR=h;[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x.getAttribute('data-b')===h);});}})();
   function load(){fetch('/api/reward/lb?full=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.weekStart)return;LB=j;paintSeason();paintBoard();}).catch(function(){});}
   load(); setInterval(function(){if(!document.hidden)load();},120000);
+  // Who on these boards would actually have passed a challenge (2026-09-21). Read-only: /api/funded scores the same
+  // closed trades the boards are built from, so nothing here can disagree with the standings above it. The static
+  // paragraph already states the rules for a crawler; this only appends the names once they are known.
+  (function(){
+    fetch('/api/funded',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(!j||!j.ok) return;
+      var c=document.getElementById('fCount'), tw=document.getElementById('fTw'), tb=document.getElementById('fBody');
+      var q=(j.qualified||[]), n=+j.runs_decided||0, p=+j.passed||0;
+      if(n) c.insertAdjacentHTML('afterbegin','<b>'+p+' of '+n+' finished run'+(n===1?'':'s')+' passed this season'+(j.pass_rate_pct!=null?' - '+j.pass_rate_pct+'%':'')+'.</b> ');
+      if(!q.length) return;
+      tb.innerHTML=q.map(function(x){
+        return '<tr><td>'+String(x.who||'').replace(/[<>&]/g,'')+'</td><td>+'+x.return_pct+'%</td><td>'+x.max_drawdown_pct+'%</td><td>'+x.days+'</td></tr>';
+      }).join('');
+      tw.hidden=false;
+    }).catch(function(){});
+  })();
   window.addEventListener('mp-auth-change',function(){MOONME=null;if(LB)paintBoard();});
   window.__lbPage={get:function(){return LB;},cur:function(){return CUR;}};
 })();
