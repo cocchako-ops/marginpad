@@ -117,7 +117,27 @@
   td.prz{font-family:'Space Mono',monospace;font-weight:800;color:var(--amber);text-align:right;}
   th.r,td.r{text-align:right;}
   .empty{padding:18px 0 6px;color:var(--faint);font-size:13.5px;}
-  .rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+  /* The funded card (2026-09-21). The first cut set a whole paragraph in .bcount, which is a 10px uppercase
+   Space Mono LABEL - unreadable at that length, which is exactly what the owner reported. The rules are four
+   chips now, the count is display type, and the table drops the page's button-shaped sortable <th> and its
+   520px min-width, both of which belong to the sortable boards and not here. */
+.fhero{display:flex;align-items:baseline;gap:10px 18px;flex-wrap:wrap;margin-top:16px;}
+.fhero .n{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,6.6vw,54px);line-height:.94;letter-spacing:-.035em;color:var(--lime);}
+.fhero .n small{font-size:.36em;color:var(--dim);letter-spacing:-.01em;margin-left:4px;font-family:'Familjen Grotesk',sans-serif;}
+.fhero .cap{font-size:13.5px;line-height:1.5;color:var(--dim);max-width:32ch;}
+.frules{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.fr{flex:1 1 104px;min-width:0;display:flex;flex-direction:column;gap:3px;padding:9px 12px;border:1px solid var(--line);border-radius:13px;background:#0d1014;}
+.fr b{font:700 16px 'Space Mono',monospace;color:var(--ink);}
+.fr i{font-style:normal;font:700 9px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+.ftbl{margin-top:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.ftbl table{min-width:0;max-width:760px;}
+.ftbl th{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0 12px 8px 0;cursor:default;font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:left;}
+.ftbl td{padding:9px 12px 9px 0;}
+.ftbl .w{font-weight:700;color:#fff;}
+.ftbl .g{color:var(--up);font-family:'Space Mono',monospace;}
+.fnote{margin-top:14px;font-size:12.5px;line-height:1.6;color:var(--dim);}
+@media(max-width:560px){.fhero .cap{max-width:none;}}
+.rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
   .rules .lbl{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
   .rules ul{margin:0;padding-left:18px;}
   .rules li{margin:0 0 6px;font-size:13.5px;color:var(--dim);}
@@ -205,8 +225,15 @@
 
   <section class="board" id="funded">
     <div class="bh"><h2>Who here would pass a funded-account challenge<small>the same traders, scored against a real one-step prop-firm rule set instead of against each other</small></h2></div>
-    <p class="bcount" id="fCount">Every closed trade on these boards is also replayed against the rules a prop firm sells: <b>+10% profit target, 4% maximum daily loss, 6% maximum drawdown from peak equity, five trading days minimum</b>, on a $10,000 book. A verdict is decided the moment a rule breaks, so this is a different question from who is top of a board - the board rewards the trade that came back, a challenge does not. <a href="/practice-for-a-funded-account/">How it is measured, and the live number</a>.</p>
-    <div class="tw" id="fTw" hidden><table><thead><tr><th>Trader</th><th>Return at pass</th><th>Max drawdown</th><th>Days</th></tr></thead><tbody id="fBody"></tbody></table></div>
+    <div class="fhero"><span class="n" id="fNum">&mdash;</span><span class="cap" id="fCap">Every closed trade on these boards is replayed against the rules a prop firm sells, on a $10,000 book.</span></div>
+    <div class="frules">
+      <div class="fr"><b>+10%</b><i>profit target</i></div>
+      <div class="fr"><b>4%</b><i>daily loss</i></div>
+      <div class="fr"><b>6%</b><i>max drawdown</i></div>
+      <div class="fr"><b>5</b><i>trading days</i></div>
+    </div>
+    <div class="ftbl" id="fTw" hidden><table><thead><tr><th>Trader</th><th>Return at pass</th><th>Drawdown</th><th>Days</th></tr></thead><tbody id="fBody"></tbody></table></div>
+    <p class="fnote">A verdict is decided the moment a rule breaks, which makes this a different question from who leads a board: a board rewards the trade that came back, a challenge does not. <a href="/practice-for-a-funded-account/">How it is measured</a>.</p>
   </section>
 
   <h3>Rules every board shares</h3>
@@ -328,12 +355,15 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   (function(){
     fetch('/api/funded',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!j||!j.ok) return;
-      var c=document.getElementById('fCount'), tw=document.getElementById('fTw'), tb=document.getElementById('fBody');
+      var num=document.getElementById('fNum'), cap=document.getElementById('fCap'), tw=document.getElementById('fTw'), tb=document.getElementById('fBody');
       var q=(j.qualified||[]), n=+j.runs_decided||0, p=+j.passed||0;
-      if(n) c.insertAdjacentHTML('afterbegin','<b>'+p+' of '+n+' finished run'+(n===1?'':'s')+' passed this season'+(j.pass_rate_pct!=null?' - '+j.pass_rate_pct+'%':'')+'.</b> ');
+      if(n){
+        num.innerHTML=p+' <small>of '+n+' passed'+(j.pass_rate_pct!=null?' &middot; '+j.pass_rate_pct+'%':'')+'</small>';
+        cap.textContent='Finished runs this season. Everyone else is still going, or is out.';
+      }
       if(!q.length) return;
       tb.innerHTML=q.map(function(x){
-        return '<tr><td>'+String(x.who||'').replace(/[<>&]/g,'')+'</td><td>+'+x.return_pct+'%</td><td>'+x.max_drawdown_pct+'%</td><td>'+x.days+'</td></tr>';
+        return '<tr><td class="w">'+String(x.who||'').replace(/[<>&]/g,'')+'</td><td class="g">+'+x.return_pct+'%</td><td>'+x.max_drawdown_pct+'%</td><td>'+x.days+'</td></tr>';
       }).join('');
       tw.hidden=false;
     }).catch(function(){});

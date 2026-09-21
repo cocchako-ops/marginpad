@@ -1175,8 +1175,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
     // Dots used to be an all-or-nothing toggle. It is a SIZE now, because the noise is not the dots, it is the
     // thousand-dollar ones (measured: median event $994, 506 of 1000 under $1K). Off is still one pick away.
-    var DOTMIN = [['10000', '$10K+ liqs'], ['0', __esT_mpheatmap("allLiqs",'All liqs')], ['50000', '$50K+ liqs'], ['250000', '$250K+ liqs'], ['-1', __esT_mpheatmap("noLiqDots",'No liq dots')]];
-    var dotMin0 = 10000; try { var _dm = localStorage.getItem('mp_hm_dotmin'); if (_dm != null) dotMin0 = +_dm; else if (localStorage.getItem('mp_hm_dots') === '0') dotMin0 = -1; } catch (e) {}
+    // 2026-09-21 (owner): DOTS ARE OFF BY DEFAULT NOW. The map is the heat; the dots are individual liquidation
+    // events painted over it, and arriving to both at once reads as one confusing picture rather than two
+    // answers. Turning them on is one pick and the list leads with the off state, so the default is what the
+    // control shows. Anyone who already chose a size keeps it - mp_hm_dotmin is only consulted, never reset.
+    var DOTMIN = [['-1', __esT_mpheatmap("noLiqDots",'No liq dots')], ['10000', '$10K+ liqs'], ['50000', '$50K+ liqs'], ['250000', '$250K+ liqs'], ['0', __esT_mpheatmap("allLiqs",'All liqs')]];
+    var dotMin0 = -1; try { var _dm = localStorage.getItem('mp_hm_dotmin'); if (_dm != null) dotMin0 = +_dm; else if (localStorage.getItem('mp_hm_dots') === '0') dotMin0 = -1; } catch (e) {}
     var selD = el('select', 'hm-sel'); selD.setAttribute('aria-label', 'Liquidation dot size');
     DOTMIN.forEach(function (d) { var o = document.createElement('option'); o.value = d[0]; o.textContent = d[1]; if (+d[0] === dotMin0) o.selected = true; selD.appendChild(o); });
     selD.title = __esT_mpheatmap("hideLiquidationsBelowThis",'Hide liquidations below this size');
