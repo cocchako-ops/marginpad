@@ -1376,7 +1376,7 @@ async function handleSsrCalendar(request, url, env) {
 // So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
 // Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
 // cached, rather than printing a confident blank.
-const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded' };
+const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded', 'what-leverage-should-a-beginner-use': 'leverage' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
@@ -1497,6 +1497,37 @@ async function askRender(kind, env, ctx, es) {
     return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
       (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; de operaciones cerradas que liquidó nuestro propio motor &middot; JSON gratuito en /api/funded'
           : stamp(Date.now()) + ' &middot; from closed trades our own engine settled &middot; free JSON at /api/funded')), ts: Date.now() };
+  }
+  if (kind === 'leverage') {
+    // The most-asked beginner question in leveraged trading, and everywhere else on the internet it is answered with
+    // an opinion - usually by somebody selling access to the leverage. We can count it: 30 days of closed trades on
+    // our own engine, bucketed by the leverage they were opened at. Median, never mean (the top band's mean ROE came
+    // back at 25,776% on the first run - the same few accounts the funded scan had to set aside).
+    let lv = null;
+    try { lv = await usersDO(env, '/levscan', { from: Date.now() - 30 * 86400000 }); } catch (e) {}
+    const bands = (lv && lv.buckets) || [], n = (lv && lv.closes) || 0;
+    const by = {}; bands.forEach(b => { by[b.band] = b; });
+    const hi = by['over 100x'], mid = by['26-50x'], lo = by['11-25x'], safe = by['1-2x'];
+    if (!n || !hi || !lo) return { html: '', ts: Date.now() };
+    const head = T('Ten times or less - and here is the count behind that',
+                   'Diez veces o menos — y este es el recuento que lo respalda');
+    const prose = es
+      ? ('Ninguna respuesta honesta a esta pregunta es una opinión, porque se puede contar. Estas son <strong>' + _aN(n) + ' operaciones cerradas</strong> en MarginPad en los últimos 30 días, agrupadas por el apalancamiento con el que se abrieron. Cada una se liquidó en nuestro propio motor sobre precios reales en vivo, con comisiones en ambas patas, funding y liquidación comprobada contra los extremos de la vela de un minuto.</p>'
+         + '<p>La relación no tiene ambigüedad: a <strong>1-2x se liquidó el ' + safe.liquidated_pct + '%</strong> de las operaciones, a 11-25x el ' + lo.liquidated_pct + '%, a 26-50x el ' + mid.liquidated_pct + '% y <strong>por encima de 100x el ' + hi.liquidated_pct + '%</strong>. Y lo que de verdad decide: por encima de 100x <strong>la operación mediana pierde el ' + Math.abs(hi.median_roe_pct) + '%</strong> del margen — no la media, que unas pocas cuentas extremas distorsionan, sino la de en medio.</p>'
+         + '<p>Un principiante no necesita elegir un número: necesita elegir uno con el que <strong>sobreviva a estar equivocado</strong>. A 100x, un movimiento del 1% en tu contra te saca. A 10x hace falta un 10%. Esa es toda la diferencia entre aprender y quedarte sin cuenta.')
+      : ('No honest answer to this is an opinion, because it can be counted. What follows is <strong>' + _aN(n) + ' closed trades</strong> on MarginPad over the last 30 days, grouped by the leverage they were opened at. Every one settled on our own engine against real live prices, with taker fees on both legs, funding on held positions, and liquidation checked against one-minute candle extremes.</p>'
+         + '<p>The relationship is not ambiguous: at <strong>1-2x, ' + safe.liquidated_pct + '%</strong> of trades were liquidated; at 11-25x, ' + lo.liquidated_pct + '%; at 26-50x, ' + mid.liquidated_pct + '%; and <strong>above 100x, ' + hi.liquidated_pct + '%</strong>. The figure that settles the argument: above 100x <strong>the median trade loses ' + Math.abs(hi.median_roe_pct) + '%</strong> of the margin put up. Not the average, which a handful of extreme accounts distort - the middle one.</p>'
+         + '<p>A beginner does not need to pick a number so much as pick one they can <strong>survive being wrong at</strong>. At 100x a 1% move against you is the whole position. At 10x it takes 10%. That gap is the entire difference between learning and being removed from the market.');
+    const rows = bands.filter(b => b.closes > 0).map(b => [
+      b.band,
+      b.closes < 200 ? T('too few', 'muy pocas') : b.liquidated_pct + '%',
+      b.closes < 200 ? T('thin - no rate printed', 'muestra fina — sin tasa')
+        : T(_aN(b.closes) + ' closes &middot; median ' + (b.median_roe_pct > 0 ? '+' : '') + b.median_roe_pct + '% ROE',
+            _aN(b.closes) + ' cierres &middot; mediana ' + (b.median_roe_pct > 0 ? '+' : '') + b.median_roe_pct + '% ROE'),
+    ]);
+    return { html: _askBox(head, prose, rows, es ? ['Apalancamiento', 'Liquidadas', 'Muestra'] : ['Leverage', 'Liquidated', 'Sample'],
+      (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; 30 días de operaciones cerradas que liquidó nuestro propio motor &middot; JSON gratuito en /api/leverage'
+          : stamp(Date.now()) + ' &middot; 30 days of closed trades our own engine settled &middot; free JSON at /api/leverage')), ts: Date.now() };
   }
   if (kind === 'mcp') {
     // The agent-facing question, answered from the SERVER'S OWN TOOL TABLE rather than a number typed into prose.
@@ -18104,6 +18135,25 @@ export default {
       if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return resp;
     }
+    // PUBLIC, KEYLESS (2026-09-21). What leverage actually does to a real book, measured on 30 days of our own
+    // closed trades. Every answer to this question online is an opinion; this one is a count. A band under 200
+    // closes is returned but marked thin, and the page prints no rate for it.
+    if (url.pathname === '/api/leverage') {
+      const ck = new Request('https://marginpad.io/__leverage_v1');
+      if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+      let r = null; try { r = await usersDO(env, '/levscan', { from: Date.now() - 30 * 86400000 }); } catch (e) {}
+      const MIN = 200;
+      const bk = ((r && r.buckets) || []).map(x => Object.assign({}, x, { thin: x.closes < MIN }));
+      const body = JSON.stringify({
+        ok: !!r, ts: Date.now(), window_days: 30, min_closes_for_a_rate: MIN,
+        closes_measured: (r && r.closes) || 0, bands: bk,
+        note: 'Counted from closed paper trades settled by our own engine on real live prices, with taker fees on both legs, funding on held positions, and liquidation checked against one-minute candle extremes. liquidated_pct is the share of closes in that band that ended as a forced close, not an estimate. A band with fewer than ' + MIN + ' closes is marked thin and should not be quoted as a rate. These traders risk simulated money, which makes them bolder than they would be with their own - read the high bands as an upper bound on what recklessness costs, not as a forecast for a funded account.',
+        method_url: 'https://marginpad.io/what-leverage-should-a-beginner-use/',
+      });
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=900', ...CORS } });
+      if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
     if (url.pathname.startsWith('/api/v1/')) return handleV1(url, request, env, ctx);
     if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
       const did = getCookie(request, 'mp_did') || '';
@@ -24794,6 +24844,40 @@ export class UserStore {
       out.sort((x, y) => ((y.verdict === 'pass') - (x.verdict === 'pass')) || (y.return_pct - x.return_pct));
       const tally = {}; out.forEach(r => { tally[r.verdict] = (tally[r.verdict] || 0) + 1; });
       return this.j({ ok: true, from, to, rules: { book_usd: bal, profit_target_pct: tgt, max_drawdown_pct: ddMax, max_daily_loss_pct: dayMax, min_trading_days: minDays }, accounts: out.length, off_book: offBook.length, tally, rows: out.slice(0, 300), truncated: rowsF.length >= CAP });
+    }
+    // LEVERAGE SCAN (2026-09-21). "What leverage should a beginner use" is answered everywhere by opinion, because
+    // nobody who could measure it has both a realistic engine and a population of real traders. We have both, and no
+    // stake in the answer: every trade here is simulated, so the number cannot be talked up or down by what we sell.
+    // Buckets are fixed and stated; a bucket under MIN is returned but flagged thin, and the reader-facing surface
+    // is what decides to hide it - the same rule the perf ring follows.
+    if (path === '/levscan') {
+      const from = +b.from || (now - 30 * 86400000), to = +b.to || now;
+      let rowsL = [];
+      try { rowsL = this.rows("SELECT lev, liq, roe, pnl FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND lev IS NOT NULL AND pnl IS NOT NULL LIMIT 400000", from, to); } catch (e) { return this.j({ error: 'unavailable' }); }
+      const EDGES = [[1, 2], [3, 5], [6, 10], [11, 25], [26, 50], [51, 100], [101, 1e9]];
+      const NAMES = ['1-2x', '3-5x', '6-10x', '11-25x', '26-50x', '51-100x', 'over 100x'];
+      const acc = EDGES.map(() => ({ n: 0, liq: 0, win: 0, roes: [] }));
+      let total = 0;
+      for (const r of rowsL) {
+        const L = +r.lev || 0; if (!(L >= 1)) continue;
+        let i = EDGES.findIndex(e => L >= e[0] && L <= e[1]); if (i < 0) i = EDGES.length - 1;
+        const a = acc[i]; a.n++; total++;
+        if (+r.liq) a.liq++;
+        if ((+r.pnl || 0) > 0) a.win++;
+        if (r.roe != null && isFinite(+r.roe)) a.roes.push(+r.roe);
+      }
+      // MEDIAN, NEVER THE MEAN. The first run returned an average ROE of 25,776% in the top band - the same handful
+      // of accounts whose single trades move more than a whole book, which the funded scan had to set aside for the
+      // same reason. A mean here is not a hard number with a caveat, it is a wrong one. The median is a real trade.
+      const med = (arr) => { if (!arr.length) return null; const s = arr.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+      const buckets = acc.map((a, i) => ({
+        band: NAMES[i], closes: a.n,
+        liquidated_pct: a.n ? Math.round(a.liq / a.n * 1000) / 10 : null,
+        win_rate_pct: a.n ? Math.round(a.win / a.n * 1000) / 10 : null,
+        median_roe_pct: a.roes.length ? Math.round(med(a.roes) * 100) / 100 : null,
+        share_of_closes_pct: total ? Math.round(a.n / total * 1000) / 10 : 0,
+      }));
+      return this.j({ ok: true, from, to, closes: total, buckets });
     }
     if (path === '/bottrades') { // full closed-trade ledger with paging - the journal is capped at 100, tradeev keeps 30 days
       const uid = String(b.uid || '');

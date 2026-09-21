@@ -3,7 +3,7 @@
 // page, and the document must stay well-formed - a surplus </div> once put the whole FAQ outside <article>.
 const { withBrowser } = require('./e2e-browser.js');
 const ORIGIN = 'https://marginpad.io';
-const SLUGS = ['how-many-traders-liquidated-today', 'longs-or-shorts-liquidated-more', 'biggest-liquidation-today', 'is-funding-positive-or-negative', 'where-can-i-test-a-trading-bot', 'mcp-server-for-crypto-trading', 'practice-for-a-funded-account'];
+const SLUGS = ['how-many-traders-liquidated-today', 'longs-or-shorts-liquidated-more', 'biggest-liquidation-today', 'is-funding-positive-or-negative', 'where-can-i-test-a-trading-bot', 'mcp-server-for-crypto-trading', 'practice-for-a-funded-account', 'what-leverage-should-a-beginner-use'];
 const SIBN = SLUGS.length - 1; // each page links every OTHER page in the family. A COUNT, not a constant to restate: adding the sixth page turned fifteen checks red in a suite where nothing was actually wrong.
 let pass = 0, fail = 0;
 const chk = (n, ok, d) => { (ok ? pass++ : fail++); console.log((ok ? '  ok   ' : '  FAIL ') + n + (d !== undefined && (!ok || process.env.V) ? '   ' + JSON.stringify(d) : '')); };
