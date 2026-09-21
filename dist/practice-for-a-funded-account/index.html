@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Where to Practice for a Funded Account Challenge - Free, With Our Own Pass Rate | MarginPad</title>
+<meta name="description" content="Practice a prop-firm challenge free on real live prices - fees, funding and liquidation all simulated server-side. We publish how many of our own traders would pass under a real one-step rule set, because we sell no challenges.">
+<link rel="canonical" href="https://marginpad.io/practice-for-a-funded-account/">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Where to Practice for a Funded Account Challenge - Free, With Our Own Pass Rate | MarginPad">
+<meta property="og:description" content="Practice a prop-firm challenge free on real live prices - fees, funding and liquidation all simulated server-side. We publish how many of our own traders would pass under a real one-step rule set, because we sell no challenges.">
+<meta property="og:url" content="https://marginpad.io/practice-for-a-funded-account/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"MarginPad funded-account scan","description":"Every account that closed at least one paper trade in the current 14-day season, scored in time order against a one-step prop-firm rule set: profit target, maximum daily loss, maximum drawdown from peak equity, and a minimum number of trading days. A verdict is decided the moment a rule breaks, not at the end of the season.","url":"https://marginpad.io/practice-for-a-funded-account/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/funded"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"Where can I practice for a funded account challenge for free?","acceptedAnswer":{"@type":"Answer","text":"On MarginPad. You trade a simulated futures account on real live crypto prices, with taker fees on both legs, funding on held positions, and liquidation checked against one-minute candle extremes. There is no deposit, no card and no KYC. Impose the challenge limits on yourself - a profit target, a maximum daily loss and a maximum drawdown from peak equity - and you are running the same test a prop firm sells, at no cost."}},{"@type":"Question","name":"What percentage of traders pass a funded account challenge?","acceptedAnswer":{"@type":"Answer","text":"No firm that sells challenges publishes its own pass rate, so any figure quoted from one is an estimate. Industry-wide estimates commonly put it at 5-10%. MarginPad publishes a measured figure for its own traders at /api/funded: every account that closed trades in the current season, scored in time order against a +10% target with a 4% daily loss limit, a 6% maximum drawdown from peak and a 5 trading-day minimum. Read it as a floor rather than a forecast, because our traders have no fee at stake."}},{"@type":"Question","name":"Is a funded account real money?","acceptedAnswer":{"@type":"Answer","text":"The evaluation account is simulated at essentially every firm, and the funded account usually is too - the firm pays winners from the pool of fees collected from everyone who did not pass. Your payouts are real; the account you trade generally is not. This is normal for the industry rather than a sign of a bad firm, but it is worth knowing that what you are buying is permission to be measured, not access to capital."}},{"@type":"Question","name":"Which challenge rule fails most people?","acceptedAnswer":{"@type":"Answer","text":"The maximum daily loss. It resets every day and ignores how far ahead you were, so a single bad session - typically a revenge trade after a stop, sized to recover it - ends the run. In our own scan of MarginPad traders under a one-step rule set, the daily-loss rule breaks more runs than the maximum-drawdown rule does. The profit target is rarely what stops people."}},{"@type":"Question","name":"How long should I practice before paying for a challenge?","acceptedAnswer":{"@type":"Answer","text":"Until you can reach the target without touching the limits, more than once, with realistic fills switched on and at a position size a challenge account would actually give you. There is no fixed number of weeks - the point is repeatability. Practising is free and a challenge fee is $50 to $1,000, so the arithmetic favours proving it first."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/practice-for-a-funded-account.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/practice-for-a-funded-account.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/liquidations/">Liquidations</a><a href="/heatmap">Heatmap</a><a href="/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">One question, one answer</p>
+    <h1>Where can I practice for a funded account challenge?</h1>
+    <p class="lead">Answered with our own measurement: how many traders here would have passed a standard one-step challenge this season, under which rules, and what actually ends most runs.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Reading the live figure&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/paper-trade">Start practicing now, free</a><a class="ask-cta alt" href="/leaderboards/">The live boards and who is ahead</a><a class="ask-cta alt" href="/trading-report/">Your own stats from real closes</a><a class="ask-cta alt" href="/where-can-i-test-a-trading-bot/">Testing a bot instead of trading by hand</a></p>
+
+    <h2>What a funded account actually is, before you pay for one</h2>
+    <p>A proprietary trading firm sells you an <strong>evaluation</strong>. You pay a one-time fee - roughly $50 for a small account, up to around $1,000 for a large one - and you are given a trading account with a profit target and a set of loss limits. Hit the target without breaking a limit and you are "funded": you trade the firm’s capital and keep most of the profit, commonly 80% to 90%.</p><p>One thing is worth knowing before you pay, and most firms are quiet about it: <strong>the account is almost always simulated too.</strong> The firm is not usually placing your orders on an exchange. It pays winners out of the fee pool collected from everyone who did not pass. That is not a scandal - it is the business model, and the published rules are honest about the rules if not about the odds - but it does mean the thing you are paying for is <em>permission to be measured</em>, not access to capital.</p><p>Which is exactly why practicing first costs you nothing but time, and skipping it costs the fee.</p>
+
+    <h2>The rule that ends most runs is not the profit target</h2>
+    <p>Every challenge has three numbers and one of them does almost all the damage.</p><p><strong>The profit target</strong> (commonly 8-12%) is the one people focus on. It is rarely the problem.</p><p><strong>The maximum drawdown</strong> (commonly 6-10%) is measured <em>from your peak equity</em>, not from your starting balance. This catches people out constantly: run an account to +8% and a 6% drawdown rule now stops you at +1.6%, not at -6%. Every dollar you make tightens the floor underneath you.</p><p><strong>The maximum daily loss</strong> (commonly 3-5%) resets each day and is the one that actually ends runs. It does not care that you were up yesterday. One bad session inside a single day - a revenge trade after a stop, a position sized for a recovery - is the most common way a challenge dies, and our own measurement says the same thing: the daily rule breaks more runs here than the drawdown rule does.</p><p>Some firms add a <strong>consistency rule</strong> (no single day may be more than 20-40% of total profit), which quietly disqualifies the one-big-winner style that gets most people to the target in the first place. Read that clause before you pay; it is the most common reason a passed challenge does not pay out.</p>
+
+    <h2>What we measured, and why we can publish it</h2>
+    <p>Every trader on MarginPad is practicing with simulated money on real live prices. That gives us a population nobody selling challenges has an incentive to report on: real traders, real prices, real fees and funding, a real liquidation engine - and no fee collected from any of them.</p><p>So we run the scan and publish what comes out. Each account’s closed trades are replayed in time order on a notional $10,000 book and scored against a one-step rule set: <strong>+10% target, 4% maximum daily loss, 6% maximum drawdown from peak, and at least 5 trading days.</strong> A verdict is decided the moment a rule breaks - a breach cannot be undone by a recovery later in the week, which is precisely how a real challenge behaves and precisely why "best return on the leaderboard" is a different question from "would have passed".</p><p>Two things about the number are worth stating plainly. It is measured on people with <strong>nothing at stake</strong>, so it is a floor, not a forecast - the same person with a paid fee on the line generally trades tighter. And accounts that moved more than the entire book on a single trade are set aside rather than scored, because a sequence that cannot be executed on a $10,000 account is not a failed challenge, it is a different account.</p>
+
+    <h2>How to practice so that it transfers</h2>
+    <p>Practicing without the constraints is what produces a trader who blows a challenge in two days having "done well in demo for months". Four things make a practice run mean something.</p><p><strong>Impose the limits before you need them.</strong> Write down the daily loss number and the drawdown-from-peak number and stop for the day when you reach them. The rule you have never once obeyed in practice is not a rule you will obey with a fee on the line.</p><p><strong>Turn realistic fills on.</strong> By default a paper fill lands on the live price at a flat maintenance rate, which is right for learning and optimistic for proving something. <a href="/trading-api/#realism">Switch on slippage and size-tiered maintenance margin</a> and the fill moves against you the way a real book does, while your liquidation moves closer as the position grows. Any result you intend to act on should be measured with these on.</p><p><strong>Trade the size you would actually be given.</strong> A challenge account is $5,000 to $200,000 with modest leverage. Practising at 100x on a $50 balance trains the exact reflex - recovering a loss with size - that the daily-loss rule exists to catch. Our own scan is blunt about this: the accounts that fail fastest are the ones trading margins the book could not contain.</p><p><strong>Keep the record.</strong> The <a href="/trading-report/">trading report</a> gives you win rate, expectancy, and your own worst leverage and time-of-day buckets from your real closes. A firm will not tell you why you failed. That will.</p>
+
+    <h2>Then, if you do go and pay</h2>
+    <p>Practise until you can produce the target without touching the limits, more than once. Then read the firm’s rules for the three clauses that decide whether a pass turns into money: the <strong>consistency rule</strong>, the <strong>payout schedule and proof</strong> (are payouts published, and how long do they take), and what happens to your account after the first payout. Prefer firms that state their drawdown as static rather than trailing if you are new - a trailing drawdown that follows your peak intraday is materially harder than the same number measured on closed equity.</p><p>And treat the fee as the cost of a measurement, not an investment. On the published numbers across the industry, most people pay it more than once.</p>
+
+    <h2>Questions</h2>
+    <details><summary>Where can I practice for a funded account challenge for free?</summary><p>On MarginPad. You trade a simulated futures account on real live crypto prices, with taker fees on both legs, funding on held positions, and liquidation checked against one-minute candle extremes. There is no deposit, no card and no KYC. Impose the challenge limits on yourself - a profit target, a maximum daily loss and a maximum drawdown from peak equity - and you are running the same test a prop firm sells, at no cost.</p></details>
+    <details><summary>What percentage of traders pass a funded account challenge?</summary><p>No firm that sells challenges publishes its own pass rate, so any figure quoted from one is an estimate. Industry-wide estimates commonly put it at 5-10%. MarginPad publishes a measured figure for its own traders at /api/funded: every account that closed trades in the current season, scored in time order against a +10% target with a 4% daily loss limit, a 6% maximum drawdown from peak and a 5 trading-day minimum. Read it as a floor rather than a forecast, because our traders have no fee at stake.</p></details>
+    <details><summary>Is a funded account real money?</summary><p>The evaluation account is simulated at essentially every firm, and the funded account usually is too - the firm pays winners from the pool of fees collected from everyone who did not pass. Your payouts are real; the account you trade generally is not. This is normal for the industry rather than a sign of a bad firm, but it is worth knowing that what you are buying is permission to be measured, not access to capital.</p></details>
+    <details><summary>Which challenge rule fails most people?</summary><p>The maximum daily loss. It resets every day and ignores how far ahead you were, so a single bad session - typically a revenge trade after a stop, sized to recover it - ends the run. In our own scan of MarginPad traders under a one-step rule set, the daily-loss rule breaks more runs than the maximum-drawdown rule does. The profit target is rarely what stops people.</p></details>
+    <details><summary>How long should I practice before paying for a challenge?</summary><p>Until you can reach the target without touching the limits, more than once, with realistic fills switched on and at a position size a challenge account would actually give you. There is no fixed number of weeks - the point is repeatability. Practising is free and a challenge fee is $50 to $1,000, so the arithmetic favours proving it first.</p></details>
+
+    <div class="sibs">
+      <h2>Other questions we answer with a live number</h2>
+      <ul><li><a href="/how-many-traders-liquidated-today/">How many traders got liquidated today?</a></li><li><a href="/longs-or-shorts-liquidated-more/">Are longs or shorts getting liquidated more?</a></li><li><a href="/biggest-liquidation-today/">What was the biggest liquidation today?</a></li><li><a href="/is-funding-positive-or-negative/">Is funding positive or negative right now?</a></li><li><a href="/where-can-i-test-a-trading-bot/">Where can I test a trading bot for free?</a></li><li><a href="/mcp-server-for-crypto-trading/">Is there an MCP server for crypto trading?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Related: <a href="/paper-trade">start practicing now, free</a> &middot; <a href="/leaderboards/">the live boards and who is ahead</a> &middot; <a href="/trading-report/">your own stats from real closes</a> &middot; <a href="/where-can-i-test-a-trading-bot/">testing a bot instead of trading by hand</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=c1343e45"></script>
+</body>
+</html>

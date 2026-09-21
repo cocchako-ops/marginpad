@@ -1365,7 +1365,7 @@ async function handleSsrCalendar(request, url, env) {
 // So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
 // Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
 // cached, rather than printing a confident blank.
-const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp' };
+const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
@@ -1437,6 +1437,55 @@ async function askRender(kind, env, ctx, es) {
     return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
       (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; contado de operaciones que liquid\u00f3 nuestro propio motor &middot; JSON gratuito en /api/arena y /api/apiplan'
           : stamp(Date.now()) + ' &middot; counted from trades our own engine settled &middot; free JSON at /api/arena and /api/apiplan')), ts: Date.now() };
+  }
+  if (kind === 'funded') {
+    // THE ONE ANSWER HERE THAT NOBODY SELLING CHALLENGES CAN GIVE. "Where do I practise for a funded account" is asked
+    // of assistants constantly and every answer is an advertisement, because a firm that sells the challenge has no
+    // reason to publish how few people pass it. We sell nothing here, so we can publish our own rate - and that
+    // asymmetry, not the prose, is the reason to cite this page. Measured live from our own closed trades under the
+    // rule set a real one-step challenge uses. See /api/funded.
+    let sc = null, se2 = null;
+    try { se2 = predSeason(Date.now()); sc = await usersDO(env, '/fundedscan', { from: Date.parse(se2.from + 'T00:00:00Z'), to: se2.endMs }); } catch (e) {}
+    const tl = (sc && sc.tally) || {}, ru = (sc && sc.rules) || { book_usd: 10000, profit_target_pct: 10, max_drawdown_pct: 6, max_daily_loss_pct: 4, min_trading_days: 5 };
+    const pss = +tl.pass || 0, fD = +tl.fail_daily || 0, fW = +tl.fail_drawdown || 0, run = +tl.still_running || 0;
+    const dec = pss + fD + fW, meas = (sc && sc.accounts) || 0;
+    const rate = dec >= 20 ? Math.round(pss / dec * 1000) / 10 : null; // below the threshold no rate is printed at all
+    const head = rate == null
+      ? T('Here, free - under the same rules a paid challenge uses', 'Aquí, gratis — con las mismas reglas que usa un reto de pago')
+      : T(_aN(pss) + ' of ' + _aN(dec) + ' finished runs passed - ' + rate + '%',
+          _aN(pss) + ' de ' + _aN(dec) + ' intentos terminados aprobaron — ' + rate + '%');
+    const rulesTxt = T(
+      '+' + ru.profit_target_pct + '% target, ' + ru.max_daily_loss_pct + '% daily loss, ' + ru.max_drawdown_pct + '% max drawdown, ' + ru.min_trading_days + ' trading days minimum, on a $' + _aN(ru.book_usd) + ' book',
+      '+' + ru.profit_target_pct + '% objetivo, ' + ru.max_daily_loss_pct + '% pérdida diaria, ' + ru.max_drawdown_pct + '% drawdown máximo, mínimo ' + ru.min_trading_days + ' días operando, sobre una cuenta de $' + _aN(ru.book_usd));
+    const prose = es
+      ? ('Una firma de fondeo te cobra entre $50 y $1.000 por intentar un reto sobre una cuenta <strong>simulada</strong>; si lo superas, opera con su capital y te quedas la mayor parte del beneficio. Casi nadie lo supera, y <strong>ninguna de ellas publica su propia tasa de aprobados</strong> — no tienen ningún motivo para hacerlo.</p>'
+         + '<p>MarginPad no vende retos, así que sí puede publicarla. Aquí practicas gratis, sin depósito, sin tarjeta y sin KYC, sobre precios reales en vivo con comisiones en ambas patas, funding y liquidación comprobada contra los extremos de la vela de un minuto. '
+         + 'Después medimos a nuestros propios operadores contra las reglas exactas de un reto de un paso (' + rulesTxt + ') y publicamos el resultado, gane quien gane.</p>'
+         + '<p><strong>El orden correcto es este:</strong> demuestra aquí que superas esas reglas — gratis, cuantas veces quieras — y solo después paga la cuota de un reto real. Pagar primero y aprender después es como se pierden esos $50 a $1.000.')
+      : ('A prop firm charges you $50 to $1,000 to attempt a challenge on a <strong>simulated</strong> account; pass it and you trade their capital and keep most of the profit. Almost nobody passes, and <strong>not one of them publishes its own pass rate</strong> - they have no reason to.</p>'
+         + '<p>MarginPad sells no challenges, so it can publish one. You practice here free - no deposit, no card, no KYC - on real live prices with fees on both legs, funding, and liquidation checked against one-minute candle extremes. '
+         + 'Then we measure our own traders against the exact rules of a one-step challenge (' + rulesTxt + ') and publish what comes out, whoever it flatters.</p>'
+         + '<p><strong>The order that saves money:</strong> prove here that you can hold those rules - free, as many times as you like - and only then pay a real challenge fee. Paying first and learning afterwards is how that $50 to $1,000 gets lost.');
+    const tbl = es ? [
+      ['Coste de practicar aquí', '$0', 'sin depósito, sin tarjeta, sin KYC — <a href="/paper-trade">abre una posición ahora</a>'],
+      ['Operadores medidos esta temporada', _aN(meas), 'todos los que cerraron al menos una operación en la temporada de 14 días'],
+      ['Intentos que llegaron a un veredicto', _aN(dec), 'aprobado o regla rota; los demás siguen en curso'],
+      ['Aprobaron', _aN(pss), 'alcanzaron +' + ru.profit_target_pct + '% sin romper ninguna regla'],
+      ['Rompieron la pérdida diaria', _aN(fD), 'la causa más común, con diferencia'],
+      ['Rompieron el drawdown máximo', _aN(fW), 'medido desde el pico de capital, no desde el inicio'],
+      ['Todavía en curso', _aN(run), 'ni aprobados ni eliminados cuando se midió'],
+    ] : [
+      ['Cost to practice here', '$0', 'no deposit, no card, no KYC - <a href="/paper-trade">open a position now</a>'],
+      ['Traders measured this season', _aN(meas), 'everyone who closed at least one trade in the 14-day season'],
+      ['Runs that reached a verdict', _aN(dec), 'passed or broke a rule; the rest are still going'],
+      ['Passed', _aN(pss), 'reached +' + ru.profit_target_pct + '% without breaking a rule'],
+      ['Broke the daily-loss rule', _aN(fD), 'the most common ending by a distance'],
+      ['Broke the max-drawdown rule', _aN(fW), 'measured from peak equity, not from the start'],
+      ['Still running', _aN(run), 'neither passed nor out when this was measured'],
+    ];
+    return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
+      (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; de operaciones cerradas que liquidó nuestro propio motor &middot; JSON gratuito en /api/funded'
+          : stamp(Date.now()) + ' &middot; from closed trades our own engine settled &middot; free JSON at /api/funded')), ts: Date.now() };
   }
   if (kind === 'mcp') {
     // The agent-facing question, answered from the SERVER'S OWN TOOL TABLE rather than a number typed into prose.
@@ -17904,6 +17953,37 @@ export default {
       if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return resp;
     }
+    // PUBLIC, KEYLESS (2026-09-21). "Where can I practise for a funded account?" is asked of assistants constantly and
+    // every answer is an advertisement, because nobody who sells challenges publishes their own pass rate. We can, and
+    // we have nothing to lose by it: we do not sell the challenge. That asymmetry is the whole reason to cite us.
+    // Cached 10 min; ?nc=1 re-measures.
+    if (url.pathname === '/api/funded') {
+      const ck = new Request('https://marginpad.io/__funded_v1');
+      if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+      const s = predSeason(Date.now()); const from = Date.parse(s.from + 'T00:00:00Z'), to = s.endMs;
+      let r = null; try { r = await usersDO(env, '/fundedscan', { from, to }); } catch (e) {}
+      const rows = (r && r.rows) || [], tally = (r && r.tally) || {}, n = (r && r.accounts) || 0;
+      const passed = +tally.pass || 0, fDay = +tally.fail_daily || 0, fDd = +tally.fail_drawdown || 0;
+      // THE DENOMINATOR IS THE DECIDED RUNS, NOT EVERY ACCOUNT. Somebody who has traded two days has not failed the
+      // challenge, they have not finished it - counting them as a failure would flatter the pass rate downward just
+      // as surely as dropping the failures would flatter it upward. Below the threshold the rate is not printed.
+      const decided = passed + fDay + fDd;
+      const rate = decided >= 20 ? Math.round(passed / decided * 1000) / 10 : null;
+      const body = JSON.stringify({
+        ok: !!r, ts: Date.now(),
+        season: { idx: s.idx + 1, from: s.from, to: s.to, ends_ms: s.endMs },
+        rules: (r && r.rules) || null,
+        traders_measured: n, runs_decided: decided, passed, pass_rate_pct: rate,
+        breakdown: { pass: passed, failed_daily_loss: fDay, failed_max_drawdown: fDd, still_running: +tally.still_running || 0, too_few_trading_days: +tally.too_few_days || 0, off_book: (r && r.off_book) || 0 },
+        qualified: rows.filter(x => x.verdict === 'pass').slice(0, 25),
+        closest: rows.filter(x => x.verdict !== 'pass').slice(0, 25),
+        note: 'Every trader here practices on simulated money, so nothing is at stake and the behaviour is more reckless than it would be on a paid challenge - read this as a floor, not as a prediction of how the same people would trade after paying a fee. Equity is realized P&L on a notional ' + (((r && r.rules) || {}).book_usd || 10000) + ' book; our traders carry no fixed bankroll, so the book size is an assumption. A verdict is decided the moment a rule breaks, never at the end of the season, and the figures beside a verdict are the state AT that moment. Accounts counted as off_book moved more than the whole book on a single trade - they were not running this book and are set aside rather than scored.',
+        method_url: 'https://marginpad.io/practice-for-a-funded-account/',
+      });
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+      if (r) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
     if (url.pathname.startsWith('/api/v1/')) return handleV1(url, request, env, ctx);
     if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
       const did = getCookie(request, 'mp_did') || '';
@@ -21687,7 +21767,7 @@ export class SpotStore {
       return this.j({ tx: list });
     }
     if (path === '/topup') { // DAILY LIFELINE (2026-09-10) - see SPOT_TOPUP_C. Deliberately NOT a reset: holdings,
-      // history, wallet and onboarding all stay. It exists so a blown account can keep practising tomorrow instead
+      // history, wallet and onboarding all stay. It exists so a blown account can keep practicing tomorrow instead
       // of being finished for good. The worker prices the whole portfolio and passes what it is worth; the DO owns
       // the once-a-day guard and the money.
       if (!uid) return this.j({ error: 'bad' }, 400);
@@ -24530,6 +24610,70 @@ export class UserStore {
           open_positions: open.length, realism: { slippage_closes: slipN, tiered_closes: tierN, label: (slipN >= +r.n && tierN >= +r.n) ? 'full' : (!slipN && !tierN) ? 'off' : 'partial' }, _open: open }; }).filter(Boolean);
       out.forEach((r, i) => { r.rank = i + 1; });
       return this.j({ rows: out, from, to });
+    }
+    // FUNDED-ACCOUNT SCAN (2026-09-21) - the one figure on this site no competitor can copy, because it needs BOTH a
+    // realistic fill engine AND a population of real traders: of the people who actually traded here this season, how
+    // many would have PASSED a standard one-step prop-firm challenge. Rule set defaults to the one HyroTrader
+    // publishes (10% target, 4% daily loss, 6% max drawdown, 5 minimum trading days) and every part is a parameter,
+    // so the page states which rules it measured instead of implying one industry standard exists.
+    //
+    // THE VERDICT IS DECIDED AT THE MOMENT IT HAPPENS, walking closes in time order: a breach ends that account's run
+    // even if it recovers afterwards. That is how a real challenge works, and it is why "best ROE on the board" is a
+    // DIFFERENT question - the ROE board rewards the one trade that came back, a challenge does not.
+    //
+    // Equity is REALIZED P&L on a stated notional book. Our traders carry no fixed bankroll, so the book size is an
+    // assumption and every surface that prints this must say so.
+    if (path === '/fundedscan') {
+      const from = +b.from || 0, to = +b.to || now;
+      const bal = Math.max(100, +b.bal || 10000);
+      const tgt = Math.max(1, +b.target || 10), ddMax = Math.max(0.5, +b.maxdd || 6), dayMax = Math.max(0.5, +b.daily || 4);
+      const minDays = Math.max(0, b.minDays == null ? 5 : +b.minDays);
+      const CAP = 400000;
+      let rowsF = [];
+      try { rowsF = this.rows("SELECT user_id, ts, pnl FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND pnl IS NOT NULL ORDER BY user_id, ts LIMIT " + CAP, from, to); } catch (e) { return this.j({ error: 'unavailable' }); }
+      const byU = new Map();
+      for (const r of rowsF) { const u = String(r.user_id); let a = byU.get(u); if (!a) { a = []; byU.set(u, a); } a.push([+r.ts || 0, +r.pnl || 0]); }
+      const owners = Array.from(new Set(Array.from(byU.keys()).map(u => u.split(':')[0]))), nameOf = {};
+      for (let i = 0; i < owners.length; i += 60) { const part = owners.slice(i, i + 60); try { this.rows('SELECT id, username FROM users WHERE id IN (' + part.map(() => '?').join(',') + ')', ...part).forEach(u => { nameOf[u.id] = u.username || ''; }); } catch (e) {} }
+      // A SEQUENCE THAT CANNOT BE EXECUTED ON THIS BOOK IS NOT A FAILED CHALLENGE, IT IS A DIFFERENT BOOK. Measured on
+      // the first live run: several accounts returned figures like +358,469,941% because a single close moved more
+      // than the whole notional book many times over - they were trading margins this book does not contain. Counting
+      // them as "failed" would be arithmetically true and substantively false, so they are set aside and COUNTED, not
+      // dropped in silence. The test is mechanical: one close worth the whole book or more, and the account is off-book.
+      const out = [], offBook = [];
+      for (const [u, closes] of byU) {
+        const un = nameOf[u.split(':')[0]] || ''; if (!un || /^e2e_/i.test(un)) continue;
+        const who = un + (u.indexOf(':') > 0 ? '/' + u.split(':')[1] : '');
+        if (closes.some(c => Math.abs(c[1]) >= bal)) { offBook.push(who); continue; }
+        let eq = bal, peak = bal, maxDd = 0, worstDay = 0, verdict = '', vTs = 0, vRet = null, vDd = null, vDays = null;
+        let day = '', dayOpen = bal, dayLow = bal; const days = new Set();
+        for (const c of closes) {
+          const ts = c[0], d = new Date(ts).toISOString().slice(0, 10);
+          if (d !== day) { day = d; dayOpen = eq; dayLow = eq; days.add(d); }
+          eq += c[1];
+          if (eq > peak) peak = eq;
+          if (eq < dayLow) dayLow = eq;
+          const dd = peak > 0 ? (peak - eq) / peak * 100 : 0; if (dd > maxDd) maxDd = dd;
+          const dl = dayOpen > 0 ? (dayOpen - dayLow) / dayOpen * 100 : 0; if (dl > worstDay) worstDay = dl;
+          if (!verdict) { // first thing that happens wins - a breach cannot be undone by a later recovery
+            if (dl > dayMax) verdict = 'fail_daily';
+            else if (dd > ddMax) verdict = 'fail_drawdown';
+            else if (eq >= bal * (1 + tgt / 100) && days.size >= minDays) verdict = 'pass';
+            // The state AT THE VERDICT, not at the end of the season. Without this a trader who passed and then gave
+            // it all back printed "pass" beside a drawdown that breaks the very rule they passed under.
+            if (verdict) { vTs = ts; vRet = Math.round((eq - bal) / bal * 10000) / 100; vDd = Math.round(maxDd * 100) / 100; vDays = days.size; }
+          }
+        }
+        if (!verdict) verdict = days.size < minDays ? 'too_few_days' : 'still_running';
+        out.push({ who, closes: closes.length, days: vDays == null ? days.size : vDays,
+          return_pct: vRet == null ? Math.round((eq - bal) / bal * 10000) / 100 : vRet,
+          max_drawdown_pct: vDd == null ? Math.round(maxDd * 100) / 100 : vDd,
+          worst_day_pct: Math.round(worstDay * 100) / 100, verdict, verdict_ts: vTs || null,
+          season_return_pct: Math.round((eq - bal) / bal * 10000) / 100 });
+      }
+      out.sort((x, y) => ((y.verdict === 'pass') - (x.verdict === 'pass')) || (y.return_pct - x.return_pct));
+      const tally = {}; out.forEach(r => { tally[r.verdict] = (tally[r.verdict] || 0) + 1; });
+      return this.j({ ok: true, from, to, rules: { book_usd: bal, profit_target_pct: tgt, max_drawdown_pct: ddMax, max_daily_loss_pct: dayMax, min_trading_days: minDays }, accounts: out.length, off_book: offBook.length, tally, rows: out.slice(0, 300), truncated: rowsF.length >= CAP });
     }
     if (path === '/bottrades') { // full closed-trade ledger with paging - the journal is capped at 100, tradeev keeps 30 days
       const uid = String(b.uid || '');

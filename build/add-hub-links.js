@@ -127,6 +127,9 @@ const PRACTICE_LINKS = [
   ['/academy/', 'Academy - 16 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
   ['/trading-competition/', 'Live leaderboards - $350 a season, free to enter'],
+  // 2026-09-21: the highest-intent destination in this block. Somebody reading a liquidation page is a trader, and a
+  // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
+  ['/practice-for-a-funded-account/', 'Practising for a funded account? Try the rules free first'],
 ].filter(([h]) => h === '/paper-trade' || has(h.replace(/^\/|\/$/g, '')));
 const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
 for (const c of COINS) {

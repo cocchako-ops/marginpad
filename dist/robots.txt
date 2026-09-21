@@ -9,6 +9,7 @@ Disallow: /api/
 Allow: /api/v1/
 Allow: /api/competition
 Allow: /api/arena
+Allow: /api/funded
 Allow: /api/apiplan
 Allow: /api/premium/status
 Allow: /api/openapi

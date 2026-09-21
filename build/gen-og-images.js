@@ -161,9 +161,9 @@ function plan(rel, html) {
   if (ONE[key]) { const [t, d] = ONE[key]; return { t, d: Object.assign({ sub: desc }, d) }; }
 
   // the four one-question pages
-  if (/^\/(how-many-traders-liquidated-today|longs-or-shorts-liquidated-more|biggest-liquidation-today|is-funding-positive-or-negative|crypto-liquidations-today|where-can-i-test-a-trading-bot|mcp-server-for-crypto-trading)\/$/.test(rel)) {
+  if (/^\/(how-many-traders-liquidated-today|longs-or-shorts-liquidated-more|biggest-liquidation-today|is-funding-positive-or-negative|crypto-liquidations-today|where-can-i-test-a-trading-bot|mcp-server-for-crypto-trading|practice-for-a-funded-account)\/$/.test(rel)) {
     const A = { 'how-many-traders-liquidated-today': 'Counted every hour', 'longs-or-shorts-liquidated-more': 'Longs vs shorts, live',
-      'biggest-liquidation-today': 'The single largest', 'is-funding-positive-or-negative': 'Who pays whom', 'crypto-liquidations-today': 'Today, so far', 'where-can-i-test-a-trading-bot': 'Free, on live prices', 'mcp-server-for-crypto-trading': 'One line of config' };
+      'biggest-liquidation-today': 'The single largest', 'is-funding-positive-or-negative': 'Who pays whom', 'crypto-liquidations-today': 'Today, so far', 'where-can-i-test-a-trading-bot': 'Free, on live prices', 'mcp-server-for-crypto-trading': 'One line of config', 'practice-for-a-funded-account': 'Our own pass rate' };
     return { t: 'ask', d: { title: s.head, answer: A[rel.replace(/\//g, '')] || 'Live', sub: desc, path: rel, accent: ACCENT.orange } };
   }
 
