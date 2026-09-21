@@ -131,25 +131,46 @@ const PRACTICE_LINKS = [
   // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
   ['/practice-for-a-funded-account/', 'Practising for a funded account? Try the rules free first'],
 ].filter(([h]) => h === '/paper-trade' || has(h.replace(/^\/|\/$/g, '')));
+// REGIONAL (2026-09-21). Measured before adding it: the two live LATAM pages were linked from eight pages - the
+// homepage, each other, and /free-crypto-api/ - and from NOTHING a crawler actually walks. Google's own report has
+// both of them under "Discovered - currently not indexed": it knows the URLs and has never fetched one. Their sitemap
+// cadence was already daily with a fresh lastmod, so cadence was not the gap; inbound links from crawled pages are.
+// This block goes ONLY on the six coin pages and the two liquidation pages, which together carry most of the crawl
+// budget - a Portuguese link on all 220 pages would be dilution, not discovery.
+const REGIONAL_LINKS = [
+  ['/bitcoin-hoje/', 'Bitcoin hoje - preço, funding e liquidações (Português)'],
+  ['/dolar-cripto/', 'Dólar cripto - cotizaciones y brecha (Español, Argentina)'],
+].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
+const REGIONAL_INTRO = 'The same live numbers, written for two markets that price crypto against a currency of their own.';
 const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
 for (const c of COINS) {
   const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
   const b = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (REGIONAL_LINKS.length) b.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
   if (others.length) b.push(block('Other coins', '', others));
   if (inject(path.join(COINDIR, c, 'index.html'), null, b)) n++;
 }
 // the two liquidation pages that take thousands of crawls and had no route to the API either
 for (const d of ['liquidation-statistics', 'liquidations/by-exchange']) {
   const f = path.join(DIST, d, 'index.html');
-  if (fs.existsSync(f) && inject(f, null, [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)])) n++;
+  const bl = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (REGIONAL_LINKS.length) bl.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
+  if (fs.existsSync(f) && inject(f, null, bl)) n++;
 }
 // 5) English hubs link their translations (and each translation links the English original + its siblings)
+// A LINK MUST POINT AT THE DESTINATION, NEVER AT A HOP. The eleven translated subpages were retired long ago and the
+// worker 301s /<lang>/<anything>/ to the English original; only /es/ is a live twin. This block used to link every
+// language whose FILE existed, which put 33 redirecting links back into dist the moment --refresh ran (caught by
+// link-check on 2026-09-21, against a clean 0 the day before). Existence of the file is not the test - being served is.
+const LIVE_LANGS = new Set(['es']);
 for (const hub of HUBS) {
-  const langs = LANGS.filter(l => fs.existsSync(path.join(DIST, l, hub, 'index.html')));
-  if (!langs.length || !has(hub)) continue;
-  if (inject(rel(hub), null, [block('This page in other languages', '', langs.map(l => ['/' + l + '/' + hub + '/', LANG_NAMES[l]]))])) n++;
-  for (const l of langs) {
-    const links = [['/' + hub + '/', 'English']].concat(langs.filter(x => x !== l).map(x => ['/' + x + '/' + hub + '/', LANG_NAMES[x]]));
+  const present = LANGS.filter(l => fs.existsSync(path.join(DIST, l, hub, 'index.html')));
+  const live = present.filter(l => LIVE_LANGS.has(l));
+  if (!present.length || !has(hub)) continue;
+  if (live.length && inject(rel(hub), null, [block('This page in other languages', '', live.map(l => ['/' + l + '/' + hub + '/', LANG_NAMES[l]]))])) n++;
+  for (const l of present) {
+    // A frozen page gets the English original and nothing else - every sibling it used to name is a redirect.
+    const links = [['/' + hub + '/', 'English']].concat(live.filter(x => x !== l).map(x => ['/' + x + '/' + hub + '/', LANG_NAMES[x]]));
     if (inject(path.join(DIST, l, hub, 'index.html'), null, [block('Other languages', '', links)])) n++;
   }
 }
