@@ -2176,7 +2176,12 @@ async function ssrLiqMapPanel(sym, env, c) {
         const maxW = Math.max.apply(null, shown.map(z => +z.w));
         const avgAll = near.reduce((s, z) => s + (+z.w), 0) / Math.max(1, near.length);
         const row = (z) => {
-          const d = (+z.p / px - 1) * 100, above = d > 0, col = above ? grn : red;
+          // THE COLOUR BELONGS TO WHOSE ZONE IT IS, and the live tool is the authority: mp-heatmap paints a
+          // long-liquidation level green and a short-liquidation level red, which is the same long=green /
+          // short=red the trade form, the tickets and every board already use. Above the price is where SHORTS
+          // die, so it is RED. The first cut of this panel had both sides inverted, so a reader met the same
+          // zone in one colour here and the opposite colour one tap later on the map it links to.
+          const d = (+z.p / px - 1) * 100, above = d > 0, col = above ? red : grn;
           const w = Math.max(6, Math.round(+z.w / maxW * 100));
           const rel = avgAll > 0 ? (+z.w / avgAll) : 0;
           return '<div style="display:grid;grid-template-columns:minmax(72px,88px) 1fr minmax(86px,auto);gap:10px;align-items:center;padding:3px 0">'
@@ -2186,11 +2191,11 @@ async function ssrLiqMapPanel(sym, env, c) {
         };
         const hdr = (t, col) => '<div style="font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:' + col + ';margin:0 0 6px">' + t + '</div>';
         ladder = '<div style="padding:14px 16px;border-top:1px solid ' + line + '">'
-          + (up.length ? hdr('Above &mdash; where shorts get liquidated', grn) + up.map(row).join('') : '')
+          + (up.length ? hdr('Above &mdash; where shorts get liquidated', red) + up.map(row).join('') : '')
           + '<div style="display:flex;align-items:center;gap:10px;margin:9px 0;padding:5px 0;border-top:1px dashed #2d333b;border-bottom:1px dashed #2d333b">'
           + '<span style="font:700 11px/1 ui-monospace,monospace;color:' + lime + '">' + S + ' ' + _spx(px) + '</span>'
           + '<span style="font:11px/1 system-ui,sans-serif;color:' + dim + '">trading now</span></div>'
-          + (dn.length ? hdr('Below &mdash; where longs get liquidated', red) + dn.map(row).join('') : '')
+          + (dn.length ? hdr('Below &mdash; where longs get liquidated', grn) + dn.map(row).join('') : '')
           + '<p style="margin:10px 0 0;font:12px/1.55 system-ui,sans-serif;color:' + dim + '">Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are <strong style="color:#c9cfd6">modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.</p>'
           + '</div>';
       }

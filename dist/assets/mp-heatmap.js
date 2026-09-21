@@ -366,10 +366,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ctx.fillStyle = 'rgba(10,12,16,.92)'; ctx.fillRect(0, PH, W, H - PH);
     ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, PH + 0.5); ctx.lineTo(W, PH + 0.5); ctx.stroke();
     ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-    var zt = W < 90 ? 'x TYPICAL' : 'LEVELS - x TYPICAL';
-    var zw = ctx.measureText(zt).width;
-    ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect((W - zw) / 2 - 4, 2, zw + 8, 13);
-    ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText(zt, W / 2, 12);
+    // MEASURE THE LABEL, NEVER GUESS THE WIDTH IT NEEDS. This picked its wording from `W < 90`, while the
+    // long form needs about 105px at this font and the column is 104 - so on an ordinary desktop it was
+    // clipped at BOTH ends and read as "EVELS - x TYPICA": a header that looks like a typo on the one column
+    // whose whole job is to say what its numbers mean. A canvas can measure its own text, so the rule is the
+    // longest form that actually fits. The separator is a middle dot; a hyphen in front of "x TYPICAL" read
+    // as a minus sign with a missing number, which is what the column is trying not to be.
+    var zt = '', _zc = ['LEVELS · x TYPICAL', 'x TYPICAL', 'xTYP'];
+    for (var _zi = 0; _zi < _zc.length; _zi++) { if (ctx.measureText(_zc[_zi]).width + 10 <= W) { zt = _zc[_zi]; break; } }
+    if (zt) {
+      var zw = ctx.measureText(zt).width;
+      ctx.fillStyle = 'rgba(7,9,12,.88)'; ctx.fillRect((W - zw) / 2 - 4, 2, zw + 8, 13);
+      ctx.fillStyle = 'rgba(122,140,170,.95)'; ctx.fillText(zt, W / 2, 12);
+    }
   }
 
   // ---- band sizing -------------------------------------------------------------------------------
