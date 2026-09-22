@@ -6362,6 +6362,81 @@ function posAlertHits(c, pos, ord, prices) {
   }
   return hits;
 }
+// ---- BIG-PRINT ALERTS: the filter you set IS the alert (2026-09-22) --------------------------------
+// Owner: "alert treba da radi tako sto se setuje filter na orders ili tapes i kad nesto izadje da
+// korisniku stigne na telegram. Ali da radi samo za neke vece limite."
+//
+// THE FLOOR IS ENFORCED HERE, NOT IN THE PAGE. A quarter of a million dollars is roughly 300 times the
+// median BTC print, and even that fires a few times an hour on a busy day; at $10k a single coin would
+// send dozens a minute and the alert would be muted within an hour - which is worse than never having
+// built it. The page hides the bell below the floor, but the switch itself is what refuses.
+const TAPE_ALERT_MIN = 250000;
+const TAPE_ALERT_COINS = ['BTC', 'ETH', 'SOL'];
+function tapeAlertCfg(o) {
+  const c = (o && typeof o === 'object') ? o : {};
+  let coins = Array.isArray(c.coins) ? c.coins.map((x) => String(x || '').toUpperCase()).filter((x) => TAPE_ALERT_COINS.indexOf(x) >= 0) : [];
+  if (!coins.length) coins = ['BTC'];
+  return {
+    on: !!c.on,
+    usd: Math.max(TAPE_ALERT_MIN, Math.min(50000000, Math.round(+c.usd || TAPE_ALERT_MIN))),
+    side: [0, 1, 2].indexOf(+c.side) >= 0 ? +c.side : 0,   // 0 both, 1 buys, 2 sells
+    coins: coins.slice(0, TAPE_ALERT_COINS.length),
+  };
+}
+
+// The cron half. One tape read per watched coin for the whole site, not per subscriber: everybody is
+// matched against the same handful of prints, so a thousand subscribers cost the droplet three requests.
+async function checkTapePrints(env) {
+  try {
+    const stamp = (o) => { try { return env.STATS.put('tapealert:last', JSON.stringify(Object.assign({ ts: Date.now() }, o)), { expirationTtl: 3600 }); } catch (e) {} };
+    const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (!base) return;
+    let watch = [];
+    try { const r = await usersDO(env, '/tapealertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ watched: 0, fired: 0, err: 1 }); return; }
+    const live = watch.filter((w) => w && w.tg && w.cfg && w.cfg.on);
+    if (!live.length) { await stamp({ watched: watch.length, live: 0, fired: 0 }); return; }
+
+    const want = new Set();
+    live.forEach((w) => tapeAlertCfg(w.cfg).coins.forEach((c) => want.add(c)));
+    const tape = {};
+    for (const sym of Array.from(want).slice(0, TAPE_ALERT_COINS.length)) {
+      try {
+        const r = await fetch(base + '/api/v1/tape?symbol=' + encodeURIComponent(sym) + '&limit=300', { signal: AbortSignal.timeout(6000), cf: { cacheTtl: 2, cacheEverything: true } });
+        if (r.ok) { const j = await r.json(); tape[sym] = (j && j.trades) || []; }
+      } catch (e) {}
+    }
+
+    let fired = 0;
+    for (const w of live) {
+      const c = tapeAlertCfg(w.cfg);
+      let sent = 0;
+      for (const sym of c.coins) {
+        for (const t of (tape[sym] || [])) {
+          if (sent >= 2) break;                                   // two per coin per run: an alert is a nudge, not a feed
+          const usd = +t.usd || 0;
+          if (!(usd >= c.usd)) continue;
+          if (c.side === 1 && t.side !== 'buy') continue;
+          if (c.side === 2 && t.side !== 'sell') continue;
+          // Dedupe on the exchange's own trade id, so a print is never sent twice however often this runs.
+          const kk = 'tpal:' + w.uid + ':' + sym + ':' + String(t.id || t.ts);
+          try { if (await env.STATS.get(kk)) continue; await env.STATS.put(kk, '1', { expirationTtl: 6 * 3600 }); } catch (e) { continue; }
+          const buy = t.side === 'buy';
+          const txt = '<b>' + (buy ? '▲' : '▼') + ' ' + _susd(usd) + ' ' + sym + ' ' + (buy ? 'bought' : 'sold') + ' at market</b>\n'
+            + (buy ? 'A buyer crossed the spread and took the offer' : 'A seller hit the bid') + ' on <b>' + String(t.venue || '').toUpperCase() + '</b>'
+            + ' at <b>' + _spx(+t.px || 0) + '</b>.\n'
+            + 'Your alert fires on prints over ' + _susd(c.usd) + '.\n'
+            + '<a href="https://marginpad.io/heatmap?coin=' + sym + '">Open the live order flow</a>';
+          if (env.TELEGRAM_TOKEN) {
+            try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: txt }); sent++; fired++; } catch (e) {}
+          }
+        }
+      }
+    }
+    await stamp({ watched: watch.length, live: live.length, coins: Array.from(want), fired });
+    return { watched: watch.length, live: live.length, fired };
+  } catch (e) {}
+}
+
 async function checkPositionAlerts(env) {
   try {
     if (!env.USERS || !env.STATS) return;
@@ -15674,6 +15749,36 @@ async function handleAlerts(url, env, request) {
   }
   // Position alerts: your own liq / stop / target / resting-order levels. Premium, and gated on the SERVER - the
   // page hides the card for everyone else, but the switch itself must be the thing that refuses.
+  // BIG-PRINT ALERTS. The filter on the tape is the alert: pick a size on /heatmap, press the bell, and a
+  // print that big reaches Telegram. Free for any signed-in member with Telegram linked - unlike position
+  // alerts it costs one shared tape read for the whole site, and it is the best reason anybody has to link
+  // a chat at all. The $250k floor is enforced right here: below it a busy coin would send dozens a minute.
+  if (sub === '/tapealert') {
+    const pf = await premiumFor(env, request);
+    if (!pf || !pf.uid) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method === 'GET') {
+      let cur = null;
+      try {
+        const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, keys: ['tapealert'] }) }));
+        const d = await r.json(); cur = d && d.prefs && d.prefs.tapealert ? d.prefs.tapealert.v : null;
+      } catch (e) {}
+      let cfg = null; try { cfg = JSON.parse(cur || 'null'); } catch (e) {}
+      let last = null; try { last = JSON.parse(await env.STATS.get('tapealert:last') || 'null'); } catch (e) {}
+      // Whether a chat is linked comes from the DO, the same way /tglink asks - there is no helper for it.
+      let linked = false;
+      try { const ir = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const ii = await ir.json(); linked = !!(ii && ii.linked); } catch (e) {}
+      return jr({ cfg: tapeAlertCfg(cfg || {}), min_usd: TAPE_ALERT_MIN, coins: TAPE_ALERT_COINS, telegram: linked, lastRun: last && last.ts ? last.ts : null });
+    }
+    let pb = {}; try { pb = await request.json(); } catch (e) {}
+    const cfg = tapeAlertCfg(pb);
+    if (cfg.on) {
+      let linked = false;
+      try { const ir = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const ii = await ir.json(); linked = !!(ii && ii.linked); } catch (e) {}
+      if (!linked) return jr({ error: 'telegram_required', message: 'Link Telegram first - the alert has nowhere to go otherwise.' }, 400);
+    }
+    try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'tapealert', v: JSON.stringify(cfg) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, cfg });
+  }
   if (sub === '/posalert') {
     const pf = await premiumFor(env, request);
     if (!pf || !pf.uid) return jr({ error: 'not_signed_in' }, 401);
@@ -20631,7 +20736,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, liqarch: archiveLiq, liqrecap: liqRecapDaily };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -21680,6 +21785,7 @@ export default {
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
     bg(checkAlerts, 'alerts');
     bg(checkAccountAlerts, 'acctalerts');
+    bg(checkTapePrints, 'tapealerts'); // the tape filter a reader set, delivered to Telegram
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
     bg(payWeeklyPrizes, 'prizes');
     bg(payBybitPrizes, 'bybitprizes');
@@ -24894,6 +25000,20 @@ export class UserStore {
         if (!cfg || (!cfg.push && !cfg.tg)) continue;
         const u = this.rows("SELECT tg_chat, username FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
         out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, h: (+cfg.h === 16 ? 16 : 8), username: u.username || '' });
+      }
+      return this.j({ watch: out });
+    }
+    // Who wants to hear about a big print. The pref row doubles as the INDEX, so an account that never
+    // switched it on is never walked - the same shape posalert uses, and the reason that cron is cheap.
+    if (path === '/tapealertwatch') {
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='tapealert' LIMIT 4000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || !cfg.on) continue;
+        const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', r.user_id)[0] || {};
+        if (!u.tg_chat) continue;   // no Telegram, nothing to send to
+        out.push({ uid: r.user_id, cfg, tg: u.tg_chat, username: u.username || '' });
       }
       return this.j({ watch: out });
     }

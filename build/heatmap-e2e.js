@@ -73,6 +73,8 @@ const LAYOUT = () => {
     bkTapeCols: (function () { var r = document.querySelector('.hm-tp-row'); return r ? r.children.length : 0; })(),
     bkHeads: [...document.querySelectorAll('.hm-col-h')].map(function (h) { return h.textContent.replace(/\s+/g, ' ').trim(); }),
     helpQ: document.querySelectorAll('.hm-q').length,
+    filters: [...document.querySelectorAll('.hm-mini')].map(function (e) { return e.className.replace('hm-mini ', ''); }),
+    bell: (function () { var b = document.querySelector('.hm-bell'); return b ? { cls: b.className, title: b.title } : null; })(),
     readTxt: (document.querySelector('.hm-sm-l') || {}).innerText || '',
     readGroups: document.querySelectorAll('.hm-sm-t').length,
     foldCount: document.querySelectorAll('.hm-foot-c').length,
@@ -266,6 +268,11 @@ const LAYOUT = () => {
     ok('the long explanations are folded away at the bottom', L.foldCount >= 4 && !L.panelNote, 'folds=' + L.foldCount + ' noteStillInPanel=' + L.panelNote);
     // The page was one flat black; the windows now sit on shades that differ.
     ok('the windows are not all the same colour', new Set(Object.values(L.shades)).size >= 3, JSON.stringify(L.shades));
+    // A reader can throw away the noise: a floor in dollars and a side on the tape, and a row width on
+    // the book - which is grouping rather than hiding, because a ladder has to stay contiguous to mean
+    // anything. The bell turns whatever filter is set into a Telegram alert.
+    ok('the tape and the book can both be filtered', L.filters.length === 3 && L.filters.indexOf('bkMin') >= 0 && L.filters.indexOf('bkSide') >= 0 && L.filters.indexOf('bkTick') >= 0, L.filters.join(','));
+    ok('the alert bell is there and explains its floor before it is pressed', !!L.bell && /250K/.test(L.bell.title), L.bell && L.bell.title);
     ok('the jargon explains itself', L.helpQ >= 6, 'help marks=' + L.helpQ);
     // TARGETS keeps all six chips and every price readable, in half the height it used to take on a phone.
     ok('no target price is cut off', L.tgCut === 0, 'truncated=' + L.tgCut);

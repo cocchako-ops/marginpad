@@ -79,6 +79,31 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   })();
   function q(key) { return '<b class="hm-q" data-q="' + key + '" role="button" tabindex="0" aria-label="What is this?">?</b>'; }
 
+// ---- FILTERS, ONE PER COLUMN, IN THE HEADER OF THE THING THEY CONTROL (2026-09-22) ------------------
+// Owner: "neki cool filter za tape i book, tipa da se izabere koji je minimalan iznos koji hocu da vidim".
+//
+// The TAPE gets exactly that: a floor in dollars, so a reader can throw away the hundreds of $87 prints
+// that make a busy coin unreadable and watch only orders with money behind them. It is the same idea the
+// map's own liquidation-dot filter already uses, and the same ladder of sizes, so the page is consistent.
+//
+// THE BOOK DOES NOT GET A SIZE FILTER, and that is deliberate: a ladder has to be CONTIGUOUS to mean
+// anything - Sum is the running total as you walk away from the price, and hiding the small rows in the
+// middle would silently break every number below them. What a book is filtered by is its ROW WIDTH, which
+// is what the "0.1" control on an exchange terminal does: group the same orders more coarsely and the
+// small stuff merges into the walls instead of disappearing. Nothing is hidden; it is aggregated.
+//
+// Both persist, because a reader who wants $50k+ wants it on every visit, and both say what they are
+// doing next to the control - a filter you cannot see is a filter that makes the page look broken.
+var TPMIN = [['0', 'All prints'], ['1000', '$1K+'], ['10000', '$10K+'], ['50000', '$50K+'], ['250000', '$250K+']];
+var TICKX = [['1', 'Auto'], ['2', 'x2'], ['5', 'x5'], ['10', 'x10'], ['25', 'x25']];
+function bkPref(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : +v; } catch (e) { return d; } }
+function bkPrefSet(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) {} }
+function bkSelect(cls, opts, cur) {
+  var h = '<select class="hm-mini ' + cls + '">';
+  for (var i = 0; i < opts.length; i++) h += '<option value="' + opts[i][0] + '"' + (+opts[i][0] === +cur ? ' selected' : '') + '>' + opts[i][1] + '</option>';
+  return h + '</select>';
+}
+
   var WINS = { '1H': { iv: '1', mins: 60 }, '4H': { iv: '5', mins: 240 }, '12H': { iv: '15', mins: 720 }, '1D': { iv: '15', mins: 1440 }, '3D': { iv: '60', mins: 4320 }, '7D': { iv: '240', mins: 10080 } };
   var BINS = 200;
   var S = null;
@@ -158,6 +183,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     '.hm-bk-n>b:first-child{color:#c2f64a;font:700 9.5px "Space Mono",monospace;letter-spacing:.12em;text-transform:uppercase}' +
     '.hm-bk-n b.k{color:#c9d4e6;font-weight:600}.hm-bk-n em{font-style:normal;color:#c9d4e6}' +
     '.hm-bk-n .g{color:#66d3a5}.hm-bk-n .r{color:#ff8f86}' +
+    '.hm-col-h{flex-wrap:wrap}' +
+    '.hm-mini{appearance:none;-webkit-appearance:none;background:#141b26;border:1px solid #26303f;color:#c9d4e6;border-radius:7px;padding:2px 7px;font:10.5px "Space Mono",monospace;cursor:pointer;height:22px;max-width:104px}' +
+    '.hm-mini:hover{border-color:#3a465c}.hm-mini:focus{outline:none;border-color:#c2f64a}' +
+    '.hm-col-h .hm-mini:first-of-type{margin-left:auto}' +
+    '.hm-bell{width:22px;height:22px;border-radius:7px;border:1px solid #26303f;background:#141b26;color:#5c6b84;font-size:9px;line-height:1;cursor:pointer;flex:none}' +
+    '.hm-bell:hover{border-color:#3a465c;color:#8fa3c4}.hm-bell.on{border-color:#c2f64a;color:#c2f64a;background:rgba(194,246,74,.10)}' +
+    '.hm-bell.dim{opacity:.45}' +
+    '.hm-fon{display:block;font-style:normal;font:10px "Space Mono",monospace;color:#c2f64a;margin-top:2px}' +
     '.hm-tp-row{cursor:pointer;border-radius:3px}.hm-tp-row:hover{background:rgba(255,255,255,.045)}' +
     '.hm-tp-row .vb{position:absolute;right:0;top:2px;bottom:2px;border-radius:2px;z-index:0;opacity:.13;transition:width .3s ease}' +
     '.hm-tp-row.a .vb{background:#2ebd85}.hm-tp-row.b .vb{background:#ff5a4d}' +
@@ -1397,11 +1430,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       + '<span class="hm-seg hm-bk-seg"></span></div>'
       + '<div class="hm-bk-say"></div>'
       + '<div class="hm-bk-g">'
-      + __esT_mpheatmap("orderBookWhatIs",'  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i>') + q('resting') + '</div>'
+      + __esT_mpheatmap("orderBookWhatIs",'  <div class="hm-col hm-ob"><div class="hm-col-h"><b>ORDER BOOK</b><i>what is waiting</i>') + q('resting') + bkSelect('bkTick', TICKX, bkPref('mp_hm_booktick', 1)) + '</div>'
       + __esT_mpheatmap("priceSizeSum",'    <div class="hm-ob-hd"><span>Price</span><span>Size</span><span>Sum') + q('sum') + '</span></div>'
       + '    <div class="hm-ob-a"></div><div class="hm-ob-px"></div><div class="hm-ob-b"></div>'
       + '    <div class="hm-ob-r"><b></b><i></i><u></u><s></s></div><div class="hm-vk"></div></div>'
-      + __esT_mpheatmap("tapeWhatJustHappened",'  <div class="hm-col hm-tp"><div class="hm-col-h"><b>TAPE</b><i>what just happened</i>') + q('aggressor') + '</div>'
+      + __esT_mpheatmap("tapeWhatJustHappened",'  <div class="hm-col hm-tp"><div class="hm-col-h"><b>TAPE</b><i>what just happened</i>') + q('aggressor')
+      + bkSelect('bkSide', [['0', 'Both sides'], ['1', 'Buys only'], ['2', 'Sells only']], bkPref('mp_hm_tapeside', 0))
+      + bkSelect('bkMin', TPMIN, bkPref('mp_hm_tapemin', 0))
+      + '<button type="button" class="hm-bell" title="Alert me on Telegram when a print this size goes through">&#9679;</button>'
+      + '</div>'
       + __esT_mpheatmap("timePriceSizeValue",'    <div class="hm-tp-hd"><span>Time</span><span>Price</span><span>Size</span><span>Value</span><span>On</span></div>')
       + '    <div class="hm-tp-l"></div></div>'
       + __esT_mpheatmap("theReadWhatIt",'  <div class="hm-col hm-sm"><div class="hm-col-h"><b>THE READ</b><i>what it means</i>') + q('measured') + '</div>'
@@ -1433,7 +1470,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // its own mid first: measured, Hyperliquid traded $73 above the other four on BTC, enough that merging by
     // absolute price put its bids above another venue's asks and crossed the whole ladder.
     function merge(V, side) {
-      var t = niceTick(V.mid), m = new Map(), i, j;
+      // The reader's grouping multiplies the natural step. A ladder has to stay CONTIGUOUS - Sum is a
+      // running total, so hiding small rows would silently break every number under them - which is why the
+      // book is filtered by ROW WIDTH and not by size. Nothing disappears; it merges into the walls.
+      var t = niceTick(V.mid) * Math.max(1, bkPref('mp_hm_booktick', 1)), m = new Map(), i, j;
       for (i = 0; i < V.list.length; i++) {
         var vn = V.list[i], lv = vn.top && vn.top[side];
         if (!lv) continue;
@@ -1547,14 +1587,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         }).join('') + __esT_mpheatmap("whoHoldsEachRow",'<span class="lbl">who holds each row') + q('venuestrip') + '</span>';
 
       // ---- TAPE ----
-      var tr = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
+      var tpMin = bkPref('mp_hm_tapemin', 0), tpSide = bkPref('mp_hm_tapeside', 0);
+      var trAll = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
+      var tr = trAll.filter(function (x) {
+        if (tpMin > 0 && (+x.usd || 0) < tpMin) return false;
+        if (tpSide === 1 && x.side !== 'buy') return false;
+        if (tpSide === 2 && x.side !== 'sell') return false;
+        return true;
+      });
+      var tpHid = trAll.length - tr.length;
       // "Big" is measured against THIS tape, not against a number somebody picked: the median print, times
       // eight. On BTC the median print is about $750, so a $6,000 order is genuinely unusual and lights up.
       var vals = tr.map(function (x) { return +x.usd || 0; }).sort(function (a, b2) { return a - b2; });
       var med = vals.length ? vals[Math.floor(vals.length / 2)] : 0, big = med * 8;
       var bigMax = vals.length ? vals[vals.length - 1] : 0;
       tr = tr.slice(Math.max(0, tr.length - 18)).reverse();
-      var ch2 = ensure(tpL, tr.length, 'hm-tp-row');
+      if (!tr.length) { tpL.innerHTML = '<div class="hm-tp-none">nothing this big has printed yet — ' + tpHid + ' smaller print' + (tpHid === 1 ? '' : 's') + ' hidden by the filter</div>'; }
+      var ch2 = tr.length ? ensure(tpL, tr.length, 'hm-tp-row') : [];
       for (i = 0; i < tr.length; i++) {
         var x = tr[i], e2 = ch2[i], dt = new Date(x.ts);
         e2.className = 'hm-tp-row ' + (x.side === 'buy' ? 'a' : 'b') + ((big > 0 && +x.usd >= big) ? ' big' : '');
@@ -1714,7 +1763,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         : pace && pace <= 0.6 ? __esT_mpheatmap("theTapeIsQuieter"," The tape is quieter than usual.") : "";
       bkSay.innerHTML = __esT_mpheatmap("rightNow","<b class=\"lead\">Right now</b> ") + sayA[0] + (sayB ? " " + sayB : "") + "." + sayC
         + (absorb ? " " + absorb[0] : "");
-      bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + __esT_mpheatmap("exchangesLinedUp",' exchanges, lined up') : BKN[pick] || pick) + '</i>';
+      var fBits = [];
+      if (tpMin > 0) fBits.push('prints over ' + usdShort(tpMin));
+      if (tpSide === 1) fBits.push('buys only'); else if (tpSide === 2) fBits.push('sells only');
+      if (bkPref('mp_hm_booktick', 1) > 1) fBits.push('rows grouped x' + bkPref('mp_hm_booktick', 1));
+      bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + __esT_mpheatmap("exchangesLinedUp",' exchanges, lined up') : BKN[pick] || pick) + '</i>' + (fBits.length ? '<em class="hm-fon">filtered: ' + fBits.join(' · ') + '</em>' : '');
     }
     function sideUsd(list, side) {
       var s = 0, i;
@@ -1863,6 +1916,69 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       for (i = 0; i < bs.length; i++) bs[i].className = bs[i] === t ? 'on' : '';
       bkRender();
     });
+    // ---- THE BELL: the filter you set becomes the alert -------------------------------------------
+    // Owner: "alert treba da radi tako sto se setuje filter na orders ili tapes i kad nesto izadje da
+    // korisniku stigne na telegram. Ali da radi samo za neke vece limite."
+    //
+    // So the bell carries no settings of its own: whatever the tape filter says right now IS the alert.
+    // It is dark below the server's floor and says why, because a control that looks available and then
+    // refuses is worse than one that explains itself before you press it.
+    var bellCfg = null;
+    function bellMin() { return 250000; }   // mirrors TAPE_ALERT_MIN; the server is what actually enforces it
+    function bellPaint() {
+      var b = bk.querySelector('.hm-bell'); if (!b) return;
+      var min = bkPref('mp_hm_tapemin', 0), on = !!(bellCfg && bellCfg.on);
+      var ok = min >= bellMin();
+      b.className = 'hm-bell' + (on ? ' on' : '') + (ok ? '' : ' dim');
+      b.textContent = on ? '●' : '○';
+      b.title = on
+        ? 'Telegram alert is ON for prints over ' + usdShort(bellCfg.usd) + ' - press to stop'
+        : ok ? 'Send me a Telegram when a print over ' + usdShort(min) + ' goes through'
+          : 'Telegram alerts start at ' + usdShort(bellMin()) + ' - pick a bigger size and the bell wakes up';
+    }
+    function bellLoad() {
+      // ONLY ASK IF THIS BROWSER HAS A SESSION. Called unconditionally it hands every signed-out reader a
+      // 401 in the console on every visit - noise that the page's own error check caught immediately, and
+      // that would otherwise have sat in Sentry for weeks looking like a real fault. `mp_li` is the
+      // non-HttpOnly cookie that says a session exists; it is what the lazy auth loader reads too.
+      var li = false; try { li = /(^|;\s*)mp_li=/.test(document.cookie); } catch (e) {}
+      if (!li) { bellPaint(); return; }
+      fetch('/api/alerts/tapealert').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (j && j.cfg) { bellCfg = j.cfg; bellCfg._tg = !!j.telegram; }
+        bellPaint();
+      }).catch(function () {});
+    }
+    function bellSay(msg, good) { try { if (window.mpToast) window.mpToast({ msg: msg, kind: good ? 'good' : 'warn' }); else alert(msg); } catch (e) {} }
+    function bellClick() {
+      var min = bkPref('mp_hm_tapemin', 0), side = bkPref('mp_hm_tapeside', 0);
+      if (min < bellMin()) { bellSay('Telegram alerts start at ' + usdShort(bellMin()) + ' a print. Pick that size or bigger in the tape filter, then press the bell.', false); return; }
+      var want = !(bellCfg && bellCfg.on);
+      var body = { on: want, usd: min, side: side, coins: [S.coin] };
+      fetch('/api/alerts/tapealert', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.s === 401) { bellSay('Sign in first - an alert needs an account to reach you.', false); return; }
+          if (res.s === 400 && res.j && res.j.error === 'telegram_required') {
+            bellSay('Link Telegram first, on the alerts page - the alert has nowhere to go otherwise.', false); return;
+          }
+          if (!res.j || !res.j.ok) { bellSay('Could not save that alert. Try again in a moment.', false); return; }
+          bellCfg = res.j.cfg; bellPaint();
+          bellSay(want
+            ? 'Telegram alert on: every ' + S.coin + ' print over ' + usdShort(min) + (side === 1 ? ' that is a buy' : side === 2 ? ' that is a sell' : '') + ' reaches you.'
+            : 'Telegram alert off.', want);
+        }).catch(function () { bellSay('Could not save that alert. Try again in a moment.', false); });
+    }
+
+    bk.addEventListener('change', function (ev) {
+      var t = ev.target; if (!t || t.tagName !== 'SELECT' || !S) return;
+      var key = t.classList.contains('bkTick') ? 'mp_hm_booktick' : t.classList.contains('bkSide') ? 'mp_hm_tapeside' : t.classList.contains('bkMin') ? 'mp_hm_tapemin' : '';
+      if (!key) return;
+      bkPrefSet(key, t.value);
+      bkRender();
+      bellPaint();
+    });
+    bk.addEventListener('click', function (ev) { if (ev.target && ev.target.classList && ev.target.classList.contains('hm-bell')) { ev.stopPropagation(); bellClick(); } });
+    bellLoad();
     S.bkLoad = bkLoad;
     bkLoad();
     // A terminal that updates every twenty seconds is not a terminal. Both endpoints are edge-cached for
