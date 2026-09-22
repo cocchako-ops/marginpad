@@ -2576,13 +2576,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=ec87e3d9
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=a076fd2a
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=ec87e3d9';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=a076fd2a';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
