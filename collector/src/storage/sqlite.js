@@ -213,6 +213,19 @@ export function createSqliteStorage(path, opts = {}) {
     }
     return out;
   }
+  // MEASURED DOLLARS IN A LIST OF PRICE-AND-TIME WINDOWS. One prepared statement reused, because the
+  // caller asks about a few hundred at once and a fresh prepare per window is most of the cost. Narrow
+  // on both axes, so with the ts covering index each one is a short range seek rather than a scan.
+  function liqSum(symbol, wins) {
+    ensure();
+    const q = db.prepare('SELECT COALESCE(SUM(notional),0) v, COUNT(*) n FROM liquidations WHERE symbol=? AND ts>=? AND ts<=? AND price>=? AND price<=?');
+    return wins.map((w) => {
+      const t0 = +w[0], t1 = +w[1], p0 = +w[2], p1 = +w[3];
+      if (!(t1 > t0) || !(p1 > p0)) return { v: 0, n: 0 };
+      const r = q.get(String(symbol), t0, t1, p0, p1);
+      return { v: Math.round(r.v || 0), n: r.n || 0 };
+    });
+  }
   function pulse(sinceTs) { ensure(); return cached('pulse:' + hoursKey(sinceTs), 30000, () => pulseRaw(sinceTs)); } // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
   function pulseRaw(sinceTs) {
     // px = price of the newest row in the window: SQLite takes bare columns from the row that produced a
@@ -237,6 +250,6 @@ export function createSqliteStorage(path, opts = {}) {
 
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
-    saveOiSnap, oi24h, liqBySymbol, pulse, exportDay,
+    saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay,
     close: () => db.close() };
 }

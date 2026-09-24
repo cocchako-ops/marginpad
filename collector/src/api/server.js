@@ -348,6 +348,22 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     });
   });
 
+  // HOW MUCH REALLY LIQUIDATED IN THESE WINDOWS. The liquidation MODEL lives in the worker's KV and the
+  // liquidation RECORD lives here, so neither side can calibrate one against the other alone. This is the
+  // bridge: a list of price-and-time windows in, the measured dollars out, one request instead of four
+  // hundred. It exists so the map can say what a band of a given weight has HISTORICALLY liquidated -
+  // a measurement with an n behind it - rather than printing the model's own units as if they were money.
+  app.post('/api/v1/liqsum', express.json({ limit: '256kb' }), async (req, res) => {
+    const sym = String((req.body && req.body.symbol) || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const wins = Array.isArray(req.body && req.body.wins) ? req.body.wins.slice(0, 500) : [];
+    if (!wins.length) return res.status(400).json({ error: 'no_windows' });
+    try {
+      const out = await storage.async.liqSum(sym, wins);
+      res.set('Cache-Control', 'no-store');
+      res.json({ symbol: sym, n: out.length, sums: out });
+    } catch (e) { log.error('liqsum failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
   // THE BOOK OVER TIME. Price bucketed against the shared mid every few seconds, plus the walls standing
   // now and the ones that have just gone - each marked eaten or pulled by what the tape did at its price.
   app.get('/api/v1/bookmap', (req, res) => {

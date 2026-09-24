@@ -31,7 +31,7 @@ function timed(storage) {
 // each on the droplet and ran on the main thread, where the exchange sockets live; a burst of them was a
 // 30-50s stall that dropped every venue. Reads now wait in the worker; the main thread only writes.
 const READ_TIMEOUT_MS = 25000; // nginx gives up at 30s - fail the request before it does, and never queue forever
-const READS = ['histogram', 'live', 'feed', 'pulse', 'liqBySymbol', 'oi24h', 'stats', 'getClusters', 'exportDay', 'latestOi'];
+const READS = ['histogram', 'live', 'feed', 'pulse', 'liqBySymbol', 'oi24h', 'stats', 'getClusters', 'exportDay', 'latestOi', 'liqSum'];
 function asyncReads(path) {
   let worker = null, seq = 0; const pending = new Map();
   const stats = { restarts: 0, inflight: 0, timeouts: 0, errors: 0, maxMs: 0 };

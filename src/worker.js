@@ -530,12 +530,81 @@ async function heatPoolsCron(env) {
   }
   return diag;
 }
+// WHAT A BAND OF THIS WEIGHT HAS HISTORICALLY LIQUIDATED (2026-09-24, owner asked why the map carries no
+// dollar figure and the honest answer turned out to be worth measuring).
+//
+// The rule it replaces was right and is not being relaxed: a dollar figure derived FROM the model stays
+// forbidden, because the one time it was tried - projecting from open interest - it overstated an average
+// Bitcoin band by about thirty times. What is published here is the opposite direction. It is not the
+// model converted into money; it is the RECORD of what really liquidated at bands of this weight when the
+// price reached them, from our own collector, with the number of sweeps it is based on printed beside it.
+//
+// MEASURED on the first run, 136 swept BTC bands: every single one had real liquidations at its price and
+// time, so the model finds WHERE extremely well. It is the HOW MUCH it cannot do - its own weight runs a
+// median of 15.7x the real dollars, and the ratio ranges from 0.1x to 1383x, so no single divisor exists.
+// What does hold is the ORDER (rank correlation 0.56): a heavier band really does liquidate more, and the
+// quartile medians came out $0.73M / $2.80M / $3.02M. So the map quotes the measured median for the band's
+// own quartile, and says how many sweeps that median is made of - never a figure derived from the weight.
+//
+// Daily, not per run: it costs one request with a few hundred windows in it, and a calibration built from
+// eight days of sweeps does not move in ten minutes.
+async function heatCalibCron(env) {
+  const out = {};
+  if (!env || !env.STATS) return out;
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  if (!base) return out;
+  for (const sym of HM_COINS) {
+    try {
+      let pub = null; try { pub = JSON.parse(await env.STATS.get('hmp:pub:' + sym) || 'null'); } catch (e) {}
+      const dead = (pub && pub.dead) || [];
+      const binH = +(pub && pub.binH) || 0;
+      if (dead.length < 12 || !(binH > 0)) continue;   // too few sweeps to quote a median from
+      const half = binH / 2;
+      const wins = dead.slice(0, 400).map((d) => [d.tsw * 1000 - 30 * 60000, d.tsw * 1000 + 30 * 60000, d.p - half, d.p + half]);
+      let sums = null;
+      try {
+        const r = await fetch(base + '/api/v1/liqsum', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ symbol: sym, wins }), signal: AbortSignal.timeout(20000),
+        });
+        if (r.ok) { const j = await r.json(); sums = j && j.sums; }
+      } catch (e) {}
+      if (!sums || sums.length !== wins.length) continue;
+      const rows = [];
+      for (let i = 0; i < wins.length; i++) if (sums[i] && sums[i].v > 0) rows.push({ w: +dead[i].w || 0, v: +sums[i].v });
+      if (rows.length < 12) continue;
+      rows.sort((a, b) => a.w - b.w);
+      // Four buckets by the model's own weight, each answering with the MEASURED median of its members.
+      // A median, not a mean: one $80M cascade would otherwise set the expectation for every ordinary band.
+      const q = Math.max(3, Math.floor(rows.length / 4));
+      const bands = [];
+      for (let i = 0; i < 4; i++) {
+        const part = rows.slice(i * q, i === 3 ? rows.length : (i + 1) * q);
+        if (part.length < 3) continue;
+        const vs = part.map((x) => x.v).sort((a, b) => a - b);
+        bands.push({
+          wFrom: Math.round(part[0].w), wTo: Math.round(part[part.length - 1].w),
+          med: Math.round(vs[Math.floor(vs.length / 2)]),
+          lo: Math.round(vs[Math.floor(vs.length * 0.25)]), hi: Math.round(vs[Math.floor(vs.length * 0.75)]),
+          n: part.length,
+        });
+      }
+      if (!bands.length) continue;
+      const cal = { t: Date.now(), n: rows.length, days: 8, bands };
+      await env.STATS.put('hmp:cal:' + sym, JSON.stringify(cal), { expirationTtl: 30 * 86400 });
+      out[sym] = { sweeps: rows.length, bands: bands.length, medians: bands.map((b) => b.med) };
+      await new Promise((r) => setTimeout(r, 120));
+    } catch (e) { out[sym] = { err: String((e && e.message) || e).slice(0, 80) }; }
+  }
+  return out;
+}
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const ck = new Request('https://marginpad.io/__hmp_' + sym);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
   try { const sw = await env.STATS.get('hmp:swp:' + sym); if (body && sw) { const o = JSON.parse(body); o.sweeps = JSON.parse(sw); body = JSON.stringify(o); } } catch (e) {}
+  try { const cl = await env.STATS.get('hmp:cal:' + sym); if (body && cl) { const o = JSON.parse(body); o.calib = JSON.parse(cl); body = JSON.stringify(o); } } catch (e) {}
   const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   try { await caches.default.put(ck, r.clone()); } catch (e) {}
   return r;
@@ -20354,7 +20423,7 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } const diag = await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset'), diag }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } const diag = await heatPoolsCron(env); const calib = url.searchParams.get('calib') ? await heatCalibCron(env) : null; return J({ ok: true, reset: !!url.searchParams.get('reset'), diag, calib }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }
@@ -21906,6 +21975,9 @@ export default {
     bg(webhookDrain, 'webhooks'); // Bot API 2.3 - backstop drain of the webhook outbox (the hot paths drain right after their own writes)
     bg(screenerKvWarm, 'scrwarm'); // keep the screener KV floor fresh - no visitor ever pays the full compute
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
+      // Once a day is the right cadence: it costs one request carrying a few hundred windows, and a
+      // calibration built from eight days of sweeps does not move in ten minutes.
+      if (new Date().getUTCHours() === 4 && new Date().getUTCMinutes() < 10) bg(heatCalibCron, 'heatcalib');
     bg(checkAlerts, 'alerts');
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkTapePrints, 'tapealerts'); // the tape filter a reader set, delivered to Telegram
