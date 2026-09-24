@@ -20161,11 +20161,15 @@ export default {
           try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); out.photo = { ok: !!j.ok, desc: j.description || '', bytes: buf.byteLength }; } catch (e) { out.photo = { error: String(e).slice(0, 80) }; }
         }
       }
-      /* ?invite=1 mints the link that makes the gate work at all: an ordinary invite link lets
-         anybody straight in, while one created with creates_join_request turns every Join into a
-         chat_join_request the bot answers. This is the link to publish. */
+      /* ?invite=1 mints a PLAIN invite link - Join means in, with nothing to wait for.
+         It used to be minted with creates_join_request:true, which is the whole reason the owner kept
+         reporting a verification he had never asked for: the gate itself was deleted on 2026-09-20 and the
+         bot has auto-approved ever since, but the LINK still turned every Join into a pending request, so a
+         reader saw "Request sent" and sat there. The channel's own "approve new members" switch is off
+         (joinByRequest:false, checked live), so the link was the only thing still gating anybody.
+         The chat_join_request handler stays as a safety net for anyone holding an older link. */
       if (url.searchParams.get('invite') === '1' && chan && env.TELEGRAM_TOKEN) {
-        try { const r = await tgApi(env.TELEGRAM_TOKEN, 'createChatInviteLink', { chat_id: chan, name: 'MarginPad weekly bonus', creates_join_request: true });
+        try { const r = await tgApi(env.TELEGRAM_TOKEN, 'createChatInviteLink', { chat_id: chan, name: 'MarginPad weekly bonus', creates_join_request: false });
           if (r && r.ok) { out.invite = { link: r.result.invite_link, joinRequest: !!r.result.creates_join_request };
             try { await env.STATS.put('cfg:bybitinvite', r.result.invite_link); } catch (e) {} }
           else out.invite = { error: (r && r.description) || 'failed' }; } catch (e) { out.invite = { error: String(e).slice(0, 80) }; }

@@ -720,6 +720,127 @@ const LAYOUT = () => {
     const gl = await page.$$eval('.hm-bm-gi', (g) => g.map((x) => ({ t: x.querySelector('b').textContent, d: x.querySelector('span').textContent.length })));
     ok('the words under the map are all defined in one place', gl.length >= 6 && gl.every((x) => x.d > 60), JSON.stringify(gl.map((x) => x.t)));
 
+    // ---- ONLY WHAT IS DRAWN CAN BE CLICKED, AND IT IS CLICKED EXACTLY (2026-09-24) -------------------
+    // Owner: "Prazan prostor na mapi ne sme da bude clicable ... hocu da klikovi budu precizni u milimetar,
+    // bilo da je zumirano ili ne". Before this, the map snapped to the nearest band within 10-20px (so the
+    // gap between two lines, and the empty stretch past a swept band's cut, both answered), and the film
+    // inverted its rows with Math.round, half a row out - click a bright cell, select nothing.
+    // Every target below is computed INSIDE the page and returned in VIEWPORT coordinates, in the same
+    // evaluate that reads the geometry. Reading a canvas box once and clicking it later is a measurement
+    // bug: earlier legs scroll the page and pan the film, and these checks then failed while the product
+    // was correct - which is the worst kind of red.
+    // AND THE TARGET HAS TO BE ON SCREEN. A click at a y outside the viewport is clamped to the edge by
+    // the browser, so it lands on a different row and the check reports a consistent offset that looks like a
+    // product bug. Earlier legs scroll this page a long way; bring the canvas into view, let layout settle,
+    // and only then measure.
+    const pickAt = async (fn, arg, sel) => {
+      await page.evaluate((q) => { const e = document.querySelector(q); if (e) e.scrollIntoView({ block: "center" }); }, sel || ".hm-cv");
+      await new Promise((r) => setTimeout(r, 600));
+      const p = await page.evaluate(fn, arg);
+      if (!p) return null;
+      await page.mouse.click(p.cx, p.cy);
+      await new Promise((r) => setTimeout(r, 420));
+      return p;
+    };
+
+    const nRects = await page.evaluate(() => (window.__mpHeat.state().bandRects || []).length);
+    ok('the map records every rectangle it fills', nRects > 0, String(nRects));
+    if (nRects) {
+      const p1 = await pickAt(() => {
+        const S = window.__mpHeat.state(), R = S.bandRects || [];
+        const b2 = R.filter((r) => r.x1 - r.x0 > 40).sort((x, y) => (y.x1 - y.x0) - (x.x1 - x.x0))[0] || R[0];
+        if (!b2) return null;
+        const r = document.querySelector('.hm-cv').getBoundingClientRect();
+        return { cx: r.x + (b2.x0 + b2.x1) / 2, cy: r.y + b2.y + b2.h / 2, want: b2.price };
+      });
+      const sel1 = await page.evaluate(() => window.__mpHeat.state().sel);
+      ok('clicking the centre of a band selects THAT band', !!p1 && !!sel1 && Math.abs(sel1.price - p1.want) < 1e-9, JSON.stringify({ got: sel1, want: p1 && p1.want }));
+
+      const p2 = await pickAt(() => {
+        const S = window.__mpHeat.state(), R = S.bandRects || [];
+        const c = document.querySelector('.hm-cv'), r = c.getBoundingClientRect();
+        for (let gy = 6; gy < (S.plotH || r.height) - 6; gy += 3) for (let gx = 8; gx < r.width - 90; gx += 17) {
+          let inside = false;
+          for (const z of R) if (gx >= z.x0 - 9 && gx <= z.x1 + 9 && gy >= z.y - 9 && gy <= z.y + z.h + 9) { inside = true; break; }
+          if (!inside) return { cx: r.x + gx, cy: r.y + gy };
+        }
+        return null;
+      });
+      if (p2) {
+        const sel2 = await page.evaluate(() => window.__mpHeat.state().sel);
+        // THE LOAD-BEARING ONE: with the old nearest-band snap this selects a pool and goes red.
+        ok('empty map selects nothing at all', sel2 === null, JSON.stringify(sel2));
+      }
+
+      // a pixel tolerance means something different at every zoom, so ask again after zooming
+      const cb = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.x + r.width * 0.5, y: r.y + r.height * 0.4 }; });
+      await page.mouse.move(cb.x, cb.y);
+      for (let z = 0; z < 6; z++) { await page.mouse.wheel({ deltaY: -120 }); await new Promise((r) => setTimeout(r, 90)); }
+      await new Promise((r) => setTimeout(r, 900));
+      const p3 = await pickAt(() => {
+        const S = window.__mpHeat.state(), R = (S.bandRects || []).filter((r) => r.x1 - r.x0 > 40);
+        if (!R.length) return null;
+        const r = document.querySelector('.hm-cv').getBoundingClientRect();
+        return { cx: r.x + (R[0].x0 + R[0].x1) / 2, cy: r.y + R[0].y + R[0].h / 2, want: R[0].price };
+      });
+      if (p3) {
+        const sel3 = await page.evaluate(() => window.__mpHeat.state().sel);
+        ok('and it is still exact when zoomed in', !!sel3 && Math.abs(sel3.price - p3.want) < 1e-9, JSON.stringify({ got: sel3, want: p3.want }));
+      }
+    }
+
+    // the film: the MIDDLE and the TOP EDGE of one row, then film that is provably empty
+    // THE BOTTOM OF A ROW IS THE HALF THAT WAS BROKEN, and it took a falsification to notice: with
+    // k = round(kMax - y/rh), a click in the TOP half already rounded to the right row, so a 'top edge'
+    // check tested the half the bug got right - and failed only because it asked for a sub-pixel offset a
+    // browser rounds away. In the bottom half the old inverse lands on the row BELOW, which is the report.
+    for (const where of ['mid', 'bottom']) {
+      const pf = await pickAt((w) => {
+        const s2 = window.__mpBmState; if (!s2 || !s2.geo || !s2.data) return null;
+        const g = s2.geo, d = s2.data, c = document.querySelector('.hm-bm-cv');
+        if (!c) return null;
+        const r = c.getBoundingClientRect();
+        // A CELL WITH NO WALL LINE THROUGH IT. A wall's line is drawn across the row it sits on and is
+        // rightly pickable there, so a cell chosen without checking for one makes this check flaky - and a
+        // flaky check is a broken check.
+        const walls = (d.wallsStanding || []).concat(d.wallsFinished || []);
+        const clear = (y2) => !walls.some((w) => Math.abs(g.yOf(w.price / g.step) + g.rh / 2 - y2) < g.rh * 1.5);
+        for (let i2 = Math.floor(d.cols.length * 0.35); i2 < d.cols.length; i2++) { const col = d.cols[i2];
+          for (const kk in (col.b || {})) { const k = +kk, y = g.yOf(k);
+            if (y < 2 || y > g.PH - 2) continue;
+            if (!clear(y + g.rh / 2)) continue;
+            var off = w === 'bottom' ? g.rh * 0.8 : g.rh / 2;
+            return { cx: r.x + i2 * g.cw + g.cw / 2, cy: r.y + y + off, want: k };
+          } }
+        return null;
+      }, where, ".hm-bm-cv");
+      if (!pf) continue;
+      const got = await page.evaluate(() => { const s2 = window.__mpBmState; return s2 && s2.sel ? { kind: s2.sel.kind, bucket: s2.sel.payload && s2.sel.payload.bucket } : null; });
+      // the TOP EDGE one is load-bearing: the old Math.round inverse landed on the row above, which usually
+      // held nothing and therefore selected nothing at all.
+      ok('the film hits the row you touched (' + where + ')', !!got && got.kind === 'cell' && got.bucket === pf.want, JSON.stringify({ got: got, want: pf.want }));
+    }
+    const pe = await pickAt(() => {
+      const s2 = window.__mpBmState; if (!s2 || !s2.geo || !s2.data) return null;
+      const g = s2.geo, d = s2.data, c = document.querySelector('.hm-bm-cv'); if (!c) return null;
+      const r = c.getBoundingClientRect();
+      const all = (d.wallsStanding || []).concat(d.wallsFinished || []);
+      for (let i2 = 0; i2 < d.cols.length; i2++) { const col = d.cols[i2];
+        for (let k = g.kMin; k <= g.kMax; k++) {
+          if ((col.b && col.b[k] > 0) || (col.a && col.a[k] > 0)) continue;
+          const y = g.yOf(k) + g.rh / 2; if (y < 3 || y > g.PH - 3) continue;
+          let near = false;
+          for (const w of all) { const wy = g.yOf(w.price / g.step) + g.rh / 2; if (Math.abs(wy - y) < g.rh * 1.5) { near = true; break; } }
+          if (!near) return { cx: r.x + i2 * g.cw + g.cw / 2, cy: r.y + y };
+        } }
+      return null;
+    }, null, ".hm-bm-cv");
+    if (pe) {
+      const none = await page.evaluate(() => { const s2 = window.__mpBmState; return s2 && s2.sel ? s2.sel.kind : null; });
+      ok('empty film selects nothing at all', none === null, String(none));
+    }
+    const hdr = await page.evaluate(() => ({ bell: !!document.querySelector('.hm-bm-bell'), size: !!document.querySelector('.hm-bm-h select'), coin: !!document.querySelector('[data-bmcoin]') }));
+    ok('the film header carries no alert bell and no size picker', !hdr.bell && !hdr.size && hdr.coin, JSON.stringify(hdr));
     ok('no page errors while driving it', o.errs.length === 0, JSON.stringify(o.errs.slice(0, 3)));
     await page.close();
   }, { timeoutMs: 280000 });
