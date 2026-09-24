@@ -75,6 +75,7 @@ const LAYOUT = () => {
     helpQ: document.querySelectorAll('.hm-q').length,
     filters: [...document.querySelectorAll('.hm-mini')].map(function (e) { return e.className.replace('hm-mini ', ''); }),
     bell: (function () { var b = document.querySelector('.hm-bell'); return b ? { cls: b.className, title: b.title } : null; })(),
+    tickOpts: [...document.querySelectorAll('.bkTick option')].map(function (o) { return o.textContent; }),
     readTxt: (document.querySelector('.hm-sm-l') || {}).innerText || '',
     readGroups: document.querySelectorAll('.hm-sm-t').length,
     foldCount: document.querySelectorAll('.hm-foot-c').length,
@@ -273,6 +274,14 @@ const LAYOUT = () => {
     // anything. The bell turns whatever filter is set into a Telegram alert.
     ok('the tape and the book can both be filtered', L.filters.length === 3 && L.filters.indexOf('bkMin') >= 0 && L.filters.indexOf('bkSide') >= 0 && L.filters.indexOf('bkTick') >= 0, L.filters.join(','));
     ok('the alert bell is there and explains its floor before it is pressed', !!L.bell && /250K/.test(L.bell.title), L.bell && L.bell.title);
+    // "Auto / x2 / x5" named the multiplier and never the thing being chosen (owner: "nije mi jasno sta tu
+    // biram"). Every option must carry the price step it produces, which is a real number off this coin's
+    // own ladder - so the check is that they are prices, and that they really differ from one another.
+    ok('the row-width control names a price step, never "Auto"', L.tickOpts.length === 5
+      && L.tickOpts.every(function (t) { return /^\$[\d,.]+ /.test(t); })
+      && !/Auto/.test(L.tickOpts.join(' '))
+      && new Set(L.tickOpts.map(function (t) { return /^\$[\d,.]+/.exec(t)[0]; })).size === 5,
+      L.tickOpts.join(' | '));
     ok('the jargon explains itself', L.helpQ >= 6, 'help marks=' + L.helpQ);
     // TARGETS keeps all six chips and every price readable, in half the height it used to take on a phone.
     ok('no target price is cut off', L.tgCut === 0, 'truncated=' + L.tgCut);
@@ -390,6 +399,99 @@ const LAYOUT = () => {
     ok('a small dot is never harder to hit than the flat radius it replaced', rad.small >= 16, JSON.stringify(rad));
     ok('and a big dot reaches further, so overlapping circles collect together', rad.big > rad.small && rad.big >= 18, JSON.stringify(rad));
     ok('the hover tip never hangs off either edge of the canvas', offEdge === 0, offEdge);
+    await page.close();
+  }, { timeoutMs: 280000 });
+
+  // ---- the filters, driven rather than inspected --------------------------------------------------------
+  // THE LOAD-BEARING CHECK HERE IS THE THIRD ONE. The empty-state message shares its container with the
+  // rows, and the row builder used to count it as one: the next print to pass the filter was written into
+  // cells the message does not have, so it turned green, took the row's pointer cursor, and the render
+  // threw on the missing cell - freezing the panel with "nothing this big has printed" still on screen
+  // while real orders went by behind it. Restoring that is a one-line revert, so it is tested by forcing
+  // the message and then letting rows arrive, not by reading the markup.
+  console.log('\nfilters');
+  await withBrowser(async (browser) => {
+    // open() is what swaps in the working-tree bundle under --local; a raw newPage() silently graded
+    // PRODUCTION instead, which is how the first cut of these checks passed with the bug restored.
+    const o = await open(browser, { width: 1366, height: 900 });
+    const page = o.page, legErrs = o.errs;
+    await page.waitForSelector('.hm-tp-l .hm-tp-row', { timeout: 60000 });
+    const pick = async (cls, v) => {
+      await page.$eval('.' + cls, (s, val) => { s.value = val; s.dispatchEvent(new Event('change', { bubbles: true })); }, v);
+      await new Promise((r) => setTimeout(r, 1500));
+    };
+
+    // A filter the live window cannot answer must reach into the kept big prints instead of going blank.
+    await pick('bkMin', '250000');
+    const deep = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll('.hm-tp-l .hm-tp-row')];
+      const usd = rows.map((r) => (r.querySelector('.u') || {}).textContent || '');
+      return {
+        n: rows.length, usd,
+        sub: ((document.querySelector('.hm-tp .hm-col-h i') || {}).textContent || ''),
+        none: !!document.querySelector('.hm-tp-none'),
+        out: !!document.querySelector('.hm-tp-clr'),
+      };
+    });
+    // Read the row's own printed value back into dollars - "$355K" is a string, and parseFloat of it is NaN.
+    const asUsd = (t) => {
+      const m = /^\$([\d.]+)([MK]?)$/.exec(String(t).trim());
+      return m ? +m[1] * (m[2] === 'M' ? 1e6 : m[2] === 'K' ? 1e3 : 1) : NaN;
+    };
+    const allBig = deep.usd.length > 0 && deep.usd.every((t) => asUsd(t) >= 250000);
+    ok('a $250K filter is answered from the kept prints, not from an empty minute', deep.n >= 3 && allBig,
+      JSON.stringify({ rows: deep.n, first: deep.usd.slice(0, 4) }));
+    ok('and it says how far back it had to reach', /reaching back/.test(deep.sub), JSON.stringify(deep.sub));
+
+    // Force the message, then bring the rows back.
+    await page.evaluate(() => { document.querySelector('.hm-tp-l').innerHTML = '<div class="hm-tp-none"><b>forced</b></div>'; });
+    await pick('bkMin', '0');
+    const back = await page.evaluate(() => {
+      const l = document.querySelector('.hm-tp-l'), rows = [...l.querySelectorAll('.hm-tp-row')];
+      return {
+        msg: !!l.querySelector('.hm-tp-none'), n: rows.length,
+        marked: rows.every((r) => r.hasAttribute('data-r')),
+        cells: rows.length ? !!(rows[0].querySelector('.tm') && rows[0].querySelector('.u')) : false,
+        // The message div reused as a row keeps its own words, so what the first row SAYS is the tell -
+        // a real one opens with a clock. Asserting only "no .hm-tp-none left" passes with the bug
+        // restored, because the broken path renames that div instead of removing it.
+        first: rows.length ? (rows[0].textContent || '').trim().slice(0, 24) : '',
+      };
+    });
+    back.threw = legErrs.filter((e) => /pageerror/.test(e)).slice(-1)[0] || '';
+    ok('a print is never hidden behind the empty-state message',
+      !back.msg && back.n >= 5 && back.marked && back.cells && /^\d\d:\d\d:\d\d/.test(back.first) && !back.threw,
+      JSON.stringify(back));
+
+    // A filter that finds nothing hands back the way out, instead of being a dead end.
+    await page.evaluate(() => { document.querySelector('.hm-tp-l').innerHTML = ''; });
+    await pick('bkMin', '250000');
+    await pick('bkSide', '1');
+    const esc = await page.evaluate(async () => {
+      const b = document.querySelector('.hm-tp-clr');
+      if (!b) return { skip: true };
+      b.click();
+      await new Promise((r) => setTimeout(r, 1400));
+      return { min: localStorage.getItem('mp_hm_tapemin'), side: localStorage.getItem('mp_hm_tapeside'), n: document.querySelectorAll('.hm-tp-l .hm-tp-row').length };
+    });
+    ok('an empty filter carries the way back out of itself', esc.skip || (esc.min === '0' && esc.side === '0' && esc.n >= 5),
+      JSON.stringify(esc));
+
+    // Being told the alert cannot reach you is only useful with the way to fix it, so it is a window with
+    // a link, not a note in the corner that fades while the reader is still looking at the bell.
+    await pick('bkMin', '250000');
+    await page.click('.hm-bell');
+    await new Promise((r) => setTimeout(r, 1800));
+    const gate = await page.evaluate(() => {
+      const g = document.querySelector('.hm-gate');
+      if (!g) return null;
+      const c = g.querySelector('.hm-gate-c').getBoundingClientRect();
+      const a = g.querySelector('.hm-gate-go');
+      const mid = document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2);
+      return { href: a && a.getAttribute('href'), txt: (a || {}).textContent, reach: !!(mid && g.contains(mid)), w: Math.round(c.width) };
+    });
+    ok('the bell answers a guest with a window that links the alerts page', !!gate && gate.href === '/alerts' && gate.reach,
+      gate ? JSON.stringify(gate) : 'no window');
     await page.close();
   }, { timeoutMs: 280000 });
 

@@ -2,7 +2,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpheatmap = {"yourEntry":"TU ENTRADA ","yourLiq":"TU LIQ ","heavierThanATypical":"</b> más pesado que un nivel típico","heavierThanATypical2":"</b> más pesado que un nivel típico en esta pantalla.","lighterThanATypical":"más ligero que un nivel típico <b>(","lighterThanATypical2":"Más ligero que un nivel típico en esta pantalla <b>(","aboutAsHeavyAs":"aproximadamente tan pesado como un nivel típico","aboutAsHeavyAs2":"Aproximadamente tan pesado como un nivel típico en esta pantalla.","titleShowThisZone":"\" title=\"Mostrar esta zona en el mapa\">","targetsU2014WhereLiquidity":"<div class=\"hm-tg-h\">OBJETIVOS — dónde la liquidez atrae el precio</div>","theNearestLevelsWhere":"<div class=\"hm-tg-exp\">Los niveles más cercanos donde se liquidan las posiciones apalancadas - <span style=\"color:#66d3a5\">verde</span> es donde van los longs, <span style=\"color:#ff8f86\">rojo</span> es donde van los shorts. Estimado a partir del historial de precios, no un registro de lo que realmente se ha liquidado. Toca uno para mostrarlo en el mapa.</div>","getLiquidated":"</span> se liquidan","reallyLiquidatedHereIn":"</b> realmente liquidado aquí en 24h","nothingReallyLiquidatedHer":"<span style=\"color:#8b95a1\">nada se liquidó realmente aquí en las últimas 24h</span>","priceAlreadyWentThrough":"el precio ya pasó por este nivel - las <span class=\"","hereAreGone":"</span> de aquí ya no existen","wasLiquidatedOn":" se liquidó en ","moreClickToList":" más - haz clic para listarlas</span>","justNow":"justo ahora","liquidationsStackedHere":" liquidaciones</b> acumuladas aquí · <b>","totalPickOne":"</b> en total - elige una:</span><div class=\"hm-cl-list\">","moreZoomInTo":" más (haz zoom para separar el grupo)</div>","wasLiquidatedAt":"</b> se liquidó a <b>","alreadySwept":"<span class=\"k\">YA BARRIDO</span>","priceWentThrough":"El precio pasó por <b>","anySpanClass":"Cualquier <span class=\"","sittingHereWouldHave":"</span> que estuviera aquí se habría liquidado entonces. ","thisWasOurEstimate":"<span style=\"color:#8b95a1\">Esta fue nuestra estimación de dónde estaban, no un registro de lo que se cerró.</span>","liquidationLevel":"<span class=\"k\">NIVEL DE LIQUIDACIÓN</span>","getLiquidated2":"</span> se liquidan.<br>","priceHasTo":"El precio tiene que ","toReachIt":"%</b> para llegar a él.<br>","thatIsOurEstimate":" <span style=\"color:#8b95a1\">Esa es nuestra estimación a partir del historial de precios, no una cifra en dólares.</span><br>","reallyWasLiquidatedHere":"</b> realmente se liquidó aquí en las últimas 24 horas.","nothingHasActuallyBeen":"<span style=\"color:#8b95a1\">En realidad no se ha liquidado nada aquí en las últimas 24 horas.</span>","buildingFor":"<br><span style=\"color:#8b95a1\">Recopilando datos desde hace ","dragToZoomThe":"Arrastra para hacer zoom en el eje de precios","uSTariffHike":"Subida de aranceles de EE. UU. a China","everyCoinAllVenues":"todas las monedas · todos los exchanges · órdenes ≥ $1K · en vivo","totalLiquidationsByCoin":"LIQUIDACIONES TOTALES POR MONEDA","top10LiquidationEvents":"<div class=\"hm-t10-h\">TOP 10 EVENTOS DE LIQUIDACIÓN DE TODOS LOS TIEMPOS</div>","onTheLiquidationMap":" en el mapa de liquidaciones</button>","zoneMapCoversThe":"<span class=\"hm-nomap\">El mapa de zonas cubre las 10 principales, ","isNotOneOf":" todavía no es una de ellas</span>","paperTrade":"\">Operar en simulado ","coinPrice":"<div class=\"hm-ct-hd\"><span>#</span><span>Moneda</span><span>Precio</span>","liquidationOrdersTotaling":"</b> órdenes de liquidación por un total de <b>","acrossOurTrackedVenues":"</b> en los exchanges que monitoreamos. La orden individual más grande alcanzó <b>","noLiquidationOrders1k":"Todavía no se han registrado órdenes de liquidación ≥ $1K en esta ventana.","liquidatedInTheLast":" liquidado en las últimas ","unlockTheLiveLiquidation":"<div style=\"font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22\">Desbloquea el mapa de calor de liquidaciones en vivo</div>","last4Hours":"Últimas 4 horas","last12Hours":"Últimas 12 horas","last24Hours":"Últimas 24 horas","last3Days":"Últimos 3 días","last7Days":"Últimos 7 días","allLiqs":"Todas las liqs","noLiqDots":"Sin puntos liq","hideLiquidationsBelowThis":"Ocultar liquidaciones menores a este tamaño","shareOnX":"Compartir en X","liquidationHeatmapLiveReal":"<div class=\"hm-mast-l\"><div class=\"hm-mast-t\">MAPA DE CALOR DE LIQUIDACIONES</div><div class=\"hm-mast-b\"><span class=\"hm-live\"><i></i>EN VIVO</span><span class=\"hm-mast-s\">Liquidaciones reales de 9 exchanges, transmitidas en el segundo en que ocurren — las bandas brillantes muestran dónde mueren las próximas posiciones apalancadas.</span></div></div><div class=\"hm-mast-r\"></div>","dragWithOneFinger":" Arrastra con un dedo para desplazarte, pellizca con dos para hacer zoom en el tiempo, arrastra la columna de zonas para hacer zoom en el precio, toca dos veces para restablecer.","dragToPanAny":" Arrastra para desplazarte (en cualquier dirección), usa el scroll para hacer zoom en el tiempo, Shift+scroll para hacer zoom en el precio, doble clic para restablecer.","howToReadIt":"><summary class=\"hm-foot-h\">CÓMO LEERLO</summary>Las bandas brillantes son multitudes de traders cuyos precios de liquidación de <span class=\"l\">long</span>/<span class=\"s\">short</span> se acumulan ahí — el precio tiende a barrer las más brillantes, y una banda desaparece en el momento en que el precio la atraviesa. ","realLiquidationsLiveFrom":"Liquidaciones reales, en vivo desde 9 exchanges - las bandas brillantes son donde se acumulan las próximas","liquidationHeatmapLiveFrom":" mapa de calor de liquidaciones - en vivo desde 9 exchanges. El precio caza las bandas brillantes.\nhttps://marginpad.io/heatmap","theGapBetweenThe":"La diferencia entre el mejor precio que pagaría un comprador y el más barato que aceptaría un vendedor. Si la cruzas, la pagas: es el peaje por querer algo ahora mismo en vez de esperar. En una moneda con mucho movimiento es una centésima de punto porcentual; en una tranquila puede ser diez veces eso.","aHundredthOfOne":"Una centésima de un uno por ciento. 1 bps = 0.01%, 100 bps = 1%. Los traders lo usan porque decir \"el spread pasó de 0.01% a 0.02%\" es un trabalenguas, mientras que \"de 1 a 2 bps\" no lo es.","restingOrders":"Órdenes pendientes","moneySittingInThe":"Dinero que espera en el libro de órdenes a un precio elegido. Nadie lo ha gastado todavía, y puede retirarse en cualquier segundo - por eso un muro sostenido por un solo exchange es menos fiable que el mismo muro compartido por cuatro.","theRunningTotalAs":"El total acumulado a medida que te alejas del precio. La fila que está tres ticks más abajo no muestra solo lo que hay en ese precio - muestra todo lo que hay entre el precio actual y ese punto, así responde a \"cuánto tendría que consumir para llegar hasta ahí\".","whoHoldsIt":"Quién lo sostiene","theThinColouredLine":"La línea fina de colores debajo de cada fila, dividida por exchange. Un solo color significa que un único exchange sostiene ese precio por su cuenta; cuatro colores significan que cuatro libros coinciden. Un muro que nadie más respalda puede desaparecer entre dos parpadeos.","everyTradeHasA":"Toda operación tiene un lado paciente y uno impaciente. Quien cruza el spread para que suceda es el agresor: una flecha hacia arriba significa que un comprador pagó el ask, una flecha hacia abajo significa que un vendedor aceptó el bid. La vela registra el precio; solo la cinta registra quién tenía prisa.","aLargeOrderEats":"Una orden grande consume primero el mejor precio, luego el siguiente, luego el siguiente - así que el precio promedio que realmente obtiene es peor que el que se ve en pantalla. Esta es esa diferencia, medida recorriendo nuestro libro real, no estimada.","aggressiveBuyingMinusAggre":"Compras agresivas menos ventas agresivas, en dólares, durante los últimos minutos. Positivo significa que los compradores fueron los impacientes. Léelo junto al precio: si el precio sube poco a poco mientras los vendedores son los agresores, significa que alguien los está absorbiendo en silencio.","aTradeFarLarger":"Una operación mucho más grande que el resto de lo que se ve en pantalla - ocho veces el tamaño de la operación mediana. El tamaño por sí solo no predice nada, pero un grupo de ellas del mismo lado, al mismo precio, es el mercado diciéndote dónde está trabajando alguien con dinero de verdad.","rowsOf":"Filas de","howWideEachRow":"Qué tan ancha es cada fila del libro en precio. Cinco exchanges cotizan con una fracción de centavo, así que sus precios se agrupan en filas de este tamaño - de lo contrario la escalera tendría cuarenta filas de polvo en vez de ocho filas con volumen.","linedUp":"Alineados","exchangesDoNotTrade":"Los exchanges no operan exactamente al mismo precio - medido en Bitcoin, un exchange estaba $73 por encima de los otros cuatro. Cuando los ves todos juntos, cada libro se desplaza primero hacia el precio medio compartido, así que una fila significa \"a esta distancia del precio\" en vez de un número que se cruza consigo mismo.","aPriceWhereA":"Un precio donde un grupo de posiciones apalancadas se cerraría por la fuerza. Es un MODELO, no un registro: el exchange nunca publica quién está apalancado ni dónde, así que esto se estima a partir del historial de precios. El precio suele ser atraído hacia las zonas más pesadas, porque un cierre forzado es una orden que tiene que ejecutarse.","theNearestModelledLiquidat":"Las zonas de liquidación modeladas más cercanas por encima y por debajo del precio - las mismas concentraciones que ordena la columna junto al mapa - verde donde se cierran los longs, rojo donde se cierran los shorts. Toca una para mostrarla en el mapa. Son estimaciones basadas en el historial de precios, nunca un registro de dinero que haya cambiado de manos.","whatItCostsTo":"Lo que cuesta moverlo","theDollarsOfResting":"Los dólares en órdenes pendientes dentro de una décima de punto porcentual del precio. Para subir el precio esa distancia, un comprador tiene que consumirlas todas - así que este es el costo de mover el mercado, en la única unidad en la que todos piensan. Cuando un lado es mucho más barato que el otro, esa es la dirección de menor resistencia en este momento. Es un hecho sobre el libro en este segundo, no una predicción: las órdenes se pueden retirar.","measuredNotModelled":"Medido, no modelado","everythingInThisPanel":"Todo lo que hay en este panel es algo que realmente existe ahora mismo: órdenes activas en cinco libros, operaciones que realmente se ejecutaron. El mapa de arriba es un modelo de dónde probablemente está el apalancamiento. Mantenemos las dos cosas separadas a propósito, y nunca ponemos una cifra en dólares sobre el modelo.","recordsNotLive":"<i>registros, no en vivo</i></summary>","lastHour":"Última hora","liveOrderFlow":"<div class=\"hm-bk-h\"><span class=\"hm-bk-t\">FLUJO DE ÓRDENES EN VIVO</span><span class=\"hm-bk-m\"></span>","orderBookWhatIs":"  <div class=\"hm-col hm-ob\"><div class=\"hm-col-h\"><b>LIBRO DE ÓRDENES</b><i>lo que espera</i>","priceSizeSum":"    <div class=\"hm-ob-hd\"><span>Precio</span><span>Tamaño</span><span>Suma","tapeWhatJustHappened":"  <div class=\"hm-col hm-tp\"><div class=\"hm-col-h\"><b>CINTA</b><i>lo que acaba de pasar</i>","timePriceSizeValue":"    <div class=\"hm-tp-hd\"><span>Hora</span><span>Precio</span><span>Tamaño</span><span>Valor</span><span>En</span></div>","theReadWhatIt":"  <div class=\"hm-col hm-sm\"><div class=\"hm-col-h\"><b>LA LECTURA</b><i>qué significa</i>","rowsOf2":"<small class=\"tk\">filas de ","onlyMdashTheColour":" solamente &mdash; la franja de colores vuelve cuando eliges Todos</span>","whoHoldsEachRow":"<span class=\"lbl\">quién sostiene cada fila","sellersPressedAndThe":"Los vendedores presionaron y el precio subió de todas formas &mdash; alguien los está absorbiendo.","buyersPressedAndThe":"Los compradores presionaron y el precio bajó de todas formas &mdash; alguien les está vendiendo.","theTapeLeaned":"La cinta se inclinó ","andThePriceBarely":" y el precio apenas se movió &mdash; está siendo absorbido.","theRest":" el resto","toLiftIt0":"Para subirlo 0.1%","ofBuying":" de compras","toDropIt0":"Para bajarlo 0.1%","ofSelling":" de ventas","lessMoneyIsNeeded":"Ahora mismo hace falta menos dinero para subirlo que para hundirlo.","lessMoneyIsNeeded2":"Ahora mismo hace falta menos dinero para hundirlo que para subirlo.","ofTheBigPrints":"De las operaciones grandes","wasBuying":"% fue compra","theUsual":"× lo habitual","priceSame":"Precio, igual ","theFiveBooks":"LOS CINCO LIBROS","theGapBetweenVenues":" — la diferencia entre exchanges es donde vive el arbitraje.","booksRead":"Libros leídos","moreMoneyIsWaiting":"hay más dinero esperando para <b>comprar</b> que para vender","moreMoneyIsWaiting2":"hay más dinero esperando para <b>vender</b> que para comprar","buyersAndSellersAre":"compradores y vendedores esperan en un tamaño similar","andBuyersAreThe":"y los <b>compradores</b> son los impacientes, cruzando el spread para ejecutar sus órdenes","andSellersAreThe":"y los <b>vendedores</b> son los impacientes, golpeando el bid para salir","theTapeIsRunning":" La cinta corre <b>","theTapeIsQuieter":" La cinta está más tranquila de lo habitual.","rightNow":"<b class=\"lead\">Ahora mismo</b> ","exchangesLinedUp":" exchanges, alineados","buyerTookTheOffer":"▲ COMPRADOR tomó el ask","sellerHitTheBid":"▼ VENDEDOR golpeó el bid","againstTheTape":"Contra la cinta","theMiddlingPrint":"× la operación mediana","aFractionOfThe":"una fracción de la operación mediana","fromThePrice":"Desde el precio","reachedUsIn":"Nos llegó en","somebodyWantedThisFilled":"Alguien quería que esto se ejecutara ya y pagó el ask por ello. Una seguidilla de estas del mismo lado son compradores levantando el ask - el mercado siendo tomado, no ofrecido.","somebodyWantedOutNow":"Alguien quería salir ya y aceptó el bid vigente. Una seguidilla de estas son vendedores golpeando el bid, que es como se ve una caída desde adentro."};
+var __esD_mpheatmap = {"yourEntry":"TU ENTRADA ","yourLiq":"TU LIQ ","heavierThanATypical":"</b> más pesado que un nivel típico","heavierThanATypical2":"</b> más pesado que un nivel típico en esta pantalla.","lighterThanATypical":"más ligero que un nivel típico <b>(","lighterThanATypical2":"Más ligero que un nivel típico en esta pantalla <b>(","aboutAsHeavyAs":"aproximadamente tan pesado como un nivel típico","aboutAsHeavyAs2":"Aproximadamente tan pesado como un nivel típico en esta pantalla.","titleShowThisZone":"\" title=\"Mostrar esta zona en el mapa\">","targetsU2014WhereLiquidity":"<div class=\"hm-tg-h\">OBJETIVOS — dónde la liquidez atrae el precio</div>","theNearestLevelsWhere":"<div class=\"hm-tg-exp\">Los niveles más cercanos donde se liquidan las posiciones apalancadas - <span style=\"color:#66d3a5\">verde</span> es donde van los longs, <span style=\"color:#ff8f86\">rojo</span> es donde van los shorts. Estimado a partir del historial de precios, no un registro de lo que realmente se ha liquidado. Toca uno para mostrarlo en el mapa.</div>","getLiquidated":"</span> se liquidan","reallyLiquidatedHereIn":"</b> realmente liquidado aquí en 24h","nothingReallyLiquidatedHer":"<span style=\"color:#8b95a1\">nada se liquidó realmente aquí en las últimas 24h</span>","priceAlreadyWentThrough":"el precio ya pasó por este nivel - las <span class=\"","hereAreGone":"</span> de aquí ya no existen","wasLiquidatedOn":" se liquidó en ","moreClickToList":" más - haz clic para listarlas</span>","justNow":"justo ahora","liquidationsStackedHere":" liquidaciones</b> acumuladas aquí · <b>","totalPickOne":"</b> en total - elige una:</span><div class=\"hm-cl-list\">","moreZoomInTo":" más (haz zoom para separar el grupo)</div>","wasLiquidatedAt":"</b> se liquidó a <b>","alreadySwept":"<span class=\"k\">YA BARRIDO</span>","priceWentThrough":"El precio pasó por <b>","anySpanClass":"Cualquier <span class=\"","sittingHereWouldHave":"</span> que estuviera aquí se habría liquidado entonces. ","thisWasOurEstimate":"<span style=\"color:#8b95a1\">Esta fue nuestra estimación de dónde estaban, no un registro de lo que se cerró.</span>","liquidationLevel":"<span class=\"k\">NIVEL DE LIQUIDACIÓN</span>","getLiquidated2":"</span> se liquidan.<br>","priceHasTo":"El precio tiene que ","toReachIt":"%</b> para llegar a él.<br>","thatIsOurEstimate":" <span style=\"color:#8b95a1\">Esa es nuestra estimación a partir del historial de precios, no una cifra en dólares.</span><br>","reallyWasLiquidatedHere":"</b> realmente se liquidó aquí en las últimas 24 horas.","nothingHasActuallyBeen":"<span style=\"color:#8b95a1\">En realidad no se ha liquidado nada aquí en las últimas 24 horas.</span>","buildingFor":"<br><span style=\"color:#8b95a1\">Recopilando datos desde hace ","dragToZoomThe":"Arrastra para hacer zoom en el eje de precios","uSTariffHike":"Subida de aranceles de EE. UU. a China","everyCoinAllVenues":"todas las monedas · todos los exchanges · órdenes ≥ $1K · en vivo","totalLiquidationsByCoin":"LIQUIDACIONES TOTALES POR MONEDA","top10LiquidationEvents":"<div class=\"hm-t10-h\">TOP 10 EVENTOS DE LIQUIDACIÓN DE TODOS LOS TIEMPOS</div>","onTheLiquidationMap":" en el mapa de liquidaciones</button>","zoneMapCoversThe":"<span class=\"hm-nomap\">El mapa de zonas cubre las 10 principales, ","isNotOneOf":" todavía no es una de ellas</span>","paperTrade":"\">Operar en simulado ","coinPrice":"<div class=\"hm-ct-hd\"><span>#</span><span>Moneda</span><span>Precio</span>","liquidationOrdersTotaling":"</b> órdenes de liquidación por un total de <b>","acrossOurTrackedVenues":"</b> en los exchanges que monitoreamos. La orden individual más grande alcanzó <b>","noLiquidationOrders1k":"Todavía no se han registrado órdenes de liquidación ≥ $1K en esta ventana.","liquidatedInTheLast":" liquidado en las últimas ","unlockTheLiveLiquidation":"<div style=\"font:800 22px Familjen Grotesk,system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22\">Desbloquea el mapa de calor de liquidaciones en vivo</div>","last4Hours":"Últimas 4 horas","last12Hours":"Últimas 12 horas","last24Hours":"Últimas 24 horas","last3Days":"Últimos 3 días","last7Days":"Últimos 7 días","allLiqs":"Todas las liqs","noLiqDots":"Sin puntos liq","hideLiquidationsBelowThis":"Ocultar liquidaciones menores a este tamaño","shareOnX":"Compartir en X","liquidationHeatmapLiveReal":"<div class=\"hm-mast-l\"><div class=\"hm-mast-t\">MAPA DE CALOR DE LIQUIDACIONES</div><div class=\"hm-mast-b\"><span class=\"hm-live\"><i></i>EN VIVO</span><span class=\"hm-mast-s\">Liquidaciones reales de 9 exchanges, transmitidas en el segundo en que ocurren — las bandas brillantes muestran dónde mueren las próximas posiciones apalancadas.</span></div></div><div class=\"hm-mast-r\"></div>","dragWithOneFinger":" Arrastra con un dedo para desplazarte, pellizca con dos para hacer zoom en el tiempo, arrastra la columna de zonas para hacer zoom en el precio, toca dos veces para restablecer.","dragToPanAny":" Arrastra para desplazarte (en cualquier dirección), usa el scroll para hacer zoom en el tiempo, Shift+scroll para hacer zoom en el precio, doble clic para restablecer.","howToReadIt":"><summary class=\"hm-foot-h\">CÓMO LEERLO</summary>Las bandas brillantes son multitudes de traders cuyos precios de liquidación de <span class=\"l\">long</span>/<span class=\"s\">short</span> se acumulan ahí — el precio tiende a barrer las más brillantes, y una banda desaparece en el momento en que el precio la atraviesa. ","realLiquidationsLiveFrom":"Liquidaciones reales, en vivo desde 9 exchanges - las bandas brillantes son donde se acumulan las próximas","liquidationHeatmapLiveFrom":" mapa de calor de liquidaciones - en vivo desde 9 exchanges. El precio caza las bandas brillantes.\nhttps://marginpad.io/heatmap","theGapBetweenThe":"La diferencia entre el mejor precio que pagaría un comprador y el más barato que aceptaría un vendedor. Si la cruzas, la pagas: es el peaje por querer algo ahora mismo en vez de esperar. En una moneda con mucho movimiento es una centésima de punto porcentual; en una tranquila puede ser diez veces eso.","aHundredthOfOne":"Una centésima de un uno por ciento. 1 bps = 0.01%, 100 bps = 1%. Los traders lo usan porque decir \"el spread pasó de 0.01% a 0.02%\" es un trabalenguas, mientras que \"de 1 a 2 bps\" no lo es.","restingOrders":"Órdenes pendientes","moneySittingInThe":"Dinero que espera en el libro de órdenes a un precio elegido. Nadie lo ha gastado todavía, y puede retirarse en cualquier segundo - por eso un muro sostenido por un solo exchange es menos fiable que el mismo muro compartido por cuatro.","theRunningTotalAs":"El total acumulado a medida que te alejas del precio. La fila que está tres ticks más abajo no muestra solo lo que hay en ese precio - muestra todo lo que hay entre el precio actual y ese punto, así responde a \"cuánto tendría que consumir para llegar hasta ahí\".","whoHoldsIt":"Quién lo sostiene","theThinColouredLine":"La línea fina de colores debajo de cada fila, dividida por exchange. Un solo color significa que un único exchange sostiene ese precio por su cuenta; cuatro colores significan que cuatro libros coinciden. Un muro que nadie más respalda puede desaparecer entre dos parpadeos.","everyTradeHasA":"Toda operación tiene un lado paciente y uno impaciente. Quien cruza el spread para que suceda es el agresor: una flecha hacia arriba significa que un comprador pagó el ask, una flecha hacia abajo significa que un vendedor aceptó el bid. La vela registra el precio; solo la cinta registra quién tenía prisa.","aLargeOrderEats":"Una orden grande consume primero el mejor precio, luego el siguiente, luego el siguiente - así que el precio promedio que realmente obtiene es peor que el que se ve en pantalla. Esta es esa diferencia, medida recorriendo nuestro libro real, no estimada.","aggressiveBuyingMinusAggre":"Compras agresivas menos ventas agresivas, en dólares, durante los últimos minutos. Positivo significa que los compradores fueron los impacientes. Léelo junto al precio: si el precio sube poco a poco mientras los vendedores son los agresores, significa que alguien los está absorbiendo en silencio.","aTradeFarLarger":"Una operación mucho más grande que el resto de lo que se ve en pantalla - ocho veces el tamaño de la operación mediana. El tamaño por sí solo no predice nada, pero un grupo de ellas del mismo lado, al mismo precio, es el mercado diciéndote dónde está trabajando alguien con dinero de verdad.","rowsOf":"Filas de","howWideEachRow":"Qué tan ancha es cada fila del libro en precio. Cinco exchanges cotizan con una fracción de centavo, así que sus precios se agrupan en filas de este tamaño - de lo contrario la escalera tendría cuarenta filas de polvo en vez de ocho filas con volumen.","linedUp":"Alineados","exchangesDoNotTrade":"Los exchanges no operan exactamente al mismo precio - medido en Bitcoin, un exchange estaba $73 por encima de los otros cuatro. Cuando los ves todos juntos, cada libro se desplaza primero hacia el precio medio compartido, así que una fila significa \"a esta distancia del precio\" en vez de un número que se cruza consigo mismo.","aPriceWhereA":"Un precio donde un grupo de posiciones apalancadas se cerraría por la fuerza. Es un MODELO, no un registro: el exchange nunca publica quién está apalancado ni dónde, así que esto se estima a partir del historial de precios. El precio suele ser atraído hacia las zonas más pesadas, porque un cierre forzado es una orden que tiene que ejecutarse.","theNearestModelledLiquidat":"Las zonas de liquidación modeladas más cercanas por encima y por debajo del precio - las mismas concentraciones que ordena la columna junto al mapa - verde donde se cierran los longs, rojo donde se cierran los shorts. Toca una para mostrarla en el mapa. Son estimaciones basadas en el historial de precios, nunca un registro de dinero que haya cambiado de manos.","whatItCostsTo":"Lo que cuesta moverlo","theDollarsOfResting":"Los dólares en órdenes pendientes dentro de una décima de punto porcentual del precio. Para subir el precio esa distancia, un comprador tiene que consumirlas todas - así que este es el costo de mover el mercado, en la única unidad en la que todos piensan. Cuando un lado es mucho más barato que el otro, esa es la dirección de menor resistencia en este momento. Es un hecho sobre el libro en este segundo, no una predicción: las órdenes se pueden retirar.","measuredNotModelled":"Medido, no modelado","everythingInThisPanel":"Todo lo que hay en este panel es algo que realmente existe ahora mismo: órdenes activas en cinco libros, operaciones que realmente se ejecutaron. El mapa de arriba es un modelo de dónde probablemente está el apalancamiento. Mantenemos las dos cosas separadas a propósito, y nunca ponemos una cifra en dólares sobre el modelo.","recordsNotLive":"<i>registros, no en vivo</i></summary>","lastHour":"Última hora","liveOrderFlow":"<div class=\"hm-bk-h\"><span class=\"hm-bk-t\">FLUJO DE ÓRDENES EN VIVO</span><span class=\"hm-bk-m\"></span>","orderBookWhatIs":"  <div class=\"hm-col hm-ob\"><div class=\"hm-col-h\"><b>LIBRO DE ÓRDENES</b><i>lo que espera</i>","priceSizeSum":"    <div class=\"hm-ob-hd\"><span>Precio</span><span>Tamaño</span><span>Suma","tapeWhatJustHappened":"  <div class=\"hm-col hm-tp\"><div class=\"hm-col-h\"><b>CINTA</b><i>lo que acaba de pasar</i>","timePriceSizeValue":"    <div class=\"hm-tp-hd\"><span>Hora</span><span>Precio</span><span>Tamaño</span><span>Valor</span><span>En</span></div>","theReadWhatIt":"  <div class=\"hm-col hm-sm\"><div class=\"hm-col-h\"><b>LA LECTURA</b><i>qué significa</i>","rowsOf2":"<small class=\"tk\">filas de ","onlyMdashTheColour":" solamente &mdash; la franja de colores vuelve cuando eliges Todos</span>","whoHoldsEachRow":"<span class=\"lbl\">quién sostiene cada fila","sellersPressedAndThe":"Los vendedores presionaron y el precio subió de todas formas &mdash; alguien los está absorbiendo.","buyersPressedAndThe":"Los compradores presionaron y el precio bajó de todas formas &mdash; alguien les está vendiendo.","theTapeLeaned":"La cinta se inclinó ","andThePriceBarely":" y el precio apenas se movió &mdash; está siendo absorbido.","theRest":" el resto","toLiftIt0":"Para subirlo 0.1%","ofBuying":" de compras","toDropIt0":"Para bajarlo 0.1%","ofSelling":" de ventas","lessMoneyIsNeeded":"Ahora mismo hace falta menos dinero para subirlo que para hundirlo.","lessMoneyIsNeeded2":"Ahora mismo hace falta menos dinero para hundirlo que para subirlo.","ofTheBigPrints":"De las operaciones grandes","wasBuying":"% fue compra","theUsual":"× lo habitual","priceSame":"Precio, igual ","theFiveBooks":"LOS CINCO LIBROS","theGapBetweenVenues":" — la diferencia entre exchanges es donde vive el arbitraje.","booksRead":"Libros leídos","moreMoneyIsWaiting":"hay más dinero esperando para <b>comprar</b> que para vender","moreMoneyIsWaiting2":"hay más dinero esperando para <b>vender</b> que para comprar","buyersAndSellersAre":"compradores y vendedores esperan en un tamaño similar","andBuyersAreThe":"y los <b>compradores</b> son los impacientes, cruzando el spread para ejecutar sus órdenes","andSellersAreThe":"y los <b>vendedores</b> son los impacientes, golpeando el bid para salir","theTapeIsRunning":" La cinta corre <b>","theTapeIsQuieter":" La cinta está más tranquila de lo habitual.","rightNow":"<b class=\"lead\">Ahora mismo</b> ","exchangesLinedUp":" exchanges, alineados","buyerTookTheOffer":"▲ COMPRADOR tomó el ask","sellerHitTheBid":"▼ VENDEDOR golpeó el bid","againstTheTape":"Contra la cinta","theMiddlingPrint":"× la operación mediana","aFractionOfThe":"una fracción de la operación mediana","fromThePrice":"Desde el precio","reachedUsIn":"Nos llegó en","somebodyWantedThisFilled":"Alguien quería que esto se ejecutara ya y pagó el ask por ello. Una seguidilla de estas del mismo lado son compradores levantando el ask - el mercado siendo tomado, no ofrecido.","somebodyWantedOutNow":"Alguien quería salir ya y aceptó el bid vigente. Una seguidilla de estas son vendedores golpeando el bid, que es como se ve una caída desde adentro.","tpNow":"lo que acaba de pasar","tpReach":"las más grandes, retrocediendo","agoNow":"el último minuto","tpNoneT":"No ha pasado nada tan grande","tpNoneH":"en las horas que llevamos observando","tpNoneM":"en el último minuto","tpNone1":"{n} operación más pequeña pasó mientras mirabas","tpNoneN":"{n} operaciones más pequeñas pasaron mientras mirabas","tpNoneQ":"la cinta está tranquila ahora mismo","tpNoneB":"Mostrar todas las operaciones","tkRowFmt":"filas de {s}","tkFinest":"la más fina","fbRowsOf":"filas de","gateLater":"Ahora no","gateInT":"Inicia sesión primero","gateInB":"Una alerta tiene que llegarle a alguien. Inicia sesión y vincula Telegram, y cada operación por encima de este tamaño llegará a tu chat.","gateInC":"Ir a alertas","gateTgT":"Telegram aún no está vinculado","gateTgB":"La alerta está lista, solo que no tiene a dónde ir. Vincularlo es un toque en la página de alertas: abre el bot, pulsa start y vuelve aquí.","gateTgC":"Vincular Telegram","crowdedShort":"unas <b>","crowdedShort2":"</b> veces más concurrido que un precio medio de aquí","crowdedLong":"Unas <b>","crowdedLong2":"</b> veces más concurrido que un precio medio de esta pantalla — esa cantidad de traders de más se cerraría aquí.","quietShort":"menos concurrido que un precio medio de aquí <b>(","quietLong":"Menos concurrido que un precio medio de esta pantalla <b>(","quietLong2":")</b> — aquí se cerrarían menos traders que en un precio medio de los que ves.","evenShort":"tan concurrido como un precio medio de aquí","evenLong":"Tan concurrido como un precio medio de esta pantalla."};
 function __esT_mpheatmap(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpheatmap[k] != null) return __esD_mpheatmap[k]; } catch (e) {} return en; }
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 - DELETE with the pxtag round */
 /* mp-heatmap.js - Liquidation Heatmap v2.1 (simplified + full-bleed, owner pass 2026-07-24).
@@ -191,6 +191,20 @@ function bkSelect(cls, opts, cur) {
     '.hm-bell:hover{border-color:#3a465c;color:#8fa3c4}.hm-bell.on{border-color:#c2f64a;color:#c2f64a;background:rgba(194,246,74,.10)}' +
     '.hm-bell.dim{opacity:.45}' +
     '.hm-fon{display:block;font-style:normal;font:10px "Space Mono",monospace;color:#c2f64a;margin-top:2px}' +
+    '.hm-gate{position:fixed;inset:0;z-index:2147483645;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(6,8,11,.72);backdrop-filter:blur(3px)}' +
+    '.hm-gate-c{position:relative;width:100%;max-width:400px;padding:22px 20px 18px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:#12151b;box-shadow:0 22px 60px rgba(0,0,0,.6);font:13.5px/1.55 "Familjen Grotesk",system-ui,sans-serif;color:#c9d4e6}' +
+    '.hm-gate-c b{display:block;margin:0 0 7px;font:600 17px/1.25 "Bricolage Grotesque","Familjen Grotesk",system-ui,sans-serif;color:#eef3fa}' +
+    '.hm-gate-c p{margin:0 0 16px;color:#8d9ab1}' +
+    '.hm-gate-x{position:absolute;top:8px;right:9px;width:28px;height:28px;border:0;border-radius:8px;background:none;color:#6b7a93;font-size:19px;line-height:1;cursor:pointer}' +
+    '.hm-gate-x:hover{background:rgba(255,255,255,.07);color:#c9d4e6}' +
+    '.hm-gate-go{display:block;padding:10px 14px;border-radius:9px;background:#c2f64a;color:#0a0b0d;font:600 13.5px/1 "Familjen Grotesk",system-ui,sans-serif;text-align:center;text-decoration:none}' +
+    '.hm-gate-go:hover{background:#d2fd6d}' +
+    '.hm-gate-no{display:block;width:100%;margin-top:7px;padding:8px;border:0;border-radius:9px;background:none;color:#6b7a93;font:13px/1 "Familjen Grotesk",system-ui,sans-serif;cursor:pointer}' +
+    '.hm-gate-no:hover{color:#c9d4e6}' +
+    '.hm-tp-none{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:14px 8px;font:12px/1.5 "Familjen Grotesk",system-ui,sans-serif}' +
+    '.hm-tp-none b{color:#c9d4e6;font-weight:600}.hm-tp-none span{color:#6b7a93}' +
+    '.hm-tp-clr{margin-top:1px;padding:5px 11px;border:1px solid rgba(194,246,74,.35);border-radius:999px;background:rgba(194,246,74,.08);color:#c2f64a;font:600 11.5px/1 "Familjen Grotesk",system-ui,sans-serif;cursor:pointer}' +
+    '.hm-tp-clr:hover{background:rgba(194,246,74,.16)}' +
     '.hm-tp-row{cursor:pointer;border-radius:3px}.hm-tp-row:hover{background:rgba(255,255,255,.045)}' +
     '.hm-tp-row .vb{position:absolute;right:0;top:2px;bottom:2px;border-radius:2px;z-index:0;opacity:.13;transition:width .3s ease}' +
     '.hm-tp-row.a .vb{background:#2ebd85}.hm-tp-row.b .vb{background:#ff5a4d}' +
@@ -1449,6 +1463,7 @@ function bkSelect(cls, opts, cur) {
     var obA = bk.querySelector('.hm-ob-a'), obB = bk.querySelector('.hm-ob-b'), obPx = bk.querySelector('.hm-ob-px');
     var obR = bk.querySelector('.hm-ob-r'), obVk = bk.querySelector('.hm-vk');
     var tpL = bk.querySelector('.hm-tp-l'), bkSm = bk.querySelector('.hm-sm-l'), bkN = bk.querySelector('.hm-bk-n');
+    var tpSub = bk.querySelector('.hm-tp .hm-col-h i');
     if (bkN) { bkN.remove(); bkN = null; }
 
 
@@ -1497,9 +1512,15 @@ function bkSelect(cls, opts, cur) {
     // the old panel blink; a ladder is meant to breathe, so the elements persist, the numbers change, the
     // bars transition, and a row whose size really moved flashes for a moment.
     function ensure(host, n, cls) {
+      // A ROW IS MARKED, AND ANYTHING UNMARKED IS SWEPT OUT FIRST. The empty-state message lives in this
+      // same container, and without this check it was counted as a row: the next print to pass the filter
+      // was written into fields the message does not have, so it turned green, took the row's pointer
+      // cursor, and the render threw on the missing cell - freezing the whole panel with the message still
+      // on screen. Owner caught exactly that: "ne sakriva trades iza sebe". It did, and worse.
+      if (host.firstElementChild && !host.firstElementChild.hasAttribute('data-r')) host.textContent = '';
       while (host.children.length > n) host.removeChild(host.lastChild);
       while (host.children.length < n) {
-        var d = document.createElement('div'); d.className = cls;
+        var d = document.createElement('div'); d.className = cls; d.setAttribute('data-r', '');
         d.innerHTML = cls.indexOf('hm-ob-row') >= 0
           ? '<i class="bar"></i><i class="vs"></i><span class="p"></span><span class="s"></span><span class="t"></span>'
           : '<span class="tm"></span><span class="p"></span><span class="s"></span><span class="u"></span><span class="v"></span>';
@@ -1508,6 +1529,12 @@ function bkSelect(cls, opts, cur) {
       return host.children;
     }
     function setTxt(el2, v) { if (el2.textContent !== v) { el2.textContent = v; return true; } return false; }
+    // A price STEP, not a price: $2 and $0.005 are both right, "2.000" never is.
+    function stepTxt(v) { v = +v; return '$' + (v >= 1 ? v.toLocaleString('en-US', { maximumFractionDigits: 2 }) : +v.toPrecision(2)); }
+    function agoTxt(t) {
+      var m = Math.round((Date.now() - (+t || Date.now())) / 60000);
+      return m < 1 ? __esT_mpheatmap('agoNow', 'the last minute') : m < 60 ? m + 'm' : (m / 60).toFixed(m < 600 ? 1 : 0) + 'h';
+    }
     function flash(row) {
       row.classList.remove('fx');
       // reading offsetWidth restarts the transition; without it a row that changes twice in a row flashes once
@@ -1539,6 +1566,24 @@ function bkSelect(cls, opts, cur) {
       var mid = 0, nv = 0, i;
       for (i = 0; i < list.length; i++) if (list[i].mid > 0) { mid += list[i].mid; nv++; }
       mid = nv ? mid / nv : 0;
+      // "AUTO / x2 / x5" TOLD NOBODY WHAT THEY WERE PICKING (owner: "nije mi jasno sta tu biram"). The
+      // control merges price rows, and the only honest label is the price step each choice produces - a
+      // number that depends on the coin, so it is written at render time from the ladder's own base tick.
+      var tkSel = bk.querySelector('.bkTick');
+      if (tkSel && mid > 0) {
+        var base = niceTick(mid);
+        if (tkSel._base !== base) {
+          tkSel._base = base;
+          for (i = 0; i < tkSel.options.length; i++) {
+            var st = base * (+tkSel.options[i].value || 1);
+            // The step goes in through a placeholder, not by concatenation: Spanish says "filas de $2",
+            // so gluing the words after the number gives "$2 filas". Same reason the magnitude words
+            // are passed a language rather than appended.
+            tkSel.options[i].textContent = __esT_mpheatmap('tkRowFmt', '{s} rows').split('{s}').join(stepTxt(st))
+              + (i === 0 ? ' · ' + __esT_mpheatmap('tkFinest', 'finest') : '');
+          }
+        }
+      }
       if (!(mid > 0)) { bk.style.display = 'none'; stage.classList.remove('hm-j'); return; }
       bk.style.display = 'block'; stage.classList.add('hm-j');
 
@@ -1588,21 +1633,55 @@ function bkSelect(cls, opts, cur) {
 
       // ---- TAPE ----
       var tpMin = bkPref('mp_hm_tapemin', 0), tpSide = bkPref('mp_hm_tapeside', 0);
-      var trAll = (d.tape || []).filter(function (x) { return pick === 'all' || x.venue === pick; });
-      var tr = trAll.filter(function (x) {
+      var venOk = function (x) { return pick === 'all' || x.venue === pick; };
+      var fltOk = function (x) {
         if (tpMin > 0 && (+x.usd || 0) < tpMin) return false;
         if (tpSide === 1 && x.side !== 'buy') return false;
         if (tpSide === 2 && x.side !== 'sell') return false;
         return true;
-      });
-      var tpHid = trAll.length - tr.length;
+      };
+      // AT A BIG FILTER THE LIVE WINDOW IS THE WRONG PLACE TO LOOK. It holds every print, so on BTC it
+      // spans about half a minute - ask it for quarter-million-dollar orders and it comes back empty
+      // nearly always, not because none happened but because the window is sized for every $9 trade.
+      // The collector keeps the large ones on a ring of their own, so from $50k up the tape is drawn
+      // from THAT and reaches back hours. Same rows, nothing invented, each still printing its own time.
+      var liveAll = (d.tape || []).filter(venOk), liveHit = liveAll.filter(fltOk);
+      var bigAll = (d.tapeBig || []).filter(venOk);
+      var deep = tpMin >= 50000 && bigAll.length > 0;
+      var tr = deep ? bigAll.filter(fltOk) : liveHit;
+      if (deep) {
+        // the live window can hold one the big ring has not caught up with yet - keep both, once each
+        var seen = {}, kOf = function (x) { return (x.venue || '') + ':' + (x.id || x.ts); };
+        for (i = 0; i < tr.length; i++) seen[kOf(tr[i])] = 1;
+        for (i = 0; i < liveHit.length; i++) if (!seen[kOf(liveHit[i])]) tr.push(liveHit[i]);
+        tr.sort(function (a, b2) { return a.ts - b2.ts; });
+      }
+      var tpHid = liveAll.length - liveHit.length;
+      if (tpSub) {
+        setTxt(tpSub, deep
+          ? __esT_mpheatmap('tpReach', 'the biggest, reaching back') + ' ' + agoTxt(tr.length ? tr[0].ts : 0)
+          : __esT_mpheatmap('tpNow', 'what just happened'));
+      }
       // "Big" is measured against THIS tape, not against a number somebody picked: the median print, times
       // eight. On BTC the median print is about $750, so a $6,000 order is genuinely unusual and lights up.
       var vals = tr.map(function (x) { return +x.usd || 0; }).sort(function (a, b2) { return a - b2; });
       var med = vals.length ? vals[Math.floor(vals.length / 2)] : 0, big = med * 8;
       var bigMax = vals.length ? vals[vals.length - 1] : 0;
       tr = tr.slice(Math.max(0, tr.length - 18)).reverse();
-      if (!tr.length) { tpL.innerHTML = '<div class="hm-tp-none">nothing this big has printed yet — ' + tpHid + ' smaller print' + (tpHid === 1 ? '' : 's') + ' hidden by the filter</div>'; }
+      // A DEAD END IS NOT AN ANSWER. The old message just said nothing had printed, on a panel whose only
+      // way out was to find the filter again - so it takes the reader back itself, and says what the
+      // filter is actually holding off rather than leaving "nothing" to read as "broken".
+      if (!tr.length) {
+        tpL.innerHTML = '<div class="hm-tp-none"><b>' + __esT_mpheatmap('tpNoneT', 'Nothing that big has gone through') + ' '
+          + (bigAll.length ? __esT_mpheatmap('tpNoneH', 'in the hours we have been watching') : __esT_mpheatmap('tpNoneM', 'in the last minute')) + '.</b>'
+          // Singular and plural are two whole sentences, not a sentence with an "s" glued on - Spanish
+          // pluralises the adjective too ("operaciones mas pequenas"), so an appended letter is wrong.
+          + '<span>' + (tpHid
+            ? (tpHid === 1 ? __esT_mpheatmap('tpNone1', '{n} smaller print went through while you were looking')
+              : __esT_mpheatmap('tpNoneN', '{n} smaller prints went through while you were looking')).split('{n}').join(tpHid)
+            : __esT_mpheatmap('tpNoneQ', 'the tape is quiet right now')) + '</span>'
+          + '<button type="button" class="hm-tp-clr">' + __esT_mpheatmap('tpNoneB', 'Show every print') + '</button></div>';
+      }
       var ch2 = tr.length ? ensure(tpL, tr.length, 'hm-tp-row') : [];
       for (i = 0; i < tr.length; i++) {
         var x = tr[i], e2 = ch2[i], dt = new Date(x.ts);
@@ -1766,7 +1845,12 @@ function bkSelect(cls, opts, cur) {
       var fBits = [];
       if (tpMin > 0) fBits.push('prints over ' + usdShort(tpMin));
       if (tpSide === 1) fBits.push('buys only'); else if (tpSide === 2) fBits.push('sells only');
-      if (bkPref('mp_hm_booktick', 1) > 1) fBits.push('rows grouped x' + bkPref('mp_hm_booktick', 1));
+      if (bkPref('mp_hm_booktick', 1) > 1) {
+        var tkS = bk.querySelector('.bkTick');
+        fBits.push(tkS && tkS._base > 0
+          ? __esT_mpheatmap('fbRowsOf', 'rows of') + ' ' + stepTxt(tkS._base * bkPref('mp_hm_booktick', 1))
+          : 'rows grouped x' + bkPref('mp_hm_booktick', 1));
+      }
       bkMeta.innerHTML = '<i>' + (pick === 'all' ? names.length + __esT_mpheatmap("exchangesLinedUp",' exchanges, lined up') : BKN[pick] || pick) + '</i>' + (fBits.length ? '<em class="hm-fon">filtered: ' + fBits.join(' · ') + '</em>' : '');
     }
     function sideUsd(list, side) {
@@ -1814,6 +1898,12 @@ function bkSelect(cls, opts, cur) {
       d.style.left = (left + scrollX) + 'px'; d.style.top = (top + scrollY) + 'px';
     }
     tpL.addEventListener('click', function (ev) {
+      if (ev.target.classList && ev.target.classList.contains('hm-tp-clr')) {
+        bkPrefSet('mp_hm_tapemin', 0); bkPrefSet('mp_hm_tapeside', 0);
+        var s1 = bk.querySelector('.bkMin'), s2 = bk.querySelector('.bkSide');
+        if (s1) s1.value = '0'; if (s2) s2.value = '0';
+        bellPaint(); bkRender(); return;
+      }
       var r = ev.target.closest && ev.target.closest('.hm-tp-row');
       if (r) { ev.stopPropagation(); tradeCard(r); }
     });
@@ -1834,12 +1924,17 @@ function bkSelect(cls, opts, cur) {
       var coin = S.coin;
       Promise.all([
         fetch('/api/v1/book?symbol=' + encodeURIComponent(coin) + '&levels=40').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=140').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+        // Tell the tape what we are filtering for, so the kept prints it returns are the ones that will
+        // actually be shown - otherwise the deepest filter gets the shallowest reach back in time.
+        fetch('/api/v1/tape?symbol=' + encodeURIComponent(coin) + '&limit=140'
+          + (bkPref('mp_hm_tapemin', 0) >= 50000 ? '&bigmin=' + bkPref('mp_hm_tapemin', 0) : ''))
+          .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       ]).then(function (res) {
         if (!S || S.coin !== coin) return;
         var b = res[0], tp = res[1];
         S.bk.book = (b && b.venues && Object.keys(b.venues).length) ? b : null;
         S.bk.tape = (tp && Array.isArray(tp.trades)) ? tp.trades : [];
+        S.bk.tapeBig = (tp && Array.isArray(tp.big)) ? tp.big : [];
         S.bk.minutes = (tp && Array.isArray(tp.minutes)) ? tp.minutes : [];
         if (S.bk.book) {
           var names = Object.keys(S.bk.book.venues);
@@ -1949,6 +2044,24 @@ function bkSelect(cls, opts, cur) {
       }).catch(function () {});
     }
     function bellSay(msg, good) { try { if (window.mpToast) window.mpToast({ msg: msg, kind: good ? 'good' : 'warn' }); else alert(msg); } catch (e) {} }
+    // A CORNER NOTE IS THE WRONG SHAPE FOR "YOU CANNOT DO THIS YET" (owner). A toast fades out beside the
+    // thing the reader was pressing and leaves them exactly where they were; being told that Telegram is
+    // not linked is only useful together with the way to link it, so this stops the page and carries the
+    // link. Everything that IS a result - alert saved, alert off - stays a toast, because it needs no act.
+    function bellGate(title, body, cta, href) {
+      var old = document.querySelector('.hm-gate'); if (old) old.remove();
+      var g = document.createElement('div'); g.className = 'hm-gate';
+      g.innerHTML = '<div class="hm-gate-c" role="dialog" aria-modal="true"><button type="button" class="hm-gate-x" aria-label="Close">&times;</button>'
+        + '<b>' + title + '</b><p>' + body + '</p>'
+        + '<a class="hm-gate-go" href="' + href + '">' + cta + '</a>'
+        + '<button type="button" class="hm-gate-no">' + __esT_mpheatmap('gateLater', 'Not now') + '</button></div>';
+      var close = function () { g.remove(); };
+      g.addEventListener('click', function (ev) {
+        if (ev.target === g || ev.target.classList.contains('hm-gate-x') || ev.target.classList.contains('hm-gate-no')) close();
+      });
+      document.body.appendChild(g);
+      try { g.querySelector('.hm-gate-go').focus(); } catch (e) {}
+    }
     function bellClick() {
       var min = bkPref('mp_hm_tapemin', 0), side = bkPref('mp_hm_tapeside', 0);
       if (min < bellMin()) { bellSay('Telegram alerts start at ' + usdShort(bellMin()) + ' a print. Pick that size or bigger in the tape filter, then press the bell.', false); return; }
@@ -1957,9 +2070,15 @@ function bkSelect(cls, opts, cur) {
       fetch('/api/alerts/tapealert', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
         .then(function (res) {
-          if (res.s === 401) { bellSay('Sign in first - an alert needs an account to reach you.', false); return; }
+          if (res.s === 401) {
+            bellGate(__esT_mpheatmap('gateInT', 'Sign in first'),
+              __esT_mpheatmap('gateInB', 'An alert has to reach somebody. Sign in and link Telegram, and every print over this size lands in your chat.'),
+              __esT_mpheatmap('gateInC', 'Go to alerts'), '/alerts'); return;
+          }
           if (res.s === 400 && res.j && res.j.error === 'telegram_required') {
-            bellSay('Link Telegram first, on the alerts page - the alert has nowhere to go otherwise.', false); return;
+            bellGate(__esT_mpheatmap('gateTgT', 'Telegram is not linked yet'),
+              __esT_mpheatmap('gateTgB', 'The alert is ready - it just has nowhere to go. Linking takes one tap on the alerts page: open the bot, press start, and come back.'),
+              __esT_mpheatmap('gateTgC', 'Link Telegram'), '/alerts'); return;
           }
           if (!res.j || !res.j.ok) { bellSay('Could not save that alert. Try again in a moment.', false); return; }
           bellCfg = res.j.cfg; bellPaint();
@@ -1975,6 +2094,9 @@ function bkSelect(cls, opts, cur) {
       if (!key) return;
       bkPrefSet(key, t.value);
       bkRender();
+      // The size filter is part of the REQUEST now, not only of the drawing, so changing it has to ask
+      // again - otherwise the first paint after a change is filtered out of the previous floor's rows.
+      if (key === 'mp_hm_tapemin') bkLoad();
       bellPaint();
     });
     bk.addEventListener('click', function (ev) { if (ev.target && ev.target.classList && ev.target.classList.contains('hm-bell')) { ev.stopPropagation(); bellClick(); } });

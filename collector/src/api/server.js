@@ -381,12 +381,18 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       // spans about half a minute - which means a reader filtering for $250k orders is shown an empty list
       // almost always, not because none happened but because the window is sized for every $9 trade. These
       // are the same rows, retained on their own, so a size filter answers with the last real ones.
+      // `bigmin` lets the caller say what it is actually filtering for. Without it a $250k filter is
+      // served 300 rows that start at $50k, of which two dozen qualify - never empty, but reaching back
+      // only a couple of minutes. Asked for its own floor, the same ring answers with 300 rows that ALL
+      // qualify, so the deepest filter reaches back furthest instead of shallowest.
       big: (function () {
-        const rows = [];
+        const floor = Math.max(0, +req.query.bigmin || 0);
+        let rows = [];
         for (const c of tapeCols) {
           if (want && c.venue !== want) continue;
-          if (c.big) rows.push(...c.big(sym, 300));
+          if (c.big) rows.push(...c.big(sym, 400));
         }
+        if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
         return rows.slice(Math.max(0, rows.length - 300));
       })(),
