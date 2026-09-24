@@ -200,13 +200,21 @@ export class BookMap {
     const seen = new Set();
     const scan = (m, mv, side) => {
       const rows = [...m.entries()].map(([k, v]) => ({ k: +k, v })).sort((a, b) => a.k - b.k);
+      const sorted = rows.map((r) => r.v).sort((a, b) => a - b);
+      const sideMed = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
       for (let i = 0; i < rows.length; i++) {
         const r = rows[i];
         if (r.v < WALL_MIN_USD) continue;
         const nb = rows.slice(Math.max(0, i - WALL_NEIGHBOURS), i + WALL_NEIGHBOURS + 1)
           .filter((x) => x.k !== r.k).map((x) => x.v).sort((a, b) => a - b);
-        if (nb.length < 6) continue;                    // too few neighbours to call anything local
-        const nbMed = nb[Math.floor(nb.length / 2)];
+        // A LONE BLOCK WITH NOTHING AROUND IT IS THE CLEAREST WALL THERE IS, and the neighbour rule was
+        // throwing exactly those away. Out at 3-5% from the price the book is sparse - the money sits on
+        // round numbers with empty rows between them - so fewer than six neighbours is the NORMAL case
+        // there, not a reason to refuse. When the neighbourhood is too thin to judge, the row is measured
+        // against the median of its whole side instead, which is the honest fallback: it still has to be
+        // far heavier than a typical row, it just is not asked to beat rows that do not exist.
+        const nbMed = nb.length >= 6 ? nb[Math.floor(nb.length / 2)] : sideMed;
+        if (!(nbMed > 0)) continue;
         const rel = nbMed > 0 ? r.v / nbMed : 0;
         if (rel < WALL_MIN_REL) continue;
         const key = band + ':' + side + ':' + r.k;
