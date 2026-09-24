@@ -239,6 +239,10 @@ export class BookMap {
     // then would report a withdrawal that never happened, which is the worst mistake this feature can
     // make. So the dollars at that price are the judge: still most of what it was, and the wall is alive.
     for (const [key, w] of live) {
+      // ONLY THIS BAND'S WALLS. _walls runs twice a frame, once per grid, and they share one live map -
+      // so without this the near pass declared every wide wall gone and the wide pass returned the favour.
+      // Measured: zero walls standing on either grid while both were full of them.
+      if ((w.band || 'near') !== band) continue;
       if (seen.has(key)) continue;
       const m = w.side === 'bid' ? bidM : askM;
       const still = m.get(w.bucket) || 0;
