@@ -132,9 +132,12 @@ const RING = 500;     // trades kept per venue+symbol for live reads
 // minutes, exactly TWO were over $1M and none over $5M - so a count-capped ring answers the biggest
 // filters with an almost empty list, which is what a reader sees as 'this is broken'. Prints over
 // $500k are rare enough to keep far more of, and far longer, for a few megabytes.
-const HUGE_USD = 250000;
-const HUGE_KEEP = 1200;
-const HUGE_MS = 12 * 3600000;
+const MID_USD = 250000;
+const MID_KEEP = 1500;
+const MID_MS = 3 * 3600000;
+const HUGE_USD = 1000000;
+const HUGE_KEEP = 900;
+const HUGE_MS = 26 * 3600000;   // a full day, plus room so 'today' is always covered
 const BIG_USD = 50000;
 const BIG_KEEP = 400;
 const MIN_KEEP = 45;  // completed minutes kept per symbol - enough to draw three quarters of an hour of flow
@@ -154,7 +157,8 @@ export class TapeCollector extends BaseCollector {
     // is meaningless three seconds into a minute. Pure memory, MIN_KEEP entries of four numbers per symbol.
     this.mins = new Map();      // sym -> [{ m, buyUsd, sellUsd, n }] oldest first
     this.bigs = new Map();      // sym -> [row] the large prints only, kept far longer than the live ring
-    this.huge = new Map();      // sym -> [row] the rare ones, kept for hours so the biggest filters have a list
+    this.mid = new Map();       // sym -> [row] over (k, a few hours
+    this.huge = new Map();      // sym -> [row] over M, a full day
     this.seen = new Map();      // sym -> Set of recent ids
     this.seenOrder = new Map(); // sym -> id[] (FIFO for trimming)
     this.trades = 0; this.dupes = 0; this.bad = 0; this.skipped = 0;
@@ -226,6 +230,12 @@ export class TapeCollector extends BaseCollector {
     if (row.side === 'buy') b.buyUsd += row.usd; else b.sellUsd += row.usd;
     b.n++;
 
+    if (row.usd >= MID_USD) {
+      let md = this.mid.get(t.sym); if (!md) { md = []; this.mid.set(t.sym, md); }
+      md.push(row);
+      const mcut = row.ts - MID_MS;
+      while (md.length && (md.length > MID_KEEP || md[0].ts < mcut)) md.shift();
+    }
     if (row.usd >= HUGE_USD) {
       let hg = this.huge.get(t.sym); if (!hg) { hg = []; this.huge.set(t.sym, hg); }
       hg.push(row);
@@ -260,6 +270,12 @@ export class TapeCollector extends BaseCollector {
   /** The rare ones, newest last, reaching back hours rather than minutes. */
   hugePrints(sym, n = 400) {
     const a = this.huge.get(sym) || [];
+    return a.slice(Math.max(0, a.length - n));
+  }
+
+  /** Over (k, a few hours back. Between the live ring and the day-long one. */
+  midPrints(sym, n = 400) {
+    const a = this.mid.get(sym) || [];
     return a.slice(Math.max(0, a.length - n));
   }
 

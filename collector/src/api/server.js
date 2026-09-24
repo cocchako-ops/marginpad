@@ -435,7 +435,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
           else if (c.big) rows.push(...c.big(sym, 400));
         }
         bigOldest = rows.length ? Math.min.apply(null, rows.map((r) => r.ts)) : null;
-        bigFloorUsd = deep ? 250000 : 50000;
+        bigFloorUsd = tier === 'huge' ? 1000000 : tier === 'mid' ? 250000 : 50000;
         if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
         return rows.slice(Math.max(0, rows.length - 300));
