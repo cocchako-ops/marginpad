@@ -28,7 +28,9 @@ import { log } from '../logger.js';
 
 const SAMPLE_MS = 5000;        // one film frame; the page polls slower than this
 const KEEP_MS = 20 * 60000;    // twenty minutes of film - measured against the droplet's free memory
-const BAND_PCT = 0.35;         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
+const BAND_PCT = 0.35;         // the near grid: tick-by-tick around the price
+const WIDE_PCT = 5;            // the wide grid: where the round-number walls live
+const WIDE_LEVELS = 4000;      // raw levels to walk for it (only Binance has anywhere near this many)         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
 const BUCKETS = 170;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
 const WALL_MIN_USD = 250000;   // a wall is never smaller than this, whatever the coin
 const WALL_MIN_REL = 2.5;      // ...and never less than this many times the median of its SIXTEEN NEIGHBOURS
@@ -41,6 +43,14 @@ const EATEN_FRAC = 0.35;       // traded >= this share of the wall's peak while 
  *  coin's book spans about 25 basis points either side of the mid - on Bitcoin that is roughly $200, so a
  *  step taken as a thousandth of the price ($100) drew the entire book in TWO rows. Eight hundredths of a
  *  basis point puts about sixty rows across the part of the book that actually exists, on any coin. */
+export function wideStepFor(px) {
+  // about a hundred rows across +/-5%, rounded to 1/2/5 so the prices read as prices
+  const raw = px * 0.001;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / mag;
+  return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag;
+}
+
 export function stepFor(px) {
   if (!(px > 0)) return 1;
   const raw = px * 0.00008;
@@ -57,7 +67,8 @@ export class BookMap {
     this.cols = new Map();     // sym -> [column]
     this.live = new Map();     // sym -> Map(key -> live wall)
     this.done = new Map();     // sym -> [finished wall]
-    this.step = new Map();     // sym -> price step
+    this.step = new Map();     // sym -> price step, near grid
+    this.wstep = new Map();    // sym -> price step, wide grid
     this._lastAcc = new Map(); // sym -> when the tape was last folded into the standing walls
     this.samples = 0;
     this.lastMs = 0;
@@ -83,7 +94,7 @@ export class BookMap {
   _sampleSym(sym, ts) {
     const per = [];                       // [{venue, mid, bids, asks}]
     for (const c of this.bookCols) {
-      const l = c.levels ? c.levels(sym, 250) : null;
+      const l = c.levels ? c.levels(sym, WIDE_LEVELS) : null;
       if (l) per.push({ venue: c.venue, ...l });
     }
     if (!per.length) return;
@@ -96,30 +107,47 @@ export class BookMap {
     if (!step || step > want * 2 || step < want / 2) { step = want; this.step.set(sym, step); }
     const lo = mid * (1 - BAND_PCT / 100), hi = mid * (1 + BAND_PCT / 100);
 
+    let wstep = this.wstep.get(sym);
+    const wwant = wideStepFor(mid);
+    if (!wstep || wstep > wwant * 2 || wstep < wwant / 2) { wstep = wwant; this.wstep.set(sym, wstep); }
+    const wlo = mid * (1 - WIDE_PCT / 100), whi = mid * (1 + WIDE_PCT / 100);
+
     const bid = new Map(), ask = new Map();          // bucket -> usd, every venue together
     const bidV = new Map(), askV = new Map();        // bucket -> Set(venue)
     const bidByV = new Map(), askByV = new Map();    // bucket -> Map(venue -> usd)
-    const put = (m, mv, mbv, px, sz, venue) => {
-      if (px < lo || px > hi) return;
-      const k = Math.round(px / step);
+    const wbidByV = new Map(), waskByV = new Map();  // the same, on the wide grid
+    const wbid = new Map(), wask = new Map();
+    const wbidV = new Map(), waskV = new Map();
+    const put = (m, mv, mbv, px, sz, venue, st, lo2, hi2) => {
+      if (px < lo2 || px > hi2) return;
+      const k = Math.round(px / st);
       const usd = px * sz;
       m.set(k, (m.get(k) || 0) + usd);
-      let s = mv.get(k); if (!s) { s = new Set(); mv.set(k, s); }
-      s.add(venue);
+      let s2 = mv.get(k); if (!s2) { s2 = new Set(); mv.set(k, s2); }
+      s2.add(venue);
       let bv = mbv.get(k); if (!bv) { bv = new Map(); mbv.set(k, bv); }
       bv.set(venue, (bv.get(venue) || 0) + usd);
     };
     for (const v of per) {
-      for (const [px, sz] of v.bids) { if (px < lo) break; put(bid, bidV, bidByV, px, sz, v.venue); }
-      for (const [px, sz] of v.asks) { if (px > hi) break; put(ask, askV, askByV, px, sz, v.venue); }
+      for (const [px, sz] of v.bids) {
+        if (px < wlo) break;
+        put(wbid, wbidV, wbidByV, px, sz, v.venue, wstep, wlo, whi);
+        if (px >= lo) put(bid, bidV, bidByV, px, sz, v.venue, step, lo, hi);
+      }
+      for (const [px, sz] of v.asks) {
+        if (px > whi) break;
+        put(wask, waskV, waskByV, px, sz, v.venue, wstep, wlo, whi);
+        if (px <= hi) put(ask, askV, askByV, px, sz, v.venue, step, lo, hi);
+      }
     }
 
     const trim = (m) => {
       if (m.size <= BUCKETS) return m;
-      const keep = [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, BUCKETS);
+      const keep = [...m.entries()].sort((a2, b2) => b2[1] - a2[1]).slice(0, BUCKETS);
       return new Map(keep);
     };
     const b = trim(bid), a = trim(ask);
+    const wb = trim(wbid), wa = trim(wask);
 
     // PER VENUE, NOT JUST THE TOTAL. The whole reason to hold five books is to be able to answer "show me
     // Binance" as well as "show me everybody", and a consolidated total cannot be taken apart afterwards.
@@ -137,8 +165,9 @@ export class BookMap {
       return o;
     };
     const col = {
-      ts, mid: +mid.toFixed(8), step, venues: per.length,
+      ts, mid: +mid.toFixed(8), step, wstep, venues: per.length,
       b: perV(bidByV, b), a: perV(askByV, a),
+      wb: perV(wbidByV, wb), wa: perV(waskByV, wa),
     };
 
     let arr = this.cols.get(sym);
@@ -148,7 +177,8 @@ export class BookMap {
     while (arr.length && arr[0].ts < cut) arr.shift();
 
     this._accrue(sym, ts, step);   // fold the new prints into the standing walls BEFORE any of them ends
-    this._walls(sym, ts, step, mid, b, a, bidV, askV);
+    this._walls(sym, ts, step, mid, b, a, bidV, askV, 'near');
+    this._walls(sym, ts, wstep, mid, wb, wa, wbidV, waskV, 'wide');
   }
 
   // ---- WALLS ------------------------------------------------------------------------------------
@@ -163,7 +193,7 @@ export class BookMap {
   // at 36x its neighbours - unmistakable - while the ask side topped out at 1.98x, which is worth knowing
   // in itself: there is no wall above right now. A heavy row at the thin outer edge of the book is not an
   // artifact of the rule; a lone block order with nothing around it is exactly what that looks like.
-  _walls(sym, ts, step, mid, bidM, askM, bidV, askV) {
+  _walls(sym, ts, step, mid, bidM, askM, bidV, askV, band) {
     let live = this.live.get(sym); if (!live) { live = new Map(); this.live.set(sym, live); }
     let done = this.done.get(sym); if (!done) { done = []; this.done.set(sym, done); }
 
@@ -179,11 +209,11 @@ export class BookMap {
         const nbMed = nb[Math.floor(nb.length / 2)];
         const rel = nbMed > 0 ? r.v / nbMed : 0;
         if (rel < WALL_MIN_REL) continue;
-        const key = side + ':' + r.k;
+        const key = band + ':' + side + ':' + r.k;
         seen.add(key);
         let w = live.get(key);
         if (!w) {
-          w = { side, bucket: r.k, price: +(r.k * step).toFixed(8), first: ts, last: ts, peakUsd: 0, peakRel: 0, seenN: 0, venues: [] };
+          w = { band, side, bucket: r.k, price: +(r.k * step).toFixed(8), distPct: +(((r.k * step) - mid) / mid * 100).toFixed(3), first: ts, last: ts, peakUsd: 0, peakRel: 0, seenN: 0, venues: [] };
           live.set(key, w);
         }
         w.last = ts; w.seenN++;
@@ -253,7 +283,7 @@ export class BookMap {
   /** The film, plus the walls standing now and the ones that have just finished.
    *  `venue` picks ONE book or leaves them consolidated; the summing happens here so the page never
    *  downloads a breakdown it is not showing. */
-  read(sym, { mins = 20, venue = '', back = 0 } = {}) {
+  read(sym, { mins = 20, venue = '', back = 0, band = 'near' } = {}) {
     const arr = this.cols.get(sym) || [];
     if (!arr.length) return null;
     // A WINDOW THAT CAN SIT IN THE PAST. Without `back` the film could only ever show its own tail, so
@@ -272,13 +302,15 @@ export class BookMap {
       }
       return [o, n];
     };
+    const wide = band === 'wide';
     const cols = raw.map((c) => {
-      const [b, bv] = flat(c.b), [a, av] = flat(c.a);
-      return { ts: c.ts, mid: c.mid, step: c.step, venues: c.venues, b, a, bv, av };
+      const [b, bv] = flat(wide ? (c.wb || {}) : c.b), [a, av] = flat(wide ? (c.wa || {}) : c.a);
+      return { ts: c.ts, mid: c.mid, step: wide ? (c.wstep || c.step) : c.step, venues: c.venues, b, a, bv, av };
     }).filter((c) => Object.keys(c.b).length || Object.keys(c.a).length);
     if (!cols.length) return null;
-    const step = this.step.get(sym) || cols[cols.length - 1].step;
-    const vOk = (w) => !want || want === 'all' || (w.venues || []).indexOf(want) >= 0;
+    const step = (wide ? this.wstep.get(sym) : this.step.get(sym)) || cols[cols.length - 1].step;
+    const bOk = (w) => (w.band || 'near') === band;
+    const vOk = (w) => bOk(w) && (!want || want === 'all' || (w.venues || []).indexOf(want) >= 0);
     const live = [...(this.live.get(sym) || new Map()).values()]
       .filter((w) => w.seenN >= 2 && vOk(w))
       .map((w) => ({ ...w, ageMs: Date.now() - w.first, tradedUsd: Math.round(w.tradedUsd || 0), standing: true }))
@@ -286,7 +318,8 @@ export class BookMap {
       .slice(0, 24);
     const done = (this.done.get(sym) || []).filter(vOk).slice(-24).map((w) => ({ ...w, standing: false }));
     return {
-      symbol: sym, ts: Date.now(), step, sampleMs: SAMPLE_MS, venue: want || 'all',
+      symbol: sym, ts: Date.now(), step, sampleMs: SAMPLE_MS, venue: want || 'all', band,
+      bandPct: wide ? WIDE_PCT : BAND_PCT,
       backMins: Math.round(bk2 / 60000), keepMins: Math.round(KEEP_MS / 60000),
       oldestKeptTs: arr.length ? arr[0].ts : null, newestKeptTs: arr.length ? arr[arr.length - 1].ts : null,
       venuesAvailable: this.bookCols.map((c) => c.venue),

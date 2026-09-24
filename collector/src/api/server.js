@@ -354,7 +354,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     if (!bookMap) return res.status(404).json({ error: 'not_enabled' });
     const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
     const mins = Math.min(20, Math.max(1, +req.query.mins || 20));
-    const out = bookMap.read(sym, { mins, back: Math.min(20, Math.max(0, +req.query.back || 0)), venue: String(req.query.venue || '').toLowerCase().replace(/[^a-z]/g, '') });
+    const out = bookMap.read(sym, { mins, back: Math.min(20, Math.max(0, +req.query.back || 0)), band: String(req.query.band || '') === 'wide' ? 'wide' : 'near', venue: String(req.query.venue || '').toLowerCase().replace(/[^a-z]/g, '') });
     // WALLS ONLY. The film is a few hundred kilobytes and a caller that wants the walls - the chart
     // assistant's brief, an alert, a bot - should not have to download it, decode it and throw it away.
     // Measured: the assistant's 1.5s budget could not finish the full read, so it was told there were no
