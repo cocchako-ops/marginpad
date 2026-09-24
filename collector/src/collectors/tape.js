@@ -129,7 +129,7 @@ const RING = 500;     // trades kept per venue+symbol for live reads
 // the big ones scrolled out of a window sized for every $9 trade. These are kept on their own and stay for
 // as long as the ring takes to fill, so a filter answers with the last real orders instead of nothing.
 const BIG_USD = 50000;
-const BIG_KEEP = 150;
+const BIG_KEEP = 400;
 const MIN_KEEP = 45;  // completed minutes kept per symbol - enough to draw three quarters of an hour of flow
 const DEDUP = 4000;   // recent trade ids kept per venue, to drop a repeat without unbounded memory
 
@@ -244,7 +244,7 @@ export class TapeCollector extends BaseCollector {
   }
 
   /** The large prints only, newest last. What a size filter should actually be answered from. */
-  big(sym, n = 60) {
+  big(sym, n = 300) {
     const a = this.bigs.get(sym) || [];
     return a.slice(Math.max(0, a.length - n));
   }

@@ -385,10 +385,10 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         const rows = [];
         for (const c of tapeCols) {
           if (want && c.venue !== want) continue;
-          if (c.big) rows.push(...c.big(sym, 100));
+          if (c.big) rows.push(...c.big(sym, 300));
         }
         rows.sort((a, b) => a.ts - b.ts);
-        return rows.slice(Math.max(0, rows.length - 100));
+        return rows.slice(Math.max(0, rows.length - 300));
       })(),
     });
   });
