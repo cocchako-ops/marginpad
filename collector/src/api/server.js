@@ -355,6 +355,14 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
     const mins = Math.min(20, Math.max(1, +req.query.mins || 20));
     const out = bookMap.read(sym, { mins, venue: String(req.query.venue || '').toLowerCase().replace(/[^a-z]/g, '') });
+    // WALLS ONLY. The film is a few hundred kilobytes and a caller that wants the walls - the chart
+    // assistant's brief, an alert, a bot - should not have to download it, decode it and throw it away.
+    // Measured: the assistant's 1.5s budget could not finish the full read, so it was told there were no
+    // walls on a coin that had four.
+    if (String(req.query.only || '') === 'walls' && out) {
+      delete out.cols;
+      out.only = 'walls';
+    }
     if (!out) return res.status(404).json({ error: 'no_map_yet', symbol: sym, note: 'the film starts empty after a restart and fills in a few seconds' });
     res.set('Cache-Control', 'public, max-age=3');
     res.json(out);
