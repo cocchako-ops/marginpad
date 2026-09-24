@@ -523,9 +523,21 @@ export class BookCollector extends BaseCollector {
     const b = this.books.get(sym);
     if (!b || !b.ok) return null;
     if (Date.now() - b.rxAt > this.maxBookAgeMs) return null;
-    if (!summarize(b, this.skewMs, 1)) return null;   // the one judge of whether this book may be shown
-    const n = Math.max(1, maxN || 400);
-    return { mid: (b._sb[0][0] + b._sa[0][0]) / 2, ts: b.rxAt, bids: b._sb.slice(0, n), asks: b._sa.slice(0, n) };
+    // VALIDATE IT HERE, DO NOT CALL summarize() TO DO IT. summarize walks the whole side once per depth
+    // rung AND once per slippage size - work this caller throws away. MEASURED on the droplet: with it,
+    // one pass of the book film over six coins and five venues took 3.2 SECONDS of the single vCPU every
+    // five, which starved the SQLite reader the public liquidation API runs on and pushed /api/v1/pulse
+    // to forty seconds. The checks that actually matter here are three comparisons.
+    if (!b._sb || b._sv !== b.seq || b._st !== b.rxAt) {
+      b._sb = sortedSide(b.bids, true);
+      b._sa = sortedSide(b.asks, false);
+      b._sv = b.seq; b._st = b.rxAt;
+    }
+    if (!b._sb.length || !b._sa.length) return null;
+    const bb = b._sb[0][0], ba = b._sa[0][0];
+    if (!(bb > 0) || !(ba > 0) || ba <= bb) return null;   // a crossed book is a broken book
+    const n = Math.max(1, maxN || 250);
+    return { mid: (bb + ba) / 2, ts: b.rxAt, bids: b._sb.slice(0, n), asks: b._sa.slice(0, n) };
   }
 
   /** Why one symbol's book is not being served, in a word a reader can be shown. The same judgement

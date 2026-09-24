@@ -83,7 +83,7 @@ export class BookMap {
   _sampleSym(sym, ts) {
     const per = [];                       // [{venue, mid, bids, asks}]
     for (const c of this.bookCols) {
-      const l = c.levels ? c.levels(sym, 400) : null;
+      const l = c.levels ? c.levels(sym, 250) : null;
       if (l) per.push({ venue: c.venue, ...l });
     }
     if (!per.length) return;
