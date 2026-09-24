@@ -290,7 +290,9 @@ const LAYOUT = () => {
     ok('who is winning lives in the summary line that was already there, in more than one shape',
       L.win && L.win.formats >= 4 && /: 1/.test(L.win.big) && /25 bps/.test(L.win.sub) && L.win.inSayLine && L.win.extraBoxes === 0 && L.win.stripH < 120,
       JSON.stringify(L.win));
-    ok('the tape and the book can both be filtered', L.filters.length === 3 && L.filters.indexOf('bkMin') >= 0 && L.filters.indexOf('bkSide') >= 0 && L.filters.indexOf('bkTick') >= 0, L.filters.join(','));
+    // Named, not counted: the film added its own alert-floor picker and an exact count turned this red
+    // while all three filters it is about were exactly where they should be.
+    ok('the tape and the book can both be filtered', L.filters.indexOf('bkMin') >= 0 && L.filters.indexOf('bkSide') >= 0 && L.filters.indexOf('bkTick') >= 0, L.filters.join(','));
     ok('the alert bell is there and explains its floor before it is pressed', !!L.bell && /250K/.test(L.bell.title), L.bell && L.bell.title);
     // "Auto / x2 / x5" named the multiplier and never the thing being chosen (owner: "nije mi jasno sta tu
     // biram"). Every option must carry the price step it produces, which is a real number off this coin's

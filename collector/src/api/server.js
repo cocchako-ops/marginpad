@@ -363,7 +363,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       delete out.cols;
       out.only = 'walls';
     }
-    if (!out) return res.status(404).json({ error: 'no_map_yet', symbol: sym, note: 'the film starts empty after a restart and fills in a few seconds' });
+    if (!out) { res.set('Cache-Control', 'public, max-age=3'); return res.json({ symbol: sym, ts: Date.now(), building: true, cols: [], wallsStanding: [], wallsFinished: [], note: 'the film starts empty after a restart and fills within a few seconds' }); }
     res.set('Cache-Control', 'public, max-age=3');
     res.json(out);
   });
