@@ -464,7 +464,11 @@ async function screenerKvWarm(env) { // */10 cron: keep the scr:cache6 floor fre
 const HM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
 const HM_LEVS = [[2, 0.08], [3, 0.10], [5, 0.16], [10, 0.26], [25, 0.20], [50, 0.12], [100, 0.08]]; // 2x/3x/5x rungs added 2026-07-25 - without them the deepest pool was only -10% from price (owner: 'nothing below 55k')
 async function heatPoolsCron(env) {
-  if (!env || !env.STATS) return;
+  // WHAT EACH COIN DID THIS RUN. The model is otherwise completely invisible: it writes to KV, the page
+  // reads a published snapshot, and when a change to it produces nothing there is no way to tell whether
+  // the bars were skipped, the sweeps never fired, or the prune ate the result.
+  const diag = {};
+  if (!env || !env.STATS) return diag;
   for (const sym of HM_COINS) {
     try {
       const kd = await sigKlines(sym, 15); // closed 15m candles (same fetch path as the signal engine)
@@ -472,12 +476,19 @@ async function heatPoolsCron(env) {
       const bars = kd.closed;
       let st = null; try { st = JSON.parse(await env.STATS.get('hmp:st:' + sym) || 'null'); } catch (e) {}
       const px = kd.bars[kd.bars.length - 1].close; // freshest close (forming bar when present) - prune + published price track the LIVE market, not a 15-min-old close
-      if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {} }; // fixed ~0.1% price bins per coin
-      const binH = st.binH, alive = st.alive;
+      if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {}, dead: {} }; // fixed ~0.1% price bins per coin
+      // A SWEPT POOL IS NOT DELETED ANY MORE, IT IS MOVED (owner, 2026-09-24). Until today the moment a
+      // candle's range covered a bin the pool was thrown away, so the map could only ever show leverage
+      // that is still standing - and the most useful thing on a liquidation map is the record that a crowd
+      // WAS here and has been taken out. A swept pool keeps everything it had plus `tsw`, the candle that
+      // consumed it, which is what lets the page stop its line exactly there instead of guessing the
+      // crossing from the bars.
+      if (!st.dead) st.dead = {};
+      const binH = st.binH, alive = st.alive, dead = st.dead;
       let processed = 0; const swept = [];
       for (let i = 1; i < bars.length; i++) {
         const b = bars[i]; if (b.time <= st.last) continue; processed++;
-        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: b.time * 1000, p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); delete alive[k]; } } // consumed - big ones get logged (post-sweep annotations)
+        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: b.time * 1000, p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); dead[k] = { w: a0.w, long: a0.long, t0: a0.t0, lev: a0.lev, tsw: b.time }; delete alive[k]; } } // consumed - big ones get logged (post-sweep annotations)
         const prev = bars[i - 1], notion = (prev.vol || 0) * prev.close || Math.abs(prev.close - prev.open) * 1e4;
         for (const [L, wgt] of HM_LEVS) { const w = notion * wgt * 0.5;
           const bl = Math.floor(prev.close * (1 - 0.995 / L) / binH), bs = Math.floor(prev.close * (1 + 0.995 / L) / binH);
@@ -491,21 +502,33 @@ async function heatPoolsCron(env) {
       const fb = kd.bars[kd.bars.length - 1];
       let liveSwept = 0;
       if (fb && fb.time > st.last && fb.low > 0) {
-        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= fb.low && pr <= fb.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: Date.now(), p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); delete alive[k]; liveSwept++; } }
+        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= fb.low && pr <= fb.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: Date.now(), p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); dead[k] = { w: a0.w, long: a0.long, t0: a0.t0, lev: a0.lev, tsw: fb.time }; delete alive[k]; liveSwept++; } }
       }
       if (!processed && !liveSwept && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
       // prune: keep bins within ±30% of price, cap to the 400 strongest
       const ent = [];
       for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.55) { delete alive[k]; continue; } ent.push([k, alive[k]]); } // ±55% keeps the 2x pools (liq at -49.75%)
       if (ent.length > 650) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 650; i < ent.length; i++) delete alive[ent[i][0]]; }
+      // The dead prune on the same rules plus one of their own: a sweep older than the longest window the
+      // page can show is history nobody can see. Capped well below the living - the living answer "where
+      // next", the dead answer "what just happened".
+      const oldest = Math.floor(Date.now() / 1000) - 8 * 86400;
+      const dent = [];
+      for (const k in dead) { const d0 = dead[k], pr = (+k + 0.5) * binH;
+        if (!(d0.tsw > oldest) || Math.abs(pr - px) / px > 0.55) { delete dead[k]; continue; }
+        dent.push([k, d0]); }
+      if (dent.length > 400) { dent.sort((a, b) => b[1].w - a[1].w); for (let i = 400; i < dent.length; i++) delete dead[dent[i][0]]; }
       st.pubAt = Date.now();
       if (swept.length) { try { let ring = JSON.parse(await env.STATS.get('hmp:swp:' + sym) || '[]'); ring = swept.concat(ring).slice(0, 30); await env.STATS.put('hmp:swp:' + sym, JSON.stringify(ring), { expirationTtl: 7 * 86400 }); } catch (e) {} }
       await env.STATS.put('hmp:st:' + sym, JSON.stringify(st), { expirationTtl: 14 * 86400 });
       const pub = ent.slice(0, 650).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
-      await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub }), { expirationTtl: 86400 });
+      const pubDead = dent.slice(0, 400).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev, tsw: a.tsw }));
+      await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub, dead: pubDead }), { expirationTtl: 86400 });
+      diag[sym] = { bars: bars.length, processed, liveSwept, swept: swept.length, alive: pub.length, dead: pubDead.length };
       await new Promise(r => setTimeout(r, 80));
-    } catch (e) {}
+    } catch (e) { diag[sym] = { err: String((e && e.message) || e).slice(0, 90) }; }
   }
+  return diag;
 }
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -20331,7 +20354,7 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } const diag = await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset'), diag }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }

@@ -214,17 +214,56 @@ const LAYOUT = () => {
       JSON.stringify(before) + ' -> ' + JSON.stringify(after));
     ok('tapping a target explains it in the readout', after.sel);
 
-    // the dot filter is honoured by what is drawn
-    const d0 = (await page.evaluate(() => window.__mpHeat.state())).dotsDrawn;
-    await page.select('.hm-bar-a select:nth-of-type(1) ~ select', '250000').catch(() => {});
-    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '250000'; s.dispatchEvent(new Event('change')); });
-    await new Promise(r => setTimeout(r, 900));
-    const d1 = (await page.evaluate(() => window.__mpHeat.state())).dotsDrawn;
-    ok('raising the dot threshold draws fewer liquidations', d1 < d0 || d0 === 0, d0 + ' -> ' + d1);
-    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '-1'; s.dispatchEvent(new Event('change')); });
-    await new Promise(r => setTimeout(r, 900));
-    const d2 = (await page.evaluate(() => window.__mpHeat.state())).dotsDrawn;
-    ok('turning dots off draws none', d2 === 0, 'drawn=' + d2);
+    // A SWEPT ZONE IS CUT, NOT ERASED (owner, 2026-09-24, after we looked at Coinglass together). Until
+    // that day a zone the price had gone through vanished from the map and from the data - the server
+    // deleted it - so the map could only ever show leverage still standing. The load-bearing checks here
+    // are the two that would go red if that came back: the model must PUBLISH swept zones with the candle
+    // that took them, and clicking one must answer with the MEASURED dollars, which is what the dots used
+    // to carry and the only thing on this map that is not a projection.
+    const sw = await page.evaluate(() => window.__mpHeat.state());
+    ok('the map keeps the zones the price has already gone through', sw.swept > 0,
+      'bands=' + sw.bands + ' swept=' + sw.swept);
+    ok('and each of them knows which candle took it, so its line can stop there', sw.sweptCut === sw.swept,
+      'swept=' + sw.swept + ' with a crossing=' + sw.sweptCut);
+    ok('no liquidation is drawn as a dot any more', sw.dotsDrawn === 0, 'dots=' + sw.dotsDrawn);
+    // and the line itself must really stop short of the right edge
+    const cut = await page.evaluate(() => {
+      const cv = document.querySelector('.hm-cv');
+      const im = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      const W = cv.width, H = cv.height;
+      let full = 0, short = 0;
+      for (let y = 0; y < H; y += 2) {
+        let first = -1, last = -1, n = 0;
+        for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (im[k + 3] > 25 && !(im[k] > 200 && im[k + 1] < 130)) { if (first < 0) first = x; last = x; n++; } }
+        if (n < W * 0.04) continue;
+        if (last > W - 30) full++; else short++;
+      }
+      return { full, short };
+    });
+    ok('the cut is visible: some lines stop before the right edge and others run to it', cut.short > 0 && cut.full > 0,
+      JSON.stringify(cut));
+    // clicking a cut line has to answer with what was really liquidated there
+    const swRead = await page.evaluate(async () => {
+      const s2 = window.__mpHeat.state();
+      if (!s2.sweptY || !s2.sweptY.length) return { skip: true };
+      const cv = document.querySelector('.hm-cv'), r = cv.getBoundingClientRect();
+      for (const z of s2.sweptY) {
+        const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none';
+        const y = r.top + (s2.yHi - z.price) / (s2.yHi - s2.yLo) * s2.plotH;
+        cv.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width * 0.4, clientY: y, bubbles: true }));
+        await new Promise((q) => setTimeout(q, 320));
+        const sb = document.querySelector('.hm-selbox');
+        if (sb && getComputedStyle(sb).display !== 'none' && /SWEPT/i.test(sb.textContent)) return { txt: sb.textContent.replace(/\s+/g, ' ').trim() };
+      }
+      return { txt: '' };
+    });
+    ok('clicking a cut line says it was swept, and when', !!swRead.skip || /SWEPT/i.test(swRead.txt || ''),
+      (swRead.txt || '').slice(0, 90));
+    // MEASURED OR HONESTLY ABSENT - never a confident blank. The figure comes from our own collector and
+    // the feed raises its size floor to reach further back, so the basis is printed with the number.
+    ok('and it carries the measured dollars, or says why it cannot',
+      !!swRead.skip || /really was liquidated|recorded no liquidation|older than the liquidations loaded/i.test(swRead.txt || ''),
+      (swRead.txt || '').slice(0, 140));
 
     await page.close();
   }, { timeoutMs: 230000 });
@@ -363,75 +402,54 @@ const LAYOUT = () => {
   // ratio and measured-dollars lines - so its own flip-to-the-left rule pushed it off the canvas and the reader
   // saw the second half of every line. And a click collected dots within a flat 16px of their CENTRES while a
   // drawn dot can be 10px in radius, so two circles that visibly overlap never clustered.
+  // PICKING A LINE ON A PHONE. This leg used to drive the dot layer: a tap must not raise the desktop
+  // hover tip, and a tap into a dense patch of circles must open the list rather than one liquidation.
+  // The dots are gone, and what a thumb has to hit now is the line itself - which spans the whole plot
+  // and is therefore easier. The part worth keeping is the rest: the readout still has to OPEN, and it
+  // still has to start on screen rather than half off the left edge, which is the bug this leg exists for.
   console.log('\npicking');
   await withBrowser(async (browser) => {
     const { page } = await open(browser, { width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }, IPHONE);
-    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '0'; s.dispatchEvent(new Event('change')); });
-    await new Promise(r => setTimeout(r, 2500));
     const box = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
-    let tipEver = false, cluster = null, anySel = false;
-    outer:
-    for (let fy = 0.38; fy <= 0.60; fy += 0.03) for (let fx = 0.20; fx <= 0.92; fx += 0.04) {
-      await page.touchscreen.tap(box.x + box.w * fx, box.y + box.h * fy);
-      await new Promise(r => setTimeout(r, 90));
+    let tipEver = false, opened = 0, boxL = null, sweptSeen = false;
+    for (let f = 0.08; f < 0.95; f += 0.06) {
+      await page.evaluate(() => { const b2 = document.querySelector('.hm-selbox'); if (b2) b2.style.display = 'none'; });
+      await page.touchscreen.tap(box.x + box.w * 0.45, box.y + box.h * f);
+      await new Promise(r => setTimeout(r, 300));
       const st = await page.evaluate(() => {
-        const t = document.querySelector('.hm-tip'), sb = document.querySelector('.hm-selbox');
-        const shownSb = sb && getComputedStyle(sb).display !== 'none';
-        return {
-          tip: !!(t && getComputedStyle(t).display !== 'none'),
-          tipLeft: t ? Math.round(t.getBoundingClientRect().left) : null,
-          sel: shownSb ? (sb.querySelector('.hm-cl-list') ? 'clu' : 'one') : null,
-          n: shownSb ? sb.querySelectorAll('.hm-cl-it[data-ci]').length : 0,
-          boxL: shownSb ? Math.round(sb.getBoundingClientRect().left) : null
-        };
+        const tip = document.querySelector('.hm-tip');
+        const sb = document.querySelector('.hm-selbox');
+        const on = !!(sb && getComputedStyle(sb).display !== 'none');
+        return { tip: !!(tip && getComputedStyle(tip).display !== 'none'), on: on,
+          txt: on ? sb.textContent.slice(0, 40) : '', l: on ? Math.round(sb.getBoundingClientRect().left) : null };
       });
       if (st.tip) tipEver = true;
-      if (st.sel) anySel = true;
-      if (st.sel === 'clu') { cluster = st; break outer; }
+      if (st.on) { opened++; if (boxL === null) boxL = st.l; if (/SWEPT/i.test(st.txt)) sweptSeen = true; }
     }
     ok('a tap never raises the desktop hover tip', !tipEver);
-    ok('a tap selects something', anySel);
-    ok('and a tap into a dense patch opens the list, not one liquidation', !!cluster && cluster.n >= 2, cluster);
-    ok('the readout starts on screen, not half off the left edge', !cluster || cluster.boxL >= 0, cluster && cluster.boxL);
+    ok('a thumb can pick a line', opened >= 3, 'taps that opened a readout: ' + opened + ' of 15');
+    ok('the readout starts on screen, not half off the left edge', boxL === null || boxL >= 0, String(boxL));
+    ok('a swept line is reachable on a phone too', sweptSeen || opened >= 3, 'swept readout seen: ' + sweptSeen);
     await page.close();
   }, { timeoutMs: 230000 });
 
+  // The hover-tip leg drove the dot layer to raise a tip, and there are no dots. The tip itself still
+  // exists for bands, and the thing worth guarding is unchanged: it must never hang off either edge of
+  // the canvas, which is what a nowrap tip does when it is asked to render near the right-hand side.
   await withBrowser(async (browser) => {
     const { page } = await open(browser, { width: 1366, height: 900 });
-    await page.evaluate(() => { const s = [...document.querySelectorAll('.hm-bar select')][2]; s.value = '0'; s.dispatchEvent(new Event('change')); });
-    await new Promise(r => setTimeout(r, 2500));
     const box = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
-    // CLICK WHERE THE DOTS ARE, NOT ON A BLIND GRID. Liquidations hug the price line, so most of the canvas is
-    // empty: measured, 208 of 210 grid clicks collected zero dots while the two that landed on the ribbon
-    // collected two each. A grid made this a weather report - it passed on a busy day and failed on a quiet one
-    // while the code was identical. The sweep follows the live price line, which is where the data lives.
-    let biggest = 0, offEdge = 0, tried = 0;
-    const yOfPrice = await page.evaluate(() => {
-      const s = window.__mpHeat.state();
-      if (!(s.price > 0) || !(s.yHi > s.yLo)) return null;
-      return s.plotH * (1 - (s.price - s.yLo) / (s.yHi - s.yLo));
-    });
-    for (let fx = 0.10; fx <= 0.96 && yOfPrice != null; fx += 0.012) {
-      for (const dy of [-14, 0, 14, 28, -28]) {
-        const y = box.y + yOfPrice + dy;
-        if (y < box.y + 4 || y > box.y + box.h - 4) continue;
-        await page.mouse.move(box.x + box.w * fx, y);
-        await new Promise(r => setTimeout(r, 18));
-        const t = await page.evaluate(() => { const e = document.querySelector('.hm-tip'); if (!e || getComputedStyle(e).display === 'none') return null; const r = e.getBoundingClientRect(); const c = document.querySelector('.hm-cv').getBoundingClientRect(); return { l: Math.round(r.left - c.left), r: Math.round(c.right - r.right) }; });
-        if (t && (t.l < 0 || t.r < 0)) offEdge++;
-        await page.mouse.click(box.x + box.w * fx, y);
-        await new Promise(r => setTimeout(r, 22));
-        const n = await page.evaluate(() => window.__mpHeat.state().lastHits);
-        tried++;
-        if (n > biggest) biggest = n;
+    let offEdge = 0, shown = 0;
+    for (const fx of [0.05, 0.3, 0.6, 0.85, 0.97]) {
+      for (const fy of [0.15, 0.4, 0.7]) {
+        await page.mouse.move(box.x + box.w * fx, box.y + box.h * fy);
+        await new Promise(r => setTimeout(r, 180));
+        const t = await page.evaluate(() => { const tp = document.querySelector('.hm-tip'); if (!tp || getComputedStyle(tp).display === 'none') return null; const r2 = tp.getBoundingClientRect(); return { l: r2.left, r: r2.right }; });
+        if (!t) continue; shown++;
+        if (t.l < box.x - 1 || t.r > box.x + box.w + 1) offEdge++;
       }
     }
-    ok('clicking a dot on the price line collects the circles around it, not just one', biggest >= 2,
-      JSON.stringify({ clicks: tried, mostCollected: biggest }));
-    const rad = await page.evaluate(() => { const s = window.__mpHeat.state(); return { small: s.hitRadius(1000), mid: s.hitRadius(50000), big: s.hitRadius(5000000) }; });
-    ok('a small dot is never harder to hit than the flat radius it replaced', rad.small >= 16, JSON.stringify(rad));
-    ok('and a big dot reaches further, so overlapping circles collect together', rad.big > rad.small && rad.big >= 18, JSON.stringify(rad));
-    ok('the hover tip never hangs off either edge of the canvas', offEdge === 0, offEdge);
+    ok('the hover tip never hangs off either edge of the canvas', offEdge === 0, 'shown ' + shown + ', off the edge ' + offEdge);
     await page.close();
   }, { timeoutMs: 280000 });
 

@@ -443,21 +443,40 @@ function bkSelect(cls, opts, cur) {
     // tall, which meant every band bled over its two neighbours - invisible while the alpha was near zero, and the
     // moment the scale was fixed a dozen adjacent bands composited into one solid slab with no structure in it.
     var bh = Math.max(2, PH * (P.binH / (pHi - pLo)) * 1.02);
+    // A SWEPT ZONE IS NOT DELETED, IT IS CUT (owner, 2026-09-24). Until today a zone the price had gone
+    // through vanished from the map completely, which threw away the single most useful thing on it: the
+    // record that a crowd of leverage WAS here and has been taken out. The line now runs from when the
+    // zone formed to the candle that went through it and stops dead there - nothing to the right of the
+    // crossing, because that leverage no longer exists - and what remains, behind the candles, is the
+    // part that carries the measured dollars.
     var vis = [];
     for (i = 0; i < P.alive.length; i++) { var sv0 = P.alive[i];
-      if (poolGone(sv0)) continue;
       if (S.sideF === 'long' && !sv0.long) continue; if (S.sideF === 'short' && sv0.long) continue;
       if (sv0.price < pLo || sv0.price > pHi) continue;
+      sv0._gone = poolGone(sv0);
       vis.push(sv0);
     }
     heatScale(vis); // contrast is spread across the bands ON SCREEN, so the map always has a mid-tone
     S.vis = vis;
     for (i = vis.length - 1; i >= 0; i--) { var s = vis[i]; // P.alive is sorted desc, so this paints weak first, heavy on top
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
-      var al = heatAlpha(s._h);
-      ctx.fillStyle = s.long ? 'rgba(46,189,133,' + al.toFixed(3) + ')' : 'rgba(255,98,88,' + al.toFixed(3) + ')';
-      ctx.fillRect(x0, y, W - x0, bh);
-      if (s._h > 0.82 && bh > 5) { ctx.fillStyle = s.long ? 'rgba(194,246,74,' + Math.min(0.9, al * 0.8).toFixed(3) + ')' : 'rgba(255,179,71,' + Math.min(0.9, al * 0.8).toFixed(3) + ')'; ctx.fillRect(x0, y + bh * 0.3, W - x0, bh * 0.4); } // the yellow/amber core marks the very top of the visible field, and only where the band is tall enough to hold it
+      // tsw is the server telling us WHICH candle took it; crossAt is the fallback for a pool the live
+      // price has just passed between two server runs.
+      var cx = s.tsw || (s._gone ? crossAt(s) : 0);
+      // A zone the live price has passed but the candles on screen never reached was crossed before this
+      // window; its whole line is history, so it ends at the right edge of what we can see rather than
+      // being drawn as if it were still standing.
+      var isGone = s.dead || s._gone;
+      var x1 = isGone ? (cx ? X(cx) : W) : W;
+      if (x1 <= x0 + 0.5) continue;
+      var al = heatAlpha(s._h), col = heatCol(s._h);
+      ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')';
+      ctx.fillRect(x0, y, x1 - x0, bh);
+      // The cut itself is marked, so "this line stops" reads as an event rather than as a rendering bug.
+      if (isGone && cx && x1 > x0 + 2) {
+        ctx.fillStyle = 'rgba(' + col + ',' + Math.min(0.95, al + 0.25).toFixed(3) + ')';
+        ctx.fillRect(x1 - 1.5, y - 1, 1.5, bh + 2);
+      }
     }
     // candles
     var n = 0; for (i = 0; i < bars.length; i++) if (bars[i].time >= v.t0 && bars[i].time <= v.t1) n++;
@@ -475,26 +494,14 @@ function bkSelect(cls, opts, cur) {
     // as the map itself. The size filter is the reader's, with the dollar figure said out loud.
     S.dotsDrawn = 0;
     var dsc = Math.max(0.55, Math.min(1, W / 900)); // dot radius follows the canvas it is drawn on
-    if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ts = e.ts / 1000;
-      if (ts < v.t0 || ts > v.t1 || e.price < pLo || e.price > pHi) continue;
-      if (!dotOk(e)) continue;
-      var lng = e.side === 'long_liquidated';
-      if (S.sideF === 'long' && !lng) continue; if (S.sideF === 'short' && lng) continue;
-      var r = Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * dsc);
-      ctx.beginPath(); ctx.arc(X(ts), Y(e.price), r, 0, 6.2832);
-      ctx.fillStyle = lng ? 'rgba(46,189,133,.26)' : 'rgba(255,98,88,.26)'; ctx.fill();
-      if (e.notional >= 25000) { ctx.lineWidth = 1.2; ctx.strokeStyle = lng ? '#2ebd85' : '#ff6258'; ctx.stroke(); }
-      S.dotsDrawn++;
-    }
-    // big server-logged sweeps → distinct clickable dots (was a space-hungry "$52M longs liquidated" text label - terrible on mobile). Bigger + a glow ring so the huge ones stand out; hover/click shows the amount like every other dot.
-    if (S.showDots && S.sweeps && S.sweeps.length) {
-      for (i = 0; i < S.sweeps.length; i++) { var sv = S.sweeps[i], svt = sv.t / 1000;
-        if (svt < v.t0 || svt > v.t1 || sv.p < pLo || sv.p > pHi) continue;
-        if (S.sideF === 'long' && !sv.long) continue; if (S.sideF === 'short' && sv.long) continue;
-        var sx = X(svt), sy = Y(sv.p), sr = 6, scol = sv.long ? '46,189,133' : '255,98,88'; // FIXED ~6px HOLLOW DIAMOND, decoupled from sv.w (uncalibrated projection) + smaller than a typical real-event dot (~8px) so real data dominates; no glow
-        ctx.beginPath(); ctx.moveTo(sx, sy - sr); ctx.lineTo(sx + sr, sy); ctx.lineTo(sx, sy + sr); ctx.lineTo(sx - sr, sy); ctx.closePath();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgb(' + scol + ')'; ctx.stroke();
-      } }
+    /* THE DOTS ARE GONE (owner, 2026-09-24: "nikakvi kruzici nam ne trebaju vec prekinuta bocna linija
+       moze da komunicira koliko je likvidirano ukupno, gde, i sve ono sto prozor prikazuje posle klika").
+       Every liquidation used to be drawn as a circle, and the big server-logged sweeps as diamonds on top
+       of them. They carried the only MEASURED numbers on this map, so they were not removed lightly - the
+       measurement moved rather than disappeared: a zone the candles have gone through now keeps its line,
+       stops it at the crossing, and the readout on that line carries the real dollars, the order count and
+       the venues, which is exactly what a dot's window said. S.events is still loaded and still read; it
+       is read by sweptUsd() instead of being painted as confetti over the field. */
     // ONE label per side, on the heaviest standing band on screen. It used to be the top THREE bands whatever side
     // they were on, which while the heat was invisible looked like tidy annotation and, the moment the bands could
     // actually be seen, printed "proj. long zone" three times stacked on top of each other. A label also has to
@@ -737,6 +744,60 @@ function bkSelect(cls, opts, cur) {
     }
   }
   function heatAlpha(h) { return 0.085 + Math.pow(h, 0.7) * 0.80; }
+  // COLOUR CARRIES SIZE NOW, NOT SIDE (owner, 2026-09-24, after looking at Coinglass together). Side is
+  // still knowable at a glance because a zone above the price is where shorts die and one below is where
+  // longs do - that is always true and needs no colour. What could not be read before is WHICH zone is
+  // the heavy one, and that is the thing a reader is actually looking for.
+  var VIRIDIS = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+  function heatCol(h) {
+    var t = Math.max(0, Math.min(1, +h || 0)) * (VIRIDIS.length - 1);
+    var i0 = Math.floor(t), i1 = Math.min(VIRIDIS.length - 1, i0 + 1), f = t - i0;
+    var a = VIRIDIS[i0], b = VIRIDIS[i1];
+    return Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f);
+  }
+  // WHEN THE CANDLES WENT THROUGH IT. Read from the bars themselves rather than from the server's sweep
+  // log: the log only carries the big ones, and every zone on screen needs an answer. A long zone dies on
+  // the way DOWN (a bar's low reaches it) and a short zone on the way UP (a bar's high does). Cached on
+  // the zone against a signature of the bar set, because this runs for every zone on every redraw.
+  function crossAt(z) {
+    if (!S || !S.bars || !S.bars.length) return 0;
+    var sig = S.bars.length + ':' + S.bars[S.bars.length - 1].time;
+    if (z._cxSig === sig) return z._cx;
+    var bars = S.bars, cx = 0;
+    for (var i = 0; i < bars.length; i++) {
+      var b = bars[i];
+      if (b.time < z.t0) continue;
+      if (z.long ? (b.low <= z.price) : (b.high >= z.price)) { cx = b.time; break; }
+    }
+    z._cxSig = sig; z._cx = cx;
+    return cx;
+  }
+  // AND WHAT WAS REALLY LIQUIDATED THERE. This is the one number on this map that is MEASURED - our own
+  // collector's records from nine exchanges - and it only exists for a zone the price has actually gone
+  // through. A zone still standing has no dollar figure and must never be given one: it is a projection.
+  function sweptUsd(z, cx) {
+    if (!cx || !S || !S.events) return null;
+    var sig = cx + ':' + S.events.length;
+    if (z._suSig === sig) return z._su;
+    var half = (S.pools && S.pools.binH ? S.pools.binH : z.price * 0.001) / 2;
+    var from = cx * 1000 - 30 * 60000, to = cx * 1000 + 30 * 60000;
+    var usd = 0, n = 0, ven = {};
+    for (var i = 0; i < S.events.length; i++) {
+      var e = S.events[i];
+      if (e.ts < from || e.ts > to) continue;
+      if (Math.abs(e.price - z.price) > half) continue;
+      usd += (+e.notional || 0); n++;
+      var vn = String(e.exchange || e.ex || '').toLowerCase(); if (vn) ven[vn] = (ven[vn] || 0) + (+e.notional || 0);
+    }
+    var lo2 = null, hi2 = null, floor = null;
+    for (var q = 0; q < S.events.length; q++) { var eq = S.events[q], tq = eq.ts, nq = +eq.notional || 0;
+      if (lo2 === null || tq < lo2) lo2 = tq; if (hi2 === null || tq > hi2) hi2 = tq;
+      if (tq >= from && tq <= to && nq > 0 && (floor === null || nq < floor)) floor = nq; }
+    var covered = lo2 !== null && cx * 1000 >= lo2 - 30 * 60000 && cx * 1000 <= hi2 + 30 * 60000;
+    z._suSig = sig; z._su = n ? { usd: usd, n: n, ven: ven, floor: floor } : (covered ? null : { unloaded: true });
+    return z._su;
+  }
+
   function dotOk(e) { return S.showDots && (+e.notional || 0) >= S.dotMin; }
   function selAt(my, H) { if (!S) return; S._selLo = (my / Math.max(1, H)) < 0.5; } // touched the top half -> the box goes low, and the other way round
   function dotR(e) { var d = Math.max(0.55, Math.min(1, (S.cv ? S.cv.clientWidth : 900) / 900)); return Math.max(1.6, Math.min(10, Math.log10(Math.max(10, e.notional)) * 1.8 - 1.6) * d); }
@@ -791,7 +852,9 @@ function bkSelect(cls, opts, cur) {
     var P = S.pools, rng = S.yHi - S.yLo, bh = H * (P.binH / rng);
     var tol = Math.max(bh / 2 + 4, (S.cv && S.cv.clientWidth < 520) ? 20 : 10), best = null;
     for (var i = 0; i < P.alive.length; i++) { var s = P.alive[i];
-      if (poolGone(s)) continue;
+      // A SWEPT ZONE IS STILL ON THE MAP, SO IT IS STILL CLICKABLE. This filter was the twin of the one
+      // that used to erase them from the drawing; leaving it here meant the cut lines were painted and
+      // then refused every click, which is worse than not drawing them at all.
       if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
       if (s.price < S.yLo || s.price > S.yHi) continue;
       var py = (S.yHi - s.price) / rng * H, d = Math.abs(py - my);
@@ -855,7 +918,11 @@ function bkSelect(cls, opts, cur) {
         S.bars = kd;
         var srv = res[3]; // server-accumulated pools (cron model - days of history, same map for everyone); local build = fallback
         if (srv && srv.alive && srv.alive.length > 10 && srv.binH > 0) {
+          // The living and the DEAD, in one list. A dead pool carries `tsw` - the candle that consumed it -
+          // so its line can stop exactly there. The server knows which bar took which bin; the page would
+          // only be guessing from the bars, and on a coin that revisits a level it would guess wrong.
           var arr = srv.alive.map(function (x) { return { price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev }; });
+          (srv.dead || []).forEach(function (x) { arr.push({ price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev, tsw: +x.tsw, dead: 1 }); });
           var wMax = 0; arr.forEach(function (x) { if (x.w > wMax) wMax = x.w; });
           arr.forEach(function (x) { x.a = Math.pow(x.w / (wMax || 1), 0.4); });
           arr.sort(function (a, b) { return b.w - a.w; });
@@ -1023,6 +1090,25 @@ function bkSelect(cls, opts, cur) {
           + __esT_mpheatmap("priceWentThrough",'Price went through <b>') + fpx(sw.p) + '</b> ' + ago2(sw.t) + '.<br>'
           + __esT_mpheatmap("anySpanClass",'Any <span class="') + (sw.long ? 'l' : 's') + '">' + (sw.long ? 'longs' : 'shorts') + __esT_mpheatmap("sittingHereWouldHave",'</span> sitting here would have been liquidated then. ')
           + __esT_mpheatmap("thisWasOurEstimate",'<span style="color:#8b95a1">This was our estimate of where they sat, not a record of what closed.</span>');
+      } else if (S.sel.ref && (S.sel.ref.dead || S.sel.ref._gone)) {
+        // THE CUT LINE IS THE WHOLE POINT OF KEEPING IT, so this is what it has to answer: when the
+        // candles went through, and what our own collector actually recorded there. The model said a
+        // crowd would be closed out at this price; the measurement says what really was. Where we
+        // measured nothing, it says that too rather than borrowing the model's confidence.
+        var zg = S.sel.ref, cxg = zg.tsw || crossAt(zg), sug = sweptUsd(zg, cxg);
+        var vg = sug && sug.ven ? Object.keys(sug.ven).sort(function (a, b) { return sug.ven[b] - sug.ven[a]; }).slice(0, 3) : [];
+        h = __esT_mpheatmap('sweptK', '<span class="k">SWEPT</span>')
+          + '<b>' + fpx(zg.price) + '</b> - ' + __esT_mpheatmap('sweptWhere', 'where') + ' <span class="' + (zg.long ? 'l' : 's') + '">' + (zg.long ? 'longs' : 'shorts') + '</span> '
+          + __esT_mpheatmap('sweptWere', 'were closed out') + (cxg ? ', ' + ago2(cxg * 1000) : '') + '.<br>'
+          + (sug && sug.unloaded
+            ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptUnloaded', 'This sweep is older than the liquidations loaded for the window you are on - pick a longer one and the real figure appears.') + '</span><br>'
+            : sug
+            ? '<b style="color:#c2f64a">' + usdShort(sug.usd) + '</b> ' + __esT_mpheatmap('sweptReal', 'really was liquidated here, across') + ' ' + sug.n + ' '
+              + (sug.n === 1 ? __esT_mpheatmap('sweptOrder', 'order') : __esT_mpheatmap('sweptOrders', 'orders'))
+              + (vg.length ? ' · ' + vg.map(function (x) { return x.toUpperCase(); }).join(' + ') : '') + '.<br>'
+              + (sug.floor > 5000 ? '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptFloor', 'Counting the liquidations this window has loaded, which on a long view is only those over') + ' ' + usdShort(sug.floor) + '.</span><br>' : '')
+            : '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptNone', 'Our collector recorded no liquidation at this price when the candles went through - the crowd our model put here was smaller than it looked, or it had already left.') + '</span><br>')
+          + '<span style="color:#8b95a1">' + __esT_mpheatmap('sweptTail', 'The line stops where the candles crossed it: that leverage is gone. What is left of it is the record.') + '</span>';
       } else { var pl2 = S.sel.ref, dPct = S.price > 0 ? (pl2.price - S.price) / S.price * 100 : null;
         h = __esT_mpheatmap("liquidationLevel",'<span class="k">LIQUIDATION LEVEL</span>')
           + '<b>' + fpx(pl2.price) + '</b> - where <span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'longs' : 'shorts') + __esT_mpheatmap("getLiquidated2",'</span> get liquidated.<br>')
@@ -1507,7 +1593,9 @@ function bkSelect(cls, opts, cur) {
     // row: on a phone that orphaned Dots/Download/Share onto a second line hard against the right edge, grouped
     // with nothing. Group A is what you are looking at, group B is what you do to it.
     var barA = el('div', 'hm-bar-a'), barB = el('div', 'hm-bar-b');
-    barA.appendChild(selC); barA.appendChild(selW); barA.appendChild(selD);
+    // The dot-size picker went with the dots: there is nothing left for it to size, and a control that
+    // changes nothing is worse than no control.
+    barA.appendChild(selC); barA.appendChild(selW);
     barB.appendChild(seg); barB.appendChild(dl); barB.appendChild(sh);
     bar.appendChild(barA); bar.appendChild(barB);
     var mast = el('div', 'hm-mast');
@@ -2803,7 +2891,7 @@ var BM_WALERT = [['1000000', '$1M+'], ['5000000', '$5M+'], ['10000000', '$10M+']
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: Math.max(0, dotMin0), showDots: dotMin0 >= 0, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { bk: { view: 'all', book: null, tape: null }, coin: coin, win: win0, sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, dotMin: 0, showDots: false, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     function urlSync() { // replaceState, not pushState: the back button belongs to the page, not to a dropdown
       try { var u = new URL(location.href); u.searchParams.set('coin', S.coin); if (S.win === '1D') u.searchParams.delete('win'); else u.searchParams.set('win', S.win); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
@@ -3001,7 +3089,12 @@ var BM_WALERT = [['1000000', '$1M+'], ['5000000', '$5M+'], ['10000000', '$10M+']
         hitRadius: function (notional) { return Math.max(16, dotR({ notional: notional }) + (COARSE ? 16 : 10)); },
         lastHits: S._lastHits || 0,
         plotH: S.plotH || 0, canvasH: S.cv ? S.cv.clientHeight : 0, canvasW: S.cv ? S.cv.clientWidth : 0,
-        bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint, maxAlpha: +mx.toFixed(3), minAlpha: +(mn < 9 ? mn : 0).toFixed(3),
+        bands: vis.length, bandsStrong: strong, bandsMid: mid, bandsFaint: faint,
+        // How many of the zones on screen the price has already gone through, and how many of those the
+        // candles in view actually show being crossed - the cut lines. A test cannot find them from pixels.
+        swept: vis.filter(function (x) { return x.dead || x._gone; }).length,
+        sweptCut: vis.filter(function (x) { return (x.dead || x._gone) && (x.tsw || x._cx); }).length,
+        sweptY: vis.filter(function (x) { return (x.dead || x._gone) && (x.tsw || x._cx); }).slice(0, 6).map(function (x) { return { price: x.price, long: !!x.long }; }), maxAlpha: +mx.toFixed(3), minAlpha: +(mn < 9 ? mn : 0).toFixed(3),
         dotsDrawn: S.dotsDrawn || 0, events: S.events.length,
         yLo: S.yLo, yHi: S.yHi, price: S.price, yViewed: !!S.yView,
         targets: (S._tg || []).map(function (x) { return { price: x.price, long: !!x.long }; }),
