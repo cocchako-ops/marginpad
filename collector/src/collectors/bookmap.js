@@ -30,8 +30,9 @@ const SAMPLE_MS = 4000;        // one film frame; the page polls slower than thi
 const KEEP_MS = 30 * 60000;    // half an hour of film
 const BAND_PCT = 0.35;         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
 const BUCKETS = 170;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
-const WALL_MIN_USD = 150000;   // a wall is never smaller than this, whatever the coin
-const WALL_MIN_REL = 5;        // ...and never less than this many times the median occupied bucket
+const WALL_MIN_USD = 250000;   // a wall is never smaller than this, whatever the coin
+const WALL_MIN_REL = 2.5;      // ...and never less than this many times the median of its SIXTEEN NEIGHBOURS
+const WALL_NEIGHBOURS = 8;     // rows either side that decide what 'heavier than around it' means
 const WALL_KEEP = 60;          // finished walls kept per symbol, newest last
 const EATEN_FRAC = 0.35;       // traded >= this share of the wall's peak while it stood = eaten, not pulled
 
@@ -132,32 +133,45 @@ export class BookMap {
   }
 
   // ---- WALLS ------------------------------------------------------------------------------------
-  // A wall is a bucket carrying far more than the rest of its own book. "Far more" is measured against
-  // THIS book's own median occupied bucket, not a fixed number, so a $300k order is a wall on a thin coin
-  // and unremarkable on Bitcoin - the same reason the tape calls a print big against its own median.
+  // A WALL IS A LOCAL SPIKE, NOT A BIG NUMBER. The first cut measured each row against the median of the
+  // whole book - the same rule the tape uses to call a print big - and on this data it found NOTHING, at
+  // any threshold down to 3x. MEASURED on a live Bitcoin frame: 66 occupied rows, median $2.3M, maximum
+  // $6.9M. Five books bucketed together have no long tail; the dollars sit almost evenly, so "many times
+  // the median" describes a shape this data does not have.
+  //
+  // What a reader's eye actually picks out is a row far heavier than the rows AROUND it, and that IS
+  // measurable: the median of the sixteen nearest rows. On the same frame that rule found $4.45M resting
+  // at 36x its neighbours - unmistakable - while the ask side topped out at 1.98x, which is worth knowing
+  // in itself: there is no wall above right now. A heavy row at the thin outer edge of the book is not an
+  // artifact of the rule; a lone block order with nothing around it is exactly what that looks like.
   _walls(sym, ts, step, mid, bidM, askM, bidV, askV) {
     let live = this.live.get(sym); if (!live) { live = new Map(); this.live.set(sym, live); }
     let done = this.done.get(sym); if (!done) { done = []; this.done.set(sym, done); }
 
-    const all = [...bidM.values(), ...askM.values()].sort((x, y) => x - y);
-    const med = all.length ? all[Math.floor(all.length / 2)] : 0;
-    const floor = Math.max(WALL_MIN_USD, med * WALL_MIN_REL);
-
     const seen = new Set();
     const scan = (m, mv, side) => {
-      for (const [k, usd] of m) {
-        if (usd < floor) continue;
-        const key = side + ':' + k;
+      const rows = [...m.entries()].map(([k, v]) => ({ k: +k, v })).sort((a, b) => a.k - b.k);
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i];
+        if (r.v < WALL_MIN_USD) continue;
+        const nb = rows.slice(Math.max(0, i - WALL_NEIGHBOURS), i + WALL_NEIGHBOURS + 1)
+          .filter((x) => x.k !== r.k).map((x) => x.v).sort((a, b) => a - b);
+        if (nb.length < 6) continue;                    // too few neighbours to call anything local
+        const nbMed = nb[Math.floor(nb.length / 2)];
+        const rel = nbMed > 0 ? r.v / nbMed : 0;
+        if (rel < WALL_MIN_REL) continue;
+        const key = side + ':' + r.k;
         seen.add(key);
         let w = live.get(key);
         if (!w) {
-          w = { side, bucket: k, price: +(k * step).toFixed(8), first: ts, last: ts, peakUsd: 0, seenN: 0, venues: [] };
+          w = { side, bucket: r.k, price: +(r.k * step).toFixed(8), first: ts, last: ts, peakUsd: 0, peakRel: 0, seenN: 0, venues: [] };
           live.set(key, w);
         }
         w.last = ts; w.seenN++;
-        if (usd > w.peakUsd) w.peakUsd = Math.round(usd);
-        w.usd = Math.round(usd);
-        const vs = mv.get(k); if (vs) w.venues = [...vs];
+        if (r.v > w.peakUsd) w.peakUsd = Math.round(r.v);
+        if (rel > w.peakRel) w.peakRel = +rel.toFixed(1);
+        w.usd = Math.round(r.v); w.rel = +rel.toFixed(1);
+        const vs = mv.get(r.k); if (vs) w.venues = [...vs];
       }
     };
     scan(bidM, bidV, 'bid');
