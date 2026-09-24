@@ -529,7 +529,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _mli=q('mtrLim');if(_mli)_mli.addEventListener('input',upd);
     function upd(){var px=livePx();var amt=+q('mtrAmt').value||0;
       var epx=(oType==='limit'&&limPx()>0)?limPx():px; // a limit ticket quotes its liq off the price it will be entered at
-      if(epx>0){var liq=side==='long'?epx*(1-(1-mmr)/lev):epx*(1+(1-mmr)/lev);
+      if(epx>0){var _mRate=(window.mpFeeRate?window.mpFeeRate(lev,tSym):Math.min(0.00055,0.1/Math.max(1,lev)));
+      var liq=(window.mpLiqPx?window.mpLiqPx(epx,lev,mmr,side==='long',_mRate):(side==='long'?epx*(1-(1-mmr)/lev):epx*(1+(1-mmr)/lev)));
         q('mtrPx').textContent=fp(epx);
         q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
       }else{q('mtrPx').textContent='…';q('mtrLiq').textContent='-';}
@@ -572,7 +573,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side - drop so it can't self-trigger
         if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
         var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
-        var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+        var notional=amt*lev,qty=notional/px,_oRate=(window.mpFeeRate?window.mpFeeRate(lev,tSym):Math.min(0.00055,0.1/Math.max(1,lev)));
+        var liq=(window.mpLiqPx?window.mpLiqPx(px,lev,mmr,long,_oRate):(long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev)));
         var _locT={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(lev,tSym):Math.min(0.00055,0.1/Math.max(1,lev))),status:'open',pnl:null};/* per-class taker fee (was hardcoded 0 → mobile demo-trades closed fee-free, inconsistent with the plan form) */
         var _finMc=function(P){
         var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}

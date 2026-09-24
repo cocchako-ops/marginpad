@@ -82,7 +82,29 @@ const CHAT_HIST_MAX = 150; // room history kept in DO storage (was 60 = a few ho
 function inChunks(list, fn, size) { const out = []; const n = size || 50; for (let i = 0; i < list.length; i += n) { const part = list.slice(i, i + n); const r = fn(part, part.map(() => '?').join(',')); if (r && r.length) for (const x of r) out.push(x); } return out; } // board-winner frames: worn from the grant (season settle) until the next season settles - ts refreshed on every win
 const SEASON_STATS_EPOCH = Date.UTC(2026, 7, 17); // owner 2026-08-16: from this Monday, USER-facing trading stats (profile card) show the current season only; before it nothing changes. Progress systems (XP, achievements, referrals, missions) and ops/admin views stay lifetime.
 function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.floor((now - LB_ANCHOR) / LB_PERIOD) * LB_PERIOD; }
-function mpcLiq(entry, lev, mmr, long) { return long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); }
+// THE OPEN FEE IS TAKEN AT THE FILL, SO LESS MARGIN IS BACKING THE POSITION AND IT LIQUIDATES SOONER
+// (2026-09-24, owner: "kad otvore, odma im se uzme fee i smanji margina a onda kad zatvore da znaju unapred
+// koliko placaju fee"). Measured on our own leverage distribution, the median position here runs over 100x,
+// where the round trip is 11% of the stake - all of it invisible on the card until the moment of closing.
+// That is the "$5 profit that is really a loss" he reported.
+//
+// Derivation, so nobody has to rediscover it: qty = margin*lev/entry, so the open leg costs qty*entry*rate =
+// margin*lev*rate and what actually backs the position is mBack = margin*(1 - lev*rate). Liquidation is still
+// where the loss eats (1 - mmr) of the backing, so the distance simply carries that factor:
+//   liq_long = entry * (1 - (1-mmr)*(1-lev*rate)/lev)
+// At 100x, 0.055% a side, mmr 0.5%: 0.995% from entry becomes 0.940%. `rate` is always min(base, 0.1/lev), so
+// lev*rate can never exceed 0.1 and the factor never drops below 0.9 - this cannot invert at any leverage.
+//
+// THE BOOKED MONEY DOES NOT MOVE. pnl still charges both legs against the COMMITTED margin, so ROE, the paid
+// boards and every closed trade in history mean exactly what they meant yesterday (owner's call, asked and
+// answered the same day). Only where the position dies changes, and what the card shows.
+//
+// rate defaults to 0, which reproduces the old formula byte for byte - every caller that does not price a fill
+// (calculators, legacy rows, the chart's leverage guides) is untouched by construction.
+function mpcLiq(entry, lev, mmr, long, rate) {
+  const f = 1 - Math.min(0.1, Math.max(0, (+rate || 0) * lev));
+  return long ? entry * (1 - (1 - mmr) * f / lev) : entry * (1 + (1 - mmr) * f / lev);
+}
 function handleApi(url) {
   const p = url.searchParams;
   switch (url.pathname) {
@@ -6255,7 +6277,7 @@ function orderPosition(o, fillTs) {
     ts: fillTs, sym, side: long ? 'long' : 'short', entry, stop: (o.sl == null ? null : +o.sl), tp: (o.tp == null ? null : +o.tp),
     lev, rr: null, qty: margin * lev / entry, notional: margin * lev,
     margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, rate),
-    liq: Number(mpcLiq(entry, lev, mmr, long).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
+    liq: Number(mpcLiq(entry, lev, mmr, long, rate).toPrecision(10)), mmr, feeRate: rate, status: 'open', pnl: null,
     src: isBot ? 'bot' : 'srv', ord: o.id, swT: fillTs,
     ...(o.fv && FEE_VENUES[o.fv] ? { feeVenue: o.fv } : {}), // Bot API 2.4: the venue whose taker rate this fill was stamped with
     ...(+o.trail > 0 ? { trail: +o.trail, hwm: entry } : {}) // a trailing stop set on the order rides onto the position, ratcheting from the fill
@@ -6941,7 +6963,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=58a2b1ba" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b87c149c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12556,7 +12578,8 @@ async function handleTelegram(request, env) {
     // auto-syncs to the website within ~14s (pullTrades). No claim link needed; opening here = opening on the web.
     if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
     const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = Math.min(maxLevFor(p.sym), Math.max(1, +o.lev || 1)), margin = o.margin; // per-coin leverage cap - this path trusted the raw /open text (x700.5 on a microcap parsed fine) while /api/trade and the bot API both clamp
-    const liq = mpcLiq(entry, lev, mmr, long);
+    const _rateTg = feeRateFor(lev, p.sym);
+    const liq = mpcLiq(entry, lev, mmr, long, _rateTg);
     const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, p.sym)), liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
@@ -14622,7 +14645,11 @@ async function handleTrade(url, request, env, ctx) {
     const long = side === 'long';
     const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin });
     const entry = _rr.entry, mmr = _rr.mmr;
-    const liq = mpcLiq(entry, lev, mmr, long);
+    // the fee venue has to be resolved BEFORE the liq, because the liq now depends on the rate (2026-09-24) -
+    // it used to be declared further down beside cid, where reading it here is a temporal-dead-zone throw.
+    const _fvS = (b.feeVenue !== undefined) ? (feeVenueNorm(b.feeVenue) || '') : undefined;
+    const _rateSrv = feeRateFor(lev, sym, _fvS || '');
+    const liq = mpcLiq(entry, lev, mmr, long, _rateSrv);
     const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
@@ -14631,7 +14658,6 @@ async function handleTrade(url, request, env, ctx) {
     // journal sync if the server had filled it after all. Measured before: the site aborted at 1.4 s and opened locally while the server
     // open completed -> 52 duplicate positions in one day (~9% of site opens), all on slow mobile networks.
     const cid = String(b.cid || '').replace(/[^\w.:-]/g, '').slice(0, 64);
-    const _fvS = (b.feeVenue !== undefined) ? (feeVenueNorm(b.feeVenue) || '') : undefined;
     const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin: margin, riskAmt: margin, feeOpen: _feeOpen(margin, lev, feeRateFor(lev, sym, _fvS || '')), liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding - sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, ...(_rr.applied ? { rz: _rzTag(_rr) } : {}) /* what this fill really ran with - recorded on the close so the Bot arena can say so (2026-09-16) */, feeRate: feeRateFor(lev, sym, _fvS || ''), ...(_fvS !== undefined ? { feeVenue: _fvS } : {}) /* Bot API 2.4: the terminal's fee venue; undefined = the store applies the account default */, status: 'open', pnl: null, src: 'srv', ...(cid ? { cid } : {}) }; // per-market taker fee/side - settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm, e2: !!adminUid, ...(cid ? { coid: 'site:' + cid } : {}) });
@@ -15604,7 +15630,8 @@ async function handleBot(url, request, env, ctx) {
     // touching the account. `slippage:true` / `margin_tiers:true` / `mmr_pct:0.4` on the open body.
     const _rr = applyRealism(_rz, { price: +pd.price, sym, side, lev, margin, over: { slippage: b.slippage, margin_tiers: b.margin_tiers, mmr_pct: b.mmr_pct } });
     const entry = _rr.entry, mmr = _rr.mmr;
-    const liq = mpcLiq(entry, lev, mmr, long);
+    const _rateBot = feeRateFor(lev, sym, feeVenue || '');
+    const liq = mpcLiq(entry, lev, mmr, long, _rateBot);
     const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);

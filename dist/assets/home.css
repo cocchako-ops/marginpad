@@ -561,6 +561,12 @@
   .ptl-cut::before,.ptl-cut::after{content:'';position:absolute;top:-7px;width:13px;height:13px;border-radius:50%;background:var(--bg);border:1px solid var(--line-bright);}
   .ptl-cut::before{left:-8px;}.ptl-cut::after{right:-8px;}
   .ptl-meta{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.7;letter-spacing:.01em;}
+  /* WHAT CLOSING COSTS, ON THE OPEN TICKET (2026-09-24). Same type as the meta line so it reads as one block,
+     but the booked figure is the only thing with colour - it is the number the trader is deciding on. */
+  .ptl-cost{font-family:"Space Mono",monospace;font-size:10.5px;line-height:1.7;letter-spacing:.01em;color:var(--ink-dim);}
+  .ptl-cost b{font-weight:700;}
+  .ptl-cost b.g{color:#2ebd85;} .ptl-cost b.r{color:#ff5a4d;}
+  .ptl-cost span{opacity:.72;}
   .ptl-meta b{color:var(--ink);}
   /* the stop / target the position is actually carrying, on the card the trader watches (owner 2026-09-09) */
   .ptl-risk{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:4px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.7;letter-spacing:.01em;min-width:0;}
@@ -3042,3 +3048,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .rz-st{font-size:12px;color:var(--txt3,#6b7280);margin-left:auto;}
 .rz-st.on{color:var(--lime,#c2f64a);}
 @media(max-width:520px){.rz-st{margin-left:0;width:100%;}}
+
+/* WHAT A CLOSE BOOKS, on the My Trades row (2026-09-24). The only coloured cell in the meta grid, because
+   it is the number the trader is deciding on - everything else there is a fact about the position. */
+.pp-meta b.jg{color:#2ebd85;} .pp-meta b.jr{color:#ff5a4d;}

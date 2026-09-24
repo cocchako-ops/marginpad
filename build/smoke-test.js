@@ -74,6 +74,42 @@ async function get(path) {
   } catch (e) { inv.push('mcp tools/list → ' + e.message); }
   fails.push(...inv);
 
+  // CAN A TRADE STILL BE OPENED? (2026-09-24) Everything above is keyless and read-only on purpose, which is
+  // exactly why a 500 on /api/trade/open shipped to production and this test still printed OK: a `const` read one
+  // line before its own declaration threw a ReferenceError inside the handler, and nothing keyless touches that
+  // path. Opening a position is the single most important thing this site does.
+  //
+  // Runs only when ADMIN_KEY.local.txt is present, which it always is on the machine that deploys - a CI or
+  // staging run skips it silently rather than failing for a missing key. It writes to a throwaway e2e account and
+  // removes it again, so nothing reaches a board, the money layer or the owner's daily read.
+  // A SKIP MUST NOT READ AS A PASS. The first cut of this leg swallowed a missing key in its own try/catch and
+  // printed an OK line all but identical to a real one - the same "a check that cannot fire" trap the heatmap
+  // suite hit. The tail of the line now always says which of the three happened.
+  let openLeg = ' + open/close SKIPPED (no admin key)';
+  try {
+    const fs2 = require('fs'), path2 = require('path');
+    const key = (fs2.readFileSync(path2.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').match(/mpadm_[a-z0-9]+/i) || [''])[0];
+    if (process.env.SMOKE_BASE) openLeg = ' + open/close SKIPPED (not production)';
+    if (key && !process.env.SMOKE_BASE) {
+      const AH = { 'x-admin-key': key, 'content-type': 'application/json' };
+      const uid = 'e2e-smk' + Date.now().toString(36);
+      const call = async (p, b) => { const r = await fetch(BASE + p, { method: 'POST', headers: AH, body: JSON.stringify(b) }); const t = await r.text(); try { return { s: r.status, j: JSON.parse(t) }; } catch (e) { return { s: r.status, j: null, raw: t.slice(0, 120) }; } };
+      await call('/api/admin/e2euser', { uid, op: 'mk' });
+      const o = await call('/api/trade/open?uid=' + uid, { sym: 'BTC', side: 'long', lev: 20, margin: 50 });
+      const t = (o.j && (o.j.raw || o.j.position)) || o.j;
+      if (o.s !== 200 || !t || !(+t.entry > 0)) fails.push('open a position → HTTP ' + o.s + ' ' + (o.raw || JSON.stringify(o.j || {}).slice(0, 140)));
+      else {
+        // the liq must sit on the right side of entry and inside one leverage step of it - the class of bug that
+        // an inverted or fee-less formula produces, caught here rather than by a trader
+        if (!(t.liq > 0) || !(t.liq < t.entry) || t.liq < t.entry * 0.9) fails.push('open → liq ' + t.liq + ' vs entry ' + t.entry);
+        if (!(+t.feeOpen > 0)) fails.push('open → no feeOpen recorded');
+        openLeg = ' + a real open/close';
+        if (t.id) await call('/api/trade/close?uid=' + uid, { id: t.id });
+      }
+      await call('/api/admin/e2euser', { uid, op: 'rm' });
+    }
+  } catch (e) { /* no key, or no network for it: the keyless checks above still stand */ }
+
   if (fails.length) { console.error('smoke-test: FAIL (' + BASE + ')'); fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
-  console.log('smoke-test: OK - ' + CHECKS.length + ' routes 200 + app-shell bundle resolves + 5 API invariants (' + BASE + ')');
+  console.log('smoke-test: OK - ' + CHECKS.length + ' routes 200 + app-shell bundle resolves + 5 API invariants' + openLeg + ' (' + BASE + ')');
 })().catch(e => { console.error('smoke-test: FATAL ' + e.message); process.exit(1); });

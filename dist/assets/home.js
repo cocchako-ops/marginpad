@@ -230,6 +230,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
          server stamps the same rate from its own - they must agree, so change both. */
       window.mpFeeVenues={bybit:{n:'Bybit',t:0.055,d:20},binance:{n:'Binance',t:0.050,d:20},okx:{n:'OKX',t:0.050,d:0},bitget:{n:'Bitget',t:0.060,d:20},mexc:{n:'MEXC',t:0.020,d:0},gate:{n:'Gate',t:0.050,d:20},kucoin:{n:'KuCoin',t:0.060,d:0},kraken:{n:'Kraken',t:0.050,d:0},hyperliquid:{n:'Hyperliquid',t:0.045,d:4}};
       try{window.mpFeeVenue=String(localStorage.getItem('mp_feevenue')||'');if(!window.mpFeeVenues[window.mpFeeVenue])window.mpFeeVenue='';}catch(e){window.mpFeeVenue='';}
+      /* WHERE A MARGINPAD POSITION REALLY DIES (2026-09-24). Mirror of the worker's mpcLiq: the open leg is
+         taken at the fill, so what backs the position is margin*(1-lev*rate) and the liq distance carries that
+         factor. rate omitted reproduces the old formula exactly, which is what the leverage guides and the
+         standalone calculator want. lev*rate can never exceed 0.1, so this cannot invert at any leverage. */
+      window.mpLiqPx=function(entry,lev,mmr,long,rate){var f=1-Math.min(0.1,Math.max(0,(+rate||0)*lev));return long?entry*(1-(1-mmr)*f/lev):entry*(1+(1-mmr)*f/lev);};
       window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */
@@ -309,8 +314,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional','planFee'];
     var px=effPx();
     if(!isFinite(px)||px<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'-');});setBtn();try{limHint();}catch(_){}return;}
-    var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-_mmr)/lev):px*(1+(1-_mmr)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
+    var _mmr=(window.mpPlanMmr||0.005),long=side==='long',notional=amt*lev,qty=notional/px;
+    /* the preview must quote the liq the FILL will write, fee included - a preview that disagrees with the
+       engine is the exact bug #planEx was (cosmetic picker, flat server rate) on 2026-09-16. */
+    var _pRate=(window.mpFeeRate?window.mpFeeRate(lev,sym):0.00055);
+    var liq=(window.mpLiqPx?window.mpLiqPx(px,lev,_mmr,long,_pRate):(long?px*(1-(1-_mmr)/lev):px*(1+(1-_mmr)/lev)));
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
     var _ld=(liq-px)/px*100; set('planLiq', money(liq)+'  ('+(_ld>=0?'+':'')+_ld.toFixed(2)+'%)'); set('planNotional', money(notional)); // distance to liquidation next to the price: the number a beginner needs before Open, not after (2026-09-05)
     /* Round-trip cost BEFORE the click (owner 2026-09-09: "I paid $18 of fees on a $100 position just because I
@@ -633,7 +642,35 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var _lastSig='';
   function _tkCls(m){return (m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));}
   function _tkPnl(m){return (m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));}
-  function _tkMeta(e,m){return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin <b>'+money((+e.margin||+e.riskAmt||0))+'</b>';}
+  /* What the open fee already took, and what closing will take - see the 2026-09-24 note. `working` is the
+     margin actually backing the position (the open leg is gone, which is why liq sits closer); `book` is what
+     a close books right now, the same number the close sheet previews and the server writes. Legacy rows
+     carry feeRate 0, so every one of these collapses to the old display by construction. */
+  /* Mirror of home.js _tkFees - see the 2026-09-24 note there. Legacy rows carry feeRate 0 and collapse to
+     the old display by construction. */
+  function _jFees(e,m){var r=+e.feeRate||0,q=+e.qty||0,mg=(+e.margin||+e.riskAmt||0);
+    if(!(r>0)||!(q>0)||!(mg>0))return null;
+    var op=(+e.feeOpen>0)?+e.feeOpen:q*(+e.entry||0)*r, cl=q*(+m.live||0)*r;
+    if(!isFinite(op)||!isFinite(cl))return null;
+    return {open:op,close:cl,working:Math.max(0,mg-op),stake:mg,book:(m.pnlNet!=null?m.pnlNet:null)};}
+  function _tkFees(e,m){var r=+e.feeRate||0,q=+e.qty||0,mg=(+e.margin||+e.riskAmt||0);
+    if(!(r>0)||!(q>0)||!(mg>0))return null;
+    var op=(+e.feeOpen>0)?+e.feeOpen:q*(+e.entry||0)*r, cl=q*(+m.live||0)*r;
+    if(!isFinite(op)||!isFinite(cl))return null;
+    return {open:op,close:cl,working:Math.max(0,mg-op),stake:mg,book:(m.pnlNet!=null?m.pnlNet:null)};}
+  function _tkMeta(e,m){var f=_tkFees(e,m);
+    var mg=(f?('<b title="'+money(f.stake)+' committed, '+money(f.open)+' taken as the opening fee">'+money(f.working)+'</b> '+((window.mpT&&window.mpT('rOfStake'))||'of')+' '+money(f.stake)):('<b>'+money((+e.margin||+e.riskAmt||0))+'</b>'));
+    return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin '+mg;}
+  /* The one line the owner asked for: what a close costs, BEFORE it is pressed. */
+  function _tkCost(e,m){var f=_tkFees(e,m);if(!f||f.book==null)return '';
+    var b=f.book,bs=(b>=0?'+':'−')+'$'+Math.abs(b).toFixed(2);
+    /* THE FIGURE THE READER CAN CHECK. 'Close now -$9.79' is measured against the COMMITTED stake, so it also
+       carries the opening fee that is already gone - a reader adding up the market move and the closing fee
+       alone would come out short and think the number wrong. 'back' closes that: working margin + the market
+       move - the closing fee, which is exactly stake + book. Nothing is counted twice and it can be verified
+       against the margin line right above it. */
+    var back=f.stake+b;
+    return '<div class="ptl-cost">'+((window.mpT&&window.mpT('rCloseNow'))||'Close now')+' <b class="'+(b>=0?'g':'r')+'">'+bs+'</b> <span>· '+money(f.close)+' '+((window.mpT&&window.mpT('rCloseFee'))||'closing fee')+' · '+money(back)+' '+((window.mpT&&window.mpT('rBack'))||'back')+'</span></div>';}
   /* SL/TP ON THE TICKET THE TRADER ACTUALLY WATCHES (owner 2026-09-09: "I set a TP on the open ticket, press save,
      and nothing on the ticket says it is set"). Measured: the take-profit WAS saved (journal + server + the drawer
      card + the chart line all carried it) - this ticket, the one under the form, simply never printed SL/TP and
@@ -653,7 +690,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
         +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'-')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-cut"></div>'
-        +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
+        +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'+_tkCost(e,m)
         +'<div class="ptl-risk">'+_tkRisk(e)+'</div>'
         +'</div>';
     }).join('');
@@ -672,6 +709,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var big=row.querySelector('.big');if(big){var bv=_tkPnl(m);if(big.textContent!==bv)big.textContent=bv;}
       var roe=row.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var meta=row.querySelector('.ptl-meta');if(meta){var mv=_tkMeta(e,m);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
+      /* diffed in place like everything else on this ticket - a full rebuild here loses the scroll */
+      var cst=row.querySelector('.ptl-cost');var cv=_tkCost(e,m);
+      if(cst&&!cv)cst.remove(); else if(cst){if(cst.outerHTML!==cv)cst.outerHTML=cv;} else if(cv&&meta)meta.insertAdjacentHTML('afterend',cv);
       var rsk=row.querySelector('.ptl-risk');if(rsk){var rkv=_tkRisk(e);if(rsk.innerHTML!==rkv)rsk.innerHTML=rkv;} /* an SL/TP saved from anywhere (this row, the drawer, the server sync) lands here within a tick */
     });}
   // Set / Edit SL-TP straight from the ticket under the form - the same sheet the drawer uses, so there is one editor, not two.
@@ -1266,6 +1306,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+  /* SECOND COPY, on purpose. home.js is a stack of sibling IIFEs and this drawer lives in a different one from
+     the ticket - the first cut defined _jFees once, beside _tkFees, and the drawer threw ReferenceError on every
+     phone render (caught by the phone leg of fee-open-e2e on its first real run). Cross-IIFE state is
+     window-scoped here by rule; a pure helper this small is simply carried twice, like metrics() itself. */
+  function _jFees(e,m){var r=+e.feeRate||0,q=+e.qty||0,mg=(+e.margin||+e.riskAmt||0);
+    if(!(r>0)||!(q>0)||!(mg>0))return null;
+    var op=(+e.feeOpen>0)?+e.feeOpen:q*(+e.entry||0)*r, cl=q*(+m.live||0)*r;
+    if(!isFinite(op)||!isFinite(cl))return null;
+    return {open:op,close:cl,working:Math.max(0,mg-op),stake:mg,book:(m.pnlNet!=null?m.pnlNet:null)};}
   function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L - legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */
     /* pnlNet: see the metrics() above - gross stays on the card, the fee is settled only into what a close books. */
     var _fxN=(gross!=null)?((+e.qty||0)*((+e.entry||0)+live)*(+e.feeRate||0)):0,pnlNet=(gross!=null)?gross-_fxN-(+e.fund||0):null;
@@ -1278,7 +1327,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
-        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'-')+'</b></div>'
+        +(function(){var f=_jFees(e,m);
+          /* MARGIN = WHAT IS STILL BACKING THE POSITION. The opening fee is genuinely gone (it is why the liq
+             sits closer), so printing the committed figure here was the quiet half of the owner's complaint. */
+          if(!f)return '<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'-')+'</b></div>';
+          return '<div title="'+money(f.stake)+' committed, '+money(f.open)+' taken as the opening fee"><span>'+MT('jMargin2','Margin')+'</span><b>'+money(f.working)+'</b></div>'
+            +(f.book!=null?('<div><span>'+((window.mpT&&window.mpT('rCloseNow'))||'Close now')+'</span><b class="'+(f.book>=0?'jg':'jr')+'">'+(f.book>=0?'+':'−')+'$'+Math.abs(f.book).toFixed(2)+'</b></div>'):'');
+        })()
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'-')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
@@ -1585,7 +1640,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))_bad.push('take-profit');
     if(_bad.length){_say('Your '+_bad.join(' and ')+__esT_home("isOnTheWrong",' is on the wrong side of the entry price - fix it (or clear the field) to open the trade.'));try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
     var notional=amt*L, qty=notional/entry;
-    var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
+    var liq=(window.mpLiqPx?window.mpLiqPx(entry,L,mmr,side==='long',feeRate):(side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L)));  // always on the correct side of entry, even at extreme leverage; the open fee is already out of the backing margin
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
@@ -3111,7 +3166,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=4343f984'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=b6336f39'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3538,7 +3593,8 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(!(entry>0)){cleanUrl();return;}
       if(window.mpTradeGate&&!window.mpTradeGate(p.sym,long?'long':'short')){cleanUrl();return;} // respect open-trade limits + one-way mode for Telegram imports too
       var notional=margin*lev,qty=entry>0?notional/entry:0,mmr=0.005;
-      var liq=long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev);
+      var _tgRate=window.mpFeeRate(lev,p.sym);
+      var liq=(window.mpLiqPx?window.mpLiqPx(entry,lev,mmr,long,_tgRate):(long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev)));
       arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev,p.sym),status:'open',pnl:null,src:'telegram',tgClaim:tok});
       try{window.mpJStore(arr);}catch(e){}
       try{window.mpLivePrices=window.mpLivePrices||{};if(!(window.mpLivePrices[p.sym]&&window.mpLivePrices[p.sym].p>0))window.mpLivePrices[p.sym]={p:entry,t:Date.now()};}catch(e){}
@@ -3591,7 +3647,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=c8306020'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=f504b9c0'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }
@@ -3690,9 +3746,15 @@ window.mpSrvOpen=function(payload,ok,fail){
     var pnl=(m.pnlNet!=null?m.pnlNet:0); /* the sheet previews exactly the number it is about to book (taker fee settled), not the gross card number */
     ov.querySelector('.mpcs-pnl').innerHTML='<span class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'−')+fm(Math.abs(pnl)).replace('-','')+'</span><small>ROE '+((m.roeNet*100)>=0?'+':'')+(m.roeNet*100).toFixed(2)+'%</small>';
     var f=pct/100,part=pnl*f,keepM=(m.margin||0)*(1-f);
+    /* NAME THE FEE AT THE MOMENT OF DECISION (2026-09-24). The sheet already previewed the number it books,
+       which is the honest figure, but it never said how much of the difference was the fee - and 'how much am I
+       paying to close' is exactly what the owner asked to be visible before the press. Scales with the slice,
+       like everything else here. Legacy rows carry feeRate 0 and get no clause at all. */
+    var _cf=((+e.qty||0)*(+m.live||0)*(+e.feeRate||0))*f;
+    var _cfTxt=(_cf>0.004)?(' '+((window.mpT&&window.mpT('rFeeIncl'))||'Includes')+' <b>'+fm(_cf)+'</b> '+((window.mpT&&window.mpT('rCloseFee'))||'closing fee')+'.'):'';
     ov.querySelector('.mpcs-prev').innerHTML= pct>=100
-      ? __esT_home("closesTheWholePosition",'Closes the whole position at ')+fm(m.live)+'.'
-      : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).';
+      ? __esT_home("closesTheWholePosition",'Closes the whole position at ')+fm(m.live)+'.'+_cfTxt
+      : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).'+_cfTxt;
     var go=ov.querySelector('.mpcs-go');go.textContent='Close '+pct+'%';go.className='mpcs-go '+(pnl>=0?'up':'dn');
   }
   function show(id,cb){ curId=id;after=cb||null;

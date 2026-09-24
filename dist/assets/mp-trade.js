@@ -103,6 +103,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+  /* Mirror of home.js _tkFees - see the 2026-09-24 note there. Legacy rows carry feeRate 0 and collapse to
+     the old display by construction. */
+  function _jFees(e,m){var r=+e.feeRate||0,q=+e.qty||0,mg=(+e.margin||+e.riskAmt||0);
+    if(!(r>0)||!(q>0)||!(mg>0))return null;
+    var op=(+e.feeOpen>0)?+e.feeOpen:q*(+e.entry||0)*r, cl=q*(+m.live||0)*r;
+    if(!isFinite(op)||!isFinite(cl))return null;
+    return {open:op,close:cl,working:Math.max(0,mg-op),stake:mg,book:(m.pnlNet!=null?m.pnlNet:null)};}
   function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open caps at -99% until real liquidation */
     /* pnlNet - MIRROR of home.js metrics(): the card keeps the GROSS unrealized number, the fee on both legs is settled
        only into what a close actually books, so a manual close matches the server to the cent. */
@@ -116,7 +123,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
-        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'-')+'</b></div>'
+        +(function(){var f=_jFees(e,m);
+          /* MARGIN = WHAT IS STILL BACKING THE POSITION. The opening fee is genuinely gone (it is why the liq
+             sits closer), so printing the committed figure here was the quiet half of the owner's complaint. */
+          if(!f)return '<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'-')+'</b></div>';
+          return '<div title="'+money(f.stake)+' committed, '+money(f.open)+' taken as the opening fee"><span>'+MT('jMargin2','Margin')+'</span><b>'+money(f.working)+'</b></div>'
+            +(f.book!=null?('<div><span>'+((window.mpT&&window.mpT('rCloseNow'))||'Close now')+'</span><b class="'+(f.book>=0?'jg':'jr')+'">'+(f.book>=0?'+':'−')+'$'+Math.abs(f.book).toFixed(2)+'</b></div>'):'');
+        })()
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'-')+'</b></div>'
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'-')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
@@ -900,9 +913,12 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var pnl=(m.pnlNet!=null?m.pnlNet:0); /* the sheet previews exactly the number it is about to book (taker fee settled), not the gross card number */
     ov.querySelector('.mpcs-pnl').innerHTML='<span class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'−')+fm(Math.abs(pnl)).replace('-','')+'</span><small>ROE '+((m.roeNet*100)>=0?'+':'')+(m.roeNet*100).toFixed(2)+'%</small>';
     var f=pct/100,part=pnl*f,keepM=(m.margin||0)*(1-f);
+    /* MIRROR of home.js: name the closing fee at the moment of decision (2026-09-24). */
+    var _cf=((+e.qty||0)*(+m.live||0)*(+e.feeRate||0))*f;
+    var _cfTxt=(_cf>0.004)?(' '+((window.mpT&&window.mpT('rFeeIncl'))||'Includes')+' <b>'+fm(_cf)+'</b> '+((window.mpT&&window.mpT('rCloseFee'))||'closing fee')+'.'):'';
     ov.querySelector('.mpcs-prev').innerHTML= pct>=100
-      ? __esT_mptrade("closesTheWholePosition",'Closes the whole position at ')+fm(m.live)+'.'
-      : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).';
+      ? __esT_mptrade("closesTheWholePosition",'Closes the whole position at ')+fm(m.live)+'.'+_cfTxt
+      : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).'+_cfTxt;
     var go=ov.querySelector('.mpcs-go');go.textContent='Close '+pct+'%';go.className='mpcs-go '+(pnl>=0?'up':'dn');
   }
   function show(id,cb){ curId=id;after=cb||null;

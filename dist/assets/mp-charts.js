@@ -2175,7 +2175,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var eE=qtEl.querySelector('.cqt-entry'),eL=qtEl.querySelector('.cqt-liq'),eS=qtEl.querySelector('.cqt-size');
     if(!(p>0)){if(eE)eE.textContent='…';if(eL)eL.textContent='…';if(eS)eS.textContent='…';qtLimHint();return;}
     var px=qtEff(p); // a limit ticket must quote its liq off the price it will actually be entered at
-    var mmr=0.005,liq=qtSide==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev),notional=amt*lev;
+    var mmr=0.005,_qRate=(window.mpFeeRate?window.mpFeeRate(lev,sym):0.00055);
+    /* the quick-trade preview quotes the liq the fill will write: the open fee is taken at the fill, so less
+       margin backs the position (2026-09-24). window.mpLiqPx lives in home.js, which the app shell always loads. */
+    var liq=(window.mpLiqPx?window.mpLiqPx(px,lev,mmr,qtSide==='long',_qRate):(qtSide==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev))),notional=amt*lev;
     if(eE)eE.textContent=fmtP(px);if(eL)eL.textContent=fmtP(liq);if(eS)eS.textContent=fmtP(notional);qtLimHint();}
   function doOpenPos(){ var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,msg=qtEl.querySelector('.cqt-msg');
     if(amt>100000){amt=100000;qtEl.querySelector('.cqt-amt').value='100000';if(msg)msg.textContent=__esT_mpcharts("maxTradeSizeIs",'Max trade size is $100,000');} // owner rule
@@ -2197,7 +2200,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       return;
     }
     function open(p,srvT,cid){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+__esT_mpcharts("marketIsClosedYou",' market is closed - you can trade it when it reopens.'));return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
-      var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
+      var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,_fRate=(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L)));
+      var liq=(window.mpLiqPx?window.mpLiqPx(p,L,mmr,qtSide==='long',_fRate):(qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L)));
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
       if(isFinite(_sl)&&((_lng&&_sl>=p)||(!_lng&&_sl<=p)))_sl=NaN;

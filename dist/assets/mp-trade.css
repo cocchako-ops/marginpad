@@ -389,3 +389,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
    must not raise its own callout over ours (owner 2026-09-14). Copying is an action IN the sheet. */
 .ct-msg{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ct-msg a,.ct-msg input,.ct-msg textarea{-webkit-user-select:auto;user-select:auto}
+
+/* WHAT A CLOSE BOOKS, on the My Trades row (2026-09-24). The only coloured cell in the meta grid, because
+   it is the number the trader is deciding on - everything else there is a fact about the position. */
+.pp-meta b.jg{color:#2ebd85;} .pp-meta b.jr{color:#ff5a4d;}
