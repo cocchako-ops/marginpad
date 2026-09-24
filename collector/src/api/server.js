@@ -353,8 +353,8 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   app.get('/api/v1/bookmap', (req, res) => {
     if (!bookMap) return res.status(404).json({ error: 'not_enabled' });
     const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const mins = Math.min(30, Math.max(1, +req.query.mins || 30));
-    const out = bookMap.read(sym, { mins });
+    const mins = Math.min(20, Math.max(1, +req.query.mins || 20));
+    const out = bookMap.read(sym, { mins, venue: String(req.query.venue || '').toLowerCase().replace(/[^a-z]/g, '') });
     if (!out) return res.status(404).json({ error: 'no_map_yet', symbol: sym, note: 'the film starts empty after a restart and fills in a few seconds' });
     res.set('Cache-Control', 'public, max-age=3');
     res.json(out);
