@@ -375,6 +375,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     const want = String(req.query.venue || '').toLowerCase();
     const n = Math.min(500, Math.max(1, +req.query.limit || 100));
     const trades = [], delta = {};
+    let bigOldest = null, bigFloorUsd = 0;
     for (const c of tapeCols) {
       if (want && c.venue !== want) continue;
       const rows = c.read(sym, n);
@@ -410,6 +411,8 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         return [...by.values()].sort((x, y) => x.minute - y.minute);
       })(),
       deltaThisMinute: { ...tot, deltaUsd: Math.round(tot.buyUsd - tot.sellUsd) },
+      get bigWatchedSinceMs() { return bigOldest; },
+      get bigRingFloorUsd() { return bigFloorUsd; },
       // THE LARGE PRINTS, KEPT FAR LONGER THAN THE LIVE RING. `trades` above is every print, so on BTC it
       // spans about half a minute - which means a reader filtering for $250k orders is shown an empty list
       // almost always, not because none happened but because the window is sized for every $9 trade. These
@@ -431,6 +434,8 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
           if (deep && c.hugePrints) rows.push(...c.hugePrints(sym, 400));
           else if (c.big) rows.push(...c.big(sym, 400));
         }
+        bigOldest = rows.length ? Math.min.apply(null, rows.map((r) => r.ts)) : null;
+        bigFloorUsd = deep ? 250000 : 50000;
         if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
         return rows.slice(Math.max(0, rows.length - 300));

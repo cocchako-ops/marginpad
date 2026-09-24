@@ -132,7 +132,7 @@ const RING = 500;     // trades kept per venue+symbol for live reads
 // minutes, exactly TWO were over $1M and none over $5M - so a count-capped ring answers the biggest
 // filters with an almost empty list, which is what a reader sees as 'this is broken'. Prints over
 // $500k are rare enough to keep far more of, and far longer, for a few megabytes.
-const HUGE_USD = 500000;
+const HUGE_USD = 250000;
 const HUGE_KEEP = 1200;
 const HUGE_MS = 12 * 3600000;
 const BIG_USD = 50000;
