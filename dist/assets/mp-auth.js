@@ -2013,6 +2013,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync - flushed on pagehide + next visible tick
   window.addEventListener('pagehide', function () { try { var j2 = localStorage.getItem('mp_journal') || ''; if (ME && j2 && j2 !== lastJ && j2.length < 60000 && navigator.sendBeacon) { lastJ = j2; navigator.sendBeacon('/api/auth/trades', new Blob([JSON.stringify({ journal: JSON.parse(j2) })], { type: 'application/json' })); } } catch (e) {} });
   // pull the server journal periodically so trades opened elsewhere - cross-device AND via the Bot API - appear LIVE in My Trades
+  // REACHABLE FROM THE TERMINAL. The 40-second poll is right for cross-device drift and far too slow for
+  // the one moment it matters: a position being liquidated. MEASURED 2026-09-24 with a real member session -
+  // the server settled the position and the ticket sat on screen for THIRTY SECONDS afterwards, which is the
+  // owner's report ('nista se ne desi, tek kad refresujem'). The terminal can now ask for a pull the instant
+  // it has a reason to expect a change, instead of waiting out the interval.
+  window.mpPullTrades = function () { if (ME) { try { pullTrades(); } catch (_) {} } };
   setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 40000); // server-journal pull: 40s (cross-device/bot sync doesn't need faster) - lowers steady-state load on the single 'main' UserStore DO, which reduces the reset/"internal error" rate
   document.addEventListener('visibilitychange', function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } });
 

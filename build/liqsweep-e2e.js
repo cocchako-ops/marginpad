@@ -94,11 +94,13 @@ const AK = { 'x-admin-key': K, 'content-type': 'application/json' };
         });
         await page.goto(O + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
         await new Promise(r => setTimeout(r, 6000));
-        const past = +p3.liq * 1.0005;
-        for (let i = 0; i < 10; i++) {   // hold it past the liq: the client arms a liquidation over 2 consecutive ticks
-          await page.evaluate((p) => { if (window.mpLivePrices) window.mpLivePrices.BTC = { p: p, t: Date.now() }; }, past);
-          await new Promise(r => setTimeout(r, 900));
-        }
+        // HOLD IT, do not poke it. The page's own price poll overwrites the injected value between pokes, so
+        // at 900ms two CONSECUTIVE ticks never both saw the fake price and the client never armed - the check
+        // reported 'the terminal does not ask' while the terminal was fine. Measured at 250ms: 5 nudges.
+        const past = +p3.liq * 1.0008;
+        const hold = setInterval(() => page.evaluate((p) => { if (window.mpLivePrices) window.mpLivePrices.BTC = { p: p, t: Date.now() }; }, past).catch(() => {}), 250);
+        await new Promise(r => setTimeout(r, 12000));
+        clearInterval(hold);
         res = await page.evaluate(() => ({ n: window.__nudges.length, first: window.__nudges[0] || '' }));
       });
     } catch (e) { res.err = String(e && e.message || e).slice(0, 120); }

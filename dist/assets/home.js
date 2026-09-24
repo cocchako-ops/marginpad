@@ -545,6 +545,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(window.__mpDebug){try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){}} // DIAG (opt-in): per-symbol tick trail - was allocating for every open position every tick
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
     var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir-((+e.qty||0)*(e.entry+exit)*(+e.feeRate||0))-(+e.fund||0):null;};
+    /* NEAR ITS LIQUIDATION, THE 40-SECOND JOURNAL POLL IS THE WRONG SPEED. The nudge covers the case where
+       THIS browser sees the cross; it does not cover the server settling first - its own cron, its own candle,
+       or another device. So while any position is within half a percent of its level, the journal is pulled
+       every few seconds instead. It costs nothing the rest of the time: the flag is only set by a position
+       that is actually in danger, and it lapses fifteen seconds after that stops being true. */
+    if(m.liq>0&&e.entry>0){var _dl=Math.abs(px-m.liq)/m.liq;if(_dl<0.005)_nearLiq=Date.now();}
     var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
     var sl=e.stop!=null&&(m.long?px<=e.stop:px>=e.stop);
     var liqHit=m.liq>0&&(m.long?px<=m.liq:px>=m.liq);
@@ -589,13 +595,20 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       try{if(window.__mpTrack)window.__mpTrack('cliq',e.sym+' liq'+(+m.liq).toPrecision(6)+' px'+(+px).toPrecision(6)+' age'+((prices[e.sym]&&prices[e.sym].t)?Math.round((Date.now()-prices[e.sym].t)/1000):-1)+'s');}catch(_){} // server-side trail: every client liquidation logs symbol + level + the price that fired it
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}
+  var _nearLiq=0;
+  setInterval(function(){if(!_nearLiq||Date.now()-_nearLiq>15000)return;if(document.visibilityState!=='visible')return;try{if(window.mpPullTrades)window.mpPullTrades();}catch(e){}},4000);
   var _nudgeIds={},_nudgeT=null;
   // A srv (server-filled, signed-in) position that auto-closes LOCALLY must tell the server so it settles the SAME
   // position at its OWN level (candle-check) and stamps sc - otherwise the client's local close syncs WITHOUT sc and the
   // trade never counts on the paid board. Debounced: one nudge per close-burst; the server rate-limits (1/3s) + verifies
   // from its own candles (no client price/reason trusted). keepalive so a tab close still delivers it. Fire-and-forget:
   // the server is authoritative and pullTrades reconciles the sc'd close (local-closed display is kept until then).
-  function queueNudge(id){if(!id)return;_nudgeIds[String(id)]=1;if(_nudgeT)return;_nudgeT=setTimeout(function(){var ids=Object.keys(_nudgeIds);_nudgeIds={};_nudgeT=null;if(!ids.length)return;try{fetch('/api/trade/nudge',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({ids:ids})}).catch(function(){});}catch(e){}},500);}
+  /* A NUDGE IS A REASON TO LOOK, so it is followed by one. Asking the server to settle a position and then
+     waiting out the 40-second journal poll is what the owner saw as 'nothing happens until I refresh' -
+     MEASURED: the server closed the position and the ticket stayed on screen 30 s. Two pulls, at 1.4 s and
+     4.5 s, cover the sweep whether it settles at once or after the server has fetched its own candle. */
+  function nudgePull(){try{var f=window.mpPullTrades;if(!f)return;setTimeout(f,1400);setTimeout(f,4500);}catch(e){}}
+  function queueNudge(id){if(!id)return;_nudgeIds[String(id)]=1;if(_nudgeT)return;_nudgeT=setTimeout(function(){var ids=Object.keys(_nudgeIds);_nudgeIds={};_nudgeT=null;if(!ids.length)return;try{fetch('/api/trade/nudge',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({ids:ids})}).then(nudgePull).catch(nudgePull);}catch(e){nudgePull();}},500);}
  function buzz(p){try{if(navigator.vibrate)(navigator.userActivation&&navigator.userActivation.hasBeenActive)&&navigator.vibrate(p);}catch(e){}}
   if(!window.mpBuzz)window.mpBuzz=buzz; // mp-auth owns the global now (it loads on every page); this local copy is the fallback for the tick before it parses
   function notify(e,kind){if(notified[e.id])return;notified[e.id]=true;
