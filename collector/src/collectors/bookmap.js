@@ -30,6 +30,7 @@ const SAMPLE_MS = 5000;        // one film frame; the page polls slower than thi
 const KEEP_MS = 20 * 60000;    // twenty minutes of film - measured against the droplet's free memory
 const BAND_PCT = 0.35;         // the near grid: tick-by-tick around the price
 const WIDE_PCT = 5;            // the wide grid: where the round-number walls live
+const WIDE_EVERY = 3;          // the wide grid is sampled every Nth frame - see below
 const WIDE_LEVELS = 4000;      // raw levels to walk for it (only Binance has anywhere near this many)         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
 const BUCKETS = 170;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
 const WALL_MIN_USD = 250000;   // a wall is never smaller than this, whatever the coin
@@ -86,15 +87,22 @@ export class BookMap {
   /** One frame of the film, for every symbol. Pure bookkeeping - no network, no disk. */
   sample() {
     const t0 = Date.now();
-    for (const sym of this.symbols) this._sampleSym(sym, t0);
+    // A $20M LIMIT AT 87,000 DOES NOT MOVE EVERY FIVE SECONDS, and walking every venue's whole book to
+    // find it does cost every five seconds. MEASURED after shipping the wide grid: the frame went 49ms ->
+    // 416ms, the SQLite reader on the same single core was starved, and /api/v1/pulse - which feeds the
+    // tables at the bottom of the same page - started answering 503 after thirty seconds. The wide grid is
+    // sampled every third frame and carried forward in between; the near grid, where the price actually
+    // is, keeps its full rate.
+    const wideNow = this.samples % WIDE_EVERY === 0;
+    for (const sym of this.symbols) this._sampleSym(sym, t0, wideNow);
     this.samples++;
     this.lastMs = Date.now() - t0;
   }
 
-  _sampleSym(sym, ts) {
+  _sampleSym(sym, ts, wideNow) {
     const per = [];                       // [{venue, mid, bids, asks}]
     for (const c of this.bookCols) {
-      const l = c.levels ? c.levels(sym, WIDE_LEVELS) : null;
+      const l = c.levels ? c.levels(sym, wideNow ? WIDE_LEVELS : 300) : null;
       if (l) per.push({ venue: c.venue, ...l });
     }
     if (!per.length) return;
@@ -130,13 +138,13 @@ export class BookMap {
     };
     for (const v of per) {
       for (const [px, sz] of v.bids) {
-        if (px < wlo) break;
-        put(wbid, wbidV, wbidByV, px, sz, v.venue, wstep, wlo, whi);
+        if (px < (wideNow ? wlo : lo)) break;
+        if (wideNow) put(wbid, wbidV, wbidByV, px, sz, v.venue, wstep, wlo, whi);
         if (px >= lo) put(bid, bidV, bidByV, px, sz, v.venue, step, lo, hi);
       }
       for (const [px, sz] of v.asks) {
-        if (px > whi) break;
-        put(wask, waskV, waskByV, px, sz, v.venue, wstep, wlo, whi);
+        if (px > (wideNow ? whi : hi)) break;
+        if (wideNow) put(wask, waskV, waskByV, px, sz, v.venue, wstep, wlo, whi);
         if (px <= hi) put(ask, askV, askByV, px, sz, v.venue, step, lo, hi);
       }
     }
@@ -147,7 +155,8 @@ export class BookMap {
       return new Map(keep);
     };
     const b = trim(bid), a = trim(ask);
-    const wb = trim(wbid), wa = trim(wask);
+    const wb = wideNow ? trim(wbid) : null, wa = wideNow ? trim(wask) : null;
+    const prevCol = (this.cols.get(sym) || []).slice(-1)[0];
 
     // PER VENUE, NOT JUST THE TOTAL. The whole reason to hold five books is to be able to answer "show me
     // Binance" as well as "show me everybody", and a consolidated total cannot be taken apart afterwards.
@@ -167,7 +176,8 @@ export class BookMap {
     const col = {
       ts, mid: +mid.toFixed(8), step, wstep, venues: per.length,
       b: perV(bidByV, b), a: perV(askByV, a),
-      wb: perV(wbidByV, wb), wa: perV(waskByV, wa),
+      wb: wideNow ? perV(wbidByV, wb) : (prevCol && prevCol.wb) || {},
+      wa: wideNow ? perV(waskByV, wa) : (prevCol && prevCol.wa) || {},
     };
 
     let arr = this.cols.get(sym);
@@ -178,7 +188,7 @@ export class BookMap {
 
     this._accrue(sym, ts, step);   // fold the new prints into the standing walls BEFORE any of them ends
     this._walls(sym, ts, step, mid, b, a, bidV, askV, 'near');
-    this._walls(sym, ts, wstep, mid, wb, wa, wbidV, waskV, 'wide');
+    if (wideNow) this._walls(sym, ts, wstep, mid, wb, wa, wbidV, waskV, 'wide');
   }
 
   // ---- WALLS ------------------------------------------------------------------------------------
