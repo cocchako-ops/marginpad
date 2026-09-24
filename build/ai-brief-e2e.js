@@ -206,7 +206,11 @@ async function derivCheck() {
   const a = String((j && j.answer) || '');
   ok(!!a, 'the model answered');
   // a live funding rate and an OI change, in an answer that could only contain them if the merge worked
-  ok(/funding/i.test(a) && /-?\d+\.\d+ ?%/.test(a), 'it can state a funding rate', a.slice(0, 120));
+  // THE DECIMAL WAS NEVER PART OF THE INVARIANT. Funding genuinely rounds to zero on a quiet day and a
+  // model that writes "0%" has still quoted the block - the run went red while nothing was wrong, which
+  // teaches a reader to ignore this suite. What proves the merge is the trio below: funding named with a
+  // number, the open-interest move, and OUR liquidation dollars. None of them can appear without it.
+  ok(/funding/i.test(a) && /-?\d+(\.\d+)? ?%/.test(a), 'it can state a funding rate', a.slice(0, 120));
   ok(/open interest/i.test(a), 'and the open-interest move', a.slice(0, 120));
   ok(/liquidat/i.test(a) && /\$\s?[\d.,]+ ?[MBK]/i.test(a), 'and the liquidation split in dollars - our collector, not a model', a.slice(0, 160));
   ok(!/(cannot|can't|do not have|don't have|not provided|no data)/i.test(a.slice(0, 260)), 'it does NOT say the data is missing', a.slice(0, 160));
