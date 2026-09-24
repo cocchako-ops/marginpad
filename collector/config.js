@@ -62,7 +62,12 @@ export const config = {
   // Start narrow. Measured 2026-09-21: three venues and three symbols is 12.5 GB/day raw, 2.13 gzipped.
   book: {
     enabled: process.env.MP_BOOK !== '0',
-    symbols: (process.env.MP_BOOK_SYMBOLS || 'BTC,ETH,SOL').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
+    // SIX, not three. The chart assistant reads the book off this list, so on every coin outside it the
+    // honest answer was "I cannot see the order book" - which reads to a member as "the feature does not
+    // exist". Widened after measuring the droplet: ONE vCPU at 19.8%, 96MB of 458MB. Doubling the symbol
+    // count roughly doubles the message rate, so this is measured again after the change and never
+    // widened on optimism - the same core runs the SQLite reader the liquidation API depends on.
+    symbols: (process.env.MP_BOOK_SYMBOLS || 'BTC,ETH,SOL,XRP,DOGE,BNB').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
     // Binance joined on 2026-09-21. The other four ship a snapshot down the socket, so a subscription is a
     // book; Binance sends only differences, so its book is bootstrapped from REST with the differences that
     // arrived during that request replayed onto it. Gate and MEXC can follow the same way when they are wanted.
