@@ -34,7 +34,7 @@ function resolveWindow(q) {
 }
 function validSymbol(s) { return typeof s === 'string' && /^[A-Z0-9]{2,20}$/.test(s.toUpperCase()); } // any captured ticker
 
-export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCols = [] }) {
+export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCols = [], bookMap = null }) {
   const app = express();
   app.disable('x-powered-by');
 
@@ -346,6 +346,18 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         return { venue: v, state: st || 'resyncing' };
       }),
     });
+  });
+
+  // THE BOOK OVER TIME. Price bucketed against the shared mid every few seconds, plus the walls standing
+  // now and the ones that have just gone - each marked eaten or pulled by what the tape did at its price.
+  app.get('/api/v1/bookmap', (req, res) => {
+    if (!bookMap) return res.status(404).json({ error: 'not_enabled' });
+    const sym = String(req.query.symbol || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const mins = Math.min(30, Math.max(1, +req.query.mins || 30));
+    const out = bookMap.read(sym, { mins });
+    if (!out) return res.status(404).json({ error: 'no_map_yet', symbol: sym, note: 'the film starts empty after a restart and fills in a few seconds' });
+    res.set('Cache-Control', 'public, max-age=3');
+    res.json(out);
   });
 
   // TRADE TAPE. The book says what is standing; this says what was executed, and `side` is always the

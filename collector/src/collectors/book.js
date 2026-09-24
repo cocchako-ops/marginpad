@@ -517,6 +517,17 @@ export class BookCollector extends BaseCollector {
     return summarize(b, this.skewMs, topN);
   }
 
+  /** The sorted sides themselves, for a caller that wants to bucket them rather than read a summary.
+   *  Reuses summarize()'s own sort cache, so sampling this every few seconds costs no extra sorting. */
+  levels(sym, maxN) {
+    const b = this.books.get(sym);
+    if (!b || !b.ok) return null;
+    if (Date.now() - b.rxAt > this.maxBookAgeMs) return null;
+    if (!summarize(b, this.skewMs, 1)) return null;   // the one judge of whether this book may be shown
+    const n = Math.max(1, maxN || 400);
+    return { mid: (b._sb[0][0] + b._sa[0][0]) / 2, ts: b.rxAt, bids: b._sb.slice(0, n), asks: b._sa.slice(0, n) };
+  }
+
   /** Why one symbol's book is not being served, in a word a reader can be shown. The same judgement
    *  read() makes, so the API can never say "resyncing" about a book it is happily serving. */
   bookState(sym) {

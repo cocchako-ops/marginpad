@@ -21,6 +21,7 @@ import { GateLiqCollector, HtxLiqCollector, DydxLiqCollector } from './collector
 import { HyperliquidLiqCollector } from './collectors/hyperliquid.js'; // counterparty-harvest detection (no public liq stream exists)
 import { BookCollector } from './collectors/book.js';   // order book state (2026-09-21) - memory only, phase 00
 import { TapeCollector } from './collectors/tape.js';   // trade tape - memory only, phase 00
+import { BookMap } from './collectors/bookmap.js';
 import { startPhase2 } from './phase2.js';
 import { startWhales } from './whales.js';
 
@@ -66,6 +67,12 @@ const bookCols = config.book.enabled
 const tapeCols = config.book.enabled
   ? config.book.tapeVenues.map((v) => new TapeCollector(v, { symbols: config.book.symbols }))
   : [];
+// The film of the book over time, and the walls in it. Reads the two above on a timer - it opens no
+// socket of its own and writes nothing to disk, so it cannot cost either feed anything but CPU.
+const bookMap = config.book.enabled
+  ? new BookMap({ bookCols, tapeCols, symbols: config.book.symbols })
+  : null;
+
 
 // Event-loop stall detector: a 1s heartbeat measures how late it fires. Exposed on /status so a
 // "silent socket" can be told apart from a process that could not read its sockets at the time.
@@ -99,6 +106,7 @@ function getStatus() {
       enabled: true, symbols: config.book.symbols,
       books: bookCols.map((c) => c.status()),
       tape: tapeCols.map((c) => c.status()),
+      bookMap: bookMap ? bookMap.status() : null,
     } : { enabled: false },
   };
 }
@@ -117,6 +125,7 @@ async function main() {
     log.info('starting book + tape', { symbols: config.book.symbols, books: config.book.bookVenues, tape: config.book.tapeVenues });
     await Promise.allSettled([...bookCols, ...tapeCols].map((c) => c.init()));
     for (const c of [...bookCols, ...tapeCols]) { try { c.start(); } catch (e) { log.error('book/tape start failed', { name: c.name, e: String(e) }); } }
+    if (bookMap) bookMap.start();
   } else log.info('book + tape disabled (MP_BOOK=0)');
 startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
@@ -140,7 +149,7 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
   }
   oiSnapTick();
   const oiSnapTimer = setInterval(oiSnapTick, 3600000);
-  const api = createApiServer({ storage, getStatus, bus, bookCols, tapeCols });
+  const api = createApiServer({ storage, getStatus, bus, bookCols, tapeCols, bookMap });
 
   function shutdown(sig) {
     log.info('shutting down', { sig });
@@ -148,6 +157,7 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
     try { p2 && p2.stop(); } catch (e) {}
     collectors.forEach((c) => c.shutdown());
     [...bookCols, ...tapeCols].forEach((c) => { try { c.shutdown(); } catch (e) {} });
+    try { bookMap && bookMap.shutdown(); } catch (e) {}
     try { aggregateTick(); } catch {}
     try { api.close(() => {}); } catch {}
     try { storage.close(); } catch {}
