@@ -253,11 +253,15 @@ export class BookMap {
   /** The film, plus the walls standing now and the ones that have just finished.
    *  `venue` picks ONE book or leaves them consolidated; the summing happens here so the page never
    *  downloads a breakdown it is not showing. */
-  read(sym, { mins = 20, venue = '' } = {}) {
+  read(sym, { mins = 20, venue = '', back = 0 } = {}) {
     const arr = this.cols.get(sym) || [];
     if (!arr.length) return null;
-    const from = Date.now() - Math.max(1, Math.min(20, +mins || 20)) * 60000;
-    const raw = arr.filter((c) => c.ts >= from);
+    // A WINDOW THAT CAN SIT IN THE PAST. Without `back` the film could only ever show its own tail, so
+    // a wall that formed and was pulled four minutes ago was unreachable the moment it scrolled off.
+    const span = Math.max(1, Math.min(20, +mins || 20)) * 60000;
+    const bk2 = Math.max(0, Math.min(20, +back || 0)) * 60000;
+    const to = Date.now() - bk2, from = to - span;
+    const raw = arr.filter((c) => c.ts >= from && c.ts <= to);
     if (!raw.length) return null;
     const want = String(venue || '').toLowerCase();
     const flat = (byV) => {
@@ -283,6 +287,8 @@ export class BookMap {
     const done = (this.done.get(sym) || []).filter(vOk).slice(-24).map((w) => ({ ...w, standing: false }));
     return {
       symbol: sym, ts: Date.now(), step, sampleMs: SAMPLE_MS, venue: want || 'all',
+      backMins: Math.round(bk2 / 60000), keepMins: Math.round(KEEP_MS / 60000),
+      oldestKeptTs: arr.length ? arr[0].ts : null, newestKeptTs: arr.length ? arr[arr.length - 1].ts : null,
       venuesAvailable: this.bookCols.map((c) => c.venue),
       windowMins: Math.round((cols[cols.length - 1].ts - cols[0].ts) / 60000),
       cols, wallsStanding: live, wallsFinished: done,
