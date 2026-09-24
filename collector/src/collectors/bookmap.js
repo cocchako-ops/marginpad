@@ -102,7 +102,7 @@ export class BookMap {
   _sampleSym(sym, ts, wideNow) {
     const per = [];                       // [{venue, mid, bids, asks}]
     for (const c of this.bookCols) {
-      const l = c.levels ? c.levels(sym, wideNow ? WIDE_LEVELS : 300) : null;
+      const l = c.levels ? c.levels(sym) : null;   // uncapped: the walk below stops at its own band
       if (l) per.push({ venue: c.venue, ...l });
     }
     if (!per.length) return;

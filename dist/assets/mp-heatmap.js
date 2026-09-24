@@ -2070,6 +2070,7 @@ function bkSelect(cls, opts, cur) {
     var BM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB'];
     var BM_WINS = [['5', '5m'], ['10', '10m'], ['20', '20m']];
 var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
+var BM_WALERT = [['1000000', '$1M+'], ['5000000', '$5M+'], ['10000000', '$10M+'], ['25000000', '$25M+']];
     var bmState = { coin: '', venue: 'all', mins: 10, band: 'near', back: 0, keepMins: 20, data: null, hover: null, sel: null, cells: [], loading: false };
     // Published where the read-only mirror can see it: that mirror lives in a different IIFE, so a bare
     // var assigned here never reaches it - it silently made a new global in one scope and left null in the other.
@@ -2084,7 +2085,9 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
       return '<div class="hm-bm-h"><span class="hm-bm-t">' + __esT_mpheatmap('bmTitle', 'THE BOOK OVER TIME') + '</span>'
         + q('bookfilm')
         + '<span class="hm-bm-sp"></span>'
-        + '<span class="hm-bm-s">' + __esT_mpheatmap('bmSub', 'where money has been standing, and what happened to it') + '</span></div>'
+        + '<span class="hm-bm-s">' + __esT_mpheatmap('bmSub', 'where money has been standing, and what happened to it') + '</span>'
+        + bkSelect('bmWa', BM_WALERT, bkPref('mp_hm_walertusd', 1000000))
+        + '<button type="button" class="hm-bell hm-bm-bell"></button></div>'
         + '<div class="hm-bm-c">'
         + '<span class="hm-bm-g"><b>' + __esT_mpheatmap('bmCoin', 'coin') + '</b>'
         + BM_COINS.map(function (c) { return bmChip('bmcoin', c, c, c === bmState.coin, ''); }).join('') + '</span>'
@@ -2231,13 +2234,25 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
         var x0 = xOfT(w.first);
         ctx.fillStyle = w.side === 'bid' ? 'rgba(126,226,184,.95)' : 'rgba(255,163,155,.95)';
         ctx.fillRect(x0, y + rh / 2 - 1, PW - x0, 2);
-        ctx.beginPath(); ctx.arc(x0, y + rh / 2, 3, 0, 6.3); ctx.fill();
+        // the dot marks WHEN it appeared; a notch at the edge means it was already there before this window
+        if (w.first > t0 + 500) { ctx.beginPath(); ctx.arc(x0, y + rh / 2, 3, 0, 6.3); ctx.fill(); }
+        else { ctx.fillRect(0, y + rh / 2 - 4, 2, 8); }
       });
-      // walls that ENDED: a mark where they went, coloured by whether they were eaten or withdrawn
+      // A WALL THAT ENDED ALSO HAD A LIFE, and drawing only the moment it went threw that away - the
+      // owner's point: 'linije su kratke i zavrsavaju se negde ... naglasimo da se neke skupljaju dosta
+      // duze'. Every wall is now a bar from when it APPEARED to when it went, so how long it stood is a
+      // length you can compare across the whole picture, and a wall that was already standing when the
+      // window opens runs to the left edge with a notch saying it started before this.
       (d.wallsFinished || []).forEach(function (w) {
         var y = yOf(w.price / step);
         if (y < -rh || y > PH + rh || !w.endedAt) return;
-        var x = xOfT(w.endedAt);
+        var x = xOfT(w.endedAt), xs = xOfT(w.first || w.endedAt);
+        if (x > xs + 1) {
+          ctx.fillStyle = w.side === 'bid' ? 'rgba(126,226,184,.42)' : 'rgba(255,163,155,.42)';
+          ctx.fillRect(xs, y + rh / 2 - 1, x - xs, 2);
+        }
+        if ((w.first || 0) < t0 - 500) { ctx.fillStyle = 'rgba(233,240,250,.55)'; ctx.fillRect(0, y + rh / 2 - 3, 2, 6); }
+
         var eaten = /eaten/.test(w.ending || '');
         ctx.strokeStyle = eaten ? 'rgba(255,176,32,.9)' : 'rgba(177,140,255,.9)';
         ctx.lineWidth = 1.4;
@@ -2247,6 +2262,25 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
         ctx.stroke();
       });
 
+      // WHAT IS SELECTED HAS TO LOOK SELECTED. A card appearing below the picture does not say WHICH
+      // row it is about, and on a film of eighty rows that is most of the answer. The chosen cell or wall
+      // is outlined in white and keeps its outline until something else is chosen or the card is closed.
+      if (bmState.sel) {
+        var sl = bmState.sel, sy = null, sx0 = 0, sx1 = PW;
+        if (sl.kind === 'cell') {
+          sy = yOf(sl.payload.bucket);
+          var si = cols.indexOf(sl.payload.col);
+          if (si >= 0) { sx0 = si * cw; sx1 = sx0 + Math.max(2, cw); }
+        } else if (sl.kind === 'wall') {
+          sy = yOf(sl.payload.price / step) ;
+          sx0 = xOfT(sl.payload.first || t0);
+          sx1 = sl.payload.standing ? PW : xOfT(sl.payload.endedAt || t1);
+        }
+        if (sy != null && sy > -rh && sy < PH + rh) {
+          ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.lineWidth = 1.5;
+          ctx.strokeRect(Math.max(0.5, sx0 - 1.5), sy - Math.max(3, rh / 2 + 1), Math.max(4, sx1 - sx0 + 3), Math.max(7, rh + 2));
+        }
+      }
       // price axis on the right, over the film rather than inside the plot
       ctx.fillStyle = 'rgba(10,13,17,.86)'; ctx.fillRect(PW, 0, AXW, H);
       ctx.fillStyle = '#6b7a93'; ctx.font = '10.5px "Space Mono",monospace'; ctx.textAlign = 'left';
@@ -2482,6 +2516,7 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
       var host = bmEl.querySelector('.hm-bm-d');
       if (host) { host.innerHTML = ''; host.style.display = 'none'; }
       bmState.sel = null;
+      try { bmPaint(); } catch (e) {}
     }
 
     // Hit testing, small targets first: a cross or a plus is 9px across and a cell can be forty of them.
@@ -2592,6 +2627,7 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
       if (t.hasAttribute('data-bmcoin')) bmState.coin = t.getAttribute('data-bmcoin');
       else if (t.hasAttribute('data-bmven')) bmState.venue = t.getAttribute('data-bmven');
       else if (t.hasAttribute('data-bmwin')) bmState.mins = +t.getAttribute('data-bmwin') || 10;
+      else if (t.classList && t.classList.contains('bmWa')) { bkPrefSet('mp_hm_walertusd', t.value); bmAlPaint(); return; }
       else if (t.hasAttribute('data-bmband')) { bmState.band = t.getAttribute('data-bmband') === 'wide' ? 'wide' : 'near'; try { localStorage.setItem('mp_hm_bmband', bmState.band); } catch (e) {} }
       else return;
       try {
@@ -2602,13 +2638,69 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
       } catch (e) {}
       bmState.data = null;
       bmChromePaint();
+    bmAlLoad();
       bmPaint();
       bmFetch();
     });
+    // ---- THE WALL ALERT -----------------------------------------------------------------------------
+    // The tape's bell alerts on money that CHANGED HANDS. This one alerts on money that has just been
+    // PLACED - a limit order appearing in the book - which is a different event and deserves its own
+    // switch. The floor beside it is the whole control: a $250k resting order is ordinary and a $10M one
+    // is not, and where that line sits is the reader's call, not ours.
+    var bmAl = null;
+    function bmAlPaint() {
+      var b = bmEl.querySelector('.hm-bm-bell'); if (!b) return;
+      var on = !!(bmAl && bmAl.wall), usd = bkPref('mp_hm_walertusd', 1000000);
+      b.className = 'hm-bell hm-bm-bell' + (on ? ' on' : '');
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2.6 2.9 10.9l7.1 2.7 2.7 7.1 8.8-18.1Z"/><path d="m10 13.6 5.4-5.4"/></svg>';
+      b.title = on
+        ? __esT_mpheatmap('bmAlOn', 'Telegram alert is ON for new walls over') + ' ' + usdShort(usd) + ' - ' + __esT_mpheatmap('bmAlOff2', 'press to stop')
+        : __esT_mpheatmap('bmAlAsk', 'Send me a Telegram when a limit order this big appears in the book');
+    }
+    function bmAlLoad() {
+      var li = false; try { li = /(^|;\s*)mp_li=/.test(document.cookie); } catch (e) {}
+      if (!li) { bmAlPaint(); return; }                 // a guest is never asked; the gate explains when pressed
+      fetch('/api/alerts/tapealert').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (j && j.cfg) bmAl = j.cfg;
+        bmAlPaint();
+      }).catch(function () {});
+    }
+    function bmAlClick() {
+      var usd = bkPref('mp_hm_walertusd', 1000000);
+      var want = !(bmAl && bmAl.wall);
+      var body = {
+        on: !!(bmAl && bmAl.on), usd: (bmAl && bmAl.usd) || 250000, side: (bmAl && bmAl.side) || 0,
+        coins: [bmState.coin || (S && S.coin) || 'BTC'],
+        wall: { on: want, usd: usd },
+      };
+      fetch('/api/alerts/tapealert', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
+        .then(function (res) {
+          if (res.s === 401) {
+            bellGate(__esT_mpheatmap('gateInT', 'Sign in first'),
+              __esT_mpheatmap('gateInB', 'An alert has to reach somebody. Sign in and link Telegram, and every print over this size lands in your chat.'),
+              __esT_mpheatmap('gateInC', 'Go to alerts'), '/alerts'); return;
+          }
+          if (res.s === 400 && res.j && res.j.error === 'telegram_required') {
+            bellGate(__esT_mpheatmap('gateTgT', 'Telegram is not linked yet'),
+              __esT_mpheatmap('gateTgB', 'The alert is ready - it just has nowhere to go. Linking takes one tap on the alerts page: open the bot, press start, and come back.'),
+              __esT_mpheatmap('gateTgC', 'Link Telegram'), '/alerts'); return;
+          }
+          if (!res.j || !res.j.ok) { bellSay(__esT_mpheatmap('bmAlFail', 'Could not save that alert. Try again in a moment.'), false); return; }
+          bmAl = res.j.cfg; bmAlPaint();
+          bellSay(want
+            ? __esT_mpheatmap('bmAlNow', 'Telegram alert on: a new') + ' ' + usdShort(usd) + ' '
+              + __esT_mpheatmap('bmAlNow2', 'limit order in the') + ' ' + (bmState.coin || 'BTC') + ' '
+              + __esT_mpheatmap('bmAlNow3', 'book reaches you. A resting order is not a trade - it can be withdrawn.')
+            : __esT_mpheatmap('bmAlDone', 'Wall alert off.'), want);
+        }).catch(function () { bellSay(__esT_mpheatmap('bmAlFail', 'Could not save that alert. Try again in a moment.'), false); });
+    }
+
     function bmChromePaint() {
       var st = bmEl.querySelector('.hm-bm-st'), keepH = st && st.querySelector('.hm-bm-cv') ? null : null;
       bmEl.innerHTML = bmChrome();
       bmWireCanvas();
+      bmAlPaint();
     }
     function bmWireCanvas() {
       var cv = bmEl.querySelector('.hm-bm-cv'); if (!cv) return;
@@ -2660,9 +2752,12 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
         if (!hit) { bmHide(); return; }
         bmState.sel = hit;
         bmDetail(hit.kind, hit.payload);
+        bmPaint();
       });
       bmEl.addEventListener('click', function (ev) {
-        if (ev.target.classList && ev.target.classList.contains('hm-bmd-x')) bmHide();
+        var bl = ev.target.closest && ev.target.closest('.hm-bm-bell');
+      if (bl) { ev.stopPropagation(); bmAlClick(); return; }
+      if (ev.target.classList && ev.target.classList.contains('hm-bmd-x')) bmHide();
         if (ev.target.classList && ev.target.classList.contains('hm-bm-nowb')) { bmState.back = 0; bmFetch(true); bmNowChip(); }
       });
       var move = function (ev) {

@@ -536,7 +536,13 @@ export class BookCollector extends BaseCollector {
     if (!b._sb.length || !b._sa.length) return null;
     const bb = b._sb[0][0], ba = b._sa[0][0];
     if (!(bb > 0) || !(ba > 0) || ba <= bb) return null;   // a crossed book is a broken book
-    const n = Math.max(1, maxN || 250);
+    // NO SLICE BY DEFAULT. The caller walks outward and breaks when it leaves its own price band, so a
+    // count cap is both a cost and a lie: MEASURED, Binance keeps 1,295 levels inside a TENTH of one
+    // percent, so a 300-level cap truncated the near band and the film drew vertical stripes wherever a
+    // frame had been capped. Copying 4,000 entries per venue per symbol every five seconds was also most
+    // of what made the sample expensive. These arrays are the book's own sort cache - read, never write.
+    if (!maxN) return { mid: (bb + ba) / 2, ts: b.rxAt, bids: b._sb, asks: b._sa };
+    const n = Math.max(1, maxN);
     return { mid: (bb + ba) / 2, ts: b.rxAt, bids: b._sb.slice(0, n), asks: b._sa.slice(0, n) };
   }
 

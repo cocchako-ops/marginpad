@@ -6382,7 +6382,56 @@ function tapeAlertCfg(o) {
     usd: Math.max(TAPE_ALERT_MIN, Math.min(50000000, Math.round(+c.usd || TAPE_ALERT_MIN))),
     side: [0, 1, 2].indexOf(+c.side) >= 0 ? +c.side : 0,   // 0 both, 1 buys, 2 sells
     coins: coins.slice(0, TAPE_ALERT_COINS.length),
+    // A SECOND KIND OF BIG MONEY, on its own switch. A print is money that changed hands; a wall is money
+    // somebody placed and can take back. They deserve separate switches because they deserve separate
+    // reactions - and the floor for a wall is higher by default, because a big resting order is common
+    // and a big EXECUTION is not.
+    // BOTH SHAPES, because this function has to survive its own round trip: the page posts
+    // { wall: { on, usd } } and what gets STORED is what this returns, which is flat. Reading only the
+    // nested form meant the setting was lost the moment it was saved and read back - the switch would
+    // look on until the next page load and then be off with nothing to explain it.
+    wall: c.wall === true || !!(c.wall && c.wall.on),
+    wallUsd: Math.max(TAPE_ALERT_MIN, Math.min(50000000, Math.round(+c.wallUsd || (c.wall && +c.wall.usd) || TAPE_ALERT_MIN * 4))),
   };
+}
+
+// A WALL APPEARING IS ITS OWN KIND OF NEWS, and it is not the kind a print is. A print is money that
+// CHANGED HANDS; a wall is money somebody has PLACED at a price and can take back before it is ever
+// touched. The message keeps that distinction in its first line, because a reader told "somebody bought
+// $4.3M" when nobody bought anything would trade on it.
+//
+// Two things this deliberately does NOT say, however often they are asked for: who did it, and at what
+// leverage. An order book publishes the total resting at a price and nothing else - no account, no
+// leverage, no position behind it. Any number there would be invented.
+async function tapeWallAlerts(env, w, c, walls, bump) {
+  let wsent = 0, fired = 0;
+  for (const sym of c.coins) {
+    for (const k of (walls[sym] || [])) {
+      if (wsent >= 2) break;                                   // two per coin per run, same as the prints
+      const usd = +k.peakUsd || 0;
+      if (!(usd >= c.wallUsd)) continue;
+      if (c.side === 1 && k.side !== 'bid') continue;
+      if (c.side === 2 && k.side !== 'ask') continue;
+      // Only a wall that has just APPEARED is news; one that has stood for an hour is the furniture.
+      if (!(k.ageMs >= 0 && k.ageMs < 10 * 60000)) continue;
+      const kk = 'wlal:' + w.uid + ':' + sym + ':' + (k.band || 'wide') + ':' + k.side + ':' + k.bucket + ':' + Math.round((+k.first || 0) / 60000);
+      try { if (await env.STATS.get(kk)) continue; await env.STATS.put(kk, '1', { expirationTtl: 12 * 3600 }); } catch (e) { continue; }
+      const buy = k.side === 'bid';
+      const who = (k.venues || []).map((v) => String(v).toUpperCase()).join(' + ') || 'one venue';
+      const dp = +k.distPct;
+      const txt = '<b>' + (buy ? '◆' : '◇') + ' ' + _susd(usd) + ' ' + sym + ' ' + (buy ? 'BUY' : 'SELL') + ' WALL appeared</b>\n'
+        + 'Somebody has placed <b>' + _susd(usd) + '</b> of ' + (buy ? 'buy' : 'sell') + ' orders at <b>' + _spx(+k.price || 0) + '</b>'
+        + (isFinite(dp) ? ', ' + Math.abs(dp).toFixed(2) + '% ' + (dp >= 0 ? 'above' : 'below') + ' the price' : '') + '.\n'
+        + 'Standing on <b>' + who + '</b>' + ((k.venues || []).length === 1 ? ' alone' : '') + ', ' + Math.round((k.ageMs || 0) / 1000) + 's so far'
+        + (k.peakRel ? ', ' + k.peakRel + 'x the prices either side of it' : '') + '.\n'
+        + '<i>A resting order, not a trade: nothing has changed hands and it can be withdrawn at any second. An order book carries no leverage and no identity, so nobody can tell you who placed it or at what leverage.</i>\n'
+        + '<a href="https://marginpad.io/heatmap?coin=' + sym + '">See it on the live book map</a>';
+      if (env.TELEGRAM_TOKEN) {
+        try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: txt }); wsent++; fired++; } catch (e) {}
+      }
+    }
+  }
+  if (fired && bump) bump(fired);
 }
 
 // The cron half. One tape read per watched coin for the whole site, not per subscriber: everybody is
@@ -6394,7 +6443,7 @@ async function checkTapePrints(env) {
     if (!base) return;
     let watch = [];
     try { const r = await usersDO(env, '/tapealertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ watched: 0, fired: 0, err: 1 }); return; }
-    const live = watch.filter((w) => w && w.tg && w.cfg && w.cfg.on);
+    const live = watch.filter((w) => w && w.tg && w.cfg && (w.cfg.on || tapeAlertCfg(w.cfg).wall));
     if (!live.length) { await stamp({ watched: watch.length, live: 0, fired: 0 }); return; }
 
     const want = new Set();
@@ -6407,9 +6456,24 @@ async function checkTapePrints(env) {
       } catch (e) {}
     }
 
+    // THE WALLS, read once per coin for the whole site, exactly like the prints. A wall is NOT a trade:
+    // nobody has bought anything, somebody has PLACED an order and can withdraw it, and the message says
+    // so in its own words. It also never states a leverage - an order book does not carry one, and no
+    // feed anywhere can tell you what leverage a resting limit order belongs to.
+    const walls = {};
+    const wantW = new Set();
+    live.forEach((w) => { const cc = tapeAlertCfg(w.cfg); if (cc.wall) cc.coins.forEach((x) => wantW.add(x)); });
+    for (const sym of Array.from(wantW).slice(0, TAPE_ALERT_COINS.length)) {
+      try {
+        const r = await fetch(base + '/api/v1/bookmap?symbol=' + encodeURIComponent(sym) + '&band=wide&only=walls', { signal: AbortSignal.timeout(6000), cf: { cacheTtl: 5, cacheEverything: true } });
+        if (r.ok) { const j = await r.json(); walls[sym] = (j && j.wallsStanding) || []; }
+      } catch (e) {}
+    }
+
     let fired = 0;
     for (const w of live) {
       const c = tapeAlertCfg(w.cfg);
+      if (c.wall) await tapeWallAlerts(env, w, c, walls, (n) => { fired += n; });
       let sent = 0;
       for (const sym of c.coins) {
         for (const t of (tape[sym] || [])) {
@@ -15818,7 +15882,9 @@ async function handleAlerts(url, env, request) {
     }
     let pb = {}; try { pb = await request.json(); } catch (e) {}
     const cfg = tapeAlertCfg(pb);
-    if (cfg.on) {
+    // EITHER switch needs somewhere to send to. Checking only the print switch let a reader turn walls on
+    // with no chat linked and hear nothing, for ever, with no error to explain it.
+    if (cfg.on || cfg.wall) {
       let linked = false;
       try { const ir = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const ii = await ir.json(); linked = !!(ii && ii.linked); } catch (e) {}
       if (!linked) return jr({ error: 'telegram_required', message: 'Link Telegram first - the alert has nowhere to go otherwise.' }, 400);
@@ -25057,7 +25123,9 @@ export class UserStore {
       let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='tapealert' LIMIT 4000"); } catch (e) { return this.j({ watch: [] }); }
       for (const r of rows) {
         let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
-        if (!cfg || !cfg.on) continue;
+        // EITHER switch keeps the row in the watch list. Filtering on the print switch alone meant a
+        // reader who wanted only wall alerts was never walked at all.
+        if (!cfg || !(cfg.on || cfg.wall === true || (cfg.wall && cfg.wall.on))) continue;
         const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', r.user_id)[0] || {};
         if (!u.tg_chat) continue;   // no Telegram, nothing to send to
         out.push({ uid: r.user_id, cfg, tg: u.tg_chat, username: u.username || '' });
