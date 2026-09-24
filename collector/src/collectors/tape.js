@@ -285,6 +285,47 @@ export class TapeCollector extends BaseCollector {
     return a.slice(Math.max(0, a.length - n));
   }
 
+  // ---- SURVIVING A RESTART (2026-09-25) --------------------------------------------------------------
+  // Every ring above is memory, and a restart wiped all of it: on 24.09 the process was restarted 31 times
+  // (every one a deploy), and each time the day-long ring of $1M prints started again from nothing, so the
+  // biggest filters on the page answered "nothing this big" for hours after every push. dump() is the
+  // rings as plain JSON; restore() is the inverse, re-applying each ring's own cap and age so a stale blob
+  // can never resurrect rows the live process would already have dropped. The dedupe set is re-seeded from
+  // the restored ids, because a venue that replays its last prints on reconnect would otherwise double them.
+  dump() {
+    const m2o = (m) => { const o = {}; for (const [k, v] of m) o[k] = v; return o; };
+    return { venue: this.venue, at: Date.now(), rings: m2o(this.rings), mins: m2o(this.mins),
+      bigs: m2o(this.bigs), mid: m2o(this.mid), huge: m2o(this.huge) };
+  }
+  restore(d) {
+    if (!d || d.venue !== this.venue) return 0;
+    const now = Date.now();
+    let n = 0;
+    const take = (src, dst, keep, maxAgeMs) => {
+      for (const [sym, rows] of Object.entries(src || {})) {
+        if (!this.symbols.includes(sym) || !Array.isArray(rows)) continue;
+        const cut = maxAgeMs > 0 ? now - maxAgeMs : 0;
+        const a = rows.filter((r) => r && r.ts > cut && r.px > 0).slice(-keep);
+        if (!a.length) continue;
+        dst.set(sym, a);
+        n += a.length;
+        let seen = this.seen.get(sym);
+        if (!seen) { seen = new Set(); this.seen.set(sym, seen); this.seenOrder.set(sym, []); }
+        const order = this.seenOrder.get(sym);
+        for (const r of a) if (r.id && !seen.has(r.id)) { seen.add(r.id); order.push(r.id); }
+        if (order.length > DEDUP) { const drop = order.splice(0, order.length - DEDUP); for (const x of drop) seen.delete(x); }
+      }
+    };
+    take(d.rings, this.rings, RING, 30 * 60000);   // the live tape is "what just happened" - half an hour is generous
+    take(d.bigs, this.bigs, BIG_KEEP, 0);          // count-capped in the live code too, never by age
+    take(d.mid, this.mid, MID_KEEP, MID_MS);
+    take(d.huge, this.huge, HUGE_KEEP, HUGE_MS);
+    for (const [sym, arr] of Object.entries(d.mins || {})) {
+      if (this.symbols.includes(sym) && Array.isArray(arr) && arr.length) this.mins.set(sym, arr.slice(-MIN_KEEP));
+    }
+    return n;
+  }
+
   /** The last completed minutes, oldest first, plus the one in progress. A page draws the flow from this. */
   minutes(sym, n = 30) {
     const h = this.mins.get(sym) || [];

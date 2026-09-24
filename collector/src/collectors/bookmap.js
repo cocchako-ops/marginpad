@@ -357,6 +357,39 @@ export class BookMap {
     };
   }
 
+  // ---- SURVIVING A RESTART (2026-09-25) --------------------------------------------------------------
+  // The film is twenty minutes of memory, so every deploy opened the page on "building the film" for a
+  // while and every wall that was standing at the restart lost its history. dump() is the whole store as
+  // JSON; restore() re-applies KEEP_MS to the frames and to the standing walls, so a blob left over from a
+  // long outage restores nothing rather than a film with a hole in the middle of it. A standing wall
+  // restored here is judged by the very next frame like any other: still there and it carries on with its
+  // real `first`, gone and it is finished - a few minutes later than it really ended, never invented.
+  dump() {
+    const m2o = (m, f) => { const o = {}; for (const [k, v] of m) o[k] = f ? f(v) : v; return o; };
+    return { at: Date.now(), samples: this.samples,
+      cols: m2o(this.cols), live: m2o(this.live, (lm) => [...lm.entries()]), done: m2o(this.done),
+      step: m2o(this.step), wstep: m2o(this.wstep) };
+  }
+  restore(d) {
+    if (!d || !d.cols) return 0;
+    const now = Date.now();
+    let n = 0;
+    for (const sym of this.symbols) {
+      const cols = (d.cols[sym] || []).filter((c) => c && c.ts > now - KEEP_MS && c.ts <= now);
+      if (cols.length) { this.cols.set(sym, cols); n += cols.length; }
+      if (d.step && d.step[sym] > 0) this.step.set(sym, d.step[sym]);
+      if (d.wstep && d.wstep[sym] > 0) this.wstep.set(sym, d.wstep[sym]);
+      const live = new Map();
+      for (const [k, w] of ((d.live && d.live[sym]) || [])) if (w && w.last > now - KEEP_MS) live.set(k, w);
+      if (live.size) this.live.set(sym, live);
+      const done = ((d.done && d.done[sym]) || []).filter((w) => w && w.endedAt > now - 6 * 3600000).slice(-WALL_KEEP);
+      if (done.length) this.done.set(sym, done);
+      if (cols.length) this._lastAcc.set(sym, cols[cols.length - 1].ts);   // accrue from where the film left off
+    }
+    if (d.samples > 0) this.samples = d.samples;
+    return n;
+  }
+
   status() {
     const out = {};
     for (const s of this.symbols) {

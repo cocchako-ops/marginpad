@@ -73,6 +73,43 @@ const bookMap = config.book.enabled
   ? new BookMap({ bookCols, tapeCols, symbols: config.book.symbols })
   : null;
 
+// WHAT LIVES IN MEMORY SURVIVES A RESTART (2026-09-25, owner: "i ako padne, informacije se skupljaju pa
+// posle kad ga dignemo da imamo istorijsku vrednost"). The liquidations always did - they are rows in
+// SQLite and 9,799 of them were written through the five-hour tape outage, longest gap 73s. What a
+// restart really lost was the tape's day-long ring of big prints and the twenty-minute film, and 24.09
+// alone had thirty-one restarts, every one a deploy. Each collector dumps its rings as one JSON row in
+// the `state` table every two minutes and on graceful shutdown, and reads it back once at boot before
+// its socket opens. A dump older than three days is refused: a blob that old is not "recent".
+const STATE_MAX_AGE_MS = 3 * 86400000;
+const STATE_EVERY_MS = 2 * 60000;
+let ringTimer = null;
+function restoreRings() {
+  let tapeRows = 0, filmCols = 0;
+  for (const c of tapeCols) {
+    try { const s = storage.loadState('ring:tape:' + c.venue, STATE_MAX_AGE_MS); if (s && c.restore) tapeRows += c.restore(s.obj); }
+    catch (e) { log.warn('tape restore failed', { venue: c.venue, e: String((e && e.message) || e) }); }
+  }
+  if (bookMap) {
+    try { const s = storage.loadState('ring:film', STATE_MAX_AGE_MS); if (s) filmCols += bookMap.restore(s.obj); }
+    catch (e) { log.warn('film restore failed', { e: String((e && e.message) || e) }); }
+  }
+  log.info('rings restored', { tapeRows, filmCols });
+}
+function persistRings(why) {
+  const t0 = Date.now();
+  let bytes = 0;
+  for (const c of tapeCols) {
+    try { if (c.dump) bytes += storage.saveState('ring:tape:' + c.venue, c.dump()); }
+    catch (e) { log.warn('tape persist failed', { venue: c.venue, e: String((e && e.message) || e) }); }
+  }
+  if (bookMap) {
+    try { bytes += storage.saveState('ring:film', bookMap.dump()); }
+    catch (e) { log.warn('film persist failed', { e: String((e && e.message) || e) }); }
+  }
+  // logged with its cost every time, because this runs on the thread that reads the exchange sockets
+  log.info('rings persisted', { why, kb: Math.round(bytes / 1024), ms: Date.now() - t0 });
+}
+
 
 // Event-loop stall detector: a 1s heartbeat measures how late it fires. Exposed on /status so a
 // "silent socket" can be told apart from a process that could not read its sockets at the time.
@@ -124,8 +161,11 @@ async function main() {
   if (config.book.enabled) {
     log.info('starting book + tape', { symbols: config.book.symbols, books: config.book.bookVenues, tape: config.book.tapeVenues });
     await Promise.allSettled([...bookCols, ...tapeCols].map((c) => c.init()));
+    restoreRings();   // BEFORE any socket opens, so the first live print lands on top of the history, not instead of it
     for (const c of [...bookCols, ...tapeCols]) { try { c.start(); } catch (e) { log.error('book/tape start failed', { name: c.name, e: String(e) }); } }
     if (bookMap) bookMap.start();
+    ringTimer = setInterval(() => persistRings('timer'), STATE_EVERY_MS);
+    ringTimer.unref?.();
   } else log.info('book + tape disabled (MP_BOOK=0)');
 startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
@@ -158,6 +198,10 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
     collectors.forEach((c) => c.shutdown());
     [...bookCols, ...tapeCols].forEach((c) => { try { c.shutdown(); } catch (e) {} });
     try { bookMap && bookMap.shutdown(); } catch (e) {}
+    // the rings go to disk AFTER the sockets are closed (nothing lands mid-dump) and BEFORE the database
+    // does - this is the write that makes a deploy stop being a reset
+    if (ringTimer) clearInterval(ringTimer);
+    try { persistRings(sig); } catch (e) { log.warn('ring persist on shutdown failed', { e: String((e && e.message) || e) }); }
     try { aggregateTick(); } catch {}
     try { api.close(() => {}); } catch {}
     try { storage.close(); } catch {}

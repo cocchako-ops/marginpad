@@ -188,6 +188,24 @@ export function createSqliteStorage(path, opts = {}) {
   }
   function consumeClusters(symbol, lo, hi) { ensure(); return Number(db.prepare('DELETE FROM clusters WHERE symbol=? AND price_bucket>=? AND price_bucket<=?').run(symbol, lo, hi).changes); }
   function getClusters(symbol) { ensure(); return db.prepare('SELECT price_bucket AS price, side, est_notional FROM clusters WHERE symbol=? AND est_notional>0 ORDER BY price_bucket').all(symbol); }
+  // WHAT LIVES IN MEMORY SURVIVES A RESTART (2026-09-25). The tape rings and the film are rebuilt from their
+  // own dump here: one JSON row per collector, rewritten every two minutes and on graceful shutdown, read
+  // once at boot. `bytes` is stored so the size of what we keep is a query, not a guess. A row older than
+  // `maxAgeMs` is refused on read - a blob from three days ago is not "recent big prints".
+  function saveState(k, obj) {
+    ensure();
+    const v = JSON.stringify(obj);
+    db.prepare('INSERT INTO state(k,v,ts,bytes) VALUES(?,?,?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v, ts=excluded.ts, bytes=excluded.bytes')
+      .run(k, v, Date.now(), v.length);
+    return v.length;
+  }
+  function loadState(k, maxAgeMs) {
+    ensure();
+    const r = db.prepare('SELECT v, ts FROM state WHERE k=?').get(k);
+    if (!r) return null;
+    if (maxAgeMs > 0 && Date.now() - Number(r.ts) > maxAgeMs) return null;
+    try { return { ts: Number(r.ts), obj: JSON.parse(r.v) }; } catch { return null; }
+  }
   function pruneOi(days) { ensure(); return Number(db.prepare('DELETE FROM oi WHERE ts<?').run(Date.now() - days * 86400000).changes); }
 
   // ---- screener extra: hourly OI snapshots + per-symbol 24h liquidation aggregates ----
@@ -251,5 +269,6 @@ export function createSqliteStorage(path, opts = {}) {
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay,
+    saveState, loadState,
     close: () => db.close() };
 }
