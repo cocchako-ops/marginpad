@@ -443,19 +443,24 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         // twelve minutes, which is right for a $50k filter and useless for a $1M one - measured, it held
         // exactly two prints that big. Above half a million the long ring answers instead and reaches
         // back hours, so the biggest filters show a real recent history rather than an empty box.
-        const deep = floor >= 500000;
+        // THREE RINGS, AND ALL THREE ARE USED. The first cut only ever reached for two, so a $250k filter was
+        // answered by the $50k ring: 7 rows reaching back three minutes, measured, when the mid ring holds
+        // 1,500 rows over three hours and exists for exactly this question.
+        const tier = floor >= 500000 ? 'huge' : floor >= 150000 ? 'mid' : 'big';
         let rows = [];
         for (const c of tapeCols) {
           if (want && c.venue !== want) continue;
-          if (deep && c.hugePrints) rows.push(...c.hugePrints(sym, 400));
+          if (tier === 'huge' && c.hugePrints) rows.push(...c.hugePrints(sym, 400));
+          else if (tier === 'mid' && c.midPrints) rows.push(...c.midPrints(sym, 400));
           else if (c.big) rows.push(...c.big(sym, 400));
         }
         bigOldest = rows.length ? Math.min.apply(null, rows.map((r) => r.ts)) : null;
-        // WHAT THE RING THAT ANSWERED ACTUALLY HOLDS. This read `tier`, a variable from an earlier draft that
-        // was replaced by `deep` and never existed at runtime - so every single /api/v1/tape call threw a
-        // ReferenceError, express 500'd, and pm2 restarted the collector. 85 restarts, and the tape, the book,
-        // the film and the liquidation feed were all down with it. Derive it from the ring that was read.
-        bigFloorUsd = deep ? 1000000 : 50000;
+        // WHAT THE RING THAT ANSWERED ACTUALLY HOLDS. This line once read `tier` while the selector above was
+        // called `deep` - a name left behind by an earlier draft - so every /api/v1/tape call threw
+        // ReferenceError, express 500'd, the error was uncaught, and pm2 restarted the process. 85 restarts,
+        // with the tape, the order book, the film and the liquidation feed all dark behind it. It is derived
+        // from the ring that was actually read now, so the two can never drift apart again.
+        bigFloorUsd = tier === 'huge' ? 1000000 : tier === 'mid' ? 250000 : 50000;
         if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
         return rows.slice(Math.max(0, rows.length - 300));
