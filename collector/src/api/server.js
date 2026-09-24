@@ -451,7 +451,11 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
           else if (c.big) rows.push(...c.big(sym, 400));
         }
         bigOldest = rows.length ? Math.min.apply(null, rows.map((r) => r.ts)) : null;
-        bigFloorUsd = tier === 'huge' ? 1000000 : tier === 'mid' ? 250000 : 50000;
+        // WHAT THE RING THAT ANSWERED ACTUALLY HOLDS. This read `tier`, a variable from an earlier draft that
+        // was replaced by `deep` and never existed at runtime - so every single /api/v1/tape call threw a
+        // ReferenceError, express 500'd, and pm2 restarted the collector. 85 restarts, and the tape, the book,
+        // the film and the liquidation feed were all down with it. Derive it from the ring that was read.
+        bigFloorUsd = deep ? 1000000 : 50000;
         if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
         return rows.slice(Math.max(0, rows.length - 300));
