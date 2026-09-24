@@ -76,6 +76,16 @@ const LAYOUT = () => {
     filters: [...document.querySelectorAll('.hm-mini')].map(function (e) { return e.className.replace('hm-mini ', ''); }),
     bell: (function () { var b = document.querySelector('.hm-bell'); return b ? { cls: b.className, title: b.title } : null; })(),
     tickOpts: [...document.querySelectorAll('.bkTick option')].map(function (o) { return o.textContent; }),
+    win: (function () {
+      var w = document.querySelector('.hm-bk-say .hm-say-w'); if (!w) return null;
+      return { big: (w.querySelector('.hm-say-f>b') || {}).textContent || '', sub: (w.querySelector('.hm-say-q') || {}).textContent || '',
+        formats: w.querySelectorAll('.hm-say-f>span').length,
+        inSayLine: !!document.querySelector('.hm-bk-say').contains(w),
+        extraBoxes: document.querySelectorAll('.hm-bk-win, .hm-bm .hm-bmw').length,
+        // the STRIP is the thing that has to stay small; how far the sentence above it wraps is the
+        // phone's business, and measuring the whole box made this go red at 390px for nothing.
+        stripH: Math.round(w.getBoundingClientRect().height) };
+    })(),
     readTxt: (document.querySelector('.hm-sm-l') || {}).innerText || '',
     readGroups: document.querySelectorAll('.hm-sm-t').length,
     foldCount: document.querySelectorAll('.hm-foot-c').length,
@@ -272,6 +282,14 @@ const LAYOUT = () => {
     // A reader can throw away the noise: a floor in dollars and a side on the tape, and a row width on
     // the book - which is grouping rather than hiding, because a ladder has to stay contiguous to mean
     // anything. The bell turns whatever filter is set into a Telegram alert.
+    // WHO IS WINNING lives with the ladder it measures (owner), not with the film - the film is the
+    // same book minutes old. It names its own window too, because the strip under the ladder measures
+    // the visible rows instead and the two legitimately disagree.
+    // IT GOES IN THE LINE THAT ALREADY EXISTED (owner: "ta linija vec postoji sad si samo napravio drugu").
+    // The check therefore asserts BOTH halves: the formats are there, and there is no second box anywhere.
+    ok('who is winning lives in the summary line that was already there, in more than one shape',
+      L.win && L.win.formats >= 4 && /: 1/.test(L.win.big) && /25 bps/.test(L.win.sub) && L.win.inSayLine && L.win.extraBoxes === 0 && L.win.stripH < 120,
+      JSON.stringify(L.win));
     ok('the tape and the book can both be filtered', L.filters.length === 3 && L.filters.indexOf('bkMin') >= 0 && L.filters.indexOf('bkSide') >= 0 && L.filters.indexOf('bkTick') >= 0, L.filters.join(','));
     ok('the alert bell is there and explains its floor before it is pressed', !!L.bell && /250K/.test(L.bell.title), L.bell && L.bell.title);
     // "Auto / x2 / x5" named the multiplier and never the thing being chosen (owner: "nije mi jasno sta tu
@@ -567,6 +585,75 @@ const LAYOUT = () => {
     await new Promise((r) => setTimeout(r, 7000));
     const sol = await page.evaluate(() => window.__mpHeat.state().bookMap);
     ok('another coin loads its own film', !!sol && sol.coin === 'SOL' && sol.cols >= 2, JSON.stringify(sol));
+    // ---- CLICKING IT ------------------------------------------------------------------------------
+    // A picture you cannot interrogate is a poster. The load-bearing checks here are the two that state
+    // a FACT about somebody's money: a finished wall must say whether it was traded through or taken
+    // away, and a plain price must not claim to know about individual orders - an exchange publishes the
+    // total at a price and nothing else, so the panel says so in its own words.
+    const rect = () => page.evaluate(() => { const r = document.querySelector('.hm-bm-cv').getBoundingClientRect(); return { l: r.left, t: r.top }; });
+    const clickAt = async (x, y) => {
+      const r = await rect();
+      await page.evaluate((cx, cy) => {
+        document.querySelector('.hm-bm-cv').dispatchEvent(new MouseEvent('click', { clientX: cx, clientY: cy, bubbles: true }));
+      }, r.l + x, r.t + y);
+      await new Promise((z) => setTimeout(z, 500));
+      return page.evaluate(() => {
+        const p = document.querySelector('.hm-bm-d');
+        if (!p || p.style.display === 'none' || !p.textContent.trim()) return null;
+        return { txt: p.textContent.replace(/\s+/g, ' ').trim(), tag: (p.querySelector('.hm-bmd-tag') || {}).textContent || '', rows: p.querySelectorAll('.hm-bmd-r').length };
+      });
+    };
+    const geo = await page.evaluate(() => {
+      const g = window.__mpBmState.geo, d = window.__mpBmState.data;
+      const xOfT = (t) => Math.max(0, Math.min(g.PW, (t - g.t0) / g.span * g.PW));
+      const fin = (d.wallsFinished || [])[d.wallsFinished.length - 1];
+      const ci = Math.max(0, Math.floor(d.cols.length * 0.3)), col = d.cols[ci];
+      // NOT the heaviest bucket: that is exactly what the wall detector picks, so the click opened a
+      // wall card and this check graded the wrong panel. A middling row is an ordinary price.
+      const sorted = Object.keys(col.b).sort((x, y) => col.b[y] - col.b[x]);
+      const bk2 = sorted[Math.floor(sorted.length / 2)];
+      return {
+        fin: fin ? { x: xOfT(fin.endedAt), y: g.yOf(fin.price / g.step) + g.rh / 2, ending: fin.ending } : null,
+        cell: bk2 ? { x: (ci + 0.5) * g.cw, y: g.yOf(+bk2) + g.rh / 2 } : null,
+      };
+    });
+    if (geo.fin) {
+      const w = await clickAt(geo.fin.x, geo.fin.y);
+      ok('clicking a mark on the film says what ended that wall', !!w && /WITHDRAWN|TRADED/.test(w.tag) && w.rows >= 6,
+        w ? JSON.stringify({ tag: w.tag, rows: w.rows }) : 'no panel');
+      ok('and it separates money that traded from money that was taken away', !!w && /Traded into it/.test(w.txt) && (/spoofing/.test(w.txt) || /traded through this price/.test(w.txt)),
+        w ? w.txt.slice(0, 120) : '-');
+    }
+    if (geo.cell) {
+      const c = await clickAt(geo.cell.x, geo.cell.y);
+      ok('clicking a price says how long money has rested there', !!c && /rested here/i.test(c.txt) && c.rows >= 5, c ? JSON.stringify({ rows: c.rows }) : 'no panel');
+      // THE HONESTY CHECK. A book publishes the total at a price, never the orders inside it, so this
+      // panel must never imply it can see one trader cancel one order.
+      ok('and it refuses to claim it can see individual orders', !!c && /never the individual orders/.test(c.txt), c ? c.txt.slice(-140) : '-');
+    }
+
+    // The film is twenty minutes long and the window is ten, so most of what it knows is off screen.
+    const pan = await page.evaluate(async () => {
+      const cv = document.querySelector('.hm-bm-cv'), r = cv.getBoundingClientRect();
+      cv.dispatchEvent(new MouseEvent('mousedown', { clientX: r.left + 300, clientY: r.top + 60, bubbles: true }));
+      window.dispatchEvent(new MouseEvent('mousemove', { clientX: r.left + 640, clientY: r.top + 60, bubbles: true }));
+      window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await new Promise((z) => setTimeout(z, 3200));
+      const chip = document.querySelector('.hm-bm-now');
+      return { back: +window.__mpBmState.back.toFixed(2), chip: chip && !chip.hidden ? chip.textContent.replace(/\s+/g, ' ').trim() : '' };
+    });
+    ok('dragging winds the film back into its own history', pan.back > 0.4, JSON.stringify(pan));
+    ok('and it says so, with one tap back to now', /back/i.test(pan.chip) && !!(await page.$('.hm-bm-nowb')), JSON.stringify(pan.chip));
+    const backNow = await page.evaluate(async () => {
+      const b = document.querySelector('.hm-bm-nowb'); if (!b) return null;
+      b.click(); await new Promise((z) => setTimeout(z, 3000));
+      return +window.__mpBmState.back.toFixed(2);
+    });
+    ok('and pressing it really returns to the live edge', backNow === 0, String(backNow));
+
+    const gl = await page.$$eval('.hm-bm-gi', (g) => g.map((x) => ({ t: x.querySelector('b').textContent, d: x.querySelector('span').textContent.length })));
+    ok('the words under the map are all defined in one place', gl.length >= 6 && gl.every((x) => x.d > 60), JSON.stringify(gl.map((x) => x.t)));
+
     ok('no page errors while driving it', o.errs.length === 0, JSON.stringify(o.errs.slice(0, 3)));
     await page.close();
   }, { timeoutMs: 280000 });
