@@ -124,6 +124,12 @@ const ADAPTERS = {
 export const TAPE_VENUES = Object.keys(ADAPTERS);
 
 const RING = 500;     // trades kept per venue+symbol for live reads
+// A SEPARATE RING FOR THE PRINTS THAT MATTER. The live ring holds 500 per venue+symbol, which on BTC is
+// about half a minute - so a reader filtering for $250k orders sees an empty list most of the time, because
+// the big ones scrolled out of a window sized for every $9 trade. These are kept on their own and stay for
+// as long as the ring takes to fill, so a filter answers with the last real orders instead of nothing.
+const BIG_USD = 50000;
+const BIG_KEEP = 150;
 const MIN_KEEP = 45;  // completed minutes kept per symbol - enough to draw three quarters of an hour of flow
 const DEDUP = 4000;   // recent trade ids kept per venue, to drop a repeat without unbounded memory
 
@@ -140,6 +146,7 @@ export class TapeCollector extends BaseCollector {
     // COMPLETED minutes, kept so a reader can see the SHAPE of the flow rather than a single number that
     // is meaningless three seconds into a minute. Pure memory, MIN_KEEP entries of four numbers per symbol.
     this.mins = new Map();      // sym -> [{ m, buyUsd, sellUsd, n }] oldest first
+    this.bigs = new Map();      // sym -> [row] the large prints only, kept far longer than the live ring
     this.seen = new Map();      // sym -> Set of recent ids
     this.seenOrder = new Map(); // sym -> id[] (FIFO for trimming)
     this.trades = 0; this.dupes = 0; this.bad = 0; this.skipped = 0;
@@ -211,6 +218,10 @@ export class TapeCollector extends BaseCollector {
     if (row.side === 'buy') b.buyUsd += row.usd; else b.sellUsd += row.usd;
     b.n++;
 
+    if (row.usd >= BIG_USD) {
+      let bg = this.bigs.get(t.sym); if (!bg) { bg = []; this.bigs.set(t.sym, bg); }
+      bg.push(row); if (bg.length > BIG_KEEP) bg.splice(0, bg.length - BIG_KEEP);
+    }
     this.trades++;
     this.lastEventAt = rxAt;   // BaseCollector's stale watchdog reads this
     if (this.onTrade) this.onTrade(row);
@@ -230,6 +241,12 @@ export class TapeCollector extends BaseCollector {
     return { minute: b.m * 60000, trades: b.n,
       buyUsd: Math.round(b.buyUsd), sellUsd: Math.round(b.sellUsd),
       deltaUsd: Math.round(b.buyUsd - b.sellUsd) };
+  }
+
+  /** The large prints only, newest last. What a size filter should actually be answered from. */
+  big(sym, n = 60) {
+    const a = this.bigs.get(sym) || [];
+    return a.slice(Math.max(0, a.length - n));
   }
 
   /** The last completed minutes, oldest first, plus the one in progress. A page draws the flow from this. */

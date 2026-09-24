@@ -377,6 +377,19 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         return [...by.values()].sort((x, y) => x.minute - y.minute);
       })(),
       deltaThisMinute: { ...tot, deltaUsd: Math.round(tot.buyUsd - tot.sellUsd) },
+      // THE LARGE PRINTS, KEPT FAR LONGER THAN THE LIVE RING. `trades` above is every print, so on BTC it
+      // spans about half a minute - which means a reader filtering for $250k orders is shown an empty list
+      // almost always, not because none happened but because the window is sized for every $9 trade. These
+      // are the same rows, retained on their own, so a size filter answers with the last real ones.
+      big: (function () {
+        const rows = [];
+        for (const c of tapeCols) {
+          if (want && c.venue !== want) continue;
+          if (c.big) rows.push(...c.big(sym, 100));
+        }
+        rows.sort((a, b) => a.ts - b.ts);
+        return rows.slice(Math.max(0, rows.length - 100));
+      })(),
     });
   });
 
