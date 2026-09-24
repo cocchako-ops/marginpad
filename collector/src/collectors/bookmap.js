@@ -34,6 +34,7 @@ const WALL_MIN_USD = 250000;   // a wall is never smaller than this, whatever th
 const WALL_MIN_REL = 2.5;      // ...and never less than this many times the median of its SIXTEEN NEIGHBOURS
 const WALL_NEIGHBOURS = 8;     // rows either side that decide what 'heavier than around it' means
 const WALL_KEEP = 60;          // finished walls kept per symbol, newest last
+const ALIVE_FRAC = 0.5;        // a wall that stopped standing out still HAS its money if it kept this much
 const EATEN_FRAC = 0.35;       // traded >= this share of the wall's peak while it stood = eaten, not pulled
 
 /** THE ROW HEIGHT COMES FROM HOW FAR THE BOOK REACHES, NOT FROM HOW BIG THE PRICE IS. Measured: a major
@@ -57,6 +58,7 @@ export class BookMap {
     this.live = new Map();     // sym -> Map(key -> live wall)
     this.done = new Map();     // sym -> [finished wall]
     this.step = new Map();     // sym -> price step
+    this._lastAcc = new Map(); // sym -> when the tape was last folded into the standing walls
     this.samples = 0;
     this.lastMs = 0;
     this._t = null;
@@ -129,6 +131,7 @@ export class BookMap {
     const cut = ts - KEEP_MS;
     while (arr.length && arr[0].ts < cut) arr.shift();
 
+    this._accrue(sym, ts, step);   // fold the new prints into the standing walls BEFORE any of them ends
     this._walls(sym, ts, step, mid, b, a, bidV, askV);
   }
 
@@ -177,15 +180,22 @@ export class BookMap {
     scan(bidM, bidV, 'bid');
     scan(askM, askV, 'ask');
 
-    // A wall that stopped showing is finished. What finished it is the interesting part.
+    // A WALL THAT STOPS BEING A SPIKE HAS NOT NECESSARILY GONE. It also leaves the detected set when its
+    // NEIGHBOURS grow around it - the money is still there, it simply stopped standing out. Finishing it
+    // then would report a withdrawal that never happened, which is the worst mistake this feature can
+    // make. So the dollars at that price are the judge: still most of what it was, and the wall is alive.
     for (const [key, w] of live) {
       if (seen.has(key)) continue;
+      const m = w.side === 'bid' ? bidM : askM;
+      const still = m.get(w.bucket) || 0;
+      if (still >= w.peakUsd * ALIVE_FRAC) { w.last = ts; w.usd = Math.round(still); w.rel = null; continue; }
       live.delete(key);
       if (w.seenN < 2) continue;                       // one frame is noise, not a wall
-      const traded = this._tradedAt(sym, w.price, step, w.first, ts + SAMPLE_MS);
       w.endedAt = ts;
       w.heldMs = w.last - w.first;
-      w.tradedUsd = Math.round(traded);
+      w.leftUsd = Math.round(still);
+      w.tradedUsd = Math.round(w.tradedUsd || 0);
+      const traded = w.tradedUsd;
       // EATEN OR PULLED, and the difference is the whole point. A wall the tape chewed through was real
       // money that changed hands; one that vanished with nothing trading at its price was never a
       // commitment. We never call it "spoofing" - that is an intent, and we can only measure the fact.
@@ -195,20 +205,32 @@ export class BookMap {
     while (done.length > WALL_KEEP) done.shift();
   }
 
-  /** Dollars the tape executed inside one bucket between two times. The measurement behind eaten/pulled. */
-  _tradedAt(sym, price, step, from, to) {
-    const lo = price - step / 2, hi = price + step / 2;
-    let usd = 0;
+  /** WHAT THE TAPE EXECUTED AT EACH STANDING WALL, ADDED UP AS IT HAPPENS. It has to be accumulated per
+   *  frame rather than looked up when the wall ends: the tape ring holds about 500 prints a venue, which
+   *  on Bitcoin is half a minute, so asking it afterwards about a wall that stood ten minutes would see
+   *  almost none of the trading that hit it and would call an eaten wall "pulled" - the exact error this
+   *  measurement exists to avoid. One pass over the new prints per symbol per frame. */
+  _accrue(sym, ts, step) {
+    const live = this.live.get(sym);
+    if (!live || !live.size) { this._lastAcc.set(sym, ts); return; }
+    const since = this._lastAcc.get(sym) || (ts - SAMPLE_MS * 2);
+    const byBucket = new Map();
     for (const c of this.tapeCols) {
       const rows = c.read ? c.read(sym, 500) : null;
       if (!rows) continue;
       for (const t of rows) {
-        if (t.ts < from || t.ts > to) continue;
+        if (!(t.ts > since) || t.ts > ts) continue;
         const px = +t.px || 0;
-        if (px >= lo && px <= hi) usd += +t.usd || 0;
+        if (!(px > 0)) continue;
+        const k = Math.round(px / step);
+        byBucket.set(k, (byBucket.get(k) || 0) + (+t.usd || 0));
       }
     }
-    return usd;
+    if (byBucket.size) for (const w of live.values()) {
+      const v = byBucket.get(w.bucket);
+      if (v) w.tradedUsd = (w.tradedUsd || 0) + v;
+    }
+    this._lastAcc.set(sym, ts);
   }
 
   // ---- READ -------------------------------------------------------------------------------------
@@ -222,7 +244,7 @@ export class BookMap {
     const step = this.step.get(sym) || cols[cols.length - 1].step;
     const live = [...(this.live.get(sym) || new Map()).values()]
       .filter((w) => w.seenN >= 2)
-      .map((w) => ({ ...w, ageMs: Date.now() - w.first, standing: true }))
+      .map((w) => ({ ...w, ageMs: Date.now() - w.first, tradedUsd: Math.round(w.tradedUsd || 0), standing: true }))
       .sort((x, y) => y.peakUsd - x.peakUsd)
       .slice(0, 24);
     const done = (this.done.get(sym) || []).slice(-24).map((w) => ({ ...w, standing: false }));
