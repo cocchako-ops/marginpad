@@ -595,12 +595,30 @@ function bkSelect(cls, opts, cur) {
     var wAvg = vis.length ? wSum / vis.length : 0;
     S._wAvgVis = wAvg; // every surface quotes the ratio against the SAME denominator
     var bh = Math.max(3, PH * (P.binH / (pHi - pLo)));
+    // A LENGTH YOU CANNOT MEASURE AGAINST ANYTHING IS A SHAPE. Three faint marks at a quarter, a half and
+    // three quarters of the column let the eye compare two bars without counting pixels, which is what the
+    // column was missing: not variety, a ruler.
+    ctx.fillStyle = 'rgba(255,255,255,.055)';
+    for (i = 1; i <= 3; i++) ctx.fillRect(Math.round(W * i / 4), 0, 1, PH);
+    // TRANSPARENCY SATURATED FOR HALF THE BARS. It was min(0.95, 0.39 + rel*0.78), which hits its ceiling at
+    // 72% of the heaviest band - and MEASURED on a live frame the median band is at 53% and the top tenth all
+    // sit at the maximum, so the whole upper half of the column was drawn in one identical colour. The owner
+    // saw exactly that: 'sve ove bocne linije iste jacine boje'. This spreads the same range with no ceiling.
+    var rank = vis.slice().sort(function (a, b) { return b.w - a.w; });
+    var topW = rank.length ? rank[Math.min(2, rank.length - 1)].w : 0;   // the third heaviest on screen
     for (i = vis.length - 1; i >= 0; i--) { var s = vis[i];
       var y = Y(s.price), rel = s.w / (wMax || 1);
       var bw = 4 + rel * (W - 8);
-      var ba = Math.min(0.95, (0.3 + rel * 0.6) * 1.3).toFixed(2); // owner 2026-09-18: the weak end was barely visible, +30%
+      var ba = (0.26 + Math.pow(rel, 0.8) * 0.70).toFixed(3);
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + ba + ')' : 'rgba(255,98,88,' + ba + ')';
-      ctx.fillRect(0, y - bh / 2, bw, bh); }
+      ctx.fillRect(0, y - bh / 2, bw, bh);
+      // The three heaviest get a bright cap at their tip. Length still means weight - that is the whole
+      // point of a bar - but when the weights are close together, and measured they often are, length alone
+      // cannot say which is the biggest. The cap ranks them without changing what the bar claims.
+      if (topW > 0 && s.w >= topW) {
+        ctx.fillStyle = s.long ? 'rgba(126,226,184,.95)' : 'rgba(255,163,155,.95)';
+        ctx.fillRect(Math.max(0, bw - 2.5), y - bh / 2, 2.5, bh);
+      } }
     // THE PRICE AXIS LIVES HERE NOW. The bars keep the full column and the five tick labels sit on top of them,
     // right-aligned on their own backing - five occluded rows out of ninety, against a price column that used to
     // be painted over the candles themselves. The "x avg" ratio labels that used to own this edge are gone with
@@ -2051,7 +2069,8 @@ function bkSelect(cls, opts, cur) {
     bmEl.className = 'hm-bm';
     var BM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB'];
     var BM_WINS = [['5', '5m'], ['10', '10m'], ['20', '20m']];
-    var bmState = { coin: '', venue: 'all', mins: 10, back: 0, keepMins: 20, data: null, hover: null, sel: null, cells: [], loading: false };
+var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
+    var bmState = { coin: '', venue: 'all', mins: 10, band: 'near', back: 0, keepMins: 20, data: null, hover: null, sel: null, cells: [], loading: false };
     // Published where the read-only mirror can see it: that mirror lives in a different IIFE, so a bare
     // var assigned here never reaches it - it silently made a new global in one scope and left null in the other.
     window.__mpBmState = bmState;
@@ -2072,6 +2091,8 @@ function bkSelect(cls, opts, cur) {
         + '<span class="hm-bm-g"><b>' + __esT_mpheatmap('bmBook', 'book') + '</b>'
         + bmChip('bmven', 'all', __esT_mpheatmap('bmAll', 'All five'), bmState.venue === 'all', '')
         + venues.map(function (v) { return bmChip('bmven', v, BKN[v] || v, bmState.venue === v, BKC[v] || '#8fa3c4'); }).join('') + '</span>'
+        + '<span class="hm-bm-g"><b>' + __esT_mpheatmap('bmZoom', 'zoom') + '</b>'
+        + BM_BANDS.map(function (z) { return bmChip('bmband', z[0], __esT_mpheatmap('bmBand_' + z[0], z[1]), z[0] === bmState.band, ''); }).join('') + '</span>'
         + '<span class="hm-bm-g"><b>' + __esT_mpheatmap('bmSpan', 'span') + '</b>'
         + BM_WINS.map(function (w) { return bmChip('bmwin', w[0], w[1], +w[0] === bmState.mins, ''); }).join('') + '</span>'
         + '</div>'
@@ -2082,13 +2103,13 @@ function bkSelect(cls, opts, cur) {
 
     function bmFetch(force) {
       if (!S || (bmState.loading && !force)) return;
-      var coin = bmState.coin || S.coin, ven = bmState.venue, mins = bmState.mins, back = Math.round(bmState.back * 10) / 10;
+      var coin = bmState.coin || S.coin, ven = bmState.venue, mins = bmState.mins, back = Math.round(bmState.back * 10) / 10, band = bmState.band;
       bmState.loading = true;
-      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (ven && ven !== 'all' ? '&venue=' + ven : ''))
+      fetch('/api/v1/bookmap?symbol=' + encodeURIComponent(coin) + '&mins=' + mins + (back > 0 ? '&back=' + back : '') + (band === 'wide' ? '&band=wide' : '') + (ven && ven !== 'all' ? '&venue=' + ven : ''))
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
           bmState.loading = false;
-          if (!S || bmState.coin !== coin || bmState.venue !== ven || bmState.mins !== mins) return;
+          if (!S || bmState.coin !== coin || bmState.venue !== ven || bmState.mins !== mins || bmState.band !== band) return;
           bmState.data = (j && j.cols && j.cols.length) ? j : null;
           if (j && j.keepMins) bmState.keepMins = j.keepMins;
           bmPaint();
@@ -2305,10 +2326,15 @@ function bkSelect(cls, opts, cur) {
       }
 
       // 3. where the money keeps coming back to, over the whole window rather than this second
+      // A PRICE PRESENT ON BOTH SIDES OF ONE FRAME IS STILL ONE FRAME. Counting the bid and the ask
+      // separately made the share of the window exceed 100 - it printed '160% of the window', which is
+      // not a thing. One tick per frame per price.
       var acc = {}, seen = {};
       cols.forEach(function (c) {
-        var k; for (k in c.b) { acc[k] = (acc[k] || 0) + c.b[k]; seen[k] = (seen[k] || 0) + 1; }
-        for (k in c.a) { acc[k] = (acc[k] || 0) + c.a[k]; seen[k] = (seen[k] || 0) + 1; }
+        var k, hit = {};
+        for (k in c.b) { acc[k] = (acc[k] || 0) + c.b[k]; hit[k] = 1; }
+        for (k in c.a) { acc[k] = (acc[k] || 0) + c.a[k]; hit[k] = 1; }
+        for (k in hit) seen[k] = (seen[k] || 0) + 1;
       });
       var best = null;
       for (var k2 in acc) { var sc = acc[k2] / cols.length; if (!best || sc > best.sc) best = { k: +k2, sc: sc, n: seen[k2] }; }
@@ -2566,6 +2592,7 @@ function bkSelect(cls, opts, cur) {
       if (t.hasAttribute('data-bmcoin')) bmState.coin = t.getAttribute('data-bmcoin');
       else if (t.hasAttribute('data-bmven')) bmState.venue = t.getAttribute('data-bmven');
       else if (t.hasAttribute('data-bmwin')) bmState.mins = +t.getAttribute('data-bmwin') || 10;
+      else if (t.hasAttribute('data-bmband')) { bmState.band = t.getAttribute('data-bmband') === 'wide' ? 'wide' : 'near'; try { localStorage.setItem('mp_hm_bmband', bmState.band); } catch (e) {} }
       else return;
       try {
         bkPrefSet('mp_hm_bmcoin', 0); // the coin is remembered by name, not a number
@@ -2670,6 +2697,7 @@ function bkSelect(cls, opts, cur) {
     try {
       bmState.coin = localStorage.getItem('mp_hm_bmcoin2') || '';
       bmState.venue = localStorage.getItem('mp_hm_bmven') || 'all';
+      bmState.band = localStorage.getItem('mp_hm_bmband') === 'wide' ? 'wide' : 'near';
       bmState.mins = bkPref('mp_hm_bmwin', 10);
     } catch (e) {}
     if (BM_COINS.indexOf(bmState.coin) < 0) bmState.coin = BM_COINS.indexOf(coin) >= 0 ? coin : 'BTC';

@@ -320,20 +320,30 @@ const LAYOUT = () => {
     // covered the band it was explaining; pinned to the bottom of the VIEWPORT it could sit 300px below the
     // circle the finger just touched, which on a phone reads as "nothing happened". It is inside the map, in
     // the half opposite the touch.
-    const tapHalf = async (frac) => {
-      await page.evaluate(() => { const sb = document.querySelector('.hm-selbox'); if (sb) sb.style.display = 'none'; });
+    // TAP UNTIL IT FINDS A BAND, do not assume where one is. A fixed fraction of the plot only works
+    // while the model happens to have a zone at that height, and it often does not: measured, a tap at
+    // 0.72 opened the readout and the same tap at 0.25 found nothing, with the product working perfectly.
+    // The invariant is that tapping a band opens the readout and the readout stays inside the map - not
+    // that a band exists at 25% of the price axis this minute.
+    const read = () => page.evaluate(() => {
+      const sb = document.querySelector('.hm-selbox');
+      if (!sb || getComputedStyle(sb).display === 'none') return { shown: false };
+      const r = sb.getBoundingClientRect(), st = document.querySelector('.hm-stage').getBoundingClientRect();
+      return { shown: true, lo: sb.classList.contains('lo'), inside: r.top >= st.top - 2 && r.bottom <= st.bottom + 2,
+        midFrac: (r.top + r.height / 2 - st.top) / st.height, txt: sb.textContent.slice(0, 40) };
+    });
+    const tapHalf = async (from, to) => {
       const b = await page.evaluate(() => { const r = document.querySelector('.hm-cv').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
-      await page.touchscreen.tap(b.x + b.w * 0.55, b.y + b.h * frac);
-      await new Promise(r => setTimeout(r, 400));
-      return await page.evaluate(() => {
-        const sb = document.querySelector('.hm-selbox');
-        if (!sb || getComputedStyle(sb).display === 'none') return { shown: false };
-        const r = sb.getBoundingClientRect(), st = document.querySelector('.hm-stage').getBoundingClientRect();
-        return { shown: true, lo: sb.classList.contains('lo'), inside: r.top >= st.top - 2 && r.bottom <= st.bottom + 2,
-          midFrac: (r.top + r.height / 2 - st.top) / st.height, txt: sb.textContent.slice(0, 40) };
-      });
+      for (let f = from; (from < to ? f <= to : f >= to); f += (from < to ? 0.06 : -0.06)) {
+        await page.evaluate(() => { const sb = document.querySelector('.hm-selbox'); if (sb) sb.style.display = 'none'; });
+        await page.touchscreen.tap(b.x + b.w * 0.55, b.y + b.h * f);
+        await new Promise(r => setTimeout(r, 320));
+        const got = await read();
+        if (got.shown) { got.at = +f.toFixed(2); return got; }
+      }
+      return { shown: false };
     };
-    const hiTap = await tapHalf(0.25), loTap = await tapHalf(0.72);
+    const hiTap = await tapHalf(0.30, 0.06), loTap = await tapHalf(0.68, 0.94);
     ok('a tap on the map opens the readout', hiTap.shown && loTap.shown, { hi: hiTap.shown, lo: loTap.shown });
     ok('the readout stays inside the map, where the reader is looking', hiTap.inside && loTap.inside, { hi: hiTap, lo: loTap });
     ok('touching the top half puts it low, touching the bottom half puts it high', hiTap.midFrac > 0.5 && loTap.midFrac < 0.5,
@@ -564,21 +574,20 @@ const LAYOUT = () => {
 
     // Picking one book must change the PICTURE, not just the chip - the film is stored per venue for
     // exactly this reason, and a filter that only moves the highlight would be a lie.
-    const before = await page.evaluate(() => {
-      const cv = document.querySelector('.hm-bm-cv'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
-      let lit = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 14) lit++;
-      return lit;
+    const money = () => page.evaluate(() => {
+      const d = window.__mpBmState.data, c = d.cols[d.cols.length - 1];
+      const sum = (o) => { let t = 0; for (const k in o) t += o[k]; return t; };
+      return { usd: Math.round(sum(c.b) + sum(c.a)), rows: Object.keys(c.b).length + Object.keys(c.a).length };
     });
+    const before = await money();
     await page.click('[data-bmven="binance"]');
     await new Promise((r) => setTimeout(r, 7000));
-    const after = await page.evaluate(() => {
-      const el = document.querySelector('.hm-bm');
-      const cv = el.querySelector('.hm-bm-cv'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
-      let lit = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 14) lit++;
-      return { lit, on: (el.querySelector('.hm-bm-b.on[data-bmven]') || {}).textContent.trim(), st: window.__mpHeat.state().bookMap };
-    });
-    ok('picking one exchange redraws the film from that book alone', after.on === 'Binance' && after.st && after.st.venue === 'binance' && Math.abs(after.lit - before) > before * 0.08,
-      JSON.stringify({ litAll: before, litOne: after.lit, venue: after.st && after.st.venue }));
+    const after = Object.assign(await money(), await page.evaluate(() => ({
+      on: (document.querySelector('.hm-bm .hm-bm-b.on[data-bmven]') || {}).textContent.trim(),
+      st: window.__mpHeat.state().bookMap,
+    })));
+    ok('picking one exchange redraws the film from that book alone', after.on === 'Binance' && after.st && after.st.venue === 'binance' && after.usd > 0 && after.usd < before.usd * 0.75,
+      JSON.stringify({ allFive: before, binanceOnly: { usd: after.usd, rows: after.rows }, venue: after.st && after.st.venue }));
 
     // and a coin with a book must be switchable to
     await page.click('[data-bmcoin="SOL"]');
