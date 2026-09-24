@@ -13,6 +13,25 @@ export function createSqliteStorage(path, opts = {}) {
   const db = opts.readOnly ? new DatabaseSync(path, { readOnly: true }) : new DatabaseSync(path);
   if (!opts.readOnly) db.exec('PRAGMA journal_mode = WAL;');
   db.exec('PRAGMA busy_timeout = 5000;');
+  // THE WRITE-AHEAD LOG HAS TO BE CHECKPOINTED, AND NOBODY WAS DOING IT. SQLite checkpoints on its own
+  // only when no reader is holding a snapshot - and this database has a reader WORKER THREAD serving the
+  // public API, so there is almost always one open. MEASURED 2026-09-24: the WAL had grown to 1.15 GB
+  // against a 606 MB database on a disk that was 78% full, and every cold read had to walk it - the
+  // liquidation pulse that feeds the bottom of the heatmap page took 19.6 SECONDS, and 30 with the book
+  // film also on the core, at which point it answered 503.
+  //
+  // TRUNCATE rather than PASSIVE: a passive checkpoint gives up the moment a reader is in the way, which
+  // is the situation that created this. It blocks writers for the moment it takes, which is why it runs
+  // on a timer from the writer itself rather than from a request, and why it is hourly rather than often.
+  if (!opts.readOnly) {
+    const ckpt = () => {
+      const t0 = Date.now();
+      try { db.exec('PRAGMA wal_checkpoint(TRUNCATE);'); log.info('wal checkpoint', { ms: Date.now() - t0 }); }
+      catch (e) { log.warn('wal checkpoint failed', { e: String(e && e.message || e) }); }
+    };
+    setTimeout(ckpt, 60000).unref?.();              // once shortly after start, so a restart clears a backlog
+    setInterval(ckpt, 60 * 60000).unref?.();
+  }
 
   let insertStmt, aggUpsert, getMeta, setMeta, oiStmt, clAdd;
   function prepareAll() {
