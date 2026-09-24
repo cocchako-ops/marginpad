@@ -128,6 +128,13 @@ const RING = 500;     // trades kept per venue+symbol for live reads
 // about half a minute - so a reader filtering for $250k orders sees an empty list most of the time, because
 // the big ones scrolled out of a window sized for every $9 trade. These are kept on their own and stay for
 // as long as the ring takes to fill, so a filter answers with the last real orders instead of nothing.
+// AND A SECOND RING FOR THE ONES THAT ARE RARE. MEASURED: of 300 prints over $50k spanning twelve
+// minutes, exactly TWO were over $1M and none over $5M - so a count-capped ring answers the biggest
+// filters with an almost empty list, which is what a reader sees as 'this is broken'. Prints over
+// $500k are rare enough to keep far more of, and far longer, for a few megabytes.
+const HUGE_USD = 500000;
+const HUGE_KEEP = 1200;
+const HUGE_MS = 12 * 3600000;
 const BIG_USD = 50000;
 const BIG_KEEP = 400;
 const MIN_KEEP = 45;  // completed minutes kept per symbol - enough to draw three quarters of an hour of flow
@@ -147,6 +154,7 @@ export class TapeCollector extends BaseCollector {
     // is meaningless three seconds into a minute. Pure memory, MIN_KEEP entries of four numbers per symbol.
     this.mins = new Map();      // sym -> [{ m, buyUsd, sellUsd, n }] oldest first
     this.bigs = new Map();      // sym -> [row] the large prints only, kept far longer than the live ring
+    this.huge = new Map();      // sym -> [row] the rare ones, kept for hours so the biggest filters have a list
     this.seen = new Map();      // sym -> Set of recent ids
     this.seenOrder = new Map(); // sym -> id[] (FIFO for trimming)
     this.trades = 0; this.dupes = 0; this.bad = 0; this.skipped = 0;
@@ -218,6 +226,12 @@ export class TapeCollector extends BaseCollector {
     if (row.side === 'buy') b.buyUsd += row.usd; else b.sellUsd += row.usd;
     b.n++;
 
+    if (row.usd >= HUGE_USD) {
+      let hg = this.huge.get(t.sym); if (!hg) { hg = []; this.huge.set(t.sym, hg); }
+      hg.push(row);
+      const cut = row.ts - HUGE_MS;
+      while (hg.length && (hg.length > HUGE_KEEP || hg[0].ts < cut)) hg.shift();
+    }
     if (row.usd >= BIG_USD) {
       let bg = this.bigs.get(t.sym); if (!bg) { bg = []; this.bigs.set(t.sym, bg); }
       bg.push(row); if (bg.length > BIG_KEEP) bg.splice(0, bg.length - BIG_KEEP);
@@ -241,6 +255,12 @@ export class TapeCollector extends BaseCollector {
     return { minute: b.m * 60000, trades: b.n,
       buyUsd: Math.round(b.buyUsd), sellUsd: Math.round(b.sellUsd),
       deltaUsd: Math.round(b.buyUsd - b.sellUsd) };
+  }
+
+  /** The rare ones, newest last, reaching back hours rather than minutes. */
+  hugePrints(sym, n = 400) {
+    const a = this.huge.get(sym) || [];
+    return a.slice(Math.max(0, a.length - n));
   }
 
   /** The large prints only, newest last. What a size filter should actually be answered from. */

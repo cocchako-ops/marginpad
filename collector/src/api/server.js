@@ -420,10 +420,16 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
       // qualify, so the deepest filter reaches back furthest instead of shallowest.
       big: (function () {
         const floor = Math.max(0, +req.query.bigmin || 0);
+        // WHICH RING ANSWERS DEPENDS ON WHAT WAS ASKED FOR. The $50k ring is count-capped and spans about
+        // twelve minutes, which is right for a $50k filter and useless for a $1M one - measured, it held
+        // exactly two prints that big. Above half a million the long ring answers instead and reaches
+        // back hours, so the biggest filters show a real recent history rather than an empty box.
+        const deep = floor >= 500000;
         let rows = [];
         for (const c of tapeCols) {
           if (want && c.venue !== want) continue;
-          if (c.big) rows.push(...c.big(sym, 400));
+          if (deep && c.hugePrints) rows.push(...c.hugePrints(sym, 400));
+          else if (c.big) rows.push(...c.big(sym, 400));
         }
         if (floor > 0) rows = rows.filter((r) => (+r.usd || 0) >= floor);
         rows.sort((a, b) => a.ts - b.ts);
