@@ -495,6 +495,82 @@ const LAYOUT = () => {
     await page.close();
   }, { timeoutMs: 280000 });
 
+  // ---- THE BOOK OVER TIME -------------------------------------------------------------------------
+  // The film is the answer to "where are the orders, on which exchange, how much, and when" - so what is
+  // tested is that it DRAWS both sides, that picking one exchange really changes the picture rather than
+  // only the chip, that every derived card carries a measurement AND the sentence explaining it, and that
+  // the price axis fits the labels it prints. That last one is load-bearing: measuring the two ends of
+  // the scale is not enough, because they are exact multiples of the step and format without a decimal
+  // while every tick between them has one - which is how a phone was printing "83,606." for a week.
+  console.log('\nthe book over time');
+  await withBrowser(async (browser) => {
+    const o = await open(browser, { width: 1366, height: 900 });
+    const page = o.page;
+    await page.waitForSelector('.hm-bm-cv', { timeout: 60000 });
+    await page.waitForFunction('window.__mpHeat && window.__mpHeat.state() && window.__mpHeat.state().bookMap', { timeout: 60000 }).catch(() => {});
+    await new Promise((r) => setTimeout(r, 2500));
+
+    const A = await page.evaluate(() => {
+      const el = document.querySelector('.hm-bm');
+      const cv = el.querySelector('.hm-bm-cv'), ctx = cv.getContext('2d');
+      const d = ctx.getImageData(0, 0, cv.width, cv.height).data;
+      let green = 0, red = 0;
+      for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 14) continue; if (d[i + 1] > d[i] + 8) green++; else if (d[i] > d[i + 1] + 8) red++; }
+      const foot = document.querySelector('details.hm-foot, .hm-foot');
+      return {
+        coins: [...el.querySelectorAll('[data-bmcoin]')].map((b) => b.textContent.trim()),
+        venues: [...el.querySelectorAll('[data-bmven]')].map((b) => b.textContent.trim()),
+        spans: [...el.querySelectorAll('[data-bmwin]')].map((b) => b.textContent.trim()),
+        cards: [...el.querySelectorAll('.hm-bm-k')].map((k) => ({ lab: k.querySelector('u').textContent, val: k.querySelector('b').textContent, note: (k.querySelector('s') || {}).textContent || '' })),
+        walls: [...el.querySelectorAll('.hm-bm-wi')].map((w) => w.textContent.replace(/\s+/g, ' ')),
+        green, red,
+        foot: (el.querySelector('.hm-bm-e') || {}).textContent || '',
+        beforeExplainers: !!(foot && (el.compareDocumentPosition(foot) & Node.DOCUMENT_POSITION_FOLLOWING)),
+        st: window.__mpHeat.state().bookMap,
+        wide: [...el.querySelectorAll('*')].filter((e) => e.getBoundingClientRect().width > 1366).length,
+      };
+    });
+    ok('the film covers six coins, five books and three spans', A.coins.length === 6 && A.venues.length === 6 && A.spans.length === 3,
+      JSON.stringify({ coins: A.coins.length, venues: A.venues, spans: A.spans }));
+    ok('it draws BOTH sides of the book, not one', A.green > 2000 && A.red > 2000, JSON.stringify({ green: A.green, red: A.red }));
+    ok('it sits between the panel and the explanations', A.beforeExplainers, String(A.beforeExplainers));
+    // A number with no sentence beside it is the thing this page keeps being redesigned away from.
+    ok('every reading carries its measurement AND what it means', A.cards.length >= 3 && A.cards.every((c) => c.val.length > 0 && c.note.length > 12),
+      JSON.stringify(A.cards.map((c) => c.lab + ' = ' + c.val)));
+    ok('one of them answers what happened to the walls that went', A.cards.some((c) => /pulled|eaten|went/i.test(c.lab + c.val + c.note)),
+      A.cards.map((c) => c.lab).join(' | '));
+    ok('the marks are explained where they are drawn', /cross/.test(A.foot) && /withdrawn/.test(A.foot) && /cancelled/.test(A.foot), A.foot.slice(0, 80));
+    ok('the price axis fits the widest label it prints', !!A.st && A.st.axw >= A.st.widestLabel + 8,
+      JSON.stringify({ axw: A.st && A.st.axw, widest: A.st && A.st.widestLabel }));
+    ok('nothing in the film is wider than the screen', A.wide === 0, 'wide=' + A.wide);
+
+    // Picking one book must change the PICTURE, not just the chip - the film is stored per venue for
+    // exactly this reason, and a filter that only moves the highlight would be a lie.
+    const before = await page.evaluate(() => {
+      const cv = document.querySelector('.hm-bm-cv'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let lit = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 14) lit++;
+      return lit;
+    });
+    await page.click('[data-bmven="binance"]');
+    await new Promise((r) => setTimeout(r, 7000));
+    const after = await page.evaluate(() => {
+      const el = document.querySelector('.hm-bm');
+      const cv = el.querySelector('.hm-bm-cv'), d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let lit = 0; for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 14) lit++;
+      return { lit, on: (el.querySelector('.hm-bm-b.on[data-bmven]') || {}).textContent.trim(), st: window.__mpHeat.state().bookMap };
+    });
+    ok('picking one exchange redraws the film from that book alone', after.on === 'Binance' && after.st && after.st.venue === 'binance' && Math.abs(after.lit - before) > before * 0.08,
+      JSON.stringify({ litAll: before, litOne: after.lit, venue: after.st && after.st.venue }));
+
+    // and a coin with a book must be switchable to
+    await page.click('[data-bmcoin="SOL"]');
+    await new Promise((r) => setTimeout(r, 7000));
+    const sol = await page.evaluate(() => window.__mpHeat.state().bookMap);
+    ok('another coin loads its own film', !!sol && sol.coin === 'SOL' && sol.cols >= 2, JSON.stringify(sol));
+    ok('no page errors while driving it', o.errs.length === 0, JSON.stringify(o.errs.slice(0, 3)));
+    await page.close();
+  }, { timeoutMs: 280000 });
+
   // ---- copy that has to agree with itself ---------------------------------------------------------------
   console.log('\ncopy');
   const src = SRC || await (await fetch('https://marginpad.io/assets/mp-heatmap.js?cb=' + Date.now())).text();
