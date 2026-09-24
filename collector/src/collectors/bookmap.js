@@ -28,17 +28,20 @@ import { log } from '../logger.js';
 
 const SAMPLE_MS = 4000;        // one film frame; the page polls slower than this
 const KEEP_MS = 30 * 60000;    // half an hour of film
-const BAND_PCT = 0.6;          // buckets within +/-0.6% of mid - the books themselves only reach ~0.25%
-const BUCKETS = 140;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
+const BAND_PCT = 0.35;         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
+const BUCKETS = 170;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
 const WALL_MIN_USD = 150000;   // a wall is never smaller than this, whatever the coin
 const WALL_MIN_REL = 5;        // ...and never less than this many times the median occupied bucket
 const WALL_KEEP = 60;          // finished walls kept per symbol, newest last
 const EATEN_FRAC = 0.35;       // traded >= this share of the wall's peak while it stood = eaten, not pulled
 
-/** A price step that gives readable rows on any coin: about a thousandth of the price, rounded to 1/2/5. */
+/** THE ROW HEIGHT COMES FROM HOW FAR THE BOOK REACHES, NOT FROM HOW BIG THE PRICE IS. Measured: a major
+ *  coin's book spans about 25 basis points either side of the mid - on Bitcoin that is roughly $200, so a
+ *  step taken as a thousandth of the price ($100) drew the entire book in TWO rows. Eight hundredths of a
+ *  basis point puts about sixty rows across the part of the book that actually exists, on any coin. */
 export function stepFor(px) {
   if (!(px > 0)) return 1;
-  const raw = px / 1000;
+  const raw = px * 0.00008;
   const mag = Math.pow(10, Math.floor(Math.log10(raw)));
   const n = raw / mag;
   return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag;
@@ -86,7 +89,8 @@ export class BookMap {
     // Bucketing each against its own mid would smear one venue's wall across two rows of the picture.
     const mid = per.reduce((s, v) => s + v.mid, 0) / per.length;
     let step = this.step.get(sym);
-    if (!step || Math.abs(Math.log10(mid / (step * 1000))) > 0.5) { step = stepFor(mid); this.step.set(sym, step); }
+    var want = stepFor(mid);
+    if (!step || step > want * 2 || step < want / 2) { step = want; this.step.set(sym, step); }
     const lo = mid * (1 - BAND_PCT / 100), hi = mid * (1 + BAND_PCT / 100);
 
     const bid = new Map(), ask = new Map();          // bucket -> usd
