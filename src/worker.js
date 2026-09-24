@@ -12075,36 +12075,23 @@ async function handleTelegram(request, env) {
   const token = env.TELEGRAM_TOKEN;
   const base = { parse_mode: 'HTML', disable_web_page_preview: true };
 
-  /* JOIN REQUESTS FOR THE BONUS CHANNEL - our own version of the Bybit bot's referral check.
-     Answered before anything else in this webhook because it is time-sensitive: the person is
-     staring at a "request sent" spinner. */
+  /* JOIN REQUESTS: LET THEM IN. NO CHECKS (owner order, 2026-09-24).
+     This used to refuse anybody whose MarginPad account did not carry a Bybit UID from our own referral
+     list - three separate refusals, each with a message telling the person to go and open a Bybit
+     account. The owner never asked for that gate on our bot and has ordered it removed.
+
+     The handler STAYS, and that is deliberate: the channel has Telegram's "approve new members" switch
+     on, so deleting this code would not open the channel - it would leave every request hanging
+     unanswered for ever, which is worse than the gate it replaced. Nobody is checked, nobody is
+     refused, and nobody is left staring at a spinner. If the channel should be members-only again,
+     that is Telegram's own setting and the owner's call, not a rule this bot enforces. */
   if (update.chat_join_request) {
     const jr = update.chat_join_request;
     const chatId = String((jr.chat && jr.chat.id) || '');
     const uid = String((jr.from && jr.from.id) || '');
-    let want = ''; try { want = (await env.STATS.get('cfg:bybitchan')) || ''; } catch (e) {}
-    if (!chatId || !uid || (want && chatId !== want)) return new Response('ok');
-    const dm = async t => { try { await tgApi(token, 'sendMessage', { chat_id: uid, parse_mode: 'HTML', disable_web_page_preview: true, text: t }); } catch (e) {} };
-    const no = async (why, t) => {
-      try { await tgApi(token, 'declineChatJoinRequest', { chat_id: chatId, user_id: uid }); } catch (e) {}
-      await dm(t);
-      try { await evPush(env, null, 'bybitjoin', 'declined: ' + why + ' (@' + ((jr.from && jr.from.username) || uid) + ')', ''); } catch (e) {}
-      return new Response('ok');
-    };
-    // 1. is this Telegram account linked to a MarginPad account at all?
-    let acct = null;
-    try { const r = await usersDO(env, '/presence/names', { chats: [uid] }); acct = (r && r.chats && r.chats[uid]) || null; } catch (e) {}
-    if (!acct || !acct.id) return no('no_account', '<b>MarginPad weekly bonus</b>\n\nThis channel is for traders using a Bybit account opened through MarginPad.\n\nTo get in:\n1. Open <a href="https://marginpad.io/rewards/">marginpad.io/rewards</a> and sign in (email only, free)\n2. Link this Telegram to your account there\n3. Register your Bybit UID\n\nThen ask to join again - you will be let in straight away.');
-    // 2. has that account registered a Bybit UID?
-    let buid = '';
-    try { const pg = await usersDO(env, '/prefsget', { uid: String(acct.id), keys: ['bybit_uid'] }); buid = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
-    if (!buid) return no('no_uid', '<b>MarginPad weekly bonus</b>\n\nYou are signed in as <b>@' + (acct.username || 'your account') + '</b>, but no Bybit UID is registered on it yet.\n\nRegister it on <a href="https://marginpad.io/rewards/">marginpad.io/rewards</a> - it takes one number - then ask to join again.\n\nNo Bybit account through us yet? Open one at <a href="https://partner.bybit.com/b/162071">this link</a> first; an account opened any other way cannot be counted.');
-    // 3. is that UID really one of ours? The allowlist is fed from Bybit's own affiliate list.
-    let ours = false; try { ours = (await bybitUidSet(env)).has(buid); } catch (e) {}
-    if (!ours) return no('not_ours', '<b>MarginPad weekly bonus</b>\n\nThe Bybit UID on your account (<code>' + buid + '</code>) is not one that was opened through MarginPad, so Bybit does not report it to us and we cannot count it.\n\nIf you believe that is wrong, reply here and we will check it by hand.');
+    if (!chatId || !uid) return new Response('ok');
     try { await tgApi(token, 'approveChatJoinRequest', { chat_id: chatId, user_id: uid }); } catch (e) {}
-    await dm('<b>You are in.</b>\n\nBybit UID <code>' + buid + '</code> checked against our referral list - welcome to the MarginPad weekly bonus channel.\n\nYour bonus is worked out every Tuesday for the week before, and grows with how much you trade. Claim it at <a href="https://marginpad.io/rewards/#bybonus">marginpad.io/rewards</a>.');
-    try { await evPush(env, null, 'bybitjoin', 'approved @' + ((jr.from && jr.from.username) || uid) + ' UID ' + buid, ''); } catch (e) {}
+    try { await evPush(env, null, 'tgjoin', 'approved @' + ((jr.from && jr.from.username) || uid), ''); } catch (e) {}
     return new Response('ok');
   }
 
