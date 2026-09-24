@@ -19,7 +19,15 @@ const CHECKS = [
   ['tape $50k', '/tape?symbol=BTC&limit=2&bigmin=50000', (j) => Array.isArray(j && j.big) && j.bigRingFloorUsd === 50000 ? '' : 'ring floor ' + (j && j.bigRingFloorUsd)],
   ['tape $250k', '/tape?symbol=BTC&limit=2&bigmin=250000', (j) => Array.isArray(j && j.big) && j.bigRingFloorUsd === 250000 ? '' : 'ring floor ' + (j && j.bigRingFloorUsd) + ' (the mid ring should answer this)'],
   ['tape $1M', '/tape?symbol=BTC&limit=2&bigmin=1000000', (j) => Array.isArray(j && j.big) && j.bigRingFloorUsd === 1000000 ? '' : 'ring floor ' + (j && j.bigRingFloorUsd)],
-  ['book', '/book?symbol=BTC&levels=5', (j) => (j && (j.bids || j.levels)) ? '' : 'no ladder'],
+  // the book answers PER VENUE, each with its own ladder and depth - a top-level bids array was my
+  // guess, and a smoke test built on a guess is how you get a red line with nothing wrong.
+  ['book', '/book?symbol=BTC&levels=5', (j) => {
+    const v = j && j.venues && Object.values(j.venues)[0];
+    if (!v) return 'no venues';
+    if (!(v.top && Array.isArray(v.top.bid) && v.top.bid.length)) return 'no ladder on ' + Object.keys(j.venues)[0];
+    if (!(v.mid > 0)) return 'no mid price';
+    return '';
+  }],
   ['bookmap', '/bookmap?symbol=BTC&mins=5&only=walls', (j) => (j && (j.cols || j.building || j.wallsStanding)) ? '' : 'no film'],
   ['feed', '/feed?limit=5', (j) => Array.isArray(j) || Array.isArray(j && j.events) ? '' : 'no liquidation events'],
   ['pulse', '/pulse', (j) => j && typeof j === 'object' ? '' : 'empty'],
