@@ -42,8 +42,19 @@ async function open(browser, vp, ua) {
   });
   const errs = [];
   page.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 200)); });
+  // A REFUSED REQUEST MUST NAME ITSELF. This is the check that caught the page rate-limiting ITSELF on
+  // 2026-09-24 - 56 keyless /api/v1/ calls a minute against a 60 ceiling - and all it said was "Failed to load
+  // resource: the server responded with a status of 429 ()", with no path, so the finding cost a measurement
+  // to identify. Now the status and the route are in the failure line.
+  page.on('response', r => {
+    if (r.status() >= 400 && /marginpad\.io\/api\//.test(r.url())) errs.push('HTTP ' + r.status() + ' ' + r.url().replace(/^https:\/\/marginpad\.io/, '').split('&')[0]);
+  });
   page.on('pageerror', e => errs.push('pageerror: ' + String(e).slice(0, 200)));
-  await page.goto(URL_, { waitUntil: 'networkidle2', timeout: 60000 });
+  // NOT networkidle2. This page polls forever - the book and tape every four seconds, the film every five,
+  // prices, presence - so "two connections quiet for half a second" is a state it may simply never reach,
+  // and when it did not the run died at whichever leg happened to be unlucky while the page itself was
+  // answering in 0.06s. The real readiness signal is the line below: the map has bands to draw.
+  await page.goto(URL_, { waitUntil: 'domcontentloaded', timeout: 60000 });
   // the map needs klines + liquidations + pools + price before it has anything to draw
   await page.waitForFunction('window.__mpHeat && window.__mpHeat.state() && window.__mpHeat.state().bands > 0', { timeout: 45000 });
   await new Promise(r => setTimeout(r, 3500));
@@ -257,6 +268,23 @@ const LAYOUT = () => {
       }
       return { txt: '' };
     });
+    // A STANDING ZONE CARRIES A MEASURED DOLLAR FIGURE AND STILL REFUSES TO PRICE THE MODEL. Those are
+    // two different claims in the same box and both have to survive: the crowding is an ESTIMATE and says
+    // so, and the dollars are the RECORD of what really liquidated at bands of this weight, with its n.
+    const cal = await page.evaluate(async () => {
+      const cv = document.querySelector('.hm-cv'), r = cv.getBoundingClientRect();
+      for (let f = 0.06; f < 0.95; f += 0.05) {
+        const b2 = document.querySelector('.hm-selbox'); if (b2) b2.style.display = 'none';
+        cv.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width * 0.5, clientY: r.top + r.height * f, bubbles: true }));
+        await new Promise((q) => setTimeout(q, 250));
+        const sb = document.querySelector('.hm-selbox');
+        if (sb && getComputedStyle(sb).display !== 'none' && /LIQUIDATION LEVEL/.test(sb.textContent)) return sb.textContent.replace(/\s+/g, ' ').trim();
+      }
+      return '';
+    });
+    ok('a zone still standing quotes what bands this heavy have really liquidated, with its n',
+      !cal || (/have liquidated a median of/.test(cal) && /measured on \d+ of our own swept levels/.test(cal)), cal.slice(0, 220));
+    ok('and it still refuses to price the model itself', !cal || /not a dollar figure/.test(cal), cal.slice(0, 120));
     ok('clicking a cut line says it was swept, and when', !!swRead.skip || /SWEPT/i.test(swRead.txt || ''),
       (swRead.txt || '').slice(0, 90));
     // MEASURED OR HONESTLY ABSENT - never a confident blank. The figure comes from our own collector and
@@ -604,7 +632,7 @@ const LAYOUT = () => {
     });
     const before = await money();
     await page.click('[data-bmven="binance"]');
-    await new Promise((r) => setTimeout(r, 7000));
+    await page.waitForFunction(() => { var s2 = window.__mpBmState; return s2 && s2.venue === 'binance' && s2.data && s2.data.cols && s2.data.cols.length >= 2; }, { timeout: 40000 }).catch(() => {});
     const after = Object.assign(await money(), await page.evaluate(() => ({
       on: (document.querySelector('.hm-bm .hm-bm-b.on[data-bmven]') || {}).textContent.trim(),
       st: window.__mpHeat.state().bookMap,
@@ -614,7 +642,9 @@ const LAYOUT = () => {
 
     // and a coin with a book must be switchable to
     await page.click('[data-bmcoin="SOL"]');
-    await new Promise((r) => setTimeout(r, 7000));
+    // WAIT FOR THE DATA, not for a clock: a coin switch clears the film and refetches, and a fixed sleep
+    // graded whichever side of that race the run happened to land on.
+    await page.waitForFunction(() => { var s2 = window.__mpBmState; return s2 && s2.coin === 'SOL' && s2.data && s2.data.cols && s2.data.cols.length >= 2; }, { timeout: 40000 }).catch(() => {});
     const sol = await page.evaluate(() => window.__mpHeat.state().bookMap);
     ok('another coin loads its own film', !!sol && sol.coin === 'SOL' && sol.cols >= 2, JSON.stringify(sol));
     // ---- CLICKING IT ------------------------------------------------------------------------------
@@ -636,9 +666,13 @@ const LAYOUT = () => {
       });
     };
     const geo = await page.evaluate(() => {
-      const g = window.__mpBmState.geo, d = window.__mpBmState.data;
+      // The film clears itself on a coin or venue change and refetches, so every read of it has to
+      // survive being empty rather than throwing and taking the whole run down with it.
+      const s2 = window.__mpBmState;
+      const g = s2 && s2.geo, d = s2 && s2.data;
+      if (!g || !d || !d.cols || !d.cols.length) return { fin: null, cell: null, empty: true };
       const xOfT = (t) => Math.max(0, Math.min(g.PW, (t - g.t0) / g.span * g.PW));
-      const fin = (d.wallsFinished || [])[d.wallsFinished.length - 1];
+      const fin = (d.wallsFinished || [])[(d.wallsFinished || []).length - 1];
       const ci = Math.max(0, Math.floor(d.cols.length * 0.3)), col = d.cols[ci];
       // NOT the heaviest bucket: that is exactly what the wall detector picks, so the click opened a
       // wall card and this check graded the wrong panel. A middling row is an ordinary price.
@@ -720,7 +754,10 @@ const LAYOUT = () => {
       if (cookie) await page.setCookie({ name: 'mp_sess', value: cookie, domain: 'marginpad.io', path: '/' });
       // a preview already spent, so the wall paints at once instead of five minutes from now
       await page.evaluateOnNewDocument(() => { try { localStorage.setItem('mp_hm_lock', String(Date.now() - 3600000)); } catch (e) {} });
-      await page.goto(URL_, { waitUntil: 'networkidle2', timeout: 60000 });
+      // domcontentloaded, not networkidle2 - see open(): this page never stops polling, so "the network went
+      // quiet for half a second" is a state it may simply never reach, and the run then dies on a 60s timeout
+      // while the page itself is answering in 0.06s.
+      await page.goto(URL_, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForSelector('.hm-paywall', { timeout: 30000 }).catch(() => {});
       out = await page.evaluate(() => {
         const w = document.querySelector('.hm-paywall');

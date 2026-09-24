@@ -109,12 +109,37 @@ const V1CORS = {
   'content-type': 'application/json; charset=utf-8',
 };
 const V1_LIMIT = 60; // requests / minute / IP (generous, keyless)
+// OUR OWN PAGES ARE NOT A THIRD-PARTY API CONSUMER (2026-09-24). Measured on /heatmap over one quiet minute:
+// 56 keyless /api/v1/ calls against a 60 ceiling, and 15 of the 66 requests the page made came back 429 - the
+// book and the tape every four seconds, the film and the live liquidations every five. So we had published a
+// limit our own site cannot live inside: open a second tab, or sit behind one office IP with somebody else, and
+// the panels simply stop filling. That is the "things wait to load" the owner reported.
+//
+// The published contract does not move one byte - a real API caller still gets exactly 60/min/IP, and the SDKs,
+// the docs, the OpenAPI spec and llms.txt all stay true. A call our own page made (same-origin, or our Origin /
+// Referer) is metered against its own budget instead, in its own bucket, and says so in x-ratelimit-scope.
+//
+// Yes, two headers can be forged, and this repo is public, so pretending otherwise would be theatre. It is not a
+// security control and never was: this data is free and keyless BY DESIGN, and anyone who wanted more of it could
+// simply ask from a second address. The counter exists so one careless script cannot bury the collector, and
+// Cloudflare's edge is what actually stands in front of abuse.
+const SITE_LIMIT = 300; // requests / minute / IP for our own pages (four live panels polling at 4-5s)
+function sameOriginCall(request) {
+  try {
+    if ((request.headers.get('sec-fetch-site') || '') === 'same-origin') return true;
+    const o = request.headers.get('origin') || request.headers.get('referer') || '';
+    return /^https:\/\/(www\.)?marginpad\.io([\/?#]|$)/.test(o);
+  } catch (e) { return false; }
+}
 const _v1rl = new Map(); // ip|minute -> count (per-isolate)
-function v1Rate(ip) {
-  const now = Date.now(), win = Math.floor(now / 60000), key = (ip || 'anon') + '|' + win;
+function v1Rate(ip, site) {
+  const cap = site ? SITE_LIMIT : V1_LIMIT;
+  // SEPARATE BUCKETS, not one bucket with a bigger lid: a reader with the site open keeps the whole public
+  // allowance for anything else they run from the same address.
+  const now = Date.now(), win = Math.floor(now / 60000), key = (site ? 's|' : '') + (ip || 'anon') + '|' + win;
   const n = (_v1rl.get(key) || 0) + 1; _v1rl.set(key, n);
   if (_v1rl.size > 8000) { for (const k of _v1rl.keys()) { if (!k.endsWith('|' + win)) _v1rl.delete(k); } }
-  return { limited: n > V1_LIMIT, limit: V1_LIMIT, remaining: Math.max(0, V1_LIMIT - n), reset: (win + 1) * 60 };
+  return { limited: n > cap, limit: cap, remaining: Math.max(0, cap - n), reset: (win + 1) * 60, site: !!site };
 }
 function v1env(body, status, rlh, cache) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { ...V1CORS, ...(rlh || {}), 'cache-control': cache || 'no-store' } });
@@ -157,9 +182,9 @@ async function handleV1(url, request, env, ctx) {
     if (a.error === 'rate_limit') return v1env({ ok: false, error: { code: 'rate_limited', message: 'Rate limit exceeded: ' + (a.limit || 120) + ' requests/minute on this key. Retry after X-RateLimit-Reset.' + ((+a.limit || 120) < 5000 ? ' API Pro raises every key to 600/minute, Max to 2000 and Business to 5000: ' + API_UPGRADE : '') }, ts: Date.now() }, 429, { ...rlh, 'retry-after': String(Math.max(1, (+a.reset || 0) - Math.floor(Date.now() / 1000))) });
     rl = { limited: false };
   } else {
-    rl = v1Rate(ip);
-    rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': 'ip' };
-    if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + V1_LIMIT + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
+    rl = v1Rate(ip, sameOriginCall(request));
+    rlh = { 'x-ratelimit-limit': String(rl.limit), 'x-ratelimit-remaining': String(rl.remaining), 'x-ratelimit-reset': String(rl.reset), 'x-ratelimit-scope': rl.site ? 'site' : 'ip' };
+    if (rl.limited) return v1err('rate_limited', 'Rate limit exceeded: ' + rl.limit + ' requests/minute per IP. Retry after X-RateLimit-Reset. Send a free API key (X-API-Key, from https://marginpad.io/trading-api/) for a per-key budget of 120/minute, 600 on Premium.', 429, rlh);
   }
   if (sub === 'ping' || sub === 'status') return v1ok({ service: 'MarginPad Free Crypto API', version: '2.9.1', status: 'ok', keyless: true, cors: true, rateLimit: V1_LIMIT + '/min/IP', keyed: 'optional X-API-Key (free at /trading-api/): 120/min per key on Free, 600 on API Pro, 2000 on Max, 5000 on Business, no per-IP limit', docs: 'https://marginpad.io/free-crypto-api/', openapi: 'https://marginpad.io/api/openapi.json', endpoints: ['price', 'prices', 'klines', 'symbols', 'screener', 'funding', 'open-interest', 'long-short', 'liquidations', 'venues', 'feed', 'liquidations/live', 'liquidations/recent', 'clusters', 'book', 'tape', 'calendar', 'fear-greed', 'coins', 'global', 'trending', 'defi', 'calc/liquidation', 'calc/position-size', 'calc/pnl', 'calc/risk-reward', 'calc/take-profit'] }, rlh);
   const M = {
