@@ -381,7 +381,16 @@ export class BookCollector extends BaseCollector {
       this.gaps++; this.lastGapAt = Date.now();
       b.ok = false; b.seq = null; b.booting = false; b.buf = [];
       log.warn(`[${this.name}] sequence gap on ${u.sym} - invalidating book and resyncing`, { had: had, got: u.seq, prev: u.prevSeq });
-      this._resync();
+      // A GAP ON ONE SYMBOL MUST NOT TEAR DOWN THE SOCKET CARRYING THE OTHER TWO. A venue that can fetch a
+      // snapshot has already been invalidated by the lines above, so its very next message goes to _buffer
+      // and re-bootstraps THAT book alone, at the cost of one REST call. Closing the socket instead
+      // invalidated all three, and after each reconnect only one managed to bootstrap before the next gap
+      // closed it again - a loop that fed itself. MEASURED 2026-09-24 on Binance: 2,481 reconnects, a close
+      // roughly every nine seconds, and the venue missing from 22% of the responses the page fetched, which
+      // is what the owner saw as "books read" flickering. Only a venue that snapshots on SUBSCRIBE has to
+      // reconnect to get a fresh book; for it, that is the resync.
+      if (this.ad.needsSnapshot) { this.resyncs++; this.lastResyncAt = Date.now(); }
+      else this._resync();
       return;
     }
 
@@ -506,6 +515,17 @@ export class BookCollector extends BaseCollector {
     if (!b || !b.ok) return null;
     if (Date.now() - b.rxAt > this.maxBookAgeMs) return null;  // alive socket, dead subscription
     return summarize(b, this.skewMs, topN);
+  }
+
+  /** Why one symbol's book is not being served, in a word a reader can be shown. The same judgement
+   *  read() makes, so the API can never say "resyncing" about a book it is happily serving. */
+  bookState(sym) {
+    const b = this.books.get(sym);
+    if (!b) return 'starting';
+    if (b.booting || b.seq == null) return 'resyncing';
+    if (!b.ok) return 'resyncing';
+    if (Date.now() - b.rxAt > this.maxBookAgeMs) return 'stale';
+    return summarize(b) ? 'ok' : 'crossed';
   }
 
   status() {

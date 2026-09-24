@@ -332,7 +332,20 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
         agg[side][bp] = (agg[side][bp] || 0) + val;
       }
     }
-    res.json({ symbol: sym, ts: Date.now(), venues: out, consolidatedDepthUsd: agg });
+    // WHAT WE TRACK, BESIDE WHAT ANSWERED. Without this the page could only count what came back and
+    // printed "4 of 4" while a venue was resyncing - which reads as "we only ever had four" rather than
+    // "one is briefly away". Named, a reader can see it is Binance and that it is coming back.
+    const tracked = bookCols.filter((c) => !want || c.venue === want).map((c) => c.venue);
+    const missing = tracked.filter((v) => !out[v]);
+    res.json({
+      symbol: sym, ts: Date.now(), venues: out, consolidatedDepthUsd: agg,
+      tracked,
+      missing: missing.map((v) => {
+        const c = bookCols.filter((x) => x.venue === v)[0];
+        const st = c && c.bookState ? c.bookState(sym) : null;
+        return { venue: v, state: st || 'resyncing' };
+      }),
+    });
   });
 
   // TRADE TAPE. The book says what is standing; this says what was executed, and `side` is always the
