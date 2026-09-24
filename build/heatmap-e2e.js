@@ -288,7 +288,10 @@ const LAYOUT = () => {
     // IT GOES IN THE LINE THAT ALREADY EXISTED (owner: "ta linija vec postoji sad si samo napravio drugu").
     // The check therefore asserts BOTH halves: the formats are there, and there is no second box anywhere.
     ok('who is winning lives in the summary line that was already there, in more than one shape',
-      L.win && L.win.formats >= 4 && /: 1/.test(L.win.big) && /25 bps/.test(L.win.sub) && L.win.inSayLine && L.win.extraBoxes === 0 && L.win.stripH < 120,
+      // THREE are unconditional; the two that read the film - who has led, and for how long unbroken -
+      // are only shown once there are six frames to read, which is the honest thing to do and is not
+      // true in the first half-minute after a collector restart.
+      L.win && L.win.formats >= 3 && /: 1/.test(L.win.big) && /25 bps/.test(L.win.sub) && L.win.inSayLine && L.win.extraBoxes === 0 && L.win.stripH < 120,
       JSON.stringify(L.win));
     // Named, not counted: the film added its own alert-floor picker and an exact count turned this red
     // while all three filters it is about were exactly where they should be.
