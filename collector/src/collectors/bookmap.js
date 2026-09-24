@@ -26,8 +26,8 @@
 
 import { log } from '../logger.js';
 
-const SAMPLE_MS = 4000;        // one film frame; the page polls slower than this
-const KEEP_MS = 30 * 60000;    // half an hour of film
+const SAMPLE_MS = 5000;        // one film frame; the page polls slower than this
+const KEEP_MS = 20 * 60000;    // twenty minutes of film - measured against the droplet's free memory
 const BAND_PCT = 0.35;         // buckets within +/-0.35% of mid - measured, the books themselves reach ~0.25%
 const BUCKETS = 170;           // per side, hard cap, so one thin-priced coin cannot blow the memory up
 const WALL_MIN_USD = 250000;   // a wall is never smaller than this, whatever the coin
@@ -96,18 +96,22 @@ export class BookMap {
     if (!step || step > want * 2 || step < want / 2) { step = want; this.step.set(sym, step); }
     const lo = mid * (1 - BAND_PCT / 100), hi = mid * (1 + BAND_PCT / 100);
 
-    const bid = new Map(), ask = new Map();          // bucket -> usd
+    const bid = new Map(), ask = new Map();          // bucket -> usd, every venue together
     const bidV = new Map(), askV = new Map();        // bucket -> Set(venue)
-    const put = (m, mv, px, sz, venue) => {
+    const bidByV = new Map(), askByV = new Map();    // bucket -> Map(venue -> usd)
+    const put = (m, mv, mbv, px, sz, venue) => {
       if (px < lo || px > hi) return;
       const k = Math.round(px / step);
-      m.set(k, (m.get(k) || 0) + px * sz);
+      const usd = px * sz;
+      m.set(k, (m.get(k) || 0) + usd);
       let s = mv.get(k); if (!s) { s = new Set(); mv.set(k, s); }
       s.add(venue);
+      let bv = mbv.get(k); if (!bv) { bv = new Map(); mbv.set(k, bv); }
+      bv.set(venue, (bv.get(venue) || 0) + usd);
     };
     for (const v of per) {
-      for (const [px, sz] of v.bids) { if (px < lo) break; put(bid, bidV, px, sz, v.venue); }
-      for (const [px, sz] of v.asks) { if (px > hi) break; put(ask, askV, px, sz, v.venue); }
+      for (const [px, sz] of v.bids) { if (px < lo) break; put(bid, bidV, bidByV, px, sz, v.venue); }
+      for (const [px, sz] of v.asks) { if (px > hi) break; put(ask, askV, askByV, px, sz, v.venue); }
     }
 
     const trim = (m) => {
@@ -117,12 +121,24 @@ export class BookMap {
     };
     const b = trim(bid), a = trim(ask);
 
+    // PER VENUE, NOT JUST THE TOTAL. The whole reason to hold five books is to be able to answer "show me
+    // Binance" as well as "show me everybody", and a consolidated total cannot be taken apart afterwards.
+    // MEASURED before choosing this: a consolidated column is 1,441 bytes over 53 rows, 2.32 venues quote
+    // the average row, so per-venue is about 2.7KB a column - twenty minutes at five seconds across six
+    // coins is 3.7MB on the wire and roughly three times that in memory, on a droplet with 224MB free.
+    // The API sums whichever venues were asked for, so the page never downloads the breakdown it is not
+    // showing.
+    const perV = (src, keep) => {
+      const o = {};
+      for (const [k, byV] of src) {
+        if (!keep.has(k)) continue;
+        for (const [vn, usd] of byV) { (o[vn] || (o[vn] = {}))[k] = Math.round(usd); }
+      }
+      return o;
+    };
     const col = {
       ts, mid: +mid.toFixed(8), step, venues: per.length,
-      b: Object.fromEntries([...b].map(([k, v]) => [k, Math.round(v)])),
-      a: Object.fromEntries([...a].map(([k, v]) => [k, Math.round(v)])),
-      bv: Object.fromEntries([...b].map(([k]) => [k, (bidV.get(k) || { size: 0 }).size])),
-      av: Object.fromEntries([...a].map(([k]) => [k, (askV.get(k) || { size: 0 }).size])),
+      b: perV(bidByV, b), a: perV(askByV, a),
     };
 
     let arr = this.cols.get(sym);
@@ -234,22 +250,40 @@ export class BookMap {
   }
 
   // ---- READ -------------------------------------------------------------------------------------
-  /** The film, plus the walls standing now and the ones that have just finished. */
-  read(sym, { mins = 30, venue = '' } = {}) {
+  /** The film, plus the walls standing now and the ones that have just finished.
+   *  `venue` picks ONE book or leaves them consolidated; the summing happens here so the page never
+   *  downloads a breakdown it is not showing. */
+  read(sym, { mins = 20, venue = '' } = {}) {
     const arr = this.cols.get(sym) || [];
     if (!arr.length) return null;
-    const from = Date.now() - Math.max(1, Math.min(30, +mins || 30)) * 60000;
-    const cols = arr.filter((c) => c.ts >= from);
+    const from = Date.now() - Math.max(1, Math.min(20, +mins || 20)) * 60000;
+    const raw = arr.filter((c) => c.ts >= from);
+    if (!raw.length) return null;
+    const want = String(venue || '').toLowerCase();
+    const flat = (byV) => {
+      const o = {}, n = {};
+      for (const [vn, rows] of Object.entries(byV)) {
+        if (want && want !== 'all' && vn !== want) continue;
+        for (const [k, usd] of Object.entries(rows)) { o[k] = (o[k] || 0) + usd; n[k] = (n[k] || 0) + 1; }
+      }
+      return [o, n];
+    };
+    const cols = raw.map((c) => {
+      const [b, bv] = flat(c.b), [a, av] = flat(c.a);
+      return { ts: c.ts, mid: c.mid, step: c.step, venues: c.venues, b, a, bv, av };
+    }).filter((c) => Object.keys(c.b).length || Object.keys(c.a).length);
     if (!cols.length) return null;
     const step = this.step.get(sym) || cols[cols.length - 1].step;
+    const vOk = (w) => !want || want === 'all' || (w.venues || []).indexOf(want) >= 0;
     const live = [...(this.live.get(sym) || new Map()).values()]
-      .filter((w) => w.seenN >= 2)
+      .filter((w) => w.seenN >= 2 && vOk(w))
       .map((w) => ({ ...w, ageMs: Date.now() - w.first, tradedUsd: Math.round(w.tradedUsd || 0), standing: true }))
       .sort((x, y) => y.peakUsd - x.peakUsd)
       .slice(0, 24);
-    const done = (this.done.get(sym) || []).slice(-24).map((w) => ({ ...w, standing: false }));
+    const done = (this.done.get(sym) || []).filter(vOk).slice(-24).map((w) => ({ ...w, standing: false }));
     return {
-      symbol: sym, ts: Date.now(), step, sampleMs: SAMPLE_MS,
+      symbol: sym, ts: Date.now(), step, sampleMs: SAMPLE_MS, venue: want || 'all',
+      venuesAvailable: this.bookCols.map((c) => c.venue),
       windowMins: Math.round((cols[cols.length - 1].ts - cols[0].ts) / 60000),
       cols, wallsStanding: live, wallsFinished: done,
       note: 'Resting orders bucketed by price every ' + (SAMPLE_MS / 1000) + 's across every venue that had a provable book. '
