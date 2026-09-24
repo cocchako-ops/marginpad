@@ -205,8 +205,13 @@ export class BookMap {
       for (let i = 0; i < rows.length; i++) {
         const r = rows[i];
         if (r.v < WALL_MIN_USD) continue;
-        const nb = rows.slice(Math.max(0, i - WALL_NEIGHBOURS), i + WALL_NEIGHBOURS + 1)
-          .filter((x) => x.k !== r.k).map((x) => x.v).sort((a, b) => a - b);
+        // NEIGHBOURS ARE MEASURED IN PRICE, NOT IN ARRAY POSITION. Taking eight entries either side of the
+        // row works while the grid is dense and is nonsense once it is not: on the wide grid the eight
+        // occupied rows below the price can span three percent, so a row at the touch was being compared
+        // with blocks thousands of dollars away and came out at 539 TIMES its neighbours. Within eight
+        // buckets is a real neighbourhood on either grid.
+        const nb = rows.filter((x) => x.k !== r.k && Math.abs(x.k - r.k) <= WALL_NEIGHBOURS)
+          .map((x) => x.v).sort((a, b) => a - b);
         // A LONE BLOCK WITH NOTHING AROUND IT IS THE CLEAREST WALL THERE IS, and the neighbour rule was
         // throwing exactly those away. Out at 3-5% from the price the book is sparse - the money sits on
         // round numbers with empty rows between them - so fewer than six neighbours is the NORMAL case
