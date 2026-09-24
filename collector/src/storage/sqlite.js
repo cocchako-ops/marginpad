@@ -28,6 +28,19 @@ export function createSqliteStorage(path, opts = {}) {
       const t0 = Date.now();
       try { db.exec('PRAGMA wal_checkpoint(TRUNCATE);'); log.info('wal checkpoint', { ms: Date.now() - t0 }); }
       catch (e) { log.warn('wal checkpoint failed', { e: String(e && e.message || e) }); }
+      // AND THE PLANNER NEEDS STATISTICS, WHICH NOTHING HAS EVER GIVEN IT. MEASURED 2026-09-24: the
+      // liquidation pulse - four aggregations over a day of rows - took 24 SECONDS cold, and the query
+      // plan said "SCAN liquidations USING INDEX idx_liq_dedup": a full walk of 1.19 million rows, while
+      // a covering index on (ts, symbol, exchange, side, notional, price) sat right there unused. With no
+      // sqlite_stat1 the planner is guessing. One ANALYZE turned that SCAN into a SEARCH and the same
+      // aggregation into 664ms.
+      //
+      // analysis_limit is the whole reason this can live on a timer: a bare ANALYZE on this table takes
+      // 28 SECONDS and would stall every exchange socket on this single-core box for all of it. Bounded,
+      // PRAGMA optimize samples a few hundred rows per index and only touches what has actually drifted.
+      const t1 = Date.now();
+      try { db.exec('PRAGMA analysis_limit=400; PRAGMA optimize;'); log.info('planner stats refreshed', { ms: Date.now() - t1 }); }
+      catch (e) { log.warn('optimize failed', { e: String(e && e.message || e) }); }
     };
     setTimeout(ckpt, 60000).unref?.();              // once shortly after start, so a restart clears a backlog
     setInterval(ckpt, 60 * 60000).unref?.();
