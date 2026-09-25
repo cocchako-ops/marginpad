@@ -60,7 +60,7 @@ const CASES = [
     kw: 'lowest fee crypto exchange, cheapest crypto futures, low fee futures exchange, crypto exchange fee comparison' },
   { slug: 'highest-leverage-crypto-exchange', title: 'Highest-Leverage Crypto Exchange (2026)', h1: 'Highest-leverage crypto exchange',
     intro: 'Some venues offer up to 125× on majors. Higher leverage means a tiny move can liquidate you - always check your liquidation price first. Ranked by maximum leverage.',
-    rank: ['binance', 'okx', 'bybit', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    rank: ['mexc', 'binance', 'okx', 'bybit', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×', /* MEXC's 500x headline leads a page ranked by leverage (audit 2026-09-25) */
     why: { binance: 'up to 125× on BTC and ETH with the deepest liquidity to back it', okx: '125× on majors with pro-grade order types', bybit: '100× on majors with a fast, reliable engine', kucoin: '100× across a wide altcoin list', kraken: 'a conservative 50× cap, favouring safety over extremes' },
     kw: 'highest leverage crypto exchange, 125x crypto exchange, max leverage futures, high leverage trading' },
   { slug: 'best-crypto-exchange-for-altcoins', title: 'Best Crypto Exchange for Altcoin Futures (2026)', h1: 'Best crypto exchange for altcoin futures',

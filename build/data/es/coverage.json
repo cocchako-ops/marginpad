@@ -43,9 +43,9 @@
  },
  {
   "rel": "aave-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "about/index.html",
@@ -67,9 +67,9 @@
  },
  {
   "rel": "ada-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "ai-indicators/index.html",
@@ -121,9 +121,9 @@
  },
  {
   "rel": "apt-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "arb-liquidation-calculator/index.html",
@@ -133,9 +133,9 @@
  },
  {
   "rel": "arb-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "arena/index.html",
@@ -151,9 +151,9 @@
  },
  {
   "rel": "atom-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "avax-liquidation-calculator/index.html",
@@ -163,9 +163,9 @@
  },
  {
   "rel": "avax-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "axs-liquidation-calculator/index.html",
@@ -1015,9 +1015,9 @@
  },
  {
   "rel": "bnb-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "bonk-liquidation-calculator/index.html",
@@ -1027,9 +1027,9 @@
  },
  {
   "rel": "bonk-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "btc-liquidation-calculator/index.html",
@@ -1039,9 +1039,9 @@
  },
  {
   "rel": "btc-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "bybit-liquidation-calculator/index.html",
@@ -1297,9 +1297,9 @@
  },
  {
   "rel": "doge-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "dot-liquidation-calculator/index.html",
@@ -1309,9 +1309,9 @@
  },
  {
   "rel": "dot-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "embed/calendar/index.html",
@@ -1357,9 +1357,9 @@
  },
  {
   "rel": "eth-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "exchanges/index.html",
@@ -1387,9 +1387,9 @@
  },
  {
   "rel": "fil-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "floki-liquidation-calculator/index.html",
@@ -1567,9 +1567,9 @@
  },
  {
   "rel": "highest-leverage-crypto-exchange/index.html",
-  "cover": 1,
-  "hit": 84,
-  "missing": 0
+  "cover": 0.9550561797752809,
+  "hit": 85,
+  "missing": 4
  },
  {
   "rel": "how-many-traders-liquidated-today/index.html",
@@ -1585,9 +1585,9 @@
  },
  {
   "rel": "hype-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "hyperliquid-liquidation-calculator/index.html",
@@ -1663,9 +1663,9 @@
  },
  {
   "rel": "inj-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "is-funding-positive-or-negative/index.html",
@@ -1759,9 +1759,9 @@
  },
  {
   "rel": "link-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "liquidation-statistics/index.html",
@@ -1807,9 +1807,9 @@
  },
  {
   "rel": "ltc-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "mana-liquidation-calculator/index.html",
@@ -1861,9 +1861,9 @@
  },
  {
   "rel": "near-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "news/index.html",
@@ -1909,9 +1909,9 @@
  },
  {
   "rel": "op-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "open-interest/index.html",
@@ -1945,9 +1945,9 @@
  },
  {
   "rel": "pepe-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "pivot-point-calculator/index.html",
@@ -2041,9 +2041,9 @@
  },
  {
   "rel": "sei-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "shib-liquidation-calculator/index.html",
@@ -2053,9 +2053,9 @@
  },
  {
   "rel": "shib-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "sol-liquidation-calculator/index.html",
@@ -2065,9 +2065,9 @@
  },
  {
   "rel": "sol-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "spot/index.html",
@@ -2107,9 +2107,9 @@
  },
  {
   "rel": "sui-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "tao-liquidation-calculator/index.html",
@@ -2119,9 +2119,9 @@
  },
  {
   "rel": "tao-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "terms/index.html",
@@ -2191,9 +2191,9 @@
  },
  {
   "rel": "trx-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "uni-liquidation-calculator/index.html",
@@ -2203,9 +2203,9 @@
  },
  {
   "rel": "uni-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "vault/index.html",
@@ -2245,9 +2245,9 @@
  },
  {
   "rel": "wif-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "wld-liquidation-calculator/index.html",
@@ -2281,9 +2281,9 @@
  },
  {
   "rel": "xrp-liquidation-map/index.html",
-  "cover": 1,
-  "hit": 55,
-  "missing": 0
+  "cover": 0.9818181818181818,
+  "hit": 54,
+  "missing": 1
  },
  {
   "rel": "zec-liquidation-calculator/index.html",

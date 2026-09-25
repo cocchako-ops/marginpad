@@ -862,7 +862,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       var upd = function () { el.classList.toggle('mp-hs-end', el.scrollLeft + el.clientWidth >= el.scrollWidth - 4); };
       el.addEventListener('scroll', upd, { passive: true }); upd();
     }
-    function scan() { var all = document.querySelectorAll('div,section,nav,ul,ol,pre,figure,main,article'); for (var i = 0; i < all.length; i++) mark(all[i]); }
+    function scan() { var all = document.querySelectorAll('div,section,nav,ul,ol,pre,code,table,figure,main,article'); for (var i = 0; i < all.length; i++) mark(all[i]); }
     var t = null, last = 0; function later() { clearTimeout(t); t = setTimeout(function () { last = Date.now(); scan(); }, 400); }
     if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
     setTimeout(scan, 1500); setTimeout(scan, 4000);
