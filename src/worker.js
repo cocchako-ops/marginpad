@@ -2351,7 +2351,8 @@ async function ssrBookBlock(S, px, env, col, nearestPct) {
   const hi = (a) => (a.length ? Math.max.apply(null, a) : null);
   const buy = lo(nums((v) => v.slipBps && +v.slipBps.buy_250000));
   const sell = lo(nums((v) => v.slipBps && +v.slipBps.sell_250000));
-  const reach = hi(nums((v) => Math.max(+v.coverBelowPct || 0, +v.coverAbovePct || 0)));
+  // a cover figure past 100% of the price is a corrupt level, not a book; the audit caught "reaches 910.50% from the price" (2026-09-25)
+  const reach = hi(nums((v) => { const c = Math.max(+v.coverBelowPct || 0, +v.coverAbovePct || 0); return (c > 0 && c <= 100) ? c : 0; }));
   const ageS = Math.max(0, Math.round((Date.now() - (+bk.ts || Date.now())) / 1000));
   const bar = (v, c2) => '<span style="display:block;height:9px;background:#15181c;border-radius:2px;overflow:hidden">'
     + '<span style="display:block;height:100%;width:' + Math.max(6, Math.round(v / top * 100)) + '%;background:' + c2 + ';opacity:.85"></span></span>';

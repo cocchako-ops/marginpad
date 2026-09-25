@@ -40,7 +40,7 @@ function __esT_mpcalc(k, en) { try { if ((document.documentElement.lang || "").s
   // LANDING-ONLY (2026-08-03): on every tool route (/paper-trade /charts /calculators /screener /heatmap /swap)
   // home.js hides .exchanges/.hotpairs - populating them was pure wasted work (E2E-proven hidden on all 6).
   // Only the direct /app landing state still shows them, and it keeps working.
-  const TOOLROUTE = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test(location.pathname);
+  const TOOLROUTE = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''));
   const exgrid = TOOLROUTE ? null : document.getElementById('exgrid');
   if (exgrid) EXLIST.forEach(ex => {
     const a = document.createElement('a');

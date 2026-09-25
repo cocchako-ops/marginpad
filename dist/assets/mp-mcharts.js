@@ -786,5 +786,5 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mcharts]');if(!t)return;if(isMob()){e.preventDefault();e.stopPropagation();open();}},true);
   // landing on /charts on a phone → open the full-screen experience automatically
-  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(open,250);});}
+  if(isMob()&&/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))){window.addEventListener('load',function(){setTimeout(open,250);});}
 })();

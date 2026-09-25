@@ -36,7 +36,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="preconnect" href="https://api.coingecko.com" />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-<script>/* Mark dedicated-tool routes on <html> BEFORE first paint so the landing never flashes when arriving at /paper-trade, /charts, /calculators (e.g. from the Rekt nav). */(function(){var p=location.pathname,c=document.documentElement;if(/^\/paper-trade\/?$/.test(p))c.className+=' route-paper';else if(/^\/charts\/?$/.test(p))c.className+=' route-charts';else if(/^\/calculators\/?$/.test(p))c.className+=' route-calc';else if(/^\/screener\/?$/.test(p))c.className+=' route-screener';})();</script>
+<script>/* Mark dedicated-tool routes on <html> BEFORE first paint so the landing never flashes when arriving at /paper-trade, /charts, /calculators (e.g. from the Rekt nav). */(function(){var p=(location.pathname||'').replace(/^\/es(?=\/|$)/,''),c=document.documentElement;if(/^\/paper-trade\/?$/.test(p))c.className+=' route-paper';else if(/^\/charts\/?$/.test(p))c.className+=' route-charts';else if(/^\/calculators\/?$/.test(p))c.className+=' route-calc';else if(/^\/screener\/?$/.test(p))c.className+=' route-screener';})();</script>
 <!-- Instant navigation: prefetch same-origin pages on hover/pointerdown (Chromium) so clicks load near-instantly; the existing @view-transition then cross-fades them. Progressive enhancement - other browsers ignore it. -->
 <script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/api/*"}}]},"eagerness":"moderate"}]}</script>
 <title>Crypto Liquidation Map, Heatmap & Calculators - MarginPad</title>
@@ -115,7 +115,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=c4bc44be">
+<link rel="stylesheet" href="/assets/home.css?v=ff137a75">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -781,7 +781,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 </div>
 
-<script defer src="/assets/mp-calc.js?v=8743666f"></script>
+<script defer src="/assets/mp-calc.js?v=ac52d5d4"></script>
 
 
 
@@ -857,7 +857,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=c4bc44be"></script>
+<script src="/assets/home.js?v=ff137a75"></script>
 <script defer src="/assets/mp-nav.js?v=5c0fa804"></script>
 </body>
 </html>

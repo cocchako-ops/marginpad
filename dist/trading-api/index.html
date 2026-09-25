@@ -463,7 +463,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API - Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-09-25T18:13:35.266Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API - Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-09-25T18:40:32.300Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
 
@@ -1317,7 +1317,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
   }
   window.__apPlanPaint=paint;
   function load(){ fetch('/api/apiplan',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){state=d;paint();}).catch(function(){}); }
-  function buy(plan,btn){
+  function buy(plan,btn){if(!/(^|; )mp_li=/.test(document.cookie)){var _o=document.querySelector('[data-auth-open]');if(_o)_o.click();say(T('Sign in first, then pick a plan.','Inicia sesión primero y luego elige un plan.'),1);return;} /* audit 2026-09-25: a guest click used to fire the buy request and log a 401 */
     btn.classList.add('busy');btn.disabled=true;say('');
     fetch('/api/apiplan/buy',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({plan:plan})})
       .then(function(r){return r.json().then(function(j){return{s:r.status,j:j};});})

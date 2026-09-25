@@ -7,7 +7,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
 ﻿/* Market Screener - live USDT-perp table (multi-exchange Bybit+OKX+Gate via /api/screener: aggregated volume, venue count, median-price cross-check), sortable, with a per-coin action sheet. Runs only on /screener. */
 (function(){
   var listEl=document.getElementById('scrList');if(!listEl)return;
-  if(!/^\/screener\/?$/.test(location.pathname))return; // dedicated route only - don't fetch on every homepage load
+  if(!/^\/screener\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,'')))return; /* /es/screener too (audit 2026-09-25) */ // dedicated route only - don't fetch on every homepage load
   try{window.mpLoadTokens&&window.mpLoadTokens();}catch(e){} // warm the Bybit set so window.mpIsBybit() can gate the sheet's paper-trade action
   var DATA=[],sortKey='score',filterKey='all',query='',sheet=null,curRow=null,LOGOS={},NAMES={};
   function wlGet(){try{return JSON.parse(localStorage.getItem('mp_watchlist')||'[]');}catch(e){return [];}}

@@ -2018,7 +2018,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // keyboard shortcuts on the Charts page: 1-6 = timeframe on the front window, A = add chart, D = toggle draw
   document.addEventListener('keydown',function(e){
     if(!built||!wins.length)return;
-    if(!(document.body.classList.contains('charts-page')||/^\/charts\/?$/.test(location.pathname)))return;
+    if(!(document.body.classList.contains('charts-page')||/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))))return;
     if(e.metaKey||e.ctrlKey||e.altKey)return;
     var t=e.target;if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t.isContentEditable))return;
     var front=null;for(var i=0;i<wins.length;i++){if(wins[i].el&&wins[i].el.classList.contains('front')){front=wins[i];break;}}if(!front)front=wins[wins.length-1];if(!front||!front.el)return;
@@ -2424,12 +2424,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&mw.candle&&!mw.dead)loadData(mw,false);});
     window.addEventListener('storage',updMT);
   }
-  window.mpCharts={ activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) - owner request
+  window.mpCharts={ activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) - owner request
     setTheme:function(m){chTheme=(m==='light')?'light':'dark';try{localStorage.setItem('mp_ch_theme',chTheme);}catch(e){}applyTheme();},
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},
     openSymbol:function(sym){try{openSymbolW(sym);}catch(e){}},
     openOnly:function(sym){try{sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym||isMobile())return;showEmpty(false);wins.slice().forEach(function(w){try{closeWin(w);}catch(e){}});addWin({sym:sym,tf:'60'});setTimeout(function(){try{reflowWins();}catch(e){}},50);setTimeout(function(){try{reflowWins();}catch(e){}},320);}catch(e){}},
     openSetup:function(sym,info){try{openSetupW(sym,info);}catch(e){}} };
-  if(/^\/charts\/?$/.test(location.pathname)){try{window.mpCharts.activate();}catch(e){}}
+  if(/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))){try{window.mpCharts.activate();}catch(e){}}
 })();
