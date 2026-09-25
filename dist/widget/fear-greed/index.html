@@ -27,7 +27,7 @@
   .wh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px;text-align:left}
   .wh b{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em}
   .live{font-size:10.5px;color:#9aa3ad;white-space:nowrap}.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ebd85;margin-right:5px;vertical-align:middle}
-  .gauge{position:relative;width:220px;height:120px;margin:6px auto 0}
+  .gauge{position:relative;width:220px;margin:6px auto 0} /* height:auto - at a fixed 120px the value and the class label spilled over the Yesterday / Last week row (audit 2026-09-25) */
   .gauge svg{display:block}
   .val{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:44px;letter-spacing:-2px;margin-top:-46px;font-variant-numeric:tabular-nums}
   .cls{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-top:2px}
