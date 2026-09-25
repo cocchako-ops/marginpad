@@ -2436,11 +2436,11 @@ async function ssrLiqMapPanel(sym, env, c) {
         };
         const hdr = (t, col) => '<div style="font:700 9.5px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:' + col + ';margin:0 0 6px">' + t + '</div>';
         ladder = '<div style="padding:14px 16px;border-top:1px solid ' + line + '">'
-          + (up.length ? hdr('Above &mdash; where shorts get liquidated', red) + up.map(row).join('') : '')
+          + (up.length ? hdr('Above &mdash; where shorts get liquidated', grn) /* a SHORT liquidation is green everywhere else on the site (rekt badges, the map's bubbles); the panel had the two sides inverted (audit 2026-09-25) */ + up.map(row).join('') : '')
           + '<div style="display:flex;align-items:center;gap:10px;margin:9px 0;padding:5px 0;border-top:1px dashed #2d333b;border-bottom:1px dashed #2d333b">'
           + '<span style="font:700 11px/1 ui-monospace,monospace;color:' + lime + '">' + S + ' ' + _spx(px) + '</span>'
           + '<span style="font:11px/1 system-ui,sans-serif;color:' + dim + '">trading now</span></div>'
-          + (dn.length ? hdr('Below &mdash; where longs get liquidated', grn) + dn.map(row).join('') : '')
+          + (dn.length ? hdr('Below &mdash; where longs get liquidated', red) + dn.map(row).join('') : '')
           + '<p style="margin:10px 0 0;font:12px/1.55 system-ui,sans-serif;color:' + dim + '">Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are <strong style="color:#c9cfd6">modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.</p>'
           + '</div>';
       }
