@@ -1465,9 +1465,9 @@
  },
  {
   "rel": "glossary/index.html",
-  "cover": 1,
-  "hit": 256,
-  "missing": 0
+  "cover": 0.9921875,
+  "hit": 254,
+  "missing": 2
  },
  {
   "rel": "grt-liquidation-calculator/index.html",
