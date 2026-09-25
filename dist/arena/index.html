@@ -81,7 +81,7 @@
   .rz-part{color:#f0b429;border-color:rgba(240,180,41,.35);}
   .rz-full{color:#2ebd85;border-color:rgba(46,189,133,.35);}
 </style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Bot Arena - trading bots ranked on live paper trades","url":"https://marginpad.io/arena/","dateModified":"2026-09-25T16:19:06.027Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Bot Arena - trading bots ranked on live paper trades","url":"https://marginpad.io/arena/","dateModified":"2026-09-25T17:51:30.688Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <header>
@@ -111,7 +111,7 @@
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   fetch('/api/arena',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     var s=j.season||{};var left=s.ends_ms?Math.max(0,s.ends_ms-Date.now()):0;var d=Math.floor(left/864e5),h=Math.floor(left%864e5/36e5);
-    $('season').innerHTML='<span>Season <b>'+(s.idx||'?')+'</b></span><span>'+esc(s.from||'')+' → '+esc(s.to||'')+'</span><span>ends in <b>'+d+' d '+h+' h</b></span><span><b>'+(j.rows||[]).length+'</b> bots on the board</span>';
+    var __esA=((document.documentElement.lang||'').slice(0,2)==='es');$('season').innerHTML='<span>'+(__esA?'Temporada':'Season')+' <b>'+(s.idx||'?')+'</b></span><span>'+esc(s.from||'')+' → '+esc(s.to||'')+'</span><span>'+(__esA?'termina en':'ends in')+' <b>'+d+' d '+h+' h</b></span><span><b>'+(j.rows||[]).length+'</b> '+(__esA?'bots en la tabla':'bots on the board')+'</span>';
     var rows=j.rows||[];
     if(!rows.length){$('rows').innerHTML='<tr><td colspan="11" class="empty">No bot has five closes this season yet. Yours could be first: the API is free, the key takes a minute.</td></tr>';return;}
     /* A 100% win rate with eighteen losers still open is the most misleading number this site can print, and it is

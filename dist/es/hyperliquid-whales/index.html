@@ -346,7 +346,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Rastreador de Ballenas de Hyperliquid - Mayores Posiciones en Vivo","url":"https://marginpad.io/es/hyperliquid-whales/","dateModified":"2026-09-25T16:24:23.669Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Rastreador de Ballenas de Hyperliquid - Mayores Posiciones en Vivo","url":"https://marginpad.io/es/hyperliquid-whales/","dateModified":"2026-09-25T17:51:34.451Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
 <div class="wrap">
@@ -554,7 +554,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
         : '<div class="wl-empty">No trade over <b>$'+Math.round((d.fillMin||250000)/1000)+'k</b> recorded yet.<br>The feed fills as the whales trade — nothing smaller is shown, on purpose.</div>';
       return; }
     box.innerHTML=tr.slice(0,28).map(function(t){
-      var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+      var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       var side=t.long?'long':'short';
       var m=esc(mkt(t.sym));
       var lev=t.lev?'<span class="wl-lev">'+t.lev+'x</span>':'';
@@ -736,7 +736,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var tr=j.trades||[];
     if(tr.length){
       H+='<div class="wd-h3">Recent executions we recorded</div>'+tr.slice(0,10).map(function(t){
-        var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+        var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
         return '<div class="wl-tr '+(t.long?'l':'s')+'" style="margin-bottom:6px">'+
           '<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'+
           '<span class="say"><span class="l1"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' <span class="wl-lev2">'+t.lev+'x</span>':'')+'</span>'+
@@ -800,10 +800,10 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="Show these positions">'+
         '<b>'+esc(mkt(c.sym))+'<small>'+px(c.mark)+(c.chg==null?'':' · '+fmtPct(c.chg))+'</small></b>'+
         '<span><span class="nb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span><span class="nl"><span>'+lp.toFixed(0)+'% long</span><span>'+(100-lp).toFixed(0)+'% short</span></span></span>'+
-        '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?'net long':'net short')+'<small>'+usd(Math.abs(net))+' of '+usd(tot)+'</small></span></div>'; }).join(''); }
+        '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en long':'net long'):(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en short':'net short'))+'<small>'+usd(Math.abs(net))+' of '+usd(tot)+'</small></span></div>'; }).join(''); }
     else mb.innerHTML='<div class="wl-empty">The market breakdown appears with the next position sweep.</div>';
     var fl=(d.fills||[]).slice(0,4);
-    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?'opened':(t.act==='close'?'closed':'flipped to');
+    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       return '<div class="wl-nt '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="Open this wallet">'+
         '<span class="ck">'+clock(t.ts).slice(0,5)+'</span>'+
         '<span class="tx"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' '+t.lev+'x':'')+' · '+esc(shorta(t.user))+'</span>'+
@@ -878,7 +878,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
         var cy=Y(last); s+='<circle cx="'+(W-PR-2).toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="2.5" fill="#fff"/>';
         s+='</svg>';
         var dist=(liq>0&&last>0)?Math.abs(last-liq)/last*100:null;
-        var cap='<div class="cap"><span>1h candles · '+(ots?'dot = opened '+dayOf(ots)+' '+clock(ots).slice(0,5):'dot = entry level (opened before our feed)')+(dist!=null?' · liq '+dist.toFixed(1)+'% away':'')+'</span>'+
+        var cap='<div class="cap"><span>1h candles · '+(ots?'dot = opened '+dayOf(ots)+' '+clock(ots).slice(0,5):'dot = entry level (opened before our feed)')+(dist!=null?' · liq '+dist.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away'):'')+'</span>'+
           '<a href="/es/paper-trade?coin='+encodeURIComponent(sym)+'&side='+(isL?'long':'short')+(el.getAttribute('data-lev')?'&lev='+encodeURIComponent(el.getAttribute('data-lev')):'')+'">Trade it on paper →</a></div>';
         el.innerHTML=s+cap;
       });
