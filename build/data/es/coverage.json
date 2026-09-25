@@ -49,9 +49,9 @@
  },
  {
   "rel": "about/index.html",
-  "cover": 0.96875,
-  "hit": 31,
-  "missing": 1
+  "cover": 1,
+  "hit": 32,
+  "missing": 0
  },
  {
   "rel": "academy/index.html",
@@ -1267,9 +1267,9 @@
  },
  {
   "rel": "crypto-trading-simulator-no-sign-up/index.html",
-  "cover": 0.9906542056074766,
-  "hit": 106,
-  "missing": 1
+  "cover": 1,
+  "hit": 107,
+  "missing": 0
  },
  {
   "rel": "crypto-trading-usa/index.html",
@@ -1747,9 +1747,9 @@
  },
  {
   "rel": "leverage-trading-simulator/index.html",
-  "cover": 0.9911504424778761,
-  "hit": 112,
-  "missing": 1
+  "cover": 1,
+  "hit": 113,
+  "missing": 0
  },
  {
   "rel": "link-liquidation-calculator/index.html",
@@ -2179,9 +2179,9 @@
  },
  {
   "rel": "tradingview-paper-trading-alternative/index.html",
-  "cover": 0.9594594594594594,
-  "hit": 71,
-  "missing": 3
+  "cover": 1,
+  "hit": 74,
+  "missing": 0
  },
  {
   "rel": "trx-liquidation-calculator/index.html",

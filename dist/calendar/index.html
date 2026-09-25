@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_calendarindex = {"emailSet":"Email guardado ✓","noScheduledEventsClean":"<div class=\"cs-empty\">Sin eventos programados - aire limpio. Opéralo en <a href=\"/paper-trade\" style=\"color:#c2f64a\">Paper Trade</a>.</div>","allDay":"Todo el día","yourTime":" tu hora"};
+function __esT_calendarindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_calendarindex[k] != null) return __esD_calendarindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -234,7 +240,7 @@
 (function(){
   try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
   var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d'],macro:['MACRO','#e9e7df'],unlock:['UNLOCK','#ff8ad8']};
-  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var __esCal=((document.documentElement.lang||'').slice(0,2).toLowerCase()==='es');var MONTHS=__esCal?['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']:['January','February','March','April','May','June','July','August','September','October','November','December'];
   var YEARS=[2023,2024,2025,2026,2027];
   var nowD=new Date(), vy=nowD.getFullYear(), vm=nowD.getMonth();
   var selKey=dayKey(nowD), yearCache={}, nextEv=null;
@@ -250,7 +256,7 @@
     btn.disabled=true;btn.textContent='…';
     fetch('/api/calendar/remind',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ts:ts,title:title})})
       .then(function(r){return r.json();}).then(function(d){
-        if(d&&d.ok){btn.classList.add('done');btn.textContent='Email set ✓';return;}
+        if(d&&d.ok){btn.classList.add('done');btn.textContent=__esT_calendarindex("emailSet",'Email set ✓');return;}
         btn.disabled=false;btn.textContent='Email';
         if(d&&d.error==='login_required'){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
       }).catch(function(){btn.disabled=false;btn.textContent='Email';});
@@ -289,7 +295,7 @@
       var chips=evs.slice(0,3).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;
         var short=String(e.title).replace(/^US /,'').replace(/ token unlock · .*$/,' unlock').replace(/ - .*$/,'').replace(/Monthly BTC & ETH options expiry/,'Options expiry').replace(/Quarterly BTC & ETH options expiry/,'Quarterly expiry').replace(/jobs report \(NFP\)/,'Jobs report (NFP)');
         return '<span class="calev" style="color:'+tp[1]+';background:'+tp[1]+'1c" title="'+esc(e.title)+'"><i></i>'+esc(short)+'</span>';}).join('');
-      if(evs.length>3)chips+='<span class="calmore">+'+(evs.length-3)+' more</span>';
+      if(evs.length>3)chips+='<span class="calmore">+'+(evs.length-3)+(__esCal?' más':' more')+'</span>';
       var dots='<span class="caldots">'+evs.slice(0,4).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;return '<i style="color:'+tp[1]+'"></i>';}).join('')+'</span>';
       var wd=c.d.getDay();
       var mx=0;evs.forEach(function(e){if((e.impact||1)>mx)mx=e.impact||1;});
@@ -301,18 +307,18 @@
     var d=selKey.split('-'),dd=new Date(+d[0],+d[1]-1,+d[2]);
     document.getElementById('csDayH').textContent=dd.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});
     var evs=evOn(events,selKey),body=document.getElementById('csDayB'),now=Date.now();
-    if(!evs.length){body.innerHTML='<div class="cs-empty">No scheduled events - clean air. Trade it on <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a>.</div>';return;}
+    if(!evs.length){body.innerHTML=__esT_calendarindex("noScheduledEventsClean",'<div class="cs-empty">No scheduled events - clean air. Trade it on <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a>.</div>');return;}
     var IMPL={3:['Market mover','#ff6258'],2:['Worth watching','#ffb347'],1:['Background','#8a929c']};
     body.innerHTML=evs.map(function(e){var tp=TYPES[e.type]||TYPES.crypto,fut=e.ts>now,im=IMPL[e.impact||1]||IMPL[1];
       var d2=new Date(e.ts);
-      var tm=e.allday?'All day':d2.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' your time';
+      var tm=e.allday?__esT_calendarindex("allDay",'All day'):d2.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+__esT_calendarindex("yourTime",' your time');
       var utc=e.allday?'':' · '+('0'+d2.getUTCHours()).slice(-2)+':'+('0'+d2.getUTCMinutes()).slice(-2)+' UTC';
       var remind=fut?'<button type="button" class="cs-rmb" onclick="__calRemind(this,'+e.ts+',\''+esc(e.title).replace(/'/g,'')+'\')">Email</button>'
         +'<a class="cs-rmb tg" href="https://t.me/MarginPadBot?start=cal_'+Math.floor(e.ts/1000)+'_'+e.type+'" target="_blank" rel="noopener">Telegram</a>':'';
       return '<div class="cs-ev"><div class="tt"><b>'+esc(e.title)+'</b><span class="cs-badge" style="color:'+tp[1]+';background:'+tp[1]+'1c">'+tp[0]+'</span><span class="cs-implbl" style="color:'+im[1]+';background:'+im[1]+'1a">'+im[0]+'</span>'+(e.approx?'<span class="cs-badge" style="color:#8a929c;background:rgba(255,255,255,.05)">usually</span>':'')+'</div>'
         +'<div class="ds">'+esc(e.desc||'')+'</div>'
         +'<div class="mt"><span class="tm">'+tm+utc+'</span>'+(fut?'<span class="cdn" data-ts="'+e.ts+'">in '+fmtIn(e.ts-now)+'</span>':'<span class="tm">done</span>')+'</div>'
-        +(fut?'<div class="mt" style="margin-top:9px"><span class="tm" style="color:#8a929c">Remind me ~30 min before:</span>'+remind+'</div>':'')+'</div>';
+        +(fut?'<div class="mt" style="margin-top:9px"><span class="tm" style="color:#8a929c">'+(__esCal?'Avísame ~30 min antes:':'Remind me ~30 min before:')+'</span>'+remind+'</div>':'')+'</div>';
     }).join('');
   }
   // ---- interactions ----
@@ -331,7 +337,7 @@
   }).catch(function(){});
   setInterval(function(){var now=Date.now();
     if(nextEv)document.getElementById('cnCd').textContent=fmtIn(nextEv.ts-now);
-    document.querySelectorAll('.cdn[data-ts]').forEach(function(b){var ts=+b.getAttribute('data-ts');if(ts>now)b.textContent='in '+fmtIn(ts-now);});},1000);
+    document.querySelectorAll('.cdn[data-ts]').forEach(function(b){var ts=+b.getAttribute('data-ts');if(ts>now)b.textContent=(__esCal?'en ':'in ')+fmtIn(ts-now);});},1000);
   render();
   var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,120);}go();});
   var hd=document.getElementById('calHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});

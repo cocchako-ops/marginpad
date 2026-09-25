@@ -1524,13 +1524,15 @@ async function handleSsrCalendar(request, url, env) {
   } catch (e) {}
   if (!evs.length) return pass();
   const esc2 = t => String(t == null ? '' : t).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
-  const fmt = ts => { const d = new Date(+ts); return d.toUTCString().replace(/:\d\d GMT$/, ' UTC').replace(/^\w+, /, ''); };
+  const es = esLang(request) === 'es'; // the /es/ twin's SSR block used to be the English one, chrome included (audit 2026-09-25)
+  const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const fmt = ts => { const d = new Date(+ts); if (es) { const p = n => String(n).padStart(2, '0'); return d.getUTCDate() + ' ' + MES[d.getUTCMonth()] + ' ' + d.getUTCFullYear() + ' ' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ' UTC'; } return d.toUTCString().replace(/:\d\d GMT$/, ' UTC').replace(/^\w+, /, ''); };
   const li = evs.map(e => '<li><time datetime="' + new Date(+e.ts).toISOString() + '">' + fmt(e.ts) + '</time>'
-    + '<div><b>' + esc2(e.title) + '</b>' + (+e.impact >= 3 ? '<span class="imp">HIGH IMPACT</span>' : '')
+    + '<div><b>' + esc2(e.title) + '</b>' + (+e.impact >= 3 ? '<span class="imp">' + (es ? 'ALTO IMPACTO' : 'HIGH IMPACT') + '</span>' : '')
     + (e.desc ? '<span>' + esc2(e.desc) + '</span>' : '') + '</div></li>').join('');
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
-  const block = '<section class="cssr"><h2>What is coming up</h2>'
-    + '<div class="sub">Next ' + evs.length + ' scheduled events &middot; all times UTC &middot; updated ' + stamp + '</div>'
+  const block = '<section class="cssr"><h2>' + (es ? 'Lo que viene' : 'What is coming up') + '</h2>'
+    + '<div class="sub">' + (es ? 'Próximos ' + evs.length + ' eventos programados &middot; horas en UTC &middot; actualizado ' : 'Next ' + evs.length + ' scheduled events &middot; all times UTC &middot; updated ') + stamp + '</div>'
     + '<ol>' + li + '</ol></section>';
   const ld = '<script type="application/ld+json">' + JSON.stringify(evs.map(e => ({
     '@context': 'https://schema.org', '@type': 'Event', name: String(e.title || ''),
@@ -28452,6 +28454,9 @@ export class Community {
 // ---------- Community worker layer: /api/comm/* API + SSR'd /community/* pages ----------
 function escH(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates' };
+// Category names for the /es/community/ twin (audit 2026-09-25: the SSR crumb and the category page title were English there).
+const COMM_CATS_ES = { ideas: 'Ideas de trading', analysis: 'Análisis técnico', news: 'Noticias del mercado', education: 'Educación', crypto: 'Crypto', forex: 'Forex', stocks: 'Acciones', futures: 'Futuros', strategies: 'Estrategias', psychology: 'Psicología', risk: 'Gestión del riesgo', indicators: 'Indicadores', platform: 'Novedades de la plataforma' };
+function commCatName(k, request) { return ((request && esLang(request) === 'es') ? COMM_CATS_ES[k] : null) || COMM_CATS[k] || k; }
 function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
 // Anti-gibberish gate (2026-08-13, owner: reward-farm posts like "wweegrdddd…" + 500 dots beat the pure
 // length floor). A post must be made of plausible WORDS, not padding. Script-agnostic: any Unicode letter
@@ -28945,7 +28950,7 @@ async function commPage(url, request, env) {
         setMeta(p.title + ' - MarginPad Community', desc, canon);
         const ld = { '@context': 'https://schema.org', '@type': 'SocialMediaPosting', headline: p.title, datePublished: new Date(p.ts).toISOString(), author: { '@type': 'Person', name: p.author, url: 'https://marginpad.io/community/u/' + encodeURIComponent(p.author) }, publisher: { '@type': 'Organization', name: 'MarginPad' }, mainEntityOfPage: canon, commentCount: p.ncom, interactionStatistic: { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: p.likes } };
         const crumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://marginpad.io/' }, { '@type': 'ListItem', position: 2, name: 'Community', item: 'https://marginpad.io/community/' }, { '@type': 'ListItem', position: 3, name: p.title, item: canon }] };
-        const ssr = '<article class="ssr-post"><div class="pcrumb"><a href="/community/">Community</a> / <a href="/community/c/' + escH(p.cat) + '">' + escH(COMM_CATS[p.cat] || p.cat) + '</a></div><h1>' + escH(p.title) + '</h1><div class="pmeta">by <a href="/community/u/' + encodeURIComponent(p.author) + '">' + escH(p.author) + '</a> · ' + new Date(p.ts).toISOString().slice(0, 10) + ' · ' + (p.likes || 0) + ' likes · ' + (p.ncom || 0) + ' comments</div><div class="pbody">' + commMd(p.body) + '</div></article>'
+        const ssr = '<article class="ssr-post"><div class="pcrumb"><a href="/community/">Community</a> / <a href="/community/c/' + escH(p.cat) + '">' + escH(commCatName(p.cat, request)) + '</a></div><h1>' + escH(p.title) + '</h1><div class="pmeta">by <a href="/community/u/' + encodeURIComponent(p.author) + '">' + escH(p.author) + '</a> · ' + new Date(p.ts).toISOString().slice(0, 10) + ' · ' + (p.likes || 0) + ' likes · ' + (p.ncom || 0) + ' comments</div><div class="pbody">' + commMd(p.body) + '</div></article>'
           + '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>'
           + '<script type="application/ld+json">' + JSON.stringify(crumb).replace(/</g, '\\u003c') + '</script>';
         html = html.split('<!--SSR-->').join(ssr); // split/join: ssr carries user text, a `$'` in a post body would have duplicated the page tail
@@ -28955,7 +28960,7 @@ async function commPage(url, request, env) {
     const who = decodeURIComponent(m[1]).replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 30);
     setMeta(who + ' - trader profile | MarginPad Community', who + "'s trading ideas, market analysis and discussions on the MarginPad community.", 'https://marginpad.io/community/u/' + encodeURIComponent(who));
   } else if ((m = url.pathname.match(/^\/community\/c\/([a-z-]{3,24})/))) {
-    const nm = COMM_CATS[m[1]] || m[1];
+    const nm = commCatName(m[1], request);
     setMeta(nm + ' - MarginPad Community', 'Latest ' + nm.toLowerCase() + ' posts and discussions from the MarginPad trading community.', 'https://marginpad.io/community/c/' + m[1]);
   } else if (url.pathname === '/community/sitemap.xml') {
     let items = [];
