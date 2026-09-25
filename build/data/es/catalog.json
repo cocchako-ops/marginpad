@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T18:20:11.820Z",
+  "generated": "2026-09-25T18:23:55.185Z",
   "pages": 383,
   "occurrences": 26297,
-  "unique": 13883,
-  "words": 263590,
+  "unique": 13884,
+  "words": 263592,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T18:20:26.579Z"
+  "merged": "2026-09-25T18:23:55.352Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -8258,17 +8258,17 @@
    "n": 1,
    "w": 27
   },
-  "A9ON0-hiX_": {
-   "en": "Sign in to set alerts",
-   "es": "Inicia sesión para configurar alertas",
+  "Yvttv77gPH": {
+   "en": "Price alerts",
+   "es": "Alertas de precio",
    "kind": [
     "html"
    ],
    "ctx": [
     "/alerts/"
    ],
-   "n": 2,
-   "w": 5
+   "n": 1,
+   "w": 2
   },
   "I7blSfY0n3": {
    "en": "Alerts are tied to your account so they follow you across devices and we know where to email you. Signing in is free - just your email, no password.",
@@ -8281,6 +8281,18 @@
    ],
    "n": 1,
    "w": 28
+  },
+  "A9ON0-hiX_": {
+   "en": "Sign in to set alerts",
+   "es": "Inicia sesión para configurar alertas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/alerts/"
+   ],
+   "n": 1,
+   "w": 5
   },
   "ZN8YXhMJoW": {
    "en": "New price alert",

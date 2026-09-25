@@ -79,9 +79,9 @@
  },
  {
   "rel": "alerts/index.html",
-  "cover": 0.9791666666666666,
-  "hit": 47,
-  "missing": 1
+  "cover": 1,
+  "hit": 48,
+  "missing": 0
  },
  {
   "rel": "algo-liquidation-calculator/index.html",
