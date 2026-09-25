@@ -113,9 +113,9 @@ ${dataLd}
       var side=c.long>=c.short*1.5?'<span class="lqs-long">Longs</span>':c.short>=c.long*1.5?'<span class="lqs-short">Shorts</span>':'Balanced';
       return '<tr><td>'+esc(c.s)+'</td><td>'+usd(c.liq)+'</td><td class="lqs-long">'+usd(c.long)+'</td><td class="lqs-short">'+usd(c.short)+'</td><td>'+side+'</td></tr>';
     });
-    if(j.market)rows.push('<tr><td><b>All coins ('+j.market.count+')</b></td><td><b>'+usd(j.market.total)+'</b></td><td class="lqs-long">'+usd(j.market.long)+'</td><td class="lqs-short">'+usd(j.market.short)+'</td><td></td></tr>');
+    if(j.market)rows.push('<tr><td><b>All coins</b> <small>'+(j.market.coinsN||'')+' coins · '+j.market.count+' liquidations</small></td><td><b>'+usd(j.market.total)+'</b></td><td class="lqs-long">'+usd(j.market.long)+'</td><td class="lqs-short">'+usd(j.market.short)+'</td><td></td></tr>');
     tb.innerHTML=rows.join('');
-    var note=document.getElementById('lqsCoinsNote');if(note&&j.ts)note.textContent='Measured over the past 24 hours · n = '+(j.market?j.market.count:j.coins.length)+' coins · updated '+new Date(j.ts).toISOString().replace('T',' ').slice(0,16)+' UTC';
+    var note=document.getElementById('lqsCoinsNote');if(note&&j.ts)note.textContent='Measured over the past 24 hours · n = '+(j.market?j.market.count:j.coins.length)+' liquidations across '+(j.market&&j.market.coinsN?j.market.coinsN:j.coins.length)+' coins · updated '+new Date(j.ts).toISOString().replace('T',' ').slice(0,16)+' UTC';
   }).catch(function(){});
   Promise.all(['BTC','ETH'].map(function(s){return fetch('/api/v1/liquidations/live?symbol='+s+'&limit=200').then(function(r){return r.json();}).catch(function(){return null;});})).then(function(res){
     var tb=document.querySelector('#lqsBig tbody');if(!tb)return;

@@ -76,7 +76,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Estadísticas de Liquidaciones Cripto - Totales en Vivo de 24h por Moneda","url":"https://marginpad.io/es/liquidation-statistics/","dateModified":"2026-09-25T18:40:36.242Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Estadísticas de Liquidaciones Cripto - Totales en Vivo de 24h por Moneda","url":"https://marginpad.io/es/liquidation-statistics/","dateModified":"2026-09-25T18:47:08.459Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -142,9 +142,9 @@
       var side=c.long>=c.short*1.5?'<span class="lqs-long">Longs</span>':c.short>=c.long*1.5?'<span class="lqs-short">Shorts</span>':'Balanced';
       return '<tr><td>'+esc(c.s)+'</td><td>'+usd(c.liq)+'</td><td class="lqs-long">'+usd(c.long)+'</td><td class="lqs-short">'+usd(c.short)+'</td><td>'+side+'</td></tr>';
     });
-    if(j.market)rows.push('<tr><td><b>All coins ('+j.market.count+')</b></td><td><b>'+usd(j.market.total)+'</b></td><td class="lqs-long">'+usd(j.market.long)+'</td><td class="lqs-short">'+usd(j.market.short)+'</td><td></td></tr>');
+    if(j.market)rows.push('<tr><td><b>All coins</b> <small>'+(j.market.coinsN||'')+' coins · '+j.market.count+' liquidations</small></td><td><b>'+usd(j.market.total)+'</b></td><td class="lqs-long">'+usd(j.market.long)+'</td><td class="lqs-short">'+usd(j.market.short)+'</td><td></td></tr>');
     tb.innerHTML=rows.join('');
-    var note=document.getElementById('lqsCoinsNote');if(note&&j.ts)note.textContent='Measured over the past 24 hours · n = '+(j.market?j.market.count:j.coins.length)+' coins · updated '+new Date(j.ts).toISOString().replace('T',' ').slice(0,16)+' UTC';
+    var note=document.getElementById('lqsCoinsNote');if(note&&j.ts)note.textContent='Measured over the past 24 hours · n = '+(j.market?j.market.count:j.coins.length)+' liquidations across '+(j.market&&j.market.coinsN?j.market.coinsN:j.coins.length)+' coins · updated '+new Date(j.ts).toISOString().replace('T',' ').slice(0,16)+' UTC';
   }).catch(function(){});
   Promise.all(['BTC','ETH'].map(function(s){return fetch('/api/v1/liquidations/live?symbol='+s+'&limit=200').then(function(r){return r.json();}).catch(function(){return null;});})).then(function(res){
     var tb=document.querySelector('#lqsBig tbody');if(!tb)return;
