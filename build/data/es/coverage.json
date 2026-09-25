@@ -607,9 +607,9 @@
  },
  {
   "rel": "blog/crypto-futures-vs-options/index.html",
-  "cover": 0.9759036144578314,
-  "hit": 81,
-  "missing": 2
+  "cover": 1,
+  "hit": 83,
+  "missing": 0
  },
  {
   "rel": "blog/crypto-leverage-explained/index.html",
@@ -1267,9 +1267,9 @@
  },
  {
   "rel": "crypto-trading-simulator-no-sign-up/index.html",
-  "cover": 0.9906542056074766,
-  "hit": 106,
-  "missing": 1
+  "cover": 1,
+  "hit": 107,
+  "missing": 0
  },
  {
   "rel": "crypto-trading-usa/index.html",
@@ -1933,9 +1933,9 @@
  },
  {
   "rel": "paper-trading/index.html",
-  "cover": 0.9923076923076923,
-  "hit": 129,
-  "missing": 1
+  "cover": 1,
+  "hit": 130,
+  "missing": 0
  },
  {
   "rel": "pepe-liquidation-calculator/index.html",
@@ -2155,9 +2155,9 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 0.9977728285077951,
-  "hit": 448,
-  "missing": 1
+  "cover": 1,
+  "hit": 449,
+  "missing": 0
  },
  {
   "rel": "trading-competition/index.html",
@@ -2293,8 +2293,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 0.9978354978354979,
-  "hit": 461,
-  "missing": 1
+  "cover": 1,
+  "hit": 462,
+  "missing": 0
  }
 ]
