@@ -5,9 +5,9 @@
   "occurrences": 26302,
   "unique": 13886,
   "words": 263521,
-  "untranslated": 10,
-  "untranslatedWords": 531,
-  "merged": "2026-09-25T18:58:19.627Z"
+  "untranslated": 2,
+  "untranslatedWords": 199,
+  "merged": "2026-09-25T18:59:55.998Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -73378,7 +73378,7 @@
   },
   "ErYwGwQrs0": {
    "en": "When this page was last rebuilt (17 August 2026), BNB perpetuals held about <strong>2.7%</strong> of Bitcoin's. Those figures are a snapshot; the live box at the top of this page always shows the current ones.",
-   "es": "",
+   "es": "Cuando esta página se actualizó por última vez (17 de agosto de 2026), los perpetuos de BNB tenían cerca del <strong>2.7%</strong> del de Bitcoin. Esas cifras son una foto puntual; el recuadro en vivo en la parte superior de esta página siempre muestra las actuales.",
    "kind": [
     "html"
    ],
@@ -74115,7 +74115,7 @@
   },
   "ToeqR7heRE": {
    "en": "When this page was last rebuilt (17 August 2026), BONK perpetuals held under <strong>0.1%</strong> of Bitcoin's. Those figures are a snapshot; the live box at the top of this page always shows the current ones.",
-   "es": "",
+   "es": "Cuando esta página se actualizó por última vez (17 de agosto de 2026), los perpetuos de BONK tenían menos del <strong>0.1%</strong> del de Bitcoin. Esas cifras son una foto puntual; el recuadro en vivo en la parte superior de esta página siempre muestra las actuales.",
    "kind": [
     "html"
    ],
@@ -89775,7 +89775,7 @@
   },
   "iiU11f6pYG": {
    "en": "When this page was last rebuilt (17 August 2026), DOGE perpetuals held about <strong>3.5%</strong> of Bitcoin's. Over the 24 hours before that snapshot, $967K of DOGE positions were liquidated. Those figures are a snapshot; the live box at the top of this page always shows the current ones.",
-   "es": "",
+   "es": "Cuando esta página se reconstruyó por última vez (17 de agosto de 2026), los perpetuos de DOGE tenían alrededor del <strong>3.5%</strong> del de Bitcoin. En las 24 horas previas a esa instantánea, se liquidaron $967K en posiciones de DOGE. Esas cifras son una instantánea; el cuadro en vivo en la parte superior de esta página siempre muestra las actuales.",
    "kind": [
     "html"
    ],
@@ -90511,7 +90511,7 @@
   },
   "V0b-lZp-UB": {
    "en": "When this page was last rebuilt (17 August 2026), DOT perpetuals held about <strong>0.5%</strong> of Bitcoin's. Those figures are a snapshot; the live box at the top of this page always shows the current ones.",
-   "es": "",
+   "es": "Cuando esta página se reconstruyó por última vez (17 de agosto de 2026), los perpetuos de DOT tenían alrededor del <strong>0.5%</strong> del de Bitcoin. Esas cifras son una instantánea; el cuadro en vivo en la parte superior de esta página siempre muestra las actuales.",
    "kind": [
     "html"
    ],
@@ -109060,7 +109060,7 @@
   },
   "McJqT6DQo-": {
    "en": "MEXC offers a 500× headline on BTC-class majors - the highest published cap of any major venue, with the thin small-cap books that come with it.",
-   "es": "",
+   "es": "MEXC ofrece un titular de 500× en los mayores tipo BTC - el tope publicado más alto de cualquier exchange grande, con los libros finos en small caps que vienen con él.",
    "kind": [
     "html"
    ],
@@ -109085,7 +109085,7 @@
   },
   "egAO6Eq9-y": {
    "en": "<b>500×</b><span>Max leverage</span>",
-   "es": "",
+   "es": "<b>500×</b><span>Apalancamiento máx.</span>",
    "kind": [
     "html"
    ],
@@ -109208,7 +109208,7 @@
   },
   "JnAO0jUu5O": {
    "en": "For this use case the factor that matters most is <strong>max leverage</strong>, which is why our ranking leads with it - but it is never the only thing to weigh. Deep liquidity keeps your fills tight and your slippage low; a fast, reliable matching engine means your orders actually land during the volatile moments that matter; and low fees compound in your favour the more you trade. Our top pick, <strong>MEXC</strong>, offers a 500× headline on BTC-class majors - the highest published cap of any major venue, with the thin small-cap books that come with it, which is what puts it first here. The runners-up, <strong>Binance</strong> and <strong>OKX</strong>, are close behind and may suit you better depending on which coins you trade and where you live.",
-   "es": "",
+   "es": "Para este caso de uso, el factor que más importa es el <strong>apalancamiento máximo</strong>, y por eso nuestro ranking lo pone primero - pero nunca es lo único que hay que sopesar. La liquidez profunda mantiene tus ejecuciones ajustadas y tu slippage bajo; un motor de emparejamiento rápido y fiable hace que tus órdenes de verdad entren en los momentos volátiles que importan; y las comisiones bajas se acumulan a tu favor cuanto más operas. Nuestra primera opción, <strong>MEXC</strong>, ofrece un titular de 500× en los mayores tipo BTC - el tope publicado más alto de cualquier exchange grande, con los libros finos en small caps que vienen con él, y eso es lo que la pone primera aquí. Las siguientes, <strong>Binance</strong> y <strong>OKX</strong>, van muy cerca y pueden encajarte mejor según qué monedas operes y dónde vivas.",
    "kind": [
     "html"
    ],
@@ -109257,7 +109257,7 @@
   },
   "k3aWuQRG2m": {
    "en": "Our top pick is MEXC, which offers a 500× headline on BTC-class majors - the highest published cap of any major venue, with the thin small-cap books that come with it. Runners-up are Binance and OKX.",
-   "es": "",
+   "es": "Nuestra primera opción es MEXC, que ofrece un titular de 500× en los mayores tipo BTC - el tope publicado más alto de cualquier exchange grande, con los libros finos en small caps que vienen con él. Las siguientes son Binance y OKX.",
    "kind": [
     "ld"
    ],

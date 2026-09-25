@@ -1015,9 +1015,9 @@
  },
  {
   "rel": "bnb-liquidation-map/index.html",
-  "cover": 0.9818181818181818,
-  "hit": 54,
-  "missing": 1
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
  },
  {
   "rel": "bonk-liquidation-calculator/index.html",
@@ -1027,9 +1027,9 @@
  },
  {
   "rel": "bonk-liquidation-map/index.html",
-  "cover": 0.9818181818181818,
-  "hit": 54,
-  "missing": 1
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
  },
  {
   "rel": "btc-liquidation-calculator/index.html",
@@ -1297,9 +1297,9 @@
  },
  {
   "rel": "doge-liquidation-map/index.html",
-  "cover": 0.9818181818181818,
-  "hit": 54,
-  "missing": 1
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
  },
  {
   "rel": "dot-liquidation-calculator/index.html",
@@ -1309,9 +1309,9 @@
  },
  {
   "rel": "dot-liquidation-map/index.html",
-  "cover": 0.9818181818181818,
-  "hit": 54,
-  "missing": 1
+  "cover": 1,
+  "hit": 55,
+  "missing": 0
  },
  {
   "rel": "embed/calendar/index.html",
@@ -1567,9 +1567,9 @@
  },
  {
   "rel": "highest-leverage-crypto-exchange/index.html",
-  "cover": 0.9550561797752809,
-  "hit": 85,
-  "missing": 4
+  "cover": 1,
+  "hit": 89,
+  "missing": 0
  },
  {
   "rel": "how-many-traders-liquidated-today/index.html",
