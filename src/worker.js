@@ -2468,6 +2468,51 @@ async function ssrLiqMapPanel(sym, env, c) {
     + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr))">' + tiles + '</div>'
     + ladder + book + cta + '</div>\n    ';
 }
+// The live map panel and its crawler sentences, in Spanish for the /es/ twins (audit 2026-09-25: every one of the
+// 32 map twins opened with a Spanish h1 and four screens of ENGLISH live data). Fragment-for-fragment over the
+// built HTML, so the builder stays one function; anything not in this table is a number, a symbol or a tag.
+// Function replacements only - a `$`-carrying replacement string is the 2026-09-10 trap.
+const SSR_MAP_ES = [
+  [' LIQUIDATION MAP &middot; UPDATED ', ' MAPA DE LIQUIDACIONES &middot; ACTUALIZADO '],
+  ['>Price<', '>Precio<'], ['>Liquidated 24h<', '>Liquidado 24h<'], ['>Long vs short<', '>Longs vs shorts<'],
+  ['Above &mdash; where shorts get liquidated', 'Arriba &mdash; donde se liquidan los shorts'],
+  ['Below &mdash; where longs get liquidated', 'Abajo &mdash; donde se liquidan los longs'],
+  ['>trading now<', '>cotizando ahora<'],
+  ['Zoom, hover a band, read the clusters', 'Haz zoom, pasa por una banda, lee los clusters'],
+  ['Deep perpetual liquidity', 'Liquidez profunda en perpetuos'], ['3.5% of your trading fees back', 'Te devuelven el 3,5% de tus comisiones'],
+  [' A $250,000 buy would really cost ', ' Una compra de $250,000 costaria realmente '], [' in slippage', ' de slippage'],
+  ['This is <strong', 'Esto esta <strong'], ['measured</strong>, not modelled: real limit orders standing on ', 'medido</strong>, no modelado: ordenes limite reales en los libros de '],
+  [' exchange order books a second ago. ', ' exchanges de hace un segundo. '], [' exchange order books ', ' exchanges de hace '], [' seconds ago. ', ' segundos. '],
+  ['The real book right now &middot; measured', 'El libro real ahora mismo &middot; medido'],
+  ['Bids resting', 'Compras en espera'], ['Offers resting', 'Ventas en espera'],
+  ['within 0.25% of the price, summed across', 'a menos del 0,25% del precio, sumado en'], [' venues', ' exchanges'],
+  ['A $250,000 buy would really cost', 'Una compra de $250,000 costaria realmente'], ['in slippage', 'de slippage'], [' a $250,000 sell, ', ' una venta de $250,000, '],
+  ['&middot; UPDATED ', '&middot; ACTUALIZADO '], ['· UPDATED ', '· ACTUALIZADO '], ['See it live:', 'Miralo en vivo:'],
+  ['It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ', 'Responde a una pregunta distinta de la de las zonas de arriba, y la diferencia merece recordarse: un libro muestra ordenes que alguien <em>eligio</em> colocar y puede retirar en cualquier momento, mientras que una zona de liquidacion es donde el apalancamiento se cierra le guste o no a su dueno &mdash; y ningun libro de ordenes muestra eso, a ninguna distancia. '],
+  ['On top of which the deepest book we can read only reaches ', 'Ademas, el libro mas profundo que podemos leer solo llega a '], [' from the price', ' del precio'], [', while the nearest zone above sits ', ', mientras que la zona mas cercana por encima esta a '], ['% away', '%'], [': past that, even the resting orders are out of sight.', ': mas alla de eso, ni siquiera las ordenes en espera se ven.'],
+  ['Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ', 'La longitud de la barra es el peso de una zona activa frente a las demas de esta lista; la cifra al lado es cuantas veces la banda activa media cerca del precio contiene. Estas son zonas '],
+  ['modelled</strong> zones, not money that has changed hands &mdash; the only dollar figures here are the 24h totals above, which our collector watched happen.', 'modeladas</strong>, no dinero que haya cambiado de manos &mdash; las unicas cifras en dolares aqui son los totales de 24h de arriba, que nuestro colector vio ocurrir.'],
+  ['>measured<', '>medido<'], ['>modelled<', '>modelado<'],
+  [' from longs and ', ' de longs y '], [' from shorts', ' de shorts'],
+  [', so the recent damage came on the way down', ', asi que el dano reciente vino en la bajada'], [', so shorts were squeezed on a move up', ', asi que los shorts fueron exprimidos en una subida'], [', a fairly even two-sided battle', ', una batalla bastante pareja por ambos lados'],
+  ['There is currently ', 'Ahora mismo hay '], [' of open ', ' de interes abierto en '], [' interest that the market can test', ' que el mercado puede poner a prueba'],
+  [' (roughly steady over 24 hours)', ' (mas o menos estable en 24 horas)'], [' (up ', ' (sube '], [' (down ', ' (baja '], ['% in a day)', '% en un dia)'],
+  ['Funding is flat right now - no crowded side for the market to hunt.', 'El funding esta plano ahora mismo: no hay un lado saturado que el mercado pueda cazar.'],
+  ['Funding is positive (', 'El funding es positivo ('], [') - the crowd is long, and long clusters below the price are usually the first this map fills.', '): la mayoria esta en long, y los clusters de longs por debajo del precio suelen ser los primeros que este mapa llena.'],
+  ['Funding is negative (', 'El funding es negativo ('], [') - the crowd is short, and short clusters above the price are the first targets.', '): la mayoria esta en short, y los clusters de shorts por encima del precio son los primeros objetivos.'],
+  [' trades at ', ' cotiza a '], [', up ', ', sube '], [', down ', ', baja '], ['% in 24 hours', '% en 24 horas'],
+  ['Live liquidation feed', 'Feed de liquidaciones en vivo'], ['24h totals by coin', 'Totales de 24h por moneda'],
+  [' billion', ' mil millones'], [' million', ' millones'],
+];
+function esMapFrag(s) {
+  s = String(s || '');
+  s = s.replace(/Open the live ([A-Z0-9]+) heatmap/g, (m, c) => 'Abre el heatmap de ' + c + ' en vivo');
+  s = s.replace(/Trade ([A-Z0-9]+) on Bybit/g, (m, c) => 'Opera ' + c + ' en Bybit');
+  s = s.replace(/^(.+?) of ([A-Z0-9]+) positions hit this map in the past 24 hours - /, (m, t, c) => t + ' en posiciones de ' + c + ' se liquidaron en este mapa en las ultimas 24 horas: ');
+  s = s.replace(/^The ([A-Z0-9]+) map has been quiet - under \$50K liquidated in the past 24 hours\./, (m, c) => 'El mapa de ' + c + ' ha estado tranquilo: menos de $50K liquidados en las ultimas 24 horas.');
+  for (const [a, b] of SSR_MAP_ES) s = s.split(a).join(b);
+  return s;
+}
 async function handleSsrLiq(request, url, env, mode, param) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME
@@ -2484,11 +2529,17 @@ async function handleSsrLiq(request, url, env, mode, param) {
   let res = null;
   try { res = await ssrLiqSentences(mode, param, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
-  const kick = mode === 'lev' ? 'LIVE - ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
+  const kick = esLang(request) === 'es'
+    ? (mode === 'lev' ? 'EN VIVO - ' + param + 'X AHORA MISMO' : mode === 'excalc' ? 'DATOS DE MERCADO EN VIVO' : 'DATOS DE ' + String(param).toUpperCase() + ' EN VIVO')
+    : (mode === 'lev' ? 'LIVE - ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA');
   // The map pages lead with the market drawn, then the sentences. Prose-only was the complaint, and a page that takes
   // thousands of crawls a month should not open on a paragraph. A panel that cannot be built falls through silently.
   let panel = '';
   if (mode === 'map' && res.c) { try { panel = await ssrLiqMapPanel(param, env, res.c); } catch (e) { panel = ''; } }
+  const esBox = (mode === 'map' && esLang(request) === 'es') ? esMapFrag : (x => x); // the sentence box carries its own "UPDATED" / "See it live" chrome
+  if (mode === 'map' && esLang(request) === 'es') { // the /es/ twin: same live data, Spanish words (fragment table above)
+    try { panel = esMapFrag(panel); res.S = (res.S || []).map(esMapFrag); if (Array.isArray(res.links)) res.links = res.links.map(l => [l[0], esMapFrag(l[1])]); } catch (e) {}
+  }
   // WHERE the panel goes decided whether it was seen at all. Injected at the first <h2> like the sentence box, it
   // landed BELOW the "What this is" paragraph and started at y=860 on a 390x844 phone - one pixel past the fold, so
   // the live market was off screen on the device most of this audience reads on. It goes directly under the existing
@@ -2498,9 +2549,9 @@ async function handleSsrLiq(request, url, env, mode, param) {
     const cta = html.indexOf('class="liqmap-cta top"');
     const end = cta >= 0 ? html.indexOf('</div>', cta) : -1;
     const at = end >= 0 ? end + 6 : anchor;
-    out = ssrStampDate(html.slice(0, at) + panel + html.slice(at, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
+    out = ssrStampDate(html.slice(0, at) + panel + html.slice(at, anchor) + esBox(ssrBoxHtml(kick, res.S, res.links)) + html.slice(anchor), Date.now());
   } else {
-    out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor), Date.now());
+    out = ssrStampDate(html.slice(0, anchor) + esBox(ssrBoxHtml(kick, res.S, res.links)) + html.slice(anchor), Date.now());
   }
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'liq-' + mode } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
