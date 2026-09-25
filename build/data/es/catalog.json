@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T16:19:14.581Z",
+  "generated": "2026-09-25T18:05:38.909Z",
   "pages": 383,
-  "occurrences": 26295,
-  "unique": 13883,
-  "words": 263539,
+  "occurrences": 26296,
+  "unique": 13884,
+  "words": 263543,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T16:20:58.281Z"
+  "merged": "2026-09-25T18:05:50.164Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -93489,6 +93489,18 @@
    "n": 1,
    "w": 1
   },
+  "Xgi7aplX7Z": {
+   "en": "<b>Not published</b>",
+   "es": "<b>No publicado</b>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/exchanges/"
+   ],
+   "n": 1,
+   "w": 2
+  },
   "5guuZESR6b": {
    "en": "Crypto + stocks + indices",
    "es": "Cripto + acciones + índices",
@@ -94749,9 +94761,9 @@
    "n": 1,
    "w": 6
   },
-  "ViiSpwBUTF": {
-   "en": "<span class=\"exc-lev\">—<small>max lev</small></span>",
-   "es": "<span class=\"exc-lev\">—<small>apalanc. máx.</small></span>",
+  "pQQPkpSlHW": {
+   "en": "<span class=\"exc-lev\">Not published<small>max lev</small></span>",
+   "es": "<span class=\"exc-lev\">No publicado<small>apalanc. máx.</small></span>",
    "kind": [
     "html"
    ],
@@ -94759,7 +94771,7 @@
     "/exchanges/"
    ],
    "n": 1,
-   "w": 2
+   "w": 4
   },
   "qqkz45j6UQ": {
    "en": "A social-first trading app rather than an exchange terminal: a feed of what other traders are actually buying, profiles you can follow, and copy trading, with spot across six chains on a single USDC balance. Perpetuals arrived in June 2026 and are the interesting part here - not just BTC, ETH, SOL and HYPE, but equity perps (NVDA, GOOGL, AMD), indices (S&amp;P 500, Nasdaq 100, Nikkei 225), commodities (gold, silver, oil, copper, natural gas) and even pre-IPO exposure such as SpaceX, all from one account. Execution is not theirs: perps are powered by Hyperliquid and Trade[XYZ], so you are trading on books that already exist. The fee is the headline - one flat 0.05% per transaction, no maker/taker split and no VIP ladder to climb.",
