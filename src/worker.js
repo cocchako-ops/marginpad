@@ -2530,6 +2530,7 @@ const SSR_COMP_ES = [
   ['>Leading<', '>Lidera<'], ['>Open board<', '>Tabla abierta<'], ['>nobody has scored yet<', '>nadie ha puntuado todavía<'], ['>one qualifying trade puts you first<', '>una operación válida te pone primero<'],
   [' entered</div>', ' inscritos</div>'], ['% win rate', '% de acierto'], [' green days', ' días verdes'], [' green day', ' día verde'], [' wagered', ' apostados'],
   ['>Real money<', '>Dinero real<'], ['>Free - paper<', '>Gratis - paper<'],
+  ['>Measured ', '>Medido '], [' UTC by MarginPad, from the same data that pays the prizes.', ' UTC por MarginPad, con los mismos datos que pagan los premios.'],
   ['>Highest ROE<', '>Mayor ROE<'], ['>Green Days<', '>Días verdes<'], ['>Best Win Rate<', '>Mejor tasa de acierto<'], ['>Season XP<', '>XP de temporada<'], ['>Bybit Volume<', '>Volumen en Bybit<'],
   ['>the best return on a single closed trade.<', '>el mejor retorno en una sola operación cerrada.<'], ['>the most days closed in profit.<', '>más días cerrados en beneficio.<'],
   ['>the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<', '>la mayor tasa de acierto, ordenada por puntuación de Wilson para que una racha de suerte no la gane.<'],
