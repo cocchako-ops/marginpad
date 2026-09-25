@@ -82,6 +82,7 @@ const CHAT_HIST_MAX = 150; // room history kept in DO storage (was 60 = a few ho
 function inChunks(list, fn, size) { const out = []; const n = size || 50; for (let i = 0; i < list.length; i += n) { const part = list.slice(i, i + n); const r = fn(part, part.map(() => '?').join(',')); if (r && r.length) for (const x of r) out.push(x); } return out; } // board-winner frames: worn from the grant (season settle) until the next season settles - ts refreshed on every win
 const SEASON_STATS_EPOCH = Date.UTC(2026, 7, 17); // owner 2026-08-16: from this Monday, USER-facing trading stats (profile card) show the current season only; before it nothing changes. Progress systems (XP, achievements, referrals, missions) and ops/admin views stay lifetime.
 function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.floor((now - LB_ANCHOR) / LB_PERIOD) * LB_PERIOD; }
+// (2026-09-24 note, kept for the FEE reasoning; the formula it derives was replaced on 2026-09-25 - read mpcLiq below.)
 // THE OPEN FEE IS TAKEN AT THE FILL, SO LESS MARGIN IS BACKING THE POSITION AND IT LIQUIDATES SOONER
 // (2026-09-24, owner: "kad otvore, odma im se uzme fee i smanji margina a onda kad zatvore da znaju unapred
 // koliko placaju fee"). Measured on our own leverage distribution, the median position here runs over 100x,
@@ -101,9 +102,24 @@ function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.
 //
 // rate defaults to 0, which reproduces the old formula byte for byte - every caller that does not price a fill
 // (calculators, legacy rows, the chart's leverage guides) is untouched by construction.
+// THE EXCHANGE FORMULA, SINCE 2026-09-25 (owner: "moze da nastavis kako si planirao sa motorom"). The audit found
+// two liquidation formulas on the site: this engine's (loss eats (1-mmr) of the backing) and the one every
+// exchange publishes and 76 of our own calculators print - Bybit: LP_long = entry * (1 - IM + MM), IM = 1/lev.
+// The engine now uses the exchange's, with two things a real venue also has:
+//   - the open fee is already out of the margin (2026-09-24), so the initial margin RATE that backs the position
+//     is (1/lev - rate), not 1/lev; and
+//   - a maintenance rate can never be more than HALF the initial margin that backs the position - that is the
+//     rule Hyperliquid publishes (mm = half the max initial margin fraction), and it is what keeps 200x-1000x
+//     from computing a liquidation ABOVE the entry, which the bare formula does at lev >= 1/mmr (line 31).
+//   liq_long = entry * (1 - im + mmr_eff),  im = 1/lev - rate,  mmr_eff = min(mmr, im/2)
+// Measured: 10x 0.5% -> 9.45% from entry (Bybit's no-fee 9.5%), 100x -> 0.445% (was 0.940%), 1000x -> 0.023%.
+// A liquidation still books exactly -margin (the sweep does not read this for the loss, only for the level),
+// every open position keeps the liq it was filled with, and rate 0 gives the calculators Bybit's own number.
 function mpcLiq(entry, lev, mmr, long, rate) {
-  const f = 1 - Math.min(0.1, Math.max(0, (+rate || 0) * lev));
-  return long ? entry * (1 - (1 - mmr) * f / lev) : entry * (1 + (1 - mmr) * f / lev);
+  lev = Math.max(1, +lev || 1); mmr = Math.max(0, +mmr || 0);
+  const im = Math.max(1e-6, 1 / lev - Math.min(0.1 / lev, Math.max(0, +rate || 0)));
+  const me = Math.min(mmr, im / 2);
+  return long ? entry * (1 - im + me) : entry * (1 + im - me);
 }
 function handleApi(url) {
   const p = url.searchParams;
@@ -6996,7 +7012,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=dad56e9a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=ee10916c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -18600,6 +18616,15 @@ export default {
       const s8 = +url.searchParams.get('season') || 0;
       const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...(s8 ? { season: s8 } : {}), ...(url.searchParams.get('verify') ? { verify: 1 } : {}) }) }));
       return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/say' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one line into the global room as MarginPad (the house voice announceGift uses) - owner notices, e.g. the 2026-09-25 liquidation-formula change
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const text = String(b.text || '').replace(/[<>]/g, '').trim().slice(0, 400);
+      if (!text) return J({ error: 'text_required' }, 400);
+      if (!env.CHAT) return J({ error: 'no_chat' }, 503);
+      let ok = false; try { const r = await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); ok = r.ok; } catch (e) {}
+      try { await tgAdmin(env, '<b>House line posted</b> to the global room: ' + text.slice(0, 200), { kind: 'house-say', sev: 'info' }); } catch (e) {}
+      return J({ ok, text });
     }
     if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only - restores season-best values provably lost to the utrades blob trim)
       let body8 = {}; try { body8 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }

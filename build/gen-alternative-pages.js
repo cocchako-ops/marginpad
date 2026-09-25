@@ -52,7 +52,7 @@ const PAGES = [
       ['Leverage simulation', 'Yes - up to 1000x on crypto, per-class caps on stocks/forex', 'No native leverage mechanics'],
       ['Liquidation price & forced closure', 'Yes - real maintenance-margin math, close-confirmed', 'No'],
       ['Funding & trading fees', 'Yes - funding applied, per-exchange fee models', 'No'],
-      ['Markets', 'Crypto perps, 20+ US stocks, forex majors, indices, metals - one account', 'Everything TradingView charts'],
+      ['Markets', 'Crypto perps, 18 US stocks and 2 ETFs, forex majors, indices, metals - one account', 'Everything TradingView charts'],
       ['Charting depth', 'Multi-chart workspace, 19+ indicators, drawing tools', 'Best-in-class charting - TradingView wins here'],
       ['Signup required', 'No - trades work instantly, account optional for leaderboards', 'TradingView account required'],
       ['Leaderboards, duels, missions, XP', 'Yes - 14-day season prize leaderboards', 'No'],
@@ -69,7 +69,7 @@ const PAGES = [
     faq: [
       { q: 'Does TradingView paper trading support leverage?', a: 'TradingView paper trading fills orders at market prices but does not simulate leverage mechanics - there is no liquidation price, no margin call and no funding. MarginPad simulates all three with real maintenance-margin math on live prices.' },
       { q: 'Is MarginPad paper trading really free without an account?', a: 'Yes. You can open leveraged paper positions immediately with no signup. A free account adds sync across devices, the trade journal, leaderboards and 14-day season prizes.' },
-      { q: 'Can I paper trade stocks and forex with leverage on MarginPad?', a: 'Yes - 20+ US stocks, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account.' },
+      { q: 'Can I paper trade stocks and forex with leverage on MarginPad?', a: 'Yes - 18 US stocks and 2 ETFs, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account.' },
       { q: 'Can I test a trading bot against MarginPad paper trading?', a: 'Yes - the free Trading API exposes paper-trading endpoints over REST so you can open, manage and close simulated positions programmatically. Docs at marginpad.io/trading-api/.' },
     ],
   },

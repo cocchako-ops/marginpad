@@ -234,7 +234,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
          taken at the fill, so what backs the position is margin*(1-lev*rate) and the liq distance carries that
          factor. rate omitted reproduces the old formula exactly, which is what the leverage guides and the
          standalone calculator want. lev*rate can never exceed 0.1, so this cannot invert at any leverage. */
-      window.mpLiqPx=function(entry,lev,mmr,long,rate){var f=1-Math.min(0.1,Math.max(0,(+rate||0)*lev));return long?entry*(1-(1-mmr)*f/lev):entry*(1+(1-mmr)*f/lev);};
+      /* 2026-09-25: the EXCHANGE formula (Bybit: entry*(1 - IM + MM)), mirror of the worker's mpcLiq. IM is what backs the
+         position after the open fee (1/lev - rate); MM can never exceed half of it (Hyperliquid's rule), which is what keeps
+         200x-1000x from printing a liquidation above the entry. rate 0 = Bybit's own no-fee number (10x -> 9.5%). */
+      window.mpLiqPx=function(entry,lev,mmr,long,rate){lev=Math.max(1,+lev||1);mmr=Math.max(0,+mmr||0);var im=Math.max(1e-6,1/lev-Math.min(0.1/lev,Math.max(0,+rate||0)));var me=Math.min(mmr,im/2);return long?entry*(1-im+me):entry*(1+im-me);};
       window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var v=(cls==='crypto'&&window.mpFeeVenue&&window.mpFeeVenues[window.mpFeeVenue])||null;var base=v?(v.t*(1-v.d/100)/100):(cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055);return Math.min(base,0.1/Math.max(1,+lev||1));};
       /* the "Fees as on" selector in the trade form: options from the mirror table, persisted per device, and for a
          member also as the account default on the server (so the Bot API and every other opener charge the same) */

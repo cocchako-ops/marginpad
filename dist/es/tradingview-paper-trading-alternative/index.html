@@ -37,7 +37,7 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿El paper trading de TradingView admite apalancamiento?","acceptedAnswer":{"@type":"Answer","text":"El paper trading de TradingView ejecuta órdenes a precio de mercado pero no simula las mecánicas de apalancamiento - no hay precio de liquidación, ni llamada de margen, ni funding. MarginPad simula los tres con matemática real de margen de mantenimiento sobre precios en vivo."}},{"@type":"Question","name":"¿El paper trading de MarginPad es realmente gratis sin una cuenta?","acceptedAnswer":{"@type":"Answer","text":"Sí. Puedes abrir posiciones simuladas apalancadas de inmediato, sin registro. Una cuenta gratis añade sincronización entre dispositivos, el diario de operaciones, las tablas de clasificación y los premios de temporada de 14 días."}},{"@type":"Question","name":"¿Puedo hacer paper trading de acciones y forex con apalancamiento en MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Sí - más de 20 acciones de EE. UU., pares principales de forex, índices bursátiles y metales operan como perpetuos, con topes de apalancamiento por categoría y manejo de horarios de mercado, junto a los futuros de cripto en una sola cuenta."}},{"@type":"Question","name":"¿Puedo probar un bot de trading contra el paper trading de MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Sí - la API de Trading gratis expone endpoints de paper trading vía REST para que puedas abrir, gestionar y cerrar posiciones simuladas mediante código. Documentación en marginpad.io/trading-api/."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿El paper trading de TradingView admite apalancamiento?","acceptedAnswer":{"@type":"Answer","text":"El paper trading de TradingView ejecuta órdenes a precio de mercado pero no simula las mecánicas de apalancamiento - no hay precio de liquidación, ni llamada de margen, ni funding. MarginPad simula los tres con matemática real de margen de mantenimiento sobre precios en vivo."}},{"@type":"Question","name":"¿El paper trading de MarginPad es realmente gratis sin una cuenta?","acceptedAnswer":{"@type":"Answer","text":"Sí. Puedes abrir posiciones simuladas apalancadas de inmediato, sin registro. Una cuenta gratis añade sincronización entre dispositivos, el diario de operaciones, las tablas de clasificación y los premios de temporada de 14 días."}},{"@type":"Question","name":"¿Puedo hacer paper trading de acciones y forex con apalancamiento en MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Yes - 18 US stocks and 2 ETFs, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account."}},{"@type":"Question","name":"¿Puedo probar un bot de trading contra el paper trading de MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Sí - la API de Trading gratis expone endpoints de paper trading vía REST para que puedas abrir, gestionar y cerrar posiciones simuladas mediante código. Documentación en marginpad.io/trading-api/."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Alternativa a TradingView Paper Trading (con mecánicas reales de apalancamiento)","item":"https://marginpad.io/es/tradingview-paper-trading-alternative/"}]}</script>
 <style>
 .alt-table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}
@@ -48,7 +48,7 @@
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -68,7 +68,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Alternativa a TradingView Paper Trading con Apalancamiento","url":"https://marginpad.io/es/tradingview-paper-trading-alternative/","dateModified":"2026-09-25T12:46:27.589Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Alternativa a TradingView Paper Trading con Apalancamiento","url":"https://marginpad.io/es/tradingview-paper-trading-alternative/","dateModified":"2026-09-25T13:08:33.810Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -85,7 +85,7 @@
       <tr><td>Simulación de apalancamiento</td><td>Sí - hasta 1000x en cripto, topes por categoría en acciones/forex</td><td>Sin mecánicas nativas de apalancamiento</td></tr>
       <tr><td>Precio de liquidación y cierre forzado</td><td>Sí - matemática real de margen de mantenimiento, confirmada al cierre</td><td>No</td></tr>
       <tr><td>Funding y comisiones de trading</td><td>Sí - funding aplicado, modelos de comisión por exchange</td><td>No</td></tr>
-      <tr><td>Mercados</td><td>Perpetuos de cripto, más de 20 acciones de EE. UU., pares principales de forex, índices, metales - una sola cuenta</td><td>Todo lo que grafica TradingView</td></tr>
+      <tr><td>Mercados</td><td>Crypto perps, 18 US stocks and 2 ETFs, forex majors, indices, metals - one account</td><td>Todo lo que grafica TradingView</td></tr>
       <tr><td>Profundidad de los gráficos</td><td>Espacio de trabajo multi-gráfico, más de 19 indicadores, herramientas de dibujo</td><td>Los mejores gráficos del mercado - aquí gana TradingView</td></tr>
       <tr><td>Se requiere registro</td><td>No - las operaciones funcionan al instante, la cuenta es opcional para las tablas de clasificación</td><td>Se requiere cuenta de TradingView</td></tr>
       <tr><td>Tablas de clasificación, duelos, misiones, XP</td><td>Sí - tablas de clasificación con premios por temporada de 14 días</td><td>No</td></tr>
@@ -99,7 +99,7 @@
     <h3>¿El paper trading de MarginPad es realmente gratis sin una cuenta?</h3>
     <p>Sí. Puedes abrir posiciones simuladas apalancadas de inmediato, sin registro. Una cuenta gratis añade sincronización entre dispositivos, el diario de operaciones, las tablas de clasificación y los premios de temporada de 14 días.</p>
     <h3>¿Puedo hacer paper trading de acciones y forex con apalancamiento en MarginPad?</h3>
-    <p>Sí - más de 20 acciones de EE. UU., pares principales de forex, índices bursátiles y metales operan como perpetuos, con topes de apalancamiento por categoría y manejo de horarios de mercado, junto a los futuros de cripto en una sola cuenta.</p>
+    <p>Yes - 18 US stocks and 2 ETFs, forex majors, stock indices and metals trade as perpetuals with per-class leverage caps and market-hours handling, alongside crypto futures on one account.</p>
     <h3>¿Puedo probar un bot de trading contra el paper trading de MarginPad?</h3>
     <p>Sí - la API de Trading gratis expone endpoints de paper trading vía REST para que puedas abrir, gestionar y cerrar posiciones simuladas mediante código. Documentación en marginpad.io/trading-api/.</p>
     <div class="toolshow">
@@ -115,6 +115,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/paper-trade">Paper Trade</a> · <a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
+<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
 </body>
 </html>

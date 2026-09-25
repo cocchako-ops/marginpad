@@ -21,7 +21,7 @@ for (const f of walk(ROOT, [])) {
   let html = fs.readFileSync(f, 'utf8');
   if (html.includes('mp-nav.js')) { skipped++; continue; }            // already has it
   if (html.includes('hmenuBtn')) { skipped++; continue; }             // homepage / lang homepage - already has the inline hamburger + Browse
-  if (rel.startsWith('widget/') || rel.includes('/widget/')) { skipped++; continue; } // iframe embeds
+  if (rel.startsWith('widget/') || rel.includes('/widget/') || rel.startsWith('embed/') || rel.includes('/embed/')) { skipped++; continue; } // iframe embeds - /embed/* too (audit 2026-09-25: the hamburger, the chat bubble and the phone tab bar were rendering inside other people's iframes)
   if (!html.includes('</body>')) { skipped++; continue; }
   const i = html.lastIndexOf('</body>');
   html = html.slice(0, i) + TAG + '\n' + html.slice(i);

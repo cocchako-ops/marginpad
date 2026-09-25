@@ -82,6 +82,7 @@
   .fdcta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
   .fdload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
   @media(max-width:600px){.fdtbl th.hide,.fdtbl td.hide{display:none}}
+@media(max-width:480px){.fdtbl th.hide2,.fdtbl td.hide2{display:none}} /* audit 2026-09-25: on a 390px phone the FUNDING column - the page's subject - sat off-screen with no scroll cue; it now follows Coin and 24h yields first */
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Rastreador de tasas de funding de criptomonedas","url":"https://marginpad.io/es/funding/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es una tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"La tasa de funding es un pequeño pago periódico entre traders long y short en futuros perpetuos que mantiene el precio del perpetuo cerca del spot. El funding positivo significa que los longs pagan a los shorts; el funding negativo significa que los shorts pagan a los longs."}},{"@type":"Question","name":"¿Qué significa un funding positivo alto?","acceptedAnswer":{"@type":"Answer","text":"Un funding positivo alto significa que el mercado está fuertemente long y los longs pagan por mantenerse - una señal de longs concurridos que puede alimentar un short squeeze en una corrección. Un funding fuertemente negativo significa shorts concurridos, lo que puede alimentar un long squeeze."}}]}</script>
@@ -89,9 +90,7 @@
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
-<nav class="hublinks" data-hublinks aria-label="Esta página en otros idiomas"><h2>Esta página en otros idiomas</h2><div class="hl"><a href="/es/funding/">Español</a></div></nav>
-<footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -122,7 +121,7 @@
 @media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Tasas de funding de criptomonedas - Rastreador de tasas de funding en vivo","url":"https://marginpad.io/es/funding/","dateModified":"2026-09-25T12:46:27.342Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Tasas de funding de criptomonedas - Rastreador de tasas de funding en vivo","url":"https://marginpad.io/es/funding/","dateModified":"2026-09-25T13:08:33.778Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -171,7 +170,9 @@ if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bu
 var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
 <div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
 </article>
-  <footer>
+  <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
+<nav class="hublinks" data-hublinks aria-label="Esta página en otros idiomas"><h2>Esta página en otros idiomas</h2><div class="hl"><a href="/es/funding/">Español</a></div></nav>
+<footer>
     <span>© 2026 MarginPad</span> <span><a href="/es/screener">Screener</a> · <a href="/es/liquidations/">Liquidaciones</a> · <a href="/es/">Herramientas</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
@@ -186,13 +187,13 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var byF=c.slice().sort(function(a,b){return (+b.funding||0)-(+a.funding||0);}), hi=byF[0], lo=byF[byF.length-1];
     topEl.innerHTML='<div class="fdcard hi"><div class="fd-k">Most expensive longs · highest funding</div><div class="fd-row"><span class="fd-sym">'+hi.s+'</span><span class="fd-val up">'+fn(hi.funding)+'</span></div><div class="fd-hint">Longs are paying the most here - crowded longs, short-squeeze risk on a pullback.</div></div>'
       +'<div class="fdcard lo"><div class="fd-k">Most expensive shorts · lowest funding</div><div class="fd-row"><span class="fd-sym">'+lo.s+'</span><span class="fd-val dn">'+fn(lo.funding)+'</span></div><div class="fd-hint">Shorts are paying the most here - crowded shorts, long-squeeze risk on a bounce.</div></div>';
-    var rows=c.map(function(x,i){var up=(x.chg24h||0)>=0,fp=(x.funding||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+fpx(x.price)+'</td><td class="chg '+(up?'up':'dn')+'">'+(up?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td><td class="fund '+(fp?'up':'dn')+'">'+fn(x.funding)+'</td><td class="hide">'+bn(x.oiUsd)+'</td></tr>';}).join('');
-    tEl.innerHTML='<div class="fdwrap"><table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Price</th><th>24h</th><th>Funding</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    var rows=c.map(function(x,i){var up=(x.chg24h||0)>=0,fp=(x.funding||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td class="fund '+(fp?'up':'dn')+'">'+fn(x.funding)+'</td><td>'+fpx(x.price)+'</td><td class="chg hide2 '+(up?'up':'dn')+'">'+(up?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td><td class="hide">'+bn(x.oiUsd)+'</td></tr>';}).join('');
+    tEl.innerHTML='<div class="fdwrap"><table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Funding</th><th>Price</th><th class="hide2">24h</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
     if(uEl)uEl.textContent='Updated just now · refreshes automatically';
   }
   function load(){fetch('/api/cg/funding',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
   load();setInterval(load,60000);
 })();</script>
-<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
+<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
 </body>
 </html>

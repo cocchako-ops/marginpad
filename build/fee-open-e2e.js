@@ -41,7 +41,8 @@ const get = async (p) => { const r = await fetch(B + p, { headers: H }); const t
 
 // the formula, written out independently of the worker so the test does not just restate the implementation
 const oldLiq = (entry, lev, mmr, long) => long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev);
-const newLiq = (entry, lev, mmr, long, rate) => { const f = 1 - Math.min(0.1, rate * lev); return long ? entry * (1 - (1 - mmr) * f / lev) : entry * (1 + (1 - mmr) * f / lev); };
+// 2026-09-25: the engine moved to the EXCHANGE formula (mirror of mpcLiq): im = 1/lev - rate, mmr_eff = min(mmr, im/2), liq_long = entry*(1 - im + mmr_eff)
+const newLiq = (entry, lev, mmr, long, rate) => { const im = Math.max(1e-6, 1 / lev - Math.min(0.1 / lev, rate)); const me = Math.min(mmr, im / 2); return long ? entry * (1 - im + me) : entry * (1 + im - me); };
 
 (async () => {
   if (!ADMIN) { console.error('fee-open-e2e: ADMIN_KEY.local.txt has no mpadm_ token'); process.exitCode = 1; return; }
@@ -72,11 +73,11 @@ const newLiq = (entry, lev, mmr, long, rate) => { const f = 1 - Math.min(0.1, ra
       'new ' + S.liq + ' old ' + oldLiq(S.entry, 100, mmr, false) + ' entry ' + S.entry);
     ok('the opening fee is recorded as its own figure', Math.abs(+L.feeOpen - 100 * 100 * rate) < 0.01, String(L.feeOpen));
 
-    // HISTORY IS NEVER REWRITTEN: the fee-less calculator, which every legacy row and every generic answer uses,
-    // must be untouched. /api/liquidation is that path.
+    // The fee-less calculator answers the EXCHANGE number (2026-09-25): 100x at 0.5% = 0.50% from entry, which is
+    // exactly what Bybit publishes and what the 76 calculator pages print - one formula on the whole site now.
     const calc = await get('/api/liquidation?entry=100000&leverage=100&side=long&mmr=0.5');
-    ok('a fee-less liquidation still answers the old number',
-      Math.abs(+calc.liquidationPrice - oldLiq(100000, 100, 0.005, true)) < 0.02,
+    ok('a fee-less liquidation answers the exchange number (100x, 0.5% -> 99,500)',
+      Math.abs(+calc.liquidationPrice - newLiq(100000, 100, 0.005, true, 0)) < 0.02 && Math.abs(+calc.liquidationPrice - 99500) < 0.02,
       JSON.stringify(calc).slice(0, 140));
 
     console.log('\nwhat the trader sees before pressing Close');

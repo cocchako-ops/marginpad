@@ -104,7 +104,7 @@
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -142,7 +142,7 @@
     <h1>Flujos de ETF de Bitcoin y Ethereum</h1>
     <p class="lead">Adónde va el dinero institucional. Sigue las entradas y salidas netas diarias de todos los ETF spot de Bitcoin y Ethereum en EE. UU., los activos totales bajo gestión, y un desglose en vivo por fondo (IBIT, FBTC, ETHA y el resto). Entradas persistentes = acumulación; salidas sostenidas = distribución. Gratis, sin registro.</p>
 
-    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>ETF flow data is not available right now.</b> The source this page relied on stopped on 2026-08-21, and a number we cannot measure is not printed. The explanation below still holds; the figures return when a source is wired up again.</span></div>
+    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>Ahora mismo no hay datos de flujos de ETF.</b> La fuente en la que se apoyaba esta página dejó de emitir el 2026-08-21, y una cifra que no podemos medir no se publica. La explicación de abajo sigue siendo válida; los números vuelven en cuanto conectemos otra fuente.</span></div>
 
     <div class="ef-hero">
       <div class="ef-panel btc" id="efBtc">
@@ -175,7 +175,7 @@
     <h2>Los fondos que importan</h2>
     <p>El <strong>IBIT</strong> de BlackRock domina los activos de ETF de Bitcoin, con el <strong>FBTC</strong> de Fidelity, Grayscale, Bitwise (BITB) y ARK (ARKB) formando la mayor parte del resto. Del lado de Ethereum, el <strong>ETHA</strong> de BlackRock lidera. Los activos bajo gestión (AUM) te dicen el tamaño total que ha acumulado cada fondo; el flujo diario te dice la dirección en este momento. Lee los flujos junto con las <a href="/es/funding/">tasas de funding</a> y las <a href="/es/liquidations/">liquidaciones</a> para separar la demanda impulsada por el spot de los movimientos impulsados por el apalancamiento.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">ETF figures, when shown, come from a third-party aggregator and are labelled with their source. For information only - not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Las cifras de ETF, cuando aparecen, vienen de un agregador externo y llevan indicada su fuente. Solo a título informativo - no es asesoramiento financiero.</p>
   
 <div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
 </article>
@@ -222,6 +222,6 @@
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=580ed368"></script>
-<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
+<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
 </body>
 </html>

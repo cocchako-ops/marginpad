@@ -74,7 +74,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de apalancamiento - Margen, posición y distancia de liquidación","url":"https://marginpad.io/es/leverage-calculator/","dateModified":"2026-09-25T12:46:22.622Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de apalancamiento - Margen, posición y distancia de liquidación","url":"https://marginpad.io/es/leverage-calculator/","dateModified":"2026-09-25T13:08:13.058Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <h1>Calculadora de apalancamiento cripto</h1>
@@ -96,6 +96,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var m=+document.getElementById('margin').value,p=+document.getElementById('pos').value,mmr=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(m>0&&p>0)){r.innerHTML='';return;}var lev=p/m,liq=(1-mmr)/lev*100;
 r.innerHTML='<div class="rrow big"><span class="k">Implied leverage</span><span class="v">'+lev.toFixed(2)+'x</span></div><div class="rrow"><span class="k">Liquidation distance (approx, long)</span><span class="v dn">-'+liq.toFixed(2)+'%</span></div><div class="rrow"><span class="k">A 1% price move changes your margin by</span><span class="v">'+lev.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Move that wipes 50% of margin</span><span class="v">'+(50/lev).toFixed(2)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
+<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
 </body>
 </html>

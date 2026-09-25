@@ -838,3 +838,36 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     };
   } catch (e) {}
 })();
+
+/* HORIZONTAL SCROLL CUE (audit 2026-09-25): on a 390px phone a dozen data tables cut their most important
+   column (FUNDING on /funding/, P&L on /arena/, LEV/LIQ on the whales page, DISTANCE on the Hyperliquid
+   feed) with nothing on screen saying the box scrolls. Every element that really overflows sideways gets a
+   fading right edge (an INSET shadow - painted on the box, so it does not scroll away with the content) and
+   loses it once scrolled to the end. Marquee tapes are overflow:hidden and are never touched. */
+(function () {
+  try {
+    if (window.__mpHs) return; window.__mpHs = 1;
+    var st = document.createElement('style');
+    st.textContent = '.mp-hs{box-shadow:inset -38px 0 26px -26px rgba(0,0,0,.85);transition:box-shadow .2s}.mp-hs.mp-hs-end{box-shadow:none}';
+    document.head.appendChild(st);
+    var seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+    function mark(el) {
+      if (!el || (seen && seen.has(el))) return;
+      var cs; try { cs = getComputedStyle(el); } catch (e) { return; }
+      var ox = cs.overflowX; if (ox !== 'auto' && ox !== 'scroll') return;
+      if (el.scrollWidth <= el.clientWidth + 6) return;
+      if (el.hasAttribute('data-nohs')) return;
+      if (seen) seen.add(el);
+      el.classList.add('mp-hs');
+      var upd = function () { el.classList.toggle('mp-hs-end', el.scrollLeft + el.clientWidth >= el.scrollWidth - 4); };
+      el.addEventListener('scroll', upd, { passive: true }); upd();
+    }
+    function scan() { var all = document.querySelectorAll('div,section,nav,ul,ol,pre,figure,main,article'); for (var i = 0; i < all.length; i++) mark(all[i]); }
+    var t = null, last = 0; function later() { clearTimeout(t); t = setTimeout(function () { last = Date.now(); scan(); }, 400); }
+    if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
+    setTimeout(scan, 1500); setTimeout(scan, 4000);
+    window.addEventListener('resize', later);
+    // a live tape mutates every second - rescan at most every 5 s on DOM changes, the first paint is covered above
+    try { new MutationObserver(function () { if (Date.now() - last > 5000) later(); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  } catch (e) {}
+})();

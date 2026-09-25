@@ -53,12 +53,12 @@
   @media(max-width:600px){.lvtab{display:block;overflow-x:auto;white-space:nowrap}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Calculadora de PnL de MEXC","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/es/mexc-pnl-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Calculadora gratuita de PnL de MEXC: ingresa la entrada, la salida y el apalancamiento para ver la ganancia, el ROI y el ROE apalancado de cualquier operación de futuros en MEXC con un clic, long o short. Sin registro."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo calculo el PnL en MEXC?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size para un long, o (entry - exit) x size para un short. El ROE multiplica el ROI de precio por tu apalancamiento."}},{"@type":"Question","name":"¿Qué es el ROE en los futuros de MEXC?","acceptedAnswer":{"@type":"Answer","text":"El ROE es el retorno sobre el margen que depositaste, amplificado por el apalancamiento. Un movimiento del 10% con 10x de apalancamiento equivale aproximadamente a un retorno del 100% sobre el margen."}},{"@type":"Question","name":"¿Las comisiones de MEXC reducen mi PnL?","acceptedAnswer":{"@type":"Answer","text":"Yes. MEXC charges about 0.02% taker per side plus funding every 8 hours, so net profit is a little below the raw price PnL. This tool shows gross PnL; subtract roughly two taker fees for a round trip."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo calculo el PnL en MEXC?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size para un long, o (entry - exit) x size para un short. El ROE multiplica el ROI de precio por tu apalancamiento."}},{"@type":"Question","name":"¿Qué es el ROE en los futuros de MEXC?","acceptedAnswer":{"@type":"Answer","text":"El ROE es el retorno sobre el margen que depositaste, amplificado por el apalancamiento. Un movimiento del 10% con 10x de apalancamiento equivale aproximadamente a un retorno del 100% sobre el margen."}},{"@type":"Question","name":"¿Las comisiones de MEXC reducen mi PnL?","acceptedAnswer":{"@type":"Answer","text":"Sí. MEXC cobra alrededor de 0.02% taker por lado más funding cada 8 horas, así que el beneficio neto queda algo por debajo del PnL bruto del precio. Esta herramienta muestra el PnL bruto; resta unas dos comisiones taker por ida y vuelta."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Calculadora de PnL de MEXC","item":"https://marginpad.io/es/mexc-pnl-calculator/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -78,7 +78,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de PnL de MEXC (2026) - Ganancia, ROI y ROE","url":"https://marginpad.io/es/mexc-pnl-calculator/","dateModified":"2026-09-25T12:46:27.407Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de PnL de MEXC (2026) - Ganancia, ROI y ROE","url":"https://marginpad.io/es/mexc-pnl-calculator/","dateModified":"2026-09-25T13:08:33.794Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -104,11 +104,10 @@
         <div class="rr"><span>ROE (sobre margen)</span><b id="pnlRoe">-</b></div>
       </div>
     </div>
-    <a class="exbtn" data-ex="MEXC" style="background:#1966ff;color:#ffffff" href="https://s.mexc.com/referral/YkL887dVgt" target="_blank" rel="sponsored noopener noreferrer">Trade on MEXC →</a>
-    <span class="avail no">✕ Non-US · base taker 0.02%</span>
+    <a class="exbtn" data-ex="MEXC" style="background:#1966ff;color:#ffffff" href="https://s.mexc.com/referral/YkL887dVgt" target="_blank" rel="sponsored noopener noreferrer">Operar en MEXC →</a> <span class="avail no">✕ No disponible en EE. UU. · taker base 0.02%</span>
 
     <h2>Cómo funcionan el PnL y el ROE en MEXC</h2>
-    <p>MEXC lists over 1,000 perpetual contracts - the widest futures menu of any major venue - with headline leverage up to 500x on select majors and some of the lowest maker fees in the market. Your raw profit on a MEXC trade is the price move times your position size: <code>(Exit − Entry) × Size</code> for a long, and the reverse for a short. <b>Price ROI</b> is the percentage the asset moved; <b>ROE</b> is your return on the margin you actually posted, which MEXC's leverage multiplies. MEXC competes on breadth and price: more than 1,000 USDT-perpetual pairs (new listings appear here first), 0% maker and 0.02% taker fees on futures at the base tier, and up to 500x leverage on BTC-class majors. The flip side of 500x is a razor-thin liquidation buffer - at that leverage a roughly 0.2% adverse move ends the position, which is exactly what this calculator makes visible before you try it with money. Maintenance margin on BTC starts around 0.5% at retail position sizes and tiers up with size.</p>
+    <p>MEXC lista más de 1,000 contratos perpetuos - el menú de futuros más amplio de cualquier exchange grande - con un apalancamiento anunciado de hasta 500x en algunas majors y algunas de las comisiones maker más bajas del mercado. Tu beneficio bruto en una operación en MEXC es el movimiento del precio por el tamaño de tu posición: <code>(Exit − Entry) × Size</code> para un long, y al revés para un short. El <b>ROI de precio</b> es el porcentaje que se movió el activo; el <b>ROE</b> es el retorno sobre el margen que realmente depositaste, y el apalancamiento de MEXC lo multiplica. MEXC compite en amplitud y en precio: más de 1,000 pares perpetuos en USDT (los nuevos listados aparecen aquí primero), 0% maker y 0.02% taker en futuros en el nivel base, y hasta 500x de apalancamiento en majors de la clase de BTC. La contrapartida de los 500x es un colchón de liquidación finísimo: con ese apalancamiento, un movimiento en contra de apenas un 0.2% acaba con la posición, que es justo lo que esta calculadora te enseña antes de que lo pruebes con dinero. El margen de mantenimiento en BTC arranca en torno al 0.5% con tamaños minoristas y sube por tramos con el tamaño.</p>
 
     <h2>Ejemplo resuelto</h2>
     <p>Un long de 0.5 monedas abierto a <code>$60,000</code> y cerrado a <code>$66,000</code> con 10× de apalancamiento:</p>
@@ -127,7 +126,7 @@
     <p>Cuanto mayor el apalancamiento, más rápido se acumula el ROE - y menor el movimiento que te liquida. Esa simetría es la razón por la que el tamaño de posición gana a perseguir apalancamiento.</p>
 
     <h2>Comisiones y funding en MEXC</h2>
-    <p>This tool shows <b>gross</b> PnL. On MEXC you also pay about <b>0.02% taker</b> per side (so roughly <b>0.040%</b> for a round trip at market), plus <b>funding</b> every 8 hours while the position is open. On a fast scalp the fees can outweigh a small edge, which is why makers (resting limit orders at <b>0%</b>) keep more of their profit. Subtract those costs from the figure above for your true net result.</p>
+    <p>Esta herramienta muestra el PnL <b>bruto</b>. En MEXC también pagas alrededor de <b>0.02% taker</b> por lado (unos <b>0.040%</b> por ida y vuelta a mercado), más <b>funding</b> cada 8 horas mientras la posición sigue viva. En un scalp rápido las comisiones pueden comerse una ventaja pequeña, y por eso quienes hacen de maker (órdenes límite pendientes al <b>0%</b>) se quedan con más beneficio. Resta esos costes a la cifra de arriba para tu resultado neto real.</p>
 
     <h2>FAQ</h2>
     <h3>¿En qué se diferencia el ROE del ROI en MEXC?</h3>
@@ -160,6 +159,6 @@ if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathna
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}});});})();
 </script>
-<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
+<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
 </body>
 </html>

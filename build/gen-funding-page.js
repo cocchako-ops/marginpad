@@ -39,6 +39,7 @@ const CSS = `
   .fdcta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
   .fdload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
   @media(max-width:600px){.fdtbl th.hide,.fdtbl td.hide{display:none}}
+@media(max-width:480px){.fdtbl th.hide2,.fdtbl td.hide2{display:none}} /* audit 2026-09-25: on a 390px phone the FUNDING column - the page's subject - sat off-screen with no scroll cue; it now follows Coin and 24h yields first */
 `;
 
 const LD = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Funding Rate Tracker","url":"${URL}","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
@@ -126,8 +127,8 @@ ${LD}
     var byF=c.slice().sort(function(a,b){return (+b.funding||0)-(+a.funding||0);}), hi=byF[0], lo=byF[byF.length-1];
     topEl.innerHTML='<div class="fdcard hi"><div class="fd-k">Most expensive longs · highest funding</div><div class="fd-row"><span class="fd-sym">'+hi.s+'</span><span class="fd-val up">'+fn(hi.funding)+'</span></div><div class="fd-hint">Longs are paying the most here - crowded longs, short-squeeze risk on a pullback.</div></div>'
       +'<div class="fdcard lo"><div class="fd-k">Most expensive shorts · lowest funding</div><div class="fd-row"><span class="fd-sym">'+lo.s+'</span><span class="fd-val dn">'+fn(lo.funding)+'</span></div><div class="fd-hint">Shorts are paying the most here - crowded shorts, long-squeeze risk on a bounce.</div></div>';
-    var rows=c.map(function(x,i){var up=(x.chg24h||0)>=0,fp=(x.funding||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+fpx(x.price)+'</td><td class="chg '+(up?'up':'dn')+'">'+(up?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td><td class="fund '+(fp?'up':'dn')+'">'+fn(x.funding)+'</td><td class="hide">'+bn(x.oiUsd)+'</td></tr>';}).join('');
-    tEl.innerHTML='<div class="fdwrap"><table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Price</th><th>24h</th><th>Funding</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    var rows=c.map(function(x,i){var up=(x.chg24h||0)>=0,fp=(x.funding||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td class="fund '+(fp?'up':'dn')+'">'+fn(x.funding)+'</td><td>'+fpx(x.price)+'</td><td class="chg hide2 '+(up?'up':'dn')+'">'+(up?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td><td class="hide">'+bn(x.oiUsd)+'</td></tr>';}).join('');
+    tEl.innerHTML='<div class="fdwrap"><table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Funding</th><th>Price</th><th class="hide2">24h</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
     if(uEl)uEl.textContent='Updated just now · refreshes automatically';
   }
   function load(){fetch('/api/cg/funding',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
