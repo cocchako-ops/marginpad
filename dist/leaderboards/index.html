@@ -182,7 +182,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Trading Leaderboards - Live Season Standings, Prizes and Rules","url":"https://marginpad.io/leaderboards/","dateModified":"2026-09-25T09:34:38.803Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Trading Leaderboards - Live Season Standings, Prizes and Rules","url":"https://marginpad.io/leaderboards/","dateModified":"2026-09-25T12:46:04.328Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -288,7 +288,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     roe:{key:'top',grp:'free',name:'Highest ROE',sub:__esT_leaderboardsindex("sub8556",'the best return on a single closed trade this season'),
       head:['#','Trader',__esT_leaderboardsindex("bestTradeRoe",'Best trade ROE'),'P&amp;L','Pair','Prize'],
       row:function(r){return '<td class="v up">'+(r.roe>=0?'+':'')+int(r.roe)+'%</td><td class="v '+(r.pnl>=0?'up':'dn')+'">'+money(r.pnl)+'</td><td>'+esc(String(r.symbol||'').toUpperCase())+(r.side?' <span style="color:'+(r.side==='short'?'#ff6258':'#2ebd85')+'">'+esc(r.side)+'</span>':'')+'</td>';},
-      rules:[__esT_leaderboardsindex("ruleRoeBoard",'Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).'),__esT_leaderboardsindex("aTradeNeedsAt",'A trade needs at least <b>5% ROE and a 0.2% real price move</b> to count; a scratch or a spread-width close never enters.'),__esT_leaderboardsindex("tenClosedTradesIn",'<b>One closed trade</b> opened this season, filled and closed server-side, puts you on the board; forex, metals and indices never rank.'),__esT_leaderboardsindex("filledAndClosedServer",'Filled and closed server-side against real candles - a browser cannot report a trade onto this board.')]},
+      rules:[__esT_leaderboardsindex("ruleRoeBoard",'Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).'),__esT_leaderboardsindex("aTradeNeedsAt",'<b>No minimum here</b>: a +3% best trade ranks above a +2% one. The 5% ROE / 0.2% move rule defines a <i>win</i> on the Best win rate board, not a place on this one.'),__esT_leaderboardsindex("tenClosedTradesIn",'<b>One closed trade</b> opened this season, filled and closed server-side, puts you on the board; forex, metals and indices never rank.'),__esT_leaderboardsindex("filledAndClosedServer",'Filled and closed server-side against real candles - a browser cannot report a trade onto this board.')]},
     green:{key:'topGreen',grp:'free',name:__esT_leaderboardsindex("greenDays",'Green days'),sub:__esT_leaderboardsindex("theMostDaysClosed",'the most days closed in profit this season'),
       head:['#','Trader',__esT_leaderboardsindex("greenDays",'Green days'),__esT_leaderboardsindex("redDays",'Red days'),'Trades','Prize'],
       row:function(r){return '<td class="v up">'+int(r.days)+'</td><td class="v dn">'+int(r.red||0)+'</td><td class="v">'+int(r.trades||0)+'</td>';},
@@ -387,6 +387,6 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=580ed368"></script>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

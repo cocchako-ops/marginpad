@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo","description":"Órdenes a mercado vs órdenes límite explicadas para futuros cripto: ejecución instantánea y slippage frente a control del precio y comisiones maker, cuándo usar cada una, y dónde encajan las órdenes stop y stop-limit.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/limit-vs-market-orders/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo","description":"Órdenes a mercado vs órdenes límite explicadas para futuros cripto: ejecución instantánea y slippage frente a control del precio y comisiones maker, cuándo usar cada una, y dónde encajan las órdenes stop y stop-limit.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/limit-vs-market-orders/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuál es la diferencia entre una orden a mercado y una orden límite?","acceptedAnswer":{"@type":"Answer","text":"Una orden a mercado se ejecuta al instante al mejor precio disponible: tomas lo que ofrezca el libro de órdenes, lo que puede implicar slippage en mercados rápidos o con poca liquidez. Una orden límite se ejecuta solo a tu precio elegido o mejor: tú controlas el precio, pero la orden puede no ejecutarse nunca si el precio no llega a ese nivel. Mercado = velocidad; límite = control del precio."}},{"@type":"Question","name":"¿Qué tipo de orden tiene comisiones más bajas?","acceptedAnswer":{"@type":"Answer","text":"Las órdenes límite que quedan pendientes en el libro suelen pagar la comisión maker más baja (y algunos exchanges pagan un rebate maker), porque añaden liquidez. Las órdenes a mercado retiran liquidez y pagan la comisión taker más alta. A lo largo de muchas operaciones esa diferencia se acumula, lo que es una de las razones por las que los traders activos prefieren las órdenes límite."}},{"@type":"Question","name":"¿Qué es una orden stop o stop-limit?","acceptedAnswer":{"@type":"Answer","text":"Una orden stop es un disparador: cuando el precio llega a tu nivel de stop, dispara una orden a mercado (stop-market) o una orden límite (stop-limit). Los traders usan los stops para fijar un stop-loss o para entrar en una ruptura. El stop-market garantiza la salida pero no el precio; el stop-limit controla el precio pero puede no ejecutarse en un movimiento rápido."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Límite vs mercado","item":"https://marginpad.io/es/blog/limit-vs-market-orders/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Límite vs mercado</div>
   <article>
     <h1>Órdenes límite vs órdenes a mercado en futuros cripto (2026): cuál usar y cuándo</h1>
-    <div class="meta">Basics · 5 min read · Updated September 2026</div>
+    <div class="meta">Básicos · 5 min de lectura · Actualizado en junio de 2026</div>
     <p>Toda operación que colocas es de uno de dos tipos básicos: una <strong>orden a mercado</strong> o una <strong>orden límite</strong>. Elegir la equivocada te cuesta dinero - en slippage, en comisiones, o en una ejecución que nunca quisiste. Aquí está la diferencia, cuándo usar cada una, y dónde encajan las órdenes stop. <em>(Solo con fines educativos - no es asesoramiento financiero.)</em></p>
     <h2>Orden a mercado: velocidad, a cierto precio</h2>
     <p>Una <strong>orden a mercado</strong> se ejecuta <strong>de inmediato</strong> al mejor precio disponible en ese momento en el libro de órdenes. Tienes garantizada la ejecución, pero <strong>no</strong> el precio. En un mercado que se mueve rápido o con poca liquidez, tu orden «recorre el libro», ejecutándose a precios progresivamente peores: esa diferencia entre el precio que viste y el que obtuviste es el <a href="/es/blog/what-is-slippage/">slippage</a>. Las órdenes a mercado también pagan la <a href="/es/blog/maker-vs-taker-fees/">comisión taker</a> más alta porque retiran liquidez.</p>
@@ -127,6 +127,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo evitar la liquidación en futuros de cripto (2026)","description":"La liquidación acaba con más cuentas minoristas de futuros que cualquier mala predicción. Aquí explicamos exactamente cómo funciona la liquidación y los cinco hábitos concretos - apalancamiento, stops, dimensionamiento de posición, un colchón de margen y estar atento a los eventos - que mantienen viva tu posición.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-07-22","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-avoid-liquidation-crypto/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo evitar la liquidación en futuros de cripto (2026)","description":"La liquidación acaba con más cuentas minoristas de futuros que cualquier mala predicción. Aquí explicamos exactamente cómo funciona la liquidación y los cinco hábitos concretos - apalancamiento, stops, dimensionamiento de posición, un colchón de margen y estar atento a los eventos - que mantienen viva tu posición.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-07-22","dateModified":"2026-07-22","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-avoid-liquidation-crypto/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué causa la liquidación en los futuros de cripto?","acceptedAnswer":{"@type":"Answer","text":"La liquidación ocurre cuando el mercado se mueve en contra de tu posición apalancada lo suficiente como para que tu margen ya no cubra la pérdida. El exchange cierra la posición a la fuerza en el precio de liquidación para protegerse. Cuanto mayor sea tu apalancamiento, más cerca está ese precio de tu entrada - a 100x está a solo cerca de 1% de distancia."}},{"@type":"Question","name":"¿Cómo evito que me liquiden?","acceptedAnswer":{"@type":"Answer","text":"Usa un apalancamiento más bajo para que el precio de liquidación quede lejos de tu entrada, coloca siempre un stop-loss que se active antes de la liquidación, dimensiona las posiciones para que una sola pérdida sea una fracción pequeña de tu cuenta, mantén un colchón de margen en lugar de ir all-in, y evita mantener apalancamiento alto durante volatilidad programada como el FOMC o el CPI. Practicar esto primero en una cuenta de paper trading crea el hábito sin riesgo."}},{"@type":"Question","name":"¿Dónde está exactamente mi precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Depende de tu entrada, tu apalancamiento, el tamaño de la posición y el margen de mantenimiento del exchange. Una calculadora de liquidación te da el precio exacto en segundos - revísalo antes de abrir cada operación para saber con precisión cuánto margen de maniobra tienes."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Evitar la liquidación","item":"https://marginpad.io/es/blog/how-to-avoid-liquidation-crypto/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Evitar la liquidación</div>
   <article>
     <h1>Cómo evitar la liquidación en futuros de cripto (2026)</h1>
-    <div class="meta">Guides · 8 min read · Updated September 2026</div>
+    <div class="meta">Guías · 8 min de lectura · Actualizado en junio de 2026</div>
     <p>Mueren más cuentas minoristas de futuros por <b>liquidación</b> que por equivocarse de dirección. Puedes acertar el movimiento a la perfección y aun así quedar barrido si un bandazo normal toca antes tu precio de liquidación. La buena noticia: la liquidación es totalmente predecible, y evitarla es cuestión de hábitos - no de suerte. Aquí te decimos cómo.</p>
  <h2>Primero, qué es realmente la liquidación</h2>
  <p>Cuando operas con apalancamiento, pides prestado para controlar una posición mayor que tu margen. Si el precio se mueve en tu contra lo suficiente como para que tu margen no cubra la pérdida, el exchange <b>cierra a la fuerza</b> la operación en tu <b>precio de liquidación</b> - pierdes el margen de esa posición. La trampa: cuanto mayor sea tu apalancamiento, más cerca está ese precio de tu entrada. A 10x está a aproximadamente un 10% de distancia; a 100x está a cerca de <b>1%</b>. Por eso un apalancamiento alto se siente como lanzar una moneda al aire - porque literalmente lo es.</p>
@@ -125,6 +125,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

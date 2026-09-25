@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Bots de grid trading explicados (2026): cómo funcionan y cómo probar uno gratis","description":"Un bot de grid trading coloca órdenes de compra y venta a intervalos fijos para sacar provecho de un mercado lateral. Aprende cómo funcionan los bots de grid, dónde ganan y dónde explotan, y cómo probar uno sin riesgo antes de financiarlo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/grid-trading-bot-explained/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Bots de grid trading explicados (2026): cómo funcionan y cómo probar uno gratis","description":"Un bot de grid trading coloca órdenes de compra y venta a intervalos fijos para sacar provecho de un mercado lateral. Aprende cómo funcionan los bots de grid, dónde ganan y dónde explotan, y cómo probar uno sin riesgo antes de financiarlo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/grid-trading-bot-explained/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un bot de grid trading?","acceptedAnswer":{"@type":"Answer","text":"Un bot de grid coloca una escalera de órdenes de compra y venta a intervalos de precio fijos dentro de un rango. Mientras el precio oscila, compra bajo y vende alto dentro de la grilla, acumulando pequeñas ganancias en cada vaivén. Funciona mejor en un mercado lateral y le cuesta cuando el precio marca una tendencia fuerte en una dirección."}},{"@type":"Question","name":"¿Es rentable el grid trading?","acceptedAnswer":{"@type":"Answer","text":"It can be, in the right conditions — a choppy, range-bound market is where grid bots shine. But a strong trend that breaks out of the range can leave the bot holding losing positions, and fees eat into many small trades. Test any grid setup on paper first to see how it behaves in a real trend."}},{"@type":"Question","name":"¿Cuáles son los riesgos de un bot de grid?","acceptedAnswer":{"@type":"Answer","text":"El más grande es una ruptura de tendencia: si el precio se sale de tu grid, acumulas posiciones del lado equivocado sin que se ejecute ningún take-profit. Con apalancamiento eso puede liquidarte. Los bots de grid también pagan comisiones en cada ejecución, así que un grid ajustado en un mercado tranquilo puede perder por los costos."}},{"@type":"Question","name":"¿Cómo pruebo un bot de grid trading gratis?","acceptedAnswer":{"@type":"Answer","text":"Simulate the grid logic against real live prices with a free paper-trading API — open and close positions in simulated dollars and watch how the grid performs across a trend, a range and a volatile day before risking real money."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bots de grid trading","item":"https://marginpad.io/es/blog/grid-trading-bot-explained/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Bots de grid trading</div>
   <article>
     <h1>Bots de grid trading explicados (2026): cómo funcionan y cómo probar uno gratis</h1>
-    <div class="meta">Guides · 6 min read · Updated September 2026</div>
+    <div class="meta">Guías · 6 min de lectura · Actualizado en junio de 2026</div>
     <p>Grid bots are one of the most popular automated crypto strategies — and one of the most misunderstood. Used in the right market they quietly bank small profits all day; used in the wrong one they hand you a bag of losers. Here's how a grid trading bot actually works, where it wins and where it blows up, and how to test one without risking a cent. <em>(Educational only — not financial advice.)</em></p>
     <h2>Cómo funciona un bot de grid</h2>
     <p>A <strong>grid bot</strong> divides a price range into a ladder of levels and places <strong>buy orders below</strong> and <strong>sell orders above</strong> the current price at fixed intervals. As price oscillates within the range, the bot <strong>buys low and sells high</strong> on each swing, pocketing the gap between grid lines. It doesn't predict direction — it harvests <strong>volatility inside a range</strong>.</p>
@@ -123,6 +123,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

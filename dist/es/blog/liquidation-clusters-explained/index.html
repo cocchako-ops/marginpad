@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Los clústeres de liquidación explicados: cómo detectar imanes de liquidez","description":"Aprende qué son los grupos de liquidación, cómo los forma el apalancamiento acumulado y por qué estos imanes de liquidez atraen el precio de los futuros de cripto. Una guía práctica.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/liquidation-clusters-explained/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Los clústeres de liquidación explicados: cómo detectar imanes de liquidez","description":"Aprende qué son los grupos de liquidación, cómo los forma el apalancamiento acumulado y por qué estos imanes de liquidez atraen el precio de los futuros de cripto. Una guía práctica.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/liquidation-clusters-explained/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un grupo de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Es un nivel de precio donde muchas posiciones apalancadas se liquidarían a la vez. Los niveles de liquidación individuales se acumulan en el mismo precio, creando una reserva densa de órdenes forzadas que puede mover el mercado cuando el precio la alcanza."}},{"@type":"Question","name":"¿Por qué los grupos de liquidación actúan como imanes?","acceptedAnswer":{"@type":"Answer","text":"Una liquidación es una orden a mercado forzada, así que un grupo es una pila de flujo garantizado en un precio conocido. Los grandes jugadores buscan esa liquidez, y una vez que el precio llega a un grupo, las órdenes forzadas pueden desatar una cascada que se retroalimenta y arrastra el precio aún más adentro."}},{"@type":"Question","name":"¿Los grupos de MarginPad son datos reales del exchange?","acceptedAnswer":{"@type":"Answer","text":"No. Las liquidaciones reales del mapa son eventos que de verdad ocurrieron en Bybit, OKX y Binance. La capa de grupos estimados es un modelo construido a partir de los cambios en el interés abierto y una distribución de apalancamiento asumida: un mapa de probabilidad de dónde probablemente está el apalancamiento, no datos del libro de órdenes."}},{"@type":"Question","name":"¿Cuál es la diferencia entre los grupos de longs y de shorts?","acceptedAnswer":{"@type":"Answer","text":"Los grupos de longs están por debajo del precio actual porque los longs se liquidan cuando el precio cae. Los grupos de shorts están por encima del precio actual porque los shorts se liquidan cuando el precio sube. Un repunte hacia un grupo de shorts puede desatar un squeeze; una caída hacia un grupo de longs puede desatar una cascada de ventas."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Grupos de liquidación","item":"https://marginpad.io/es/blog/liquidation-clusters-explained/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Grupos de liquidación</div>
   <article>
     <h1>Los clústeres de liquidación explicados: cómo detectar imanes de liquidez</h1>
-    <div class="meta">Liquidation · 6 min read · Updated September 2026</div>
+    <div class="meta">Liquidación · 6 min de lectura · Actualizado en junio de 2026</div>
 <p>Si operas futuros de cripto, probablemente hayas visto cómo el precio deriva hacia un nivel, acelera al llegar y luego rebota. A menudo ese nivel es un <strong>grupo de liquidación</strong>: un precio donde muchas posiciones apalancadas están a punto de ser forzadas a salir. Esta guía explica qué son los grupos, cómo se forman y cómo leerlos en un <a href="/es/heatmap">mapa de liquidaciones</a> sin engañarte sobre lo que realmente muestran los datos.</p>
 
 <h2>Qué es realmente un grupo de liquidación</h2>
@@ -169,6 +169,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ const desc = 'Live Bitcoin cycle dashboard: Pi Cycle Top, Rainbow Chart band, Pu
 const kw = 'bitcoin cycle, pi cycle top, bitcoin rainbow chart, puell multiple, is bitcoin at the top, bitcoin market cycle, altcoin season index, bitcoin dominance, 200 week moving average, cycle top indicator';
 
 const HEADER_CSS = `
-  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
   .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
   header .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
   header .mark b{color:#c2f64a}

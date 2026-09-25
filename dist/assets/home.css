@@ -183,7 +183,7 @@
   .swapwrap{margin-top:14px;padding:6px 0 0;animation:panelIn .45s cubic-bezier(.2,.7,.2,1) both;}
   .swap-intro{font-size:13.5px;color:var(--ink-dim);line-height:1.5;text-align:center;margin:0 auto 14px;max-width:520px;}
   .swap-frame{position:relative;width:100%;max-width:464px;margin:0 auto;border-radius:14px;overflow:hidden;}
-  .swap-frame iframe{display:block;width:100%;height:430px;border:0;background:transparent;opacity:.97;}
+  .swap-frame iframe{display:block;width:100%;height:362px;border:0;background:transparent;opacity:.97;} /* the ChangeNOW card is ~355px tall; at 430px the iframe's own white document showed as an 80px white block under the Exchange button (audit 2026-09-25) */
   .swap-load{position:absolute;left:0;right:0;top:0;height:430px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:13px;pointer-events:none;}
   .swap-note{font-size:12px;color:var(--ink-faint);line-height:1.5;margin:14px auto 0;text-align:center;max-width:480px;}
   @media (max-width:680px){.heat-act{margin-left:0;width:100%;}.heat-btn{flex:1;justify-content:center;}}

@@ -163,7 +163,7 @@ const SKIP = /^(privacy|terms|contact|about|api|trading-api|free-crypto-api|widg
 const LANGS = new Set(['ar', 'de', 'es', 'fr', 'id', 'ja', 'ko', 'nl', 'pt', 'ru', 'tr', 'zh']);
 
 const CSS = `<style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}

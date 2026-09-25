@@ -120,7 +120,7 @@ const CSS = `
   .dfgl .r .c{font-family:'Space Mono',monospace;font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
   .dfgl .col.gain .c{color:#34d99a}.dfgl .col.lose .c{color:#ff7b72}
   /* ===== VERBATIM homepage header (bento) - full-bleed sticky blur bar, identical markup + rules ===== */
-  #dfHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,64px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid rgba(255,255,255,.09);width:100vw;margin-left:calc(50% - 50vw)}
+  #dfHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,64px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid rgba(255,255,255,.09);width:100vw;margin-left:calc(50% - 50vw)}
   #dfHead.sc{box-shadow:0 14px 34px -20px rgba(0,0,0,.9)}
   #dfHead .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
   #dfHead .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:#f0eee6;text-decoration:none}
@@ -323,11 +323,15 @@ ${ld}
       dom.innerHTML=segs;leg.innerHTML=lg;}
     // 7-day movers among the biggest protocols
     var mv=document.getElementById('dfMovers');
-    if(mv&&d.topProtos.length){var wp=d.topProtos.filter(function(p){return p.chg7d!=null&&isFinite(p.chg7d);});
-      var up=wp.slice().sort(function(a,b){return b.chg7d-a.chg7d;}).slice(0,5);
-      var dn=wp.slice().sort(function(a,b){return a.chg7d-b.chg7d;}).slice(0,5);
+    /* Gainers are protocols that GAINED and losers protocols that LOST (audit 2026-09-25: a quiet week put five
+       positive numbers under "Losers", because the list was simply the bottom five of a descending sort). A 7d
+       change past 1000% is a relisting or a broken TVL series, not a move - it is left out of both lists. */
+    if(mv&&d.topProtos.length){var wp=d.topProtos.filter(function(p){return p.chg7d!=null&&isFinite(p.chg7d)&&Math.abs(+p.chg7d)<=1000;});
+      var up=wp.filter(function(p){return p.chg7d>0;}).sort(function(a,b){return b.chg7d-a.chg7d;}).slice(0,5);
+      var dn=wp.filter(function(p){return p.chg7d<0;}).sort(function(a,b){return a.chg7d-b.chg7d;}).slice(0,5);
       var mrow=function(p){var lg2=p.logo?'<img src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.remove()">':'<img alt="">';return '<div class="r">'+lg2+'<span class="n">'+esc(p.name)+'</span><span class="c">'+(p.chg7d>=0?'+':'')+(+p.chg7d).toFixed(1)+'%</span></div>';};
-      mv.innerHTML='<div class="col gain"><h4>Gainers · 7d</h4>'+up.map(mrow).join('')+'</div><div class="col lose"><h4>Losers · 7d</h4>'+dn.map(mrow).join('')+'</div>';}
+      var none=function(t){return '<div class="r" style="color:var(--ink-faint,#6b7684);font-size:12.5px">'+t+'</div>';};
+      mv.innerHTML='<div class="col gain"><h4>Gainers · 7d</h4>'+(up.length?up.map(mrow).join(''):none('No large protocol gained TVL this week.'))+'</div><div class="col lose"><h4>Losers · 7d</h4>'+(dn.length?dn.map(mrow).join(''):none('No large protocol lost TVL this week.'))+'</div>';}
   }
   fetch('/api/defi/overview',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(render).catch(function(){document.getElementById('dfTvl').textContent='-';});
   // extra datasets: DEX volumes + fees + revenue (who actually earns)

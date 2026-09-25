@@ -16,7 +16,7 @@ const desc = 'Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflo
 const kw = 'bitcoin etf flows, spot bitcoin etf, ethereum etf flows, ibit flows, etf inflows, etf outflows, bitcoin etf aum, spot etf net flow, etha flows';
 
 const HEADER_CSS = `
-  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
   .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
   header .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
   header .mark b{color:#c2f64a}
@@ -133,7 +133,7 @@ ${ld}
     <h1>Bitcoin &amp; Ethereum ETF Flows</h1>
     <p class="lead">Where institutional money is going. Track the daily net inflows and outflows across every US spot Bitcoin and Ethereum ETF, total assets under management, and a live per-fund breakdown (IBIT, FBTC, ETHA and the rest). Persistent inflows = accumulation; sustained outflows = distribution. Free, no signup.</p>
 
-    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>ETF data is <b>refreshing</b> - one moment.</span></div>
+    <div class="ef-wait" id="efWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>ETF flow data is not available right now.</b> The source this page relied on stopped on 2026-08-21, and a number we cannot measure is not printed. The explanation below still holds; the figures return when a source is wired up again.</span></div>
 
     <div class="ef-hero">
       <div class="ef-panel btc" id="efBtc">
@@ -169,7 +169,7 @@ ${ld}
     <h2>The funds that matter</h2>
     <p>BlackRock’s <strong>IBIT</strong> dominates Bitcoin ETF assets, with Fidelity’s <strong>FBTC</strong>, Grayscale, Bitwise (BITB) and ARK (ARKB) making up most of the rest. On the Ethereum side, BlackRock’s <strong>ETHA</strong> leads. Assets under management (AUM) tells you the total size each fund has accumulated; the daily flow tells you the direction right now. Read flows alongside <a href="/funding/">funding rates</a> and <a href="/liquidations/">liquidations</a> to separate spot-driven demand from leverage-driven moves.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">ETF data aggregated from Coinglass. For information only - not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">ETF figures, when shown, come from a third-party aggregator and are labelled with their source. For information only - not financial advice.</p>
   </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>

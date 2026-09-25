@@ -49,12 +49,14 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo calcular el PnL en futuros de cripto (con ROE)","description":"La fórmula del PnL de futuros de cripto para longs y shorts, con un ejemplo resuelto - y en qué se diferencia el PnL del ROE.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-calculate-pnl/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo calcular el PnL en futuros de cripto (con ROE)","description":"La fórmula del PnL de futuros de cripto para longs y shorts, con un ejemplo resuelto - y en qué se diferencia el PnL del ROE.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-calculate-pnl/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo calculo el PnL en una operación de futuros de cripto?","acceptedAnswer":{"@type":"Answer","text":"PnL = (salida − entrada) × cantidad en un long, o (entrada − salida) × cantidad en un short. La cantidad es el valor nocional de tu posición dividido entre el precio de entrada. El resultado es tu ganancia o pérdida en dólares, antes de comisiones."}},{"@type":"Question","name":"¿Cuál es la diferencia entre el PnL y el ROE?","acceptedAnswer":{"@type":"Answer","text":"El PnL es tu ganancia o pérdida en dólares. El ROE (retorno sobre el capital) es ese PnL como porcentaje del margen que aportaste. El apalancamiento no cambia tu PnL en dólares, solo tu % de ROE y cuán cerca está la liquidación."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Calcular el PnL","item":"https://marginpad.io/es/blog/how-to-calculate-pnl/"}]}</script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
+<nav class="hublinks" data-hublinks aria-label="Lee esta guía en otros idiomas"><h2>Lee esta guía en otros idiomas</h2><div class="hl"><a href="/blog/how-to-calculate-pnl/da/">Dansk</a><a href="/blog/how-to-calculate-pnl/de/">Deutsch</a><a href="/blog/how-to-calculate-pnl/fi/">Suomi</a><a href="/blog/how-to-calculate-pnl/fr/">Français</a><a href="/blog/how-to-calculate-pnl/nl/">Nederlands</a><a href="/blog/how-to-calculate-pnl/no/">Norsk</a><a href="/blog/how-to-calculate-pnl/sv/">Svenska</a></div></nav>
+<footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -86,7 +88,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Calcular el PnL</div>
   <article>
     <h1>Cómo calcular el PnL en futuros de cripto (con ROE)</h1>
-    <div class="meta">Basics · 5 min read · Updated September 2026</div>
+    <div class="meta">Básicos · 5 min de lectura · Actualizado en junio de 2026</div>
     <p>Tu ganancia y pérdida (PnL) en una operación de futuros es más simple de lo que parece - y conocerla antes de abrir te mantiene honesto sobre el riesgo y la recompensa. <em>(Información general, no es asesoría financiera.)</em></p>
     <h2>La fórmula del PnL</h2>
     <p>Para una posición, <code>PnL = (exit − entry) × quantity</code> en un long, y <code>(entry − exit) × quantity</code> en un short. Tu <strong>cantidad</strong> es el valor nocional de la posición dividido entre la entrada. Así que una posición de $1,000 con entrada a $60,000 son 0.0167 BTC; si BTC sube a $63,000, tu PnL del long es (63,000 − 60,000) × 0.0167 = <strong>+$50</strong>.</p>
@@ -119,12 +121,10 @@
     <div id="cmList" class="cm-list"></div>
   </section>
   <script src="/assets/comments.js" defer></script>
-  <style>.hublinks{margin:28px auto 8px;max-width:1080px;padding:0 16px;font-family:inherit}.hublinks h2{font-size:15px;margin:18px 0 8px;color:#e9e7df;letter-spacing:.01em}.hublinks p{margin:0 0 6px;font-size:12.5px;color:#9aa3ad}.hublinks .hl{display:flex;flex-wrap:wrap;gap:6px 8px}.hublinks .hl a{font-size:12.5px;color:#c8d0d9;background:#111419;border:1px solid #232932;border-radius:8px;padding:5px 9px;text-decoration:none;line-height:1.3}.hublinks .hl a:hover{color:#c2f64a;border-color:#2f3742}</style>
-<nav class="hublinks" data-hublinks aria-label="Lee esta guía en otros idiomas"><h2>Lee esta guía en otros idiomas</h2><div class="hl"><a href="/blog/how-to-calculate-pnl/da/">Dansk</a><a href="/blog/how-to-calculate-pnl/de/">Deutsch</a><a href="/blog/how-to-calculate-pnl/fi/">Suomi</a><a href="/blog/how-to-calculate-pnl/fr/">Français</a><a href="/blog/how-to-calculate-pnl/nl/">Nederlands</a><a href="/blog/how-to-calculate-pnl/no/">Norsk</a><a href="/blog/how-to-calculate-pnl/sv/">Svenska</a></div></nav>
-<footer>
+  <footer>
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

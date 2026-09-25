@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito","description":"Build a working crypto trading bot in Python and test it against real live prices with fake money — free, no deposit. Full code: price feed, EMA-cross strategy, open/close orders and the bot loop.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito","description":"Build a working crypto trading bot in Python and test it against real live prices with fake money — free, no deposit. Full code: price feed, EMA-cross strategy, open/close orders and the bot loop.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cómo creo un bot de trading cripto en Python?","acceptedAnswer":{"@type":"Answer","text":"En el fondo, un bot es un bucle: obtienes un precio en vivo o unas velas, ejecutas la lógica de tu estrategia y colocas una orden cuando se cumple la regla. En Python solo necesitas la librería requests y un endpoint de trading. Empieza con una API de paper trading para que los errores no cuesten nada, y pasa a un exchange real cuando la estrategia esté probada."}},{"@type":"Question","name":"¿Puedo probar gratis un bot de trading en Python?","acceptedAnswer":{"@type":"Answer","text":"Sí. La API REST de paper trading de MarginPad es gratis: inicia sesión con un correo, genera una clave API, y tu bot en Python puede abrir y cerrar posiciones apalancadas a precios reales en vivo con simulación automática de stop-loss, take-profit y liquidación. Sin depósito, sin KYC, 120 peticiones por minuto."}},{"@type":"Question","name":"¿Qué librerías de Python necesito para un bot de trading?","acceptedAnswer":{"@type":"Answer","text":"Para un bot de paper trading casi no necesitas nada: un cliente HTTP tipo requests (o el propio paquete requests) para llamar a la API, y opcionalmente pandas/numpy si calculas tus propios indicadores. Todo en este tutorial funciona solo con requests."}},{"@type":"Question","name":"¿Cuánto tiempo debería probar un bot en simulado antes de pasarlo a real?","acceptedAnswer":{"@type":"Answer","text":"Long enough to see more than one market condition — usually at least 2–4 weeks and 30+ trades covering a trend, a chop and a volatile day. If the bot survives all three with its risk rules intact, you have evidence rather than a lucky sample."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bot de trading en Python","item":"https://marginpad.io/es/blog/python-crypto-trading-bot-tutorial/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Bot de trading en Python</div>
   <article>
     <h1>Tutorial de bot de trading cripto en Python (2026): créalo y pruébalo gratis, sin depósito</h1>
-    <div class="meta">Guides · 8 min read · Updated September 2026</div>
+    <div class="meta">Guías · 8 min de lectura · Actualizado en junio de 2026</div>
     <p>Trading bots are everywhere in 2026, and Python is the easiest way to build one. The good news: you don't need a fancy framework or a funded exchange account to start. In this tutorial you'll build a working crypto trading bot in Python and test it against <strong>real live prices with fake money</strong> — free, no deposit. <em>(Educational only — not financial advice.)</em></p>
     <h2>Qué vas a construir</h2>
     <p>A simple momentum bot: it watches a coin, and when the short-term trend flips up it opens a small long; when the trend flips down it closes. Every order goes to a <strong>paper-trading API</strong> that fills at the real live price and simulates leverage, stop-loss, take-profit and liquidation — so a bug costs you nothing instead of your account.</p>
@@ -178,6 +178,6 @@ while True:
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

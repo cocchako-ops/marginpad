@@ -72,7 +72,7 @@
   .tk-del:hover{color:var(--red);}
   .jr-empty{color:var(--ink-faint);text-align:center;padding:48px 20px;font-size:15px;line-height:1.6;}
   .jr-empty a{color:var(--up);text-decoration:none;}
-  .cta{display:inline-block;margin-top:16px;background:var(--up);color:#04150d;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:11px 20px;border-radius:10px;text-decoration:none;}
+  .cta,.jr-empty a.cta{display:inline-block;margin-top:16px;background:var(--up);color:#04150d;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:11px 20px;border-radius:10px;text-decoration:none;}
   .mobnav{position:fixed;bottom:0;left:0;right:0;z-index:55;display:flex;justify-content:space-around;align-items:center;padding:13px 0 calc(env(safe-area-inset-bottom) + 16px);background:rgba(11,12,15,.74);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border-top:1px solid rgba(255,255,255,.1);}
   .mobnav a{flex:1;background:none;border:none;color:rgba(255,255,255,.62);display:flex;align-items:center;justify-content:center;text-decoration:none;padding:3px 0;transition:transform .12s,color .12s;}
   .mobnav a.active{color:#fff;}
@@ -199,7 +199,7 @@
     var net=closed.reduce(function(s,e){return s+(+e.pnl||0);},0),unreal=0;
     open.forEach(function(e){var m=metrics(e);if(m.pnl!=null)unreal+=m.pnl;});
     function stat(v,l,c){return '<div class="jr-stat"><div class="v"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
-    if(statsEl)statsEl.innerHTML=stat(open.length,MT('jOpen','Open'))+stat((unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>=0?'#2ebd85':'#ff6258')+stat(wr==null?'-':wr+'%',MT('jWinRate','Win rate'))+stat((net>=0?'+':'−')+money(Math.abs(net)).replace('-',''),MT('jRealized','Realized'),net>=0?'#2ebd85':'#ff6258');
+    if(statsEl)statsEl.innerHTML=stat(open.length,MT('jOpen','Open'))+stat((unreal>0?'+':unreal<0?'−':'')+money(Math.abs(unreal)).replace('-',''),MT('jUnreal','Unrealized'),unreal>0?'#2ebd85':unreal<0?'#ff6258':'')+stat(wr==null?'-':wr+'%',MT('jWinRate','Win rate'))+stat((net>0?'+':net<0?'−':'')+money(Math.abs(net)).replace('-',''),MT('jRealized','Realized'),net>0?'#2ebd85':net<0?'#ff6258':''); /* zero is neither a gain nor a loss: no sign, no colour (audit 2026-09-25: "+$0" in green read as a win) */
     var html='';
     if(open.length)html+='<div class="jr-section-t">'+MT('jOpenPos','Open positions · live')+'</div>'+open.slice().reverse().map(liveTicket).join('');
     if(closed.length)html+='<div class="jr-section-t">'+MT('jClosed','Closed')+'</div>'+closed.slice().reverse().map(closedTicket).join('');
@@ -224,6 +224,6 @@
 })();
 </script>
 <script>(function(){var L=window.mpLang;if(!L||L==='en')return;var as=document.querySelectorAll('a[href]');for(var i=0;i<as.length;i++){var h=as[i].getAttribute('href');if(h==='/')as[i].href='/'+L+'/';else if(h.charAt(0)==='/'&&h.charAt(1)==='#')as[i].href='/'+L+'/'+h.slice(1);else if(h.indexOf('/?')===0)as[i].href='/'+L+'/'+h.slice(1);else if(h.indexOf('/journal/')===0)as[i].href='/journal/?lang='+L;}})();</script>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

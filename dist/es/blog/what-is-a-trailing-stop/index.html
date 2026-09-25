@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)","description":"Un trailing stop sigue el precio a una distancia fija, asegurando ganancias mientras deja correr una posición ganadora. Aprende cómo funciona, cómo fijar la distancia, los errores más comunes y cuándo usarlo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)","description":"Un trailing stop sigue el precio a una distancia fija, asegurando ganancias mientras deja correr una posición ganadora. Aprende cómo funciona, cómo fijar la distancia, los errores más comunes y cuándo usarlo.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Un trailing stop es un stop-loss que sigue automáticamente el precio a tu favor a una distancia fija: un porcentaje o una cantidad en dólares. Cuando el precio sube en un long, el stop se ajusta hacia arriba con él; si luego el precio revierte esa distancia, el stop se activa y asegura tu ganancia. Nunca retrocede, así que protege el beneficio mientras deja correr una posición ganadora."}},{"@type":"Question","name":"¿Qué tan amplio debe ser un trailing stop?","acceptedAnswer":{"@type":"Answer","text":"Lo bastante amplio para sobrevivir al ruido normal del mercado, y lo bastante ajustado para proteger una ganancia real. Si es demasiado ajustado, la volatilidad habitual te saca antes de tiempo; si es demasiado amplio, devuelves una buena parte de la ganancia antes de que se active. Muchos traders basan la distancia en la volatilidad (por ejemplo, un múltiplo del ATR) en lugar de un número redondo, para que el stop respire con el mercado."}},{"@type":"Question","name":"¿Cuándo debería usar un trailing stop en vez de uno fijo?","acceptedAnswer":{"@type":"Answer","text":"Usa un stop fijo para definir tu riesgo al entrar, y cambia a (o añade) un trailing stop una vez que la operación esté en ganancia y siga la tendencia, para acompañar el movimiento mientras proteges las ganancias. Los trailing stops brillan en tendencias fuertes; en mercados laterales y erráticos suelen saltar antes de tiempo."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Trailing stop","item":"https://marginpad.io/es/blog/what-is-a-trailing-stop/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Trailing stop</div>
   <article>
     <h1>¿Qué es un trailing stop? Cómo asegurar ganancias a medida que se mueve el precio (2026)</h1>
-    <div class="meta">Risk · 5 min read · Updated September 2026</div>
+    <div class="meta">Riesgo · 5 min de lectura · Actualizado en junio de 2026</div>
     <p>Cortar una pérdida es fácil de entender. La habilidad más difícil es saber cuándo <em>tomar ganancias</em> - vendes demasiado pronto y te pierdes el gran movimiento; te quedas demasiado tiempo y lo devuelves todo. Un <strong>trailing stop</strong> está diseñado para resolver exactamente eso. <em>(Solo con fines educativos - no es asesoría financiera.)</em></p>
     <h2>Qué hace un trailing stop</h2>
     <p>Un <a href="/es/blog/how-to-set-a-stop-loss/">stop-loss</a> normal se queda en un precio fijo. Un <strong>trailing stop</strong>, en cambio, sigue al precio a una <strong>distancia</strong> fija - digamos 3% - pero solo a tu favor. En un long:</p>
@@ -127,6 +127,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

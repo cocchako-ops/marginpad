@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Node.js (2026): crea y pruébalo gratis con JavaScript","description":"Build a crypto trading bot in Node.js / JavaScript and test it on real live prices with fake money — free, no deposit. Full code: fetch price feed, EMA-cross signal, open/close orders and the loop.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/nodejs-crypto-trading-bot-tutorial/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Tutorial de bot de trading cripto en Node.js (2026): crea y pruébalo gratis con JavaScript","description":"Build a crypto trading bot in Node.js / JavaScript and test it on real live prices with fake money — free, no deposit. Full code: fetch price feed, EMA-cross signal, open/close orders and the loop.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/nodejs-crypto-trading-bot-tutorial/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Puedo crear un bot de trading cripto en Node.js?","acceptedAnswer":{"@type":"Answer","text":"Yes — Node.js is one of the easiest ways to build a trading bot. With the built-in fetch you can call a trading API, run your strategy in a loop, and place orders. Start on a paper-trading API so bugs cost nothing, then move to a real exchange once the strategy is proven."}},{"@type":"Question","name":"¿Cómo pruebo gratis un bot de trading en JavaScript?","acceptedAnswer":{"@type":"Answer","text":"Apúntalo a la API REST de paper trading gratuita de MarginPad: inicia sesión con un correo, genera una clave API, y tu bot en Node.js puede abrir y cerrar posiciones apalancadas a precios reales en vivo con simulación automática de stop-loss, take-profit y liquidación. Sin depósito, sin KYC."}},{"@type":"Question","name":"¿Necesito algún paquete de npm?","acceptedAnswer":{"@type":"Answer","text":"No. El Node.js moderno (18+) trae fetch integrado, así que todo el bot de este tutorial funciona sin dependencias. Añade paquetes solo si quieres tu propia librería de indicadores o un programador de tareas."}},{"@type":"Question","name":"¿En qué se diferencia esto de un bot en un exchange real?","acceptedAnswer":{"@type":"Answer","text":"The code and logic are identical — the only difference is that orders settle in simulated dollars instead of real money. That is exactly what makes it safe to test: you catch every logic bug before a cent is at risk."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bot de trading en Node.js","item":"https://marginpad.io/es/blog/nodejs-crypto-trading-bot-tutorial/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Bot de trading en Node.js</div>
   <article>
     <h1>Tutorial de bot de trading cripto en Node.js (2026): crea y pruébalo gratis con JavaScript</h1>
-    <div class="meta">Guides · 7 min read · Updated September 2026</div>
+    <div class="meta">Guías · 7 min de lectura · Actualizado en junio de 2026</div>
     <p>Prefer JavaScript over Python? You can build a full crypto trading bot in <strong>Node.js</strong> just as easily — and test it against <strong>real live prices with fake money</strong>, free, no deposit. Here's a complete, running bot with zero npm dependencies. <em>(Educational only — not financial advice.)</em></p>
     <h2>Qué vas a construir</h2>
     <p>A momentum bot: it watches a coin, opens a small long when the short-term trend flips up, and closes when it flips down. Every order hits a <a href="/es/trading-api/">paper-trading API</a> that fills at the real live price and simulates leverage, stop-loss, take-profit and liquidation — so a bug costs nothing.</p>
@@ -156,6 +156,6 @@ setInterval(async () => {
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

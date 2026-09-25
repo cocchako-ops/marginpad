@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender","description":"Cómo usar una posición short en futuros para proteger tu cripto en spot de una caída - qué es cubrirse, cómo funciona una cobertura delta-neutral, cuánto cuesta en funding, un ejemplo resuelto y cuándo tiene sentido.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender","description":"Cómo usar una posición short en futuros para proteger tu cripto en spot de una caída - qué es cubrirse, cómo funciona una cobertura delta-neutral, cuánto cuesta en funding, un ejemplo resuelto y cuándo tiene sentido.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué significa cubrirse en cripto con futuros?","acceptedAnswer":{"@type":"Answer","text":"Cubrirse significa abrir una posición de futuros que gana cuando caen tus tenencias en spot, de modo que las dos se cancelan aproximadamente. Si tienes 1 BTC en spot y abres un short de 1 BTC en futuros, una caída de precio pierde en tu spot pero gana en el short - protegiendo tu valor sin tener que vender la moneda subyacente (lo cual podría generar impuestos o hacerte perder tu posición a largo plazo)."}},{"@type":"Question","name":"¿Cuánto cuesta una cobertura?","acceptedAnswer":{"@type":"Answer","text":"El principal costo continuo es el funding: si el funding es positivo lo pagas en un short solo cuando se les paga a los shorts, pero más a menudo un short recibe funding cuando el mercado está muy long. También pagas comisiones de trading al abrir y cerrar, y renuncias al potencial alcista - mientras estás cubierto, las ganancias en spot se compensan con las pérdidas en el short. Una cobertura compra protección, no dinero gratis."}},{"@type":"Question","name":"¿Cuándo tiene sentido cubrirse?","acceptedAnswer":{"@type":"Answer","text":"Cuando quieres conservar tus monedas pero reducir el riesgo bajista a corto plazo - por ejemplo, durante un evento que esperas que sea volátil, o para evitar vender y materializar una ganancia gravable. Es una herramienta de gestión de riesgo, no una estrategia de ganancias. Practícalo primero en un simulador para entender exactamente cómo se mueven juntos los dos lados."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Cobertura con futuros","item":"https://marginpad.io/es/blog/how-to-hedge-crypto-with-futures/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Cobertura con futuros</div>
   <article>
     <h1>Cómo cubrirte en cripto con futuros (2026): protege tus tenencias sin vender</h1>
-    <div class="meta">Guides · 6 min read · Updated September 2026</div>
+    <div class="meta">Guías · 6 min de lectura · Actualizado en junio de 2026</div>
     <p>Eres alcista a largo plazo, pero te preocupa una caída a corto plazo. Vender tus monedas significa materializar una ganancia (y una posible factura de impuestos) y renunciar a tu posición. Hay otra opción: <strong>cubrirte con futuros</strong> - abrir un short que gana si el precio cae, así tus tenencias quedan protegidas sin vender ni una sola moneda. Así es como funciona. <em>(Solo con fines educativos - no es asesoría financiera.)</em></p>
     <h2>Qué significa realmente cubrirse</h2>
     <p>Una <strong>cobertura (hedge)</strong> es una posición que se mueve en dirección <em>opuesta</em> a algo que ya posees, de modo que las dos se compensan. Si tienes cripto en <strong>spot</strong> y abres un <strong>short por la misma cantidad en futuros</strong>, una caída de precio <strong>pierde en tu spot pero gana en el short</strong> - y las dos se cancelan aproximadamente. Sigues invertido, conservas tus monedas, pero has neutralizado la caída mientras la cobertura esté activa.</p>
@@ -131,6 +131,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>

@@ -42,13 +42,13 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"El bug de Zcash que podría haber acuñado ZEC ilimitados, explicado","description":"Una falla de cuatro años en el pool blindado Orchard de Zcash pudo haber permitido a un atacante falsificar ZEC de forma ilimitada. Qué pasó y qué significa para los traders.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/zcash-orchard-counterfeiting-bug/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"El bug de Zcash que podría haber acuñado ZEC ilimitados, explicado","description":"Una falla de cuatro años en el pool blindado Orchard de Zcash pudo haber permitido a un atacante falsificar ZEC de forma ilimitada. Qué pasó y qué significa para los traders.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/zcash-orchard-counterfeiting-bug/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué fue el bug de Zcash Orchard?","acceptedAnswer":{"@type":"Answer","text":"Una falla de solidez en el circuito del pool blindado Orchard, activa desde 2022, que pudo haber permitido a un atacante crear ZEC falsificado, ilimitado e indetectable. Se corrigió con un parche de emergencia y se reveló públicamente el 5 de junio de 2026."}},{"@type":"Question","name":"¿Se llegaron a crear ZEC falsos?","acceptedAnswer":{"@type":"Answer","text":"Los desarrolladores de Zcash dicen que no hay evidencia de que el bug fuera explotado y creen que no se acuñaron monedas falsificadas. Pero como el pool está blindado, no existe una forma criptográfica de probar que la emisión nunca se infló durante esos cuatro años."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Bug de Zcash Orchard","item":"https://marginpad.io/es/blog/zcash-orchard-counterfeiting-bug/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
+.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box} /* the rail is inserted before <footer>, which on /tools/, the simulators and the best-for pages sits OUTSIDE the content column - so it ran edge to edge at x=0 (audit 2026-09-25); it now keeps the column's width wherever the anchor lands */
 .mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
 .mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
 .mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
@@ -80,7 +80,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Bug de Zcash Orchard</div>
   <article>
     <h1>El bug de Zcash que podría haber acuñado ZEC ilimitados, explicado</h1>
-    <div class="meta">News · 5 min read · Updated September 2026</div>
+    <div class="meta">Noticias · 5 min de lectura · Actualizado en junio de 2026</div>
     <p>El 5 de junio de 2026, la moneda de privacidad Zcash (ZEC) cayó con fuerza después de que los desarrolladores revelaran una falla crítica que, en teoría, podría haber permitido a alguien falsificar una cantidad ilimitada de ZEC sin que nadie lo notara. Esto es lo que pasó explicado en lenguaje sencillo, y por qué importa aunque nunca toques monedas de privacidad.</p>
     <h2>En qué consistía el bug</h2>
     <p>La falla vivía en el <strong>pool blindado (shielded) Orchard</strong> - la parte de Zcash que oculta los montos de las transacciones detrás de pruebas de conocimiento cero. Un error de solidez (soundness) en el circuito de Orchard significaba que, bajo las condiciones adecuadas, entradas falsas podían burlar los controles que se supone garantizan que cada moneda es real. Un ingeniero de seguridad, Taylor Hornby, escribió una prueba de concepto funcional que acuñó <strong>ZEC falsificado, ilimitado e indetectable</strong> en una prueba local.</p>
@@ -126,6 +126,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
+<script defer src="/assets/mp-nav.js?v=dad56e9a"></script>
 </body>
 </html>
