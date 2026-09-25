@@ -35,6 +35,24 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free - no deposit, no KYC."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad - Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
+<!-- The member card replaces the hero. Decide WHO this is before the first paint, from the non-HttpOnly mp_li
+     marker the worker sets on sign-in - mp-auth restores the account ~110-280 ms later, and until 2026-09-10 that
+     was long enough to see the guest hero flash under the card on every refresh (owner report). If the session
+     turns out to be dead, paint() takes the class off again and the hero comes back. -->
+<script>
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_demohomeindex = {"close20Trades":"Cierra 20 operaciones","5GreenDays":"5 días en verde","make7DailyCalls":"Haz 7 predicciones diarias","checkIn10Days":"Entra 10 días","greenDays":"Días en Verde","greenDays2":"Días en verde","bestWinRate":"Mejor Tasa de Acierto","winRate":"Tasa de acierto","seasonXp":"XP de Temporada","greenDays3":"días en verde","lastWeek":" · la semana pasada ","quietMonthAheadSee":"Mes tranquilo por delante: consulta el calendario completo.","tradeBehindThisRank":"<div class=\"lb-tkm-h\">OPERACIÓN DETRÁS DE ESTE PUESTO</div>","openThisMarketRarr":"\">Abrir este mercado &rarr;</a>","accountsYouFollowTap":"★ Cuentas que sigues. Toca cualquier trader para ver su ficha. Inicia sesión para seguir a jugadores desde la tabla.","theGoldRoomGold":"<b>The Gold Room</b> - solo para miembros Gold o superior. Una operación que cierras en ganancia es <b>+1 punto</b>, una que cierras en rojo es <b>-1</b>. Esta temporada se juega por el título; <b>el premio en dinero empieza la próxima temporada</b>.","greenDays4":"Días en verde","bestWinRate2":"Mejor tasa de acierto","paysTheTop5":"</b> paga a los 5 primeros en USDT real cada temporada de 14 días - escala posiciones.","rankedByWinRate":" Se ordena por <b>tasa de acierto ponderada por operaciones jugadas</b> - cuantas más partidas, más cuenta tu %, así que un 45G-3P puede superar a un % más alto con menos operaciones. Mínimo 20 operaciones cerradas.","seeRules":" <button type=\"button\" class=\"lbr-open lbr-inline\" data-lbr=\"1\">Ver reglas</button>","noWinningTradesYet":"<div class=\"lb-empty\">Todavía no hay operaciones ganadoras esta temporada - abre un paper trade y ciérralo en ganancia para liderar la tabla.</div>","noOneHas20":"<div class=\"lb-empty\">Nadie tiene 20 operaciones cerradas todavía esta temporada - cierra 20+ y reclama la corona de tasa de acierto.</div>","thisSeason":"esta temporada","noXpEarnedYet":"<div class=\"lb-empty\">Todavía no se ha ganado XP esta temporada - opera, aprende en la Academia y completa misiones para escalar.</div>","noGoldMemberHas":"<div class=\"lb-empty\">Ningún miembro Gold ha puntuado todavía esta temporada. Llega a Gold (12,000 XP) para entrar a la sala.</div>","noGreenDaysYet":"<div class=\"lb-empty\">Todavía no hay días en verde esta temporada - cierra un día en ganancia (3 operaciones o más) y estarás en la tabla.</div>","signInFreeTo":"<div class=\"lb-empty\">Inicia sesión (gratis) para seguir a jugadores y verlos aquí. <button type=\"button\" class=\"lb-signin\" data-auth-open>Iniciar sesión</button></div>","youAreNotFollowing":"<div class=\"lb-empty\">Todavía no sigues a nadie. Toca un trader en la tabla y pulsa <b>Seguir</b>.</div>","noTradesThisSeason":"sin operaciones esta temporada","couldNotLoadYour":"<div class=\"lb-empty\">No se pudo cargar tu lista de seguidos.</div>","loadingTrader":"<div class=\"lbm-load\">Cargando trader…</div>","noPublicProfileFor":"<div class=\"lbm-load\">Este trader todavía no tiene perfil público.</div>","thisIsYou":"<div class=\"lbm-self\">Este eres tú</div>","signInToFollow":"<button type=\"button\" class=\"lbm-follow\" data-auth-open>Inicia sesión para seguir</button>","premiumMember":"\">MIEMBRO PREMIUM</div>","seasonBoardWin":" victoria en tabla de temporada","seasonWinner":"</svg><span>GANADOR DE TEMPORADA</span></div>","followsYou":"<span class=\"lbm-fw\" title=\"Te sigue\">Te sigue</span>","winRate2":"Tasa de acierto","bestTrade":"Mejor operación","tradesWk":" operaciones · sem","couldNotLoadThis":"<div class=\"lbm-load\">No se pudo cargar este trader.</div>","noClosedTradesYet":"<div class=\"cf-empty\">Todavía no hay operaciones cerradas - la sala se está calentando.</div>","biggestWin":"Mayor ganancia","postedAnOpenDuel":"<span class=\"vs\">publicó un duelo abierto</span><span class=\"sub\">","noStake":" · sin apuesta","leftLive":" restante</span></div><span class=\"df-tag active\"><i></i>En vivo</span></div>","noDuelsYetBe":"<div class=\"df-empty\">Todavía no hay duelos - <b>sé el primero</b>: publica un desafío abierto y deja que cualquiera lo acepte.</div>","openChallengesFirstTaker":"<div class=\"df-sechd\">Desafíos abiertos - el primero que lo acepte entra</div>","duelHistory":"<div class=\"df-sechd\">Historial de duelos</div>","youAreIn":"Estás dentro","setAUsernameFirst":"Elige primero un nombre de usuario","alreadyTaken":"Ya aceptado","liveDuelWithThem":"Duelo en vivo con esa persona","tryAgain":"Inténtalo de nuevo","14DaySeasonEnds":"Temporada de 14 días · termina en <b>","youAreInAs":"Estás dentro como @","closeAWinningTrade":" - cierra una operación ganadora para escalar.","signInFreeAnd":"Inicia sesión (gratis) y tu mejor operación entra automáticamente.","fivePaperBoardsFree":"Cuatro tablas de paper trading se abren con tu primera operación cerrada, la Gold Room en Gold, y dos se puntúan en cuentas reales: Bybit volume y King of the Moon.","onNow":"en curso","endsIn":"termina en ","thenANewOne":" · luego empieza una nueva","aNewSeasonStarts":"una nueva temporada empieza hoy","welcomeBack":"Bienvenido de nuevo, ","1CheckingYourSeason":"<span><i>1</i>Comprobando tu temporada…</span>","of14EndsIn":" de 14 · termina en ","topOfTheLadder":"en lo más alto de la tabla","toClaim":" para reclamar","xpToNext":" XP para el siguiente","passReward":" premio del pase","daysInARow":" días seguidos","tomorrow0000Utc":"mañana 00:00 UTC","makeTodaySBtc":"Haz tu predicción de BTC de hoy","claimGoal":"Meta a reclamar: ","pickYourSeasonGoal":"Elige tu meta de temporada","seasonXp2":"XP de Temporada","notRankedYet":"todavía sin clasificar","youAre":"Estás en el puesto #","ifItHolds":" si se mantiene","close10TradesTo":"Cierra 10 operaciones para entrar en las tablas","xpPerWinningClose":" XP por cierre ganador","happyHourIn":"Happy Hour en ","1AllCaughtUp":"<span class=\"ok\"><i>1</i>Todo al día - a operar</span>","signInFreeTo2":"<b>Inicia sesión (gratis)</b> para hacer tu predicción. Las predicciones cierran a las ","00UtcThe00":":00 UTC; el cierre de las 00:00 UTC la resuelve. Acertar dentro del 0.25% paga <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, más 1 por participar.","yourCall":"Tu predicción: <b>$","lockedInUntil":"Fijada hasta ","callsAreClosedFor":"Las predicciones están cerradas por hoy. ","settlesAt0000":"Se resuelve a las 00:00 UTC","daysInARow2":" días seguidos</b>","callsForTodayClosed":"Las predicciones de hoy cerraron a las ","00UtcComeBack":":00 UTC. Vuelve después de medianoche UTC para la de mañana","within025Pays":"Acertar dentro del 0.25% paga <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, más 1 por participar. Una predicción al día, se puede cambiar hasta ","yesterdayYouSaid":"Ayer: dijiste <b>$","itClosed":"</b>, cerró en <b>$","topCallersThisSeason":"<div class=\"dc-bh\"><span>Mejores predictores · esta temporada</span><span>","typeAPriceFirst":"<b style=\"color:#ff8a80\">Escribe un precio primero.</b>","thatIsMoreThan":"Eso está a más del 30% del precio actual.","callsClosedForToday":"Predicciones cerradas por hoy.","signInFirst":"Inicia sesión primero.","couldNotSaveYour":"No se pudo guardar tu predicción.","ticksWhenYouHit":" Ticks</b> si aciertas. <b>Inicia sesión (gratis)</b> para elegir.","oneMore":"Una más. ","forThisSeason":"</b> para esta temporada. ","ticksNoSwapsOnce":" Ticks</b>. Sin cambios una vez elegida.","bothDoneThisSeason":"Las dos completadas esta temporada. ","countedFromYourReal":"Se cuenta a partir de tu actividad real, verificada al reclamar. ","youAlreadyHaveTwo":"Ya tienes dos metas esta temporada.","notThereYet":"Todavía no llegas: ","alreadyClaimed":"Ya reclamada.","couldNotSaveThat":"No se pudo guardar eso.","every14Days":"cada 14 días","unlockedByTheXp":"Se desbloquea con el XP que ya ganas. Vía gratis para todos; la vía pro duplica los Ticks y añade hasta $1 a tu saldo, artículos de The Vault, suministros, días de Premium y regalos de skins. <b>Inicia sesión (gratis)</b> para empezar a escalar.","xpThisSeason":" XP esta temporada","everyTierReached":"Todos los niveles alcanzados.","xpToTier":" XP para el nivel ","toClaim2":" para reclamar</b>","proTrackDoubleTicks":" Vía pro: el doble de Ticks, hasta $1 a tu saldo, artículos de The Vault, suministros, días de Premium y regalos de skins.","everyDayOfThe":"Cada día de la temporada que terminas en ganancia cuenta como un día en verde - gana el trader con más días así. Un día necesita al menos 3 operaciones cerradas para ponerse en verde, necesitas 10 operaciones cerradas en la temporada para entrar en la clasificación, y tienes que estar en positivo en la temporada en general. Es la única tabla que no puedes ganar en una sola sesión.","theHighestShareOf":"La mayor proporción de operaciones ganadoras durante la temporada de 14 días (mínimo 20 operaciones cerradas). Solo cuentan las ganancias de al menos +5% ROE - los scalps mínimos no inflan tu tasa. Premia el trading constante y consistente, no un golpe de suerte.","totalXpYouEarn":"El XP total que ganas esta temporada - por operar, por la Academia, por misiones diarias y por XP Happy Hour. Premia el uso de toda la plataforma, no solo una operación con suerte, y no se puede manipular con el tamaño de la posición.","anyMomentNow":"en cualquier momento","liveNow":"<span class=\"lbpz-livebadge\">● En vivo</span>","nextSeason":"<span class=\"lbpz-lockbadge\"> Próxima temporada</span>","noPrizesThisSeason":"<div class=\"lbpz-row p1\"><span class=\"m\">!</span><span class=\"l\">Sin premios esta temporada</span><span class=\"v\">$0</span></div>","runningThisSeasonPays":"En curso esta temporada · se paga al final de la temporada (00:00 UTC) · <b>","unlocksNextSeason":"Se desbloquea la próxima temporada · <b>","thisSeasonRunsFor":"Esta temporada se juega solo por el título - <b>el premio en dinero empieza la próxima temporada</b> · <b>","titleNoPrizePool":"<div class=\"lbpz-pool\">TÍTULO<small>sin bolsa de premios esta temporada</small></div>","seasonPrizePool":"<small>bolsa de premios de la temporada</small></div>","anyCoin":"Cualquier moneda","liveNowEndsIn":"En vivo · termina en ","startsIn":"Empieza en ","everyDay":"Todos los días · ","xpTrade":" XP / operación","winningTrade":"Operación ganadora ≥ ","maxLeverage":"Apalancamiento máximo","closeAWinningPaper":"<div class=\"hhm-note\">Cierra una <b>operación ganadora en paper trading</b> con al menos <b>","bonusXpOnTop":" XP extra</b> además del XP habitual de la operación. El bono se aplica a la <b>hora de cierre</b> de la operación.</div>","openPaperTrade":"<a class=\"hhm-cta\" href=\"/paper-trade\">Abrir Paper Trade →</a>","winningTrade2":"Operación ganadora","anyTrade":"Cualquier operación","paperTradeOn":"paper trade en <b>","withAtLeast":"</b> con al menos <b>","bonusXpPerQualifying":" XP extra</b> por cada operación que califique.</div>","liveEndsIn":"En vivo · termina en ","xpEndsIn":" XP · termina en ","xpStartsIn":" XP · empieza en ","notIn":"No disponible en ","yourCountry":"tu país","availableIn":"Disponible en ","availableIn2":"disponible en","showingExchangesAvailableI":"Mostrando exchanges disponibles en ","wereShorts":"% fueron shorts","liveDataIsWarming":"<div class=\"t-sub\" style=\"color:var(--faint)\">los datos en vivo se están cargando - abre la página completa</div>","openTheLiveLiquidations":"Abrir el feed de liquidaciones en vivo"};
+function __esT_demohomeindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_demohomeindex[k] != null) return __esD_demohomeindex[k]; } catch (e) {} return en; }
+
+
+/* Values the WORKER supplies at runtime - season goal names, their units, board names. The page cannot
+   key these by a literal because it never sees them in its own source; a finite value table is the
+   right shape, and an unknown string falls through to English. */
+var __esVD_srv = {"Close 20 trades": "Cierra 20 operaciones", "5 green days": "5 días verdes", "Finish 5 Academy lessons": "Termina 5 lecciones de la Academia", "Make 7 daily calls": "Haz 7 predicciones diarias", "Check in 10 days": "Regístrate 10 días", "Green Days": "Días verdes", "Green days": "Días verdes", "Highest ROE": "ROE más alto", "Best Win Rate": "Mejor tasa de acierto", "Win rate": "Tasa de acierto", "Season XP": "XP de temporada", "The Gold Room": "The Gold Room", "trades": "operaciones", "green days": "días verdes", "lessons": "lecciones", "calls": "predicciones", "days": "días"};
+function __esV_srv(s){try{if((document.documentElement.lang||"").slice(0,2).toLowerCase()==="es"&&__esVD_srv[s]!=null)return __esVD_srv[s];}catch(e){}return s;}
+try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.className+=' mp-li';}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -67,7 +85,11 @@
   :root{--bg:#0b0d12;--panel:#12161d;--panel2:#171c26;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.17);--ink:#f0eee6;--dim:#a6afba;--faint:#707a86;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
   *{box-sizing:border-box;margin:0;padding:0;}
   html{touch-action:manipulation;overflow-x:hidden;scroll-behavior:smooth;}
-  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
+  /* the page scrollbar is a classic, styled bar in its own gutter on a desktop (2026-09-12, owner: "the scroll strip runs over the header and
+     the tape"): Chrome on Windows 11 draws its default scrollbar as an overlay across the whole viewport, header included; a styled scrollbar
+     is never an overlay, so the header ends where the gutter begins. Phones keep the browser's own indicator (nothing else exists there). */
+  @media(min-width:981px) and (pointer:fine){html{scrollbar-width:thin;scrollbar-color:#2a3140 #0a0b0d}html::-webkit-scrollbar{width:10px;height:10px}html::-webkit-scrollbar-track{background:#0a0b0d}html::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px;border:2px solid #0a0b0d}html::-webkit-scrollbar-thumb:hover{background:#333d4a}}
+  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip;position:relative;} /* clip, not hidden (2026-09-12): overflow-x:hidden made <body> a scroll container, so the sticky header never stuck in Chrome/Android (it scrolled away with the page; iOS alone kept it) */
   body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
   a{color:inherit;text-decoration:none;}
   .mono{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;}
@@ -87,18 +109,24 @@
   /* ================= live background (desktop only) ================= */
   .bgfx{display:none;}
   @media(min-width:941px){
+    /* body carries an opaque --bg, and a z-index:-1 layer paints BELOW block backgrounds - so the
+       aurora was being painted over by the page itself. The ground colour moves up to html, which
+       paints first, and body gets out of the way. Same tone, nothing else moves. (2026-09-14) */
+    html{background:var(--bg);}
+    body{background:transparent;}
     .bgfx{display:block;position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
     .bgfx .au{position:absolute;width:46vw;height:46vw;border-radius:50%;filter:blur(100px);will-change:transform;}
-    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);animation:au1 46s ease-in-out infinite alternate;}
-    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);animation:au2 58s ease-in-out infinite alternate;}
-    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);animation:au1 70s ease-in-out infinite alternate-reverse;}
+    /* the drift is driven by the rAF loop at the foot of this page, not by @keyframes: the owner's
+       Windows has animation effects off, which silences every @keyframes on his machine. */
+    .bgfx .au1{left:-12vw;top:-16vw;background:radial-gradient(circle,rgba(194,246,74,.13),transparent 65%);}
+    .bgfx .au2{right:-14vw;bottom:-18vw;background:radial-gradient(circle,rgba(46,189,133,.11),transparent 65%);}
+    .bgfx .au3{left:34vw;top:44vh;width:34vw;height:34vw;background:radial-gradient(circle,rgba(63,216,230,.06),transparent 65%);}
     #bgline{position:absolute;inset:0;width:100%;height:100%;}
   }
-  @keyframes au1{from{transform:translate(0,0);}to{transform:translate(9vw,7vh);}}
-  @keyframes au2{from{transform:translate(0,0);}to{transform:translate(-8vw,-6vh);}}
+  /* au1 / au2 keyframes retired 2026-09-14 - the drift is on the rAF loop now, see the bgfx script. */
 
   /* ================= header - same as the live homepage ================= */
-  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid var(--line);}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:var(--bg);contain:paint;border-bottom:1px solid var(--line);} /* opaque, no blur (2026-09-12): mp-nav.js already forces body>header to a solid #0a0b0d, so the translucent + backdrop-filter pair here was dead code that only cost GPU; the member card must never show through the stuck block */
   .brand{display:flex;align-items:baseline;gap:10px;}
   .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
   .brand .mark:hover{letter-spacing:-.02em;}
@@ -117,7 +145,7 @@
   .hrwd{color:#c2f64a;}
   .hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
   .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
-  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}.hnav{gap:2px;}}
+  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}.hnav{gap:2px;}}
 
   /* ================= ticker ================= */
   .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
@@ -226,6 +254,63 @@
   .pt-viz .ticket .side{background:rgba(46,189,133,.16);color:var(--grn);font-weight:700;border-radius:5px;padding:2px 6px;margin-right:5px;}
   .pt-viz .ticket .pnl{display:block;margin-top:5px;font-size:13.5px;font-weight:700;color:var(--grn);font-variant-numeric:tabular-nums;}
   @media(max-width:940px){.pt-hero .in{grid-template-columns:1fr;}.pt-viz{min-height:190px;}}
+
+  /* ---------- COMPETITION card (2026-09-17, regrouped the same day: owner "free to enter / trade to enter odvojeno, Gold+ odvojen,
+     previse sareno") - DOM-second, full width, right under Paper Trade. ONE colour: the card is gold, everything else is ink and
+     hairlines. The two real-account boards are the prize of the card: a metallic border and a bigger number, no colour. ---------- */
+  #trade .bento{grid-auto-flow:dense;} /* the card is s12 and sits second in the DOM: without dense the Screener would leave a 4-col hole beside Paper Trade on desktop */
+  .cp-hero{border-color:rgba(255,215,90,.28);background:radial-gradient(70% 90% at 0 0,rgba(255,215,90,.11),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.004)),var(--panel);}
+  .cp-in{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.5fr);gap:28px;flex:1;position:relative;z-index:2;}
+  .cp-copy{display:flex;flex-direction:column;min-width:0;}
+  .cp-t{font-size:26px;}.cp-t b{color:var(--amber);}
+  .cp-pool{display:flex;flex-direction:column;gap:7px;margin-top:22px;}
+  .cp-pool b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(42px,4.4vw,58px);line-height:.95;letter-spacing:-.04em;background:linear-gradient(180deg,#fff 25%,var(--amber));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .cp-pool span{color:var(--dim);font-size:13.5px;line-height:1.5;max-width:340px;}
+  .cp-rib{position:absolute;top:0;right:0;font:800 8.5px 'Space Mono',monospace;letter-spacing:.12em;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#ffb020);padding:4px 9px 3px;border-radius:0 12px 0 9px;font-style:normal;z-index:2;}
+  .cp-days{display:flex;align-items:center;gap:12px;margin-top:16px;}
+  .cp-strip{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;flex:1;max-width:250px;}
+  .cp-strip i{display:block;height:6px;border-radius:3px;background:#1a1f27;}.cp-strip i.on{background:var(--amber);box-shadow:0 0 8px -2px rgba(255,215,90,.9);}.cp-strip i.now{background:#fff;}
+  .cp-left{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);white-space:nowrap;}
+  .cp-fair{margin-top:auto;padding-top:16px;font-size:12px;line-height:1.5;color:var(--faint);max-width:330px;}
+  /* three groups: free (a full row of four), Gold (one), trade to enter (two) */
+  .cp-boards{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.1fr);gap:12px 14px;align-content:center;min-width:0;}
+  .cp-grp{min-width:0;display:flex;flex-direction:column;gap:8px;}
+  .cp-grp.free{grid-column:1/-1;}
+  .cp-gh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07);min-width:0;}
+  .cp-gh span{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap;}
+  .cp-gh em{font-style:normal;font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .cp-grp.gold .cp-gh span{color:var(--amber);}
+  .cp-grp.real .cp-gh{border-bottom-color:rgba(255,255,255,.16);}
+  .cp-tiles{display:grid;gap:8px;min-width:0;}
+  .cp-grp.free .cp-tiles{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .cp-grp.real .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .cp-b{display:flex;flex-direction:column;gap:6px;padding:12px 13px 11px;border-radius:13px;background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.07);min-width:0;position:relative;overflow:hidden;transition:border-color .18s,background .18s,transform .18s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+  .cp-hero:hover .cp-b{border-color:rgba(255,255,255,.13);}
+  .cp-bn{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
+  .cp-dot{width:6px;height:6px;border-radius:50%;background:var(--d,#fff);box-shadow:0 0 7px var(--d,#fff);flex:none;}
+  .cp-bp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1;white-space:nowrap;}
+  .cp-bp small{font-size:10px;color:var(--faint);font-family:'Space Mono',monospace;font-weight:600;margin-left:6px;letter-spacing:.04em;text-transform:uppercase;}
+  .cp-bl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:7px;font-size:12.5px;min-width:0;margin-top:2px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
+  .cp-bl i{font:800 10px 'Space Mono',monospace;color:var(--dim);font-style:normal;background:rgba(255,255,255,.08);border-radius:5px;padding:2px 5px;}
+  .cp-bl b{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cp-bl em{font:700 11.5px 'Space Mono',monospace;font-style:normal;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .cp-bl em:empty{display:none;}
+  /* Gold: the one warm tile, because the room is named after the colour */
+  .cp-grp.gold .cp-b{border-color:rgba(255,215,90,.34);background:linear-gradient(180deg,rgba(255,215,90,.11),rgba(255,215,90,.02));}
+  .cp-grp.gold .cp-bp{color:var(--amber);}
+  .cp-grp.gold .cp-bl i{color:var(--amber);background:rgba(255,215,90,.12);}
+  /* Trade to enter: metallic hairline border (gradient in the border box), a taller number, the venue named by a single dot */
+  .cp-grp.real .cp-b{padding:14px 15px 13px;border:1px solid transparent;background:linear-gradient(165deg,#131820,#0b0e13 72%) padding-box,linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.08) 38%,rgba(255,255,255,.1) 62%,rgba(255,255,255,.42)) border-box;box-shadow:0 14px 34px -22px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.16);}
+  .cp-hero:hover .cp-grp.real .cp-b{transform:translateY(-1px);}
+  .cp-grp.real .cp-bn{color:var(--dim);}
+  .cp-grp.real .cp-bp{font-size:27px;background:linear-gradient(180deg,#fff 30%,#aeb7c4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .cp-grp.real .cp-bp small{-webkit-text-fill-color:var(--faint);}
+  .cp-grp.real .cp-bl{border-top-color:rgba(255,255,255,.1);}
+  .cp-grp.real .cp-bl i{color:#fff;background:rgba(255,255,255,.12);}
+  @media(max-width:1100px){.cp-grp.free .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:940px){.cp-in{grid-template-columns:1fr;gap:18px;}.cp-grp.free .cp-tiles{grid-template-columns:repeat(4,minmax(0,1fr));}}
+  @media(max-width:640px){.cp-boards{grid-template-columns:1fr;gap:12px;}.cp-grp.free .cp-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.cp-grp.real .cp-tiles{grid-template-columns:1fr;} /* measured 2026-09-17 at 390px: two real tiles side by side cut KING OF THE MOON to MOO */.cp-b{padding:11px 12px 10px;gap:6px;}.cp-bp{font-size:19px;white-space:normal;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 6px;}.cp-bp small{margin-left:0;}.cp-grp.real .cp-bp{font-size:23px;}.cp-t{font-size:22px;}.cp-pool b{font-size:40px;}.cp-pool span{font-size:13px;}.cp-fair{display:none;}.cp-pool{margin-top:16px;}
+    .cp-days{flex-wrap:wrap;gap:8px 12px;}.cp-strip{flex:1 1 100%;max-width:none;}} /* measured 2026-09-17 at 390px: the nowrap "ends in" text squeezed the 14-cell strip to 3 px, and "$10 first" was cut mid-word */
 
   /* ---------- Screener ---------- */
   .mv-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid rgba(255,255,255,.045);font-size:13px;position:relative;z-index:2;}
@@ -360,33 +445,6 @@
 
   /* ---------- Leaderboard band ---------- */
   .lb-wrap{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;}
-/* This season (2026-09-06): the homepage keeps a compact season section; everything deep lives on /season/. */
-.ss-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr);gap:12px}
-.ss-card{display:block;min-width:0;background:linear-gradient(180deg,#12161d,#0c0f13);border:1px solid #2a323c;border-radius:16px;padding:16px 17px;color:inherit;text-decoration:none;position:relative}
-.ss-you{border-color:rgba(255,215,90,.4);background:radial-gradient(110% 80% at 100% 0,rgba(255,215,90,.1),transparent 55%),linear-gradient(180deg,#12161d,#0c0f13);transition:border-color .14s,transform .1s}
-.ss-you:hover{border-color:rgba(255,215,90,.8)}.ss-you:active{transform:translateY(1px)}
-.ss-k{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#ffd75a}
-.ss-k span{margin-left:auto;font-size:10px;color:#c2f64a;background:rgba(194,246,74,.12);border-radius:20px;padding:2px 8px}
-.ss-k .ss-dot{display:block;flex:0 0 7px;width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#2ebd85;box-shadow:0 0 10px #2ebd85;margin-left:auto;align-self:center}
-.ss-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin:12px 0 10px}
-.ss-days i{display:block;height:7px;border-radius:3px;background:#1a1f27}.ss-days i.on{background:#c2f64a;box-shadow:0 0 8px -2px rgba(194,246,74,.9)}.ss-days i.now{background:#fff}
-.ss-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1.05;color:#fff;margin:2px 0 10px}
-.ss-big b{color:#c2f64a}
-.ss-rows{display:grid;gap:6px}
-.ss-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;font-size:13px;color:#c7ccd4;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;min-width:0}
-.ss-row b{font-family:'Space Mono',monospace;font-size:12px;color:#fff;white-space:nowrap;text-align:right}.ss-row b.ok{color:#c2f64a}.ss-row b.pro{color:#c792ff}.ss-row b.gold{color:#ffd75a}
-.ss-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ss-go{margin-top:12px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#c2f64a}.ss-go span{display:inline-block;transition:transform .15s}.ss-you:hover .ss-go span{transform:translateX(4px)}
-.ss-list{margin-top:10px;display:flex;flex-direction:column}
-.ss-r{display:grid;grid-template-columns:24px minmax(0,1fr) 78px 44px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #1f252e;font-size:13px;white-space:nowrap;min-height:34px}.ss-r:first-child{border-top:0}.ss-r>*{min-width:0}.ss-r.cl{grid-template-columns:minmax(0,1fr) 84px 92px 36px}
-.ss-r i{font:800 11px 'Space Mono',monospace;color:#5c656f;font-style:normal;text-align:right}.ss-r.t1 i{color:#ffd75a}.ss-r.t2 i{color:#cfd6df}.ss-r.t3 i{color:#d19a66}
-.ss-r .w{font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ss-r .w:hover{color:#c2f64a}
-.ss-r .v{font:700 12px 'Space Mono',monospace;color:#c7ccd4;text-align:right;overflow:hidden;text-overflow:ellipsis}.ss-r .v.up{color:#2ebd85}.ss-r .v.dn{color:#ff5a4d}
-.ss-r .pz{font:700 11px 'Space Mono',monospace;color:#c2f64a;min-width:28px;text-align:right}
-.ss-r .sy{font:700 10.5px 'Space Mono',monospace;color:#9aa3ad;border:1px solid #2a323c;border-radius:6px;padding:2px 6px;text-align:center;overflow:hidden;text-overflow:ellipsis}.ss-r .sy.l{color:#2ebd85;border-color:rgba(46,189,133,.5)}.ss-r .sy.s{color:#ff5a4d;border-color:rgba(255,90,77,.5)}
-.ss-r .ago{font:600 10.5px 'Space Mono',monospace;color:#5c656f;text-align:right}
-.ss-empty{color:#5c656f;font-size:13px;padding:8px 0}
-.ss-more{display:inline-block;margin-top:10px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;color:#ffd75a;text-decoration:none}
 /* member strip: replaces the hero for a signed-in visitor */
 .dash{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.35fr) minmax(220px,.8fr);align-items:stretch;gap:18px;margin:14px var(--pad) 0;padding:20px 22px;border-radius:22px;border:1px solid rgba(199,146,255,.3);background:radial-gradient(70% 90% at 0 0,rgba(199,146,255,.16),transparent 60%),radial-gradient(50% 80% at 100% 100%,rgba(194,246,74,.1),transparent 60%),linear-gradient(180deg,#12161d,#0b0e12);color:inherit;text-decoration:none;position:relative;z-index:2;overflow:hidden;box-shadow:0 30px 80px -40px rgba(199,146,255,.45),inset 0 1px 0 rgba(255,255,255,.05);transition:border-color .2s,transform .2s}
 .dash:hover{border-color:rgba(194,246,74,.5);transform:translateY(-1px)}
@@ -412,6 +470,7 @@
 .dash-stats .dst b{font:800 22px 'Space Mono',monospace;letter-spacing:-.03em;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dash-stats .dst b small{font-size:11px;color:#5c656f;font-weight:600;margin-left:2px}
 .dash-stats .dst em{font-style:normal;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-stats .dst i{font-style:normal;font-size:11px;color:#5c656f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stats .dst.sk{opacity:.32}.dash-stats .dst.sk b,.dash-stats .dst.sk em,.dash-stats .dst.sk i{color:#5c656f}
 .dash-stats .dst.ok{border-color:rgba(194,246,74,.45)}.dash-stats .dst.ok b{color:#c2f64a}.dash-stats .dst.pro{border-color:rgba(199,146,255,.45)}.dash-stats .dst.pro b{color:#c792ff}.dash-stats .dst.gold{border-color:rgba(255,215,90,.45)}.dash-stats .dst.gold b{color:#ffd75a}.dash-stats .dst.hot{border-color:rgba(255,176,32,.55);background:rgba(255,176,32,.08)}.dash-stats .dst.hot i{color:#ffb020}
 .dash-next{display:flex;flex-direction:column;gap:8px;padding-left:18px;border-left:1px solid rgba(255,255,255,.07);min-width:0}
 .dash-todo{display:flex;flex-direction:column;gap:6px}
@@ -422,9 +481,11 @@
 .dash-days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:8px}.dash-days i{display:block;height:5px;border-radius:3px;background:#1a1f27}.dash-days i.on{background:#c792ff}.dash-days i.now{background:#fff;box-shadow:0 0 8px #c792ff}
 @media(max-width:980px){.dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dash-next{grid-column:1/-1;border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.07);padding-top:12px}}
 @media(max-width:640px){.dash{grid-template-columns:1fr;padding:16px}.dash-stats{grid-template-columns:1fr 1fr}.dash-t{font-size:21px}}
-body.mpa-authed .hero{display:none}
-@media(max-width:980px){.ss-grid{grid-template-columns:1fr 1fr}.ss-you{grid-column:1/-1}}
-@media(max-width:640px){.ss-grid{grid-template-columns:1fr}}
+/* The hero is replaced by the member card, so it may only disappear once that card is REALLY on screen.
+   Keyed on mpa-authed it vanished at ~180 ms while the card waited for /api/pass + /api/goals until ~950 ms,
+   and the top of the page sat empty in between (owner 2026-09-10, measured). */
+body.mpa-dash .hero,html.mp-li .hero{display:none}
+html.mp-li .dash[hidden]{display:grid} /* the static markup below already carries the skeleton, so this is the right shape from frame one */
   @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
   .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;}
   .lb-info{border-color:rgba(255,215,90,.3);background:linear-gradient(160deg,rgba(255,215,90,.09),rgba(255,215,90,.015) 55%),var(--panel);}
@@ -807,8 +868,8 @@ body.mpa-authed .hero{display:none}
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
   .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:420px;}
-  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 26px -6px rgba(117,115,225,.75);}
-  .exbig-offer{display:block;margin:12px 0 4px;padding:13px 14px 12px;border-radius:14px;border:1px solid rgba(138,92,255,.38);background:linear-gradient(150deg,rgba(138,92,255,.14),rgba(138,92,255,.02) 62%),#0d0f16;position:relative;overflow:hidden}.exbig-offer::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(138,92,255,.22),transparent 68%);pointer-events:none}.xo-top{display:flex;align-items:center;gap:11px;position:relative;z-index:1}.xo-pct{font:800 27px/1 "Space Mono",ui-monospace,monospace;letter-spacing:-.02em;color:#b39aff;text-shadow:0 0 22px rgba(138,92,255,.5)}.xo-lab{display:block;font:800 12.5px/1.2 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e9e7df}.xo-lab em{display:block;margin-top:3px;font:500 12px/1.4 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#9aa3ad;font-style:normal}.xo-code{display:flex;align-items:center;gap:10px;margin-top:11px;padding:10px 12px;border-radius:11px;border:1px dashed rgba(179,154,255,.65);background:rgba(138,92,255,.10);position:relative;z-index:1}.xo-code i{flex:0 0 auto;font:700 9.5px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#9aa3ad;font-style:normal}.xo-code b{font:800 21px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.14em;color:#fff;text-shadow:0 0 18px rgba(138,92,255,.55)}.xo-alt{display:block;margin-top:8px;font:500 11.5px/1.4 "Familjen Grotesk",system-ui,sans-serif;color:#7a8390;position:relative;z-index:1}@media(max-width:640px){.exbig-offer{padding:12px}.xo-pct{font-size:24px}.xo-code b{font-size:18px;letter-spacing:.12em}.xo-lab em{font-size:11.5px}}/* 2026-09-10 (owner): the offer is its own column on wide screens - under the pitch it stretched the card by 170px. */@media(min-width:1101px){.exbig{flex-wrap:nowrap;gap:clamp(22px,2.6vw,38px)}.exbig-main{flex:1 1 40%}.exbig-side{flex:1 1 40%}.exbig-offer{flex:0 0 212px;align-self:center;margin:0}.xo-top{flex-direction:column;align-items:flex-start;gap:5px}.xo-pct{font-size:33px}.xo-code{margin-top:12px;flex-direction:column;align-items:center;gap:5px;text-align:center;padding:10px 8px}.xo-code b{font-size:20px;letter-spacing:.1em}.xo-alt{display:none}}@media(min-width:1101px) and (max-width:1380px){.exbig{gap:clamp(16px,1.8vw,26px)}.exbig-offer{flex:0 0 184px}.xo-pct{font-size:29px}.xo-code b{font-size:18px;letter-spacing:.1em}}@media(max-width:1100px){.exbig{flex-wrap:wrap}.exbig-offer{flex:1 1 100%;margin:0}}@media(max-width:760px){.exbig-main{order:1}.exbig-offer{order:2;width:100%;flex:0 0 auto;align-self:auto}.exbig-side{order:3}}.exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7573e1,#6358d3);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(117,115,225,.85);animation:moonCta 3.2s ease-in-out infinite;}
+  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 26px -6px rgba(117,115,225,.75);}.exbig-offer{display:block;margin:12px 0 4px;padding:13px 14px 12px;border-radius:14px;border:1px solid rgba(138,92,255,.38);background:linear-gradient(150deg,rgba(138,92,255,.14),rgba(138,92,255,.02) 62%),#0d0f16;position:relative;overflow:hidden}.exbig-offer::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(138,92,255,.22),transparent 68%);pointer-events:none}.xo-top{display:flex;align-items:center;gap:11px;position:relative;z-index:1}.xo-pct{font:800 27px/1 "Space Mono",ui-monospace,monospace;letter-spacing:-.02em;color:#b39aff;text-shadow:0 0 22px rgba(138,92,255,.5)}.xo-lab{display:block;font:800 12.5px/1.2 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#e9e7df}.xo-lab em{display:block;margin-top:3px;font:500 12px/1.4 "Familjen Grotesk",system-ui,sans-serif;letter-spacing:0;text-transform:none;color:#9aa3ad;font-style:normal}.xo-code{display:flex;align-items:center;gap:10px;margin-top:11px;padding:10px 12px;border-radius:11px;border:1px dashed rgba(179,154,255,.65);background:rgba(138,92,255,.10);position:relative;z-index:1}.xo-code i{flex:0 0 auto;font:700 9.5px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#9aa3ad;font-style:normal}.xo-code b{font:800 21px/1 "Space Mono",ui-monospace,monospace;letter-spacing:.14em;color:#fff;text-shadow:0 0 18px rgba(138,92,255,.55)}.xo-alt{display:block;margin-top:8px;font:500 11.5px/1.4 "Familjen Grotesk",system-ui,sans-serif;color:#7a8390;position:relative;z-index:1}@media(max-width:640px){.exbig-offer{padding:12px}.xo-pct{font-size:24px}.xo-code b{font-size:18px;letter-spacing:.12em}.xo-lab em{font-size:11.5px}}/* 2026-09-10 (owner): the offer is its own column on wide screens - under the pitch it stretched the card by 170px. */@media(min-width:1101px){.exbig{flex-wrap:nowrap;gap:clamp(22px,2.6vw,38px)}.exbig-main{flex:1 1 40%}.exbig-side{flex:1 1 40%}.exbig-offer{flex:0 0 212px;align-self:center;margin:0}.xo-top{flex-direction:column;align-items:flex-start;gap:5px}.xo-pct{font-size:33px}.xo-code{margin-top:12px;flex-direction:column;align-items:center;gap:5px;text-align:center;padding:10px 8px}.xo-code b{font-size:20px;letter-spacing:.1em}.xo-alt{display:none}}@media(min-width:1101px) and (max-width:1380px){.exbig{gap:clamp(16px,1.8vw,26px)}.exbig-offer{flex:0 0 184px}.xo-pct{font-size:29px}.xo-code b{font-size:18px;letter-spacing:.1em}}@media(max-width:1100px){.exbig{flex-wrap:wrap}.exbig-offer{flex:1 1 100%;margin:0}}@media(max-width:760px){.exbig-main{order:1}.exbig-offer{order:2;width:100%;flex:0 0 auto;align-self:auto}.exbig-side{order:3}}
+  .exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7573e1,#6358d3);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(117,115,225,.85);animation:moonCta 3.2s ease-in-out infinite;}
   @keyframes moonCta{0%,100%{box-shadow:0 0 22px -8px rgba(117,115,225,.7);}50%{box-shadow:0 0 34px -4px rgba(142,148,235,.95);}}
   .exbig:hover .exbig-cta{box-shadow:0 0 38px -4px rgba(142,148,235,1);animation:none;}
   .exs{--exc:#f7a600;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
@@ -916,11 +977,11 @@ body.mpa-authed .hero{display:none}
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - 無料の暗号資産先物ターミナル：ペーパートレード、計算ツール、ライブ清算データ","url":"https://marginpad.io/ja/","dateModified":"2026-09-11T11:28:06.171Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-</head>
+<style>#geoTip{display:none;align-items:center;justify-content:center;gap:9px;padding:9px 14px;background:#11161d;border-bottom:1px solid #1c2230;color:#cfe3ff;font-size:13.5px;line-height:1.35;text-align:center}#geoTip[data-on]{display:flex}#geoTip b{color:#c2f64a}#geoTip span.f{font-size:15px;line-height:1}@media(max-width:560px){#geoTip{font-size:12.5px;padding:8px 12px}}</style><meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - 無料の暗号資産先物ターミナル：ペーパートレード、計算ツール、ライブ清算データ","url":"https://marginpad.io/ja/","dateModified":"2026-09-25T09:34:43.971Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
@@ -933,7 +994,7 @@ body.mpa-authed .hero{display:none}
   <nav class="hnav">
     <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Join our Telegram group" aria-label="Telegram group"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
     <button type="button" class="hlink hjr" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>マイトレード</button>
-    <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>サインイン</span></button>
+    <button type="button" class="hlink hauth" data-auth-open aria-label="サインイン"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>サインイン</span></button>
     <select class="lang" id="langSel" aria-label="Language"><option value="/">EN</option><option value="/es/">ES</option><option value="/pt/">PT</option><option value="/fr/">FR</option><option value="/de/">DE</option><option value="/ru/">RU</option><option value="/tr/">TR</option><option value="/zh/">ZH</option><option value="/ja/">JA</option><option value="/ko/">KO</option><option value="/ar/">AR</option><option value="/id/">ID</option><option value="/nl/">NL</option></select>
   </nav>
 </header>
@@ -944,8 +1005,8 @@ body.mpa-authed .hero{display:none}
 
 <a class="dash" id="dash" href="/season/" hidden>
   <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
-  <div class="dash-stats" id="dashChips"></div>
-  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"></div><span class="dash-go">Open your season →</span></div>
+  <div class="dash-stats" id="dashChips"><span class="dst sk"><b>-</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Boards</em><i>loading</i></span></div><!-- skeleton in the MARKUP: with html.mp-li the card is the right shape on the very first frame, so nothing resizes when the numbers land -->
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"><span><i>1</i>Checking your season…</span></div><span class="dash-go">Open your season →</span></div>
 </a>
 <section class="hero">
   <div>
@@ -1004,6 +1065,44 @@ body.mpa-authed .hero{display:none}
       </div>
     </a>
 
+    <!-- COMPETITION (2026-09-17, owner: the prizes and the leaderboards sell themselves right under Paper Trade; the
+         old band-04 "This season" is gone). Static numbers are today's; the JS block below reads /api/competition. -->
+    <a class="tile s12 cp-hero" id="cpCard" href="/leaderboards/" style="--ac:#ffd75a">
+      <div class="cp-in">
+        <div class="cp-copy">
+          <div class="t-kick"><span class="dot"></span> Trading competition · <span id="cpEye">every 14 days</span></div>
+          <div class="t-title cp-t">Paper trades, <b>real prize money</b></div>
+          <div class="cp-pool"><b id="cpPool">$350</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span></div>
+          <div class="cp-days"><div class="cp-strip" id="cpDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="cp-left" id="cpLeft">14-day seasons</span></div>
+          <div class="cp-fair">Filled server-side against real exchange candles. A win needs 5% ROE and a real 0.2% move. Standings are public.</div>
+        </div>
+        <div class="cp-boards" id="cpBoards">
+          <div class="cp-grp free">
+            <div class="cp-gh"><span>Free to enter</span><em>paper trades · no deposit · every 14 days</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="roe"><span class="cp-bn">最高ROE</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="green"><span class="cp-bn">Green days</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="winrate"><span class="cp-bn">最高勝率</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="xp"><span class="cp-bn">シーズンXP</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
+          <div class="cp-grp gold">
+            <div class="cp-gh"><span>Gold level</span><em>12,000 XP and up</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="gold"><i class="cp-rib">GOLD+</i><span class="cp-bn">The Gold Room</span><span class="cp-bp">$30<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
+          <div class="cp-grp real">
+            <div class="cp-gh"><span>Trade to enter</span><em>real accounts through MarginPad · Bybit every season · Moon every two</em></div>
+            <div class="cp-tiles">
+              <div class="cp-b" data-b="bybit"><span class="cp-bn"><i class="cp-dot" style="--d:#f7a600"></i>Bybit volume</span><span class="cp-bp">$200<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="moon"><span class="cp-bn"><i class="cp-dot" style="--d:#b39dff"></i>King of the Moon</span><span class="cp-bp">$300<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+
     <a class="tile s4" href="/screener" style="--ac:#6aa3ff">
       <div class="t-kick"><span class="dot"></span> 値動きランキング · 24時間 · ライブ</div>
       <div class="t-title">スクリーナー</div>
@@ -1034,7 +1133,7 @@ body.mpa-authed .hero{display:none}
     <a class="tile s3" href="/charts" style="--ac:#3fd8e6">
       <div class="t-kick">プロ仕様ワークスペース</div>
       <div class="t-title">マルチチャート</div>
-      <div class="t-sub">最大10ウィンドウ、12種類のインジケーター、描画ツール、AIチャート分析。</div>
+      <div class="t-sub">Up to 8 windows, 19+ indicators, drawing, AI chart analyst.</div>
       <div class="cw-mock">
         <div class="cw-win cw-w1"><div class="bar"><i></i><i></i></div><div class="cw-candles"><i style="height:38%"></i><i class="d" style="height:56%"></i><i style="height:44%"></i><i style="height:72%"></i><i class="d" style="height:52%"></i><i style="height:80%"></i><i style="height:64%"></i><i class="d" style="height:40%"></i><i style="height:88%"></i></div></div>
         <div class="cw-win cw-w2"><div class="bar"><i></i><i></i></div><div class="cw-candles"><i class="d" style="height:60%"></i><i style="height:42%"></i><i style="height:74%"></i><i class="d" style="height:50%"></i><i style="height:66%"></i><i style="height:84%"></i></div></div>
@@ -1175,7 +1274,7 @@ body.mpa-authed .hero{display:none}
           <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg></span><span class="mf-tx">MarginPadの報酬をそのまま出金</span></div>
         </div>
       </div>
-      <span class="exbig-offer"><span class="xo-top"><b class="xo-pct">3.5%</b><span class="xo-lab">手数料キャッシュバック<em>取引手数料の3.5%が戻ります。</em></span></span><span class="xo-code"><i>コード</i><b>MARGINPAD</b></span><span class="xo-alt">またはこのカードから口座開設 - 同じです。</span></span>
+      <span class="exbig-offer"><span class="xo-top"><b class="xo-pct">3.5%</b><span class="xo-lab">fee rebate<em>You get 3.5% of your trading fees back.</em></span></span><span class="xo-code"><i>use code</i><b>MARGINPAD</b></span><span class="xo-alt">or open the account from this card - same thing.</span></span>
     </a>
     <a class="exs" href="https://partner.bybit.com/b/162071" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">最も人気</span><span class="exs-go">→</span></span><span class="exs-perk">取引手数料割引&amp;新規登録ボーナス</span></a>
     <a class="exs" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="noopener sponsored" data-ex="Hyperliquid" style="--exc:#5ee6c8"><span class="exs-top"><span class="exs-ic"><img src="/assets/ex/hyperliquid.png" alt="Hyperliquid" width="30" height="30" loading="lazy"></span><span class="exs-n">Hyperliquid</span><span class="exs-tag">On-chain perps</span><span class="exs-go">→</span></span><span class="exs-perk">4% off trading fees with code MARGINPAD</span></a>
@@ -1184,38 +1283,15 @@ body.mpa-authed .hero{display:none}
     <a class="exs" href="https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">コピートレード</span><span class="exs-go">→</span></span><span class="exs-perk">手数料割引&amp;ワンクリックでトップトレーダーをコピー</span></a>
     <a class="exs" href="https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">早期上場</span><span class="exs-go">→</span></span><span class="exs-perk">手数料還元&amp;新規トークンへの最速アクセス</span></a>
     <a class="exs" href="https://s.mexc.com/referral/YkL887dVgt" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">低手数料</span><span class="exs-go">→</span></span><span class="exs-perk">超低手数料&amp;定期エアドロップイベント</span></a>
-    <a class="exs" href="https://fomo.family/r/Marginpad" target="_blank" rel="noopener sponsored" data-ex="Fomo" style="--exc:#ff4d8d"><span class="exs-top"><span class="exs-ic"><img src="/assets/ex/fomo.png" alt="Fomo" width="30" height="30" loading="lazy"></span><span class="exs-n">Fomo</span><span class="exs-tag">ソーシャルトレード</span><span class="exs-go">→</span></span><span class="exs-perk">パーペチュアルは一律0.05% - 暗号資産・株式・商品</span></a>
+    <a class="exs" href="https://fomo.family/r/Marginpad" target="_blank" rel="noopener sponsored" data-ex="Fomo" style="--exc:#ff4d8d"><span class="exs-top"><span class="exs-ic"><img src="/assets/ex/fomo.png" alt="Fomo" width="30" height="30" loading="lazy"></span><span class="exs-n">Fomo</span><span class="exs-tag">Social trading</span><span class="exs-go">→</span></span><span class="exs-perk">Flat 0.05% per trade on perps - crypto, stocks and commodities</span></a>
     <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">規制準拠</span><span class="exs-go">→</span></span><span class="exs-perk">完全規制対応取引所での低手数料</span></a>
     <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">米国規制準拠</span><span class="exs-go">→</span></span><span class="exs-perk">初心者に優しい&amp;新規登録ボーナス</span></a>
   </div>
   <div class="exch-disc">リファラルリンク - このリンク経由で口座を開設すると、ユーザーに費用負担なくMarginPadが報酬を得る場合があります。これにより、当サイトのすべてのツールを無料で提供できています。責任を持って取引してください：レバレッジは証拠金全額の強制決済につながる可能性があります。</div>
 </section>
 
-<section class="band" id="season" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">This season</h2><span class="band-s">Five boards pay the top 5 in real USDT every 14 days. The pass, the daily call, your goals and the live floor all live on one page.</span></div>
-  <div class="ss-grid">
-    <a class="ss-card ss-you" id="ssYou" href="/season/">
-      <div class="ss-k" id="ssEye">Season</div>
-      <div class="ss-days" id="ssDays"></div>
-      <div class="ss-big" id="ssBig">Your season</div>
-      <div class="ss-rows" id="ssRows"></div>
-      <div class="ss-go">Open your season <span>→</span></div>
-    </a>
-    <div class="ss-card ss-board">
-      <div class="ss-k" id="ssBoardK">Green days <span id="ssPz"></span></div>
-      <div class="ss-list" id="ssBoard"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/season/#boards">All five boards, rules and payouts →</a>
-    </div>
-    <div class="ss-card ss-live">
-      <div class="ss-k">Live floor <span class="ss-dot"></span></div>
-      <div class="ss-list" id="ssLive"><div class="ss-empty">Loading…</div></div>
-      <a class="ss-more" href="/season/#floor">Every close and every duel →</a>
-    </div>
-  </div>
-</section>
-
 <section class="band b-learn" style="--glow:rgba(255,215,90,.08);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">05</span><h2 class="band-t">学んで稼ぐ</h2><span class="band-s">最初のレッスンから最初の報酬受け取りまで - すべて無料。</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">学んで稼ぐ</h2><span class="band-s">最初のレッスンから最初の報酬受け取りまで - すべて無料。</span></div>
   <div class="bento">
 
     <a class="tile s4" href="/academy/" style="--ac:#c2f64a">
@@ -1257,7 +1333,7 @@ body.mpa-authed .hero{display:none}
     <div><h5>取引</h5><a href="/paper-trade">ペーパートレード</a><a href="/charts">チャート</a><a href="/stock-trading-simulator/">株式シミュレーター</a><a href="/forex-trading-simulator/">外国為替シミュレーター</a><a href="/index-trading-simulator/">指数シミュレーター</a><a href="/leverage-trading-simulator/">Leverage simulator</a><a href="/crypto-trading-simulator-no-sign-up/">No sign-up simulator</a><a href="/screener">スクリーナー</a><a href="/rekt/">Rekt - 強制決済</a><a href="/crypto-liquidations-today/">Liquidations today</a><a href="/alerts/">価格アラート</a></div>
     <div><h5>分析</h5><a href="/calculators">計算ツール</a><a href="/tools/">トレーディングツール</a><a href="/trading-api/">ボットAPI</a><a href="/coins/">マーケット</a><a href="/defi/">DeFi</a></div>
     <div><h5>ガイド</h5><a href="/blog/what-is-liquidation-in-crypto/">強制決済とは？</a><a href="/blog/what-is-funding-rate/">資金調達率を解説</a><a href="/blog/crypto-leverage-explained/">レバレッジを解説</a><a href="/blog/best-crypto-futures-exchanges/">おすすめの先物取引所</a><a href="/blog/btc-dominance-altcoin-season/">BTCドミナンス&amp;アルトシーズン</a><a href="/blog/paper-trade-crypto-futures/">ペーパートレードの始め方</a></div>
-    <div><h5>学んで稼ぐ</h5><a href="/academy/">アカデミー</a><a href="/blog/">ブログ</a><a href="/news/">ニュース</a><a href="/rewards/">リワード</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">広告開示：リファラルリンク</a></div>
+    <div><h5>学んで稼ぐ</h5><a href="/academy/">アカデミー</a><a href="/blog/">ブログ</a><a href="/news/">ニュース</a><a href="/rewards/">リワード</a><a href="/leaderboards/">Leaderboards</a><a href="/trading-competition/">Trading competition</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">広告開示：リファラルリンク</a></div>
   </div>
   <div class="foot-word">MARGINPAD</div>
   <div class="foot-bottom"><span>© 2026 MarginPad · シミュレーション取引のみ · 投資助言ではありません</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">概要</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">お問い合わせ</a><a href="/terms/" style="display:inline;padding:0 12px 0 0">Terms</a><a href="/privacy/" style="display:inline;padding:0">プライバシー</a></span></div>
@@ -1271,14 +1347,25 @@ body.mpa-authed .hero{display:none}
 
   // ---- live prices: tape (>=15 pairs: live majors + screener top-volume) + hero terminal ----
   var scrX=null; // extra pairs from the screener to widen the tape
+  var tapeNext=null;
+  (function(){ var el=document.getElementById('tape'); if(!el)return;
+    el.addEventListener('animationiteration',function(){ if(tapeNext){ el.innerHTML=tapeNext; tapeNext=null; } });
+  })();
   function buildTape(ps){
     var seen={},rows=[];
     ps.forEach(function(p){var sm=p.symbol.replace('USDT','');if(seen[sm])return;seen[sm]=1;rows.push({s:sm,p:+p.price,c:+p.changePct});});
     (scrX||[]).forEach(function(r){if(seen[r.s]||rows.length>=18)return;seen[r.s]=1;rows.push({s:r.s,p:+r.p,c:+r.chg});});
     if(rows.length<3)return;
     var html=rows.map(function(r){return '<span><b>'+r.s+'</b> $'+fmt(r.p)+' <span class="'+(r.c>=0?'up':'dn')+'">'+(r.c>=0?'+':'')+r.c.toFixed(2)+'%</span></span>';}).join('');
-    var el=document.getElementById('tape');el.innerHTML=html+html;
-    el.style.animationDuration=Math.max(28,rows.length*2.4)+'s'; // speed scales with content so it always visibly rolls
+    var el=document.getElementById('tape');
+    /* Same rule as the liquidation strip at the foot of the page: the scroll is a percentage of the
+       element's own width, so new text moves the loop point. The content waits for the wrap. This tape
+       measured clean before the change only because its symbols and digit counts happen to be stable -
+       one longer pair would have started it jumping too. */
+    tapeNext = html + html;
+    var dur=Math.max(28,rows.length*2.4)+'s';   // reassigning this restarts the animation, so only when it changes
+    if(el.style.animationDuration!==dur)el.style.animationDuration=dur;
+    if(!el.children.length){ el.innerHTML=tapeNext; tapeNext=null; }
   }
   fetch('/api/screener').then(function(r){return r.json();}).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
@@ -1333,7 +1420,7 @@ body.mpa-authed .hero{display:none}
     var arc=document.getElementById('fngArc');var L=Math.PI*50;
     arc.setAttribute('stroke',col);arc.setAttribute('stroke-dasharray',(v/100*L).toFixed(1)+' 999');
     var y=arr[1],w=arr[7];
-    document.getElementById('fngHist').textContent='yesterday '+(y?y.v:'-')+' · last week '+(w?w.v:'-');
+    document.getElementById('fngHist').textContent='yesterday '+(y?y.v:'-')+__esT_demohomeindex("lastWeek",' · last week ')+(w?w.v:'-');
     var sf=document.getElementById('snFng');sf.textContent=v;sf.style.color=col;
     document.getElementById('snFngS').textContent=now.c;
   }).catch(function(){});
@@ -1359,7 +1446,7 @@ body.mpa-authed .hero{display:none}
         var tile=g.closest('.tile');if(tile)tile.classList.add('cal-hot');}
       else if(todEv.length){nx.innerHTML='Today: <b style="color:#ffd75a">'+String(todEv[0].title).replace(/</g,'&lt;')+'</b>'+(fut&&fut.ts>Date.now()?'':'');}
       else if(fut){var days=Math.ceil((fut.ts-Date.now())/86400000);nx.innerHTML='Next: <b style="color:#ffd75a">'+String(fut.title).replace(/</g,'&lt;')+'</b> - '+(days<=1?'tomorrow':'in '+days+' days');}
-      else nx.textContent='Quiet month ahead - see the full calendar.';
+      else nx.textContent=__esT_demohomeindex("quietMonthAheadSee",'Quiet month ahead - see the full calendar.');
     }).catch(function(){nx.textContent='';});
   })();
 
@@ -1379,12 +1466,12 @@ body.mpa-authed .hero{display:none}
     var w=document.createElement('div');w.className='lb-tkm';
     w.innerHTML='<div class="lb-tkm-c" role="dialog" aria-modal="true" aria-label="Trade behind this rank">'
       +'<button type="button" class="lb-tkm-x" aria-label="Close">&#215;</button>'
-      +'<div class="lb-tkm-h">TRADE BEHIND THIS RANK</div>'
+      +__esT_demohomeindex("tradeBehindThisRank",'<div class="lb-tkm-h">TRADE BEHIND THIS RANK</div>')
       +'<div class="lb-tkm-who"><span class="r">#'+((t.rank||0)||'')+'</span> '+lbEsc(t.who||'trader')+'</div>'
       +'<div class="lb-tkm-sym"><span class="s">'+lbEsc(t.symbol||'')+'</span><span class="sd '+(side==='SHORT'?'dn':'up')+'">'+lbEsc(side)+'</span></div>'
       +'<div class="lb-tkm-roe '+(up?'up':'dn')+'">'+(up?'+':'')+(+t.roe).toFixed(2)+'%</div>'
       +'<div class="lb-tkm-pnl">Profit <b class="'+(up?'up':'dn')+'">'+lbMoney(t.pnl)+'</b></div>'
-      +'<a class="lb-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.symbol||'BTC'))+'">Open this market &rarr;</a>'
+      +'<a class="lb-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.symbol||'BTC'))+__esT_demohomeindex("openThisMarketRarr",'">Open this market &rarr;</a>')
       +'</div>';
     function close(){try{w.remove();}catch(e){}document.removeEventListener('keydown',onKey);}
     function onKey(e){if(e.key==='Escape')close();}
@@ -1431,37 +1518,37 @@ body.mpa-authed .hero{display:none}
   function lbRender(){
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
     if(note){
-      if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
+      if(lbMode==='following'){note.className='lb-note';note.innerHTML=__esT_demohomeindex("accountsYouFollowTap",'★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.');}
       else{note.className='lb-note'+(lbMode==='green'?' pay':'');
-        note.innerHTML=(lbMode==='gold'?'<b>The Gold Room</b> - Gold members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.':'<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season - climb it.')+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> - more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">ルールを見る</button>';}}
+        note.innerHTML=(lbMode==='gold'?__esT_demohomeindex("theGoldRoomGold",'<b>The Gold Room</b> - Gold+ members only. A trade you close in profit is <b>+1 point</b>, one you close red is <b>-1</b>. This season runs for the title; <b>prize money starts next season</b>.'):'<b>'+(lbMode==='green'?__esT_demohomeindex("greenDays4",'Green days'):lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':__esT_demohomeindex("bestWinRate2",'Best win rate'))+__esT_demohomeindex("paysTheTop5",'</b> pays the top 5 in real USDT every 14-day season - climb it.'))+(lbMode==='wr'?__esT_demohomeindex("rankedByWinRate",' Ranked by <b>win rate weighted by trades played</b> - more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.'):'')+__esT_demohomeindex("seeRules",' <button type="button" class="lbr-open lbr-inline" data-lbr="1">ルールを見る</button>');}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
       el.innerHTML=rt.length?rt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up',t.symbol?i:null);}).join('')
-        :'<div class="lb-empty">No winning trades yet this season - open a paper trade and close it in profit to top the board.</div>';
+        :__esT_demohomeindex("noWinningTradesYet",'<div class="lb-empty">No winning trades yet this season - open a paper trade and close it in profit to top the board.</div>');
       lbAfter(el);return;
     }
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,15);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
-        :'<div class="lb-empty">No one has 20 closed trades yet this season - close 20+ and claim the win-rate crown.</div>';
+        :__esT_demohomeindex("noOneHas20",'<div class="lb-empty">No one has 20 closed trades yet this season - close 20+ and claim the win-rate crown.</div>');
       lbAfter(el);return;
     }
     if(lbMode==='xp'){
       var xt=((d&&d.topXp)||[]).slice(0,15);
-      el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this season',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
-        :'<div class="lb-empty">No XP earned yet this season - trade, learn in the Academy, and complete missions to climb.</div>';
+      el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,__esT_demohomeindex("thisSeason",'this season'),(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
+        :__esT_demohomeindex("noXpEarnedYet",'<div class="lb-empty">No XP earned yet this season - trade, learn in the Academy, and complete missions to climb.</div>');
       lbAfter(el);return;
     }
     if(lbMode==='gold'){
       var gt=((d&&d.topGold)||[]).slice(0,15);
       el.innerHTML=gt.length?gt.map(function(t,i){var gp=+t.pts||0;return lbRow(i,t.who,((+t.w||0)+'W-'+(+t.l||0)+'L'),(gp>0?'+':'')+gp+' pts',gp>=0?'up':'down');}).join('')
-        :'<div class="lb-empty">No Gold member has scored yet this season. Reach Gold (12,000 XP) to enter the room.</div>';
+        :__esT_demohomeindex("noGoldMemberHas",'<div class="lb-empty">No Gold member has scored yet this season. Reach Gold (12,000 XP) to enter the room.</div>');
       lbAfter(el);return;
     }
     var st=((d&&d.topGreen)||[]).slice(0,15);
     el.innerHTML=st.length?st.map(function(t,i){return lbRow(i,t.who,((+t.trades||0)+' trades'),(+t.days||0)+((+t.days||0)===1?' day':' days'),'up');}).join('')
-      :'<div class="lb-empty">No green days yet this season - close a day in profit (3 or more trades) and you are on the board.</div>';
+      :__esT_demohomeindex("noGreenDaysYet",'<div class="lb-empty">No green days yet this season - close a day in profit (3 or more trades) and you are on the board.</div>');
     lbAfter(el);
   }
   function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
@@ -1469,19 +1556,19 @@ body.mpa-authed .hero{display:none}
   function lbFollowSet(){try{return JSON.parse(localStorage.getItem('mp_lb_following')||'[]');}catch(e){return [];}}
   function lbSetFollowSet(a){try{localStorage.setItem('mp_lb_following',JSON.stringify(a));}catch(e){}}
   function lbRenderFollowing(el){
-    if(!lbSignedIn()){el.innerHTML='<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>サインイン</button></div>';return;}
+    if(!lbSignedIn()){el.innerHTML=__esT_demohomeindex("signInFreeTo",'<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>サインイン</button></div>');return;}
     el.innerHTML='<div class="lb-empty">Loading…</div>';
     fetch('/api/lb/following').then(function(r){return r.json();}).then(function(d){
       var f=(d&&d.following)||[];
-      lbSetFollowSet(f.map(function(x){return x.name;}));
-      if(!f.length){el.innerHTML='<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>';return;}
+      lbSetFollowSet(f.map(function(x){return __esV_srv(x.name);}));
+      if(!f.length){el.innerHTML=__esT_demohomeindex("youAreNotFollowing",'<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>');return;}
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
-        var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this season';
-        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who"><span data-lvln="'+lbEsc(x.name)+'"></span>'+lbEsc(x.name)+'<span data-lpro="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
+        var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):__esT_demohomeindex("noTradesThisSeason",'no trades this season');
+        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(__esV_srv(x.name))+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who"><span data-lvln="'+lbEsc(__esV_srv(x.name))+'"></span>'+lbEsc(__esV_srv(x.name))+'<span data-lpro="'+lbEsc(__esV_srv(x.name))+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
       }).join('');
       lbAfter(el);
-    }).catch(function(){el.innerHTML='<div class="lb-empty">Could not load your following list.</div>';});
+    }).catch(function(){el.innerHTML=__esT_demohomeindex("couldNotLoadYour",'<div class="lb-empty">Could not load your following list.</div>');});
   }
   var lbModal=null;
   function lbCloseModal(){if(lbModal){lbModal.classList.remove('on');setTimeout(function(){if(lbModal&&!lbModal.classList.contains('on'))lbModal.style.display='none';},200);}}
@@ -1506,10 +1593,10 @@ body.mpa-authed .hero{display:none}
     if(!lbModal){lbModal=document.createElement('div');lbModal.className='lbm';lbModal.innerHTML='<div class="lbm-card"><button type="button" class="lbm-x" aria-label="Close">✕</button><div class="lbm-body"></div></div>';document.body.appendChild(lbModal);
       lbModal.addEventListener('click',function(e){if(e.target===lbModal||e.target.closest('.lbm-x'))lbCloseModal();});}
     var body=lbModal.querySelector('.lbm-body'),card=lbModal.querySelector('.lbm-card');
-    body.innerHTML='<div class="lbm-load">Loading trader…</div>';card.style.setProperty('--lc','#c97f4a');card.className='lbm-card';
+    body.innerHTML=__esT_demohomeindex("loadingTrader",'<div class="lbm-load">Loading trader…</div>');card.style.setProperty('--lc','#c97f4a');card.className='lbm-card';
     lbModal.style.display='flex';requestAnimationFrame(function(){lbModal.classList.add('on');});
     fetch('/api/lb/user?name='+encodeURIComponent(name)).then(function(r){return r.json();}).then(function(d){
-      if(!d||!d.exists){body.innerHTML='<div class="lbm-load">No public profile for this trader yet.</div>';return;}
+      if(!d||!d.exists){body.innerHTML=__esT_demohomeindex("noPublicProfileFor",'<div class="lbm-load">No public profile for this trader yet.</div>');return;}
       var L=d.level||{k:'bronze',name:'Bronze',col:'#c97f4a'},st=d.stats||{},lc=L.col||'#c97f4a';
       card.style.setProperty('--lc',lc);card.className='lbm-card lvl-'+(L.k||'bronze')+(d.frame&&d.frame!=='default'?' frame-'+String(d.frame).replace(/[^a-z0-9_]/g,''):(d.owner?' frame-owner':d.founder?' frame-founder':(d.premium?' lbm-premium':'')))+(d.cardbg?' bg-'+String(d.cardbg).replace(/[^a-z0-9_]/g,''):''); /* MIRROR: mp-profile.js - izabrani okvir pobedjuje auto-halo; bg-* = Vault pozadina */
       var svg=(window.mpLvlSvg?window.mpLvlSvg(L.k,lc):'');
@@ -1520,26 +1607,26 @@ body.mpa-authed .hero{display:none}
       var CHAT_SVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
       var DUEL_SVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/></svg>';
       var dmBtn=(!isSelf&&lbSignedIn())?'<button type="button" class="lbm-dm" data-lbdm="'+lbEsc(d.name)+'" title="Message">'+CHAT_SVG+'</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="'+lbEsc(d.name)+'" title="Challenge to a duel">'+DUEL_SVG+'</button>':'';
-      var mBtn='<div class="lbm-acts">'+(isSelf?'<div class="lbm-self">This is you</div>':(lbSignedIn()?'<button type="button" class="lbm-follow'+(following?' on':'')+'" data-lbfollow="'+lbEsc(d.name)+'" data-tuid="'+lbEsc(d.uid)+'">'+(following?'Following':'Follow')+'</button>':'<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>'))+dmBtn+'</div>';
+      var mBtn='<div class="lbm-acts">'+(isSelf?__esT_demohomeindex("thisIsYou",'<div class="lbm-self">This is you</div>'):(lbSignedIn()?'<button type="button" class="lbm-follow'+(following?' on':'')+'" data-lbfollow="'+lbEsc(d.name)+'" data-tuid="'+lbEsc(d.uid)+'">'+(following?'Following':'Follow')+'</button>':__esT_demohomeindex("signInToFollow",'<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>')))+dmBtn+'</div>';
       var av=d.avatar?(/^data:image\//.test(d.avatar)?'<img class="lbm-av lbm-av-img" src="'+lbEsc(d.avatar)+'" alt="">':'<span class="lbm-av">'+lbEsc(d.avatar)+'</span>'):'';
       var acc=d.accent||'';
       var bioHtml=d.bio?'<div class="lbm-bio"'+(acc?' style="border-color:'+acc+'55"':'')+'>'+lbEsc(d.bio)+'</div>':'';
       var coinsHtml=(d.coins&&d.coins.length)?'<div class="lbm-coins">'+d.coins.map(function(c){return '<span class="lbm-coin"'+(acc?' style="color:'+acc+';border-color:'+acc+'44"':'')+'>'+lbEsc(c)+'</span>';}).join('')+'</div>':'';
       body.innerHTML=
-        (d.otag?'<div class="lbm-premtag lbm-ownertag">'+d.otag+'</div>':d.owner?'<div class="lbm-premtag lbm-ownertag">OWNER</div>':d.premium?(function(){var tc=LB_TAGC[String(d.frame||'').replace(/[^a-z0-9_]/g,'')]||LB_TAGC['default'];return '<div class="lbm-premtag" data-sheen style="background:linear-gradient(100deg,'+tc[0]+' 0%,'+tc[1]+' 42%,#ffffff 50%,'+tc[1]+' 58%,'+tc[0]+' 100%);background-size:280% 100%;background-position:120% 0;box-shadow:0 0 16px -6px '+tc[0]+'">PREMIUM MEMBER</div>';})():'')+(function(){var w=d.wins;if(!w||!(+w.n>0))return '';var n=+w.n||0,ttl=n+' season board win'+(n===1?'':'s')+(w.boards&&w.boards.length?' ('+w.boards.join(', ')+')':'');return '<div class="lbm-medal" title="'+lbEsc(ttl)+'" aria-label="'+lbEsc(ttl)+'">'+'<svg viewBox="0 0 44 56" width="34" height="43" aria-hidden="true">'+'<defs><linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".45" stop-color="#ffd75a"/><stop offset=".6" stop-color="#b8860b"/><stop offset="1" stop-color="#ffe98a"/></linearGradient>'+'<linearGradient id="mdr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a4d"/><stop offset="1" stop-color="#8f1f18"/></linearGradient></defs>'+'<path d="M13 2h7l-3 17h-8z" fill="url(#mdr)"/><path d="M31 2h-7l3 17h8z" fill="url(#mdr)" opacity=".85"/>'+'<circle cx="22" cy="37" r="16" fill="url(#mdg)" stroke="#7a5a10" stroke-width="1.2"/>'+'<circle cx="22" cy="37" r="11.5" fill="none" stroke="#7a5a10" stroke-width=".9" opacity=".55"/>'+'<text x="22" y="42" text-anchor="middle" font-family="Space Mono, monospace" font-size="13" font-weight="700" fill="#4a3608">'+(n>9?'9+':n)+'</text>'+'</svg><span>SEASON WINNER</span></div>';})()
-        +'<div class="lbm-head"><div class="lbm-badge">'+svg+'</div><div class="lbm-id"><div class="lbm-name">'+av+(d.premium?'<span class="mp-progold">'+lbEsc(d.name)+'</span>':lbEsc(d.name))+(d.mutual?'<span class="lbm-friend" title="You follow each other">★ Friends</span>':(d.followsMe?'<span class="lbm-fw" title="Follows you">Follows you</span>':''))+'</div><div class="lbm-lvl" style="color:'+lc+'">'+lbEsc(L.name||'Bronze')+(L.next?' · '+(L.pct||0)+'% to '+lbEsc(L.next):' · max tier')+'</div></div></div>'
+        (d.otag?'<div class="lbm-premtag lbm-ownertag">'+d.otag+'</div>':d.owner?'<div class="lbm-premtag lbm-ownertag">OWNER</div>':d.premium?(function(){var tc=LB_TAGC[String(d.frame||'').replace(/[^a-z0-9_]/g,'')]||LB_TAGC['default'];return '<div class="lbm-premtag" data-sheen style="background:linear-gradient(100deg,'+tc[0]+' 0%,'+tc[1]+' 42%,#ffffff 50%,'+tc[1]+' 58%,'+tc[0]+' 100%);background-size:280% 100%;background-position:120% 0;box-shadow:0 0 16px -6px '+tc[0]+__esT_demohomeindex("premiumMember",'">PREMIUM MEMBER</div>');})():'')+(function(){var w=d.wins;if(!w||!(+w.n>0))return '';var n=+w.n||0,ttl=n+__esT_demohomeindex("seasonBoardWin",' season board win')+(n===1?'':'s')+(w.boards&&w.boards.length?' ('+w.boards.join(', ')+')':'');return '<div class="lbm-medal" title="'+lbEsc(ttl)+'" aria-label="'+lbEsc(ttl)+'">'+'<svg viewBox="0 0 44 56" width="34" height="43" aria-hidden="true">'+'<defs><linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".45" stop-color="#ffd75a"/><stop offset=".6" stop-color="#b8860b"/><stop offset="1" stop-color="#ffe98a"/></linearGradient>'+'<linearGradient id="mdr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a4d"/><stop offset="1" stop-color="#8f1f18"/></linearGradient></defs>'+'<path d="M13 2h7l-3 17h-8z" fill="url(#mdr)"/><path d="M31 2h-7l3 17h8z" fill="url(#mdr)" opacity=".85"/>'+'<circle cx="22" cy="37" r="16" fill="url(#mdg)" stroke="#7a5a10" stroke-width="1.2"/>'+'<circle cx="22" cy="37" r="11.5" fill="none" stroke="#7a5a10" stroke-width=".9" opacity=".55"/>'+'<text x="22" y="42" text-anchor="middle" font-family="Space Mono, monospace" font-size="13" font-weight="700" fill="#4a3608">'+(n>9?'9+':n)+'</text>'+__esT_demohomeindex("seasonWinner",'</svg><span>SEASON WINNER</span></div>');})()
+        +'<div class="lbm-head"><div class="lbm-badge">'+svg+'</div><div class="lbm-id"><div class="lbm-name">'+av+(d.premium?'<span class="mp-progold">'+lbEsc(d.name)+'</span>':lbEsc(d.name))+(d.mutual?'<span class="lbm-friend" title="You follow each other">★ Friends</span>':(d.followsMe?__esT_demohomeindex("followsYou",'<span class="lbm-fw" title="Follows you">Follows you</span>'):''))+'</div><div class="lbm-lvl" style="color:'+lc+'">'+lbEsc(L.name||'Bronze')+(L.next?' · '+(L.pct||0)+'% to '+lbEsc(L.next):' · max tier')+'</div></div></div>'
         +bioHtml+coinsHtml
         +'<div class="lbm-bar"><i style="width:'+(L.pct||0)+'%;background:'+lc+'"></i></div>'
         +'<div class="lbm-grid">'
           +stat((st.trades||0),'Trades')
-          +stat((st.winRate||0)+'%','Win rate',st.winRate>=50?'#34d99a':'')
+          +stat((st.winRate||0)+'%',__esT_demohomeindex("winRate2",'Win rate'),st.winRate>=50?'#34d99a':'')
           +stat((st.bestRoe==null?'-':lbPctC(st.bestRoe)),'Best ROE',st.bestRoe>0?'#34d99a':'')
-          +stat((st.bestPnl==null?'-':lbMoneyC(st.bestPnl)),'Best trade',st.bestPnl>0?'#34d99a':'')
+          +stat((st.bestPnl==null?'-':lbMoneyC(st.bestPnl)),__esT_demohomeindex("bestTrade",'Best trade'),st.bestPnl>0?'#34d99a':'')
           +stat(lbMoneyC(st.realized||0),'Realized P&L',(st.realized>=0?'#34d99a':'#ff6c5c'))
-          +stat(lbMoneyC(st.weekPnl||0),(st.weekTrades||0)+' trades · wk',(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
+          +stat(lbMoneyC(st.weekPnl||0),(st.weekTrades||0)+__esT_demohomeindex("tradesWk",' trades · wk'),(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
         +'</div>'
         +'<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>'+(d.followers||0)+'</b> follower'+((d.followers===1)?'':'s')+'</span>'+mBtn+'</div>';
-    }).catch(function(){body.innerHTML='<div class="lbm-load">Could not load this trader.</div>';});
+    }).catch(function(){body.innerHTML=__esT_demohomeindex("couldNotLoadThis",'<div class="lbm-load">Could not load this trader.</div>');});
   }
   document.addEventListener('click',function(e){
     var fb=e.target.closest&&e.target.closest('[data-lbfollow]');
@@ -1582,7 +1669,7 @@ body.mpa-authed .hero{display:none}
     function load(){
       fetch('/api/trades/feed').then(function(r){return r.json();}).then(function(d){
         var arr=(d&&d.closes)||[];
-        if(!arr.length){if(first){el.innerHTML='<div class="cf-empty">No closed trades yet - the floor is warming up.</div>';first=false;}return;}
+        if(!arr.length){if(first){el.innerHTML=__esT_demohomeindex("noClosedTradesYet",'<div class="cf-empty">No closed trades yet - the floor is warming up.</div>');first=false;}return;}
         var frag='',news=[];
         arr.slice(0,10).forEach(function(x){var k=(+x.ts||0)+'|'+String(x.who||'');if(!seen[k])news.push(k);seen[k]=1;frag+=row(x);});
         el.innerHTML=frag;
@@ -1598,15 +1685,15 @@ body.mpa-authed .hero{display:none}
   (function(){
     var el=document.getElementById('duelFeed'); if(!el) return;
     var STAR='<svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px;vertical-align:-1px;margin-left:2px"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>';
-    var MET={roe:'ROE',wr:'Win rate',win:'Biggest win',pnl:'Profit',survival:'Survival',streak:'Streak',sniper:'Sniper'};
+    var MET={roe:'ROE',wr:__esT_demohomeindex("winRate2",'Win rate'),win:__esT_demohomeindex("biggestWin",'Biggest win'),pnl:'Profit',survival:'Survival',streak:'Streak',sniper:'Sniper'};
     function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     function nm(n,pr){return '<span class="nm'+(pr?' pr':'')+'" data-lbu="'+esc(n)+'" role="button">@'+esc(n)+(pr?STAR:'')+'</span>';}
     function tleft(end){var ms=end-Date.now();if(ms<=0)return 'ending';var h=Math.floor(ms/3600000),d=Math.floor(h/24);return d>=1?d+'d':h>=1?h+'h':Math.max(1,Math.floor(ms/60000))+'m';}
     function durS(v){return v===3600000?'1h':v===86400000?'24h':v===259200000?'3d':'7d';}
     function row(x){
       var met=MET[x.metric]||'ROE',sym=x.sym?' · '+esc(x.sym):'',prem=x.aPrem||x.bPrem;
-      if(x.status==='open')return '<div class="df-r'+(x.aPrem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">posted an open duel</span><span class="sub">'+met+sym+' · '+durS(+x.dur)+(x.stake>0?' · stake '+x.stake+' T, winner takes '+(x.stake*2):' · no stake')+'</span></div><button type="button" class="df-take" data-dftake="'+esc(x.id)+'">Take it</button></div>';
-      if(x.status==='active')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+(x.stake*2)+' T pot':'')+' · '+tleft(x.end)+' left</span></div><span class="df-tag active"><i></i>Live</span></div>';
+      if(x.status==='open')return '<div class="df-r'+(x.aPrem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+__esT_demohomeindex("postedAnOpenDuel",'<span class="vs">posted an open duel</span><span class="sub">')+met+sym+' · '+durS(+x.dur)+(x.stake>0?' · stake '+x.stake+' T, winner takes '+(x.stake*2):__esT_demohomeindex("noStake",' · no stake'))+'</span></div><button type="button" class="df-take" data-dftake="'+esc(x.id)+'">Take it</button></div>';
+      if(x.status==='active')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+(x.stake*2)+' T pot':'')+' · '+tleft(x.end)+__esT_demohomeindex("leftLive",' left</span></div><span class="df-tag active"><i></i>Live</span></div>');
       var w=x.winner==='a'?x.a:x.winner==='b'?x.b:'',wp=x.winner==='a'?x.aPrem:x.bPrem,l=x.winner==='a'?x.b:x.a,lp=x.winner==='a'?x.bPrem:x.aPrem;
       if(!w)return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+' · dead heat</span></div><span class="df-tag done">Tie</span></div>';
       return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(w,wp)+'<span class="vs">beat</span>'+nm(l,lp)+'<span class="sub">'+met+sym+(x.stake>0?' · +'+(x.stake*2)+' T':'')+'</span></div><span class="df-tag done">Result</span></div>';
@@ -1616,11 +1703,11 @@ body.mpa-authed .hero{display:none}
         var arr=(d&&d.duels)||[];
         var opens=arr.filter(function(x){return x.status==='open';}).sort(function(a,b){return b.ts-a.ts;});
         var hist=arr.filter(function(x){return x.status==='active'||x.status==='done';}).sort(function(a,b){return (a.status==='active'?0:1)-(b.status==='active'?0:1)||(b.ts-a.ts);});
-        if(!opens.length&&!hist.length){el.innerHTML='<div class="df-empty">No duels yet - <b>be the first</b>: post an open challenge and let anyone take it.</div>';return;}
+        if(!opens.length&&!hist.length){el.innerHTML=__esT_demohomeindex("noDuelsYetBe",'<div class="df-empty">No duels yet - <b>be the first</b>: post an open challenge and let anyone take it.</div>');return;}
         var html='';
-        html+='<div class="df-sechd">Open challenges - first taker is in</div>';
+        html+=__esT_demohomeindex("openChallengesFirstTaker",'<div class="df-sechd">Open challenges - first taker is in</div>');
         html+=opens.length?opens.slice(0,6).map(row).join(''):'<div class="df-empty" style="padding:8px 0">The board is empty - post one and set your terms.</div>';
-        if(hist.length)html+='<div class="df-sechd">Duel history</div>'+hist.slice(0,8).map(row).join('');
+        if(hist.length)html+=__esT_demohomeindex("duelHistory",'<div class="df-sechd">Duel history</div>')+hist.slice(0,8).map(row).join('');
         el.innerHTML=html;
         Array.prototype.forEach.call(el.querySelectorAll('[data-dftake]'),function(b){b.addEventListener('click',function(){
           var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
@@ -1628,8 +1715,8 @@ body.mpa-authed .hero{display:none}
           b.disabled=true;b.textContent='…';
           fetch('/api/duel/accept',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-dftake')})})
             .then(function(r){return r.json();}).then(function(jd){
-              if(jd&&jd.ok){b.textContent='You are in';if(window.mpAuth&&window.mpAuth.duelsView)setTimeout(window.mpAuth.duelsView,700);setTimeout(draw,1200);}
-              else{b.disabled=false;b.textContent=jd&&jd.error==='need_username'?'Set a username first':jd&&jd.error==='gone'?'Already taken':jd&&jd.error==='exists'?'Live duel with them':jd&&jd.error==='need_xp'?('Need '+jd.need+' XP'):'Try again';}
+              if(jd&&jd.ok){b.textContent=__esT_demohomeindex("youAreIn",'You are in');if(window.mpAuth&&window.mpAuth.duelsView)setTimeout(window.mpAuth.duelsView,700);setTimeout(draw,1200);}
+              else{b.disabled=false;b.textContent=jd&&jd.error==='need_username'?__esT_demohomeindex("setAUsernameFirst",'Set a username first'):jd&&jd.error==='gone'?__esT_demohomeindex("alreadyTaken",'Already taken'):jd&&jd.error==='exists'?__esT_demohomeindex("liveDuelWithThem",'Live duel with them'):jd&&jd.error==='need_xp'?('Need '+jd.need+' XP'):__esT_demohomeindex("tryAgain",'Try again');}
             }).catch(function(){b.disabled=false;b.textContent='Take it';});
         });});
       }).catch(function(){});
@@ -1650,73 +1737,119 @@ body.mpa-authed .hero{display:none}
     ['lbPz1','lbPz2','lbPz3'].forEach(function(id,i){var e=document.getElementById(id);if(e&&pz[i]!=null)e.textContent='$'+pz[i];});
     if(window.mpLbpzSetPrizes)window.mpLbpzSetPrizes(d&&d.boardPrizes);
     var we=+(d&&d.weekEnd)||0,rs=document.getElementById('lbReset');
-    if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='14-day season · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
+    if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML=__esT_demohomeindex("14DaySeasonEnds",'14-day season · ends in <b>')+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
   }).catch(function(){});
   // reflect sign-in state on the leaderboard CTA
-  function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' - close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
+  function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?(__esT_demohomeindex("youAreInAs",'You are in as @')+((me.username||me.email||'you').split('@')[0])+__esT_demohomeindex("closeAWinningTrade",' - close a winning trade to climb.')):__esT_demohomeindex("signInFreeAnd",'Sign in (free) and your best trade enters automatically.');}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
-  /* This season (compact) + the member strip: one state from six endpoints, rendered twice. */
+  /* COMPETITION card (2026-09-17): one keyless read of /api/competition (edge-cached 120 s) fills the pool, the day
+     strip and the leader of each board. The static markup is today's numbers so a crawler reads a true page; this
+     block is the authority the moment it answers. Nothing here depends on sign-in. */
   (function(){
-    var you=document.getElementById('ssYou'),board=document.getElementById('ssBoard'),live=document.getElementById('ssLive'),dash=document.getElementById('dash');if(!you||!dash)return;
+    var card=document.getElementById('cpCard');if(!card)return;
+    function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function int(n){return Math.round(+n||0).toLocaleString('en-US');}
+    function val(id,v){v=+v||0;
+      if(id==='roe')return (v>=0?'+':'')+int(v)+'%';
+      if(id==='green')return int(v)+(v===1?' day':' days');
+      if(id==='winrate')return v.toFixed(1)+'%';
+      if(id==='xp')return int(v)+' XP';
+      if(id==='gold')return int(v)+' pts';
+      if(id==='bybit'||id==='moon')return '$'+(v>=1e6?(v/1e6).toFixed(2)+'M':v>=1e4?(v/1e3).toFixed(1)+'k':v>=100?int(v):(+v).toFixed(2));
+      return int(v);}
+    function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600);return d?d+'d '+h+'h':h+'h';}
+    function paint(d){
+      if(!d||!d.boards||!d.boards.length)return;
+      var pool=+d.prize_pool_usd_per_season||0,month=+d.prize_pool_usd_per_month||0;
+      if(pool>0){document.getElementById('cpPool').textContent='$'+int(pool);
+        document.getElementById('cpPoolS').textContent='a season'+(month>pool?' ($'+int(month)+' a month)':'')+', paid in USD to your rewards balance. '+__esT_demohomeindex("fivePaperBoardsFree",'Four paper boards open with your first closed trade, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.');}
+      var sn=d.season||{},day=+sn.day_of_season||0,endMs=sn.ends?Date.parse(sn.ends):0;
+      if(day>0){document.getElementById('cpDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?__esT_demohomeindex("onNow",'on now'):'')+'"></i>';}).join('');
+        document.getElementById('cpEye').textContent='day '+day+' of 14';
+        document.getElementById('cpLeft').textContent=endMs>Date.now()?__esT_demohomeindex("endsIn",'ends in ')+left(endMs-Date.now())+__esT_demohomeindex("thenANewOne",' · then a new one starts'):__esT_demohomeindex("aNewSeasonStarts",'a new season starts today');}
+      d.boards.forEach(function(b){var el=card.querySelector('.cp-b[data-b="'+b.id+'"]');if(!el)return;
+        var pz=+b.prize_pool_usd||0,top=(b.prize_usd_top5||[])[0]||0;
+        if(pz>0)el.querySelector('.cp-bp').innerHTML='$'+int(pz)+'<small>pool · $'+int(top)+' first'+'</small>';
+        var L=b.leader,bl=el.querySelector('.cp-bl');
+        if(L&&L.name){bl.innerHTML='<i>1</i><b title="'+esc(L.name)+'">'+esc(L.name)+'</b><em>'+esc(val(b.id,L.value))+'</em>';}
+        else{bl.innerHTML='<i>1</i><b>open - nobody ranked yet</b><em></em>';}});
+    }
+    function load(){fetch('/api/competition',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(paint).catch(function(){});}
+    setTimeout(load,250);setInterval(function(){if(!document.hidden)load();},300000);
+  })();
+  /* The member strip (was "This season" + the strip until 2026-09-17; the section is gone, the strip stays): one state from five endpoints. */
+  (function(){
+    var dash=document.getElementById('dash');if(!dash)return;
     var S={};
     function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
     function int(n){return Math.round(+n||0).toLocaleString('en-US');}
-    function money(v){v=+v||0;var a=Math.abs(v);return (v<0?'-$':'+$')+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'k':a.toFixed(2));}
     function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
-    function ago(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
     function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;}
+    /* INSTANT MEMBER CARD (2026-09-10, owner: "it does not load right away like the paper trade card, so it"
+       "appears later out of nowhere and the user wonders what they clicked"). Measured before: mpa-authed
+       landed at ~180 ms (mp-auth restores the account from its own cache) but paint() only ran after
+       /api/pass + /api/goals + /api/predict all resolved - ~950 ms - so a 460 px block dropped in.
+       Now the card is drawn from what the browser ALREADY has (the account, and last visit's season numbers
+       kept in localStorage) the moment the account is known; the live numbers replace them in place. */
+    var SNAPK='mp_dash_snap';
+    function snapGet(){try{var v=JSON.parse(localStorage.getItem(SNAPK)||'null');return (v&&Date.now()-(+v.ts||0)<864e5)?v:null;}catch(e){return null;}}
+    function snapPut(o){try{o.ts=Date.now();localStorage.setItem(SNAPK,JSON.stringify(o));}catch(e){}}
+    var HES={close10:'Cierra 10 operaciones para entrar en las tablas',youAre:'Vas #',seasonN:'Temporada ',dayS:' · día ',of14e:' de 14 · termina en ',notRanked:'sin clasificar aún',nextUp:'Siguiente',xpTo:' XP para ',closedS:'cerrado',wb:'Bienvenido de nuevo, ',season:'Temporada',day:' · día ',of14:' de 14 · termina en ',passTier:'Nivel del pass',toClaim:' por reclamar',xpNext:' XP al siguiente',claim:'Reclama ',passReward:' del pass',dailyCall:'Pronóstico diario',tmrw:'mañana 00:00 UTC',makeCall:'Haz tu pronóstico de BTC',goals:'Metas',pick:'elige ',more:' más',claimGoal:'Reclama la meta: ',pickGoal:'Elige tu meta de temporada',boards:'Tablas',green:'Días verdes',roe:'Mejor ROE',wr:'Tasa de acierto',sxp:'XP de temporada',loading:'cargando'};function HT(k,en){try{var L=String(document.documentElement.lang||'en').slice(0,2).toLowerCase();if(L==='es'&&HES[k]!=null)return HES[k];}catch(e){}return en;}var SKEL='<span class="dst sk"><b>-</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Boards</em><i>loading</i></span>';
+    function ident(m){ var L=m.level||{},col=L.col||'#c2f64a';
+      document.getElementById('dashT').innerHTML=HT('wb',__esT_demohomeindex("welcomeBack",'Welcome back, '))+'<b>@'+esc(m.username||'trader')+'</b>';
+      var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';
+      if(m.avatar&&/^data:image\//.test(m.avatar)){av.innerHTML='<img src="'+m.avatar+'" alt="">';}else{av.textContent=(m.username||'M').charAt(0).toUpperCase();}
+      var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;
+      return col; }
+    function quick(){ var m=me(); if(!m||!dash.hidden)return; var sn=snapGet()||{};
+      try{ ident(m); }catch(e){ return; }
+      document.getElementById('dashEye').textContent=sn.eye||'Season';
+      var dq=+sn.day||0;
+      document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<dq?'on':i+1===dq?__esT_demohomeindex("onNow",'on now'):'')+'"></i>';}).join('');
+      document.getElementById('dashChips').innerHTML=sn.chips||SKEL;
+      document.getElementById('dashTodo').innerHTML=sn.todo||__esT_demohomeindex("1CheckingYourSeason",'<span><i>1</i>Checking your season…</span>');
+      dash.hidden=false; document.body.classList.add('mpa-dash'); document.documentElement.classList.add('mp-li');
+      try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){} }
     function J(u){return fetch(u,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}
     function paint(){
       var m=me(),signed=!!m,sk=(S.pass&&S.pass.season)||(S.goals&&S.goals.season)||null;
       var day=sk?Math.min(14,Math.max(1,Math.floor((Date.now()-Date.parse(sk.from+'T00:00:00Z'))/86400000)+1)):0;
-      var eye=sk?('Season '+(sk.idx+1)+' · day '+day+' of 14 · ends in '+left(sk.endMs-Date.now())):'Season';
-      document.getElementById('ssEye').textContent=eye;
-      document.getElementById('ssDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
-      var rows=[],P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
-      if(signed){
-        document.getElementById('ssBig').innerHTML='Your <b>season</b>';
-        if(P)rows.push('<div class="ss-row"><span>Pass tier</span><b class="pro">'+P.tier+' / '+(P.n||40)+(P.claimable?' · '+P.claimable+' to claim':'')+'</b></div>');
-        if(D){var t=D.me&&D.me.today;rows.push('<div class="ss-row"><span>Daily call</span><b class="'+(t?'ok':'')+'">'+(t?'made · $'+int(t.guess):(D.open?'open until '+D.cutoffH+':00 UTC':'closed today'))+'</b></div>');}
-        if(G){var pk=G.picks||[],dn=pk.filter(function(x){return x.done&&!x.paid;}).length;rows.push('<div class="ss-row"><span>Goals</span><b class="'+(dn?'gold':'')+'">'+(pk.length?pk.length+' picked'+(dn?' · '+dn+' to claim':''):'pick two')+'</b></div>');}
-        if(LB){var nm=(m.username||'').toLowerCase(),best=null;[['topGreen','Green days'],['top','Highest ROE'],['topWr','Win rate'],['topXp','Season XP'],['topGold','Gold Room']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nm;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1]};});rows.push('<div class="ss-row"><span>Boards</span><b class="'+(best&&best.rank<=5?'ok':'')+'">'+(best?'#'+best.rank+' '+best.name:'not ranked yet')+'</b></div>');}
-      }else{
-        document.getElementById('ssBig').innerHTML='Boards, pass, calls, goals';
-        rows.push('<div class="ss-row"><span>Season pass</span><b class="pro">40 tiers · free track</b></div>');
-        rows.push('<div class="ss-row"><span>Daily call</span><b>'+(D?(D.open?'open · up to 12 Ticks':'closed today'):'one a day')+'</b></div>');
-        rows.push('<div class="ss-row"><span>Season goals</span><b class="gold">pick two · 100 XP each</b></div>');
-        if(H)rows.push('<div class="ss-row"><span>XPハッピーアワー</span><b class="'+(H.active?'ok':'')+'">'+(H.active?'live now':H.nextStartMs?'in '+left(H.nextStartMs-Date.now()):String(H.hourUTC).padStart(2,'0')+':00 UTC')+'</b></div>');
-      }
-      document.getElementById('ssRows').innerHTML=rows.join('');
+      var eye=sk?(HT('seasonN','Season ')+(sk.idx+1)+HT('dayS',' · day ')+day+HT('of14e',__esT_demohomeindex("of14EndsIn",' of 14 · ends in '))+left(sk.endMs-Date.now())):'Season';
+      var P=S.pass,G=S.goals,D=S.pred,H=S.hh,LB=S.lb;
       /* strip */
-      if(signed&&sk){dash.hidden=false;var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
-        document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML='Welcome back, <b>@'+esc(nm)+'</b>';
+      if(signed){dash.hidden=false;document.body.classList.add('mpa-dash');document.documentElement.classList.add('mp-li');var nm=m.username||'trader',L=m.level||{},col=L.col||'#c2f64a';
+        document.getElementById('dashEye').textContent=eye;document.getElementById('dashT').innerHTML=HT('wb',__esT_demohomeindex("welcomeBack",'Welcome back, '))+'<b>@'+esc(nm)+'</b>';
         var av=document.getElementById('dashAv');av.style.setProperty('--lvl',col);av.style.background=(m.avatar&&/^data:image\//.test(m.avatar))?'#0a0b0d':'linear-gradient(160deg,#fff,'+col+')';av.innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc(nm.charAt(0).toUpperCase());
-        var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:'top of the ladder';
-        document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?'on now':'')+'"></i>';}).join('');
+        var lv=document.getElementById('dashLvl');lv.textContent=(L.name||'Unranked')+' · '+int(m.xp||L.xp||0)+' XP';lv.style.color=col;document.getElementById('dashBar').style.width=Math.max(2,Math.min(100,+L.pct||0))+'%';document.getElementById('dashBar').style.background='linear-gradient(90deg,'+col+',#fff)';document.getElementById('dashNx').textContent=L.next?int(L.toNext||0)+' XP to '+L.next:__esT_demohomeindex("topOfTheLadder",'top of the ladder');
+        document.getElementById('dashDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?__esT_demohomeindex("onNow",'on now'):'')+'"></i>';}).join('');
         var ch=[],todo=[];
-        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/'+(P.n||40)+'</small></b><em>Pass tier</em><i>'+(P.claimable?P.claimable+' to claim':P.tier>=(P.n||40)?'complete':int(P.next||0)+' XP to next')+'</i></span>');if(P.claimable)todo.push(['ok','Claim '+P.claimable+' pass reward'+(P.claimable>1?'s':'')]);}
-        if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>Daily call</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+' days in a row':''):D.open?'until '+D.cutoffH+':00 UTC':'tomorrow 00:00 UTC')+'</i></span>');if(!td&&D.open)todo.push(['hot','Make today\'s BTC call']);}
-        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>Goals</em><i>'+(gd.length?gd.length+' to claim':pk2.length<2?'pick '+(2-pk2.length)+' more':pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok','Claim goal: '+x.name]);});if(pk2.length<2)todo.push(['pro','Pick your season goal'+(pk2.length?'':'s')]);}
-        if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen','Green days','green'],['top','Highest ROE','roe'],['topWr','Win rate','wr'],['topXp','Season XP','xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
-          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'-')+'</b><em>Boards</em><i>'+(best?best.name+(best.pay?' · $'+best.pay:''):'not ranked yet')+'</i></span>');if(best&&best.rank<=5)todo.push(['ok','You are #'+best.rank+' on '+best.name+(best.pay?' - $'+best.pay+' if it holds':'')]);else if(!best)todo.push(['pro','Close 10 trades to enter the boards']);}
-        if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+' XP per winning close']);else if(H.nextStartMs)todo.push(['','Happy Hour in '+left(H.nextStartMs-Date.now())]);}
-        document.getElementById('dashChips').innerHTML=ch.join('');
-        document.getElementById('dashTodo').innerHTML=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('')||'<span class="ok"><i>1</i>All caught up - go trade</span>';}
-      else dash.hidden=true;
-      /* leading board: green days, top 5 with prizes */
-      if(LB){var pz=(LB.boardPrizes||{}).green||[],top=(LB.topGreen||[]).slice(0,5);document.getElementById('ssPz').textContent=pz.length?'$'+pz.reduce(function(a,c){return a+c;},0)+' pool':'';
-        board.innerHTML=top.length?top.map(function(r){return '<div class="ss-r t'+r.rank+'"><i>'+r.rank+'</i><span class="w" data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</span><span class="v up">'+r.days+' green</span><span class="pz">'+(pz[r.rank-1]?'$'+pz[r.rank-1]:'')+'</span></div>';}).join(''):'<div class="ss-empty">Nobody qualifies yet - 10 closes and a green season get you on.</div>';}
-      if(S.closes){live.innerHTML=S.closes.length?S.closes.slice(0,5).map(function(c){var up=(+c.pnl||0)>=0;return '<div class="ss-r cl"><span class="w" data-lbu="'+esc(c.who)+'" title="'+esc(c.who)+'">'+esc(c.who)+'</span><span class="sy '+(c.side==='short'?'s':'l')+'" title="'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'">'+esc(String(c.sym||'').toUpperCase())+' ×'+(c.lev||1)+'</span><span class="v '+(c.liq?'dn':up?'up':'dn')+'">'+(c.liq?'REKT':money(c.pnl))+'</span><span class="ago">'+ago(c.ts)+'</span></div>';}).join(''):'<div class="ss-empty">Quiet on the floor right now.</div>';}
+        if(P){ch.push('<span class="dst pro'+(P.claimable?' hot':'')+'"><b>'+P.tier+'<small>/'+(P.n||40)+'</small></b><em>'+HT('passTier','Pass tier')+'</em><i>'+(P.claimable?P.claimable+HT('toClaim',__esT_demohomeindex("toClaim",' to claim')):P.tier>=(P.n||40)?'complete':int(P.next||0)+HT('xpNext',__esT_demohomeindex("xpToNext",' XP to next')))+'</i></span>');if(P.claimable)todo.push(['ok',HT('claim','Claim ')+P.claimable+HT('passReward',__esT_demohomeindex("passReward",' pass reward'))+(P.claimable>1?'s':'')]);}
+        if(D){var td=D.me&&D.me.today;ch.push('<span class="dst'+(td?' ok':D.open?' hot':'')+'"><b>'+(td?'$'+int(td.guess):D.open?'open':'closed')+'</b><em>'+HT('dailyCall','Daily call')+'</em><i>'+(td?'made'+(D.me.streak>1?' · '+D.me.streak+__esT_demohomeindex("daysInARow",' days in a row'):''):D.open?'until '+D.cutoffH+':00 UTC':HT('tmrw',__esT_demohomeindex("tomorrow0000Utc",'tomorrow 00:00 UTC')))+'</i></span>');if(!td&&D.open)todo.push(['hot',__esT_demohomeindex("makeTodaySBtc",'Make today\'s BTC call')]);}
+        if(G){var pk2=G.picks||[],gd=pk2.filter(function(x){return x.done&&!x.paid;});ch.push('<span class="dst gold"><b>'+pk2.length+'<small>/2</small></b><em>'+HT('goals','Goals')+'</em><i>'+(gd.length?gd.length+HT('toClaim',__esT_demohomeindex("toClaim",' to claim')):pk2.length<2?HT('pick','pick ')+(2-pk2.length)+HT('more',' more'):pk2.map(function(x){return Math.min(x.n||0,x.target)+'/'+x.target;}).join(' · '))+'</i></span>');gd.forEach(function(x){todo.push(['ok',HT('claimGoal',__esT_demohomeindex("claimGoal",'Claim goal: '))+__esV_srv(x.name)]);});if(pk2.length<2)todo.push(['pro',HT('pickGoal',__esT_demohomeindex("pickYourSeasonGoal",'Pick your season goal'))+(pk2.length?'':'s')]);}
+        if(LB){var nml=nm.toLowerCase(),best=null;[['topGreen',HT('green',__esT_demohomeindex("greenDays4",'Green days')),'green'],['top',HT('roe','Highest ROE'),'roe'],['topWr',HT('wr',__esT_demohomeindex("winRate2",'Win rate')),'wr'],['topXp',HT('sxp',__esT_demohomeindex("seasonXp2",'Season XP')),'xp'],['topGold','Gold Room','gold']].forEach(function(b){var r=(LB[b[0]]||[]).filter(function(x){return String(x.who||'').toLowerCase()===nml;})[0];if(r&&(!best||r.rank<best.rank))best={rank:r.rank,name:b[1],pay:(((LB.boardPrizes||{})[b[2]]||[])[r.rank-1])||0};});
+          ch.push('<span class="dst'+(best&&best.rank<=5?' ok':'')+'"><b>'+(best?'#'+best.rank:'-')+'</b><em>'+HT('boards','Boards')+'</em><i>'+(best?__esV_srv(best.name)+(best.pay?' · $'+best.pay:''):HT('notRanked',__esT_demohomeindex("notRankedYet",'not ranked yet')))+'</i></span>');if(best&&best.rank<=5)todo.push(['ok',HT('youAre',__esT_demohomeindex("youAre",'You are #'))+best.rank+' on '+__esV_srv(best.name)+(best.pay?' - $'+best.pay+__esT_demohomeindex("ifItHolds",' if it holds'):'')]);else if(!best)todo.push(['pro',HT('close10',__esT_demohomeindex("close10TradesTo",'Close 10 trades to enter the boards'))]);}
+        if(H){if(H.active)todo.push(['hot','Happy Hour is live: +'+(H.xp||0)+__esT_demohomeindex("xpPerWinningClose",' XP per winning close')]);else if(H.nextStartMs)todo.push(['',__esT_demohomeindex("happyHourIn",'Happy Hour in ')+left(H.nextStartMs-Date.now())]);}
+        /* keep whatever quick() already drew until real data exists - a fetch that has not answered yet must
+           never blank a card the reader is looking at */
+        var todoH=todo.slice(0,3).map(function(t,i){return '<span class="'+t[0]+'"><i>'+(i+1)+'</i>'+esc(t[1])+'</span>';}).join('');
+        if(ch.length){document.getElementById('dashChips').innerHTML=ch.join('');}
+        if(sk&&!todoH)todoH=__esT_demohomeindex("1AllCaughtUp",'<span class="ok"><i>1</i>All caught up - go trade</span>');
+        if(todoH)document.getElementById('dashTodo').innerHTML=todoH;
+        if(sk&&ch.length)snapPut({eye:eye,day:day,chips:ch.join(''),todo:todoH}); /* next visit paints this instantly */}
+      else {dash.hidden=true;document.body.classList.remove('mpa-dash');document.documentElement.classList.remove('mp-li');} // signed out (or a session that expired behind the cached card): the hero comes back
       try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}
     }
     function load(all){var ps=[J('/api/pass').then(function(d){if(d&&d.tiers)S.pass=d;}),J('/api/goals').then(function(d){if(d&&d.catalogue)S.goals=d;}),J('/api/predict').then(function(d){if(d&&d.day)S.pred=d;})];
-      if(all){ps.push(J('/api/reward/lb').then(function(d){if(d&&d.weekStart)S.lb=d;}),J('/api/happyhour').then(function(d){if(d)S.hh=d;}),J('/api/trades/feed').then(function(d){if(d)S.closes=d.closes||[];}));}
+      if(all){ps.push(J('/api/reward/lb').then(function(d){if(d&&d.weekStart)S.lb=d;}),J('/api/happyhour').then(function(d){if(d)S.hh=d;}));}
       Promise.all(ps).then(paint);}
-    if(window.mpWhenVisible&&document.getElementById('season'))mpWhenVisible(document.getElementById('season'),function(){load(true);});else setTimeout(function(){load(true);},900);
-    setTimeout(function(){load(true);},1200); /* the strip sits above the fold: do not wait for the section to scroll into view */
-    window.addEventListener('mp-auth-change',function(){setTimeout(function(){load(true);},400);});
+    /* the strip is the only reader now and it only exists for a member: a guest pays none of these five fetches */
+    function armed(){return !!me()||document.documentElement.classList.contains('mp-li');}
+    setTimeout(function(){if(armed())load(true);},1200);
+    /* draw the card NOW from what we already hold, then let the fetches refresh it in place */
+    quick(); var _qt=setInterval(function(){ if(me()){ quick(); clearInterval(_qt); } },80); setTimeout(function(){clearInterval(_qt);},8000); // mp-auth is deferred: poll briefly instead of testing once (the mpEx gotcha)
+    window.addEventListener('mp-auth-change',function(){quick();setTimeout(function(){if(armed())load(true);},400);});
     window.addEventListener('mp:xp',function(){setTimeout(function(){load(false);},1500);});
-    setInterval(function(){if(!document.hidden)load(true);},300000);
+    setInterval(function(){if(!document.hidden&&armed())load(true);},300000);
   })();
   /* Section-view beacon (2026-09-06): which homepage blocks people actually reach. One AE event per block per
      pageview at 30% visibility, so the next cut of this page is measured, not guessed. */
@@ -1724,7 +1857,10 @@ body.mpa-authed .hero{display:none}
     if(!('IntersectionObserver' in window)||!navigator.sendBeacon)return;
     var els=[].slice.call(document.querySelectorAll('section.hero, section.band, .snap, .trust, footer.foot, #dash'));if(!els.length)return;
     var seen={};
-    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:.3});
+    /* "reached" = 30% of the block on screen, OR the block filling 60% of the viewport: a band taller than 3.3 screens
+       (band 01 on a phone since the competition card, 2026-09-17) can never show 30% of itself at once and would
+       otherwise never be counted, however long the reader spent in it. */
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:[.05,.15,.3]});
     els.forEach(function(el){io.observe(el);});
   })();
   /* Daily call: state comes whole from /api/predict; re-fetched on sign-in, after a call, and every 5 min. */
@@ -1740,23 +1876,23 @@ body.mpa-authed .hero{display:none}
       var me=D.me,today=me&&me.today,signed=!!D.signedIn;
       st.textContent=D.open?('OPEN · '+hm(D.cutoff-Date.now())+' left'):'CLOSED';st.className='dc-state'+(D.open?'':' off');
       live.textContent=D.live?('now $'+fmt(D.live)):'';
-      if(!signed){form.hidden=true;mine.hidden=true;sub.innerHTML='<b>Sign in (free)</b> to make your call. Calls close at '+D.cutoffH+':00 UTC; the 00:00 UTC close settles it. Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up.';}
-      else if(today&&!box.getAttribute('data-edit')){form.hidden=true;mine.hidden=false;mine.innerHTML='Your call: <b>$'+fmt(today.guess)+'</b>'+(D.open?' <button type="button" class="dc-chg" id="dcChg">change</button>':'');var cb=document.getElementById('dcChg');if(cb)cb.onclick=function(){box.setAttribute('data-edit','1');paint();inp.focus();};
-        sub.innerHTML=(D.open?'Locked in until '+D.cutoffH+':00 UTC. ':'Calls are closed for today. ')+'Settles at 00:00 UTC'+(me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+(me.season&&me.season.n?' · season <b>'+me.season.pts+' pts</b>'+(me.season.rank?' (#'+me.season.rank+')':''):'')+'.';}
-      else{form.hidden=!D.open;mine.hidden=true;if(!D.open){sub.innerHTML='Calls for today closed at '+D.cutoffH+':00 UTC. Come back after midnight UTC for tomorrow'+(me&&me.streak>1?' · <b>'+me.streak+' days in a row</b>':'')+'.';}else{sub.innerHTML='Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up. One call a day, changeable until '+D.cutoffH+':00 UTC.';}
+      if(!signed){form.hidden=true;mine.hidden=true;sub.innerHTML=__esT_demohomeindex("signInFreeTo2",'<b>Sign in (free)</b> to make your call. Calls close at ')+D.cutoffH+__esT_demohomeindex("00UtcThe00",':00 UTC; the 00:00 UTC close settles it. Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up.');}
+      else if(today&&!box.getAttribute('data-edit')){form.hidden=true;mine.hidden=false;mine.innerHTML=__esT_demohomeindex("yourCall",'Your call: <b>$')+fmt(today.guess)+'</b>'+(D.open?' <button type="button" class="dc-chg" id="dcChg">change</button>':'');var cb=document.getElementById('dcChg');if(cb)cb.onclick=function(){box.setAttribute('data-edit','1');paint();inp.focus();};
+        sub.innerHTML=(D.open?__esT_demohomeindex("lockedInUntil",'Locked in until ')+D.cutoffH+':00 UTC. ':__esT_demohomeindex("callsAreClosedFor",'Calls are closed for today. '))+__esT_demohomeindex("settlesAt0000",'Settles at 00:00 UTC')+(me.streak>1?' · <b>'+me.streak+__esT_demohomeindex("daysInARow2",' days in a row</b>'):'')+(me.season&&me.season.n?' · season <b>'+me.season.pts+' pts</b>'+(me.season.rank?' (#'+me.season.rank+')':''):'')+'.';}
+      else{form.hidden=!D.open;mine.hidden=true;if(!D.open){sub.innerHTML=__esT_demohomeindex("callsForTodayClosed",'Calls for today closed at ')+D.cutoffH+__esT_demohomeindex("00UtcComeBack",':00 UTC. Come back after midnight UTC for tomorrow')+(me&&me.streak>1?' · <b>'+me.streak+__esT_demohomeindex("daysInARow2",' days in a row</b>'):'')+'.';}else{sub.innerHTML=__esT_demohomeindex("within025Pays",'Within 0.25% pays <b>12 Ticks</b>, 0.5% 8, 1% 5, 2% 2, plus 1 for showing up. One call a day, changeable until ')+D.cutoffH+':00 UTC.';}
         if(!inp.value&&D.live)inp.placeholder=fmt(D.live);}
-      if(me&&me.yday&&me.yday.settled){var yy=me.yday,cls=yy.pts>=8?'win':yy.pts>0?'mid':'';y.hidden=false;y.innerHTML='Yesterday: you said <b>$'+fmt(yy.guess)+'</b>, it closed <b>$'+fmt(yy.close)+'</b> · <span class="'+cls+'">'+(Math.round(yy.err*100)/100)+'% off · +'+yy.ticks+' Ticks</span>';}else{y.hidden=true;}
+      if(me&&me.yday&&me.yday.settled){var yy=me.yday,cls=yy.pts>=8?'win':yy.pts>0?'mid':'';y.hidden=false;y.innerHTML=__esT_demohomeindex("yesterdayYouSaid",'Yesterday: you said <b>$')+fmt(yy.guess)+__esT_demohomeindex("itClosed",'</b>, it closed <b>$')+fmt(yy.close)+'</b> · <span class="'+cls+'">'+(Math.round(yy.err*100)/100)+'% off · +'+yy.ticks+' Ticks</span>';}else{y.hidden=true;}
       var rows=D.board||[],myName=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()||{}).username||'';
-      if(rows.length){bd.hidden=false;bd.innerHTML='<div class="dc-bh"><span>Top callers · this season</span><span>'+(D.callers||0)+' calling</span></div>'+rows.slice(0,5).map(function(r,i){return '<div class="dc-r'+(r.name===myName?' me':'')+'"><i>'+(i+1)+'</i><span>@'+esc(r.name)+'</span><b>'+r.pts+' pts</b></div>';}).join('');}else{bd.hidden=true;}
+      if(rows.length){bd.hidden=false;bd.innerHTML=__esT_demohomeindex("topCallersThisSeason",'<div class="dc-bh"><span>Top callers · this season</span><span>')+(D.callers||0)+' calling</span></div>'+rows.slice(0,5).map(function(r,i){return '<div class="dc-r'+(r.name===myName?' me':'')+'"><i>'+(i+1)+'</i><span>@'+esc(r.name)+'</span><b>'+r.pts+' pts</b></div>';}).join('');}else{bd.hidden=true;}
       go.disabled=false;
     }
     function load(){fetch('/api/predict',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.day){D=d;box.removeAttribute('data-edit');paint();}}).catch(function(){});}
     document.getElementById('dcForm').addEventListener('submit',function(e){e.preventDefault();if(busy)return;var v=parseFloat(String(document.getElementById('dcIn').value).replace(/[^0-9.]/g,''));var sub=document.getElementById('dcSub');
-      if(!(v>0)){sub.innerHTML='<b style="color:#ff8a80">Type a price first.</b>';return;}
+      if(!(v>0)){sub.innerHTML=__esT_demohomeindex("typeAPriceFirst",'<b style="color:#ff8a80">Type a price first.</b>');return;}
       busy=true;document.getElementById('dcGo').disabled=true;
       fetch('/api/predict',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({guess:v})}).then(function(r){return r.json();}).then(function(d){busy=false;
         if(d&&d.ok){document.getElementById('dcIn').value='';load();}
-        else{document.getElementById('dcGo').disabled=false;sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='range'?'That is more than 30% from the price right now.':d&&d.error==='closed'?'Calls closed for today.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save your call.')+'</b>';}
+        else{document.getElementById('dcGo').disabled=false;sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='range'?__esT_demohomeindex("thatIsMoreThan",'That is more than 30% from the price right now.'):d&&d.error==='closed'?__esT_demohomeindex("callsClosedForToday",'Calls closed for today.'):d&&d.error==='not_signed_in'?__esT_demohomeindex("signInFirst",'Sign in first.'):__esT_demohomeindex("couldNotSaveYour",'Could not save your call.'))+'</b>';}
       }).catch(function(){busy=false;document.getElementById('dcGo').disabled=false;});});
     window.addEventListener('mp-auth-change',load);setTimeout(load,900);setInterval(function(){if(!document.hidden)load();},300000);
     setInterval(function(){if(D&&D.open&&!document.hidden){var st=document.getElementById('dcState');if(st&&Date.now()<D.cutoff)st.textContent='OPEN · '+hm(D.cutoff-Date.now())+' left';}},60000);
@@ -1771,20 +1907,20 @@ body.mpa-authed .hero{display:none}
       var st=document.getElementById('sgState'),sub=document.getElementById('sgSub'),list=document.getElementById('sgList');
       st.textContent=daysLeft();
       var picks=G.picks||[],max=G.max||2,rw=G.reward||{xp:100,ticks:40};
-      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.';list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
+      if(!G.signedIn){sub.innerHTML='Pick <b>two</b> targets for the 14-day season, each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+__esT_demohomeindex("ticksWhenYouHit",' Ticks</b> when you hit it. <b>Sign in (free)</b> to choose.');list.innerHTML=(G.catalogue||[]).map(function(c){return '<div class="sg-opt" style="cursor:default"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></div>';}).join('');return;}
       var left=max-picks.length;
-      if(left>0){sub.innerHTML=(picks.length?'One more. ':'Pick <b>'+max+'</b> for this season. ')+'Each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+' Ticks</b>. No swaps once chosen.';
+      if(left>0){sub.innerHTML=(picks.length?__esT_demohomeindex("oneMore",'One more. '):'Pick <b>'+max+__esT_demohomeindex("forThisSeason",'</b> for this season. '))+'Each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+__esT_demohomeindex("ticksNoSwapsOnce",' Ticks</b>. No swaps once chosen.');
         var taken={};picks.forEach(function(p){taken[p.k]=1;});
         list.innerHTML=picks.map(row).join('')+(G.catalogue||[]).filter(function(c){return !taken[c.k];}).map(function(c){return '<button type="button" class="sg-opt" data-pick="'+c.k+'"><span>'+esc(c.name)+'</span><i>'+c.target+' '+esc(c.unit)+'</i></button>';}).join('');}
-      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?'Both done this season. ':'Counted from your real activity, verified when you claim. ')+'Each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
+      else{var done=picks.filter(function(p){return p.paid;}).length;sub.innerHTML=(done===picks.length?__esT_demohomeindex("bothDoneThisSeason",'Both done this season. '):__esT_demohomeindex("countedFromYourReal",'Counted from your real activity, verified when you claim. '))+'Each pays <b>+'+rw.xp+' XP</b> そして <b>+'+rw.ticks+' Ticks</b>.';list.innerHTML=picks.map(row).join('');}
     }
     function row(p){var pct=Math.min(100,Math.round((p.n||0)/(p.target||1)*100));return '<div class="sg-g'+(p.done?' done':'')+'"><div class="t"><span>'+esc(p.name)+'</span><b>'+(Math.min(p.n||0,p.target))+' / '+p.target+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div>'+(p.paid?'<div class="sg-paid">Claimed · +'+(G.reward.xp)+' XP · +'+(G.reward.ticks)+' Ticks</div>':(p.done?'<button type="button" class="sg-claim" data-claim="'+p.k+'">Claim +'+G.reward.xp+' XP · +'+G.reward.ticks+' Ticks</button>':''))+'</div>';}
     function load(){fetch('/api/goals',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.catalogue){G=d;paint();}}).catch(function(){});}
     box.addEventListener('click',function(e){var b=e.target.closest&&(e.target.closest('[data-pick]')||e.target.closest('[data-claim]'));if(!b||busy)return;busy=true;b.disabled=true;
       var op=b.hasAttribute('data-claim')?'claim':'pick',k=b.getAttribute('data-'+op);
       fetch('/api/goals',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:op,k:k})}).then(function(r){return r.json();}).then(function(d){busy=false;
-        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)setTimeout(window.mpXpCheck,600);load();}
-        else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?'You already have two goals this season.':d&&d.error==='not_done'?'Not there yet: '+d.n+' of '+d.target+'.':d&&d.error==='paid'?'Already claimed.':d&&d.error==='not_signed_in'?'Sign in first.':'Could not save that.')+'</b>';}
+        if(d&&d.ok){if(op==='claim'&&window.mpXpCheck)window.mpXpCheck();load();}
+        else{b.disabled=false;var sub=document.getElementById('sgSub');sub.innerHTML='<b style="color:#ff8a80">'+(d&&d.error==='full'?__esT_demohomeindex("youAlreadyHaveTwo",'You already have two goals this season.'):d&&d.error==='not_done'?__esT_demohomeindex("notThereYet",'Not there yet: ')+d.n+' of '+d.target+'.':d&&d.error==='paid'?__esT_demohomeindex("alreadyClaimed",'Already claimed.'):d&&d.error==='not_signed_in'?__esT_demohomeindex("signInFirst",'Sign in first.'):__esT_demohomeindex("couldNotSaveThat",'Could not save that.'))+'</b>';}
       }).catch(function(){busy=false;b.disabled=false;});});
     window.addEventListener('mp-auth-change',load);setTimeout(load,1100);setInterval(function(){if(!document.hidden)load();},300000);
     window.addEventListener('mp:xp',function(){setTimeout(load,1500);});
@@ -1796,10 +1932,10 @@ body.mpa-authed .hero{display:none}
     function load(){fetch('/api/pass',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(!d||!d.tiers)return;box.hidden=false;
       var st=document.getElementById('spState'),t=document.getElementById('spT'),n=document.getElementById('spN'),bar=document.getElementById('spBar'),sub=document.getElementById('spSub');
       st.textContent=d.pro?'PRO':'FREE';
-      if(!d.signedIn){t.innerHTML=(d.n||40)+' tiers';n.textContent='every 14 days';bar.style.width='0%';sub.innerHTML='Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.';return;}
+      if(!d.signedIn){t.innerHTML=(d.n||40)+' tiers';n.textContent=__esT_demohomeindex("every14Days",'every 14 days');bar.style.width='0%';sub.innerHTML=__esT_demohomeindex("unlockedByTheXp",'Unlocked by the XP you already earn. Free track for everyone; pro doubles the Ticks and adds up to $1 to your balance, Vault items, supplies, Premium days and skin gifts. <b>Sign in (free)</b> to start climbing.');return;}
       var step=d.step||100,N=d.n||40,into=d.xp-d.tier*step,pct=d.tier>=N?100:Math.round(into/step*100);
-      t.innerHTML='Tier '+d.tier+' <small>/ '+N+'</small>';n.textContent=fmt(d.xp)+' XP this season';bar.style.width=pct+'%';
-      sub.innerHTML=(d.tier>=N?'Every tier reached.':fmt(d.next)+' XP to tier '+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+' to claim</b>':'')+(d.pro?'':' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.');
+      t.innerHTML='Tier '+d.tier+' <small>/ '+N+'</small>';n.textContent=fmt(d.xp)+__esT_demohomeindex("xpThisSeason",' XP this season');bar.style.width=pct+'%';
+      sub.innerHTML=(d.tier>=N?__esT_demohomeindex("everyTierReached",'Every tier reached.'):fmt(d.next)+__esT_demohomeindex("xpToTier",' XP to tier ')+(d.tier+1)+'.')+(d.claimable?' <b>'+d.claimable+' reward'+(d.claimable===1?'':'s')+__esT_demohomeindex("toClaim2",' to claim</b>'):'')+(d.pro?'':__esT_demohomeindex("proTrackDoubleTicks",' Pro track: double Ticks, up to $1 to your balance, Vault items, supplies, Premium days and skin gifts.'));
     }).catch(function(){});}
     window.addEventListener('mp-auth-change',load);setTimeout(load,1300);window.addEventListener('mp:xp',function(){setTimeout(load,1700);});
   })();
@@ -1809,25 +1945,25 @@ body.mpa-authed .hero{display:none}
     var panel=document.getElementById('lbpzPanel'),tabs=document.getElementById('lbpzTabs');
     if(!panel||!tabs)return;
     var PZ={
-      roe:{name:'Green days',pool:25,p:[10,6,4,3,2],live:true,desc:"Every day of the season you finish in profit counts as one green day - the trader with the most of them wins. A day needs at least 3 closed trades to turn green, you need 10 closed trades in the season to rank, and you have to be up on the season overall. It is the one board you cannot win in a single session."},
+      roe:{name:__esT_demohomeindex("greenDays4",'Green days'),pool:25,p:[10,6,4,3,2],live:true,desc:__esT_demohomeindex("everyDayOfThe","Every day of the season you finish in profit counts as one green day - the trader with the most of them wins. A day needs at least 3 closed trades to turn green, you need 10 closed trades in the season to rank, and you have to be up on the season overall. It is the one board you cannot win in a single session.")},
       roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season - server-verified trades only. One well-timed call can top it, on any account size."},
-      wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count - tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
-      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season - from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."},
-      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold members only, scored in points: close a trade in profit and it is +1, close it red and it is -1. Your season score is simply the difference, so volume alone gets you nowhere - you need to be right more often than you are wrong. A trade that never moved the price 0.2% counts neither way, partial closes of one position count once, and so does a batch of the same trade opened together. Minimum $1 margin, server-settled trades, opened during the season. Reach Gold (12,000 XP) to enter."}
+      wr:{name:__esT_demohomeindex("bestWinRate2",'Best win rate'),pool:67,p:[30,15,10,7,5],live:true,desc:__esT_demohomeindex("theHighestShareOf","The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count - tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot.")},
+      xp:{name:__esT_demohomeindex("seasonXp2",'Season XP'),pool:30,p:[10,8,6,4,2],live:true,desc:__esT_demohomeindex("totalXpYouEarn","Total XP you earn this season - from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size.")},
+      gold:{name:'The Gold Room',pool:0,p:[],live:true,gold:true,desc:"Gold+ members only, scored in points: close a trade in profit and it is +1, close it red and it is -1. Your season score is simply the difference, so volume alone gets you nowhere - you need to be right more often than you are wrong. A trade that never moved the price 0.2% counts neither way, partial closes of one position count once, and so does a batch of the same trade opened together. Minimum $1 margin, server-settled trades, opened during the season. Reach Gold (12,000 XP) to enter."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock - same anchor as the server (lbPeriodStart, Mon 2026-07-20)
     var START=seasonEnd();
-    function ctd(){var ms=START-Date.now();if(ms<=0)return'any moment now';var m=Math.floor(ms/6e4),dd=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return'in '+(dd>0?dd+'d ':'')+h+'h '+mm+'m';}
+    function ctd(){var ms=START-Date.now();if(ms<=0)return__esT_demohomeindex("anyMomentNow",'any moment now');var m=Math.floor(ms/6e4),dd=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return'in '+(dd>0?dd+'d ':'')+h+'h '+mm+'m';}
     var cur='roe';
     function render(){
       var b=PZ[cur],rows='';
       for(var i=0;i<b.p.length;i++){var r=i+1,lbl=r+(r===1?'st':r===2?'nd':r===3?'rd':'th');rows+='<div class="lbpz-row p'+r+'"><span class="m">'+r+'</span><span class="l">'+lbl+' place</span><span class="v">$'+b.p[i]+'</span></div>';}
-      var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge"> Next season</span>';
-      if(b.gold&&!b.p.length){rows='<div class="lbpz-row p1"><span class="m">!</span><span class="l">No prizes this season</span><span class="v">$0</span></div>';}
-      var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');
-      if(b.gold&&!b.p.length)foot='This season runs for the title only - <b>prize money starts next season</b> · <b>'+ctd()+'</b>';
+      var badge=b.live?__esT_demohomeindex("liveNow",'<span class="lbpz-livebadge">● Live now</span>'):__esT_demohomeindex("nextSeason",'<span class="lbpz-lockbadge"> Next season</span>');
+      if(b.gold&&!b.p.length){rows=__esT_demohomeindex("noPrizesThisSeason",'<div class="lbpz-row p1"><span class="m">!</span><span class="l">No prizes this season</span><span class="v">$0</span></div>');}
+      var foot=b.live?(__esT_demohomeindex("runningThisSeasonPays",'Running this season · pays out at season end (00:00 UTC) · <b>')+ctd()+'</b>'):(__esT_demohomeindex("unlocksNextSeason",'Unlocks next season · <b>')+ctd()+'</b>');
+      if(b.gold&&!b.p.length)foot=__esT_demohomeindex("thisSeasonRunsFor",'This season runs for the title only - <b>prize money starts next season</b> · <b>')+ctd()+'</b>';
       panel.innerHTML='<div class="lbpz-name">'+b.name+badge+'</div>'
-        +(b.gold&&!b.p.length?'<div class="lbpz-pool">TITLE<small>no prize pool this season</small></div>':'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>')
+        +(b.gold&&!b.p.length?__esT_demohomeindex("titleNoPrizePool",'<div class="lbpz-pool">TITLE<small>no prize pool this season</small></div>'):'<div class="lbpz-pool">$'+b.pool+__esT_demohomeindex("seasonPrizePool",'<small>season prize pool</small></div>'))
         +'<div class="lbpz-desc">'+b.desc+'</div>'
         +'<div class="lbpz-rows">'+rows+'</div>'
         +'<div class="lbpz-count">'+foot+'</div>';
@@ -1846,29 +1982,29 @@ body.mpa-authed .hero{display:none}
     var cfg={enabled:true,hourUTC:18,durMin:60,roeMin:200,levMax:100,xp:150},promos=[],off=0;
     function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
     function fmt(ms){if(ms<0)ms=0;var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;return (h>0?h+'h ':'')+m+'m '+ss+'s';}
-    function coinsTxt(c){return (c&&c.length)?c.join(' · '):'Any coin';}
+    function coinsTxt(c){return (c&&c.length)?c.join(' · '):__esT_demohomeindex("anyCoin",'Any coin');}
     // ---- details modal ----
     var modal=null;
     function ensureModal(){if(modal)return modal;modal=document.createElement('div');modal.className='hhm';modal.hidden=true;modal.innerHTML='<div class="hhm-card"><button type="button" class="hhm-x" aria-label="Close">✕</button><div class="hhm-body"></div></div>';document.body.appendChild(modal);modal.addEventListener('click',function(e){if(e.target===modal||e.target.closest('.hhm-x'))closeModal();});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});return modal;}
     function closeModal(){if(modal)modal.hidden=true;}
     function row(k,v){return '<div class="hhm-row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';}
-    function openHH(){ensureModal();var now=Date.now()+off,d=new Date(now);var ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur;var count=live?('Live now · ends in '+fmt(ts+dur-now)):('Starts in '+fmt((now<ts?ts:ts+86400000)-now));
+    function openHH(){ensureModal();var now=Date.now()+off,d=new Date(now);var ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur;var count=live?(__esT_demohomeindex("liveNowEndsIn",'Live now · ends in ')+fmt(ts+dur-now)):(__esT_demohomeindex("startsIn",'Starts in ')+fmt((now<ts?ts:ts+86400000)-now));
       var h2=String(cfg.hourUTC).padStart(2,'0')+':00', e2=String((cfg.hourUTC+Math.floor((cfg.durMin||60)/60))%24).padStart(2,'0')+':'+String((cfg.durMin||60)%60).padStart(2,'0');
       modal.querySelector('.hhm-card').style.setProperty('--hc','#ffb020');
       modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span></span>XPハッピーアワー<span class="hhm-badge">'+(live?'LIVE':'DAILY')+'</span></div>'
         +'<div class="hhm-count">'+count+'</div>'
-        +'<div class="hhm-rows">'+row('When','Every day · '+h2+'–'+e2+' UTC')+row('Reward','+'+(cfg.xp||150)+' XP / trade')+row('Condition','Winning trade ≥ '+cfg.roeMin+'% ROE')+row('Max leverage',(cfg.levMax||100)+'×')+'</div>'
-        +'<div class="hhm-note">Close a <b>winning paper trade</b> with at least <b>'+cfg.roeMin+'% ROE</b> at <b>'+(cfg.levMax||100)+'× leverage or less</b> during the daily window and you earn <b>+'+(cfg.xp||150)+' bonus XP</b> on top of the usual trade XP. Bonus applies to the trade’s <b>close time</b>.</div>'
-        +'<a class="hhm-cta" href="/paper-trade">ペーパートレードを開始 →</a>';
+        +'<div class="hhm-rows">'+row('When',__esT_demohomeindex("everyDay",'Every day · ')+h2+'–'+e2+' UTC')+row('Reward','+'+(cfg.xp||150)+__esT_demohomeindex("xpTrade",' XP / trade'))+row('Condition',__esT_demohomeindex("winningTrade",'Winning trade ≥ ')+cfg.roeMin+'% ROE')+row(__esT_demohomeindex("maxLeverage",'Max leverage'),(cfg.levMax||100)+'×')+'</div>'
+        +__esT_demohomeindex("closeAWinningPaper",'<div class="hhm-note">Close a <b>winning paper trade</b> with at least <b>')+cfg.roeMin+'% ROE</b> at <b>'+(cfg.levMax||100)+'× leverage or less</b> during the daily window and you earn <b>+'+(cfg.xp||150)+__esT_demohomeindex("bonusXpOnTop",' bonus XP</b> on top of the usual trade XP. Bonus applies to the trade’s <b>close time</b>.</div>')
+        +__esT_demohomeindex("openPaperTrade",'<a class="hhm-cta" href="/paper-trade">ペーパートレードを開始 →</a>');
       modal.hidden=false;}
-    function openPromo(p){ensureModal();var now=Date.now()+off;var live=now>=p.startMs&&now<p.endMs;var count=live?('Live now · ends in '+fmt(p.endMs-now)):('Starts in '+fmt(p.startMs-now));
+    function openPromo(p){ensureModal();var now=Date.now()+off;var live=now>=p.startMs&&now<p.endMs;var count=live?(__esT_demohomeindex("liveNowEndsIn",'Live now · ends in ')+fmt(p.endMs-now)):(__esT_demohomeindex("startsIn",'Starts in ')+fmt(p.startMs-now));
       var endD=new Date(p.endMs);var endTxt=endD.toISOString().slice(5,16).replace('T',' ')+' UTC';
       modal.querySelector('.hhm-card').style.setProperty('--hc','#38bdf8');
       modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span></span>'+esc(p.title)+'<span class="hhm-badge">'+(live?'LIVE':'SOON')+'</span></div>'
         +'<div class="hhm-count">'+count+' <small>· ends '+endTxt+'</small></div>'
-        +'<div class="hhm-rows">'+row('Coins',(p.coins&&p.coins.length)?'<span class="hhm-chips">'+p.coins.map(function(c){return '<span>'+esc(c)+'</span>';}).join('')+'</span>':'Any coin')+row('Reward','+'+p.xp+' XP / trade')+row('Condition',(p.winOnly!==false?'Winning trade':'Any trade')+' ≥ '+p.roeMin+'% ROE')+row('Max leverage',p.levMax+'×')+'</div>'
-        +'<div class="hhm-note">Close a '+(p.winOnly!==false?'<b>winning</b> ':'')+'paper trade on <b>'+coinsTxt(p.coins)+'</b> with at least <b>'+p.roeMin+'% ROE</b> at <b>'+p.levMax+'× leverage or less</b> before it ends, and earn <b>+'+p.xp+' bonus XP</b> per qualifying trade.</div>'
-        +'<a class="hhm-cta" href="/paper-trade">ペーパートレードを開始 →</a>';
+        +'<div class="hhm-rows">'+row('Coins',(p.coins&&p.coins.length)?'<span class="hhm-chips">'+p.coins.map(function(c){return '<span>'+esc(c)+'</span>';}).join('')+'</span>':__esT_demohomeindex("anyCoin",'Any coin'))+row('Reward','+'+p.xp+__esT_demohomeindex("xpTrade",' XP / trade'))+row('Condition',(p.winOnly!==false?__esT_demohomeindex("winningTrade2",'Winning trade'):__esT_demohomeindex("anyTrade",'Any trade'))+' ≥ '+p.roeMin+'% ROE')+row(__esT_demohomeindex("maxLeverage",'Max leverage'),p.levMax+'×')+'</div>'
+        +'<div class="hhm-note">Close a '+(p.winOnly!==false?'<b>winning</b> ':'')+__esT_demohomeindex("paperTradeOn",'paper trade on <b>')+coinsTxt(p.coins)+__esT_demohomeindex("withAtLeast",'</b> with at least <b>')+p.roeMin+'% ROE</b> at <b>'+p.levMax+'× leverage or less</b> before it ends, and earn <b>+'+p.xp+__esT_demohomeindex("bonusXpPerQualifying",' bonus XP</b> per qualifying trade.</div>')
+        +__esT_demohomeindex("openPaperTrade",'<a class="hhm-cta" href="/paper-trade">ペーパートレードを開始 →</a>');
       modal.hidden=false;}
     if(whenCard)whenCard.addEventListener('click',openHH);
     // ---- render promo cards ----
@@ -1883,9 +2019,9 @@ body.mpa-authed .hero{display:none}
       // a currently-LIVE promo takes the Happy Hour card's spot while Happy Hour itself hasn't started; reverts when the promo ends
       var promoLive=shownPromos.some(function(p){return now>=p.startMs&&now<p.endMs;});
       // HH card
-      if(whenCard){var d=new Date(now),ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var hhLive=anyHH&&now>=ts&&now<ts+dur;var showHH=anyHH&&!(promoLive&&!hhLive);whenCard.style.display=showHH?'':'none';if(showHH){var nextStart=now<ts?ts:ts+86400000;if(hhLive){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent='Live · ends in '+fmt(ts+dur-now);}else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent='Starts in '+fmt(nextStart-now);}}}
+      if(whenCard){var d=new Date(now),ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var hhLive=anyHH&&now>=ts&&now<ts+dur;var showHH=anyHH&&!(promoLive&&!hhLive);whenCard.style.display=showHH?'':'none';if(showHH){var nextStart=now<ts?ts:ts+86400000;if(hhLive){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent=__esT_demohomeindex("liveEndsIn",'Live · ends in ')+fmt(ts+dur-now);}else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent=__esT_demohomeindex("startsIn",'Starts in ')+fmt(nextStart-now);}}}
       // promo card countdowns
-      if(promosEl){Array.prototype.forEach.call(promosEl.querySelectorAll('.hh-promo'),function(card){var pid=card.getAttribute('data-pid'),p=promos.filter(function(x){return x.id===pid;})[0];if(!p)return;var cc=card.querySelector('.promo-count'),st=card.querySelector('.hh-state');var pl=now>=p.startMs&&now<p.endMs;if(now>=p.endMs){card.style.display='none';return;}card.style.display='';if(pl){card.classList.add('live');if(st)st.textContent='LIVE';if(cc)cc.textContent='+'+p.xp+' XP · ends in '+fmt(p.endMs-now);}else{card.classList.remove('live');if(st)st.textContent='SOON';if(cc)cc.textContent='+'+p.xp+' XP · starts in '+fmt(p.startMs-now);}});}
+      if(promosEl){Array.prototype.forEach.call(promosEl.querySelectorAll('.hh-promo'),function(card){var pid=card.getAttribute('data-pid'),p=promos.filter(function(x){return x.id===pid;})[0];if(!p)return;var cc=card.querySelector('.promo-count'),st=card.querySelector('.hh-state');var pl=now>=p.startMs&&now<p.endMs;if(now>=p.endMs){card.style.display='none';return;}card.style.display='';if(pl){card.classList.add('live');if(st)st.textContent='LIVE';if(cc)cc.textContent='+'+p.xp+__esT_demohomeindex("xpEndsIn",' XP · ends in ')+fmt(p.endMs-now);}else{card.classList.remove('live');if(st)st.textContent='SOON';if(cc)cc.textContent='+'+p.xp+__esT_demohomeindex("xpStartsIn",' XP · starts in ')+fmt(p.startMs-now);}});}
     }
     fetch('/api/happyhour').then(function(r){return r.json();}).then(function(d){
       if(d&&typeof d.hourUTC==='number'){cfg=d;if(d.now)off=d.now-Date.now();}
@@ -1904,7 +2040,7 @@ body.mpa-authed .hero{display:none}
     document.getElementById('snTvlS').textContent=(d.chainCount||'-')+' chains';
     var ch=(d.topChains||[]).slice(0,3);if(!ch.length)return;
     var mx=+ch[0].tvl||1;
-    document.getElementById('chains').innerHTML=ch.map(function(x){return '<div class="cb"><span class="nm">'+String(x.name||'').replace(/</g,'&lt;')+'</span><span class="bar"><i style="width:'+Math.max(6,(+x.tvl/mx*100)).toFixed(0)+'%"></i></span><span class="v">$'+(+x.tvl/1e9).toFixed(1)+'B</span></div>';}).join('');
+    document.getElementById('chains').innerHTML=ch.map(function(x){return '<div class="cb"><span class="nm">'+String(__esV_srv(x.name)||'').replace(/</g,'&lt;')+'</span><span class="bar"><i style="width:'+Math.max(6,(+x.tvl/mx*100)).toFixed(0)+'%"></i></span><span class="v">$'+(+x.tvl/1e9).toFixed(1)+'B</span></div>';}).join('');
   }).catch(function(){});
 
   // ---- candles: hero chart (grid + area + last-dot) + PT tile chart + mock PnL ----
@@ -2002,29 +2138,35 @@ body.mpa-authed .hero{display:none}
     try{var _ms='';try{_ms=sessionStorage.getItem('mp_src')||'';if(!_ms){var _f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(_f0&&_f0.s&&(Date.now()-(+_f0.ts||0))<=7776e6)_ms=String(_f0.s);}}catch(e8){}
       navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p='+encodeURIComponent(location.pathname)+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
 
-  // ---- geo-aware exchange cards: US/CA visitors see US-legal venues first (Bybit/Binance/OKX geoblock them) ----
-  try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){
-    var cc=(g&&g.cc)||'';var RESTRICT={US:1,CA:1};if(!RESTRICT[cc])return;
-    var grid=document.querySelector('.exch-grid');if(!grid)return;
-    var LEGAL={Kraken:1,Coinbase:1};var region=cc==='CA'?'Canada':'the US';
-    Array.prototype.forEach.call(grid.querySelectorAll('a.exs'),function(a){
-      var ex=a.getAttribute('data-ex');var tag=a.querySelector('.exs-tag');
-      if(LEGAL[ex]){a.style.order='-1';a.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+region;tag.style.color='var(--exc)';}}
-      else{a.style.order='9';a.style.opacity='.5';if(tag)tag.textContent='Not in '+region;}
-    });
-    var eb=grid.querySelector('.exbig');if(eb)eb.style.order='-2';
-    var sub=document.querySelector('.band .band-s');if(sub&&sub.innerHTML.indexOf('available in')<0)sub.innerHTML='Showing exchanges available in '+region+' first. '+sub.innerHTML;
-  }).catch(function(){});}catch(e){}
+  /* Exchange cards in the order that fits the reader (2026-09-09). The ranking, the referral URLs and the
+     "not available here" rule all live in ONE place - window.mpEx / mpExArrange in mp-auth.js - so the homepage,
+     the terminal ticket, the screener sheet and the calculators grid can never drift apart. This block only adds
+     the homepage's own dressing: the halo + tag on the top card and one line in the band subtitle, and only where
+     a restriction is a documented fact (US, CA). Everywhere else the cards are simply reordered, nothing is said.
+     NOTE: this used to fetch /api/geo directly and the endpoint did not exist - it was dead code for weeks. */
+  /* mp-auth.js is DEFERRED, this block runs at parse time - so wait for the shared layer instead of testing for it once
+     (the first version tested once, found nothing, and silently did nothing at all). */
+  try{(function(){var n=0,t=setInterval(function(){if(!window.mpExArrange){if(++n>80)clearInterval(t);return;}clearInterval(t);mpArrangeHome();},100);})();}catch(e){}
+  function mpArrangeHome(){window.mpExArrange('.exch-grid','a.exs',function(el,name,off,cc,reg,idx){
+    var tag=el.querySelector('.exs-tag');
+    if(off){if(tag){tag.textContent=__esT_demohomeindex("notIn",'Not in ')+(reg||__esT_demohomeindex("yourCountry",'your country'));tag.style.color='#8b97a5';return true;}return false;} /* true = this card is already labelled, skip the shared note */
+    if(reg&&idx===0){el.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent=__esT_demohomeindex("availableIn",'Available in ')+reg;tag.style.color='var(--exc)';}
+      var bnd=el.closest?el.closest('.band'):null,sub=bnd?bnd.querySelector('.band-s'):null; /* THIS band, not the first one on the page */
+      if(sub&&sub.innerHTML.indexOf(__esT_demohomeindex("availableIn2",'available in'))<0)sub.innerHTML=__esT_demohomeindex("showingExchangesAvailableI",'Showing exchanges available in ')+reg+' first. '+sub.innerHTML;}
+  });}
 
   // ---- real 24h liquidation total on the Rekt tile ----
   fetch('/api/cg/liquidations').then(function(r){return r.json();}).then(function(d){
     var m=d&&d.market;if(!(m&&m.total>0))return;
     var sh=m.total>0?Math.round(m.short/m.total*100):0;
-    document.getElementById('rk24').textContent='24h: −$'+(m.total/1e6).toFixed(0)+'M liquidated · '+sh+'% were shorts';
+    document.getElementById('rk24').textContent='24h: −$'+(m.total/1e6).toFixed(0)+'M liquidated · '+sh+__esT_demohomeindex("wereShorts",'% were shorts');
   }).catch(function(){});
 
   // ---- language select (navigates to the language homepage, like the live site) ----
-  (function(){var ls=document.getElementById('langSel');if(ls)ls.addEventListener('change',function(){var v=this.value,m=(v.match(/^\/([a-z]{2})\//)||[])[1]||'en';try{localStorage.setItem('mp_lang',m);}catch(e){}location.href=v;});})();
+  (function(){var ls=document.getElementById('langSel');if(!ls)return;
+    /* show the language this reader chose BEFORE mp-nav (deferred) syncs it: URL prefix > saved choice (2026-09-13, owner: the dropdown said EN on /es/) */
+    try{var cur=(location.pathname.match(/^\/([a-z]{2})\//)||[])[1]||localStorage.getItem('mp_lang')||'en';for(var i=0;i<ls.options.length;i++){var v=ls.options[i].value,c=v==='/'?'en':(v.match(/^\/([a-z]{2})\/$/)||[])[1];if(c===cur){ls.selectedIndex=i;break;}}}catch(e){}
+    ls.addEventListener('change',function(){if(ls.__mpLangWired)return;var v=this.value,m=(v.match(/^\/([a-z]{2})\//)||[])[1]||'en';try{localStorage.setItem('mp_lang',m);}catch(e){}location.href=v;});})();
 
   // ---- the lime burger + mobnav Browse open the SHARED site drawer (mp-nav.js) ----
   function openBrowse(){var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(openBrowse,150);}
@@ -2032,12 +2174,27 @@ body.mpa-authed .hero{display:none}
   /* the mobile bar is now injected + handled by mp-nav.js (single source of truth site-wide) */
 
   // ---- graceful fallback: if a live tile never loads, clear its skeleton ----
-  setTimeout(function(){['movers','mkts','news','lbx'].forEach(function(id){var e=document.getElementById(id);if(e&&e.querySelector('.skel'))e.innerHTML='<div class="t-sub" style="color:var(--faint)">live data is warming up - open the full page</div>';});},9000);
+  setTimeout(function(){['movers','mkts','news','lbx'].forEach(function(id){var e=document.getElementById(id);if(e&&e.querySelector('.skel'))e.innerHTML=__esT_demohomeindex("liveDataIsWarming",'<div class="t-sub" style="color:var(--faint)">live data is warming up - open the full page</div>');});},9000);
 
   // ---- live background: two faint price wireframes drifting across the viewport (desktop only) ----
   (function(){
     if(!window.matchMedia||!matchMedia('(min-width:941px)').matches)return;
     var cv=document.getElementById('bgline');if(!cv)return;
+    /* The drift runs through the Web Animations API, not a timer and not @keyframes. WAAPI still plays
+       when the OS has animation effects off - that is why the breathing marks and the Supernova frame
+       use it - and Chrome hands a pure transform animation to the COMPOSITOR, so three 46vw blobs
+       under filter:blur(100px) cost the main thread nothing. The 120 ms interval this replaced was
+       writing style 25 times a second and was measured as the biggest source of churn on the page. */
+    (function(){
+      var blobs=[['.au1',9,7,46000,0],['.au2',-8,-6,58000,-9000],['.au3',-7,6,70000,-21000]];
+      blobs.forEach(function(b){
+        var el=document.querySelector('.bgfx '+b[0]); if(!el||!el.animate)return;
+        try{
+          el.animate([{transform:'translate(0,0)'},{transform:'translate('+b[1]+'vw,'+b[2]+'vh)'}],
+            {duration:b[3],iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:b[4]});
+        }catch(e){}
+      });
+    })();
     var g=cv.getContext('2d'),W=0,H=0;
     function size(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
     size();var rs;addEventListener('resize',function(){clearTimeout(rs);rs=setTimeout(size,200);});
@@ -2072,7 +2229,7 @@ body.mpa-authed .hero{display:none}
 </script>
 
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
-  <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span>戻る</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button class="jr-grab" data-jr-close type="button" aria-label="戻る"><span>戻る</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>マイトレード</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>統計</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
@@ -2091,9 +2248,9 @@ body.mpa-authed .hero{display:none}
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<script defer src="/assets/mp-trade.js?v=63bbf7bc"></script>
+<script defer src="/assets/mp-trade.js?v=ad5f8788"></script>
 <script defer src="/assets/mp-auth.js?v=580ed368"></script>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
@@ -2110,7 +2267,7 @@ body.mpa-authed .hero{display:none}
 @media(max-width:980px){.mpq{display:none}}
 .mpqm{display:none}
 @media(max-width:980px){
-  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px dashed #232b3a;background:#07090c;margin:0 0 2px}
+  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px solid #1c2230;background:#07090c;margin:0;box-shadow:0 10px 16px -6px rgba(7,9,12,.95)} /* 2026-09-12: sticky under the header - no 2px gap and no dashed edge for the scrolling card to peek through; the shadow fades content out under the bar instead of cutting it */
   .mpqm-cap{flex:none;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#c2f64a;padding:0 10px;border-right:1px solid #1c2230;height:100%;display:flex;align-items:center;gap:5px}
   .mpqm-cap s{display:inline-block;width:6px;height:11px;background:#c2f64a;animation:mpqB 1s infinite;text-decoration:none}
   .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
@@ -2124,31 +2281,51 @@ body.mpa-authed .hero{display:none}
   var fpx=function(p){p=+p;return p>=1000?p.toLocaleString('en-US',{maximumFractionDigits:0}):p>=1?p.toFixed(2):p.toPrecision(3);};
   var desk=window.matchMedia&&window.matchMedia('(min-width:981px)').matches;
   if(desk){ /* live liquidation tape, our own 6-exchange feed - click through to Rekt */
-    var q=document.createElement('div');q.className='mpq';q.setAttribute('role','link');q.title='Open the live liquidations feed';
+    var q=document.createElement('div');q.className='mpq';q.setAttribute('role','link');q.title=__esT_demohomeindex("openTheLiveLiquidations",'Open the live liquidations feed');
     q.innerHTML='<span class="mpq-cap"><i></i>LIVE LIQUIDATIONS</span><span class="mpq-win"><span class="mpq-trk" id="mpqT"></span></span>';
     document.body.appendChild(q);
     q.addEventListener('click',function(){location.href='/rekt/';});
-    var lastTs=0;
+    var lastTs=0, mpqNext=null;
+    (function(){ var t=document.getElementById('mpqT'); if(!t)return;
+      // the wrap is the one moment the reader cannot tell old content from new
+      t.addEventListener('animationiteration',function(){ if(mpqNext){ t.innerHTML=mpqNext; mpqNext=null; } });
+    })();
     function pull(){ if(document.hidden)return;
       fetch('/api/v1/feed').then(function(r){return r.json();}).then(function(d){
         var ev=(d&&d.events||[]).slice(0,16); if(!ev.length)return;
         if(ev[0].ts===lastTs)return; lastTs=ev[0].ts;
         var h=ev.map(function(e){var lg=e.side==='long_liquidated';
           return '<span class="mpq-it"><span class="ex">'+e.exchange+'</span> <b>'+e.symbol+'</b> <b class="'+(lg?'lg':'sh')+'">'+(lg?'LONG':'SHORT')+' REKT '+money(e.notional)+'</b> @'+fpx(e.price)+'</span>';}).join('');
-        var t=document.getElementById('mpqT'); if(t)t.innerHTML=h+h; /* duplicated for the seamless -50% loop */
+        var t=document.getElementById('mpqT'); if(!t)return;
+        /* The strip scrolls to -50% of its OWN width, with the content duplicated so the wrap is
+           invisible. Any text change moves that width, and the loop point moves with it: measured jumps
+           of 64px, 149px and 281px as items came and went. So the new content WAITS and is swapped in at
+           the seam, where position 0 and -50% look identical by construction. */
+        mpqNext = h + h;
+        if (!t.children.length) { t.innerHTML = mpqNext; mpqNext = null; }
       }).catch(function(){});
     }
     pull(); setInterval(pull,9000);
   } else { /* mobile: terminal price tape under the header - live via the same WS map mp-trade.js feeds */
     var hd=document.querySelector('header'); if(!hd)return;
     var m=document.createElement('div');m.className='mpqm';
-    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT"></span></span>';
-    hd.parentNode.insertBefore(m,hd.nextSibling);
+    /* 2026-09-12 (owner: "the tape sometimes slides under the header or vanishes and comes back"): (1) the track was rebuilt with innerHTML
+       every 1.5 s and only for coins that already had a price, so its width - and the -50% loop point of the CSS animation - jumped
+       whenever a coin appeared or a price changed digits, which read as the tape blinking out; now every coin has a fixed slot from the
+       start and only the text nodes change. (2) the tape is sticky right under the sticky header, so it never scrolls beneath it. */
     var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE'],chg={};
+    var slot=function(sy){return '<span data-tp="'+sy+'"><span class="sym">'+sy+'</span> <b data-p>-</b> <span data-c></span></span>';};
+    m.innerHTML='<span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT">'+COINS.map(slot).join('')+'<span class="sym">· marginpad.io ·</span>'+COINS.map(slot).join('')+'</span></span>';
+    /* The tape lives INSIDE the sticky header as its second row (2026-09-12, owner screenshot: a separately-stuck tape sat a few px
+       below the header once the header's height changed after load, and the member card showed through the gap). One sticky block,
+       one edge, nothing to re-measure. */
+    hd.style.flexWrap='wrap';hd.style.rowGap='0';hd.appendChild(m); /* rowGap 0 (owner 2026-09-12: "half a centimetre of empty space between the tape and the header"): measured 26 px = the header's flex gap 14 px wrapping onto the new row + the tape's own 12 px margin */
+    hd.style.setProperty('padding-bottom','0','important');hd.style.setProperty('border-bottom','none','important');hd.style.setProperty('margin-bottom','0','important'); /* mp-nav.js pins header padding-bottom:12px + margin-bottom:6px !important site-wide; here the tape's own bottom border is the header's bottom edge and the card starts right under it */
+    m.style.cssText='flex:0 0 calc(100% + 2*var(--pad));width:calc(100% + 2*var(--pad));margin:6px calc(-1*var(--pad)) 0;position:static;';
     function seed(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){(d&&d.pairs||[]).forEach(function(x){var sy=String(x.symbol||'').replace('USDT','');chg[sy]=+x.changePct;window.mpLivePrices=window.mpLivePrices||{};if(!window.mpLivePrices[sy]&&+x.price>0)window.mpLivePrices[sy]={p:+x.price,t:Date.now()};});draw();}).catch(function(){});}
-    function draw(){var px=window.mpLivePrices||{},h='';
-      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy];h+='<span><span class="sym">'+sy+'</span> <b>'+fpx(o.p)+'</b>'+(c!=null&&isFinite(c)?' <span class="'+(c>=0?'up':'dn')+'">'+(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%</span>':'')+'</span>';});
-      if(!h)return; var t=document.getElementById('mpqMT'); if(t)t.innerHTML=h+'<span class="sym">· marginpad.io ·</span>'+h;
+    function draw(){var px=window.mpLivePrices||{};
+      COINS.forEach(function(sy){var o=px[sy];if(!o||!(o.p>0))return;var c=chg[sy],pt=fpx(o.p),ct=(c!=null&&isFinite(c))?(c>=0?'▲':'▼')+Math.abs(c).toFixed(1)+'%':'',cc=(c!=null&&isFinite(c))?(c>=0?'up':'dn'):'';
+        var els=m.querySelectorAll('[data-tp="'+sy+'"]');for(var i=0;i<els.length;i++){var p=els[i].querySelector('[data-p]'),k=els[i].querySelector('[data-c]');if(p&&p.textContent!==pt)p.textContent=pt;if(k&&(k.textContent!==ct||k.className!==cc)){k.textContent=ct;k.className=cc;}}});
     }
     seed(); setInterval(draw,1500); setInterval(seed,90000);
   }
@@ -2233,5 +2410,6 @@ body.mpa-authed .hero{display:none}
   run();
 })();
 </script>
+<script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=event&type=sect&l=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=event&type=nav&l=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>

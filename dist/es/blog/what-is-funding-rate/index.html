@@ -34,7 +34,7 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es la tasa de funding en los futuros de cripto?","description":"La tasa de funding explicada para traders de futuros perpetuos.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-08-20","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-funding-rate/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"¿Qué es la tasa de funding en los futuros de cripto?","description":"La tasa de funding explicada para traders de futuros perpetuos.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/what-is-funding-rate/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Quién paga la tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"Cuando el funding es positivo, los longs le pagan a los shorts. Cuando es negativo, los shorts le pagan a los longs. Se intercambia entre traders, no se paga al exchange."}},{"@type":"Question","name":"¿Con qué frecuencia se cobra el funding?","acceptedAnswer":{"@type":"Answer","text":"La mayoría de los exchanges cobran el funding cada 8 horas, aunque algunos usan intervalos de 4 o 1 hora en mercados volátiles."}},{"@type":"Question","name":"¿Cómo se calcula la tasa de funding?","acceptedAnswer":{"@type":"Answer","text":"Combina un componente de prima - cuánto se ha alejado el perpetuo de su índice spot durante el intervalo - con un pequeño componente de interés fijo, y luego limita el resultado para que un movimiento violento no cree un cobro extremo. En cripto la prima domina, así que el funding sube cuando el perpetuo cotiza persistentemente por encima del spot."}},{"@type":"Question","name":"¿El funding afecta mi precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"Sí. El funding se liquida con cargo a tu margen, así que cada pago reduce tu colchón y acerca un poco la liquidación. En una posición apalancada de varios días, el precio de liquidación que revisaste al entrar no es el que tienes días después."}},{"@type":"Question","name":"¿Qué se considera una tasa de funding alta?","acceptedAnswer":{"@type":"Answer","text":"El nivel base es de unos +0.01% cada 8 horas, cerca de un 11% anualizado. Lecturas sostenidas por encima de +0.03% (cerca de un 33% al año) significan un mercado saturado, y +0.05% o más es euforia - un nivel que históricamente no dura y en el que el lado que paga está más expuesto a un squeeze."}},{"@type":"Question","name":"¿Puedo evitar pagar funding?","acceptedAnswer":{"@type":"Answer","text":"Cierra antes del instante de liquidación, toma el lado que recibe en vez del que paga, o mantén spot en lugar de un perpetuo. El funding se cobra a quien mantiene la posición en el momento de la liquidación, así que una exposición que nunca cruza una ventana no cuesta nada."}}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -72,7 +72,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Qué es la tasa de funding</div>
   <article>
     <h1>¿Qué es la tasa de funding en los futuros de cripto?</h1>
-    <div class="meta">Básicos · 8 min de lectura · Actualizado en agosto de 2026</div>
+    <div class="meta">Basics · 8 min read · Updated September 2026</div>
 
     <p>Si operas <strong>futuros perpetuos</strong>, seguro has visto un pequeño número llamado <strong>tasa de funding</strong> subir y bajar. Ese número mueve dinero, en silencio, dentro y fuera de tu cuenta cada pocas horas. Esto es lo que es y por qué importa.</p>
 
@@ -162,6 +162,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

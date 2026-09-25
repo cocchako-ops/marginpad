@@ -96,7 +96,7 @@ const PAGES = [
       ['/paper-trade', 'Paper Trade', 'No signup, live prices'],
       ['/calculators', 'Liquidation Calculator', 'Know your exit price'],
       ['/trading-api/', 'Bot API', 'REST paper trading'],
-      ['/academy/', 'Academy', '96 free lessons + XP'],
+      ['/academy/', 'Academy', '147 free lessons + XP'],
     ],
     faq: [
       { q: 'Does the Binance futures testnet work in the US?', a: 'No - the Binance testnet follows Binance’s geoblocking, so US users cannot register. MarginPad’s paper-trading simulator is not an exchange, so it works from any country with no account.' },

@@ -177,6 +177,7 @@ async function v1PriceResp(url) {
 }
 async function v1Unwrap(resp, rlh) {
   let data = null; try { data = await resp.clone().json(); } catch (e) {}
+  if (data && data.ok === false && data.error && typeof data.error === 'object' && data.error.code) return v1env(data, resp.status >= 400 ? resp.status : 400, rlh); // already in the v1 error shape (v1err) - pass it through instead of stringifying the object into "_object_object_"
   if (data && data.error) {
     const code = String(data.error).toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 40) || 'error';
     const st = resp.status >= 400 ? resp.status : (code === 'not_found' || code === 'not_found_' ? 404 : 400);
@@ -212,7 +213,20 @@ async function handleV1(url, request, env, ctx) {
   const M = {
     'price': () => v1PriceResp(url),
     'prices': () => handlePrices(env, ctx),
-    'klines': () => handleKlines(v1remap(url, '/api/klines')),
+    'klines': async () => { // audit 2026-09-25: `interval=1h`/`1d`/`D` silently became 60 m and `limit` was ignored (1000 bars every time)
+      const u = v1remap(url, '/api/klines');
+      const IV = { '1': '1', '1m': '1', '5': '5', '5m': '5', '15': '15', '15m': '15', '60': '60', '1h': '60', '60m': '60', '240': '240', '4h': '240', '1440': '1440', '1d': '1440', 'd': '1440', '10080': '10080', '1w': '10080', 'w': '10080' };
+      const raw = String(u.searchParams.get('interval') || '60').toLowerCase(), iv = IV[raw];
+      if (!iv) return v1err('bad_interval', 'interval must be one of 1m, 5m, 15m, 1h, 4h, 1d, 1w (or minutes: 1, 5, 15, 60, 240, 1440, 10080)', 400);
+      u.searchParams.set('interval', iv);
+      const lim = parseInt(u.searchParams.get('limit') || '', 10); u.searchParams.delete('limit'); // the shared edge cache has no limit dimension - slice AFTER
+      const r = await handleKlines(u, env, undefined, ctx);
+      if (!(lim > 0) || !r || r.status !== 200) return r;
+      let bars = null; try { bars = await r.clone().json(); } catch (e) { return r; }
+      if (!Array.isArray(bars)) return r;
+      const h = new Headers(r.headers); h.delete('content-length');
+      return new Response(JSON.stringify(bars.slice(-Math.min(1000, Math.max(1, lim)))), { status: 200, headers: h });
+    },
     'symbols': () => handleSymbols(),
     'screener': () => handleScreener(env, false),
     'funding': () => handleCgFunding(v1remap(url, '/api/cg/funding'), env),
@@ -1940,7 +1954,7 @@ async function handleSsrVenues(request, url, env, ctx) {
   const inner = lead + '<div class="vx-wrap"><table class="vx"><thead><tr><th>Exchange</th><th>24h liquidated</th><th>Share</th><th>Longs</th><th>Shorts</th><th>Long / short</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
     + '<p class="vx-stamp">Measured by the MarginPad collector across nine exchange websockets &middot; rolling 24h &middot; ' + stamp + ' UTC</p>';
   html = ssrStampDate(html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + inner + html.slice(close), Date.now());
-  const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+  const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'venues' } });
   try { await caches.default.put(ck, out.clone()); } catch (e) {}
   return out;
 }
@@ -2481,7 +2495,10 @@ async function handleSsrLiq(request, url, env, mode, param) {
 // without this the hubs read as empty shells to them; with it the static HTML carries dated, citable numbers.
 // Every data source is an existing edge-cached handler - a full miss costs one internal call, then 10 min cache.
 function _fpct(f) { return (f >= 0 ? '+' : '') + (+f).toFixed(4) + '%'; }
-async function ssrHubSentences(page, sym, env) {
+async function ssrHubSentences(page, sym, env, request) {
+  // `request` is here ONLY for esLang(): the liquidations and whales branches used it without it being a
+  // parameter, so a ReferenceError was swallowed by the caller's try/catch and /liquidations/,
+  // /liquidation-statistics/ and /hyperliquid-whales/ served NO crawler sentences at all (audit 2026-09-25).
   const S = [];
   const jget = async fn => { try { return await (await fn()).json(); } catch (e) { return null; } };
   if (page === 'liquidations') {
@@ -2637,7 +2654,7 @@ async function handleSsrHub(request, url, env, page, sym) {
   let anchor = html.indexOf('<h2'); if (anchor < 0) anchor = html.indexOf('<footer');
   if (anchor < 0) return pass();
   let res = null;
-  try { res = await ssrHubSentences(page, sym, env); } catch (e) {}
+  try { res = await ssrHubSentences(page, sym, env, request); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
   const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS', rekt: 'LIVE LIQUIDATIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") - name them for the reader
   const out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor), Date.now());
@@ -2774,7 +2791,7 @@ async function handleCgLongShort(url, env) {
 // changes USD open interest with nobody opening or closing a position, and "inflow" must mean positions.
 // First fill: while the ring holds no point old enough, ONE pass seeds it from Bybit's own 1h OI history for the
 // largest coins (KV oi:seeded, once) so the page does not sit blank for a day after deploy.
-const OI_RING_KEEP = 27, OI_SEED_N = 120;
+const OI_RING_KEEP = 30, OI_SEED_N = 120; // 30 hourly points: the 24 h lookback plus a buffer, so one missed cron hour does not drop the point it needs
 function oiRingRows(list) { // Bybit linear tickers -> {SYM: open contracts}, same liquidity threshold as the endpoint
   const m = {};
   (list || []).forEach(t => {
@@ -2801,9 +2818,12 @@ async function oiRingTick(env) { // */10 cron: records one point per UTC hour; s
     const m = oiRingRows(j && j.result && j.result.list);
     if (Object.keys(m).length >= 20) { pts.push({ t: hour, m }); dirty = true; } // a thin answer is not a snapshot
   }
-  const oldest = pts.length ? Math.min(...pts.map(p => +p.t || now)) : now;
-  if (now - oldest < 22 * 3600000 && !(await env.STATS.get('oi:seeded'))) {
-    await env.STATS.put('oi:seeded', String(now), { expirationTtl: 7 * 86400 }); // before the fetches: a crash must not re-run 120 calls every 10 min
+  // BACKFILL WHENEVER THE 24H POINT IS MISSING, not only once (audit 2026-09-25): the ring had a 64-hour hole
+  // (2026-09-21 20:00 -> 09-24 12:00, the cron simply did not write) and the one-time seed flag, 7 days long, meant
+  // /open-interest/ printed a dash in every OI 24h cell for a day after the cron came back. Bybit's own 1h open-interest
+  // history fills the hole in 120 calls; the flag now only spaces those out (6 h), it never forbids them.
+  if (!oiRingAt(pts, 24 * 3600000, 2 * 3600000) && !(await env.STATS.get('oi:seeded'))) {
+    await env.STATS.put('oi:seeded', String(now), { expirationTtl: 6 * 3600 }); // before the fetches: a crash must not re-run 120 calls every 10 min
     const last = pts[pts.length - 1], syms = last ? Object.keys(last.m) : [];
     // rank by USD so the seed covers the rows a reader actually sees (the ring itself stores contracts)
     let ranked = syms;
@@ -3357,11 +3377,12 @@ async function cgCached(env, cgUrl, ttlS) {
  const h = { headers: { accept: 'application/json' } };
  if (env.COINGECKO_API_KEY) h.headers['x-cg-demo-api-key'] = env.COINGECKO_API_KEY;
  const r = await fetch(cgUrl, h);
- if (!r.ok) return null;
+ if (!r.ok) { let b = ''; try { b = (await r.text()).slice(0, 160); } catch (e) {} _cgFail[kvKey] = { status: r.status, body: b, ts: Date.now() }; return null; } // remembered so the JSON error can say WHY (audit 2026-09-25: /api/gecko/global answered "unavailable" for weeks with no trace of the upstream status anywhere)
  const j = await r.json();
  try { await env.STATS.put(kvKey, JSON.stringify(j), { expirationTtl: ttlS }); } catch (e) {}
  return j;
 }
+const _cgFail = {}; // kvKey -> last upstream failure this isolate saw (status, body snippet, ts)
 async function handleGeckoMarkets(url, env) {
   const cat = (url.searchParams.get('cat') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 40);
   const slim = url.searchParams.get('slim') === '1'; // logos/prices only, no sparkline - ~400KB -> ~10KB (mobile perf 2026-07-14)
@@ -3438,11 +3459,11 @@ async function handleGeckoCoin(url, env) {
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let out = null;
   try {
-    const h = { headers: { accept: 'application/json' } };
-    if (env.COINGECKO_API_KEY) h.headers['x-cg-demo-api-key'] = env.COINGECKO_API_KEY;
-    const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=' + sym + '&sparkline=true&price_change_percentage=1h,24h,7d,30d', h);
-    if (r.ok) {
-      const j = await r.json();
+    // KV-cached (10 min, one call for the planet), not a per-colo edge fetch: every colo asking CoinGecko for
+    // every symbol every two minutes is how the 10,000-call demo quota was gone by the 25th and /global answered
+    // 429 for the rest of the month (audit 2026-09-25, upstream error_code 10006).
+    const j = await cgCached(env, 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=' + sym + '&sparkline=true&price_change_percentage=1h,24h,7d,30d', 600);
+    {
       if (Array.isArray(j) && j.length) {
         const c = j.sort((a, b) => (+b.market_cap || 0) - (+a.market_cap || 0))[0];
         out = {
@@ -3850,8 +3871,20 @@ async function handleGeckoGlobal(env) {
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let data = null;
  try { data = await cgCached(env, 'https://api.coingecko.com/api/v3/global', 2700); } catch (e) {}
+  // Second source when CoinGecko is out (its demo quota is 10,000 calls a month and was exhausted on the 25th,
+  // audit 2026-09-25): CoinPaprika's keyless /v1/global, mapped onto the SAME shape the homepage, the language
+  // homepages and /api/v1/global already read, and labelled `src` so nobody mistakes it for CoinGecko's figure.
+  if (!(data && data.data)) {
+    try {
+      const kvK = 'cg:c:paprika-global';
+      let p = null; try { p = JSON.parse(await env.STATS.get(kvK) || 'null'); } catch (e) {}
+      if (!p) { const r = await fetch('https://api.coinpaprika.com/v1/global', { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(6000) }); if (r.ok) { p = await r.json(); if (p && +p.market_cap_usd > 0) { try { await env.STATS.put(kvK, JSON.stringify(p), { expirationTtl: 1800 }); } catch (e) {} } else p = null; } }
+      if (p && +p.market_cap_usd > 0) data = { data: { total_market_cap: { usd: +p.market_cap_usd }, total_volume: { usd: +p.volume_24h_usd || 0 }, market_cap_percentage: { btc: +p.bitcoin_dominance_percentage || 0 }, market_cap_change_percentage_24h_usd: (p.market_cap_change_24h != null ? +p.market_cap_change_24h : null), active_cryptocurrencies: +p.cryptocurrencies_number || null, updated_at: Math.floor((+p.last_updated || Date.now() / 1000)) }, src: 'coinpaprika' };
+    } catch (e) {}
+  }
   const ok = data && data.data;
-  const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? 'public, max-age=300' : 'no-store', ...CORS } });
+  const _f = _cgFail['cg:c:' + 'https://api.coingecko.com/api/v3/global'.slice(30, 160)];
+  const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable', upstream: _f ? { status: _f.status, body: _f.body, ago_s: Math.round((Date.now() - _f.ts) / 1000) } : null }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? 'public, max-age=300' : 'no-store', ...CORS } });
   if (ok) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -6963,7 +6996,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b87c149c" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e12bbc95" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15283,7 +15316,10 @@ function BOT_TIER_LIMITS(tier) {
 }
 // The one sentence every 402/429 hint uses. Never point an API refusal at /premium/ again - that page sells the site.
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
-const API_UPGRADE_HINT = 'API Pro is $29 a month (600 requests/minute, 10 keys, 200 open positions, webhooks, AI reads), Max is $79 (2000/min) and Business is $159 (5000/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE;
+// Built FROM API_PLANS, never typed: the literal version said $29/$79/$159 and "AI reads" for ten days after the
+// plans were repriced to $39/$99/$199 with no AI on any tier (audit 2026-09-25) - every 402/429 a bot received quoted it.
+const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), pro = p('pro'), max = p('max'), biz = p('business');
+  return 'API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
 async function apiPlanOf(env, uid) {
@@ -18188,7 +18224,7 @@ const CSP_REPORT = [
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https://flagcdn.com https://www.google-analytics.com https://mc.yandex.ru https://*.marginpad.io",
   "connect-src 'self' https://api.bybit.com wss://stream.bybit.com https://www.google-analytics.com https://mc.yandex.ru https://collector.marginpad.io wss://marginpad.io",
-  "frame-src 'self' https://www.youtube-nocookie.com",
+  "frame-src 'self' https://www.youtube-nocookie.com https://mc.yandex.com https://mc.yandex.ru", // Metrika's webvisor frames mc.yandex.com on every page that carries the counter (report-only violation on /rewards/ the day the counter reached it, 2026-09-25)
   "frame-ancestors 'self'",
   "object-src 'none'",
   "base-uri 'self'",
@@ -24775,7 +24811,7 @@ export class UserStore {
         const cur = curById.get(String(t.id));
         if (!cur) return false;                                          // fabrication - server never issued this id
         if (cur.sc) return false;                                        // server-closed is FINAL
-        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose', 'feeRate', 'feeOpen']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose + the per-market feeRate the server charges) a client sync can't touch
+        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose', 'feeRate', 'feeOpen', 'rz', 'feeVenue']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose + the per-market feeRate the server charges) a client sync can't touch
         if ((t.status === 'win' || t.status === 'loss') && cur.status !== 'win' && cur.status !== 'loss') return false; // P0.6 - srv closes are SERVER-AUTHORITATIVE: manual close routes through /botclose (sets sc); auto-close (liq/SL/TP) is settled by the sweep/nudge candle-check at the server's OWN level. A client sync can NEVER close an srv trade (its exit price can't be trusted, and the position must stay OPEN in active_srv so the sweep settles it). The client's local close still shows instantly (pullTrades keeps a locally-closed trade over a stale server 'open'); the server reconciles with sc within one sweep/nudge.
         return true;
       });

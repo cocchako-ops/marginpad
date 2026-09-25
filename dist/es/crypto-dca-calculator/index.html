@@ -69,12 +69,12 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Todas las herramientas","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Calculadora de DCA Cripto","item":"https://marginpad.io/es/crypto-dca-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Es el DCA mejor que comprar de una sola vez?","acceptedAnswer":{"@type":"Answer","text":"La compra única gana ligeramente más a menudo en mercados alcistas, pero el DCA elimina la decisión de sincronización y se ajusta a cómo llegan tus ingresos - para activos volátiles, la disciplina suele valer la pequeña diferencia en el valor esperado."}},{"@type":"Question","name":"¿Sirve el DCA para promediar a la baja en una posición perdedora?","acceptedAnswer":{"@type":"Answer","text":"Solo cuando la tesis original sigue siendo válida y el tamaño total se mantiene dentro del plan de riesgo. Promediar a la baja sin límite es cómo las pequeñas pérdidas terminan liquidando la cuenta."}},{"@type":"Question","name":"¿Con qué frecuencia deberían ocurrir las compras?","acceptedAnswer":{"@type":"Answer","text":"Las diferencias entre semanal y mensual son menores; la constancia durante un mercado bajista importa más que la frecuencia."}}]}</script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de DCA - Entrada Promedio entre Compras","url":"https://marginpad.io/es/crypto-dca-calculator/","dateModified":"2026-09-10T19:56:57.478Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-dca-calculator.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/crypto-dca-calculator.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-</head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de DCA - Entrada Promedio entre Compras","url":"https://marginpad.io/es/crypto-dca-calculator/","dateModified":"2026-09-25T09:34:41.455Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <h1>Calculadora de DCA Cripto</h1>
@@ -95,6 +95,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var r=document.getElementById('res');var tot=0,qty=0;for(var i=1;i<=4;i++){var p=+document.getElementById('p'+i).value,a=+document.getElementById('a'+i).value;if(p>0&&a>0){tot+=a;qty+=a/p;}}if(!(qty>0)){r.innerHTML='';return;}var avg=tot/qty;r.innerHTML='<div class="rrow"><span class="k">Total invested</span><span class="v">'+tot.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Total coins</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow big"><span class="k">Average entry (break-even)</span><span class="v">'+avg.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

@@ -15,7 +15,8 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Calculadora de liquidación de Kraken (2026) - Long y Short, cualquier apalancamiento | MarginPad</title>
 <meta name="description" content="Calculadora gratuita del precio de liquidación de Kraken: consulta tu precio de liquidación exacto a 10x, 25x, 50x o cualquier apalancamiento, long o short, con el margen de mantenimiento real de Kraken. Instantánea, sin registro." />
@@ -56,11 +57,11 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Calculadora de liquidación de Kraken","item":"https://marginpad.io/es/kraken-liquidation-calculator/"}]}</script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de liquidación de Kraken (2026) - Long y Short, cualquier apalancamiento","url":"https://marginpad.io/es/kraken-liquidation-calculator/","dateModified":"2026-09-10T19:56:57.537Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
+<meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-</head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de liquidación de Kraken (2026) - Long y Short, cualquier apalancamiento","url":"https://marginpad.io/es/kraken-liquidation-calculator/","dateModified":"2026-09-25T09:34:45.564Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -77,7 +78,7 @@
         <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
         <label>Precio de entrada (USD)</label><input id="liqEntry" type="number" value="60000" step="any">
         <label>Apalancamiento</label><input id="liqLev" type="number" value="10" step="any">
-        <label>Tasa de margen de mantenimiento (%)</label><input id="liqMmr" type="number" value="0.5" step="any">
+        <label>Tasa de margen de mantenimiento (%)</label><input id="liqMmr" type="number" value="0.6" step="any">
       </div>
       <div class="calc-out">
         <div class="col">Precio de liquidación estimado</div><div class="big" id="liqOut">-</div>
@@ -88,18 +89,18 @@
 
     <h2>Cómo funciona la liquidación en Kraken</h2>
     <p>Kraken es un exchange consolidado que prioriza la seguridad. Sus futuros ofrecen un apalancamiento más conservador, favoreciendo el control del riesgo. Kraken es la opción de confianza: uno de los exchanges más antiguos que sigue en pie, con un sólido historial de seguridad y, algo importante, uno de los pocos grandes que atiende a traders de EE. UU. Su límite de apalancamiento es un conservador 50x - una virtud, no un defecto, para quien valora un margen de liquidación más amplio por encima de los números llamativos.</p>
-    <p>En Kraken, una posición con margen aislado se liquida cuando las pérdidas consumen el margen depositado. La estimación es <code>Entry × (1 − 1/Leverage + MMR)</code> para un long y <code>Entry × (1 + 1/Leverage − MMR)</code> para un short, donde <b>MMR</b> es la tasa de margen de mantenimiento - aproximadamente <b>0.5%</b> en los contratos principales de Kraken. Como Kraken permite hasta <b>50× de apalancamiento</b>, el margen de liquidación puede reducirse rápido; cuanto mayor sea el apalancamiento, más cerca queda la liquidación de tu entrada.</p>
+    <p>On Kraken, an isolated-margin position is liquidated when losses eat through your posted margin. The estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate - roughly <b>0.6%</b> on Kraken's flagship contracts. Because Kraken allows up to <b>50× leverage</b>, the liquidation buffer can get thin fast; the higher the leverage, the closer liquidation sits to your entry.</p>
 
     <h2>Distancia de liquidación de Kraken según el apalancamiento</h2>
-    <p>Cuánto tiene que moverse el precio de Kraken en tu contra para liquidar un long con margen aislado, con un margen de mantenimiento del 0.5%:</p>
-    <table class="lvtab"><thead><tr><th>Apalancamiento</th><th>Movimiento hasta la liquidación</th><th>Margen inicial</th></tr></thead><tbody><tr><td>10×</td><td>−9.50%</td><td>10.00%</td></tr><tr><td>25×</td><td>−3.50%</td><td>4.00%</td></tr><tr><td>50×</td><td>−1.50%</td><td>2.00%</td></tr></tbody></table>
+    <p>How far Kraken's price has to move against you before an isolated-margin long is liquidated, at 0.6% maintenance margin:</p>
+    <table class="lvtab"><thead><tr><th>Apalancamiento</th><th>Movimiento hasta la liquidación</th><th>Margen inicial</th></tr></thead><tbody><tr><td>10×</td><td>−9.40%</td><td>10.00%</td></tr><tr><td>25×</td><td>−3.40%</td><td>4.00%</td></tr><tr><td>50×</td><td>−1.40%</td><td>2.00%</td></tr></tbody></table>
     <p>A 50× - el límite de Kraken en los pares principales - un movimiento de aproximadamente <b>2.00%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición a 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.</p>
 
     <h2>Ejemplo resuelto</h2>
-    <p>Un long a 10× en Kraken abierto en <code>$60,000.00</code> con una tasa de margen de mantenimiento del 0.5% se liquida aproximadamente en:</p>
+    <p>A 10× long on Kraken entered at <code>$60,000.00</code> with a 0.6% maintenance margin rate is liquidated at about:</p>
     <div class="example">
-      <div class="row"><span>Precio de liquidación</span><b>$54,300.00</b></div>
-      <div class="row"><span>Movimiento hasta la liquidación</span><b>−9.50%</b></div>
+      <div class="row"><span>Liquidation price</span><b>$54,360.00</b></div>
+      <div class="row"><span>Move to liquidation</span><b>−9.40%</b></div>
     </div>
     <p>Coloca tu stop-loss cómodamente dentro de ese nivel. Mira también la <a href="/es/blog/what-is-liquidation-in-crypto/">guía para evitar la liquidación</a> y las <a href="/es/blog/how-to-avoid-liquidation-crypto/">siete formas en que los traders son liquidados</a>.</p>
 
@@ -108,7 +109,7 @@
 
     <h2>Cómo se compara Kraken</h2>
     <p>Los límites de apalancamiento y los márgenes de mantenimiento varían entre plataformas, y ambos afectan tu precio de liquidación. Así se compara Kraken con los demás exchanges principales:</p>
-    <table class="lvtab"><thead><tr><th>Exchange</th><th>Apalancamiento máx.</th><th>Comisión taker</th><th>Margen de mant.</th></tr></thead><tbody><tr><td>Bybit</td><td>100×</td><td>0.055%</td><td>~0.5%</td></tr><tr><td>Binance</td><td>125×</td><td>0.04%</td><td>~0.4%</td></tr><tr><td>OKX</td><td>125×</td><td>0.05%</td><td>~0.5%</td></tr><tr><td>KuCoin</td><td>100×</td><td>0.06%</td><td>~0.5%</td></tr><tr><td>Gate</td><td>100×</td><td>0.05%</td><td>~0.5%</td></tr><tr class="self"><td>Kraken <span class="you">esta página</span></td><td>50×</td><td>0.05%</td><td>~0.5%</td></tr><tr><td>Bitget</td><td>125×</td><td>0.06%</td><td>~0.5%</td></tr><tr><td>MEXC</td><td>500×</td><td>0.04%</td><td>~0.5%</td></tr></tbody></table>
+    <table class="lvtab"><thead><tr><th>Exchange</th><th>Apalancamiento máx.</th><th>Comisión taker</th><th>Margen de mant.</th></tr></thead><tbody><tr><td>Bybit</td><td>100×</td><td>0.055%</td><td>~0.5%</td></tr><tr><td>Binance</td><td>125×</td><td>0.05%</td><td>~0.4%</td></tr><tr><td>OKX</td><td>125×</td><td>0.05%</td><td>~0.5%</td></tr><tr><td>KuCoin</td><td>100×</td><td>0.06%</td><td>~0.5%</td></tr><tr><td>Gate</td><td>100×</td><td>0.05%</td><td>~0.5%</td></tr><tr class="self"><td>Kraken <span class="you">esta página</span></td><td>50×</td><td>0.05%</td><td>~0.6%</td></tr><tr><td>Bitget</td><td>125×</td><td>0.06%</td><td>~0.5%</td></tr><tr><td>MEXC</td><td>500×</td><td>0.02%</td><td>~0.1%</td></tr></tbody></table>
     <p>Un apalancamiento mayor y un margen de mantenimiento menor acercan la liquidación a tu entrada, así que el «mejor» exchange depende de cuánto margen quieras. Consulta el análisis completo del <a href="/es/best-crypto-futures-exchange/">mejor exchange de futuros cripto</a>, o una comparación directa como <a href="/es/bybit-vs-kraken/">Kraken vs Bybit</a>.</p>
 
     <h2>Dónde está disponible Kraken</h2>
@@ -148,6 +149,6 @@ if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathna
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}});});})();
 </script>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

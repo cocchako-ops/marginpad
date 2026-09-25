@@ -15,7 +15,8 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -41,7 +42,7 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"What Is Liquidation in Crypto Trading (and How to Avoid It)","description":"Liquidation explained simply: what it is, why leverage causes it, what actually happens when you get liquidated, and seven practical ways to make sure it never happens to you.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/what-is-liquidation-in-crypto/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"What Is Liquidation in Crypto Trading (and How to Avoid It)","description":"Liquidation explained simply: what it is, why leverage causes it, what actually happens when you get liquidated, and seven practical ways to make sure it never happens to you.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/blog/what-is-liquidation-in-crypto/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does it mean to be liquidated in crypto?","acceptedAnswer":{"@type":"Answer","text":"It means the exchange force-closed your leveraged position because your losses ate through the margin backing it. The position is closed at market, you lose that margin, and a liquidation fee is usually charged on top."}},{"@type":"Question","name":"At what percentage do you get liquidated?","acceptedAnswer":{"@type":"Answer","text":"Roughly 1 divided by your leverage, minus a small maintenance margin. A 10x position is liquidated after about a 9-10% move against it, 25x after about 4%, and 100x after about 1%. Higher leverage means a much smaller move wipes you out."}},{"@type":"Question","name":"Can you lose more than your margin when liquidated?","acceptedAnswer":{"@type":"Answer","text":"On isolated margin, normally no - your loss is capped at the margin assigned to that position. On cross margin your whole balance backs the trade, so a single bad position can drain the entire account. Insurance funds and auto-deleveraging cover the rare cases where liquidation cannot fill in time."}},{"@type":"Question","name":"How do I avoid getting liquidated?","acceptedAnswer":{"@type":"Answer","text":"Use lower leverage, always set a stop-loss inside your liquidation price, size each trade to risk only 1-2% of your account, keep a margin buffer, prefer isolated margin, cut leverage before major economic events, and check your exact liquidation price before every trade."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"What is liquidation","item":"https://marginpad.io/blog/what-is-liquidation-in-crypto/"}]}</script>
 
@@ -79,7 +80,7 @@
   <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / What is liquidation</div>
   <article>
     <h1>What Is Liquidation in Crypto Trading (and How to Avoid It)</h1>
-    <div class="meta">Basics · 7 min read · Updated June 2026</div>
+    <div class="meta">Basics · 7 min read · Updated September 2026</div>
 <p><strong>Liquidation</strong> is the fastest way to lose a crypto futures account - and it catches more traders than being wrong about direction ever does. You can call a move perfectly and still get wiped out if a normal wobble hits your liquidation price first. This guide explains, in plain English, what liquidation actually is, why leverage causes it, what happens the moment it hits, and seven habits that keep it from ever touching your account.</p>
 
 <h2>What does liquidation mean?</h2>
@@ -112,7 +113,7 @@
 </ul>
 
 <h2>See it happen with live data</h2>
-<p>The concept sticks once you watch it in real time. MarginPad&apos;s <a href="/liquidations/">live liquidations feed</a> shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href="/liquidations/">BTC</a>, <a href="/liquidations/">ETH</a>, <a href="/liquidations/">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href="/paper-trade">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.</p>
+<p>The concept sticks once you watch it in real time. MarginPad&apos;s <a href="/liquidations/">live liquidations feed</a> shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href="/liquidations/btc/">BTC</a>, <a href="/liquidations/eth/">ETH</a>, <a href="/liquidations/sol/">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href="/paper-trade">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.</p>
     <div class="toolshow">
       <div class="ts-head">Everything free on MarginPad - no signup</div>
       <div class="ts-grid">
@@ -147,6 +148,6 @@
     <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

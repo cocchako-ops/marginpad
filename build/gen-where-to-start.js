@@ -104,7 +104,7 @@ const GOALS = [
   {
     id: 'earn', t: 'Compete, and earn while practising', s: 'Free entry, real prizes',
     steps: [
-      { u: '/trading-competition/', t: 'Trading competition', why: 'Free entry, six boards, prizes paid every 14 days. What it is and how the scoring works.', lv: ALL3 },
+      { u: '/trading-competition/', t: 'Trading competition', why: 'Free entry, seven boards, prizes paid every 14 days. What it is and how the scoring works.', lv: ALL3 },
       { u: '/season/', t: 'Your season', why: 'The boards you are on, the pass, the daily call and your goals.', lv: ALL3 },
       { u: '/rewards/', t: 'Rewards', why: 'Claims, missions and withdrawals. The rewards area unlocks at Bronze, which is 500 XP.', lv: ALL3 },
       { u: '/levels/', t: 'Levels', why: 'Bronze to Diamond: how XP is earned and what each level opens.', lv: ['new', 'some'] },

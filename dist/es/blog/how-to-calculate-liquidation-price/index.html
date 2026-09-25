@@ -15,7 +15,8 @@
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -30,7 +31,6 @@
 <link rel="canonical" href="https://marginpad.io/es/blog/how-to-calculate-liquidation-price/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
-<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/how-to-calculate-liquidation-price/" />
 <link rel="alternate" hreflang="pt" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/pt/" />
 <link rel="alternate" hreflang="fr" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/" />
 <link rel="alternate" hreflang="de" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/de/" />
@@ -46,6 +46,7 @@
 <link rel="alternate" hreflang="no" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/no/" />
 <link rel="alternate" hreflang="da" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/da/" />
 <link rel="alternate" hreflang="fi" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fi/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/blog/how-to-calculate-liquidation-price/" />
 <meta property="og:title" content="Cómo calcular el precio de liquidación (fórmula + ejemplos)" />
 <meta property="og:description" content="La fórmula exacta que usan los exchanges para fijar tu precio de liquidación en margen aislado, por qué el apalancamiento lo acerca a tu entrada, y ejemplos resueltos para longs y shorts a 10x, 20x y 100x." />
 <meta property="og:type" content="article" />
@@ -56,7 +57,7 @@
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo calcular el precio de liquidación (fórmula + ejemplos)","description":"La fórmula exacta que usan los exchanges para fijar tu precio de liquidación en margen aislado, por qué el apalancamiento lo acerca a tu entrada, y ejemplos resueltos para longs y shorts a 10x, 20x y 100x.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-calculate-liquidation-price/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cómo calcular el precio de liquidación (fórmula + ejemplos)","description":"La fórmula exacta que usan los exchanges para fijar tu precio de liquidación en margen aislado, por qué el apalancamiento lo acerca a tu entrada, y ejemplos resueltos para longs y shorts a 10x, 20x y 100x.","image":"https://marginpad.io/assets/og.png","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","logo":{"@type":"ImageObject","url":"https://marginpad.io/assets/og.png"}},"datePublished":"2026-06-10","dateModified":"2026-09-25","mainEntityOfPage":"https://marginpad.io/es/blog/how-to-calculate-liquidation-price/"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuál es la fórmula del precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"En margen aislado, un long se liquida aproximadamente en Entrada × (1 − 1/Apalancamiento + margen de mantenimiento), y un short en Entrada × (1 + 1/Apalancamiento − margen de mantenimiento). El término 1/Apalancamiento es el factor principal: determina cuánto puede moverse el precio antes de que tu margen desaparezca."}},{"@type":"Question","name":"¿A qué porcentaje se liquida una posición?","acceptedAnswer":{"@type":"Answer","text":"Aproximadamente 1 dividido entre tu apalancamiento, menos el margen de mantenimiento. Una posición a 10x se liquida tras un movimiento en su contra de aproximadamente 9-10%, a 25x tras aproximadamente 3.5%, y a 100x tras aproximadamente 1%. Un apalancamiento mayor pone la liquidación mucho más cerca de tu entrada."}},{"@type":"Question","name":"¿El tamaño de la posición cambia el precio de liquidación?","acceptedAnswer":{"@type":"Answer","text":"En margen aislado, no - el precio de liquidación depende de la entrada, el apalancamiento y el margen de mantenimiento, no de cuán grande sea la posición. El tamaño de la posición cambia cuánto dinero pierdes en la liquidación, no el precio al que ocurre. El margen cruzado es distinto: todo tu saldo respalda la operación, alejando la liquidación."}},{"@type":"Question","name":"¿Es exacto el precio de liquidación calculado?","acceptedAnswer":{"@type":"Answer","text":"Es una estimación cercana. Las comisiones, el funding y el margen de mantenimiento escalonado en posiciones grandes hacen que la liquidación real llegue un poco antes, y los exchanges liquidan contra el mark price en lugar del último trade. Trata la fórmula como una guía ligeramente optimista y deja un colchón."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Calcular el precio de liquidación","item":"https://marginpad.io/es/blog/how-to-calculate-liquidation-price/"}]}</script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -93,7 +94,7 @@
   <div class="crumb"><a href="/es/">Inicio</a> / <a href="/es/blog/">Blog</a> / Calcular el precio de liquidación</div>
   <article>
     <h1>Cómo calcular el precio de liquidación (fórmula + ejemplos)</h1>
-    <div class="meta">Liquidación · 8 min de lectura · Actualizado en junio de 2026</div>
+    <div class="meta">Liquidation · 8 min read · Updated September 2026</div>
 <p>Tu <strong>precio de liquidación</strong> es el número más importante en el trading apalancado. Es el precio al que el exchange cierra tu posición a la fuerza y pierdes el margen que la respalda - sin aviso, sin negociación. Conocerlo <em>antes</em> de entrar es la diferencia entre una operación controlada y una explosión sorpresa. La buena noticia: sale de una fórmula sencilla, y una vez que la entiendes puedes dimensionar cualquier operación para que un movimiento normal del mercado nunca la alcance. Si solo quieres el número, la <a href="/es/calculators?c=liq">calculadora de liquidación</a> lo da al instante - pero vale la pena entender las matemáticas.</p>
 
 <h2>La fórmula del precio de liquidación (margen aislado)</h2>
@@ -149,7 +150,7 @@
 <p>Trata la fórmula como una estimación cercana pero ligeramente optimista, y deja siempre un colchón.</p>
 
 <h2>Míralo con datos en vivo</h2>
-<p>Los números se entienden mejor cuando los ves ocurrir. El <a href="/es/liquidations/">feed de liquidaciones en vivo</a> muestra cuánto apalancamiento se está borrando ahora mismo en Binance, Bybit y OKX, y cada moneda importante tiene su propia página - <a href="/es/liquidations/">BTC</a>, <a href="/es/liquidations/">ETH</a>, <a href="/es/liquidations/">SOL</a> - con el total de 24 horas y el reparto entre longs y shorts. Antes de entrar, mete tu entrada y tu apalancamiento en la <a href="/es/calculators?c=liq">calculadora de liquidación</a>, dimensiona la operación desde tu stop con la <a href="/es/calculators?c=size">calculadora de tamaño de posición</a> y ensáyalo todo sin riesgo al precio real en el <a href="/es/paper-trade">terminal de paper trading</a>. Aprender qué es una liquidación con dinero ficticio sale muchísimo más barato que aprenderlo con el tuyo.</p>
+<p>Numbers land harder when you watch them play out. The <a href="/es/liquidations/">live liquidations feed</a> shows exactly how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href="/liquidations/btc/">BTC</a>, <a href="/liquidations/eth/">ETH</a>, <a href="/liquidations/sol/">SOL</a> - with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the <a href="/es/calculators?c=liq">liquidation calculator</a>, size the trade from your stop with the <a href="/es/calculators?c=size">position-size calculator</a>, and rehearse the whole thing risk-free at the live price on the <a href="/es/paper-trade">paper-trading terminal</a>. Learning liquidation with fake money is far cheaper than learning it with your own.</p>
     <div class="toolshow">
       <div class="ts-head">Todo gratis en MarginPad - sin registro</div>
       <div class="ts-grid">
@@ -180,6 +181,6 @@
     <span>© 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> · <a href="/es/blog/">Blog</a> · <a href="/es/terms/">Términos</a> · <a href="/es/privacy/">Privacidad</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

@@ -544,9 +544,9 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Live Crypto Liquidations - Real-Time Feed, Free, No Login","url":"https://marginpad.io/rekt/","dateModified":"2026-09-11T11:28:06.188Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-</head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Live Crypto Liquidations - Real-Time Feed, Free, No Login","url":"https://marginpad.io/rekt/","dateModified":"2026-09-25T09:34:41.679Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 <div class="wrap">
@@ -577,7 +577,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
         <div class="rkh-tiles">
           <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">-</div></div>
           <div class="rkh-tile"><div class="l">Most rekt · 24h</div><div class="v" id="rkhBig">-</div></div>
-          <div class="rkh-tile pace"><div class="l">Pace · right now</div><div class="v" id="rkhPace">-</div></div>
+          <div class="rkh-tile pace"><div class="l">Pace · 5-min average</div><div class="v" id="rkhPace">-</div></div>
           <div class="rkh-tile"><div class="l">Biggest hit · today</div><div class="v" id="rkhRec">-</div></div>
           <div class="rkh-meter"><div class="bar"><i class="bl" id="rkhML" style="width:50%"></i><i class="bs" id="rkhMS" style="width:50%"></i></div><div class="lbl"><span class="ll" id="rkhMLl">Longs -</span><span class="ls" id="rkhMSl">- Shorts</span></div></div>
         </div>
@@ -899,8 +899,11 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var pl=document.getElementById('rktPL'),ps=document.getElementById('rktPS');if(pl)pl.style.width=lp+'%';if(ps)ps.style.width=(100-lp)+'%';
     var a=document.getElementById('rktPLl'),b=document.getElementById('rktPSl');if(a)a.textContent='Longs $'+money(L);if(b)b.textContent='$'+money(S)+' Shorts';
     var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?__esT_rektindex("quietWaitingForLiquidation",'Quiet - waiting for liquidations…'):(lp>=62?__esT_rektindex("longsAreGettingRekt",'▼ LONGS ARE GETTING REKT'):lp<=38?__esT_rektindex("shortsAreGettingRekt",'▲ SHORTS ARE GETTING REKT'):'BALANCED PAIN');
-    var rate=document.getElementById('rktRate');if(rate){var c60=0,s60=0;win10.forEach(function(x){if(x.t>=now-60000){c60++;s60+=x.n;}});rate.textContent=c60+' liq/min · $'+money(s60)+'/min';
-      var hp=document.getElementById('rkhPace');if(hp)hp.innerHTML='$'+money(s60)+'<small>/min · '+c60+' liq</small>';}
+    /* PACE = a per-minute rate averaged over the last FIVE minutes (audit 2026-09-25). A 60 s window printed
+       "$0/min · 0 liq" the moment the tape went quiet for a minute - true, and read as a broken tile next to rows
+       that were 63 s old. Five minutes is still "now" for a liquidation stream and rarely lands on an empty window. */
+    var rate=document.getElementById('rktRate');if(rate){var c5=0,s5=0;win10.forEach(function(x){if(x.t>=now-300000){c5++;s5+=x.n;}});var cM=Math.round(c5/5),sM=s5/5;rate.textContent=cM+' liq/min · $'+money(sM)+'/min';
+      var hp=document.getElementById('rkhPace');if(hp)hp.innerHTML='$'+money(sM)+'<small>/min · '+cM+' liq</small>';}
     var hr=document.getElementById('rkhRec');if(hr&&sessBig)hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
     var cas=document.getElementById('rktCascade');if(cas){var on=c90>=2000000||n90>=25;cas.hidden=!on;if(on){var cv=document.getElementById('rktCasV');if(cv)cv.textContent='$'+money(c90);}}
     var rec=document.getElementById('rktRec');if(rec&&sessBig){var lg=sessBig.side==='long_liquidated';
@@ -1207,7 +1210,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
 </script>
 <script defer src="/assets/mp-auth.js?v=580ed368"></script>
 <script defer src="/assets/mp-profile.js?v=340d5165"></script>
-<script src="/assets/mp-trade.js?v=63bbf7bc" defer></script>
+<script src="/assets/mp-trade.js?v=ad5f8788" defer></script>
 <script>
 /* affiliate-click conversion signal (Google Ads + GA4 + admin dashboard) - delegated so it catches the dynamically-rendered liquidation-ticket trade links */
 (function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
@@ -1220,6 +1223,6 @@ if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>

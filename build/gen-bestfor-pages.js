@@ -40,10 +40,11 @@ const EN_KNOWN = { bybit: 'a fast matching engine and deep USDT-perpetual liquid
 
 const EX = {
   bybit:   { name: 'Bybit',   ref: 'https://partner.bybit.com/b/162071',     lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perp liquidity' },
-  binance: { name: 'Binance', ref: 'https://www.binance.com/register?ref=MAOZM9DS', lev: 125, mmr: 0.4, maker: 0.02, taker: 0.04,  accent: '#f0b90b', fg: '#181a20', known: 'the largest volume and the widest range of futures pairs' },
+  binance: { name: 'Binance', ref: 'https://www.binance.com/register?ref=MAOZM9DS', lev: 125, mmr: 0.4, maker: 0.02, taker: 0.05,  accent: '#f0b90b', fg: '#181a20', known: 'the largest volume and the widest range of futures pairs' },
   okx:     { name: 'OKX',     ref: 'https://okx.com/join/96160298',                 lev: 125, mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#cfd3d8', fg: '#0a0b0d', known: 'a powerful pro interface and a unified account model' },
   kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',          lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection' },
-  kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',       lev: 50,  mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust' },
+  mexc:    { name: 'MEXC',    ref: 'https://s.mexc.com/referral/YkL887dVgt',         lev: 500, mmr: 0.1, maker: 0.00, taker: 0.02,  accent: '#1972ff', fg: '#ffffff', known: 'the lowest published futures fees and the widest list of new and small-cap perps' }, // numbers as on /exchanges/ and FEE_VENUES / MARGIN_VENUES in the worker (audit 2026-09-25: the lowest-fee page did not mention the lowest-fee venue)
+  kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',       lev: 50,  mmr: 0.6, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust' },
 };
 
 const CASES = [
@@ -54,8 +55,8 @@ const CASES = [
     kw: 'best crypto exchange for beginners, beginner futures exchange, easiest crypto exchange, best exchange to start trading' },
   { slug: 'lowest-fee-crypto-exchange', title: 'Lowest-Fee Crypto Futures Exchange (2026)', h1: 'Lowest-fee crypto futures exchange',
     intro: 'Fees compound fast when you trade often. This ranking is by standard taker fee on USDT perpetuals - before VIP tiers or token discounts.',
-    rank: ['binance', 'bybit', 'okx', 'kraken', 'kucoin'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
-    why: { binance: 'the lowest standard taker fee of the majors at 0.04%, before VIP or BNB discounts', bybit: 'very competitive fees plus a fast engine, so slippage stays low too', okx: 'low fees with maker rebates at higher tiers', kraken: 'mid-pack fees but unmatched trust', kucoin: 'slightly higher taker fees, offset by frequent promos' },
+    rank: ['mexc', 'binance', 'okx', 'kraken', 'bybit', 'kucoin'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
+    why: { mexc: 'the lowest published futures fees of any major venue - 0.02% taker and 0% maker - at the cost of thinner books on small caps', binance: 'a standard 0.05% taker fee, level with OKX and Kraken, before VIP or BNB discounts', okx: 'the same 0.05% taker, with maker rebates at higher tiers', kraken: 'the same 0.05% taker with unmatched trust, but lower leverage', bybit: '0.055% taker - a hair higher, offset by a fast engine so slippage stays low', kucoin: 'the highest taker fee here at 0.06%, offset by frequent promos' },
     kw: 'lowest fee crypto exchange, cheapest crypto futures, low fee futures exchange, crypto exchange fee comparison' },
   { slug: 'highest-leverage-crypto-exchange', title: 'Highest-Leverage Crypto Exchange (2026)', h1: 'Highest-leverage crypto exchange',
     intro: 'Some venues offer up to 125× on majors. Higher leverage means a tiny move can liquidate you - always check your liquidation price first. Ranked by maximum leverage.',

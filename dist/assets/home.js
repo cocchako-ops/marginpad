@@ -1349,7 +1349,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function feeBrk(e){var qty=+e.qty||0,fr=+e.feeRate||0,entry=+e.entry||0,exit=(e.exit!=null?+e.exit:entry);
     var fo=qty*entry*fr,fc=qty*exit*fr,fu=+e.fund||0;
     var MJ={BTC:1,ETH:1,SOL:1,BNB:1,XRP:1,DOGE:1,ADA:1,LINK:1,AVAX:1,LTC:1};
-    var slip=(e.src==='srv')?qty*entry*(MJ[String(e.sym||'').toUpperCase()]?0.0001:0.0005):null;
+    /* A LINE MAY QUOTE ONLY A CHARGE THAT HAPPENED (audit 2026-09-25): slippage is a realism SWITCH, off by default since
+       2026-09-16, and the fill records it in `rz` ('S'). Server fills before 2026-09-02 always slipped; between 09-02 and 09-16
+       nothing did. Estimating it for every srv row printed a cost the engine never took. MIRROR in mp-trade.js feeBrk. */
+    var _slipped=(e.src==='srv')&&(/S/.test(String(e.rz||''))||(+e.ts||0)<1788307200000);
+    var slip=_slipped?qty*entry*(MJ[String(e.sym||'').toUpperCase()]?0.0001:0.0005):null;
     return {fo:fo,fc:fc,fu:fu,slip:slip,total:fo+fc+fu};}
   function feeF(v){v=Math.abs(v);return '$'+(v>=0.005?v.toFixed(2):v.toFixed(4));}
   function feeHas(e){return (e.status==='win'||e.status==='loss')&&((+e.feeRate>0)||(+e.fund));}

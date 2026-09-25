@@ -124,7 +124,7 @@ const API_INTRO = 'Every number on this page is available as free JSON, and the 
 const PRACTICE_LINKS = [
   ['/paper-trade', 'Paper trade these moves - futures, live prices, fake money'],
   ['/spot/', 'Demo Spot - a $10,000 card, an exchange and your own wallet'],
-  ['/academy/', 'Academy - 16 courses, from the words up'],
+  ['/academy/', 'Academy - 17 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
   ['/trading-competition/', 'Live leaderboards - $350 a season, free to enter'],
   // 2026-09-21: the highest-intent destination in this block. Somebody reading a liquidation page is a trader, and a

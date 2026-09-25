@@ -2,9 +2,23 @@
 <html lang="es" data-es-twin="/leaderboards/">
 <head>
 <meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Tablas de Clasificación de Trading - Posiciones en Vivo, Premios y Reglas | MarginPad</title>
-<meta name="description" content="Las siete clasificaciones de MarginPad al completo: cinco tablas gratuitas de paper trading, la Gold Room y dos puntuadas con cuentas reales - volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, el premio que paga cada puesto, las reglas exactas." />
+<meta name="description" content="The seven MarginPad leaderboards in full: four free paper-trading boards, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over two seasons. Every ranked trader, the prize each rank pays, the exact rules." />
 <link rel="canonical" href="https://marginpad.io/es/leaderboards/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/leaderboards/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/leaderboards/" />
@@ -12,7 +26,7 @@
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Tablas de Clasificación de MarginPad - posiciones en vivo, premios, reglas" />
-<meta property="og:description" content="Siete tablas - cinco gratuitas, la Gold Room, dos con cuentas reales - cada trader clasificado, el premio por puesto y las reglas con las que se puntúa cada tabla." />
+<meta property="og:description" content="Seven boards - four free, the Gold Room, two on real accounts - every ranked trader, the prize per rank and the rules each board is scored by." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/leaderboards/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -117,7 +131,27 @@
   td.prz{font-family:'Space Mono',monospace;font-weight:800;color:var(--amber);text-align:right;}
   th.r,td.r{text-align:right;}
   .empty{padding:18px 0 6px;color:var(--faint);font-size:13.5px;}
-  .rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+  /* The funded card (2026-09-21). The first cut set a whole paragraph in .bcount, which is a 10px uppercase
+   Space Mono LABEL - unreadable at that length, which is exactly what the owner reported. The rules are four
+   chips now, the count is display type, and the table drops the page's button-shaped sortable <th> and its
+   520px min-width, both of which belong to the sortable boards and not here. */
+.fhero{display:flex;align-items:baseline;gap:10px 18px;flex-wrap:wrap;margin-top:16px;}
+.fhero .n{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,6.6vw,54px);line-height:.94;letter-spacing:-.035em;color:var(--lime);}
+.fhero .n small{font-size:.36em;color:var(--dim);letter-spacing:-.01em;margin-left:4px;font-family:'Familjen Grotesk',sans-serif;}
+.fhero .cap{font-size:13.5px;line-height:1.5;color:var(--dim);max-width:32ch;}
+.frules{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.fr{flex:1 1 104px;min-width:0;display:flex;flex-direction:column;gap:3px;padding:9px 12px;border:1px solid var(--line);border-radius:13px;background:#0d1014;}
+.fr b{font:700 16px 'Space Mono',monospace;color:var(--ink);}
+.fr i{font-style:normal;font:700 9px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+.ftbl{margin-top:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.ftbl table{min-width:0;max-width:760px;}
+.ftbl th{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:0 12px 8px 0;cursor:default;font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:left;}
+.ftbl td{padding:9px 12px 9px 0;}
+.ftbl .w{font-weight:700;color:#fff;}
+.ftbl .g{color:var(--up);font-family:'Space Mono',monospace;}
+.fnote{margin-top:14px;font-size:12.5px;line-height:1.6;color:var(--dim);}
+@media(max-width:560px){.fhero .cap{max-width:none;}}
+.rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
   .rules .lbl{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
   .rules ul{margin:0;padding-left:18px;}
   .rules li{margin:0 0 6px;font-size:13.5px;color:var(--dim);}
@@ -138,7 +172,7 @@
   footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Tablas de Clasificación de MarginPad","url":"https://marginpad.io/es/leaderboards/","description":"Las siete clasificaciones de MarginPad al completo: cinco tablas gratuitas de paper trading, la Gold Room y dos puntuadas con cuentas reales. Cada trader clasificado, el premio que paga cada puesto y las reglas con las que se puntúa cada tabla.","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"about":{"@type":"Event","name":"Temporada de Competencia de Trading de MarginPad","url":"https://marginpad.io/trading-competition/","eventAttendanceMode":"https://schema.org/OnlineEventAttendanceMode","isAccessibleForFree":true}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Tablas de Clasificación de MarginPad","url":"https://marginpad.io/es/leaderboards/","description":"The seven MarginPad leaderboards in full: four free paper boards, the Gold Room, and two scored on real accounts. Every ranked trader, the prize each rank pays, and the rules each board is scored by.","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"about":{"@type":"Event","name":"Temporada de Competencia de Trading de MarginPad","url":"https://marginpad.io/trading-competition/","eventAttendanceMode":"https://schema.org/OnlineEventAttendanceMode","isAccessibleForFree":true}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Tablas de clasificación","item":"https://marginpad.io/es/leaderboards/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuánto dura una temporada de MarginPad?","acceptedAnswer":{"@type":"Answer","text":"Catorce días, comenzando cada dos lunes a las 00:00 UTC. Los cinco primeros de cada tabla se pagan automáticamente después de que termina la temporada, y una nueva comienza de inmediato."}},{"@type":"Question","name":"¿Cuánto paga ganar en una tabla de clasificación?","acceptedAnswer":{"@type":"Answer","text":"Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla de volumen en Bybit paga $100, $50, $25, $15 y $10; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Los premios se abonan en USD al saldo de recompensas de MarginPad y son retirables. La bolsa de la temporada es de $350, más $300 para King of the Moon cada dos temporadas."}},{"@type":"Question","name":"¿Cómo se cuenta una victoria en las tablas?","acceptedAnswer":{"@type":"Answer","text":"Las operaciones en paper trading se ejecutan del lado del servidor contra velas reales del exchange, nunca reportadas por el navegador. Una operación cerrada cuenta como victoria solo con al menos 5% de ROE y un movimiento real de precio del 0.2%, de modo que un scratch no puede inflar la tasa de acierto. La tabla de tasa de acierto se clasifica por puntuación de Wilson, así que una racha de suerte corta no puede liderarla."}},{"@type":"Question","name":"¿Quién puede participar?","acceptedAnswer":{"@type":"Answer","text":"Cualquier cuenta gratuita de MarginPad. Las tablas de paper trading no requieren depósito ni cuenta en un exchange. La Gold Room requiere el nivel Gold (12,000 XP). La tabla de volumen en Bybit requiere una cuenta de Bybit abierta a través de MarginPad con su UID registrado en la página de temporada. King of the Moon requiere una cuenta de Moon abierta a través de MarginPad, registrada al reclamar el bono de registro de Moon en la página de recompensas."}}]}</script>
 <meta property="og:image" content="https://marginpad.io/assets/og/leaderboards.jpg" />
@@ -148,7 +182,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-</head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Trading Leaderboards - Live Season Standings, Prizes and Rules","url":"https://marginpad.io/es/leaderboards/","dateModified":"2026-09-25T09:34:38.803Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -161,12 +195,12 @@
 
   <span class="eyebrow"><i></i>Competencia de trading</span>
   <h1>Clasifica<em>ciones</em></h1>
-  <p class="sub">Siete tablas, premios en dinero real pagados en USD a tu saldo de recompensas. Cinco son tablas gratuitas de paper trading, una es la Gold Room y dos se puntúan con cuentas reales abiertas a través de MarginPad: volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, cada premio y la regla exacta con la que se puntúa cada tabla.</p>
+  <p class="sub">Seven boards, real prize money paid in USD to your rewards balance. Four are free paper-trading boards, one is the Gold Room, and two are scored on real accounts opened through MarginPad: Bybit volume every season and King of the Moon over two seasons. Every ranked trader, every prize, and the exact rule each board is scored by.</p>
 
   <section class="season" aria-label="Temporada">
     <div class="sc"><div class="k">Temporada</div><div class="v" id="sEye">Temporada · 14 días</div><div class="days" id="sDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="s" id="sLeft">termina cada dos lunes a las 00:00 UTC</div></div>
     <div class="sc"><div class="k">Bolsa de premios</div><div class="v"><b id="sPool">$350</b> por temporada</div><div class="s" id="sPoolS">+ $300 en King of the Moon cada dos temporadas · pagados en USD, retirables</div></div>
-    <div class="sc"><div class="k">Modalidad</div><div class="v">Gratis</div><div class="s">cinco tablas de paper trading no piden nada; dos requieren una cuenta real abierta a través de MarginPad</div></div>
+    <div class="sc"><div class="k">Modalidad</div><div class="v">Gratis</div><div class="s">four paper boards need nothing, the Gold Room needs Gold; two need a real account opened through MarginPad</div></div>
   </section>
 
   <div class="tabs" id="tabs" role="tablist" aria-label="Tablas">
@@ -200,6 +234,19 @@
     <p class="bcount" id="bCount"></p>
     <div class="tw" id="bTw"><table id="bTbl"><thead id="bHead"></thead><tbody id="bBody"><tr><td class="empty" colspan="6">Cargando las posiciones…</td></tr></tbody></table></div>
     <div class="rules"><p class="lbl">Cómo se puntúa esta tabla</p><ul id="bRules"></ul></div>
+  </section>
+
+  <section class="board" id="funded">
+    <div class="bh"><h2>Who here would pass a funded-account challenge<small>the same traders, scored against a real one-step prop-firm rule set instead of against each other</small></h2></div>
+    <div class="fhero"><span class="n" id="fNum">&mdash;</span><span class="cap" id="fCap">Every closed trade on these boards is replayed against the rules a prop firm sells, on a $10,000 book.</span></div>
+    <div class="frules">
+      <div class="fr"><b>+10%</b><i>profit target</i></div>
+      <div class="fr"><b>4%</b><i>daily loss</i></div>
+      <div class="fr"><b>6%</b><i>max drawdown</i></div>
+      <div class="fr"><b>5</b><i>trading days</i></div>
+    </div>
+    <div class="ftbl" id="fTw" hidden><table><thead><tr><th>Trader</th><th>Return at pass</th><th>Drawdown</th><th>Días</th></tr></thead><tbody id="fBody"></tbody></table></div>
+    <p class="fnote">A verdict is decided the moment a rule breaks, which makes this a different question from who leads a board: a board rewards the trade that came back, a challenge does not. <a href="/es/practice-for-a-funded-account/">How it is measured</a>.</p>
   </section>
 
   <h3>Reglas que comparten todas las tablas</h3>
@@ -240,7 +287,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     roe:{key:'top',grp:'free',name:'Highest ROE',sub:__esT_leaderboardsindex("sub8556",'the best return on a single closed trade this season'),
       head:['#','Trader',__esT_leaderboardsindex("bestTradeRoe",'Best trade ROE'),'P&amp;L','Pair','Prize'],
       row:function(r){return '<td class="v up">'+(r.roe>=0?'+':'')+int(r.roe)+'%</td><td class="v '+(r.pnl>=0?'up':'dn')+'">'+money(r.pnl)+'</td><td>'+esc(String(r.symbol||'').toUpperCase())+(r.side?' <span style="color:'+(r.side==='short'?'#ff6258':'#2ebd85')+'">'+esc(r.side)+'</span>':'')+'</td>';},
-      rules:[__esT_leaderboardsindex("ruleRoeBoard",'Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).'),__esT_leaderboardsindex("aTradeNeedsAt",'A trade needs at least <b>5% ROE and a 0.2% real price move</b> to count; a scratch or a spread-width close never enters.'),__esT_leaderboardsindex("tenClosedTradesIn",'<b>Ten closed trades</b> in the season put you on the board; one lucky trade with nothing behind it does not rank.'),__esT_leaderboardsindex("filledAndClosedServer",'Filled and closed server-side against real candles - a browser cannot report a trade onto this board.')]},
+      rules:[__esT_leaderboardsindex("ruleRoeBoard",'Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).'),__esT_leaderboardsindex("aTradeNeedsAt",'A trade needs at least <b>5% ROE and a 0.2% real price move</b> to count; a scratch or a spread-width close never enters.'),__esT_leaderboardsindex("tenClosedTradesIn",'<b>One closed trade</b> opened this season, filled and closed server-side, puts you on the board; forex, metals and indices never rank.'),__esT_leaderboardsindex("filledAndClosedServer",'Filled and closed server-side against real candles - a browser cannot report a trade onto this board.')]},
     green:{key:'topGreen',grp:'free',name:__esT_leaderboardsindex("greenDays",'Green days'),sub:__esT_leaderboardsindex("theMostDaysClosed",'the most days closed in profit this season'),
       head:['#','Trader',__esT_leaderboardsindex("greenDays",'Green days'),__esT_leaderboardsindex("redDays",'Red days'),'Trades','Prize'],
       row:function(r){return '<td class="v up">'+int(r.days)+'</td><td class="v dn">'+int(r.red||0)+'</td><td class="v">'+int(r.trades||0)+'</td>';},
@@ -315,11 +362,30 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   (function(){var h=(location.hash||'').slice(1);if(B[h]){CUR=h;[].forEach.call(document.querySelectorAll('.tab'),function(x){x.classList.toggle('on',x.getAttribute('data-b')===h);});}})();
   function load(){fetch('/api/reward/lb?full=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j||!j.weekStart)return;LB=j;paintSeason();paintBoard();}).catch(function(){});}
   load(); setInterval(function(){if(!document.hidden)load();},120000);
+  // Who on these boards would actually have passed a challenge (2026-09-21). Read-only: /api/funded scores the same
+  // closed trades the boards are built from, so nothing here can disagree with the standings above it. The static
+  // paragraph already states the rules for a crawler; this only appends the names once they are known.
+  (function(){
+    fetch('/api/funded',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(!j||!j.ok) return;
+      var num=document.getElementById('fNum'), cap=document.getElementById('fCap'), tw=document.getElementById('fTw'), tb=document.getElementById('fBody');
+      var q=(j.qualified||[]), n=+j.runs_decided||0, p=+j.passed||0;
+      if(n){
+        num.innerHTML=p+' <small>of '+n+' passed'+(j.pass_rate_pct!=null?' &middot; '+j.pass_rate_pct+'%':'')+'</small>';
+        cap.textContent='Finished runs this season. Everyone else is still going, or is out.';
+      }
+      if(!q.length) return;
+      tb.innerHTML=q.map(function(x){
+        return '<tr><td class="w">'+String(x.who||'').replace(/[<>&]/g,'')+'</td><td class="g">+'+x.return_pct+'%</td><td>'+x.max_drawdown_pct+'%</td><td>'+x.days+'</td></tr>';
+      }).join('');
+      tw.hidden=false;
+    }).catch(function(){});
+  })();
   window.addEventListener('mp-auth-change',function(){MOONME=null;if(LB)paintBoard();});
   window.__lbPage={get:function(){return LB;},cur:function(){return CUR;}};
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=580ed368"></script>
-<script defer src="/assets/mp-nav.js?v=b87c149c"></script>
+<script defer src="/assets/mp-nav.js?v=e12bbc95"></script>
 </body>
 </html>
