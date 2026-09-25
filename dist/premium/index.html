@@ -103,6 +103,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
   .price small{font-size:16px;color:var(--dim);font-weight:600}
   .pcard ul{list-style:none;padding:0;margin:16px 0 22px;display:flex;flex-direction:column;gap:10px}
   .pcard li{display:flex;gap:9px;font-size:13.5px;color:var(--ink)}
+  .pcard li>b{display:contents} /* the li is a flex row (icon + text): a <b> became its own flex item and the sentence broke into ragged blocks around it (audit 2026-09-25) */
   .pcard li svg{flex:none;width:17px;height:17px;color:var(--lime);margin-top:1px}
   .pcard .btn{width:100%;justify-content:center;margin-top:auto}
   .pnote{text-align:center;color:var(--faint);font-size:12px;margin-top:16px}
