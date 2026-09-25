@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T18:14:28.745Z",
+  "generated": "2026-09-25T18:20:11.820Z",
   "pages": 383,
-  "occurrences": 26296,
+  "occurrences": 26297,
   "unique": 13883,
   "words": 263590,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T18:16:09.850Z"
+  "merged": "2026-09-25T18:20:26.579Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -11669,6 +11669,19 @@
    "n": 1,
    "w": 12
   },
+  "Y9-PKaTkUt": {
+   "en": "Swap crypto",
+   "es": "Swap de cripto",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 2,
+   "w": 2
+  },
   "e9ueTkV7jo": {
    "en": "Swap 900+ coins instantly - no account, non-custodial. Your funds and addresses never touch MarginPad.",
    "es": "Haz swap de más de 900 monedas al instante - sin cuenta, no custodial. Tus fondos y direcciones nunca pasan por MarginPad.",
@@ -14797,18 +14810,6 @@
    ],
    "n": 5,
    "w": 1
-  },
-  "Y9-PKaTkUt": {
-   "en": "Swap crypto",
-   "es": "Swap de cripto",
-   "kind": [
-    "attr:aria-label"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2
   },
   "ePEgBUGqDb": {
    "en": "Market screener",
@@ -42149,9 +42150,9 @@
    "n": 4,
    "w": 9
   },
-  "4ixjP0QVzA": {
-   "en": "USA · 6 min read · Updated September 2026",
-   "es": "USA · 6 min de lectura · Actualizado septiembre 2026",
+  "qEZ_nzqa7g": {
+   "en": "USA · 6 min read · Updated June 2026",
+   "es": "USA · 6 min de lectura · Actualizado junio 2026",
    "kind": [
     "html"
    ],
@@ -44121,9 +44122,9 @@
    "n": 4,
    "w": 10
   },
-  "ygznzaKKO2": {
-   "en": "USA · 7 min read · Updated September 2026",
-   "es": "USA · 7 min de lectura · Actualizado septiembre 2026",
+  "ujeAY2hl3P": {
+   "en": "USA · 7 min read · Updated June 2026",
+   "es": "USA · 7 min de lectura · Actualizado junio 2026",
    "kind": [
     "html"
    ],
@@ -93972,7 +93973,7 @@
   },
   "b4VBIdiDuT": {
    "en": "<a class=\"exc-cta\" data-ex=\"Bybit\" href=\"https://partner.bybit.com/b/162071\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Get the Bybit bonus →</a>",
-   "es": "<a class=\"exc-cta\" data-ex=\"Bybit\" href=\"https://partner.bybit.com/b/162071\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtén el bono de Bybit →</a>",
+   "es": "<a class=\"exc-cta\" data-ex=\"Bybit\" href=\"https://partner.bybit.com/b/162071\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtener el bono de Bybit →</a>",
    "kind": [
     "html"
    ],
@@ -94932,7 +94933,7 @@
   },
   "5SQcKCV0_P": {
    "en": "<a class=\"exc-cta\" data-ex=\"Fomo\" href=\"https://fomo.family/r/Marginpad\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Get the Fomo bonus →</a>",
-   "es": "<a class=\"exc-cta\" data-ex=\"Fomo\" href=\"https://fomo.family/r/Marginpad\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtén el bono de Fomo →</a>",
+   "es": "<a class=\"exc-cta\" data-ex=\"Fomo\" href=\"https://fomo.family/r/Marginpad\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtener el bono de Fomo →</a>",
    "kind": [
     "html"
    ],
@@ -95136,7 +95137,7 @@
   },
   "bI8b7usW49": {
    "en": "<a class=\"exc-cta\" data-ex=\"MEXC\" href=\"https://s.mexc.com/referral/YkL887dVgt\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Get the MEXC bonus →</a>",
-   "es": "<a class=\"exc-cta\" data-ex=\"MEXC\" href=\"https://s.mexc.com/referral/YkL887dVgt\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtén el bono de MEXC →</a>",
+   "es": "<a class=\"exc-cta\" data-ex=\"MEXC\" href=\"https://s.mexc.com/referral/YkL887dVgt\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtener el bono de MEXC →</a>",
    "kind": [
     "html"
    ],
@@ -95292,7 +95293,7 @@
   },
   "f054xaAKfI": {
    "en": "<a class=\"exc-cta\" data-ex=\"Gate.io\" href=\"https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Get the Gate.io bonus →</a>",
-   "es": "<a class=\"exc-cta\" data-ex=\"Gate.io\" href=\"https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtén el bono de Gate.io →</a>",
+   "es": "<a class=\"exc-cta\" data-ex=\"Gate.io\" href=\"https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate\" target=\"_blank\" rel=\"sponsored noopener noreferrer\">Obtener el bono de Gate.io →</a>",
    "kind": [
     "html"
    ],

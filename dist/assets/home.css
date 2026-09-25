@@ -3052,3 +3052,6 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 /* WHAT A CLOSE BOOKS, on the My Trades row (2026-09-24). The only coloured cell in the meta grid, because
    it is the number the trader is deciding on - everything else there is a fact about the position. */
 .pp-meta b.jg{color:#2ebd85;} .pp-meta b.jr{color:#ff5a4d;}
+
+/* /swap had no visible heading (audit 2026-09-25): the shell h1 is the SPA route title, hidden on tool routes */
+.swap-title{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,3.4vw,32px);letter-spacing:-.02em;text-align:center;margin:8px 0 6px;color:var(--ink,#e9e7df)}
