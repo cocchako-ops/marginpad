@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T16:14:35.763Z",
+  "generated": "2026-09-25T16:19:14.581Z",
   "pages": 383,
-  "occurrences": 26289,
-  "unique": 13879,
-  "words": 263460,
+  "occurrences": 26295,
+  "unique": 13883,
+  "words": 263539,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T16:15:56.899Z"
+  "merged": "2026-09-25T16:20:58.281Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -57064,6 +57064,18 @@
    "n": 1,
    "w": 1
   },
+  "qCKDWskc0r": {
+   "en": "<span class=\"tag\">UAE</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">UAE</span><span class=\"tag pub\">Publicado jun 2026</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/"
+   ],
+   "n": 2,
+   "w": 4
+  },
   "yYAyvMdPS0": {
    "en": "UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong",
    "es": "Impuestos Cripto en EAU para Traders (2026): el 0% Es Real - la Residencia Fiscal Es lo que la Gente Confunde",
@@ -57091,9 +57103,9 @@
    "n": 1,
    "w": 26
   },
-  "XjZALtWNpF": {
-   "en": "<span class=\"tag\">Europe</span>",
-   "es": "<span class=\"tag\">Europa</span>",
+  "86vG2v4OYo": {
+   "en": "<span class=\"tag\">Europe</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Europa</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -57101,7 +57113,7 @@
     "/blog/"
    ],
    "n": 2,
-   "w": 1
+   "w": 4
   },
   "PpeoLJ39eo": {
    "en": "The MiCA Deadline Has Passed: What Actually Happened to Europe&rsquo;s Crypto Exchanges",
@@ -57142,9 +57154,9 @@
    "n": 1,
    "w": 27
   },
-  "JM6BRN5kD-": {
-   "en": "<span class=\"tag\">Guides</span>",
-   "es": "<span class=\"tag\">Guías</span>",
+  "lnIjk9pOY1": {
+   "en": "<span class=\"tag\">Guides</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Guías</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -57152,7 +57164,7 @@
     "/blog/"
    ],
    "n": 38,
-   "w": 1
+   "w": 4
   },
   "ewApDW02Go": {
    "en": "Moon Review (2026): Call Crypto, Stocks & Forex Up or Down - 24/7",
@@ -57409,9 +57421,9 @@
    "n": 1,
    "w": 26
   },
-  "iViQ7M8euy": {
-   "en": "<span class=\"tag\">News</span>",
-   "es": "<span class=\"tag\">Noticias</span>",
+  "O3cwT7nsIz": {
+   "en": "<span class=\"tag\">News</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Noticias</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -57419,7 +57431,7 @@
     "/blog/"
    ],
    "n": 7,
-   "w": 1
+   "w": 4
   },
   "Rmp8wdqHkL": {
    "en": "The next FOMC rate decision lands July 29, 2026 at 18:00 UTC - historically one of the most volatile hours of the month for Bitcoin.",
@@ -57650,9 +57662,9 @@
    "n": 1,
    "w": 23
   },
-  "lx31qmSZyA": {
-   "en": "<span class=\"tag\">Basics</span>",
-   "es": "<span class=\"tag\">Básicos</span>",
+  "bTYO1n_XsJ": {
+   "en": "<span class=\"tag\">Basics</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Fundamentos</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -57660,7 +57672,7 @@
     "/blog/"
    ],
    "n": 20,
-   "w": 1
+   "w": 4
   },
   "rr4f2l33Ed": {
    "en": "RSI Indicator Explained (2026): How to Use It in Crypto Trading",
@@ -57764,9 +57776,9 @@
    "n": 1,
    "w": 25
   },
-  "NtC3sE7csK": {
-   "en": "<span class=\"tag\">Risk</span>",
-   "es": "<span class=\"tag\">Riesgo</span>",
+  "B4JdxqgrMF": {
+   "en": "<span class=\"tag\">Risk</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Riesgo</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -57774,7 +57786,7 @@
     "/blog/"
    ],
    "n": 4,
-   "w": 1
+   "w": 4
   },
   "-_WhGMapFr": {
    "en": "What Is a Trading Journal? How to Track Trades and Find Your Edge (2026)",
@@ -57969,6 +57981,18 @@
    "n": 1,
    "w": 24
   },
+  "fBlA3AUCPG": {
+   "en": "<span class=\"tag\">UK</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">UK</span><span class=\"tag pub\">Publicado jun 2026</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/"
+   ],
+   "n": 1,
+   "w": 4
+  },
   "3YeIBOYXVq": {
    "en": "The FCA bans crypto futures and CFDs for UK retail - here's what that means, what UK traders realistically do, how CGT works, and how to practise the mechanics risk-free.",
    "es": "La FCA prohíbe los futuros y CFD de cripto para minoristas del Reino Unido: esto es lo que significa, qué hacen realmente los traders del Reino Unido, cómo funciona el CGT, y cómo practicar la mecánica sin riesgo.",
@@ -57980,6 +58004,18 @@
    ],
    "n": 1,
    "w": 29
+  },
+  "NW-zLMa3bc": {
+   "en": "<span class=\"tag\">USA</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">USA</span><span class=\"tag pub\">Publicado jun 2026</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/"
+   ],
+   "n": 1,
+   "w": 4
   },
   "ChW_nVnmx-": {
    "en": "Offshore perpetual exchanges geo-block US persons - here's the legal CFTC-regulated route, the Section 1256 and IRS tax picture, and how to learn the mechanics risk-free.",
@@ -57993,9 +58029,9 @@
    "n": 1,
    "w": 25
   },
-  "5v-B6D7tbj": {
-   "en": "<span class=\"tag\">Canada</span>",
-   "es": "<span class=\"tag\">Canadá</span>",
+  "VsBCnRIBVq": {
+   "en": "<span class=\"tag\">Canada</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Canadá</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58003,7 +58039,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "O-pYLayqon": {
    "en": "Why high-leverage crypto futures are largely off-limits to Canadian retail traders, how the CRA taxes crypto gains, and how to learn the mechanics risk-free.",
@@ -58017,9 +58053,9 @@
    "n": 1,
    "w": 24
   },
-  "ySqOZgnMhG": {
-   "en": "<span class=\"tag\">Australia</span>",
-   "es": "<span class=\"tag\">Australia</span>",
+  "kj117KemMQ": {
+   "en": "<span class=\"tag\">Australia</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Australia</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58027,7 +58063,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "Qdd4iX9ja5": {
    "en": "How Australians access crypto perpetuals in 2026 - AUSTRAC-registered exchanges, the ASIC derivatives caveats, ATO tax and the 50% CGT discount, plus risk-free practice.",
@@ -58041,9 +58077,9 @@
    "n": 1,
    "w": 23
   },
-  "u2o7nVDBts": {
-   "en": "<span class=\"tag\">Switzerland</span>",
-   "es": "<span class=\"tag\">Suiza</span>",
+  "c5dATGp_DG": {
+   "en": "<span class=\"tag\">Switzerland</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Suiza</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58051,7 +58087,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "4NZdNMAPKS": {
    "en": "How Swiss traders access crypto futures, why private investors pay no capital gains tax but owe wealth tax on holdings, and how to practise before risking real margin.",
@@ -58065,9 +58101,9 @@
    "n": 1,
    "w": 28
   },
-  "jMd_quwgKe": {
-   "en": "<span class=\"tag\">Singapore</span>",
-   "es": "<span class=\"tag\">Singapur</span>",
+  "KJCUcvPyj4": {
+   "en": "<span class=\"tag\">Singapore</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Singapur</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58075,7 +58111,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "u2WP2KIlsu": {
    "en": "What MAS rules mean for leveraged crypto in Singapore, how gains are taxed, and the free, legal way to learn the mechanics first.",
@@ -58143,9 +58179,9 @@
    "n": 1,
    "w": 21
   },
-  "xJ16qWcYbt": {
-   "en": "<span class=\"tag\">Exchanges</span>",
-   "es": "<span class=\"tag\">Exchanges</span>",
+  "6qdmZ5Qnld": {
+   "en": "<span class=\"tag\">Exchanges</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Exchanges</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58153,7 +58189,7 @@
     "/blog/"
    ],
    "n": 4,
-   "w": 1
+   "w": 4
   },
   "2LbyC2aT3b": {
    "en": "Is Binance Banned in Europe? Country-by-Country Status & Best Alternatives (2026)",
@@ -58242,9 +58278,9 @@
    "n": 1,
    "w": 18
   },
-  "PIy9TYqCOC": {
-   "en": "<span class=\"tag\">Germany</span>",
-   "es": "<span class=\"tag\">Alemania</span>",
+  "lXp0T-fEoz": {
+   "en": "<span class=\"tag\">Germany</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Alemania</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58252,7 +58288,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "do6E6J_aiO": {
    "en": "Which exchanges work for German traders, how derivatives gains are taxed vs the 1-year spot rule, and how to practice before risking euros.",
@@ -58266,9 +58302,9 @@
    "n": 1,
    "w": 23
   },
-  "NEZExJhA21": {
-   "en": "<span class=\"tag\">France</span>",
-   "es": "<span class=\"tag\">Francia</span>",
+  "p4bOUxNq9K": {
+   "en": "<span class=\"tag\">France</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Francia</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58276,7 +58312,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "n5YHH_Ifyt": {
    "en": "How French traders access perpetuals, the 30% PFU flat tax, AMF rules - and the calculators to size every trade.",
@@ -58290,9 +58326,9 @@
    "n": 1,
    "w": 19
   },
-  "07JM7OW_VC": {
-   "en": "<span class=\"tag\">Nordics</span>",
-   "es": "<span class=\"tag\">Países nórdicos</span>",
+  "tnUluig-tt": {
+   "en": "<span class=\"tag\">Nordics</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Países nórdicos</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58300,7 +58336,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "EIp-phFgEk": {
    "en": "Access is easy across the Nordics - the tax is what differs. A country-by-country breakdown plus risk-free practice.",
@@ -58314,9 +58350,9 @@
    "n": 1,
    "w": 16
   },
-  "EIxf_xLh0f": {
-   "en": "<span class=\"tag\">Italy</span>",
-   "es": "<span class=\"tag\">Italia</span>",
+  "pFjl9-Ozgo": {
+   "en": "<span class=\"tag\">Italy</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Italia</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58324,7 +58360,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "76Nn7sz4il": {
    "en": "How Italian traders access perpetuals under MiCA, the 26% substitute tax (threshold removed in 2025), and how to practice before risking euros.",
@@ -58338,9 +58374,9 @@
    "n": 1,
    "w": 22
   },
-  "cEhjQ-ggdJ": {
-   "en": "<span class=\"tag\">Spain</span>",
-   "es": "<span class=\"tag\">España</span>",
+  "T6CiHC_Csm": {
+   "en": "<span class=\"tag\">Spain</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">España</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58348,7 +58384,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "gmZ0IAB9NJ": {
    "en": "How Spanish traders access perpetuals, the 19%–28% savings-income tax, Modelo 721 - and the calculators to size every trade.",
@@ -58362,9 +58398,9 @@
    "n": 1,
    "w": 18
   },
-  "FWoN78DBT3": {
-   "en": "<span class=\"tag\">Poland</span>",
-   "es": "<span class=\"tag\">Polonia</span>",
+  "hXMYEP-wfx": {
+   "en": "<span class=\"tag\">Poland</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Polonia</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58372,7 +58408,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "x6YO91M_Hh": {
    "en": "How Polish traders access perpetuals, the flat 19% tax that only hits on cash-out, and how to practice risk-free first.",
@@ -58398,9 +58434,9 @@
    "n": 1,
    "w": 18
   },
-  "df0nqtOC3D": {
-   "en": "<span class=\"tag\">Netherlands</span>",
-   "es": "<span class=\"tag\">Países Bajos</span>",
+  "AmJEEXYJC5": {
+   "en": "<span class=\"tag\">Netherlands</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Países Bajos</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58408,7 +58444,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 1
+   "w": 4
   },
   "5CAsUxs-GL": {
    "en": "Access via the usual exchanges - but the Dutch Box 3 system taxes your assets, not each trade. What that means for traders.",
@@ -58421,6 +58457,18 @@
    ],
    "n": 1,
    "w": 21
+  },
+  "ADssSwDv7A": {
+   "en": "<span class=\"tag\">US</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">US</span><span class=\"tag pub\">Publicado jun 2026</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/"
+   ],
+   "n": 2,
+   "w": 4
   },
   "4gluWbEvGv": {
    "en": "Capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting - how the IRS taxes crypto futures and perps for US traders.",
@@ -58458,9 +58506,9 @@
    "n": 1,
    "w": 18
   },
-  "eNyI7ijfMi": {
-   "en": "<span class=\"tag\">Liquidation</span>",
-   "es": "<span class=\"tag\">Liquidación</span>",
+  "sIKgRy69O9": {
+   "en": "<span class=\"tag\">Liquidation</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Liquidación</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58468,7 +58516,7 @@
     "/blog/"
    ],
    "n": 5,
-   "w": 1
+   "w": 4
   },
   "rffMwomGN7": {
    "en": "Liquidation Clusters Explained: How to Spot Liquidity Magnets",
@@ -58563,9 +58611,9 @@
    "n": 1,
    "w": 16
   },
-  "BgQB2M8qGp": {
-   "en": "<span class=\"tag\">Risk management</span>",
-   "es": "<span class=\"tag\">Gestión del riesgo</span>",
+  "I05hxABu9u": {
+   "en": "<span class=\"tag\">Risk management</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">Gestión de riesgo</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -58573,7 +58621,7 @@
     "/blog/"
    ],
    "n": 5,
-   "w": 2
+   "w": 5
   },
   "oXnb5Y_Osc": {
    "en": "Eight practical rules - lower leverage, the 1% rule, stops inside your liquidation, margin buffers and more.",
@@ -59096,9 +59144,9 @@
    "n": 1,
    "w": 18
   },
-  "G6fP-283bR": {
-   "en": "<span class=\"tag\">India</span>",
-   "es": "<span class=\"tag\">India</span>",
+  "lno7T_cI9S": {
+   "en": "<span class=\"tag\">India</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">India</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -59106,7 +59154,7 @@
     "/blog/"
    ],
    "n": 2,
-   "w": 1
+   "w": 4
   },
   "D2aXfcJFmJ": {
    "en": "The flat 30% tax, the 1% TDS, no loss offset - and what it all means for traders.",
@@ -59132,9 +59180,9 @@
    "n": 1,
    "w": 14
   },
-  "wUa66d2_MH": {
-   "en": "<span class=\"tag\">China</span>",
-   "es": "<span class=\"tag\">China</span>",
+  "ixhnKshUdt": {
+   "en": "<span class=\"tag\">China</span><span class=\"tag pub\">Published Jun 2026</span>",
+   "es": "<span class=\"tag\">China</span><span class=\"tag pub\">Publicado jun 2026</span>",
    "kind": [
     "html"
    ],
@@ -59142,7 +59190,7 @@
     "/blog/"
    ],
    "n": 2,
-   "w": 1
+   "w": 4
   },
   "5gfcZVomkX": {
    "en": "Trading Crypto from Mainland China: The 2026 Reality",

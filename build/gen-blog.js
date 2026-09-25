@@ -1425,8 +1425,13 @@ function cardText(s) {
   if (cut >= s.length * 0.6) return s.slice(0, cut + 1);
   return s.replace(/[\s,;:-]+$/, '') + '…';
 }
+// The card names its month (audit 2026-09-25: two NEWS cards described July events in the future tense on 25
+// September with nothing saying when they were written). "Published", never "Updated" - stamp-updated.js rewrites
+// every "Updated <Month> <Year>" to the current month on each build, and a publish date must not move.
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function pubLabel(d) { const m = String(d || '2026-06-10').match(/^(\d{4})-(\d{2})/); return m ? 'Published ' + MON[+m[2] - 1] + ' ' + m[1] : ''; }
 const cards = INDEX.map(p => `    <a class="post-card" data-cat="${p.tag}" href="/blog/${p.slug}/">
-      <span class="tag">${p.tag}</span>
+      <span class="tag">${p.tag}</span><span class="tag pub">${pubLabel(p.date)}</span>
       <h2>${p.title}</h2>
       <p>${cardText(p.card)}</p>
     </a>`).join('\n');

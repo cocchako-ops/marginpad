@@ -211,3 +211,6 @@ article h2:first-of-type{margin-top:44px}
   .nav{display:flex;flex-wrap:wrap;gap:0 16px;width:100%}
   .nav a{margin-left:0;font-size:11px;letter-spacing:.08em}
 }
+
+/* card publish month (2026-09-25): a quiet second chip, no fill */
+.post-card .tag.pub{background:none;border:0;color:var(--ink-faint);margin-left:8px;font-weight:600;letter-spacing:.04em}
