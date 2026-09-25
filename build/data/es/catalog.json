@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T16:04:08.660Z",
+  "generated": "2026-09-25T16:14:35.763Z",
   "pages": 383,
   "occurrences": 26289,
   "unique": 13879,
-  "words": 263529,
+  "words": 263460,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T16:05:10.233Z"
+  "merged": "2026-09-25T16:15:56.899Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -57181,9 +57181,9 @@
    "n": 1,
    "w": 39
   },
-  "bON7oLaXMh": {
-   "en": "When you buy the same coin at ten prices and sell some, which purchase counts? Cost basis methods decide your taxable gain. FIFO, LIFO and HIFO explained with a",
-   "es": "Cuando compras la misma moneda a diez precios distintos y vendes una parte, ¿cuál compra cuenta? Los métodos de costo base determinan tu ganancia imponible. FIFO, LIFO y HIFO explicados con un",
+  "LQ4-CIuOss": {
+   "en": "When you buy the same coin at ten prices and sell some, which purchase counts? Cost basis methods decide your taxable gain.",
+   "es": "Cuando compras la misma moneda a diez precios distintos y vendes una parte, ¿qué compra cuenta? Los métodos de base de costo deciden tu ganancia gravable. FIFO, LIFO y HIFO explicados con un ejemplo resuelto, y una calculadora gratuita que hace el emparejamiento por ti.",
    "kind": [
     "html"
    ],
@@ -57191,23 +57191,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 28
+   "w": 22
   },
-  "zhtJPhQj3s": {
-   "en": "Sitting on losers? Realizing crypto losses can offset your gains and even some ordinary income. How tax-loss harvesting works, the crypto wash-sale gray area, a",
-   "es": "¿Tienes posiciones en pérdida? Materializar pérdidas en cripto puede compensar tus ganancias e incluso parte de tus ingresos ordinarios. Cómo funciona el tax-loss harvesting, la zona gris del wash-sale en cripto, y",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/"
-   ],
-   "n": 1,
-   "w": 24
-  },
-  "1FVqBsgp7e": {
-   "en": "How the CRA taxes crypto in Canada: the 50% capital-gains inclusion rate, the capital-gains vs business-income question that trips up active traders, and how to",
-   "es": "Cómo grava la CRA las cripto en Canadá: la tasa de inclusión del 50% en ganancias de capital, la disyuntiva entre ganancia de capital e ingreso de negocio que confunde a los traders activos, y cómo",
+  "cof6sMxUI6": {
+   "en": "Sitting on losers? Realizing crypto losses can offset your gains and even some ordinary income. How tax-loss harvesting works, the crypto wash-sale gray area, a…",
+   "es": "¿Tienes posiciones perdedoras? Realizar pérdidas de cripto puede compensar tus ganancias e incluso parte del ingreso ordinario. Cómo funciona la cosecha de pérdidas fiscales, la zona gris del wash-sale en cripto…",
    "kind": [
     "html"
    ],
@@ -57217,9 +57205,21 @@
    "n": 1,
    "w": 25
   },
-  "KI4B9V5JkB": {
-   "en": "You don't pay tax on a loss - but you can use it. How crypto capital losses offset your gains, the $3,000 ordinary-income deduction, loss carry-forwards, and wh",
-   "es": "No pagas impuestos por una pérdida, pero puedes aprovecharla. Cómo las pérdidas de capital en cripto compensan tus ganancias, la deducción de $3,000 sobre ingresos ordinarios, el arrastre de pérdidas, y qu",
+  "FuXZTo7of8": {
+   "en": "How the CRA taxes crypto in Canada: the 50% capital-gains inclusion rate, the capital-gains vs business-income question that trips up active traders, and how to…",
+   "es": "Cómo grava la CRA el cripto en Canadá: la tasa de inclusión del 50% en ganancias de capital, la cuestión de ganancias de capital vs ingreso de negocio que confunde a los traders activos, y…",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/"
+   ],
+   "n": 1,
+   "w": 25
+  },
+  "vYixYEFyp1": {
+   "en": "You don't pay tax on a loss - but you can use it. How crypto capital losses offset your gains, the $3,000 ordinary-income deduction, loss carry-forwards, and wh…",
+   "es": "No pagas impuestos por una pérdida - pero puedes aprovecharla. Cómo las pérdidas de capital en cripto compensan tus ganancias, la deducción de $3,000 sobre el ingreso ordinario, el traslado de pérdidas, y por…",
    "kind": [
     "html"
    ],
@@ -57229,9 +57229,9 @@
    "n": 1,
    "w": 26
   },
-  "kLPZYFvHZM": {
-   "en": "US spot Bitcoin ETFs turned Wall Street into a daily driver of crypto price. What ETF flows actually measure, why net inflows and outflows move the market, how",
-   "es": "Los ETF spot de Bitcoin en EE. UU. convirtieron a Wall Street en un motor diario del precio de las cripto. Qué miden realmente los flujos de los ETF, por qué las entradas y salidas netas mueven el mercado, cómo",
+  "YV8pMkRyqd": {
+   "en": "US spot Bitcoin ETFs turned Wall Street into a daily driver of crypto price. What ETF flows actually measure, why net inflows and outflows move the market, how…",
+   "es": "Los ETF spot de Bitcoin en EE. UU. convirtieron a Wall Street en un motor diario del precio cripto. Qué miden realmente los flujos de ETF, por qué las entradas y salidas netas mueven el…",
    "kind": [
     "html"
    ],
@@ -57256,9 +57256,9 @@
    "n": 5,
    "w": 10
   },
-  "osNJvApU3_": {
-   "en": "The monthly Non-Farm Payrolls report lands the first Friday at 12:30 UTC and can whip Bitcoin in seconds. Why a jobs number moves a 24/7 crypto market, hot vs c",
-   "es": "El informe mensual de nóminas no agrícolas (NFP) llega el primer viernes a las 12:30 UTC y puede sacudir a Bitcoin en segundos. Por qué un dato de empleo mueve un mercado cripto que opera 24/7 en caliente frente a",
+  "1M4QPn_nES": {
+   "en": "The monthly Non-Farm Payrolls report lands the first Friday at 12:30 UTC and can whip Bitcoin in seconds.",
+   "es": "El informe mensual de nóminas no agrícolas (NFP) sale el primer viernes a las 12:30 UTC y puede sacudir a Bitcoin en segundos.",
    "kind": [
     "html"
    ],
@@ -57266,11 +57266,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 27
+   "w": 18
   },
-  "sebdElVvid": {
-   "en": "The US Dollar Index quietly steers risk assets, and Bitcoin usually trades inverse to it. What DXY measures, why the inverse correlation exists, when it breaks",
-   "es": "El índice del dólar estadounidense (DXY) dirige en silencio los activos de riesgo, y Bitcoin suele moverse en sentido inverso a él. Qué mide el DXY, por qué existe esa correlación inversa, cuándo se rompe",
+  "itBLb9axap": {
+   "en": "The US Dollar Index quietly steers risk assets, and Bitcoin usually trades inverse to it. What DXY measures, why the inverse correlation exists, when it breaks…",
+   "es": "El índice del dólar estadounidense dirige silenciosamente a los activos de riesgo, y Bitcoin suele moverse a la inversa. Qué mide el DXY, por qué existe la correlación inversa…",
    "kind": [
     "html"
    ],
@@ -57295,9 +57295,9 @@
    "n": 5,
    "w": 11
   },
-  "7P4Ru4y_SJ": {
-   "en": "The US 10-year Treasury yield is the risk-free rate the whole market prices against - and it quietly pulls on Bitcoin. What the 10-year is, the liquidity channe",
-   "es": "El rendimiento del bono del Tesoro de EE. UU. a 10 años es la tasa libre de riesgo con la que todo el mercado se compara, y tira en silencio de Bitcoin. Qué es el bono a 10 años, el canal de liquide",
+  "cDlZgMIYFw": {
+   "en": "The US 10-year Treasury yield is the risk-free rate the whole market prices against - and it quietly pulls on Bitcoin.",
+   "es": "El rendimiento del bono del Tesoro de EE. UU. a 10 años es la tasa libre de riesgo contra la que se valora todo el mercado - y tira de Bitcoin sin hacer ruido.",
    "kind": [
     "html"
    ],
@@ -57305,7 +57305,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 27
+   "w": 20
   },
   "KgOqrDqrek": {
    "en": "PCE Inflation and Crypto: The Fed's Favorite Number",
@@ -57322,9 +57322,9 @@
    "n": 5,
    "w": 8
   },
-  "o5tEOyBlcn": {
-   "en": "Everyone watches CPI, but the Federal Reserve steers by PCE - its preferred inflation gauge. What PCE is, how it differs from CPI, why it can move crypto even w",
-   "es": "Todos vigilan el IPC, pero la Reserva Federal se guía por el PCE, su indicador de inflación preferido. Qué es el PCE, en qué se diferencia del IPC, por qué puede mover las cripto incluso cuand",
+  "uo3YHzRKT5": {
+   "en": "Everyone watches CPI, but the Federal Reserve steers by PCE - its preferred inflation gauge. What PCE is, how it differs from CPI, why it can move crypto even w…",
+   "es": "Todos miran el CPI, pero la Reserva Federal se guía por el PCE - su indicador de inflación preferido…",
    "kind": [
     "html"
    ],
@@ -57332,11 +57332,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 28
+   "w": 29
   },
-  "aGw3ZOxFbx": {
-   "en": "Most 100x perpetual-futures venues geoblock US residents - so what can a US trader actually use in 2026? An honest map of legal spot, US-regulated derivatives,",
-   "es": "La mayoría de los exchanges de futuros perpetuos con 100x bloquean por geolocalización a los residentes de EE. UU., entonces ¿qué puede usar realmente un trader estadounidense en 2026? Un mapa honesto del spot legal, los derivados regulados en EE. UU.,",
+  "uFx-8Ttkl9": {
+   "en": "Most 100x perpetual-futures venues geoblock US residents - so what can a US trader actually use in 2026?",
+   "es": "La mayoría de las plataformas de futuros perpetuos a 100x bloquean por región a los residentes de EE. UU. - entonces, ¿qué puede usar realmente un trader estadounidense en 2026?",
    "kind": [
     "html"
    ],
@@ -57344,7 +57344,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 24
+   "w": 16
   },
   "K35bLA36ge": {
    "en": "Is Binance, Bybit & OKX Legal in the US? (2026 Guide)",
@@ -57361,9 +57361,9 @@
    "n": 5,
    "w": 10
   },
-  "OfcAM44QBV": {
-   "en": "Straight answers for US traders: whether Binance, Bybit and OKX serve US residents in 2026, what happened with each, why a VPN is not a safe workaround, and the",
-   "es": "Respuestas claras para traders de EE. UU.: si Binance, Bybit y OKX operan con residentes estadounidenses en 2026, qué pasó con cada uno, por qué una VPN no es una solución segura, y l",
+  "XItsjyd8RM": {
+   "en": "Straight answers for US traders: whether Binance, Bybit and OKX serve US residents in 2026, what happened with each, why a VPN is not a safe workaround, and the…",
+   "es": "Respuestas directas para traders de EE. UU.: si Binance, Bybit y OKX atienden a residentes estadounidenses en 2026, qué pasó con cada uno, por qué una VPN no es una solución segura, y las formas legales de operar y practicar futuros cripto desde Estados…",
    "kind": [
     "html"
    ],
@@ -57373,9 +57373,9 @@
    "n": 1,
    "w": 27
   },
-  "L9Bf8qlK8p": {
-   "en": "Canada's securities regulators tightened the rules and several offshore venues left - so which platforms can Canadians actually use for crypto in 2026? A clear",
-   "es": "Los reguladores de valores de Canadá endurecieron las reglas y varios exchanges offshore se retiraron, entonces ¿qué plataformas pueden usar realmente los canadienses para cripto en 2026? Una guía clar",
+  "EOfkv08aIA": {
+   "en": "Canada's securities regulators tightened the rules and several offshore venues left - so which platforms can Canadians actually use for crypto in 2026?",
+   "es": "Los reguladores de valores de Canadá endurecieron las reglas y varios exchanges offshore se retiraron: entonces ¿qué plataformas pueden usar realmente los canadienses para cripto en 2026? Una mirada clara a las opciones registradas, qué revisar antes de depositar, y cómo practicar futuros sin riesgo.",
    "kind": [
     "html"
    ],
@@ -57383,11 +57383,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 23
+   "w": 22
   },
-  "jCXWjxcu33": {
-   "en": "MiCA reshaped crypto trading across the EU - CASP authorisation, EUR-stablecoin rules and a transitional window closing July 1, 2026. What EU traders should loo",
-   "es": "MiCA transformó el trading de cripto en toda la UE: autorización CASP, reglas para stablecoins en EUR y una ventana transitoria que cierra el 1 de julio de 2026. Qué deberían tener en cuenta los traders de la UE",
+  "Gw0PPOgH8t": {
+   "en": "MiCA reshaped crypto trading across the EU - CASP authorisation, EUR-stablecoin rules and a transitional window closing July 1, 2026.",
+   "es": "MiCA reconfiguró el trading de cripto en toda la UE - autorización CASP, reglas para stablecoins en EUR y una ventana transitoria que se cierra el 1 de julio de 2026.",
    "kind": [
     "html"
    ],
@@ -57395,11 +57395,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 23
+   "w": 18
   },
-  "NHv4-YAV-i": {
-   "en": "How the IRS treats crypto trading gains, why short-term futures profits are taxed as ordinary income, the wash-sale gray area, the new 1099-DA reporting era, an",
-   "es": "Cómo trata el IRS las ganancias del trading de cripto, por qué las ganancias de futuros a corto plazo se gravan como ingreso ordinario, la zona gris del wash-sale, la nueva era de reportes 1099-DA, y",
+  "841K9MHLND": {
+   "en": "How the IRS treats crypto trading gains, why short-term futures profits are taxed as ordinary income, the wash-sale gray area, the new 1099-DA reporting era, an…",
+   "es": "Cómo trata el IRS las ganancias del trading de cripto, por qué las ganancias de futuros a corto plazo se gravan como ingreso ordinario, la zona gris de la regla wash-sale, la nueva era de reportes 1099-DA, y por qué un diario de trading limpio es la diferencia entre un abril tranquilo y una pesadilla…",
    "kind": [
     "html"
    ],
@@ -57421,9 +57421,9 @@
    "n": 7,
    "w": 1
   },
-  "PkU6hcGiqY": {
-   "en": "The next FOMC rate decision lands July 29, 2026 at 18:00 UTC - historically one of the most volatile hours of the month for Bitcoin. What the Fed decision actually changes for cryp",
-   "es": "La próxima decisión de tipos del FOMC llega el 29 de julio de 2026 a las 18:00 UTC, históricamente una de las horas más volátiles del mes para Bitcoin. Qué cambia realmente la decisión de la Fed para las cript",
+  "Rmp8wdqHkL": {
+   "en": "The next FOMC rate decision lands July 29, 2026 at 18:00 UTC - historically one of the most volatile hours of the month for Bitcoin.",
+   "es": "La próxima decisión de tipos del FOMC llega el 29 de julio de 2026 a las 18:00 UTC - históricamente una de las horas más volátiles del mes para Bitcoin.",
    "kind": [
     "html"
    ],
@@ -57431,11 +57431,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 32
+   "w": 24
   },
-  "eQz4rbVPxT": {
-   "en": "US CPI lands July 14, 2026 at 12:30 UTC, kicking off a heavy macro week - PPI, retail sales and Fed speeches back to back. Why inflation prints hit crypto within one second, hot vs",
-   "es": "El IPC de EE. UU. llega el 14 de julio de 2026 a las 12:30 UTC, abriendo una semana macro cargada: IPP, ventas minoristas y discursos de la Fed uno tras otro. Por qué los datos de inflación golpean a las cripto en un segundo, en caliente frente a",
+  "HlsKj50oo7": {
+   "en": "US CPI lands July 14, 2026 at 12:30 UTC, kicking off a heavy macro week - PPI, retail sales and Fed speeches back to back.",
+   "es": "El IPC de EE. UU. sale el 14 de julio de 2026 a las 12:30 UTC y abre una semana macro cargada - PPI, ventas minoristas y discursos de la Fed uno tras otro.",
    "kind": [
     "html"
    ],
@@ -57443,7 +57443,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 33
+   "w": 23
   },
   "Ddu0zdkrsi": {
    "en": "Long/Short Ratio Explained: How to Read Crowd Positioning Before It Traps You",
@@ -57460,9 +57460,9 @@
    "n": 5,
    "w": 12
   },
-  "54p1yDvHYJ": {
-   "en": "The long/short ratio shows which side of the boat the crowd is on - and crowded boats tip. What the ratio actually measures, why extremes are contrarian signals, and how to combine",
-   "es": "El ratio long/short muestra de qué lado del barco está la multitud, y los barcos abarrotados se voltean. Qué mide realmente el ratio, por qué los extremos son señales contrarian, y cómo combinarlo",
+  "A0bwljiAo8": {
+   "en": "The long/short ratio shows which side of the boat the crowd is on - and crowded boats tip. What the ratio actually measures, why extremes are contrarian signals, and how to combine…",
+   "es": "El ratio long/short muestra en qué lado del bote está la multitud, y los botes abarrotados vuelcan. Qué mide en realidad el ratio, por qué los extremos son señales contrarias, y cómo combinarlo…",
    "kind": [
     "html"
    ],
@@ -57472,9 +57472,9 @@
    "n": 1,
    "w": 31
   },
-  "ddgH1PEJT-": {
-   "en": "Cash-and-carry in crypto: hold spot, short the perp, collect funding - no price exposure. How the trade works mechanically, what it realistically yields, and the four risks that bl",
-   "es": "Cash-and-carry en cripto: mantén spot, abre un short en el perpetuo y cobra el funding, sin exposición al precio. Cómo funciona mecánicamente la operación, qué rendimiento realista da, y los cuatro riesgos que pueden",
+  "D9yerdpn4u": {
+   "en": "Cash-and-carry in crypto: hold spot, short the perp, collect funding - no price exposure. How the trade works mechanically, what it realistically yields, and the four risks that bl…",
+   "es": "Cash-and-carry en cripto: mantén el spot, ponte short en el perpetuo y cobra el funding - sin exposición al precio. Cómo funciona la operación mecánicamente, qué rinde realmente y los cuatro riesgos que la pueden…",
    "kind": [
     "html"
    ],
@@ -57484,9 +57484,9 @@
    "n": 1,
    "w": 28
   },
-  "gBvQUoXKSQ": {
-   "en": "Billions in BTC and ETH options expire on the last Friday of every month at 08:00 UTC - and price action around it often looks magnetized. Max pain explained, why pinning happens,",
-   "es": "Miles de millones en opciones de BTC y ETH vencen el último viernes de cada mes a las 08:00 UTC, y el precio suele parecer imantado alrededor de ese momento. El max pain explicado, por qué ocurre el pinning,",
+  "phIWUhV62j": {
+   "en": "Billions in BTC and ETH options expire on the last Friday of every month at 08:00 UTC - and price action around it often looks magnetized.",
+   "es": "Miles de millones en opciones de BTC y ETH vencen el último viernes de cada mes a las 08:00 UTC - y la acción del precio alrededor de eso a menudo parece magnetizada. El max pain explicado, por qué ocurre el anclaje, qué cambia después del vencimiento, y cómo deberían navegarlo los traders de futuros.",
    "kind": [
     "html"
    ],
@@ -57494,11 +57494,11 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 31
+   "w": 25
   },
-  "xOu2sAs3x7": {
-   "en": "BTC dominance measures Bitcoin's share of the total crypto market - and its trend decides whether altcoins pump or bleed. How to read the rotation cycle, the four market phases, an",
-   "es": "La dominancia de BTC mide la cuota de Bitcoin en el mercado cripto total, y su tendencia decide si las altcoins suben o sangran. Cómo leer el ciclo de rotación, las cuatro fases del mercado, y",
+  "JnpmOu9wPj": {
+   "en": "BTC dominance measures Bitcoin's share of the total crypto market - and its trend decides whether altcoins pump or bleed.",
+   "es": "La dominancia de BTC mide la cuota de Bitcoin en el mercado cripto total - y su tendencia decide si las altcoins suben o sangran.",
    "kind": [
     "html"
    ],
@@ -57506,7 +57506,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 30
+   "w": 19
   },
   "j40tOQxHNr": {
    "en": "An honest head-to-head - fees, liquidity, max leverage, KYC and trust. Which one fits a scalper, a swing trader or a beginner, and how to test either risk-free first.",

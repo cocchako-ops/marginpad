@@ -148,7 +148,7 @@
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Crypto News - Latest Headlines, Live","url":"https://marginpad.io/news/","dateModified":"2026-09-25T13:08:13.065Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Crypto News - Latest Headlines, Live","url":"https://marginpad.io/news/","dateModified":"2026-09-25T16:13:41.011Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="n-glow" aria-hidden="true"></div>
 <div class="wrap">
@@ -201,7 +201,7 @@
   var feed=document.getElementById('feed');
   try{var u='/api/track?t=pageview&p=/news/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
   function esc(s){return String(s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
-  function ago(t){if(!t)return '';var s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago';}
+  var __esN=((document.documentElement.lang||'').slice(0,2).toLowerCase()==='es');function ago(t){if(!t)return '';var s=Math.round((Date.now()-t)/1000);if(__esN)return s<60?'ahora mismo':s<3600?'hace '+Math.floor(s/60)+' min':s<86400?'hace '+Math.floor(s/3600)+' h':'hace '+Math.floor(s/86400)+' d';return s<60?'just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago';}
   var ITEMS=[];
   function render(items){
     if(!items||!items.length){feed.innerHTML='<div class="muted">News feed is busy - refreshing shortly.</div>';return;}
@@ -210,9 +210,9 @@
     var leadIdx=-1;for(var i=0;i<items.length;i++){if(items[i].img){leadIdx=i;break;}}
     feed.innerHTML=items.map(function(n,i){
       var img=n.img?'<img class="n-img" src="'+esc(n.img)+'" alt="'+esc(n.title||'')+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
-      return '<article class="n-item'+(i===leadIdx?' lead':'')+'" data-i="'+i+'" tabindex="0" role="button" aria-label="Read: '+esc(n.title)+'">'+img+'<div class="n-b"><span class="n-t">'+esc(n.title)+'</span>'+(n.body?'<p class="n-d">'+esc(n.body)+'</p>':'')+'<div class="n-m"><span class="n-src">'+esc(n.src)+'</span><span>·</span><span>'+ago(n.ts)+'</span><span class="n-read">READ HERE →</span></div></div></article>';
+      return '<article class="n-item'+(i===leadIdx?' lead':'')+'" data-i="'+i+'" tabindex="0" role="button" aria-label="Read: '+esc(n.title)+'">'+img+'<div class="n-b"><span class="n-t">'+esc(n.title)+'</span>'+(n.body?'<p class="n-d">'+esc(n.body)+'</p>':'')+'<div class="n-m"><span class="n-src">'+esc(n.src)+'</span><span>·</span><span>'+ago(n.ts)+'</span><span class="n-read">'+(__esN?'LEER AQUÍ →':'READ HERE →')+'</span></div></div></article>';
     }).join('');
-    var up=document.getElementById('nUpd');if(up)up.textContent='Updated '+ago(Date.now()-1000);
+    var up=document.getElementById('nUpd');if(up)up.textContent=(__esN?'Actualizado ':'Updated ')+ago(Date.now()-1000);
   }
   var _dlDone=false;
   function tryDeepLink(){if(_dlDone)return;try{var q=new URLSearchParams(location.search);var u=q.get('read');if(!u)return;_dlDone=true;var n=ITEMS.filter(function(x){return x.url===u;})[0];if(!n)n={url:u,title:q.get('t')||'',src:q.get('s')||'',img:q.get('img')||'',ts:Date.now()};openReader(n);}catch(e){}}

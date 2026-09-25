@@ -1416,10 +1416,19 @@ NEW.forEach(a => {
 const cats = [];
 INDEX.forEach(p => { if (!cats.includes(p.tag)) cats.push(p.tag); });
 const chips = `<button class="chip active" data-cat="all">All</button>` + cats.map(c => `<button class="chip" data-cat="${c}">${c}</button>`).join('');
+// A card excerpt ends on a sentence or on an ellipsis - never mid-word (audit 2026-09-25: "explained with a" on
+// dozens of cards). The hand-written `card` strings are kept; this only decides where the reader stops reading.
+function cardText(s) {
+  s = String(s || '').trim();
+  if (!s || /[.!?…]$/.test(s) || /[.!?]["'”)]$/.test(s)) return s;
+  const cut = Math.max(s.lastIndexOf('. '), s.lastIndexOf('! '), s.lastIndexOf('? '));
+  if (cut >= s.length * 0.6) return s.slice(0, cut + 1);
+  return s.replace(/[\s,;:-]+$/, '') + '…';
+}
 const cards = INDEX.map(p => `    <a class="post-card" data-cat="${p.tag}" href="/blog/${p.slug}/">
       <span class="tag">${p.tag}</span>
       <h2>${p.title}</h2>
-      <p>${p.card}</p>
+      <p>${cardText(p.card)}</p>
     </a>`).join('\n');
 const indexHtml = `<!DOCTYPE html>
 <html lang="en">
