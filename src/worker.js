@@ -1938,6 +1938,7 @@ async function handleSsrComp(request, url, env, ctx) {
   }
   H += '</div>';
 
+  if (esLang(request) === 'es') H = esCompFrag(H); // the /es/ twin gets the same numbers in Spanish words
   const out = ssrStampDate(html.slice(0, open) + '<div id="compdata" data-ssr="comp">' + H + html.slice(close), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'competition' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -2516,6 +2517,27 @@ function esMapFrag(s) {
   for (const [a, b] of SSR_MAP_ES) s = s.split(a).join(b);
   return s;
 }
+// /es/trading-competition/: the server-rendered half (the day meter, the pot, the seven board rows) in Spanish on
+// the twin (audit 2026-09-25: "everything the page is about is served in English on the Spanish twin").
+const SSR_COMP_ES = [
+  ['>Day of season<', '>Día de la temporada<'], ['Right now it is <b>day ', 'Ahora mismo es el <b>día '], ['</b>. This season ends <b>', '</b>. Esta temporada termina el <b>'],
+  ['</b>, in ', '</b>, en '], [' days, and the next one starts the same day - you can join on any day and still place.', ' días, y la siguiente empieza el mismo día - puedes entrar cualquier día y aun así clasificar.'],
+  [' hours, and the next one starts the same day - you can join on any day and still place.', ' horas, y la siguiente empieza el mismo día - puedes entrar cualquier día y aun así clasificar.'],
+  ['<span>Entry <b>', '<span>Entrada <b>'], ['<span>Deposit <b>none</b></span>', '<span>Depósito <b>ninguno</b></span>'],
+  ['</b> person is competing</span>', '</b> persona está compitiendo</span>'], ['</b> people are competing</span>', '</b> personas están compitiendo</span>'], ['</b> placements</span>', '</b> plazas</span>'],
+  ['<h2>The seven boards</h2>', '<h2>Las siete tablas</h2>'],
+  ['<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>', '<p>Cada tabla puntúa algo distinto, así que un solo estilo de trading no las barre todas. Cada una paga a sus cinco primeros, y puedes clasificar en más de una.</p>'],
+  ['>Leading<', '>Lidera<'], ['>Open board<', '>Tabla abierta<'], ['>nobody has scored yet<', '>nadie ha puntuado todavía<'], ['>one qualifying trade puts you first<', '>una operación válida te pone primero<'],
+  [' entered</div>', ' inscritos</div>'], ['% win rate', '% de acierto'], [' green days', ' días verdes'], [' green day', ' día verde'], [' wagered', ' apostados'],
+  ['>Real money<', '>Dinero real<'], ['>Free - paper<', '>Gratis - paper<'],
+  ['>Highest ROE<', '>Mayor ROE<'], ['>Green Days<', '>Días verdes<'], ['>Best Win Rate<', '>Mejor tasa de acierto<'], ['>Season XP<', '>XP de temporada<'], ['>Bybit Volume<', '>Volumen en Bybit<'],
+  ['>the best return on a single closed trade.<', '>el mejor retorno en una sola operación cerrada.<'], ['>the most days closed in profit.<', '>más días cerrados en beneficio.<'],
+  ['>the highest win rate, ranked by Wilson score so a lucky streak cannot win it.<', '>la mayor tasa de acierto, ordenada por puntuación de Wilson para que una racha de suerte no la gane.<'],
+  ['>the most XP earned this season.<', '>más XP ganados esta temporada.<'], ['>the best points score across wins and losses.<', '>la mejor puntuación entre ganancias y pérdidas.<'],
+  ['>the most REAL futures volume on a Bybit account opened through MarginPad.<', '>más volumen REAL de futuros en una cuenta de Bybit abierta a través de MarginPad.<'],
+  ['>the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<', '>la mayor cantidad REAL apostada en una cuenta de Moon abierta a través de MarginPad, en un concurso de dos temporadas.<'],
+];
+function esCompFrag(s) { s = String(s || ''); for (const [a, b] of SSR_COMP_ES) s = s.split(a).join(b); s = s.replace(/(<b>día \d+) of (\d+<\/b>)/g, (m, x, y) => x + ' de ' + y); s = s.split('on the line this season, free to enter').join('en juego esta temporada, entrada gratis'); return s; }
 async function handleSsrLiq(request, url, env, mode, param) {
   const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
   // ?nc=1 renders past the 10-minute edge copy. The key ignores the query, so a bare ?cb= buster reads the SAME

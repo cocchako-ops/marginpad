@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T18:58:19.389Z",
+  "generated": "2026-09-25T19:04:53.252Z",
   "pages": 383,
   "occurrences": 26302,
   "unique": 13886,
-  "words": 263521,
+  "words": 263527,
   "untranslated": 2,
   "untranslatedWords": 199,
-  "merged": "2026-09-25T18:59:55.998Z"
+  "merged": "2026-09-25T19:04:53.413Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -24719,9 +24719,9 @@
    "n": 1,
    "w": 2
   },
-  "woAUiYIOxN": {
-   "en": "Yes, full",
-   "es": "Sí, completo",
+  "dwauppv8uP": {
+   "en": "5-min preview free, full on Premium",
+   "es": "Vista previa de 5 min gratis, completo con Premium",
    "kind": [
     "html"
    ],
@@ -24729,7 +24729,7 @@
     "/best-liquidation-heatmap-tools/"
    ],
    "n": 1,
-   "w": 2
+   "w": 6
   },
   "M9rWbhqtle": {
    "en": "Yes, 9 exchanges",
@@ -24755,9 +24755,9 @@
    "n": 1,
    "w": 7
   },
-  "YXK-vGrIPF": {
-   "en": "None needed",
-   "es": "Ninguno necesario",
+  "yFSC_zcHBn": {
+   "en": "Premium $11.99/mo for unlimited",
+   "es": "Premium $11.99/mes para ilimitado",
    "kind": [
     "html"
    ],
@@ -24765,7 +24765,7 @@
     "/best-liquidation-heatmap-tools/"
    ],
    "n": 1,
-   "w": 2
+   "w": 4
   },
   "Px3orQaN9W": {
    "en": "2. Coinglass",
@@ -24829,9 +24829,9 @@
    "n": 1,
    "w": 3
   },
-  "VJDJ_iTm8Q": {
-   "en": "Prime (models, refresh, API $29-299/mo)",
-   "es": "Prime (modelos, actualización, API $29-299/mes)",
+  "7dan4zphea": {
+   "en": "Prime (models, refresh, API $29-699/mo)",
+   "es": "Prime (modelos, refresco, API $29-699/mes)",
    "kind": [
     "html"
    ],
