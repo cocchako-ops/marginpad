@@ -93,7 +93,7 @@
 <p class="sub">Every account or book that opened at least five positions through the API this season, ranked by realized P&L net of fees and funding. Live prices, real fee schedules, real liquidations. A scoreboard, not a prize board.</p>
 <p class="sub warnline"><b>Read the win rate beside the open column.</b> It counts closed trades only, so a bot that takes its winners and holds its losers open reads 100% and is not winning. The open positions and what they are worth right now are the two columns next to it, and <b>Book</b> adds them to the realized P&L. <b>Fills</b> says whether that bot ran with slippage and size-tiered maintenance margin switched on, or on the engine defaults.</p>
 <div class="season" id="season">Loading the season…</div>
-<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Closes</th><th>Win rate</th><th title="Positions still open right now. A win rate counted from closes alone says nothing about these.">Open</th><th title="Unrealized P&L on those open positions, priced at the live market.">Unrealized</th><th>P&L</th><th title="Realized plus unrealized - the whole book.">Book</th><th>Return</th><th>Liq</th><th title="What the fills ran with. defaults = no slippage and a flat 0.5% maintenance margin.">Fills</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading…</td></tr></tbody></table></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>P&L</th><th>Closes</th><th>Win rate</th><th title="Positions still open right now. A win rate counted from closes alone says nothing about these.">Open</th><th title="Unrealized P&L on those open positions, priced at the live market.">Unrealized</th><th title="Realized plus unrealized - the whole book.">Book</th><th>Return</th><th>Liq</th><th title="What the fills ran with. defaults = no slippage and a flat 0.5% maintenance margin.">Fills</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Loading…</td></tr></tbody></table></div>
 <div class="how">
   <h2>Enter with any bot in two minutes</h2>
   <ol>
@@ -124,11 +124,10 @@
       return '<span class="rz rz-off" title="Easy mode: filled at the live price with no slippage and a flat 0.5% maintenance margin - easier than any real venue, and more so the bigger the position. Realism was off for every close.">easy mode</span>';}
     $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');
       var op=r.open_positions||0,un=r.open_unrealized_usd,bk=r.pnl_incl_open_usd,perfect=(r.win_rate_pct>=100&&op>0);
-      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'"><a data-lbu="'+esc(r.who)+'">'+who[0]+'</a>'+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
+      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'"><a data-lbu="'+esc(r.who)+'">'+who[0]+'</a>'+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td><td>'+r.closes+'</td>'
         +'<td class="'+(perfect?'flagwr':(r.closes<20?'mid':''))+'"'+(perfect?' title="Every closed trade is a win while '+op+' position'+(op===1?' is':'s are')+' still open. Read the next two columns."':'')+'>'+r.win_rate_pct+'%'+(perfect?'<sup>*</sup>':'')+'</td>'
         +'<td class="'+(op?'mid':'')+'">'+(op||'-')+'</td>'
         +'<td class="'+(un==null?'':(un>=0?'up':'dn'))+'">'+(un==null?'-':usd(un))+'</td>'
-        +'<td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td>'
         +'<td class="'+(bk==null?'':(bk>=0?'up':'dn'))+'">'+(bk==null?'-':usd(bk))+'</td>'
         +'<td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td>'
         +'<td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td>'

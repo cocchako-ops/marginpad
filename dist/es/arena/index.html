@@ -93,7 +93,7 @@
 <p class="sub">Toda cuenta o libro que abrió al menos cinco posiciones a través de la API esta temporada, clasificado por P&L realizado neto de comisiones y funding. Precios en vivo, tarifas reales, liquidaciones reales. Un marcador, no una tabla de premios.</p>
 <p class="sub warnline"><b>Lee la tasa de acierto junto a la columna de abiertas.</b> Solo cuenta operaciones cerradas, así que un bot que se queda con sus ganadoras y mantiene abiertas sus perdedoras marca 100% y no está ganando. Las posiciones abiertas y lo que valen ahora mismo son las dos columnas siguientes, y <b>Book</b> las suma al P&L realizado. <b>Ejecuciones</b> indica si ese bot operó con slippage y margen de mantenimiento por tramos activados, o con los valores predeterminados del motor.</p>
 <div class="season" id="season">Cargando la temporada…</div>
-<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>Cierres</th><th>Tasa de acierto</th><th title="Posiciones que siguen abiertas ahora mismo. Una tasa de acierto calculada solo con cierres no dice nada sobre estas.">Abiertas</th><th title="P&L no realizado de esas posiciones abiertas, valorado al precio de mercado en vivo.">No realizado</th><th>P&L</th><th title="Realizado más no realizado: el book completo.">Libro</th><th>Rendimiento</th><th>Liq.</th><th title="Con qué se ejecutaron las operaciones. predeterminados = sin slippage y un margen de mantenimiento fijo del 0.5%.">Ejecuciones</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Cargando…</td></tr></tbody></table></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Bot</th><th>P&L</th><th>Cierres</th><th>Tasa de acierto</th><th title="Posiciones que siguen abiertas ahora mismo. Una tasa de acierto calculada solo con cierres no dice nada sobre estas.">Abiertas</th><th title="P&L no realizado de esas posiciones abiertas, valorado al precio de mercado en vivo.">No realizado</th><th title="Realizado más no realizado: el book completo.">Libro</th><th>Rendimiento</th><th>Liq.</th><th title="Con qué se ejecutaron las operaciones. predeterminados = sin slippage y un margen de mantenimiento fijo del 0.5%.">Ejecuciones</th></tr></thead><tbody id="rows"><tr><td colspan="11" class="empty">Cargando…</td></tr></tbody></table></div>
 <div class="how">
   <h2>Entra con cualquier bot en dos minutos</h2>
   <ol>
@@ -124,11 +124,10 @@
       return '<span class="rz rz-off" title="Easy mode: filled at the live price with no slippage and a flat 0.5% maintenance margin - easier than any real venue, and more so the bigger the position. Realism was off for every close.">easy mode</span>';}
     $('rows').innerHTML=rows.map(function(r){var who=esc(r.who).split('/');
       var op=r.open_positions||0,un=r.open_unrealized_usd,bk=r.pnl_incl_open_usd,perfect=(r.win_rate_pct>=100&&op>0);
-      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'"><a data-lbu="'+esc(r.who)+'">'+who[0]+'</a>'+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td>'+r.closes+'</td>'
+      return '<tr class="t'+r.rank+'"><td>'+r.rank+'</td><td title="'+esc(r.who)+'"><a data-lbu="'+esc(r.who)+'">'+who[0]+'</a>'+(who[1]?'<small>book '+who[1]+'</small>':'')+'</td><td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td><td>'+r.closes+'</td>'
         +'<td class="'+(perfect?'flagwr':(r.closes<20?'mid':''))+'"'+(perfect?' title="Every closed trade is a win while '+op+' position'+(op===1?' is':'s are')+' still open. Read the next two columns."':'')+'>'+r.win_rate_pct+'%'+(perfect?'<sup>*</sup>':'')+'</td>'
         +'<td class="'+(op?'mid':'')+'">'+(op||'-')+'</td>'
         +'<td class="'+(un==null?'':(un>=0?'up':'dn'))+'">'+(un==null?'-':usd(un))+'</td>'
-        +'<td class="'+(r.pnl_usd>=0?'up':'dn')+'">'+usd(r.pnl_usd)+'</td>'
         +'<td class="'+(bk==null?'':(bk>=0?'up':'dn'))+'">'+(bk==null?'-':usd(bk))+'</td>'
         +'<td class="'+(r.return_pct>=0?'up':'dn')+'">'+(r.return_pct>=0?'+':'')+r.return_pct+'%</td>'
         +'<td class="'+(r.liquidations?'dn':'')+'">'+r.liquidations+'</td>'

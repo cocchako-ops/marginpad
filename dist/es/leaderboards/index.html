@@ -54,7 +54,8 @@
   .season{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:10px;margin:0 0 22px;}
   .sc{background:#0d1014;border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0;}
   .sc .k{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);}
-  .sc .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:#fff;margin-top:6px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sc .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.03em;color:#fff;margin-top:6px;line-height:1.05;overflow-wrap:anywhere;} /* was nowrap+ellipsis: "$350 a se..." on a phone (audit 2026-09-25) */
+  @media(max-width:700px){.sc .v{font-size:22px}}
   .sc .v b{color:var(--amber);}
   .sc .s{font:600 11px 'Space Mono',monospace;color:var(--faint);margin-top:6px;}
   .days{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:10px;}
