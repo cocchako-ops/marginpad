@@ -7,7 +7,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_rektindex = {"notAvailable":"no disponible","wipedAt":" liquidado a $","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener sponsored\" title=\"Operar ","liquidationForDetails":" - detalles de la liquidación\"></button><span class=\"tk-serial\">№ ","noLiquidationsMatchThis":"<div class=\"rk-empty\">Todavía no hay liquidaciones que coincidan con este filtro…</div>","openThisTicket":"Abrir este ticket","startOfTheDay":"- inicio del día (UTC) -","quietWaitingForLiquidation":"Tranquilo - esperando liquidaciones…","longsAreGettingRekt":"▼ LOS LONGS ESTÁN SIENDO LIQUIDADOS","shortsAreGettingRekt":"▲ LOS SHORTS ESTÁN SIENDO LIQUIDADOS","titleFilterTheTape":"\" title=\"Filtrar la cinta a ","liveCryptoFuturesLiquidati":"Liquidaciones de futuros cripto en vivo · mira a los traders quedar liquidados en marginpad.io/rekt","ticketImageSavedDrag":"Imagen del ticket guardada - arrástrala a tu publicación en X","liquidationPrice":"<div><div class=\"l\">Precio de liquidación</div><div class=\"v\">$","longForceClosed":"Long cerrado forzosamente","shortForceClosed":"Short cerrado forzosamente","inCryptoFuturesLiquidated":" en futuros cripto liquidados en la última hora. Mira a los traders quedar liquidados en vivo en MarginPad.","linkCopied":"Enlace copiado ✓","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño y más","liquidationPrice2":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","seeWhereTheDanger":"Descubre dónde están las zonas de peligro","claimEvery5Minutes":"Reclama cada 5 minutos"};
+var __esR=((document.documentElement.lang||'').slice(0,2).toLowerCase()==='es');var __esD_rektindex = {"balancedPain":"DOLOR EQUILIBRADO","notAvailable":"no disponible","wipedAt":" liquidado a $","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener sponsored\" title=\"Operar ","liquidationForDetails":" - detalles de la liquidación\"></button><span class=\"tk-serial\">№ ","noLiquidationsMatchThis":"<div class=\"rk-empty\">Todavía no hay liquidaciones que coincidan con este filtro…</div>","openThisTicket":"Abrir este ticket","startOfTheDay":"- inicio del día (UTC) -","quietWaitingForLiquidation":"Tranquilo - esperando liquidaciones…","longsAreGettingRekt":"▼ LOS LONGS ESTÁN SIENDO LIQUIDADOS","shortsAreGettingRekt":"▲ LOS SHORTS ESTÁN SIENDO LIQUIDADOS","titleFilterTheTape":"\" title=\"Filtrar la cinta a ","liveCryptoFuturesLiquidati":"Liquidaciones de futuros cripto en vivo · mira a los traders quedar liquidados en marginpad.io/rekt","ticketImageSavedDrag":"Imagen del ticket guardada - arrástrala a tu publicación en X","liquidationPrice":"<div><div class=\"l\">Precio de liquidación</div><div class=\"v\">$","longForceClosed":"Long cerrado forzosamente","shortForceClosed":"Short cerrado forzosamente","inCryptoFuturesLiquidated":" en futuros cripto liquidados en la última hora. Mira a los traders quedar liquidados en vivo en MarginPad.","linkCopied":"Enlace copiado ✓","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño y más","liquidationPrice2":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","seeWhereTheDanger":"Descubre dónde están las zonas de peligro","claimEvery5Minutes":"Reclama cada 5 minutos"};
 function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_rektindex[k] != null) return __esD_rektindex[k]; } catch (e) {} return en; }
 
     (function(m,e,t,r,i,k,a){
@@ -758,7 +758,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
         +'<div class="tk-amt">'+mark+'<span class="d">$</span>'+num+(unit?'<span class="u">'+unit+'</span>':'')+'</div>'
         +'<div class="tk-foot">'
           +'<div class="tk-code"><button class="tk-bars" type="button" data-scan title="Scan ticket - full details" style="--bcode:'+barcode(e.ts)+'" aria-label="Scan '+esc(e.symbol)+__esT_rektindex("liquidationForDetails",' liquidation for details"></button><span class="tk-serial">№ ')+String(e.ts).slice(-6)+'</span></div>'
-          +'<span class="tk-ago" data-ts="'+e.ts+'">'+ago(e.ts)+' ago</span></div>'
+          +'<span class="tk-ago" data-ts="'+e.ts+'">'+(__esR?'hace '+ago(e.ts):ago(e.ts)+' ago')+'</span></div>'
       +'</div>'
       +'<span class="tk-stamp">REKT</span><span class="tk-perf"></span>'
     +'</div></div>';
@@ -847,7 +847,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
       render();try{deskRenderAll();}catch(_e){}
     });})();
   document.addEventListener('visibilitychange',function(){if(!document.hidden){if(!REKT_MAINT)poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
-  setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=ago(t)+' ago';});},1000);
+  setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=__esR?'hace '+ago(t):ago(t)+' ago';});},1000);
   /* ===== DESKTOP LIQUIDATION TERMINAL (≥861px) =====
      Live tape (dense table rows, escalating weight ≥$100K amber / ≥$1M red) + an analytics rail computed from the
      SAME stream: 10-min long/short pressure, liq/min rate, cascade detector (90s window), biggest session hit,
@@ -898,7 +898,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var sum=L+S,lp=sum>0?Math.round(L/sum*100):50;
     var pl=document.getElementById('rktPL'),ps=document.getElementById('rktPS');if(pl)pl.style.width=lp+'%';if(ps)ps.style.width=(100-lp)+'%';
     var a=document.getElementById('rktPLl'),b=document.getElementById('rktPSl');if(a)a.textContent='Longs $'+money(L);if(b)b.textContent='$'+money(S)+' Shorts';
-    var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?__esT_rektindex("quietWaitingForLiquidation",'Quiet - waiting for liquidations…'):(lp>=62?__esT_rektindex("longsAreGettingRekt",'▼ LONGS ARE GETTING REKT'):lp<=38?__esT_rektindex("shortsAreGettingRekt",'▲ SHORTS ARE GETTING REKT'):'BALANCED PAIN');
+    var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?__esT_rektindex("quietWaitingForLiquidation",'Quiet - waiting for liquidations…'):(lp>=62?__esT_rektindex("longsAreGettingRekt",'▼ LONGS ARE GETTING REKT'):lp<=38?__esT_rektindex("shortsAreGettingRekt",'▲ SHORTS ARE GETTING REKT'):__esT_rektindex("balancedPain",'BALANCED PAIN'));
     /* PACE = a per-minute rate averaged over the last FIVE minutes (audit 2026-09-25). A 60 s window printed
        "$0/min · 0 liq" the moment the tape went quiet for a minute - true, and read as a broken tile next to rows
        that were 63 s old. Five minutes is still "now" for a liquidation stream and rarely lands on an empty window. */
@@ -907,7 +907,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var hr=document.getElementById('rkhRec');if(hr&&sessBig)hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
     var cas=document.getElementById('rktCascade');if(cas){var on=c90>=2000000||n90>=25;cas.hidden=!on;if(on){var cv=document.getElementById('rktCasV');if(cv)cv.textContent='$'+money(c90);}}
     var rec=document.getElementById('rktRec');if(rec&&sessBig){var lg=sessBig.side==='long_liquidated';
-      rec.innerHTML='<span class="amt" style="color:'+(lg?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span><span class="sub">'+esc(sessBig.symbol)+' '+(lg?'LONG':'SHORT')+' liquidated @ $'+px(sessBig.price)+'<br>'+esc(String(sessBig.exchange).toUpperCase())+' · '+ago(sessBig.ts)+' ago</span>';}
+      rec.innerHTML='<span class="amt" style="color:'+(lg?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span><span class="sub">'+esc(sessBig.symbol)+' '+(lg?'LONG':'SHORT')+' liquidated @ $'+px(sessBig.price)+'<br>'+esc(String(sessBig.exchange).toUpperCase())+' · '+(__esR?'hace '+ago(sessBig.ts):ago(sessBig.ts)+' ago')+'</span>';}
     var ex=document.getElementById('rktEx');if(ex){var ks=Object.keys(sessEx).sort(function(x,y){return sessEx[y]-sessEx[x];}).slice(0,7);var mx=sessEx[ks[0]]||1;
       ex.innerHTML=ks.length?ks.map(function(k){return '<div class="mr"><span>'+esc(k)+'</span><i class="mb" style="width:'+Math.max(4,Math.round(sessEx[k]/mx*100))+'%"></i><span>$'+money(sessEx[k])+'</span></div>';}).join(''):'-';}
     var hs=document.getElementById('rktHist');if(hs){var lbl=['&lt;$10K','$10–100K','$100K–1M','&gt;$1M'],mx2=Math.max.apply(null,sessB.concat([1]));
@@ -1223,6 +1223,6 @@ if(a.getAttribute('data-mpex'))return;
 var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
-<script defer src="/assets/mp-nav.js?v=ee10916c"></script>
+<script defer src="/assets/mp-nav.js?v=5c0fa804"></script>
 </body>
 </html>
