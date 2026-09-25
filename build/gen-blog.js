@@ -784,7 +784,7 @@ const NEW = [
 `
   },
   {
-    slug:'crypto-futures-taxes-us', tag:'US', read:7, crumb:'US crypto futures taxes',
+    slug:'crypto-futures-taxes-us', tag:'USA', read:7, crumb:'US crypto futures taxes',
     title:'Crypto Futures Taxes in the US (2026): What You Owe',
     desc:'How the IRS taxes crypto futures and perpetuals for US traders in 2026 - capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting, and record-keeping.',
     keywords:'crypto futures taxes us, crypto tax usa, how are crypto futures taxed, section 1256 crypto, crypto perpetuals tax, irs crypto futures, 1099-DA crypto, day trading crypto taxes',
@@ -1263,7 +1263,7 @@ const NEW = [
     <div class="callout"><div class="k">Plan the entry, skip the chase</div><p style="margin-bottom:14px">Know your size, liquidation and risk before you click buy.</p><a class="cta" href="/">Open MarginPad →</a></div>`
   },
   {
-    slug:'crypto-futures-legal-in-the-us', tag:'US', read:6, crumb:'US crypto futures',
+    slug:'crypto-futures-legal-in-the-us', tag:'USA', read:6, crumb:'US crypto futures',
     title:'Are Crypto Futures Legal in the US? (2026 Update)',
     desc:'For years US traders were shut out of crypto perps. In 2026 the CFTC opened the door. Here is what changed and where Americans can legally trade.',
     keywords:'crypto futures legal us, are crypto perps legal in us, us crypto futures exchanges, cftc crypto perpetual futures, trade crypto futures usa',
@@ -1361,7 +1361,7 @@ const INDEX = [
   {slug:'crypto-futures-poland', tag:'Poland', title:'Crypto Futures Trading in Poland (2026): Exchanges, the 19% Tax & How to Start', card:'How Polish traders access perpetuals, the flat 19% tax that only hits on cash-out, and how to practice risk-free first.'},
   {slug:'crypto-futures-europe', tag:'Europe', title:'Crypto Futures Trading in Europe (2026): MiCA, Access & Tax by Country', card:'The EU hub - MiCA access plus the big tax differences country by country, with detailed guides for each.'},
   {slug:'crypto-futures-netherlands', tag:'Netherlands', title:'Crypto Futures Trading in the Netherlands (2026): Exchanges, Box 3 Tax & Rules', card:'Access via the usual exchanges - but the Dutch Box 3 system taxes your assets, not each trade. What that means for traders.'},
-  {slug:'crypto-futures-taxes-us', tag:'US', title:'Crypto Futures Taxes in the US (2026): What You Owe', card:'Capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting - how the IRS taxes crypto futures and perps for US traders.'},
+  {slug:'crypto-futures-taxes-us', tag:'USA', title:'Crypto Futures Taxes in the US (2026): What You Owe', card:'Capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting - how the IRS taxes crypto futures and perps for US traders.'},
   {slug:'how-much-to-start-crypto-futures', tag:'Basics', title:'How Much Money Do You Need to Start Trading Crypto Futures?', card:'The technical minimum vs the practical minimum, the 1% risk rule, and what $100, $500 and $1,000 accounts can really do.'},
   {slug:'crypto-futures-vs-options', tag:'Basics', title:'Crypto Futures vs Options: Which Should You Trade?', card:'Payoff shape, liquidation vs premium risk, funding vs theta - and when each one makes sense for leverage traders.'},
   {slug:'liquidation-clusters-explained', tag:'Liquidation', title:'Liquidation Clusters Explained: How to Spot Liquidity Magnets', card:'What liquidation clusters are, how stacked leverage forms them, and why they pull price like magnets.'},
@@ -1371,7 +1371,7 @@ const INDEX = [
   {slug:'how-to-avoid-liquidation', tag:'Risk management', title:'How to Avoid Liquidation in Crypto: 8 Rules That Work', card:'Eight practical rules - lower leverage, the 1% rule, stops inside your liquidation, margin buffers and more.'},
   {slug:'bybit-vs-binance-futures', tag:'Exchanges', title:'Bybit vs Binance for Futures Trading (2026 Comparison)', card:'Fees, liquidity, leverage, UX and regional access compared - a neutral guide to picking your perpetuals venue.'},
   {slug:'how-to-swap-crypto-without-an-account', tag:'Guides', title:'How to Swap Crypto Without an Account (Non-Custodial)', card:'How no-account, non-custodial swaps work - fees, slippage, safety steps, and how to swap on MarginPad.'},
-  {slug:'crypto-futures-legal-in-the-us', tag:'US', title:'Are Crypto Futures Legal in the US? (2026 Update)', card:'For years US traders were shut out of crypto perps. In 2026 the CFTC opened the door - what changed and where Americans can legally trade.'},
+  {slug:'crypto-futures-legal-in-the-us', tag:'USA', title:'Are Crypto Futures Legal in the US? (2026 Update)', card:'For years US traders were shut out of crypto perps. In 2026 the CFTC opened the door - what changed and where Americans can legally trade.'},
   {slug:'best-leverage-for-beginners', tag:'Risk management', title:'Best Leverage for Beginners (Why Less Is More)', card:'High leverage feels powerful but liquidates you fast. The simple math on why beginners should start at 2–5x.'},
   {slug:'what-is-open-interest', tag:'Basics', title:'What Is Open Interest in Crypto Futures?', card:'What open interest reveals about momentum, liquidity and the liquidation cascades that move markets.'},
   {slug:'mark-price-vs-last-price', tag:'Basics', title:'Mark Price vs Last Price: Why Liquidations Use Mark Price', card:'Your exchange liquidates on the mark price, not the last trade - and that protects you from manipulation.'},

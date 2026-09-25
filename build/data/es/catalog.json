@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T18:05:38.909Z",
+  "generated": "2026-09-25T18:14:28.745Z",
   "pages": 383,
   "occurrences": 26296,
-  "unique": 13884,
-  "words": 263543,
+  "unique": 13883,
+  "words": 263590,
   "untranslated": 1,
   "untranslatedWords": 5,
-  "merged": "2026-09-25T18:05:50.164Z"
+  "merged": "2026-09-25T18:16:09.850Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -40494,7 +40494,7 @@
     "/blog/crypto-futures-france/",
     "/blog/crypto-futures-germany/"
    ],
-   "n": 13,
+   "n": 12,
    "w": 47
   },
   "BcCax6tU7G": {
@@ -42149,9 +42149,9 @@
    "n": 4,
    "w": 9
   },
-  "fRfSi-1btm": {
-   "en": "US · 6 min read · Updated June 2026",
-   "es": "EE. UU. · 6 min de lectura · Actualizado en junio de 2026",
+  "4ixjP0QVzA": {
+   "en": "USA · 6 min read · Updated September 2026",
+   "es": "USA · 6 min de lectura · Actualizado septiembre 2026",
    "kind": [
     "html"
    ],
@@ -42377,9 +42377,9 @@
    "n": 1,
    "w": 32
   },
-  "b-DC7I1Qz_": {
-   "en": "<a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">US</span><span class=\"rel-t\">Crypto Futures Taxes in the US (2026): What You Owe</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong</span></a><a class=\"rel-card\" href=\"/blog/mica-deadline-passed-what-happened/\"><span class=\"tag\">Europe</span><span class=\"rel-t\">The MiCA Deadline Has Passed: What Actually Happened to Europe&rsquo;s Crypto Exchanges</span></a>",
-   "es": "<a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">EE. UU.</span><span class=\"rel-t\">Impuestos de los Futuros de Cripto en EE. UU. (2026): Qué Debes Pagar</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">EAU</span><span class=\"rel-t\">Impuestos Cripto en los EAU para Traders (2026): El 0% Es Real - La Residencia Fiscal Es Lo Que la Gente Confunde</span></a><a class=\"rel-card\" href=\"/blog/mica-deadline-passed-what-happened/\"><span class=\"tag\">Europa</span><span class=\"rel-t\">El Plazo de MiCA Ya Pasó: Qué Pasó de Verdad con los Exchanges de Cripto de Europa&rsquo;</span></a>",
+  "gDXpOzq7_x": {
+   "en": "<a class=\"rel-card\" href=\"/blog/crypto-futures-usa/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Crypto Futures Trading in the USA (2026): What's Allowed, the Tax Rules & How to Practise</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Crypto Futures Taxes in the US (2026): What You Owe</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong</span></a>",
+   "es": "<a class=\"rel-card\" href=\"/blog/crypto-futures-usa/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Trading de futuros de cripto en EE. UU. (2026): qué está permitido, las reglas fiscales y cómo practicar</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Impuestos de los Futuros de Cripto en EE. UU. (2026): Qué Debes Pagar</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">Impuestos Cripto en EAU para Traders (2026): el 0% Es Real - la Residencia Fiscal Es lo que la Gente Confunde</span></a>",
    "kind": [
     "html"
    ],
@@ -42387,7 +42387,7 @@
     "/blog/crypto-futures-legal-in-the-us/"
    ],
    "n": 1,
-   "w": 42
+   "w": 45
   },
   "fkVJPIOSAf": {
    "en": "For years US traders were shut out of crypto perps. In 2026 the CFTC opened the door. Here is what changed and where Americans can legally trade.",
@@ -44121,16 +44121,17 @@
    "n": 4,
    "w": 10
   },
-  "ZXz2YMWbGj": {
-   "en": "US · 7 min read · Updated June 2026",
-   "es": "EE. UU. · 7 min de lectura · Actualizado en junio de 2026",
+  "ygznzaKKO2": {
+   "en": "USA · 7 min read · Updated September 2026",
+   "es": "USA · 7 min de lectura · Actualizado septiembre 2026",
    "kind": [
     "html"
    ],
    "ctx": [
-    "/blog/crypto-futures-taxes-us/"
+    "/blog/crypto-futures-taxes-us/",
+    "/blog/crypto-futures-usa/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 6
   },
   "OsqVyRO3Lk": {
@@ -44424,9 +44425,9 @@
    "n": 1,
    "w": 39
   },
-  "YqS-Kr1wMk": {
-   "en": "<a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">US</span><span class=\"rel-t\">Are Crypto Futures Legal in the US? (2026 Update)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong</span></a><a class=\"rel-card\" href=\"/blog/mica-deadline-passed-what-happened/\"><span class=\"tag\">Europe</span><span class=\"rel-t\">The MiCA Deadline Has Passed: What Actually Happened to Europe&rsquo;s Crypto Exchanges</span></a>",
-   "es": "<a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">EE. UU.</span><span class=\"rel-t\">¿Son Legales los Futuros de Cripto en EE. UU.? (Actualización 2026)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">EAU</span><span class=\"rel-t\">Impuestos Cripto en los EAU para Traders (2026): El 0% Es Real - La Residencia Fiscal Es Lo Que la Gente Confunde</span></a><a class=\"rel-card\" href=\"/blog/mica-deadline-passed-what-happened/\"><span class=\"tag\">Europa</span><span class=\"rel-t\">El Plazo de MiCA Ya Pasó: Qué Pasó de Verdad con los Exchanges de Cripto de Europa&rsquo;</span></a>",
+  "q9SiN4889t": {
+   "en": "<a class=\"rel-card\" href=\"/blog/crypto-futures-usa/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Crypto Futures Trading in the USA (2026): What's Allowed, the Tax Rules & How to Practise</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Are Crypto Futures Legal in the US? (2026 Update)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong</span></a>",
+   "es": "<a class=\"rel-card\" href=\"/blog/crypto-futures-usa/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Trading de futuros de cripto en EE. UU. (2026): qué está permitido, las reglas fiscales y cómo practicar</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">¿Son Legales los Futuros de Cripto en EE. UU.? (Actualización 2026)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">Impuestos Cripto en EAU para Traders (2026): el 0% Es Real - la Residencia Fiscal Es lo que la Gente Confunde</span></a>",
    "kind": [
     "html"
    ],
@@ -44434,7 +44435,7 @@
     "/blog/crypto-futures-taxes-us/"
    ],
    "n": 1,
-   "w": 41
+   "w": 44
   },
   "7XKJdO6Jfy": {
    "en": "How the IRS taxes crypto futures and perpetuals for US traders in 2026 - capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting, and record-keeping.",
@@ -45315,18 +45316,6 @@
    "n": 5,
    "w": 15
   },
-  "ujeAY2hl3P": {
-   "en": "USA · 7 min read · Updated June 2026",
-   "es": "EE. UU. · 7 min de lectura · Actualizado en junio de 2026",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/crypto-futures-usa/"
-   ],
-   "n": 1,
-   "w": 6
-  },
   "8T5i5ZfHzZ": {
    "en": "The United States is the single biggest crypto market - and also one of the most <strong>restricted</strong> for futures. Most of the offshore perpetual-futures exchanges you read about (the ones advertising 50&times; or 100&times; leverage) <strong>do not legally serve US persons</strong>, and the regulators have made that stick. So the useful guide for a US trader isn't \"which 100&times; exchange\" - it's <strong>what's actually allowed, how it's taxed, and how to learn the mechanics without breaking a rule or risking a cent</strong>. <em>(General information, not financial, legal or tax advice - verify current rules with the CFTC, SEC, IRS or a US-licensed professional.)</em>",
    "es": "Estados Unidos es el mercado de cripto más grande del mundo - y también uno de los más <strong>restringidos</strong> para futuros. La mayoría de los exchanges de futuros perpetuos offshore de los que oyes hablar (los que anuncian apalancamiento de 50&times; o 100&times;) <strong>no pueden operar legalmente con personas de EE. UU.</strong>, y los reguladores lo han hecho cumplir. Así que la guía útil para un trader de EE. UU. no es \"qué exchange de 100&times;\" - es <strong>qué está realmente permitido, cómo se grava, y cómo aprender la mecánica sin romper ninguna regla ni arriesgar un centavo</strong>. <em>(Información general, no asesoría financiera, legal ni fiscal - verifica las reglas vigentes con la CFTC, la SEC, el IRS o un profesional con licencia en EE. UU.)</em>",
@@ -45626,6 +45615,18 @@
    ],
    "n": 1,
    "w": 36
+  },
+  "-YzWtMvDZj": {
+   "en": "<a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Crypto Futures Taxes in the US (2026): What You Owe</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Are Crypto Futures Legal in the US? (2026 Update)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">UAE Crypto Tax for Traders (2026): 0% Is Real - Tax Residency Is the Part People Get Wrong</span></a>",
+   "es": "<a class=\"rel-card\" href=\"/blog/crypto-futures-taxes-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">Impuestos de los Futuros de Cripto en EE. UU. (2026): Qué Debes Pagar</span></a><a class=\"rel-card\" href=\"/blog/crypto-futures-legal-in-the-us/\"><span class=\"tag\">USA</span><span class=\"rel-t\">¿Son Legales los Futuros de Cripto en EE. UU.? (Actualización 2026)</span></a><a class=\"rel-card\" href=\"/blog/uae-crypto-tax-residency/\"><span class=\"tag\">UAE</span><span class=\"rel-t\">Impuestos Cripto en EAU para Traders (2026): el 0% Es Real - la Residencia Fiscal Es lo que la Gente Confunde</span></a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/blog/crypto-futures-usa/"
+   ],
+   "n": 1,
+   "w": 39
   },
   "DvcFdB8bUQ": {
    "en": "Crypto futures for US traders in 2026 - why offshore perpetual exchanges geo-block US persons, the legal CFTC-regulated route (CME futures), how the IRS taxes crypto, and how to learn the mechanics risk-free.",
@@ -58014,7 +58015,7 @@
    "ctx": [
     "/blog/"
    ],
-   "n": 1,
+   "n": 3,
    "w": 4
   },
   "ChW_nVnmx-": {
@@ -58457,18 +58458,6 @@
    ],
    "n": 1,
    "w": 21
-  },
-  "ADssSwDv7A": {
-   "en": "<span class=\"tag\">US</span><span class=\"tag pub\">Published Jun 2026</span>",
-   "es": "<span class=\"tag\">US</span><span class=\"tag pub\">Publicado jun 2026</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/blog/"
-   ],
-   "n": 2,
-   "w": 4
   },
   "4gluWbEvGv": {
    "en": "Capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting - how the IRS taxes crypto futures and perps for US traders.",
@@ -105116,9 +105105,9 @@
    "n": 2,
    "w": 1
   },
-  "1iEhEh4iP3": {
-   "en": "The thin line above or below a candle body showing the extreme prices touched inside the period. Wicks through liquidation clusters are how over-leveraged positions die in seconds - and why MarginPad&#39;s paper trading requires close-confirmation, not wick touches.",
-   "es": "La línea delgada por encima o por debajo del cuerpo de una vela que muestra los precios extremos alcanzados dentro del periodo. Las mechas que atraviesan grupos de liquidación son la forma en que las posiciones sobreapalancadas mueren en segundos, y por eso el paper trading de MarginPad exige confirmación de cierre, no un simple toque de mecha.",
+  "QB6pJ1AYtx": {
+   "en": "The thin line above or below a candle body showing the extreme prices touched inside the period. Wicks through liquidation clusters are how over-leveraged positions die in seconds - and why MarginPad&#39;s paper trading settles a liquidation on the server against one-minute candles, never on a single price the browser happened to fetch.",
+   "es": "La línea fina por encima o por debajo del cuerpo de una vela que muestra los precios extremos tocados dentro del periodo. Las mechas que atraviesan clusters de liquidación son la forma en que las posiciones sobreapalancadas mueren en segundos - y por eso el paper trading de MarginPad liquida en el servidor contra velas de un minuto, nunca sobre un único precio que el navegador haya recibido.",
    "kind": [
     "html",
     "ld"
@@ -105127,7 +105116,7 @@
     "/glossary/"
    ],
    "n": 2,
-   "w": 37
+   "w": 49
   },
   "IFvdYGUYTa": {
    "en": "Volatility",
