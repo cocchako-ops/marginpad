@@ -578,7 +578,7 @@ ${ld}
           '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(mkt(p.sym))+'</span>'+rec+'</span>'+
         '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'-')+'</span>'+
         '<span class="wl-val">'+usd(p.val)+'</span>'+
-        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+'% away</small>':'')+'</span>'+
+        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away')+'</small>':'')+'</span>'+
         '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
       '</div>';
     }).join('');
