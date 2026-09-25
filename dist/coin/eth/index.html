@@ -168,7 +168,7 @@
   </footer>
 </div>
 <script>(function(){
-  var L={"liveData":"Live data","notAvail":"Not available for this market yet","pos":"Trader positioning · long vs short","posShort":"Trader positioning","long":"long","short":"short","mkt":"Market overview","rank":"Rank #","mcap":"Market cap","vol":"24h volume","ath":"All-time high","circ":"Circulating"};
+  var L={"liveData":"Live data","notAvail":"Not available for this market yet","pos":"Trader positioning · long vs short","posShort":"Trader positioning","long":"long","short":"short","mkt":"Market overview","rank":"Rank #","mcap":"Market cap","vol":"24h volume","ath":"All-time high","circ":"Circulating"};if((document.documentElement.lang||'').slice(0,2)==='es'){L.liveData='Datos en vivo';L.notAvail='Aún no disponible para este mercado';L.pos='Posicionamiento de traders · long vs short';L.posShort='Posicionamiento de traders';L.mkt='Resumen del mercado';L.rank='Puesto #';L.mcap='Capitalización';L.vol='Volumen 24h';L.ath='Máximo histórico';L.circ='En circulación';}
   var grid=document.getElementById('cdGrid'),sym=grid.getAttribute('data-sym');
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}

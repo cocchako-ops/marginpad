@@ -1202,14 +1202,14 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
       var days=(o.days||[]).filter(function(d){return d.n>0;});
       var full=days.filter(function(d){return d.n>=(o.expectedPerDay||144);});
       var ms=o.now.store&&o.now.store.ms;
-      var venues=o.now.collector?(o.now.collector.connected+'/'+o.now.collector.total+' venues'):'';
+      var venues=o.now.collector?(o.now.collector.connected+'/'+o.now.collector.total+(((document.documentElement.lang||'').slice(0,2)==='es')?' exchanges':' venues')):'';
       var note=[];
-      if(ms!=null) note.push('store answered in '+ms+' ms');
+      var __esS=((document.documentElement.lang||'').slice(0,2)==='es');if(ms!=null) note.push(__esS?'el store respondió en '+ms+' ms':'store answered in '+ms+' ms');
       if(venues) note.push(venues);
       /* n matters more than the percentage: say how many whole days have been sampled, never a bare 99.x% */
-      if(days.length) note.push(days.length+' day'+(days.length===1?'':'s')+' of checks so far, '+full.length+' complete');
+      if(days.length) note.push(__esS?(days.length+' día'+(days.length===1?'':'s')+' de comprobaciones hasta ahora, '+full.length+' completo'+(full.length===1?'':'s')):(days.length+' day'+(days.length===1?'':'s')+' of checks so far, '+full.length+' complete'));
       var n=document.getElementById('sbNote'); if(n) n.textContent=note.join(' · ');
-    }).catch(function(){ var n=document.getElementById('sbNote'); if(n) n.textContent='status is measured every 10 minutes'; });
+    }).catch(function(){ var n=document.getElementById('sbNote'); if(n) n.textContent=((document.documentElement.lang||'').slice(0,2)==='es')?'el estado se mide cada 10 minutos':'status is measured every 10 minutes'; });
   })();
 
   /* 5. live background: three drifting aurora blobs plus two faint price wireframes. Desktop only -
