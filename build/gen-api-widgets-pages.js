@@ -334,7 +334,7 @@ ${hreflang('widgets')}
   @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
   .embed-prev{background:#0c0f13;border:1px solid var(--line-bright);border-radius:16px;padding:8px}
   .embed-prev iframe{display:block;width:100%;border:0;border-radius:11px}
-  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:normal;overflow-wrap:anywhere}
   .copy{position:absolute;top:10px;right:10px;background:#1a1f27;border:1px solid var(--line-bright);color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer}
   .copy:hover{color:#c2f64a;border-color:#c2f64a}
   .coins{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 18px}
