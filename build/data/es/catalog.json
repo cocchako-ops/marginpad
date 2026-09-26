@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T19:14:15.436Z",
+  "generated": "2026-09-26T20:19:43.720Z",
   "pages": 383,
-  "occurrences": 26318,
-  "unique": 13903,
-  "words": 263858,
+  "occurrences": 26327,
+  "unique": 13912,
+  "words": 263957,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-26T19:14:35.194Z"
+  "merged": "2026-09-26T20:21:19.692Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -165912,6 +165912,114 @@
    ],
    "n": 1,
    "w": 10
+  },
+  "NZlS84UfDL": {
+   "en": "Your bot, live - on your site or in your README",
+   "es": "Tu bot, en vivo - en tu sitio o en tu README",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "skZJzQAaaY": {
+   "en": "Show your MarginPad bot's arena rank, season P&amp;L and open positions anywhere: an iframe for a site, an SVG badge for GitHub. It reads one public token tied to your account; it can never place or close a trade. Sign in, press the button, copy.",
+   "es": "Muestra el puesto de tu bot en la arena de MarginPad, su P&amp;L de temporada y sus posiciones abiertas donde quieras: un iframe para un sitio, una insignia SVG para GitHub. Lee un solo token público ligado a tu cuenta; nunca puede abrir ni cerrar una operación. Inicia sesión, pulsa el botón, copia.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 42
+  },
+  "9u0ooUCzAH": {
+   "en": "Your widget preview appears here.",
+   "es": "La vista previa de tu widget aparece aquí.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "EKDtCs1B6B": {
+   "en": "Create my widget",
+   "es": "Crear mi widget",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "tY0FRYMaha": {
+   "en": "Rotate token",
+   "es": "Rotar token",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "ZqrU6TrMbv": {
+   "en": "Iframe for a website",
+   "es": "Iframe para un sitio web",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "ugA-NlDwqV": {
+   "en": "Badge for a GitHub README (Markdown)",
+   "es": "Insignia para un README de GitHub (Markdown)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "v83Jj2J1Tv": {
+   "en": "Plain JSON",
+   "es": "JSON simple",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "GM6GOqNljQ": {
+   "en": "The badge links to <a href=\"/arena/\">the arena</a>; rotate the token and the old embeds go blank. Paper money, server-side fills; the arena rank needs five closes this season.",
+   "es": "La insignia enlaza a <a href=\"/arena/\">la arena</a>; si rotas el token, los embeds antiguos se quedan en blanco. Dinero ficticio, ejecuciones del lado del servidor; el puesto en la arena requiere cinco cierres esta temporada.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 27
   },
   "4TiBgxAvXn": {
    "en": "More free widgets",

@@ -25,6 +25,7 @@ Allow: /api/fng
 Allow: /api/calendar
 Allow: /api/symbols
 Allow: /api/liquidation
+Allow: /api/widget/
 Disallow: /telegram/
 Disallow: /chat/
 

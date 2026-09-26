@@ -6529,6 +6529,48 @@ async function webhookDrain(env, opts) {
   try { if (env.AE) env.AE.writeDataPoint({ indexes: ['webhook'], blobs: ['webhook', 'deliver'], doubles: [results.filter(r => r.ok).length, results.filter(r => !r.ok).length] }); } catch (e) {}
   return { delivered: results.filter(r => r.ok).length, failed: results.filter(r => !r.ok).length, results };
 }
+// "MY BOT, LIVE" (2026-09-26): one account's arena standing + open book, priced by the worker, for the embeddable
+// widget (/widget/bot/) and the README badge (/api/widget/bot.svg). Paper money; the arena row needs 5 closes.
+async function botWidgetData(env, rec) {
+  const s = predSeason(Date.now()); const from = Date.parse(s.from + 'T00:00:00Z'), to = s.endMs;
+  const uid = String(rec.uid), un = String(rec.un || '');
+  let ar = null, book = null;
+  try { ar = await usersDO(env, '/arena', { from, to }); } catch (e) {}
+  try { book = await usersDO(env, '/widgetbook', { uid, from, to }); } catch (e) {}
+  const rows = (ar && ar.rows) || []; const row = rows.find(x => x.who === un) || null;
+  const open = (book && book.open) || (row && row._open) || [];
+  const syms = Array.from(new Set(open.map(o => o.sym))).slice(0, 40); const px = {};
+  await Promise.all(syms.map(async sy => { try { const d = await fetchPriceCached(sy); if (d && +d.price > 0) px[sy] = +d.price; } catch (e) {} }));
+  let unUsd = 0, priced = 0;
+  const positions = open.map(o => {
+    const p = px[o.sym], dir = o.side === 'short' ? -1 : 1, pnl = (p > 0 && o.qty > 0) ? o.qty * (p - o.entry) * dir : null;
+    if (pnl != null) { unUsd += pnl; priced++; }
+    return { sym: o.sym, side: o.side, lev: o.lev, entry: o.entry, margin: Math.round(o.margin * 100) / 100, price: p || null, pnl_usd: pnl == null ? null : Math.round(pnl * 100) / 100, pnl_pct: (pnl == null || !(o.margin > 0)) ? null : Math.round(pnl / o.margin * 1000) / 10, opened_ts: o.ts };
+  });
+  return {
+    username: un,
+    arena: row ? { rank: row.rank, of: rows.length, closes: row.closes, win_rate_pct: row.win_rate_pct, pnl_usd: row.pnl_usd, return_pct: row.return_pct, realism: row.realism && row.realism.label } : null,
+    season: { from: s.from, ends: new Date(to).toISOString(), closes: book ? book.closes : (row ? row.closes : 0), wins: book ? book.wins : (row ? row.wins : 0), pnl_usd: book ? book.pnl_usd : (row ? row.pnl_usd : 0) },
+    open_positions: positions.length,
+    open_unrealized_usd: positions.length ? (priced === positions.length ? Math.round(unUsd * 100) / 100 : null) : 0,
+    positions, arena_url: 'https://marginpad.io/arena/', updated: Date.now(),
+    note: 'Paper trades on MarginPad - server-side fills at live prices, fake money. An arena rank needs 5 closes this season; open_unrealized_usd is null when a position could not be priced.'
+  };
+}
+function botWidgetSvg(d, err) {
+  const esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+  const money = v => (v == null ? '-' : (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+  const name = d ? '@' + d.username : 'MarginPad', rank = d ? (d.arena ? '#' + d.arena.rank + ' of ' + d.arena.of + ' in the arena' : 'not ranked yet (5 closes to enter)') : String(err || 'unknown token');
+  const pnl = d ? money(d.season.pnl_usd) : '', col = d && d.season.pnl_usd < 0 ? '#ff5a4d' : '#2ebd85';
+  const open = d ? d.open_positions + ' open' + (d.open_unrealized_usd != null && d.open_positions ? ' (' + money(d.open_unrealized_usd) + ')' : '') : '';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="64" viewBox="0 0 320 64" role="img" aria-label="' + esc(name + ' - ' + rank + (pnl ? ' - season ' + pnl : '')) + '">'
+    + '<rect width="320" height="64" rx="10" fill="#0a0b0d" stroke="#232932"/>'
+    + '<text x="14" y="21" font-family="Space Mono,Menlo,monospace" font-size="9.5" font-weight="700" letter-spacing="1.6" fill="#c2f64a">MARGINPAD BOT ARENA</text>'
+    + '<text x="14" y="41" font-family="Bricolage Grotesque,Segoe UI,system-ui,sans-serif" font-size="15" font-weight="800" fill="#eef1f5">' + esc(name) + '</text>'
+    + '<text x="14" y="55" font-family="Space Mono,Menlo,monospace" font-size="9" fill="#9aa3ad">' + esc(rank) + (open ? ' · ' + esc(open) : '') + '</text>'
+    + (d ? '<text x="306" y="43" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="16" font-weight="700" fill="' + col + '">' + esc(pnl) + '</text><text x="306" y="56" text-anchor="end" font-family="Space Mono,Menlo,monospace" font-size="8.5" fill="#5d6b7f">season P&amp;L · paper</text>' : '')
+    + '</svg>';
+}
 // Test sink: POST anything to /api/whsink/<token> and read it back with GET - the last 20 bodies, 15 minutes. Lets a
 // developer (and our E2E) see exactly what a webhook delivers before pointing it at their own server. No auth: the
 // token is the secret, bodies are capped at 8 KB, and nothing here is ever executed or forwarded.
@@ -18845,7 +18887,40 @@ export default {
       return new Response(xml, { headers: { 'content-type': 'application/rss+xml; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
     }
     if (url.pathname === '/api/status') return handleStatusApi(env); // public status: live checks + 90 days of sampled uptime (Phase 0)
-    if (url.pathname === '/api/arena') { // Bot arena (2.5): public season board of bot-opened closes, per account or book, 5 closes to enter; no prizes, a scoreboard
+    // "MY BOT, LIVE" WIDGET (2026-09-26): a developer embeds their own arena standing + open book on their site (iframe) or
+    // README (SVG badge). The token is a public read handle to ONE account's paper book - it moves nothing, and the owner
+    // of the account mints or rotates it from /widgets/#bot while signed in.
+    if (url.pathname === '/api/widget/bot/token' && request.method === 'POST') {
+      const JHW = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const tok0 = getCookie(request, SESS_COOKIE); let su = null; if (tok0 && env.USERS) { try { su = await sessionUser(env, tok0); } catch (e) {} }
+      if (!su || !su.id) return new Response(JSON.stringify({ error: 'login_required' }), { status: 401, headers: JHW });
+      let body = {}; try { body = await request.json(); } catch (e) {}
+      const uid = String(su.id); let un = String(su.username || '');
+      if (!un) { try { const w = await usersDO(env, '/xpdiag', { uid }); un = String((w && w.user && w.user.username) || ''); } catch (e) {} }
+      let tk = ''; try { tk = (await env.STATS.get('botwidget:u:' + uid)) || ''; } catch (e) {}
+      if (!tk || body.op === 'reset') {
+        if (tk) { try { await env.STATS.delete('botwidget:t:' + tk); } catch (e) {} }
+        tk = 'bw_' + crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+        await env.STATS.put('botwidget:u:' + uid, tk); await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ uid, un, ts: Date.now() }));
+      } else { try { const rec = JSON.parse((await env.STATS.get('botwidget:t:' + tk)) || 'null'); if (rec && rec.un !== un && un) await env.STATS.put('botwidget:t:' + tk, JSON.stringify({ ...rec, un })); } catch (e) {} } // a rename follows the token
+      return new Response(JSON.stringify({ ok: true, token: tk, username: un, iframe: 'https://marginpad.io/widget/bot/?t=' + tk, badge: 'https://marginpad.io/api/widget/bot.svg?t=' + tk, json: 'https://marginpad.io/api/widget/bot?t=' + tk }), { headers: JHW });
+    }
+    if (url.pathname === '/api/widget/bot' || url.pathname === '/api/widget/bot.svg') {
+      const tk = String(url.searchParams.get('t') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40), svg = url.pathname.endsWith('.svg');
+      const bad = (msg, code) => svg ? new Response(botWidgetSvg(null, msg), { status: code, headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'no-store', ...CORS } })
+                                     : new Response(JSON.stringify({ error: msg, hint: 'Mint a token at https://marginpad.io/widgets/#bot while signed in.' }), { status: code, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+      if (!tk) return bad('bad_token', 400);
+      const ck = new Request('https://marginpad.io/__botwidget_v1/' + tk + (svg ? '.svg' : ''));
+      if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+      let rec = null; try { rec = JSON.parse((await env.STATS.get('botwidget:t:' + tk)) || 'null'); } catch (e) {}
+      if (!rec || !rec.uid) return bad('unknown_token', 404);
+      const d = await botWidgetData(env, rec);
+      const resp = svg ? new Response(botWidgetSvg(d), { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } })
+                       : new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } });
+      try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
+    if (url.pathname === '/api/arena') { // Bot arena (2.5): public season board of bot-opened closes, per account or book, 5 closes to enter; no prizes,a scoreboard
       const ck = new Request('https://marginpad.io/__arena_v2');
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       const s = predSeason(Date.now()); const from = Date.parse(s.from + 'T00:00:00Z'), to = s.endMs;
@@ -19976,7 +20051,8 @@ export default {
       let eb = {}; try { eb = await request.json(); } catch (e) {}
       // {op:'mk', xp:N} also grants XP (e2e uids only) so an E2E can pass the Bronze gate on rewards routes (moon-limit-e2e, 2026-09-13)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
-      if (String((eb && eb.op) || '') === 'rm' && eb.uid) { try { await apiPlanGrant(env, String(eb.uid), 0, 0, 'owner'); } catch (e) {} } // an API plan lives in KV, not in the DO, so the account cleanup cannot see it
+      if (String((eb && eb.op) || '') === 'rm' && eb.uid) { try { await apiPlanGrant(env, String(eb.uid), 0, 0, 'owner'); } catch (e) {} // an API plan lives in KV, not in the DO, so the account cleanup cannot see it
+        try { const wt = await env.STATS.get('botwidget:u:' + String(eb.uid)); if (wt) { await env.STATS.delete('botwidget:t:' + wt); await env.STATS.delete('botwidget:u:' + String(eb.uid)); } } catch (e) {} } // and so does a "my bot, live" widget token (2026-09-26)
     }
     if (url.pathname === '/api/admin/bybitvol' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Bybit volume board: the owner's report (upload / preview / clear) + the joined view
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
@@ -25559,6 +25635,14 @@ export class UserStore {
       const step = stepMin * 60000, points = []; let acc = base, i = 0, closes = 0;
       for (let t = Math.floor(since / step) * step + step; t <= now + step; t += step) { while (i < rowsE.length && +rowsE[i].ts < t) { acc += +rowsE[i].pnl || 0; closes++; i++; } points.push({ t: Math.min(t, now), realized: Math.round(acc * 100) / 100, closes }); if (points.length > 3000) break; }
       return this.j({ ok: true, since, reset_ts: rts || null, step_min: stepMin, base_realized_usd: Math.round(base * 100) / 100, points });
+    }
+    if (path === '/widgetbook') { // "my bot, live" widget (2026-09-26): ONE account's open bot/server book + its season closes. Read-only -
+      // never the /botpositions path, which sweeps and can close a position; a public widget must not move anything.
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'bad_uid' });
+      let open = []; try { open = this._loadJournal(uid).filter(t => t && t.status !== 'win' && t.status !== 'loss' && (t.src === 'bot' || t.src === 'srv') && +t.entry > 0).slice(0, 60).map(t => ({ sym: String(t.sym || '').toUpperCase().slice(0, 12), side: t.side === 'short' ? 'short' : 'long', entry: +t.entry, qty: +t.qty || 0, margin: +t.margin || 0, lev: +t.lev || 1, ts: +t.ts || 0 })); } catch (e) {}
+      let closes = 0, wins = 0, pnl = 0;
+      try { const r = this.rows("SELECT COUNT(*) n, SUM(CASE WHEN pnl>=0 THEN 1 ELSE 0 END) w, SUM(pnl) p FROM tradeev WHERE kind='close' AND user_id=? AND ts>=? AND ts<?", uid, +b.from || 0, +b.to || Date.now())[0]; if (r) { closes = +r.n || 0; wins = +r.w || 0; pnl = +r.p || 0; } } catch (e) {}
+      return this.j({ open, closes, wins, pnl_usd: Math.round(pnl * 100) / 100 });
     }
     if (path === '/arena') { // public Bot arena: bot-opened closes in a window, per account (main or book), at least 5 closes
       const from = +b.from || 0, to = +b.to || now;

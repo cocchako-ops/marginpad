@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>My bot, live - MarginPad widget</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+  :root{--bg:#0a0b0d;--panel:#0f1115;--line:#232932;--ink:#eef1f5;--dim:#9aa3ad;--faint:#5d6b7f;--lime:#c2f64a;--up:#2ebd85;--dn:#ff5a4d;--amber:#ffd75a}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .w{padding:14px 14px 10px;display:flex;flex-direction:column;gap:10px;min-height:100vh}
+  .hd{display:flex;align-items:center;gap:10px}
+  .av{width:36px;height:36px;border-radius:10px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:var(--lime);flex:0 0 36px}
+  .nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.01em;line-height:1.1}
+  .nm small{display:block;font-family:'Space Mono',monospace;font-weight:700;font-size:9.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin-top:3px}
+  .rk{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+  .rk.on{color:var(--lime);border-color:rgba(194,246,74,.45)}
+  .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .s{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 10px;min-width:0}
+  .s i{display:block;font-style:normal;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .s b{display:block;font-family:'Space Mono',monospace;font-size:15px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .up{color:var(--up)} .dn{color:var(--dn)}
+  .pos{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .pos .h{display:flex;justify-content:space-between;align-items:center;padding:8px 11px;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid var(--line)}
+  .row{display:grid;grid-template-columns:minmax(0,1.2fr) 52px minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;padding:8px 11px;border-bottom:1px solid rgba(35,41,50,.6);font-family:'Space Mono',monospace;font-size:11.5px;font-variant-numeric:tabular-nums}
+  .row:last-child{border-bottom:0}
+  .row .sym{font-weight:700;color:var(--ink)} .row .sym small{color:var(--faint);font-weight:400;margin-left:4px}
+  .side{font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:2px 6px;border-radius:6px;text-align:center}
+  .side.l{color:var(--up);background:rgba(46,189,133,.12)} .side.s{color:var(--dn);background:rgba(255,90,77,.12)}
+  .row .px{color:var(--dim)} .row .pnl{text-align:right;font-weight:700}
+  .empty{padding:14px 11px;color:var(--dim);font-size:12.5px}
+  .ft{margin-top:auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint)}
+  .ft a{color:var(--lime);text-decoration:none;font-weight:700;letter-spacing:.06em}
+  .ft a:hover{text-decoration:underline}
+  .err{padding:18px 14px;color:var(--dim);font-size:13px;line-height:1.5}
+  .err a{color:var(--lime)}
+  @media(max-width:360px){.st{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:minmax(0,1.2fr) 46px minmax(0,1fr)}.row .px{display:none}}
+</style>
+</head>
+<body>
+<div class="w" id="w"><div class="err">Loading the bot&hellip;</div></div>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search),t=q.get('t')||'',w=document.getElementById('w');
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+  function money(v){if(v==null)return '-';return (v>=0?'+$':'-$')+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:2});}
+  function fpx(v){if(v==null)return '-';return v>=1000?v.toLocaleString('en-US',{maximumFractionDigits:1}):v>=1?v.toFixed(2):v.toPrecision(4);}
+  function cls(v){return v==null?'':v>=0?'up':'dn';}
+  function render(d){
+    var a=d.arena,s=d.season||{},un=d.username||'bot',init=(un[0]||'?').toUpperCase();
+    var h='<div class="hd"><div class="av">'+esc(init)+'</div><div class="nm">@'+esc(un)+'<small>MarginPad bot arena · paper trades</small></div>'
+      +'<span class="rk'+(a?' on':'')+'">'+(a?'#'+a.rank+' of '+a.of:'not ranked yet')+'</span></div>';
+    var wr=s.closes>0?Math.round(s.wins/s.closes*1000)/10+'%':'-';
+    h+='<div class="st"><div class="s"><i>Season P&amp;L</i><b class="'+cls(s.pnl_usd)+'">'+money(s.pnl_usd)+'</b></div>'
+      +'<div class="s"><i>Win rate</i><b>'+wr+'<span style="font-size:10px;color:var(--faint);font-weight:400"> · '+(s.closes||0)+' closes</span></b></div>'
+      +'<div class="s"><i>Open</i><b class="'+cls(d.open_unrealized_usd)+'">'+(d.open_positions||0)+(d.open_positions?' · '+money(d.open_unrealized_usd):'')+'</b></div></div>';
+    h+='<div class="pos"><div class="h"><span>Open positions</span><span>'+(a&&a.realism?'fills: '+(a.realism==='off'?'easy mode':a.realism==='full'?'realistic':'mixed'):'live prices')+'</span></div>';
+    if(d.positions&&d.positions.length){h+=d.positions.slice(0,8).map(function(p){return '<div class="row"><span class="sym">'+esc(p.sym)+'<small>'+esc(p.lev)+'×</small></span><span class="side '+(p.side==='short'?'s':'l')+'">'+(p.side==='short'?'SHORT':'LONG')+'</span><span class="px">'+fpx(p.entry)+' → '+fpx(p.price)+'</span><span class="pnl '+cls(p.pnl_usd)+'">'+money(p.pnl_usd)+(p.pnl_pct!=null?' <span style="font-weight:400;color:var(--faint)">'+(p.pnl_pct>=0?'+':'')+p.pnl_pct+'%</span>':'')+'</span></div>';}).join('');if(d.positions.length>8)h+='<div class="empty">+'+(d.positions.length-8)+' more open</div>';}
+    else h+='<div class="empty">Nothing open right now.</div>';
+    h+='</div><div class="ft"><span>updated '+new Date(d.updated||Date.now()).toUTCString().slice(17,22)+' UTC · fake money</span><a href="https://marginpad.io/arena/?utm_source=widget&utm_medium=embed&utm_campaign=bot" target="_blank" rel="noopener">POWERED BY MARGINPAD →</a></div>';
+    w.innerHTML=h;
+  }
+  function load(){
+    if(!t){w.innerHTML='<div class="err">No token. Mint yours at <a href="https://marginpad.io/widgets/#bot" target="_blank" rel="noopener">marginpad.io/widgets</a>.</div>';return;}
+    fetch('/api/widget/bot?t='+encodeURIComponent(t),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      if(!d||d.error){w.innerHTML='<div class="err">'+(d&&d.error==='unknown_token'?'This widget token is no longer valid.':'Could not load the bot right now.')+' <a href="https://marginpad.io/widgets/#bot" target="_blank" rel="noopener">Mint a new one</a>.</div>';return;}
+      render(d);
+    }).catch(function(){w.innerHTML='<div class="err">Could not reach MarginPad. It will retry.</div>';});
+  }
+  load();setInterval(load,30000);
+})();
+</script>
+</body>
+</html>
