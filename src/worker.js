@@ -2541,6 +2541,9 @@ const SSR_COMP_ES = [
   ['>the most XP earned this season.<', '>más XP ganados esta temporada.<'], ['>the best points score across wins and losses.<', '>la mejor puntuación entre ganancias y pérdidas.<'],
   ['>the most REAL futures volume on a Bybit account opened through MarginPad.<', '>más volumen REAL de futuros en una cuenta de Bybit abierta a través de MarginPad.<'],
   ['>the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest.<', '>la mayor cantidad REAL apostada en una cuenta de Moon abierta a través de MarginPad, en un concurso de dos temporadas.<'],
+  // the generic [' wagered', ' apostados'] pair above runs first and had already turned this sentence into
+  // "the most REAL amount apostados on a Moon account..." (audit 2026-09-25) - match that form too
+  ['>the most REAL amount apostados on a Moon account opened through MarginPad, over a two-season contest.<', '>la mayor cantidad REAL apostada en una cuenta de Moon abierta a través de MarginPad, en un concurso de dos temporadas.<'],
 ];
 function esCompFrag(s) { s = String(s || ''); for (const [a, b] of SSR_COMP_ES) s = s.split(a).join(b); s = s.replace(/(<b>día \d+) of (\d+<\/b>)/g, (m, x, y) => x + ' de ' + y); s = s.split('on the line this season, free to enter').join('en juego esta temporada, entrada gratis'); return s; }
 async function handleSsrLiq(request, url, env, mode, param) {

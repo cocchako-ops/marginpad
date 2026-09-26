@@ -201,7 +201,7 @@ function render(){
     bl.querySelectorAll('.tag.go').forEach(function(x){if(!x.closest('.step').classList.contains('first'))x.remove();});
   });
   var lab=qs('#outLabel');
-  if(lab)lab.textContent=g?('Your next steps - '+goalName(g).toLowerCase()):'Your next steps';
+  if(lab)lab.textContent=g?((((document.documentElement.lang||'').slice(0,2)==='es')?'Tus próximos pasos - ':'Your next steps - ')+goalName(g).toLowerCase()):(((document.documentElement.lang||'').slice(0,2)==='es')?'Tus próximos pasos':'Your next steps');
   var r=qs('#reset');if(r)r.hidden=!(g||lv);
 }
 /* Only scroll when the next question is NOT already on screen. Scrolling unconditionally yanks the page under
