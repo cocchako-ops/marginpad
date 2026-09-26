@@ -294,7 +294,7 @@ ${ld}
 <script>(function(){
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e12)return '$'+(x/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(x/1e9).toFixed(1)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function chgHtml(v){if(v==null||!isFinite(v))return '';var up=v>=0;return '<div class="ch '+(up?'up':'dn')+'">'+(up?'+':'')+v.toFixed(1)+'%</div>';}
+  function chgHtml(v){if(v==null||!isFinite(v)||Math.abs(v)>1000)return '';/* a near-zero base prints +1035817% - not a change a reader can use (audit 2026-09-25) */var up=v>=0;return '<div class="ch '+(up?'up':'dn')+'">'+(up?'+':'')+v.toFixed(1)+'%</div>';}
   function render(d){
     if(!d||d.error){document.getElementById('dfTvl').textContent='-';return;}
     document.getElementById('dfTvl').textContent=bn(d.totalTvl);

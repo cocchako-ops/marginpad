@@ -214,7 +214,7 @@ function liqPage(ex) {
     <h2>${ex.name} liquidation distance by leverage</h2>
     <p>How far ${ex.name}'s price has to move against you before an isolated-margin long is liquidated, at ${pct(ex.mmr)} maintenance margin:</p>
     ${levTable(ex.mmr, ex.lev)}
-    <p>At ${ex.lev}× - ${ex.name}'s cap on the majors - roughly a <b>${(100 / ex.lev).toFixed(2)}%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.</p>
+    <p>At ${ex.lev}× - ${ex.name}'s cap on the majors - roughly a <b>${(100 / ex.lev - (ex.mmr || 0.5)).toFixed(2)}%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.</p>
 
     <h2>Worked example</h2>
     <p>A ${lev}× long on ${ex.name} entered at <code>$${fmt(entry)}</code> with a ${ex.mmr}% maintenance margin rate is liquidated at about:</p>

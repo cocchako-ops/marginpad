@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T18:31:24.580Z",
+  "generated": "2026-09-26T18:55:02.732Z",
   "pages": 383,
-  "occurrences": 26310,
-  "unique": 13893,
-  "words": 263560,
-  "untranslated": 1,
-  "untranslatedWords": 2,
-  "merged": "2026-09-26T18:31:46.342Z"
+  "occurrences": 26307,
+  "unique": 13896,
+  "words": 263847,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-09-26T18:56:00.385Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1668,
+   "n": 1664,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -9584,9 +9584,9 @@
    "n": 1,
    "w": 10
   },
-  "Mb3v0mP22H": {
-   "en": "Interactive reference for the MarginPad free crypto API and the Bot API: market data, liquidations, screener, calculators and paper trading for bots. Generated from the OpenAPI 2.4 spec; try every call from the page.",
-   "es": "Referencia interactiva de la API cripto gratuita de MarginPad y de la Bot API: datos de mercado, liquidaciones, screener, calculadoras y paper trading para bots. Generada a partir de la especificación OpenAPI 2.4; prueba cada llamada desde la página.",
+  "aSDU5Ma7AO": {
+   "en": "Interactive reference for the MarginPad free crypto API and the Bot API: market data, liquidations, screener, calculators and paper trading for bots. Generated live from the OpenAPI spec, so it is always the current version; try every call from the page.",
+   "es": "Referencia interactiva de la API cripto gratuita de MarginPad y de la Bot API: datos de mercado, liquidaciones, screener, calculadoras y paper trading para bots. Generada en vivo desde la especificación OpenAPI, así que siempre es la versión actual; prueba cada llamada desde la página.",
    "kind": [
     "attr:content"
    ],
@@ -9594,7 +9594,7 @@
     "/api-docs/"
    ],
    "n": 1,
-   "w": 34
+   "w": 41
   },
   "UyVZ_e-uD1": {
    "en": "MarginPad API Reference",
@@ -26351,9 +26351,9 @@
    "n": 1,
    "w": 19
   },
-  "vFYmy3Ai2-": {
-   "en": "At 125× - Binance's cap on the majors - roughly a <b>0.80%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 125× - el tope de Binance en las principales monedas - un movimiento de apenas <b>0.80%</b> borra la posición. Por eso quienes sobreviven suelen operar muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "392ji3-gHk": {
+   "en": "At 125× - Binance's cap on the majors - roughly a <b>0.40%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 125× - el tope de Binance en las principales - un movimiento de apenas <b>0.40%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -29660,9 +29660,9 @@
    "n": 1,
    "w": 19
   },
-  "lCU_pyQAro": {
-   "en": "At 125× - Bitget's cap on the majors - roughly a <b>0.80%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 125× - el tope de Bitget en las principales monedas - un movimiento de apenas <b>0.80%</b> borra la posición. Por eso quienes sobreviven suelen operar muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "ooSyM1Mddt": {
+   "en": "At 125× - Bitget's cap on the majors - roughly a <b>0.30%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 125× - el tope de Bitget en las principales - un movimiento de apenas <b>0.30%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -75150,9 +75150,9 @@
    "n": 1,
    "w": 19
   },
-  "q8zjU7fXVi": {
-   "en": "At 100× - Bybit's cap on the majors - roughly a <b>1.00%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 100× - el tope de Bybit en las principales - un movimiento de apenas <b>1.00%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
+  "wUKRYfS9EL": {
+   "en": "At 100× - Bybit's cap on the majors - roughly a <b>0.50%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 100× - el tope de Bybit en las principales - un movimiento de apenas <b>0.50%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -77941,9 +77941,9 @@
    "n": 1,
    "w": 4
   },
-  "72LWmmdqOe": {
-   "en": "A BNB perpetual future (perp) lets you trade BNB with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means BNB longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open BNB positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged BNB traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de BNB (perp) te permite operar BNB con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BNB le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de BNB; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de BNB fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "A7rSCRmHfd": {
+   "en": "The BNB perpetual future (perp) lets you trade BNB with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means BNB longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open BNB positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged BNB traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de BNB (perp) te permite operar BNB con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BNB le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de BNB; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de BNB fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "html"
    ],
@@ -77951,7 +77951,7 @@
     "/coin/bnb/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "bTn4j2DiXN": {
    "en": "How to use this BNB dashboard",
@@ -77989,9 +77989,9 @@
    "n": 1,
    "w": 5
   },
-  "71xGkKZrrh": {
-   "en": "BNB futures are deepest on Binance and track the health of the broader BNB ecosystem. When you trade BNB on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because BNB can move several percent in a session, traders who last keep BNB leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a BNB position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Los futuros de BNB son más profundos en Binance y reflejan la salud de todo el ecosistema BNB. Cuando operas BNB con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas 1% en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9–10%; a 5× cerca de 18%. Como BNB puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de BNB moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de BNB con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
+  "coJK8qaxTA": {
+   "en": "BNB futures are deepest on Binance and track the health of the broader BNB ecosystem. When you trade BNB on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because BNB can move several percent in a session, traders who last keep BNB leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in BNB would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Los futuros de BNB son más profundos en Binance y reflejan la salud de todo el ecosistema BNB. Cuando operas BNB con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas medio punto porcentual en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9.5%; a 5× cerca de 19.5%. Como BNB puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de BNB moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de BNB con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
    "kind": [
     "html"
    ],
@@ -77999,7 +77999,7 @@
     "/coin/bnb/"
    ],
    "n": 1,
-   "w": 106
+   "w": 110
   },
   "qwQbHbWYNF": {
    "en": "The four live numbers above tell you how crowded and leveraged the BNB market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real BNB liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any BNB idea at the live price with zero risk on the <a href=\"/paper-trade?coin=BNB\">BNB paper-trading terminal</a> before you commit real margin.",
@@ -78102,9 +78102,9 @@
    "n": 8,
    "w": 29
   },
-  "2aaJ5Tguky": {
-   "en": "<a href=\"/paper-trade\">Paper trade these moves - futures, live prices, fake money</a><a href=\"/spot/\">Demo Spot - a $10,000 card, an exchange and your own wallet</a><a href=\"/academy/\">Academy - 17 courses, from the words up</a><a href=\"/where-to-start/\">Not sure where to start?</a><a href=\"/trading-competition/\">Live leaderboards - $350 a season, free to enter</a><a href=\"/practice-for-a-funded-account/\">Practising for a funded account? Try the rules free first</a>",
-   "es": "<a href=\"/paper-trade\">Opera estos movimientos en simulado - futuros, precios en vivo, dinero ficticio</a><a href=\"/spot/\">Demo Spot - una tarjeta de $10,000, un exchange y tu propia wallet</a><a href=\"/academy/\">Academia - 17 cursos, desde el vocabulario en adelante</a><a href=\"/where-to-start/\">¿No sabes por dónde empezar?</a><a href=\"/trading-competition/\">Clasificaciones en vivo - $350 por temporada, entrada gratis</a><a href=\"/practice-for-a-funded-account/\">¿Practicando para una cuenta fondeada? Prueba las reglas gratis primero</a>",
+  "PuotUAsbrf": {
+   "en": "<a href=\"/paper-trade\">Paper trade these moves - futures, live prices, fake money</a><a href=\"/spot/\">Demo Spot - a $10,000 card, an exchange and your own wallet</a><a href=\"/academy/\">Academy - 17 courses, from the words up</a><a href=\"/where-to-start/\">Not sure where to start?</a><a href=\"/trading-competition/\">Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account</a><a href=\"/practice-for-a-funded-account/\">Practising for a funded account? Try the rules free first</a>",
+   "es": "<a href=\"/paper-trade\">Opera estos movimientos en simulado - futuros, precios en vivo, dinero ficticio</a><a href=\"/spot/\">Demo Spot - una tarjeta de $10,000, un exchange y tu propia wallet</a><a href=\"/academy/\">Academia - 17 cursos, desde el vocabulario en adelante</a><a href=\"/where-to-start/\">¿No sabes por dónde empezar?</a><a href=\"/trading-competition/\">Clasificaciones en vivo - $150 repartidos en cinco tablas gratuitas de paper trading, $200 más en una cuenta de Bybit fondeada</a><a href=\"/practice-for-a-funded-account/\">¿Practicando para una cuenta fondeada? Prueba las reglas gratis primero</a>",
    "kind": [
     "html"
    ],
@@ -78115,7 +78115,7 @@
     "/coin/eth/"
    ],
    "n": 8,
-   "w": 47
+   "w": 54
   },
   "fsGeU00H25": {
    "en": "In another language",
@@ -78269,9 +78269,9 @@
    "n": 1,
    "w": 5
   },
-  "iyh2bU2MGW": {
-   "en": "A BNB perpetual future (perp) lets you trade BNB with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means BNB longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open BNB positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged BNB traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de BNB (perp) te permite operar BNB con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BNB le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de BNB; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de BNB fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "wLrn8Yw5o4": {
+   "en": "The BNB perpetual future (perp) lets you trade BNB with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means BNB longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open BNB positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged BNB traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de BNB (perp) te permite operar BNB con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BNB le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de BNB; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de BNB fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "ld"
    ],
@@ -78279,7 +78279,7 @@
     "/coin/bnb/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "EDzmN7nb7i": {
    "en": "How do you read BNB funding, open interest and liquidations together?",
@@ -78428,9 +78428,9 @@
    "n": 1,
    "w": 4
   },
-  "Zgk-Tazlrr": {
-   "en": "A BTC perpetual future (perp) lets you trade Bitcoin with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means BTC longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open BTC positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged BTC traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de BTC (perp) te permite operar Bitcoin con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BTC le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de BTC; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de BTC fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "5f4gqAk2WL": {
+   "en": "The BTC perpetual future (perp) lets you trade Bitcoin with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means BTC longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open BTC positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged BTC traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de BTC (perp) te permite operar Bitcoin con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BTC le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de BTC; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de BTC fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "html"
    ],
@@ -78438,7 +78438,7 @@
     "/coin/btc/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "T8fAPmK-dv": {
    "en": "How to use this BTC dashboard",
@@ -78476,9 +78476,9 @@
    "n": 1,
    "w": 5
   },
-  "F0-kVZVFfb": {
-   "en": "Bitcoin runs the deepest perpetual-futures market in crypto, so its funding, open interest and liquidations move the whole market. When you trade BTC on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because Bitcoin can move several percent in a session, traders who last keep BTC leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a BTC position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Bitcoin tiene el mercado de futuros perpetuos más profundo de todo el cripto, así que su funding, interés abierto y liquidaciones mueven todo el mercado. Cuando operas BTC con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas 1% en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9–10%; a 5× cerca de 18%. Como Bitcoin puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de BTC moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de BTC con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
+  "jm_2ElFc8Z": {
+   "en": "Bitcoin runs the deepest perpetual-futures market in crypto, so its funding, open interest and liquidations move the whole market. When you trade BTC on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because Bitcoin can move several percent in a session, traders who last keep BTC leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in BTC would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Bitcoin tiene el mercado de futuros perpetuos más profundo de todo el cripto, así que su funding, interés abierto y liquidaciones mueven todo el mercado. Cuando operas BTC con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas medio punto porcentual en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9.5%; a 5× cerca de 19.5%. Como Bitcoin puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de BTC moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de BTC con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
    "kind": [
     "html"
    ],
@@ -78486,7 +78486,7 @@
     "/coin/btc/"
    ],
    "n": 1,
-   "w": 110
+   "w": 114
   },
   "vFdbp3Gicb": {
    "en": "The four live numbers above tell you how crowded and leveraged the BTC market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real BTC liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any BTC idea at the live price with zero risk on the <a href=\"/paper-trade?coin=BTC\">BTC paper-trading terminal</a> before you commit real margin.",
@@ -78572,9 +78572,9 @@
    "n": 1,
    "w": 5
   },
-  "1pbiD1Twc5": {
-   "en": "A BTC perpetual future (perp) lets you trade Bitcoin with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means BTC longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open BTC positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged BTC traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de BTC (perp) te permite operar Bitcoin con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BTC le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de BTC; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de BTC fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "5XNz945JAC": {
+   "en": "The BTC perpetual future (perp) lets you trade Bitcoin with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means BTC longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open BTC positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged BTC traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de BTC (perp) te permite operar Bitcoin con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de BTC le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de BTC; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de BTC fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "ld"
    ],
@@ -78582,7 +78582,7 @@
     "/coin/btc/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "9hMs4d-i0E": {
    "en": "How do you read BTC funding, open interest and liquidations together?",
@@ -78716,9 +78716,9 @@
    "n": 1,
    "w": 4
   },
-  "G1LWaxJo5E": {
-   "en": "A DOGE perpetual future (perp) lets you trade Dogecoin with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means DOGE longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open DOGE positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged DOGE traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de DOGE (perp) te permite operar Dogecoin con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de DOGE le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de DOGE; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de DOGE fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "PcFLMNs-b2": {
+   "en": "The DOGE perpetual future (perp) lets you trade Dogecoin with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means DOGE longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open DOGE positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged DOGE traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de DOGE (perp) te permite operar Dogecoin con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de DOGE le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de DOGE; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de DOGE fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "html"
    ],
@@ -78726,7 +78726,7 @@
     "/coin/doge/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "Piqn_XYDxU": {
    "en": "How to use this DOGE dashboard",
@@ -78764,9 +78764,9 @@
    "n": 1,
    "w": 5
   },
-  "BzFD5qhmoP": {
-   "en": "Dogecoin is a high-beta meme perp where funding and positioning can swing hard on sentiment. When you trade DOGE on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because Dogecoin can move several percent in a session, traders who last keep DOGE leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a DOGE position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Dogecoin es un perp meme de beta alta donde el funding y el posicionamiento pueden oscilar con fuerza según el sentimiento. Cuando operas DOGE con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas 1% en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9–10%; a 5× cerca de 18%. Como Dogecoin puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de DOGE moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de DOGE con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
+  "rChdemoxwu": {
+   "en": "Dogecoin is a high-beta meme perp where funding and positioning can swing hard on sentiment. When you trade DOGE on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because Dogecoin can move several percent in a session, traders who last keep DOGE leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in DOGE would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Dogecoin es un perp meme de beta alta donde el funding y el posicionamiento pueden oscilar con fuerza según el sentimiento. Cuando operas DOGE con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas medio punto porcentual en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9.5%; a 5× cerca de 19.5%. Como Dogecoin puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de DOGE moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de DOGE con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
    "kind": [
     "html"
    ],
@@ -78774,7 +78774,7 @@
     "/coin/doge/"
    ],
    "n": 1,
-   "w": 105
+   "w": 109
   },
   "LbpZjQ3LnK": {
    "en": "The four live numbers above tell you how crowded and leveraged the DOGE market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real DOGE liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any DOGE idea at the live price with zero risk on the <a href=\"/paper-trade?coin=DOGE\">DOGE paper-trading terminal</a> before you commit real margin.",
@@ -78860,9 +78860,9 @@
    "n": 1,
    "w": 5
   },
-  "U0x-spGizh": {
-   "en": "A DOGE perpetual future (perp) lets you trade Dogecoin with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means DOGE longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open DOGE positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged DOGE traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de DOGE (perp) te permite operar Dogecoin con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de DOGE le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de DOGE; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de DOGE fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "PMIQ2VgQ6p": {
+   "en": "The DOGE perpetual future (perp) lets you trade Dogecoin with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means DOGE longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open DOGE positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged DOGE traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de DOGE (perp) te permite operar Dogecoin con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de DOGE le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de DOGE; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de DOGE fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "ld"
    ],
@@ -78870,7 +78870,7 @@
     "/coin/doge/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "Nzeovq7c0V": {
    "en": "How do you read DOGE funding, open interest and liquidations together?",
@@ -79004,9 +79004,9 @@
    "n": 1,
    "w": 4
   },
-  "s4hwvkp0GK": {
-   "en": "A ETH perpetual future (perp) lets you trade Ethereum with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means ETH longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open ETH positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged ETH traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de ETH (perp) te permite operar Ethereum con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de ETH le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de ETH; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de ETH fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "H54R9hUPg4": {
+   "en": "The ETH perpetual future (perp) lets you trade Ethereum with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means ETH longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open ETH positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged ETH traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de ETH (perp) te permite operar Ethereum con apalancamiento y sin vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perp atado al spot - un funding positivo significa que los longs de ETH le pagan a los shorts (longs saturados), negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas de ETH; una subida rápida significa que está entrando apalancamiento nuevo. Las <strong>liquidaciones</strong> muestran dónde los traders sobreapalancados de ETH fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "html"
    ],
@@ -79014,7 +79014,7 @@
     "/coin/eth/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "CANCLmS6Jf": {
    "en": "How to use this ETH dashboard",
@@ -79052,9 +79052,9 @@
    "n": 1,
    "w": 5
   },
-  "ne_HOGIkfT": {
-   "en": "Ethereum is the second-largest perp by volume and open interest, and a key barometer for altcoin risk appetite. When you trade ETH on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because Ethereum can move several percent in a session, traders who last keep ETH leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a ETH position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Ethereum es el segundo perp más grande por volumen e interés abierto, y un barómetro clave del apetito de riesgo por altcoins. Cuando operas ETH con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas 1% en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9–10%; a 5× cerca de 18%. Como Ethereum puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de ETH moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de ETH con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
+  "jxe0byBw17": {
+   "en": "Ethereum is the second-largest perp by volume and open interest, and a key barometer for altcoin risk appetite. When you trade ETH on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because Ethereum can move several percent in a session, traders who last keep ETH leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in ETH would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Ethereum es el segundo perp más grande por volumen e interés abierto, y un barómetro clave del apetito de riesgo por altcoins. Cuando operas ETH con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento de apenas medio punto porcentual en tu contra te borra; a 10× hace falta un movimiento de aproximadamente 9.5%; a 5× cerca de 19.5%. Como Ethereum puede moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de ETH moderado y colocan un stop-loss <em>dentro</em> del nivel de liquidación en lugar de perseguir el máximo que permite el exchange. Calcula exactamente dónde se liquidaría una posición de ETH con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de comisión de funding</a>.",
    "kind": [
     "html"
    ],
@@ -79062,7 +79062,7 @@
     "/coin/eth/"
    ],
    "n": 1,
-   "w": 108
+   "w": 112
   },
   "FqybIHyzl1": {
    "en": "The four live numbers above tell you how crowded and leveraged the ETH market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real ETH liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any ETH idea at the live price with zero risk on the <a href=\"/paper-trade?coin=ETH\">ETH paper-trading terminal</a> before you commit real margin.",
@@ -79148,9 +79148,9 @@
    "n": 1,
    "w": 5
   },
-  "eiGFLpJ8VI": {
-   "en": "A ETH perpetual future (perp) lets you trade Ethereum with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means ETH longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open ETH positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged ETH traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de ETH (perp) te permite operar Ethereum con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de ETH le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de ETH; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de ETH fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
+  "TFIjH751pO": {
+   "en": "The ETH perpetual future (perp) lets you trade Ethereum with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means ETH longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open ETH positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged ETH traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de ETH (perp) te permite operar Ethereum con apalancamiento y sin vencimiento. La tasa de funding mantiene el precio del perp atado al spot - un funding positivo significa que los longs de ETH le pagan a los shorts (longs saturados), negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas de ETH; una subida rápida significa que está entrando apalancamiento nuevo. Las liquidaciones muestran dónde los traders sobreapalancados de ETH fueron cerrados por la fuerza - liquidaciones long en las caídas, liquidaciones short en los rallies.",
    "kind": [
     "ld"
    ],
@@ -79158,7 +79158,7 @@
     "/coin/eth/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "vXVW3j9DFn": {
    "en": "How do you read ETH funding, open interest and liquidations together?",
@@ -79292,9 +79292,9 @@
    "n": 1,
    "w": 4
   },
-  "8vPzP2_uZi": {
-   "en": "A SOL perpetual future (perp) lets you trade Solana with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means SOL longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open SOL positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged SOL traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de SOL (perp) te permite operar Solana con apalancamiento y sin fecha de vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de SOL están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas en SOL; una subida rápida indica que está entrando nuevo apalancamiento. Las <strong>liquidaciones</strong> muestran dónde los traders de SOL sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
+  "K89MVBXWFm": {
+   "en": "The SOL perpetual future (perp) lets you trade Solana with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means SOL longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open SOL positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged SOL traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de SOL (perp) te permite operar Solana con apalancamiento y sin fecha de vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de SOL están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas en SOL; una subida rápida indica que está entrando nuevo apalancamiento. Las <strong>liquidaciones</strong> muestran dónde los traders de SOL sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
    "kind": [
     "html"
    ],
@@ -79302,7 +79302,7 @@
     "/coin/sol/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "uAGGIpjytd": {
    "en": "How to use this SOL dashboard",
@@ -79340,9 +79340,9 @@
    "n": 1,
    "w": 5
   },
-  "oE-zHr6ksZ": {
-   "en": "Solana is one of the most actively traded large-cap perps and tends to lead alt rallies and flushes. When you trade SOL on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because Solana can move several percent in a session, traders who last keep SOL leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a SOL position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Solana es uno de los perpetuos de gran capitalización más operados y suele liderar los rallies y las caídas de las altcoins. Cuando operas SOL con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento en tu contra de apenas ~1% te borra del mapa; a 10× hace falta un movimiento de unos 9-10%; a 5× ronda el 18%. Como Solana puede moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de SOL moderado y colocan el stop-loss <em>dentro</em> del nivel de liquidación en lugar de estirarlo al máximo que permite el exchange. Calcula con exactitud dónde se liquidaría una posición de SOL con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de funding</a>.",
+  "lh03TX_N4A": {
+   "en": "Solana is one of the most actively traded large-cap perps and tends to lead alt rallies and flushes. When you trade SOL on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because Solana can move several percent in a session, traders who last keep SOL leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in SOL would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Solana es uno de los perpetuos de gran capitalización más operados y suele liderar los rallies y las caídas de las altcoins. Cuando operas SOL con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento en tu contra de apenas medio punto porcentual te borra del mapa; a 10× hace falta un movimiento de unos 9.5%; a 5× ronda el 19.5%. Como Solana puede moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de SOL moderado y colocan el stop-loss <em>dentro</em> del nivel de liquidación en lugar de estirarlo al máximo que permite el exchange. Calcula con exactitud dónde se liquidaría una posición de SOL con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de funding</a>.",
    "kind": [
     "html"
    ],
@@ -79350,7 +79350,7 @@
     "/coin/sol/"
    ],
    "n": 1,
-   "w": 109
+   "w": 113
   },
   "1izPDOfMIC": {
    "en": "The four live numbers above tell you how crowded and leveraged the SOL market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real SOL liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any SOL idea at the live price with zero risk on the <a href=\"/paper-trade?coin=SOL\">SOL paper-trading terminal</a> before you commit real margin.",
@@ -79436,9 +79436,9 @@
    "n": 1,
    "w": 5
   },
-  "BgAESVEH_v": {
-   "en": "A SOL perpetual future (perp) lets you trade Solana with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means SOL longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open SOL positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged SOL traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de SOL (perp) te permite operar Solana con apalancamiento y sin fecha de vencimiento. La tasa de funding mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de SOL están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas en SOL; una subida rápida indica que está entrando nuevo apalancamiento. Las liquidaciones muestran dónde los traders de SOL sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
+  "wgwx3DyJmp": {
+   "en": "The SOL perpetual future (perp) lets you trade Solana with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means SOL longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open SOL positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged SOL traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de SOL (perp) te permite operar Solana con apalancamiento y sin fecha de vencimiento. La tasa de funding mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de SOL están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas en SOL; una subida rápida indica que está entrando nuevo apalancamiento. Las liquidaciones muestran dónde los traders de SOL sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
    "kind": [
     "ld"
    ],
@@ -79446,7 +79446,7 @@
     "/coin/sol/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "w9Yvd2UyKo": {
    "en": "How do you read SOL funding, open interest and liquidations together?",
@@ -79580,9 +79580,9 @@
    "n": 1,
    "w": 4
   },
-  "gm-KDlNYGf": {
-   "en": "A XRP perpetual future (perp) lets you trade XRP with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means XRP longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open XRP positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged XRP traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de XRP (perp) te permite operar XRP con apalancamiento y sin fecha de vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de XRP están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas en XRP; una subida rápida indica que está entrando nuevo apalancamiento. Las <strong>liquidaciones</strong> muestran dónde los traders de XRP sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
+  "ngR5aWU673": {
+   "en": "The XRP perpetual future (perp) lets you trade XRP with leverage and no expiry. The <a href=\"/funding/\">funding rate</a> keeps the perp price tethered to spot - positive funding means XRP longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open XRP positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged XRP traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de XRP (perp) te permite operar XRP con apalancamiento y sin fecha de vencimiento. La <a href=\"/funding/\">tasa de funding</a> mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de XRP están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El <strong>interés abierto</strong> es el valor total de las posiciones abiertas en XRP; una subida rápida indica que está entrando nuevo apalancamiento. Las <strong>liquidaciones</strong> muestran dónde los traders de XRP sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
    "kind": [
     "html"
    ],
@@ -79590,7 +79590,7 @@
     "/coin/xrp/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "10V9HIVLqf": {
    "en": "How to use this XRP dashboard",
@@ -79628,9 +79628,9 @@
    "n": 1,
    "w": 5
   },
-  "YRevTwqRTu": {
-   "en": "XRP perps see sharp, news-driven moves and carry large speculative open interest. When you trade XRP on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because XRP can move several percent in a session, traders who last keep XRP leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a XRP position would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
-   "es": "Los perpetuos de XRP tienen movimientos bruscos impulsados por noticias y un interés abierto especulativo muy alto. Cuando operas XRP con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento en tu contra de apenas ~1% te borra del mapa; a 10× hace falta un movimiento de unos 9-10%; a 5× ronda el 18%. Como XRP puede moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XRP moderado y colocan el stop-loss <em>dentro</em> del nivel de liquidación en lugar de estirarlo al máximo que permite el exchange. Calcula con exactitud dónde se liquidaría una posición de XRP con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de funding</a>.",
+  "cQz5R3aM8T": {
+   "en": "XRP perps see sharp, news-driven moves and carry large speculative open interest. When you trade XRP on leverage, the single most important number is your liquidation price. At 100× a move of about half a percent against you is a wipeout; at 10× it takes a move of roughly 9.5%; at 5× close to 19.5%. Because XRP can move several percent in a session, traders who last keep XRP leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a position in XRP would be liquidated with the <a href=\"/calculators?c=liq\">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a>.",
+   "es": "Los perpetuos de XRP tienen movimientos bruscos impulsados por noticias y un interés abierto especulativo muy alto. Cuando operas XRP con apalancamiento, el número más importante es tu precio de liquidación. A 100× un movimiento en tu contra de apenas medio punto porcentual te borra del mapa; a 10× hace falta un movimiento de unos 9.5%; a 5× ronda el 19.5%. Como XRP puede moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XRP moderado y colocan el stop-loss <em>dentro</em> del nivel de liquidación en lugar de estirarlo al máximo que permite el exchange. Calcula con exactitud dónde se liquidaría una posición de XRP con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, y cuánto margen drena el funding en una posición de varios días con la <a href=\"/funding-fee-calculator/\">calculadora de funding</a>.",
    "kind": [
     "html"
    ],
@@ -79638,7 +79638,7 @@
     "/coin/xrp/"
    ],
    "n": 1,
-   "w": 103
+   "w": 107
   },
   "ZyRgqkvUc6": {
    "en": "The four live numbers above tell you how crowded and leveraged the XRP market is right now - read them together. Then screen the whole market on the <a href=\"/screener\">futures screener</a>, watch real XRP liquidations stream in on the <a href=\"/liquidations/\">live liquidations feed</a>, and rehearse any XRP idea at the live price with zero risk on the <a href=\"/paper-trade?coin=XRP\">XRP paper-trading terminal</a> before you commit real margin.",
@@ -79724,9 +79724,9 @@
    "n": 1,
    "w": 5
   },
-  "qNuqnl5a22": {
-   "en": "A XRP perpetual future (perp) lets you trade XRP with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means XRP longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open XRP positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged XRP traders got force-closed - long liquidations on drops, short liquidations on rallies.",
-   "es": "Un futuro perpetuo de XRP (perp) te permite operar XRP con apalancamiento y sin fecha de vencimiento. La tasa de funding mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de XRP están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas en XRP; una subida rápida indica que está entrando nuevo apalancamiento. Las liquidaciones muestran dónde los traders de XRP sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
+  "DUjN6t0RE2": {
+   "en": "The XRP perpetual future (perp) lets you trade XRP with leverage and no expiry. The funding rate keeps the perp price tethered to spot - positive funding means XRP longs are paying shorts (crowded longs), negative means the reverse. Open interest is the total value of open XRP positions; a fast rise means new leverage is flowing in. Liquidations show where over-leveraged XRP traders got force-closed - long liquidations on drops, short liquidations on rallies.",
+   "es": "El futuro perpetuo de XRP (perp) te permite operar XRP con apalancamiento y sin fecha de vencimiento. La tasa de funding mantiene el precio del perpetuo anclado al spot: un funding positivo significa que los longs de XRP están pagando a los shorts (longs saturados), y uno negativo significa lo contrario. El interés abierto es el valor total de las posiciones abiertas en XRP; una subida rápida indica que está entrando nuevo apalancamiento. Las liquidaciones muestran dónde los traders de XRP sobreapalancados fueron cerrados a la fuerza: liquidaciones de longs en las caídas, liquidaciones de shorts en los rallies.",
    "kind": [
     "ld"
    ],
@@ -79734,7 +79734,7 @@
     "/coin/xrp/"
    ],
    "n": 1,
-   "w": 71
+   "w": 72
   },
   "V_oZXnME3-": {
    "en": "How do you read XRP funding, open interest and liquidations together?",
@@ -81727,9 +81727,9 @@
    "n": 4,
    "w": 3
   },
-  "NJ_hJws6uU": {
-   "en": "Run a rule-based strategy over real historical candles and see how it would have performed - versus simply buying and holding. EMA cross, RSI, SMA trend or Donchian breakout, on any coin.",
-   "es": "Ejecuta una estrategia basada en reglas sobre velas históricas reales y comprueba cómo habría rendido - frente a simplemente comprar y mantener. Cruce de EMA, RSI, tendencia de SMA o ruptura de Donchian, en cualquier moneda.",
+  "GWdvZALU3O": {
+   "en": "Run a rule-based strategy over real historical candles and see how it would have performed - versus simply buying and holding. Nineteen rule sets, from EMA cross to Supertrend and Donchian breakout, on any coin.",
+   "es": "Ejecuta una estrategia basada en reglas sobre velas históricas reales y comprueba cómo habría rendido - frente a simplemente comprar y mantener. Diecinueve conjuntos de reglas, desde el cruce de EMA hasta Supertrend y la ruptura de Donchian, en cualquier moneda.",
    "kind": [
     "html"
    ],
@@ -81737,7 +81737,7 @@
     "/crypto-backtester/"
    ],
    "n": 1,
-   "w": 30
+   "w": 33
   },
   "5sRQ3ZBzlr": {
    "en": "Coin<input id=\"coin\" value=\"BTC\" maxlength=\"12\" autocomplete=\"off\" style=\"width:110px\">",
@@ -82076,9 +82076,9 @@
    "n": 1,
    "w": 68
   },
-  "Fq8D8PZduF": {
-   "en": "Four classic rule sets are included: <b>EMA cross</b> (9 over 21), <b>price versus SMA 50</b> trend following, <b>RSI(14)</b> mean reversion, and a <b>20-bar Donchian breakout</b>. Results are long-only and use close prices with no slippage or funding, so treat them as an educational study of whether a strategy had an edge - not financial advice.",
-   "es": "Se incluyen cuatro conjuntos de reglas clásicos: <b>cruce de EMA</b> (9 sobre 21), seguimiento de tendencia con <b>precio frente a SMA 50</b>, reversión a la media con <b>RSI(14)</b>, y una <b>ruptura de Donchian de 20 velas</b>. Los resultados son solo long y usan precios de cierre sin slippage ni funding, así que trátalos como un estudio educativo sobre si la estrategia tenía una ventaja - no como asesoramiento financiero.",
+  "-0kJQFRPzn": {
+   "en": "Nineteen rule sets are included, among them: <b>EMA cross</b> (9 over 21), <b>price versus SMA 50</b> trend following, <b>RSI(14)</b> mean reversion, and a <b>20-bar Donchian breakout</b>. Results are long-only and use close prices with no slippage or funding, so treat them as an educational study of whether a strategy had an edge - not financial advice.",
+   "es": "Se incluyen diecinueve conjuntos de reglas, entre ellos: <b>cruce de EMA</b> (9 sobre 21), seguimiento de tendencia con <b>precio frente a SMA 50</b>, reversión a la media con <b>RSI(14)</b>, y una <b>ruptura de Donchian de 20 velas</b>. Los resultados son solo long y usan precios de cierre sin slippage ni funding, así que trátalos como un estudio educativo sobre si la estrategia tenía una ventaja - no como asesoramiento financiero.",
    "kind": [
     "html"
    ],
@@ -82086,7 +82086,7 @@
     "/crypto-backtester/"
    ],
    "n": 1,
-   "w": 52
+   "w": 53
   },
   "4OUOKE8Ot0": {
    "en": "What is backtesting a trading strategy?",
@@ -82127,9 +82127,9 @@
    "n": 2,
    "w": 4
   },
-  "8B-L4kUWBC": {
-   "en": "Four classic rule-based strategies: EMA cross (9 / 21), price versus SMA 50 trend following, RSI(14) mean reversion, and a 20-bar Donchian channel breakout. Each runs long-only on real historical candles for the coin and timeframe you choose.",
-   "es": "Cuatro estrategias clásicas basadas en reglas: cruce de EMA (9 / 21), seguimiento de tendencia con precio frente a SMA 50, reversión a la media con RSI(14), y una ruptura del canal de Donchian de 20 velas. Cada una se ejecuta solo en long sobre velas históricas reales de la moneda y la temporalidad que elijas.",
+  "NpKL4lIl9F": {
+   "en": "Nineteen rule-based strategies - EMA and SMA crosses, the golden cross, an EMA ribbon, Supertrend, MACD, momentum, stochastic, RSI(14) mean reversion, a 20-bar Donchian breakout and more. Each runs long-only on real historical candles for the coin and timeframe you choose.",
+   "es": "Diecinueve estrategias basadas en reglas - cruces de EMA y SMA, el golden cross, una cinta de EMA, Supertrend, MACD, momentum, estocástico, reversión a la media con RSI(14), una ruptura de Donchian de 20 velas y más. Cada una corre solo long sobre velas históricas reales de la moneda y la temporalidad que elijas.",
    "kind": [
     "html",
     "ld"
@@ -82138,7 +82138,7 @@
     "/crypto-backtester/"
    ],
    "n": 2,
-   "w": 36
+   "w": 39
   },
   "oNShmyVric": {
    "en": "How accurate is this backtester?",
@@ -82241,9 +82241,9 @@
    "n": 6,
    "w": 9
   },
-  "G6N6l9KgYM": {
-   "en": "Backtest crypto trading strategies - EMA cross, RSI reversion, SMA trend and Donchian breakout - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy &amp; hold. Free, no signup.",
-   "es": "Haz backtest de estrategias de trading cripto - cruce de EMA, reversión de RSI, tendencia de SMA y ruptura Donchian - sobre velas históricas reales. Consulta la tasa de acierto, el profit factor, el drawdown máximo y una curva de equity frente a comprar y mantener. Gratis, sin registro.",
+  "ifJXpVwwgE": {
+   "en": "Backtest 19 crypto trading strategies - EMA and SMA crosses, Supertrend, MACD, RSI reversion, Donchian breakout and more - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy &amp; hold. Free, no signup.",
+   "es": "Haz backtest de 19 estrategias de trading cripto - cruces de EMA y SMA, Supertrend, MACD, reversión de RSI, ruptura de Donchian y más - sobre velas históricas reales. Consulta la tasa de acierto, el profit factor, el drawdown máximo y una curva de equity frente a comprar y mantener. Gratis, sin registro.",
    "kind": [
     "attr:content"
    ],
@@ -82251,7 +82251,7 @@
     "/crypto-backtester/"
    ],
    "n": 1,
-   "w": 34
+   "w": 38
   },
   "aU1q5ZOIbt": {
    "en": "Backtest crypto trading strategies on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy &amp; hold. Free, no signup.",
@@ -82265,9 +82265,9 @@
    "n": 2,
    "w": 25
   },
-  "_C9FPdRxnJ": {
-   "en": "Backtest crypto trading strategies - EMA cross, RSI reversion, SMA trend and Donchian breakout - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy & hold.",
-   "es": "Haz backtesting de estrategias de trading cripto - cruce de EMA, reversión de RSI, tendencia de SMA y ruptura de Donchian - sobre velas históricas reales. Consulta la tasa de acierto, el factor de beneficio, el drawdown máximo y una curva de capital frente a comprar y mantener.",
+  "HkllicraQG": {
+   "en": "Backtest 19 crypto trading strategies - EMA and SMA crosses, Supertrend, MACD, RSI reversion, Donchian breakout and more - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy & hold.",
+   "es": "Haz backtesting de 19 estrategias de trading cripto - cruces de EMA y SMA, Supertrend, MACD, reversión de RSI, ruptura de Donchian y más - sobre velas históricas reales. Consulta la tasa de acierto, el factor de beneficio, el drawdown máximo y una curva de capital frente a comprar y mantener.",
    "kind": [
     "ld"
    ],
@@ -82275,7 +82275,7 @@
     "/crypto-backtester/"
    ],
    "n": 1,
-   "w": 31
+   "w": 35
   },
   "TyDLPN5gaS": {
    "en": "Free Crypto Strategy Backtester - Test Trading Strategies",
@@ -87565,9 +87565,9 @@
    "n": 1,
    "w": 51
   },
-  "hoXBnTxfKG": {
-   "en": "MarginPad flips that: the simulator IS the product. It opens instantly, keeps your practice trades in your browser, and never pushes a deposit - because there is nothing to deposit. If you later want the social layer (paid 14-day season leaderboards, missions that earn real USDT, duels, profiles), a free account adds it. But that is your choice, not a gate.",
-   "es": "MarginPad le da la vuelta a esto: el simulador ES el producto. Se abre al instante, guarda tus operaciones de práctica en tu navegador, y nunca te empuja a depositar - porque no hay nada que depositar. Si más adelante quieres la capa social (clasificaciones de temporada de 14 días con premios, misiones que ganan USDT real, duelos, perfiles), una cuenta gratuita la añade. Pero esa es tu elección, no una barrera.",
+  "KOYw44ArvI": {
+   "en": "MarginPad flips that: the simulator IS the product. It opens instantly, keeps your practice trades in your browser, and never pushes a deposit - because there is nothing to deposit. If you later want the social layer (14-day season leaderboards, daily missions, duels, profiles), a free account adds it, and the parts that pay real USDT open at Bronze - 500 XP, earned by trading and the Academy. But that is your choice, not a gate.",
+   "es": "MarginPad le da la vuelta a esto: el simulador ES el producto. Se abre al instante, guarda tus operaciones de práctica en tu navegador, y nunca te empuja a depositar - porque no hay nada que depositar. Si más adelante quieres la capa social (clasificaciones de temporada de 14 días, misiones diarias, duelos, perfiles), una cuenta gratuita la añade, y las partes que pagan USDT real se abren en Bronze - 500 XP, que se ganan operando y en la Academia. Pero esa es tu elección, no una barrera.",
    "kind": [
     "html"
    ],
@@ -87575,7 +87575,7 @@
     "/crypto-trading-simulator-no-sign-up/"
    ],
    "n": 1,
-   "w": 57
+   "w": 71
   },
   "reiaJ_Tl_0": {
    "en": "Open the terminal",
@@ -87858,9 +87858,9 @@
    "n": 2,
    "w": 6
   },
-  "J6_FYaH9VD": {
-   "en": "Only the social layer: 14-day season leaderboards with real USDT prizes, daily missions that pay, XP levels, duels and a public trader profile. The full trading simulator itself works without any account.",
-   "es": "Solo la capa social: clasificaciones de temporada de 14 días con premios reales en USDT, misiones diarias que pagan, niveles de XP, duelos y un perfil público de trader. El simulador de trading completo funciona sin ninguna cuenta.",
+  "-Mhce82DTQ": {
+   "en": "Only the social layer: 14-day season leaderboards with real USDT prizes, daily missions that pay up to $0.03 each, XP levels, duels and a public trader profile - the money parts unlock at Bronze (500 XP). The full trading simulator itself works without any account.",
+   "es": "Solo la capa social: clasificaciones de temporada de 14 días con premios reales en USDT, misiones diarias que pagan hasta $0.03 cada una, niveles de XP, duelos y un perfil público de trader - las partes que pagan dinero se desbloquean en Bronze (500 XP). El simulador de trading completo funciona sin ninguna cuenta.",
    "kind": [
     "html",
     "ld"
@@ -87869,7 +87869,7 @@
     "/crypto-trading-simulator-no-sign-up/"
    ],
    "n": 2,
-   "w": 31
+   "w": 43
   },
   "ao4-AKqs1m": {
    "en": "Does it use real prices?",
@@ -87936,9 +87936,9 @@
    "n": 2,
    "w": 7
   },
-  "yM3xD4HAKz": {
-   "en": "Forever. There is no trial clock, no locked features behind a card, and no deposit - the simulator is free, permanently.",
-   "es": "Para siempre. No hay un reloj de prueba, ninguna función bloqueada detrás de una tarjeta, y ningún depósito - el simulador es gratis, de forma permanente.",
+  "FZtHxPjdC4": {
+   "en": "Forever. There is no trial clock and no deposit - the simulator is free, permanently. The only paid things on the site are Premium extras such as the AI indicators and the live heatmap, never the simulator.",
+   "es": "Para siempre. No hay un reloj de prueba ni depósito - el simulador es gratis, de forma permanente. Lo único de pago en el sitio son los extras de Premium, como los indicadores de IA y el mapa de calor en vivo, nunca el simulador.",
    "kind": [
     "html",
     "ld"
@@ -87947,7 +87947,7 @@
     "/crypto-trading-simulator-no-sign-up/"
    ],
    "n": 2,
-   "w": 19
+   "w": 36
   },
   "Q9x5mI_ux9": {
    "en": "How is this different from Binance testnet or exchange demos?",
@@ -102569,9 +102569,9 @@
    "n": 1,
    "w": 19
   },
-  "lF2b6rxlF-": {
-   "en": "At 100× - Gate's cap on the majors - roughly a <b>1.00%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 100× - el tope de Gate en las principales monedas - un movimiento de apenas <b>1.00%</b> liquida la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición a 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "7DudUvuI-5": {
+   "en": "At 100× - Gate's cap on the majors - roughly a <b>0.50%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 100× - el tope de Gate en las principales - un movimiento de apenas <b>0.50%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -116676,10 +116676,9 @@
    ],
    "ctx": [
     "/",
-    "/rewards/",
-    "/season/"
+    "/rewards/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 29
   },
   "R-uwes6Avv": {
@@ -118137,6 +118136,18 @@
    ],
    "n": 1,
    "w": 1
+  },
+  "U-XJ1t-BF_": {
+   "en": "Your paper-trading journal on MarginPad: every open and closed position with entry, exit, leverage, fees and P&L, win rate and realized results - the trades you made on the free simulator, in one place.",
+   "es": "Tu diario de paper trading en MarginPad: cada posición abierta y cerrada con entrada, salida, apalancamiento, comisiones y P&L, tasa de acierto y resultados realizados - las operaciones que hiciste en el simulador gratuito, en un solo lugar.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/journal/"
+   ],
+   "n": 1,
+   "w": 33
   },
   "-YcYOGIPZ3": {
    "en": "JUP Liquidation Calculator - Jupiter Futures (Long & Short) | MarginPad",
@@ -120057,9 +120068,9 @@
    "n": 1,
    "w": 19
   },
-  "18XjZKkkJ9": {
-   "en": "At 100× - KuCoin's cap on the majors - roughly a <b>1.00%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 100× - el límite de KuCoin en los pares principales - un movimiento de aproximadamente <b>1.00%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición a 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "CV9R7vDlIj": {
+   "en": "At 100× - KuCoin's cap on the majors - roughly a <b>0.50%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 100× - el tope de KuCoin en las principales - un movimiento de apenas <b>0.50%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -126151,13 +126162,12 @@
    "en": "Crypto Liquidations Today - Live Liquidation Tracker",
    "es": "Liquidaciones Cripto Hoy - Rastreador de Liquidaciones en Vivo",
    "kind": [
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/liquidations/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 6
   },
   "H3CwszNUUK": {
@@ -129468,9 +129478,9 @@
    "n": 1,
    "w": 19
   },
-  "CFOiniXRh3": {
-   "en": "At 500× - MEXC's cap on the majors - roughly a <b>0.20%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 500× - el máximo de MEXC en las principales monedas - un movimiento de apenas <b>0.20%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición a 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "oB_-flC2Rh": {
+   "en": "At 500× - MEXC's cap on the majors - roughly a <b>0.10%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 500× - el tope de MEXC en las principales - un movimiento de apenas <b>0.10%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -131504,9 +131514,9 @@
    "n": 1,
    "w": 19
   },
-  "bqCbwmKskD": {
-   "en": "At 125× - OKX's cap on the majors - roughly a <b>0.80%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
-   "es": "A 125× - el límite de OKX en las principales - un movimiento de apenas <b>0.80%</b> liquida la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que el exchange intervenga.",
+  "7T_s2WPDJm": {
+   "en": "At 125× - OKX's cap on the majors - roughly a <b>0.30%</b> move wipes the position. That is why most survivors trade well below the maximum: a 5–20× position leaves room for normal volatility, funding and fees before the exchange steps in.",
+   "es": "A 125× - el tope de OKX en las principales - un movimiento de apenas <b>0.30%</b> borra la posición. Por eso la mayoría de los que sobreviven operan muy por debajo del máximo: una posición de 5–20× deja margen para la volatilidad normal, el funding y las comisiones antes de que intervenga el exchange.",
    "kind": [
     "html"
    ],
@@ -134821,9 +134831,9 @@
    "n": 1,
    "w": 33
   },
-  "ZvBKvBUnLJ": {
-   "en": "<b>Real rewards for practice</b>Season leaderboards pay <a href=\"/levels/\">real USDT prizes</a> to the top 5 every 14 days - Green days, ROE, win rate and XP all pay. <a href=\"/rewards/\">Daily missions</a> credit real cents for using the tools. The amounts are learning-sized, not a salary - but you are the only trader in the room whose practice is not unpaid.",
-   "es": "<b>Recompensas reales por practicar</b>Las tablas de posiciones de temporada pagan <a href=\"/levels/\">premios reales en USDT</a> a los 5 primeros cada 14 días - Green days, ROE, tasa de acierto y XP, todos pagan. Las <a href=\"/rewards/\">misiones diarias</a> acreditan centavos reales por usar las herramientas. Son montos del tamaño del aprendizaje, no un salario - pero eres el único trader en la sala cuya práctica no es gratis.",
+  "Z8GLQFG4gg": {
+   "en": "<b>Real rewards for practice</b>Season leaderboards pay <a href=\"/levels/\">real USDT prizes</a> to the top 5 every 14 days - seven boards in all: green days, ROE, win rate, XP, the Gold Room, Bybit volume and King of the Moon. <a href=\"/rewards/\">Daily missions</a> credit real cents for using the tools. The amounts are learning-sized, not a salary - but you are the only trader in the room whose practice is not unpaid.",
+   "es": "<b>Recompensas reales por practicar</b>Las tablas de posiciones de temporada pagan <a href=\"/levels/\">premios reales en USDT</a> a los 5 primeros cada 14 días - siete tablas en total: días verdes, ROE, tasa de acierto, XP, la Gold Room, volumen de Bybit y King of the Moon. Las <a href=\"/rewards/\">misiones diarias</a> acreditan centavos reales por usar las herramientas. Son montos del tamaño del aprendizaje, no un salario - pero eres el único trader en la sala cuya práctica no es gratis.",
    "kind": [
     "html"
    ],
@@ -134831,7 +134841,7 @@
     "/paper-trading/"
    ],
    "n": 1,
-   "w": 54
+   "w": 65
   },
   "HumWsVmjqJ": {
    "en": "<b>A live trading floor</b>Chat with the floor while you trade, follow traders worth studying, challenge anyone to a <b>duel</b> (seven days, best stats win the pot), share your P&L tickets, and build a public trader card with XP levels and unlockable frames from <a href=\"/vault/\">The Vault</a>.",
@@ -135326,9 +135336,9 @@
    "n": 2,
    "w": 4
   },
-  "YOPycaW9BL": {
-   "en": "On MarginPad, completely: no deposit, no card, no signup to try the simulator. A free account adds leaderboards, missions, XP and rewards.",
-   "es": "En MarginPad, completamente: sin depósito, sin tarjeta, sin registro para probar el simulador. Una cuenta gratis añade tablas de posiciones, misiones, XP y recompensas.",
+  "jzTajtpbV3": {
+   "en": "On MarginPad, completely: no deposit, no card, no signup to try the simulator. A free account adds leaderboards, missions and XP; the parts that pay real USDT open at Bronze (500 XP).",
+   "es": "En MarginPad, completamente: sin depósito, sin tarjeta, sin registro para probar el simulador. Una cuenta gratis añade tablas de posiciones, misiones y XP; las partes que pagan USDT real se abren en Bronze (500 XP).",
    "kind": [
     "html"
    ],
@@ -135336,7 +135346,7 @@
     "/paper-trading/"
    ],
    "n": 1,
-   "w": 21
+   "w": 31
   },
   "GkPhKVrCnS": {
    "en": "Can you earn real money paper trading?",
@@ -135592,9 +135602,9 @@
    "n": 1,
    "w": 48
   },
-  "Hlp3mWT9fi": {
-   "en": "On MarginPad, yes - completely. The simulator opens without a signup and never asks for a deposit or a card. A free account adds leaderboards, missions, XP and rewards on top.",
-   "es": "En MarginPad, sí - completamente. El simulador se abre sin registro y nunca pide un depósito ni una tarjeta. Una cuenta gratis suma además tablas de posiciones, misiones, XP y recompensas.",
+  "Lr01nJlJJh": {
+   "en": "On MarginPad, yes - completely. The simulator opens without a signup and never asks for a deposit or a card. A free account adds leaderboards, missions and XP on top; the parts that pay real USDT open at Bronze (500 XP).",
+   "es": "En MarginPad, sí - completamente. El simulador se abre sin registro y nunca pide un depósito ni una tarjeta. Una cuenta gratis suma además tablas de posiciones, misiones y XP; las partes que pagan USDT real se abren en Bronze (500 XP).",
    "kind": [
     "ld"
    ],
@@ -135602,7 +135612,7 @@
     "/paper-trading/"
    ],
    "n": 1,
-   "w": 26
+   "w": 36
   },
   "Be_lhGVQeh": {
    "en": "Normally no - simulators pay nothing. MarginPad is the exception: 14-day season leaderboards pay real USDT prizes to top traders, and daily missions credit small USDT amounts for practicing. The amounts are learning-sized, not a salary - but practice is no longer unpaid.",
@@ -141790,9 +141800,9 @@
    "n": 1,
    "w": 3
   },
-  "uKwmuNRl4Z": {
-   "en": "Seven leaderboards pay their top five every fourteen days. <a href=\"/trading-competition/\">How the competition works</a>.",
-   "es": "Siete clasificaciones pagan a sus cinco primeros cada catorce días. <a href=\"/trading-competition/\">Cómo funciona la competencia</a>.",
+  "LwEcJgt4ci": {
+   "en": "Six leaderboards pay their top five every fourteen days; King of the Moon pays its top five once per two-season contest. <a href=\"/trading-competition/\">How the competition works</a>.",
+   "es": "Seis clasificaciones pagan a sus cinco primeros cada catorce días; King of the Moon paga a sus cinco primeros una vez por concurso de dos temporadas. <a href=\"/trading-competition/\">Cómo funciona la competencia</a>.",
    "kind": [
     "html"
    ],
@@ -141800,7 +141810,7 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 13
+   "w": 25
   },
   "Sb_1BuAAjh": {
    "en": "The faucet, the missions, referrals and withdrawals open at <b>Bronze - 500 XP</b>, which is free to earn on the <a href=\"/academy/\">Academy</a> and <a href=\"/paper-trade\">Paper Trade</a>. The welcome bonus and the sign-up bonuses do not wait for it.",
@@ -145974,6 +145984,30 @@
    ],
    "n": 1,
    "w": 83
+  },
+  "X680KTcMrM": {
+   "en": "<b>King of the Moon - powered by Moon.</b> Ranked by the real wagering on the Moon account you opened through MarginPad, counted from the contest's opening figures to its closing ones - one contest over two seasons, not per season. Entry is an approved Moon sign-up bonus claim; that is how we know the account behind the mask. Top 5 share $300: $150, $70, $40, $25, $15.",
+   "es": "<b>King of the Moon - powered by Moon.</b> Se clasifica por las apuestas reales en la cuenta de Moon que abriste a través de MarginPad, contadas desde las cifras de apertura del concurso hasta las de cierre - un solo concurso a lo largo de dos temporadas, no por temporada. La entrada es un reclamo aprobado del bono de registro en Moon; así es como sabemos qué cuenta hay detrás de la máscara. Los 5 primeros se reparten $300: $150, $70, $40, $25, $15.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 64
+  },
+  "qDmchJ3IGN": {
+   "en": "Six boards run per 14-day season and pay the top 5 in real USDT to the rewards balance; King of the Moon runs one contest over two seasons. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.",
+   "es": "Seis tablas corren por temporada de 14 días y pagan a los 5 mejores en USDT real al saldo de recompensas; King of the Moon corre un solo concurso a lo largo de dos temporadas. Las trampas, cuentas baneadas y símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 39
   },
   "7RVj6n90Sc": {
    "en": "<span class=\"eb\">Live · every member, every close</span>",

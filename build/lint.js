@@ -45,4 +45,16 @@ for (const f of fsL.readdirSync(ASSETS)) {
 }
 if (bad.length) { console.error('lint: FAIL - raw control character in a shipped bundle:'); bad.forEach(b => console.error('  ' + b)); process.exit(1); }
 
+// EVERY SHIPPED BUNDLE MUST PARSE (2026-09-26): a hand edit left an extra ')' in mp-calc.js, `node --check` in the
+// working shell failed, and the deploy that followed still went out - esbuild only bundles the worker, so the
+// syntax of dist/assets/*.js was checked by nobody. /calculators served a bundle that threw on load until the
+// next deploy. This is the gate that would have stopped it.
+const synBad = [];
+for (const f of fsL.readdirSync(ASSETS)) {
+  if (!/\.js$/.test(f)) continue;
+  try { require('child_process').execFileSync(process.execPath, ['--check', require('path').join(ASSETS, f)], { stdio: ['ignore', 'ignore', 'pipe'] }); }
+  catch (e) { synBad.push(f + ': ' + String(e.stderr || e.message || e).split('\n').filter(Boolean).slice(-2).join(' | ').slice(0, 220)); }
+}
+if (synBad.length) { console.error('lint: FAIL - a shipped bundle does not parse:'); synBad.forEach(b => console.error('  ' + b)); process.exit(1); }
+
 console.log('lint: OK - esbuild bundle has no warnings, no control characters in dist/assets');

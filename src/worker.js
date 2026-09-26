@@ -4207,7 +4207,10 @@ async function handleScreener(env, force, ctx) { // force=true (cron warmer) ski
     if (b) {
       try {
         const a = _screenScore({ price: t.p, closes: b.closes, highs: b.highs, lows: b.lows, vols: b.vols, chg: t.chg, funding: t.f });
-        return { ...t, score: a.score, verdict: _verdict(a.score), trend: a.trend, rsi: a.rsi, macd: a.macd, atrPct: a.atrPct, sig: a.sig, setup: a.setup };
+        // the suggested leverage must respect the per-class cap the terminal enforces (XAU/XAG 20x, stocks, indices) - the screener
+        // proposed 70x on gold, which the engine would have refused at open (audit 2026-09-25)
+        const capL = maxLevFor(t.s || t.symbol || ''), setup = (a.setup && a.setup.lev > capL) ? { ...a.setup, lev: capL, levAgg: capL } : a.setup;
+        return { ...t, score: a.score, verdict: _verdict(a.score), trend: a.trend, rsi: a.rsi, macd: a.macd, atrPct: a.atrPct, sig: a.sig, setup };
       } catch (e) {}
     }
     return { ...t, score: null };
