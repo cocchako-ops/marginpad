@@ -2754,7 +2754,10 @@ async function handleSsrHub(request, url, env, page, sym) {
   try { res = await ssrHubSentences(page, sym, env, request); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
   const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS', rekt: 'LIVE LIQUIDATIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") - name them for the reader
-  const out = ssrStampDate(html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor), Date.now());
+  const hubBox = ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links);
+  // the twin is served with url.pathname already rewritten, so the language is read off request.url (SSR_L10N rule);
+  // the box chrome ("See it live", link labels) goes through the same fragment table as the map pages (2026-09-26)
+  const out = ssrStampDate(html.slice(0, anchor) + (esLang(request) === 'es' ? esMapFrag(hubBox) : hubBox) + html.slice(anchor), Date.now());
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
