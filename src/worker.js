@@ -18044,6 +18044,10 @@ async function handleReward(url, request, env) {
       if (!r9 || r9.error) { await bylog((r9 && r9.error) || 'unavailable'); return jr({ error: (r9 && r9.error) || 'unavailable' }, r9 && r9.error === 'uid_taken' ? 409 : 503); }
       await bylog('');
       try { await evPush(env, request, 'bybitlink', buid ? 'linked Bybit UID for the volume board' : 'unlinked Bybit UID', '/season/'); } catch (e) {}
+      // THE BOARD SHOWS THE MEMBER THE MOMENT THE UID IS LINKED (2026-09-26, owner: "kad unese UID on ce odma da se pojavi na tablici").
+      // The season report already carries this UID's volume (bybitAffSync reads the whole affiliate list every 10 minutes); only the
+      // JOIN was missing until the next cron, so a member who registered saw an empty seat for up to ten minutes and asked support.
+      try { await bybitSnapshotRebuild(env, lbPeriodStart(Date.now())); } catch (e) {}
       return jr({ ok: true, uid: buid, eligible: !!buid });
     }
     let cur9 = ''; try { const pg = await usersDO(env, '/prefsget', { uid: uid9, keys: ['bybit_uid'] }); cur9 = String((pg && pg.prefs && pg.prefs.bybit_uid && pg.prefs.bybit_uid.v) || ''); } catch (e) {}
@@ -20068,6 +20072,7 @@ export default {
       if (buid && !ab.force) { const allow = await bybitUidSet(env); if (!allow.has(buid)) return J({ error: 'uid_not_ours', hint: 'That UID is not on the affiliate list. Re-send with force:true only if you have checked the Bybit dashboard yourself.' }, 409); }
       const r = await usersDO(env, '/bybitlink', { uid: auid, buid });
       if (!r || r.error) return J({ error: (r && r.error) || 'unavailable' }, r && r.error === 'uid_taken' ? 409 : 503);
+      try { await bybitSnapshotRebuild(env, lbPeriodStart(Date.now())); } catch (e) {} // same rule as the member route: the board reflects the link at once
       try { await bybitLinkLog(env, request, { uid: auid, un: who.user.username || '', buid, err: '', ok: 1, admin: 1 }); } catch (e) {}
       try { await tgAdmin(env, '<b>Bybit UID set by admin</b> @' + (who.user.username || auid.slice(0, 8)) + ' → ' + (buid || '(cleared)'), { kind: 'bybit uid admin', sev: 'info' }); } catch (e) {}
       return J({ ok: true, username: who.user.username || '', uid: auid, buid });
