@@ -22013,7 +22013,8 @@ export default {
           { '@type': 'Question', name: 'Which coins are covered?', acceptedAnswer: { '@type': 'Answer', text: 'BTC and ETH plus top USDT-perpetual altcoins, with per-coin liquidation map pages for 32 coins and liquidation calculators for 76 coins.' } }
         ] }) + '</scr' + 'ipt>';
         const HM_SEO = '<section style="max-width:860px;margin:30px auto 40px;padding:0 20px;color:#9aa3ad;font-size:14px;line-height:1.7"><p style="color:#c8d0d9">MarginPad&#39;s crypto liquidation heatmap maps estimated liquidation clusters on BTC, ETH and top altcoins in real time, built from our own nine-exchange liquidation feed rather than a third-party API. Anyone can read the live map for five minutes every 12 hours without an account; continuous access comes with Premium. Free and unmetered: a <a href="/rekt/" style="color:#c2f64a">live liquidations feed</a>, <a href="/btc-liquidation-map/" style="color:#c2f64a">per-coin liquidation maps</a> for 32 coins and <a href="/calculators" style="color:#c2f64a">liquidation calculators</a> for 76 coins.</p><p>New to reading it? Start with the guide: <a href="/blog/how-to-read-a-liquidation-heatmap/" style="color:#c2f64a">how to read a liquidation heatmap</a>.</p></section>';
-        rw = rw.on('head', { element(e) { e.append(HM_SCHEMA, { html: true }); } }).on('body', { element(e) { e.append(HM_SEO, { html: true }); } });
+        // the crawlable paragraph goes ABOVE the site footer, not after it - appended to <body> it rendered below "© 2026 MarginPad" (audit 2026-09-25)
+        rw = rw.on('head', { element(e) { e.append(HM_SCHEMA, { html: true }); } }).on('footer.site-foot', { element(e) { e.before(HM_SEO, { html: true }); } });
       }
       return rw.transform(base);
     }
