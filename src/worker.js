@@ -1559,7 +1559,7 @@ async function handleSsrCalendar(request, url, env) {
 // So each page opens with the number and who measured it, filled HERE (crawlers run no JavaScript) into #askdata.
 // Markup: build/gen-ask-pages.js. A page whose data is missing keeps its "reading the live figure" line and is NOT
 // cached, rather than printing a confident blank.
-const ASK_PAGES = { 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded', 'what-leverage-should-a-beginner-use': 'leverage' };
+const ASK_PAGES = { 'leverage-report': 'levreport', 'how-many-traders-liquidated-today': 'count', 'longs-or-shorts-liquidated-more': 'side', 'biggest-liquidation-today': 'big', 'is-funding-positive-or-negative': 'funding', 'where-can-i-test-a-trading-bot': 'bot', 'mcp-server-for-crypto-trading': 'mcp', 'practice-for-a-funded-account': 'funded', 'what-leverage-should-a-beginner-use': 'leverage' };
 const _aUsd = v => { v = +v || 0; return v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + ' billion' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + ' million' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v); };
 const _aN = v => Math.round(+v || 0).toLocaleString('en-US');
 const _aVen = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
@@ -1631,6 +1631,44 @@ async function askRender(kind, env, ctx, es) {
     return { html: _askBox(head, prose, tbl, es ? ['', 'Cifra', 'Nota'] : ['', 'Figure', 'Note'],
       (es ? 'Medido ' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; contado de operaciones que liquid\u00f3 nuestro propio motor &middot; JSON gratuito en /api/arena y /api/apiplan'
           : stamp(Date.now()) + ' &middot; counted from trades our own engine settled &middot; free JSON at /api/arena and /api/apiplan')), ts: Date.now() };
+  }
+  if (kind === 'levreport') {
+    // THE MONTHLY LEVERAGE REPORT (2026-09-26, owner idea 9): the same count as /what-leverage-should-a-beginner-use/,
+    // but per CALENDAR MONTH and archived, so a figure quoted in October still resolves in March. The daily cron
+    // (leverageReportSnap) writes KV `levrep:<YYYY-MM>`; the current month is a rolling partial. Median, never mean.
+    const rep = await leverageReportRead(env);
+    const cur = rep.months[0] || null;
+    if (!cur || !cur.bands || !cur.bands.length) return { html: '', ts: Date.now() };
+    const byB = {}; cur.bands.forEach(b => { byB[b.band] = b; });
+    const hi = byB['over 100x'], lo = byB['11-25x'], safe = byB['1-2x'], mid = byB['26-50x'];
+    if (!hi || !lo) return { html: '', ts: Date.now() };
+    const mName = (m, esx) => { const [y, mo] = m.split('-'); const EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']; return (esx ? ES : EN)[+mo - 1] + ' ' + y; };
+    const rate = b => (b && b.closes >= 200) ? b.liquidated_pct + '%' : T('too few', 'muy pocas');
+    const head = T(mName(cur.month) + ': over 100x, ' + rate(hi) + ' of trades ended in liquidation - at 1-2x, ' + rate(safe),
+                   mName(cur.month, true) + ': por encima de 100x, el ' + rate(hi) + ' de las operaciones terminó liquidado; a 1-2x, el ' + rate(safe));
+    const prev = rep.months.slice(1, 7);
+    const prevLine = prev.length ? prev.map(m => { const hb = (m.bands || []).find(b => b.band === 'over 100x'), lb = (m.bands || []).find(b => b.band === '11-25x'); return mName(m.month, es) + ': ' + T('over 100x ', 'más de 100x ') + rate(hb) + ', 11-25x ' + rate(lb) + ' (' + _aN(m.closes) + T(' closes', ' cierres') + ')'; }).join('; ') : '';
+    const prose = es
+      ? ('Cada mes contamos <strong>todas las operaciones cerradas</strong> en MarginPad, agrupadas por el apalancamiento con el que se abrieron, y publicamos qué parte de cada tramo terminó en liquidación forzosa y qué devolvió la operación mediana. '
+         + (cur.partial ? 'Este mes sigue en curso: ' : 'Mes cerrado: ') + '<strong>' + _aN(cur.closes) + ' operaciones cerradas</strong> desde el ' + cur.from.slice(0, 10) + '. '
+         + 'A 11-25x, donde se concentra la mayoría, se liquidó el ' + rate(lo) + '; a 26-50x, el ' + rate(mid) + '. La mediana, nunca la media: la media del tramo más alto es una cifra sin sentido, dominada por unas pocas cuentas.</p>'
+         + (prevLine ? '<p><strong>Meses anteriores:</strong> ' + prevLine + '.</p>' : '')
+         + '<p>Son operaciones simuladas, ejecutadas en el servidor a precios reales en vivo, con comisiones en ambas patas, funding y liquidación comprobada contra velas de un minuto. Un tramo con menos de 200 cierres no imprime tasa. El JSON de cada mes es gratuito y sin clave.</p>')
+      : ('Every month we count <strong>every trade closed</strong> on MarginPad, grouped by the leverage it was opened at, and publish what share of each band ended in a forced close and what the median trade returned. '
+         + (cur.partial ? 'This month is still running: ' : 'Month closed: ') + '<strong>' + _aN(cur.closes) + ' closed trades</strong> since ' + cur.from.slice(0, 10) + '. '
+         + 'At 11-25x, where most people sit, ' + rate(lo) + ' were liquidated; at 26-50x, ' + rate(mid) + '. Median, never mean: the top band’s mean is a meaningless figure driven by a handful of accounts.</p>'
+         + (prevLine ? '<p><strong>Previous months:</strong> ' + prevLine + '.</p>' : '')
+         + '<p>These are paper trades, filled server-side at real live prices with taker fees on both legs, funding on held positions, and liquidation checked against one-minute candles. A band with fewer than 200 closes prints no rate. Every month’s JSON is free and keyless.</p>');
+    const rows = cur.bands.filter(b => b.closes > 0).map(b => [
+      b.band,
+      b.closes < 200 ? T('too few', 'muy pocas') : b.liquidated_pct + '%',
+      b.closes < 200 ? T('thin - no rate printed', 'muestra fina - sin tasa')
+        : T(_aN(b.closes) + ' closes &middot; median ' + (b.median_roe_pct > 0 ? '+' : '') + b.median_roe_pct + '% ROE &middot; ' + b.share_of_closes_pct + '% of the month',
+            _aN(b.closes) + ' cierres &middot; mediana ' + (b.median_roe_pct > 0 ? '+' : '') + b.median_roe_pct + '% ROE &middot; ' + b.share_of_closes_pct + '% del mes'),
+    ]);
+    return { html: _askBox(head, prose, rows, es ? ['Apalancamiento', 'Liquidadas', 'Muestra'] : ['Leverage', 'Liquidated', 'Sample'],
+      (es ? 'Medido ' + new Date(cur.ts || Date.now()).toISOString().slice(0, 16).replace('T', ' ') + ' UTC &middot; ' + mName(cur.month, true) + ', operaciones cerradas que liquidó nuestro propio motor &middot; JSON gratuito en /api/leverage?month=' + cur.month
+          : stamp(cur.ts || Date.now()) + ' &middot; ' + mName(cur.month) + ', closed trades our own engine settled &middot; free JSON at /api/leverage?month=' + cur.month)), ts: Date.now() };
   }
   if (kind === 'funded') {
     // THE ONE ANSWER HERE THAT NOBODY SELLING CHALLENGES CAN GIVE. "Where do I practise for a funded account" is asked
@@ -6528,6 +6566,45 @@ async function webhookDrain(env, opts) {
   await usersDO(env, '/webhook/ack', { results });
   try { if (env.AE) env.AE.writeDataPoint({ indexes: ['webhook'], blobs: ['webhook', 'deliver'], doubles: [results.filter(r => r.ok).length, results.filter(r => !r.ok).length] }); } catch (e) {}
   return { delivered: results.filter(r => r.ok).length, failed: results.filter(r => !r.ok).length, results };
+}
+// MONTHLY LEVERAGE REPORT (2026-09-26): /levscan per calendar month, archived in KV so a quoted month never changes
+// under the reader. `levrep:<YYYY-MM>` = {month, from, to, ts, partial, closes, bands}; `levrep:index` = months, newest
+// first. The daily cron rewrites the current month (partial) and seals the previous one once, on its first run in the
+// new month. Read side tolerates an empty archive by measuring the current month live (the first day after deploy).
+const _levMonthKey = d => d.toISOString().slice(0, 7);
+async function leverageReportOne(env, monthKey, now) {
+  const [y, m] = monthKey.split('-').map(Number); const from = Date.UTC(y, m - 1, 1), end = Date.UTC(y, m, 1), to = Math.min(end, now || Date.now());
+  let r = null; try { r = await usersDO(env, '/levscan', { from, to }); } catch (e) {}
+  if (!r || !Array.isArray(r.buckets)) return null;
+  const MIN = 200;
+  return { month: monthKey, from: new Date(from).toISOString(), to: new Date(to).toISOString(), ts: Date.now(), partial: to < end, closes: +r.closes || 0, min_closes_for_a_rate: MIN, bands: r.buckets.map(x => Object.assign({}, x, { thin: x.closes < MIN })) };
+}
+async function leverageReportSnap(env) {
+  if (!env || !env.STATS) return { ok: false };
+  const now = Date.now(), cur = _levMonthKey(new Date(now)), prevD = new Date(now); prevD.setUTCDate(1); prevD.setUTCMonth(prevD.getUTCMonth() - 1); const prev = _levMonthKey(prevD);
+  let idx = []; try { idx = JSON.parse((await env.STATS.get('levrep:index')) || '[]'); } catch (e) {}
+  const out = { ok: true, wrote: [] };
+  const c = await leverageReportOne(env, cur, now); if (c) { await env.STATS.put('levrep:' + cur, JSON.stringify(c)); out.wrote.push(cur); }
+  let sealed = null; try { sealed = JSON.parse((await env.STATS.get('levrep:' + prev)) || 'null'); } catch (e) {}
+  // seal the previous month on the first runs of the new one, never later: tradeev keeps a Free account's closes for
+  // 30 days, so a month first measured weeks after it ended would be an undercount dressed as an archive
+  const prevEnd = Date.UTC(prevD.getUTCFullYear(), prevD.getUTCMonth() + 1, 1);
+  if ((!sealed && now - prevEnd < 3 * 86400000) || (sealed && sealed.partial)) { const p = await leverageReportOne(env, prev, now); if (p) { await env.STATS.put('levrep:' + prev, JSON.stringify(p)); out.wrote.push(prev); } }
+  const set = new Set([cur, prev, ...idx]); const months = Array.from(set).filter(Boolean).sort().reverse().slice(0, 36);
+  await env.STATS.put('levrep:index', JSON.stringify(months));
+  return out;
+}
+async function leverageReportRead(env) {
+  let idx = []; try { idx = JSON.parse((await env.STATS.get('levrep:index')) || '[]'); } catch (e) {}
+  const cur = _levMonthKey(new Date());
+  if (!idx.includes(cur)) idx = [cur, ...idx];
+  const months = [];
+  for (const m of idx.slice(0, 12)) {
+    let rec = null; try { rec = JSON.parse((await env.STATS.get('levrep:' + m)) || 'null'); } catch (e) {}
+    if (!rec && m === cur) rec = await leverageReportOne(env, cur, Date.now()); // nothing archived yet: measure the running month live
+    if (rec) months.push(rec);
+  }
+  return { months };
 }
 // "MY BOT, LIVE" (2026-09-26): one account's arena standing + open book, priced by the worker, for the embeddable
 // widget (/widget/bot/) and the README badge (/api/widget/bot.svg). Paper money; the arena row needs 5 closes.
@@ -18987,6 +19064,19 @@ export default {
     // PUBLIC, KEYLESS (2026-09-21). What leverage actually does to a real book, measured on 30 days of our own
     // closed trades. Every answer to this question online is an opinion; this one is a count. A band under 200
     // closes is returned but marked thin, and the page prints no rate for it.
+    if (url.pathname === '/api/leverage' && (url.searchParams.get('month') || url.searchParams.get('months') === '1')) { // the monthly report archive (2026-09-26)
+      const JHL = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=900', ...CORS };
+      const mk = String(url.searchParams.get('month') || '');
+      if (mk) {
+        if (!/^\d{4}-\d{2}$/.test(mk)) return new Response(JSON.stringify({ error: 'bad_month', hint: 'YYYY-MM' }), { status: 400, headers: { ...JHL, 'cache-control': 'no-store' } });
+        let rec = null; try { rec = JSON.parse((await env.STATS.get('levrep:' + mk)) || 'null'); } catch (e) {}
+        if (!rec && mk === _levMonthKey(new Date())) rec = await leverageReportOne(env, mk, Date.now());
+        if (!rec) return new Response(JSON.stringify({ error: 'no_such_month', hint: 'GET /api/leverage?months=1 lists the archived months' }), { status: 404, headers: { ...JHL, 'cache-control': 'no-store' } });
+        return new Response(JSON.stringify({ ok: true, ...rec, method_url: 'https://marginpad.io/leverage-report/' }), { headers: JHL });
+      }
+      const rep = await leverageReportRead(env);
+      return new Response(JSON.stringify({ ok: true, months: rep.months.map(m => ({ month: m.month, partial: m.partial, closes: m.closes, ts: m.ts, bands: m.bands })), method_url: 'https://marginpad.io/leverage-report/' }), { headers: JHL });
+    }
     if (url.pathname === '/api/leverage') {
       const ck = new Request('https://marginpad.io/__leverage_v1');
       if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
@@ -22216,6 +22306,7 @@ export default {
       acctalerts: ['price and account alerts', 'alerts members set do not fire'],
       subs: ['expires Premium and API subscriptions', 'lapsed plans keep working, so this leaks access rather than breaking it'],
       apiexp: ['warns API customers before their plan ends', 'a customer can be cut off with no notice'],
+      levrep: ['archives the monthly leverage report', '/leverage-report/ and /api/leverage?month= go stale or empty'],
       spotorders: ['fills Demo Spot limit orders', 'spot limit orders sit unfilled'],
       wrap: ['the daily market wrap to the channel', 'the channel is quiet today'],
       brief: ['the morning brief', 'you do not get your own daily read'],
@@ -22292,6 +22383,7 @@ export default {
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
+    bg(leverageReportSnap, 'levrep'); // the monthly leverage report: current month rolling, previous month sealed once (2026-09-26)
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
     bg(checkWhaleAlerts, 'whale');

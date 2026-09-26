@@ -42,6 +42,32 @@ const SIBS = [
 
 const PAGES = [
   {
+    // 2026-09-26 (owner idea 9): the same count as the leverage question page, but per calendar month and ARCHIVED, so
+    // a figure somebody quotes in October still resolves in March. The worker's daily cron seals each month into KV;
+    // the SSR block reads the archive and the page below only explains the method. Median, never mean.
+    slug: 'leverage-report',
+    kind: 'levreport',
+    h1: 'Crypto leverage report: what traders actually use, month by month',
+    title: 'Crypto Leverage Report (Monthly) - Liquidation Rate by Leverage, Measured | MarginPad',
+    desc: 'A monthly count, not a survey: every trade closed on MarginPad grouped by the leverage it was opened at, with the share that ended in liquidation and the median return per band. Archived per month, free JSON per month.',
+    lead: 'Published every month from our own book: how many trades each leverage band closed, what share of them were liquidated, and what the middle trade returned. Nothing modelled, nothing surveyed.',
+    dataset: ['MarginPad monthly leverage report', 'Every paper trade closed on MarginPad in a calendar month, grouped by the leverage it was opened at, with the share of each band that ended in liquidation, the median ROE and the band\'s share of all closes. One record per month, archived; the current month is a rolling partial.', 'https://marginpad.io/api/leverage?months=1'],
+    body: [
+      ['What is counted, and what is not', '<p>A trade enters this report when it <strong>closes</strong> - by a stop, a take-profit, a manual close, or a liquidation. The band is the leverage it was <strong>opened</strong> at, so a 100x trade that ends at 2% profit counts as a 100x trade, not a lucky one. The liquidation rate is the share of those closes that were forced closes; the median ROE is the return on margin of the middle trade in the band, which is why it never reads +25,776% the way the mean of the top band once did. A band with fewer than 200 closes in the month prints <em>too few</em> instead of a rate: a percentage of 40 trades is noise dressed as a figure.</p>'],
+      ['Why the shape of the table barely moves', '<p>Month after month the middle bands hold most of the closes - 11-25x is where the bulk of leveraged crypto trading actually happens, on any venue - and the liquidation rate climbs with leverage in the same order every time. That is arithmetic, not sentiment: at 100x a 0.5% move against the position is the whole margin; at 5x it takes about 19.5%. A volatile month raises every band a little; it does not reorder them. When the order does change, that is the month worth reading twice.</p>'],
+      ['How to use this on a real account', '<p>Find the band you trade in. If its liquidation rate is a number you would not accept as the odds of losing your whole margin on a single position, move one band down before the market does it for you. The <a href="/what-leverage-should-a-beginner-use/">beginner leverage page</a> reads the same count over the last 30 days; this page is the archive, so you can see whether the month you are trading in is unusual. Every figure can be reproduced from the free JSON - one call per month, no key.</p>'],
+      ['Test your own leverage before it costs money', '<p>All of this comes from people trading on <a href="/paper-trade">MarginPad’s paper-trading terminal</a>: real live prices, fees on both legs, funding on held positions, liquidation checked against one-minute candles, and no deposit. Open a position at the leverage you use for real, hold it through a week of the market, and your own row in this count will tell you more than any opinion.</p>'],
+    ],
+    related: [['/what-leverage-should-a-beginner-use/', 'what leverage a beginner should use, measured over 30 days'], ['/paper-trade', 'practice at your chosen leverage, free'], ['/calculators?c=liq', 'liquidation price calculator'], ['/how-many-traders-liquidated-today/', 'how many traders were liquidated today'], ['/practice-for-a-funded-account/', 'our own funded-challenge pass rate']],
+    faq: [
+      ['What percentage of leveraged crypto trades get liquidated?', 'It depends on the leverage more than on anything else. On MarginPad, counted every month across every closed trade, roughly 0-1% of trades at 1-2x end in liquidation, about 10-12% at 11-25x, close to 30% at 26-50x, and over half of trades opened above 100x. The exact figures for each month are on this page and in the free JSON.'],
+      ['What leverage do most crypto traders use?', 'In our count the 11-25x band holds the largest share of closed trades every month - typically a third of them - followed by 26-50x. Very low leverage (1-2x) and very high leverage (over 100x) are each a small minority of closes.'],
+      ['Is the leverage report based on real money?', 'No. It is measured on paper trades filled server-side at real live prices with real venue fees, funding and liquidation rules. The price path and the mechanics are real; the money is not, which is also why it is the only leverage dataset that can be published in full.'],
+      ['Why median ROE instead of average?', 'Because the average of a leverage band is dominated by a handful of extreme accounts and says nothing about a typical trade - the top band once averaged +25,776%. The median is the return of the middle trade, which is the number that describes what usually happens.'],
+      ['Can I get the report for a specific month?', 'Yes. GET https://marginpad.io/api/leverage?month=YYYY-MM returns that month\'s bands, and ?months=1 lists every archived month. No API key, CORS enabled.'],
+    ],
+  },
+  {
     // 2026-09-21. The most-asked beginner question in leveraged trading, and everywhere else on the internet it is
     // answered with an opinion - frequently by somebody selling access to the leverage. We can COUNT it, on 30 days
     // of closed trades settled by our own engine, and we have no stake in the answer because none of it is real

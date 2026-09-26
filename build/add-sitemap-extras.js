@@ -40,6 +40,7 @@ const EXTRAS = [
   ['/mcp-server-for-crypto-trading/', '1.0', D],
   ['/practice-for-a-funded-account/', '1.0', D],
   ['/what-leverage-should-a-beginner-use/', '1.0', D],
+  ['/leverage-report/', '1.0', D],
   ['/crypto-liquidations-today/', '0.9', D],
   ['/liquidations/by-exchange/', '0.9', D],
   ['/hyperliquid-liquidations/', '0.9', D],

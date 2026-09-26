@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Crypto Leverage Report (Monthly) - Liquidation Rate by Leverage, Measured | MarginPad</title>
+<meta name="description" content="A monthly count, not a survey: every trade closed on MarginPad grouped by the leverage it was opened at, with the share that ended in liquidation and the median return per band. Archived per month, free JSON per month.">
+<link rel="canonical" href="https://marginpad.io/leverage-report/">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Crypto Leverage Report (Monthly) - Liquidation Rate by Leverage, Measured | MarginPad">
+<meta property="og:description" content="A monthly count, not a survey: every trade closed on MarginPad grouped by the leverage it was opened at, with the share that ended in liquidation and the median return per band. Archived per month, free JSON per month.">
+<meta property="og:url" content="https://marginpad.io/leverage-report/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"MarginPad monthly leverage report","description":"Every paper trade closed on MarginPad in a calendar month, grouped by the leverage it was opened at, with the share of each band that ended in liquidation, the median ROE and the band's share of all closes. One record per month, archived; the current month is a rolling partial.","url":"https://marginpad.io/leverage-report/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/leverage?months=1"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"What percentage of leveraged crypto trades get liquidated?","acceptedAnswer":{"@type":"Answer","text":"It depends on the leverage more than on anything else. On MarginPad, counted every month across every closed trade, roughly 0-1% of trades at 1-2x end in liquidation, about 10-12% at 11-25x, close to 30% at 26-50x, and over half of trades opened above 100x. The exact figures for each month are on this page and in the free JSON."}},{"@type":"Question","name":"What leverage do most crypto traders use?","acceptedAnswer":{"@type":"Answer","text":"In our count the 11-25x band holds the largest share of closed trades every month - typically a third of them - followed by 26-50x. Very low leverage (1-2x) and very high leverage (over 100x) are each a small minority of closes."}},{"@type":"Question","name":"Is the leverage report based on real money?","acceptedAnswer":{"@type":"Answer","text":"No. It is measured on paper trades filled server-side at real live prices with real venue fees, funding and liquidation rules. The price path and the mechanics are real; the money is not, which is also why it is the only leverage dataset that can be published in full."}},{"@type":"Question","name":"Why median ROE instead of average?","acceptedAnswer":{"@type":"Answer","text":"Because the average of a leverage band is dominated by a handful of extreme accounts and says nothing about a typical trade - the top band once averaged +25,776%. The median is the return of the middle trade, which is the number that describes what usually happens."}},{"@type":"Question","name":"Can I get the report for a specific month?","acceptedAnswer":{"@type":"Answer","text":"Yes. GET https://marginpad.io/api/leverage?month=YYYY-MM returns that month's bands, and ?months=1 lists every archived month. No API key, CORS enabled."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/liquidations/">Liquidations</a><a href="/heatmap">Heatmap</a><a href="/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">One question, one answer</p>
+    <h1>Crypto leverage report: what traders actually use, month by month</h1>
+    <p class="lead">Published every month from our own book: how many trades each leverage band closed, what share of them were liquidated, and what the middle trade returned. Nothing modelled, nothing surveyed.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Reading the live figure&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/what-leverage-should-a-beginner-use/">What leverage a beginner should use, measured over 30 days</a><a class="ask-cta alt" href="/paper-trade">Practice at your chosen leverage, free</a><a class="ask-cta alt" href="/calculators?c=liq">Liquidation price calculator</a><a class="ask-cta alt" href="/how-many-traders-liquidated-today/">How many traders were liquidated today</a><a class="ask-cta alt" href="/practice-for-a-funded-account/">Our own funded-challenge pass rate</a></p>
+
+    <h2>What is counted, and what is not</h2>
+    <p>A trade enters this report when it <strong>closes</strong> - by a stop, a take-profit, a manual close, or a liquidation. The band is the leverage it was <strong>opened</strong> at, so a 100x trade that ends at 2% profit counts as a 100x trade, not a lucky one. The liquidation rate is the share of those closes that were forced closes; the median ROE is the return on margin of the middle trade in the band, which is why it never reads +25,776% the way the mean of the top band once did. A band with fewer than 200 closes in the month prints <em>too few</em> instead of a rate: a percentage of 40 trades is noise dressed as a figure.</p>
+
+    <h2>Why the shape of the table barely moves</h2>
+    <p>Month after month the middle bands hold most of the closes - 11-25x is where the bulk of leveraged crypto trading actually happens, on any venue - and the liquidation rate climbs with leverage in the same order every time. That is arithmetic, not sentiment: at 100x a 0.5% move against the position is the whole margin; at 5x it takes about 19.5%. A volatile month raises every band a little; it does not reorder them. When the order does change, that is the month worth reading twice.</p>
+
+    <h2>How to use this on a real account</h2>
+    <p>Find the band you trade in. If its liquidation rate is a number you would not accept as the odds of losing your whole margin on a single position, move one band down before the market does it for you. The <a href="/what-leverage-should-a-beginner-use/">beginner leverage page</a> reads the same count over the last 30 days; this page is the archive, so you can see whether the month you are trading in is unusual. Every figure can be reproduced from the free JSON - one call per month, no key.</p>
+
+    <h2>Test your own leverage before it costs money</h2>
+    <p>All of this comes from people trading on <a href="/paper-trade">MarginPad’s paper-trading terminal</a>: real live prices, fees on both legs, funding on held positions, liquidation checked against one-minute candles, and no deposit. Open a position at the leverage you use for real, hold it through a week of the market, and your own row in this count will tell you more than any opinion.</p>
+
+    <h2>Questions</h2>
+    <details><summary>What percentage of leveraged crypto trades get liquidated?</summary><p>It depends on the leverage more than on anything else. On MarginPad, counted every month across every closed trade, roughly 0-1% of trades at 1-2x end in liquidation, about 10-12% at 11-25x, close to 30% at 26-50x, and over half of trades opened above 100x. The exact figures for each month are on this page and in the free JSON.</p></details>
+    <details><summary>What leverage do most crypto traders use?</summary><p>In our count the 11-25x band holds the largest share of closed trades every month - typically a third of them - followed by 26-50x. Very low leverage (1-2x) and very high leverage (over 100x) are each a small minority of closes.</p></details>
+    <details><summary>Is the leverage report based on real money?</summary><p>No. It is measured on paper trades filled server-side at real live prices with real venue fees, funding and liquidation rules. The price path and the mechanics are real; the money is not, which is also why it is the only leverage dataset that can be published in full.</p></details>
+    <details><summary>Why median ROE instead of average?</summary><p>Because the average of a leverage band is dominated by a handful of extreme accounts and says nothing about a typical trade - the top band once averaged +25,776%. The median is the return of the middle trade, which is the number that describes what usually happens.</p></details>
+    <details><summary>Can I get the report for a specific month?</summary><p>Yes. GET https://marginpad.io/api/leverage?month=YYYY-MM returns that month's bands, and ?months=1 lists every archived month. No API key, CORS enabled.</p></details>
+
+    <div class="sibs">
+      <h2>Other questions we answer with a live number</h2>
+      <ul><li><a href="/how-many-traders-liquidated-today/">How many traders got liquidated today?</a></li><li><a href="/longs-or-shorts-liquidated-more/">Are longs or shorts getting liquidated more?</a></li><li><a href="/biggest-liquidation-today/">What was the biggest liquidation today?</a></li><li><a href="/is-funding-positive-or-negative/">Is funding positive or negative right now?</a></li><li><a href="/where-can-i-test-a-trading-bot/">Where can I test a trading bot for free?</a></li><li><a href="/mcp-server-for-crypto-trading/">Is there an MCP server for crypto trading?</a></li><li><a href="/practice-for-a-funded-account/">Where can I practice for a funded account challenge?</a></li><li><a href="/what-leverage-should-a-beginner-use/">What leverage should a beginner use?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Related: <a href="/what-leverage-should-a-beginner-use/">what leverage a beginner should use, measured over 30 days</a> &middot; <a href="/paper-trade">practice at your chosen leverage, free</a> &middot; <a href="/calculators?c=liq">liquidation price calculator</a> &middot; <a href="/how-many-traders-liquidated-today/">how many traders were liquidated today</a> &middot; <a href="/practice-for-a-funded-account/">our own funded-challenge pass rate</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
+</body>
+</html>
