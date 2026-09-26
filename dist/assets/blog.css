@@ -217,3 +217,5 @@ article h2:first-of-type{margin-top:44px}
 
 /* article tables on a phone (audit 2026-09-25): scroll inside their own box instead of shredding the last column into single characters; mp-nav paints the fade cue on any box that overflows */
 @media(max-width:600px){article table,.post table,.sc-table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}article table th,article table td,.post table th,.post table td,.sc-table th,.sc-table td{white-space:nowrap}}
+
+@media(max-width:600px){.cat-chips{display:flex;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:8px;padding:2px 2px 8px;scrollbar-width:none;margin-right:-16px}.cat-chips::-webkit-scrollbar{display:none}.cat-chips .chip{flex:0 0 auto;white-space:nowrap}}/* phone: one scrolling row of chips (audit 2026-09-25) */

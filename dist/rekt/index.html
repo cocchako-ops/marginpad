@@ -271,15 +271,15 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   .tk-stub:active{filter:brightness(.92)}
   .tk-stub::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
   .tk.long .tk-stub{background:linear-gradient(180deg,rgba(255,90,77,.11),rgba(255,90,77,.035))}
-  .tk.short .tk-stub{background:linear-gradient(180deg,rgba(255,90,77,.11),rgba(255,90,77,.035))}
+  .tk.short .tk-stub{background:linear-gradient(180deg,rgba(46,189,133,.13),rgba(46,189,133,.04))}
   .tk.long .tk-stub::before{background:linear-gradient(180deg,var(--lqred),#9c2b23)}
-  .tk.short .tk-stub::before{background:linear-gradient(180deg,var(--lqred),#9c2b23)}
+  .tk.short .tk-stub::before{background:linear-gradient(180deg,var(--lqgrn),#1f7a58)}
   .tk-dir{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.17em;color:var(--lqink2)}
   .tk-arrow{line-height:0;margin:2px 0}
   .tk-arrow svg{display:block}
-  .tk.long .tk-arrow{color:var(--lqgrn)}.tk.short .tk-arrow{color:var(--lqred)}
+  .tk.long .tk-arrow{color:var(--lqred)}.tk.short .tk-arrow{color:var(--lqgrn)}
   .tk-rekt{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.24em}
-  .tk.long .tk-rekt{color:var(--lqredg)}.tk.short .tk-rekt{color:var(--lqredg)}
+  .tk.long .tk-rekt{color:var(--lqredg)}.tk.short .tk-rekt{color:#7fe0b6}
 
   /* perforation line running through the punched notches */
   .tk-perf{position:absolute;top:7px;bottom:7px;left:var(--px);width:0;border-left:2px dashed rgba(255,255,255,.2);pointer-events:none}
@@ -751,7 +751,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var cls='tk '+(lng?'long':'short')+(huge?' huge':'')+(fresh?' fresh':'');
     var shareTxt=esc(e.symbol+' '+(lng?'LONG':'SHORT')+' liquidated - $'+money(e.notional)+__esT_rektindex("wipedAt",' wiped at $')+px(e.price)+' on '+String(e.exchange).toUpperCase()+'. Live crypto liquidations on MarginPad:');
     return '<div class="'+cls+'" data-side="'+(lng?'long':'short')+'" data-n="'+e.notional+'" data-sym="'+esc(e.symbol)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-share="'+shareTxt+'"><div class="tk-paper">'
-      +'<div class="tk-stub" title="Tap to share this liquidation"><span class="tk-dir">'+(lng?'LONG':'SHORT')+'</span><span class="tk-arrow">'+(lng?'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 5l8 13H4z"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 19 4 6h16z"/></svg>')+'</span><span class="tk-rekt">REKT</span></div>'
+      +'<div class="tk-stub" title="Tap to share this liquidation"><span class="tk-dir">'+(lng?'LONG':'SHORT')+'</span><span class="tk-arrow">'+(!lng?'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 5l8 13H4z"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 19 4 6h16z"/></svg>')+'</span><span class="tk-rekt">REKT</span></div>'
       +'<div class="tk-body">'
         +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+__esT_rektindex("targetBlankRelNoopener",'" target="_blank" rel="noopener sponsored" title="Trade ')+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span></div>'
         +'<div class="tk-sub">@ <b>$'+px(e.price)+'</b></div>'
