@@ -24,6 +24,7 @@ Allow: /api/screener
 Allow: /api/fng
 Allow: /api/calendar
 Allow: /api/symbols
+Allow: /api/liquidation
 Disallow: /telegram/
 Disallow: /chat/
 
