@@ -287,6 +287,7 @@
   <url><loc>https://marginpad.io/es/leaderboards/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/levels/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/leverage-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/es/leverage-report/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/leverage-trading-simulator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/link-liquidation-calculator/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/es/link-liquidation-map/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

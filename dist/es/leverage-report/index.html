@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/leverage-report/"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Informe Mensual de Apalancamiento Cripto - Tasa de Liquidación por Apalancamiento, Medida | MarginPad</title>
+<meta name="description" content="Un conteo mensual, no una encuesta: cada operación cerrada en MarginPad agrupada por el apalancamiento con el que se abrió, con la proporción que terminó en liquidación y el retorno mediano por tramo. Archivado mes a mes, JSON gratuito cada mes.">
+<link rel="canonical" href="https://marginpad.io/es/leverage-report/">
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/leverage-report/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/leverage-report/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/leverage-report/" />
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta property="og:title" content="Informe Mensual de Apalancamiento Cripto - Tasa de Liquidación por Apalancamiento, Medida | MarginPad">
+<meta property="og:description" content="Un conteo mensual, no una encuesta: cada operación cerrada en MarginPad agrupada por el apalancamiento con el que se abrió, con la proporción que terminó en liquidación y el retorno mediano por tramo. Archivado mes a mes, JSON gratuito cada mes.">
+<meta property="og:url" content="https://marginpad.io/es/leverage-report/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+/* ── the answer is the page ─────────────────────────────────────────────────────────────────────────
+   These five pages exist to answer one question, and until 2026-09-16 the answer arrived as a callout
+   inside a blog post - so they READ as blog posts. The answer breaks the reading column now and sits as
+   its own object: display type, one sentence, then where the figure came from. Everything is static HTML;
+   a crawler runs no JavaScript and the figure is server-rendered into #askdata before the page is sent. */
+.qeye{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--lime);margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+.qeye::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.35),transparent)}
+/* The ANSWER is the largest thing on the page, not the question. blog.css sizes h1 at clamp(32,5.5vw,50)
+   for an article title, which on a phone made the question half again bigger than the answer under it -
+   the wrong hierarchy for a page that exists to answer one thing. The question still has to be recognisable
+   at a glance (a reader arriving from an assistant is checking they are in the right place), so it stays
+   large - just never larger than what it is asking for. */
+article h1{margin:0 0 14px;font-size:clamp(27px,4.3vw,39px)}
+
+.ansbox{position:relative;margin:26px -26px 0;padding:28px 30px 24px;border:1px solid var(--line-bright);border-radius:18px;
+  background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.07),transparent 58%),linear-gradient(180deg,#12161c,#0d1014);overflow:hidden}
+.ansbox::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--lime),rgba(194,246,74,.12) 42%,transparent)}
+.ansbox .big{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;font-size:clamp(30px,5.6vw,47px);line-height:1.12;font-weight:800;letter-spacing:-.025em;color:#f4f2ec;margin:0 0 14px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansbox .big span,.ansbox .big b,.ansbox .big strong{color:var(--lime);font-weight:800}
+.ansbox .say{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink-dim);max-width:66ch}
+.ansbox .say strong{color:var(--ink)}
+.ansbox .say a{color:var(--lime)}
+/* provenance: when, from what, and the free JSON that returns the same number. This is the reason to cite
+   us instead of lifting the figure, and it used to be one line of grey small print. */
+.prov{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:9px 26px;margin:20px -30px -24px;padding:14px 30px;border-top:1px solid var(--line);background:rgba(0,0,0,.28);
+  font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.55;letter-spacing:.02em;color:var(--ink-faint)}
+/* a GRID, not a sentence with separators. Flex-wrap put the dot at the start of every wrapped line, where it
+   read as a typo - and these items are three different kinds of provenance, not three clauses. One per cell,
+   one per line on a phone, and no separator can ever be orphaned. */
+.prov span{display:block;position:relative;padding-left:13px}
+.prov span::before{content:'';position:absolute;left:0;top:.52em;width:4px;height:4px;border-radius:50%;background:var(--line-bright)}
+.prov span:first-child::before{background:var(--lime);opacity:.7}
+.prov a{color:var(--ink-dim);text-decoration:none;border-bottom:1px solid var(--line-bright)}
+.prov a:hover{color:var(--lime)}
+@media(max-width:720px){.ansbox{margin-left:-14px;margin-right:-14px;padding:22px 18px 20px;border-radius:14px}.prov{margin:18px -18px -20px;padding:13px 18px;gap:8px}}
+
+/* the supporting figures. Digits line up in a column, so tabular-nums and the mono face; the note column
+   is the one thing allowed to wrap. min-width:0 on the scroll box or a wide table widens the document. */
+.ask-w{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;margin:22px 0 0;border:1px solid var(--line);border-radius:14px;background:#0e1116}
+.ask-t{width:100%;border-collapse:collapse;font-size:14px;margin:0}
+.ask-t th,.ask-t td{padding:11px 16px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.ask-t tr:last-child td{border-bottom:0}
+.ask-t tbody tr:hover td{background:rgba(255,255,255,.018)}
+.ask-t th{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:400;background:rgba(0,0,0,.25)}
+.ask-t th.r{text-align:right}
+.ask-t td.n{font-family:'Space Mono',monospace;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.ask-t td:last-child,.ask-t th:last-child{color:var(--ink-dim);font-size:12.5px;white-space:normal;text-align:left;font-family:inherit;min-width:180px}
+.ask-t td:first-child{font-weight:600;color:var(--ink)}
+.ask-t a{color:var(--ink-dim)}
+@media(max-width:720px){.ask-t th,.ask-t td{padding:10px 12px}.ask-t td:last-child{min-width:150px}}
+
+/* where to go next, right under the answer - a link is the useful half of an assistant's reply */
+.ask-cta{display:inline-flex;align-items:center;margin:0;padding:10px 16px;border-radius:11px;background:var(--lime);color:#0a0b0d;font-weight:700;font-size:14px;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.ask-cta.alt{background:none;border:1px solid var(--line-bright);color:var(--ink)}
+.ask-cta:hover{transform:translateY(-1px)}
+.ask-cta.alt:hover{border-color:var(--lime);color:var(--lime)}
+.ctarow{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 6px}
+
+/* the questions. A <details> with no styling reads as a browser default in the middle of a designed page. */
+article details{border-bottom:1px solid var(--line);padding:0}
+article details:first-of-type{border-top:1px solid var(--line)}
+article details summary{list-style:none;cursor:pointer;padding:16px 34px 16px 0;position:relative;font-weight:600;color:var(--ink);font-size:15.5px;line-height:1.45}
+article details summary::-webkit-details-marker{display:none}
+article details summary::after{content:'';position:absolute;right:6px;top:22px;width:7px;height:7px;border-right:1.5px solid var(--ink-faint);border-bottom:1.5px solid var(--ink-faint);transform:rotate(45deg);transition:transform .16s ease}
+article details[open] summary::after{transform:rotate(-135deg)}
+article details summary:hover{color:var(--lime)}
+article details p{margin:0 0 18px;max-width:68ch}
+
+/* the other four questions, so each page feeds the family instead of being a dead end */
+.sibs{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--line)}
+.sibs h2{font-size:15px!important;padding-left:0!important;margin:0 0 14px!important;font-family:'Space Mono',monospace!important;font-weight:400!important;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)!important}
+.sibs h2::before{display:none}
+.sibs ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:9px}
+.sibs li{margin:0}
+.sibs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-size:14.5px;line-height:1.4;background:#0e1116;transition:border-color .12s ease,color .12s ease}
+.sibs a:hover{border-color:var(--lime);color:var(--lime)}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Informe mensual de apalancamiento de MarginPad","description":"Cada operación de paper trading cerrada en MarginPad en un mes calendario, agrupada por el apalancamiento con el que se abrió, con la proporción de cada tramo que terminó en liquidación, el ROE mediano y la parte que representa el tramo sobre el total de cierres. Un registro por mes, archivado; el mes en curso es un parcial en progreso.","url":"https://marginpad.io/es/leverage-report/","license":"https://marginpad.io/terms/","isAccessibleForFree":true,"creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"temporalCoverage":"P1D","dateModified":"2026-09-14","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/leverage?months=1"}],"measurementTechnique":"Direct subscription to exchange public feeds; events normalised and aggregated over a rolling 24-hour window."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-09-14","mainEntity":[{"@type":"Question","name":"¿Qué porcentaje de las operaciones cripto apalancadas se liquida?","acceptedAnswer":{"@type":"Answer","text":"Depende del apalancamiento más que de cualquier otra cosa. En MarginPad, contado cada mes sobre todas las operaciones cerradas, aproximadamente el 0-1% de las operaciones a 1-2x termina en liquidación, cerca del 10-12% a 11-25x, casi el 30% a 26-50x, y más de la mitad de las operaciones abiertas por encima de 100x. Las cifras exactas de cada mes están en esta página y en el JSON gratuito."}},{"@type":"Question","name":"¿Qué apalancamiento usa la mayoría de los traders de cripto?","acceptedAnswer":{"@type":"Answer","text":"En nuestro conteo, el tramo 11-25x concentra la mayor parte de las operaciones cerradas cada mes - normalmente un tercio de ellas - seguido por 26-50x. El apalancamiento muy bajo (1-2x) y el muy alto (más de 100x) son, cada uno, una pequeña minoría de los cierres."}},{"@type":"Question","name":"¿El informe de apalancamiento se basa en dinero real?","acceptedAnswer":{"@type":"Answer","text":"No. Se mide sobre operaciones de paper trading ejecutadas del lado del servidor a precios reales en vivo, con las comisiones, el funding y las reglas de liquidación reales del exchange. El recorrido del precio y la mecánica son reales; el dinero no lo es, y por eso también es el único conjunto de datos de apalancamiento que se puede publicar por completo."}},{"@type":"Question","name":"¿Por qué ROE mediano en vez de promedio?","acceptedAnswer":{"@type":"Answer","text":"Porque el promedio de un tramo de apalancamiento está dominado por un puñado de cuentas extremas y no dice nada sobre una operación típica - el tramo más alto llegó a promediar +25,776%. La mediana es el retorno de la operación del medio, la cifra que describe lo que suele pasar."}},{"@type":"Question","name":"¿Puedo obtener el informe de un mes específico?","acceptedAnswer":{"@type":"Answer","text":"Sí. GET https://marginpad.io/api/leverage?month=YYYY-MM devuelve los tramos de ese mes, y ?months=1 lista todos los meses archivados. Sin clave API, con CORS habilitado."}}]}</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta property="og:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/leverage-report.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/es/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/es/liquidations/">Liquidaciones</a><a href="/es/heatmap">Mapa de calor</a><a href="/es/trading-api/">API</a></nav>
+  </header>
+  <article>
+    <p class="qeye">Una pregunta, una respuesta</p>
+    <h1>Informe de apalancamiento cripto: qué usan realmente los traders, mes a mes</h1>
+    <p class="lead">Publicado cada mes a partir de nuestro propio libro: cuántas operaciones cerró cada tramo de apalancamiento, qué proporción de ellas fue liquidada y qué devolvió la operación mediana. Nada modelado, nada basado en encuestas.</p>
+
+    <div id="askdata">
+      <div class="ansbox"><p class="say">Leyendo la cifra en vivo&hellip;</p></div>
+    </div>
+
+    <p class="ctarow"><a class="ask-cta" href="/es/what-leverage-should-a-beginner-use/">Qué apalancamiento debe usar un principiante, medido sobre 30 días</a><a class="ask-cta alt" href="/es/paper-trade">Practica con el apalancamiento que elijas, gratis</a><a class="ask-cta alt" href="/es/calculators?c=liq">Calculadora del precio de liquidación</a><a class="ask-cta alt" href="/es/how-many-traders-liquidated-today/">Cuántos traders fueron liquidados hoy</a><a class="ask-cta alt" href="/es/practice-for-a-funded-account/">Nuestra propia tasa de aprobados en retos fondeados</a></p>
+
+    <h2>Qué se cuenta, y qué no</h2>
+    <p>Una operación entra en este informe cuando <strong>se cierra</strong> - por un stop, un take-profit, un cierre manual o una liquidación. El tramo es el apalancamiento con el que se <strong>abrió</strong>, así que una operación a 100x que termina con un 2% de beneficio cuenta como una operación de 100x, no como un golpe de suerte. La tasa de liquidación es la proporción de esos cierres que fueron cierres forzosos; el ROE mediano es el retorno sobre el margen de la operación mediana del tramo, y por eso nunca marca +25,776% como llegó a hacer la media del tramo más alto. Un tramo con menos de 200 cierres en el mes muestra <em>insuficiente</em> en lugar de una tasa: un porcentaje sobre 40 operaciones es ruido disfrazado de cifra.</p>
+
+    <h2>Por qué la forma de la tabla apenas cambia</h2>
+    <p>Mes tras mes, los tramos centrales concentran la mayoría de los cierres - el 11-25x es donde ocurre realmente el grueso del trading cripto apalancado, en cualquier exchange - y la tasa de liquidación sube con el apalancamiento en el mismo orden cada vez. Eso es aritmética, no sentimiento: a 100x, un movimiento del 0.5% en contra de la posición es todo el margen; a 5x hacen falta cerca de un 19.5%. Un mes volátil sube un poco cada tramo; no cambia el orden entre ellos. Cuando el orden sí cambia, ese es el mes que merece leerse dos veces.</p>
+
+    <h2>Cómo usar esto en una cuenta real</h2>
+    <p>Encuentra el tramo en el que operas. Si su tasa de liquidación es una cifra que no aceptarías como la probabilidad de perder todo tu margen en una sola posición, baja un tramo antes de que el mercado lo haga por ti. La <a href="/es/what-leverage-should-a-beginner-use/">página de apalancamiento para principiantes</a> lee el mismo conteo sobre los últimos 30 días; esta página es el archivo, así que puedes ver si el mes en el que operas es inusual. Cada cifra se puede reproducir a partir del JSON gratuito - una llamada por mes, sin clave.</p>
+
+    <h2>Pon a prueba tu propio apalancamiento antes de que te cueste dinero</h2>
+    <p>Todo esto viene de gente operando en <a href="/es/paper-trade">el terminal de paper trading de MarginPad</a>: precios reales en vivo, comisiones en ambos lados, funding sobre posiciones abiertas, liquidación comprobada contra velas de un minuto, y sin depósito. Abre una posición con el apalancamiento que usarías de verdad, mantenla durante una semana de mercado, y tu propia fila en este conteo te dirá más que cualquier opinión.</p>
+
+    <h2>Preguntas</h2>
+    <details><summary>¿Qué porcentaje de las operaciones cripto apalancadas se liquida?</summary><p>Depende del apalancamiento más que de cualquier otra cosa. En MarginPad, contado cada mes sobre todas las operaciones cerradas, aproximadamente el 0-1% de las operaciones a 1-2x termina en liquidación, cerca del 10-12% a 11-25x, casi el 30% a 26-50x, y más de la mitad de las operaciones abiertas por encima de 100x. Las cifras exactas de cada mes están en esta página y en el JSON gratuito.</p></details>
+    <details><summary>¿Qué apalancamiento usa la mayoría de los traders de cripto?</summary><p>En nuestro conteo, el tramo 11-25x concentra la mayor parte de las operaciones cerradas cada mes - normalmente un tercio de ellas - seguido por 26-50x. El apalancamiento muy bajo (1-2x) y el muy alto (más de 100x) son, cada uno, una pequeña minoría de los cierres.</p></details>
+    <details><summary>¿El informe de apalancamiento se basa en dinero real?</summary><p>No. Se mide sobre operaciones de paper trading ejecutadas del lado del servidor a precios reales en vivo, con las comisiones, el funding y las reglas de liquidación reales del exchange. El recorrido del precio y la mecánica son reales; el dinero no lo es, y por eso también es el único conjunto de datos de apalancamiento que se puede publicar por completo.</p></details>
+    <details><summary>¿Por qué ROE mediano en vez de promedio?</summary><p>Porque el promedio de un tramo de apalancamiento está dominado por un puñado de cuentas extremas y no dice nada sobre una operación típica - el tramo más alto llegó a promediar +25,776%. La mediana es el retorno de la operación del medio, la cifra que describe lo que suele pasar.</p></details>
+    <details><summary>¿Puedo obtener el informe de un mes específico?</summary><p>Sí. GET https://marginpad.io/api/leverage?month=YYYY-MM devuelve los tramos de ese mes, y ?months=1 lista todos los meses archivados. Sin clave API, con CORS habilitado.</p></details>
+
+    <div class="sibs">
+      <h2>Otras preguntas que respondemos con un número en vivo</h2>
+      <ul><li><a href="/es/how-many-traders-liquidated-today/">¿Cuántos traders fueron liquidados hoy?</a></li><li><a href="/es/longs-or-shorts-liquidated-more/">¿Se liquidan más los longs o los shorts?</a></li><li><a href="/es/biggest-liquidation-today/">¿Cuál fue la mayor liquidación de hoy?</a></li><li><a href="/es/is-funding-positive-or-negative/">¿El funding es positivo o negativo ahora mismo?</a></li><li><a href="/es/where-can-i-test-a-trading-bot/">¿Dónde puedo probar un bot de trading gratis?</a></li><li><a href="/es/mcp-server-for-crypto-trading/">¿Existe un servidor MCP para trading de criptomonedas?</a></li><li><a href="/es/practice-for-a-funded-account/">¿Dónde puedo practicar para un reto de cuenta fondeada?</a></li><li><a href="/es/what-leverage-should-a-beginner-use/">¿Qué apalancamiento debería usar un principiante?</a></li></ul>
+    </div>
+    <p style="margin-top:26px;font-size:13.5px">Relacionado: <a href="/es/what-leverage-should-a-beginner-use/">qué apalancamiento debe usar un principiante, medido sobre 30 días</a> &middot; <a href="/es/paper-trade">practica con el apalancamiento que elijas, gratis</a> &middot; <a href="/es/calculators?c=liq">calculadora del precio de liquidación</a> &middot; <a href="/es/how-many-traders-liquidated-today/">cuántos traders fueron liquidados hoy</a> &middot; <a href="/es/practice-for-a-funded-account/">nuestra propia tasa de aprobados en retos fondeados</a></p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span> <span><a href="/es/">Calculadoras</a> &middot; <a href="/es/blog/">Blog</a> &middot; <a href="/es/terms/">Términos</a> &middot; <a href="/es/privacy/">Privacidad</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
+</body>
+</html>

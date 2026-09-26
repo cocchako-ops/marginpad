@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T20:19:43.720Z",
-  "pages": 383,
-  "occurrences": 26327,
-  "unique": 13912,
-  "words": 263957,
+  "generated": "2026-09-26T20:39:17.736Z",
+  "pages": 384,
+  "occurrences": 26365,
+  "unique": 13938,
+  "words": 264763,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-26T20:21:19.692Z"
+  "merged": "2026-09-26T20:43:04.962Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -34,7 +34,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 301,
+   "n": 302,
    "w": 2
   },
   "EEUXew76Qs": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1668,
+   "n": 1653,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -7783,7 +7783,7 @@
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/"
    ],
-   "n": 11,
+   "n": 12,
    "w": 1
   },
   "8OnM418jVh": {
@@ -25711,9 +25711,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/liquidations/by-exchange/"
+    "/leverage-report/"
    ],
-   "n": 9,
+   "n": 10,
    "w": 3
   },
   "ADpi7uK7k7": {
@@ -25727,9 +25727,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/liquidations/"
+    "/leverage-report/"
    ],
-   "n": 10,
+   "n": 11,
    "w": 4
   },
   "0bZuTtPc1O": {
@@ -25766,9 +25766,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 8,
+   "n": 9,
    "w": 4
   },
   "34toQI5R31": {
@@ -26027,9 +26027,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 8,
+   "n": 9,
    "w": 7
   },
   "3BG9T5UKib": {
@@ -26041,10 +26041,10 @@
    "ctx": [
     "/biggest-liquidation-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/",
-    "/mcp-server-for-crypto-trading/"
+    "/leverage-report/",
+    "/longs-or-shorts-liquidated-more/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 6
   },
   "nPa2iH43Cm": {
@@ -26057,9 +26057,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/mcp-server-for-crypto-trading/"
+    "/leverage-report/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 7
   },
   "_Z4bVQIdZN": {
@@ -26071,10 +26071,10 @@
    "ctx": [
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
-    "/longs-or-shorts-liquidated-more/",
-    "/mcp-server-for-crypto-trading/"
+    "/leverage-report/",
+    "/longs-or-shorts-liquidated-more/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 7
   },
   "PTtNBvepXq": {
@@ -26087,9 +26087,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 7
   },
   "IceDaN6wJs": {
@@ -26102,9 +26102,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 8
   },
   "XAKQF6NdOX": {
@@ -26117,9 +26117,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 7
   },
   "p2VzLZdYcT": {
@@ -26132,9 +26132,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/"
+    "/leverage-report/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 5
   },
   "3rA-KsHa9u": {
@@ -26159,9 +26159,9 @@
     "/biggest-liquidation-today/",
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/liquidations/by-exchange/"
+    "/leverage-report/"
    ],
-   "n": 9,
+   "n": 10,
    "w": 6
   },
   "yvPk6WiK2w": {
@@ -109527,10 +109527,10 @@
    "ctx": [
     "/how-many-traders-liquidated-today/",
     "/is-funding-positive-or-negative/",
-    "/longs-or-shorts-liquidated-more/",
-    "/mcp-server-for-crypto-trading/"
+    "/leverage-report/",
+    "/longs-or-shorts-liquidated-more/"
    ],
-   "n": 7,
+   "n": 8,
    "w": 6
   },
   "i_Dfd6eAzC": {
@@ -123191,6 +123191,329 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "_Mbzgzh0iQ": {
+   "en": "Crypto Leverage Report (Monthly) - Liquidation Rate by Leverage, Measured | MarginPad",
+   "es": "Informe Mensual de Apalancamiento Cripto - Tasa de Liquidación por Apalancamiento, Medida | MarginPad",
+   "kind": [
+    "title",
+    "attr:content"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 10
+  },
+  "DUHmuoeGB1": {
+   "en": "Crypto leverage report: what traders actually use, month by month",
+   "es": "Informe de apalancamiento cripto: qué usan realmente los traders, mes a mes",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "b6aK_2rSBV": {
+   "en": "Published every month from our own book: how many trades each leverage band closed, what share of them were liquidated, and what the middle trade returned. Nothing modelled, nothing surveyed.",
+   "es": "Publicado cada mes a partir de nuestro propio libro: cuántas operaciones cerró cada tramo de apalancamiento, qué proporción de ellas fue liquidada y qué devolvió la operación mediana. Nada modelado, nada basado en encuestas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 30
+  },
+  "TzS3JTBFmr": {
+   "en": "<a class=\"ask-cta\" href=\"/what-leverage-should-a-beginner-use/\">What leverage a beginner should use, measured over 30 days</a><a class=\"ask-cta alt\" href=\"/paper-trade\">Practice at your chosen leverage, free</a><a class=\"ask-cta alt\" href=\"/calculators?c=liq\">Liquidation price calculator</a><a class=\"ask-cta alt\" href=\"/how-many-traders-liquidated-today/\">How many traders were liquidated today</a><a class=\"ask-cta alt\" href=\"/practice-for-a-funded-account/\">Our own funded-challenge pass rate</a>",
+   "es": "<a class=\"ask-cta\" href=\"/what-leverage-should-a-beginner-use/\">Qué apalancamiento debe usar un principiante, medido sobre 30 días</a><a class=\"ask-cta alt\" href=\"/paper-trade\">Practica con el apalancamiento que elijas, gratis</a><a class=\"ask-cta alt\" href=\"/calculators?c=liq\">Calculadora del precio de liquidación</a><a class=\"ask-cta alt\" href=\"/how-many-traders-liquidated-today/\">Cuántos traders fueron liquidados hoy</a><a class=\"ask-cta alt\" href=\"/practice-for-a-funded-account/\">Nuestra propia tasa de aprobados en retos fondeados</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "SXt7hwK-cH": {
+   "en": "What is counted, and what is not",
+   "es": "Qué se cuenta, y qué no",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "ECcy32E7Za": {
+   "en": "A trade enters this report when it <strong>closes</strong> - by a stop, a take-profit, a manual close, or a liquidation. The band is the leverage it was <strong>opened</strong> at, so a 100x trade that ends at 2% profit counts as a 100x trade, not a lucky one. The liquidation rate is the share of those closes that were forced closes; the median ROE is the return on margin of the middle trade in the band, which is why it never reads +25,776% the way the mean of the top band once did. A band with fewer than 200 closes in the month prints <em>too few</em> instead of a rate: a percentage of 40 trades is noise dressed as a figure.",
+   "es": "Una operación entra en este informe cuando <strong>se cierra</strong> - por un stop, un take-profit, un cierre manual o una liquidación. El tramo es el apalancamiento con el que se <strong>abrió</strong>, así que una operación a 100x que termina con un 2% de beneficio cuenta como una operación de 100x, no como un golpe de suerte. La tasa de liquidación es la proporción de esos cierres que fueron cierres forzosos; el ROE mediano es el retorno sobre el margen de la operación mediana del tramo, y por eso nunca marca +25,776% como llegó a hacer la media del tramo más alto. Un tramo con menos de 200 cierres en el mes muestra <em>insuficiente</em> en lugar de una tasa: un porcentaje sobre 40 operaciones es ruido disfrazado de cifra.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 107
+  },
+  "D8NSX8Bjsm": {
+   "en": "Why the shape of the table barely moves",
+   "es": "Por qué la forma de la tabla apenas cambia",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "UVzvCOfgpe": {
+   "en": "Month after month the middle bands hold most of the closes - 11-25x is where the bulk of leveraged crypto trading actually happens, on any venue - and the liquidation rate climbs with leverage in the same order every time. That is arithmetic, not sentiment: at 100x a 0.5% move against the position is the whole margin; at 5x it takes about 19.5%. A volatile month raises every band a little; it does not reorder them. When the order does change, that is the month worth reading twice.",
+   "es": "Mes tras mes, los tramos centrales concentran la mayoría de los cierres - el 11-25x es donde ocurre realmente el grueso del trading cripto apalancado, en cualquier exchange - y la tasa de liquidación sube con el apalancamiento en el mismo orden cada vez. Eso es aritmética, no sentimiento: a 100x, un movimiento del 0.5% en contra de la posición es todo el margen; a 5x hacen falta cerca de un 19.5%. Un mes volátil sube un poco cada tramo; no cambia el orden entre ellos. Cuando el orden sí cambia, ese es el mes que merece leerse dos veces.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 83
+  },
+  "RMU47yA5pM": {
+   "en": "How to use this on a real account",
+   "es": "Cómo usar esto en una cuenta real",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "zu5bKTAmdW": {
+   "en": "Find the band you trade in. If its liquidation rate is a number you would not accept as the odds of losing your whole margin on a single position, move one band down before the market does it for you. The <a href=\"/what-leverage-should-a-beginner-use/\">beginner leverage page</a> reads the same count over the last 30 days; this page is the archive, so you can see whether the month you are trading in is unusual. Every figure can be reproduced from the free JSON - one call per month, no key.",
+   "es": "Encuentra el tramo en el que operas. Si su tasa de liquidación es una cifra que no aceptarías como la probabilidad de perder todo tu margen en una sola posición, baja un tramo antes de que el mercado lo haga por ti. La <a href=\"/what-leverage-should-a-beginner-use/\">página de apalancamiento para principiantes</a> lee el mismo conteo sobre los últimos 30 días; esta página es el archivo, así que puedes ver si el mes en el que operas es inusual. Cada cifra se puede reproducir a partir del JSON gratuito - una llamada por mes, sin clave.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 84
+  },
+  "pM4n-e2MKw": {
+   "en": "Test your own leverage before it costs money",
+   "es": "Pon a prueba tu propio apalancamiento antes de que te cueste dinero",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "c2up9KKFh8": {
+   "en": "All of this comes from people trading on <a href=\"/paper-trade\">MarginPad’s paper-trading terminal</a>: real live prices, fees on both legs, funding on held positions, liquidation checked against one-minute candles, and no deposit. Open a position at the leverage you use for real, hold it through a week of the market, and your own row in this count will tell you more than any opinion.",
+   "es": "Todo esto viene de gente operando en <a href=\"/paper-trade\">el terminal de paper trading de MarginPad</a>: precios reales en vivo, comisiones en ambos lados, funding sobre posiciones abiertas, liquidación comprobada contra velas de un minuto, y sin depósito. Abre una posición con el apalancamiento que usarías de verdad, mantenla durante una semana de mercado, y tu propia fila en este conteo te dirá más que cualquier opinión.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 60
+  },
+  "W4l7ULGpg0": {
+   "en": "What percentage of leveraged crypto trades get liquidated?",
+   "es": "¿Qué porcentaje de las operaciones cripto apalancadas se liquida?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 8
+  },
+  "eIqFgGs62D": {
+   "en": "It depends on the leverage more than on anything else. On MarginPad, counted every month across every closed trade, roughly 0-1% of trades at 1-2x end in liquidation, about 10-12% at 11-25x, close to 30% at 26-50x, and over half of trades opened above 100x. The exact figures for each month are on this page and in the free JSON.",
+   "es": "Depende del apalancamiento más que de cualquier otra cosa. En MarginPad, contado cada mes sobre todas las operaciones cerradas, aproximadamente el 0-1% de las operaciones a 1-2x termina en liquidación, cerca del 10-12% a 11-25x, casi el 30% a 26-50x, y más de la mitad de las operaciones abiertas por encima de 100x. Las cifras exactas de cada mes están en esta página y en el JSON gratuito.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 60
+  },
+  "WIsgcFA7I2": {
+   "en": "What leverage do most crypto traders use?",
+   "es": "¿Qué apalancamiento usa la mayoría de los traders de cripto?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 7
+  },
+  "ppmia4iEvd": {
+   "en": "In our count the 11-25x band holds the largest share of closed trades every month - typically a third of them - followed by 26-50x. Very low leverage (1-2x) and very high leverage (over 100x) are each a small minority of closes.",
+   "es": "En nuestro conteo, el tramo 11-25x concentra la mayor parte de las operaciones cerradas cada mes - normalmente un tercio de ellas - seguido por 26-50x. El apalancamiento muy bajo (1-2x) y el muy alto (más de 100x) son, cada uno, una pequeña minoría de los cierres.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 38
+  },
+  "c_xrWGpQ_h": {
+   "en": "Is the leverage report based on real money?",
+   "es": "¿El informe de apalancamiento se basa en dinero real?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 8
+  },
+  "4E9gIgxoOs": {
+   "en": "No. It is measured on paper trades filled server-side at real live prices with real venue fees, funding and liquidation rules. The price path and the mechanics are real; the money is not, which is also why it is the only leverage dataset that can be published in full.",
+   "es": "No. Se mide sobre operaciones de paper trading ejecutadas del lado del servidor a precios reales en vivo, con las comisiones, el funding y las reglas de liquidación reales del exchange. El recorrido del precio y la mecánica son reales; el dinero no lo es, y por eso también es el único conjunto de datos de apalancamiento que se puede publicar por completo.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 49
+  },
+  "2NJhCaFY04": {
+   "en": "Why median ROE instead of average?",
+   "es": "¿Por qué ROE mediano en vez de promedio?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 6
+  },
+  "eWNb_W18R_": {
+   "en": "Because the average of a leverage band is dominated by a handful of extreme accounts and says nothing about a typical trade - the top band once averaged +25,776%. The median is the return of the middle trade, which is the number that describes what usually happens.",
+   "es": "Porque el promedio de un tramo de apalancamiento está dominado por un puñado de cuentas extremas y no dice nada sobre una operación típica - el tramo más alto llegó a promediar +25,776%. La mediana es el retorno de la operación del medio, la cifra que describe lo que suele pasar.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 43
+  },
+  "AyoDVsgT1B": {
+   "en": "Can I get the report for a specific month?",
+   "es": "¿Puedo obtener el informe de un mes específico?",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 7
+  },
+  "jOusaoX1Nh": {
+   "en": "Yes. GET https://marginpad.io/api/leverage?month=YYYY-MM returns that month's bands, and ?months=1 lists every archived month. No API key, CORS enabled.",
+   "es": "Sí. GET https://marginpad.io/api/leverage?month=YYYY-MM devuelve los tramos de ese mes, y ?months=1 lista todos los meses archivados. Sin clave API, con CORS habilitado.",
+   "kind": [
+    "html",
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 18
+  },
+  "ssVMGO1PJz": {
+   "en": "Related: <a href=\"/what-leverage-should-a-beginner-use/\">what leverage a beginner should use, measured over 30 days</a> &middot; <a href=\"/paper-trade\">practice at your chosen leverage, free</a> &middot; <a href=\"/calculators?c=liq\">liquidation price calculator</a> &middot; <a href=\"/how-many-traders-liquidated-today/\">how many traders were liquidated today</a> &middot; <a href=\"/practice-for-a-funded-account/\">our own funded-challenge pass rate</a>",
+   "es": "Relacionado: <a href=\"/what-leverage-should-a-beginner-use/\">qué apalancamiento debe usar un principiante, medido sobre 30 días</a> &middot; <a href=\"/paper-trade\">practica con el apalancamiento que elijas, gratis</a> &middot; <a href=\"/calculators?c=liq\">calculadora del precio de liquidación</a> &middot; <a href=\"/how-many-traders-liquidated-today/\">cuántos traders fueron liquidados hoy</a> &middot; <a href=\"/practice-for-a-funded-account/\">nuestra propia tasa de aprobados en retos fondeados</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 30
+  },
+  "wKmSh-sMYO": {
+   "en": "A monthly count, not a survey: every trade closed on MarginPad grouped by the leverage it was opened at, with the share that ended in liquidation and the median return per band. Archived per month, free JSON per month.",
+   "es": "Un conteo mensual, no una encuesta: cada operación cerrada en MarginPad agrupada por el apalancamiento con el que se abrió, con la proporción que terminó en liquidación y el retorno mediano por tramo. Archivado mes a mes, JSON gratuito cada mes.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 2,
+   "w": 37
+  },
+  "-DWKTBBZkD": {
+   "en": "MarginPad monthly leverage report",
+   "es": "Informe mensual de apalancamiento de MarginPad",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "DgkN9cvKiy": {
+   "en": "Every paper trade closed on MarginPad in a calendar month, grouped by the leverage it was opened at, with the share of each band that ended in liquidation, the median ROE and the band's share of all closes. One record per month, archived; the current month is a rolling partial.",
+   "es": "Cada operación de paper trading cerrada en MarginPad en un mes calendario, agrupada por el apalancamiento con el que se abrió, con la proporción de cada tramo que terminó en liquidación, el ROE mediano y la parte que representa el tramo sobre el total de cierres. Un registro por mes, archivado; el mes en curso es un parcial en progreso.",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/leverage-report/"
+   ],
+   "n": 1,
+   "w": 48
   },
   "QBP4ZgMJGU": {
    "en": "Leverage Trading Simulator - Practice up to 1000x, Free | MarginPad",
