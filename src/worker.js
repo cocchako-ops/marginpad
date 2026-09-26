@@ -19525,6 +19525,11 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/rewardkinds' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // credits by type over N days (2026-09-27)
+      const days = Math.min(365, Math.max(1, +url.searchParams.get('days') || 7));
+      let r = null; try { r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/kinds', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: Date.now() - days * 86400000, type: url.searchParams.get('type') || '' }) })).then(x => x.json()); } catch (e) {}
+      return new Response(JSON.stringify({ days, ...(r || { error: 'unavailable' }) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/money' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Money block (2026-09-03, ops plan block D): the faucet's cost vs the site's income on ONE line, what the ledger owes, and whether the live ledger still agrees with its last 6h backup. Read-only. Edge-cached 60s (?nc=1 bypasses).
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const ck = new Request('https://marginpad.io/__adm_money_v1');
@@ -23630,6 +23635,17 @@ export class RewardLedger {
         try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
       }
       return this.j(out);
+    }
+    if (path === '/kinds') { // WHERE THE MONEY GOES (2026-09-27, owner: "which maths halves rewards without touching the boards"): credits by type over a window
+      const from = +body.from || (Date.now() - 7 * 86400000), to = +body.to || Date.now();
+      let rows = [], days = [];
+      try { rows = this.rows('SELECT type, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0 GROUP BY type ORDER BY c DESC', from, to); } catch (e) { return this.j({ error: 'unavailable' }); }
+      try { days = this.rows("SELECT date(ts/1000,'unixepoch') d, type, SUM(amount) c FROM acctlog WHERE ts>=? AND ts<? AND amount>0 GROUP BY d, type ORDER BY d", from, to); } catch (e) {}
+      let details = [];
+      if (body.type) { try { details = this.rows('SELECT detail, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY detail ORDER BY c DESC LIMIT 40', from, to, String(body.type)).map(r => ({ detail: String(r.detail || '').slice(0, 120), n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })); } catch (e) {} }
+      let hist = [];
+      if (body.type) { try { hist = this.rows("SELECT n, COUNT(*) k FROM (SELECT acct, date(ts/1000,'unixepoch') d, COUNT(*) n FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY acct, d) GROUP BY n ORDER BY n", from, to, String(body.type)).map(r => ({ per_account_day: +r.n, account_days: +r.k })); } catch (e) {} } // how many credits of this type an account collects in a day
+      return this.j({ from, to, kinds: rows.map(r => ({ type: r.type, n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })), days: days.map(r => ({ day: r.d, type: r.type, usd: Math.round(+r.c) / 100 })), details, hist });
     }
     if (path === '/admin') {
       const pending = this.rows("SELECT id,address,acct,amount,ts FROM withdrawals WHERE status='pending' ORDER BY ts ASC").map(w => {
