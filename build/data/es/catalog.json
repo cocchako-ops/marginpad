@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T18:55:02.732Z",
+  "generated": "2026-09-26T18:59:43.245Z",
   "pages": 383,
-  "occurrences": 26307,
+  "occurrences": 26311,
   "unique": 13896,
-  "words": 263847,
+  "words": 263765,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-26T18:56:00.385Z"
+  "merged": "2026-09-26T19:01:55.106Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1664,
+   "n": 1668,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -2373,9 +2373,9 @@
    "n": 71,
    "w": 2
   },
-  "_AiCFTzRJt": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Aave routinely moves several percent in a session, most traders who last keep AAVE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% elimina la posición; a 5× tienes cerca de 19.5% de margen. Como Aave suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de AAVE en un rango bajo a medio y dejan respirar la posición.",
+  "9dXM8GXRaw": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Aave routinely moves several percent in a session, most traders who last keep AAVE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% elimina la posición; a 5× tienes cerca de 19.5% de margen. Como Aave suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de AAVE en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -3419,9 +3419,9 @@
    "n": 2,
    "w": 3
   },
-  "I6jQfhwM2D": {
-   "en": "<a href=\"/paper-trade\">Paper Trade</a> - a demo futures terminal on live prices, long &amp; short up to 1000&times; with SL/TP, trailing stops and real liquidations (of fake money). <a href=\"/charts\">Charts</a> - a multi-chart workspace with indicators, drawing tools and AI chart analysis. <a href=\"/screener\">Screener</a> - 130+ pairs scored 0&ndash;100 with RSI, MACD and trend. <a href=\"/calculators\">Calculators</a> - liquidation, position size, PnL, DCA, take-profit, risk:reward and cross-margin. Plus the <a href=\"/calendar/\">economic calendar</a>, <a href=\"/liquidations/\">24h liquidation data</a>, <a href=\"/fear-greed/\">Fear &amp; Greed index</a> and a <a href=\"/rewards/\">rewards program</a> that pays small amounts of real USDT for using the tools.",
-   "es": "<a href=\"/paper-trade\">Paper Trade</a> - un terminal de futuros demo a precios en vivo, long y short hasta 1000&times; con SL/TP, trailing stops y liquidaciones reales (de dinero ficticio). <a href=\"/charts\">Charts</a> - un espacio multigráfico con indicadores, herramientas de dibujo y análisis de gráficos con IA. <a href=\"/screener\">Screener</a> - más de 130 pares puntuados de 0&ndash;100 con RSI, MACD y tendencia. <a href=\"/calculators\">Calculadoras</a> - liquidación, tamaño de posición, PnL, DCA, take-profit, riesgo:beneficio y margen cruzado. Además el <a href=\"/calendar/\">calendario económico</a>, <a href=\"/liquidations/\">datos de liquidaciones 24h</a>, el <a href=\"/fear-greed/\">índice Fear &amp; Greed</a> y un <a href=\"/rewards/\">programa de recompensas</a> que paga pequeñas cantidades de USDT real por usar las herramientas.",
+  "iORuSPTGwO": {
+   "en": "<a href=\"/paper-trade\">Paper Trade</a> - a demo futures terminal on live prices, long &amp; short up to 1000&times; with SL/TP, trailing stops and real liquidations (of fake money). <a href=\"/charts\">Charts</a> - a multi-chart workspace with indicators, drawing tools and AI chart analysis. <a href=\"/screener\">Screener</a> - 130+ pairs scored 0&ndash;100 with RSI, MACD and trend. <a href=\"/calculators\">Calculators</a> - liquidation, position size, PnL, DCA, take-profit, risk:reward and cross-margin. Plus the <a href=\"/calendar/\">economic calendar</a>, <a href=\"/liquidations/\">24h liquidation data</a>, <a href=\"/fear-greed/\">Fear &amp; Greed index</a> and a <a href=\"/rewards/\">rewards program</a> that pays small amounts of real USDT for using the tools once you reach Bronze (500 XP).",
+   "es": "<a href=\"/paper-trade\">Paper Trade</a> - un terminal de futuros demo a precios en vivo, long y short hasta 1000&times; con SL/TP, trailing stops y liquidaciones reales (de dinero ficticio). <a href=\"/charts\">Charts</a> - un espacio multigráfico con indicadores, herramientas de dibujo y análisis de gráficos con IA. <a href=\"/screener\">Screener</a> - más de 130 pares puntuados de 0&ndash;100 con RSI, MACD y tendencia. <a href=\"/calculators\">Calculadoras</a> - liquidación, tamaño de posición, PnL, DCA, take-profit, riesgo:beneficio y margen cruzado. Además el <a href=\"/calendar/\">calendario económico</a>, <a href=\"/liquidations/\">datos de liquidaciones 24h</a>, el <a href=\"/fear-greed/\">índice Fear &amp; Greed</a> y un <a href=\"/rewards/\">programa de recompensas</a> que paga pequeñas cantidades de USDT real por usar las herramientas una vez que llegas a Bronze (500 XP).",
    "kind": [
     "html"
    ],
@@ -3429,7 +3429,7 @@
     "/about/"
    ],
    "n": 1,
-   "w": 78
+   "w": 84
   },
   "6g1LQhPZ08": {
    "en": "Editorial standards &amp; data sources",
@@ -6248,9 +6248,9 @@
    "n": 1,
    "w": 18
   },
-  "e7mRI18CxW": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Cardano routinely moves several percent in a session, most traders who last keep ADA leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% elimina la posición; a 5× tienes cerca de 19.5% de margen. Como Cardano suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ADA en un rango bajo a medio y dejan respirar la posición.",
+  "LhBd_bucl1": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Cardano routinely moves several percent in a session, most traders who last keep ADA leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% elimina la posición; a 5× tienes cerca de 19.5% de margen. Como Cardano suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ADA en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -8575,9 +8575,9 @@
    "n": 1,
    "w": 2
   },
-  "dI7NiXXfJ9": {
-   "en": "We email or message you on Telegram the instant it crosses.",
-   "es": "Te enviamos un email o un mensaje por Telegram en el instante en que lo cruza.",
+  "fixe6F4T2z": {
+   "en": "We email or message you on Telegram within minutes of it crossing - prices are checked every 10 minutes.",
+   "es": "Te enviamos un email o un mensaje por Telegram a los pocos minutos de cruzarlo - los precios se revisan cada 10 minutos.",
    "kind": [
     "html"
    ],
@@ -8585,7 +8585,7 @@
     "/alerts/"
    ],
    "n": 1,
-   "w": 11
+   "w": 18
   },
   "1nuunlVAwm": {
    "en": "<a href=\"/\">← Back to MarginPad</a> · <a href=\"/screener\">Screener</a> · <a href=\"/paper-trade\">Paper Trade</a> &middot; <a href=\"/terms/\">Terms</a> &middot; <a href=\"/privacy/\">Privacy</a><br> <span style=\"color:var(--faint)\">Alerts are checked every few minutes. Not financial advice.</span>",
@@ -8804,9 +8804,9 @@
    "n": 1,
    "w": 18
   },
-  "wzped8Lfnw": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Algorand routinely moves several percent in a session, most traders who last keep ALGO leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Algorand suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ALGO en un rango bajo-medio y dejan que la posición respire.",
+  "2sQSqsnnFb": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Algorand routinely moves several percent in a session, most traders who last keep ALGO leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Algorand suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ALGO en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -9204,9 +9204,9 @@
    "n": 1,
    "w": 18
   },
-  "NIp3YwLNtY": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because ApeCoin routinely moves several percent in a session, most traders who last keep APE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como ApeCoin suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de APE en un rango bajo-medio y dejan que la posición respire.",
+  "71qlkB80UT": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because ApeCoin routinely moves several percent in a session, most traders who last keep APE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como ApeCoin suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de APE en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -15973,9 +15973,9 @@
    "n": 1,
    "w": 18
   },
-  "XsMyzcRttc": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Aptos routinely moves several percent in a session, most traders who last keep APT leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Aptos suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de APT en un rango bajo a medio y dejan que la posición respire.",
+  "0oiYBpyi44": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Aptos routinely moves several percent in a session, most traders who last keep APT leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Aptos suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de APT en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -16710,9 +16710,9 @@
    "n": 1,
    "w": 18
   },
-  "84ux6ITBQ0": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Arbitrum routinely moves several percent in a session, most traders who last keep ARB leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Arbitrum suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ARB en un rango bajo a medio y dejan que la posición respire.",
+  "2EVH-wno01": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Arbitrum routinely moves several percent in a session, most traders who last keep ARB leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Arbitrum suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ARB en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -17809,9 +17809,9 @@
    "n": 1,
    "w": 18
   },
-  "yYWhzBYziY": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Cosmos routinely moves several percent in a session, most traders who last keep ATOM leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Cosmos suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ATOM en un rango bajo a medio y dejan que la posición respire.",
+  "LLStNFzYdr": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Cosmos routinely moves several percent in a session, most traders who last keep ATOM leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Cosmos suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ATOM en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -18546,9 +18546,9 @@
    "n": 1,
    "w": 18
   },
-  "4m2XHt2AQO": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Avalanche routinely moves several percent in a session, most traders who last keep AVAX leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Avalanche suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de AVAX en un rango bajo a medio y dejan que la posición respire.",
+  "fm9ux1ECR4": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Avalanche routinely moves several percent in a session, most traders who last keep AVAX leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Avalanche suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de AVAX en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -19270,9 +19270,9 @@
    "n": 1,
    "w": 19
   },
-  "c0qppMc-6I": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Axie Infinity routinely moves several percent in a session, most traders who last keep AXS leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Axie Infinity suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de AXS en un rango bajo a medio y dejan que la posición respire.",
+  "oD8slYvHaR": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Axie Infinity routinely moves several percent in a session, most traders who last keep AXS leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Axie Infinity suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de AXS en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -19670,9 +19670,9 @@
    "n": 1,
    "w": 19
   },
-  "RCIe4tAaco": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Bitcoin Cash routinely moves several percent in a session, most traders who last keep BCH leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Bitcoin Cash suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de BCH en un rango bajo a medio y dejan que la posición respire.",
+  "3fGKYucHE4": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Bitcoin Cash routinely moves several percent in a session, most traders who last keep BCH leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Bitcoin Cash suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de BCH en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -28636,9 +28636,9 @@
    "n": 1,
    "w": 58
   },
-  "M2Eng-v_6b": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Binance charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento del sitio donde la diferencia de comisiones basta por sí sola para decidir. Binance cobra un 0.05% frente al 0.06% de KuCoin y, como la comisión se aplica sobre el <em>valor nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "YImmkn5pTO": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Binance charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Binance cobra un 0.05% frente al 0.06% de KuCoin y, como la comisión se aplica sobre el <em>valor nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -28646,7 +28646,7 @@
     "/binance-vs-kucoin/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "MG1xHvqWIq": {
    "en": "Over a hundred round trips that is <strong>$200.00</strong> in Binance's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -30364,9 +30364,9 @@
    "n": 1,
    "w": 64
   },
-  "8SNV27BS3l": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Binance charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento del sitio donde la diferencia de comisiones basta por sí sola para decidir. Binance cobra un 0.05% frente al 0.06% de Bitget y, como la comisión se aplica sobre el <em>valor nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "SI6BRu7lBs": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Binance charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Binance cobra un 0.05% frente al 0.06% de Bitget y, como la comisión se aplica sobre el <em>valor nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -30374,7 +30374,7 @@
     "/bitget-vs-binance/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "maRiEIlpw_": {
    "en": "Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what Binance liquidated in the last 24 hours, not an estimate or a vendor figure. Bitget does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.",
@@ -30618,9 +30618,9 @@
    "n": 1,
    "w": 62
   },
-  "Fv_oSm1H3t": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Gate charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Gate cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "NU4Z1oy2np": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Gate charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Gate cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -30628,7 +30628,7 @@
     "/bitget-vs-gate/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "UWrmqBtvHb": {
    "en": "Over a hundred round trips that is <strong>$200.00</strong> in Gate's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -30912,9 +30912,9 @@
    "n": 1,
    "w": 58
   },
-  "MBT323AQBs": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Kraken cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "hSMSAln-p3": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Kraken cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -30922,7 +30922,7 @@
     "/bitget-vs-kraken/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "YdYuIn9YpY": {
    "en": "Over a hundred round trips that is <strong>$200.00</strong> in Kraken's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -31433,9 +31433,9 @@
    "n": 1,
    "w": 61
   },
-  "OOHJKjjM-y": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. OKX charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. OKX cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "jEdRdQXt_P": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. OKX charges 0.05% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. OKX cobra 0.05% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -31443,7 +31443,7 @@
     "/bitget-vs-okx/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "AlIlVR2oSi": {
    "en": "Over a hundred round trips that is <strong>$200.00</strong> in OKX's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -50204,9 +50204,9 @@
    "n": 5,
    "w": 11
   },
-  "TYVjCVr1iN": {
-   "en": "Every 8 hours, perpetual futures transfer money between longs and shorts to keep the perp glued to spot - the <a href=\"/blog/what-is-funding-rate/\">funding rate</a>. When the crowd is long, longs pay shorts. Funding arbitrage is the trade that collects that payment while taking <b>zero price risk</b>: long spot, short perp, same size.",
-   "es": "Cada 8 horas, los futuros perpetuos transfieren dinero entre longs y shorts para mantener el perpetuo pegado al spot - la <a href=\"/blog/what-is-funding-rate/\">tasa de funding</a>. Cuando la mayoría está long, los longs pagan a los shorts. El arbitraje de funding es la operación que cobra ese pago sin asumir <b>ningún riesgo de precio</b>: long en spot, short en perpetuo, mismo tamaño.",
+  "fLBbdJP_Po": {
+   "en": "Every 8 hours, perpetual futures transfer money between longs and shorts to keep the perp glued to spot - the <a href=\"/blog/what-is-funding-rate/\">funding rate</a>. When the crowd is long, longs pay shorts. Funding arbitrage is the trade that collects that payment while taking <b>very little price risk</b>: long spot, short perp, same size.",
+   "es": "Cada 8 horas, los futuros perpetuos transfieren dinero entre longs y shorts para mantener el perpetuo pegado al spot - la <a href=\"/blog/what-is-funding-rate/\">tasa de funding</a>. Cuando la mayoría está long, los longs pagan a los shorts. El arbitraje de funding es la operación que cobra ese pago asumiendo <b>muy poco riesgo de precio</b>: long en spot, short en perpetuo, mismo tamaño.",
    "kind": [
     "html"
    ],
@@ -50214,7 +50214,7 @@
     "/blog/funding-rate-arbitrage/"
    ],
    "n": 1,
-   "w": 48
+   "w": 49
   },
   "mRPhIZmGGh": {
    "en": "The mechanics",
@@ -52728,9 +52728,9 @@
    "n": 1,
    "w": 5
   },
-  "nA3IHN6dEM": {
-   "en": "Numbers land harder when you watch them play out. The <a href=\"/liquidations/\">live liquidations feed</a> shows exactly how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the <a href=\"/calculators?c=liq\">liquidation calculator</a>, size the trade from your stop with the <a href=\"/calculators?c=size\">position-size calculator</a>, and rehearse the whole thing risk-free at the live price on the <a href=\"/paper-trade\">paper-trading terminal</a>. Learning liquidation with fake money is far cheaper than learning it with your own.",
-   "es": "Los números calan más cuando los ves en acción. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> muestra exactamente cuánto apalancamiento se está barriendo ahora mismo en Binance, Bybit y OKX, y cada moneda importante tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre longs y shorts. Antes de comprometerte, mete tu entrada y tu apalancamiento en la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, dimensiona la operación desde tu stop con la <a href=\"/calculators?c=size\">calculadora de tamaño de posición</a> y ensáyalo todo sin riesgo al precio en vivo en el <a href=\"/paper-trade\">terminal de paper trading</a>. Aprender qué es una liquidación con dinero ficticio sale mucho más barato que aprenderlo con el tuyo.",
+  "owYxjnQYOy": {
+   "en": "Numbers land harder when you watch them play out. The <a href=\"/liquidations/\">live liquidations feed</a> shows exactly how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the <a href=\"/calculators?c=liq\">liquidation calculator</a>, size the trade from your stop with the <a href=\"/calculators?c=size\">position-size calculator</a>, and rehearse the whole thing risk-free at the live price on the <a href=\"/paper-trade\">paper-trading terminal</a>. Learning liquidation with fake money is far cheaper than learning it with your own.",
+   "es": "Los números calan más cuando los ves en acción. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> muestra exactamente cuánto apalancamiento se está barriendo ahora mismo en nueve exchanges, y cada moneda importante tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre longs y shorts. Antes de comprometerte, mete tu entrada y tu apalancamiento en la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, dimensiona la operación desde tu stop con la <a href=\"/calculators?c=size\">calculadora de tamaño de posición</a> y ensáyalo todo sin riesgo al precio en vivo en el <a href=\"/paper-trade\">terminal de paper trading</a>. Aprender qué es una liquidación con dinero ficticio sale mucho más barato que aprenderlo con el tuyo.",
    "kind": [
     "html"
    ],
@@ -52738,7 +52738,7 @@
     "/blog/how-to-calculate-liquidation-price/"
    ],
    "n": 1,
-   "w": 98
+   "w": 96
   },
   "tIa6ILFirk": {
    "en": "<a class=\"rel-card\" href=\"/blog/liquidation-clusters-explained/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Liquidation Clusters Explained: How to Spot Liquidity Magnets</span></a><a class=\"rel-card\" href=\"/blog/long-vs-short-liquidations/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Long vs Short Liquidations: What the Balance Tells You</span></a><a class=\"rel-card\" href=\"/blog/liquidation-cascade-explained/\"><span class=\"tag\">Liquidation</span><span class=\"rel-t\">Liquidation Cascades Explained (and How to Avoid Getting Caught)</span></a>",
@@ -71277,9 +71277,9 @@
    "n": 1,
    "w": 6
   },
-  "Vp2PRifVeO": {
-   "en": "The concept sticks once you watch it in real time. MarginPad&apos;s <a href=\"/liquidations/\">live liquidations feed</a> shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.",
-   "es": "El concepto se te queda cuando lo ves en tiempo real. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> de MarginPad muestra cuánto apalancamiento se está barriendo ahora mismo en Binance, Bybit y OKX, y cada moneda grande tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre long y short. Después ensaya los hábitos de arriba sin riesgo en el <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo. Sale mucho más barato aprender qué es una liquidación con dinero ficticio que con el tuyo.",
+  "TPGnOePgXd": {
+   "en": "The concept sticks once you watch it in real time. MarginPad&apos;s <a href=\"/liquidations/\">live liquidations feed</a> shows how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.",
+   "es": "El concepto se te queda cuando lo ves en tiempo real. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> de MarginPad muestra cuánto apalancamiento se está barriendo ahora mismo en nueve exchanges, y cada moneda grande tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre long y short. Después ensaya los hábitos de arriba sin riesgo en el <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo. Sale mucho más barato aprender qué es una liquidación con dinero ficticio que con el tuyo.",
    "kind": [
     "html"
    ],
@@ -71287,7 +71287,7 @@
     "/blog/what-is-liquidation-in-crypto/"
    ],
    "n": 1,
-   "w": 76
+   "w": 74
   },
   "vCktxXj0gE": {
    "en": "Liquidation explained simply: what it is, why leverage causes it, what actually happens when you get liquidated, and seven practical ways to make sure it never happens to you.",
@@ -72953,9 +72953,9 @@
    "n": 1,
    "w": 18
   },
-  "wHQJOPqs7G": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because BNB routinely moves several percent in a session, most traders who last keep BNB leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como BNB suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BNB en el rango bajo-medio y dejan que la posición respire.",
+  "wujXB80fuY": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because BNB routinely moves several percent in a session, most traders who last keep BNB leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como BNB suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BNB en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -73689,9 +73689,9 @@
    "n": 1,
    "w": 18
   },
-  "0RCD8g3_hz": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Bonk routinely moves several percent in a session, most traders who last keep BONK leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como Bonk suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BONK en el rango bajo-medio y dejan que la posición respire.",
+  "xtZWIKx9JB": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Bonk routinely moves several percent in a session, most traders who last keep BONK leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como Bonk suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BONK en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -74414,9 +74414,9 @@
    "n": 1,
    "w": 18
   },
-  "xYT3YZmF9S": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Bitcoin routinely moves several percent in a session, most traders who last keep BTC leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como Bitcoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BTC en el rango bajo-medio y dejan que la posición respire.",
+  "RPSQ3Af8J_": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Bitcoin routinely moves several percent in a session, most traders who last keep BTC leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% elimina la posición; a 5× tienes cerca de un 19.5% de margen. Como Bitcoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de BTC en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -75811,9 +75811,9 @@
    "n": 1,
    "w": 61
   },
-  "0wisY-35FN": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Binance charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Binance cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "z5OLK3zKzk": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Binance charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Binance cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -75821,7 +75821,7 @@
     "/bybit-vs-binance/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "ixv0yD2U4F": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in Binance's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -76102,9 +76102,9 @@
    "n": 1,
    "w": 61
   },
-  "VGFUhg0-GF": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Bybit charges 0.055% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Bybit cobra 0.055% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "ovyuSTgXo3": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Bybit charges 0.055% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Bybit cobra 0.055% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -76112,7 +76112,7 @@
     "/bybit-vs-bitget/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "5EG2-VyzNz": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in Bybit's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -76381,9 +76381,9 @@
    "n": 1,
    "w": 59
   },
-  "kxlvegeLBL": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Gate charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Gate cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "WOMm6lNgjl": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Gate charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Gate cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -76391,7 +76391,7 @@
     "/bybit-vs-gate/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "tEkbT4KdZ2": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in Gate's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -76661,9 +76661,9 @@
    "n": 1,
    "w": 55
   },
-  "nsk9NC6qd-": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Kraken cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "daHp1wuPRl": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Kraken cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -76671,7 +76671,7 @@
     "/bybit-vs-kraken/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "KfR36aVC6R": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in Kraken's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -76951,9 +76951,9 @@
    "n": 1,
    "w": 55
   },
-  "0YPFHsK7SL": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Bybit charges 0.055% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Bybit cobra 0.055% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "IhGBhulihR": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Bybit charges 0.055% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Bybit cobra 0.055% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -76961,7 +76961,7 @@
     "/bybit-vs-kucoin/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "0uYkg9F8Kt": {
    "en": "Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what Bybit liquidated in the last 24 hours, not an estimate or a vendor figure. KuCoin does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.",
@@ -77193,9 +77193,9 @@
    "n": 1,
    "w": 58
   },
-  "wg1ZPMgYZo": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. OKX charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. OKX cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "lJkdL9mglS": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. OKX charges 0.05% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. OKX cobra 0.05% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -77203,7 +77203,7 @@
     "/bybit-vs-okx/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "4-v41qU89b": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in OKX's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -80421,9 +80421,9 @@
    "n": 1,
    "w": 2
   },
-  "O6K6GIA3qE": {
-   "en": "Top 250 coins by market cap - live prices, 7-day charts and market data. Tap a coin to trade it risk-free.",
-   "es": "Las 250 monedas principales por capitalización de mercado: precios en vivo, gráficos de 7 días y datos de mercado. Toca una moneda para operarla sin riesgo.",
+  "6bAL7Y1mpe": {
+   "en": "Top 250 coins by market cap - live prices, 7-day charts and market data. Tap a coin to trade it risk-free - stablecoins and tokenised funds are listed for reference, not as trades.",
+   "es": "Las 250 monedas principales por capitalización de mercado: precios en vivo, gráficos de 7 días y datos de mercado. Toca una moneda para operarla sin riesgo - las stablecoins y los fondos tokenizados aparecen como referencia, no para operar.",
    "kind": [
     "html"
    ],
@@ -80431,7 +80431,7 @@
     "/coins/"
    ],
    "n": 1,
-   "w": 19
+   "w": 30
   },
   "YRzKETTixz": {
    "en": "<span class=\"trend-l\"> Trending</span>",
@@ -81381,9 +81381,9 @@
    "n": 1,
    "w": 19
   },
-  "J3OH5HGdWH": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Curve DAO routinely moves several percent in a session, most traders who last keep CRV leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Curve DAO suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de CRV en un rango bajo-medio y dejan respirar la posición.",
+  "3o8SaIKoDU": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Curve DAO routinely moves several percent in a session, most traders who last keep CRV leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Curve DAO suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de CRV en un rango bajo-medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -89350,9 +89350,9 @@
    "n": 1,
    "w": 18
   },
-  "AK2jj3F1kP": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Dogecoin routinely moves several percent in a session, most traders who last keep DOGE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Dogecoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de DOGE en un rango bajo a medio y dejan que la posición respire.",
+  "6RTXvP045a": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Dogecoin routinely moves several percent in a session, most traders who last keep DOGE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Dogecoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de DOGE en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -90086,9 +90086,9 @@
    "n": 1,
    "w": 18
   },
-  "HWNuMOl_ge": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Polkadot routinely moves several percent in a session, most traders who last keep DOT leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Polkadot suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de DOT en un rango bajo a medio y dejan que la posición respire.",
+  "OZFPO4C_C8": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Polkadot routinely moves several percent in a session, most traders who last keep DOT leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Polkadot suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de DOT en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -90894,9 +90894,9 @@
    "n": 1,
    "w": 18
   },
-  "NmbNiRcbk6": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Ethena routinely moves several percent in a session, most traders who last keep ENA leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethena suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ENA en un rango bajo a medio y dejan que la posición respire.",
+  "_k38fp3oEL": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Ethena routinely moves several percent in a session, most traders who last keep ENA leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethena suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ENA en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -91282,9 +91282,9 @@
    "n": 1,
    "w": 20
   },
-  "afKxX6Jp1c": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum Name Service routinely moves several percent in a session, most traders who last keep ENS leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethereum Name Service suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ENS en un rango bajo a medio y dejan que la posición respire.",
+  "EYAiSq-DNm": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum Name Service routinely moves several percent in a session, most traders who last keep ENS leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethereum Name Service suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ENS en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -91683,9 +91683,9 @@
    "n": 1,
    "w": 19
   },
-  "T1MEy0FwQa": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum Classic routinely moves several percent in a session, most traders who last keep ETC leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethereum Classic suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ETC en un rango bajo a medio y dejan que la posición respire.",
+  "UwFudhOBO6": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum Classic routinely moves several percent in a session, most traders who last keep ETC leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Ethereum Classic suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que perduran mantienen el apalancamiento de ETC en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -92443,9 +92443,9 @@
    "n": 1,
    "w": 18
   },
-  "syBbtG80Qv": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum routinely moves several percent in a session, most traders who last keep ETH leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes cerca de 19.5% de margen de maniobra. Como Ethereum suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de ETH en un rango bajo a medio y dejan que la posición respire.",
+  "31UiM1dxih": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Ethereum routinely moves several percent in a session, most traders who last keep ETH leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes cerca de 19.5% de margen de maniobra. Como Ethereum suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven a largo plazo mantienen el apalancamiento de ETH en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -97024,9 +97024,9 @@
    "n": 1,
    "w": 20
   },
-  "MjiXLYENTf": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Artificial Superintelligence (FET) routinely moves several percent in a session, most traders who last keep FET leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Artificial Superintelligence (FET) suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FET en un rango bajo-medio y dejan que la posición respire.",
+  "y6y0Oa4EY8": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Artificial Superintelligence (FET) routinely moves several percent in a session, most traders who last keep FET leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Artificial Superintelligence (FET) suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FET en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -97424,9 +97424,9 @@
    "n": 1,
    "w": 18
   },
-  "aebzFJ_kX1": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Filecoin routinely moves several percent in a session, most traders who last keep FIL leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Filecoin suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FIL en un rango bajo-medio y dejan que la posición respire.",
+  "OhjwwBhXDm": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Filecoin routinely moves several percent in a session, most traders who last keep FIL leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Filecoin suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FIL en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -98161,9 +98161,9 @@
    "n": 1,
    "w": 18
   },
-  "nkspJt1vHj": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Floki routinely moves several percent in a session, most traders who last keep FLOKI leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Floki suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FLOKI en un rango bajo-medio y dejan que la posición respire.",
+  "kYPVGCtTTs": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Floki routinely moves several percent in a session, most traders who last keep FLOKI leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Floki suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de FLOKI en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -102169,9 +102169,9 @@
    "n": 1,
    "w": 18
   },
-  "OXFtLQWYgP": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Gala routinely moves several percent in a session, most traders who last keep GALA leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Gala suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de GALA en un rango bajo-medio y dejan que la posición respire.",
+  "86LynGGflo": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Gala routinely moves several percent in a session, most traders who last keep GALA leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Gala suele moverse varios puntos porcentuales en una sesión, los traders que sobreviven mantienen el apalancamiento de GALA en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -103521,9 +103521,9 @@
    "n": 1,
    "w": 56
   },
-  "DWlkQBKN2D": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Gate charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación del sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Gate cobra 0.05% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>valor nocional</em> -toda la posición apalancada, no el margen que hay detrás- y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "ig7WlOt1mr": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Gate charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Gate cobra 0.05% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>valor nocional</em> -toda la posición apalancada, no el margen que hay detrás- y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -103531,7 +103531,7 @@
     "/gate-vs-kucoin/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "4Lr6cVKHjC": {
    "en": "Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what Gate liquidated in the last 24 hours, not an estimate or a vendor figure. KuCoin does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.",
@@ -105651,9 +105651,9 @@
    "n": 1,
    "w": 19
   },
-  "fEFu5mBDB_": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because The Graph routinely moves several percent in a session, most traders who last keep GRT leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen de maniobra. Como The Graph suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de GRT en un rango bajo a medio y dejan que la posición respire.",
+  "pKKouM0KXU": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because The Graph routinely moves several percent in a session, most traders who last keep GRT leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen de maniobra. Como The Graph suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de GRT en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -108717,9 +108717,9 @@
    "n": 1,
    "w": 18
   },
-  "YsdYQf_fxv": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Hedera routinely moves several percent in a session, most traders who last keep HBAR leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen de maniobra. Como Hedera suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de HBAR en un rango bajo a medio y dejan que la posición respire.",
+  "z1dszH4FKQ": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Hedera routinely moves several percent in a session, most traders who last keep HBAR leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente un 19.5% de margen de maniobra. Como Hedera suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de HBAR en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -109702,9 +109702,9 @@
    "n": 1,
    "w": 18
   },
-  "-FbUcWBM-1": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Hyperliquid routinely moves several percent in a session, most traders who last keep HYPE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Hyperliquid suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de HYPE en un rango bajo-medio y dejan que la posición respire.",
+  "xgwa_M6zLo": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Hyperliquid routinely moves several percent in a session, most traders who last keep HYPE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Hyperliquid suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de HYPE en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -111995,9 +111995,9 @@
    "n": 1,
    "w": 67
   },
-  "6SfmoStgQI": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Binance's 0.05%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Hyperliquid cobra 0.045% frente al 0.05% de Binance, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "eU1JLXa0Ud": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Binance's 0.05%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Hyperliquid cobra 0.045% frente al 0.05% de Binance, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -112005,7 +112005,7 @@
     "/hyperliquid-vs-binance/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "aLXM23ctKn": {
    "en": "Over a hundred round trips that is <strong>$100.00</strong> in Hyperliquid's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -112274,9 +112274,9 @@
    "n": 1,
    "w": 67
   },
-  "TCcY1_LjEQ": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Hyperliquid cobra 0.045% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "eskzz6sxjZ": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Bitget's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Hyperliquid cobra 0.045% frente al 0.06% de Bitget, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -112284,7 +112284,7 @@
     "/hyperliquid-vs-bitget/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "JmUVMQlZ70": {
    "en": "Over a hundred round trips that is <strong>$300.00</strong> in Hyperliquid's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -112552,9 +112552,9 @@
    "n": 1,
    "w": 64
   },
-  "xvxXvnEUHC": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Hyperliquid cobra 0.045% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "vajyz76X4m": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against Bybit's 0.055%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Hyperliquid cobra 0.045% frente al 0.055% de Bybit, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -112562,7 +112562,7 @@
     "/hyperliquid-vs-bybit/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "Ui0sCaIsPa": {
    "en": "Over a hundred round trips that is <strong>$200.00</strong> in Hyperliquid's favour - enough to notice on a small account. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows. Model it against your own size with the <a href=\"/funding-fee-calculator/\">funding-fee calculator</a> and the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
@@ -112830,9 +112830,9 @@
    "n": 1,
    "w": 64
   },
-  "oXf-G1tIqU": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against OKX's 0.05%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Hyperliquid cobra 0.045% frente al 0.05% de OKX, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "v6iNiUsRf2": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Hyperliquid charges 0.045% against OKX's 0.05%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Hyperliquid cobra 0.045% frente al 0.05% de OKX, y como la comisión se aplica sobre el <em>valor nocional</em> - la posición apalancada completa, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -112840,7 +112840,7 @@
     "/hyperliquid-vs-okx/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "nsmqBTZiLV": {
    "en": "OKX advertises <strong>125x</strong> against Hyperliquid's <strong>40x</strong>. Read that as a ceiling, not a recommendation: at 125x a move of about 0.80% against the position is enough to end it, against 2.50% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.",
@@ -113772,9 +113772,9 @@
    "n": 1,
    "w": 19
   },
-  "ZCvuqrl1ua": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Internet Computer routinely moves several percent in a session, most traders who last keep ICP leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Internet Computer suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de ICP en un rango bajo-medio y dejan que la posición respire.",
+  "5nVKxWFXlg": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Internet Computer routinely moves several percent in a session, most traders who last keep ICP leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Internet Computer suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de ICP en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -114172,9 +114172,9 @@
    "n": 1,
    "w": 18
   },
-  "bFhjCtUheN": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Immutable routinely moves several percent in a session, most traders who last keep IMX leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Immutable suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de IMX en un rango bajo-medio y dejan que la posición respire.",
+  "7E9lMkB1yW": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Immutable routinely moves several percent in a session, most traders who last keep IMX leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Immutable suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de IMX en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -115418,9 +115418,9 @@
    "n": 1,
    "w": 4
   },
-  "uQyytJfgMH": {
-   "en": "Screen 200+ pairs <i>→</i>",
-   "es": "Analiza 200+ pares <i>→</i>",
+  "VGNkmNZRKZ": {
+   "en": "Screen 130+ pairs <i>→</i>",
+   "es": "Analiza 130+ pares <i>→</i>",
    "kind": [
     "html"
    ],
@@ -117115,9 +117115,9 @@
    "n": 1,
    "w": 18
   },
-  "jvjeZyocDi": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Injective routinely moves several percent in a session, most traders who last keep INJ leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Injective suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de INJ en un rango bajo-medio y dejan que la posición respire.",
+  "-T07q1BFi6": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Injective routinely moves several percent in a session, most traders who last keep INJ leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Injective suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de INJ en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -118270,9 +118270,9 @@
    "n": 1,
    "w": 18
   },
-  "j06Nil8Cou": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Jupiter routinely moves several percent in a session, most traders who last keep JUP leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Jupiter suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de JUP en un rango bajo-medio y dejan que la posición respire.",
+  "ubokDAWeip": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Jupiter routinely moves several percent in a session, most traders who last keep JUP leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% liquida la posición; a 5×, dispones de aproximadamente un 19.5% de margen. Como Jupiter suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de JUP en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -118670,9 +118670,9 @@
    "n": 1,
    "w": 18
   },
-  "eU4FEPRadx": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Kaspa routinely moves several percent in a session, most traders who last keep KAS leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Kaspa suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de KAS en un rango bajo a medio y dejan respirar la posición.",
+  "BcMgrLq1aa": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Kaspa routinely moves several percent in a session, most traders who last keep KAS leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Kaspa suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de KAS en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -120740,9 +120740,9 @@
    "n": 1,
    "w": 52
   },
-  "0HXvNj2zgE": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Este es el único emparejamiento en este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. Kraken cobra 0.05% frente al 0.06% de KuCoin, y como la comisión recae sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga tanto al entrar como al salir, la diferencia se acumula rápido:",
+  "IQtXtGGPJG": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. Kraken charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. Kraken cobra 0.05% frente al 0.06% de KuCoin, y como la comisión recae sobre el <em>nocional</em> - toda la posición apalancada, no el margen detrás de ella - y se paga tanto al entrar como al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -120750,7 +120750,7 @@
     "/kucoin-vs-kraken/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "Qe8Y4geONq": {
    "en": "KuCoin advertises <strong>100x</strong> against Kraken's <strong>50x</strong>. Read that as a ceiling, not a recommendation: at 100x a move of about 1.00% against the position is enough to end it, against 2.00% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.",
@@ -124122,9 +124122,9 @@
    "n": 1,
    "w": 18
   },
-  "2zyxmdgFls": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Chainlink routinely moves several percent in a session, most traders who last keep LINK leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Chainlink suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de LINK en un rango bajo a medio y dejan respirar la posición.",
+  "h0pdSrHxM5": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Chainlink routinely moves several percent in a session, most traders who last keep LINK leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes un margen de aproximadamente 19.5%. Como Chainlink suele moverse varios puntos porcentuales en una sola sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de LINK en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -127208,9 +127208,9 @@
    "n": 1,
    "w": 18
   },
-  "GexPJuvfTo": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Litecoin routinely moves several percent in a session, most traders who last keep LTC leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Litecoin suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de LTC en un rango bajo a medio y dejan que la posición respire.",
+  "n_Vo4aGXgy": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Litecoin routinely moves several percent in a session, most traders who last keep LTC leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Litecoin suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de LTC en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -127944,9 +127944,9 @@
    "n": 1,
    "w": 18
   },
-  "QKqcflTklz": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Decentraland routinely moves several percent in a session, most traders who last keep MANA leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Decentraland suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MANA en un rango bajo a medio y dejan que la posición respire.",
+  "ooS3ez9KVk": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Decentraland routinely moves several percent in a session, most traders who last keep MANA leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Decentraland suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MANA en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -128658,9 +128658,9 @@
    "n": 1,
    "w": 18
   },
-  "_HWX9NoGNE": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Polygon routinely moves several percent in a session, most traders who last keep MATIC leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Polygon suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MATIC en un rango bajo a medio y dejan que la posición respire.",
+  "m-9MT34doe": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Polygon routinely moves several percent in a session, most traders who last keep MATIC leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Polygon suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MATIC en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -130210,9 +130210,9 @@
    "n": 1,
    "w": 18
   },
-  "RAoauzijOn": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Maker routinely moves several percent in a session, most traders who last keep MKR leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Maker suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MKR en un rango bajo a medio y dejan que la posición respire.",
+  "z82S9vW5Nm": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Maker routinely moves several percent in a session, most traders who last keep MKR leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes cerca de 19.5% de margen. Como Maker suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de MKR en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -130610,9 +130610,9 @@
    "n": 1,
    "w": 19
   },
-  "B85RaaLLC0": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because NEAR Protocol routinely moves several percent in a session, most traders who last keep NEAR leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% borra la posición; a 5× tienes cerca de 19.5% de margen. Como NEAR Protocol suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de NEAR en un rango bajo a medio y dejan que la posición respire.",
+  "jEaDRp-pV8": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because NEAR Protocol routinely moves several percent in a session, most traders who last keep NEAR leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes cerca de 19.5% de margen. Como NEAR Protocol suele moverse varios puntos porcentuales en una sesión, los traders que duran mantienen el apalancamiento de NEAR en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -131273,9 +131273,9 @@
    "n": 1,
    "w": 25
   },
-  "3Hjm8f22Hb": {
-   "en": "<a class=\"news-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"> <span class=\"news-tg-ic\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span> <span class=\"news-tg-b\"><b>Get crypto news on Telegram</b><span>Breaking headlines &amp; market moves - join @marginpad</span></span> <span class=\"news-tg-go\">Join →</span> </a>",
-   "es": "<a class=\"news-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"> <span class=\"news-tg-ic\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span> <span class=\"news-tg-b\"><b>Recibe noticias cripto en Telegram</b><span>Titulares de última hora y movimientos del mercado - únete a @marginpad</span></span> <span class=\"news-tg-go\">Unirse →</span> </a>",
+  "N1OY9an99B": {
+   "en": "<a class=\"news-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"> <span class=\"news-tg-ic\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span> <span class=\"news-tg-b\"><b>Get crypto news on Telegram</b><span>The daily market wrap at 16:00 UTC - join @marginpad</span></span> <span class=\"news-tg-go\">Join →</span> </a>",
+   "es": "<a class=\"news-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\"> <span class=\"news-tg-ic\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"currentColor\"><path d=\"M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z\"/></svg></span> <span class=\"news-tg-b\"><b>Recibe noticias cripto en Telegram</b><span>El resumen diario del mercado a las 16:00 UTC - únete a @marginpad</span></span> <span class=\"news-tg-go\">Unirse →</span> </a>",
    "kind": [
     "html"
    ],
@@ -131283,7 +131283,7 @@
     "/news/"
    ],
    "n": 1,
-   "w": 12
+   "w": 15
   },
   "wpeSiBnsO7": {
    "en": "Loading the latest headlines…",
@@ -132440,9 +132440,9 @@
    "n": 1,
    "w": 55
   },
-  "qCiEPXw6YE": {
-   "en": "This is the one pairing on this site where the fee gap is large enough to decide the question on its own. OKX charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
-   "es": "Esta es la única comparación de este sitio donde la diferencia de comisiones es lo bastante grande como para decidir la cuestión por sí sola. OKX cobra 0.05% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
+  "VxKU-w6mxt": {
+   "en": "On this pairing the fee gap is large enough to decide the question on its own. OKX charges 0.05% against KuCoin's 0.06%, and because the fee lands on <em>notional</em> - the whole leveraged position, not the margin behind it - and is paid entering and exiting, the difference compounds fast:",
+   "es": "En este emparejamiento la diferencia de comisiones basta por sí sola para decidir. OKX cobra 0.05% frente al 0.06% de KuCoin, y como la comisión se aplica sobre el <em>nocional</em> - toda la posición apalancada, no el margen que hay detrás - y se paga al entrar y al salir, la diferencia se acumula rápido:",
    "kind": [
     "html"
    ],
@@ -132450,7 +132450,7 @@
     "/okx-vs-kucoin/"
    ],
    "n": 1,
-   "w": 54
+   "w": 48
   },
   "p7Q6z-cHKR": {
    "en": "OKX advertises <strong>125x</strong> against KuCoin's <strong>100x</strong>. Read that as a ceiling, not a recommendation: at 125x a move of about 0.80% against the position is enough to end it, against 1.00% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.",
@@ -132730,9 +132730,9 @@
    "n": 1,
    "w": 18
   },
-  "5dgNwc9JNC": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Ondo routinely moves several percent in a session, most traders who last keep ONDO leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Ondo suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ONDO en un rango bajo a medio y dejan respirar la posición.",
+  "PJbkQwJ2q4": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Ondo routinely moves several percent in a session, most traders who last keep ONDO leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Ondo suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ONDO en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -133130,9 +133130,9 @@
    "n": 1,
    "w": 18
   },
-  "cVtJ25iViI": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Optimism routinely moves several percent in a session, most traders who last keep OP leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Optimism suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de OP en un rango bajo a medio y dejan respirar la posición.",
+  "EL0hDOMg0A": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Optimism routinely moves several percent in a session, most traders who last keep OP leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Optimism suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de OP en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -134096,9 +134096,9 @@
    "n": 1,
    "w": 18
   },
-  "p6byAL2Go8": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because ORDI routinely moves several percent in a session, most traders who last keep ORDI leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como ORDI suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ORDI en un rango bajo a medio y dejan respirar la posición.",
+  "9tvDITku-B": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because ORDI routinely moves several percent in a session, most traders who last keep ORDI leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como ORDI suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de ORDI en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -135867,9 +135867,9 @@
    "n": 1,
    "w": 18
   },
-  "eDcEUm-ypm": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Pepe routinely moves several percent in a session, most traders who last keep PEPE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Pepe suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de PEPE en un rango bajo a medio y dejan respirar la posición.",
+  "1Ul-NYU5pB": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Pepe routinely moves several percent in a session, most traders who last keep PEPE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen. Como Pepe suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de PEPE en un rango bajo a medio y dejan respirar la posición.",
    "kind": [
     "html"
    ],
@@ -144078,9 +144078,9 @@
    "n": 1,
    "w": 18
   },
-  "VPMh0JGO33": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Render routinely moves several percent in a session, most traders who last keep RNDR leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Render se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de RNDR en el rango bajo-medio y dejan que la posición respire.",
+  "aruSrzX04u": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Render routinely moves several percent in a session, most traders who last keep RNDR leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Render se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de RNDR en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -144478,9 +144478,9 @@
    "n": 1,
    "w": 18
   },
-  "8NCxjIJECW": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because THORChain routinely moves several percent in a session, most traders who last keep RUNE leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como THORChain se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de RUNE en el rango bajo-medio y dejan que la posición respire.",
+  "HwZ5gYrizt": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because THORChain routinely moves several percent in a session, most traders who last keep RUNE leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como THORChain se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de RUNE en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -144878,9 +144878,9 @@
    "n": 1,
    "w": 19
   },
-  "K8rck5BUUP": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because The Sandbox routinely moves several percent in a session, most traders who last keep SAND leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de solo ~1% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como The Sandbox se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de SAND en el rango bajo-medio y dejan que la posición respire.",
+  "u8W-6vONHp": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because The Sandbox routinely moves several percent in a session, most traders who last keep SAND leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de solo aproximadamente 0.5% elimina la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como The Sandbox se mueve rutinariamente varios puntos porcentuales en una sesión, la mayoría de los traders que duran mantienen el apalancamiento de SAND en el rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -146408,9 +146408,9 @@
    "n": 1,
    "w": 18
   },
-  "84qKz-Cut2": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Sei routinely moves several percent in a session, most traders who last keep SEI leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Sei suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SEI en un rango bajo-medio y dejan que la posición respire.",
+  "zpjkP_eD3v": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Sei routinely moves several percent in a session, most traders who last keep SEI leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Sei suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SEI en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -147132,9 +147132,9 @@
    "n": 1,
    "w": 19
   },
-  "RmUxrWSaPB": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Shiba Inu routinely moves several percent in a session, most traders who last keep SHIB leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Shiba Inu suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SHIB en un rango bajo-medio y dejan que la posición respire.",
+  "EBwzJV5Zf_": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Shiba Inu routinely moves several percent in a session, most traders who last keep SHIB leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Shiba Inu suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SHIB en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -147856,9 +147856,9 @@
    "n": 1,
    "w": 18
   },
-  "BZP3gtXzo_": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Solana routinely moves several percent in a session, most traders who last keep SOL leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Solana suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SOL en un rango bajo-medio y dejan que la posición respire.",
+  "mdQjG2LkDD": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Solana routinely moves several percent in a session, most traders who last keep SOL leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Solana suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SOL en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -149639,9 +149639,9 @@
    "n": 2,
    "w": 4
   },
-  "lqtQTOJs9D": {
-   "en": "Trade real stocks with live prices and zero real money. Apple, Tesla, Nvidia and 20 more - practice exactly the way you would trade for real, with charts, leverage and stop-losses. No sign-up, nothing to download.",
-   "es": "Opera acciones reales con precios en vivo y cero dinero real. Apple, Tesla, Nvidia y 20 más - practica exactamente como operarías de verdad, con gráficos, apalancamiento y stop-loss. Sin registro, nada que descargar.",
+  "tbon_GHhky": {
+   "en": "Trade real stocks with live prices and zero real money. Apple, Tesla, Nvidia and 17 more - practice exactly the way you would trade for real, with charts, leverage and stop-losses. No sign-up, nothing to download.",
+   "es": "Opera acciones reales con precios en vivo y cero dinero real. Apple, Tesla, Nvidia y 17 más - practica exactamente como operarías de verdad, con gráficos, apalancamiento y stop-loss. Sin registro, nada que descargar.",
    "kind": [
     "html"
    ],
@@ -149810,9 +149810,9 @@
    "n": 2,
    "w": 5
   },
-  "prwi9UF3yO": {
-   "en": "20+ US blue-chips including Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta and Coinbase, plus the S&amp;P 500 (SPY) and Nasdaq 100 (QQQ) ETFs.",
-   "es": "Más de 20 blue-chips de EE. UU., incluyendo Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta y Coinbase, además de los ETF del S&amp;P 500 (SPY) y el Nasdaq 100 (QQQ).",
+  "XykjRewr_O": {
+   "en": "18 US blue-chips including Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta and Coinbase, plus the S&amp;P 500 (SPY) and Nasdaq 100 (QQQ) ETFs.",
+   "es": "18 blue-chips de EE. UU., incluyendo Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta y Coinbase, además de los ETF del S&amp;P 500 (SPY) y el Nasdaq 100 (QQQ).",
    "kind": [
     "html"
    ],
@@ -150015,9 +150015,9 @@
    "n": 3,
    "w": 3
   },
-  "qEX3vjQB-B": {
-   "en": "20+ US blue-chips including Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta and Coinbase, plus the S&P 500 (SPY) and Nasdaq 100 (QQQ) ETFs.",
-   "es": "Más de 20 blue-chips de EE. UU., incluyendo Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta y Coinbase, además de los ETF del S&P 500 (SPY) y el Nasdaq 100 (QQQ).",
+  "YRq1m08CEZ": {
+   "en": "18 US blue-chips including Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta and Coinbase, plus the S&P 500 (SPY) and Nasdaq 100 (QQQ) ETFs.",
+   "es": "18 blue-chips de EE. UU., incluyendo Apple, Tesla, Nvidia, Microsoft, Amazon, Alphabet, Meta y Coinbase, además de los ETF del S&P 500 (SPY) y el Nasdaq 100 (QQQ).",
    "kind": [
     "ld"
    ],
@@ -150348,9 +150348,9 @@
    "n": 1,
    "w": 18
   },
-  "SzWrNgmtos": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Stacks routinely moves several percent in a session, most traders who last keep STX leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Stacks suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de STX en un rango bajo-medio y dejan que la posición respire.",
+  "2ZUtSyPzvr": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Stacks routinely moves several percent in a session, most traders who last keep STX leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Stacks suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de STX en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -150748,9 +150748,9 @@
    "n": 1,
    "w": 18
   },
-  "tuRKVJCIbr": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Sui routinely moves several percent in a session, most traders who last keep SUI leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× un movimiento de apenas ~1% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Sui suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SUI en un rango bajo-medio y dejan que la posición respire.",
+  "ifJhbHOgW5": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Sui routinely moves several percent in a session, most traders who last keep SUI leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× un movimiento de aproximadamente 0.5% borra la posición; a 5× tienes aproximadamente un 19.5% de margen. Como Sui suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de SUI en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -151472,9 +151472,9 @@
    "n": 1,
    "w": 18
   },
-  "RdOLv10aTL": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Bittensor routinely moves several percent in a session, most traders who last keep TAO leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Bittensor suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TAO en un rango bajo a medio y dejan que la posición respire.",
+  "QSgLQBVsou": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Bittensor routinely moves several percent in a session, most traders who last keep TAO leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Bittensor suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TAO en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -153361,9 +153361,9 @@
    "n": 1,
    "w": 18
   },
-  "Tg7f1fbgLv": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Celestia routinely moves several percent in a session, most traders who last keep TIA leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Celestia suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TIA en un rango bajo a medio y dejan que la posición respire.",
+  "INYjpnMBH4": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Celestia routinely moves several percent in a session, most traders who last keep TIA leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Celestia suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TIA en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -153761,9 +153761,9 @@
    "n": 1,
    "w": 18
   },
-  "Zsy8yhooLk": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Toncoin routinely moves several percent in a session, most traders who last keep TON leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Toncoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TON en un rango bajo a medio y dejan que la posición respire.",
+  "aZp_g7SONk": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Toncoin routinely moves several percent in a session, most traders who last keep TON leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes cerca de un 19.5% de margen de maniobra. Como Toncoin suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TON en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -154569,9 +154569,9 @@
    "n": 1,
    "w": 2
   },
-  "KTltkCX6yn": {
-   "en": "Practice 20+ real US stocks - Apple, Tesla, Nvidia and more - with live prices, long/short, leverage and stop-loss. Free, no sign-up.",
-   "es": "Practica con más de 20 acciones reales de EE. UU. - Apple, Tesla, Nvidia y más - con precios en vivo, long/short, apalancamiento y stop-loss. Gratis, sin registro.",
+  "O3FxYkROS7": {
+   "en": "Practice 18 real US stocks and 2 ETFs - Apple, Tesla, Nvidia and more - with live prices, long/short, leverage and stop-loss. Free, no sign-up.",
+   "es": "Practica con 18 acciones reales de EE. UU. y 2 ETFs - Apple, Tesla, Nvidia y más - con precios en vivo, long/short, apalancamiento y stop-loss. Gratis, sin registro.",
    "kind": [
     "html"
    ],
@@ -154579,7 +154579,7 @@
     "/tools/"
    ],
    "n": 1,
-   "w": 20
+   "w": 22
   },
   "Im7DcMc3Ns": {
    "en": "Practice EUR/USD, GBP/USD, USD/JPY and other majors with live rates, leverage and stop-loss - a free forex demo, no deposit.",
@@ -154641,9 +154641,9 @@
    "n": 1,
    "w": 13
   },
-  "0Jw91Dev8-": {
-   "en": "<a href=\"/position-size-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Position size calculator</a> <a href=\"/crypto-profit-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Profit (PnL) calculator</a> <a href=\"/leverage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Leverage calculator</a> <a href=\"/stop-loss-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Stop-loss calculator</a> <a href=\"/risk-reward-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Risk/reward calculator</a> <a href=\"/crypto-break-even-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Break-even calculator</a> <a href=\"/crypto-margin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Margin calculator</a> <a href=\"/crypto-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Exchange fee calculator</a> <a href=\"/funding-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Funding fee calculator</a> <a href=\"/crypto-funding-cost-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Funding cost calculator</a> <a href=\"/crypto-roi-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">ROI calculator</a> <a href=\"/crypto-drawdown-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Drawdown calculator</a> <a href=\"/crypto-compound-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Compound calculator</a> <a href=\"/crypto-dca-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">DCA calculator</a> <a href=\"/crypto-win-rate-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Win rate &amp; expectancy</a> <a href=\"/crypto-slippage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Slippage calculator</a> <a href=\"/crypto-futures-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Futures tax estimator</a> <a href=\"/apr-apy-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">APR to APY converter</a> <a href=\"/crypto-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Tax calculator</a> <a href=\"/crypto-cost-basis-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Cost basis calculator</a> <a href=\"/risk-of-ruin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Risk of ruin calculator</a> <a href=\"/pivot-point-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Pivot point calculator</a> <a href=\"/bybit-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per exchange (Bybit, Binance, OKX, MEXC…)</a> <a href=\"/btc-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per coin (65 coins)</a> <a href=\"/100x-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per leverage (5x-100x)</a> <a href=\"/hyperliquid-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Hyperliquid liquidation calculator</a>",
-   "es": "<a href=\"/position-size-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de tamaño de posición</a> <a href=\"/crypto-profit-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de ganancia (PnL)</a> <a href=\"/leverage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de apalancamiento</a> <a href=\"/stop-loss-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de stop-loss</a> <a href=\"/risk-reward-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de riesgo/beneficio</a> <a href=\"/crypto-break-even-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de punto de equilibrio</a> <a href=\"/crypto-margin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de margen</a> <a href=\"/crypto-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de comisiones del exchange</a> <a href=\"/funding-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de comisión de funding</a> <a href=\"/crypto-funding-cost-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de costo de funding</a> <a href=\"/crypto-roi-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de ROI</a> <a href=\"/crypto-drawdown-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de drawdown</a> <a href=\"/crypto-compound-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de interés compuesto</a> <a href=\"/crypto-dca-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de DCA</a> <a href=\"/crypto-win-rate-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Tasa de acierto y expectativa</a> <a href=\"/crypto-slippage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de slippage</a> <a href=\"/crypto-futures-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Estimador de impuestos de futuros</a> <a href=\"/apr-apy-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Convertidor de APR a APY</a> <a href=\"/crypto-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de impuestos</a> <a href=\"/crypto-cost-basis-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de costo base</a> <a href=\"/risk-of-ruin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de riesgo de ruina</a> <a href=\"/pivot-point-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de puntos pivote</a> <a href=\"/bybit-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por exchange (Bybit, Binance, OKX, MEXC…)</a> <a href=\"/btc-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por moneda (65 monedas)</a> <a href=\"/100x-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por apalancamiento (5x-100x)</a> <a href=\"/hyperliquid-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de liquidación de Hyperliquid</a>",
+  "MsUbKvsTfH": {
+   "en": "<a href=\"/position-size-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Position size calculator</a> <a href=\"/crypto-profit-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Profit (PnL) calculator</a> <a href=\"/leverage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Leverage calculator</a> <a href=\"/stop-loss-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Stop-loss calculator</a> <a href=\"/risk-reward-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Risk/reward calculator</a> <a href=\"/crypto-break-even-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Break-even calculator</a> <a href=\"/crypto-margin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Margin calculator</a> <a href=\"/crypto-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Exchange fee calculator</a> <a href=\"/funding-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Funding fee calculator</a> <a href=\"/crypto-funding-cost-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Funding cost calculator</a> <a href=\"/crypto-roi-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">ROI calculator</a> <a href=\"/crypto-drawdown-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Drawdown calculator</a> <a href=\"/crypto-compound-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Compound calculator</a> <a href=\"/crypto-dca-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">DCA calculator</a> <a href=\"/crypto-win-rate-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Win rate &amp; expectancy</a> <a href=\"/crypto-slippage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Slippage calculator</a> <a href=\"/crypto-futures-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Futures tax estimator</a> <a href=\"/apr-apy-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">APR to APY converter</a> <a href=\"/crypto-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Tax calculator</a> <a href=\"/crypto-cost-basis-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Cost basis calculator</a> <a href=\"/risk-of-ruin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Risk of ruin calculator</a> <a href=\"/pivot-point-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Pivot point calculator</a> <a href=\"/bybit-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per exchange (Bybit, Binance, OKX, MEXC…)</a> <a href=\"/btc-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per coin (61 coins)</a> <a href=\"/100x-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidation - per leverage (5x-100x)</a> <a href=\"/hyperliquid-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Hyperliquid liquidation calculator</a>",
+   "es": "<a href=\"/position-size-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de tamaño de posición</a> <a href=\"/crypto-profit-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de ganancia (PnL)</a> <a href=\"/leverage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de apalancamiento</a> <a href=\"/stop-loss-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de stop-loss</a> <a href=\"/risk-reward-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de riesgo/beneficio</a> <a href=\"/crypto-break-even-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de punto de equilibrio</a> <a href=\"/crypto-margin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de margen</a> <a href=\"/crypto-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de comisiones del exchange</a> <a href=\"/funding-fee-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de comisión de funding</a> <a href=\"/crypto-funding-cost-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de costo de funding</a> <a href=\"/crypto-roi-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de ROI</a> <a href=\"/crypto-drawdown-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de drawdown</a> <a href=\"/crypto-compound-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de interés compuesto</a> <a href=\"/crypto-dca-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de DCA</a> <a href=\"/crypto-win-rate-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Tasa de acierto y expectativa</a> <a href=\"/crypto-slippage-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de slippage</a> <a href=\"/crypto-futures-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Estimador de impuestos de futuros</a> <a href=\"/apr-apy-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Convertidor de APR a APY</a> <a href=\"/crypto-tax-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de impuestos</a> <a href=\"/crypto-cost-basis-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de costo base</a> <a href=\"/risk-of-ruin-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de riesgo de ruina</a> <a href=\"/pivot-point-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de puntos pivote</a> <a href=\"/bybit-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por exchange (Bybit, Binance, OKX, MEXC…)</a> <a href=\"/btc-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por moneda (61 monedas)</a> <a href=\"/100x-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Liquidación - por apalancamiento (5x-100x)</a> <a href=\"/hyperliquid-liquidation-calculator/\" style=\"padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px\">Calculadora de liquidación de Hyperliquid</a>",
    "kind": [
     "html"
    ],
@@ -162008,9 +162008,9 @@
    "n": 1,
    "w": 18
   },
-  "RNAqHC27_h": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because TRON routinely moves several percent in a session, most traders who last keep TRX leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como TRON suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TRX en un rango bajo a medio y dejan que la posición respire.",
+  "cQnOXjoVbL": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because TRON routinely moves several percent in a session, most traders who last keep TRX leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como TRON suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de TRX en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -162744,9 +162744,9 @@
    "n": 1,
    "w": 18
   },
-  "BM2wAyr7nG": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Uniswap routinely moves several percent in a session, most traders who last keep UNI leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100×, un movimiento de apenas ~1% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Uniswap suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de UNI en un rango bajo a medio y dejan que la posición respire.",
+  "IkVcR6-aWi": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Uniswap routinely moves several percent in a session, most traders who last keep UNI leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100×, un movimiento de aproximadamente 0.5% liquida la posición; a 5× tienes aproximadamente 19.5% de margen de maniobra. Como Uniswap suele moverse varios puntos porcentuales en una sesión, la mayoría de los traders que sobreviven mantienen el apalancamiento de UNI en un rango bajo a medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -166096,9 +166096,9 @@
    "n": 1,
    "w": 18
   },
-  "NAVoGM5B7J": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because dogwifhat routinely moves several percent in a session, most traders who last keep WIF leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como dogwifhat suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de WIF en un rango bajo-medio y dejan que la posición respire.",
+  "2GyrhsKtt5": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because dogwifhat routinely moves several percent in a session, most traders who last keep WIF leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como dogwifhat suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de WIF en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -166832,9 +166832,9 @@
    "n": 1,
    "w": 18
   },
-  "jcPQfRzQsQ": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Worldcoin routinely moves several percent in a session, most traders who last keep WLD leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Worldcoin suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de WLD en un rango bajo-medio y dejan que la posición respire.",
+  "XchrVVQncA": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Worldcoin routinely moves several percent in a session, most traders who last keep WLD leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Worldcoin suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de WLD en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -167990,9 +167990,9 @@
    "n": 1,
    "w": 18
   },
-  "G31ypWP1Mw": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Stellar routinely moves several percent in a session, most traders who last keep XLM leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Stellar suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XLM en un rango bajo-medio y dejan que la posición respire.",
+  "ogKulzMyCI": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Stellar routinely moves several percent in a session, most traders who last keep XLM leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Stellar suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XLM en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -168390,9 +168390,9 @@
    "n": 1,
    "w": 18
   },
-  "y_QAhkThO1": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Monero routinely moves several percent in a session, most traders who last keep XMR leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Monero suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XMR en un rango bajo-medio y dejan que la posición respire.",
+  "J5koEKmH1o": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Monero routinely moves several percent in a session, most traders who last keep XMR leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Monero suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XMR en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -168790,9 +168790,9 @@
    "n": 1,
    "w": 18
   },
-  "iU84fMYCzg": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because XRP routinely moves several percent in a session, most traders who last keep XRP leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como XRP suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XRP en un rango bajo-medio y dejan que la posición respire.",
+  "dRBtW0MCM1": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because XRP routinely moves several percent in a session, most traders who last keep XRP leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como XRP suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de XRP en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],
@@ -169514,9 +169514,9 @@
    "n": 1,
    "w": 18
   },
-  "4Qj351LkVr": {
-   "en": "At 100× a move of just ~1% wipes the position; at 5× you get roughly 19.5% of room. Because Zcash routinely moves several percent in a session, most traders who last keep ZEC leverage in the low-to-mid range and let the position breathe.",
-   "es": "A 100× basta un movimiento de ~1% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Zcash suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de ZEC en un rango bajo-medio y dejan que la posición respire.",
+  "wAHvsBrXxB": {
+   "en": "At 100× a move of about 0.5% wipes the position; at 5× you get roughly 19.5% of room. Because Zcash routinely moves several percent in a session, most traders who last keep ZEC leverage in the low-to-mid range and let the position breathe.",
+   "es": "A 100× basta un movimiento de aproximadamente 0.5% para liquidar la posición; a 5× tienes aproximadamente 19.5% de margen. Como Zcash suele moverse varios puntos porcentuales en una sola sesión, los traders que sobreviven mantienen el apalancamiento de ZEC en un rango bajo-medio y dejan que la posición respire.",
    "kind": [
     "html"
    ],

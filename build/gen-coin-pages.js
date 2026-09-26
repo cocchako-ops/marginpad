@@ -190,7 +190,7 @@ function coinPage(c) {
     <h2>${c.sym} liquidation distance by leverage</h2>
     <p>How far ${c.name} has to move against an isolated-margin long before it is liquidated, at a 0.5% maintenance margin:</p>
     ${levTable(0.5, c.lev)}
-    <p>At 100× a move of just ~1% wipes the position; at 5× you get roughly ${((1 / 5 - 0.005) * 100).toFixed(1)}% of room. Because ${c.name} routinely moves several percent in a session, most traders who last keep ${c.sym} leverage in the low-to-mid range and let the position breathe.</p>
+    <p>At 100× a move of about 0.5% wipes the position; at 5× you get roughly ${((1 / 5 - 0.005) * 100).toFixed(1)}% of room. Because ${c.name} routinely moves several percent in a session, most traders who last keep ${c.sym} leverage in the low-to-mid range and let the position breathe.</p>
 
     <h2>Worked example - 10× ${c.sym} long</h2>
     <p>A 10× ${c.sym} long entered at <code>$${fmt(c.entry)}</code> with a 0.5% maintenance margin rate is liquidated at about:</p>
