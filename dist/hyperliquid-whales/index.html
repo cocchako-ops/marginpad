@@ -344,9 +344,7 @@
 @media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
-<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Whale Tracker - Biggest Whale Positions Live","url":"https://marginpad.io/hyperliquid-whales/","dateModified":"2026-09-25T18:58:09.626Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
 <div class="wrap">
@@ -802,11 +800,11 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var mb=document.getElementById('wlNowM'), tb=document.getElementById('wlNowT'); if(!mb||!tb)return;
     var cs=(d.coins||[]).slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);}).slice(0,5);
     if(cs.length){ mb.innerHTML=cs.map(function(c){ var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100, net=c.longUsd-c.shortUsd;
-      return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="Show these positions">'+
+      return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="'+(((document.documentElement.lang||'').slice(0,2)==='es')?'Ver estas posiciones':'Show these positions')+'">'+
         '<b>'+esc(mkt(c.sym))+'<small>'+px(c.mark)+(c.chg==null?'':' · '+fmtPct(c.chg))+'</small></b>'+
         '<span><span class="nb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span><span class="nl"><span>'+lp.toFixed(0)+'% long</span><span>'+(100-lp).toFixed(0)+'% short</span></span></span>'+
-        '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en long':'net long'):(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en short':'net short'))+'<small>'+usd(Math.abs(net))+' of '+usd(tot)+'</small></span></div>'; }).join(''); }
-    else mb.innerHTML='<div class="wl-empty">The market breakdown appears with the next position sweep.</div>';
+        '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en long':'net long'):(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en short':'net short'))+'<small>'+usd(Math.abs(net))+(((document.documentElement.lang||'').slice(0,2)==='es')?' de ':' of ')+usd(tot)+'</small></span></div>'; }).join(''); }
+    else mb.innerHTML='<div class="wl-empty">'+(((document.documentElement.lang||'').slice(0,2)==='es')?'El desglose por mercado aparece con el próximo barrido de posiciones.':'The market breakdown appears with the next position sweep.')+'</div>';
     var fl=(d.fills||[]).slice(0,4);
     if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       return '<div class="wl-nt '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="Open this wallet">'+
@@ -818,9 +816,9 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   /* ── the filter sheet ──────────────────────────────────────────────────────────────────────── */
   var FS={open:false,view:'pos'};
   function fsum(){
-    var SORT={val:'by size',pnl:'by P&L',liq:'nearest liquidation first',lev:'by leverage'};
-    var a=document.getElementById('wlFsumPos'); if(a)a.textContent=[F.sym?mkt(F.sym):'All markets',F.side==='l'?'Longs':F.side==='s'?'Shorts':'Long & short',SORT[F.sort]||'by size'].join(' · ');
-    var b=document.getElementById('wlFsumTr'); if(b)b.textContent=[TF.sym?mkt(TF.sym):'All markets',TF.act==='open'?'Opened':TF.act==='close'?'Closed':'Opened & closed',TZ==='utc'?'UTC':'local time'].join(' · ');
+    var SORT=((document.documentElement.lang||'').slice(0,2)==='es')?{val:'por tamaño',pnl:'por P&L',liq:'liquidación más cercana primero',lev:'por apalancamiento'}:{val:'by size',pnl:'by P&L',liq:'nearest liquidation first',lev:'by leverage'};
+    var a=document.getElementById('wlFsumPos'); if(a)a.textContent=[F.sym?mkt(F.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':'All markets'),F.side==='l'?'Longs':F.side==='s'?'Shorts':(((document.documentElement.lang||'').slice(0,2)==='es')?'Long y short':'Long & short'),SORT[F.sort]||SORT.val].join(' · ');
+    var b=document.getElementById('wlFsumTr'); if(b)b.textContent=[TF.sym?mkt(TF.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':'All markets'),TF.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas':'Opened'):TF.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Cerradas':'Closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas y cerradas':'Opened & closed'),TZ==='utc'?'UTC':'local time'].join(' · ');
     var pb=document.querySelector('.wl-fbtn[data-fopen="pos"]'); if(pb)pb.classList.toggle('on',!!(F.sym||F.side||F.sort!=='val'));
     var tbn=document.querySelector('.wl-fbtn[data-fopen="trades"]'); if(tbn)tbn.classList.toggle('on',!!(TF.sym||TF.act));
   }

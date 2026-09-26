@@ -2493,7 +2493,9 @@ const SSR_MAP_ES = [
   ['Bids resting', 'Compras en espera'], ['Offers resting', 'Ventas en espera'],
   ['within 0.25% of the price, summed across', 'a menos del 0,25% del precio, sumado en'], [' venues', ' exchanges'],
   ['A $250,000 buy would really cost', 'Una compra de $250,000 costaria realmente'], ['in slippage', 'de slippage'], [' a $250,000 sell, ', ' una venta de $250,000, '],
-  ['&middot; UPDATED ', '&middot; ACTUALIZADO '], ['· UPDATED ', '· ACTUALIZADO '], ['See it live:', 'Miralo en vivo:'],
+  ['&middot; UPDATED ', '&middot; ACTUALIZADO '], ['· UPDATED ', '· ACTUALIZADO '], ['See it live:', 'Míralo en vivo:'],
+  ['Practice risk-free with paper trading', 'Practica sin riesgo con paper trading'], ['Practice risk-free', 'Practica sin riesgo'], ['Full liquidation calculator', 'Calculadora de liquidación completa'],
+  ['24h liquidation totals', 'Totales de liquidaciones 24h'], ['Live liquidation feed', 'Feed de liquidaciones en vivo'], ['LIVE MARKET DATA', 'DATOS DE MERCADO EN VIVO'],
   ['It answers a different question from the zones above, and the difference is worth holding on to: a book shows orders somebody <em>chose</em> to place and can pull at any moment, while a liquidation zone is where leverage gets closed whether its owner likes it or not &mdash; and no order book anywhere shows that, at any distance. ', 'Responde a una pregunta distinta de la de las zonas de arriba, y la diferencia merece recordarse: un libro muestra ordenes que alguien <em>eligio</em> colocar y puede retirar en cualquier momento, mientras que una zona de liquidacion es donde el apalancamiento se cierra le guste o no a su dueno &mdash; y ningun libro de ordenes muestra eso, a ninguna distancia. '],
   ['On top of which the deepest book we can read only reaches ', 'Ademas, el libro mas profundo que podemos leer solo llega a '], [' from the price', ' del precio'], [', while the nearest zone above sits ', ', mientras que la zona mas cercana por encima esta a '], ['% away', '%'], [': past that, even the resting orders are out of sight.', ': mas alla de eso, ni siquiera las ordenes en espera se ven.'],
   ['Bar length is the weight of a standing zone against the others on this list; the figure beside it is how many times the average standing band near the price it carries. These are ', 'La longitud de la barra es el peso de una zona activa frente a las demas de esta lista; la cifra al lado es cuantas veces la banda activa media cerca del precio contiene. Estas son zonas '],
@@ -2564,7 +2566,7 @@ async function handleSsrLiq(request, url, env, mode, param) {
   // thousands of crawls a month should not open on a paragraph. A panel that cannot be built falls through silently.
   let panel = '';
   if (mode === 'map' && res.c) { try { panel = await ssrLiqMapPanel(param, env, res.c); } catch (e) { panel = ''; } }
-  const esBox = (mode === 'map' && esLang(request) === 'es') ? esMapFrag : (x => x); // the sentence box carries its own "UPDATED" / "See it live" chrome
+  const esBox = (esLang(request) === 'es') ? esMapFrag : (x => x); // the sentence box carries its own "UPDATED" / "See it live" chrome - every mode (the hub box on /es/hyperliquid-whales/ printed "See it live: Practice risk-free" in English, audit 2026-09-25)
   if (mode === 'map' && esLang(request) === 'es') { // the /es/ twin: same live data, Spanish words (fragment table above)
     try { panel = esMapFrag(panel); res.S = (res.S || []).map(esMapFrag); if (Array.isArray(res.links)) res.links = res.links.map(l => [l[0], esMapFrag(l[1])]); } catch (e) {}
   }
