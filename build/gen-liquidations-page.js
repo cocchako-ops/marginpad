@@ -248,12 +248,12 @@ ${FAQ}
   /* ── stat strip ─────────────────────────────────────────────────────────────────────────── */
   function paintTop(d){
     var m=d.market||{},lp=m.total?m.long/m.total*100:50,sp=100-lp;
-    $('lqTot').textContent=bn(m.total); $('lqTotS').textContent='across '+(m.coinsN||d.coins.length)+' markets on '+(d.exchanges||9)+' exchanges';
+    $('lqTot').textContent=bn(m.total); $('lqTotS').textContent=(((document.documentElement.lang||'').slice(0,2)==='es')?'en ':'across ')+(m.coinsN||d.coins.length)+(((document.documentElement.lang||'').slice(0,2)==='es')?' mercados en ':' markets on ')+(d.exchanges||9)+' exchanges';
     $('lqLs').innerHTML='<i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+sp.toFixed(1)+'%"></i>';
     $('lqLong').innerHTML=lp.toFixed(0)+'% longs<small>'+bn(m.long)+'</small>'; $('lqShort').innerHTML=sp.toFixed(0)+'% shorts<small>'+bn(m.short)+'</small>';
-    var b=d.big; if(b&&b.usd){ var el=$('lqBig'); el.textContent=bn(b.usd); el.className='v '+(b.side==='long_liquidated'?'dn':'up'); $('lqBigS').textContent=(b.s||'')+' '+(b.side==='long_liquidated'?'long':'short')+' on '+(b.ex||'')+' - one forced close'; }
-    $('lqCnt').textContent=(m.count||0).toLocaleString('en-US'); $('lqCntS').textContent='positions in the last 24 hours';
-    $('lqUpd').textContent='updated '+new Date(d.ts||Date.now()).toUTCString().slice(17,22)+' UTC · refreshes every minute';
+    var b=d.big; if(b&&b.usd){ var el=$('lqBig'); el.textContent=bn(b.usd); el.className='v '+(b.side==='long_liquidated'?'dn':'up'); $('lqBigS').textContent=(b.s||'')+' '+(b.side==='long_liquidated'?'long':'short')+(((document.documentElement.lang||'').slice(0,2)==='es')?' en ':' on ')+(b.ex||'')+(((document.documentElement.lang||'').slice(0,2)==='es')?' - un cierre forzado':' - one forced close'); }
+    $('lqCnt').textContent=(m.count||0).toLocaleString('en-US'); $('lqCntS').textContent=((document.documentElement.lang||'').slice(0,2)==='es')?'posiciones en las últimas 24 horas':'positions in the last 24 hours';
+    $('lqUpd').textContent=(((document.documentElement.lang||'').slice(0,2)==='es')?'actualizado ':'updated ')+new Date(d.ts||Date.now()).toUTCString().slice(17,22)+(((document.documentElement.lang||'').slice(0,2)==='es')?' UTC · se actualiza cada minuto':' UTC · refreshes every minute');
   }
   /* ── coin rows ───────────────────────────────────────────────────────────────────────────── */
   function rows(){
