@@ -2826,7 +2826,13 @@ async function handleCgFunding(url, env) {
     });
   } catch (e) {}
   coins.sort((a, b) => Math.abs(b.funding) - Math.abs(a.funding));
-  coins = coins.slice(0, 160);
+  // The 160 biggest |funding| movers - AND the majors, whatever their rate. BTC and ETH sit at 0.01% most days, so they
+  // fell off this list and every consumer that joins it by symbol (the derivatives board, cgCoinAgg, the coin pages)
+  // printed "Fund -" for exactly the coins a reader looks at first (audit 2026-09-25: BTC, ETH, BNB, LINK dashes).
+  const MAJ = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE', 'ADA', 'LINK', 'AVAX', 'TON', 'SUI', 'HYPE', 'LTC', 'DOT', 'TRX', 'PEPE', 'WIF', 'BONK', 'SHIB', 'ARB', 'OP', 'NEAR', 'APT', 'UNI', 'AAVE', 'ENA', 'FET', 'TIA', 'SEI', 'INJ'];
+  const top = coins.slice(0, 160), inTop = new Set(top.map(c => c.s));
+  for (const c of coins) if (!inTop.has(c.s) && MAJ.includes(c.s)) { top.push(c); inTop.add(c.s); }
+  coins = top;
   const out = { ts: Date.now(), coins };
   const resp = jr(out, coins.length ? 'public, max-age=300' : 'no-store');
   if (coins.length) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
