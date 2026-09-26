@@ -71,7 +71,8 @@ let html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/blog.css" />
-<style>${CSS}</style>
+<style>${CSS}@media(max-width:480px){.oitbl{min-width:560px}.oiwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}}/* phone: scroll, never squeeze (audit 2026-09-25) */
+</style>
 ${LD}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Open interest","item":"${URL}"}]}</script>
 </head>
