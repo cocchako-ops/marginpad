@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T19:08:08.137Z",
+  "generated": "2026-09-26T19:14:15.436Z",
   "pages": 383,
-  "occurrences": 26313,
-  "unique": 13898,
-  "words": 263816,
-  "untranslated": 1,
-  "untranslatedWords": 1,
-  "merged": "2026-09-26T19:08:50.731Z"
+  "occurrences": 26318,
+  "unique": 13903,
+  "words": 263858,
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-09-26T19:14:35.194Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -165912,6 +165912,66 @@
    ],
    "n": 1,
    "w": 10
+  },
+  "4TiBgxAvXn": {
+   "en": "More free widgets",
+   "es": "Más widgets gratis",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "jpLN6JVrVB": {
+   "en": "The same one-line embed, three other live figures.",
+   "es": "El mismo embed de una línea, con otras tres cifras en vivo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "kpPxaf7T7g": {
+   "en": "<a href=\"/widget/fear-greed/\">Crypto Fear &amp; Greed index widget</a> - today, yesterday and last week, updated daily.",
+   "es": "<a href=\"/widget/fear-greed/\">Widget del índice Crypto Fear &amp; Greed</a> - hoy, ayer y la semana pasada, actualizado a diario.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "_Gjdf0VQql": {
+   "en": "<a href=\"/widget/liquidations/\">Live liquidations widget</a> - the newest forced closes from our nine-exchange collector.",
+   "es": "<a href=\"/widget/liquidations/\">Widget de liquidaciones en vivo</a> - los cierres forzados más recientes de nuestro colector de nueve exchanges.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "UOCF2NPmpt": {
+   "en": "<a href=\"/wordpress-crypto-widgets/\">WordPress crypto widgets</a> - the same embeds as shortcodes.",
+   "es": "<a href=\"/wordpress-crypto-widgets/\">Widgets cripto para WordPress</a> - los mismos embeds como shortcodes.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/widgets/"
+   ],
+   "n": 1,
+   "w": 8
   },
   "l9py0r9lcz": {
    "en": "<span>© 2026 MarginPad</span> <span><a href=\"/\">Calculators</a> · <a href=\"/blog/\">Blog</a> · <a href=\"/glossary/\">Glossary</a></span>",
