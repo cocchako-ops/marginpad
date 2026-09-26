@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T17:40:21.312Z",
+  "generated": "2026-09-26T18:15:22.511Z",
   "pages": 383,
-  "occurrences": 26300,
-  "unique": 13885,
-  "words": 263518,
-  "untranslated": 2,
-  "untranslatedWords": 9,
-  "merged": "2026-09-26T17:41:02.352Z"
+  "occurrences": 26309,
+  "unique": 13892,
+  "words": 263525,
+  "untranslated": 4,
+  "untranslatedWords": 11,
+  "merged": "2026-09-26T18:15:57.373Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -100614,7 +100614,7 @@
   },
   "BsRzuYA3Kl": {
    "en": "<span class=\"m get\">GET</span><code>/api/v1/book?symbol=BTC</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/tape?symbol=BTC&amp;limit=100</code>",
-   "es": "",
+   "es": "<span class=\"m get\">GET</span><code>/api/v1/book?symbol=BTC</code> &nbsp; <span class=\"m get\">GET</span><code>/api/v1/tape?symbol=BTC&amp;limit=100</code>",
    "kind": [
     "html"
    ],
@@ -113457,6 +113457,30 @@
    "n": 2,
    "w": 1
   },
+  "aWy1Mye4Hq": {
+   "en": "OPENED",
+   "es": "ABIERTAS",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "vj5zsRZdsx": {
+   "en": "CLOSED",
+   "es": "CERRADAS",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 1
+  },
   "7qea_YMoVK": {
    "en": "Time zone",
    "es": "Zona horaria",
@@ -116553,6 +116577,18 @@
    "n": 1,
    "w": 12
   },
+  "6jwhFFfNgD": {
+   "en": "MARGINPAD",
+   "es": "MARGINPAD",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 1
+  },
   "CIqFvlsChh": {
    "en": "<span>© 2026 MarginPad · Simulated trading only · Not financial advice</span><span><a href=\"/about/\" style=\"display:inline;padding:0 12px 0 0\">About</a><a href=\"/contact/\" style=\"display:inline;padding:0 12px 0 0\">Contact</a><a href=\"/terms/\" style=\"display:inline;padding:0 12px 0 0\">Terms</a><a href=\"/privacy/\" style=\"display:inline;padding:0\">Privacy</a></span>",
    "es": "<span>© 2026 MarginPad · Solo trading simulado · No es asesoría financiera</span><span><a href=\"/about/\" style=\"display:inline;padding:0 12px 0 0\">Acerca de</a><a href=\"/contact/\" style=\"display:inline;padding:0 12px 0 0\">Contacto</a><a href=\"/terms/\" style=\"display:inline;padding:0 12px 0 0\">Términos</a><a href=\"/privacy/\" style=\"display:inline;padding:0\">Privacidad</a></span>",
@@ -116950,7 +116986,7 @@
   },
   "l6un4DZGJ4": {
    "en": "MarginPad - Demo homepage (full-width)",
-   "es": "",
+   "es": "MarginPad - Demo homepage (full-width)",
    "kind": [
     "ld"
    ],
@@ -138340,6 +138376,18 @@
    "n": 1,
    "w": 10
   },
+  "X-IoCYgtcR": {
+   "en": "<span class=\"pill\">EXCLUSIVE</span>",
+   "es": "<span class=\"pill\">EXCLUSIVO</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 3,
+   "w": 1
+  },
   "bPsg2Ynraq": {
    "en": "4 AI indicators",
    "es": "4 indicadores de IA",
@@ -138628,6 +138676,18 @@
    "n": 1,
    "w": 43
   },
+  "Dw21X9Vc3W": {
+   "en": "PRICING",
+   "es": "PRECIOS",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 1
+  },
   "l9Ae4cfVFI": {
    "en": "Pick your plan",
    "es": "Elige tu plan",
@@ -138651,6 +138711,18 @@
    ],
    "n": 1,
    "w": 12
+  },
+  "ccdyWG8Hos": {
+   "en": "PREMIUM",
+   "es": "PREMIUM",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 1
   },
   "O5UY_zCgOV": {
    "en": "$11.99<small> / month</small>",
@@ -139155,6 +139227,18 @@
    ],
    "n": 1,
    "w": 61
+  },
+  "YluKnqrNH2": {
+   "en": "QUESTIONS",
+   "es": "PREGUNTAS",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 1
   },
   "efw3LceQoC": {
    "en": "Good to know",

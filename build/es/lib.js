@@ -99,7 +99,7 @@ function worthy(html) {
   const txt = html.replace(/<[^>]+>/g, ' ').replace(/&[#a-z0-9]+;/gi, ' ').trim();
   if (!txt || !HAS_WORD.test(txt)) return false;
   if (/^(https?:\/\/|\/)[^\s]*$/.test(txt)) return false;
-  if (/^[A-Z0-9.\-\/]{2,12}$/.test(txt) && !/[a-z]/.test(txt)) return false; // ticker-like: BTC, BTC/USDT, OKX
+  if (/^[A-Z0-9.\-\/]{2,12}$/.test(txt) && !/[a-z]/.test(txt) && (txt.length <= 5 || /[0-9.\-\/]/.test(txt))) return false; // ticker-like: BTC, BTC/USDT, OKX - a 6+ letter all-caps WORD (EXCLUSIVE, PRICING, QUESTIONS) is copy, not a ticker (audit 2026-09-25: three premium eyebrows never reached the catalog)
   return true;
 }
 function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
