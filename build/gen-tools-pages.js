@@ -168,7 +168,7 @@ ${topbar(lang, S, slug)}
       lv.sort(function(a,b){return b.v-a.v;});
       var html='';lv.forEach(function(x,i){
         if(i>0&&lv[i-1].v>=live&&x.v<live){html+='<div class="lvl nowrow"><span class="nm">'+${J(P.jsNow)}+'</span><span class="pr">'+fp(live)+'</span><span class="ds">'+${J(P.jsLive)}+'</span></div>';}
-        var dist=(live-x.v)/live*100;
+        var dist=(x.v-live)/live*100;
         html+='<div class="lvl '+x.type+'"><span class="nm">'+x.nm+'</span><span class="pr">'+fp(x.v)+'</span><span class="ds">'+(dist>=0?'+':'')+dist.toFixed(2)+'%</span></div>';
       });
       if(live<lv[lv.length-1].v){html+='<div class="lvl nowrow"><span class="nm">'+${J(P.jsNow)}+'</span><span class="pr">'+fp(live)+'</span><span class="ds">'+${J(P.jsLive)}+'</span></div>';}

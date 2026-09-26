@@ -156,7 +156,7 @@ var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent
 `;
 }
 // live BTC price → prefill the entry field (same pattern as the per-coin pages)
-const LIVEPX = `<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b> - prefilled below';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>`;
+const LIVEPX = `<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b> - prefilled below';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);var x=document.getElementById('pnlExit');if(x){x.value=Math.round(p*1.02);}e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>`;
 
 function relatedLiq(ex) {
   const others = EX.filter(o => o.slug !== ex.slug);
@@ -320,7 +320,7 @@ ${LIVEPX}
 }
 
 // ---- translated (lean, fully-native) lang variants ----
-const LIVEPX_LANG = `<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>BTC <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b>';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>`;
+const LIVEPX_LANG = `<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>BTC <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b>';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);var x=document.getElementById('pnlExit');if(x){x.value=Math.round(p*1.02);}e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>`;
 
 function liqPageLang(ex, lang) {
   const L = EC[lang]; const home = `/${lang}/`;

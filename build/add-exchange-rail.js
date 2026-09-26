@@ -45,7 +45,7 @@ const CTX = {
   deriv: { ex: ['bybit', 'binance'], label: 'TRADE THIS DATA',
            why: 'Funding, open interest and basis are only worth something if you are positioned on the venue that pays them.' },
   sim:   { ex: ['bybit', 'moon'],    label: 'WHEN PRACTICE STOPS TEACHING YOU',
-           why: 'A simulator cannot teach you slippage, funding, or what real money does to your judgement. When the paper account stops surprising you, size down and go live.' },
+           why: 'A simulator cannot teach you what real money does to your judgement - the fills, funding and fees here are already modelled. When the paper account stops surprising you, size down and go live.' },
   calc:  { ex: ['bybit', 'binance'], label: 'THE VENUES THESE NUMBERS ASSUME',
            why: 'Maintenance margin, fee tiers and funding intervals differ per exchange - these are the ones this calculator is modelled on.' },
   guide: { ex: ['bybit', 'moon'],    label: 'PUT THIS INTO PRACTICE',

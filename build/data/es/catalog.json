@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T18:59:43.245Z",
+  "generated": "2026-09-26T19:08:08.137Z",
   "pages": 383,
-  "occurrences": 26311,
-  "unique": 13896,
-  "words": 263765,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-09-26T19:01:55.106Z"
+  "occurrences": 26313,
+  "unique": 13898,
+  "words": 263816,
+  "untranslated": 1,
+  "untranslatedWords": 1,
+  "merged": "2026-09-26T19:08:50.731Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -20744,9 +20744,9 @@
    "n": 15,
    "w": 32
   },
-  "fTlmUKoEr2": {
-   "en": "<strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href=\"/calculators?c=liq\">liquidation calculator</a> before you size up.",
-   "es": "<strong>El apalancamiento es una trampa.</strong> Un titular de 125× significa que un movimiento de ~1% te liquida. Comprueba exactamente dónde con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a> antes de aumentar el tamaño de tu posición.",
+  "pdSN9HQq5C": {
+   "en": "<strong>Leverage is a trap.</strong> A 125× headline means a move of about 0.8% liquidates you. Check exactly where with the <a href=\"/calculators?c=liq\">liquidation calculator</a> before you size up.",
+   "es": "<strong>El apalancamiento es una trampa.</strong> Un titular de 125× significa que un movimiento de aproximadamente 0.8% te liquida. Comprueba exactamente dónde con la <a href=\"/calculators?c=liq\">calculadora de liquidación</a> antes de aumentar el tamaño de tu posición.",
    "kind": [
     "html"
    ],
@@ -20757,7 +20757,7 @@
     "/best-crypto-exchange-for-copy-trading/"
    ],
    "n": 15,
-   "w": 21
+   "w": 23
   },
   "u1BYdAdASA": {
    "en": "<strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count - see how they add up on the <a href=\"/bybit-vs-binance/\">exchange comparison pages</a>.",
@@ -24297,9 +24297,9 @@
    "n": 11,
    "w": 5
   },
-  "AZyDjNBaTc": {
-   "en": "A simulator cannot teach you slippage, funding, or what real money does to your judgement. When the paper account stops surprising you, size down and go live.",
-   "es": "Un simulador no puede enseñarte el slippage, el funding, ni lo que el dinero real le hace a tu criterio. Cuando la cuenta de paper trading deje de sorprenderte, reduce el tamaño y pasa a operar en vivo.",
+  "axwqv8i50z": {
+   "en": "A simulator cannot teach you what real money does to your judgement - the fills, funding and fees here are already modelled. When the paper account stops surprising you, size down and go live.",
+   "es": "Un simulador no puede enseñarte lo que el dinero real le hace a tu criterio - las ejecuciones, el funding y las comisiones aquí ya están modelados. Cuando la cuenta de paper trading deje de sorprenderte, reduce el tamaño y pasa a operar en vivo.",
    "kind": [
     "html"
    ],
@@ -24310,7 +24310,7 @@
     "/forex-trading-simulator/"
    ],
    "n": 11,
-   "w": 26
+   "w": 32
   },
   "IV2OAd04WY": {
    "en": "<a class=\"mp-xr-c\" style=\"--xa:#f7a600\" data-ex=\"Bybit\" href=\"https://partner.bybit.com/b/162071\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" onclick=\"try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}\"><span class=\"mp-xr-k\">Bybit</span><span class=\"mp-xr-d\">USDT-perp &middot; 100x</span><span class=\"mp-xr-g\">&rarr;</span></a><i class=\"mp-xr-cut\"></i><a class=\"mp-xr-c\" style=\"--xa:#8a5cff\" data-ex=\"Moon\" href=\"https://moon.com/?offer=marginpad\" target=\"_blank\" rel=\"sponsored noopener noreferrer\" onclick=\"try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}\"><span class=\"mp-xr-k\">Moon</span><span class=\"mp-xr-d\">Any market, up or down</span><span class=\"mp-xr-g\">&rarr;</span></a>",
@@ -46261,9 +46261,9 @@
    "n": 1,
    "w": 19
   },
-  "GjmsL6FwtU": {
-   "en": "<b>Perp:</b> $1,000 margin at 5× long = $5,000 position, liquidation near −19.6%. BTC +10% → +$500 (+50% ROE) minus fees/funding. BTC −10% → −$500. BTC −20% → liquidated, −$1,000. Symmetric, path-dependent - a deep wick can end the trade even if the thesis was eventually right.",
-   "es": "<b>Perpetuo:</b> $1,000 de margen a 5× long = posición de $5,000, liquidación cerca de −19.6%. BTC +10% → +$500 (+50% ROE) menos comisiones/funding. BTC −10% → −$500. BTC −20% → liquidado, −$1,000. Simétrico, dependiente de la trayectoria - una mecha profunda puede terminar la operación incluso si la tesis terminaba siendo correcta.",
+  "2K7zIYLaQY": {
+   "en": "<b>Perp:</b> $1,000 margin at 5× long = $5,000 position, liquidation near −19.5%. BTC +10% → +$500 (+50% ROE) minus fees/funding. BTC −10% → −$500. BTC −20% → liquidated, −$1,000. Symmetric, path-dependent - a deep wick can end the trade even if the thesis was eventually right.",
+   "es": "<b>Perpetuo:</b> $1,000 de margen a 5× long = posición de $5,000, liquidación cerca de −19.5%. BTC +10% → +$500 (+50% ROE) menos comisiones/funding. BTC −10% → −$500. BTC −20% → liquidado, −$1,000. Simétrico, dependiente de la trayectoria - una mecha profunda puede terminar la operación incluso si la tesis terminaba siendo correcta.",
    "kind": [
     "html"
    ],
@@ -88161,9 +88161,9 @@
    "n": 2,
    "w": 7
   },
-  "cwKEQvVzEU": {
-   "en": "Yes - buying, selling and holding crypto is legal for US residents on registered, US-based exchanges. What is restricted is <b>high-leverage offshore futures</b>. Binance.com, Bybit and OKX all geoblock US residents and prohibit US persons in their terms; using a VPN to get around that breaks the terms and risks a frozen account. We cover the specifics in <a href=\"/blog/is-binance-bybit-okx-legal-us/\">Is Binance, Bybit &amp; OKX legal in the US?</a>",
-   "es": "Sí - comprar, vender y mantener cripto es legal para residentes de EE. UU. en exchanges registrados con base en EE. UU. Lo que está restringido son los <b>futuros offshore de alto apalancamiento</b>. Binance.com, Bybit y OKX geobloquean a los residentes de EE. UU. y prohíben a las personas estadounidenses en sus términos; usar una VPN para evadir eso incumple los términos y arriesga que te congelen la cuenta. Cubrimos los detalles en <a href=\"/blog/is-binance-bybit-okx-legal-us/\">¿Son legales Binance, Bybit y OKX en EE. UU.?</a>",
+  "da7W7DlUQI": {
+   "en": "Yes - buying, selling and holding crypto is legal for US residents on registered, US-based exchanges. What is restricted is <b>high-leverage offshore futures</b>. Binance.com and Bybit geoblock US residents and prohibit US persons in their terms, and OKX's global exchange does the same (its separate, US-regulated OKX US entity is the exception); using a VPN to get around that breaks the terms and risks a frozen account. We cover the specifics in <a href=\"/blog/is-binance-bybit-okx-legal-us/\">Is Binance, Bybit &amp; OKX legal in the US?</a>",
+   "es": "Sí - comprar, vender y mantener cripto es legal para residentes de EE. UU. en exchanges registrados con base en EE. UU. Lo que está restringido son los <b>futuros offshore de alto apalancamiento</b>. Binance.com y Bybit geobloquean a los residentes de EE. UU. y prohíben a las personas estadounidenses en sus términos, y el exchange global de OKX hace lo mismo (su entidad separada y regulada en EE. UU., OKX US, es la excepción); usar una VPN para evadir eso incumple los términos y arriesga que te congelen la cuenta. Cubrimos los detalles en <a href=\"/blog/is-binance-bybit-okx-legal-us/\">¿Son legales Binance, Bybit y OKX en EE. UU.?</a>",
    "kind": [
     "html"
    ],
@@ -88171,7 +88171,7 @@
     "/crypto-trading-usa/"
    ],
    "n": 1,
-   "w": 63
+   "w": 77
   },
   "p_h1xC_Cts": {
    "en": "Where US traders can actually trade",
@@ -140439,6 +140439,30 @@
    "n": 1,
    "w": 2
   },
+  "t4CiO1MO9r": {
+   "en": "Anthropic",
+   "es": "Anthropic",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/privacy/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "a27LWTjeZ2": {
+   "en": "Ask AI chart reads - the chart brief a member sends is processed by the model; nothing else is",
+   "es": "Lecturas de Ask AI en los gráficos - el resumen del gráfico que envía un miembro lo procesa el modelo; nada más",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/privacy/"
+   ],
+   "n": 1,
+   "w": 17
+  },
   "D09GlFJfMf": {
    "en": "Resend",
    "es": "Resend",
@@ -140547,9 +140571,9 @@
    "n": 1,
    "w": 5
   },
-  "boPRQqpBSm": {
-   "en": "Account data is kept while the account exists. Analytics is aggregated and retained in the ordinary course. The live activity feed used for operations is a rolling window of a few hours. Rewards and withdrawal records are kept longer, because we need them to resolve payment disputes and detect abuse.",
-   "es": "Los datos de la cuenta se conservan mientras la cuenta exista. La analítica se agrega y se conserva de forma habitual. El feed de actividad en vivo usado para operaciones es una ventana móvil de unas pocas horas. Los registros de recompensas y retiros se conservan más tiempo, porque los necesitamos para resolver disputas de pago y detectar abusos.",
+  "NZ4VDL1KkD": {
+   "en": "Account data is kept while the account exists. Analytics is aggregated and retained in the ordinary course. The live activity feed used for operations is a rolling 24-hour window. Rewards and withdrawal records are kept longer, because we need them to resolve payment disputes and detect abuse.",
+   "es": "Los datos de la cuenta se conservan mientras la cuenta exista. La analítica se agrega y se conserva de forma habitual. El feed de actividad en vivo usado para operaciones es una ventana móvil de 24 horas. Los registros de recompensas y retiros se conservan más tiempo, porque los necesitamos para resolver disputas de pago y detectar abusos.",
    "kind": [
     "html"
    ],
@@ -140557,7 +140581,7 @@
     "/privacy/"
    ],
    "n": 1,
-   "w": 48
+   "w": 46
   },
   "mxZM4ZBP_2": {
    "en": "Your choices",
@@ -160261,9 +160285,9 @@
    "n": 2,
    "w": 6
   },
-  "pibmr1LZD6": {
-   "en": "Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.",
-   "es": "Sí. MarginPad la organiza de forma continua en temporadas de catorce días. Cinco de sus siete tablas se puntúan con paper trading, así que entrar no cuesta nada, no requiere depósito ni cuenta en un exchange. El dinero de los premios es real y se paga a los cinco primeros de cada tabla.",
+  "c3ghjyGJSV": {
+   "en": "Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.",
+   "es": "Sí. MarginPad la organiza de forma continua en temporadas de catorce días. Cinco de sus siete tablas se puntúan con paper trading - cuatro se abren con tu primera operación cerrada, la Gold Room en el nivel Gold - así que entrar no cuesta nada, no requiere depósito ni cuenta en un exchange. El dinero de los premios es real y se paga a los cinco primeros de cada tabla.",
    "kind": [
     "html",
     "ld"
@@ -160272,7 +160296,7 @@
     "/trading-competition/"
    ],
    "n": 2,
-   "w": 45
+   "w": 58
   },
   "QnLQpGvk52": {
    "en": "What do you win?",

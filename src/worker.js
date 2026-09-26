@@ -1624,7 +1624,7 @@ async function askRender(kind, env, ctx, es) {
       ['Cost to run a bot on it', '$0', 'no deposit, no card; 120 requests a minute, 3 keys, 50 open positions'],
       ['Bots on the public board this season', _aN(bots), 'at least five closes through the API to qualify - <a href="/arena/">/arena/</a>'],
       ['Trades they closed this season', _aN(closes), 'net of fees and funding, settled by our own engine'],
-      ['Endpoints', '25', 'plus a WebSocket stream, webhooks and an MCP server for AI clients'],
+      ['Endpoints', '24', 'plus a WebSocket stream, webhooks and an MCP server for AI clients'], // 24 unique Bot API paths - the count /trading-api/ publishes (audit 2026-09-25: this row said 25)
       ['Real venue fee schedules', '9', 'charge the paper account exactly what Bybit, Binance or Hyperliquid would'],
       ['Starting balance per book', '$10,000', 'a scorecard, not a constraint - reset it any time'],
     ];

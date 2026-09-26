@@ -192,6 +192,7 @@ const privacy = `    <h1>Privacy Policy</h1>
         <tr><td>Cloudflare</td><td>Hosting, storage and delivery of the whole Service</td></tr>
         <tr><td>Google Analytics, Yandex Metrica</td><td>Traffic analytics and session recording</td></tr>
         <tr><td>Sentry</td><td>Error reporting</td></tr>
+        <tr><td>Anthropic</td><td>Ask AI chart reads - the chart brief a member sends is processed by the model; nothing else is</td></tr>
         <tr><td>Resend</td><td>Sending email - sign-in codes and notices</td></tr>
         <tr><td>NOWPayments</td><td>Processing Premium subscription payments</td></tr>
         <tr><td>Telegram</td><td>Bot messages, if you choose to link it</td></tr>
@@ -203,7 +204,7 @@ const privacy = `    <h1>Privacy Policy</h1>
     <p>Links to exchanges are <strong>affiliate links</strong> carrying a referral code. Following one tells that exchange the visit came from us. It does not send them your email, your account or anything you typed here. Once you are on their site, their privacy policy applies, not ours.</p>
 
     <h2>How long we keep things</h2>
-    <p>Account data is kept while the account exists. Analytics is aggregated and retained in the ordinary course. The live activity feed used for operations is a rolling window of a few hours. Rewards and withdrawal records are kept longer, because we need them to resolve payment disputes and detect abuse.</p>
+    <p>Account data is kept while the account exists. Analytics is aggregated and retained in the ordinary course. The live activity feed used for operations is a rolling 24-hour window. Rewards and withdrawal records are kept longer, because we need them to resolve payment disputes and detect abuse.</p>
 
     <h2>Your choices</h2>
     <ol>

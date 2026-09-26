@@ -24,7 +24,7 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 
 const FAQ = [
   ['Is there a free crypto trading competition?',
-   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.'],
+   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.'],
   ['What do you win?',
    'Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $350 a season across the six season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
   ['How do I enter?',

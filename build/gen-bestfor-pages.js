@@ -250,7 +250,7 @@ ${lang ? '' : `
     <h3>What to watch out for</h3>
     <ul>
       <li><strong>Regional access.</strong> The best venue on paper is useless if it does not serve your country - most of these are not available to US residents (<a href="/highest-leverage-crypto-exchange/">Kraken is the main US-friendly major</a>).</li>
-      <li><strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href="/calculators?c=liq">liquidation calculator</a> before you size up.</li>
+      <li><strong>Leverage is a trap.</strong> A 125× headline means a move of about 0.8% liquidates you. Check exactly where with the <a href="/calculators?c=liq">liquidation calculator</a> before you size up.</li>
       <li><strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count - see how they add up on the <a href="/bybit-vs-binance/">exchange comparison pages</a>.</li>
     </ul>
     <p>Not sure which fits? <a href="/paper-trade">Practice the exact strategy free</a> on our paper-trading terminal - live prices, real liquidation logic, zero risk - before you fund any of them.</p>`}
