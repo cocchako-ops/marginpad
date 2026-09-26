@@ -255,7 +255,7 @@
   <div class="grid">
     <div class="rc"><b>Fourteen-day seasons</b><p>A season starts every other Monday at 00:00 UTC and ends fourteen days later. Standings reset; nothing carries over except your account, your XP and your history. King of the Moon is the one exception: a single contest spanning two seasons, ending when the season after the one it opened in ends.</p></div>
     <div class="rc"><b>Paid automatically, in USD</b><p>The top five on each board are credited to their MarginPad rewards balance right after the season ends. No form, no claim. The balance is withdrawable under the rewards rules.</p></div>
-    <div class="rc"><b>Server-side fills only</b><p>Every paper trade is filled on the server against real exchange candles. A trade reported by a browser never counts, and a liquidation is settled on the candle that crosses it, wick or no wick.</p></div>
+    <div class="rc"><b>Server-side fills only</b><p>Every paper trade is filled on the server against real exchange candles. A trade reported by a browser never counts, and a liquidation is settled only on a closed candle that crosses the level - a wick alone never liquidates anyone.</p></div>
     <div class="rc"><b>What counts as a win</b><p>A closed trade is a win only with at least 5% ROE and a real 0.2% move in price. Scratches, dust and closes within the spread do not pad a record.</p></div>
     <div class="rc"><b>Members, one account each</b><p>Boards are for signed-in accounts. A second account on the same device or wallet is excluded, and duplicated trade journals (clones) are folded into one entry.</p></div>
     <div class="rc"><b>Public standings, measured numbers</b><p>Every figure here is read from the same tables that pay the prizes. If a number is below its confidence threshold it is not shown, rather than shown wrong.</p></div>
@@ -263,7 +263,7 @@
 
   <div class="cta">
     <h3>Your trades already count</h3>
-    <p>Sign in, close ten trades this season, and you are on the paper boards. Everything else - the season pass, goals, the daily call - lives on your season page.</p>
+    <p>Sign in, close one trade this season, and you are on the paper boards. Everything else - the season pass, goals, the daily call - lives on your season page.</p>
     <div class="btns"><a class="btn p" href="/paper-trade">Open Paper Trade</a><a class="btn" href="/season/">Your season</a><a class="btn" href="/trading-competition/">How the competition works</a></div>
   </div>
 

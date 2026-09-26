@@ -53,7 +53,7 @@
  {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
  {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
  {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time - it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
- {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($39 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks. API Max ($99 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks. API Business ($159 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four."}},
  {"@type":"Question","name":"Does MarginPad Premium include the API?","acceptedAnswer":{"@type":"Answer","text":"No. Since 15 September 2026 the Bot API has its own plans and a Premium subscription does not change any API limit. Premium unlocks features on the website - the exclusive chart indicators, the liquidation heatmap, Ask-AI on charts. The API plans unlock API limits. They are bought separately."}},
  {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
@@ -493,7 +493,7 @@
       <a class="btn" href="#akb">Get a free API key</a>
       <a class="btn sec" href="#quickstart">Read the quickstart</a>
     </div>
-    <p class="hnote">No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href="#plans">Pro is $39</a> when one bot becomes four. Market data stays keyless on every plan.</p>
+    <p class="hnote">No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href="#plans">Pro is $29</a> when one bot becomes four. Market data stays keyless on every plan.</p>
   </div>
 
   <div class="term" id="heroTerm">
@@ -550,7 +550,7 @@
     <div class="shead">
       <span class="kick">Plans</span>
       <h2>Free is the whole engine. You pay to run more than one thing at once.</h2>
-      <p>Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add one thing - <b>webhooks</b>. Nothing else is held back.</p>
+      <p>Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise the ceilings and add <b>webhooks</b>, report breakdowns with written findings, 90 days of trade history instead of 30, and more keys and books. The engine itself is never held back.</p>
     </div>
     <div id="apPlanState" hidden></div>
     <div class="apgrid">
@@ -615,7 +615,7 @@
       <p>Measured across every key on this API over the last fortnight: the busiest bot in production sits at <b>46 requests a minute</b> - 38% of what the Free plan already allows - and <b>no key has ever been rate-limited</b>, on any plan. If you are choosing between these, choose on the <a href="#books">books</a>, the <a href="#webhooks">webhooks</a> and the history, which is what actually runs out. The throughput is there when you need it. Most bots never touch it.</p>
     </div>
     <div class="tw plantw"><table class="vs">
-      <tr><th>What changes with the plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $39</th><th>Max &middot; $99</th><th><span class="apn">Business</span> &middot; $199</th></tr>
+      <tr><th>What changes with the plan</th><th><span class="apn">Free</span></th><th>Pro &middot; $29</th><th>Max &middot; $79</th><th><span class="apn">Business</span> &middot; $159</th></tr>
       <tr><td>Market-data API (<code>/api/v1/*</code>) with your key<br><span class="sub">60 / min per IP without a key, on every plan</span></td><td>120 / min</td><td><b>600 / min</b></td><td><b>2000 / min</b></td><td><b>5000 / min</b></td></tr>
       <tr><td>API keys per account</td><td>3</td><td><b>10</b></td><td><b>30</b></td><td><b>100</b></td></tr>
       <tr><td>Open positions at once</td><td>50</td><td><b>200</b></td><td><b>500</b></td><td><b>1000</b></td></tr>
@@ -1068,7 +1068,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
 <section id="liq-api">
   <h2>Free liquidation data API <span class="tag data">LIVE DATA</span></h2>
-  <p>Real-time liquidations aggregated from <b>Binance, Bybit, OKX, BitMEX, Hyperliquid and Bitfinex</b> - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
+  <p>Real-time liquidations aggregated from <b>nine exchanges</b> by our own collector - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
   <div class="epg">
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/feed</span><span class="d">The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Events land here seconds after they happen (3s edge cache). Poll every 3-5s.</span></div>
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class="d">Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</span></div>

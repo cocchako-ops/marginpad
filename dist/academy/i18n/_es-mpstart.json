@@ -1,0 +1,346 @@
+{
+ "id": "mpstart",
+ "name": "Empieza aquí: MarginPad",
+ "sub": "El sitio en sí, en siete lecciones cortas",
+ "lessons": [
+  {
+   "id": "mp1",
+   "t": "Qué es realmente MarginPad",
+   "cards": [
+    {
+     "h": "Precios reales, dinero de práctica",
+     "p": "El gráfico que tienes delante es el mercado en vivo. Los precios y las velas vienen directo de los exchanges, los mismos que está mirando ahora mismo un trader con fondos reales. El dinero no es real: empiezas con $10,000 que te damos nosotros, y no hay forma de depositar ni un centavo en ningún lugar de este sitio."
+    },
+    {
+     "h": "Por qué alguien practicaría primero",
+     "p": "Los futuros apalancados son la forma más rápida de perder dinero en cripto, y casi todo el mundo pierde su primera cuenta. Aquí el mercado puede quitarte una posición y enseñarte la misma lección, y el único coste es el tiempo que dedicaste. Pierdes los $10,000 y no ha pasado nada."
+    },
+    {
+     "h": "Aunque parte de esto sí es real",
+     "p": "El trading es práctica. Las recompensas no lo son. MarginPad paga USDT real por usar el sitio - cantidades pequeñas, de una bolsa diaria - y lo retiras a una cuenta de exchange. Es un sistema aparte del trading, y dentro de dos lecciones sabrás exactamente cómo funciona."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Los precios contra los que operas en MarginPad son:",
+     "o": [
+      "Inventados por el sitio",
+      "Precios en vivo de exchanges reales",
+      "Los precios de cierre de ayer",
+      "Solo se actualizan cuando recargas la página"
+     ]
+    },
+    {
+     "q": "¿Cuánto tienes que depositar antes de poder operar aquí?",
+     "o": [
+      "Nada - no hay depósito en ningún lugar del sitio",
+      "$10 para desbloquear el terminal",
+      "Lo que quieras operar",
+      "$50 reembolsables"
+     ]
+    },
+    {
+     "q": "Abres una operación y sale mal. ¿Qué te costó?",
+     "o": [
+      "Dinero real de tu tarjeta",
+      "Parte del saldo de práctica, y nada más",
+      "Una comisión cargada a tu cuenta",
+      "Tu posición en las clasificaciones, para siempre"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp2",
+   "t": "XP, tu nivel y Bronze",
+   "cards": [
+    {
+     "h": "El XP es solo lo que hiciste, contado",
+     "p": "Cada lección que terminas son 25 XP, cada día que te conectas son 20, una operación son 3 y una ganadora 15. Nada se compra y nada es aleatorio - el XP es un registro de haber usado el sitio. El número aparece junto a tu nombre en el menú de tu cuenta y arriba de tu página de temporada."
+    },
+    {
+     "h": "Bronze son 500 XP, y es la única puerta",
+     "p": "Por debajo de 500 XP eres Sin rango, y todo el lado de recompensas de MarginPad está cerrado: el faucet, las misiones diarias, las referencias y los retiros. Al llegar a Bronze los cuatro se abren a la vez y quedan abiertos. Nada de esto cuesta dinero, y es lo único que separa a una cuenta nueva de todo lo que paga este sitio."
+    },
+    {
+     "h": "Este curso te deja a mitad de camino",
+     "p": "Estás leyendo la lección dos de siete. Terminar las siete, con las dos bonificaciones del camino a Bronze que activan, te deja un poco por encima de 400 XP - así que después de esto, una operación en simulado con un stop-loss puesto, o simplemente volver mañana, es Bronze."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué es Bronze?",
+     "o": [
+      "Un nivel de membresía de pago",
+      "El nivel que alcanzas a los 500 XP",
+      "El primer premio de la clasificación",
+      "Un marco cosmético para tu tarjeta de perfil"
+     ]
+    },
+    {
+     "q": "¿Qué desbloquea llegar a Bronze?",
+     "o": [
+      "Comisiones de trading más bajas",
+      "El faucet, las misiones diarias, las referencias y los retiros",
+      "Un saldo de práctica más grande",
+      "Los gráficos y el mapa de calor"
+     ]
+    },
+    {
+     "q": "¿Cuál es la forma gratuita más rápida de ganar XP?",
+     "o": [
+      "Abrir tantas operaciones como sea posible",
+      "Las lecciones de la Academia - 25 cada una, más 50 por curso terminado",
+      "Dejar el sitio abierto en una pestaña",
+      "Invitar amigos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp3",
+   "t": "El dinero real de este sitio",
+   "cards": [
+    {
+     "h": "De dónde sale",
+     "p": "MarginPad es gratis y no tiene publicidad. Gana dinero cuando un lector abre una cuenta en un exchange a través de uno de nuestros enlaces, y el exchange comparte parte de su comisión. Ese es todo el negocio, y por eso las recompensas son pequeñas, reales y con límite, en vez de grandes e imaginarias."
+    },
+    {
+     "h": "Qué hay sobre la mesa",
+     "p": "Un bono de bienvenida de $0.50. $0.02 del faucet cada pocos minutos, hasta $0.20 al día. Misiones diarias además. $1.00 por abrir una cuenta en Moon o en Fomo a través de nosotros. $0.50 cuando un amigo que invitaste realmente opera. Todo excepto el bono de bienvenida y los bonos de registro espera a Bronze."
+    },
+    {
+     "h": "Cómo sacarlo",
+     "p": "El saldo se paga en USDT y puedes retirar desde $5.00 a una cuenta de Bybit o de Moon. Cada retiro se revisa y se paga a mano, así que no es instantáneo. Es un agradecimiento por usar el sitio, no un ingreso - trátalo como lo que es y nunca te decepcionará."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Cómo gana dinero MarginPad?",
+     "o": [
+      "Vendiendo tus datos",
+      "Enlaces de afiliado a exchanges - una parte de la comisión cuando alguien se registra a través de nosotros",
+      "Cobrando por la Academia",
+      "Quedándose con parte de las ganancias del paper trading"
+     ]
+    },
+    {
+     "q": "¿Cuál es la cantidad mínima que puedes retirar?",
+     "o": [
+      "$1.00",
+      "$5.00",
+      "$20.00",
+      "No hay mínimo"
+     ]
+    },
+    {
+     "q": "¿Cuál de estos NO espera a Bronze?",
+     "o": [
+      "El faucet",
+      "Las misiones diarias",
+      "El bono de bienvenida de $0.50",
+      "Las referencias"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Todo lo mencionado arriba vive en una sola página. Ábrela y mira dónde están tu saldo, el faucet y los bonos de registro - tendrá más sentido en cuanto veas el diseño.",
+    "label": "Abrir Recompensas",
+    "href": "/rewards/"
+   }
+  },
+  {
+   "id": "mp4",
+   "t": "Long, short y qué hace realmente el apalancamiento",
+   "cards": [
+    {
+     "h": "Dos direcciones, no una",
+     "p": "Un long gana cuando el precio sube. Un short gana cuando el precio baja. Esa es toda la diferencia, y por eso un trader de futuros nunca está obligado a quedarse fuera de un mercado que cae. En MarginPad ambos son un toque: los botones Long y Short en el ticket de la operación."
+    },
+    {
+     "h": "El apalancamiento es tamaño, no magia",
+     "p": "Pones $100 a 10x y estás moviendo una posición de $1,000. Cada 1% que se mueve el mercado ahora es el 10% de tu dinero, en cualquier dirección que se mueva. El apalancamiento no mejora una operación - multiplica lo que sea que esa operación te iba a hacer de todos modos."
+    },
+    {
+     "h": "Por qué te dejamos llegar a 1000x",
+     "p": "Las principales monedas aquí llegan hasta 1000x, muy por encima de lo que usaría una persona en su sano juicio. Eso es deliberado. A 1000x, más o menos una décima parte de un uno por ciento en tu contra acaba con la posición - y deberías descubrirlo en una cuenta de práctica, esta noche, y no en un exchange con tu propio dinero."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Comprometes $100 a 10x de apalancamiento. ¿De qué tamaño es la posición?",
+     "o": [
+      "$100",
+      "$110",
+      "$1,000",
+      "$10,000"
+     ]
+    },
+    {
+     "q": "Una posición short gana dinero cuando:",
+     "o": [
+      "El precio sube",
+      "El precio baja",
+      "El precio se mantiene plano",
+      "El volumen sube"
+     ]
+    },
+    {
+     "q": "¿Qué cambia realmente subir el apalancamiento?",
+     "o": [
+      "Las probabilidades de acertar",
+      "El tamaño de la posición, así que cada movimiento cuenta más",
+      "La comisión que pagas",
+      "Cuánto tiempo puedes mantener la operación"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp5",
+   "t": "El margen, y dónde muere una posición",
+   "cards": [
+    {
+     "h": "El margen es lo que pones",
+     "p": "El margen es la parte de tu saldo que comprometes en una operación. También es lo máximo que esa operación puede quitarte jamás: una pérdida tiene un suelo en tu margen, así que una posición abierta con $100 puede costarte esos $100 y nunca un centavo más. Tus otros $9,900 no están a su alcance."
+    },
+    {
+     "h": "La liquidación es tocar ese suelo",
+     "p": "Si el precio se mueve lo suficiente en tu contra, la posición se cierra sola y el margen desaparece. Ese precio es la liquidación, y MarginPad la dibuja en tu gráfico desde el momento en que abres - así que el nivel donde termina la operación es visible todo el tiempo que estás dentro, no una sorpresa al final."
+    },
+    {
+     "h": "Se decide en nuestro servidor, no en tu navegador",
+     "p": "Tu posición se guarda en el servidor. Cierra la pestaña, pierde la señal, cambia a otro teléfono - nada cambia. El stop-loss, el take-profit y la liquidación se comprueban desde nuestro lado contra velas ya cerradas, que es también la razón por la que una mecha que atraviesa tu nivel no te acaba aquí a menos que la vela realmente cerrara ahí."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Cuánto es lo máximo que puede hacerte perder una posición?",
+     "o": [
+      "Todo tu saldo",
+      "El margen que comprometiste en ella",
+      "El doble del margen",
+      "Depende del apalancamiento"
+     ]
+    },
+    {
+     "q": "Abres una operación y luego cierras el navegador. ¿Qué le pasa?",
+     "o": [
+      "Se cancela",
+      "Sigue abierta y se comprueba en el servidor",
+      "Se congela hasta que vuelves",
+      "Se cierra al precio actual"
+     ]
+    },
+    {
+     "q": "Una liquidación es:",
+     "o": [
+      "Una comisión por mantener la posición demasiado tiempo",
+      "El cierre automático de la posición porque el precio llegó al nivel donde se agota el margen",
+      "Un cierre manual hecho por el sitio",
+      "Lo mismo que un stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp6",
+   "t": "Tus dos salidas: stop-loss y take-profit",
+   "cards": [
+    {
+     "h": "Decide la salida antes de necesitarla",
+     "p": "Un stop-loss cierra la operación a un precio que eliges si sale mal. Un take-profit hace lo mismo si sale bien. Ambos se fijan una vez y luego se respetan sin ti, que es justo el punto: el momento en que una posición está perdiendo es el peor momento posible para decidir qué hacer al respecto."
+    },
+    {
+     "h": "Dónde los fijas aquí",
+     "p": "En el ticket, antes de abrir - o después, desde el botón para fijarlos en la tarjeta de la operación y desde Mis operaciones. Puedes moverlos tantas veces como quieras mientras la operación está abierta. Una operación sin ninguno de los dos es una operación cuya salida la va a elegir lo que sea que sientas en ese momento."
+    },
+    {
+     "h": "Este es el hábito que vale la pena construir",
+     "p": "Nada más en este curso va a cambiar tus resultados tanto como esto. En las tablas que pagan USDT real, las cuentas que duran no son las que eligen mejores entradas - son las que ya habían decidido dónde se equivocarían. Fijar uno también es una tarea del camino a Bronze, que vale 40 XP."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué hace un stop-loss?",
+     "o": [
+      "Te impide abrir más operaciones",
+      "Cierra la operación al precio que elegiste, si sale en tu contra",
+      "Pausa la posición",
+      "Garantiza que no puedes perder"
+     ]
+    },
+    {
+     "q": "¿Cuándo puedes fijar o mover un stop-loss en MarginPad?",
+     "o": [
+      "Solo al abrir la operación",
+      "Solo cuando ya está en ganancia",
+      "Antes de abrir, y en cualquier momento mientras la operación está abierta",
+      "Una vez al día"
+     ]
+    },
+    {
+     "q": "¿Por qué fijar la salida de antemano?",
+     "o": [
+      "Baja la comisión",
+      "Sube el límite de apalancamiento",
+      "Porque el momento en que una operación está perdiendo es el peor momento para decidir qué hacer",
+      "Es obligatorio antes de poder abrir una posición"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mp7",
+   "t": "Temporadas, tablas y el pase",
+   "cards": [
+    {
+     "h": "El sitio corre en temporadas de catorce días",
+     "p": "Todo lo competitivo se reinicia con un reloj de catorce días. Tu XP de temporada, tu posición en las tablas y el pase empiezan de nuevo, así que una quincena mala nunca es permanente y un recién llegado nunca está un año atrás. El día de la temporada se muestra arriba en la página de temporada."
+    },
+    {
+     "h": "Siete tablas, y cuatro de ellas no cuestan nada",
+     "p": "Siete clasificaciones pagan a sus cinco primeros al final de una temporada. Cuatro - Highest ROE, Green Days, Best Win Rate y Season XP - solo necesitan Bronze y operaciones en simulado. The Gold Room necesita Gold, que son 12,000 XP. Dos son para lectores que operan con dinero real en Bybit o Moon."
+    },
+    {
+     "h": "Y el pase corre por debajo de todo esto",
+     "p": "Cada 100 XP de temporada es un nivel del pase, cuarenta en total, y la ruta gratis paga en Ticks y cosméticos a medida que subes. Ya lo estás ganando: el XP de este curso contó para el pase mientras lo leías."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Cuánto dura una temporada de MarginPad?",
+     "o": [
+      "Siete días",
+      "Catorce días",
+      "Un mes",
+      "Hasta que alguien gana"
+     ]
+    },
+    {
+     "q": "¿Qué requieren las cuatro tablas gratuitas?",
+     "o": [
+      "Un depósito en un exchange",
+      "Premium",
+      "Bronze, y operaciones en simulado",
+      "Una invitación"
+     ]
+    },
+    {
+     "q": "¿Qué avanza un nivel del pase?",
+     "o": [
+      "Comprarlo",
+      "Cada 100 XP de temporada",
+      "Ganar una tabla",
+      "Iniciar sesión siete días seguidos"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ese es todo el recorrido. Lo único que queda es aquello para lo que existe el sitio: abre el terminal, elige una moneda, pon una posición pequeña con un stop-loss, y observa qué pasa. Esa única operación es el último paso hacia Bronze.",
+    "label": "Abrir Paper Trade",
+    "href": "/paper-trade"
+   }
+  }
+ ]
+}

@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-26T18:15:22.511Z",
+  "generated": "2026-09-26T18:31:24.580Z",
   "pages": 383,
-  "occurrences": 26309,
-  "unique": 13892,
-  "words": 263525,
-  "untranslated": 4,
-  "untranslatedWords": 11,
-  "merged": "2026-09-26T18:15:57.373Z"
+  "occurrences": 26310,
+  "unique": 13893,
+  "words": 263560,
+  "untranslated": 1,
+  "untranslatedWords": 2,
+  "merged": "2026-09-26T18:31:46.342Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1672,
+   "n": 1668,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -113571,13 +113571,12 @@
    "en": "Hyperliquid Whale Tracker - Biggest Whale Positions Live",
    "es": "Rastreador de Ballenas de Hyperliquid - Mayores Posiciones en Vivo",
    "kind": [
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/hyperliquid-whales/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 7
   },
   "iOMRnNaWdA": {
@@ -121370,9 +121369,9 @@
    "n": 1,
    "w": 3
   },
-  "iVucGrf3R3": {
-   "en": "Every paper trade is filled on the server against real exchange candles. A trade reported by a browser never counts, and a liquidation is settled on the candle that crosses it, wick or no wick.",
-   "es": "Toda operación en paper trading se ejecuta en el servidor contra velas reales del exchange. Una operación reportada por el navegador nunca cuenta, y una liquidación se resuelve en la vela que la cruza, con mecha o sin ella.",
+  "NDnJCrJOcI": {
+   "en": "Every paper trade is filled on the server against real exchange candles. A trade reported by a browser never counts, and a liquidation is settled only on a closed candle that crosses the level - a wick alone never liquidates anyone.",
+   "es": "Toda operación en paper trading se ejecuta en el servidor contra velas reales del exchange. Una operación reportada por el navegador nunca cuenta, y una liquidación se resuelve solo en una vela cerrada que cruza el nivel - una mecha por sí sola nunca liquida a nadie.",
    "kind": [
     "html"
    ],
@@ -121380,7 +121379,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 32
+   "w": 35
   },
   "NpP9mc8RuV": {
    "en": "<b>What counts as a win</b>",
@@ -121466,9 +121465,9 @@
    "n": 1,
    "w": 4
   },
-  "yCN_l29JfN": {
-   "en": "Sign in, close ten trades this season, and you are on the paper boards. Everything else - the season pass, goals, the daily call - lives on your season page.",
-   "es": "Inicia sesión, cierra diez operaciones esta temporada y ya estás en las tablas de paper trading. Todo lo demás - el pase de temporada, los objetivos, la predicción diaria - vive en tu página de temporada.",
+  "JzD0FboEhJ": {
+   "en": "Sign in, close one trade this season, and you are on the paper boards. Everything else - the season pass, goals, the daily call - lives on your season page.",
+   "es": "Inicia sesión, cierra una operación esta temporada y ya estás en las tablas de paper trading. Todo lo demás - el pase de temporada, los objetivos, la predicción diaria - vive en tu página de temporada.",
    "kind": [
     "html"
    ],
@@ -138964,9 +138963,9 @@
    "n": 1,
    "w": 5
   },
-  "EoJDigSJgf": {
-   "en": "Measured on our own bills, per question. At the Premium Plus ceiling of <b>50 reads a day</b> that is about <b>$66 a month of model spend for one member</b> - which is why it is the only thing here with a per-use price, and why Premium carries one read a day rather than fifty.",
-   "es": "Medido en nuestras propias facturas, por pregunta. Con el tope de Premium Plus de <b>50 lecturas al día</b> eso equivale a unos <b>$66 al mes de gasto en el modelo por un solo miembro</b> - por eso es lo único aquí con un precio por uso, y por eso Premium trae una lectura al día en lugar de cincuenta.",
+  "FVTMpQhCNN": {
+   "en": "Measured on our own bills, per question on average; a full-length read at the model ceiling costs $0.044. At the Premium Plus ceiling of <b>50 reads a day</b> that is <b>$27 to $66 a month of model spend for one member</b> - which is why it is the only thing here with a per-use price, and why Premium carries one read a day rather than fifty.",
+   "es": "Medido en nuestras propias facturas, por pregunta y en promedio; una lectura completa al tope del modelo cuesta $0.044. Con el tope de Premium Plus de <b>50 lecturas al día</b> eso son <b>de $27 a $66 al mes de gasto en el modelo por un solo miembro</b> - por eso es lo único aquí con un precio por uso, y por eso Premium trae una lectura al día en lugar de cincuenta.",
    "kind": [
     "html"
    ],
@@ -138974,7 +138973,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 49
+   "w": 60
   },
   "LDWHRVb4ST": {
    "en": "What the data alone costs elsewhere",
@@ -139671,6 +139670,18 @@
    ],
    "n": 1,
    "w": 4
+  },
+  "_wUS3j2CmW": {
+   "en": "Open full size",
+   "es": "Abrir a tamaño completo",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 6,
+   "w": 3
   },
   "ShGnyzLw90": {
    "en": "Ask AI marks a short on Bitcoin with the reward-to-risk printed on the block",
@@ -154838,9 +154849,9 @@
    "n": 1,
    "w": 7
   },
-  "oAwRyGY_Y7": {
-   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $39</a> when one bot becomes four. Market data stays keyless on every plan.",
-   "es": "Sin tarjeta, sin KYC, sin depósito. Gratis para siempre con 120 peticiones por minuto - <a href=\"#plans\">Pro cuesta $39</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
+  "nBI6QUxxU_": {
+   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $29</a> when one bot becomes four. Market data stays keyless on every plan.",
+   "es": "Sin tarjeta, sin KYC, sin depósito. Gratis para siempre con 120 peticiones por minuto - <a href=\"#plans\">Pro cuesta $29</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
    "kind": [
     "html"
    ],
@@ -155006,9 +155017,9 @@
    "n": 1,
    "w": 15
   },
-  "MLr9FRN7Ll": {
-   "en": "Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise ceilings and add one thing - <b>webhooks</b>. Nothing else is held back.",
-   "es": "Toda cuenta empieza en Free y obtiene el producto completo: el motor de trading, comisiones reales de cada exchange, entradas límite y stop, trailing stops, replay, books, el stream de WebSocket y todos los datos de mercado sin necesidad de clave. Los planes de pago elevan los límites y añaden una sola cosa - <b>webhooks</b>. No se retiene nada más.",
+  "7ZmlsARWwy": {
+   "en": "Every account starts on Free and gets the complete product: the trading engine, real venue fees, limit and stop entries, trailing stops, replay, books, the WebSocket stream and all keyless market data. The paid plans raise the ceilings and add <b>webhooks</b>, report breakdowns with written findings, 90 days of trade history instead of 30, and more keys and books. The engine itself is never held back.",
+   "es": "Toda cuenta empieza en Free y obtiene el producto completo: el motor de trading, comisiones reales de cada exchange, entradas límite y stop, trailing stops, replay, books, el stream de WebSocket y todos los datos de mercado sin necesidad de clave. Los planes de pago elevan los límites y añaden <b>webhooks</b>, desgloses del informe con hallazgos escritos, 90 días de historial de operaciones en lugar de 30, y más claves y books. El motor en sí nunca se retiene.",
    "kind": [
     "html"
    ],
@@ -155016,7 +155027,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 47
+   "w": 66
   },
   "dWp5k_KJhK": {
    "en": "<span class=\"apn\">Free</span>",
@@ -155474,9 +155485,9 @@
    "n": 1,
    "w": 5
   },
-  "5jSVUNE7P2": {
-   "en": "Pro &middot; $39",
-   "es": "Pro &middot; $39",
+  "8WuG6ZSvAS": {
+   "en": "Pro &middot; $29",
+   "es": "Pro &middot; $29",
    "kind": [
     "html"
    ],
@@ -155486,9 +155497,9 @@
    "n": 1,
    "w": 2
   },
-  "6iqMOCtb1B": {
-   "en": "Max &middot; $99",
-   "es": "Max &middot; $99",
+  "UIv_XykVhR": {
+   "en": "Max &middot; $79",
+   "es": "Max &middot; $79",
    "kind": [
     "html"
    ],
@@ -155498,9 +155509,9 @@
    "n": 1,
    "w": 2
   },
-  "T0i6v5Fv9y": {
-   "en": "<span class=\"apn\">Business</span> &middot; $199",
-   "es": "<span class=\"apn\">Business</span> · $199",
+  "NtPUbASe6J": {
+   "en": "<span class=\"apn\">Business</span> &middot; $159",
+   "es": "<span class=\"apn\">Business</span> &middot; $159",
    "kind": [
     "html"
    ],
@@ -158294,9 +158305,9 @@
    "n": 1,
    "w": 6
   },
-  "kILSkU_oGa": {
-   "en": "Real-time liquidations aggregated from <b>Binance, Bybit, OKX, BitMEX, Hyperliquid and Bitfinex</b> - the data behind our <a href=\"/rekt/\">Rekt feed</a> and <a href=\"/heatmap\">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.",
-   "es": "Liquidaciones en tiempo real agregadas de <b>Binance, Bybit, OKX, BitMEX, Hyperliquid y Bitfinex</b> - los datos detrás de nuestro <a href=\"/rekt/\">feed Rekt</a> y del <a href=\"/heatmap\">Mapa de Calor de Liquidaciones</a>, expuestos como JSON gratis. En otros lugares, datos comparables suelen estar detrás de un muro de pago de <b>$300+/mes</b>; aquí <b>no hace falta ninguna clave API</b>. Con caché en el edge y límite de peticiones, así que soporta sin problema a los bots que hacen polling.",
+  "oI0wTdUKD8": {
+   "en": "Real-time liquidations aggregated from <b>nine exchanges</b> by our own collector - the data behind our <a href=\"/rekt/\">Rekt feed</a> and <a href=\"/heatmap\">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.",
+   "es": "Liquidaciones en tiempo real agregadas de <b>nueve exchanges</b> por nuestro propio colector - los datos detrás de nuestro <a href=\"/rekt/\">feed Rekt</a> y del <a href=\"/heatmap\">Mapa de Calor de Liquidaciones</a>, expuestos como JSON gratis. En otros lugares, datos comparables suelen estar detrás de un muro de pago de <b>$300+/mes</b>; aquí <b>no hace falta ninguna clave API</b>. Con caché en el edge y límite de peticiones, así que soporta sin problema a los bots que hacen polling.",
    "kind": [
     "html"
    ],
@@ -158304,7 +158315,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 49
+   "w": 48
   },
   "ltUKKNeZlZ": {
    "en": "<span class=\"m get\">GET</span><span class=\"u\">/api/v1/feed</span><span class=\"d\">The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Events land here seconds after they happen (3s edge cache). Poll every 3-5s.</span>",
@@ -159567,9 +159578,9 @@
    "n": 1,
    "w": 4
   },
-  "t9g80YiucH": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($39 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks. API Max ($99 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
-   "es": "Free: 120 peticiones por minuto y clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($39 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks. API Max ($99 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks. API Business ($199 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream WebSocket y MCP están incluidos en los cuatro.",
+  "ZdxeVrIZHW": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks. API Business ($159 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
+   "es": "Free: 120 peticiones por minuto y clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($29 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks. API Max ($79 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks. API Business ($159 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream WebSocket y MCP están incluidos en los cuatro.",
    "kind": [
     "ld"
    ],
