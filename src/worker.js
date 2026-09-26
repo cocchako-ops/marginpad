@@ -782,7 +782,9 @@ async function handleCgCoin(url, env) {
 // Derivatives board: a basket of major coins with funding / long-short tilt / OI - homepage content. Edge-cached 5 min.
 // ---------- Crypto news (CryptoCompare, free public) + Fear & Greed (alternative.me, free) ----------
 function _rssPick(block, tag) { const m = block.match(new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)</' + tag + '>', 'i')); let v = m ? m[1] : ''; const c = v.match(/<!\[CDATA\[([\s\S]*?)\]\]>/); return (c ? c[1] : v).trim(); }
-function _xmlDec(s) { return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'").replace(/&amp;/g, '&'); }
+// Numeric entities too (&#34; &#8217; &#x2019;): a feed that double-encodes its summary (the CDATA body already holds
+// &#34;) printed the entity on the news cards as text (audit 2026-09-25). Decoded AFTER &amp; so a second layer resolves.
+function _xmlDec(s) { return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'").replace(/&amp;/g, '&').replace(/&#(\d{1,6});/g, (m, d) => { const c = +d; return c > 31 && c < 1114112 ? String.fromCodePoint(c) : m; }).replace(/&#x([0-9a-f]{1,6});/gi, (m, x) => { const c = parseInt(x, 16); return c > 31 && c < 1114112 ? String.fromCodePoint(c) : m; }).replace(/&(quot|nbsp|rsquo|lsquo|rdquo|ldquo|ndash|mdash|hellip);/g, (m, k) => ({ quot: '"', nbsp: ' ', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', ndash: '–', mdash: '—', hellip: '…' }[k])); }
 // On-site news reader: fetches the source article, has Claude write an ORIGINAL ~300-word brief (our own
 // words, source attributed) so readers get the story WITHOUT leaving the site. Cached per article in KV -
 // each story is summarized once, ever. Domain-whitelisted + globally capped per day to bound API spend.

@@ -979,9 +979,9 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<style>#geoTip{display:none;align-items:center;justify-content:center;gap:9px;padding:9px 14px;background:#11161d;border-bottom:1px solid #1c2230;color:#cfe3ff;font-size:13.5px;line-height:1.35;text-align:center}#geoTip[data-on]{display:flex}#geoTip b{color:#c2f64a}#geoTip span.f{font-size:15px;line-height:1}@media(max-width:560px){#geoTip{font-size:12.5px;padding:8px 12px}}</style><meta property="og:image:width" content="1200" />
+<style>#geoTip{display:none;align-items:center;justify-content:center;gap:9px;padding:9px 14px;background:#11161d;border-bottom:1px solid #1c2230;color:#cfe3ff;font-size:13.5px;line-height:1.35;text-align:center}#geoTip[data-on]{display:flex}#geoTip b{color:#c2f64a}#geoTip span.f{font-size:15px;line-height:1}@media(max-width:560px){#geoTip{font-size:12.5px;padding:8px 12px}}</style><!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - Demo homepage (full-width)","url":"https://marginpad.io/demo-home/","dateModified":"2026-09-25T18:55:47.650Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/es/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/es/"}}</script><!--/dm--><meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - Terminal Gratis de Futuros Cripto, Paper Trade y Liquidaciones","url":"https://marginpad.io//","dateModified":"2026-09-25T18:58:07.994Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/es/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/es/"}}</script><!--/dm--></head>
+</head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
@@ -1182,7 +1182,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         <div class="calc-live">
           <div class="l">Ejemplo en vivo · BTC long</div>
           <div class="big" id="calcEx">…</div>
-          <div class="note" id="calcExN">Con 20× de apalancamiento, un movimiento de aproximadamente −4.8% liquida la posición. Por eso la calculadora va primero.</div>
+          <div class="note" id="calcExN">Con 20× de apalancamiento, un movimiento de aproximadamente −4.5% liquida la posición. Por eso la calculadora va primero.</div>
         </div>
       </div>
     </div>
@@ -1372,7 +1372,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       var alT=document.getElementById('alTarget');if(alT)alT.textContent='$'+fmt(Math.round(px*1.06/500)*500);
       var liq=px*(1-1/20+0.005);
       var ce=document.getElementById('calcEx');if(ce)ce.innerHTML='$'+fmt(px)+' → liq <b>$'+fmt(liq)+'</b>';
-      var lq=document.getElementById('hTickLq');if(lq)lq.textContent='liq $'+fmt(liq)+' · −4.8%';
+      var lq=document.getElementById('hTickLq');if(lq)lq.textContent='liq $'+fmt(liq)+' · −'+((1-liq/px)*100).toFixed(1)+'%';
     }
   }).catch(function(){});}
   prices();setInterval(prices,15000);

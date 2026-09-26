@@ -1185,7 +1185,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         <div class="calc-live">
           <div class="l">Exemplo ao vivo · BTC long</div>
           <div class="big" id="calcEx">…</div>
-          <div class="note" id="calcExN">Com alavancagem de 20×, um movimento de cerca de −4,8% liquida a posição. Por isso a calculadora vem primeiro.</div>
+          <div class="note" id="calcExN">Com alavancagem de 20×, um movimento de cerca de −4,5% liquida a posição. Por isso a calculadora vem primeiro.</div>
         </div>
       </div>
     </div>
@@ -1384,7 +1384,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
       var alT=document.getElementById('alTarget');if(alT)alT.textContent='$'+fmt(Math.round(px*1.06/500)*500);
       var liq=px*(1-1/20+0.005);
       var ce=document.getElementById('calcEx');if(ce)ce.innerHTML='$'+fmt(px)+' → liq <b>$'+fmt(liq)+'</b>';
-      var lq=document.getElementById('hTickLq');if(lq)lq.textContent='liq $'+fmt(liq)+' · −4.8%';
+      var lq=document.getElementById('hTickLq');if(lq)lq.textContent='liq $'+fmt(liq)+' · −'+((1-liq/px)*100).toFixed(1)+'%';
     }
   }).catch(function(){});}
   prices();setInterval(prices,15000);

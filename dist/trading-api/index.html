@@ -1059,7 +1059,6 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     <tr><td><code>premium_required</code></td><td class="hl">402</td><td>Legacy code for <code>plan_required</code>, still sent so a 2.3 bot recognises it.</td></tr>
     <tr><td><code>too_many_webhooks</code></td><td class="hl">409</td><td>Delete one first - three hooks on Pro, fifteen on Max, fifty on Business.</td></tr>
     <tr><td><code>bad_url</code> / <code>bad_event</code></td><td class="hl">400</td><td>Webhook URLs are https on a public host; event names are listed in <code>GET /webhooks</code>.</td></tr>
-    <tr><td><code>ai_quota</code></td><td class="hl">429</td><td>The daily AI quota (shared with the site) is used. Resets 00:00 UTC.</td></tr>
     <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You are at your plan's open-position ceiling. Close something.</td></tr>
     <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Harmless on a retry - the position is already settled.</td></tr>
     <tr><td><code>no_price</code></td><td class="hl">400</td><td>No live price this instant; the position stays open. Retry.</td></tr>

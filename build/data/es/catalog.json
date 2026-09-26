@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-25T19:04:53.252Z",
+  "generated": "2026-09-26T17:40:21.312Z",
   "pages": 383,
-  "occurrences": 26302,
-  "unique": 13886,
-  "words": 263527,
+  "occurrences": 26300,
+  "unique": 13885,
+  "words": 263518,
   "untranslated": 2,
-  "untranslatedWords": 199,
-  "merged": "2026-09-25T19:04:53.413Z"
+  "untranslatedWords": 9,
+  "merged": "2026-09-26T17:41:02.352Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -100624,9 +100624,9 @@
    "n": 1,
    "w": 5
   },
-  "MfEn43jQV8": {
-   "en": "<b>The live order book and trade tape</b> for BTC, ETH, SOL, XRP, DOGE and BNB, reconstructed by our own collector from the Bybit, OKX, Bitget and Hyperliquid websockets &ndash; a snapshot plus every incremental update, each one checked against the venue&rsquo;s own sequence number, so a missed update forces a resync instead of quietly corrupting the book. <code>book</code> returns, per venue, the spread in bps, <code>depthUsd</code> (resting dollars within 1/2/5/10/25&nbsp;bps of mid) and <code>slipBps</code> (what a $10k/$50k/$250k market order would really cost walking that book), plus a consolidated total across all four. Depth is quoted at basis-point <i>distances</i>, not as &ldquo;liquidity within 2%&rdquo;: a major-coin book only reaches about 0.03&ndash;0.24% from mid, so a wider band would be mostly empty. Freshness is measured from <i>our</i> receive time, never the exchange clock. A venue whose book we cannot prove correct is left out, and an unknown symbol returns 404 rather than a plausible wrong number. <code>tape</code> returns executed trades across five venues including Binance, each with <b><code>side</code> = the aggressor</b> &ndash; the taker who crossed the spread &ndash; plus cumulative volume delta per minute. That is the half of the flow a candle throws away: volume says how much traded, the aggressor says who was in a hurry.",
-   "es": "",
+  "WEy5Aa7PXX": {
+   "en": "<b>The live order book and trade tape</b> for BTC, ETH, SOL, XRP, DOGE and BNB, reconstructed by our own collector from the Binance, Bybit, OKX, Bitget and Hyperliquid websockets &ndash; a snapshot plus every incremental update, each one checked against the venue&rsquo;s own sequence number, so a missed update forces a resync instead of quietly corrupting the book. <code>book</code> returns, per venue, the spread in bps, <code>depthUsd</code> (resting dollars within 1/2/5/10/25&nbsp;bps of mid) and <code>slipBps</code> (what a $10k/$50k/$250k market order would really cost walking that book), plus a consolidated total across all five. Depth is quoted at basis-point <i>distances</i>, not as &ldquo;liquidity within 2%&rdquo;: a major-coin book only reaches about 0.03&ndash;0.24% from mid, so a wider band would be mostly empty. Freshness is measured from <i>our</i> receive time, never the exchange clock. A venue whose book we cannot prove correct is left out, and an unknown symbol returns 404 rather than a plausible wrong number. <code>tape</code> returns executed trades across five venues including Binance, each with <b><code>side</code> = the aggressor</b> &ndash; the taker who crossed the spread &ndash; plus cumulative volume delta per minute. That is the half of the flow a candle throws away: volume says how much traded, the aggressor says who was in a hurry.",
+   "es": "<b>El libro de órdenes y la cinta de operaciones en vivo</b> de BTC, ETH, SOL, XRP, DOGE y BNB, reconstruidos por nuestro propio colector a partir de los websockets de Binance, Bybit, OKX, Bitget e Hyperliquid &ndash; una instantánea más cada actualización incremental, cada una comprobada contra el número de secuencia del propio exchange, de modo que una actualización perdida fuerza una resincronización en lugar de corromper el libro en silencio. <code>book</code> devuelve, por exchange, el spread en bps, <code>depthUsd</code> (dólares en reposo a 1/2/5/10/25&nbsp;bps del precio medio) y <code>slipBps</code> (lo que una orden a mercado de $10k/$50k/$250k costaría realmente al recorrer ese libro), más un total consolidado de los cinco. La profundidad se cotiza a <i>distancias</i> en puntos básicos, no como &ldquo;liquidez dentro del 2%&rdquo;: el libro de una moneda principal solo llega a unos 0.03&ndash;0.24% del precio medio, así que una banda más ancha estaría casi vacía. La frescura se mide desde <i>nuestra</i> hora de recepción, nunca desde el reloj del exchange. Un exchange cuyo libro no podamos probar como correcto se deja fuera, y un símbolo desconocido devuelve 404 en lugar de un número plausible pero erróneo. <code>tape</code> devuelve las operaciones ejecutadas en cinco exchanges, Binance incluido, cada una con <b><code>side</code> = el agresor</b> &ndash; el taker que cruzó el spread &ndash; más el delta de volumen acumulado por minuto. Esa es la mitad del flujo que una vela descarta: el volumen dice cuánto se operó, el agresor dice quién tenía prisa.",
    "kind": [
     "html"
    ],
@@ -100634,7 +100634,7 @@
     "/free-crypto-api/"
    ],
    "n": 1,
-   "w": 194
+   "w": 195
   },
   "9kq4HfP0WR": {
    "en": "Open a position (curl)",
@@ -114880,13 +114880,12 @@
    "es": "MarginPad - Terminal Gratis de Futuros Cripto, Paper Trade y Liquidaciones",
    "kind": [
     "title",
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/"
    ],
-   "n": 4,
+   "n": 3,
    "w": 8
   },
   "JF8_cqkXLq": {
@@ -115830,9 +115829,9 @@
    "n": 1,
    "w": 4
   },
-  "wPN-HYstpy": {
-   "en": "At 20× leverage, a move of about −4.8% liquidates the position. That is why the calculator comes first.",
-   "es": "Con 20× de apalancamiento, un movimiento de aproximadamente −4.8% liquida la posición. Por eso la calculadora va primero.",
+  "s7Nw8UYzq1": {
+   "en": "At 20× leverage, a move of about −4.5% liquidates the position. That is why the calculator comes first.",
+   "es": "Con 20× de apalancamiento, un movimiento de aproximadamente −4.5% liquida la posición. Por eso la calculadora va primero.",
    "kind": [
     "html"
    ],
@@ -116948,6 +116947,18 @@
    ],
    "n": 1,
    "w": 5
+  },
+  "l6un4DZGJ4": {
+   "en": "MarginPad - Demo homepage (full-width)",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 4
   },
   "LVxj-Abynu": {
    "en": "INJ Liquidation Calculator - Injective Futures (Long & Short) | MarginPad",
@@ -158090,30 +158101,6 @@
    ],
    "n": 1,
    "w": 14
-  },
-  "sHLvuzlmu1": {
-   "en": "<code>ai_quota</code>",
-   "es": "<code>ai_quota</code>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "ik6eEA1K_3": {
-   "en": "The daily AI quota (shared with the site) is used. Resets 00:00 UTC.",
-   "es": "Se usó la cuota diaria de IA (compartida con el sitio). Se reinicia a las 00:00 UTC.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 1,
-   "w": 13
   },
   "_hI9b2vBm6": {
    "en": "<code>too_many_open</code>",
