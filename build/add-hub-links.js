@@ -126,7 +126,7 @@ const PRACTICE_LINKS = [
   ['/spot/', 'Demo Spot - a $10,000 card, an exchange and your own wallet'],
   ['/academy/', 'Academy - 17 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
-  ['/trading-competition/', 'Live leaderboards - $350 a season, free to enter'],
+  ['/trading-competition/', 'Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account'],
   // 2026-09-21: the highest-intent destination in this block. Somebody reading a liquidation page is a trader, and a
   // trader considering a $50-$1,000 prop-firm challenge is exactly who should meet a free run at the same rules first.
   ['/practice-for-a-funded-account/', 'Practising for a funded account? Try the rules free first'],

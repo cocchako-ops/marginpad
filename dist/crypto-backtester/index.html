@@ -21,7 +21,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <title>Free Crypto Strategy Backtester - Test Trading Strategies | MarginPad</title>
-<meta name="description" content="Backtest crypto trading strategies - EMA cross, RSI reversion, SMA trend and Donchian breakout - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy &amp; hold. Free, no signup." />
+<meta name="description" content="Backtest 19 crypto trading strategies - EMA and SMA crosses, Supertrend, MACD, RSI reversion, Donchian breakout and more - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy &amp; hold. Free, no signup." />
 <meta name="keywords" content="crypto backtester, strategy backtesting, trading strategy tester, ema crossover backtest, crypto trading strategy, free backtester" />
 <link rel="canonical" href="https://marginpad.io/crypto-backtester/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-backtester/" />
@@ -47,13 +47,13 @@
   .prose p{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:760px;margin:0 0 12px}
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Strategy Backtester","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/crypto-backtester/","description":"Backtest crypto trading strategies - EMA cross, RSI reversion, SMA trend and Donchian breakout - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy & hold."}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Strategy Backtester","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/crypto-backtester/","description":"Backtest 19 crypto trading strategies - EMA and SMA crosses, Supertrend, MACD, RSI reversion, Donchian breakout and more - on real historical candles. See win rate, profit factor, max drawdown and an equity curve versus buy & hold."}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Strategy Backtester","item":"https://marginpad.io/crypto-backtester/"}]}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is backtesting a trading strategy?","acceptedAnswer":{"@type":"Answer","text":"Backtesting runs a fixed set of trading rules over historical price data to see how the strategy would have performed in the past. It reports total return, win rate, profit factor and maximum drawdown, and compares them against simply buying and holding - so you can judge whether the rules had any edge before risking real money."}},{"@type":"Question","name":"Which strategies can I backtest?","acceptedAnswer":{"@type":"Answer","text":"Four classic rule-based strategies: EMA cross (9 / 21), price versus SMA 50 trend following, RSI(14) mean reversion, and a 20-bar Donchian channel breakout. Each runs long-only on real historical candles for the coin and timeframe you choose."}},{"@type":"Question","name":"How accurate is this backtester?","acceptedAnswer":{"@type":"Answer","text":"It uses historical close prices and a fixed fee per side, with no slippage, funding or partial fills, and it is long-only. Signals are computed on the close of each bar and acted on the next bar. Treat the results as a directional, educational guide to whether a strategy had an edge - not a guarantee of future or real-world performance."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is backtesting a trading strategy?","acceptedAnswer":{"@type":"Answer","text":"Backtesting runs a fixed set of trading rules over historical price data to see how the strategy would have performed in the past. It reports total return, win rate, profit factor and maximum drawdown, and compares them against simply buying and holding - so you can judge whether the rules had any edge before risking real money."}},{"@type":"Question","name":"Which strategies can I backtest?","acceptedAnswer":{"@type":"Answer","text":"Nineteen rule-based strategies - EMA and SMA crosses, the golden cross, an EMA ribbon, Supertrend, MACD, momentum, stochastic, RSI(14) mean reversion, a 20-bar Donchian breakout and more. Each runs long-only on real historical candles for the coin and timeframe you choose."}},{"@type":"Question","name":"How accurate is this backtester?","acceptedAnswer":{"@type":"Answer","text":"It uses historical close prices and a fixed fee per side, with no slippage, funding or partial fills, and it is long-only. Signals are computed on the close of each bar and acted on the next bar. Treat the results as a directional, educational guide to whether a strategy had an edge - not a guarantee of future or real-world performance."}}]}
 </script>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -69,7 +69,7 @@
   <section class="hero">
     <span class="eyebrow">Backtester</span>
     <h1>Crypto Strategy Backtester</h1>
-    <p class="sub">Run a rule-based strategy over real historical candles and see how it would have performed - versus simply buying and holding. EMA cross, RSI, SMA trend or Donchian breakout, on any coin.</p>
+    <p class="sub">Run a rule-based strategy over real historical candles and see how it would have performed - versus simply buying and holding. Nineteen rule sets, from EMA cross to Supertrend and Donchian breakout, on any coin.</p>
   </section>
 
   <div class="toolbar">
@@ -126,7 +126,7 @@
   <h2>How the backtester works</h2>
   <div class="prose">
     <p>Each strategy reads completed candles and produces a long-or-flat signal on the <b>close</b> of every bar, then acts on the <b>next</b> bar - so a signal you see today is entered at the following candle, never with future knowledge. You choose the coin, timeframe, starting capital and a flat fee charged on each side of a trade. The engine marks the position to market bar by bar and records every entry and exit.</p>
-    <p>Four classic rule sets are included: <b>EMA cross</b> (9 over 21), <b>price versus SMA 50</b> trend following, <b>RSI(14)</b> mean reversion, and a <b>20-bar Donchian breakout</b>. Results are long-only and use close prices with no slippage or funding, so treat them as an educational study of whether a strategy had an edge - not financial advice.</p>
+    <p>Nineteen rule sets are included, among them: <b>EMA cross</b> (9 over 21), <b>price versus SMA 50</b> trend following, <b>RSI(14)</b> mean reversion, and a <b>20-bar Donchian breakout</b>. Results are long-only and use close prices with no slippage or funding, so treat them as an educational study of whether a strategy had an edge - not financial advice.</p>
   </div>
 
   <h2>FAQ</h2>
@@ -134,7 +134,7 @@
     <h3>What is backtesting a trading strategy?</h3>
     <p>Backtesting runs a fixed set of trading rules over historical price data to see how the strategy would have performed in the past. It reports total return, win rate, profit factor and maximum drawdown, and compares them against simply buying and holding - so you can judge whether the rules had any edge before risking real money.</p>
     <h3>Which strategies can I backtest?</h3>
-    <p>Four classic rule-based strategies: EMA cross (9 / 21), price versus SMA 50 trend following, RSI(14) mean reversion, and a 20-bar Donchian channel breakout. Each runs long-only on real historical candles for the coin and timeframe you choose.</p>
+    <p>Nineteen rule-based strategies - EMA and SMA crosses, the golden cross, an EMA ribbon, Supertrend, MACD, momentum, stochastic, RSI(14) mean reversion, a 20-bar Donchian breakout and more. Each runs long-only on real historical candles for the coin and timeframe you choose.</p>
     <h3>How accurate is this backtester?</h3>
     <p>It uses historical close prices and a fixed fee per side, with no slippage, funding or partial fills, and it is long-only. Signals are computed on the close of each bar and acted on the next bar. Treat the results as a directional, educational guide to whether a strategy had an edge - not a guarantee of future or real-world performance.</p>
   </div>
@@ -225,7 +225,7 @@
     $('eq').innerHTML='<path d="'+path('b')+'" fill="none" stroke="#5c656f" stroke-width="1.5"/><path d="'+path('s')+'" fill="none" stroke="#c2f64a" stroke-width="2"/>';
     $('trSub').textContent='· '+R.trades.length+" total";
     var rows='<thead><tr><th>#</th><th>Entry</th><th>Exit</th><th>Return</th></tr></thead><tbody>';
-    R.trades.slice().reverse().forEach(function(t,idx){var n=R.trades.length-idx;rows+='<tr><td>'+n+(t.open?' <span style="color:#ffb347">'+"open"+'</span>':'')+'</td><td>'+t.entry.toPrecision(6)+'</td><td>'+t.exit.toPrecision(6)+'</td><td class="'+(t.ret>=0?'pos':'neg')+'">'+pct(t.ret)+'</td></tr>';});
+    R.trades.slice().reverse().forEach(function(t,idx){var n=R.trades.length-idx;rows+='<tr><td>'+n+(t.open?' <span style="color:#ffb347" title="still open - exit and return are marked at the last close">'+"open · marked"+'</span>':'')+'</td><td>'+t.entry.toPrecision(6)+'</td><td>'+t.exit.toPrecision(6)+'</td><td class="'+(t.ret>=0?'pos':'neg')+'">'+pct(t.ret)+'</td></tr>';});
     rows+='</tbody>';
     $('trades').innerHTML=rows;
   }
@@ -234,6 +234,6 @@
   run();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=8be09c42"></script>
+<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
 </body>
 </html>

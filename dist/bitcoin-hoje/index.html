@@ -242,7 +242,7 @@
     if(!d||!d.ok)return;
     var big=$('lvBig');if(big){big.textContent=brl(d.btcMid,0);if(lastMid&&d.btcMid!==lastMid){big.classList.remove('up','dn');big.classList.add('flash',d.btcMid>lastMid?'up':'dn');setTimeout(function(){big.classList.remove('up','dn');},1400);}lastMid=d.btcMid;}
     var sub=$('lvSub');if(sub)sub.textContent=updText(d);
-    var chips=$('lvChips');if(chips){var h='';if(d.btcUsd>0)h+='<div class="chip"><span class="ck">BTC em dólar</span><b>US$ '+d.btcUsd.toLocaleString('en-US',{maximumFractionDigits:0})+'</b></div>';if(d.usdbrl>0)h+='<div class="chip"><span class="ck">Dólar comercial</span><b>'+brl(d.usdbrl,4)+'</b></div>';if(d.usdtMid>0){var uv=d.usdbrl>0?(d.usdtMid/d.usdbrl-1)*100:null;h+='<div class="chip"><span class="ck">USDT em reais</span><b>'+brl(d.usdtMid,3)+'</b><i class="'+((uv||0)>=0?'up':'dn')+'">'+pct(uv)+'</i></div>';}if(d.agioMid!=null)h+='<div class="chip"><span class="ck">Ágio mediano</span><b class="'+(d.agioMid>=0?'up':'dn')+'">'+pct(d.agioMid,2)+'</b></div>';chips.innerHTML=h;}
+    var chips=$('lvChips');if(chips){var h='';if(d.btcUsd>0)h+='<div class="chip"><span class="ck">BTC em dólar</span><b>US$ '+d.btcUsd.toLocaleString('pt-BR',{maximumFractionDigits:0})+'</b></div>';if(d.usdbrl>0)h+='<div class="chip"><span class="ck">Dólar comercial</span><b>'+brl(d.usdbrl,4)+'</b></div>';if(d.usdtMid>0){var uv=d.usdbrl>0?(d.usdtMid/d.usdbrl-1)*100:null;h+='<div class="chip"><span class="ck">USDT em reais</span><b>'+brl(d.usdtMid,3)+'</b><i class="'+((uv||0)>=0?'up':'dn')+'">'+pct(uv)+'</i></div>';}if(d.agioMid!=null)h+='<div class="chip"><span class="ck">Ágio mediano</span><b class="'+(d.agioMid>=0?'up':'dn')+'">'+pct(d.agioMid,2)+'</b></div>';chips.innerHTML=h;}
     var best=$('lvBest');if(best){best.innerHTML=(d.bestBuy?'<div class="bc buy"><span>Mais barato para comprar BTC</span><b>'+esc(d.bestBuy.name)+'</b><i>'+brl(d.bestBuy.price,0)+'</i></div>':'')+(d.bestSell?'<div class="bc sell"><span>Melhor preço para vender BTC</span><b>'+esc(d.bestSell.name)+'</b><i>'+brl(d.bestSell.price,0)+'</i></div>':'');}
     var tb=$('lvTbl');if(tb){var b1=tb.querySelector('tbody');if(b1)b1.innerHTML=d.btc.map(function(r,i){return row(r,d,'btc',i);}).join('');foldBtn(tb,d.btc.length,'Ver as '+d.btc.length+' corretoras');}
     var tb2=$('lvTbl2');if(tb2){var b2=tb2.querySelector('tbody');if(b2)b2.innerHTML=d.usdt.map(function(r,i){return row(r,d,'usdt',i);}).join('');foldBtn(tb2,d.usdt.length,'Ver as '+d.usdt.length+' corretoras');}
@@ -281,6 +281,6 @@
   try{if(navigator.sendBeacon)navigator.sendBeacon('/api/track?t=pageview&p=/bitcoin-hoje/'+(document.referrer?'&r='+encodeURIComponent(document.referrer):''));window.__mpPv=1;}catch(e){}
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=8be09c42"></script>
+<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
 </body>
 </html>
