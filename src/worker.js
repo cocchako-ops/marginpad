@@ -18914,6 +18914,11 @@ export default {
       if (url.searchParams.get('nc') !== '1') { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
       let rec = null; try { rec = JSON.parse((await env.STATS.get('botwidget:t:' + tk)) || 'null'); } catch (e) {}
       if (!rec || !rec.uid) return bad('unknown_token', 404);
+      // the account must still exist: a token minted and removed within seconds can outlive its KV cleanup (KV reads are
+      // eventually consistent), and a deleted member's book must never render - one DO read, behind the 30-60 s edge cache
+      let who = null; try { who = await usersDO(env, '/xpdiag', { uid: rec.uid }); } catch (e) {}
+      if (!who || !who.user) return bad('unknown_token', 404);
+      if (who.user.username && who.user.username !== rec.un) rec = { ...rec, un: String(who.user.username) }; // a rename follows the token
       const d = await botWidgetData(env, rec);
       const resp = svg ? new Response(botWidgetSvg(d), { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } })
                        : new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } });
