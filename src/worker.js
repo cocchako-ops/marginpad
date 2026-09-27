@@ -13780,6 +13780,11 @@ async function checkBybitBonus(env) {
      (money sits unannounced). So: a short floor so a week cannot settle before it has ended, then
      ask Bybit whether the week's last day has a commission figure yet. */
   if (now - thisWeek < 2 * 3600000) return;
+  // AN ANNOUNCED WEEK IS FINISHED - decide that BEFORE asking Bybit anything. This check used to sit below the
+  // readiness branch, so a week whose last day never reported commission re-sent "settled anyway" to the owner on
+  // every ten-minute run after day five, forever (2026-09-27: six lines an hour from 09:44 until it was found).
+  const done0 = await bybitBonusGet(env, ws);
+  if (done0 && done0.announcedTs && !done0.testOnly) return;
   const rdy = await bybitWeekReady(env, ws);
   const waited = now - thisWeek;
   if (!rdy.ready && waited < 5 * 86400000) {
@@ -13789,7 +13794,7 @@ async function checkBybitBonus(env) {
     if (!told) { try { await tgAdmin(env, '<b>Bybit bonus waiting</b> - ' + bybitWeekLabel(ws) + ' is not final yet: ' + (rdy.why || '') + ' (last day ' + (rdy.lastDay || '') + ', volume $' + Math.round(rdy.vol || 0).toLocaleString('en-US') + ', commission $' + (rdy.com || 0) + '). Nothing announced; it goes out by itself the moment Bybit reports it.', { kind: 'bybit rebate', sev: 'info' }); await env.STATS.put(nk, '1', { expirationTtl: 3 * 86400 }); } catch (e) {} }
     return;
   }
-  if (!rdy.ready) { try { await tgAdmin(env, '<b>Bybit bonus settled anyway</b> - ' + bybitWeekLabel(ws) + ' waited five days and the last day still reports no commission. Paying on what Bybit does report; the last day may be light.', { kind: 'bybit rebate', sev: 'amber' }); } catch (e) {} }
+  if (!rdy.ready) { const ak = 'bybonus:anyway:' + bybitWeekKey(ws); let said = false; try { said = !!(await env.STATS.get(ak)); } catch (e) {} if (!said) { try { await env.STATS.put(ak, '1', { expirationTtl: 30 * 86400 }); } catch (e) {} } if (!said) try { await tgAdmin(env, '<b>Bybit bonus settled anyway</b> - ' + bybitWeekLabel(ws) + ' waited five days and the last day still reports no commission. Paying on what Bybit does report; the last day may be light.', { kind: 'bybit rebate', sev: 'amber' }); } catch (e) {} }
   const done = await bybitBonusGet(env, ws);
   // a rehearsal does not count as the announcement - otherwise a forgotten ?test=1 would silently
   // swallow the week that was supposed to reach real traders
