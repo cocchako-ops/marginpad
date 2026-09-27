@@ -19,7 +19,7 @@ const { withBrowser, newPage } = require('./e2e-browser.js');
 
 const BUNDLE = path.join(__dirname, '..', 'dist', 'assets', 'mp-charts.js');
 const WORKER = path.join(__dirname, '..', 'src', 'worker.js');
-const CAP = 8200; // must match briefJson(ctx, N) in handleAiChart
+const CAP = 14000; // must match briefJson(ctx, N) in handleAiChart
 
 let pass = 0, fail = 0;
 const ok = (c, m, d) => { if (c) { pass++; console.log('  ok   ' + m); } else { fail++; console.log('  FAIL ' + m + (d ? '  ' + JSON.stringify(d).slice(0, 220) : '')); } };
@@ -162,7 +162,7 @@ console.log('\nPURE - the brief packer (an over-cap brief must be SMALLER, never
   eval(w.slice(i, j));
   // read the cap out of the worker instead of hardcoding it twice - the last change moved it and this check
   // failed for the honest reason, but a test that has to be edited alongside a constant will drift eventually
-  const capM = w.match(/briefJson\(ctx, (\d+)\)/);
+  const capM = w.match(/const AI_BRIEF_CAP = (\d+);/) || w.match(/briefJson\(ctx, (\d+)\)/); // the cap is a named constant since 2026-09-27
   ok(!!capM && +capM[1] === CAP, 'handleAiChart packs the brief at the cap this test checks (' + CAP + ')', capM && capM[1]);
   const big = {
     symbol: 'BTC', price: 80900, setups: [{ name: 'keep me' }], volume: { state: 'normal' }, chartTools: { x: 1 },
