@@ -19571,6 +19571,22 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/lbpaid' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // WHY WAS X (NOT) PAID (2026-09-28): the win-rate list exactly as payWeeklyPrizes computes it
+      const ws = +url.searchParams.get('ws') || (lbPeriodStart(Date.now()) - LB_PERIOD), we = ws + LB_PERIOD;
+      const lim = Math.min(2000, Math.max(1, +url.searchParams.get('limit') || 40)); // the payer asks for 40 - a bigger limit shows who sits OUTSIDE the paid candidate set
+      let ud = null; try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=' + lim)); ud = await ur.json(); } catch (e) {}
+      const banned = {}; try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
+      const doKeys = ud ? Object.keys(ud) : [];
+      const wilsonP = (w, n) => { if (!n) return 0; const z = 1.96, pr = w / n, z2 = z * z; return (pr + z2 / (2 * n) - z * Math.sqrt((pr * (1 - pr) + z2 / (4 * n)) / n)) / (1 + z2 / n); }; // same formula as payWeeklyPrizes (its helper is local to it)
+      const rows = ((ud && ud.top) || []).map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, name: x.name || '', w, l, n: w + l, wr_pct: w + l ? Math.round(w / (w + l) * 1000) / 10 : null, wilson: w + l ? Math.round(wilsonP(w, w + l) * 1000) / 1000 : null, banned: !!banned[x.uid], eligible: !banned[x.uid] && (w + l) >= 20 }; })
+        .sort((a, b) => ((b.wilson || 0) - (a.wilson || 0)) || (b.n - a.n));
+      return new Response(JSON.stringify({ ws, we, limit: lim, doKeys, note: 'w/l are the PAID rule: server-settled closes only, one ticket group (same symbol+side opened within 10 min) = one result, excluded symbols dropped; the public topWr is a looser count', rows }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/chatlog' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the room's kept history, for support (2026-09-28)
+      if (!env.CHAT) return new Response('{"messages":[]}', { headers: { 'content-type': 'application/json; charset=utf-8' } });
+      let out = '{"messages":[]}'; try { const r = await env.CHAT.get(env.CHAT.idFromName(chatInstOf(url))).fetch(new Request('https://do/history')); out = await r.text(); } catch (e) {}
+      return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/tgsend' && request.method === 'POST' && isAdminKey(env, adminKeyFrom(request, url))) { // one line to the owner's Telegram, on request (2026-09-28)
       let tb = {}; try { tb = await request.json(); } catch (e) {}
       const text = String((tb && tb.text) || '').slice(0, 3800);
