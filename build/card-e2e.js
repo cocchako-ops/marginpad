@@ -148,10 +148,10 @@ async function openPanel(page, rowId) {
             wide: wide, h: p.scrollHeight };
         });
         ok(c && c.title === 'Competitions', 'it opens', c && c.title);
-        ok(c.rows.length === 7, 'all seven boards are listed', c.rows.length);
+        ok(c.rows.length === 8, 'all eight boards are listed', c.rows.length);
         ok(c.rows.every(r => /^\$\d/.test(r.pool)), 'each names its prize pool', JSON.stringify(c.rows.map(r => r.pool)));
         ok(c.rows.every(r => r.verdict), 'and each carries a verdict', JSON.stringify(c.rows.map(r => r.verdict)));
-        ok(/\d+ of 7/.test(c.text), 'a one-glance summary says how many you are on');
+        ok(/\d+ of 8/.test(c.text), 'a one-glance summary says how many you are on');
 
         /* THE CORRECTION THIS CARD EXISTS FOR - both directions. */
         ok(/To withdraw what you win you need Bronze/.test(c.text), 'Bronze is named as the gate on WITHDRAWING');

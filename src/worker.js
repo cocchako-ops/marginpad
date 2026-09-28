@@ -1953,8 +1953,8 @@ async function handleSsrComp(request, url, env, ctx) {
   // ONE ROW PER BOARD, SAID ONCE. The page used to carry two tables of the same seven boards - one for the live
   // leader, one for the description - with Board and Pool in both. The pot is drawn at TRUE relative scale
   // against the biggest one, because $300 is ten times $30 and a table column hid that completely.
-  H += '<h2>The seven boards</h2>';
-  H += '<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>';
+  H += '<h2>The eight boards</h2>';
+  H += '<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>';
   H += '<div class="cp-brds">';
   for (const b of c.boards) {
     const lv = b.leader && b.leader.value;
@@ -1966,6 +1966,7 @@ async function handleSsrComp(request, url, env, ctx) {
       else if (b.id === 'gold') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
       else if (b.id === 'xp') v = Math.round(+lv).toLocaleString('en-US') + ' XP';
       else if (b.id === 'bybit' || b.id === 'moon') v = '$' + Math.round(+lv).toLocaleString('en-US') + ' wagered';
+      else if (b.id === 'call') v = Math.round(+lv).toLocaleString('en-US') + ' pts';
       else v = Math.round(+lv).toLocaleString('en-US');
     }
     const real = b.entry === 'real_money';
@@ -1979,7 +1980,7 @@ async function handleSsrComp(request, url, env, ctx) {
        + '</div>'
        + '<div class="cp-bp' + (real ? ' real' : '') + '"><span class="amt">$' + pot + '</span>'
        + '<div class="cp-bbar"><i style="width:' + Math.max(4, Math.round(pot / maxPot * 100)) + '%"></i></div>'
-       + '<span class="cp-bpe">' + (real ? 'Real money' : 'Free - paper') + '</span></div>'
+       + '<span class="cp-bpe">' + (real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : 'Free - paper') + '</span></div>'
        + '</div>';
   }
   H += '</div>';
@@ -2573,7 +2574,7 @@ const SSR_COMP_ES = [
   [' hours, and the next one starts the same day - you can join on any day and still place.', ' horas, y la siguiente empieza el mismo día - puedes entrar cualquier día y aun así clasificar.'],
   ['<span>Entry <b>', '<span>Entrada <b>'], ['<span>Deposit <b>none</b></span>', '<span>Depósito <b>ninguno</b></span>'],
   ['</b> person is competing</span>', '</b> persona está compitiendo</span>'], ['</b> people are competing</span>', '</b> personas están compitiendo</span>'], ['</b> placements</span>', '</b> plazas</span>'],
-  ['<h2>The seven boards</h2>', '<h2>Las siete tablas</h2>'],
+  ['<h2>The eight boards</h2>', '<h2>Las ocho tablas</h2>'], ['Free - daily call', 'Gratis - predicción diaria'],
   ['<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>', '<p>Cada tabla puntúa algo distinto, así que un solo estilo de trading no las barre todas. Cada una paga a sus cinco primeros, y puedes clasificar en más de una.</p>'],
   ['>Leading<', '>Lidera<'], ['>Open board<', '>Tabla abierta<'], ['>nobody has scored yet<', '>nadie ha puntuado todavía<'], ['>one qualifying trade puts you first<', '>una operación válida te pone primero<'],
   [' entered</div>', ' inscritos</div>'], ['% win rate', '% de acierto'], [' green days', ' días verdes'], [' green day', ' día verde'], [' wagered', ' apostados'],
@@ -3273,10 +3274,11 @@ const COMP_BOARDS = [
   { id: 'gold', ent: 'gold', key: 'topGold', prize: 'lbGold', name: 'The Gold Room', asks: 'the best points score across wins and losses', unit: 'points', f: 'pts' },
   { id: 'bybit', ent: 'bybit', key: 'topBybit', prize: 'lbBybit', name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad', unit: 'USD volume', f: 'vol' },
   { id: 'moon', ent: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
+  { id: 'call', ent: 'call', key: 'topCall', prize: 'lbCall', name: 'Daily BTC Call', asks: 'the most points from daily calls on where BTC closes - a closer call scores more, one call a day', unit: 'points', f: 'pts' }, // 2026-09-28 (owner): the daily call became a paid board; it used to pay Ticks on the season page
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v5'); // v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
+  const ck = new Request('https://marginpad.io/__competition_v6'); // v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -3294,7 +3296,7 @@ async function handleCompetition(url, request, env, ctx) {
       entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
-      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : 'free_paper',
+      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : b.id === 'call' ? 'free_call' : 'free_paper',
       /* FREE IS NOT THE SAME AS OPEN (2026-09-20), AND NEITHER IS "OPEN" THE SAME AS "PAID" (2026-09-21).
          `requires` was on the Gold Room alone; the other six read as asking nothing, which is how a
          member comes to believe a board is open to them when it is not. And the opposite error was live
@@ -3304,6 +3306,7 @@ async function handleCompetition(url, request, env, ctx) {
       requires: b.id === 'gold' ? { level: 'gold', xp: 12000, what: 'Gold - 12,000 XP' }
         : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
         : b.id === 'moon' ? { link: 'moon_signup', xp: REWARDS_MIN_XP, what: 'an approved Moon sign-up bonus claim (claiming one needs Bronze)' }
+        : b.id === 'call' ? { what: 'a username and at least one settled daily BTC call this season (calls close at ' + PRED_CUTOFF_H + ':00 UTC, the 00:00 UTC close settles them)' }
         : { what: 'a username and at least one closed trade this season' },
       // what it takes to KEEP what you win - the same on every board, and the thing Bronze actually gates
       payout: { level: 'bronze', xp: REWARDS_MIN_XP, what: 'Bronze - ' + REWARDS_MIN_XP + ' XP - to withdraw' },
@@ -3316,7 +3319,7 @@ async function handleCompetition(url, request, env, ctx) {
 
   const out = {
     name: 'MarginPad Season',
-    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one is scored from real Bybit futures volume; a seventh, King of the Moon, is a two-season contest scored from real wagering on Moon.',
+    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one from daily calls on where BTC closes; one is scored from real Bybit futures volume; an eighth, King of the Moon, is a two-season contest scored from real wagering on Moon.',
     url: 'https://marginpad.io/trading-competition/',
     live: true,
     season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
@@ -7235,7 +7238,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b81f72d8" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=f1c2e786" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11094,7 +11097,7 @@ const TG_HELP =
   '<code>/rekt</code> - 24h liquidations · <code>/funding</code> - funding extremes · <code>/sentiment</code> - Fear &amp; Greed\n' +
   '<code>/fundalert</code> BTC 0.1 - ping me on extreme funding\n\n' +
   '<b>Competition</b>\n' +
-  '<code>/leaderboard</code> - the five 14-day season boards (green days · ROE · win rate · XP · the Gold Room)\n\n' +
+  '<code>/leaderboard</code> - the 14-day season boards (green days · ROE · win rate · XP · the Gold Room · daily BTC call)\n\n' +
   '<b>Signals, news &amp; community</b>\n' +
   '<code>/premium</code> - premium signal groups (the free channel carries the daily wrap)\n' +
   '<code>/community</code> - join our Telegram community\n' +
@@ -11260,10 +11263,10 @@ const CAMPAIGN_TPLS = [
     cta: ['See the board', 'https://marginpad.io/leaderboards/'] },
 
   { id: 'competition', name: 'Season competition - free to enter', group: 'Competitions', needs: [],
-    subject: 'There is $350 a season on the boards, and it is free',
-    lead: 'The seven season boards.',
+    subject: 'There is $370 a season on the boards, and it is free',
+    lead: 'The eight season boards.',
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">You are already eligible, {name}.</p>'
-      + '<p style="margin:0 0 12px">Every 14 days MarginPad pays out across seven leaderboards - green days, return, win rate, XP and more. No entry fee, no deposit, and paper trades count.</p>'
+      + '<p style="margin:0 0 12px">Every 14 days MarginPad pays out across eight leaderboards - green days, return, win rate, XP, a daily BTC call and more. No entry fee, no deposit, and paper trades count.</p>'
       + '<p style="margin:0 0 12px">Most people who place were not trying to. They just traded that fortnight.</p>',
     cta: ['See what is on the table', 'https://marginpad.io/trading-competition/'] },
 
@@ -11927,7 +11930,7 @@ const TICK_SOURCES = [
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
-  { k: 'predict', label: 'Daily call', cap: 13 },
+  // 'predict' (Daily call, cap 13) left this table 2026-09-28: the call is a paid season board now and pays no Ticks
   { k: 'goal', label: 'Season goals', cap: 80 },
   { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T - a season-end "Claim all" must fit in one day
 ];
@@ -12167,8 +12170,18 @@ const ACH_DEFS = [ // id, name, how - all server-verified from real tables; earn
   { id: 'regular', name: 'The Regular', how: '500 pageviews on your account' },
 ];
 // Daily call (2026-09-06): guess where BTC closes today (00:00 UTC). Calls close at PRED_CUTOFF_H so the last hours
-// cannot be a free answer; the 1D candle settles it; points are the Ticks tiers (plus 1 Tick for showing up).
+// cannot be a free answer; the 1D candle settles it. SINCE 2026-09-28 THE CALL IS A PAID SEASON BOARD (owner: "$20
+// prize pool, poeni se skupljaju 14 dana"): the accuracy tiers are POINTS on the Daily BTC Call board and nothing else -
+// the Ticks it used to pay per call are gone, and so is the free card on /season/ (the call lives under its board).
 const PRED_CUTOFF_H = 20;
+const CALL_LB_START = Date.UTC(2026, 8, 28); // the season running when it shipped - the owner wanted it paid from now
+// The season's call standings, ONE function for the public board and the payer: uid + name + points + calls, ranked
+// by points then by fewer calls (a closer caller beats a busier one). `limit` is a cut on an already-ranked list.
+async function predBoardRows(env, atMs, limit, inclE2e) {
+  const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pred/board?now=' + (+atMs || Date.now()) + '&limit=' + (limit || 50) + (inclE2e ? '&e2e=1' : '')));
+  const j = await r.json();
+  return (j && j.board) || [];
+}
 // Season goals: five things a member can aim at, pick two per season, no swaps. Every one is counted from a real
 // table inside the season window, never from the client. One reward for all five so the choice is about taste.
 const GOAL_DEFS = [
@@ -12983,8 +12996,8 @@ async function rewardCfg(env) {
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
-  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbBybit = arr5(m.lbBybit, [100, 50, 25, 15, 10]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]); /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbBybit, lbMoon,raw: m };
+  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbBybit = arr5(m.lbBybit, [100, 50, 25, 15, 10]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [10, 6, 4, 0, 0]); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbBybit, lbMoon, lbCall, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -13185,10 +13198,10 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
- const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : 'Highest ROE'; // the four paid boards (the Demo-Spot bank board was retired 2026-08-17)
+ const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : board === 'call' ? 'Daily BTC Call' : 'Highest ROE'; // every paid board (the Demo-Spot bank board was retired 2026-08-17; Daily BTC Call added 2026-09-28)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieve = board === 'call' ? ('<b>' + Math.round(info.pts || 0) + ' points</b> from ' + (info.n || 0) + ' daily BTC call' + ((info.n === 1) ? '' : 's') + ' this season') : board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
   const achieveTxt = board === 'moon' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered on Moon during the contest') : board === 'bybit' ? ('$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ((info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
@@ -14035,7 +14048,7 @@ async function promoteLbPending(env) {
     let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) { return null; }
     const p = cfg.lbPending;
     if (!p || !(+p.fromWs > 0) || Date.now() < +p.fromWs) return null;
-    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon'].filter(k => Array.isArray(p[k]));
+    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon', 'lbCall'].filter(k => Array.isArray(p[k]));
     if (!keys.length) { delete cfg.lbPending; await env.STATS.put('rwd:cfg', JSON.stringify(cfg)); return null; }
     const lines = [];
     for (const k of keys) { lines.push(k + ': ' + JSON.stringify(cfg[k] || []) + ' -> ' + JSON.stringify(p[k])); cfg[k] = p[k]; }
@@ -14113,6 +14126,15 @@ async function payWeeklyPrizes(env) {
           .map(x => ({ uid: String(x.uid).indexOf('u:') === 0 ? x.uid : 'u:' + x.uid, name: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
         push(goldTop, cfg.lbGold, 'gold', x => ({ name: x.name || '', pts: x.pts, w: x.w, l: x.l }));
       }
+      // DAILY BTC CALL (2026-09-28): points from the season's settled calls, ranked in the DO by points then fewer calls.
+      // predBoardRows is the SAME function the public board reads, and the DO orders by the score itself, so a 50-row
+      // cut cannot hide a winner the way the 40-row best-trade cut hid the win-rate leaders on 2026-09-14.
+      if (ws >= CALL_LB_START) {
+        let callRows = []; try { callRows = await predBoardRows(env, ws, 50); } catch (e) {}
+        const callTop = callRows.filter(x => !banned['u:' + String(x.uid || '').replace(/^u:/, '')] && (+x.pts || 0) > 0).slice(0, 5)
+          .map(x => ({ uid: 'u:' + String(x.uid).replace(/^u:/, ''), name: x.name, pts: +x.pts || 0, n: +x.n || 0 }));
+        push(callTop, cfg.lbCall, 'call', x => ({ name: x.name || '', pts: x.pts, n: x.n }));
+      }
       // BYBIT VOLUME BOARD: paid by payBybitPrizes() (own cron task) - only once the owner marked the season's report FINAL.
     }
     let paidOut = [], payOk = payload.length === 0; // nothing to pay = trivially settled
@@ -14126,7 +14148,7 @@ async function payWeeklyPrizes(env) {
       for (const p of paidOut) {
         const u = prof[String(p.acct).replace(/^u:/, '')]; const cx = ctx[p.acct + '|' + (p.board || 'roe')] || {};
         try { await evPush(env, null, 'lbpaid', ((u && u.username) || String(p.acct || '').replace('u:', '').slice(0, 10)) + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' ' + (p.board || 'roe') + ')', ''); } catch (e) {}
-        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr, bank: cx.bank || 0, days: cx.days || 0 }); } catch (e) {} }
+        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr, bank: cx.bank || 0, days: cx.days || 0, pts: cx.pts || 0, n: cx.n || 0, w: cx.w || 0, l: cx.l || 0 }); } catch (e) {} }
         try { const xp = p.rank === 1 ? 300 : p.rank === 2 ? 200 : p.rank === 3 ? 100 : 50; await grantXp(env, p.acct, 'lbprize', xp, { note: 'season ' + (p.board || 'roe') + ' leaderboard #' + p.rank }); } catch (xe) {}
       }
     }
@@ -16276,7 +16298,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '580ed368';
+const ASSET_V = '2d977409';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18092,7 +18114,7 @@ async function handleReward(url, request, env) {
       // happens AFTER a season ends - so editing them mid-season silently changes what the season that just finished
       // pays out. With `nextSeason:true` the new numbers are parked in `lbPending` and promoted by `promoteLbPending`
       // the moment the next season starts; without it they apply immediately, exactly as before.
-      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon'];
+      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbBybit', 'lbMoon', 'lbCall'];
       const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       const boardsIn = BOARD_KEYS.filter(k => k in b && Array.isArray(b[k]));
       if (b.nextSeason && boardsIn.length) {
@@ -18119,9 +18141,9 @@ async function handleReward(url, request, env) {
           var NL9 = String.fromCharCode(10); await tgAdmin(env, '<b>Reward config changed</b> (' + diffs.length + ' key' + (diffs.length > 1 ? 's' : '') + ')' + NL9 + '<code>' + diffs.join(NL9).slice(0, 1500) + '</code>' + NL9 + 'If this was not you, restore it in ops Settings NOW.');
         }
       } catch (e) {}
-      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2) } });
+      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall) } });
     }
-    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
+    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon, lbCall: full.lbCall }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -18160,7 +18182,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
- const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon }; // (unchanged) - reward config snapshot passed to the DO
+ const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbBybit: full.lbBybit, lbMoon: full.lbMoon, lbCall: full.lbCall }; // (unchanged) - reward config snapshot passed to the DO
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -18269,7 +18291,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
-    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v10' : 'v10')); // v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v11' : 'v11')); // v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -18311,25 +18333,30 @@ async function handleReward(url, request, env) {
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
         let moon = null; try { moon = await moonPubSnapshot(env); } catch (e) {}
+        // DAILY BTC CALL (2026-09-28): points from settled calls inside the season window, ranked in the DO by points
+        // then fewer calls. The SAME query the payer runs (predBoardRows) - one source, one ranking, so what is shown is what pays.
+        let callRows = []; try { callRows = await predBoardRows(env, weekStart, lbFull ? 1000 : 50); } catch (e) {}
+        const qCall = callRows.filter(x => !banned['u:' + String(x.uid || '').replace(/^u:/, '')] && (+x.pts || 0) > 0);
+        const topCall = qCall.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, n: +x.n || 0 }));
         // ONE TRADER ON THREE BOARDS IS ONE PERSON. The competition page reported "79 entries ranked", which was
         // the sum of seven board lengths - capped at 15 each AND double-counting anybody ranked on more than one.
         // `entrants` is per board, measured before the slice; `people` is the distinct union across all of them.
         const keyOf = x => { const u = String((x && x.uid) || ''); return u || ('n:' + String((x && (x.who || x.name)) || '').toLowerCase()); };
         const who = {};
-        [qTop, qWr, qXp, qGreen, qGold].forEach(a => a.forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; }));
+        [qTop, qWr, qXp, qGreen, qGold, qCall].forEach(a => a.forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; }));
         (bybit.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         if (moon) (moon.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
-          bybit: (bybit.rows || []).length, moon: moon ? (moon.rows || []).length : 0 };
+          bybit: (bybit.rows || []).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length };
         const people = Object.keys(who).length;
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, entrants, people, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
     let out = bodyText;
- try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: cfg.lbBybit, moon: cfg.lbMoon }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
+ try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: cfg.lbBybit, moon: cfg.lbMoon, call: cfg.lbCall }; out = JSON.stringify(o); } catch (e) {} // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board - DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel - same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -21932,7 +21959,15 @@ export default {
       }
       let board = { board: [], callers: 0, season: predSeason(now) }; try { board = await (await stubP.fetch(new Request('https://do/pred/board'))).json(); } catch (e) {}
       let me = null; if (uP) { try { me = await (await stubP.fetch(new Request('https://do/pred/me?uid=' + encodeURIComponent(uP.id) + '&day=' + day + '&yday=' + yday))).json(); } catch (e) {} }
-      return new Response(JSON.stringify({ day, yday, cutoff: cutoffMs, open, live, cutoffH: PRED_CUTOFF_H, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], board: board.board || [], callers: board.callers || 0, season: board.season, me, signedIn: !!(uP && tokP) }), { headers: jh3 });
+      let prizes = [10, 6, 4, 0, 0]; try { prizes = (await rewardCfg(env)).lbCall; } catch (e) {}
+      return new Response(JSON.stringify({ day, yday, cutoff: cutoffMs, open, live, cutoffH: PRED_CUTOFF_H, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], prizes, paidFrom: CALL_LB_START, board: (board.board || []).map(r => ({ name: r.name, pts: r.pts, n: r.n })), callers: board.callers || 0, season: board.season, me, signedIn: !!(uP && tokP) }), { headers: jh3 });
+    }
+    if (url.pathname === '/api/admin/callboard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // support/E2E: the Daily BTC Call board exactly as the payer computes it for a season (?ws=, default the running one); ?e2e=1 includes test accounts
+      const jh5 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ws5 = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
+      let rows5 = []; try { rows5 = await predBoardRows(env, ws5, +url.searchParams.get('limit') || 50, url.searchParams.get('e2e') === '1'); } catch (e) {}
+      let prizes5 = []; try { prizes5 = (await rewardCfg(env)).lbCall; } catch (e) {}
+      return new Response(JSON.stringify({ ws: ws5, we: ws5 + LB_PERIOD, paidFrom: CALL_LB_START, prizes: prizes5, rows: rows5 }), { headers: jh5 });
     }
     if (url.pathname === '/api/admin/predict' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops/E2E: ?settle=<day>&close=<px>[&uid=] forces a settlement with a given close; plain GET = last settle stamp
       const jh4 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -22469,7 +22504,7 @@ export default {
     bg(payWeeklyPrizes, 'prizes');
     bg(payBybitPrizes, 'bybitprizes');
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
-    bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses, pay Ticks
+    bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
     bg(leverageReportSnap, 'levrep'); // the monthly leverage report: current month rolling, previous month sealed once (2026-09-26)
@@ -24813,7 +24848,7 @@ export class UserStore {
     // Personal records (2026-09-06): the four numbers a trader beats over months, kept forever and updated on every
     // close. new_json/new_ts remember the last record broken so the /xp poll can toast it once.
     s.exec('CREATE TABLE IF NOT EXISTS upb(user_id TEXT PRIMARY KEY, best_roe REAL, best_roe_ts INTEGER, best_pnl REAL, best_pnl_ts INTEGER, streak INTEGER DEFAULT 0, streak_best INTEGER DEFAULT 0, streak_best_ts INTEGER, day_key TEXT, day_n INTEGER DEFAULT 0, day_best INTEGER DEFAULT 0, day_best_ts INTEGER, new_json TEXT, new_ts INTEGER)');
-    // Daily call (2026-09-06): one BTC close guess per UTC day, settled from the 1D candle, paid in Ticks only.
+    // Daily call (2026-09-06): one BTC close guess per UTC day, settled from the 1D candle. Since 2026-09-28 the points are the Daily BTC Call season board (real prizes); the `ticks` column stays 0.
     // Season goals (2026-09-06): two self-chosen targets per 14-day season, verified from the real tables, paid once.
     // Season pass (2026-09-06): the free track is everyone's; the pro track is bought with Ticks, balance or a code.
     s.exec('CREATE TABLE IF NOT EXISTS upass(user_id TEXT, season INTEGER, pro INTEGER DEFAULT 0, bought_ts INTEGER, src TEXT, claimed TEXT, PRIMARY KEY(user_id, season))');
@@ -27843,24 +27878,25 @@ export class UserStore {
       const above = this.rows('SELECT COUNT(*) c FROM (SELECT user_id, SUM(pts) p FROM upred WHERE settled=1 AND day>=? AND day<? GROUP BY user_id HAVING p>?)', sk.from, sk.to, +mine.p || 0)[0] || { c: 0 };
       return this.j({ today, yday: y, streak, season: { pts: +mine.p || 0, n: +mine.n || 0, rank: (+mine.n || 0) ? (+above.c || 0) + 1 : null } });
     }
-    if (path === '/pred/board') { // season top callers: points are the same tiers the Ticks pay
+    if (path === '/pred/board') { // season standings of the Daily BTC Call board: points from settled calls, ranked by points then fewer calls. ?limit= (default 10, max 1000), ?e2e=1 includes test accounts (E2E only - the payer and the page never send it)
       const sk = predSeason(url.searchParams.get('now') ? +url.searchParams.get('now') : Date.now());
-      const rows = this.rows("SELECT p.user_id uid, u.username name, SUM(p.pts) pts, COUNT(*) n FROM upred p JOIN users u ON u.id=p.user_id WHERE p.settled=1 AND p.day>=? AND p.day<? AND u.username NOT LIKE 'e2e\\_%' ESCAPE '\\' GROUP BY p.user_id ORDER BY pts DESC, n ASC LIMIT 10", sk.from, sk.to);
+      const lim = Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 10));
+      const e2eOk = url.searchParams.get('e2e') === '1';
+      const rows = this.rows("SELECT p.user_id uid, u.username name, SUM(p.pts) pts, COUNT(*) n FROM upred p JOIN users u ON u.id=p.user_id WHERE p.settled=1 AND p.day>=? AND p.day<? " + (e2eOk ? '' : "AND u.username NOT LIKE 'e2e\\_%' ESCAPE '\\' ") + "GROUP BY p.user_id ORDER BY pts DESC, n ASC LIMIT " + lim, sk.from, sk.to);
       const callers = (this.rows("SELECT COUNT(DISTINCT p.user_id) c FROM upred p JOIN users u ON u.id=p.user_id WHERE p.day>=? AND p.day<? AND u.username NOT LIKE 'e2e\\_%' ESCAPE '\\'", sk.from, sk.to)[0] || {}).c || 0;
-      return this.j({ season: sk, board: rows.filter(r => r.name).map(r => ({ name: r.name, pts: +r.pts || 0, n: +r.n || 0 })), callers });
+      return this.j({ season: sk, board: rows.filter(r => r.name).map(r => ({ uid: r.uid, name: r.name, pts: +r.pts || 0, n: +r.n || 0 })), callers });
     }
-    if (path === '/pred/settle' && request.method === 'POST') { // {day, close, uid?}: score every open call for that day, pay Ticks (accuracy tiers + 1 for showing up)
+    if (path === '/pred/settle' && request.method === 'POST') { // {day, close, uid?}: score every open call for that day. Points = accuracy tiers, and they are the Daily BTC Call BOARD (paid at season end) - no Ticks since 2026-09-28
       const day = String(b.day || ''), close = +b.close, only = b.uid ? String(b.uid).replace(/^u:/, '') : '';
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !(close > 0)) return this.j({ error: 'bad' }, 400);
       const rows = only ? this.rows('SELECT user_id, guess FROM upred WHERE day=? AND settled=0 AND user_id=?', day, only) : this.rows('SELECT user_id, guess FROM upred WHERE day=? AND settled=0', day);
-      let n = 0, paid = 0;
+      let n = 0;
       for (const r of rows) {
-        const err = Math.abs(+r.guess - close) / close * 100, pts = predPts(err), tk = pts + 1;
-        this.state.storage.sql.exec('UPDATE upred SET close=?, err=?, pts=?, ticks=?, settled=1 WHERE user_id=? AND day=?', close, Math.round(err * 1000) / 1000, pts, tk, r.user_id, day);
-        try { paid += this._grantTicks(r.user_id, 'predict', tk, { dayCap: TICK_CAP.predict, note: 'daily call ' + day + ' (' + (Math.round(err * 100) / 100) + '% off)' }); } catch (e) {}
+        const err = Math.abs(+r.guess - close) / close * 100, pts = predPts(err);
+        this.state.storage.sql.exec('UPDATE upred SET close=?, err=?, pts=?, ticks=0, settled=1 WHERE user_id=? AND day=?', close, Math.round(err * 1000) / 1000, pts, r.user_id, day);
         n++;
       }
-      return this.j({ ok: true, day, close, settled: n, ticksPaid: paid });
+      return this.j({ ok: true, day, close, settled: n, ticksPaid: 0 });
     }
     if (path === '/pb') { const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); return this.j({ records: uid ? this._pbGet(uid) : null }); } // personal records (self poll + admin)
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
@@ -28852,63 +28888,63 @@ function commMd(src) {
 // ---------- Daily Missions: earn cents by USING the product (verified from the per-user event log - turns reward farmers into traders) ----------
 const MISSION_POOL = [
   // trade missions are always index 0/1 (missionsForDay picks one) - DO NOT reorder these two. cat = per-day category quota (see missionsForDay CAPS).
-  { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', cents: 3, vt: 'ev', va: 'paper', n: 1, cat: 'core' },
-  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today - repetition is how instinct gets built', cents: 3, vt: 'ev', va: 'paper', n: 3, cat: 'core' },
+  { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', cents: 2, vt: 'ev', va: 'paper', n: 1, cat: 'core' },
+  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today - repetition is how instinct gets built', cents: 2, vt: 'ev', va: 'paper', n: 3, cat: 'core' },
   // growth: Telegram - the free signal group / news channel / bot rotate ONE into every day (missionsForDay). owner-provided links 2026-07-31.
- { mid: 'tgsignals', title: 'Join our free Telegram channel', desc: 'The daily market wrap at 16:00 UTC - prices, liquidations and the next macro event', cents: 2, vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' }, // the free channel carries the daily wrap; live signals are the paid tiers (free signals paused since 2026-08-03)
-  { mid: 'tgnews', title: 'Follow our Telegram news channel', desc: 'Crypto headlines the minute they drop - ahead of your P&L', cents: 2, vt: 'ev', va: 'tgnews', n: 1, cat: 'promo2', url: 'https://t.me/marginpadnews' }, // owner-added 2026-07-31
-  { mid: 'tgbot', title: 'Open the MarginPad Telegram bot', desc: 'Live prices, alerts and signals right in your DMs', cents: 2, vt: 'ev', va: 'tgbot', n: 1, cat: 'promo2', url: 'https://t.me/MarginPadBot' }, // owner-added 2026-07-31
+ { mid: 'tgsignals', title: 'Join our free Telegram channel', desc: 'The daily market wrap at 16:00 UTC - prices, liquidations and the next macro event', cents: 1, vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' }, // the free channel carries the daily wrap; live signals are the paid tiers (free signals paused since 2026-08-03)
+  { mid: 'tgnews', title: 'Follow our Telegram news channel', desc: 'Crypto headlines the minute they drop - ahead of your P&L', cents: 1, vt: 'ev', va: 'tgnews', n: 1, cat: 'promo2', url: 'https://t.me/marginpadnews' }, // owner-added 2026-07-31
+  { mid: 'tgbot', title: 'Open the MarginPad Telegram bot', desc: 'Live prices, alerts and signals right in your DMs', cents: 1, vt: 'ev', va: 'tgbot', n: 1, cat: 'promo2', url: 'https://t.me/MarginPadBot' }, // owner-added 2026-07-31
   // trade quality (verified against the trade-event log / event trail)
-  { mid: 'win', title: 'Close a winning trade', desc: 'Get one into the green and actually take it. Banked beats brilliant', cents: 3, vt: 'win', va: '', n: 1, cat: 'trade' },
-  { mid: 'sltp', title: 'Set a stop-loss or take-profit', desc: 'Pick your exit before the market picks one for you', cents: 3, vt: 'ev', va: 'sltp', n: 1, cat: 'trade' },
-  { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', cents: 2, vt: 'ev', va: 'watch', n: 1, cat: 'market' },
-  { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', cents: 3, vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
-  { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', cents: 3, vt: 'win', va: '', n: 2, cat: 'trade' },
-  { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', cents: 3, vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
+  { mid: 'win', title: 'Close a winning trade', desc: 'Get one into the green and actually take it. Banked beats brilliant', cents: 2, vt: 'win', va: '', n: 1, cat: 'trade' },
+  { mid: 'sltp', title: 'Set a stop-loss or take-profit', desc: 'Pick your exit before the market picks one for you', cents: 2, vt: 'ev', va: 'sltp', n: 1, cat: 'trade' },
+  { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', cents: 1, vt: 'ev', va: 'watch', n: 1, cat: 'market' },
+  { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', cents: 2, vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
+  { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', cents: 2, vt: 'win', va: '', n: 2, cat: 'trade' },
+  { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', cents: 2, vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
   // chat / social / community
-  { mid: 'chat3', title: 'Send 3 chat messages', desc: 'Three messages - the floor is better when you talk', cents: 3, vt: 'ev', va: 'chat', n: 3, cat: 'chat' },
-  { mid: 'chat', title: 'Post in the trader chat', desc: 'Say something on the floor. Lurking earns nothing', cents: 2, vt: 'ev', va: 'chat', n: 1, cat: 'chat' },
-  { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board - follow someone worth studying', cents: 3, vt: 'follow', va: '', n: 1, cat: 'social' },
-  { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 3, vt: 'dm', va: '', n: 1, cat: 'social' },
-  { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 3, vt: 'duel', va: '', n: 1, cat: 'social' },
-  { mid: 'duelwin', title: 'Win a duel', desc: 'Any format - take the pot and the bragging rights', cents: 3, vt: 'duelw', va: '', n: 1, cat: 'social' },
-  { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk - be worth following today', cents: 3, vt: 'follower', va: '', n: 1, cat: 'social' },
-  { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card - see how the ranked ones do it', cents: 2, vt: 'ev', va: 'profile', n: 1, cat: 'social' },
-  { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win - or your tuition', cents: 3, vt: 'ev', va: 'share', n: 1, cat: 'social' },
-  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one - the floor decides', cents: 3, vt: 'comm', va: '', n: 1, cat: 'community' },
-  { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', cents: 2, vt: 'pv', va: '/community', n: 1, cat: 'community' },
-  { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent - tell them', cents: 2, vt: 'ev', va: 'like', n: 1, cat: 'community' },
+  { mid: 'chat3', title: 'Send 3 chat messages', desc: 'Three messages - the floor is better when you talk', cents: 2, vt: 'ev', va: 'chat', n: 3, cat: 'chat' },
+  { mid: 'chat', title: 'Post in the trader chat', desc: 'Say something on the floor. Lurking earns nothing', cents: 1, vt: 'ev', va: 'chat', n: 1, cat: 'chat' },
+  { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board - follow someone worth studying', cents: 2, vt: 'follow', va: '', n: 1, cat: 'social' },
+  { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 2, vt: 'dm', va: '', n: 1, cat: 'social' },
+  { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 2, vt: 'duel', va: '', n: 1, cat: 'social' },
+  { mid: 'duelwin', title: 'Win a duel', desc: 'Any format - take the pot and the bragging rights', cents: 2, vt: 'duelw', va: '', n: 1, cat: 'social' },
+  { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk - be worth following today', cents: 2, vt: 'follower', va: '', n: 1, cat: 'social' },
+  { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card - see how the ranked ones do it', cents: 1, vt: 'ev', va: 'profile', n: 1, cat: 'social' },
+  { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win - or your tuition', cents: 2, vt: 'ev', va: 'share', n: 1, cat: 'social' },
+  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one - the floor decides', cents: 2, vt: 'comm', va: '', n: 1, cat: 'community' },
+  { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', cents: 1, vt: 'pv', va: '/community', n: 1, cat: 'community' },
+  { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent - tell them', cents: 1, vt: 'ev', va: 'like', n: 1, cat: 'community' },
   // academy (verified against the completed-lessons table) - CAPPED AT ONE PER DAY by missionsForDay
-  { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', cents: 3, vt: 'academy', va: '', n: 1, cat: 'academy' },
-  { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day - a proper study session', cents: 3, vt: 'academy', va: '', n: 3, cat: 'academy' },
-  { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', cents: 3, vt: 'academy', va: '', n: 2, cat: 'academy' },
-  { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', cents: 2, vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
-  { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', cents: 2, vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
+  { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', cents: 2, vt: 'academy', va: '', n: 1, cat: 'academy' },
+  { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day - a proper study session', cents: 2, vt: 'academy', va: '', n: 3, cat: 'academy' },
+  { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', cents: 2, vt: 'academy', va: '', n: 2, cat: 'academy' },
+  { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', cents: 1, vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
+  { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', cents: 1, vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
   // markets / tools discovery
-  { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market - know the terrain', cents: 2, vt: 'pv', va: '/coins', n: 1, cat: 'market' },
-  { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', cents: 2, vt: 'pv', va: '/news', n: 1, cat: 'market' },
-  { mid: 'screener', title: 'Scan the market screener', desc: 'Find out who’s pumping and who’s bleeding right now', cents: 3, vt: 'pv', va: '/screener', n: 1, cat: 'market' },
-  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when the market has chaos scheduled this week', cents: 2, vt: 'pv', va: '/calendar', n: 1, cat: 'market' },
-  { mid: 'funding', title: 'Check funding rates', desc: 'See which side of the boat is overloaded', cents: 2, vt: 'pv', va: '/funding', n: 1, cat: 'market' },
-  { mid: 'feargreed', title: 'Check the Fear & Greed index', desc: 'Check the market’s mood ring', cents: 2, vt: 'pv', va: '/fear-greed', n: 1, cat: 'market' },
-  { mid: 'calc', title: 'Use a trading calculator', desc: 'Do the math before the market does it to you', cents: 3, vt: 'pv', va: '/calculators', n: 1, cat: 'market' },
-  { mid: 'charts', title: 'Open the charts workspace', desc: 'Chart something - indicators, drawings, the works', cents: 3, vt: 'pv', va: '/charts', n: 1, cat: 'market' },
-  { mid: 'levels', title: 'Check the XP leaderboard', desc: 'See where you rank. Then go fix it', cents: 2, vt: 'pv', va: '/levels', n: 1, cat: 'market' },
-  { mid: 'defi', title: 'Explore DeFi TVL', desc: 'See which chains actually hold the money', cents: 2, vt: 'pv', va: '/defi', n: 1, cat: 'market' },
-  { mid: 'longshort', title: 'Check the long/short ratio', desc: 'Longs vs shorts - see which crowd is braver', cents: 2, vt: 'pv', va: '/long-short', n: 1, cat: 'market' },
-  { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', cents: 3, vt: 'ev', va: 'alert', n: 1, cat: 'market' },
-  { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', cents: 3, vt: 'ev', va: 'ai', n: 1, cat: 'market' },
-  { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level - trade lines, not vibes', cents: 2, vt: 'ev', va: 'draw', n: 1, cat: 'market' },
+  { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market - know the terrain', cents: 1, vt: 'pv', va: '/coins', n: 1, cat: 'market' },
+  { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', cents: 1, vt: 'pv', va: '/news', n: 1, cat: 'market' },
+  { mid: 'screener', title: 'Scan the market screener', desc: 'Find out who’s pumping and who’s bleeding right now', cents: 2, vt: 'pv', va: '/screener', n: 1, cat: 'market' },
+  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when the market has chaos scheduled this week', cents: 1, vt: 'pv', va: '/calendar', n: 1, cat: 'market' },
+  { mid: 'funding', title: 'Check funding rates', desc: 'See which side of the boat is overloaded', cents: 1, vt: 'pv', va: '/funding', n: 1, cat: 'market' },
+  { mid: 'feargreed', title: 'Check the Fear & Greed index', desc: 'Check the market’s mood ring', cents: 1, vt: 'pv', va: '/fear-greed', n: 1, cat: 'market' },
+  { mid: 'calc', title: 'Use a trading calculator', desc: 'Do the math before the market does it to you', cents: 2, vt: 'pv', va: '/calculators', n: 1, cat: 'market' },
+  { mid: 'charts', title: 'Open the charts workspace', desc: 'Chart something - indicators, drawings, the works', cents: 2, vt: 'pv', va: '/charts', n: 1, cat: 'market' },
+  { mid: 'levels', title: 'Check the XP leaderboard', desc: 'See where you rank. Then go fix it', cents: 1, vt: 'pv', va: '/levels', n: 1, cat: 'market' },
+  { mid: 'defi', title: 'Explore DeFi TVL', desc: 'See which chains actually hold the money', cents: 1, vt: 'pv', va: '/defi', n: 1, cat: 'market' },
+  { mid: 'longshort', title: 'Check the long/short ratio', desc: 'Longs vs shorts - see which crowd is braver', cents: 1, vt: 'pv', va: '/long-short', n: 1, cat: 'market' },
+  { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', cents: 2, vt: 'ev', va: 'alert', n: 1, cat: 'market' },
+  { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', cents: 2, vt: 'ev', va: 'ai', n: 1, cat: 'market' },
+  { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level - trade lines, not vibes', cents: 1, vt: 'ev', va: 'draw', n: 1, cat: 'market' },
   // 2026-08-14 owner: more same-value missions so the daily rotation feels fresh
- { mid: 'vault', title: 'Browse The Vault', desc: 'Frames, ticket skins, backgrounds - see what your Ticks buy', cents: 2, vt: 'pv', va: '/vault', n: 1, cat: 'market' },
-  { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time - and learn from it', cents: 2, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
-  { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house - no leverage, no liquidations', cents: 3, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
-  { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', cents: 3, vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
-  { mid: 'spotcash', title: 'Cash out in Demo Spot', desc: 'Bring money the whole way back to the card - exits are the skill', cents: 3, vt: 'ev', va: 'spotcash', n: 1, cat: 'market' },
-  { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding - know where the edge is', cents: 2, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
-  { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 2, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
-  { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats - review before you repeat', cents: 2, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
-  { mid: 'backtest', title: 'Run the backtester', desc: 'Test the idea on history before it tests your balance', cents: 3, vt: 'pv', va: '/crypto-backtester', n: 1, cat: 'market' },
+ { mid: 'vault', title: 'Browse The Vault', desc: 'Frames, ticket skins, backgrounds - see what your Ticks buy', cents: 1, vt: 'pv', va: '/vault', n: 1, cat: 'market' },
+  { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time - and learn from it', cents: 1, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
+  { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house - no leverage, no liquidations', cents: 2, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
+  { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', cents: 2, vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
+  { mid: 'spotcash', title: 'Cash out in Demo Spot', desc: 'Bring money the whole way back to the card - exits are the skill', cents: 2, vt: 'ev', va: 'spotcash', n: 1, cat: 'market' },
+  { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding - know where the edge is', cents: 1, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
+  { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 1, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
+  { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats - review before you repeat', cents: 1, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
+  { mid: 'backtest', title: 'Run the backtester', desc: 'Test the idea on history before it tests your balance', cents: 2, vt: 'pv', va: '/crypto-backtester', n: 1, cat: 'market' },
 ];
 // mulberry32 - tiny deterministic PRNG so a day's missions are STABLE within that day (claims re-derive the set)
 // but well-shuffled and different day-to-day (feels random). Seeded from the UTC date.
@@ -28929,13 +28965,14 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
   const CAPS = { academy: 1, chat: 1, community: 1, social: 3, trade: 2, market: 2 }; // per-day category quotas (2026-08-15 owner: same money, higher-value actions - social 2->3, market pageviews 3->2; every follow/duel raises switching cost, a pageview raises nothing)
   const used = {}; const pick = [];
-  for (let i = 0; i < rest.length && pick.length < 6; i++) {
+  const PICKS = 5; // 6 until 2026-09-28 (the mission budget was halved: see SET_CENTS in handleMissions)
+  for (let i = 0; i < rest.length && pick.length < PICKS; i++) {
     const m = rest[i]; if (skip(m)) continue;
     const c = m.cat || 'market'; if ((used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue;
     used[c] = (used[c] || 0) + 1; pick.push(m);
   }
-  for (let i = 0; i < rest.length && pick.length < 6; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback - never under-fill the day
-  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram (signals/news/bot) + 6 = 8/day
+  for (let i = 0; i < rest.length && pick.length < PICKS; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback - never under-fill the day
+  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram (signals/news/bot) + 5 = 7/day
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
 const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
@@ -29029,7 +29066,7 @@ async function handleMissions(url, request, env) {
   const enabled = cfg.raw ? cfg.raw.missionsEnabled !== false : true;
   const day = new Date().toISOString().slice(0, 10);
   const dayStart = new Date(day).getTime();
-  const SET_N = 6, SET_CENTS = 5, WEEK_N = 15, WEEK_CENTS = 10; // engagement bonuses (2026-08-15 owner): claim 6 of 8 today -> +$0.05 set bonus; 15 claims Mon-Sun -> +$0.10 weekly bonus. Completion beats cherry-picking.
+  const SET_N = 5, SET_CENTS = 2, WEEK_N = 15, WEEK_CENTS = 5; // engagement bonuses (2026-08-15 owner): claim 5 of 7 today -> +$0.02 set bonus; 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
   const wkFrom = new Date(dayStart - ((new Date(dayStart).getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10); // this week's Monday (UTC)
   const wkMid = 'wk' + wkFrom.replace(/-/g, '');
   let uid = '', uxp = 0;

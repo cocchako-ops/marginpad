@@ -360,7 +360,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free USDT Faucet - Welcome Bonus + Claim Every 5 Minutes","url":"https://marginpad.io/rewards/","dateModified":"2026-09-25T18:55:47.886Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free USDT Faucet - Welcome Bonus + Claim Every 5 Minutes","url":"https://marginpad.io/rewards/","dateModified":"2026-09-28T11:49:02.703Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header class="mpnav-hdr">
@@ -395,8 +395,8 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     </div>
     <div class="et-r">
       <div class="et-k">Every day</div>
-      <div class="et-v"><span class="eamt" id="eaDay">$0.20</span><i>a day</i></div>
-      <div class="et-d">Claim <b id="eaAmt">$0.02</b> from the faucet every few minutes and finish the daily missions. Resets at 00:00 UTC.</div>
+      <div class="et-v"><span class="eamt" id="eaDay">$0.10</span><i>a day</i></div>
+      <div class="et-d">Claim <b id="eaAmt">$0.01</b> from the faucet every few minutes and finish the daily missions. Resets at 00:00 UTC.</div>
     </div>
     <div class="et-r">
       <div class="et-k">Every time you do it</div>
@@ -470,9 +470,9 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       <div class="note" style="text-align:left;margin-top:7px;color:#c7ced6">Withdrawals are <b style="color:#ffd75a">not automatic</b> - each request is reviewed and sent manually, and will be processed soon. USDT is sent to your Bybit account by UID - double-check your Bybit UID before confirming.</div>
     </div>
     <div class="prog"><i id="prog"></i></div>
-    <div class="prog-lbl"><span id="progLbl">$0.00 / $0.20 claimed today</span></div>
+    <div class="prog-lbl"><span id="progLbl">$0.00 / $0.10 claimed today</span></div>
     <div class="claim-row">
-      <button class="btn btn-lime" id="claimBtn" type="button">Claim 0.02 USDT</button>
+      <button class="btn btn-lime" id="claimBtn" type="button">Claim 0.01 USDT</button>
     </div>
     <div class="msg" id="msg"></div>
     <form class="claim-row" id="codeRow" autocomplete="off" style="margin-top:10px;gap:8px;flex-wrap:wrap">
@@ -708,7 +708,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="lbl">How it works</div>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Sign in with email</h3><p>Just your email - no password, no UID yet. Your balance saves to your account.</p></div>
-      <div class="step"><div class="n">02</div><h3>Claim every 5 min</h3><p>Each claim adds <span class="tAmt">0.02</span> USDT, up to $<span class="tPer">0.20</span> a day (more at higher levels). Come back and stack it up.</p></div>
+      <div class="step"><div class="n">02</div><h3>Claim every 5 min</h3><p>Each claim adds <span class="tAmt">0.01</span> USDT, up to $<span class="tPer">0.10</span> a day (more at higher levels). Come back and stack it up.</p></div>
       <div class="step"><div class="n">03</div><h3>Withdraw at $<span class="tMin">5</span></h3><p>Hit $<span class="tMin">5</span> and request a payout. USDT lands in your Bybit account by UID. <a data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" style="color:#ffd75a;font-weight:700;white-space:nowrap">No UID yet? &rarr;</a></p></div>
     </div>
   </div>
@@ -830,7 +830,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   var dash=document.getElementById('dash'),
       balEl=document.getElementById('bal'),wdBtn=document.getElementById('wdBtn'),progEl=document.getElementById('prog'),
       progLbl=document.getElementById('progLbl'),claimBtn=document.getElementById('claimBtn'),msgEl=document.getElementById('msg');
-  var nextClaim=0,perDay=0.2,amount=0.02,minWd=5,welcomeAmt=0,acct=null,busy=false,bannedAcct=false,signedIn=false,payoutAddr='';
+  var nextClaim=0,perDay=0.1,amount=0.01,minWd=5,welcomeAmt=0,acct=null,busy=false,bannedAcct=false,signedIn=false,payoutAddr='';
   // Faucet/rewards gate (2026-08-04): the whole rewards system unlocks at Bronze (500 XP). Signed-in users below
   // that are 'unranked' → the earn cards hide and #lockedCard explains why + points to Academy/Paper Trade/Charts.
   var MIN_XP=500,rewardsLocked=false;
@@ -1301,9 +1301,9 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
 })();
 </script>
 <script src="/assets/mp-trade.js?v=ad5f8788" defer></script>
-<script defer src="/assets/mp-auth.js?v=580ed368"></script>
+<script defer src="/assets/mp-auth.js?v=2d977409"></script>
 <script defer src="/assets/mp-profile.js?v=340d5165"></script>
-<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
+<script defer src="/assets/mp-nav.js?v=f1c2e786"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;
@@ -1330,7 +1330,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       var C9=169.6,total9=d.missions.length;
       var rf=document.getElementById('msnRingF');if(rf)rf.style.strokeDashoffset=String((C9*(1-(total9?doneN/total9:0))).toFixed(1));
       var rt=document.getElementById('msnRingT');if(rt)rt.textContent=doneN+'/'+total9;
-      var b9=d.bonus||{};var sN=+b9.setN||6,sU=(+b9.setUsd||0.05).toFixed(2),wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.1).toFixed(2),wC=+b9.weekCount||0;
+      var b9=d.bonus||{};var sN=+b9.setN||5,sU=(+b9.setUsd||0.02).toFixed(2),wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.05).toFixed(2),wC=+b9.weekCount||0;
       var st9=document.getElementById('msnSetTxt');
       if(st9)st9.innerHTML=b9.setClaimed?'SET BONUS <span style="color:#c2f64a">+$'+sU+' PAID</span>':'SET BONUS <span style="color:#c2f64a">+$'+sU+'</span> at '+sN+' claims \u00b7 <span style="color:#e9e7df">'+Math.min(doneN,sN)+'/'+sN+'</span>';
       var wt=document.getElementById('msnWkTxt');

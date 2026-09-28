@@ -74,7 +74,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Tamaño de Posición - Dimensionamiento Cripto Basado en Riesgo","url":"https://marginpad.io/es/position-size-calculator/","dateModified":"2026-09-25T18:55:47.882Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Tamaño de Posición - Dimensionamiento Cripto Basado en Riesgo","url":"https://marginpad.io/es/position-size-calculator/","dateModified":"2026-09-26T18:48:04.122Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <h1>Calculadora de Tamaño de Posición</h1>
@@ -96,6 +96,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script>function calc(){var a=+document.getElementById('acct').value,rp=+document.getElementById('riskp').value/100,en=+document.getElementById('entry').value,st=+document.getElementById('stop').value,l=+document.getElementById('lev').value;var r=document.getElementById('res');if(!(a>0&&rp>0&&en>0&&st>0&&en!==st)){r.innerHTML='';return;}var riskUsd=a*rp,dist=Math.abs(en-st)/en,pos=riskUsd/dist,qty=pos/en,marg=l>0?pos/l:pos;
 r.innerHTML='<div class="rrow"><span class="k">Dollar risk (if the stop hits)</span><span class="v dn">-'+riskUsd.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Stop distance</span><span class="v">'+(dist*100).toFixed(2)+'%</span></div><div class="rrow big"><span class="k">Position size</span><span class="v">$'+pos.toLocaleString(undefined,{maximumFractionDigits:2})+'</span></div><div class="rrow"><span class="k">Quantity</span><span class="v">'+qty.toFixed(6)+'</span></div><div class="rrow"><span class="k">Margin needed at '+l+'x</span><span class="v">$'+marg.toFixed(2)+'</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
+<script defer src="/assets/mp-nav.js?v=f1c2e786"></script>
 </body>
 </html>

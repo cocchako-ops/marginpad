@@ -74,7 +74,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Win Rate & Expectancy Calculator - Is the System Profitable?","url":"https://marginpad.io/crypto-win-rate-calculator/","dateModified":"2026-09-25T18:55:47.646Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Win Rate & Expectancy Calculator - Is the System Profitable?","url":"https://marginpad.io/crypto-win-rate-calculator/","dateModified":"2026-09-26T18:48:03.826Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <h1>Win Rate &amp; Expectancy Calculator</h1>
@@ -96,6 +96,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var w=+document.getElementById('wr').value/100,aw=+document.getElementById('aw').value,al=+document.getElementById('al').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(w>=0&&w<=1&&aw>=0&&al>=0)){r.innerHTML='';return;}var ex=w*aw-(1-w)*al,mo=ex*n,beWR=al+aw>0?al/(aw+al)*100:0;r.innerHTML='<div class="rrow big"><span class="k">Expectancy per trade</span><span class="v '+(ex>=0?'up':'dn')+'">'+(ex>=0?'+':'')+ex.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Expected monthly ('+n+' trades)</span><span class="v '+(mo>=0?'up':'dn')+'">'+(mo>=0?'+':'')+mo.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+beWR.toFixed(1)+'%</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=b81f72d8"></script>
+<script defer src="/assets/mp-nav.js?v=f1c2e786"></script>
 </body>
 </html>

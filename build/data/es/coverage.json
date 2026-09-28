@@ -272,7 +272,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -1411,9 +1411,9 @@
  },
  {
   "rel": "free-crypto-api/index.html",
-  "cover": 0.9914163090128756,
-  "hit": 231,
-  "missing": 2
+  "cover": 1,
+  "hit": 233,
+  "missing": 0
  },
  {
   "rel": "funding-fee-calculator/index.html",
@@ -1574,7 +1574,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -1628,7 +1628,7 @@
  {
   "rel": "hyperliquid-whales/index.html",
   "cover": 1,
-  "hit": 88,
+  "hit": 90,
   "missing": 0
  },
  {
@@ -1652,7 +1652,7 @@
  {
   "rel": "index.html",
   "cover": 1,
-  "hit": 227,
+  "hit": 229,
   "missing": 0
  },
  {
@@ -1670,13 +1670,13 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 55,
   "missing": 0
  },
  {
   "rel": "journal/index.html",
   "cover": 1,
-  "hit": 11,
+  "hit": 12,
   "missing": 0
  },
  {
@@ -1730,7 +1730,7 @@
  {
   "rel": "leaderboards/index.html",
   "cover": 1,
-  "hit": 82,
+  "hit": 83,
   "missing": 0
  },
  {
@@ -1743,6 +1743,12 @@
   "rel": "leverage-calculator/index.html",
   "cover": 1,
   "hit": 39,
+  "missing": 0
+ },
+ {
+  "rel": "leverage-report/index.html",
+  "cover": 1,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -1790,7 +1796,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -1832,7 +1838,7 @@
  {
   "rel": "mcp-server-for-crypto-trading/index.html",
   "cover": 1,
-  "hit": 64,
+  "hit": 62,
   "missing": 0
  },
  {
@@ -1970,19 +1976,19 @@
  {
   "rel": "practice-for-a-funded-account/index.html",
   "cover": 1,
-  "hit": 70,
+  "hit": 68,
   "missing": 0
  },
  {
   "rel": "premium/index.html",
   "cover": 1,
-  "hit": 147,
+  "hit": 159,
   "missing": 0
  },
  {
   "rel": "privacy/index.html",
   "cover": 1,
-  "hit": 79,
+  "hit": 81,
   "missing": 0
  },
  {
@@ -2030,7 +2036,7 @@
  {
   "rel": "season/index.html",
   "cover": 1,
-  "hit": 107,
+  "hit": 105,
   "missing": 0
  },
  {
@@ -2156,13 +2162,13 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 449,
+  "hit": 447,
   "missing": 0
  },
  {
   "rel": "trading-competition/index.html",
   "cover": 1,
-  "hit": 117,
+  "hit": 126,
   "missing": 0
  },
  {
@@ -2222,7 +2228,7 @@
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 63,
+  "hit": 61,
   "missing": 0
  },
  {
@@ -2234,7 +2240,7 @@
  {
   "rel": "widgets/index.html",
   "cover": 1,
-  "hit": 33,
+  "hit": 47,
   "missing": 0
  },
  {

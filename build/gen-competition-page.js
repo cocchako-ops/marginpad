@@ -19,14 +19,16 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'trading-competition', 'index.html');
 const URLB = 'https://marginpad.io/trading-competition/';
 const TITLE = 'Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days';
-const DESC = 'Join a free crypto futures trading competition. Seven leaderboards, a $350 prize pool every 14 days plus $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles; two boards pay for real trading - Bybit volume and King of the Moon.';
+const DESC = 'Join a free crypto futures trading competition. Eight leaderboards, a $370 prize pool every 14 days plus $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.';
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const FAQ = [
   ['Is there a free crypto trading competition?',
-   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its seven boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top five on every board.'],
+   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its eight boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - and a sixth from a daily call on where BTC closes, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.'],
   ['What do you win?',
-   'Every board pays its top five: $10, $8, $6, $4 and $2. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $350 a season across the six season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $10, $6 and $4 to its top three. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $370 a season across the seven season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+  ['What is the Daily BTC Call board?',
+   'Once a day, before 20:00 UTC, you call where BTC closes at 00:00 UTC. The daily candle settles it: a call within 0.25% scores 12 points, within 0.5% eight, within 1% five, within 2% two. Points add up over the fourteen-day season and the top three share $20. It takes no trade, no deposit and about ten seconds a day; the call is made on the season page.'],
   ['How do I enter?',
    'Create a free MarginPad account and start trading on the paper terminal. Every closed trade counts toward the boards automatically from the moment you sign up; there is no separate registration step and no entry fee. You can try the terminal with no account at all first, but only signed-in accounts appear on the boards.'],
   ['How is it kept fair?',
@@ -45,6 +47,7 @@ const BOARDS = [
   ['Best Win Rate', 'The highest win rate, Wilson-ranked so a short streak cannot top it.', '$30', 'Paper'],
   ['Season XP', 'The most XP earned this season across trading, lessons and missions.', '$30', 'Paper'],
   ['The Gold Room', 'A points score across wins and losses - the all-round board.', '$30', 'Paper'],
+  ['Daily BTC Call', 'Points from one call a day on where BTC closes - closer scores more.', '$20', 'Call'],
   ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad.', '$200', 'Real money'],
   ['King of the Moon', 'Real amount wagered on a Moon account opened through MarginPad - one contest across two seasons.', '$300 / 2 seasons', 'Real money'],
 ];
@@ -242,7 +245,7 @@ const html = `<!DOCTYPE html>
   <article>
     <div class="eyebrow"><i></i>Running now</div>
     <h1>Crypto trading competition, free to enter</h1>
-    <p class="lead">A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Seven leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on five of them.</p>
+    <p class="lead">A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Eight leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on six of them.</p>
 
     <div id="compdata">
       <div class="cp-desk">
@@ -252,15 +255,15 @@ const html = `<!DOCTYPE html>
           <p class="cp-when">Seasons are <b>fourteen days</b> and the next one starts the day this one ends - you can join on any day and still place.</p>
         </div>
         <div class="cp-dr">
-          <div class="cp-pot"><span class="amt">$350</span></div>
+          <div class="cp-pot"><span class="amt">$370</span></div>
           <div class="cp-potk">on the line this season, free to enter</div>
-          <div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>7</b> boards</span></div>
+          <div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>8</b> boards</span></div>
         </div>
       </div>
       <p class="cp-src">Live standings, the exact pot and the day of the season load with the page.</p>
 
-      <h2>The seven boards</h2>
-      <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>
+      <h2>The eight boards</h2>
+      <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>
       <div class="cp-brds">
 ${BOARDS.map(([n, w, p, e]) => {
   const amt = +String(p).replace(/[^0-9]/g, '');
@@ -268,13 +271,13 @@ ${BOARDS.map(([n, w, p, e]) => {
   return `        <div class="cp-brd">
           <div><p class="cp-bn">${n}</p><p class="cp-bw">${w}</p></div>
           <div class="cp-bl open"><div class="cp-blk">Leading</div><div class="cp-bln">standings load with the page</div></div>
-          <div class="cp-bp${real ? ' real' : ''}"><span class="amt">$${amt}</span><div class="cp-bbar"><i style="width:${Math.round(amt / 300 * 100)}%"></i></div><span class="cp-bpe">${real ? 'Real money' : 'Free - paper'}</span></div>
+          <div class="cp-bp${real ? ' real' : ''}"><span class="amt">$${amt}</span><div class="cp-bbar"><i style="width:${Math.round(amt / 300 * 100)}%"></i></div><span class="cp-bpe">${real ? 'Real money' : e === 'Call' ? 'Free - daily call' : 'Free - paper'}</span></div>
         </div>`;
 }).join('')}
       </div>
     </div>
 
-    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
+    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $10 / $6 / $4 to the top three. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <div class="cp-cta">
       <a class="go" href="/season/">Enter the season - free →</a>
@@ -286,7 +289,7 @@ ${BOARDS.map(([n, w, p, e]) => {
     <ol class="cp-steps">
       <li><b>Open the terminal.</b> <a href="/paper-trade">Paper Trade</a> works with no account at all - try it first if you want.</li>
       <li><b>Create a free account.</b> Email and a sign-in code. No card, no deposit, no KYC.</li>
-      <li><b>Trade.</b> Every trade you close counts toward the boards from that moment. There is no separate entry step and nothing to pay.</li>
+      <li><b>Trade, or call.</b> Every trade you close counts toward the boards from that moment. One call a day on where BTC closes - ten seconds on the <a href="/season/#boards">season page</a> - enters the Daily BTC Call board. There is no separate entry step and nothing to pay.</li>
       <li><b>Watch the boards.</b> <a href="/season/#boards">Live standings</a> update as trades close. A season is fourteen days and you can join on any day of it.</li>
       <li><b>Get paid.</b> Prizes are credited automatically when the season ends, to the top five of every board.</li>
     </ol>
