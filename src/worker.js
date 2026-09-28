@@ -7241,7 +7241,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=6e472b48" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=68e7bfc2" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12112,6 +12112,7 @@ const VAULT_ITEMS = [
   { id: 'tkt_obsidian', name: 'Obsidian Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 299, desc: 'Volcanic glass, fracture facets catching a violet edge' },
   { id: 'tkt_kraft', name: 'Kraft Stub', kind: 't', tier: 'common', ticks: 300, desc: 'Brown kraft card with a punched perforation strip down the left edge' },
   { id: 'tkt_blueprint', name: 'Blueprint Stub', kind: 't', tier: 'rare', ticks: 1200, desc: 'Draft-paper navy under a fine cyan measuring grid' },
+  { id: 'tkt_season', name: 'Season Ticket', kind: 't', tier: 'rare', earn: 'Season pass, free track, tier 40', desc: 'Navy card stock with a gold foil band and a guilloche the way a real ticket is printed' },
   { id: 'tkt_terminal', name: 'Terminal', kind: 't', tier: 'rare', ticks: 1200, desc: 'Green phosphor on black with the cursor still blinking on line one' },
   { id: 'tkt_boarding', name: 'Boarding Pass', kind: 't', tier: 'rare', ticks: 1200, desc: 'Airline stub with a dashed tear line and a printed barcode' },
   { id: 'tkt_frost', name: 'Frostbite', kind: 't', tier: 'epic', ticks: 3000, cents: 99, desc: 'Frosted glass fractured by three ice cracks' },
@@ -12132,6 +12133,7 @@ const VAULT_ITEMS = [
   { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Northern lights and a field of stars, calm above the chaos' },
   { id: 'bg_deepfield', name: 'Deep Field', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 299, desc: 'A dust lane cutting across distant nebulae and pinprick stars' },
   { id: 'bg_dunes', name: 'Dunes', kind: 'bg', tier: 'common', ticks: 300, desc: 'Sand ridges stacked in low evening light' },
+  { id: 'bg_bluehour', name: 'Blue Hour', kind: 'bg', tier: 'common', earn: 'Season pass, free track, tier 20', desc: 'Twenty minutes after sunset: indigo overhead, one warm band still burning on the horizon' },
   { id: 'bg_static', name: 'Static', kind: 'bg', tier: 'common', ticks: 300, desc: 'Dead-channel noise, the screen nobody is watching' },
   { id: 'bg_circuit', name: 'Mainboard', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Copper traces routing between three lit vias' },
   { id: 'bg_waves', name: 'Swell', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Three long ocean swells rolling in from open water' },
@@ -12153,6 +12155,10 @@ const VAULT_ITEMS = [
   // ---- APEX: one frame, one window. A tier of its own above legendary, and the first cosmetic whose motion is driven by
   // the Web Animations API instead of @keyframes, so it is visible even with system animation effects switched off.
   // On sale for twenty days from the drop; after `until` both buy routes refuse it and it never comes back at this price.
+  // ---- THE SEASON PASS DROP (2026-09-28) - earn-only, no price: the pass is the only way to wear these ----
+  { id: 'kintsugi', name: 'Kintsugi', tier: 'rare', earn: 'Season pass, pro track, tier 12', desc: 'Black lacquer broken and put back together with gold in every seam - the repair is the ornament' },
+  { id: 'damascus', name: 'Damascus', tier: 'epic', earn: 'Season pass, pro track, tier 24', desc: 'Folded watered steel: a hundred layers showing as banding along the edge, cold and matte' },
+  { id: 'corona', name: 'Corona', tier: 'legendary', earn: 'Season pass, pro track, tier 40', desc: 'The surface of a star at the rim of your card, turning slowly and breathing - the only moving frame you cannot buy' },
   { id: 'supernova', name: 'Supernova', tier: 'apex', ticks: 9000, cents: 699, until: '2026-10-03', desc: 'A star in the act of going off: a plasma ring turning around your card, a core that flares, and light thrown out past the edge. Twenty days only' },
 ];
 const ACH_DEFS = [ // id, name, how - all server-verified from real tables; earned once, kept forever
@@ -12211,14 +12217,16 @@ const PASS_STEP = 100, PASS_TIERS_N = 40, PASS_PRICE_TICKS = 2500, PASS_PRICE_CE
 //           free (never a cash-only item; the tier caps it at common 300 / rare 1,200). Two social moments per season.
 const PASS_CENTS_CAP = 100;
 const PASS_TICKS_FREE = 24, PASS_TICKS_PRO = 48; // per tier: 960 T free / 1,920 T pro over 40 tiers (owner 2026-09-06: "double it, frames cost thousands"; was 300 / 600 over 20)
-const PASS_FREE = { 20: { item: 'arctic' }, 40: { item: 'jade' } };
-// Pro extras over 40 tiers. Money: 5/10/15/20/25/30/35/40 = 5+10+10+10+15+15+15+20 = exactly $1.00. Nine catalogue skins (Ticks-priced,
-// no new CSS) rising in rarity; three Shields, three Surges; two 3-day Premium tastes; the two skin-gift vouchers.
+const PASS_FREE = { 20: { item: 'bg_bluehour' }, 40: { item: 'tkt_season' } }; // pass-exclusive since 2026-09-28 (was arctic / jade, two 300-Tick commons anyone could buy)
+// Pro extras over 40 tiers. Money: 5/10/15/20/25/30/35/40 = 5+10+10+10+15+15+15+20 = exactly $1.00. Nine skins rising in rarity -
+// SIX from the catalogue and THREE that exist only here (kintsugi 12, damascus 24, corona 40; the free track gets bg_bluehour 20 and
+// tkt_season 40). An earn-only item has no price, so it can never be bought or sent with a gift voucher: wearing it says you played
+// the season. Three Shields, three Surges; two 3-day Premium tastes; the two skin-gift vouchers.
 const PASS_PRO = {
   4: { sup: 'shield' }, 5: { cents: 5 }, 6: { item: 'bg_static' }, 8: { gift: 300 }, 9: { item: 'sandstone' }, 10: { cents: 10 },
-  12: { item: 'tkt_kraft' }, 14: { sup: 'shield' }, 15: { cents: 10 }, 16: { prem: 3 }, 18: { item: 'copper' }, 19: { sup: 'surge' }, 20: { cents: 10 },
-  22: { gift: 1200 }, 24: { item: 'bg_trench' }, 25: { cents: 15 }, 26: { sup: 'shield' }, 28: { item: 'tkt_terminal' }, 29: { sup: 'surge' }, 30: { cents: 15 },
-  32: { item: 'neonoir' }, 34: { sup: 'surge' }, 35: { cents: 15 }, 36: { item: 'storm' }, 38: { prem: 3 }, 40: { cents: 20, item: 'leviathan' },
+  12: { item: 'kintsugi' }, 14: { sup: 'shield' }, 15: { cents: 10 }, 16: { prem: 3 }, 18: { item: 'copper' }, 19: { sup: 'surge' }, 20: { cents: 10 },
+  22: { gift: 1200 }, 24: { item: 'damascus' }, 25: { cents: 15 }, 26: { sup: 'shield' }, 28: { item: 'tkt_terminal' }, 29: { sup: 'surge' }, 30: { cents: 15 },
+  32: { item: 'neonoir' }, 34: { sup: 'surge' }, 35: { cents: 15 }, 36: { item: 'storm' }, 38: { prem: 3 }, 40: { cents: 20, item: 'corona' },
 };
 function passTiers() { // the cap is enforced HERE, mechanically: a cents entry that would push the season total past PASS_CENTS_CAP is dropped, whatever the table says
   const out = []; let cents = 0;
@@ -16350,7 +16358,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'f1023ed2';
+const ASSET_V = '90ecbae5';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

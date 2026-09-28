@@ -8,7 +8,7 @@
 // the one that makes the card unreadable.
 const fs = require('fs');
 const { withBrowser, newPage } = require('./e2e-browser.js');
-const FRAMES = ['default','supernova','regalia','owner','midas','inferno','dragonfire','cathedral','prism','quicksilver','singularity','sovereign','emperor','ice','sakura','arctic','tungsten','phosphor','koi','circuitry','void','obsidian','ink','leviathan','magnetar','realtrader','glacier','petrol','storm'];
+const FRAMES = ['default','corona','kintsugi','damascus','supernova','regalia','owner','midas','inferno','dragonfire','cathedral','prism','quicksilver','singularity','sovereign','emperor','ice','sakura','arctic','tungsten','phosphor','koi','circuitry','void','obsidian','ink','leviathan','magnetar','realtrader','glacier','petrol','storm'];
 withBrowser(async b => {
   const p = await newPage(b); await p.setCacheEnabled(false);
   await p.setViewport({ width: 900, height: 800 });
