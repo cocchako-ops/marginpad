@@ -71,6 +71,12 @@ function calcTakeProfit(p) {
 // Anchor = Monday 2026-07-20 00:00 UTC: the running week became the first 14-day season; existing lb rows
 // are keyed by that same Monday timestamp so nothing orphaned. Boundaries stay Monday-aligned.
 const LB_PERIOD = 14 * 86400000, LB_ANCHOR = Date.UTC(2026, 6, 20);
+// ONE CANDIDATE SET FOR THE BOARDS THAT PAY AND THE BOARDS THAT SHOW (2026-09-28). The DO's /leaderboard `top` list is
+// ranked by best-trade ROE and cut at `limit`; the win-rate board is computed FROM those rows. The payer asked for 40 and
+// the public page for 500, so a scalper with a 92% win rate and no big single trade led the page and was never paid
+// (season 2026-09-14: igbekwu, Elli, Light - credited by hand). Both callers use this, and the payer refuses to pay any
+// board when the list came back full, because a full list means somebody may be missing.
+const LB_CANDIDATES = 1000;
 // Green Days board thresholds: a day counts as green only with GD_DAY closes finishing net-positive,
 // and a trader needs GD_SEASON closes in the season to appear at all - so the board measures showing
 // up and staying green, not a single lucky trade repeated once a day.
@@ -14056,7 +14062,11 @@ async function payWeeklyPrizes(env) {
     if (done) continue;
     const we = ws + LB_PERIOD;
     let ud = {};
-    try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=40')); ud = await ur.json(); } catch (e) {}
+    try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=' + LB_CANDIDATES)); ud = await ur.json(); } catch (e) {}
+    if (ud && Array.isArray(ud.top) && ud.top.length >= LB_CANDIDATES) { // a full list means the candidate set may be cut - never pay from a cut list
+      try { await tgAdmin(env, '<b>Season payout HELD</b> - the candidate list came back full (' + ud.top.length + ' rows). Raise LB_CANDIDATES and re-run; nothing was paid for the season starting ' + new Date(ws).toISOString().slice(0, 10) + '.', { kind: 'season payout', sev: 'red' }); } catch (e) {}
+      return;
+    }
     const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [], greenBoard = (ud && ud.green) || [], goldBoard = (ud && ud.gold) || [];
     const banned = {};
     try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
@@ -18268,7 +18278,7 @@ async function handleReward(url, request, env) {
       try {
         let board = [], xpBoard = [], greenBoard = [], goldBoard = [];
         if (env.USERS) {
-          const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=500'));
+          const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=' + LB_CANDIDATES)); // the same set the payer reads (LB_CANDIDATES)
           const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || [];
         }
         const banned = {};
@@ -19573,7 +19583,7 @@ export default {
     }
     if (url.pathname === '/api/admin/lbpaid' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // WHY WAS X (NOT) PAID (2026-09-28): the win-rate list exactly as payWeeklyPrizes computes it
       const ws = +url.searchParams.get('ws') || (lbPeriodStart(Date.now()) - LB_PERIOD), we = ws + LB_PERIOD;
-      const lim = Math.min(2000, Math.max(1, +url.searchParams.get('limit') || 40)); // the payer asks for 40 - a bigger limit shows who sits OUTSIDE the paid candidate set
+      const lim = Math.min(2000, Math.max(1, +url.searchParams.get('limit') || LB_CANDIDATES)); // default = exactly the set the payer reads; ?limit=40 reproduces the 2026-09-14 bug
       let ud = null; try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=' + lim)); ud = await ur.json(); } catch (e) {}
       const banned = {}; try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
       const doKeys = ud ? Object.keys(ud) : [];
