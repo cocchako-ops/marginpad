@@ -1683,6 +1683,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       try{drawLines();}catch(e){} // async server path finishes after add() returns - draw lines here too
     };
     var _me=null;try{_me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(_){ }
+    if(!_me&&window.mpSignedInCookie&&window.mpSignedInCookie())_me=1; // signed in, mp-auth just has not parsed yet (2026-09-29)
     if(_me&&window.mpSrvOpen){
       /* 2026-09-08 (Papis + igbekwu: "open one trade, it duplicates"): the server open is PATIENT and IDEMPOTENT now. mpSrvOpen sends the
          local id as cid, waits up to 5 s, retries once with the same cid, and only then opens locally (carrying the cid, so the sync drops
@@ -1691,7 +1692,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;} _finishOpen(_tLocal);});
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;} _finishOpen(_tLocal);try{if((window.mpSignedInCookie&&window.mpSignedInCookie())&&window.mpLimitToast)window.mpLimitToast(__esT_home("openedOnThisDevice",'Opened on this device only - our server did not take it, so this one cannot count on the leaderboards. Check your connection and open it again if you want it ranked.'));}catch(_e){}});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
@@ -3528,9 +3529,13 @@ if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
    (1.4s abort) -> ok(serverPosition) ; anon/timeout/error -> fail() = the caller's classic local open. */
+window.mpSignedInCookie=function(){try{return /(?:^|; )mp_li=1/.test(document.cookie);}catch(e){return false;}};
 window.mpSrvOpen=function(payload,ok,fail){
+  /* THE SERVER AUTHENTICATES FROM THE COOKIE, NOT FROM mpAuth (2026-09-29). This used to bail when mpAuth.me() was
+     empty, which is every click made before the deferred mp-auth.js has parsed - and a bail here is a position the
+     boards can never see. Ask the cookie the worker sets beside the session instead, and let the server decide. */
   var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}
-  if(!me||!window.fetch){fail();return;}
+  if((!me&&!window.mpSignedInCookie())||!window.fetch){fail();return;}
   /* 2026-09-08: PATIENT + IDEMPOTENT. The 1.4 s abort was the duplicate-position bug (Papis, igbekwu): the server needs 0.7-1.0 s at p95 plus
      the trader's own mobile round trip, so the abort fired while the server open was still completing, and the "fallback" local open landed
      next to it (measured 52 doubles in a day, ~9% of site opens). Now: cid = the caller's local id (the server files it on the position),
