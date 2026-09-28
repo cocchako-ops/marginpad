@@ -74,7 +74,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <meta property="og:image:height" content="630" />
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Comisiones Cripto - Costos Maker vs Taker","url":"https://marginpad.io/es/crypto-fee-calculator/","dateModified":"2026-09-26T18:48:03.822Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Calculadora de Comisiones Cripto - Costos Maker vs Taker","url":"https://marginpad.io/es/crypto-fee-calculator/","dateModified":"2026-09-28T13:00:50.704Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
 <h1>Calculadora de Comisiones Cripto</h1>
@@ -95,6 +95,6 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 </div>
 <script>function calc(){var p=+document.getElementById('pos').value,t=+document.getElementById('taker').value/100,m=+document.getElementById('maker').value/100,n=+document.getElementById('trades').value;var r=document.getElementById('res');if(!(p>0)){r.innerHTML='';return;}var rtT=2*p*t,rtM=2*p*m,moT=rtT*n,moM=rtM*n;r.innerHTML='<div class="rrow"><span class="k">Round trip as taker</span><span class="v dn">-'+rtT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Round trip as maker</span><span class="v">-'+rtM.toFixed(2)+' USD</span></div><div class="rrow big"><span class="k">Monthly cost ('+n+' trades, taker)</span><span class="v dn">-'+moT.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Limit orders save</span><span class="v up">+'+(moT-moM).toFixed(2)+' USD / month</span></div>';}
 document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
-<script defer src="/assets/mp-nav.js?v=92547b3a"></script>
+<script defer src="/assets/mp-nav.js?v=6e472b48"></script>
 </body>
 </html>

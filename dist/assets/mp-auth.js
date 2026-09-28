@@ -1647,7 +1647,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
             var own = !shared && !r.in;
             return '<div class="mpa-cpr' + (r.in ? ' in' : '') + (shared ? ' slim' : '') + '">'
               + '<span class="mpa-cpr-n">' + esc(r.name) + '</span>'
-              + '<span class="mpa-cpr-p">' + (r.id === 'bybit' ? '$' + (+r.pool || 0).toFixed(2) + ' so far' : money(r.pool)) + '</span>'
+              + '<span class="mpa-cpr-p">' + (r.id === 'bybit' ? '$' + (+r.pool || 0).toFixed(2) + ' and growing' : money(r.pool)) + '</span>'
               + '<span class="mpa-cpr-s">' + (r.in ? 'you are in' : 'not yet') + '</span>'
               + (own && r.why ? '<span class="mpa-cpr-w">' + esc(r.why) + '</span>' : '')
               + (own ? actHtml(r.act) : '')

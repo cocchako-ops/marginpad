@@ -1981,7 +1981,7 @@ async function handleSsrComp(request, url, env, ctx) {
        + '</div>'
        + '<div class="cp-bp' + (real ? ' real' : '') + '"><span class="amt">$' + (rebate ? pot.toFixed(2) : pot) + '</span>'
        + '<div class="cp-bbar"><i style="width:' + Math.max(4, Math.round(pot / maxPot * 100)) + '%"></i></div>'
-       + '<span class="cp-bpe">' + (rebate ? 'Real money - ' + Math.round(rebate.share_of_commission * 100) + '% of fees back, so far' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : 'Free - paper') + '</span></div>'
+       + '<span class="cp-bpe">' + (rebate ? 'Real money - $' + rebate.base_usd + ' start + ' + Math.round(rebate.share_of_commission * 100) + '% of fees' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : 'Free - paper') + '</span></div>'
        + '</div>';
   }
   H += '</div>';
@@ -3295,7 +3295,7 @@ async function handleCompetition(url, request, env, ctx) {
     return {
       id: b.id, name: b.name, scored_on: b.asks, unit: b.unit,
       prize_usd_top5: prizes.slice(0, 5).map(x => +x || 0), prize_pool_usd: pool,
-      ...(bp ? { prize_usd_ranks: prizes, pool: { rebate: true, share_of_commission: bp.share, commission_usd: bp.comUsd, cap_usd: bp.cap, tier: bp.tier, how: 'the pool is ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generated this season, read from the affiliate API; it grows with every sync and is paid at season end' } } : {}),
+      ...(bp ? { prize_usd_ranks: prizes, pool: { rebate: true, base_usd: bp.base, from_volume_usd: bp.fromVolume, share_of_commission: bp.share, commission_usd: bp.comUsd, volume_usd: bp.volUsd, per_100k_volume_usd: bp.perHundredK, cap_usd: bp.cap, tier: bp.tier, how: 'the pool starts at $' + bp.base + ' and adds ' + Math.round(bp.share * 100) + '% of the Bybit affiliate commission the traders on this board generate this season (about $' + bp.perHundredK + ' per $100k traded), read from the affiliate API; it grows with every sync and is paid at season end over ten ranks' } } : {}),
       entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
@@ -7241,7 +7241,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=92547b3a" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=6e472b48" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13001,9 +13001,9 @@ async function rewardCfg(env) {
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
   const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [12, 5, 3, 0, 0]);
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
-  const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 100));
+  const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, bybitShare, bybitCap, bybitSplit, raw: m };
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -13261,19 +13261,30 @@ const BYBIT_REF_URL = 'https://partner.bybit.com/b/162071';
 // THE POOL GROWS IN FRONT OF THEM, AND THE BOARD GETS STRONGER AS IT DOES (owner: "kad se leaderboard povecava da ima nekih
 // zanimljivih stvari"): four tiers by pool size; a tier says how many ranks are paid, and the page wears the tier. Every cent of
 // the pool is always paid - the shares of ranks a tier does not pay yet are spread over the ranks it does.
-const BYBIT_POOL_TIERS = [{ at: 0, name: 'Warming up', paid: 3 }, { at: 10, name: 'Heating up', paid: 5 }, { at: 25, name: 'Hot', paid: 10 }, { at: 50, name: 'On fire', paid: 10 }];
-function bybitPoolCalc(comUsd, cfg) { // pure: the season's commission on the board -> {usd, tier, prizes[10]} - the ONE place the money is decided
-  const share = +cfg.bybitShare || 0, cap = +cfg.bybitCap || 0, split = cfg.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1];
-  const raw = Math.max(0, +comUsd || 0) * share;
-  const usd = Math.round(Math.min(cap, raw) * 100) / 100;
-  let ti = 0; for (let i = 0; i < BYBIT_POOL_TIERS.length; i++) if (usd >= BYBIT_POOL_TIERS[i].at) ti = i;
+// $100 IS THE START, VOLUME ADDS TO IT (owner, same day: "fiksni pool $100, odatle se pocinje ... obrazlozi koliko koje mesto
+// dobija u startu i koliko potencijalno moze da dobije od volumena"). pool = bybitBase + bybitShare x commission, capped by the
+// safety valve bybitCap. The tiers are by the SEASON'S VOLUME on the board - the thing a trader can see themselves moving - and
+// every tier pays all ten ranks (the base guarantees rank 10 at least $1). Growth per $100k is a MEASURED figure: the board's own
+// commission / volume when it has both, else BYBIT_BPS_DEFAULT (1.68 bps measured at the 30% affiliate rate, scaled to the 40%
+// the owner holds since 2026-09-28) - it is printed as "about", and it is re-measured on every sync.
+const BYBIT_POOL_TIERS = [{ at: 0, name: 'Warming up', paid: 10 }, { at: 100000, name: 'Heating up', paid: 10 }, { at: 250000, name: 'Hot', paid: 10 }, { at: 500000, name: 'On fire', paid: 10 }, { at: 1000000, name: 'Inferno', paid: 10 }];
+const BYBIT_BPS_DEFAULT = 2.24;
+function bybitPoolCalc(comUsd, volUsd, cfg) { // pure: base + share x the season's commission on the board -> {usd, base, fromVolume, tier (by volume), prizes[10], perHundredK} - the ONE place the money is decided
+  const share = +cfg.bybitShare || 0, cap = +cfg.bybitCap || 0, base = +cfg.bybitBase || 0, split = cfg.bybitSplit || [50, 25, 10, 5, 5, 1, 1, 1, 1, 1];
+  const com = Math.max(0, +comUsd || 0), vol = Math.max(0, +volUsd || 0);
+  const raw = base + com * share;
+  const usd = Math.round((cap > 0 ? Math.min(cap, raw) : raw) * 100) / 100;
+  let ti = 0; for (let i = 0; i < BYBIT_POOL_TIERS.length; i++) if (vol >= BYBIT_POOL_TIERS[i].at) ti = i;
   const tier = BYBIT_POOL_TIERS[ti], next = BYBIT_POOL_TIERS[ti + 1] || null;
   const w = split.slice(0, tier.paid), sum = w.reduce((a, x) => a + (+x || 0), 0) || 1;
   const cents = w.map(x => Math.floor(usd * 100 * (+x || 0) / sum));
   let rem = Math.round(usd * 100) - cents.reduce((a, x) => a + x, 0); for (let i = 0; rem > 0 && i < cents.length; i++, rem--) cents[i]++; // the rounding cents go to the top, so the pool is paid to the cent
   const prizes = split.map((x, i) => i < tier.paid ? cents[i] / 100 : 0);
-  return { usd, comUsd: Math.round((+comUsd || 0) * 100) / 100, share, cap, maxed: raw >= cap && cap > 0,
-    tier: { n: ti + 1, name: tier.name, at: tier.at, paid: tier.paid, next: next ? { at: next.at, name: next.name, paid: next.paid, usdToGo: Math.round(Math.max(0, next.at - usd) * 100) / 100 } : null },
+  const bps = (com > 0 && vol > 0) ? com / vol * 10000 : BYBIT_BPS_DEFAULT; // measured on this board when it can be
+  const perHundredK = Math.round(share * bps / 10000 * 100000 * 100) / 100;
+  return { usd, base, fromVolume: Math.round(Math.max(0, usd - base) * 100) / 100, comUsd: Math.round(com * 100) / 100, volUsd: Math.round(vol * 100) / 100, share, cap, maxed: cap > 0 && raw >= cap,
+    bps: Math.round(bps * 100) / 100, bpsMeasured: com > 0 && vol > 0, perHundredK,
+    tier: { n: ti + 1, name: tier.name, at: tier.at, paid: tier.paid, next: next ? { at: next.at, name: next.name, paid: next.paid, volToGo: Math.round(Math.max(0, next.at - vol) * 100) / 100 } : null },
     prizes };
 }
 async function bybitLedger(env, p, body) { try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })); return await r.json(); } catch (e) { return null; } }
@@ -13973,7 +13984,7 @@ async function bybitSeasonSeal(env, ws, force) {
   up.final = true; up.sealedTs = now; up.by = 'bybit-api-auto'; up.sealWhy = why;
   try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv', ws }; }
   await bybitSnapshotRebuild(env, ws);
-  let poolLine = ''; try { const bb = await bybitVolBoard(env, ws); poolLine = ' Pool $' + bb.pool.usd.toFixed(2) + ' (' + Math.round(bb.pool.share * 100) + '% of $' + bb.pool.comUsd.toFixed(2) + ' commission, tier ' + bb.pool.tier.name + ', ' + bb.pool.tier.paid + ' paid).'; } catch (e) {}
+  let poolLine = ''; try { const bb = await bybitVolBoard(env, ws); poolLine = ' Pool $' + bb.pool.usd.toFixed(2) + ' ($' + bb.pool.base + ' base + ' + Math.round(bb.pool.share * 100) + '% of $' + bb.pool.comUsd.toFixed(2) + ' commission on $' + Math.round(bb.pool.volUsd).toLocaleString('en-US') + ' traded, ' + bb.pool.tier.name + ').'; } catch (e) {}
   try { await tgAdmin(env, '<b>Bybit board sealed</b> for the season that ended ' + day(we) + ' (' + why + '): ' + up.rows.length + ' UIDs in the report.' + poolLine + ' Prizes go out on the next payout pass.', { kind: 'bybit board', sev: 'info' }); } catch (e) {}
   return { sealed: true, ws, why };
 }
@@ -14034,8 +14045,8 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
   // THE POOL IS THE COMMISSION OF THE ROWS ON THE BOARD, and only those: what the competitors made this season (a banned or
   // unregistered UID's commission is not returned to anyone). The payer and every page read this same object.
   const cfg = await rewardCfg(env);
-  const pool = bybitPoolCalc(rows.reduce((s, r) => s + r.com, 0), cfg);
-  const poolAll = bybitPoolCalc(matched.reduce((s, r) => s + r.com, 0), cfg); // e2e/unlisted included - for the E2E, never public
+  const pool = bybitPoolCalc(rows.reduce((s, r) => s + r.com, 0), rows.reduce((s, r) => s + r.vol, 0), cfg);
+  const poolAll = bybitPoolCalc(matched.reduce((s, r) => s + r.com, 0), matched.reduce((s, r) => s + r.vol, 0), cfg); // e2e/unlisted included - for the E2E, never public
   // regs = every UID a member holds, whether or not it is in this report. The desk needs it to NAME a UID the owner
   // has only just typed (2026-09-19): a pending row that cannot say who it belongs to is the same blank he complained
   // about. Small by construction - one entry per registration, 22 of them the day this was added.
@@ -14077,7 +14088,7 @@ async function payBybitPrizes(env) { // */10 cron: every ENDED season from BYBIT
         try { await evPush(env, null, 'lbpaid', (u.username || x.name || '') + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' bybit)', ''); } catch (e) {}
         if (u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, username: u.username || x.name || '', board: 'bybit', vol: x.vol || 0, n: 0 }); } catch (e) {} } }
     }
-    try { await tgAdmin(env, '<b>Bybit board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' = ' + Math.round(board.pool.share * 100) + '% of $' + board.pool.comUsd.toFixed(2) + ' commission (' + board.pool.tier.name + '): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(' · ') : 'nobody eligible'), { kind: 'lbbybit', sev: 'green' }); } catch (e) {}
+    try { await tgAdmin(env, '<b>Bybit board paid</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' - pool $' + board.pool.usd.toFixed(2) + ' = $' + board.pool.base + ' base + ' + Math.round(board.pool.share * 100) + '% of $' + board.pool.comUsd.toFixed(2) + ' commission on $' + Math.round(board.pool.volUsd).toLocaleString('en-US') + ' traded (' + board.pool.tier.name + '): ' + (paid.length ? paid.map(p => '#' + p.rank + ' $' + ((p.amount || 0) / 100).toFixed(2)).join(' · ') : 'nobody eligible'), { kind: 'lbbybit', sev: 'green' }); } catch (e) {}
   }
 }
 // Promote board prizes that were scheduled for the next season (ops Settings, "apply from the next season"). Runs at the
@@ -16339,7 +16350,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '2998d9a8';
+const ASSET_V = 'f1023ed2';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18160,6 +18171,7 @@ async function handleReward(url, request, env) {
       // the Bybit rebate knobs apply at once (they price a pool that is recomputed on every sync, never parked)
       if ('bybitShare' in b) next.bybitShare = Math.max(0, Math.min(1, +b.bybitShare || 0));
       if ('bybitCap' in b) next.bybitCap = Math.max(0, Math.round((+b.bybitCap || 0) * 100) / 100);
+      if ('bybitBase' in b) next.bybitBase = Math.max(0, Math.round((+b.bybitBase || 0) * 100) / 100);
       if (Array.isArray(b.bybitSplit) && b.bybitSplit.length === 10) next.bybitSplit = b.bybitSplit.map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       const boardsIn = BOARD_KEYS.filter(k => k in b && Array.isArray(b[k]));
       if (b.nextSeason && boardsIn.length) {
@@ -18188,7 +18200,7 @@ async function handleReward(url, request, env) {
       } catch (e) {}
       return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall) } });
     }
-    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
+    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitBase: full.bybitBase, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {

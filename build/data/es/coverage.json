@@ -272,7 +272,7 @@
  {
   "rel": "biggest-liquidation-today/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 55,
   "missing": 0
  },
  {
@@ -1574,7 +1574,7 @@
  {
   "rel": "how-many-traders-liquidated-today/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 55,
   "missing": 0
  },
  {
@@ -1670,7 +1670,7 @@
  {
   "rel": "is-funding-positive-or-negative/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 57,
   "missing": 0
  },
  {
@@ -1748,7 +1748,7 @@
  {
   "rel": "leverage-report/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
@@ -1796,7 +1796,7 @@
  {
   "rel": "longs-or-shorts-liquidated-more/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
@@ -1838,7 +1838,7 @@
  {
   "rel": "mcp-server-for-crypto-trading/index.html",
   "cover": 1,
-  "hit": 62,
+  "hit": 64,
   "missing": 0
  },
  {
@@ -1976,7 +1976,7 @@
  {
   "rel": "practice-for-a-funded-account/index.html",
   "cover": 1,
-  "hit": 68,
+  "hit": 70,
   "missing": 0
  },
  {
@@ -2035,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.9904761904761905,
-  "hit": 104,
-  "missing": 1
+  "cover": 1,
+  "hit": 105,
+  "missing": 0
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2228,7 +2228,7 @@
  {
   "rel": "where-can-i-test-a-trading-bot/index.html",
   "cover": 1,
-  "hit": 61,
+  "hit": 63,
   "missing": 0
  },
  {

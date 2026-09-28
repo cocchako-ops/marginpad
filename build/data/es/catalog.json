@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-28T12:59:37.350Z",
+  "generated": "2026-09-28T14:40:20.097Z",
   "pages": 384,
-  "occurrences": 26381,
+  "occurrences": 26397,
   "unique": 13943,
-  "words": 265323,
+  "words": 265487,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-28T13:00:49.770Z"
+  "merged": "2026-09-28T14:40:56.500Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1659,
+   "n": 1675,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -115250,9 +115250,9 @@
    "n": 1,
    "w": 5
   },
-  "UqESA0WI1J": {
-   "en": "<b id=\"cpPool\">$170+</b><span id=\"cpPoolS\">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, one with your first daily BTC call, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span>",
-   "es": "<b id=\"cpPool\">$170+</b><span id=\"cpPoolS\">por temporada, pagados en USD a tu saldo de recompensas. Cuatro tablas de paper abren con tu primera operación cerrada, una con tu primera predicción diaria de BTC, la Gold Room en Gold, y dos se puntúan con cuentas reales - volumen en Bybit y King of the Moon.</span>",
+  "EPv7HzRYap": {
+   "en": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, one with your first daily BTC call, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span>",
+   "es": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">por temporada, pagados en USD a tu saldo de recompensas. Cuatro tablas de paper abren con tu primera operación cerrada, una con tu primera predicción diaria de BTC, la Gold Room en Gold, y dos se puntúan con cuentas reales - volumen en Bybit y King of the Moon.</span>",
    "kind": [
     "html"
    ],
@@ -115395,9 +115395,9 @@
    "n": 1,
    "w": 13
   },
-  "6xKydjQoTY": {
-   "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"cp-bp\">52%<small>of fees back</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Volumen en Bybit</span><span class=\"cp-bp\">52%<small>de los fees de vuelta</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "gVrWiOkh89": {
+   "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"cp-bp\">$100<small>start · grows with volume</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Volumen en Bybit</span><span class=\"cp-bp\">$100<small>de inicio · crece con el volumen</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "kind": [
     "html"
    ],
@@ -115405,7 +115405,7 @@
     "/"
    ],
    "n": 1,
-   "w": 6
+   "w": 7
   },
   "AlNPHK6xnk": {
    "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -121021,9 +121021,9 @@
    "n": 1,
    "w": 2
   },
-  "4v0xjXxddr": {
-   "en": "<b id=\"sPool\">$170+</b> a season",
-   "es": "<b id=\"sPool\">$170+</b> por temporada",
+  "BRsNhHuwFy": {
+   "en": "<b id=\"sPool\">$270+</b> a season",
+   "es": "<b id=\"sPool\">$270+</b> por temporada",
    "kind": [
     "html"
    ],
@@ -121033,9 +121033,9 @@
    "n": 1,
    "w": 2
   },
-  "SF7AaaA0xH": {
-   "en": "plus a Bybit rebate pool that grows with volume and $300 King of the Moon every two seasons · paid in USD, withdrawable",
-   "es": "más una bolsa de rebate de Bybit que crece con el volumen y $300 de King of the Moon cada dos temporadas · pagado en USD, retirable",
+  "p9tMqJdAky": {
+   "en": "$100 of it is the Bybit pool's start, which grows with volume · plus $300 King of the Moon every two seasons · paid in USD, withdrawable",
+   "es": "$100 de ellos son el inicio de la bolsa de Bybit, que crece con el volumen · más $300 de King of the Moon cada dos temporadas · pagado en USD, retirable",
    "kind": [
     "html"
    ],
@@ -121043,7 +121043,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 21
+   "w": 25
   },
   "GRcunkf-5B": {
    "en": "Entry",
@@ -121165,9 +121165,9 @@
    "n": 1,
    "w": 8
   },
-  "tQKtzC6qH5": {
-   "en": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"p\">52%<small>OF FEES BACK · GROWS</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
-   "es": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Volumen en Bybit</span><span class=\"p\">52%<small>DE FEES DE VUELTA · CRECE</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
+  "1zZI5zwneR": {
+   "en": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"p\">$100<small>START · GROWS WITH VOLUME</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
+   "es": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Volumen en Bybit</span><span class=\"p\">$100<small>DE INICIO · CRECE CON EL VOLUMEN</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
    "kind": [
     "html"
    ],
@@ -121681,9 +121681,9 @@
    "n": 1,
    "w": 5
   },
-  "R_-XTTgDaf": {
-   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Daily BTC Call board pays $12, $5 and $3 to the top three; the Bybit volume board pays a rebate pool - 52% of the affiliate commission Bybit pays MarginPad for the traders on that board during the season, capped at $100, split over up to ten ranks (50 / 25 / 10 / 5 / 5 shares, then 1 each), so it grows with the volume traded; King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The fixed season pool is $170, plus the Bybit rebate pool and $300 for King of the Moon every two seasons.",
-   "es": "Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla Predicción diaria de BTC paga $12, $5 y $3 a los tres primeros; la tabla de volumen en Bybit paga una bolsa de rebate - el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla durante la temporada, con tope de $100, repartida en hasta diez puestos (partes 50 / 25 / 10 / 5 / 5, luego 1 cada uno), así que crece con el volumen operado; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Los premios se abonan en USD al saldo de recompensas de MarginPad y se pueden retirar. La bolsa fija de la temporada es de $170, más la bolsa de rebate de Bybit y $300 para King of the Moon cada dos temporadas.",
+  "hZRQtB9Zdx": {
+   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Daily BTC Call board pays $12, $5 and $3 to the top three; the Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board (about $11.65 per $100,000 traded), split over ten ranks - 50% / 25% / 10% / 5% / 5%, then 1% each, so $50 / $25 / $10 / $5 / $5 / $1 at the start and more as the volume grows; King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The fixed season pool is $270 ($170 on the paper and call boards, $100 as the Bybit start), plus whatever the Bybit pool grows to and $300 for King of the Moon every two seasons.",
+   "es": "Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla Predicción diaria de BTC paga $12, $5 y $3 a los tres primeros; la tabla de volumen en Bybit paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla (unos $11.65 por cada $100,000 operados), repartida en diez puestos - 50% / 25% / 10% / 5% / 5%, luego 1% cada uno, es decir $50 / $25 / $10 / $5 / $5 / $1 al inicio y más a medida que crece el volumen; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Los premios se abonan en USD al saldo de recompensas de MarginPad y se pueden retirar. La bolsa fija de la temporada es de $270 ($170 en las tablas de paper y predicción, $100 como inicio de Bybit), más lo que crezca la bolsa de Bybit y $300 para King of the Moon cada dos temporadas.",
    "kind": [
     "ld"
    ],
@@ -121691,7 +121691,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 123
+   "w": 152
   },
   "aYKxwKNINC": {
    "en": "How is a win counted on the boards?",
@@ -146322,9 +146322,9 @@
    "n": 1,
    "w": 25
   },
-  "Kwkah_IyO_": {
-   "en": "<b>Bybit volume - powered by Bybit.</b> Ranked by the real trading volume you make on Bybit, taken from our affiliate report and loaded a few times a day - nothing you do on MarginPad counts here. Anyone can compete, with one condition: the Bybit account must be opened through MarginPad. Register that account's UID under the board; it is checked against our affiliate list, and one Bybit UID belongs to one MarginPad account. The prize pool is a rebate: 52% of the affiliate commission Bybit pays MarginPad for the traders on this board, this season, capped at $100 - it grows with every trade and is read straight from Bybit. How many ranks it pays depends on its size: under $10 the top 3 (50 / 25 / 10 shares), from $10 the top 5, from $25 all ten (50 / 25 / 10 / 5 / 5 and 1 each for sixth to tenth); every cent is paid.",
-   "es": "<b>Volumen en Bybit - con tecnología de Bybit.</b> Se clasifica por el volumen real de trading que haces en Bybit, tomado de nuestro informe de afiliado y cargado varias veces al día - nada de lo que hagas en MarginPad cuenta aquí. Cualquiera puede competir, con una condición: la cuenta de Bybit debe abrirse a través de MarginPad. Registra el UID de esa cuenta debajo de la tabla; se comprueba contra nuestra lista de afiliados, y un UID de Bybit pertenece a una sola cuenta de MarginPad. La bolsa de premios es un rebate: el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esta tabla, esta temporada, con tope de $100 - crece con cada operación y se lee directamente de Bybit. Cuántos puestos paga depende de su tamaño: por debajo de $10 los 3 primeros (partes 50 / 25 / 10), desde $10 los 5 primeros, desde $25 los diez (50 / 25 / 10 / 5 / 5 y 1 cada uno del sexto al décimo); se paga cada centavo.",
+  "TWX4K7WYrs": {
+   "en": "<b>Bybit volume - powered by Bybit.</b> Ranked by the real trading volume you make on Bybit, taken from our affiliate report and loaded a few times a day - nothing you do on MarginPad counts here. Anyone can compete, with one condition: the Bybit account must be opened through MarginPad. Register that account's UID under the board; it is checked against our affiliate list, and one Bybit UID belongs to one MarginPad account. The pool starts at $100 every season and grows with the volume: on top of the $100, 52% of the affiliate commission Bybit pays MarginPad for the traders on this board is added, read straight from Bybit (commission settles a day behind the volume). Ten places are paid: 50% to first, 25% to second, 10% to third, 5% each to fourth and fifth, 1% each to sixth through tenth - at the start that is $50, $25, $10, $5, $5 and $1 each, and every dollar the pool grows lifts every place by the same shares. At today's commission rate every $100,000 traded on the board adds about $11.65 to the pool, so $500,000 of season volume makes it about $158 (first place about $79) and $1,000,000 about $216 (first place about $108).",
+   "es": "<b>Volumen en Bybit - con tecnología de Bybit.</b> Se clasifica por el volumen real de trading que haces en Bybit, tomado de nuestro informe de afiliado y cargado varias veces al día - nada de lo que hagas en MarginPad cuenta aquí. Cualquiera puede competir, con una condición: la cuenta de Bybit debe abrirse a través de MarginPad. Registra el UID de esa cuenta debajo de la tabla; se comprueba contra nuestra lista de afiliados, y un UID de Bybit pertenece a una sola cuenta de MarginPad. La bolsa empieza en $100 cada temporada y crece con el volumen: encima de los $100 se suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esta tabla, leída directamente de Bybit (la comisión se liquida un día después del volumen). Se pagan diez puestos: 50% al primero, 25% al segundo, 10% al tercero, 5% a cada uno del cuarto y el quinto, 1% a cada uno del sexto al décimo - al inicio son $50, $25, $10, $5, $5 y $1 cada uno, y cada dólar que crece la bolsa sube todos los puestos en las mismas partes. Al ritmo de comisión de hoy, cada $100,000 operados en la tabla suman unos $11.65 a la bolsa, así que $500,000 de volumen en la temporada la dejan en unos $158 (el primer puesto en unos $79) y $1,000,000 en unos $216 (el primer puesto en unos $108).",
    "kind": [
     "html"
    ],
@@ -146332,7 +146332,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 143
+   "w": 200
   },
   "X680KTcMrM": {
    "en": "<b>King of the Moon - powered by Moon.</b> Ranked by the real wagering on the Moon account you opened through MarginPad, counted from the contest's opening figures to its closing ones - one contest over two seasons, not per season. Entry is an approved Moon sign-up bonus claim; that is how we know the account behind the mask. Top 5 share $300: $150, $70, $40, $25, $15.",
@@ -160369,9 +160369,9 @@
    "n": 1,
    "w": 2
   },
-  "TZlYwy1h0o": {
-   "en": "Real futures volume on a Bybit account opened through MarginPad; the pool is 52% of the fees those traders generate, so it grows with volume.",
-   "es": "Volumen real de futuros en una cuenta de Bybit abierta a través de MarginPad; la bolsa es el 52% de los fees que generan esos traders, así que crece con el volumen.",
+  "7kEzYsHKlw": {
+   "en": "Real futures volume on a Bybit account opened through MarginPad; the pool starts at $100 and adds 52% of the fees those traders generate, so it grows with volume.",
+   "es": "Volumen real de futuros en una cuenta de Bybit abierta a través de MarginPad; la bolsa empieza en $100 y suma el 52% de los fees que generan esos traders, así que crece con el volumen.",
    "kind": [
     "html"
    ],
@@ -160379,11 +160379,11 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 24
+   "w": 28
   },
-  "jKzL1hKuRQ": {
-   "en": "<span class=\"cp-bpe\">Real money - 52% of fees back</span>",
-   "es": "<span class=\"cp-bpe\">Dinero real - 52% de los fees de vuelta</span>",
+  "jnxqkr3nR3": {
+   "en": "<span class=\"cp-bpe\">Real money - $100 start + 52% of fees</span>",
+   "es": "<span class=\"cp-bpe\">Dinero real - $100 de inicio + 52% de los fees</span>",
    "kind": [
     "html"
    ],
@@ -160391,7 +160391,7 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 6
+   "w": 7
   },
   "atqa9pmG1v": {
    "en": "King of the Moon",
@@ -160429,9 +160429,9 @@
    "n": 1,
    "w": 2
   },
-  "l8WtuMGedW": {
-   "en": "Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $12 / $5 / $3 to the top three. The Bybit volume board pays a rebate pool - 52% of the fees its traders generate, capped at $100 - over up to ten ranks. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
-   "es": "Las tablas de paper pagan $10 / $8 / $6 / $4 / $2 a los cinco primeros. La tabla Predicción diaria de BTC paga $12 / $5 / $3 a los tres primeros. La tabla de volumen en Bybit paga una bolsa de rebate - el 52% de los fees que generan sus traders, con tope de $100 - en hasta diez puestos. King of the Moon paga $150 / $70 / $40 / $25 / $15 por concurso de dos temporadas. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
+  "pKpPDsMVv8": {
+   "en": "Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $12 / $5 / $3 to the top three. The Bybit volume board pays $100 plus 52% of the fees its traders generate, over ten ranks - $50 / $25 / $10 / $5 / $5 / $1 x 5 at the start, more as the volume grows. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
+   "es": "Las tablas de paper pagan $10 / $8 / $6 / $4 / $2 a los cinco primeros. La tabla Predicción diaria de BTC paga $12 / $5 / $3 a los tres primeros. La tabla de volumen en Bybit paga $100 más el 52% de los fees que generan sus traders, en diez puestos - $50 / $25 / $10 / $5 / $5 / $1 x 5 al inicio, más a medida que crece el volumen. King of the Moon paga $150 / $70 / $40 / $25 / $15 por concurso de dos temporadas. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
    "kind": [
     "html"
    ],
@@ -160439,7 +160439,7 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 72
+   "w": 81
   },
   "EtL0C0tvoK": {
    "en": "<a class=\"go\" href=\"/season/\">Enter the season - free →</a> <a href=\"/paper-trade\">Try the terminal, no account</a>",
@@ -160537,9 +160537,9 @@
    "n": 1,
    "w": 4
   },
-  "9g6Z19GJX3": {
-   "en": "Two boards are different. <b>Bybit volume</b> ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays a rebate pool: 52% of the affiliate commission Bybit pays MarginPad for those traders that season, capped at $100, over up to ten ranks - the pool is read from Bybit and grows with every trade, on top of whatever fee discount the exchange itself gives you. Register that account's UID on the <a href=\"/season/#boards\">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.",
-   "es": "Dos tablas son distintas. <b>Volumen en Bybit</b> clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad, y paga una bolsa de rebate: el 52% de la comisión de afiliado que Bybit paga a MarginPad por esos traders esa temporada, con tope de $100, en hasta diez puestos - la bolsa se lee de Bybit y crece con cada operación, además del descuento en fees que el propio exchange te dé. Registra el UID de esa cuenta en la <a href=\"/season/#boards\">página de temporada</a> para aparecer. Bybit no puede abrir cuentas en todas partes, incluidos los Estados Unidos.",
+  "7_K9vtGPHg": {
+   "en": "Two boards are different. <b>Bybit volume</b> ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for those traders - about $11.65 per $100,000 traded - over ten ranks (50% / 25% / 10% / 5% / 5%, then 1% each): $50 / $25 / $10 / $5 / $5 / $1 at the start, about $79 for first place at $500,000 of season volume. The pool is read from Bybit and grows with every trade, on top of whatever fee discount the exchange itself gives you. Register that account's UID on the <a href=\"/season/#boards\">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.",
+   "es": "Dos tablas son distintas. <b>Volumen en Bybit</b> clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad, y paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por esos traders - unos $11.65 por cada $100,000 operados - en diez puestos (50% / 25% / 10% / 5% / 5%, luego 1% cada uno): $50 / $25 / $10 / $5 / $5 / $1 al inicio, unos $79 para el primer puesto con $500,000 de volumen en la temporada. La bolsa se lee de Bybit y crece con cada operación, además del descuento en fees que el propio exchange te dé. Registra el UID de esa cuenta en la <a href=\"/season/#boards\">página de temporada</a> para aparecer. Bybit no puede abrir cuentas en todas partes, incluidos los Estados Unidos.",
    "kind": [
     "html"
    ],
@@ -160547,7 +160547,7 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 85
+   "w": 117
   },
   "2hIfxJLEEc": {
    "en": "<b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one contest spanning two seasons (it ends when the season after the one it opened in ends), and pays the top five $300. Claiming the <a href=\"/rewards/\">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href=\"/leaderboards/#moon\">the leaderboards page</a>.",
@@ -160672,9 +160672,9 @@
    "n": 2,
    "w": 4
   },
-  "_tHhV6GVXy": {
-   "en": "Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a rebate pool: 52% of the affiliate commission Bybit pays MarginPad for the traders on that board during the season, capped at $100 and split over up to ten ranks, so it grows with every trade. King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $170 of fixed prizes a season across the six paper and call boards, plus the Bybit pool, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
-   "es": "Cada tabla de paper paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla Predicción diaria de BTC paga $12, $5 y $3 a sus tres primeros. La tabla de volumen en Bybit paga una bolsa de rebate: el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla durante la temporada, con tope de $100 y repartida en hasta diez puestos, así que crece con cada operación. King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Son $170 de premios fijos por temporada en las seis tablas de paper y predicción, más la bolsa de Bybit, más $300 cada dos temporadas en Moon. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
+  "zLSPZOlknR": {
+   "en": "Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board - about $11.65 per $100,000 traded - split over ten ranks: 50% / 25% / 10% / 5% / 5%, then 1% each, so $50, $25, $10, $5, $5 and $1 at the start and more as the volume grows ($500,000 of season volume makes the pool about $158). King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $270 a season across the seven season boards before the Bybit pool grows, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
+   "es": "Cada tabla de paper paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla Predicción diaria de BTC paga $12, $5 y $3 a sus tres primeros. La tabla de volumen en Bybit paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla - unos $11.65 por cada $100,000 operados - repartida en diez puestos: 50% / 25% / 10% / 5% / 5%, luego 1% cada uno, es decir $50, $25, $10, $5, $5 y $1 al inicio y más a medida que crece el volumen ($500,000 de volumen en la temporada dejan la bolsa en unos $158). King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Son $270 por temporada en las siete tablas de temporada antes de que crezca la bolsa de Bybit, más $300 cada dos temporadas en Moon. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
    "kind": [
     "html",
     "ld"
@@ -160683,7 +160683,7 @@
     "/trading-competition/"
    ],
    "n": 2,
-   "w": 118
+   "w": 145
   },
   "UCfXKukNdt": {
    "en": "What is the Daily BTC Call board?",
@@ -160776,9 +160776,9 @@
    "n": 2,
    "w": 8
   },
-  "tMAMcy3QaL": {
-   "en": "Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays up to ten ranks from a rebate pool - 52% of the fee commission those traders generated for MarginPad that season, capped at $100; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one two-season contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.",
-   "es": "Sí, en dos tablas. La tabla de volumen en Bybit clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad y paga hasta diez puestos desde una bolsa de rebate - el 52% de la comisión por fees que esos traders generaron para MarginPad esa temporada, con tope de $100; registra el UID de esa cuenta en la página de temporada para aparecer. King of the Moon clasifica a los miembros por la cantidad apostada en una cuenta de Moon abierta a través de MarginPad durante un concurso de dos temporadas y paga $300 a los cinco primeros; reclamar el bono de registro de Moon en la página de recompensas es la inscripción.",
+  "jDC8OAXPry": {
+   "en": "Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays ten ranks from a pool that starts at $100 and adds 52% of the fee commission those traders generate for MarginPad that season; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one two-season contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.",
+   "es": "Sí, en dos tablas. La tabla de volumen en Bybit clasifica a los miembros por el volumen real de futuros operado en una cuenta de Bybit abierta a través de MarginPad y paga diez puestos desde una bolsa que empieza en $100 y suma el 52% de la comisión por fees que esos traders generan para MarginPad esa temporada; registra el UID de esa cuenta en la página de temporada para aparecer. King of the Moon clasifica a los miembros por la cantidad apostada en una cuenta de Moon abierta a través de MarginPad durante un concurso de dos temporadas y paga $300 a los cinco primeros; reclamar el bono de registro de Moon en la página de recompensas es la inscripción.",
    "kind": [
     "html",
     "ld"
@@ -160877,9 +160877,9 @@
    "n": 1,
    "w": 5
   },
-  "i3iV0H4x4o": {
-   "en": "Join a free crypto futures trading competition. Eight leaderboards, $170 in fixed prizes every 14 days plus a Bybit rebate pool that grows with volume and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.",
-   "es": "Únete a una competición gratuita de trading de futuros de cripto. Ocho tablas, $170 en premios fijos cada 14 días más una bolsa de rebate de Bybit que crece con el volumen y $300 cada dos temporadas, sin depósito para entrar. Las tablas de paper se llenan en el servidor contra velas reales de exchanges, una tabla de predicción diaria de BTC paga por la precisión, y dos tablas pagan por trading real - volumen en Bybit y King of the Moon.",
+  "mEJnGwN5Tp": {
+   "en": "Join a free crypto futures trading competition. Eight leaderboards, $270 in prizes every 14 days plus a Bybit pool that grows with the volume traded and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.",
+   "es": "Únete a una competición gratuita de trading de futuros de cripto. Ocho tablas, $270 en premios cada 14 días más una bolsa de Bybit que crece con el volumen operado y $300 cada dos temporadas, sin depósito para entrar. Las tablas de paper se llenan en el servidor contra velas reales de exchanges, una tabla de predicción diaria de BTC paga por la precisión, y dos tablas pagan por trading real - volumen en Bybit y King of the Moon.",
    "kind": [
     "attr:content"
    ],

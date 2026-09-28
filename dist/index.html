@@ -981,7 +981,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 <style>#geoTip{display:none;align-items:center;justify-content:center;gap:9px;padding:9px 14px;background:#11161d;border-bottom:1px solid #1c2230;color:#cfe3ff;font-size:13.5px;line-height:1.35;text-align:center}#geoTip[data-on]{display:flex}#geoTip b{color:#c2f64a}#geoTip span.f{font-size:15px;line-height:1}@media(max-width:560px){#geoTip{font-size:12.5px;padding:8px 12px}}</style><meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - Free Crypto Futures Terminal, Paper Trade & Liquidations","url":"https://marginpad.io//","dateModified":"2026-09-28T12:57:46.409Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad - Free Crypto Futures Terminal, Paper Trade & Liquidations","url":"https://marginpad.io//","dateModified":"2026-09-28T14:40:12.863Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
@@ -1072,7 +1072,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         <div class="cp-copy">
           <div class="t-kick"><span class="dot"></span> Trading competition · <span id="cpEye">every 14 days</span></div>
           <div class="t-title cp-t">Paper trades, <b>real prize money</b></div>
-          <div class="cp-pool"><b id="cpPool">$170+</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, one with your first daily BTC call, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span></div>
+          <div class="cp-pool"><b id="cpPool">$270+</b><span id="cpPoolS">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, one with your first daily BTC call, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span></div>
           <div class="cp-days"><div class="cp-strip" id="cpDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="cp-left" id="cpLeft">14-day seasons</span></div>
           <div class="cp-fair">Filled server-side against real exchange candles. A win needs 5% ROE and a real 0.2% move. Standings are public.</div>
         </div>
@@ -1096,7 +1096,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
           <div class="cp-grp real">
             <div class="cp-gh"><span>Trade to enter</span><em>real accounts through MarginPad · Bybit every season · Moon every two</em></div>
             <div class="cp-tiles">
-              <div class="cp-b" data-b="bybit"><span class="cp-bn"><i class="cp-dot" style="--d:#f7a600"></i>Bybit volume</span><span class="cp-bp">52%<small>of fees back</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+              <div class="cp-b" data-b="bybit"><span class="cp-bn"><i class="cp-dot" style="--d:#f7a600"></i>Bybit volume</span><span class="cp-bp">$100<small>start · grows with volume</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
               <div class="cp-b" data-b="moon"><span class="cp-bn"><i class="cp-dot" style="--d:#b39dff"></i>King of the Moon</span><span class="cp-bp">$300<small>pool</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
             </div>
           </div>
@@ -1770,7 +1770,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         document.getElementById('cpLeft').textContent=endMs>Date.now()?__esT_demohomeindex("endsIn",'ends in ')+left(endMs-Date.now())+__esT_demohomeindex("thenANewOne",' · then a new one starts'):__esT_demohomeindex("aNewSeasonStarts",'a new season starts today');}
       d.boards.forEach(function(b){var el=card.querySelector('.cp-b[data-b="'+b.id+'"]');if(!el)return;
         var pz=+b.prize_pool_usd||0,top=(b.prize_usd_top5||[])[0]||0;
-        if(b.pool&&b.pool.rebate){el.querySelector('.cp-bp').innerHTML='$'+(+pz).toFixed(2)+'<small>'+__esT_demohomeindex("poolSoFarDot","pool so far · ")+esc(b.pool.tier&&b.pool.tier.name||'')+'</small>';}
+        if(b.pool&&b.pool.rebate){el.querySelector('.cp-bp').innerHTML='$'+(+pz).toFixed(2)+'<small>'+__esT_demohomeindex("poolDotStart","pool · $")+(+b.pool.base_usd||0)+__esT_demohomeindex("startGrows"," start, grows with volume")+'</small>';}
         else if(pz>0)el.querySelector('.cp-bp').innerHTML='$'+int(pz)+'<small>'+__esT_demohomeindex("poolDot","pool · $")+int(top)+__esT_demohomeindex("firstSuf"," first")+'</small>';
         var L=b.leader,bl=el.querySelector('.cp-bl');
         if(L&&L.name){bl.innerHTML='<i>1</i><b title="'+esc(L.name)+'">'+esc(L.name)+'</b><em>'+esc(val(b.id,L.value))+'</em>';}
@@ -2251,8 +2251,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=ad5f8788"></script>
-<script defer src="/assets/mp-auth.js?v=2998d9a8"></script>
-<script defer src="/assets/mp-nav.js?v=92547b3a"></script>
+<script defer src="/assets/mp-auth.js?v=f1023ed2"></script>
+<script defer src="/assets/mp-nav.js?v=6e472b48"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
