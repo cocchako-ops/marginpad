@@ -19,14 +19,14 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'trading-competition', 'index.html');
 const URLB = 'https://marginpad.io/trading-competition/';
 const TITLE = 'Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days';
-const DESC = 'Join a free crypto futures trading competition. Eight leaderboards, a $370 prize pool every 14 days plus $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.';
+const DESC = 'Join a free crypto futures trading competition. Eight leaderboards, $170 in fixed prizes every 14 days plus a Bybit rebate pool that grows with volume and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.';
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const FAQ = [
   ['Is there a free crypto trading competition?',
    'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its eight boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - and a sixth from a daily call on where BTC closes, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.'],
   ['What do you win?',
-   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $370 a season across the seven season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a rebate pool: 52% of the affiliate commission Bybit pays MarginPad for the traders on that board during the season, capped at $100 and split over up to ten ranks, so it grows with every trade. King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $170 of fixed prizes a season across the six paper and call boards, plus the Bybit pool, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
   ['What is the Daily BTC Call board?',
    'Once a day, before 20:00 UTC, you call where BTC closes at 00:00 UTC. The daily candle settles it: a call within 0.25% scores 12 points, within 0.5% eight, within 1% five, within 2% two. Points add up over the fourteen-day season and the top three share $20. It takes no trade, no deposit and about ten seconds a day; the call is made on the season page.'],
   ['How do I enter?',
@@ -34,7 +34,7 @@ const FAQ = [
   ['How is it kept fair?',
    'Paper trades are filled by the server against real exchange candles, not reported by your browser, so a modified page cannot invent a fill. A trade only counts as a win with at least 5% ROE and a real price move of 0.2%, which kills the trick of scalping noise. The win-rate board is ranked by Wilson score, so five lucky trades cannot outrank fifty consistent ones. Every standing is public.'],
   ['Can I compete with real money instead of paper?',
-   'Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays the top five $200 a season; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one two-season contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.'],
+   'Yes, on two boards. The Bybit volume board ranks members by real futures volume traded on a Bybit account opened through MarginPad and pays up to ten ranks from a rebate pool - 52% of the fee commission those traders generated for MarginPad that season, capped at $100; register that account’s UID on the season page to appear. King of the Moon ranks members by the amount wagered on a Moon account opened through MarginPad over one two-season contest and pays the top five $300; claiming the Moon sign-up bonus on the rewards page is the registration.'],
   ['When does the next season start?',
    'Seasons run back to back with no gap, each one fourteen days, anchored to Monday. The live block at the top of this page shows which day of the current season it is and exactly when it ends - you can join mid-season and still place.'],
   ['Do I need to be in a particular country?',
@@ -48,7 +48,7 @@ const BOARDS = [
   ['Season XP', 'The most XP earned this season across trading, lessons and missions.', '$30', 'Paper'],
   ['The Gold Room', 'A points score across wins and losses - the all-round board.', '$30', 'Paper'],
   ['Daily BTC Call', 'Points from one call a day on where BTC closes - closer scores more.', '$20', 'Call'],
-  ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad.', '$200', 'Real money'],
+  ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad; the pool is 52% of the fees those traders generate, so it grows with volume.', '$0', 'Rebate'],
   ['King of the Moon', 'Real amount wagered on a Moon account opened through MarginPad - one contest across two seasons.', '$300 / 2 seasons', 'Real money'],
 ];
 
@@ -255,7 +255,7 @@ const html = `<!DOCTYPE html>
           <p class="cp-when">Seasons are <b>fourteen days</b> and the next one starts the day this one ends - you can join on any day and still place.</p>
         </div>
         <div class="cp-dr">
-          <div class="cp-pot"><span class="amt">$370</span></div>
+          <div class="cp-pot"><span class="amt">$170+</span></div>
           <div class="cp-potk">on the line this season, free to enter</div>
           <div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>8</b> boards</span></div>
         </div>
@@ -267,17 +267,17 @@ const html = `<!DOCTYPE html>
       <div class="cp-brds">
 ${BOARDS.map(([n, w, p, e]) => {
   const amt = +String(p).replace(/[^0-9]/g, '');
-  const real = e === 'Real money';
+  const real = e === 'Real money' || e === 'Rebate';
   return `        <div class="cp-brd">
           <div><p class="cp-bn">${n}</p><p class="cp-bw">${w}</p></div>
           <div class="cp-bl open"><div class="cp-blk">Leading</div><div class="cp-bln">standings load with the page</div></div>
-          <div class="cp-bp${real ? ' real' : ''}"><span class="amt">$${amt}</span><div class="cp-bbar"><i style="width:${Math.round(amt / 300 * 100)}%"></i></div><span class="cp-bpe">${real ? 'Real money' : e === 'Call' ? 'Free - daily call' : 'Free - paper'}</span></div>
+          <div class="cp-bp${real ? ' real' : ''}"><span class="amt">$${amt}</span><div class="cp-bbar"><i style="width:${Math.round(amt / 300 * 100)}%"></i></div><span class="cp-bpe">${e === 'Rebate' ? 'Real money - 52% of fees back' : real ? 'Real money' : e === 'Call' ? 'Free - daily call' : 'Free - paper'}</span></div>
         </div>`;
 }).join('')}
       </div>
     </div>
 
-    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $12 / $5 / $3 to the top three. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
+    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $12 / $5 / $3 to the top three. The Bybit volume board pays a rebate pool - 52% of the fees its traders generate, capped at $100 - over up to ten ranks. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <div class="cp-cta">
       <a class="go" href="/season/">Enter the season - free →</a>
@@ -295,7 +295,7 @@ ${BOARDS.map(([n, w, p, e]) => {
     </ol>
 
     <h2>Competing with real money</h2>
-    <p>Two boards are different. <b>Bybit volume</b> ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays the top five $200 a season - on top of whatever fee rebate the exchange itself gives you. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
+    <p>Two boards are different. <b>Bybit volume</b> ranks members by real futures volume traded on a Bybit account opened through MarginPad, and pays a rebate pool: 52% of the affiliate commission Bybit pays MarginPad for those traders that season, capped at $100, over up to ten ranks - the pool is read from Bybit and grows with every trade, on top of whatever fee discount the exchange itself gives you. Register that account's UID on the <a href="/season/#boards">season page</a> to appear. Bybit cannot open accounts everywhere, including the United States.</p>
     <p><b>King of the Moon</b> ranks members by the real amount wagered on a Moon account opened through MarginPad, over one contest spanning two seasons (it ends when the season after the one it opened in ends), and pays the top five $300. Claiming the <a href="/rewards/">Moon sign-up bonus</a> is the registration: it tells MarginPad your Moon username, which Moon otherwise reports masked. The board starts from what each account had wagered on the day the contest opened and counts only what is added after it. Full standings and rules: <a href="/leaderboards/#moon">the leaderboards page</a>.</p>
 
     <h2>Why the standings can be trusted</h2>

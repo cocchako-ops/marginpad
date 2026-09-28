@@ -21,7 +21,7 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
   ok((c.boards || []).length === 8, 'all eight boards (' + (c.boards || []).length + ')');
   { const k = (c.boards || []).find(x => x.id === 'call'); ok(k && k.entry === 'free_call' && k.period_days === 14 && k.prize_pool_usd === 20 && /settled daily BTC call/.test((k.requires || {}).what || ''), 'Daily BTC Call: free, 14 days, $20, entry stated'); }
   { const m = (c.boards || []).find(x => x.id === 'moon'); ok(m && m.period_days >= 14 && m.period_days <= 28 && m.entry === 'real_money' && m.prize_pool_usd === 300 && m.contest && m.contest.starts, 'King of the Moon: 28 days, real money, $300, contest window stated'); }
-  ok((c.boards || []).every(b => b.prize_pool_usd > 0), 'every board has a prize pool', (c.boards || []).find(b => !b.prize_pool_usd));
+  ok((c.boards || []).every(b => b.prize_pool_usd > 0 || (b.pool && b.pool.rebate === true && typeof b.prize_pool_usd === 'number')), 'every board has a prize pool (the Bybit rebate pool may be $0 on day one - it grows with volume)', (c.boards || []).find(b => !b.prize_pool_usd && !(b.pool && b.pool.rebate)));
   ok((c.boards || []).every(b => !b.leader || b.leader.value != null), 'a board with a leader always has that leader\'s score', (c.boards || []).find(b => b.leader && b.leader.value == null));
   ok(c.season && c.season.day_of_season >= 1 && c.season.day_of_season <= c.season.days, 'the season says which day it is (' + c.season.day_of_season + ' of ' + c.season.days + ')', c.season);
   ok(c.season && new Date(c.season.ends).getTime() > Date.now(), 'and that it has not already ended');
@@ -109,7 +109,7 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
       ok(r.faq === 8, '[' + tag + '] eight questions answered', r.faq);
       ok(r.ctaHit && r.ctaHref === '/season/', '[' + tag + '] the entry button is reachable and goes to the season', r);
       ok(r.boards === 8, '[' + tag + '] all eight boards, listed once (' + r.boards + ')', r.boards);
-      ok(r.amts.length === 8 && r.amts.every(a => /^\$\d+$/.test(a)), '[' + tag + '] every board shows its prize as one figure', r.amts);
+      ok(r.amts.length === 8 && r.amts.every(a => /^\$\d+(\.\d{2})?$/.test(a)), '[' + tag + '] every board shows its prize as one figure (the Bybit rebate pool to the cent)', r.amts);
       // the whole point of the bars: $300 is ten times $30 and has to look it
       ok(Math.max(...r.bars) === 100 && Math.min(...r.bars) <= 15 && Math.max(...r.bars) / Math.max(1, Math.min(...r.bars)) >= 5,
         '[' + tag + '] the prize bars are drawn at true relative scale', r.bars);

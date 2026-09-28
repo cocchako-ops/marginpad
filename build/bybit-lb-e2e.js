@@ -15,7 +15,7 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, n
   // 1. public API
   const lb = await j('/api/reward/lb?cb=' + Date.now());
   ok(lb.s === 200 && Array.isArray(lb.b.topBybit), '/api/reward/lb carries topBybit (' + (lb.b.topBybit || []).length + ' rows)');
-  ok(JSON.stringify(lb.b.boardPrizes && lb.b.boardPrizes.bybit) === '[100,50,25,15,10]', 'prizes 100/50/25/15/10 = $200');
+  ok(Array.isArray(lb.b.boardPrizes && lb.b.boardPrizes.bybit) && lb.b.boardPrizes.bybit.length === 10 && lb.b.bybitPool && typeof lb.b.bybitPool.usd === 'number' && lb.b.bybitPool.tier && lb.b.bybitPool.tier.name, 'prizes = the rebate pool split over ten ranks, pool + tier published (' + JSON.stringify(lb.b.bybitPool && { usd: lb.b.bybitPool.usd, tier: lb.b.bybitPool.tier.name }) + ')');
   ok(lb.b.bybitPaidFrom === Date.UTC(2026, 8, 14), 'pays from the season of 2026-09-14');
   ok(lb.b.bybitReport && typeof lb.b.bybitReport.n === 'number' && typeof lb.b.bybitReport.registered === 'number', 'report status published (n, onBoard, final, registered)');
   ok((lb.b.topBybit || []).every(r => r.who && r.vol >= 0 && Object.keys(r).sort().join() === 'rank,vol,who'), 'public rows carry rank, name and volume only');
@@ -84,7 +84,7 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, n
     await page.goto(O + '/season/?cb=' + Date.now() + '#boards', { waitUntil: 'networkidle2', timeout: 60000 }); await new Promise(r => setTimeout(r, 2500));
     const cards = await page.evaluate(() => [...document.querySelectorAll('#bsw .bs')].map(b => ({ k: b.getAttribute('data-board'), logo: !!b.querySelector('svg.bybit-logo'), pb: (b.querySelector('.pb') || {}).textContent || '', pz: (b.querySelector('.big') || {}).textContent || '' })));
     ok(cards.length === 8 && cards[0].k === 'bybit' && cards[1].k === 'moon', 'eight board cards, Bybit first then King of the Moon (' + cards.map(c => c.k).join(',') + ')');
-    const by = cards.find(c => c.k === 'bybit'); ok(by && by.logo && /Powered by/i.test(by.pb) && /\$200/.test(by.pz), 'Bybit card: full wordmark, "Powered by", $200 to the top 5');
+    const by = cards.find(c => c.k === 'bybit'); ok(by && by.logo && /Powered by/i.test(by.pb) && /pool/i.test(by.pz), 'Bybit card: full wordmark, "Powered by", the rebate pool with its tier');
     const def = await page.evaluate(() => ({ on: (document.querySelector('#bsw .bs.on') || {}).getAttribute('data-board'), banner: (document.querySelector('#tbl .bybanner') || {}).textContent || '', tag: (document.querySelector('#bsw .bs.bybit .tagv') || {}).textContent || '', prizes: [...document.querySelectorAll('#tbl .pzprev .pzc b')].map(b => b.textContent), full: (() => { const a = document.querySelector('#bybox .byfull'); const c = document.querySelector('#bybox .bybox2'); if (!a || !c) return null; return Math.abs(a.getBoundingClientRect().width - c.getBoundingClientRect().width) < 2; })() }));
     ok(def.on === 'bybit', 'the Bybit board opens first by default');
     ok(/Bybit volume based leaderboard/.test(def.banner) && /Bybit volume based/i.test(def.tag), 'says plainly: Bybit volume based leaderboard (banner + card tag)');
@@ -101,7 +101,7 @@ const WS = Date.UTC(2026, 6, 20); // the first season on the grid - long over, n
     ok(sw.on === 'bybit' && (sw.head ? (/Bybit volume/i.test(sw.head) && !/trades|P&L/i.test(sw.head)) : !!sw.empty), 'Bybit board selected; the only value column is volume, or the empty state (header: "' + sw.head.trim().replace(/\s+/g, ' ') + '")');
     ok(sw.seen.some(c => /sw-l|sw-r/.test(c)) && !/sw-l|sw-r/.test(sw.twClass), 'the table slid (class toggled and cleared: ' + sw.seen.join(' > ') + ')');
     ok(sw.rowsIn || !!sw.empty, 'rows settled in or the empty state shows');
-    ok(sw.note.trim()==='', 'no note under the Bybit board (owner: removed)');
+    ok(/^Pool \$\d+\.\d\d = \d+% of the \$/.test(sw.note.trim()), 'the note under the Bybit board states the rebate pool (' + sw.note.trim().slice(0, 60) + ')');
     ok(sw.box && /UID/.test(sw.boxTxt) && /opened through MarginPad/i.test(sw.boxTxt) && /Register UID/.test(sw.boxTxt), 'registration box shown to the member, states the rule (' + sw.boxTxt.trim().replace(/\s+/g, ' ').slice(0, 80) + '…)');
     const reach = await page.evaluate(async () => { const i = document.getElementById('byUid'); if (!i) return 'no-input'; let r = i.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) { i.scrollIntoView({ block: 'center' }); await new Promise(x => setTimeout(x, 300)); r = i.getBoundingClientRect(); } /* seven cards wrap to two rows since 2026-09-17, so the box sits below the first screen - a reader scrolls to it, the probe does the same */ const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return el === i ? 'ok' : 'covered by ' + (el ? el.tagName + '.' + el.className : 'nothing (top ' + Math.round(r.top) + ', vh ' + innerHeight + ')'); });
     ok(reach === 'ok', 'UID input reachable on desktop (' + reach + ')');

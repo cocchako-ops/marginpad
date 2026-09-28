@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.9879518072289156,
-  "hit": 82,
-  "missing": 1
+  "cover": 1,
+  "hit": 83,
+  "missing": 0
  },
  {
   "rel": "levels/index.html",
@@ -2167,9 +2167,9 @@
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 0.9758064516129032,
-  "hit": 121,
-  "missing": 3
+  "cover": 1,
+  "hit": 126,
+  "missing": 0
  },
  {
   "rel": "trading-journal/index.html",
