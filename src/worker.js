@@ -13892,9 +13892,43 @@ async function checkBybitKey(env) {
      - a UID in the stored report that the feed does NOT return is KEPT, not dropped. That is how a
        hand-typed correction survives (the 2026-09-15 "typing one pair is a patch" rule), and it means
        this can only ever add information. */
-async function bybitAffSync(env) {
+// THE SEASON SEALS ITSELF (2026-09-28, owner: "nagrade nisu settled, mora odmah posle zavrsetka"). The payer only ever paid a
+// season whose report was marked FINAL, and since the report comes from the affiliate API nobody marks it - the first
+// season under the feed ended at midnight with $200 owed and a nag to the owner. Every sync now also looks at the season
+// that JUST ended: it re-reads its full window (Bybit volume is T+1, so the last day fills in during the next day) and
+// seals it - FINAL, by 'bybit-api-auto' - as soon as the last day reports volume, or 36 hours after the end whatever
+// Bybit says. payBybitPrizes (same */10 cron) pays on its next pass. `?seal=1` on /api/admin/bybitaff forces it now.
+async function bybitAffSync(env, opts) {
   if (!env.STATS || !env.BYBIT_AFF_KEY) return null;
-  const ws = lbPeriodStart(Date.now()), we = ws + LB_PERIOD;
+  const now = Date.now(), ws = lbPeriodStart(now), prevWs = ws - LB_PERIOD;
+  const out = { current: await bybitAffSyncSeason(env, ws) };
+  if (prevWs >= BYBIT_LB_START && now - (prevWs + LB_PERIOD) < 4 * 86400000) out.previous = await bybitSeasonSeal(env, prevWs, !!(opts && opts.force));
+  return out;
+}
+async function bybitSeasonSeal(env, ws, force) {
+  const now = Date.now(), we = ws + LB_PERIOD, day = t => new Date(t).toISOString().slice(0, 10);
+  const up0 = await bybitUpload(env, ws);
+  if (up0 && up0.final) return { skipped: 'final', ws };
+  const synced = await bybitAffSyncSeason(env, ws); // the full window, last day included
+  if (!synced || synced.error) return { error: (synced && synced.error) || 'sync', ws };
+  let ready = force, why = force ? 'forced by the owner' : '';
+  if (!ready && now - we >= 36 * 3600000) { ready = true; why = '36 hours after the end'; }
+  if (!ready && now - we >= 3 * 3600000) {
+    const ld = day(we - 86400000); let r = null; try { r = await bybitAffList(env, 0, { startDate: ld, endDate: ld }); } catch (e) {}
+    const anyVol = !!(r && Array.isArray(r.list) && r.list.some(u => +u.tradeVol > 0));
+    if (anyVol) { ready = true; why = 'Bybit reports the last day (' + ld + ')'; }
+  }
+  if (!ready) return { waiting: true, ws, endedHoursAgo: Math.round((now - we) / 3600000) };
+  const up = await bybitUpload(env, ws); if (!up) return { error: 'no_report', ws };
+  up.final = true; up.sealedTs = now; up.by = 'bybit-api-auto'; up.sealWhy = why;
+  try { await env.STATS.put('lb:bybitup:' + ws, JSON.stringify(up), { expirationTtl: 400 * 86400 }); } catch (e) { return { error: 'kv', ws }; }
+  await bybitSnapshotRebuild(env, ws);
+  try { await tgAdmin(env, '<b>Bybit board sealed</b> for the season that ended ' + day(we) + ' (' + why + '): ' + up.rows.length + ' UIDs in the report. Prizes go out on the next payout pass.', { kind: 'bybit board', sev: 'info' }); } catch (e) {}
+  return { sealed: true, ws, why };
+}
+async function bybitAffSyncSeason(env, ws) {
+  if (!env.STATS || !env.BYBIT_AFF_KEY) return null;
+  const we = ws + LB_PERIOD;
   const prev = await bybitUpload(env, ws);
   if (prev && prev.final) return { skipped: 'final' };
   const day = t => new Date(t).toISOString().slice(0, 10);
@@ -20549,6 +20583,8 @@ export default {
       // what Bybit says about the key itself, which is the only way to see the expiry before it bites.
       const extra = {};
       if (url.searchParams.get('sync') === '1') extra.sync = await bybitAffSync(env);
+      if (url.searchParams.get('seal') === '1') extra.seal = await bybitAffSync(env, { force: true }); // seal the season that just ended NOW, whatever Bybit reports for its last day
+      if (url.searchParams.get('pay') === '1') { await payBybitPrizes(env); extra.pay = 'ran'; } // the payout pass, on demand (idempotent - lbpaid:bybit:<ws>)
       if (url.searchParams.get('key') === '1') {
         const kh = await bybitAffSign(env, '');
         try { const kr = await fetch('https://api.bybit.com/v5/user/query-api', { headers: kh, signal: AbortSignal.timeout(8000) }); const kj = await kr.json();
