@@ -19571,9 +19571,19 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/tgsend' && request.method === 'POST' && isAdminKey(env, adminKeyFrom(request, url))) { // one line to the owner's Telegram, on request (2026-09-28)
+      let tb = {}; try { tb = await request.json(); } catch (e) {}
+      const text = String((tb && tb.text) || '').slice(0, 3800);
+      if (!text) return new Response(JSON.stringify({ error: 'empty' }), { status: 400, headers: { 'content-type': 'application/json; charset=utf-8' } });
+      let ok = false; try { ok = await tgAdmin(env, text, { kind: 'owner request', sev: 'info' }); } catch (e) {}
+      return new Response(JSON.stringify({ ok: ok !== false }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/rewardkinds' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // credits by type over N days (2026-09-27)
       const days = Math.min(365, Math.max(1, +url.searchParams.get('days') || 7));
-      let r = null; try { r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/kinds', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: Date.now() - days * 86400000, type: url.searchParams.get('type') || '' }) })).then(x => x.json()); } catch (e) {}
+      let r = null; try { r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/kinds', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: Date.now() - days * 86400000, type: url.searchParams.get('type') || '', rows: url.searchParams.get('rows') === '1' }) })).then(x => x.json()); } catch (e) {}
+      if (r && Array.isArray(r.list) && r.list.length) { // names beside the accounts, so "who got paid" needs no second lookup
+        try { const prof = await resolveProfiles(env, r.list.map(x => x.acct)); r.list = r.list.map(x => ({ ...x, username: (prof[String(x.acct).replace(/^u:/, '')] || {}).username || '' })); } catch (e) {}
+      }
       return new Response(JSON.stringify({ days, ...(r || { error: 'unavailable' }) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/money' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Money block (2026-09-03, ops plan block D): the faucet's cost vs the site's income on ONE line, what the ledger owes, and whether the live ledger still agrees with its last 6h backup. Read-only. Edge-cached 60s (?nc=1 bypasses).
@@ -23693,7 +23703,9 @@ export class RewardLedger {
       if (body.type) { try { details = this.rows('SELECT detail, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY detail ORDER BY c DESC LIMIT 40', from, to, String(body.type)).map(r => ({ detail: String(r.detail || '').slice(0, 120), n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })); } catch (e) {} }
       let hist = [];
       if (body.type) { try { hist = this.rows("SELECT n, COUNT(*) k FROM (SELECT acct, date(ts/1000,'unixepoch') d, COUNT(*) n FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY acct, d) GROUP BY n ORDER BY n", from, to, String(body.type)).map(r => ({ per_account_day: +r.n, account_days: +r.k })); } catch (e) {} } // how many credits of this type an account collects in a day
-      return this.j({ from, to, kinds: rows.map(r => ({ type: r.type, n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })), days: days.map(r => ({ day: r.d, type: r.type, usd: Math.round(+r.c) / 100 })), details, hist });
+      let list = [];
+      if (body.type && body.rows) { try { list = this.rows('SELECT ts, acct, detail, amount FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? ORDER BY ts DESC LIMIT 400', from, to, String(body.type)).map(r => ({ ts: +r.ts, acct: String(r.acct || ''), detail: String(r.detail || '').slice(0, 120), usd: Math.round(+r.amount) / 100 })); } catch (e) {} } // the individual credits, for "who got paid"
+      return this.j({ from, to, kinds: rows.map(r => ({ type: r.type, n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })), days: days.map(r => ({ day: r.d, type: r.type, usd: Math.round(+r.c) / 100 })), details, hist, list });
     }
     if (path === '/admin') {
       const pending = this.rows("SELECT id,address,acct,amount,ts FROM withdrawals WHERE status='pending' ORDER BY ts ASC").map(w => {
