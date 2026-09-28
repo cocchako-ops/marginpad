@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-28T14:40:20.097Z",
+  "generated": "2026-09-28T19:22:48.685Z",
   "pages": 384,
-  "occurrences": 26397,
-  "unique": 13943,
-  "words": 265487,
+  "occurrences": 26400,
+  "unique": 13945,
+  "words": 265492,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-28T14:40:56.500Z"
+  "merged": "2026-09-28T19:22:58.413Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -11630,7 +11630,7 @@
     "/coins/",
     "/rekt/"
    ],
-   "n": 4,
+   "n": 5,
    "w": 1
   },
   "k2KrTzrosl": {
@@ -142426,6 +142426,18 @@
    "n": 1,
    "w": 4
   },
+  "-iKihIny1T": {
+   "en": "How much?",
+   "es": "¿Cuánto?",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 2
+  },
   "kWgatgE3Hw": {
    "en": "Withdrawals are <b style=\"color:#ffd75a\">not automatic</b> - each request is reviewed and sent manually, and will be processed soon. USDT is sent to your Bybit account by UID - double-check your Bybit UID before confirming.",
    "es": "Los retiros <b style=\"color:#ffd75a\">no son automáticos</b> - cada solicitud se revisa y se envía manualmente, y se procesará pronto. El USDT se envía a tu cuenta de Bybit por UID - verifica bien tu UID de Bybit antes de confirmar.",
@@ -143544,6 +143556,18 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "4Jkjug1k6V": {
+   "en": "Amount in USDT",
+   "es": "Cantidad en USDT",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/rewards/"
+   ],
+   "n": 1,
+   "w": 3
   },
   "hehdjyZlB-": {
    "en": "Your Bybit UID (numbers only)",

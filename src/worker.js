@@ -23700,11 +23700,18 @@ export class RewardLedger {
       if (r && r.banned) return this.j({ error: 'banned' }, 403); // banned accounts can't cash out either
       if (!r || r.balance < cfg.minWdC) return this.j({ error: 'min_not_met', minWd: cfg.minWdC / 100 }, 400);
       if ((r.claims || 0) < (cfg.minClaimsToWd || 0)) return this.j({ error: 'need_claims', need: cfg.minClaimsToWd, have: r.claims || 0 }, 400);
-      const bonusPct = LEVEL_WD_BONUS[xLvl] || 0; const bonusC = Math.round(r.balance * bonusPct); const amt = r.balance, id = day + '-' + acct.slice(-8) + '-' + now;
+      // A MEMBER CHOOSES HOW MUCH (2026-09-28, owner: "ljudi traze da unesu koliko hoce da povuku"): `amountUsd` picks the sum,
+      // omitted = everything, as before. At least the minimum, at most the balance, and ONE pending request at a time - the
+      // owner pays these by hand, and partial withdrawals must not turn one payout into five.
+      const wantC = (body.amountUsd != null && body.amountUsd !== '') ? Math.round((+body.amountUsd || 0) * 100) : r.balance;
+      if (!(wantC >= cfg.minWdC) || wantC > r.balance) return this.j({ error: 'bad_amount', minWd: cfg.minWdC / 100, max: r.balance / 100 }, 400);
+      const pend = this.rows("SELECT id, amount FROM withdrawals WHERE acct=? AND status='pending' LIMIT 1", acct)[0];
+      if (pend) return this.j({ error: 'pending_exists', id: pend.id, amount: (+pend.amount || 0) / 100 }, 409);
+      const bonusPct = LEVEL_WD_BONUS[xLvl] || 0; const bonusC = Math.round(wantC * bonusPct); const amt = wantC, id = day + '-' + acct.slice(-8) + '-' + now;
       sql.exec("INSERT INTO withdrawals(id,address,acct,amount,bonus,status,ts) VALUES(?,?,?,?,?,'pending',?)", id, addr, acct, amt, bonusC, now); // address = payout wallet, acct = the account it belongs to
-      sql.exec('UPDATE accounts SET balance=0, payout_addr=? WHERE address=?', addr, acct); // move credit to the pending payout queue; remember the wallet
+      sql.exec('UPDATE accounts SET balance=balance-?, payout_addr=? WHERE address=?', amt, addr, acct); // move that much to the pending payout queue; remember the wallet
       this.log('withdraw', acct, cc, dev, amt + bonusC);
-      return this.j({ ok: true, amount: amt / 100, bonus: bonusC / 100, total: (amt + bonusC) / 100, level: xLvl, id, status: 'pending' });
+      return this.j({ ok: true, amount: amt / 100, bonus: bonusC / 100, total: (amt + bonusC) / 100, remaining: (r.balance - amt) / 100, level: xLvl, id, status: 'pending' });
     }
     if (path === '/shopspend') { // ops Shop: cash debits + refunds. The durable shoplog (2026-09-04) is the source; the 200-row live log only fills in rows that predate it
       const n = Math.min(500, Math.max(10, +url.searchParams.get('n') || 200));
