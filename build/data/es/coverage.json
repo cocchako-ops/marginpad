@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 1,
-  "hit": 83,
-  "missing": 0
+  "cover": 0.9879518072289156,
+  "hit": 82,
+  "missing": 1
  },
  {
   "rel": "levels/index.html",
@@ -2035,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 1,
-  "hit": 105,
-  "missing": 0
+  "cover": 0.9904761904761905,
+  "hit": 104,
+  "missing": 1
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2167,9 +2167,9 @@
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 1,
-  "hit": 126,
-  "missing": 0
+  "cover": 0.9758064516129032,
+  "hit": 121,
+  "missing": 3
  },
  {
   "rel": "trading-journal/index.html",

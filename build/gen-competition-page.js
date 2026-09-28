@@ -26,7 +26,7 @@ const FAQ = [
   ['Is there a free crypto trading competition?',
    'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its eight boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - and a sixth from a daily call on where BTC closes, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.'],
   ['What do you win?',
-   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $10, $6 and $4 to its top three. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $370 a season across the seven season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays $100, $50, $25, $15 and $10, and King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $370 a season across the seven season boards, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
   ['What is the Daily BTC Call board?',
    'Once a day, before 20:00 UTC, you call where BTC closes at 00:00 UTC. The daily candle settles it: a call within 0.25% scores 12 points, within 0.5% eight, within 1% five, within 2% two. Points add up over the fourteen-day season and the top three share $20. It takes no trade, no deposit and about ten seconds a day; the call is made on the season page.'],
   ['How do I enter?',
@@ -277,7 +277,7 @@ ${BOARDS.map(([n, w, p, e]) => {
       </div>
     </div>
 
-    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $10 / $6 / $4 to the top three. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
+    <p class="cp-note">Paper boards pay $10 / $8 / $6 / $4 / $2 to the top five. The Daily BTC Call board pays $12 / $5 / $3 to the top three. The Bybit volume board pays $100 / $50 / $25 / $15 / $10 a season. King of the Moon pays $150 / $70 / $40 / $25 / $15 per two-season contest. Prizes are credited to your MarginPad rewards balance and can be withdrawn.</p>
 
     <div class="cp-cta">
       <a class="go" href="/season/">Enter the season - free →</a>
