@@ -29,9 +29,15 @@
   .eyebrow{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
   .mono{font-family:'Space Mono',ui-monospace,monospace}
 
-  header.hd{padding:26px 0 18px}
-  header.hd h1{font-size:clamp(30px,5.4vw,46px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
-  header.hd p.lead{margin:0;color:var(--dim);max-width:62ch;font-size:16px}
+  .hd{padding:22px 0 18px}
+  .hd h1{font-size:clamp(30px,5.4vw,46px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
+  .hd p.lead{margin:0;color:var(--dim);max-width:62ch;font-size:16px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0 6px;flex-wrap:wrap}
+  .brand{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+  .brand b{color:var(--lime)}
+  .hnav{display:flex;align-items:center;gap:14px;font-size:13.5px}
+  .hnav a{color:var(--dim);text-decoration:none}.hnav a:hover{color:var(--ink)}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 12px;font:600 13px/1 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer;min-height:34px}
   .crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--faint)}
   .crumb a{color:var(--faint);text-decoration:none}.crumb a:hover{color:var(--ink)}
 
@@ -146,11 +152,20 @@
 <body>
 <div class="wrap">
 
-<header class="hd">
+<header>
+  <a class="brand" href="/">Margin<b>Pad</b></a>
+  <nav class="hnav">
+    <a href="/season/">Your season</a>
+    <a href="/leaderboards/">Leaderboards</a>
+    <button class="hauth" type="button" data-auth-open>Sign in</button>
+  </nav>
+</header>
+
+<div class="hd">
   <div class="crumb"><a href="/">MarginPad</a> <span>/</span> <span>Squads</span></div>
   <h1>Five traders, one crest</h1>
   <p class="lead">A squad is up to five people. The leader designs a crest, and it appears on every member's profile card across the whole site. You get a room only the squad can open, and you can challenge other squads for Ticks. Win, draw or lose, everyone who traded earns XP.</p>
-</header>
+</div>
 
 <div id="app">
   <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div><div class="skel" style="width:55%;margin-top:9px"></div></div>

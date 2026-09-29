@@ -47,6 +47,12 @@ const R4 = () => { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for
     const head = await A.evaluate(() => ({ crest: !!document.querySelector('.sqhead svg.mp-crest'), name: (document.querySelector('.sqhead .nm') || {}).textContent || '', btn: !!document.querySelector('#roomGo') }));
     ok(head.crest && head.btn, 'the squad page draws the crest and offers the room', head);
     ok(!A._errs.length, 'no page errors on /squads/', A._errs.slice(0, 2));
+    // THE H1 MUST SURVIVE THE LIVE DOM, not just the served HTML. mp-nav's normalizeHeader() rebuilds
+    // body>.wrap>header into the canonical site nav, so a page title placed inside a <header> is wiped for
+    // every reader while every static check still passes on the raw markup. That is exactly what happened here.
+    const live = await A.evaluate(() => { const h = document.querySelector('h1'); return { n: document.querySelectorAll('h1').length, txt: h ? h.textContent.trim() : '', lead: !!document.querySelector('.hd .lead'), nav: !!document.querySelector('header .mpnav-burger, header .hmenu, header .brand') }; });
+    ok(live.n === 1 && live.txt.length > 6, 'the h1 is still in the DOM after the bundles have run', live);
+    ok(live.lead, 'and so is the lead paragraph that explains the feature', live);
 
     await A.evaluate(() => { const b = document.querySelector('#roomGo'); if (b) b.click(); });
     await new Promise(r => setTimeout(r, 6000));

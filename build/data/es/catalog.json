@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-29T21:54:49.403Z",
+  "generated": "2026-09-29T22:17:57.122Z",
   "pages": 385,
-  "occurrences": 26417,
-  "unique": 13962,
-  "words": 265735,
+  "occurrences": 26420,
+  "unique": 13963,
+  "words": 265738,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-29T21:55:29.937Z"
+  "merged": "2026-09-29T22:18:08.723Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6887,7 +6887,7 @@
     "/levels/",
     "/premium/"
    ],
-   "n": 4,
+   "n": 5,
    "w": 2
   },
   "pQA5o3rXre": {
@@ -6915,7 +6915,7 @@
     "/app.html",
     "/bitcoin-cycle/"
    ],
-   "n": 20,
+   "n": 21,
    "w": 2
   },
   "y_33OGr-Hk": {
@@ -149720,6 +149720,18 @@
    ],
    "n": 1,
    "w": 8
+  },
+  "Wg2OhmXdIM": {
+   "en": "<a href=\"/season/\">Your season</a> <a href=\"/leaderboards/\">Leaderboards</a>",
+   "es": "<a href=\"/season/\">Tu temporada</a> <a href=\"/leaderboards/\">Clasificaciones</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 3
   },
   "z_Jfc69aa_": {
    "en": "<a href=\"/\">MarginPad</a> <span>/</span> <span>Squads</span>",
