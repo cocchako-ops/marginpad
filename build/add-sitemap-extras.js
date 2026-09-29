@@ -54,6 +54,10 @@ const EXTRAS = [
   ['/calendar/', '0.8', D],
   ['/status/', '0.6', D],
   // --- moves with the product ------------------------------------------------------------------------------
+  // /squads/ is WEEKLY on purpose: most of the page is the explanation, and the live directory is empty on the
+  // day it ships. Over-declaring is worse than under-declaring - a crawler that keeps arriving to find nothing
+  // new discounts the whole file. Raise it when the directory actually fills.
+  ['/squads/', '0.8', W],
   ['/spot/', '0.9', W],
   ['/trading-api/', '0.8', W],
   ['/api-docs/', '0.8', W],

@@ -7,6 +7,8 @@ Disallow: /api/
 # 71% of the crawling we actually get, and what feeds Copilot and Google's AI answers. A longer
 # matching rule wins in robots.txt, so these lines re-open exactly the endpoints we advertise.
 Allow: /api/v1/
+Allow: /api/squad/
+Allow: /api/reward/lb
 Allow: /api/competition
 Allow: /api/arena
 Allow: /api/funded

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es" data-es-twin="/squads/">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Escuadras - Cinco traders, un escudo, duelos de escuadra | MarginPad</title>
+<meta name="description" content="Crea una escuadra de hasta cinco traders en MarginPad: diseña un escudo que aparece en la tarjeta de perfil de cada miembro, consigue una sala privada de escuadra y reta a otras escuadras por Ticks. Ganes, empates o pierdas, cada miembro que haya operado gana XP. Gratis, sin depósito." />
+<link rel="canonical" href="https://marginpad.io/es/squads/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/squads/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/squads/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/squads/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="Escuadras de MarginPad: cinco traders, un escudo" />
+<meta property="og:description" content="Hasta cinco traders, un escudo en la tarjeta de cada miembro, una sala privada y duelos de escuadra contra escuadra apostados en Ticks. Todo el que haya operado gana XP, gane o pierda." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/es/squads/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffd75a;--violet:#9d7bff;--blue:#6aa3ff;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--lime)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px 96px}
+  h1,h2,h3{font-family:'Bricolage Grotesque','Familjen Grotesk',system-ui,sans-serif;margin:0;line-height:1.08;text-wrap:balance}
+  .eyebrow{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+  .mono{font-family:'Space Mono',ui-monospace,monospace}
+
+  header.hd{padding:26px 0 18px}
+  header.hd h1{font-size:clamp(30px,5.4vw,46px);font-weight:800;letter-spacing:-.02em;margin:8px 0 10px}
+  header.hd p.lead{margin:0;color:var(--dim);max-width:62ch;font-size:16px}
+  .crumb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--faint)}
+  .crumb a{color:var(--faint);text-decoration:none}.crumb a:hover{color:var(--ink)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .card + .card{margin-top:14px}
+  .sect{margin-top:26px}
+  .sect > h2{font-size:clamp(19px,2.6vw,25px);font-weight:800;letter-spacing:-.01em;margin-bottom:4px}
+  .sect > .sub{color:var(--dim);font-size:14px;margin:0 0 12px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);color:var(--ink);font:600 14px/1 'Familjen Grotesk',system-ui,sans-serif;padding:11px 16px;cursor:pointer;min-height:42px;transition:border-color .15s,background .15s}
+  .btn:hover{border-color:var(--faint)}
+  .btn.p{background:var(--lime);border-color:var(--lime);color:#0a0b0d;font-weight:700}
+  .btn.p:hover{filter:brightness(1.07)}
+  .btn.d{border-color:rgba(255,98,88,.4);color:var(--red)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.sm{padding:7px 11px;min-height:32px;font-size:12.5px;border-radius:9px}
+  input[type=text],input[type=number],textarea{background:#0c0f14;border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:400 16px/1.3 'Familjen Grotesk',system-ui,sans-serif;padding:11px 12px;width:100%;min-height:44px}
+  input:focus,textarea:focus{outline:2px solid rgba(194,246,74,.45);outline-offset:1px}
+  label.fl{display:block;font-size:12px;color:var(--dim);margin:0 0 5px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .grow{flex:1 1 180px;min-width:0}
+
+  /* chips - never a native select, the one control the owner cannot use */
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--line2);background:var(--panel2);color:var(--dim);border-radius:999px;padding:7px 12px;font:600 12.5px/1 'Familjen Grotesk',system-ui,sans-serif;cursor:pointer;min-height:32px;display:inline-flex;align-items:center;gap:6px}
+  .chip:hover{border-color:var(--faint);color:var(--ink)}
+  .chip.on{background:rgba(194,246,74,.14);border-color:var(--lime);color:var(--lime)}
+  .swatch{width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.14);cursor:pointer;padding:0}
+  .swatch.on{outline:2px solid var(--ink);outline-offset:2px}
+
+  /* the builder */
+  .bld{display:grid;grid-template-columns:132px minmax(0,1fr);gap:18px;align-items:start}
+  .bld .prev{display:flex;flex-direction:column;align-items:center;gap:9px;padding:14px;background:#0c0f14;border:1px solid var(--line);border-radius:14px}
+  .bld .prev .nm{font-weight:800;font-size:14px;text-align:center;word-break:break-word;line-height:1.15}
+  .bld .prev .tg{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+  .bfield{margin-bottom:13px}
+  .bfield:last-child{margin-bottom:0}
+
+  /* the squad card */
+  .sqhead{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+  .sqhead .nm{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:clamp(21px,3.4vw,28px);font-weight:800;letter-spacing:-.01em;line-height:1.1}
+  .sqhead .mt{color:var(--dim);font-size:13.5px;margin-top:3px}
+  .rec{display:flex;gap:16px;margin-left:auto;text-align:right}
+  .rec div{min-width:44px}
+  .rec b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:19px;font-weight:700;line-height:1}
+  .rec span{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+  .rec .w b{color:var(--up)}.rec .l b{color:var(--red)}.rec .d b{color:var(--dim)}
+
+  .mem{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .mem:first-child{border-top:0}
+  .mem .av{width:30px;height:30px;border-radius:9px;background:var(--panel2);display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}
+  .mem .who{font-weight:700;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mem .lv{font-size:11.5px;color:var(--faint);margin-left:2px}
+  .mem .sp{margin-left:auto;display:flex;gap:7px;align-items:center}
+  .tagpill{font-family:'Space Mono',ui-monospace,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line2);border-radius:999px;padding:3px 7px}
+  .tagpill.ld{color:var(--amber);border-color:rgba(255,215,90,.34)}
+
+  /* duels */
+  .duel{border:1px solid var(--line);border-radius:13px;padding:13px;background:var(--panel2)}
+  .duel + .duel{margin-top:10px}
+  .duel .vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
+  .duel .sd{display:flex;align-items:center;gap:8px;min-width:0}
+  .duel .sd.r{justify-content:flex-end}
+  .duel .sd .n{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .duel .mid{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--faint);text-align:center}
+  .duel .meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+  .duel .meta b{color:var(--ink);font-family:'Space Mono',ui-monospace,monospace}
+  .duel .act{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .sc{font-family:'Space Mono',ui-monospace,monospace;font-size:15px;font-weight:700}
+  .sc.w{color:var(--up)}.sc.n{color:var(--faint)}
+  .st{font-family:'Space Mono',ui-monospace,monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--dim)}
+  .st.live{color:var(--lime);border-color:rgba(194,246,74,.4)}
+  .st.open{color:var(--blue);border-color:rgba(106,163,255,.35)}
+  .st.pend{color:var(--amber);border-color:rgba(255,215,90,.34)}
+
+  /* directory */
+  .dir{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:11px}
+  .dsq{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);min-width:0}
+  .dsq .n{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dsq .s{font-size:11.5px;color:var(--faint);font-family:'Space Mono',ui-monospace,monospace}
+  .dsq .go{margin-left:auto}
+
+  .note{font-size:12.5px;color:var(--faint);margin-top:9px}
+  .msg{margin-top:11px;font-size:13.5px;padding:10px 12px;border-radius:10px;display:none}
+  .msg.on{display:block}
+  .msg.err{background:rgba(255,98,88,.1);border:1px solid rgba(255,98,88,.3);color:#ffb3ad}
+  .msg.good{background:rgba(46,189,133,.1);border:1px solid rgba(46,189,133,.3);color:#8fe7c2}
+  .empty{color:var(--faint);font-size:13.5px;padding:14px 0}
+  .skel{height:13px;border-radius:6px;background:linear-gradient(90deg,#161a21,#1d222a,#161a21);background-size:200% 100%;animation:sh 1.3s linear infinite}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+  .how div{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .how h3{font-size:14.5px;font-weight:800;margin-bottom:5px}
+  .how p{margin:0;font-size:13px;color:var(--dim)}
+
+  @media(max-width:620px){
+    .bld{grid-template-columns:1fr}
+    .bld .prev{flex-direction:row;justify-content:flex-start}
+    .rec{margin-left:0;width:100%;justify-content:space-between;text-align:left;padding-top:10px;border-top:1px solid var(--line)}
+    .duel .vs{grid-template-columns:1fr;gap:7px}
+    .duel .sd.r{justify-content:flex-start}
+    .duel .mid{text-align:left}
+  }
+</style>
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+</head>
+<body>
+<div class="wrap">
+
+<header class="hd">
+  <div class="crumb"><a href="/es/">MarginPad</a> <span>/</span> <span>Escuadras</span></div>
+  <h1>Cinco traders, un escudo</h1>
+  <p class="lead">Una escuadra es de hasta cinco personas. El líder diseña un escudo, y ese escudo aparece en la tarjeta de perfil de cada miembro en todo el sitio. Tienes una sala que solo la escuadra puede abrir, y puedes retar a otras escuadras por Ticks. Ganes, empates o pierdas, todo el que haya operado gana XP.</p>
+</header>
+
+<div id="app">
+  <div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div><div class="skel" style="width:55%;margin-top:9px"></div></div>
+</div>
+
+<section class="sect" id="howSect">
+  <h2>Cómo funciona una escuadra</h2>
+  <p class="sub">Cuatro cosas, y nada cuesta dinero real.</p>
+  <div class="how">
+    <div><h3>Hasta cinco</h3><p>El líder la funda e invita por nombre de usuario, o la deja abierta para que entre cualquiera. Una escuadra por cuenta.</p></div>
+    <div><h3>Un escudo en cada tarjeta</h3><p>El líder elige la forma, la marca y los colores. Viaja en la tarjeta de perfil pública de cada miembro, allí donde aparezca su nombre.</p></div>
+    <div><h3>Tu propia sala</h3><p>Una sala de chat que solo tu escuadra puede abrir. El servidor comprueba quién es miembro: no es un botón escondido.</p></div>
+    <div><h3>Duelos de escuadra</h3><p>El líder apuesta Ticks por la escuadra. Si gana, la apuesta vuelve más la de la otra escuadra, repartida entre todos. Cada miembro que haya cerrado una operación gana XP en cualquier caso.</p></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_squadsindex = {"openSquadRoom2":"Abrir sala de escuadra","justNow":"ahora mismo","signInFirst":"Inicia sesión primero.","finishSettingUpYour":"Termina de configurar tu cuenta primero.","thisAccountCannotJoin":"Esta cuenta no puede unirse a una escuadra.","youAreAlreadyIn":"Ya estás en una escuadra. Sal de ella primero.","thatNameIsTaken":"Ese nombre ya está tomado.","thatTagIsTaken":"Esa etiqueta ya está tomada.","aNameIs2":"Un nombre tiene de 2 a 24 caracteres, letras y números.","aTagIs2":"Una etiqueta tiene de 2 a 4 letras o números.","onlyTheLeaderCan":"Solo el líder puede hacer eso.","youAreNotIn":"No estás en una escuadra.","thatSquadIsFull":"Esa escuadra está llena: cinco es el límite.","thatSquadIsInvite":"Esa escuadra es solo por invitación.","theyAlreadyHaveAn":"Ya tienen una invitación.","noMemberWithThat":"No hay ningún miembro con ese nombre de usuario.","theyAreAlreadyIn":"Ya están en una escuadra.","thatIsYourOwn":"Esa es tu propia escuadra.","tooManyInvitesOut":"Demasiadas invitaciones enviadas a la vez.","notWhileADuel":"No mientras haya un duelo en curso.","yourSquadIsAlready":"Tu escuadra ya está en un duelo.","thatSquadIsAlready":"Esa escuadra ya está en un duelo.","youFoughtThemRecently":"Los enfrentaste hace poco: espera unas horas.","youAlreadyHaveThree":"Ya tienes tres retos enviados.","notEnoughTicksFor":"No tienes suficientes Ticks para esa apuesta.","thatChallengeIsNo":"Ese reto ya no está abierto.","thatChallengeIsNot":"Ese reto no es tuyo.","notFound":"No encontrado.","busyTryAgainIn":"Ocupado: inténtalo de nuevo en un momento.","notEnoughTicksThat":"No tienes suficientes Ticks: esa apuesta necesita ","andYouHave":" y tú tienes ","yourTag":"Tu etiqueta","yourSquad":"Tu escuadra","signIn":"<button class=\"btn p\" data-auth-open type=\"button\">Iniciar sesión</button></div>","squadsLookingForPeople":"<div class=\"sect\"><h2>Escuadras que buscan gente</h2><p class=\"sub\">Escuadras abiertas a las que podrías entrar una vez que inicies sesión.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","orJoinOneOpen":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","youHaveBeenInvited":"<div class=\"sect\"><h2>Te han invitado</h2><div class=\"dir\">","openChallenge":"<span class=\"st open\">Reto abierto</span>","waitingForASquad":"Esperando a una escuadra","noStake":"<span>Sin apuesta</span>","openSquadRoom":"\">Abrir sala de escuadra</a>","youAreTheLeader":"Eres el líder, así que la apuesta la pones tú. Si ganas, vuelve, más la apuesta de la otra escuadra repartida entre todos.","yourLeaderPutsThe":"Tu líder pone la apuesta. Cada miembro que cierre una operación durante el duelo gana XP: ganes, empates o pierdas.","noDuelRunning":"<div class=\"empty\">No hay ningún duelo en curso.</div>","pastDuels":"<div class=\"sect\"><h2>Duelos anteriores</h2>","openChallengesSquadsLookin":"<div class=\"sect\"><h2>Retos abiertos</h2><p class=\"sub\">Escuadras que buscan a quien las enfrente.</p><div id=\"openD\"><div class=\"empty\">Cargando…</div></div></div>","dataOpen1Anyone":"\" data-open=\"1\">Cualquiera puede unirse</button><button type=\"button\" class=\"chip","dataOpen0Invite":"\" data-open=\"0\">Solo por invitación</button></div>","waitingOn":"<div class=\"note\">Pendientes de: ","totalProfit":"Beneficio total","biggestWin":"Mayor ganancia","winRate":"Tasa de acierto","noStake2":"Sin apuesta","scoredOn":"<div class=\"bfield\"><label class=\"fl\">Se puntúa por</label>","runsFor":"<div class=\"bfield\"><label class=\"fl\">Dura</label>","yourStakeYouHave":"<div class=\"bfield\"><label class=\"fl\">Tu apuesta <span style=\"color:var(--faint)\">(tienes ","squadTagOrId":"<div class=\"bfield\"><label class=\"fl\" for=\"chSid\">Etiqueta o id de escuadra <span style=\"color:var(--faint)\">(déjalo vacío para publicar un reto abierto)</span></label><input type=\"text\" id=\"chSid\" maxlength=\"8\" placeholder=\"p. ej. 7KQM2P\" autocomplete=\"off\" /></div>","sendChallenge":"<button class=\"btn p\" id=\"chGo\" type=\"button\">Enviar reto</button><div class=\"msg\" id=\"chMsg\"></div>","onTotalProfitOnly":"<div class=\"note\">En beneficio total solo cuentan los mejores miembros de cada escuadra, tantos como tenga la escuadra más pequeña, así que cinco no pueden ganar a tres por pura aritmética.</div></div>","noOpenSquadsRight":"<div class=\"empty\">Ahora mismo no hay escuadras abiertas. Empieza la primera.</div>","signIn2":"<button class=\"btn sm\" data-auth-open type=\"button\">Iniciar sesión</button>","couldNotLoad":"<div class=\"empty\">No se pudo cargar.</div>","onlyYoursIsOpen":"Ahora mismo solo está el tuyo, arriba.","nobodyHasPostedOne":"Nadie ha publicado ninguno.","openAnyone":"<div class=\"mid\"><span class=\"st open\">Abierto</span></div><div class=\"sd r\"><span class=\"n\" style=\"color:var(--faint)\">cualquiera</span></div></div>","couldNotLoadRetry":"<div class=\"card\"><div class=\"empty\">No se pudo cargar. <button class=\"btn sm\" onclick=\"location.reload()\">Reintentar</button></div></div>","inviteSent":"Invitación enviada.","leaveThisSquad":"¿Salir de esta escuadra?","youLeftTheSquad":"Has salido de la escuadra.","disbandTheSquadThe":"¿Disolver la escuadra? El escudo desaparece de la tarjeta de cada miembro.","challengeSentYourStake":"Reto enviado: tu apuesta queda retenida hasta que se resuelva.","challengeSent":"Reto enviado.","youAreIn":"Ya estás dentro.","duelIsLive":"El duelo está en marcha.","middotLedBy":" &middot; liderada por "};
+function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_squadsindex[k] != null) return __esD_squadsindex[k]; } catch (e) {} return en; }
+
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var app = $('#app');
+  var S = { me: null, loading: true, view: 'squad', draft: null };
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"']/g, function (m) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[m]; }); }
+  function crest(c, px, tag) { return window.mpSquadCrest ? window.mpSquadCrest(c, px, tag) : '<span style="display:inline-block;width:' + (px || 26) + 'px;height:' + (px || 26) + 'px;border-radius:8px;background:#232932"></span>'; }
+  function signedIn() { try { return /(?:^|; )mp_li=1/.test(document.cookie); } catch (e) { return false; } }
+  function toast(m, kind) { if (window.mpToast) window.mpToast({ msg: m, kind: kind || 'info' }); }
+  function ago(ts) { var s = Math.max(0, (Date.now() - ts) / 1000); if (s < 90) return __esT_squadsindex("justNow",'just now'); var m = s / 60; if (m < 60) return Math.round(m) + 'm ago'; var h = m / 60; if (h < 36) return Math.round(h) + 'h ago'; return Math.round(h / 24) + 'd ago'; }
+  function left(ts) { var s = (ts - Date.now()) / 1000; if (s <= 0) return 'settling'; var h = s / 3600; if (h < 1) return Math.max(1, Math.round(s / 60)) + 'm left'; if (h < 48) return Math.round(h) + 'h left'; return Math.round(h / 24) + 'd left'; }
+
+  function api(op, body) {
+    var o = body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {};
+    return fetch('/api/squad/' + op, o).then(function (r) { return r.json().catch(function () { return { error: 'busy' }; }); });
+  }
+  /* Every refusal the server can give, in words a member can act on. A raw error code on screen is a
+     dead end - the reader cannot tell a rule from a bug. */
+  var ERR = {
+    login_required: __esT_squadsindex("signInFirst",'Sign in first.'), no_account: __esT_squadsindex("finishSettingUpYour",'Finish setting up your account first.'), suspended: __esT_squadsindex("thisAccountCannotJoin",'This account cannot join a squad.'),
+    already_in_squad: __esT_squadsindex("youAreAlreadyIn",'You are already in a squad. Leave it first.'), name_taken: __esT_squadsindex("thatNameIsTaken",'That name is taken.'), tag_taken: __esT_squadsindex("thatTagIsTaken",'That tag is taken.'),
+    bad_name: __esT_squadsindex("aNameIs2",'A name is 2 to 24 characters, letters and numbers.'), bad_tag: __esT_squadsindex("aTagIs2",'A tag is 2 to 4 letters or numbers.'),
+    not_leader: __esT_squadsindex("onlyTheLeaderCan",'Only the leader can do that.'), not_in_squad: __esT_squadsindex("youAreNotIn",'You are not in a squad.'), squad_full: __esT_squadsindex("thatSquadIsFull",'That squad is full - five is the limit.'),
+    invite_only: __esT_squadsindex("thatSquadIsInvite",'That squad is invite only.'), already_invited: __esT_squadsindex("theyAlreadyHaveAn",'They already have an invite.'), no_such_member: __esT_squadsindex("noMemberWithThat",'No member with that username.'),
+    already_in_a_squad: __esT_squadsindex("theyAreAlreadyIn",'They are already in a squad.'), thats_you: __esT_squadsindex("thatIsYourOwn",'That is your own squad.'), too_many_invites: __esT_squadsindex("tooManyInvitesOut",'Too many invites out at once.'),
+    duel_running: __esT_squadsindex("notWhileADuel",'Not while a duel is running.'), already_duelling: __esT_squadsindex("yourSquadIsAlready",'Your squad is already in a duel.'), they_are_duelling: __esT_squadsindex("thatSquadIsAlready",'That squad is already in a duel.'),
+    rematch_cooldown: __esT_squadsindex("youFoughtThemRecently",'You fought them recently - give it a few hours.'), too_many_open: __esT_squadsindex("youAlreadyHaveThree",'You already have three challenges out.'),
+    need_ticks: __esT_squadsindex("notEnoughTicksFor",'Not enough Ticks for that stake.'), not_open: __esT_squadsindex("thatChallengeIsNo",'That challenge is no longer open.'), not_yours: __esT_squadsindex("thatChallengeIsNot",'That challenge is not yours.'),
+    not_found: __esT_squadsindex("notFound",'Not found.'), busy: __esT_squadsindex("busyTryAgainIn",'Busy - try again in a moment.')
+  };
+  function say(el, j, good) {
+    if (!el) return;
+    var m = j && j.error ? (ERR[j.error] || j.error.replace(/_/g, ' ')) : good;
+    if (j && j.error === 'need_ticks' && j.need != null) m = __esT_squadsindex("notEnoughTicksThat",'Not enough Ticks: that stake needs ') + j.need + __esT_squadsindex("andYouHave",' and you have ') + (j.have || 0) + '.';
+    el.textContent = m || ''; el.className = 'msg on ' + (j && j.error ? 'err' : 'good');
+  }
+
+  /* ── the crest builder ──────────────────────────────────────────────────────────────────── */
+  function draftDefault() { return { shape: 'shield', sym: 'tag', bg: '#4aa3f6', fg: '#e9e7df', ring: 'solid' }; }
+  var SYMNAME = { tag: __esT_squadsindex("yourTag",'Your tag'), bolt: 'Bolt', candle: 'Candle', up: 'Up', down: 'Down', target: 'Target', crown: 'Crown', star: 'Star', triangle: 'Triangle', diamond: 'Diamond', anchor: 'Anchor', eye: 'Eye', wave: 'Wave', cross: 'Cross' };
+  var SHAPENAME = { shield: 'Shield', circle: 'Circle', hex: 'Hex', banner: 'Banner' };
+  var RINGNAME = { none: 'None', solid: 'Solid', double: 'Double', dashed: 'Dashed' };
+  function builderHtml(d, name, tag) {
+    var cols = window.mpSquadCrestCols || ['#4aa3f6'];
+    var shapes = window.mpSquadCrestShapes || ['shield'], syms = window.mpSquadCrestSyms || ['tag'], rings = window.mpSquadCrestRings || ['solid'];
+    var chipRow = function (list, cur, key, nameMap) {
+      return '<div class="chips">' + list.map(function (v) { return '<button type="button" class="chip' + (v === cur ? ' on' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '">' + esc((nameMap && nameMap[v]) || v) + '</button>'; }).join('') + '</div>';
+    };
+    var swRow = function (cur, key) {
+      return '<div class="chips">' + cols.map(function (v) { return '<button type="button" class="swatch' + (v === cur ? ' on' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '" style="background:' + esc(v) + '" aria-label="' + esc(v) + '"></button>'; }).join('') + '</div>';
+    };
+    return '<div class="bld">'
+      + '<div class="prev"><div id="bPrev">' + crest(d, 96, tag) + '</div><div><div class="nm" id="bName">' + esc(name || __esT_squadsindex("yourSquad",'Your squad')) + '</div><div class="tg" id="bTag">' + esc((tag || '').toUpperCase() || 'TAG') + '</div></div></div>'
+      + '<div>'
+      + '<div class="bfield"><label class="fl">Shape</label>' + chipRow(shapes, d.shape, 'shape', SHAPENAME) + '</div>'
+      + '<div class="bfield"><label class="fl">Mark</label>' + chipRow(syms, d.sym, 'sym', SYMNAME) + '</div>'
+      + '<div class="bfield"><label class="fl">Background</label>' + swRow(d.bg, 'bg') + '</div>'
+      + '<div class="bfield"><label class="fl">Mark colour</label>' + swRow(d.fg, 'fg') + '</div>'
+      + '<div class="bfield"><label class="fl">Ring</label>' + chipRow(rings, d.ring, 'ring', RINGNAME) + '</div>'
+      + '</div></div>';
+  }
+  function wireBuilder(root, getName, getTag) {
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-set]'); if (!b || !root.contains(b)) return;
+      e.preventDefault();
+      S.draft[b.getAttribute('data-set')] = b.getAttribute('data-v');
+      var key = b.getAttribute('data-set');
+      Array.prototype.forEach.call(root.querySelectorAll('[data-set="' + key + '"]'), function (x) { x.classList.toggle('on', x === b); });
+      repaintPrev(root, getName, getTag);
+    });
+  }
+  function repaintPrev(root, getName, getTag) {
+    var p = $('#bPrev', root); if (p) p.innerHTML = crest(S.draft, 96, getTag ? getTag() : '');
+    var n = $('#bName', root); if (n && getName) n.textContent = getName() || __esT_squadsindex("yourSquad",'Your squad');
+    var t = $('#bTag', root); if (t && getTag) t.textContent = (getTag() || '').toUpperCase() || 'TAG';
+  }
+
+  /* ── views ──────────────────────────────────────────────────────────────────────────────── */
+  function guestView() {
+    return '<div class="card"><h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Sign in to start a squad</h2>'
+      + '<p style="margin:0 0 13px;color:var(--dim);font-size:14px">A squad needs an account so your crest can follow your name around the site. It is free and takes an email.</p>'
+      + __esT_squadsindex("signIn",'<button class="btn p" data-auth-open type="button">Sign in</button></div>')
+      + __esT_squadsindex("squadsLookingForPeople",'<div class="sect"><h2>Squads looking for people</h2><p class="sub">Open squads you could walk into once you are signed in.</p><div class="dir" id="dir"><div class="empty">Loading…</div></div></div>');
+  }
+
+  function createView() {
+    if (!S.draft) S.draft = draftDefault();
+    return '<div class="card">'
+      + '<h2 style="font-size:20px;font-weight:800;margin-bottom:4px">Start a squad</h2>'
+      + '<p style="margin:0 0 15px;color:var(--dim);font-size:14px">You become the leader. The name and the tag are permanent - they are how other squads know who they fought. Everything else you can change later.</p>'
+      + '<div class="row" style="margin-bottom:14px">'
+      + '<div class="grow"><label class="fl" for="cName">Squad name</label><input type="text" id="cName" maxlength="24" placeholder="Night Shift" autocomplete="off" /></div>'
+      + '<div style="flex:0 0 120px"><label class="fl" for="cTag">Tag</label><input type="text" id="cTag" maxlength="4" placeholder="NGT" autocomplete="off" /></div>'
+      + '</div>'
+      + '<div class="bfield"><label class="fl" for="cMotto">Motto <span style="color:var(--faint)">(optional)</span></label><input type="text" id="cMotto" maxlength="80" placeholder="We only trade the open" autocomplete="off" /></div>'
+      + '<div id="bld" style="margin:16px 0">' + builderHtml(S.draft, '', '') + '</div>'
+      + '<div class="chips" style="margin-bottom:14px"><button type="button" class="chip on" id="cOpen" data-open="1">Anyone can join</button><button type="button" class="chip" data-open="0">Invite only</button></div>'
+      + '<button class="btn p" id="cGo" type="button">Create squad</button>'
+      + '<div class="msg" id="cMsg"></div>'
+      + '</div>'
+      + invitesHtml()
+      + __esT_squadsindex("orJoinOneOpen",'<div class="sect"><h2>Or join one</h2><p class="sub">Open squads with room. One squad per account.</p><div class="dir" id="dir"><div class="empty">Loading…</div></div></div>');
+  }
+
+  function invitesHtml() {
+    var inv = (S.me && S.me.invites) || [];
+    if (!inv.length) return '';
+    return __esT_squadsindex("youHaveBeenInvited",'<div class="sect"><h2>You have been invited</h2><div class="dir">') + inv.map(function (i) {
+      return '<div class="dsq">' + crest(i.crest, 34, i.tag) + '<div style="min-width:0"><div class="n">' + esc(i.name) + '</div><div class="s">@' + esc(i.by) + ' &middot; ' + ago(i.ts) + '</div></div>'
+        + '<div class="go" style="display:flex;gap:6px"><button class="btn sm p" data-join="' + esc(i.sid) + '">Join</button><button class="btn sm" data-decl="' + esc(i.sid) + '">No</button></div></div>';
+    }).join('') + '</div></div>';
+  }
+
+  function memberRow(m) {
+    var init = (m.name || '?').slice(0, 1).toUpperCase();
+    return '<div class="mem"><div class="av" style="color:' + esc(m.level && m.level.col || '#9aa3ad') + '">' + esc(init) + '</div>'
+      + '<div style="min-width:0"><div class="who"><a href="#" data-lbu="' + esc(m.name) + '" style="color:inherit;text-decoration:none">' + esc(m.name) + '</a><span class="lv"> ' + esc((m.level && m.level.name) || '') + '</span></div></div>'
+      + '<div class="sp">' + (m.leader ? '<span class="tagpill ld">Leader</span>' : '')
+      + (S.me && S.me.isLeader && !m.leader ? '<button class="btn sm d" data-kick="' + esc(m.name) + '">Remove</button>' : '') + '</div></div>';
+  }
+
+  function duelCard(d, sid) {
+    var mineA = d.a && d.a.sid === sid, us = mineA ? d.a : d.b, them = mineA ? d.b : d.a;
+    var st = d.status === 'active' ? '<span class="st live">Live</span>' : d.status === 'open' ? __esT_squadsindex("openChallenge",'<span class="st open">Open challenge</span>') : d.status === 'pending' ? '<span class="st pend">Waiting</span>' : '<span class="st">' + esc(d.status) + '</span>';
+    var seat = '<span style="width:26px;height:26px;border-radius:8px;border:1.5px dashed var(--line2);display:inline-block;flex:0 0 auto"></span>';
+    var side = function (s, right) { var c = s ? crest(s.crest, 26, s.tag) : seat, n = '<span class="n"' + (s ? '' : ' style="color:var(--faint)"') + '>' + esc((s && s.name) || __esT_squadsindex("waitingForASquad",'Waiting for a squad')) + '</span>'; return '<div class="sd' + (right ? ' r' : '') + '">' + (right ? n + c : c + n) + '</div>'; };
+    var sc = function (v) { return v == null ? '<span class="sc n">-</span>' : '<span class="sc' + (d.winner && ((d.winner === d.a.sid && v === d.aScore) || (d.b && d.winner === d.b.sid && v === d.bScore)) ? ' w' : '') + '">' + (d.metric === 'pnl' || d.metric === 'win' ? '$' + v : v + (d.metric === 'roe' || d.metric === 'wr' ? '%' : '')) + '</span>'; };
+    var h = '<div class="duel">'
+      + '<div class="vs">' + side(d.a) + '<div class="mid">' + st + '</div>' + side(d.b, true) + '</div>';
+    if (d.settled) h += '<div class="vs" style="margin-top:9px">' + sc(d.aScore) + '<div class="mid">' + (d.winner ? '' : 'dead heat') + '</div><div style="text-align:right">' + sc(d.bScore) + '</div></div>';
+    h += '<div class="meta"><span>' + esc(d.metricLabel) + '</span>'
+      + (d.stake > 0 ? '<span>Stake <b>' + d.stake + ' T</b> a side</span>' : __esT_squadsindex("noStake",'<span>No stake</span>'))
+      + (d.status === 'active' ? '<span>' + left(d.end) + '</span>' : '<span>' + ago(d.created) + '</span>') + '</div>';
+    if (d.how && (d.status === 'active' || d.status === 'pending' || d.status === 'open')) h += '<div class="note">' + esc(d.how) + '</div>';
+    var acts = [];
+    if (S.me && S.me.isLeader) {
+      if (d.status === 'pending' && !mineA) { acts.push('<button class="btn sm p" data-acc="' + esc(d.id) + '">Accept</button>'); acts.push('<button class="btn sm" data-dec="' + esc(d.id) + '">Decline</button>'); }
+      else if ((d.status === 'pending' || d.status === 'open') && mineA) acts.push('<button class="btn sm" data-dec="' + esc(d.id) + '">Withdraw</button>');
+    }
+    if (acts.length) h += '<div class="act">' + acts.join('') + '</div>';
+    return h + '</div>';
+  }
+
+  function squadView() {
+    var s = S.me.squad, isL = S.me.isLeader;
+    var duels = S.me.duels || [], live = duels.filter(function (d) { return d.status === 'active' || d.status === 'pending' || d.status === 'open'; });
+    var past = duels.filter(function (d) { return d.settled; });
+    var h = '<div class="card">'
+      + '<div class="sqhead">' + crest(s.crest, 62, s.tag)
+      + '<div style="min-width:0"><div class="nm">' + esc(s.name) + '</div><div class="mt">' + (s.motto ? esc(s.motto) + ' &middot; ' : '') + '<span class="mono">' + esc(s.tag) + '</span> &middot; ' + s.n + ' of ' + s.max + '</div></div>'
+      + '<div class="rec"><div class="w"><b>' + s.wins + '</b><span>Won</span></div><div class="d"><b>' + s.draws + '</b><span>Drawn</span></div><div class="l"><b>' + s.losses + '</b><span>Lost</span></div></div>'
+      + '</div></div>';
+
+    h += '<div class="card"><h2 style="font-size:16px;font-weight:800;margin-bottom:8px">Members</h2>' + (s.members || []).map(memberRow).join('')
+      + '<div class="row" style="margin-top:13px">'
+      + '<button class="btn" type="button" id="roomGo" data-room="' + esc(s.sid) + '">' + __esT_squadsindex("openSquadRoom2", 'Open squad room') + '</button>'
+      + (isL && s.n < s.max ? '<button class="btn" id="invBtn" type="button">Invite someone</button>' : '')
+      + '</div>'
+      + (isL ? '<div id="invBox" hidden style="margin-top:11px"><div class="row"><div class="grow"><input type="text" id="invName" placeholder="username" maxlength="24" autocomplete="off" /></div><button class="btn p" id="invGo" type="button">Send invite</button></div><div class="msg" id="invMsg"></div>' + pendingInvHtml() + '</div>' : '')
+      + '</div>';
+
+    h += '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader",'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe",'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
+    h += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning",'<div class="empty">No duel running.</div>');
+    if (isL && !live.some(function (d) { return d.status === 'active'; })) h += challengeHtml();
+    h += '</div>';
+
+    if (past.length) h += __esT_squadsindex("pastDuels",'<div class="sect"><h2>Past duels</h2>') + past.slice(0, 8).map(function (d) { return duelCard(d, s.sid); }).join('') + '</div>';
+
+    h += __esT_squadsindex("openChallengesSquadsLookin",'<div class="sect"><h2>Open challenges</h2><p class="sub">Squads looking for anyone to take them on.</p><div id="openD"><div class="empty">Loading…</div></div></div>');
+
+    h += '<div class="sect"><h2>Leader controls</h2>';
+    if (isL) {
+      if (!S.draft) S.draft = Object.assign({}, s.crest);
+      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Crest</h3><div id="bld">' + builderHtml(S.draft, s.name, s.tag) + '</div>'
+        + '<div class="bfield" style="margin-top:13px"><label class="fl" for="eMotto">Motto</label><input type="text" id="eMotto" maxlength="80" value="' + esc(s.motto) + '" autocomplete="off" /></div>'
+        + '<div class="chips" style="margin-bottom:13px"><button type="button" class="chip' + (s.open ? ' on' : '') + __esT_squadsindex("dataOpen1Anyone",'" data-open="1">Anyone can join</button><button type="button" class="chip') + (s.open ? '' : ' on') + __esT_squadsindex("dataOpen0Invite",'" data-open="0">Invite only</button></div>')
+        + '<button class="btn p" id="eGo" type="button">Save</button><div class="msg" id="eMsg"></div></div>';
+      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:5px">Leave or disband</h3><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">If you leave, the longest-serving member takes over. Disbanding removes the squad and its crest from every member\'s card.</p>'
+        + '<div class="row"><button class="btn" id="leaveGo" type="button">Leave squad</button><button class="btn d" id="disGo" type="button">Disband</button></div><div class="msg" id="lMsg"></div></div>';
+    } else {
+      h += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the crest or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  function pendingInvHtml() {
+    var p = (S.me && S.me.pendingInv) || [];
+    if (!p.length) return '';
+    return __esT_squadsindex("waitingOn",'<div class="note">Waiting on: ') + p.map(function (x) { return esc(x.name); }).join(', ') + '</div>';
+  }
+
+  var CH = { metric: 'pnl', dur: 604800000, stake: 0, sid: '' };
+  var MET = [['pnl', __esT_squadsindex("totalProfit",'Total profit')], ['roe', 'Best ROE'], ['win', __esT_squadsindex("biggestWin",'Biggest win')], ['wr', __esT_squadsindex("winRate",'Win rate')]];
+  var DUR = [[86400000, '24 hours'], [259200000, '3 days'], [604800000, '7 days']];
+  var STK = [0, 25, 50, 100, 250];
+  function challengeHtml() {
+    var row = function (list, cur, key) { return '<div class="chips">' + list.map(function (x) { var v = Array.isArray(x) ? x[0] : x, l = Array.isArray(x) ? x[1] : (x === 0 ? __esT_squadsindex("noStake2",'No stake') : x + ' T'); return '<button type="button" class="chip' + (String(v) === String(cur) ? ' on' : '') + '" data-ch="' + key + '" data-v="' + v + '">' + l + '</button>'; }).join('') + '</div>'; };
+    return '<div class="card" style="margin-top:12px"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Start a duel</h3>'
+      + __esT_squadsindex("scoredOn",'<div class="bfield"><label class="fl">Scored on</label>') + row(MET, CH.metric, 'metric') + '</div>'
+      + __esT_squadsindex("runsFor",'<div class="bfield"><label class="fl">Runs for</label>') + row(DUR, CH.dur, 'dur') + '</div>'
+      + __esT_squadsindex("yourStakeYouHave",'<div class="bfield"><label class="fl">Your stake <span style="color:var(--faint)">(you have ') + ((S.me && S.me.ticks) || 0) + ' T)</span></label>' + row(STK, CH.stake, 'stake') + '</div>'
+      + __esT_squadsindex("squadTagOrId",'<div class="bfield"><label class="fl" for="chSid">Squad tag or id <span style="color:var(--faint)">(leave empty to post an open challenge)</span></label><input type="text" id="chSid" maxlength="8" placeholder="e.g. 7KQM2P" autocomplete="off" /></div>')
+      + __esT_squadsindex("sendChallenge",'<button class="btn p" id="chGo" type="button">Send challenge</button><div class="msg" id="chMsg"></div>')
+      + __esT_squadsindex("onTotalProfitOnly",'<div class="note">On total profit, only the best members of each squad count - as many as the smaller squad has - so five cannot beat three by arithmetic alone.</div></div>');
+  }
+
+  /* ── directory + open duels ─────────────────────────────────────────────────────────────── */
+  function loadDir() {
+    var el = $('#dir'); if (!el) return;
+    api('browse').then(function (j) {
+      var list = (j && j.squads) || [];
+      if (!list.length) { el.innerHTML = __esT_squadsindex("noOpenSquadsRight",'<div class="empty">No open squads right now. Start the first one.</div>'); return; }
+      el.innerHTML = list.map(function (s) {
+        return '<div class="dsq">' + crest(s.crest, 34, s.tag) + '<div style="min-width:0"><div class="n">' + esc(s.name) + '</div><div class="s">' + s.n + '/' + s.max + ' &middot; ' + s.wins + 'W ' + s.losses + 'L</div></div>'
+          + '<div class="go">' + (signedIn() ? '<button class="btn sm" data-join="' + esc(s.sid) + '">Join</button>' : __esT_squadsindex("signIn2",'<button class="btn sm" data-auth-open type="button">Sign in</button>')) + '</div></div>';
+      }).join('');
+    }).catch(function () { el.innerHTML = __esT_squadsindex("couldNotLoad",'<div class="empty">Could not load.</div>'); });
+  }
+  function loadOpen() {
+    var el = $('#openD'); if (!el) return;
+    api('openduels').then(function (j) {
+      var list = ((j && j.duels) || []).filter(function (d) { return !S.me || !S.me.squad || d.a.sid !== S.me.squad.sid; });
+      if (!list.length) {
+        var mineOpen = ((S.me && S.me.duels) || []).some(function (d) { return d.status === 'open'; });
+        el.innerHTML = '<div class="empty">' + (mineOpen ? __esT_squadsindex("onlyYoursIsOpen",'Only yours is open right now - it is above.') : __esT_squadsindex("nobodyHasPostedOne",'Nobody has posted one.')) + '</div>'; return;
+      }
+      el.innerHTML = list.map(function (d) {
+        return '<div class="duel"><div class="vs">' + '<div class="sd">' + crest(d.a.crest, 26, d.a.tag) + '<span class="n">' + esc(d.a.name) + '</span></div>'
+          + __esT_squadsindex("openAnyone",'<div class="mid"><span class="st open">Open</span></div><div class="sd r"><span class="n" style="color:var(--faint)">anyone</span></div></div>')
+          + '<div class="meta"><span>' + esc(d.metricLabel) + '</span>' + (d.stake > 0 ? '<span>Stake <b>' + d.stake + ' T</b></span>' : __esT_squadsindex("noStake",'<span>No stake</span>')) + '<span>' + ago(d.created) + '</span></div>'
+          + (S.me && S.me.isLeader ? '<div class="act"><button class="btn sm p" data-acc="' + esc(d.id) + '">Take it on</button></div>' : '') + '</div>';
+      }).join('');
+    }).catch(function () { el.innerHTML = __esT_squadsindex("couldNotLoad",'<div class="empty">Could not load.</div>'); });
+  }
+
+  /* ── render + wiring ────────────────────────────────────────────────────────────────────── */
+  function render() {
+    if (!signedIn()) { app.innerHTML = guestView(); loadDir(); return; }
+    if (!S.me) { app.innerHTML = '<div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div></div>'; return; }
+    app.innerHTML = S.me.squad ? squadView() : createView();
+    var bld = $('#bld', app);
+    if (bld) wireBuilder(bld, function () { var n = $('#cName'); return n ? n.value : (S.me.squad && S.me.squad.name); }, function () { var t = $('#cTag'); return t ? t.value : (S.me.squad && S.me.squad.tag); });
+    ['#cName', '#cTag'].forEach(function (sel) { var el = $(sel); if (el) el.addEventListener('input', function () { if (sel === '#cTag') el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); repaintPrev(bld, function () { return $('#cName').value; }, function () { return $('#cTag').value; }); }); });
+    if (S.me.squad) loadOpen(); else loadDir();
+  }
+
+  function load(soft) {
+    return api('mine').then(function (j) {
+      if (j && j.error === 'login_required') { S.me = null; app.innerHTML = guestView(); loadDir(); return; }
+      S.me = j; if (!soft) S.draft = null;
+      render();
+    }).catch(function () { app.innerHTML = __esT_squadsindex("couldNotLoadRetry",'<div class="card"><div class="empty">Could not load. <button class="btn sm" onclick="location.reload()">Retry</button></div></div>'); });
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var openBtn = t.closest && t.closest('[data-open]');
+    if (openBtn && app.contains(openBtn)) { e.preventDefault(); Array.prototype.forEach.call(openBtn.parentNode.querySelectorAll('[data-open]'), function (x) { x.classList.toggle('on', x === openBtn); }); return; }
+    var chBtn = t.closest && t.closest('[data-ch]');
+    if (chBtn) { e.preventDefault(); var k = chBtn.getAttribute('data-ch'); CH[k] = k === 'metric' ? chBtn.getAttribute('data-v') : +chBtn.getAttribute('data-v'); Array.prototype.forEach.call(chBtn.parentNode.querySelectorAll('[data-ch="' + k + '"]'), function (x) { x.classList.toggle('on', x === chBtn); }); return; }
+
+    var b = t.closest && t.closest('button, a'); if (!b) return;
+    var go = function (op, body, msgSel, good) {
+      b.disabled = true;
+      api(op, body).then(function (j) {
+        b.disabled = false;
+        say($(msgSel), j, good);
+        if (j && !j.error) { toast(good, 'good'); load(); }
+      });
+    };
+    if (b.id === 'roomGo') {
+      e.preventDefault();
+      var rid = b.getAttribute('data-room');
+      /* mp-trade.js is pulled on the first chat use and the squad arrives on the /xp poll - either can land
+         after this click, so the open is retried rather than assumed. */
+      var tryOpen = function (n) { if (window.mpChatRoom && window.mpChatRoom(rid)) return; if (n > 0) setTimeout(function () { tryOpen(n - 1); }, 350); };
+      if (window.mpEnsureChat) { try { window.mpEnsureChat(); } catch (x) {} }
+      tryOpen(14);
+      return;
+    }
+    if (b.id === 'cGo') {
+      e.preventDefault();
+      var nm = ($('#cName') || {}).value || '', tg = ($('#cTag') || {}).value || '', mo = ($('#cMotto') || {}).value || '';
+      var openOn = document.querySelector('.chip.on[data-open]');
+      go('create', { name: nm.trim(), tag: tg, motto: mo, crest: S.draft, open: openOn ? openOn.getAttribute('data-open') === '1' : true }, '#cMsg', 'Squad created.');
+    } else if (b.id === 'invBtn') { e.preventDefault(); var ib = $('#invBox'); if (ib) { ib.hidden = !ib.hidden; if (!ib.hidden) { var f = $('#invName'); if (f) f.focus(); } } }
+    else if (b.id === 'invGo') { e.preventDefault(); go('invite', { name: (($('#invName') || {}).value || '').trim() }, '#invMsg', __esT_squadsindex("inviteSent",'Invite sent.')); }
+    else if (b.id === 'eGo') { e.preventDefault(); var oo = document.querySelector('.chip.on[data-open]'); go('edit', { crest: S.draft, motto: (($('#eMotto') || {}).value || ''), open: oo ? oo.getAttribute('data-open') === '1' : undefined }, '#eMsg', 'Saved.'); }
+    else if (b.id === 'leaveGo') { e.preventDefault(); if (!confirm(__esT_squadsindex("leaveThisSquad",'Leave this squad?'))) return; go('leave', {}, '#lMsg', __esT_squadsindex("youLeftTheSquad",'You left the squad.')); }
+    else if (b.id === 'disGo') { e.preventDefault(); if (!confirm(__esT_squadsindex("disbandTheSquadThe",'Disband the squad? The crest comes off every member\'s card.'))) return; go('disband', {}, '#lMsg', 'Squad disbanded.'); }
+    else if (b.id === 'chGo') { e.preventDefault(); go('challenge', { sid: (($('#chSid') || {}).value || '').trim(), metric: CH.metric, dur: CH.dur, stake: CH.stake }, '#chMsg', CH.stake > 0 ? __esT_squadsindex("challengeSentYourStake",'Challenge sent - your stake is held until it settles.') : __esT_squadsindex("challengeSent",'Challenge sent.')); }
+    else if (b.getAttribute('data-join')) { e.preventDefault(); go('join', { sid: b.getAttribute('data-join') }, '#cMsg', __esT_squadsindex("youAreIn",'You are in.')); }
+    else if (b.getAttribute('data-decl')) { e.preventDefault(); go('declineinv', { sid: b.getAttribute('data-decl') }, '#cMsg', 'Invite dismissed.'); }
+    else if (b.getAttribute('data-kick')) { e.preventDefault(); if (!confirm('Remove ' + b.getAttribute('data-kick') + '?')) return; go('kick', { name: b.getAttribute('data-kick') }, '#invMsg', 'Removed.'); }
+    else if (b.getAttribute('data-acc')) { e.preventDefault(); go('accept', { id: b.getAttribute('data-acc') }, '#chMsg', __esT_squadsindex("duelIsLive",'Duel is live.')); }
+    else if (b.getAttribute('data-dec')) { e.preventDefault(); go('decline', { id: b.getAttribute('data-dec') }, '#chMsg', 'Done.'); }
+  });
+
+  window.addEventListener('mp-auth-change', function () { load(); });
+  /* ?sid= arrives from a profile card - show that squad even when the reader is in none */
+  try {
+    var want = new URLSearchParams(location.search).get('sid');
+    if (want) api('get?sid=' + encodeURIComponent(want)).then(function (j) {
+      if (!j || !j.squad) return;
+      var s = j.squad;
+      var box = document.createElement('div'); box.className = 'sect';
+      box.innerHTML = '<h2>' + esc(s.name) + '</h2><div class="card"><div class="sqhead">' + crest(s.crest, 56, s.tag)
+        + '<div style="min-width:0"><div class="nm">' + esc(s.name) + '</div><div class="mt">' + (s.motto ? esc(s.motto) + ' &middot; ' : '') + '<span class="mono">' + esc(s.tag) + '</span> &middot; ' + s.n + ' of ' + s.max + __esT_squadsindex("middotLedBy",' &middot; led by ') + esc(s.leaderName || '') + '</div></div>'
+        + '<div class="rec"><div class="w"><b>' + s.wins + '</b><span>Won</span></div><div class="d"><b>' + s.draws + '</b><span>Drawn</span></div><div class="l"><b>' + s.losses + '</b><span>Lost</span></div></div></div>'
+        + (s.members || []).map(function (m) { return '<div class="mem"><div class="av">' + esc((m.name || '?').slice(0, 1).toUpperCase()) + '</div><div class="who"><a href="#" data-lbu="' + esc(m.name) + '" style="color:inherit;text-decoration:none">' + esc(m.name) + '</a></div><div class="sp">' + (m.leader ? '<span class="tagpill ld">Leader</span>' : '') + '</div></div>'; }).join('')
+        + '</div>';
+      app.parentNode.insertBefore(box, app);
+    });
+  } catch (e) {}
+
+  load();
+  setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
+})();
+</script>
+<script defer src="/assets/mp-auth.js?v=910f4146"></script>
+<script defer src="/assets/mp-nav.js?v=1092f256"></script>
+</body>
+</html>

@@ -206,7 +206,7 @@ async function openDrawer(page, url) {
       const s = mp.querySelector('.mpnav-search').getBoundingClientRect();
       const wide = [...mp.querySelectorAll('*')].filter(e => e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).overflowX === 'visible').length;
       return {
-        open: !mp.hidden, small: rows.filter(r => r.getBoundingClientRect().height < 44).length,
+        open: !mp.hidden, small: rows.filter(r => r.getBoundingClientRect().height < 44).length, rows: rows.length,
         searchReachable: s.top >= 0 && s.bottom <= innerHeight, docW: document.documentElement.scrollWidth, wide,
         screens: +(sc.scrollHeight / Math.max(1, sc.clientHeight)).toFixed(2),
       };
@@ -221,8 +221,16 @@ async function openDrawer(page, url) {
     // After: 48 destinations = 4.26 screens = 0.089 per destination, longest block 8 lines. More scroll in
     // total, less scroll per thing you can reach, and the 25-row dump is gone. 4.4 fails on creep.
     // 2026-09-17: Simulators (one collapsed row) removed, Where to start moved above the sections, Leaderboards added: 48 destinations.
-    ok(pr.screens <= 4.4, 'the drawer stays within its measured length budget (' + pr.screens + ' of 4.4 screens)');
-    ok(pr.screens / 48 <= 0.100, 'and is no longer per destination than the menu it replaced (' + (pr.screens / 48).toFixed(3) + ' vs 0.100 screens each)');
+    // 2026-09-30 (Squads, the 49th): the absolute 4.4 was a SNAPSHOT of the day's measurement plus 3% headroom,
+    // so it was always going to fail on the first legitimate new row - it failed at 4.41 - while the check that
+    // carries the actual meaning divided by a HARDCODED 48 and quietly went stale. Both are honest now: the
+    // count is measured, the per-destination rule is TIGHTENED 0.100 -> 0.092 (the real figure is 0.090), and
+    // the absolute number becomes a ceiling on how long a drawer may ever get rather than a copy of last
+    // Tuesday. Both are needed: a ratio alone can be gamed by adding rows, a ceiling alone punishes growth.
+    const dest = pr.rows;
+    ok(dest >= 45, 'the drawer still lists every destination (' + dest + ')');
+    ok(pr.screens / dest <= 0.092, 'no longer per destination than it has ever been (' + (pr.screens / dest).toFixed(3) + ' vs 0.092 screens each, ' + dest + ' destinations)');
+    ok(pr.screens <= 4.8, 'and the whole drawer stays inside its ceiling (' + pr.screens + ' of 4.8 screens)');
     await ph.close();
 
     console.log('\n' + (fail ? 'FAIL' : 'PASS') + ' - ' + pass + ' ok, ' + fail + ' failed' + (LOCAL ? '  [local bundle]' : ''));

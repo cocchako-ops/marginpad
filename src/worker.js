@@ -7241,7 +7241,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=68e7bfc2" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=1092f256" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11962,12 +11962,17 @@ const SQUAD_METRICS = {
 // on a 22px chat line and a 380px profile card alike. Client renderer: window.mpSquadCrest in mp-auth.js.
 const CREST_SHAPES = ['shield', 'circle', 'hex', 'banner'];
 const CREST_SYMS = ['tag', 'bolt', 'candle', 'up', 'down', 'target', 'crown', 'star', 'triangle', 'diamond', 'anchor', 'eye', 'wave', 'cross'];
-const CREST_COLS = ['#c2f64a', '#2ebd85', '#ff5a4d', '#4aa3f6', '#b07cf6', '#f6b74a', '#f64a9e', '#4af6e0', '#e9e7df', '#7a838f'];
+const CREST_COLS = ['#c2f64a', '#2ebd85', '#ff5a4d', '#4aa3f6', '#b07cf6', '#f6b74a', '#f64a9e', '#4af6e0', '#e9e7df', '#7a838f', '#0a0b0d']; // the site's own ground is IN the palette: a light crest wants a dark mark, and without it every pale ground had to take a pale mark
 const CREST_RINGS = ['none', 'solid', 'double', 'dashed'];
 function crestNorm(c) { // never trust a posted crest - every field snaps to a member of its own list
   let o = {}; try { o = (typeof c === 'string' ? JSON.parse(c) : c) || {}; } catch (e) { o = {}; }
   const pick = (v, list, d) => (list.indexOf(String(v)) >= 0 ? String(v) : d);
-  return { shape: pick(o.shape, CREST_SHAPES, 'shield'), sym: pick(o.sym, CREST_SYMS, 'tag'), bg: pick(o.bg, CREST_COLS, '#4aa3f6'), fg: pick(o.fg, CREST_COLS, '#e9e7df'), ring: pick(o.ring, CREST_RINGS, 'solid') };
+  const bg = pick(o.bg, CREST_COLS, '#4aa3f6');
+  // A MARK THE COLOUR OF ITS OWN GROUND IS AN INVISIBLE CREST - found by rendering the whole set on one sheet,
+  // never by reading the code. The builder steers away from it and this makes it unstorable either way.
+  let fg = pick(o.fg, CREST_COLS, '#e9e7df');
+  if (fg === bg) fg = CREST_COLS.find(c => c !== bg) || '#e9e7df';
+  return { shape: pick(o.shape, CREST_SHAPES, 'shield'), sym: pick(o.sym, CREST_SYMS, 'tag'), bg, fg, ring: pick(o.ring, CREST_RINGS, 'solid') };
 }
 function squadNameOk(s) { return /^[A-Za-z0-9][A-Za-z0-9 ._'-]{1,23}$/.test(String(s || '').trim()); }
 function squadTagNorm(t) { return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); }
@@ -16391,7 +16396,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '90ecbae5';
+const ASSET_V = '910f4146';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -16985,13 +16990,15 @@ async function handleAuth(url, request, env, ctx) {
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
     const uidQ = encodeURIComponent(sd.user.id);
     const doJ = (pth) => stub.fetch(new Request('https://do/' + pth)).then(r => r.json()).catch(() => null);
-    const [xd, fd, dd, pd, nd, pf, pb] = await Promise.all([doJ('xplog?uid=' + uidQ), doJ('myfollowers?uid=' + uidQ), doJ('dm/unread?uid=' + uidQ), doJ('duel/pending?uid=' + uidQ), doJ('unotifs?uid=' + uidQ), premiumFor(env, request).catch(() => null), doJ('pb?uid=' + uidQ)]);
+    // The squad rides along on the poll every page already makes, so no surface needs its own request to know
+    // which room to offer or which crest to draw (2026-09-29). One more parallel DO read, no extra round trip.
+    const [xd, fd, dd, pd, nd, pf, pb, sqd] = await Promise.all([doJ('xplog?uid=' + uidQ), doJ('myfollowers?uid=' + uidQ), doJ('dm/unread?uid=' + uidQ), doJ('duel/pending?uid=' + uidQ), doJ('unotifs?uid=' + uidQ), premiumFor(env, request).catch(() => null), doJ('pb?uid=' + uidQ), doJ('squad/of?uids=' + encodeURIComponent(uidQ))]);
     const log = ((xd && xd.log) || []).slice(0, 12);
     const followers = (fd && fd.count) || 0, lastFollower = (fd && fd.last) || null;
     const dmUnread = (dd && dd.unread) || 0, duelPending = (pd && pd.pending) || 0, notifUnread = (nd && nd.unread) || 0;
     const premium = !!(pf && pf.premium); // drives the client premium-upgrade celebration
     const records = (pb && pb.records) || null; // personal records + the last one broken (pbNew) for the toast
-    const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread, premium, records: records ? { roe: records.roe, pnl: records.pnl, streak: records.streak, day: records.day } : null, pbNew: records && records.fresh ? records.fresh : null, premiumNew: premium && !(sd.user && sd.user.prem_seen) }; // premiumNew = premium AND not-yet-celebrated → the client fires the upgrade celebration once, regardless of WHEN they became premium (fixes first-login-already-premium: an owner grant / IPN that landed while offline)
+    const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread, premium, records: records ? { roe: records.roe, pnl: records.pnl, streak: records.streak, day: records.day } : null, pbNew: records && records.fresh ? records.fresh : null, squad: (sqd && sqd.squads && sqd.squads[uidQ]) || null, premiumNew: premium && !(sd.user && sd.user.prem_seen) }; // premiumNew = premium AND not-yet-celebrated → the client fires the upgrade celebration once, regardless of WHEN they became premium (fixes first-login-already-premium: an owner grant / IPN that landed while offline)
     try { const xc2 = globalThis.__xpC = globalThis.__xpC || new Map(); xc2.set(tok, { t: Date.now(), d: xpOut }); if (xc2.size > 500) xc2.delete(xc2.keys().next().value); } catch (e) {}
     return jr(xpOut);
   }
@@ -28979,7 +28986,8 @@ export class UserStore {
       return this.j({ squads: out });
     }
     if (path === '/squad/of') { // the crest for a set of accounts - what the public profile card and the boards ask for
-      const ids = (Array.isArray(b && b.uids) ? b.uids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 200);
+      const qIds = String(url.searchParams.get('uids') || '').split(',').filter(Boolean); // doJ() in the /xp poll is a GET helper, so the ids arrive on the query there
+      const ids = (Array.isArray(b && b.uids) ? b.uids : qIds).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 200);
       const out = {};
       if (ids.length) {
         try {

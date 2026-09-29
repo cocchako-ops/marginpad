@@ -2072,8 +2072,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   /* per-coin chat rooms: All + a few majors. 'global' = the original shared room (history preserved). */
   var ROOMS=['global','BTC','ETH','SOL','BNB','XRP','DOGE'],room='global',roomBar=null;
   var CT_STAR='<svg class="ct-ric ct-ricprem" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>';
-  function chatRooms(){var b=['global'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;} /* per-coin rooms retired 2026-09-02: measured over the DO history, BTC 6 messages lifetime, ETH 1, XRP 3, SOL/BNB/DOGE 0 - an empty room reads as a dead site. The room_<COIN> DO instances stay; re-add a coin here to reopen it. */ // Premium lounge appears only for VIPs (server also enforces it)
-  function roomLabel(r){return r==='global'?'All':r==='PREMIUM'?'Premium':r;}
+  /* The squad room is the member's own: its id IS the room name (chatInstOf keeps 6 uppercase alnum), and the
+     worker checks membership on the socket upgrade - listing it here is convenience, never the gate.
+     MIRRORED BY HAND in home.js and mp-trade.js, like every other copy in this pair. */
+  function chatRooms(){var b=['global'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');if(window.mpSquad&&window.mpSquad.sid)b.push(window.mpSquad.sid);return b;} /* per-coin rooms retired 2026-09-02: measured over the DO history, BTC 6 messages lifetime, ETH 1, XRP 3, SOL/BNB/DOGE 0 - an empty room reads as a dead site. The room_<COIN> DO instances stay; re-add a coin here to reopen it. */ // Premium lounge appears only for VIPs (server also enforces it)
+  function roomLabel(r){if(r==='global')return 'All';if(r==='PREMIUM')return 'Premium';if(window.mpSquad&&window.mpSquad.sid===r)return String(window.mpSquad.tag||'Squad').toUpperCase();return r;}
   var CT_CARET='<svg class="ct-rcaret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var CT_CHECK='<svg class="ct-ri-ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
   var CT_COIN={BTC:1,ETH:1027,SOL:5426,BNB:1839,XRP:52,DOGE:74};
@@ -2098,6 +2101,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
   window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
+  /* A squad room can appear AFTER the room bar was built (the squad arrives on the /xp poll, the bar is built
+     once on first open), so the bar is thrown away and rebuilt when the squad changes - otherwise a member who
+     just joined has a room the server would let them into and no way to pick it. window.mpChatRoom lets the
+     squads page open the chat straight onto it. MIRRORED BY HAND in home.js and mp-trade.js. */
+  window.mpChatRoom=function(r){try{if(!r||chatRooms().indexOf(r)<0)return false;if(typeof openBox==='function')openBox();switchRoom(r);return true;}catch(e){return false;}};
+  window.addEventListener('mp-squad-change',function(){try{if(roomBar&&roomBar.parentNode)roomBar.parentNode.removeChild(roomBar);roomBar=null;if(typeof buildRoomBar==='function')buildRoomBar();}catch(e){}});
   function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}

@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-28T19:22:48.685Z",
-  "pages": 384,
-  "occurrences": 26400,
-  "unique": 13945,
-  "words": 265492,
+  "generated": "2026-09-29T21:54:49.403Z",
+  "pages": 385,
+  "occurrences": 26417,
+  "unique": 13962,
+  "words": 265735,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-09-28T19:22:58.413Z"
+  "merged": "2026-09-29T21:55:29.937Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -149708,6 +149708,210 @@
    ],
    "n": 1,
    "w": 7
+  },
+  "2zyRVWv220": {
+   "en": "Squads - Five Traders, One Crest, Squad Duels | MarginPad",
+   "es": "Escuadras - Cinco traders, un escudo, duelos de escuadra | MarginPad",
+   "kind": [
+    "title"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "z_Jfc69aa_": {
+   "en": "<a href=\"/\">MarginPad</a> <span>/</span> <span>Squads</span>",
+   "es": "<a href=\"/\">MarginPad</a> <span>/</span> <span>Escuadras</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "A-Q4ZOUhPm": {
+   "en": "Five traders, one crest",
+   "es": "Cinco traders, un escudo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "bk4YVUOtwL": {
+   "en": "A squad is up to five people. The leader designs a crest, and it appears on every member's profile card across the whole site. You get a room only the squad can open, and you can challenge other squads for Ticks. Win, draw or lose, everyone who traded earns XP.",
+   "es": "Una escuadra es de hasta cinco personas. El líder diseña un escudo, y ese escudo aparece en la tarjeta de perfil de cada miembro en todo el sitio. Tienes una sala que solo la escuadra puede abrir, y puedes retar a otras escuadras por Ticks. Ganes, empates o pierdas, todo el que haya operado gana XP.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 47
+  },
+  "nedM_k5vVt": {
+   "en": "How a squad works",
+   "es": "Cómo funciona una escuadra",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "erMegyhJ73": {
+   "en": "Four things, and nothing costs real money.",
+   "es": "Cuatro cosas, y nada cuesta dinero real.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "rGYn9DXnIa": {
+   "en": "Up to five",
+   "es": "Hasta cinco",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "9tInWbCyNx": {
+   "en": "The leader founds it and invites by username, or leaves it open so anyone can walk in. One squad per account.",
+   "es": "El líder la funda e invita por nombre de usuario, o la deja abierta para que entre cualquiera. Una escuadra por cuenta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "2bK073dhtY": {
+   "en": "A crest on every card",
+   "es": "Un escudo en cada tarjeta",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "35qI3SLupS": {
+   "en": "The leader picks the shape, the mark and the colours. It rides on every member's public profile card, wherever their name appears.",
+   "es": "El líder elige la forma, la marca y los colores. Viaja en la tarjeta de perfil pública de cada miembro, allí donde aparezca su nombre.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 22
+  },
+  "wCxwCHpG5h": {
+   "en": "Your own room",
+   "es": "Tu propia sala",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "jomLCUjdpr": {
+   "en": "A chat room only your squad can open. The server checks membership - it is not a hidden button.",
+   "es": "Una sala de chat que solo tu escuadra puede abrir. El servidor comprueba quién es miembro: no es un botón escondido.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "34JjuqrCzV": {
+   "en": "Squad duels",
+   "es": "Duelos de escuadra",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "_K0NKGcz5R": {
+   "en": "The leader stakes Ticks for the squad. Win and the stake comes back plus the other squad's, split across everyone. Every member who closed a trade earns XP either way.",
+   "es": "El líder apuesta Ticks por la escuadra. Si gana, la apuesta vuelve más la de la otra escuadra, repartida entre todos. Cada miembro que haya cerrado una operación gana XP en cualquier caso.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "D9YvbaZnM5": {
+   "en": "Build a squad of up to five traders on MarginPad: design a crest that appears on every member's profile card, get a private squad room, and duel other squads for Ticks. Win, draw or lose, every member who traded earns XP. Free, no deposit.",
+   "es": "Crea una escuadra de hasta cinco traders en MarginPad: diseña un escudo que aparece en la tarjeta de perfil de cada miembro, consigue una sala privada de escuadra y reta a otras escuadras por Ticks. Ganes, empates o pierdas, cada miembro que haya operado gana XP. Gratis, sin depósito.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 41
+  },
+  "q2upni_vAv": {
+   "en": "MarginPad Squads - five traders, one crest",
+   "es": "Escuadras de MarginPad: cinco traders, un escudo",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "-7jiNIyYKB": {
+   "en": "Up to five traders, a crest on every member's card, a private room and squad-vs-squad duels staked in Ticks. Everyone who traded earns XP, win or lose.",
+   "es": "Hasta cinco traders, un escudo en la tarjeta de cada miembro, una sala privada y duelos de escuadra contra escuadra apostados en Ticks. Todo el que haya operado gana XP, gane o pierda.",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 25
   },
   "4oq_dTTdtB": {
    "en": "MarginPad Status - API, trading store, liquidation feed uptime",

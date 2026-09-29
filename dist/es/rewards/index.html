@@ -1305,10 +1305,10 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!bp.hidden)close();});
 })();
 </script>
-<script src="/assets/mp-trade.js?v=ad5f8788" defer></script>
-<script defer src="/assets/mp-auth.js?v=90ecbae5"></script>
-<script defer src="/assets/mp-profile.js?v=340d5165"></script>
-<script defer src="/assets/mp-nav.js?v=68e7bfc2"></script>
+<script src="/assets/mp-trade.js?v=0a2322e7" defer></script>
+<script defer src="/assets/mp-auth.js?v=910f4146"></script>
+<script defer src="/assets/mp-profile.js?v=271a5a64"></script>
+<script defer src="/assets/mp-nav.js?v=1092f256"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;
@@ -1335,9 +1335,10 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       var C9=169.6,total9=d.missions.length;
       var rf=document.getElementById('msnRingF');if(rf)rf.style.strokeDashoffset=String((C9*(1-(total9?doneN/total9:0))).toFixed(1));
       var rt=document.getElementById('msnRingT');if(rt)rt.textContent=doneN+'/'+total9;
-      var b9=d.bonus||{};var sN=+b9.setN||5,sU=(+b9.setUsd||0.02).toFixed(2),wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.05).toFixed(2),wC=+b9.weekCount||0;
+      var b9=d.bonus||{};var sN=+b9.setN||5,sU=(+b9.setUsd||0).toFixed(2),sX=+b9.setXp||60,wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.05).toFixed(2),wC=+b9.weekCount||0;
       var st9=document.getElementById('msnSetTxt');
-      if(st9)st9.innerHTML=b9.setClaimed?'SET BONUS <span style="color:#c2f64a">+$'+sU+' PAID</span>':'SET BONUS <span style="color:#c2f64a">+$'+sU+'</span> at '+sN+' claims \u00b7 <span style="color:#e9e7df">'+Math.min(doneN,sN)+'/'+sN+'</span>';
+      var _sv=(+sU>0)?('+$'+sU):('+'+sX+' XP'); /* 2026-09-29: the set bonus pays XP, not cents */
+      if(st9)st9.innerHTML=b9.setClaimed?'SET BONUS <span style="color:#c2f64a">'+_sv+' PAID</span>':'SET BONUS <span style="color:#c2f64a">'+_sv+'</span> at '+sN+' claims \u00b7 <span style="color:#e9e7df">'+Math.min(doneN,sN)+'/'+sN+'</span>';
       var wt=document.getElementById('msnWkTxt');
       if(wt)wt.innerHTML=b9.weekClaimed?'<span style="color:#c2f64a">+$'+wU+' PAID</span>':(wC+'/'+wN9+' \u2192 +$'+wU);
       var wb=document.getElementById('msnWkBar');if(wb)wb.style.width=Math.min(100,Math.round(wC/(wN9||15)*100))+'%';
@@ -1356,7 +1357,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       .then(function(d){
         if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null,bonus:d.bonus});
           if(d.bonusXp)msnToast('+'+d.bonusXp+' XP MYSTERY BONUS','#c2f64a');
-          if(d.setBonusUsd)setTimeout(function(){msnToast('DAILY SET COMPLETE +$'+(+d.setBonusUsd).toFixed(2),'#ffd75a');},700);
+          if(d.setBonusUsd||d.setBonusXp)setTimeout(function(){msnToast('DAILY SET COMPLETE '+(d.setBonusUsd?'+$'+(+d.setBonusUsd).toFixed(2):'+'+(+d.setBonusXp)+' XP'),'#ffd75a');},700);
           if(d.weekBonusUsd)setTimeout(function(){msnToast('WEEKLY BONUS +$'+(+d.weekBonusUsd).toFixed(2),'#ffd75a');},1400);
           try{if(typeof refresh==='function')refresh();}catch(e2){}
           try{if(window.mpBal&&window.mpBal.grant)window.mpBal.grant(2500);}catch(e4){} // Balance Mode top-up per completed mission (no-op unless the VIP has Balance Mode)

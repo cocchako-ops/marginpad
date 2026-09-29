@@ -2490,6 +2490,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
         try { window.mpLvlNow = d.level; if (window.mpToastHost) window.mpToastHost(); } catch (e) {} // the toast frame wears the trader's level colour (Bronze -> Legendary)
         window._mpXpLast = d; // the header profile card reads followers / premium from the last poll before its own fetch answers
+        // The squad rides on this poll (2026-09-29) so no page needs its own request to know which room to
+        // offer or which crest to draw. A change fires mp-squad-change: both chat copies rebuild their room list.
+        try { var sqB = JSON.stringify(d.squad || null), sqA = JSON.stringify(window.mpSquad || null); if (sqB !== sqA) { window.mpSquad = d.squad || null; window.dispatchEvent(new CustomEvent('mp-squad-change', { detail: window.mpSquad })); } } catch (e) {}
         if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         try { window.mpBronzeBar(d); } catch (e) {}
         try { if (d.pbNew && d.pbNew.ts && (d.pbNew.items || []).length) { var pk9 = 'mp_pb_seen_' + ((ME && ME.id) || ''), ps9 = +(localStorage.getItem(pk9) || 0);
@@ -3335,4 +3338,87 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   /* a dragged slider must tick per STEP of the ladder, never per frame of the drag */
   window.mpHaptic = function (kind) { return fire(P[kind] || P.tick, kind === 'step' ? 45 : 0); };
   if (!window.mpBuzz) window.mpBuzz = function (p) { return fire(p, 0); };
+})();
+
+/* ── SQUAD CREST (2026-09-29) ───────────────────────────────────────────────────────────────────
+   The crest is PARAMETRIC - shape, symbol, two colours, a ring - so there is nothing to upload,
+   nothing to store and nothing to moderate, and ONE definition renders at every size a squad is
+   seen at: 18px beside a name in chat, 26px on a profile card, 96px in the builder.
+   It lives here, in the only bundle on every page, for the same reason mpToast / mpOrders / mpEx
+   do: the profile card, the squads page, the leaderboards and both chat copies all need it, and a
+   second copy is a second thing to forget. Returns an SVG STRING - callers insert it as HTML.   */
+(function () {
+  if (window.mpSquadCrest) return;
+  var SHAPE = {
+    shield: 'M50 4 L92 20 V52 C92 76 73 92 50 96 C27 92 8 76 8 52 V20 Z',
+    circle: 'M50 5 A45 45 0 1 1 49.9 5 Z',
+    hex: 'M50 3 L91 26.5 V73.5 L50 97 L9 73.5 V26.5 Z',
+    banner: 'M11 6 H89 V72 L50 96 L11 72 Z'
+  };
+  /* Each symbol is drawn inside roughly 26..74 so it never touches the ring, whatever the shape. */
+  var SYM = {
+    bolt: 'M58 24 L34 57 H47 L43 80 L67 47 H53 Z',
+    candle: 'M48 22 h4 v10 h8 v36 h-8 v10 h-4 v-10 h-8 V32 h8 z',
+    up: 'M50 26 L74 62 H58 v14 H42 V62 H26 Z',
+    down: 'M50 78 L26 42 h16 V28 h16 v14 h16 Z',
+    target: 'M50 26 a24 24 0 1 1-.1 0 Z M50 38 a12 12 0 1 0 .1 0 Z',
+    crown: 'M27 74 L23 31 L38 45 L50 25 L62 45 L77 31 L73 74 Z',
+    star: 'M50 24 L58 45 L81 45 L62 58 L69 80 L50 66 L31 80 L38 58 L19 45 L42 45 Z',
+    triangle: 'M50 25 L78 76 H22 Z',
+    diamond: 'M50 23 L75 51 L50 79 L25 51 Z',
+    anchor: 'M46 30 a4 4 0 1 1 8 0 a4 4 0 0 1-8 0 M47 39 h6 v33 h-6 z M34 46 h32 v6 H34 z M26 58 c0 12 11 20 24 20 s24-8 24-20 h-7 c0 8-8 13-17 13 s-17-5-17-13 z',
+    eye: 'M50 33 c16 0 28 10 33 18 c-5 8-17 18-33 18 s-28-10-33-18 c5-8 17-18 33-18 z M50 42 a9 9 0 1 0 .1 0 Z',
+    wave: 'M20 47 c8-10 16-10 24 0 s16 10 24 0 l8 8 c-8 10-16 10-24 0 s-16-10-24 0 z M20 64 c8-10 16-10 24 0 s16 10 24 0 l8 8 c-8 10-16 10-24 0 s-16-10-24 0 z',
+    cross: 'M43 24 h14 v19 h19 v14 H57 v19 H43 V57 H24 V43 h19 z'
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"']/g, function (m) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[m]; }); }
+  /* A crest is drawn from untrusted JSON - every field snaps to a member of its own list, exactly as
+     crestNorm() does on the server, so a client that never refreshes cannot render something odd. */
+  var SHAPES = ['shield', 'circle', 'hex', 'banner'], RINGS = ['none', 'solid', 'double', 'dashed'];
+  var COLS = ['#c2f64a', '#2ebd85', '#ff5a4d', '#4aa3f6', '#b07cf6', '#f6b74a', '#f64a9e', '#4af6e0', '#e9e7df', '#7a838f', '#0a0b0d'];
+  function norm(c) {
+    c = c || {};
+    var p = function (v, list, d) { return list.indexOf(String(v)) >= 0 ? String(v) : d; };
+    var bg = p(c.bg, COLS, '#4aa3f6'), fg = p(c.fg, COLS, '#e9e7df');
+    /* a mark the colour of its own ground is an invisible crest - mirrored from crestNorm() on the server */
+    if (fg === bg) { for (var i = 0; i < COLS.length; i++) { if (COLS[i] !== bg) { fg = COLS[i]; break; } } }
+    return { shape: p(c.shape, SHAPES, 'shield'), sym: (SYM[c.sym] || c.sym === 'tag') ? String(c.sym) : 'tag', bg: bg, fg: fg, ring: p(c.ring, RINGS, 'solid') };
+  }
+  window.mpSquadCrestCols = COLS; window.mpSquadCrestShapes = SHAPES; window.mpSquadCrestSyms = ['tag'].concat(Object.keys(SYM)); window.mpSquadCrestRings = RINGS;
+  /* px is the rendered size; tag is only read when the symbol IS the tag. */
+  window.mpSquadCrest = function (crest, px, tag) {
+    var c = norm(crest), s = Math.max(12, +px || 26), d = SHAPE[c.shape] || SHAPE.shield;
+    var body;
+    if (c.sym === 'tag') {
+      var t = String(tag || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) || '?';
+      /* the type has to shrink with the word or a four-letter tag runs out of the shield */
+      var fs = t.length >= 4 ? 27 : t.length === 3 ? 33 : 40;
+      body = '<text x="50" y="' + (c.shape === 'banner' ? 58 : 60) + '" text-anchor="middle" font-family="Bricolage Grotesque,Familjen Grotesk,system-ui,sans-serif" font-weight="800" font-size="' + fs + '" fill="' + c.fg + '" letter-spacing="-1">' + esc(t) + '</text>';
+    } else {
+      body = '<path d="' + SYM[c.sym] + '" fill="' + c.fg + '" fill-rule="evenodd"/>';
+    }
+    var ring = '';
+    if (c.ring === 'solid') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="5" stroke-opacity=".85"/>';
+    else if (c.ring === 'double') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="4.5" stroke-opacity=".9"/><path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="2" stroke-opacity=".55" transform="translate(50,50) scale(.84) translate(-50,-50)"/>';
+    else if (c.ring === 'dashed') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="5" stroke-opacity=".85" stroke-dasharray="11 7" stroke-linecap="round"/>';
+    /* a dark crest on a dark page needs its own edge, so every crest carries a faint outer hairline */
+    return '<svg class="mp-crest" viewBox="0 0 100 100" width="' + s + '" height="' + s + '" aria-hidden="true" focusable="false" style="display:block;flex:0 0 auto">'
+      + '<path d="' + d + '" fill="' + c.bg + '"/>' + ring + body
+      + '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="2.5"/></svg>';
+  };
+  /* name + crest as one inline unit, which is how it appears everywhere but the builder */
+  window.mpSquadChip = function (sq, px) {
+    if (!sq) return '';
+    return '<span class="mp-sqchip" title="' + esc(sq.name || '') + '">' + window.mpSquadCrest(sq.crest, px || 18, sq.tag) + '<span class="mp-sqtag">' + esc(String(sq.tag || '').toUpperCase()) + '</span></span>';
+  };
+  try {
+    var st = document.createElement('style'); st.id = 'mp-crest-css';
+    st.textContent = '.mp-sqchip{display:inline-flex;align-items:center;gap:5px;vertical-align:-3px}'
+      + '.mp-sqtag{font-family:"Space Mono",ui-monospace,monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#8b9099;text-transform:uppercase}'
+      + '.lbm-sq{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:8px 10px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:rgba(255,255,255,.03)}'
+      + '.lbm-sq .lbm-sqn{font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:13px;font-weight:700;color:#e9e7df;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+      + '.lbm-sq .lbm-sqr{font-family:"Space Mono",ui-monospace,monospace;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#7a838f;margin-top:1px}'
+      + '.lbm-sq a{color:inherit;text-decoration:none}.lbm-sq a:hover .lbm-sqn{text-decoration:underline}';
+    if (!document.getElementById('mp-crest-css')) (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
 })();

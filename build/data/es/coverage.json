@@ -2082,6 +2082,12 @@
   "missing": 0
  },
  {
+  "rel": "squads/index.html",
+  "cover": 1,
+  "hit": 17,
+  "missing": 0
+ },
+ {
   "rel": "status/index.html",
   "cover": 1,
   "hit": 26,
