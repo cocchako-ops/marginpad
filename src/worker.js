@@ -7394,6 +7394,7 @@ async function checkMorningBrief(env) {
 async function settleDuels(env) {
   try { if (!env.USERS) return; const stub = env.USERS.get(env.USERS.idFromName('main'));
     await stub.fetch(new Request('https://do/duel/settle-due', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
+    await stub.fetch(new Request('https://do/squad/settle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); // squad duels settle on the same pass (2026-09-29)
   } catch (e) {}
 }
 // Phase 5: anomaly pings - only things that need ACTION, each at most once per day (withdrawals: once per new request)
@@ -11938,6 +11939,38 @@ const TICK_SOURCES = [
   { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T - a season-end "Claim all" must fit in one day
 ];
 const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
+
+// ── SQUADS (2026-09-29, owner: "squads sa max 5 clanova ... squad dueli, chatroom i Icon na profil karticama
+// svakog clana; dueli samo u ticks; pobeda nereseno i poraz nose xp svakako").
+const SQUAD_MAX = 5;                    // members, leader included - the owner's number
+const SQUAD_INV_MS = 7 * 86400000;      // an invite that is never answered stops being an invite
+const SQUAD_MAX_INV = 12;               // pending invites a squad may hold at once
+const SQUAD_STAKE_MAX = 5000;           // Ticks a leader may put on one duel
+const SQUAD_REMATCH_MS = 6 * 3600000;   // the same two squads cannot re-duel inside this window (anti-farm)
+const SQUAD_DURS = [86400000, 259200000, 604800000]; // 24h / 3d / 7d
+// Every member who actually TRADED in the window is paid, whatever the result - the owner's rule. A member who
+// did not trade is paid nothing: without that, two friends could make two squads and mint XP daily for nobody's
+// trading. dayCap is the existing per-source guard.
+const SQUAD_XP = { win: 120, draw: 60, loss: 30, dayCap: 480 };
+const SQUAD_METRICS = {
+  pnl: { label: 'total profit', agg: 'topsum', how: 'Sum of realized profit. Only the best N members of each squad count, where N is the smaller squad.' },
+  roe: { label: 'best ROE', agg: 'best', how: 'The single best ROE anyone in the squad closed.' },
+  win: { label: 'biggest win', agg: 'best', how: 'The biggest single winning trade in the squad.' },
+  wr: { label: 'win rate', agg: 'rate', how: 'Wins divided by trades across the whole squad. Needs at least 3 trades a side.' },
+};
+// The crest is PARAMETRIC, never an uploaded image: nothing to store, nothing to moderate, and it renders as SVG
+// on a 22px chat line and a 380px profile card alike. Client renderer: window.mpSquadCrest in mp-auth.js.
+const CREST_SHAPES = ['shield', 'circle', 'hex', 'banner'];
+const CREST_SYMS = ['tag', 'bolt', 'candle', 'up', 'down', 'target', 'crown', 'star', 'triangle', 'diamond', 'anchor', 'eye', 'wave', 'cross'];
+const CREST_COLS = ['#c2f64a', '#2ebd85', '#ff5a4d', '#4aa3f6', '#b07cf6', '#f6b74a', '#f64a9e', '#4af6e0', '#e9e7df', '#7a838f'];
+const CREST_RINGS = ['none', 'solid', 'double', 'dashed'];
+function crestNorm(c) { // never trust a posted crest - every field snaps to a member of its own list
+  let o = {}; try { o = (typeof c === 'string' ? JSON.parse(c) : c) || {}; } catch (e) { o = {}; }
+  const pick = (v, list, d) => (list.indexOf(String(v)) >= 0 ? String(v) : d);
+  return { shape: pick(o.shape, CREST_SHAPES, 'shield'), sym: pick(o.sym, CREST_SYMS, 'tag'), bg: pick(o.bg, CREST_COLS, '#4aa3f6'), fg: pick(o.fg, CREST_COLS, '#e9e7df'), ring: pick(o.ring, CREST_RINGS, 'solid') };
+}
+function squadNameOk(s) { return /^[A-Za-z0-9][A-Za-z0-9 ._'-]{1,23}$/.test(String(s || '').trim()); }
+function squadTagNorm(t) { return String(t || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4); }
 
 // ---- TICK PACKS (2026-09-13, owner: "nemamo opciju da korisnik kupi Ticks pravim novcem ... nek bude pristupačno ali
 // da ne narušava ostalu ekonomiju"). This REVERSES the 2026-08-19 rule that Ticks could never be bought; the thing that
@@ -20775,6 +20808,10 @@ export default {
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
+ if (url.pathname === '/api/admin/squadsettle' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // settle ONE squad duel now (support + E2E) - runs the cron's own _sduelSettle, never a second copy of the rules
+      let sb = {}; try { sb = await request.json(); } catch (e) {}
+      return J(await usersDO(env, '/squad/settleone', { id: String(sb.id || ''), now: +sb.now || 0 }) || { error: 'busy' });
+    }
  if (url.pathname === '/api/admin/socialstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only baseline for the social layer (2026-09-29): the follow graph, DMs, duels, and whether a member with an edge comes back more than one without
       const out = (await usersDO(env, '/socialstat')) || { error: 'transient' };
       try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/modq', { headers: { 'x-admin': '1' } })); const c = await r.json(); out.community = c.totals || {}; } catch (e) { out.community = null; }
@@ -22163,6 +22200,37 @@ export default {
       try { ctx.waitUntil(caches.default.put(ck9, resp9.clone())); } catch (e) {}
       return resp9;
     }
+    if (url.pathname.startsWith('/api/squad/')) { // SQUADS (2026-09-29): max 5, leader-designed crest, private room, squad-vs-squad duels staked in Ticks
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
+      const stub = env.USERS.get(env.USERS.idFromName('main'));
+      const sub = url.pathname.slice('/api/squad/'.length);
+      const call = async (p, bd) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bd) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
+      // ── public reads (no account needed): the squad directory is how a newcomer finds anyone at all
+      if (sub === 'browse' || sub === 'board' || sub === 'openduels') {
+        const ck = new Request('https://marginpad.io/__squad_' + sub + '_v1');
+        if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+        let body = '{}'; try { const r = await stub.fetch(new Request('https://do/squad/' + sub, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); body = await r.text(); } catch (e) {}
+        const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
+        try { ctx.waitUntil(caches.default.put(ck, resp.clone())); } catch (e) {}
+        return resp;
+      }
+      if (sub === 'get') return call('/squad/get', { sid: url.searchParams.get('sid') || '' });
+      // ── everything below is the member's own squad
+      const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
+      if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook, same pattern as /api/duel/
+      if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
+      if (sub === 'mine') return call('/squad/mine', { uid: su.id });
+      if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
+      let bd = {}; try { bd = await request.json(); } catch (e) {}
+      const OPS = { create: 1, edit: 1, invite: 1, join: 1, declineinv: 1, leave: 1, kick: 1, disband: 1, challenge: 1, accept: 1, decline: 1 };
+      if (!OPS[sub]) return new Response('{"error":"not_found"}', { status: 404, headers: jh });
+      const out = await call('/squad/' + sub, Object.assign({}, bd, { uid: su.id }));
+      // a squad's membership decides who may open its chat room, so the room list a client caches must not outlive it
+      if (sub === 'create' || sub === 'join' || sub === 'leave' || sub === 'kick' || sub === 'disband') { try { ctx.waitUntil(caches.default.delete(new Request('https://marginpad.io/__squad_browse_v1'))); ctx.waitUntil(caches.default.delete(new Request('https://marginpad.io/__squad_board_v1'))); } catch (e) {} }
+      if (sub === 'challenge' || sub === 'accept' || sub === 'decline') { try { ctx.waitUntil(caches.default.delete(new Request('https://marginpad.io/__squad_openduels_v1'))); } catch (e) {} }
+      return out;
+    }
     if (url.pathname.startsWith('/api/duel/')) { // friend duels (weekly stat challenges, all session-authed)
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
@@ -22263,6 +22331,17 @@ export default {
       // the socket payload - the client picks its own `u` - so edit/delete/react are bound to this, server-side.
       let chatUid = '', chatUn = '';
       try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); if (su && su.id) { chatUid = String(su.id); chatUn = String(su.username || ''); } } } catch (e) {}
+      // A SQUAD ROOM ADMITS ITS MEMBERS AND NOBODY ELSE, enforced here and not by hiding it client-side -
+      // exactly like the Premium lounge below. A squad id is 5+ chars, so the retired room_<COIN>
+      // instances (BTC/ETH/...) are untouched by this test.
+      {
+        const rmI = chatInstOf(url), sidI = rmI.slice(5);
+        if (rmI !== 'global2' && rmI !== 'room_PREMIUM' && sidI.length >= 5) {
+          if (!chatUid) return new Response('squad only', { status: 403 });
+          let inSq = false; try { const rq = await usersDO(env, '/squad/ismember', { uid: chatUid, sid: sidI }); inSq = !!(rq && rq.ok); } catch (e) { inSq = false; }
+          if (!inSq) return new Response('squad only', { status: 403 });
+        }
+      }
       if (chatInstOf(url) === 'room_PREMIUM') { try { const pf = await premiumFor(env, request); if (!pf || !pf.premium) return new Response('premium only', { status: 403 }); } catch (e) { return new Response('premium only', { status: 403 }); } } // premium-only lounge - enforced server-side, not just hidden client-side
       // A DO reset/migration mid-upgrade surfaces as a transient CF "internal error; reference=…" - catch it and return a
       // clean 503 so the client's ws.onclose just reconnects (3s) instead of the error hitting srverrlog/Sentry.
@@ -24957,6 +25036,16 @@ export class UserStore {
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
+    // ── Squads (2026-09-29, owner) ── max 5, a leader-designed crest that rides on every member's profile card,
+    // a private chat room, and squad-vs-squad duels staked in Ticks. The id is 6 uppercase alnum ON PURPOSE:
+    // chatInstOf() keeps [A-Z0-9]{1,8}, so the squad's room is room_<id> with no mapping table in between.
+    s.exec('CREATE TABLE IF NOT EXISTS squads(id TEXT PRIMARY KEY, name TEXT, tag TEXT, leader TEXT, crest TEXT, motto TEXT, created INTEGER, openj INTEGER DEFAULT 0, wins INTEGER DEFAULT 0, draws INTEGER DEFAULT 0, losses INTEGER DEFAULT 0, sxp INTEGER DEFAULT 0)');
+    s.exec('CREATE TABLE IF NOT EXISTS squadm(uid TEXT PRIMARY KEY, sid TEXT, role TEXT, ts INTEGER)'); // uid is the PK: one squad per member, enforced by the schema rather than by a check that can be raced
+    s.exec('CREATE TABLE IF NOT EXISTS squadinv(k TEXT PRIMARY KEY, sid TEXT, uid TEXT, byname TEXT, ts INTEGER)'); // k = sid|uid
+    s.exec('CREATE TABLE IF NOT EXISTS sduels(id TEXT PRIMARY KEY, a_sid TEXT, b_sid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0, dur INTEGER, stake INTEGER, escrowed INTEGER, rules TEXT, detail TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS squadm_sid ON squadm(sid)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS sduels_a ON sduels(a_sid, status)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS sduels_b ON sduels(b_sid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS livepos(did TEXT PRIMARY KEY, json TEXT, cc TEXT, updated INTEGER)'); // anonymous (not-signed-in) open paper positions, keyed by the mp_did device cookie - feeds the ops Live-trades board
   }
@@ -25046,6 +25135,129 @@ export class UserStore {
   }
   _tickBal(uid) { return (this.rows('SELECT ticks FROM users WHERE id=?', String(uid).replace(/^u:/, ''))[0] || {}).ticks || 0; }
   _giveXp(uid, amt, note) { uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return; const sql = this.state.storage.sql; sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid); sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel_pot', amt, String(note || '').slice(0, 120)); } // direct pot payout (zero-sum with stakes → no inflation), bypasses dayCap
+  // ── Squads (2026-09-29) ── helpers. Scoring reuses _duelStats per member: no second scoring engine.
+  _squadOf(uid) { uid = String(uid || '').replace(/^u:/, ''); if (!uid) return null; const m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; if (!m) return null; return this.rows('SELECT * FROM squads WHERE id=?', m.sid)[0] || null; }
+  _squadN(sid) { return (this.rows('SELECT COUNT(*) c FROM squadm WHERE sid=?', sid)[0] || { c: 0 }).c; }
+  _squadLeader(sid) { return (this.rows('SELECT leader FROM squads WHERE id=?', sid)[0] || {}).leader || ''; }
+  _squadUids(sid) { return this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC', sid).map(r => String(r.uid)); }
+  _sduelLive(sid) { return !!this.rows("SELECT 1 FROM sduels WHERE (a_sid=? OR b_sid=?) AND status='active' AND settled=0", sid, sid)[0]; }
+  _squadPub(sid, withMembers) { // never leaks a member uid - the card shows names, levels and crests
+    const s = this.rows('SELECT * FROM squads WHERE id=?', sid)[0]; if (!s) return null;
+    const o = { sid: s.id, name: s.name || '', tag: s.tag || '', crest: crestNorm(s.crest), motto: s.motto || '', created: +s.created || 0,
+      open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: SQUAD_MAX, leader: s.leader };
+    const lead = this.rows('SELECT username FROM users WHERE id=?', s.leader)[0];
+    o.leaderName = (lead && lead.username) || '';
+    if (withMembers) {
+      o.members = this.rows('SELECT m.uid, m.role, m.ts, u.username, u.xp, u.avatar, u.frame FROM squadm m LEFT JOIN users u ON u.id=m.uid WHERE m.sid=? ORDER BY m.ts ASC', s.id)
+        .map(r => { const L = xpLevelOf(+r.xp || 0); return { name: r.username || '', role: r.role || 'member', ts: +r.ts || 0, level: { k: L.k, name: L.name, col: L.col }, avatar: r.avatar || '', leader: String(r.uid) === String(s.leader) }; });
+    }
+    return o;
+  }
+  _squadRemoveUser(uid) { // account going away: hand the squad on, or take it with them if they were the last
+    uid = String(uid || '').replace(/^u:/, ''); if (!uid) return;
+    const sql = this.state.storage.sql;
+    let m = null; try { m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; } catch (e) { return; }
+    if (!m) return;
+    const sq = this.rows('SELECT id, leader FROM squads WHERE id=?', m.sid)[0];
+    try { sql.exec('DELETE FROM squadm WHERE uid=?', uid); sql.exec('DELETE FROM squadinv WHERE uid=?', uid); } catch (e) {}
+    if (!sq) return;
+    if (String(sq.leader) !== uid) return;
+    const next = this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC LIMIT 1', sq.id)[0];
+    if (!next) { this._squadDisband(sq.id, 'its last member left'); return; }
+    try { sql.exec('UPDATE squads SET leader=? WHERE id=?', next.uid, sq.id); sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", next.uid); } catch (e) {}
+    this._pushNotif(next.uid, 'squad', 'You are now the leader of your squad.', 'squads');
+  }
+  _squadDisband(sid, why) {
+    const sql = this.state.storage.sql;
+    // an open challenge this squad posted still holds its leader's Ticks - give them back before the row is gone
+    for (const d of this.rows("SELECT * FROM sduels WHERE a_sid=? AND status IN ('open','pending') AND escrowed>=1", sid)) this._giveTicks(this._squadLeader(sid), +d.stake || 0, 'Squad disbanded - stake returned');
+    try { sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE (a_sid=? OR b_sid=?) AND status IN ('open','pending')", sid, sid); } catch (e) {}
+    for (const uid of this._squadUids(sid)) this._pushNotif(uid, 'squad', 'Your squad is gone - ' + (why || 'it was disbanded') + '.', 'squads');
+    try { sql.exec('DELETE FROM squadm WHERE sid=?', sid); } catch (e) {}
+    try { sql.exec('DELETE FROM squadinv WHERE sid=?', sid); } catch (e) {}
+    try { sql.exec('DELETE FROM squads WHERE id=?', sid); } catch (e) {}
+    return this.j({ ok: true, disbanded: true });
+  }
+  _sduelPub(d) {
+    if (!d) return null;
+    const mk = sid => { const s = this.rows('SELECT id,name,tag,crest FROM squads WHERE id=?', sid)[0]; return s ? { sid: s.id, name: s.name || '', tag: s.tag || '', crest: crestNorm(s.crest) } : null; };
+    let det = null; try { det = d.detail ? JSON.parse(d.detail) : null; } catch (e) {}
+    return { id: d.id, a: mk(d.a_sid) || { sid: d.a_sid, name: d.a_name || '', tag: '', crest: crestNorm(null) }, b: d.b_sid ? mk(d.b_sid) : null,
+      metric: d.metric, metricLabel: (SQUAD_METRICS[d.metric] || {}).label || d.metric, how: (SQUAD_METRICS[d.metric] || {}).how || '',
+      status: d.status, created: +d.created || 0, start: +d.start_ts || 0, end: +d.end_ts || 0, dur: +d.dur || 0, stake: +d.stake || 0,
+      winner: d.winner || '', aScore: d.a_score == null ? null : +d.a_score, bScore: d.b_score == null ? null : +d.b_score, settled: +d.settled || 0, detail: det };
+  }
+  _sduelList(sid) {
+    const rows = this.rows("SELECT * FROM sduels WHERE a_sid=? OR b_sid=? ORDER BY CASE status WHEN 'active' THEN 0 WHEN 'pending' THEN 1 WHEN 'open' THEN 2 ELSE 3 END, created DESC LIMIT 25", sid, sid);
+    return rows.map(d => this._sduelPub(d));
+  }
+  // A squad's score for one metric. The SIZE RULE: for an additive metric only the best N members of each side
+  // count, where N is the smaller squad - otherwise five people beat three by arithmetic, not by trading.
+  _sduelScore(sid, d, nCount) {
+    const per = [];
+    for (const uid of this._squadUids(sid)) {
+      const s = this._duelStats(uid, d.start_ts, d.end_ts, {});
+      per.push({ uid, n: s.n, pnl: s.pnl, roe: s.roe, win: s.win, wins: s.wins });
+    }
+    const traded = per.filter(p => p.n > 0);
+    let score = null;
+    if (d.metric === 'pnl') {
+      const vals = per.map(p => (p.n > 0 ? +p.pnl || 0 : null)).filter(v => v != null).sort((x, y) => y - x).slice(0, Math.max(1, nCount));
+      score = vals.length ? +vals.reduce((a, c) => a + c, 0).toFixed(2) : null;
+    } else if (d.metric === 'roe') {
+      const vals = traded.map(p => p.roe).filter(v => v != null); score = vals.length ? Math.round(Math.max.apply(null, vals)) : null;
+    } else if (d.metric === 'win') {
+      const vals = traded.map(p => p.win).filter(v => v != null); score = vals.length ? +Math.max.apply(null, vals).toFixed(2) : null;
+    } else { // wr - a ratio, so squad size does not inflate it; needs a real sample
+      const n = traded.reduce((a, c) => a + c.n, 0), w = traded.reduce((a, c) => a + c.wins, 0);
+      score = n >= 3 ? Math.round(w / n * 100) : null;
+    }
+    return { score, traded: traded.map(p => p.uid), n: traded.reduce((a, c) => a + c.n, 0), members: per.length };
+  }
+  _sduelSettle(d) {
+    const sql = this.state.storage.sql;
+    const nA = this._squadN(d.a_sid), nB = this._squadN(d.b_sid), nCount = Math.max(1, Math.min(nA || 1, nB || 1));
+    const A = this._sduelScore(d.a_sid, d, nCount), B = this._sduelScore(d.b_sid, d, nCount);
+    // null = the squad never competed. Two nulls is a draw; one null loses to any real number, including a loss.
+    let winner = '';
+    if (A.score != null && B.score == null) winner = d.a_sid;
+    else if (B.score != null && A.score == null) winner = d.b_sid;
+    else if (A.score != null && B.score != null) { if (A.score > B.score) winner = d.a_sid; else if (B.score > A.score) winner = d.b_sid; }
+    const stake = +d.stake || 0, esc = +d.escrowed || 0, ml = (SQUAD_METRICS[d.metric] || {}).label || d.metric;
+    const detail = { a: { score: A.score, trades: A.n, traded: A.traded.length, members: nA }, b: { score: B.score, trades: B.n, traded: B.traded.length, members: nB }, counted: nCount };
+    sql.exec('UPDATE sduels SET status=?, winner=?, a_score=?, b_score=?, settled=1, escrowed=0, detail=? WHERE id=?', 'done', winner, A.score, B.score, JSON.stringify(detail), d.id);
+    // the record
+    if (winner) {
+      const loser = winner === d.a_sid ? d.b_sid : d.a_sid;
+      sql.exec('UPDATE squads SET wins=COALESCE(wins,0)+1 WHERE id=?', winner);
+      sql.exec('UPDATE squads SET losses=COALESCE(losses,0)+1 WHERE id=?', loser);
+    } else { sql.exec('UPDATE squads SET draws=COALESCE(draws,0)+1 WHERE id=?', d.a_sid); sql.exec('UPDATE squads SET draws=COALESCE(draws,0)+1 WHERE id=?', d.b_sid); }
+    // the pot: the LEADER put the stake up for the whole squad, so the leader is made whole first and the other
+    // squad's stake is then split equally across everyone, the leader included. That is what makes leading worth it.
+    if (stake > 0 && esc >= 2) {
+      if (winner) {
+        const lead = this._squadLeader(winner), mem = this._squadUids(winner);
+        this._giveTicks(lead, stake, 'Squad duel won - your stake back');
+        const share = Math.floor(stake / Math.max(1, mem.length)), rest = stake - share * mem.length;
+        for (const uid of mem) this._giveTicks(uid, share + (uid === lead ? rest : 0), 'Squad duel won vs ' + (winner === d.a_sid ? d.b_name : d.a_name));
+      } else { this._giveTicks(this._squadLeader(d.a_sid), stake, 'Squad duel drawn - stake returned'); this._giveTicks(this._squadLeader(d.b_sid), stake, 'Squad duel drawn - stake returned'); }
+    }
+    // XP: win, draw AND loss all pay (owner) - but only to a member who actually traded in the window, or two
+    // friends with two squads could mint XP daily for nobody's trading.
+    const pay = (sid, kind) => {
+      const amt = SQUAD_XP[kind] || 0; const scored = sid === d.a_sid ? A : B;
+      for (const uid of scored.traded) { try { this._grantXp(uid, 'duel', amt, { dayCap: SQUAD_XP.dayCap, note: 'Squad duel ' + kind + ' on ' + ml }); } catch (e) {} }
+      const sx = amt * Math.max(1, scored.traded.length); try { sql.exec('UPDATE squads SET sxp=COALESCE(sxp,0)+? WHERE id=?', sx, sid); } catch (e) {}
+    };
+    pay(d.a_sid, winner ? (winner === d.a_sid ? 'win' : 'loss') : 'draw');
+    pay(d.b_sid, winner ? (winner === d.b_sid ? 'win' : 'loss') : 'draw');
+    const line = (mine, theirs, res) => res === 'win' ? ('Squad duel won: ' + mine + ' beat ' + theirs + ' on ' + ml + (stake > 0 && esc >= 2 ? '. The pot is shared out' : '') + '.')
+      : res === 'loss' ? ('Squad duel lost: ' + theirs + ' took it on ' + ml + '. You still earned XP for the trades you closed.')
+        : ('Dead heat: ' + mine + ' vs ' + theirs + ' on ' + ml + (stake > 0 ? '. Stakes returned' : '') + '.');
+    for (const uid of this._squadUids(d.a_sid)) this._pushNotif(uid, 'squad', line(d.a_name, d.b_name, winner ? (winner === d.a_sid ? 'win' : 'loss') : 'draw'), 'squads');
+    for (const uid of this._squadUids(d.b_sid)) this._pushNotif(uid, 'squad', line(d.b_name, d.a_name, winner ? (winner === d.b_sid ? 'win' : 'loss') : 'draw'), 'squads');
+    return this._sduelPub(Object.assign({}, d, { status: 'done', winner, a_score: A.score, b_score: B.score, settled: 1, escrowed: 0, detail: JSON.stringify(detail) }));
+  }
   _duelLabel(m) { return ({ roe: 'ROE', wr: 'win rate', win: 'biggest win', pnl: 'profit', survival: 'survival', streak: 'win streak', sniper: 'sniper' })[m] || 'ROE'; }
   _durLabel(ms) { return ({ '3600000': '1 hour', '86400000': '24 hours', '259200000': '3 days', '604800000': '7 days' })[String(ms)] || '7 days'; }
   _duelDisp(metric, v) { if (v == null) return null; if (metric === 'pnl' || metric === 'survival') return v <= -1e8 ? null : v; return v < 0 ? null : v; } // pnl/survival keep real negatives; the big sentinels mean "didn't compete" → null
@@ -27738,7 +27950,8 @@ export class UserStore {
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
         const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
-        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs'];
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv'];
+        try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
         try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {}
@@ -27768,6 +27981,11 @@ export class UserStore {
             if (!seen.has(own) && seen.size < 40) { seen.add(own); out.uids.push(own); }
           }
         }
+        try { // squads: a member row whose account is gone, and a squad whose LEADER is gone
+          for (const r of this.rows('SELECT uid, sid FROM squadm')) { if (this.rows('SELECT 1 FROM users WHERE id=?', r.uid)[0]) continue; out.checked++; if (!dry) { try { sql.exec('DELETE FROM squadm WHERE uid=?', r.uid); } catch (e) {} } out.tables.squadm = (out.tables.squadm || 0) + 1; out.removed++; }
+          for (const r of this.rows('SELECT id, leader FROM squads')) { if (this.rows('SELECT 1 FROM users WHERE id=?', r.leader)[0]) continue; out.checked++; if (!dry) { const nx = this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC LIMIT 1', r.id)[0]; if (nx) { try { sql.exec('UPDATE squads SET leader=? WHERE id=?', nx.uid, r.id); sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", nx.uid); } catch (e) {} } else { try { this._squadDisband(r.id, 'its last member left'); } catch (e) {} } }
+            out.tables.squads = (out.tables.squads || 0) + 1; out.removed++; }
+        } catch (e) {}
         if (!dry) { try { this._whUids = null; } catch (e) {} }
         return this.j({ ok: true, dry: !!dry, ...out });
       } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
@@ -28075,7 +28293,7 @@ export class UserStore {
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
-        followers });
+        followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
       const rows = this.rows('SELECT username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
@@ -28538,6 +28756,239 @@ export class UserStore {
       return this.j({ duels: out });
     }
     if (path === '/duel/pending') { const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ pending: 0 }); return this.j({ pending: (this.rows("SELECT COUNT(*) c FROM duels WHERE b_uid=? AND status='pending'", uid)[0] || { c: 0 }).c }); }
+    // ─── SQUADS (2026-09-29) ─────────────────────────────────────────────────────────────────────────
+    // Max 5 to a squad, a leader-designed crest that rides on every member's public card, a private chat
+    // room (room_<id>, gated in the worker exactly like the Premium lounge) and squad-vs-squad duels
+    // staked in Ticks. Scoring reuses _duelStats per member - there is no second scoring engine.
+    if (path === '/squad/ismember') { const uid = String((b && b.uid) || '').replace(/^u:/, ''); const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return this.j({ ok: !!(uid && sid && this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', uid, sid)[0]) }); }
+    if (path === '/squad/mine') { // everything the squad page needs for one member, in one round trip
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ error: 'no_uid' }, 400);
+      const m = this.rows('SELECT sid, role FROM squadm WHERE uid=?', uid)[0];
+      const invs = this.rows('SELECT i.sid, i.byname, i.ts, s.name, s.tag, s.crest FROM squadinv i LEFT JOIN squads s ON s.id=i.sid WHERE i.uid=? AND i.ts > ? ORDER BY i.ts DESC LIMIT 12', uid, Date.now() - SQUAD_INV_MS)
+        .map(r => ({ sid: r.sid, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest), by: r.byname || '', ts: +r.ts || 0 }));
+      if (!m) return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX });
+      const sq = this._squadPub(m.sid, true);
+      if (!sq) { try { this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', uid); } catch (e) {} return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX }); }
+      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX,
+        duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
+    }
+    if (path === '/squad/get') { // one squad, public view (no member uids leave here)
+      const sid = String((b && b.sid) || url.searchParams.get('sid') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const sq = sid ? this._squadPub(sid, true) : null;
+      return sq ? this.j({ squad: sq }) : this.j({ error: 'not_found' }, 404);
+    }
+    if (path === '/squad/browse') { // squads anyone may join, fullest first - the only discovery surface a newcomer has
+      const rows = this.rows('SELECT id FROM squads WHERE openj=1 ORDER BY created DESC LIMIT 60');
+      const out = [];
+      for (const r of rows) { const s = this._squadPub(r.id, false); if (s && s.n < SQUAD_MAX) out.push(s); if (out.length >= 24) break; }
+      out.sort((a, c) => (c.n - a.n) || (c.wins - a.wins));
+      return this.j({ squads: out, total: (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c });
+    }
+    if (path === '/squad/create') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' }, 400);
+      const me = this.rows('SELECT id, username, status FROM users WHERE id=?', uid)[0];
+      if (!me || !me.username) return this.j({ error: 'no_account' }, 403);
+      if (me.status && me.status !== 'active') return this.j({ error: 'suspended' }, 403);
+      if (this.rows('SELECT 1 FROM squadm WHERE uid=?', uid)[0]) return this.j({ error: 'already_in_squad' }, 409);
+      const name = String(b.name || '').trim();
+      if (!squadNameOk(name)) return this.j({ error: 'bad_name' }, 400);
+      if (this.rows('SELECT 1 FROM squads WHERE LOWER(name)=?', name.toLowerCase())[0]) return this.j({ error: 'name_taken' }, 409);
+      const tag = squadTagNorm(b.tag); if (tag.length < 2) return this.j({ error: 'bad_tag' }, 400);
+      if (this.rows('SELECT 1 FROM squads WHERE tag=?', tag)[0]) return this.j({ error: 'tag_taken' }, 409);
+      // 6 uppercase alnum, no vowels: an id that cannot accidentally spell a word, and one chatInstOf keeps whole
+      const AL = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let id = '';
+      for (let t = 0; t < 12 && !id; t++) { let c = ''; for (let i = 0; i < 6; i++) c += AL[Math.floor(Math.random() * AL.length)]; if (!this.rows('SELECT 1 FROM squads WHERE id=?', c)[0]) id = c; }
+      if (!id) return this.j({ error: 'try_again' }, 503);
+      const crest = crestNorm(b.crest), now = Date.now();
+      const sql = this.state.storage.sql;
+      sql.exec('INSERT INTO squads(id,name,tag,leader,crest,motto,created,openj,wins,draws,losses,sxp) VALUES(?,?,?,?,?,?,?,?,0,0,0,0)', id, name, tag, uid, JSON.stringify(crest), String(b.motto || '').slice(0, 80), now, b.open ? 1 : 0);
+      sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, id, 'leader', now);
+      return this.j({ ok: true, squad: this._squadPub(id, true) });
+    }
+    if (path === '/squad/edit') { // leader only: crest, motto, who may join. The NAME and TAG are fixed at creation - they are how other squads know who they duelled.
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const sql = this.state.storage.sql;
+      if (b.crest) sql.exec('UPDATE squads SET crest=? WHERE id=?', JSON.stringify(crestNorm(b.crest)), sq.id);
+      if (b.motto != null) sql.exec('UPDATE squads SET motto=? WHERE id=?', String(b.motto || '').slice(0, 80), sq.id);
+      if (b.open != null) sql.exec('UPDATE squads SET openj=? WHERE id=?', b.open ? 1 : 0, sq.id);
+      return this.j({ ok: true, squad: this._squadPub(sq.id, true) });
+    }
+    if (path === '/squad/invite') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const who = String(b.name || '').trim().replace(/^@/, '');
+      const t = this.rows('SELECT id, username, status FROM users WHERE LOWER(username)=?', who.toLowerCase())[0];
+      if (!t || !t.username) return this.j({ error: 'no_such_member' }, 404);
+      if (t.status && t.status !== 'active') return this.j({ error: 'no_such_member' }, 404);
+      if (String(t.id) === uid) return this.j({ error: 'thats_you' }, 400);
+      if (this.rows('SELECT 1 FROM squadm WHERE uid=?', t.id)[0]) return this.j({ error: 'already_in_a_squad' }, 409);
+      if (this._squadN(sq.id) >= SQUAD_MAX) return this.j({ error: 'squad_full', max: SQUAD_MAX }, 409);
+      const now = Date.now();
+      if ((this.rows('SELECT COUNT(*) c FROM squadinv WHERE sid=? AND ts > ?', sq.id, now - SQUAD_INV_MS)[0] || { c: 0 }).c >= SQUAD_MAX_INV) return this.j({ error: 'too_many_invites' }, 429);
+      const k = sq.id + '|' + t.id;
+      if (this.rows('SELECT 1 FROM squadinv WHERE k=? AND ts > ?', k, now - SQUAD_INV_MS)[0]) return this.j({ error: 'already_invited' }, 409);
+      const me = this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {};
+      this.state.storage.sql.exec('INSERT OR REPLACE INTO squadinv(k,sid,uid,byname,ts) VALUES(?,?,?,?,?)', k, sq.id, t.id, me.username || '', now);
+      this._pushNotif(t.id, 'squad', '@' + (me.username || 'A leader') + ' invited you to the squad ' + sq.name + ' [' + sq.tag + ']. Take a look?', 'squads');
+      return this.j({ ok: true, invited: t.username });
+    }
+    if (path === '/squad/join') { // accepting an invite, or walking into an open squad
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' }, 400);
+      const me = this.rows('SELECT id, username, status FROM users WHERE id=?', uid)[0];
+      if (!me || !me.username) return this.j({ error: 'no_account' }, 403);
+      if (me.status && me.status !== 'active') return this.j({ error: 'suspended' }, 403);
+      if (this.rows('SELECT 1 FROM squadm WHERE uid=?', uid)[0]) return this.j({ error: 'already_in_squad' }, 409);
+      const sid = String(b.sid || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const s = this.rows('SELECT * FROM squads WHERE id=?', sid)[0]; if (!s) return this.j({ error: 'not_found' }, 404);
+      const now = Date.now(), sql = this.state.storage.sql;
+      const inv = this.rows('SELECT 1 FROM squadinv WHERE k=? AND ts > ?', sid + '|' + uid, now - SQUAD_INV_MS)[0];
+      if (!inv && !s.openj) return this.j({ error: 'invite_only' }, 403);
+      if (this._squadN(sid) >= SQUAD_MAX) return this.j({ error: 'squad_full', max: SQUAD_MAX }, 409);
+      // A squad in the middle of a duel cannot grow: the opponent accepted a fight against a squad of a size
+      sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, sid, 'member', now);
+      sql.exec('DELETE FROM squadinv WHERE uid=?', uid); // joining answers every other invite too
+      this._pushNotif(s.leader, 'squad', '@' + me.username + ' joined ' + s.name + '.', 'squads');
+      return this.j({ ok: true, squad: this._squadPub(sid, true) });
+    }
+    if (path === '/squad/declineinv') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sid = String(b.sid || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      try { this.state.storage.sql.exec('DELETE FROM squadinv WHERE k=?', sid + '|' + uid); } catch (e) {}
+      return this.j({ ok: true });
+    }
+    if (path === '/squad/leave') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (this._sduelLive(sq.id)) return this.j({ error: 'duel_running' }, 409); // you do not walk out mid-duel; the squad you are fighting agreed to a squad of a size
+      const sql = this.state.storage.sql;
+      if (String(sq.leader) === uid) { // the leader leaves: the longest-serving member takes it, or the squad is gone
+        const next = this.rows('SELECT uid FROM squadm WHERE sid=? AND uid<>? ORDER BY ts ASC LIMIT 1', sq.id, uid)[0];
+        if (!next) return this._squadDisband(sq.id, 'the last member left');
+        sql.exec('UPDATE squads SET leader=? WHERE id=?', next.uid, sq.id);
+        sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", next.uid);
+        this._pushNotif(next.uid, 'squad', 'You are now the leader of ' + sq.name + '.', 'squads');
+      }
+      sql.exec('DELETE FROM squadm WHERE uid=?', uid);
+      return this.j({ ok: true, left: true });
+    }
+    if (path === '/squad/kick') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      if (this._sduelLive(sq.id)) return this.j({ error: 'duel_running' }, 409);
+      const who = String(b.name || '').trim().replace(/^@/, '');
+      const t = this.rows('SELECT id, username FROM users WHERE LOWER(username)=?', who.toLowerCase())[0];
+      if (!t || String(t.id) === uid) return this.j({ error: 'no_such_member' }, 404);
+      const m = this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', t.id, sq.id)[0];
+      if (!m) return this.j({ error: 'not_a_member' }, 404);
+      this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', t.id);
+      this._pushNotif(t.id, 'squad', 'You were removed from ' + sq.name + '.', 'squads');
+      return this.j({ ok: true, removed: t.username });
+    }
+    if (path === '/squad/disband') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      if (this._sduelLive(sq.id)) return this.j({ error: 'duel_running' }, 409);
+      return this._squadDisband(sq.id, 'the leader disbanded it');
+    }
+    // ── squad duels ────────────────────────────────────────────────────────────────────────────────
+    if (path === '/squad/challenge') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const metric = SQUAD_METRICS[String(b.metric || '')] ? String(b.metric) : 'pnl';
+      const dur = SQUAD_DURS.indexOf(+b.dur) >= 0 ? +b.dur : 604800000;
+      const stake = Math.max(0, Math.min(SQUAD_STAKE_MAX, Math.round(+b.stake || 0)));
+      const now = Date.now();
+      if (this._sduelLive(sq.id)) return this.j({ error: 'already_duelling' }, 409);
+      if ((this.rows("SELECT COUNT(*) c FROM sduels WHERE a_sid=? AND status='pending'", sq.id)[0] || { c: 0 }).c >= 3) return this.j({ error: 'too_many_open' }, 429);
+      let target = null;
+      if (b.sid) {
+        const tid = String(b.sid).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+        target = this.rows('SELECT * FROM squads WHERE id=?', tid)[0];
+        if (!target) return this.j({ error: 'not_found' }, 404);
+        if (String(target.id) === sq.id) return this.j({ error: 'thats_you' }, 400);
+        if (this._sduelLive(target.id)) return this.j({ error: 'they_are_duelling' }, 409);
+        const last = this.rows('SELECT created FROM sduels WHERE ((a_sid=? AND b_sid=?) OR (a_sid=? AND b_sid=?)) ORDER BY created DESC LIMIT 1', sq.id, target.id, target.id, sq.id)[0];
+        if (last && now - (+last.created || 0) < SQUAD_REMATCH_MS) return this.j({ error: 'rematch_cooldown', wait: SQUAD_REMATCH_MS - (now - (+last.created || 0)) }, 429);
+      }
+      if (stake > 0 && !this._takeTicks(uid, stake, 'Squad duel stake - ' + sq.name)) return this.j({ error: 'need_ticks', need: stake, have: this._tickBal(uid) }, 402);
+      const id = 'sd' + now.toString(36) + Math.random().toString(36).slice(2, 7);
+      this.state.storage.sql.exec('INSERT INTO sduels(id,a_sid,b_sid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,rules,detail) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)',
+        id, sq.id, target ? target.id : '', sq.name, target ? target.name : '', metric, now, target ? 'pending' : 'open', '', dur, stake, stake > 0 ? 1 : 0, JSON.stringify({}), '');
+      if (target) for (const m of this.rows('SELECT uid FROM squadm WHERE sid=?', target.id)) this._pushNotif(m.uid, 'squad', sq.name + ' [' + sq.tag + '] challenged your squad on ' + SQUAD_METRICS[metric].label + (stake > 0 ? ' for ' + stake + ' Ticks' : '') + '.', 'squads');
+      return this.j({ ok: true, id, duel: this._sduelPub(this.rows('SELECT * FROM sduels WHERE id=?', id)[0]) });
+    }
+    if (path === '/squad/openduels') { // the board of challenges anyone may take - what a squad with nobody to fight needs
+      const now = Date.now(), out = [];
+      for (const d of this.rows("SELECT * FROM sduels WHERE status='open' ORDER BY created DESC LIMIT 40")) {
+        if (now - (+d.created || 0) > 3 * 86400000) { if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveTicks(this._squadLeader(d.a_sid), +d.stake, 'Open squad duel expired - stake returned'); this.state.storage.sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE id=?", d.id); continue; }
+        out.push(this._sduelPub(d));
+        if (out.length >= 20) break;
+      }
+      return this.j({ duels: out });
+    }
+    if (path === '/squad/accept') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const d = this.rows('SELECT * FROM sduels WHERE id=?', String(b.id || ''))[0];
+      if (!d) return this.j({ error: 'not_found' }, 404);
+      const isOpen = d.status === 'open';
+      if (!isOpen && d.status !== 'pending') return this.j({ error: 'not_open' }, 409);
+      if (!isOpen && String(d.b_sid) !== sq.id) return this.j({ error: 'not_yours' }, 403);
+      if (isOpen && String(d.a_sid) === sq.id) return this.j({ error: 'thats_you' }, 400);
+      if (this._sduelLive(sq.id)) return this.j({ error: 'already_duelling' }, 409);
+      const stake = +d.stake || 0;
+      if (stake > 0 && !this._takeTicks(uid, stake, 'Squad duel stake - ' + sq.name)) return this.j({ error: 'need_ticks', need: stake, have: this._tickBal(uid) }, 402);
+      const now = Date.now(), sql = this.state.storage.sql;
+      sql.exec('UPDATE sduels SET b_sid=?, b_name=?, status=?, start_ts=?, end_ts=?, escrowed=? WHERE id=?', sq.id, sq.name, 'active', now, now + (+d.dur || 604800000), stake > 0 ? 2 : 0, d.id);
+      const ml = (SQUAD_METRICS[d.metric] || {}).label || d.metric;
+      for (const m of this.rows('SELECT uid FROM squadm WHERE sid=? OR sid=?', d.a_sid, sq.id)) this._pushNotif(m.uid, 'squad', 'Squad duel is live: ' + d.a_name + ' vs ' + sq.name + ' on ' + ml + '. Every trade you close now counts.', 'squads');
+      return this.j({ ok: true, duel: this._sduelPub(this.rows('SELECT * FROM sduels WHERE id=?', d.id)[0]) });
+    }
+    if (path === '/squad/decline') {
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const d = this.rows('SELECT * FROM sduels WHERE id=?', String(b.id || ''))[0];
+      if (!d) return this.j({ error: 'not_found' }, 404);
+      const mine = String(d.a_sid) === sq.id, theirs = String(d.b_sid) === sq.id;
+      if (!mine && !theirs) return this.j({ error: 'not_yours' }, 403);
+      if (d.status !== 'pending' && d.status !== 'open') return this.j({ error: 'not_open' }, 409);
+      if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveTicks(this._squadLeader(d.a_sid), +d.stake, mine ? 'Squad duel cancelled - stake returned' : 'Squad duel declined - stake returned');
+      this.state.storage.sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE id=?", d.id);
+      return this.j({ ok: true });
+    }
+    if (path === '/squad/settle') { // the cron: settle every active squad duel whose window has closed
+      const now = +((b && b.now)) || Date.now(); const out = [];
+      for (const d of this.rows("SELECT * FROM sduels WHERE status='active' AND settled=0 AND end_ts>0 AND end_ts<=? LIMIT 20", now)) out.push(this._sduelSettle(d));
+      // an unanswered challenge stops being one
+      try { this.state.storage.sql.exec("UPDATE sduels SET status='expired', escrowed=0 WHERE status='pending' AND created < ?", now - 3 * 86400000); } catch (e) {}
+      return this.j({ settled: out.length, duels: out });
+    }
+    if (path === '/squad/settleone') { const d = this.rows('SELECT * FROM sduels WHERE id=?', String((b && b.id) || ''))[0]; if (!d) return this.j({ error: 'not_found' }, 404); if (d.status !== 'active' || +d.settled) return this.j({ error: 'not_active', status: d.status }, 409); if (b && b.now) { try { this.state.storage.sql.exec('UPDATE sduels SET end_ts=? WHERE id=?', Math.min(+b.now, Date.now()), d.id); d.end_ts = Math.min(+b.now, Date.now()); } catch (e) {} } return this.j({ ok: true, duel: this._sduelSettle(d) }); }
+    if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
+      const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');
+      const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
+      return this.j({ squads: out });
+    }
+    if (path === '/squad/of') { // the crest for a set of accounts - what the public profile card and the boards ask for
+      const ids = (Array.isArray(b && b.uids) ? b.uids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 200);
+      const out = {};
+      if (ids.length) {
+        try {
+          inChunks(ids, (part, ph) => this.rows('SELECT m.uid, s.id, s.name, s.tag, s.crest FROM squadm m JOIN squads s ON s.id=m.sid WHERE m.uid IN (' + ph + ')', ...part))
+            .forEach(r => { out[String(r.uid)] = { sid: r.id, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest) }; });
+        } catch (e) {}
+      }
+      return this.j({ squads: out });
+    }
     if (path === '/closefeed') { // public homepage feed: latest closed trades - manual closes AND liquidations - named active accounts only, premium flagged
       const rows = this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, user_id FROM tradeev WHERE kind='close' ORDER BY id DESC LIMIT 40");
       const uids = [...new Set(rows.map(r => String(r.user_id)))];
