@@ -134,6 +134,51 @@
   .how h3{font-size:14.5px;font-weight:800;margin-bottom:5px}
   .how p{margin:0;font-size:13px;color:var(--dim)}
 
+
+  /* ── the crest builder: every option is the thing it makes ─────────────────────────────── */
+  .bld{display:grid;grid-template-columns:168px minmax(0,1fr);gap:20px;align-items:start}
+  .bld .prev{position:relative;display:flex;flex-direction:column;align-items:center;gap:11px;padding:18px 14px;background:radial-gradient(120% 90% at 50% 0,rgba(157,123,255,.10),transparent 62%),#0c0f14;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .bld .prev .pglow{position:absolute;inset:-40% 20% auto;height:150px;background:radial-gradient(60% 100% at 50% 0,rgba(194,246,74,.16),transparent 70%);pointer-events:none}
+  .bld .prev>*{position:relative}
+  .bld .prev .nm{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:15px;text-align:center;word-break:break-word;line-height:1.15}
+  .bld .prev .tg{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;text-align:center;margin-top:2px}
+  .copts{display:flex;flex-wrap:wrap;gap:8px}
+  .copt{padding:5px;border:1px solid var(--line2);background:#0c0f14;border-radius:12px;cursor:pointer;line-height:0;transition:border-color .14s,transform .14s,box-shadow .14s}
+  .copt:hover{border-color:var(--faint);transform:translateY(-1px)}
+  .copt.on{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 6px 18px -10px var(--lime)}
+  .copts.sw{gap:9px}
+  .csw{width:30px;height:30px;border-radius:9px;background:var(--sw);border:1px solid rgba(255,255,255,.16);cursor:pointer;padding:0;position:relative;transition:transform .14s}
+  .csw:hover{transform:translateY(-1px)}
+  .csw.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+  .csw.dead{opacity:.22;cursor:not-allowed;transform:none}
+  .csw.dead::after{content:"";position:absolute;inset:4px;border-top:2px solid rgba(255,255,255,.7);transform:rotate(-45deg);transform-origin:center}
+  .bopts .bfield{margin-bottom:15px}
+
+  /* ── the gate ───────────────────────────────────────────────────────────────────────────── */
+  .gate{position:relative;overflow:hidden;background:radial-gradient(90% 120% at 0 0,rgba(157,123,255,.09),transparent 58%),var(--panel)}
+  .glock{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--violet);margin-bottom:7px}
+  .greq{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--line)}
+  .greq:first-of-type{border-top:0}
+  .gtick{width:22px;height:22px;flex:0 0 auto;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;font-size:12px;color:var(--bg);margin-top:1px}
+  .greq.done .gtick{background:var(--up);border-color:var(--up);font-weight:800}
+  .gt{font-weight:700;font-size:14.5px;line-height:1.25}
+  .gs{font-size:12.5px;color:var(--dim);margin-top:2px;font-family:'Space Mono',ui-monospace,monospace}
+  .greq.done .gs{color:var(--up)}
+  .gbar{height:4px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px;max-width:320px}
+  .gbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--violet),var(--lime));transition:width .5s ease}
+  .greq.done .gbar i{background:var(--up)}
+  .gfoot{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+  .paybar{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* ── an invitation must feel like one ───────────────────────────────────────────────────── */
+  .invp{position:relative;overflow:hidden;border-color:rgba(194,246,74,.34);background:radial-gradient(110% 130% at 0 0,rgba(194,246,74,.10),transparent 58%),var(--panel)}
+  .ipglow{position:absolute;inset:-60px -40px auto;height:190px;background:radial-gradient(50% 100% at 20% 0,rgba(194,246,74,.16),transparent 72%);pointer-events:none}
+  .iphead{position:relative;display:flex;gap:15px;align-items:center}
+  .ipk{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime)}
+  .ipn{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:clamp(20px,3.2vw,27px);font-weight:800;letter-spacing:-.01em;line-height:1.1;margin-top:2px}
+  .ipby{font-size:13px;color:var(--dim);margin-top:3px}
+  .ipl{position:relative;margin:13px 0;color:var(--dim);font-size:14px;max-width:56ch}
+  @media(max-width:620px){ .bld{grid-template-columns:1fr} .bld .prev{flex-direction:row;justify-content:flex-start;text-align:left} .bld .prev .nm,.bld .prev .tg{text-align:left} }
   @media(max-width:620px){
     .bld{grid-template-columns:1fr}
     .bld .prev{flex-direction:row;justify-content:flex-start}
@@ -188,7 +233,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_squadsindex = {"openSquadRoom2":"Abrir sala de escuadra","justNow":"ahora mismo","signInFirst":"Inicia sesión primero.","finishSettingUpYour":"Termina de configurar tu cuenta primero.","thisAccountCannotJoin":"Esta cuenta no puede unirse a una escuadra.","youAreAlreadyIn":"Ya estás en una escuadra. Sal de ella primero.","thatNameIsTaken":"Ese nombre ya está tomado.","thatTagIsTaken":"Esa etiqueta ya está tomada.","aNameIs2":"Un nombre tiene de 2 a 24 caracteres, letras y números.","aTagIs2":"Una etiqueta tiene de 2 a 4 letras o números.","onlyTheLeaderCan":"Solo el líder puede hacer eso.","youAreNotIn":"No estás en una escuadra.","thatSquadIsFull":"Esa escuadra está llena: cinco es el límite.","thatSquadIsInvite":"Esa escuadra es solo por invitación.","theyAlreadyHaveAn":"Ya tienen una invitación.","noMemberWithThat":"No hay ningún miembro con ese nombre de usuario.","theyAreAlreadyIn":"Ya están en una escuadra.","thatIsYourOwn":"Esa es tu propia escuadra.","tooManyInvitesOut":"Demasiadas invitaciones enviadas a la vez.","notWhileADuel":"No mientras haya un duelo en curso.","yourSquadIsAlready":"Tu escuadra ya está en un duelo.","thatSquadIsAlready":"Esa escuadra ya está en un duelo.","youFoughtThemRecently":"Los enfrentaste hace poco: espera unas horas.","youAlreadyHaveThree":"Ya tienes tres retos enviados.","notEnoughTicksFor":"No tienes suficientes Ticks para esa apuesta.","thatChallengeIsNo":"Ese reto ya no está abierto.","thatChallengeIsNot":"Ese reto no es tuyo.","notFound":"No encontrado.","busyTryAgainIn":"Ocupado: inténtalo de nuevo en un momento.","notEnoughTicksThat":"No tienes suficientes Ticks: esa apuesta necesita ","andYouHave":" y tú tienes ","yourTag":"Tu etiqueta","yourSquad":"Tu escuadra","signIn":"<button class=\"btn p\" data-auth-open type=\"button\">Iniciar sesión</button></div>","squadsLookingForPeople":"<div class=\"sect\"><h2>Escuadras que buscan gente</h2><p class=\"sub\">Escuadras abiertas a las que podrías entrar una vez que inicies sesión.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","orJoinOneOpen":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","youHaveBeenInvited":"<div class=\"sect\"><h2>Te han invitado</h2><div class=\"dir\">","openChallenge":"<span class=\"st open\">Reto abierto</span>","waitingForASquad":"Esperando a una escuadra","noStake":"<span>Sin apuesta</span>","openSquadRoom":"\">Abrir sala de escuadra</a>","youAreTheLeader":"Eres el líder, así que la apuesta la pones tú. Si ganas, vuelve, más la apuesta de la otra escuadra repartida entre todos.","yourLeaderPutsThe":"Tu líder pone la apuesta. Cada miembro que cierre una operación durante el duelo gana XP: ganes, empates o pierdas.","noDuelRunning":"<div class=\"empty\">No hay ningún duelo en curso.</div>","pastDuels":"<div class=\"sect\"><h2>Duelos anteriores</h2>","openChallengesSquadsLookin":"<div class=\"sect\"><h2>Retos abiertos</h2><p class=\"sub\">Escuadras que buscan a quien las enfrente.</p><div id=\"openD\"><div class=\"empty\">Cargando…</div></div></div>","dataOpen1Anyone":"\" data-open=\"1\">Cualquiera puede unirse</button><button type=\"button\" class=\"chip","dataOpen0Invite":"\" data-open=\"0\">Solo por invitación</button></div>","waitingOn":"<div class=\"note\">Pendientes de: ","totalProfit":"Beneficio total","biggestWin":"Mayor ganancia","winRate":"Tasa de acierto","noStake2":"Sin apuesta","scoredOn":"<div class=\"bfield\"><label class=\"fl\">Se puntúa por</label>","runsFor":"<div class=\"bfield\"><label class=\"fl\">Dura</label>","yourStakeYouHave":"<div class=\"bfield\"><label class=\"fl\">Tu apuesta <span style=\"color:var(--faint)\">(tienes ","squadTagOrId":"<div class=\"bfield\"><label class=\"fl\" for=\"chSid\">Etiqueta o id de escuadra <span style=\"color:var(--faint)\">(déjalo vacío para publicar un reto abierto)</span></label><input type=\"text\" id=\"chSid\" maxlength=\"8\" placeholder=\"p. ej. 7KQM2P\" autocomplete=\"off\" /></div>","sendChallenge":"<button class=\"btn p\" id=\"chGo\" type=\"button\">Enviar reto</button><div class=\"msg\" id=\"chMsg\"></div>","onTotalProfitOnly":"<div class=\"note\">En beneficio total solo cuentan los mejores miembros de cada escuadra, tantos como tenga la escuadra más pequeña, así que cinco no pueden ganar a tres por pura aritmética.</div></div>","noOpenSquadsRight":"<div class=\"empty\">Ahora mismo no hay escuadras abiertas. Empieza la primera.</div>","signIn2":"<button class=\"btn sm\" data-auth-open type=\"button\">Iniciar sesión</button>","couldNotLoad":"<div class=\"empty\">No se pudo cargar.</div>","onlyYoursIsOpen":"Ahora mismo solo está el tuyo, arriba.","nobodyHasPostedOne":"Nadie ha publicado ninguno.","openAnyone":"<div class=\"mid\"><span class=\"st open\">Abierto</span></div><div class=\"sd r\"><span class=\"n\" style=\"color:var(--faint)\">cualquiera</span></div></div>","couldNotLoadRetry":"<div class=\"card\"><div class=\"empty\">No se pudo cargar. <button class=\"btn sm\" onclick=\"location.reload()\">Reintentar</button></div></div>","inviteSent":"Invitación enviada.","leaveThisSquad":"¿Salir de esta escuadra?","youLeftTheSquad":"Has salido de la escuadra.","disbandTheSquadThe":"¿Disolver la escuadra? El escudo desaparece de la tarjeta de cada miembro.","challengeSentYourStake":"Reto enviado: tu apuesta queda retenida hasta que se resuelva.","challengeSent":"Reto enviado.","youAreIn":"Ya estás dentro.","duelIsLive":"El duelo está en marcha.","middotLedBy":" &middot; liderada por "};
+var __esD_squadsindex = {"shape":"Forma","mark":"Marca","background":"Fondo","markColour":"Color de la marca","ring":"Anillo","surpriseMe":"Sorpréndeme","foundingASquad":"Fundar una escuadra","twoThingsOpenThe":"Dos cosas abren el editor de escudos","joiningASquadIs":"Unirse a una escuadra es gratis y siempre lo será. Fundar una no: un escudo que viaja en cinco tarjetas públicas está para ganárselo.","reachLevel":"Llega a ","unlocked":" - desbloqueado","nowSp":" ahora","ticksOrSp":" Ticks, o ","fromYourBalance":" de tu saldo","youHaveTheTicks":"Tienes los Ticks","isInYourBalance":" hay en tu saldo","ticksSp":" Ticks","balance":" de saldo","xpComesFromTrading":"El XP viene de operar, la Academia y las misiones diarias. Los Ticks vienen de misiones, duelos y el pase de temporada.","yourSeason":"Tu temporada","academy":"Academia","createForSp":"Crear por ","ticks":"Ticks","payFromBalance":"Pagar ","fromBalance":" del saldo","ticksAreTheCheaper":"Los Ticks son la vía más barata: valen casi lo mismo y te los ganaste jugando.","youAreInvited":"Te han invitado","byAt":"de @","joinAndTheirCrest":"Únete y su escudo pasa a tu tarjeta de perfil, entras en su sala y cuentas en cada duelo de escuadra que peleen.","joinSquad":"Unirme a la escuadra","noThanks":"No, gracias","orJoinOneOpen2":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando...</div></div></div>","squadCreated2":"Escuadra creada.","openSquadRoom2":"Abrir sala de escuadra","justNow":"ahora mismo","signInFirst":"Inicia sesión primero.","finishSettingUpYour":"Termina de configurar tu cuenta primero.","thisAccountCannotJoin":"Esta cuenta no puede unirse a una escuadra.","youAreAlreadyIn":"Ya estás en una escuadra. Sal de ella primero.","thatNameIsTaken":"Ese nombre ya está tomado.","thatTagIsTaken":"Esa etiqueta ya está tomada.","aNameIs2":"Un nombre tiene de 2 a 24 caracteres, letras y números.","aTagIs2":"Una etiqueta tiene de 2 a 4 letras o números.","onlyTheLeaderCan":"Solo el líder puede hacer eso.","youAreNotIn":"No estás en una escuadra.","thatSquadIsFull":"Esa escuadra está llena: cinco es el límite.","thatSquadIsInvite":"Esa escuadra es solo por invitación.","theyAlreadyHaveAn":"Ya tienen una invitación.","noMemberWithThat":"No hay ningún miembro con ese nombre de usuario.","theyAreAlreadyIn":"Ya están en una escuadra.","thatIsYourOwn":"Esa es tu propia escuadra.","tooManyInvitesOut":"Demasiadas invitaciones enviadas a la vez.","notWhileADuel":"No mientras haya un duelo en curso.","yourSquadIsAlready":"Tu escuadra ya está en un duelo.","thatSquadIsAlready":"Esa escuadra ya está en un duelo.","youFoughtThemRecently":"Los enfrentaste hace poco: espera unas horas.","youAlreadyHaveThree":"Ya tienes tres retos enviados.","notEnoughTicksFor":"No tienes suficientes Ticks para esa apuesta.","thatChallengeIsNo":"Ese reto ya no está abierto.","thatChallengeIsNot":"Ese reto no es tuyo.","notFound":"No encontrado.","busyTryAgainIn":"Ocupado: inténtalo de nuevo en un momento.","notEnoughTicksThat":"No tienes suficientes Ticks: esa apuesta necesita ","andYouHave":" y tú tienes ","yourTag":"Tu etiqueta","yourSquad":"Tu escuadra","signIn":"<button class=\"btn p\" data-auth-open type=\"button\">Iniciar sesión</button></div>","squadsLookingForPeople":"<div class=\"sect\"><h2>Escuadras que buscan gente</h2><p class=\"sub\">Escuadras abiertas a las que podrías entrar una vez que inicies sesión.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","orJoinOneOpen":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","youHaveBeenInvited":"<div class=\"sect\"><h2>Te han invitado</h2><div class=\"dir\">","openChallenge":"<span class=\"st open\">Reto abierto</span>","waitingForASquad":"Esperando a una escuadra","noStake":"<span>Sin apuesta</span>","openSquadRoom":"\">Abrir sala de escuadra</a>","youAreTheLeader":"Eres el líder, así que la apuesta la pones tú. Si ganas, vuelve, más la apuesta de la otra escuadra repartida entre todos.","yourLeaderPutsThe":"Tu líder pone la apuesta. Cada miembro que cierre una operación durante el duelo gana XP: ganes, empates o pierdas.","noDuelRunning":"<div class=\"empty\">No hay ningún duelo en curso.</div>","pastDuels":"<div class=\"sect\"><h2>Duelos anteriores</h2>","openChallengesSquadsLookin":"<div class=\"sect\"><h2>Retos abiertos</h2><p class=\"sub\">Escuadras que buscan a quien las enfrente.</p><div id=\"openD\"><div class=\"empty\">Cargando…</div></div></div>","dataOpen1Anyone":"\" data-open=\"1\">Cualquiera puede unirse</button><button type=\"button\" class=\"chip","dataOpen0Invite":"\" data-open=\"0\">Solo por invitación</button></div>","waitingOn":"<div class=\"note\">Pendientes de: ","totalProfit":"Beneficio total","biggestWin":"Mayor ganancia","winRate":"Tasa de acierto","noStake2":"Sin apuesta","scoredOn":"<div class=\"bfield\"><label class=\"fl\">Se puntúa por</label>","runsFor":"<div class=\"bfield\"><label class=\"fl\">Dura</label>","yourStakeYouHave":"<div class=\"bfield\"><label class=\"fl\">Tu apuesta <span style=\"color:var(--faint)\">(tienes ","squadTagOrId":"<div class=\"bfield\"><label class=\"fl\" for=\"chSid\">Etiqueta o id de escuadra <span style=\"color:var(--faint)\">(déjalo vacío para publicar un reto abierto)</span></label><input type=\"text\" id=\"chSid\" maxlength=\"8\" placeholder=\"p. ej. 7KQM2P\" autocomplete=\"off\" /></div>","sendChallenge":"<button class=\"btn p\" id=\"chGo\" type=\"button\">Enviar reto</button><div class=\"msg\" id=\"chMsg\"></div>","onTotalProfitOnly":"<div class=\"note\">En beneficio total solo cuentan los mejores miembros de cada escuadra, tantos como tenga la escuadra más pequeña, así que cinco no pueden ganar a tres por pura aritmética.</div></div>","noOpenSquadsRight":"<div class=\"empty\">Ahora mismo no hay escuadras abiertas. Empieza la primera.</div>","signIn2":"<button class=\"btn sm\" data-auth-open type=\"button\">Iniciar sesión</button>","couldNotLoad":"<div class=\"empty\">No se pudo cargar.</div>","onlyYoursIsOpen":"Ahora mismo solo está el tuyo, arriba.","nobodyHasPostedOne":"Nadie ha publicado ninguno.","openAnyone":"<div class=\"mid\"><span class=\"st open\">Abierto</span></div><div class=\"sd r\"><span class=\"n\" style=\"color:var(--faint)\">cualquiera</span></div></div>","couldNotLoadRetry":"<div class=\"card\"><div class=\"empty\">No se pudo cargar. <button class=\"btn sm\" onclick=\"location.reload()\">Reintentar</button></div></div>","inviteSent":"Invitación enviada.","leaveThisSquad":"¿Salir de esta escuadra?","youLeftTheSquad":"Has salido de la escuadra.","disbandTheSquadThe":"¿Disolver la escuadra? El escudo desaparece de la tarjeta de cada miembro.","challengeSentYourStake":"Reto enviado: tu apuesta queda retenida hasta que se resuelva.","challengeSent":"Reto enviado.","youAreIn":"Ya estás dentro.","duelIsLive":"El duelo está en marcha.","middotLedBy":" &middot; liderada por ","youNeedPlatinumTo":"Necesitas Platino para fundar una escuadra.","notEnoughBalanceFor":"No tienes saldo suficiente para eso.","thatPaymentIsStill":"Ese pago todavía se está procesando: dale un momento.","theBalanceIsUnreachable":"Ahora mismo no se puede consultar el saldo: inténtalo de nuevo en un momento.","foundingASquadNeeds":"Fundar una escuadra requiere ","xpYouHave":" XP. Tú tienes "};
 function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_squadsindex[k] != null) return __esD_squadsindex[k]; } catch (e) {} return en; }
 
 (function () {
@@ -219,12 +264,15 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     duel_running: __esT_squadsindex("notWhileADuel",'Not while a duel is running.'), already_duelling: __esT_squadsindex("yourSquadIsAlready",'Your squad is already in a duel.'), they_are_duelling: __esT_squadsindex("thatSquadIsAlready",'That squad is already in a duel.'),
     rematch_cooldown: __esT_squadsindex("youFoughtThemRecently",'You fought them recently - give it a few hours.'), too_many_open: __esT_squadsindex("youAlreadyHaveThree",'You already have three challenges out.'),
     need_ticks: __esT_squadsindex("notEnoughTicksFor",'Not enough Ticks for that stake.'), not_open: __esT_squadsindex("thatChallengeIsNo",'That challenge is no longer open.'), not_yours: __esT_squadsindex("thatChallengeIsNot",'That challenge is not yours.'),
-    not_found: __esT_squadsindex("notFound",'Not found.'), busy: __esT_squadsindex("busyTryAgainIn",'Busy - try again in a moment.')
+    not_found: __esT_squadsindex("notFound",'Not found.'), busy: __esT_squadsindex("busyTryAgainIn",'Busy - try again in a moment.'),
+    need_level: __esT_squadsindex("youNeedPlatinumTo",'You need Platinum to found a squad.'), insufficient: __esT_squadsindex("notEnoughBalanceFor",'Not enough balance for that.'),
+    in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.')
   };
   function say(el, j, good) {
     if (!el) return;
     var m = j && j.error ? (ERR[j.error] || j.error.replace(/_/g, ' ')) : good;
     if (j && j.error === 'need_ticks' && j.need != null) m = __esT_squadsindex("notEnoughTicksThat",'Not enough Ticks: that stake needs ') + j.need + __esT_squadsindex("andYouHave",' and you have ') + (j.have || 0) + '.';
+    if (j && j.error === 'need_level') m = __esT_squadsindex("foundingASquadNeeds",'Founding a squad needs ') + String(j.need || 'Platinum').replace(/^./, function (c) { return c.toUpperCase(); }) + ' - ' + (j.needXp || 0).toLocaleString() + __esT_squadsindex("xpYouHave",' XP. You have ') + (j.xp || 0).toLocaleString() + '.';
     el.textContent = m || ''; el.className = 'msg on ' + (j && j.error ? 'err' : 'good');
   }
 
@@ -236,20 +284,34 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   function builderHtml(d, name, tag) {
     var cols = window.mpSquadCrestCols || ['#4aa3f6'];
     var shapes = window.mpSquadCrestShapes || ['shield'], syms = window.mpSquadCrestSyms || ['tag'], rings = window.mpSquadCrestRings || ['solid'];
-    var chipRow = function (list, cur, key, nameMap) {
-      return '<div class="chips">' + list.map(function (v) { return '<button type="button" class="chip' + (v === cur ? ' on' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '">' + esc((nameMap && nameMap[v]) || v) + '</button>'; }).join('') + '</div>';
+    /* EVERY OPTION IS DRAWN AS THE THING IT MAKES. A word-chip picker for a crest asks the reader to imagine the
+       result and then check it - so each shape, mark and ring option is a miniature crest in the colours already
+       chosen, and picking one is recognition instead of translation. */
+    var opt = function (key, v, inner, label, on) {
+      return '<button type="button" class="copt' + (on ? ' on' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '" title="' + esc(label) + '" aria-label="' + esc(label) + '">' + inner + '</button>';
     };
-    var swRow = function (cur, key) {
-      return '<div class="chips">' + cols.map(function (v) { return '<button type="button" class="swatch' + (v === cur ? ' on' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '" style="background:' + esc(v) + '" aria-label="' + esc(v) + '"></button>'; }).join('') + '</div>';
+    var mini = function (over) { var c = { shape: d.shape, sym: d.sym, bg: d.bg, fg: d.fg, ring: d.ring }; for (var k in over) c[k] = over[k]; return crest(c, 38, tag || 'AB'); };
+    var shapeRow = '<div class="copts">' + shapes.map(function (v) { return opt('shape', v, mini({ shape: v }), SHAPENAME[v] || v, v === d.shape); }).join('') + '</div>';
+    var symRow = '<div class="copts">' + syms.map(function (v) { return opt('sym', v, mini({ sym: v }), SYMNAME[v] || v, v === d.sym); }).join('') + '</div>';
+    var ringRow = '<div class="copts">' + rings.map(function (v) { return opt('ring', v, mini({ ring: v }), RINGNAME[v] || v, v === d.ring); }).join('') + '</div>';
+    var swRow = function (cur, key, other) {
+      return '<div class="copts sw">' + cols.map(function (v) {
+        /* a mark the colour of its own ground is an invisible crest, so that pair is shown as unavailable
+           rather than silently corrected under the reader's hands */
+        var dead = (v === other);
+        return '<button type="button" class="csw' + (v === cur ? ' on' : '') + (dead ? ' dead' : '') + '" data-set="' + key + '" data-v="' + esc(v) + '" style="--sw:' + esc(v) + '"' + (dead ? ' disabled' : '') + ' aria-label="' + esc(v) + '"></button>';
+      }).join('') + '</div>';
     };
     return '<div class="bld">'
-      + '<div class="prev"><div id="bPrev">' + crest(d, 96, tag) + '</div><div><div class="nm" id="bName">' + esc(name || __esT_squadsindex("yourSquad",'Your squad')) + '</div><div class="tg" id="bTag">' + esc((tag || '').toUpperCase() || 'TAG') + '</div></div></div>'
-      + '<div>'
-      + '<div class="bfield"><label class="fl">Shape</label>' + chipRow(shapes, d.shape, 'shape', SHAPENAME) + '</div>'
-      + '<div class="bfield"><label class="fl">Mark</label>' + chipRow(syms, d.sym, 'sym', SYMNAME) + '</div>'
-      + '<div class="bfield"><label class="fl">Background</label>' + swRow(d.bg, 'bg') + '</div>'
-      + '<div class="bfield"><label class="fl">Mark colour</label>' + swRow(d.fg, 'fg') + '</div>'
-      + '<div class="bfield"><label class="fl">Ring</label>' + chipRow(rings, d.ring, 'ring', RINGNAME) + '</div>'
+      + '<div class="prev"><div class="pglow"></div><div id="bPrev">' + crest(d, 104, tag) + '</div>'
+      + '<div><div class="nm" id="bName">' + esc(name || __esT_squadsindex("yourSquad", 'Your squad')) + '</div><div class="tg" id="bTag">' + esc((tag || '').toUpperCase() || 'TAG') + '</div></div>'
+      + '<button type="button" class="btn sm" id="bRand">' + __esT_squadsindex("surpriseMe", 'Surprise me') + '</button></div>'
+      + '<div class="bopts">'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("shape", 'Shape') + '</label>' + shapeRow + '</div>'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("mark", 'Mark') + '</label>' + symRow + '</div>'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("background", 'Background') + '</label>' + swRow(d.bg, 'bg', d.fg) + '</div>'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("markColour", 'Mark colour') + '</label>' + swRow(d.fg, 'fg', d.bg) + '</div>'
+      + '<div class="bfield"><label class="fl">' + __esT_squadsindex("ring", 'Ring') + '</label>' + ringRow + '</div>'
       + '</div></div>';
   }
   function wireBuilder(root, getName, getTag) {
@@ -257,10 +319,20 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       var b = e.target.closest('[data-set]'); if (!b || !root.contains(b)) return;
       e.preventDefault();
       S.draft[b.getAttribute('data-set')] = b.getAttribute('data-v');
-      var key = b.getAttribute('data-set');
-      Array.prototype.forEach.call(root.querySelectorAll('[data-set="' + key + '"]'), function (x) { x.classList.toggle('on', x === b); });
-      repaintPrev(root, getName, getTag);
+      // every option previews the CURRENT colours, so a colour change has to redraw all of them, not just the
+      // row that was clicked - a picker showing stale swatches is worse than one showing words
+      rebuildBuilder(root, getName, getTag);
     });
+  }
+  function rebuildBuilder(root, getName, getTag) {
+    var nm = getName ? getName() : '', tg = getTag ? getTag() : '';
+    root.innerHTML = builderHtml(S.draft, nm, tg);
+  }
+  function randomCrest() {
+    var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+    var cols = window.mpSquadCrestCols || ['#4aa3f6'];
+    var bg = pick(cols), fg = pick(cols.filter(function (c) { return c !== bg; }));
+    return { shape: pick(window.mpSquadCrestShapes || ['shield']), sym: pick(window.mpSquadCrestSyms || ['tag']), bg: bg, fg: fg, ring: pick(window.mpSquadCrestRings || ['solid']) };
   }
   function repaintPrev(root, getName, getTag) {
     var p = $('#bPrev', root); if (p) p.innerHTML = crest(S.draft, 96, getTag ? getTag() : '');
@@ -276,9 +348,36 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + __esT_squadsindex("squadsLookingForPeople",'<div class="sect"><h2>Squads looking for people</h2><p class="sub">Open squads you could walk into once you are signed in.</p><div class="dir" id="dir"><div class="empty">Loading…</div></div></div>');
   }
 
+  /* THE EDITOR IS NOT SHOWN UNTIL IT IS EARNED (owner 2026-09-30). A builder a reader cannot use is a tease;
+     what they get instead is the exact distance to the two things that open it. */
+  function gateHtml(can) {
+    var xpPct = Math.max(0, Math.min(100, Math.round((can.xp / Math.max(1, can.needXp)) * 100)));
+    var tkPct = Math.max(0, Math.min(100, Math.round((can.ticks / Math.max(1, can.needTicks)) * 100)));
+    var money = '$' + (can.cents / 100).toFixed(2);
+    var need = function (done, title, sub, pct) {
+      return '<div class="greq' + (done ? ' done' : '') + '"><div class="gtick">' + (done ? '&#10003;' : '') + '</div>'
+        + '<div style="min-width:0;flex:1"><div class="gt">' + title + '</div><div class="gs">' + sub + '</div>'
+        + (pct == null ? '' : '<div class="gbar"><i style="width:' + pct + '%"></i></div>') + '</div></div>';
+    };
+    var h = '<div class="card gate">'
+      + '<div class="glock">' + __esT_squadsindex("foundingASquad", 'Founding a squad') + '</div>'
+      + '<h2 style="font-size:20px;font-weight:800;margin-bottom:5px">' + __esT_squadsindex("twoThingsOpenThe", 'Two things open the crest editor') + '</h2>'
+      + '<p style="margin:0 0 15px;color:var(--dim);font-size:14px">' + __esT_squadsindex("joiningASquadIs", 'Joining a squad is free and always will be. Founding one is not - a crest that rides on five public cards is meant to be earned.') + '</p>'
+      + need(can.levelOk, __esT_squadsindex("reachLevel", 'Reach ') + esc(can.needLevelName), can.levelOk ? (esc(can.levelName) + ' ' + __esT_squadsindex("unlocked", '- unlocked')) : (can.xp.toLocaleString() + ' / ' + can.needXp.toLocaleString() + ' XP &middot; ' + esc(can.levelName) + __esT_squadsindex("nowSp", ' now')), xpPct)
+      + need(can.ticksOk || can.cashOk, can.needTicks.toLocaleString() + __esT_squadsindex("ticksOrSp", ' Ticks, or ') + money + __esT_squadsindex("fromYourBalance", ' from your balance'), can.ticksOk ? __esT_squadsindex("youHaveTheTicks", 'You have the Ticks') : can.cashOk ? (money + __esT_squadsindex("isInYourBalance", ' is in your balance')) : (can.ticks.toLocaleString() + ' / ' + can.needTicks.toLocaleString() + __esT_squadsindex("ticksSp", ' Ticks') + ' &middot; $' + ((can.balanceCents || 0) / 100).toFixed(2) + __esT_squadsindex("balance", ' balance')), can.ticksOk ? 100 : tkPct)
+      + '<div class="gfoot">' + __esT_squadsindex("xpComesFromTrading", 'XP comes from trading, the Academy and daily missions. Ticks come from missions, duels and the season pass.') + ' <a href="/season/">' + __esT_squadsindex("yourSeason", 'Your season') + '</a> &middot; <a href="/academy/">' + __esT_squadsindex("academy", 'Academy') + '</a></div>'
+      + '</div>';
+    return h;
+  }
+
   function createView() {
     if (!S.draft) S.draft = draftDefault();
-    return '<div class="card">'
+    var can = (S.me && S.me.can) || {};
+    // THE CREST EDITOR IS HIDDEN UNTIL IT IS UNLOCKED (owner). Below the bar the reader gets the distance, not
+    // a form they cannot submit.
+    if (!can.ok) return invitePanel() + gateHtml(can) + invitesHtml() + browseSect();
+    var money = '$' + ((can.cents || 0) / 100).toFixed(2);
+    return invitePanel() + '<div class="card">'
       + '<h2 style="font-size:20px;font-weight:800;margin-bottom:4px">Start a squad</h2>'
       + '<p style="margin:0 0 15px;color:var(--dim);font-size:14px">You become the leader. The name and the tag are permanent - they are how other squads know who they fought. Everything else you can change later.</p>'
       + '<div class="row" style="margin-bottom:14px">'
@@ -288,15 +387,45 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + '<div class="bfield"><label class="fl" for="cMotto">Motto <span style="color:var(--faint)">(optional)</span></label><input type="text" id="cMotto" maxlength="80" placeholder="We only trade the open" autocomplete="off" /></div>'
       + '<div id="bld" style="margin:16px 0">' + builderHtml(S.draft, '', '') + '</div>'
       + '<div class="chips" style="margin-bottom:14px"><button type="button" class="chip on" id="cOpen" data-open="1">Anyone can join</button><button type="button" class="chip" data-open="0">Invite only</button></div>'
-      + '<button class="btn p" id="cGo" type="button">Create squad</button>'
+      + '<div class="paybar">'
+      + (can.ticksOk ? '<button class="btn p" id="cGoT" type="button">' + __esT_squadsindex("createForSp", 'Create for ') + (can.needTicks || 0).toLocaleString() + ' ' + __esT_squadsindex("ticks", 'Ticks') + '</button>' : '')
+      + (can.cashOk ? '<button class="btn' + (can.ticksOk ? '' : ' p') + '" id="cGoB" type="button">' + __esT_squadsindex("payFromBalance", 'Pay ') + money + __esT_squadsindex("fromBalance", ' from balance') + '</button>' : '')
+      + '</div>'
+      + '<div class="note">' + (can.ticksOk && can.cashOk ? __esT_squadsindex("ticksAreTheCheaper", 'Ticks are the cheaper route - they are worth about the same and you earned them by playing.') : '') + '</div>'
       + '<div class="msg" id="cMsg"></div>'
       + '</div>'
       + invitesHtml()
       + __esT_squadsindex("orJoinOneOpen",'<div class="sect"><h2>Or join one</h2><p class="sub">Open squads with room. One squad per account.</p><div class="dir" id="dir"><div class="empty">Loading…</div></div></div>');
   }
 
+  /* A NOTIFICATION HAS TO LAND ON SOMETHING. The invite notification links to /squads/?inv=<sid>, and this is
+     what greets them there - the squad's own crest, who asked, and one button. Without it the reader arrives on
+     a directory and has to find their own invitation in it. */
+  function invitePanel() {
+    var want = '';
+    try { want = new URLSearchParams(location.search).get('inv') || ''; } catch (e) {}
+    if (!want || !S.me || S.me.squad) return '';
+    var inv = ((S.me.invites) || []).filter(function (i) { return i.sid === want; })[0];
+    if (!inv) return '';
+    S._invShown = inv.sid;
+    return '<div class="card invp">'
+      + '<div class="ipglow"></div>'
+      + '<div class="iphead">' + crest(inv.crest, 72, inv.tag) + '<div style="min-width:0">'
+      + '<div class="ipk">' + __esT_squadsindex("youAreInvited", 'You are invited') + '</div>'
+      + '<div class="ipn">' + esc(inv.name) + '</div>'
+      + '<div class="ipby">' + __esT_squadsindex("byAt", 'by @') + esc(inv.by) + ' &middot; ' + esc(String(inv.tag || '').toUpperCase()) + '</div>'
+      + '</div></div>'
+      + '<p class="ipl">' + __esT_squadsindex("joinAndTheirCrest", 'Join and their crest goes on your profile card, you get their room, and you count in every squad duel they fight.') + '</p>'
+      + '<div class="row"><button class="btn p" data-join="' + esc(inv.sid) + '">' + __esT_squadsindex("joinSquad", 'Join squad') + '</button>'
+      + '<button class="btn" data-decl="' + esc(inv.sid) + '">' + __esT_squadsindex("noThanks", 'No thanks') + '</button></div>'
+      + '<div class="msg" id="cMsg"></div></div>';
+  }
+  function browseSect() {
+    return __esT_squadsindex("orJoinOneOpen2", '<div class="sect"><h2>Or join one</h2><p class="sub">Open squads with room. One squad per account.</p><div class="dir" id="dir"><div class="empty">Loading...</div></div></div>');
+  }
   function invitesHtml() {
-    var inv = (S.me && S.me.invites) || [];
+    // the one already standing in the panel above must not be listed again underneath it
+    var inv = ((S.me && S.me.invites) || []).filter(function (i) { return i.sid !== S._invShown; });
     if (!inv.length) return '';
     return __esT_squadsindex("youHaveBeenInvited",'<div class="sect"><h2>You have been invited</h2><div class="dir">') + inv.map(function (i) {
       return '<div class="dsq">' + crest(i.crest, 34, i.tag) + '<div style="min-width:0"><div class="n">' + esc(i.name) + '</div><div class="s">@' + esc(i.by) + ' &middot; ' + ago(i.ts) + '</div></div>'
@@ -429,6 +558,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
 
   /* ── render + wiring ────────────────────────────────────────────────────────────────────── */
   function render() {
+    S._invShown = '';
     if (!signedIn()) { app.innerHTML = guestView(); loadDir(); return; }
     if (!S.me) { app.innerHTML = '<div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div></div>'; return; }
     app.innerHTML = S.me.squad ? squadView() : createView();
@@ -472,11 +602,17 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       tryOpen(14);
       return;
     }
-    if (b.id === 'cGo') {
+    if (b.id === 'bRand') {
+      e.preventDefault();
+      S.draft = randomCrest();
+      var rt = $('#bld'); if (rt) rebuildBuilder(rt, function () { var n = $('#cName'); return n ? n.value : ((S.me.squad || {}).name || ''); }, function () { var t = $('#cTag'); return t ? t.value : ((S.me.squad || {}).tag || ''); });
+      return;
+    }
+    if (b.id === 'cGoT' || b.id === 'cGoB') {
       e.preventDefault();
       var nm = ($('#cName') || {}).value || '', tg = ($('#cTag') || {}).value || '', mo = ($('#cMotto') || {}).value || '';
       var openOn = document.querySelector('.chip.on[data-open]');
-      go('create', { name: nm.trim(), tag: tg, motto: mo, crest: S.draft, open: openOn ? openOn.getAttribute('data-open') === '1' : true }, '#cMsg', 'Squad created.');
+      go('create', { name: nm.trim(), tag: tg, motto: mo, crest: S.draft, open: openOn ? openOn.getAttribute('data-open') === '1' : true, pay: b.id === 'cGoB' ? 'balance' : 'ticks' }, '#cMsg', __esT_squadsindex("squadCreated2", 'Squad created.'));
     } else if (b.id === 'invBtn') { e.preventDefault(); var ib = $('#invBox'); if (ib) { ib.hidden = !ib.hidden; if (!ib.hidden) { var f = $('#invName'); if (f) f.focus(); } } }
     else if (b.id === 'invGo') { e.preventDefault(); go('invite', { name: (($('#invName') || {}).value || '').trim() }, '#invMsg', __esT_squadsindex("inviteSent",'Invite sent.')); }
     else if (b.id === 'eGo') { e.preventDefault(); var oo = document.querySelector('.chip.on[data-open]'); go('edit', { crest: S.draft, motto: (($('#eMotto') || {}).value || ''), open: oo ? oo.getAttribute('data-open') === '1' : undefined }, '#eMsg', 'Saved.'); }
@@ -511,7 +647,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=910f4146"></script>
-<script defer src="/assets/mp-nav.js?v=1092f256"></script>
+<script defer src="/assets/mp-auth.js?v=76fcabea"></script>
+<script defer src="/assets/mp-nav.js?v=0665d7ca"></script>
 </body>
 </html>

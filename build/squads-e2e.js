@@ -29,11 +29,17 @@ const adm = (p, body) => J(p, { method: 'POST', headers: H, body: JSON.stringify
 const UIDS = ['e2esqa1', 'e2esqa2', 'e2esqa3', 'e2esqb1', 'e2esqb2', 'e2esqc1'];
 const real = {}; // e2e uid -> internal users.id
 
-async function mk(uid) {
+async function mk(uid, found) {
   await adm('/api/admin/e2euser', { uid, op: 'rm' }).catch(() => {});
   await adm('/api/admin/e2euser', { uid, op: 'mk' });
   const who = await J('/api/admin/xpdiag?u=' + encodeURIComponent('e2e_' + uid), { headers: H });
   real[uid] = (who.user || {}).id || uid;
+  // FOUNDING is gated on Platinum + 5,000 Ticks (owner 2026-09-30). Joining is not, so only the accounts that
+  // found a squad in this suite are given the two things the gate asks for.
+  if (found) {
+    await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: real[uid], level: 'platinum', note: 'squads-e2e' }) });
+    await adm('/api/admin/ticks', { uid: real[uid], amt: 5000, note: 'squads-e2e' });
+  }
   return real[uid];
 }
 // /api/squad/mine carries the caller's Ticks balance, which is the only read that does not need a second endpoint
@@ -42,7 +48,19 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
 
 (async () => {
   if (!KEY) { console.error('ADMIN_KEY.local.txt: no mpadm_ token'); process.exitCode = 1; return; }
-  for (const u of UIDS) await mk(u);
+  const FOUNDERS = ['e2esqa1', 'e2esqc1']; // the two accounts that create a squad below
+  for (const u of UIDS) await mk(u, FOUNDERS.indexOf(u) >= 0);
+
+  // ── THE GATE (owner 2026-09-30): Platinum + 5,000 Ticks, or the cash price ──────────────────
+  const gateUid = real['e2esqa2']; // an ordinary member: no Platinum, no Ticks
+  const g1 = await sq('create', gateUid, { name: 'Gate Probe ' + Date.now().toString(36).slice(-5), tag: 'GP' + Math.floor(Math.random() * 9) });
+  ok(g1.error === 'need_level' && g1.needXp === 30000, 'AN ORDINARY MEMBER CANNOT FOUND A SQUAD - Platinum is 30,000 XP', g1);
+  await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: gateUid, level: 'platinum', note: 'squads-e2e gate' }) });
+  const g2 = await sq('create', gateUid, { name: 'Gate Probe ' + Date.now().toString(36).slice(-5), tag: 'GQ' + Math.floor(Math.random() * 9) });
+  ok(g2.error === 'need_ticks' && g2.need === 5000, 'PLATINUM ALONE IS NOT ENOUGH - it also costs 5,000 Ticks', g2);
+  const gm = await mine(gateUid);
+  ok(gm.can && gm.can.levelOk === true && gm.can.ticksOk === false && gm.can.ok === false, 'and the page is told exactly which half is missing', gm.can);
+  ok(gm.can && gm.can.cents >= 600, 'the cash price never undercuts 5,000 Ticks ($6.00 at the pass peg)', { cents: gm.can.cents });
   ok(Object.keys(real).length === 6, 'six throwaway members exist', Object.values(real).map(x => String(x).slice(0, 6)));
 
   // ── creating a squad ────────────────────────────────────────────────────────────────────────
@@ -52,11 +70,18 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   const TAG = R4(), TAGB = R4();
   const NAME = 'E2E Squad ' + Date.now().toString(36).slice(-5);
   const crest = { shape: 'hex', sym: 'bolt', bg: '#c2f64a', fg: '#0a0b0d', ring: 'double' };
+  const tkBefore = await ticks('e2esqa1');
   const c1 = await sq('create', real['e2esqa1'], { name: NAME, tag: TAG, crest, motto: 'test only', open: true });
   ok(c1.ok && c1.squad && c1.squad.sid, 'a member can create a squad and becomes its leader', c1.squad && { sid: c1.squad.sid, tag: c1.squad.tag, n: c1.squad.n });
   const SID = c1.squad && c1.squad.sid;
   ok(!!SID && /^[A-Z0-9]{6}$/.test(SID), 'the id is 6 uppercase alnum, so chatInstOf keeps it whole', SID);
   ok(c1.squad && c1.squad.crest && c1.squad.crest.sym === 'bolt' && c1.squad.crest.shape === 'hex', 'the crest is stored as posted', c1.squad && c1.squad.crest);
+  const tkAfter = await ticks('e2esqa1');
+  ok(tkAfter === tkBefore - 5000, 'FOUNDING TOOK EXACTLY 5,000 TICKS', { before: tkBefore, after: tkAfter });
+  // a refusal must never cost anybody the fee: the tag below is already taken
+  const dupTk = await ticks('e2esqc1');
+  const dupTry = await sq('create', real['e2esqc1'], { name: NAME, tag: 'ZZ7' });
+  ok(dupTry.error === 'name_taken' && (await ticks('e2esqc1')) === dupTk, 'A REFUSED CREATE COSTS NOTHING', { err: dupTry.error, before: dupTk, after: await ticks('e2esqc1') });
 
   const bogus = await sq('edit', real['e2esqa1'], { crest: { shape: 'skull', sym: '<script>', bg: 'red', ring: 'x' } });
   ok(bogus.ok && bogus.squad.crest.shape === 'shield' && bogus.squad.crest.sym === 'tag' && bogus.squad.crest.bg === '#4aa3f6', 'a junk crest snaps to safe values instead of being stored', bogus.squad && bogus.squad.crest);
@@ -72,6 +97,9 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   ok(inv.ok, 'the leader can invite by username', inv);
   const notLeader = await sq('invite', real['e2esqa2'], { name: 'e2e_e2esqa3' });
   ok(notLeader.error === 'not_in_squad' || notLeader.error === 'not_leader', 'someone outside the squad cannot invite to it', notLeader);
+  const nf = await J('/api/auth/notifs?uid=' + encodeURIComponent(real['e2esqa2']), { headers: H });
+  const inviteNf = ((nf.notifs || nf.rows || [])).filter(function (n) { return String(n.kind) === 'squad'; })[0];
+  ok(!!inviteNf && String(inviteNf.link || '').indexOf('/squads/?inv=') === 0, 'THE INVITE NOTIFICATION LINKS SOMEWHERE - a path, not a word the handler ignores', inviteNf && { link: inviteNf.link });
   const m2 = await mine(real['e2esqa2']);
   ok((m2.invites || []).some(i => i.sid === SID), 'the invite shows up for the person invited', (m2.invites || []).map(i => i.sid));
   const j2 = await sq('join', real['e2esqa2'], { sid: SID });

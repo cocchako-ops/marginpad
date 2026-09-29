@@ -25,6 +25,10 @@ const R4 = () => { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for
     const s = await adm('/api/admin/e2euser', { uid: u, op: 'sess' });
     sess[u] = s.token || s.sess;
   }
+  // founding is gated on Platinum + 5,000 Ticks since 2026-09-30 - joining still is not, which is why only
+  // the founder is topped up here
+  await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: real['e2esqrm1'], level: 'platinum', note: 'squad-room-e2e' }) });
+  await adm('/api/admin/ticks', { uid: real['e2esqrm1'], amt: 5000, note: 'squad-room-e2e' });
   const TAG = R4();
   const c = await sq('create', real['e2esqrm1'], { name: 'Room Test ' + TAG, tag: TAG, crest: { shape: 'banner', sym: 'wave', bg: '#2ebd85', fg: '#0a0b0d', ring: 'solid' }, open: true });
   const SID = c.squad && c.squad.sid;

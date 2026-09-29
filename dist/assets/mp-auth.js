@@ -1718,7 +1718,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   // ---- Notifications center ----
   function notifSetBadge(n) { n = +n || 0; window._mpNotifUnread = n; setDot('mpaNotifBadge', n); refreshTrigDot(); }
   window.mpNotifBadge = notifSetBadge;
-  function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user', gift: 'gift' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
+  function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user', gift: 'gift', squad: 'people' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
   function renderNotifs() {
     bodyEl.innerHTML = __esT_mpauth("notificationsLoadingBackTo",'<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
@@ -1727,7 +1727,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var list = (d && d.notifs) || [];
       if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">No notifications yet. Follows, messages, @mentions and duel results will show up here.</div>'); }
       else { nf.innerHTML = list.map(function (n) { var link = n.link || ''; return '<div class="mpa-nf-r' + (n.seen ? '' : ' unseen') + '"' + (link ? ' data-nflink="' + esc(link) + '" role="button"' : '') + '><span class="mpa-nf-ic">' + notifIcon(n.kind) + '</span><div class="mpa-nf-b">' + esc(n.body) + '<span class="mpa-nf-ago">' + xpAgo(n.ts) + '</span></div></div>'; }).join('');
-        Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
+        Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.charAt(0) === '/') { location.href = l; return; } /* any path just navigates - a link the handler does not recognise used to be a dead click */ if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
       }
       // mark all read (clears the bell) once viewed
       fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
