@@ -20775,6 +20775,12 @@ export default {
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
+ if (url.pathname === '/api/admin/socialstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only baseline for the social layer (2026-09-29): the follow graph, DMs, duels, and whether a member with an edge comes back more than one without
+      const out = (await usersDO(env, '/socialstat')) || { error: 'transient' };
+      try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/modq', { headers: { 'x-admin': '1' } })); const c = await r.json(); out.community = c.totals || {}; } catch (e) { out.community = null; }
+      out.now = Date.now();
+      return J(out);
+    }
  if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
  const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '' });
  out.now = Date.now();
@@ -27682,6 +27688,37 @@ export class UserStore {
       const count = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', uid)[0] || { c: 0 }).c;
       const last = this.rows('SELECT f.uid fid, u.username, f.ts FROM ufollows f LEFT JOIN users u ON u.id = f.uid WHERE f.tuid = ? ORDER BY f.ts DESC LIMIT 1', uid)[0];
       return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
+    }
+    if (path === '/socialstat') { // read-only: how much of the social layer is actually used (2026-09-29). Never guess at this - the whole follow graph fits in a handful of COUNTs.
+      const one = (q, ...a) => { try { const r = this.rows(q, ...a)[0]; return r ? +Object.values(r)[0] || 0 : 0; } catch (e) { return 0; } };
+      const cut = Date.now() - 30 * 86400000;
+      const fol = { edges: one('SELECT COUNT(*) c FROM ufollows'), followers: one('SELECT COUNT(DISTINCT tuid) c FROM ufollows'), following: one('SELECT COUNT(DISTINCT uid) c FROM ufollows'), new30: one('SELECT COUNT(*) c FROM ufollows WHERE ts > ?', cut) };
+      fol.mutual = one('SELECT COUNT(*) c FROM ufollows a JOIN ufollows b ON b.k = a.tuid || \'|\' || a.uid') / 2;
+      const dm = { msgs: one('SELECT COUNT(*) c FROM dms'), threads: one('SELECT COUNT(DISTINCT pair) c FROM dms'), senders: one('SELECT COUNT(DISTINCT from_uid) c FROM dms'), msgs30: one('SELECT COUNT(*) c FROM dms WHERE ts > ?', cut), senders30: one('SELECT COUNT(DISTINCT from_uid) c FROM dms WHERE ts > ?', cut) };
+      let duel = { total: 0, byStatus: {}, players: 0, new30: 0 };
+      try {
+        duel.total = one('SELECT COUNT(*) c FROM duels');
+        duel.new30 = one('SELECT COUNT(*) c FROM duels WHERE created > ?', cut);
+        duel.players = one('SELECT COUNT(*) c FROM (SELECT a_uid u FROM duels UNION SELECT b_uid FROM duels)');
+        for (const r of this.rows('SELECT status, COUNT(*) c FROM duels GROUP BY status')) duel.byStatus[r.status || '?'] = +r.c || 0;
+      } catch (e) {}
+      const users = one('SELECT COUNT(*) c FROM users'), active30 = one('SELECT COUNT(*) c FROM users WHERE last_seen > ?', cut);
+      // the number that decides everything: does a member with at least one follow edge come back more than one without?
+      let ret = { withEdge: 0, withEdgeActive: 0, noEdge: 0, noEdgeActive: 0 };
+      try {
+        const r = this.rows('SELECT soc, COUNT(*) n, SUM(seen) a FROM (SELECT CASE WHEN EXISTS(SELECT 1 FROM ufollows f WHERE f.uid = u.id OR f.tuid = u.id) THEN 1 ELSE 0 END soc, CASE WHEN u.last_seen > ? THEN 1 ELSE 0 END seen FROM users u) GROUP BY soc', cut);
+        for (const x of r) { if (+x.soc > 0) { ret.withEdge = +x.n || 0; ret.withEdgeActive = +x.a || 0; } else { ret.noEdge = +x.n || 0; ret.noEdgeActive = +x.a || 0; } }
+      } catch (e) {}
+      // The cohort-controlled version, because the flat split above is only a correlation: among accounts at least 30 days
+      // old, did the ones who made a social edge inside their FIRST WEEK come back more than the ones who did not?
+      let early = { edge: { n: 0, alive: 0 }, none: { n: 0, alive: 0 } };
+      try {
+        const old = Date.now() - 30 * 86400000;
+        for (const x of this.rows('SELECT soc, COUNT(*) n, SUM(alive) a FROM (SELECT CASE WHEN EXISTS(SELECT 1 FROM ufollows f WHERE (f.uid = u.id OR f.tuid = u.id) AND f.ts < u.created + 604800000) OR EXISTS(SELECT 1 FROM dms d WHERE (d.from_uid = u.id OR d.to_uid = u.id) AND d.ts < u.created + 604800000) OR EXISTS(SELECT 1 FROM duels z WHERE (z.a_uid = u.id OR z.b_uid = u.id) AND z.created < u.created + 604800000) THEN 1 ELSE 0 END soc, CASE WHEN u.last_seen > u.created + 2592000000 THEN 1 ELSE 0 END alive FROM users u WHERE u.created < ? AND u.id NOT LIKE \'e2e%\') GROUP BY soc', old)) {
+          const t = +x.soc > 0 ? early.edge : early.none; t.n = +x.n || 0; t.alive = +x.a || 0;
+        }
+      } catch (e) {}
+      return this.j({ users, active30, follows: fol, dms: dm, duels: duel, retention: ret, firstWeek: early });
     }
     if (path === '/e2euser' && request.method === 'POST') { // admin/E2E only: {uid, op:'mk'|'rm'} -- a throwaway account with a users row, so Ticks, boards and calls behave exactly as for a member; rm scrubs every table it touched
       // The hyphen belongs in the allowed set: the older harness (/mktestuser) mints ids like `e2e-vault1`, and
