@@ -6294,7 +6294,7 @@ async function handleTrack(url, request, env, ctx) {
     // A click-out that resolves to no partner is not a money click and not a reader action: it is a scanner hitting
     // /api/track. It stays COUNTED (aff:junk + affjunk:day + affjunk:lbl) and gets one radar line, but never a row.
     const _junkClick = (type === 'exchange' || type === 'tool') && !partner;
-    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad')) { // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad' || type === 'openfail')) { // 'openfail' (2026-09-29) = an open the server did not take, with the reason: 12.1% of journal rows were local-only and nothing recorded WHY // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
         let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);
@@ -11928,7 +11928,7 @@ const VAULT_TESTERS = ['chako']; // owner's test account - owns every item (test
 const TICK_SOURCES = [
   { k: 'checkin', label: 'Daily check-in', cap: 40 },
   { k: 'trade_sl', label: 'Closed with a stop set', cap: 24 },
-  { k: 'mission', label: 'Missions claimed', cap: 20 },
+  { k: 'mission', label: 'Missions claimed', cap: 28 }, // 2026-09-29: 7 missions x 4 T. It was 20, which ran out on the fifth claim and dropped the rest with nothing said; the set and weekly bonuses no longer draw from it at all
   { k: 'academy', label: 'Academy lessons', cap: 30 },
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
@@ -26719,9 +26719,9 @@ export class UserStore {
       const uid = String(b.uid || ''), day = String(b.day || ''), mid = String(b.mid || '').replace(/[^a-z0-9]/gi, '');
       if (!uid || !day || !mid) return this.j({ error: 'bad' }, 400);
       if (this.rows('SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid=?', uid, day, mid)[0]) return this.j({ ok: true, fresh: false });
-      const mxp = (mid === 'setbonus' || mid.indexOf('wk') === 0) ? 25 : (10 + Math.floor(Math.random() * 51)); // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) - variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
+      const mxp = mid === 'setbonus' ? 60 : mid.indexOf('wk') === 0 ? 25 : (10 + Math.floor(Math.random() * 51)); // 2026-09-29: the set bonus pays 60 XP instead of cents // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) - variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
       sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', mxp, { dayCap: 320, note: 'mission ' + mid }); } catch (me) {}
-      try { this._grantTicks(uid, 'mission', 4, { dayCap: TICK_CAP.mission, note: 'mission claimed' }); } catch (me2) {}
+      if (mid !== 'setbonus' && mid.indexOf('wk') !== 0) { try { this._grantTicks(uid, 'mission', 4, { dayCap: TICK_CAP.mission, note: 'mission claimed' }); } catch (me2) {} } // the bonuses used to draw from the same 20-Tick budget and push real missions off it
       return this.j({ ok: true, fresh: true, xp: mxp });
     }
     if (path === '/bronze/state') { // ROAD TO BRONZE: verified LIFETIME (no dayStart) from the same tables the
@@ -26774,7 +26774,9 @@ export class UserStore {
       const n = (this.rows("SELECT COUNT(*) n FROM missions WHERE user_id=? AND day>=? AND mid!='setbonus' AND mid NOT LIKE 'wk%'", uid, fromDay)[0] || {}).n || 0;
       const weekClaimed = !!this.rows("SELECT 1 FROM missions WHERE user_id=? AND day>=? AND mid LIKE 'wk%' LIMIT 1", uid, fromDay)[0];
       const setClaimed = day9 ? !!this.rows("SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid='setbonus' LIMIT 1", uid, day9)[0] : false;
-      return this.j({ n, weekClaimed, setClaimed });
+      // LIFETIME, no day window: the Telegram mission is once per account (2026-09-29), and missionsForDay has to know before it picks the day
+      const promoDone = !!this.rows("SELECT 1 FROM missions WHERE user_id=? AND mid IN ('tgsignals','tgnews','tgbot') LIMIT 1", uid)[0];
+      return this.j({ n, weekClaimed, setClaimed, promoDone });
     }
     if (path === '/missions/poolstats') { // ops: per-mission claim counts over a window - THE tuning dataset (a mission everyone claims is priced too easy; a dead one is boring or broken)
       const fromDay = String(b.fromDay || new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10));
@@ -29033,8 +29035,11 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
   const seed = parseInt(String(day).replace(/-/g, ''), 10) || 0; // deterministic per UTC day, so a claim re-derives the same set the GET showed
   const rnd = _missionRng(seed);
   const tradeM = MISSION_POOL[rnd() < 0.5 ? 0 : 1]; // trade1 or trade3 (random per day)
-  const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; // the free signal group / news channel / bot - rotate ONE into every day on an even 3-day cycle (guarantees fair visibility, unlike the skewed shuffle)
-  const promo2M = MISSION_POOL.find(m => m.mid === PROMO2[Math.floor(Date.parse(day) / 86400000) % 3]);
+  const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; // the free signal group / news channel / bot - ONE a day on an even 3-day cycle
+  // ONCE PER ACCOUNT (2026-09-29). Measured over 30 days: 849 claims, $16.89, for re-opening a link the member had already
+  // joined - the only mission in the pool that could be finished for ever and still paid every third day. Once any of the
+  // three has been claimed the slot goes back to the ordinary pool, so the day still holds seven missions.
+  const promo2M = opts.promoDone ? null : MISSION_POOL.find(m => m.mid === PROMO2[Math.floor(Date.parse(day) / 86400000) % 3]);
   const rest = MISSION_POOL.filter(m => m.cat !== 'core' && m.cat !== 'promo2');
   for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = rest[i]; rest[i] = rest[j]; rest[j] = t; } // Fisher–Yates
  // Missions a given user cannot complete are swapped for the next pick: lesson missions once the whole
@@ -29043,14 +29048,14 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
   const CAPS = { academy: 1, chat: 1, community: 1, social: 3, trade: 2, market: 2 }; // per-day category quotas (2026-08-15 owner: same money, higher-value actions - social 2->3, market pageviews 3->2; every follow/duel raises switching cost, a pageview raises nothing)
   const used = {}; const pick = [];
-  const PICKS = 5; // 6 until 2026-09-28 (the mission budget was halved: see SET_CENTS in handleMissions)
+  const PICKS = promo2M ? 5 : 6; // 6 until 2026-09-28 (the mission budget was halved: see SET_CENTS in handleMissions); a member who already took the Telegram mission gets an ordinary sixth pick instead, so every day is still seven
   for (let i = 0; i < rest.length && pick.length < PICKS; i++) {
     const m = rest[i]; if (skip(m)) continue;
     const c = m.cat || 'market'; if ((used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue;
     used[c] = (used[c] || 0) + 1; pick.push(m);
   }
   for (let i = 0; i < rest.length && pick.length < PICKS; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback - never under-fill the day
-  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram (signals/news/bot) + 5 = 7/day
+  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram, once per account + 5 (or 6 once it is done) = 7/day
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
 const ACAD_COURSES = { mpstart: ['mp1','mp2','mp3','mp4','mp5','mp6','mp7'], basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], words: ['wd1','wd2','wd3','wd4','wd5','wd6','wd7','wd8'], money: ['mo1','mo2','mo3','mo4','mo5','mo6','mo7','mo8','mo9'], exchange: ['ex1','ex2','ex3','ex4','ex5','ex6','ex7','ex8','ex9','ex10'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], trend: ['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9'], firsttrade: ['ft1','ft2','ft3','ft4','ft5','ft6','ft7','ft8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7'] }; // MUST match dist/academy #acadData course/lesson ids (17 courses, 147 lessons; 'mpstart', 'stories', 'psychology' and 'mastery' are free:true = always unlocked, outside the lock chain). 'mpstart' is course 0, the on-ramp - see build/data/academy-mpstart.js for why it must stay free:true and seven lessons long.
@@ -29144,7 +29149,7 @@ async function handleMissions(url, request, env) {
   const enabled = cfg.raw ? cfg.raw.missionsEnabled !== false : true;
   const day = new Date().toISOString().slice(0, 10);
   const dayStart = new Date(day).getTime();
-  const SET_N = 5, SET_CENTS = 2, WEEK_N = 15, WEEK_CENTS = 5; // engagement bonuses (2026-08-15 owner): claim 5 of 7 today -> +$0.02 set bonus; 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
+  const SET_N = 5, SET_CENTS = 0, SET_XP = 60, WEEK_N = 15, WEEK_CENTS = 5; // engagement bonuses: claim 5 of 7 today -> +60 XP set bonus (money until 2026-09-29, when it was the single biggest mission line at $34.17 of $193.75 over 30 days; XP feeds the level, the season board and the pass, which is where the exclusive cosmetics are); 15 claims Mon-Sun -> +$0.05 weekly bonus. Completion beats cherry-picking. HALVED 2026-09-28 (owner: "nagrade na misijama isto 50%"): every mission 3c->2c / 2c->1c, one pick fewer a day (8 -> 7), set 5c->2c at 5 claims, weekly 10c->5c - measured on the previous 14 days' claims that is about half of what missions paid.
   const wkFrom = new Date(dayStart - ((new Date(dayStart).getUTCDay() + 6) % 7) * 86400000).toISOString().slice(0, 10); // this week's Monday (UTC)
   const wkMid = 'wk' + wkFrom.replace(/-/g, '');
   let uid = '', uxp = 0;
@@ -29160,12 +29165,16 @@ async function handleMissions(url, request, env) {
     if (request.method === 'POST') return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: uxp, level: 'unranked', earn: '/academy/' }, 403);
     return jr({ enabled: true, signedIn: true, locked: true, minXp: REWARDS_MIN_XP, xp: uxp, missions: [], day, resetInMs: (dayStart + 86400000) - Date.now() });
   }
-  let defs = missionsForDay(day);
+  // the day's set needs to know whether the Telegram mission was already taken, so meta is read BEFORE the set is derived
+  // (and reused for the bonus block below, so this costs no extra call on a GET)
+  let meta9 = { n: 0, weekClaimed: false, setClaimed: false, promoDone: false };
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) })); meta9 = await r.json(); } catch (e) {}
+  let defs = missionsForDay(day, { promoDone: !!meta9.promoDone });
   // Owner rule: a user who FINISHED the whole Academy must not get lesson-completion missions (impossible for them) →
   // swap them out for the next mission. Only fetch the completion count on days those missions actually appear.
  // Same for Ask-AI (Premium-only): the premium lookup only runs on days the 'ai' mission is in the set. Both
  // flags feed ONE deterministic re-derivation, so GET and the later claim POST see the same set.
- const mo = {};
+ const mo = { promoDone: !!meta9.promoDone };
   if (defs.some(m => m.vt === 'academy')) {
  try { const ar = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const done = ((await ar.json()) || {}).done || []; if (done.filter(x => !String(x).startsWith('course:')).length >= ACAD_TOTAL_LESSONS) mo.academyDone = true; } catch (e) {}
  }
@@ -29194,12 +29203,16 @@ async function handleMissions(url, request, env) {
     try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger refused the ' + m.cents + 'c credit: ' + d.error, { kind: 'mission-credit', sev: 'warn' }); return jr({ error: d.error }, 403); } balanceUsd = d.balanceUsd; } catch (e) { await tgAdmin(env, 'Mission ' + mid + ' claimed by ' + uid + ' but the ledger credit of ' + m.cents + 'c FAILED (' + (e && e.message ? e.message : 'error') + ') - the claim is consumed, credit by hand', { kind: 'mission-credit', sev: 'warn' }); } // 2026-09-12: a swallowed failure here was a consumed mission with no money and no trace
     try { await evPush(env, request, 'mission', mid + ' +$' + (m.cents / 100).toFixed(2), '/rewards/'); } catch (e) {}
     // SET BONUS: the 6th claim of the day pays extra - idempotent through the same missions-table dedup (mid 'setbonus')
-    let setBonusUsd = 0, weekBonusUsd = 0;
+    let setBonusUsd = 0, weekBonusUsd = 0, setBonusXp = 0;
     const claimedNow = defs.filter(x => st.claimed && st.claimed[x.mid]).length + 1;
     if (claimedNow >= SET_N) { try {
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/claim', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, mid: 'setbonus' }) }));
       const d2 = await r.json();
-      if (d2 && d2.fresh) { const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: SET_CENTS, mid: 'setbonus' }) })); const cd = await cr.json(); if (!cd.error) { setBonusUsd = SET_CENTS / 100; if (cd.balanceUsd != null) balanceUsd = cd.balanceUsd; try { await evPush(env, request, 'mission', 'set bonus +$' + setBonusUsd.toFixed(2), '/rewards/'); } catch (e) {} } }
+      if (d2 && d2.fresh) {
+        setBonusXp = +d2.xp || SET_XP; // the DO granted it; SET_CENTS is 0 since 2026-09-29, so there is no ledger call to make
+        if (SET_CENTS > 0) { const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: SET_CENTS, mid: 'setbonus' }) })); const cd = await cr.json(); if (!cd.error) { setBonusUsd = SET_CENTS / 100; if (cd.balanceUsd != null) balanceUsd = cd.balanceUsd; } }
+        try { await evPush(env, request, 'mission', 'set bonus +' + (setBonusUsd > 0 ? '$' + setBonusUsd.toFixed(2) : setBonusXp + ' XP'), '/rewards/'); } catch (e) {}
+      }
     } catch (e) {} }
     // WEEKLY BONUS: 15 real claims since Monday pays once per week (mid 'wkYYYYMMDD', same dedup)
     let wkC9 = 0, wkCl9 = false;
@@ -29213,11 +29226,9 @@ async function handleMissions(url, request, env) {
       }
     } catch (e) {}
     const upd = missions.map(x => x.mid === mid ? { ...x, claimed: true } : x);
-    return jr({ ok: true, credited: m.cents / 100, balanceUsd, missions: upd, day, bonusXp: bonusXp || undefined, setBonusUsd: setBonusUsd || undefined, weekBonusUsd: weekBonusUsd || undefined, bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setClaimed: setBonusUsd > 0 || claimedNow > SET_N, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: wkC9, weekClaimed: wkCl9 } });
+    return jr({ ok: true, credited: m.cents / 100, balanceUsd, missions: upd, day, bonusXp: bonusXp || undefined, setBonusUsd: setBonusUsd || undefined, setBonusXp: setBonusXp || undefined, weekBonusUsd: weekBonusUsd || undefined, bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: setBonusXp > 0 || setBonusUsd > 0 || claimedNow > SET_N, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: wkC9, weekClaimed: wkCl9 } });
   }
-  let meta9 = { n: 0, weekClaimed: false, setClaimed: false };
-  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/meta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromDay: wkFrom, day }) })); meta9 = await r.json(); } catch (e) {}
-  return jr({ enabled: true, signedIn: true, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed } });
+  return jr({ enabled: true, signedIn: true, missions, day, resetInMs: (dayStart + 86400000) - Date.now(), bonus: { setN: SET_N, setUsd: SET_CENTS / 100, setXp: SET_XP, setClaimed: !!meta9.setClaimed, weekN: WEEK_N, weekUsd: WEEK_CENTS / 100, weekCount: +meta9.n || 0, weekClaimed: !!meta9.weekClaimed } });
 }
 // ---------- IndexNow (Bing/Yandex/Seznam/Naver instant indexing) ----------
 const INDEXNOW_KEY = '9f3c7e21b84d4a6fae0c5d2178b6e093'; // public by protocol design - the key file at /<key>.txt proves ownership

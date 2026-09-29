@@ -3543,7 +3543,7 @@ window.mpSrvOpen=function(payload,ok,fail){
      fallback - which carries the cid too, so the journal sync drops it the moment the server copy turns out to exist. */
   if(!payload.cid)payload.cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4);
   var tries=0;
-  function retry(){if(tries<2){attempt();return;}fail({cid:payload.cid});}
+  function retry(){if(tries<2){attempt();return;}try{if(window.__mpTrack)window.__mpTrack('openfail','timeout');}catch(_t){}fail({cid:payload.cid});}
   function attempt(){
     tries++;
     var ac=(typeof AbortController!=='undefined')?new AbortController():null;
@@ -3556,7 +3556,7 @@ window.mpSrvOpen=function(payload,ok,fail){
         else if(d&&(d.error==='rate_limited'||d.error==='too_many_open')){ /* 2026-09-12: a LIMIT refusal must not turn into a local open - that let the 20/min and open-cap rules through the back door */
           var _lm=d.error==='rate_limited'?__esT_home("slowDown",'Slow down - ')+(d.max||20)+__esT_home("opensPerMinuteIs",' opens per minute is the limit. Try again in a moment.'):__esT_home("youAlreadyHoldThe",'You already hold the maximum number of open positions')+(d.max?' ('+d.max+')':'')+'. Close one to open another.';
           try{if(window.mpLimitToast)window.mpLimitToast(_lm);}catch(e){}fail({blocked:true,message:_lm,error:d.error});}
-        else if(d&&d.error)fail({cid:payload.cid,error:d.error}); // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
+        else if(d&&d.error){try{if(window.__mpTrack)window.__mpTrack('openfail','refused:'+d.error);}catch(_t){}fail({cid:payload.cid,error:d.error});} // a definite refusal (bad symbol, wrong-side level): the classic local open, as before
         else retry();})
       .catch(function(){clearTimeout(to);retry();});
   }
