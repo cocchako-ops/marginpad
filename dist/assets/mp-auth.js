@@ -3188,7 +3188,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   try {
     // Every frame whose motion is JS-driven. @keyframes are invisible with system animation effects off, which is how
     // the owner's machine runs, so anything that IS its motion has to be driven from here.
-    var SEL = '.frame-supernova,.frame-owner,.frame-regalia,.frame-corona';
+    var SEL = '.frame-supernova,.frame-owner,.frame-regalia,.frame-corona,.mp-crest.aura'; // the squad level-10 aura rides the SAME loop - a second rAF for one ring is waste
     var els = [], raf = 0, t0 = 0;
     function frame(ts) {
       raf = 0;
@@ -3386,8 +3386,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   }
   window.mpSquadCrestCols = COLS; window.mpSquadCrestShapes = SHAPES; window.mpSquadCrestSyms = ['tag'].concat(Object.keys(SYM)); window.mpSquadCrestRings = RINGS;
   /* px is the rendered size; tag is only read when the symbol IS the tag. */
-  window.mpSquadCrest = function (crest, px, tag) {
+  /* lvl is the SQUAD LEVEL: at 26px and up the logo carries a small pip, so the level is visible wherever
+     the logo is - a profile card, the directory, the room - which is what makes anyone chase it. */
+  window.mpSquadCrest = function (crest, px, tag, lvl) {
     var c = norm(crest), s = Math.max(12, +px || 26), d = SHAPE[c.shape] || SHAPE.shield;
+    lvl = Math.max(0, Math.min(10, Math.round(+lvl || 0)));
     var body;
     if (c.sym === 'tag') {
       var t = String(tag || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4) || '?';
@@ -3398,18 +3401,26 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       body = '<path d="' + SYM[c.sym] + '" fill="' + c.fg + '" fill-rule="evenodd"/>';
     }
     var ring = '';
-    if (c.ring === 'solid') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="5" stroke-opacity=".85"/>';
+    /* THE AURA is the level-10 unlock: a living ring, and the only logo piece that moves. Its rotation and
+       pulse come from --nvA/--nvP, written by the rAF sweep at the tail of this file, because the owner's
+       Windows runs with animation effects off and never renders @keyframes. */
+    if (c.ring === 'aura') ring = '<g class="mpsq-au"><path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="7" stroke-opacity=".30"/>'
+      + '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="4" stroke-opacity=".95" stroke-dasharray="34 190" stroke-linecap="round"/>'
+      + '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="2.5" stroke-opacity=".7" stroke-dasharray="12 210" stroke-dashoffset="-120" stroke-linecap="round"/></g>';
+    else if (c.ring === 'solid') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="5" stroke-opacity=".85"/>';
     else if (c.ring === 'double') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="4.5" stroke-opacity=".9"/><path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="2" stroke-opacity=".55" transform="translate(50,50) scale(.84) translate(-50,-50)"/>';
     else if (c.ring === 'dashed') ring = '<path d="' + d + '" fill="none" stroke="' + c.fg + '" stroke-width="5" stroke-opacity=".85" stroke-dasharray="11 7" stroke-linecap="round"/>';
     /* a dark crest on a dark page needs its own edge, so every crest carries a faint outer hairline */
-    return '<svg class="mp-crest" viewBox="0 0 100 100" width="' + s + '" height="' + s + '" aria-hidden="true" focusable="false" style="display:block;flex:0 0 auto">'
+    return '<svg class="mp-crest' + (c.ring === 'aura' ? ' aura' : '') + '" viewBox="0 0 100 100" width="' + s + '" height="' + s + '" aria-hidden="true" focusable="false" style="display:block;flex:0 0 auto">'
       + '<path d="' + d + '" fill="' + c.bg + '"/>' + ring + body
-      + '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="2.5"/></svg>';
+      + '<path d="' + d + '" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="2.5"/>'
+      + ((lvl >= 2 && s >= 26) ? '<g><circle cx="79" cy="79" r="19" fill="#0a0b0d" stroke="' + c.fg + '" stroke-width="3"/><text x="79" y="87" text-anchor="middle" font-family="Space Mono,ui-monospace,monospace" font-weight="700" font-size="25" fill="' + c.fg + '">' + lvl + '</text></g>' : '')
+      + '</svg>';
   };
   /* name + crest as one inline unit, which is how it appears everywhere but the builder */
   window.mpSquadChip = function (sq, px) {
     if (!sq) return '';
-    return '<span class="mp-sqchip" title="' + esc(sq.name || '') + '">' + window.mpSquadCrest(sq.crest, px || 18, sq.tag) + '<span class="mp-sqtag">' + esc(String(sq.tag || '').toUpperCase()) + '</span></span>';
+    return '<span class="mp-sqchip" title="' + esc(sq.name || '') + '">' + window.mpSquadCrest(sq.crest, px || 18, sq.tag, sq.level && sq.level.lv) + '<span class="mp-sqtag">' + esc(String(sq.tag || '').toUpperCase()) + '</span></span>';
   };
   try {
     var st = document.createElement('style'); st.id = 'mp-crest-css';
@@ -3420,5 +3431,143 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       + '.lbm-sq .lbm-sqr{font-family:"Space Mono",ui-monospace,monospace;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#7a838f;margin-top:1px}'
       + '.lbm-sq a{color:inherit;text-decoration:none}.lbm-sq a:hover .lbm-sqn{text-decoration:underline}';
     if (!document.getElementById('mp-crest-css')) (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
+})();
+
+/* ── SQUAD LIVE (2026-10-02) ────────────────────────────────────────────────────────────────────
+   Two things the owner asked for, and both live HERE rather than in home.js and mp-trade.js: the
+   room is rendered by both of those, so a second copy of this would be a second thing to forget.
+   Same every-page exception as mpToast / mpOrders / mpSquadCrest.
+
+     1. ONE SHARED NUMBER that moves all day - the squad's season XP, drawn as a bar SEGMENTED BY
+        MEMBER in each member's level colour, so you can see who is carrying it.
+     2. WHAT THE SQUAD IS DOING RIGHT NOW - its members' opens and closes, as compact rows the chat
+        merges into its own stream.
+
+   ONE poll serves both and every surface shares it, so having the strip open in the room and the
+   bar on the squads page costs one request, not three.                                          */
+(function () {
+  if (window.mpSquadLive) return;
+  var S = { data: null, at: 0, waiting: null, subs: [], timer: 0 };
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"']/g, function (m) { return ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[m]; }); }
+  function nf(n) { n = +n || 0; return n >= 10000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace(/\.0$/, '') + 'k' : n.toLocaleString(); }
+  function money(v) { var a = Math.abs(+v || 0); return (v < 0 ? '-' : '+') + '$' + (a >= 1000 ? Math.round(a).toLocaleString() : a.toFixed(2)); }
+  function ago(ts) { var s = Math.max(0, (Date.now() - ts) / 1000); if (s < 60) return 'now'; var m = s / 60; if (m < 60) return Math.round(m) + 'm'; var h = m / 60; if (h < 24) return Math.round(h) + 'h'; return Math.round(h / 24) + 'd'; }
+
+  function fetchLive(force) {
+    if (!force && S.data && Date.now() - S.at < 15000) return Promise.resolve(S.data);
+    if (S.waiting) return S.waiting;
+    S.waiting = fetch('/api/squad/live').then(function (r) { return r.json(); }).then(function (j) {
+      S.waiting = null;
+      if (!j || j.error) return S.data;
+      S.at = Date.now(); S.data = j;
+      S.subs.forEach(function (fn) { try { fn(j); } catch (e) {} });
+      return j;
+    }).catch(function () { S.waiting = null; return S.data; });
+    return S.waiting;
+  }
+  /* one timer for the whole page, and only while something is actually looking */
+  function arm() {
+    if (S.timer || !S.subs.length) return;
+    S.timer = setInterval(function () { if (!document.hidden && S.subs.length) fetchLive(true); }, 20000);
+  }
+  window.mpSquadLive = {
+    get: function () { return S.data; },
+    refresh: function () { return fetchLive(true); },
+    on: function (fn) { S.subs.push(fn); arm(); fetchLive(); return function () { S.subs = S.subs.filter(function (x) { return x !== fn; }); if (!S.subs.length && S.timer) { clearInterval(S.timer); S.timer = 0; } }; },
+  };
+
+  /* The bar. Segments in member level colours; a squad with nothing yet still draws the track, so the
+     strip never changes height and the room does not jump when the first XP lands. */
+  window.mpSquadBar = function (season, opts) {
+    opts = opts || {};
+    var tot = (season && +season.total) || 0, ms = (season && season.members) || [];
+    var segs = tot > 0 ? ms.filter(function (m) { return m.xp > 0; }).map(function (m) {
+      return '<i style="width:' + (m.xp / tot * 100).toFixed(2) + '%;background:' + esc(m.col || '#9aa3ad') + '" title="' + esc(m.name) + ' ' + nf(m.xp) + ' XP"></i>';
+    }).join('') : '';
+    return '<div class="mpsq-bar' + (opts.slim ? ' slim' : '') + '"><div class="mpsq-track">' + segs + '</div></div>';
+  };
+  /* One compact line: the crest, the number, the bar. This is the whole strip in the room - 30px, and it
+     is the same 30px whether the squad has one member or five. */
+  window.mpSquadStripHtml = function (d, open) {
+    if (!d || !d.squad) return '';
+    var tot = (d.season && d.season.total) || 0, lv = (d.squad.level && d.squad.level.lv) || 0;
+    var feed = (d.feed || []).slice(0, open ? 6 : 1);
+    var lane = feed.length
+      ? feed.map(function (a) { return '<div class="mpsq-line">' + window.mpSquadActRow(a) + '</div>'; }).join('')
+      : '<div class="mpsq-line mpsq-quiet">' + (d.squad.n > 1 ? 'Nobody has traded yet today' : 'Bring someone in and their trades show here') + '</div>';
+    return '<div class="mpsq-strip">'
+      + (window.mpSquadCrest ? window.mpSquadCrest(d.squad.crest, 18, d.squad.tag) : '')
+      + (lv ? '<span class="mpsq-lv">' + lv + '</span>' : '')
+      + '<span class="mpsq-n">' + nf(tot) + '<small> XP</small></span>'
+      + window.mpSquadBar(d.season, { slim: true })
+      + '<span class="mpsq-c">' + (d.squad.n || 0) + '/' + (d.squad.max || 5) + '</span>'
+      + '</div>'
+      + '<div class="mpsq-lane' + (open ? ' op' : '') + '"' + ((d.feed || []).length > 1 ? ' role="button" tabindex="0" title="' + (open ? 'Show less' : 'Show more') + '"' : '') + '>' + lane + '</div>';
+  };
+  window.__mpSquadStripHtmlOld = function (d) {
+    if (!d || !d.squad) return '';
+    var tot = (d.season && d.season.total) || 0;
+    return '<div class="mpsq-strip">'
+      + (window.mpSquadCrest ? window.mpSquadCrest(d.squad.crest, 18, d.squad.tag) : '')
+      + '<span class="mpsq-n">' + nf(tot) + '<small> XP</small></span>'
+      + window.mpSquadBar(d.season, { slim: true })
+      + '<span class="mpsq-c">' + (d.squad.n || 0) + '/' + (d.squad.max || 5) + '</span>'
+      + '</div>';
+  };
+  /* One activity row. Deliberately quieter than a chat message: no avatar, no bubble, one line. */
+  window.mpSquadActRow = function (a) {
+    if (!a) return '';
+    var isC = a.kind === 'close';
+    var val = isC ? (a.pnl == null ? '' : '<b class="' + (a.pnl >= 0 ? 'up' : 'dn') + '">' + money(a.pnl) + (a.roe != null ? ' <span>' + (a.roe >= 0 ? '+' : '') + Math.round(a.roe) + '%</span>' : '') + '</b>') : '<b class="nu">' + (a.lev ? a.lev + 'x' : '') + '</b>';
+    var verb = a.liq ? 'liquidated' : isC ? 'closed' : 'opened';
+    return '<span class="mpsq-dot" style="background:' + esc(a.col) + '"></span>'
+      + '<b class="mpsq-who" data-lbu="' + esc(a.who) + '" role="button" tabindex="0" style="color:' + esc(a.col) + '">' + esc(a.who) + '</b>'
+      + '<span class="mpsq-v' + (a.liq ? ' liq' : '') + '">' + verb + '</span>'
+      + '<span class="mpsq-sym">' + esc(a.sym) + '</span>'
+      + '<span class="mpsq-side ' + (a.side === 'short' ? 'dn' : 'up') + '">' + esc(String(a.side || '').slice(0, 5)) + '</span>'
+      + val
+      + '<span class="mpsq-ago">' + ago(a.ts) + '</span>';
+  };
+  try {
+    var st = document.createElement('style'); st.id = 'mpsq-live-css';
+    st.textContent = ''
+      + '.mp-crest.aura .mpsq-au{transform-origin:50% 50%;transform:rotate(var(--nvA,0deg));filter:drop-shadow(0 0 calc(2px + 3px * var(--nvP,0)) currentColor);opacity:calc(.72 + .28 * var(--nvP,0))}'
+      + '.mpsq-lv{font-family:"Space Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;color:#0a0b0d;background:#c2f64a;border-radius:4px;padding:1px 4px;line-height:1.35}'
+      + '.mpsq-lane{border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.012);overflow:hidden;cursor:default}'
+      + '.mpsq-lane[role=button]{cursor:pointer}.mpsq-lane[role=button]:hover{background:rgba(255,255,255,.04)}'
+      + '.mpsq-lane.op{max-height:132px;overflow-y:auto}'
+      + '.mpsq-line{display:flex;align-items:center;gap:6px;padding:3px 10px;font-size:11.5px;line-height:1.35;color:#8b9099;font-family:"Space Mono",ui-monospace,monospace;white-space:nowrap;overflow:hidden}'
+      + '.mpsq-quiet{color:#5c656f;font-size:10.5px}'
+      + '.mpsq-line .mpsq-dot{width:5px;height:5px;border-radius:50%;flex:0 0 auto}'
+      + '.mpsq-line .mpsq-who{font-weight:700;cursor:pointer;max-width:9em;overflow:hidden;text-overflow:ellipsis}'
+      + '.mpsq-line .mpsq-v{color:#5c656f}.mpsq-line .mpsq-v.liq{color:#ff6258}'
+      + '.mpsq-line .mpsq-sym{color:#e9e7df;font-weight:700}'
+      + '.mpsq-line .mpsq-side{font-size:9px;letter-spacing:.08em;text-transform:uppercase}'
+      + '.mpsq-line .up{color:#2ebd85}.mpsq-line .dn{color:#ff6258}.mpsq-line .nu{color:#7a838f}'
+      + '.mpsq-line b span{font-weight:400;opacity:.75}'
+      + '.mpsq-line .mpsq-ago{margin-left:auto;color:#5c656f;font-size:9.5px;flex:0 0 auto}'
+      + '@media(max-width:420px){.mpsq-line .mpsq-side{display:none}}'
+      + '.mpsq-strip{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);min-height:30px}'
+      + '.mpsq-n{font-family:"Space Mono",ui-monospace,monospace;font-size:12px;font-weight:700;color:#e9e7df;white-space:nowrap}'
+      + '.mpsq-n small{font-size:9px;color:#7a838f;letter-spacing:.08em}'
+      + '.mpsq-c{font-family:"Space Mono",ui-monospace,monospace;font-size:10px;color:#7a838f;white-space:nowrap}'
+      + '.mpsq-bar{flex:1;min-width:40px}'
+      + '.mpsq-track{display:flex;height:6px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.07)}'
+      + '.mpsq-bar.slim .mpsq-track{height:5px}'
+      + '.mpsq-track i{display:block;height:100%;transition:width .6s cubic-bezier(.2,.7,.3,1)}'
+      + '.mpsq-track i+i{box-shadow:-1px 0 0 rgba(10,11,13,.55)}'
+      /* an activity line must read as an EVENT, not as somebody talking - quieter, one line, no bubble */
+      + '.ct-act{display:flex;align-items:center;gap:6px;padding:3px 10px;font-size:11.5px;line-height:1.35;color:#8b9099;font-family:"Space Mono",ui-monospace,monospace;white-space:nowrap;overflow:hidden}'
+      + '.ct-act .mpsq-dot{width:5px;height:5px;border-radius:50%;flex:0 0 auto}'
+      + '.ct-act .mpsq-who{font-weight:700;cursor:pointer;max-width:9em;overflow:hidden;text-overflow:ellipsis}'
+      + '.ct-act .mpsq-v{color:#5c656f}.ct-act .mpsq-v.liq{color:#ff6258}'
+      + '.ct-act .mpsq-sym{color:#e9e7df;font-weight:700}'
+      + '.ct-act .mpsq-side{font-size:9px;letter-spacing:.08em;text-transform:uppercase}'
+      + '.ct-act .up{color:#2ebd85}.ct-act .dn{color:#ff6258}.ct-act .nu{color:#7a838f}'
+      + '.ct-act b span{font-weight:400;opacity:.75}'
+      + '.ct-act .mpsq-ago{margin-left:auto;color:#5c656f;font-size:9.5px;flex:0 0 auto}'
+      + '@media(max-width:420px){.ct-act .mpsq-side{display:none}.mpsq-c{display:none}}';
+    if (!document.getElementById('mpsq-live-css')) (document.head || document.documentElement).appendChild(st);
   } catch (e) {}
 })();

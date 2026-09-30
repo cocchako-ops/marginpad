@@ -2105,9 +2105,41 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
      once on first open), so the bar is thrown away and rebuilt when the squad changes - otherwise a member who
      just joined has a room the server would let them into and no way to pick it. window.mpChatRoom lets the
      squads page open the chat straight onto it. MIRRORED BY HAND in home.js and mp-trade.js. */
+  /* ── THE SQUAD ROOM SHOWS WHAT THE SQUAD IS DOING (2026-10-02, owner) ────────────────────────────
+     A slim strip above the stream carrying the squad's season XP, and its members' opens and closes
+     appended into the stream as quiet one-line events. Both are DRAWN by mp-auth (window.mpSquadStrip
+     Html / mpSquadActRow) and fed by ONE shared poll there - so this block, which exists twice, stays
+     small enough to keep in step by hand. Nothing here writes to the chat DO: an activity line is a
+     local row, never a message, so it can never land in the room's history or be edited or reacted to.
+     MIRRORED BY HAND in home.js and mp-trade.js. */
+  var sqStrip = null, sqOff = null, sqOpen = false;
+  function sqIsRoom() { return !!(window.mpSquad && window.mpSquad.sid && room === window.mpSquad.sid); }
+  function sqPaint(d) {
+    if (!sqIsRoom() || !d || !d.squad || !window.mpSquadStripHtml) { sqUnmount(); return; }
+    if (!sqStrip) {
+      var head = box && box.querySelector('.ct-head'); if (!head || !head.parentNode) return;
+      sqStrip = document.createElement('div'); sqStrip.className = 'mpsq-host';
+      head.parentNode.insertBefore(sqStrip, head.nextSibling);
+      sqStrip.addEventListener('click', function (e) {
+        if (e.target.closest('[data-lbu]')) return;            // a name still opens the trader card
+        if (!e.target.closest('.mpsq-lane[role=button]')) return;
+        sqOpen = !sqOpen; var cur = window.mpSquadLive && window.mpSquadLive.get(); if (cur) sqPaint(cur);
+      });
+    }
+    sqStrip.innerHTML = window.mpSquadStripHtml(d, sqOpen);
+  }
+  function sqUnmount() { if (sqStrip && sqStrip.parentNode) sqStrip.parentNode.removeChild(sqStrip); sqStrip = null; }
+  function sqSync() {
+    if (sqOff) { sqOff(); sqOff = null; }
+    sqUnmount();
+    if (!sqIsRoom() || !window.mpSquadLive) return;
+    sqOff = window.mpSquadLive.on(sqPaint);
+    var cur = window.mpSquadLive.get(); if (cur) sqPaint(cur);
+  }
+  window.addEventListener('mp-squad-change', function () { setTimeout(sqSync, 60); });
   window.mpChatRoom=function(r){try{if(!r||chatRooms().indexOf(r)<0)return false;if(typeof openBox==='function')openBox();switchRoom(r);return true;}catch(e){return false;}};
   window.addEventListener('mp-squad-change',function(){try{if(roomBar&&roomBar.parentNode)roomBar.parentNode.removeChild(roomBar);roomBar=null;if(typeof buildRoomBar==='function')buildRoomBar();}catch(e){}});
-  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
+  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();try{sqSync();}catch(e){}}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   /* escape first (XSS-safe), THEN turn `trade:<id>` tokens into clickable links that open the shared ticket */
@@ -2224,7 +2256,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
  window.addEventListener('pageshow',function(){if(joined&&!ws)connect();});
   function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg(__esT_home("yourAccountIsCurrently",'Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.'));return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();premRooms();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?__esT_home("premiumLoungeVipsOnly",'Premium lounge - VIPs only…'):'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
-  function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
+  function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');try{sqSync();}catch(e){}var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing - on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);

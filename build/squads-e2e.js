@@ -69,19 +69,24 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   const R4 = () => { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for (let i = 0; i < 4; i++) v += A[Math.floor(Math.random() * A.length)]; return v; };
   const TAG = R4(), TAGB = R4();
   const NAME = 'E2E Squad ' + Date.now().toString(36).slice(-5);
-  const crest = { shape: 'hex', sym: 'bolt', bg: '#c2f64a', fg: '#0a0b0d', ring: 'double' };
+  const crest = { shape: 'shield', sym: 'bolt', bg: '#c2f64a', fg: '#0a0b0d', ring: 'solid' }; // every piece is in the LEVEL-1 set; a locked one is refused, which the check below proves
   const tkBefore = await ticks('e2esqa1');
   const c1 = await sq('create', real['e2esqa1'], { name: NAME, tag: TAG, crest, motto: 'test only', open: true });
   ok(c1.ok && c1.squad && c1.squad.sid, 'a member can create a squad and becomes its leader', c1.squad && { sid: c1.squad.sid, tag: c1.squad.tag, n: c1.squad.n });
   const SID = c1.squad && c1.squad.sid;
   ok(!!SID && /^[A-Z0-9]{6}$/.test(SID), 'the id is 6 uppercase alnum, so chatInstOf keeps it whole', SID);
-  ok(c1.squad && c1.squad.crest && c1.squad.crest.sym === 'bolt' && c1.squad.crest.shape === 'hex', 'the crest is stored as posted', c1.squad && c1.squad.crest);
+  ok(c1.squad && c1.squad.crest && c1.squad.crest.sym === 'bolt' && c1.squad.crest.shape === 'shield', 'the logo is stored as posted', c1.squad && c1.squad.crest);
   const tkAfter = await ticks('e2esqa1');
   ok(tkAfter === tkBefore - 5000, 'FOUNDING TOOK EXACTLY 5,000 TICKS', { before: tkBefore, after: tkAfter });
   // a refusal must never cost anybody the fee: the tag below is already taken
   const dupTk = await ticks('e2esqc1');
   const dupTry = await sq('create', real['e2esqc1'], { name: NAME, tag: 'ZZ7' });
   ok(dupTry.error === 'name_taken' && (await ticks('e2esqc1')) === dupTk, 'A REFUSED CREATE COSTS NOTHING', { err: dupTry.error, before: dupTk, after: await ticks('e2esqc1') });
+  // the refusal that DID leak once: a logo piece the level has not opened. It was checked after the charge
+  // for one deploy, so it took 5,000 Ticks and created nothing.
+  const lkTk = await ticks('e2esqc1');
+  const lkTry = await sq('create', real['e2esqc1'], { name: NAME + ' L', tag: 'ZY6', crest: { shape: 'banner', sym: 'bolt', bg: '#4aa3f6', fg: '#e9e7df', ring: 'solid' } });
+  ok(lkTry.error === 'locked_piece' && (await ticks('e2esqc1')) === lkTk, 'AND A LOCKED LOGO PIECE COSTS NOTHING EITHER', { err: lkTry.error, before: lkTk, after: await ticks('e2esqc1') });
 
   const bogus = await sq('edit', real['e2esqa1'], { crest: { shape: 'skull', sym: '<script>', bg: 'red', ring: 'x' } });
   ok(bogus.ok && bogus.squad.crest.shape === 'shield' && bogus.squad.crest.sym === 'tag' && bogus.squad.crest.bg === '#4aa3f6', 'a junk crest snaps to safe values instead of being stored', bogus.squad && bogus.squad.crest);
@@ -105,12 +110,16 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   const j2 = await sq('join', real['e2esqa2'], { sid: SID });
   ok(j2.ok && j2.squad.n === 2, 'they can accept it', j2.squad && { n: j2.squad.n });
 
-  await sq('join', real['e2esqa3'], { sid: SID }); // open squad - no invite needed
-  await sq('join', real['e2esqb1'], { sid: SID });
+  const j3 = await sq('join', real['e2esqa3'], { sid: SID }); // open squad - no invite needed
+  ok(j3.ok && j3.squad.n === 3, 'an open squad can be walked into, up to its seats', j3.squad && { n: j3.squad.n });
+  const j4 = await sq('join', real['e2esqb1'], { sid: SID });
+  ok(j4.error === 'squad_full' && j4.max === 3, 'A NEW SQUAD HOLDS THREE - the fourth is refused', j4);
+  // seats grow with the level (the ladder itself is squad-levels-e2e's job; here it just has to work)
+  await adm('/api/admin/squadxp', { sid: SID, amt: 1800 });
+  const j4b = await sq('join', real['e2esqb1'], { sid: SID });
+  ok(j4b.ok && j4b.squad.n === 4 && j4b.squad.max === 4, 'at level 3 the fourth seat opens and is taken', j4b.squad && { n: j4b.squad.n, max: j4b.squad.max });
   const j5 = await sq('join', real['e2esqb2'], { sid: SID });
-  ok(j5.ok && j5.squad.n === 5, 'an open squad can be walked into, up to five', j5.squad && { n: j5.squad.n });
-  const j6 = await sq('join', real['e2esqc1'], { sid: SID });
-  ok(j6.error === 'squad_full' && j6.max === 5, 'THE SIXTH IS REFUSED - max 5', j6);
+  ok(j5.error === 'squad_full' && j5.max === 4, 'and the fifth still waits for level 8', j5);
 
   // ── the crest reaches the PUBLIC profile card (the owner's whole point) ──────────────────────
   const card = await J('/api/lb/user?name=' + encodeURIComponent('e2e_e2esqa3'));
@@ -138,7 +147,7 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   ok(memberStatus === 101 || memberStatus === 426 || memberStatus === 200, 'a member is not refused (upgrade attempted)', { status: memberStatus });
 
   // ── the duel ────────────────────────────────────────────────────────────────────────────────
-  const c2 = await sq('create', real['e2esqc1'], { name: NAME + ' B', tag: TAGB, crest: { shape: 'banner', sym: 'crown' }, open: true });
+  const c2 = await sq('create', real['e2esqc1'], { name: NAME + ' B', tag: TAGB, crest: { shape: 'circle', sym: 'crown' }, open: true });
   ok(c2.ok, 'a second squad exists to fight', c2.squad && { sid: c2.squad.sid, n: c2.squad.n });
   const SIDB = c2.squad && c2.squad.sid;
 
@@ -163,7 +172,7 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
 
   const busy = await sq('challenge', real['e2esqa1'], { sid: SIDB, metric: 'roe', stake: 0 });
   ok(busy.error === 'already_duelling', 'a squad already in a duel cannot start another', busy);
-  const walk = await sq('leave', real['e2esqb1'], {});
+  const walk = await sq('leave', real['e2esqa3'], {});
   ok(walk.error === 'duel_running', 'and nobody can walk out mid-duel', walk);
 
   // real closed trades inside the window: squad A trades, squad B does not
@@ -197,7 +206,7 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
 
   // the pot
   const tA2 = await ticks('e2esqa1');
-  const nA = 5;
+  const nA = 4;
   const share = Math.floor(STAKE / nA), rest = STAKE - share * nA;
   ok(tA2 === tA1b + STAKE + share + rest, 'THE WINNING LEADER GETS THE STAKE BACK PLUS AN EQUAL SHARE', { before: tA1b, after: tA2, expect: tA1b + STAKE + share + rest, stake: STAKE, share, rest });
   const tMem = await ticks('e2esqa3');
@@ -217,8 +226,8 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   ok(afterB.squad && afterB.squad.losses === 1, 'and the other squad counts the loss', afterB.squad && { w: afterB.squad.wins, l: afterB.squad.losses });
 
   // ── leaving, kicking, handover ──────────────────────────────────────────────────────────────
-  const kick = await sq('kick', real['e2esqa1'], { name: 'e2e_e2esqb2' });
-  ok(kick.ok, 'the leader can remove a member once the duel is over', kick);
+  const kick = await sq('kick', real['e2esqa1'], { name: 'e2e_e2esqb1' });
+  ok(kick.ok && kick.removed === 'e2e_e2esqb1', 'the leader can remove a member once the duel is over', kick);
   const leave = await sq('leave', real['e2esqa2'], {});
   ok(leave.ok, 'a member can leave', leave);
   const hand = await sq('leave', real['e2esqa1'], {});

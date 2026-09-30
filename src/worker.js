@@ -7241,7 +7241,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=33a0002d" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=bcd22941" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -11942,7 +11942,40 @@ const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 
 // ── SQUADS (2026-09-29, owner: "squads sa max 5 clanova ... squad dueli, chatroom i Icon na profil karticama
 // svakog clana; dueli samo u ticks; pobeda nereseno i poraz nose xp svakako").
-const SQUAD_MAX = 5;                    // members, leader included - the owner's number
+// TEN SQUAD LEVELS (2026-10-02, owner: "klan 10 levela, na 3. otkljucavaju jedno mesto i na 8. jos jedno,
+// neku cool kozmetiku na svakom lvl-u kao i xp i ticks").
+// SEATS GROW INTO the five the owner set at the start: 3 at founding, 4 at level 3, 5 at level 8. Starting at
+// five and growing past it would contradict his own "max 5 clanova", and this way the fifth seat is earned.
+// The logo maker grows with the squad too - a new squad has 2 shapes, 8 marks, 8 colours and 2 rings (144
+// combinations, enough to feel like a choice) and every level hands over more, so the tool itself levels up.
+const SQUAD_MAX = 5;                    // the ceiling; squadSlots() is what a given squad may actually hold
+const SQUAD_BASE_SLOTS = 3;
+const SQUAD_XP_SHARE = 0.25;            // of every member's XP grant, so a lesson or a mission moves the squad too
+const SQUAD_LEVELS = [
+  { lv: 1, min: 0, slots: SQUAD_BASE_SLOTS, note: 'Founded' },
+  { lv: 2, min: 600, ticks: 60, xp: 150, marks: ['candle', 'target', 'wave'], note: 'Three more marks' },
+  { lv: 3, min: 1800, ticks: 80, xp: 200, slots: 4, note: 'A fourth seat' },
+  { lv: 4, min: 3600, ticks: 100, xp: 250, cols: ['#f64a9e', '#4af6e0', '#7a838f'], note: 'Three more colours' },
+  { lv: 5, min: 6000, ticks: 120, xp: 300, rings: ['dashed'], note: 'The dashed ring' },
+  { lv: 6, min: 9000, ticks: 140, xp: 350, marks: ['anchor', 'eye', 'cross'], note: 'Three more marks' },
+  { lv: 7, min: 13000, ticks: 160, xp: 400, shapes: ['hex', 'banner'], note: 'The hex and the banner' },
+  { lv: 8, min: 18000, ticks: 200, xp: 500, slots: 5, note: 'The fifth seat' },
+  { lv: 9, min: 24000, ticks: 240, xp: 600, rings: ['double'], note: 'The double ring' },
+  { lv: 10, min: 32000, ticks: 300, xp: 800, rings: ['aura'], note: 'THE AURA - a living ring nobody else has' },
+];
+function squadLevel(sxp) { sxp = Math.max(0, +sxp || 0); let i = 0; for (let n = 0; n < SQUAD_LEVELS.length; n++) if (sxp >= SQUAD_LEVELS[n].min) i = n; const cur = SQUAD_LEVELS[i], nx = SQUAD_LEVELS[i + 1] || null;
+  return { lv: cur.lv, min: cur.min, sxp, next: nx ? nx.lv : null, nextMin: nx ? nx.min : null, toNext: nx ? Math.max(0, nx.min - sxp) : 0, pct: nx ? Math.min(100, Math.round((sxp - cur.min) / (nx.min - cur.min) * 100)) : 100, nextNote: nx ? nx.note : '', max: SQUAD_LEVELS.length }; }
+function squadSlots(sxp) { let n = SQUAD_BASE_SLOTS; const lv = squadLevel(sxp).lv; for (const r of SQUAD_LEVELS) if (r.lv <= lv && r.slots) n = r.slots; return Math.min(SQUAD_MAX, n); }
+// What the logo maker may offer at a level. A crest already SAVED always renders - this gates the picker and
+// the save, never the drawing, so nothing a squad already wears can vanish under it.
+function squadCrestOpts(sxp) {
+  const lv = squadLevel(sxp).lv;
+  const o = { shapes: ['shield', 'circle'], syms: ['tag', 'bolt', 'up', 'down', 'crown', 'star', 'triangle', 'diamond'], cols: CREST_COLS.slice(0, 6).concat(['#e9e7df', '#0a0b0d']), rings: ['none', 'solid'] };
+  for (const r of SQUAD_LEVELS) { if (r.lv > lv) break;
+    if (r.shapes) o.shapes = o.shapes.concat(r.shapes); if (r.marks) o.syms = o.syms.concat(r.marks);
+    if (r.cols) o.cols = o.cols.concat(r.cols); if (r.rings) o.rings = o.rings.concat(r.rings); }
+  return o;
+}
 // FOUNDING one costs something (owner 2026-09-30: "za otvaranje squada je potrebno da budes platinum i da das
 // 5k ticks ili da se plati sa balansom"). JOINING one is free and always will be - the cost is on the founder.
 // MEASURED the day it shipped: 9 of 765 accounts are Platinum (30,000 XP) and 4 hold 5,000+ Ticks (site median
@@ -11976,7 +12009,7 @@ const SQUAD_METRICS = {
 const CREST_SHAPES = ['shield', 'circle', 'hex', 'banner'];
 const CREST_SYMS = ['tag', 'bolt', 'candle', 'up', 'down', 'target', 'crown', 'star', 'triangle', 'diamond', 'anchor', 'eye', 'wave', 'cross'];
 const CREST_COLS = ['#c2f64a', '#2ebd85', '#ff5a4d', '#4aa3f6', '#b07cf6', '#f6b74a', '#f64a9e', '#4af6e0', '#e9e7df', '#7a838f', '#0a0b0d']; // the site's own ground is IN the palette: a light crest wants a dark mark, and without it every pale ground had to take a pale mark
-const CREST_RINGS = ['none', 'solid', 'double', 'dashed'];
+const CREST_RINGS = ['none', 'solid', 'double', 'dashed', 'aura']; // 'aura' is the level-10 unlock - a LIVING ring, driven by the rAF sweep in mp-auth (the owner's Windows never renders @keyframes)
 function crestNorm(c) { // never trust a posted crest - every field snaps to a member of its own list
   let o = {}; try { o = (typeof c === 'string' ? JSON.parse(c) : c) || {}; } catch (e) { o = {}; }
   const pick = (v, list, d) => (list.indexOf(String(v)) >= 0 ? String(v) : d);
@@ -16409,7 +16442,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '76fcabea';
+const ASSET_V = '8f0fd2d1';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20828,6 +20861,10 @@ export default {
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
+ if (url.pathname === '/api/admin/squadxp' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // grant squad XP by hand (support + E2E) - runs the SAME _sqAddXp the member path runs, so a test cannot pass against rules production does not use
+      let xb = {}; try { xb = await request.json(); } catch (e) {}
+      return J(await usersDO(env, '/squad/addxp', { sid: String(xb.sid || ''), amt: +xb.amt || 0 }) || { error: 'busy' });
+    }
  if (url.pathname === '/api/admin/squadsettle' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // settle ONE squad duel now (support + E2E) - runs the cron's own _sduelSettle, never a second copy of the rules
       let sb = {}; try { sb = await request.json(); } catch (e) {}
       return J(await usersDO(env, '/squad/settleone', { id: String(sb.id || ''), now: +sb.now || 0 }) || { error: 'busy' });
@@ -22240,6 +22277,7 @@ export default {
       const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
       if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook, same pattern as /api/duel/
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
+      if (sub === 'live') return call('/squad/live', { uid: su.id });
       if (sub === 'mine') {
         const r0 = await call('/squad/mine', { uid: su.id });
         try { // the page has to be able to draw the cash route too, and the balance is not in that store
@@ -25146,6 +25184,9 @@ export class UserStore {
     return seed;
   }
   _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
+    // A squad levels on what its members DO - every lesson, mission and trade. Placed at the top so it sees
+    // the requested amount; the share is small and the uid set keeps non-members at one Set lookup.
+    try { this._sqShare(uid, amt); } catch (e) {}
     o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
     const sql = this.state.storage.sql; const now = Date.now();
     const _u = this.rows('SELECT premium, username, xpboost_until FROM users WHERE id=?', uid)[0];
@@ -25203,7 +25244,7 @@ export class UserStore {
   _squadPub(sid, withMembers) { // never leaks a member uid - the card shows names, levels and crests
     const s = this.rows('SELECT * FROM squads WHERE id=?', sid)[0]; if (!s) return null;
     const o = { sid: s.id, name: s.name || '', tag: s.tag || '', crest: crestNorm(s.crest), motto: s.motto || '', created: +s.created || 0,
-      open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: SQUAD_MAX, leader: s.leader };
+      open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: squadSlots(+s.sxp || 0), cap: SQUAD_MAX, level: squadLevel(+s.sxp || 0), opts: squadCrestOpts(+s.sxp || 0), leader: s.leader };
     const lead = this.rows('SELECT username FROM users WHERE id=?', s.leader)[0];
     o.leaderName = (lead && lead.username) || '';
     if (withMembers) {
@@ -25219,6 +25260,7 @@ export class UserStore {
     if (!m) return;
     const sq = this.rows('SELECT id, leader FROM squads WHERE id=?', m.sid)[0];
     try { sql.exec('DELETE FROM squadm WHERE uid=?', uid); sql.exec('DELETE FROM squadinv WHERE uid=?', uid); } catch (e) {}
+    this._sqBust();
     if (!sq) return;
     if (String(sq.leader) !== uid) return;
     const next = this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC LIMIT 1', sq.id)[0];
@@ -25233,6 +25275,7 @@ export class UserStore {
     try { sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE (a_sid=? OR b_sid=?) AND status IN ('open','pending')", sid, sid); } catch (e) {}
     for (const uid of this._squadUids(sid)) this._pushNotif(uid, 'squad', 'Your squad is gone - ' + (why || 'it was disbanded') + '.', 'squads');
     try { sql.exec('DELETE FROM squadm WHERE sid=?', sid); } catch (e) {}
+    this._sqBust();
     try { sql.exec('DELETE FROM squadinv WHERE sid=?', sid); } catch (e) {}
     try { sql.exec('DELETE FROM squads WHERE id=?', sid); } catch (e) {}
     return this.j({ ok: true, disbanded: true });
@@ -25316,6 +25359,40 @@ export class UserStore {
     for (const uid of this._squadUids(d.a_sid)) this._pushNotif(uid, 'squad', line(d.a_name, d.b_name, winner ? (winner === d.a_sid ? 'win' : 'loss') : 'draw'), 'squads');
     for (const uid of this._squadUids(d.b_sid)) this._pushNotif(uid, 'squad', line(d.b_name, d.a_name, winner ? (winner === d.b_sid ? 'win' : 'loss') : 'draw'), 'squads');
     return this._sduelPub(Object.assign({}, d, { status: 'done', winner, a_score: A.score, b_score: B.score, settled: 1, escrowed: 0, detail: JSON.stringify(detail) }));
+  }
+  // Every member's XP moves the squad, so a lesson or a mission counts for the clan too. The set keeps the
+  // cost on the XP path at one lookup for accounts that are in no squad - the same shape as _whUidSet().
+  _sqUids() { if (this._sqSet) return this._sqSet; const st = new Set(); try { for (const r of this.rows('SELECT uid FROM squadm')) st.add(String(r.uid)); } catch (e) {} this._sqSet = st; return st; }
+  _sqBust() { this._sqSet = null; }
+  _sqShare(uid, amt) {
+    amt = Math.round((+amt || 0) * SQUAD_XP_SHARE);
+    if (amt <= 0 || this._sqBusy) return;            // _sqBusy: a level-up pays its members XP, which must not re-enter here
+    uid = String(uid).replace(/^u:/, '');
+    if (!this._sqUids().has(uid)) return;
+    let m = null; try { m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; } catch (e) {}
+    if (m) this._sqAddXp(m.sid, amt);
+  }
+  _sqAddXp(sid, amt) {
+    amt = Math.round(+amt || 0); if (!sid || amt <= 0) return;
+    const row = this.rows('SELECT sxp, name FROM squads WHERE id=?', sid)[0]; if (!row) return;
+    const before = squadLevel(+row.sxp || 0).lv, after = squadLevel((+row.sxp || 0) + amt).lv;
+    try { this.state.storage.sql.exec('UPDATE squads SET sxp=COALESCE(sxp,0)+? WHERE id=?', amt, sid); } catch (e) {}
+    if (after <= before) return;
+    // LEVEL UP. Pay every member, tell every member, and say what it opened - a level that hands over
+    // something invisible is not a level.
+    this._sqBusy = true;
+    try {
+      for (let lv = before + 1; lv <= after; lv++) {
+        const r = SQUAD_LEVELS.find(x => x.lv === lv); if (!r) continue;
+        const mem = this._squadUids(sid);
+        for (const uid of mem) {
+          if (r.xp) { try { this._grantXp(uid, 'duel', r.xp, { dayCap: 2000, note: 'Squad reached level ' + lv }); } catch (e) {} }
+          if (r.ticks) { try { this._giveTicks(uid, r.ticks, 'Squad level ' + lv); } catch (e) {} }
+          this._pushNotif(uid, 'squad', (row.name || 'Your squad') + ' reached level ' + lv + '. ' + (r.note || '') + (r.ticks ? ' +' + r.ticks + ' Ticks' : '') + (r.xp ? ' +' + r.xp + ' XP' : '') + '.', '/squads/');
+        }
+      }
+    } catch (e) {}
+    this._sqBusy = false;
   }
   _duelLabel(m) { return ({ roe: 'ROE', wr: 'win rate', win: 'biggest win', pnl: 'profit', survival: 'survival', streak: 'win streak', sniper: 'sniper' })[m] || 'ROE'; }
   _durLabel(ms) { return ({ '3600000': '1 hour', '86400000': '24 hours', '259200000': '3 days', '604800000': '7 days' })[String(ms)] || '7 days'; }
@@ -28850,6 +28927,36 @@ export class UserStore {
       return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can,
         duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
+    if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      const sq = uid ? this._squadOf(uid) : null;
+      if (!sq) return this.j({ squad: null });
+      const ws = lbPeriodStart(Date.now()), we = ws + LB_PERIOD;
+      const rows = this.rows('SELECT m.uid, m.ts, u.username, u.xp, u.xp_life FROM squadm m LEFT JOIN users u ON u.id=m.uid WHERE m.sid=? ORDER BY m.ts ASC', sq.id);
+      // Season XP is xp_life MINUS the per-season base, exactly as the XP board reads it - never a sum over
+      // xplog, which is trimmed at 150 rows and would quietly under-count the busiest member.
+      const members = [], byUid = {};
+      let total = 0;
+      for (const r of rows) {
+        const bs = this.rows('SELECT base FROM xpseason WHERE user_id=? AND season=?', String(r.uid), ws)[0];
+        const sx = bs ? Math.max(0, (+r.xp_life || 0) - (+bs.base || 0)) : 0;
+        const L = xpLevelOf(+r.xp || 0);
+        const m = { name: r.username || '', xp: sx, col: L.col, level: L.k };
+        members.push(m); byUid[String(r.uid)] = m; total += sx;
+      }
+      members.sort((a, c) => c.xp - a.xp);
+      const ids = rows.map(r => String(r.uid));
+      let feed = [];
+      if (ids.length) {
+        try {
+          const ph = ids.map(() => '?').join(',');
+          feed = this.rows("SELECT ts, kind, sym, side, lev, margin, pnl, roe, liq, user_id FROM tradeev WHERE user_id IN (" + ph + ") AND kind IN ('open','close') ORDER BY id DESC LIMIT 24", ...ids)
+            .map(r => { const m = byUid[String(r.user_id)] || {}; return { ts: +r.ts || 0, kind: r.kind, who: m.name || '', col: m.col || '#9aa3ad', sym: r.sym || '', side: r.side || '', lev: +r.lev || 0, margin: +r.margin || 0, pnl: r.pnl == null ? null : +r.pnl, roe: r.roe == null ? null : +r.roe, liq: r.liq ? 1 : 0 }; })
+            .filter(x => x.who);
+        } catch (e) { feed = []; }
+      }
+      return this.j({ squad: { sid: sq.id, name: sq.name, tag: sq.tag, crest: crestNorm(sq.crest), n: rows.length, max: squadSlots(+sq.sxp || 0), level: squadLevel(+sq.sxp || 0) }, season: { start: ws, end: we, total, members }, feed });
+    }
     if (path === '/squad/get') { // one squad, public view (no member uids leave here)
       const sid = String((b && b.sid) || url.searchParams.get('sid') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
       const sq = sid ? this._squadPub(sid, true) : null;
@@ -28858,7 +28965,7 @@ export class UserStore {
     if (path === '/squad/browse') { // squads anyone may join, fullest first - the only discovery surface a newcomer has
       const rows = this.rows('SELECT id FROM squads WHERE openj=1 ORDER BY created DESC LIMIT 60');
       const out = [];
-      for (const r of rows) { const s = this._squadPub(r.id, false); if (s && s.n < SQUAD_MAX) out.push(s); if (out.length >= 24) break; }
+      for (const r of rows) { const s = this._squadPub(r.id, false); if (s && s.n < s.max) out.push(s); if (out.length >= 24) break; } // s.max is THIS squad's seats
       out.sort((a, c) => (c.n - a.n) || (c.wins - a.wins));
       return this.j({ squads: out, total: (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c });
     }
@@ -28882,14 +28989,19 @@ export class UserStore {
       // 6 uppercase alnum, no vowels: an id that cannot accidentally spell a word, and one chatInstOf keeps whole
       const AL = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let id = '';
       for (let t = 0; t < 12 && !id; t++) { let c = ''; for (let i = 0; i < 6; i++) c += AL[Math.floor(Math.random() * AL.length)]; if (!this.rows('SELECT 1 FROM squads WHERE id=?', c)[0]) id = c; }
+      // THE LOGO IS VALIDATED BEFORE ANY MONEY MOVES. It sat after the charge for one deploy, so a piece the
+      // level had not opened took 5,000 Ticks and then refused - the exact invariant this file claims.
+      const crest = crestNorm(b.crest);
+      { const op0 = squadCrestOpts(0); if (op0.shapes.indexOf(crest.shape) < 0 || op0.syms.indexOf(crest.sym) < 0 || op0.cols.indexOf(crest.bg) < 0 || op0.cols.indexOf(crest.fg) < 0 || op0.rings.indexOf(crest.ring) < 0) return this.j({ error: 'locked_piece', level: 1 }, 403); }
       if (!paidCash && this._tickBal(uid) < SQUAD_CREATE_TICKS) return this.j({ error: 'need_ticks', need: SQUAD_CREATE_TICKS, have: this._tickBal(uid) }, 402); // affordability AFTER the name and tag are known good
       if (!id) return this.j({ error: 'try_again' }, 503);
       // Charged LAST, after every refusal above: a taken tag must never cost somebody 5,000 Ticks.
       if (!paidCash && !this._takeTicks(uid, SQUAD_CREATE_TICKS, 'Founded a squad')) return this.j({ error: 'need_ticks', need: SQUAD_CREATE_TICKS, have: this._tickBal(uid) }, 402);
-      const crest = crestNorm(b.crest), now = Date.now();
+      const now = Date.now();
       const sql = this.state.storage.sql;
       sql.exec('INSERT INTO squads(id,name,tag,leader,crest,motto,created,openj,wins,draws,losses,sxp) VALUES(?,?,?,?,?,?,?,?,0,0,0,0)', id, name, tag, uid, JSON.stringify(crest), String(b.motto || '').slice(0, 80), now, b.open ? 1 : 0);
       sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, id, 'leader', now);
+      this._sqBust();
       return this.j({ ok: true, squad: this._squadPub(id, true) });
     }
     if (path === '/squad/edit') { // leader only: crest, motto, who may join. The NAME and TAG are fixed at creation - they are how other squads know who they duelled.
@@ -28897,7 +29009,11 @@ export class UserStore {
       const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
       if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
       const sql = this.state.storage.sql;
-      if (b.crest) sql.exec('UPDATE squads SET crest=? WHERE id=?', JSON.stringify(crestNorm(b.crest)), sq.id);
+      if (b.crest) { // a piece the squad has not unlocked is REFUSED, not silently swapped - the picker only offers what is open, so this is the backstop
+        const c0 = crestNorm(b.crest), op = squadCrestOpts(+sq.sxp || 0);
+        if (op.shapes.indexOf(c0.shape) < 0 || op.syms.indexOf(c0.sym) < 0 || op.cols.indexOf(c0.bg) < 0 || op.cols.indexOf(c0.fg) < 0 || op.rings.indexOf(c0.ring) < 0) return this.j({ error: 'locked_piece', level: squadLevel(+sq.sxp || 0).lv }, 403);
+        sql.exec('UPDATE squads SET crest=? WHERE id=?', JSON.stringify(c0), sq.id);
+      }
       if (b.motto != null) sql.exec('UPDATE squads SET motto=? WHERE id=?', String(b.motto || '').slice(0, 80), sq.id);
       if (b.open != null) sql.exec('UPDATE squads SET openj=? WHERE id=?', b.open ? 1 : 0, sq.id);
       return this.j({ ok: true, squad: this._squadPub(sq.id, true) });
@@ -28912,7 +29028,7 @@ export class UserStore {
       if (t.status && t.status !== 'active') return this.j({ error: 'no_such_member' }, 404);
       if (String(t.id) === uid) return this.j({ error: 'thats_you' }, 400);
       if (this.rows('SELECT 1 FROM squadm WHERE uid=?', t.id)[0]) return this.j({ error: 'already_in_a_squad' }, 409);
-      if (this._squadN(sq.id) >= SQUAD_MAX) return this.j({ error: 'squad_full', max: SQUAD_MAX }, 409);
+      { const slots = squadSlots(+sq.sxp || 0); if (this._squadN(sq.id) >= slots) return this.j({ error: 'squad_full', max: slots, lv: squadLevel(+sq.sxp || 0).lv }, 409); } // seats grow with the level, they are not the global ceiling
       const now = Date.now();
       if ((this.rows('SELECT COUNT(*) c FROM squadinv WHERE sid=? AND ts > ?', sq.id, now - SQUAD_INV_MS)[0] || { c: 0 }).c >= SQUAD_MAX_INV) return this.j({ error: 'too_many_invites' }, 429);
       const k = sq.id + '|' + t.id;
@@ -28933,9 +29049,10 @@ export class UserStore {
       const now = Date.now(), sql = this.state.storage.sql;
       const inv = this.rows('SELECT 1 FROM squadinv WHERE k=? AND ts > ?', sid + '|' + uid, now - SQUAD_INV_MS)[0];
       if (!inv && !s.openj) return this.j({ error: 'invite_only' }, 403);
-      if (this._squadN(sid) >= SQUAD_MAX) return this.j({ error: 'squad_full', max: SQUAD_MAX }, 409);
+      { const slots = squadSlots(+s.sxp || 0); if (this._squadN(sid) >= slots) return this.j({ error: 'squad_full', max: slots, lv: squadLevel(+s.sxp || 0).lv }, 409); }
       // A squad in the middle of a duel cannot grow: the opponent accepted a fight against a squad of a size
       sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, sid, 'member', now);
+      this._sqBust();
       sql.exec('DELETE FROM squadinv WHERE uid=?', uid); // joining answers every other invite too
       this._pushNotif(s.leader, 'squad', '@' + me.username + ' joined ' + s.name + '.', 'squads');
       return this.j({ ok: true, squad: this._squadPub(sid, true) });
@@ -28960,6 +29077,7 @@ export class UserStore {
       }
       sql.exec('DELETE FROM squadm WHERE uid=?', uid);
       return this.j({ ok: true, left: true });
+      this._sqBust();
     }
     if (path === '/squad/kick') {
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
@@ -28972,6 +29090,7 @@ export class UserStore {
       const m = this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', t.id, sq.id)[0];
       if (!m) return this.j({ error: 'not_a_member' }, 404);
       this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', t.id);
+      this._sqBust();
       this._pushNotif(t.id, 'squad', 'You were removed from ' + sq.name + '.', 'squads');
       return this.j({ ok: true, removed: t.username });
     }
@@ -29058,6 +29177,7 @@ export class UserStore {
       try { this.state.storage.sql.exec("UPDATE sduels SET status='expired', escrowed=0 WHERE status='pending' AND created < ?", now - 3 * 86400000); } catch (e) {}
       return this.j({ settled: out.length, duels: out });
     }
+    if (path === '/squad/addxp') { const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); const amt = Math.round(+((b && b.amt)) || 0); if (!sid || !amt) return this.j({ error: 'bad' }, 400); this._sqAddXp(sid, amt); const r = this.rows('SELECT sxp FROM squads WHERE id=?', sid)[0]; return this.j({ ok: true, sxp: r ? +r.sxp || 0 : 0, level: squadLevel(r ? +r.sxp || 0 : 0) }); }
     if (path === '/squad/settleone') { const d = this.rows('SELECT * FROM sduels WHERE id=?', String((b && b.id) || ''))[0]; if (!d) return this.j({ error: 'not_found' }, 404); if (d.status !== 'active' || +d.settled) return this.j({ error: 'not_active', status: d.status }, 409); if (b && b.now) { try { this.state.storage.sql.exec('UPDATE sduels SET end_ts=? WHERE id=?', Math.min(+b.now, Date.now()), d.id); d.end_ts = Math.min(+b.now, Date.now()); } catch (e) {} } return this.j({ ok: true, duel: this._sduelSettle(d) }); }
     if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
       const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');

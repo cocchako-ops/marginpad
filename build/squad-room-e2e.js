@@ -30,7 +30,7 @@ const R4 = () => { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for
   await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: real['e2esqrm1'], level: 'platinum', note: 'squad-room-e2e' }) });
   await adm('/api/admin/ticks', { uid: real['e2esqrm1'], amt: 5000, note: 'squad-room-e2e' });
   const TAG = R4();
-  const c = await sq('create', real['e2esqrm1'], { name: 'Room Test ' + TAG, tag: TAG, crest: { shape: 'banner', sym: 'wave', bg: '#2ebd85', fg: '#0a0b0d', ring: 'solid' }, open: true });
+  const c = await sq('create', real['e2esqrm1'], { name: 'Room Test ' + TAG, tag: TAG, crest: { shape: 'circle', sym: 'star', bg: '#2ebd85', fg: '#0a0b0d', ring: 'solid' } /* level-1 pieces only */, open: true });
   const SID = c.squad && c.squad.sid;
   ok(!!SID, 'a squad to test the room with', { SID, err: c.error });
   await sq('join', real['e2esqrm2'], { sid: SID });
