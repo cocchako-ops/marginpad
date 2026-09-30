@@ -203,3 +203,23 @@ textarea.in{width:100%;resize:vertical;font:inherit;font-size:13px;line-height:1
 .apgrant .chips{display:inline-flex;gap:5px;flex-wrap:wrap}
 .apgrant .btn{white-space:nowrap}
 #apMsg{line-height:1.55}
+
+/* Squads desk (2026-09-30) */
+.sqrow{border-top:1px solid var(--line);padding:11px 0}
+.sqrow:first-of-type{border-top:0}
+.sqh{display:flex;align-items:center;gap:10px}
+.sqc{display:inline-grid;place-items:center;border-radius:8px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.04em;flex:0 0 auto;position:relative}
+.sqc i{position:absolute;right:-4px;bottom:-4px;background:#0a0b0d;color:#c2f64a;border-radius:50%;font:700 8px/1 'Space Mono',monospace;padding:2px 3px;font-style:normal;border:1px solid #c2f64a}
+.sqn b{display:block;font-size:14px}
+.sqn span{display:block;font:400 10.5px/1.4 'Space Mono',monospace;color:var(--dim)}
+.sqm{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 8px}
+.sqp{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 9px;font-size:12px}
+.sqp.ld{border-color:rgba(255,215,90,.4)}
+.sqp a{color:var(--ink);text-decoration:none}.sqp a:hover{text-decoration:underline}
+.sqp i{font-style:normal;font:700 8.5px/1 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#ffd75a;padding:0 4px}
+.sqp button{background:rgba(255,255,255,.05);border:0;color:var(--dim);cursor:pointer;font:600 8.5px/1 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:5px}
+.sqp button:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.sqp button.x{font-size:14px;letter-spacing:0;color:#ff8a80;padding:0 6px}
+.sqa{display:flex;gap:7px;flex-wrap:wrap}
+.sqa input{flex:1 1 170px;min-width:0}
+@media(max-width:560px){.sqa{flex-direction:column}.sqa input{flex:1 1 auto}}

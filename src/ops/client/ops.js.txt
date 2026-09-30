@@ -50,7 +50,7 @@
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'campaigns', title: 'Campaigns' }, { id: 'tgbot', title: 'Telegram bot' }] },
     { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
-    { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
+    { id: 'people', title: 'People', views: [{ id: 'squads', title: 'Squads' }, { id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
     { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }] },
@@ -1234,7 +1234,77 @@
   // hop a quiet "→ /page" row, so a visitor is watched walking the site as it happens; the Visitors layout shows one card per
   // person with the whole path. IDENTITY: one person = one account (uid) - a username change is one person, never two.
   // Hovering the stream pauses it (rows queue in a pill), so nothing jumps under the cursor while the owner reads.
-  VIEWS['people/activity'] = { render: function (el, arg) {
+  VIEWS['people/squads'] = { render: function (el, arg) {
+  var st = { pick: '', msg: '', typed: '' };
+  el.innerHTML = SKEL;
+  function crest(c, px, tag, lv) {
+    c = c || {}; var s2 = px || 30;
+    // the ops desk draws a plain badge, not the site's SVG - a squad is identified here by its TAG and colours
+    return '<span class="sqc" style="width:' + s2 + 'px;height:' + s2 + 'px;background:' + esc(c.bg || '#4aa3f6') + ';color:' + esc(c.fg || '#e9e7df') + '">' + esc(String(tag || '?').slice(0, 4)) + (lv ? '<i>' + lv + '</i>' : '') + '</span>';
+  }
+  function act(sid, op, name, force) {
+    var body = { sid: sid, name: name, op: op }; if (force) body.force = true;
+    return fetch('/api/admin/squadmember', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); });
+  }
+  function draw(d) {
+    var list = (d && d.squads) || [];
+    var h = '<div class="card"><h2>Squads <small>' + list.length + '</small></h2>';
+    if (st.msg) h += '<div class="note" id="sqMsg">' + st.msg + '</div>';
+    if (!list.length) h += '<div class="muted">Nobody has founded one yet.</div>';
+    list.forEach(function (s2) {
+      var lv = (s2.level || {}).lv || 1;
+      h += '<div class="sqrow" data-sid="' + esc(s2.sid) + '">'
+        + '<div class="sqh">' + crest(s2.crest, 32, s2.tag, lv)
+        + '<div class="sqn"><b>' + esc(s2.name) + '</b><span>' + esc(s2.sid) + ' &middot; LVL ' + lv + ' &middot; ' + s2.n + '/' + s2.max + ' &middot; ' + s2.state + ' &middot; ' + s2.wins + 'W ' + s2.draws + 'D ' + s2.losses + 'L &middot; ' + (s2.sxp || 0).toLocaleString() + ' sxp</span></div></div>'
+        + '<div class="sqm">' + (s2.members || []).map(function (m) {
+          return '<span class="sqp' + (m.leader ? ' ld' : '') + '"><a href="#people/users?u=' + encodeURIComponent(m.name) + '">' + esc(m.name) + '</a>'
+            + (m.leader ? '<i>leader</i>' : '<button type="button" data-lead="' + esc(m.name) + '" title="Make this member the leader">make lead</button>')
+            + '<button type="button" class="x" data-rm="' + esc(m.name) + '" title="Remove from squad">&times;</button></span>';
+        }).join('') + '</div>'
+        + '<div class="sqa"><input type="text" placeholder="username to add" data-add-in value="' + (st.pick === s2.sid ? esc(st.typed) : '') + '" />'
+        + '<button type="button" class="btn" data-add>Add</button>'
+        + '<button type="button" class="btn" data-add-force title="Seat them even if the squad is full">Add anyway</button></div>'
+        + '</div>';
+    });
+    h += '</div>';
+    el.innerHTML = h;
+    var inp = st.pick ? el.querySelector('.sqrow[data-sid="' + st.pick + '"] [data-add-in]') : null;
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }
+  function load() {
+    return J('/api/admin/squads').then(draw).catch(function () { el.innerHTML = '<div class="card"><div class="muted">Could not load. <button class="btn" onclick="location.reload()">Retry</button></div></div>'; });
+  }
+  el.addEventListener('input', function (e) {
+    var i = e.target.closest('[data-add-in]'); if (!i) return;
+    st.pick = i.closest('.sqrow').getAttribute('data-sid'); st.typed = i.value;
+  });
+  el.addEventListener('click', function (e) {
+    var row = e.target.closest('.sqrow'); if (!row) return;
+    var sid = row.getAttribute('data-sid');
+    var rm = e.target.closest('[data-rm]'), ld = e.target.closest('[data-lead]');
+    var add = e.target.closest('[data-add]'), addF = e.target.closest('[data-add-force]');
+    var done = function (j, what) {
+      // the message has to survive the repaint it causes - the table is redrawn under it (2026-09-18)
+      st.msg = j && j.ok ? ('<b>' + what + '</b>' + (j.forced ? ' (seated past the limit)' : '') + (j.handedOver ? ' - the squad was handed to the next member' : ''))
+        : ('<b style="color:#ff8a80">' + ((j && j.hint) ? (j.error + ' - ' + j.hint) : (j && j.error) || 'failed') + '</b>');
+      if (j && j.ok) { st.typed = ''; st.pick = ''; }
+      load();
+    };
+    if (rm) { e.preventDefault(); var who = rm.getAttribute('data-rm'); if (!confirm('Remove ' + who + ' from this squad?')) return; act(sid, 'remove', who).then(function (j) { done(j, 'Removed ' + who); }); return; }
+    if (ld) { e.preventDefault(); var w2 = ld.getAttribute('data-lead'); if (!confirm('Make ' + w2 + ' the leader?')) return; act(sid, 'lead', w2).then(function (j) { done(j, w2 + ' now leads'); }); return; }
+    if (add || addF) {
+      e.preventDefault();
+      var i2 = row.querySelector('[data-add-in]'), nm = (i2 && i2.value || '').trim().replace(/^@/, '');
+      if (!nm) { st.msg = '<b style="color:#ff8a80">Type a username first</b>'; st.pick = sid; load(); return; }
+      act(sid, 'add', nm, !!addF).then(function (j) { done(j, 'Added ' + nm); });
+    }
+  });
+  load();
+  every(60000, load);
+} };
+
+VIEWS['people/activity'] = { render: function (el, arg) {
     var st = { h: 24, g: 'all', who: 'all', q: '', nopv: false, live: true, lay: 'stream' }; recall('people/activity', st, ['h', 'g', 'who', 'nopv', 'live', 'lay']);
     var FIELDS = ['h', 'g', 'who', 'nopv', 'live', 'lay'];
     var E2E = arg === 'e2e'; if (E2E) arg = ''; // #people/activity/e2e: the E2E suite watches its own (key-tagged) rows arrive over the socket

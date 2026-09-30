@@ -283,6 +283,30 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?)$/;
   const gtCache = new Map();
   setInterval(() => { const c = Date.now() - 300000; for (const [k, v] of gtCache) if (v.t < c) gtCache.delete(k); }, 120000).unref?.();
+  // COINGECKO THROUGH THE DROPLET (2026-09-30). CoinGecko answers the Cloudflare Worker egress with a 403 and
+  // an HTML body - a WAF block, not a rejected key (the demo key is set and sent). The screener lost every coin
+  // icon to it. Same escape hatch as /api/v1/latam for CriptoYa and /api/v1/dex for GeckoTerminal: the VPS is
+  // not on a blocked range. Tight allowlist, its own cache, and a stale copy served when upstream is unhappy.
+  const CG_ALLOW = /^\/(coins\/markets\?[A-Za-z0-9_=&,%.-]{0,240}|global|search\/trending)$/;
+  const cgCache = new Map();
+  setInterval(() => { const c9 = Date.now() - 3600000; for (const [k, v] of cgCache) if (v.t < c9) cgCache.delete(k); }, 300000).unref?.();
+  app.get('/api/v1/cg', async (req, res) => {
+    const p9 = String(req.query.path || '');
+    if (!CG_ALLOW.test(p9)) return res.status(400).json({ error: 'path_not_allowed' });
+    const url = 'https://api.coingecko.com/api/v3' + p9, ttl = 300000;
+    const hit = cgCache.get(url);
+    if (hit && Date.now() - hit.t < ttl) { res.set('Cache-Control', 'public, max-age=120'); res.set('x-cg-cache', 'hit'); return res.status(hit.status).type('application/json').send(hit.body); }
+    try {
+      const h9 = { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' };
+      if (process.env.COINGECKO_API_KEY) h9['x-cg-demo-api-key'] = process.env.COINGECKO_API_KEY;
+      const r = await fetch(url, { signal: AbortSignal.timeout(12000), headers: h9 });
+      const body = await r.text();
+      if (r.status === 200) cgCache.set(url, { t: Date.now(), status: r.status, body });
+      else if (hit) { res.set('x-cg-cache', 'stale'); return res.status(200).type('application/json').send(hit.body); }
+      res.set('Cache-Control', 'public, max-age=120');
+      return res.status(r.status).type('application/json').send(body);
+    } catch (e) { if (hit) { res.set('x-cg-cache', 'stale'); return res.status(200).type('application/json').send(hit.body); } return res.status(502).json({ error: 'cg_unreachable' }); }
+  });
   app.get('/api/v1/dex', async (req, res) => {
     const p4 = String(req.query.path || '');
     if (!GT_ALLOW.test(p4)) return res.status(400).json({ error: 'path_not_allowed' });

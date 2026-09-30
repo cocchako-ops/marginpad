@@ -238,6 +238,27 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   const afterB = await mine(real['e2esqc1']);
   ok(afterB.squad && afterB.squad.losses === 1, 'and the other squad counts the loss', afterB.squad && { w: afterB.squad.wins, l: afterB.squad.losses });
 
+  // ── the owner's own controls (2026-09-30): add, remove, hand the lead over ──────────────────
+  const admM = (b) => adm('/api/admin/squadmember', Object.assign({ sid: SID }, b));
+  const aAdd = await admM({ name: 'e2e_e2esqc1', op: 'add' });
+  ok(aAdd.error === 'already_in_a_squad', 'admin add refuses somebody who is already in a squad', aAdd);
+  const aFull = await admM({ name: 'e2e_e2esqb2', op: 'add' });
+  ok(aFull.error === 'squad_full' && aFull.hint, 'THE SEAT LIMIT IS REFUSED BY DEFAULT, with the way past it named', aFull);
+  const aForce = await admM({ name: 'e2e_e2esqb2', op: 'add', force: true });
+  ok(aForce.ok && aForce.forced === true && aForce.squad.n === 5, 'and force seats them anyway - the owner may overrule his own rule', aForce.squad && { n: aForce.squad.n });
+  const aRm = await admM({ name: 'e2e_e2esqb2', op: 'remove' });
+  ok(aRm.ok && aRm.removed === 'e2e_e2esqb2' && aRm.squad.n === 4, 'admin remove takes them back out', aRm.squad && { n: aRm.squad.n });
+  const aLead = await admM({ name: 'e2e_e2esqa3', op: 'lead' });
+  ok(aLead.ok && aLead.leader === 'e2e_e2esqa3', 'admin can hand the lead to another member', aLead.leader);
+  const backLead = await admM({ name: 'e2e_e2esqa1', op: 'lead' });
+  ok(backLead.ok, 'and back again', backLead.leader);
+  const aNo = await admM({ name: 'nobody_at_all_xyz', op: 'add' });
+  ok(aNo.error === 'no_such_member', 'an unknown username is refused, not silently ignored', aNo);
+  // REMOVING THE LEADER must hand the squad on, never leave it headless
+  const st0 = await J('/api/admin/squads', { headers: H });
+  const mine0 = (st0.squads || []).find(x => x.sid === SID);
+  ok(mine0 && mine0.members.length === 4, 'the roster endpoint lists the squad with its members', mine0 && { n: mine0.members.length, state: mine0.state });
+
   // ── leaving, kicking, handover ──────────────────────────────────────────────────────────────
   const kick = await sq('kick', real['e2esqa1'], { name: 'e2e_e2esqb1' });
   ok(kick.ok && kick.removed === 'e2e_e2esqb1', 'the leader can remove a member once the duel is over', kick);

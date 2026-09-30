@@ -3537,23 +3537,39 @@ async function cgCached(env, cgUrl, ttlS) {
  try { const hit = await env.STATS.get(kvKey); if (hit) return JSON.parse(hit); } catch (e) {}
  const h = { headers: { accept: 'application/json' } };
  if (env.COINGECKO_API_KEY) h.headers['x-cg-demo-api-key'] = env.COINGECKO_API_KEY;
- const r = await fetch(cgUrl, h);
+ let r = await fetch(cgUrl, h);
+ // CoinGecko 403s the Worker egress with an HTML WAF page (measured 2026-09-30, which is how the screener
+ // lost its coin icons). The droplet is not on a blocked range, so the same request goes through it -
+ // the identical escape hatch /api/v1/latam and /api/v1/dex already use for two other upstreams.
+ if (!r.ok && env.COLLECTOR_URL) {
+   try { const via = env.COLLECTOR_URL + '/api/v1/cg?path=' + encodeURIComponent(cgUrl.replace('https://api.coingecko.com/api/v3', ''));
+     const r2 = await fetch(via, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(14000) });
+     if (r2.ok) r = r2; } catch (e) {}
+ }
  if (!r.ok) { let b = ''; try { b = (await r.text()).slice(0, 160); } catch (e) {} _cgFail[kvKey] = { status: r.status, body: b, ts: Date.now() }; return null; } // remembered so the JSON error can say WHY (audit 2026-09-25: /api/gecko/global answered "unavailable" for weeks with no trace of the upstream status anywhere)
  const j = await r.json();
  try { await env.STATS.put(kvKey, JSON.stringify(j), { expirationTtl: ttlS }); } catch (e) {}
+ // LAST GOOD, kept far longer than the cache. CoinGecko blocks the Worker egress often enough that a page
+ // depending on it must never go blank: the screener lost every coin icon this way (2026-09-30), because the
+ // 45-minute entry expired during an outage and there was nothing behind it. A coin logo does not go stale.
+ try { await env.STATS.put('cg:last:' + kvKey.slice(5), JSON.stringify(j), { expirationTtl: 14 * 86400 }); } catch (e) {}
  return j;
 }
+async function cgLast(env, cgUrl) { try { const v = await env.STATS.get('cg:last:' + ('cg:c:' + cgUrl.slice(30, 160)).slice(5)); return v ? JSON.parse(v) : null; } catch (e) { return null; } } // the last answer that worked, whenever that was
 const _cgFail = {}; // kvKey -> last upstream failure this isolate saw (status, body snippet, ts)
 async function handleGeckoMarkets(url, env) {
   const cat = (url.searchParams.get('cat') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 40);
   const slim = url.searchParams.get('slim') === '1'; // logos/prices only, no sparkline - ~400KB -> ~10KB (mobile perf 2026-07-14)
   const ck = new Request('https://marginpad.io/__gecko_markets_' + (cat || 'all') + (slim ? '_slim' : ''));
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
-  let data = null;
- try { data = await cgCached(env, 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=' + (cat ? 100 : 250) + '&page=1&sparkline=true&price_change_percentage=1h,24h,7d' + (cat ? '&category=' + cat : ''), 2700); } catch (e) {}
+  let data = null, stale = false;
+  const cgu = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=' + (cat ? 100 : 250) + '&page=1&sparkline=true&price_change_percentage=1h,24h,7d' + (cat ? '&category=' + cat : '');
+ try { data = await cgCached(env, cgu, 2700); } catch (e) {}
+  if (!(Array.isArray(data) && data.length)) { const lg = await cgLast(env, cgu); if (Array.isArray(lg) && lg.length) { data = lg; stale = true; } } // an outage must not blank the icons
   let ok = Array.isArray(data) && data.length;
   if (ok && slim) data = data.map(c => ({ symbol: c.symbol, name: c.name, image: c.image, current_price: c.current_price, price_change_percentage_24h: c.price_change_percentage_24h }));
-  const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? 'public, max-age=120' : 'no-store', ...CORS } });
+  const _fm = _cgFail['cg:c:' + cgu.slice(30, 160)];
+  const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable', upstream: _fm ? { status: _fm.status, body: _fm.body, ago_s: Math.round((Date.now() - _fm.ts) / 1000) } : null }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? (stale ? 'public, max-age=60' : 'public, max-age=120') : 'no-store', ...(stale ? { 'x-mp-stale': '1' } : {}), ...CORS } });
   if (ok) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -20874,6 +20890,15 @@ export default {
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
+ if (url.pathname === '/api/admin/squads' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // every squad with its members (2026-09-30)
+      return J(await usersDO(env, '/squad/admin') || { error: 'busy' });
+    }
+ if (url.pathname === '/api/admin/squadmember' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // add / remove / hand the lead over, by name
+      let mb = {}; try { mb = await request.json(); } catch (e) {}
+      const r9 = await usersDO(env, '/squad/adminmember', { sid: String(mb.sid || ''), name: String(mb.name || mb.username || ''), op: String(mb.op || 'add'), force: !!mb.force });
+      if (r9 && r9.ok) { try { await tgAdmin(env, '<b>Squad</b> ' + (r9.added ? 'added @' + r9.added : r9.removed ? 'removed @' + r9.removed : 'lead to @' + r9.leader) + ' - ' + String(mb.sid || ''), { kind: 'squad admin', sev: 'info' }); } catch (e) {} }
+      return J(r9 || { error: 'busy' });
+    }
  if (url.pathname === '/api/admin/squadfree' && request.method !== 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // who holds a free founding
       const held = []; try { const l = await env.STATS.list({ prefix: 'squad:free:' }); const ids = l.keys.map(k => k.name.slice('squad:free:'.length)); const prof = await resolveProfiles(env, ids.map(x => 'u:' + x)); for (const id of ids) held.push({ uid: id, username: (prof[id] || {}).username || '' }); } catch (e) {}
       return J({ held });
@@ -28995,11 +29020,19 @@ export class UserStore {
       const sq = sid ? this._squadPub(sid, true) : null;
       return sq ? this.j({ squad: sq }) : this.j({ error: 'not_found' }, 404);
     }
-    if (path === '/squad/browse') { // squads anyone may join, fullest first - the only discovery surface a newcomer has
-      const rows = this.rows('SELECT id FROM squads WHERE openj=1 ORDER BY created DESC LIMIT 60');
+    if (path === '/squad/browse') { // EVERY squad, with the state of each - the only public view there is
+      // It used to list only the ones with a free seat, so a squad VANISHED from the site the moment it filled
+      // (Mistrlefty's did, three members in, at level 1 where a squad holds three). A directory that hides its
+      // subject is not a directory: a full squad is the most convincing thing a newcomer can see.
+      const rows = this.rows('SELECT id FROM squads ORDER BY sxp DESC, created DESC LIMIT 60');
       const out = [];
-      for (const r of rows) { const s = this._squadPub(r.id, false); if (s && s.n < s.max) out.push(s); if (out.length >= 24) break; } // s.max is THIS squad's seats
-      out.sort((a, c) => (c.n - a.n) || (c.wins - a.wins));
+      for (const r of rows) {
+        const s = this._squadPub(r.id, false); if (!s) continue;
+        s.joinable = !!(s.open && s.n < s.max);
+        s.state = s.n >= s.max ? 'full' : s.open ? 'open' : 'invite';
+        out.push(s); if (out.length >= 30) break;
+      }
+      out.sort((a, c) => (c.joinable - a.joinable) || (c.sxp - a.sxp) || (c.n - a.n));
       return this.j({ squads: out, total: (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c });
     }
     if (path === '/squad/create') {
@@ -29212,6 +29245,50 @@ export class UserStore {
     }
     if (path === '/squad/addxp') { const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); const amt = Math.round(+((b && b.amt)) || 0); if (!sid || !amt) return this.j({ error: 'bad' }, 400); this._sqAddXp(sid, amt); const r = this.rows('SELECT sxp FROM squads WHERE id=?', sid)[0]; return this.j({ ok: true, sxp: r ? +r.sxp || 0 : 0, level: squadLevel(r ? +r.sxp || 0 : 0) }); }
     if (path === '/squad/settleone') { const d = this.rows('SELECT * FROM sduels WHERE id=?', String((b && b.id) || ''))[0]; if (!d) return this.j({ error: 'not_found' }, 404); if (d.status !== 'active' || +d.settled) return this.j({ error: 'not_active', status: d.status }, 409); if (b && b.now) { try { this.state.storage.sql.exec('UPDATE sduels SET end_ts=? WHERE id=?', Math.min(+b.now, Date.now()), d.id); d.end_ts = Math.min(+b.now, Date.now()); } catch (e) {} } return this.j({ ok: true, duel: this._sduelSettle(d) }); }
+    if (path === '/squad/admin') { // the owner's view: every squad with its members, and who leads it
+      const out = [];
+      for (const r of this.rows('SELECT id FROM squads ORDER BY sxp DESC, created DESC LIMIT 200')) {
+        const s = this._squadPub(r.id, true); if (!s) continue;
+        s.state = s.n >= s.max ? 'full' : s.open ? 'open' : 'invite';
+        out.push(s);
+      }
+      return this.j({ squads: out, total: out.length });
+    }
+    if (path === '/squad/adminmember') { // {sid, name, op:'add'|'remove'|'lead', force?}
+      const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+      const sq = this.rows('SELECT * FROM squads WHERE id=?', sid)[0];
+      if (!sq) return this.j({ error: 'not_found' }, 404);
+      const who = String((b && b.name) || '').trim().replace(/^@/, '');
+      const u = this.rows('SELECT id, username, status FROM users WHERE LOWER(username)=?', who.toLowerCase())[0];
+      if (!u) return this.j({ error: 'no_such_member', who }, 404);
+      const sql = this.state.storage.sql, op = String((b && b.op) || 'add'), now = Date.now();
+      if (op === 'remove') {
+        if (!this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', u.id, sid)[0]) return this.j({ error: 'not_a_member' }, 404);
+        // removing the LEADER hands the squad on rather than leaving it headless
+        if (String(sq.leader) === String(u.id)) { this._squadRemoveUser(u.id); this._sqBust(); return this.j({ ok: true, removed: u.username, handedOver: true, squad: this._squadPub(sid, true) }); }
+        sql.exec('DELETE FROM squadm WHERE uid=?', u.id); this._sqBust();
+        this._pushNotif(u.id, 'squad', 'You were removed from ' + (sq.name || 'your squad') + '.', '/squads/');
+        return this.j({ ok: true, removed: u.username, squad: this._squadPub(sid, true) });
+      }
+      if (op === 'lead') {
+        if (!this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', u.id, sid)[0]) return this.j({ error: 'not_a_member' }, 404);
+        sql.exec("UPDATE squadm SET role='member' WHERE sid=?", sid);
+        sql.exec('UPDATE squads SET leader=? WHERE id=?', u.id, sid);
+        sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", u.id);
+        this._pushNotif(u.id, 'squad', 'You are now the leader of ' + (sq.name || 'your squad') + '.', '/squads/');
+        return this.j({ ok: true, leader: u.username, squad: this._squadPub(sid, true) });
+      }
+      if (this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]) return this.j({ error: 'already_in_a_squad', who: u.username }, 409);
+      const slots = squadSlots(+sq.sxp || 0);
+      // the seat limit is the product rule, so it is REFUSED by default and only the owner's explicit force
+      // gets past it - an admin tool that silently breaks the rule it is administering is worse than no tool
+      if (this._squadN(sid) >= slots && !(b && b.force)) return this.j({ error: 'squad_full', max: slots, lv: squadLevel(+sq.sxp || 0).lv, hint: 'send force:true to seat them anyway' }, 409);
+      sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', u.id, sid, 'member', now);
+      sql.exec('DELETE FROM squadinv WHERE uid=?', u.id);
+      this._sqBust();
+      this._pushNotif(u.id, 'squad', 'You were added to ' + (sq.name || 'a squad') + '.', '/squads/');
+      return this.j({ ok: true, added: u.username, forced: !!(b && b.force), squad: this._squadPub(sid, true) });
+    }
     if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
       const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
