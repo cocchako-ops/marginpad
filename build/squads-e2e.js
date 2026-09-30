@@ -58,6 +58,19 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   await J('/api/auth/xp/setlevel?key=' + encodeURIComponent(KEY), { method: 'POST', headers: H, body: JSON.stringify({ uid: gateUid, level: 'platinum', note: 'squads-e2e gate' }) });
   const g2 = await sq('create', gateUid, { name: 'Gate Probe ' + Date.now().toString(36).slice(-5), tag: 'GQ' + Math.floor(Math.random() * 9) });
   ok(g2.error === 'need_ticks' && g2.need === 5000, 'PLATINUM ALONE IS NOT ENOUGH - it also costs 5,000 Ticks', g2);
+  // THE OWNER'S FREE FOUNDING (2026-09-30: Papis, Mistrlefty, ibrar0805, esPX). It waives the PRICE only - the
+  // level still stands - and it is CONSUMED by the squad it founds, so a gift is one squad, not an exemption.
+  const fTicks = await ticks('e2esqa2');
+  await adm('/api/admin/squadfree', { uid: gateUid });
+  const fm = await mine(gateUid);
+  ok(fm.can && fm.can.free === true && fm.can.ok === true, 'a free founding makes the page say it can create, with no Ticks', fm.can && { free: fm.can.free, ok: fm.can.ok, ticks: fm.can.ticks });
+  const fTag = (function () { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for (let i = 0; i < 4; i++) v += A[Math.floor(Math.random() * A.length)]; return v; })();
+  const fc = await sq('create', gateUid, { name: 'Free Gift ' + fTag, tag: fTag, crest: { shape: 'shield', sym: 'star', bg: '#2ebd85', fg: '#0a0b0d', ring: 'solid' } });
+  ok(fc.ok, 'and the squad is founded with an empty Ticks balance', fc.error || (fc.squad && fc.squad.sid));
+  ok((await ticks('e2esqa2')) === fTicks, 'NOTHING WAS CHARGED', { before: fTicks, after: await ticks('e2esqa2') });
+  const held = await J('/api/admin/squadfree', { headers: H });
+  ok(!((held.held || []).some(function (h) { return String(h.uid) === String(gateUid); })), 'AND THE WAIVER IS SPENT - one squad, not a standing exemption', (held.held || []).length);
+  await sq('disband', gateUid, {}); // clear the way for the rest of the suite
   const gm = await mine(gateUid);
   ok(gm.can && gm.can.levelOk === true && gm.can.ticksOk === false && gm.can.ok === false, 'and the page is told exactly which half is missing', gm.can);
   ok(gm.can && gm.can.cents >= 600, 'the cash price never undercuts 5,000 Ticks ($6.00 at the pass peg)', { cents: gm.can.cents });

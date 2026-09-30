@@ -11988,6 +11988,12 @@ const SQUAD_CREATE_TICKS = 5000;
 // stay the cheaper route, which is the point: playing should pay. The floor is checked mechanically below.
 const SQUAD_CREATE_CENTS = 699;
 function squadCashFloorC() { return Math.round(SQUAD_CREATE_TICKS * TICK_FLOOR_C / 1000); }
+// A FOUNDING WAIVER the owner hands out by name (2026-09-30: Papis, Mistrlefty, ibrar0805, esPX). It waives
+// the PRICE and nothing else - the Platinum requirement is not a charge, and every one of them already holds
+// it. KV `squad:free:<uid>`, CONSUMED on the squad it founds, so a gift is one squad and not a standing
+// exemption. Granting 5,000 Ticks instead would have handed them 20,000 Ticks to spend on anything.
+const squadFreeKey = (uid) => 'squad:free:' + String(uid).replace(/^u:/, '');
+async function squadFreeHas(env, uid) { try { return !!(await env.STATS.get(squadFreeKey(uid))); } catch (e) { return false; } }
 function squadCreateCents() { return Math.max(SQUAD_CREATE_CENTS, squadCashFloorC()); } // a table edit can never make cash the loophole
 const SQUAD_INV_MS = 7 * 86400000;      // an invite that is never answered stops being an invite
 const SQUAD_MAX_INV = 12;               // pending invites a squad may hold at once
@@ -20410,9 +20416,16 @@ export default {
     if (url.pathname === '/api/admin/e2euser' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E: mint/remove a throwaway member {uid, op}
       let eb = {}; try { eb = await request.json(); } catch (e) {}
       // {op:'mk', xp:N} also grants XP (e2e uids only) so an E2E can pass the Bronze gate on rewards routes (moon-limit-e2e, 2026-09-13)
+      // EVERYTHING THIS ACCOUNT OWNS IN KV, cleared BEFORE the response. This used to sit after the return
+      // below and never ran once - so an API plan, a widget token and (from today) a free-founding waiver all
+      // outlived the account they belonged to. Same class as the 2026-09-16 orphan sweep, in the other store.
+      if (String((eb && eb.op) || '') === 'rm' && eb.uid) {
+        const eu = String(eb.uid);
+        try { await apiPlanGrant(env, eu, 0, 0, 'owner'); } catch (e) {}                       // an API plan is KV, the DO cleanup cannot see it
+        try { const wt = await env.STATS.get('botwidget:u:' + eu); if (wt) { await env.STATS.delete('botwidget:t:' + wt); await env.STATS.delete('botwidget:u:' + eu); } } catch (e) {} // a "my bot, live" token (2026-09-26)
+        try { await env.STATS.delete(squadFreeKey(eu)); } catch (e) {}                          // a free squad founding (2026-09-30)
+      }
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
-      if (String((eb && eb.op) || '') === 'rm' && eb.uid) { try { await apiPlanGrant(env, String(eb.uid), 0, 0, 'owner'); } catch (e) {} // an API plan lives in KV, not in the DO, so the account cleanup cannot see it
-        try { const wt = await env.STATS.get('botwidget:u:' + String(eb.uid)); if (wt) { await env.STATS.delete('botwidget:t:' + wt); await env.STATS.delete('botwidget:u:' + String(eb.uid)); } } catch (e) {} } // and so does a "my bot, live" widget token (2026-09-26)
     }
     if (url.pathname === '/api/admin/bybitvol' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Bybit volume board: the owner's report (upload / preview / clear) + the joined view
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
@@ -20860,6 +20873,20 @@ export default {
     }
     if (url.pathname === '/api/admin/records' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E: one account's personal records (the same row /xp and the profile card read)
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pb?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); return J(await rr.json()); } catch (e) { return J({ error: 'unavailable' }, 503); }
+    }
+ if (url.pathname === '/api/admin/squadfree' && request.method !== 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // who holds a free founding
+      const held = []; try { const l = await env.STATS.list({ prefix: 'squad:free:' }); const ids = l.keys.map(k => k.name.slice('squad:free:'.length)); const prof = await resolveProfiles(env, ids.map(x => 'u:' + x)); for (const id of ids) held.push({ uid: id, username: (prof[id] || {}).username || '' }); } catch (e) {}
+      return J({ held });
+    }
+ if (url.pathname === '/api/admin/squadfree' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // hand somebody a free squad founding, by name (owner 2026-09-30). The method check comes FIRST, matching every other admin write here.
+      let fb = {}; try { fb = await request.json(); } catch (e) {}
+      const who = await usersDO(env, '/xpdiag', { username: String(fb.username || ''), uid: String(fb.uid || '') });
+      if (!who || !who.user) return J({ error: 'not_found', who: fb.username || fb.uid }, 404);
+      const fid = String(who.user.id);
+      if (fb.on === false) { try { await env.STATS.delete(squadFreeKey(fid)); } catch (e) {} return J({ ok: true, username: who.user.username, free: false }); }
+      try { await env.STATS.put(squadFreeKey(fid), JSON.stringify({ ts: Date.now(), by: 'owner', note: String(fb.note || '') }), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+      try { await tgAdmin(env, '<b>Free squad</b> @' + who.user.username + ' can found one at no cost', { kind: 'squad grant', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, username: who.user.username, uid: fid, free: true });
     }
  if (url.pathname === '/api/admin/squadxp' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // grant squad XP by hand (support + E2E) - runs the SAME _sqAddXp the member path runs, so a test cannot pass against rules production does not use
       let xb = {}; try { xb = await request.json(); } catch (e) {}
@@ -22285,7 +22312,8 @@ export default {
           if (j0 && j0.can) {
             let bal = 0; try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/balance?acct=' + encodeURIComponent('u:' + su.id))); const bj = await br.json(); bal = +((bj && (bj.balance != null ? bj.balance : bj.cents)) || 0); } catch (e) {}
             j0.can.balanceCents = bal; j0.can.cashOk = bal >= j0.can.cents;
-            j0.can.ok = j0.can.levelOk && (j0.can.ticksOk || j0.can.cashOk);
+            j0.can.free = await squadFreeHas(env, su.id);
+            j0.can.ok = j0.can.levelOk && (j0.can.free || j0.can.ticksOk || j0.can.cashOk);
             return new Response(JSON.stringify(j0), { status: r0.status, headers: jh });
           }
         } catch (e) {}
@@ -22298,8 +22326,9 @@ export default {
       // FOUNDING A SQUAD COSTS: Ticks (taken inside the store) or the rewards balance (taken HERE, because the
       // ledger is another DO). A cash payment is debited first and REFUNDED if the store refuses, so a taken
       // name can never cost somebody money.
-      let paidCents = 0, payRef = '';
-      if (sub === 'create' && String(bd.pay || '') === 'balance') {
+      let paidCents = 0, payRef = '', usedFree = false;
+      if (sub === 'create' && await squadFreeHas(env, su.id)) { bd = Object.assign({}, bd, { paid: true }); usedFree = true; } // the owner's waiver: no Ticks, no debit
+      else if (sub === 'create' && String(bd.pay || '') === 'balance') {
         const cents = squadCreateCents();
         payRef = 'squad_create_' + su.id;
         let deb = null;
@@ -22313,6 +22342,10 @@ export default {
         paidCents = cents; bd = Object.assign({}, bd, { paid: true });
       }
       const out = await call('/squad/' + sub, Object.assign({}, bd, { uid: su.id }));
+      if (usedFree) { // spend the waiver only on a squad that really exists now
+        let made = false; try { const jj = await out.clone().json(); made = !!(jj && jj.ok); } catch (e) {}
+        if (made) { try { await env.STATS.delete(squadFreeKey(su.id)); } catch (e) {} try { await tgAdmin(env, '<b>Squad founded</b> @' + (su.username || su.id) + ' used their free founding pass', { kind: 'squad founded', sev: 'info' }); } catch (e) {} }
+      }
       if (paidCents) { // the store refused after the money moved - give it straight back
         let bad = true; try { const jj = await out.clone().json(); bad = !!(jj && jj.error); } catch (e) { bad = true; }
         if (bad) { try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + su.id, cents: paidCents, item: 'squad_create' }) })); } catch (e) {} }
