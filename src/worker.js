@@ -7407,6 +7407,21 @@ async function checkMorningBrief(env) {
   } catch (e) {}
 }
 // Friend duels: settle every active duel whose 7-day window has ended → decide winner + grant XP (idempotent in the DO).
+async function settleRaids(env) {
+  try { if (!env.USERS) return; await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/squad/raidsettle', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); } catch (e) {}
+}
+async function squadMvpWeekly(env) { // the week that ENDED at the most recent UTC Monday, settled once
+  try {
+    if (!env.USERS || !env.STATS) return;
+    const wk = wkStartOf(Date.now() - 7 * 86400000);            // last week's Monday
+    const flag = 'squad:mvp:' + wk;
+    if (await env.STATS.get(flag)) return;
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/squad/mvp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ wk }) }));
+    const j = await r.json().catch(() => null);
+    await env.STATS.put(flag, JSON.stringify({ ts: Date.now(), awarded: (j && j.awarded) || [] }), { expirationTtl: 60 * 86400 });
+    if (j && j.awarded && j.awarded.length) { try { await tgAdmin(env, '<b>Squad MVPs</b> week of ' + new Date(wk).toISOString().slice(0, 10) + ': ' + j.awarded.map(a => a.name + ' -> @' + a.mvp + ' (' + a.gain + ' XP)').join(', '), { kind: 'squad mvp', sev: 'info' }); } catch (e) {} }
+  } catch (e) {}
+}
 async function settleDuels(env) {
   try { if (!env.USERS) return; const stub = env.USERS.get(env.USERS.idFromName('main'));
     await stub.fetch(new Request('https://do/duel/settle-due', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
@@ -11967,6 +11982,26 @@ const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
 const SQUAD_MAX = 5;                    // the ceiling; squadSlots() is what a given squad may actually hold
 const SQUAD_BASE_SLOTS = 3;
 const SQUAD_XP_SHARE = 0.25;            // of every member's XP grant, so a lesson or a mission moves the squad too
+// RAIDS (2026-10-01, owner: "da raiduju 5 major coin-a ... svaki ima pool koji se ispunjava progresom, progres
+// je PnL na tom coinu ... limit po otvorenom trejdu max 10k margin ... i negativan trejd utice na progres").
+// A raid is ONE squad against ONE coin for 48 hours: the squad's realized PnL on that coin fills the target,
+// losses drain it, and reaching it pays every member who contributed. Three guards, all stated on the page:
+//   - a close only counts if the position was opened with margin <= RAID_MARGIN_MAX (the owner's limit);
+//   - ONE close may fill at most half the target (my addition: $10k at 500x is a $5M notional, and one lucky
+//     candle must not clear a raid the squad was meant to do together);
+//   - a position opened before the raid started does not count (the duel rule, tradeOpenTs).
+const RAID_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'];
+const RAID_MS = 48 * 3600000;
+const RAID_MARGIN_MAX = 10000;
+const RAID_ONE_SHARE = 0.5;
+const RAID_COOLDOWN_MS = 24 * 3600000;        // the same coin again, after a clear
+const RAID_TARGET_DEFAULT = 200;              // USD of realized PnL at level 1; KV raid:cfg.target overrides, calibrated from /api/admin/raidcal
+const RAID_PAY = { ticks: 40, ticksPerLevel: 10, xp: 80, squadXp: 300 };
+function raidTarget(base, sxp) { const lv = squadLevel(sxp).lv; return Math.round((+base || RAID_TARGET_DEFAULT) * (1 + 0.15 * (lv - 1))); } // a level-10 squad holds five and is asked for 2.35x
+// MVP OF THE WEEK (owner): the member who put the most XP into the squad over a Monday-to-Monday week wears
+// a mark on their profile card for seven days and is paid. Weeks are UTC Mondays, like the season anchor.
+const MVP_TICKS = 100, MVP_SQUAD_XP = 100, MVP_WEAR_MS = 7 * 86400000;
+function wkStartOf(ts) { const d = new Date(ts || Date.now()); const day = (d.getUTCDay() + 6) % 7; return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - day); }
 const SQUAD_LEVELS = [
   { lv: 1, min: 0, slots: SQUAD_BASE_SLOTS, note: 'Founded' },
   { lv: 2, min: 600, ticks: 60, xp: 150, marks: ['candle', 'target', 'wave'], note: 'Three more marks' },
@@ -20940,6 +20975,19 @@ export default {
       try { await tgAdmin(env, '<b>Free squad</b> @' + who.user.username + ' can found one at no cost', { kind: 'squad grant', sev: 'info' }); } catch (e) {}
       return J({ ok: true, username: who.user.username, uid: fid, free: true });
     }
+ if (url.pathname === '/api/admin/raidsettle' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // settle ONE raid now - the cron's own _raidSettle, never a second copy of the rules
+      let rb = {}; try { rb = await request.json(); } catch (e) {}
+      return J(await usersDO(env, '/squad/raidsettle', { id: String(rb.id || ''), now: +rb.now || 0 }) || { error: 'busy' });
+    }
+ if (url.pathname === '/api/admin/squadmvp' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // award a week's MVPs on demand (support + E2E); the weekly cron is idempotent on its KV flag, this is not
+      let mb = {}; try { mb = await request.json(); } catch (e) {}
+      return J(await usersDO(env, '/squad/mvp', { wk: +mb.wk || 0 }) || { error: 'busy' });
+    }
+ if (url.pathname === '/api/admin/raidcal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // what members really realize on the five majors per 48h - read this before touching raid:cfg.target
+      const out = await usersDO(env, '/squad/raidcal') || { error: 'busy' };
+      try { out.cfg = JSON.parse(await env.STATS.get('raid:cfg') || '{}'); } catch (e) { out.cfg = {}; }
+      out.defaultTarget = RAID_TARGET_DEFAULT; return J(out);
+    }
  if (url.pathname === '/api/admin/squadxp' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // grant squad XP by hand (support + E2E) - runs the SAME _sqAddXp the member path runs, so a test cannot pass against rules production does not use
       let xb = {}; try { xb = await request.json(); } catch (e) {}
       return J(await usersDO(env, '/squad/addxp', { sid: String(xb.sid || ''), amt: +xb.amt || 0 }) || { error: 'busy' });
@@ -21685,7 +21733,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, liqarch: archiveLiq, liqrecap: liqRecapDaily };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, liqarch: archiveLiq, liqrecap: liqRecapDaily };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -22357,6 +22405,12 @@ export default {
       if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook, same pattern as /api/duel/
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       if (sub === 'live') return call('/squad/live', { uid: su.id });
+      if (sub === 'raid') {
+        if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
+        let rb = {}; try { rb = await request.json(); } catch (e) {}
+        let base = RAID_TARGET_DEFAULT; try { const c = JSON.parse(await env.STATS.get('raid:cfg') || '{}'); if (+c.target > 0) base = +c.target; } catch (e) {}
+        return call('/squad/raid', { uid: su.id, op: String(rb.op || 'start'), coin: String(rb.coin || ''), targetBase: base });
+      }
       if (sub === 'mine') {
         const r0 = await call('/squad/mine', { uid: su.id });
         try { // the page has to be able to draw the cash route too, and the balance is not in that store
@@ -22840,6 +22894,7 @@ export default {
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
+    bg(squadMvpWeekly, 'squadmvp'); // every squad's MVP for the week that just ended, once per UTC week (KV flag)
     bg(leverageReportSnap, 'levrep'); // the monthly leverage report: current month rolling, previous month sealed once (2026-09-26)
     bg(checkDigest, 'digest');
     bg(checkCalReminders, 'calrem');
@@ -22862,6 +22917,7 @@ export default {
     bg(checkMorningBrief, 'brief');
     bg(checkOpsAlerts, 'opsalerts');
     bg(settleDuels, 'duels');
+    bg(settleRaids, 'raids'); // squad raids: clear or fail at the 48h mark (an early clear settles from /squad/live)
     bg(checkIndexNow, 'indexnow');
     bg(checkAiCalls, 'aicalls'); // settle what the AI promised against what the market did
     bg(syncBotTiers, 'bottiers'); // reconcile each API key's tier with premium standing (grants expire silently otherwise)
@@ -25225,6 +25281,10 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS squadm(uid TEXT PRIMARY KEY, sid TEXT, role TEXT, ts INTEGER)'); // uid is the PK: one squad per member, enforced by the schema rather than by a check that can be raced
     s.exec('CREATE TABLE IF NOT EXISTS squadinv(k TEXT PRIMARY KEY, sid TEXT, uid TEXT, byname TEXT, ts INTEGER)'); // k = sid|uid
     s.exec('CREATE TABLE IF NOT EXISTS sduels(id TEXT PRIMARY KEY, a_sid TEXT, b_sid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0, dur INTEGER, stake INTEGER, escrowed INTEGER, rules TEXT, detail TEXT)');
+    s.exec('CREATE TABLE IF NOT EXISTS raids(id TEXT PRIMARY KEY, sid TEXT, coin TEXT, start_ts INTEGER, end_ts INTEGER, target REAL, status TEXT, progress REAL, settled INTEGER DEFAULT 0, detail TEXT, created INTEGER)'); // squad raids (2026-10-01): status active / cleared / failed / abandoned
+    s.exec('CREATE TABLE IF NOT EXISTS squadwk(uid TEXT, wk INTEGER, base INTEGER, PRIMARY KEY(uid, wk))'); // xp_life at a member's FIRST grant of a UTC week -> weekly gain = xp_life - base (trim-proof, same idea as xpseason)
+    ['mvp TEXT', 'mvp_name TEXT', 'mvp_until INTEGER'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} });
+    try { s.exec('CREATE INDEX IF NOT EXISTS raids_sid ON raids(sid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS squadm_sid ON squadm(sid)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS sduels_a ON sduels(a_sid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS sduels_b ON sduels(b_sid, status)'); } catch (e) {}
@@ -25332,9 +25392,10 @@ export class UserStore {
       open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: squadSlots(+s.sxp || 0), cap: SQUAD_MAX, level: squadLevel(+s.sxp || 0), opts: squadCrestOpts(+s.sxp || 0), leader: s.leader };
     const lead = this.rows('SELECT username FROM users WHERE id=?', s.leader)[0];
     o.leaderName = (lead && lead.username) || '';
+    o.mvp = (s.mvp && +s.mvp_until > Date.now()) ? { name: s.mvp_name || '', until: +s.mvp_until } : null;
     if (withMembers) {
       o.members = this.rows('SELECT m.uid, m.role, m.ts, u.username, u.xp, u.avatar, u.frame FROM squadm m LEFT JOIN users u ON u.id=m.uid WHERE m.sid=? ORDER BY m.ts ASC', s.id)
-        .map(r => { const L = xpLevelOf(+r.xp || 0); return { name: r.username || '', role: r.role || 'member', ts: +r.ts || 0, level: { k: L.k, name: L.name, col: L.col }, avatar: r.avatar || '', leader: String(r.uid) === String(s.leader) }; });
+        .map(r => { const L = xpLevelOf(+r.xp || 0); return { name: r.username || '', role: r.role || 'member', ts: +r.ts || 0, level: { k: L.k, name: L.name, col: L.col }, avatar: r.avatar || '', leader: String(r.uid) === String(s.leader), mvp: !!(s.mvp && +s.mvp_until > Date.now() && String(r.uid) === String(s.mvp)) }; });
     }
     return o;
   }
@@ -25362,6 +25423,7 @@ export class UserStore {
     try { sql.exec('DELETE FROM squadm WHERE sid=?', sid); } catch (e) {}
     this._sqBust();
     try { sql.exec('DELETE FROM squadinv WHERE sid=?', sid); } catch (e) {}
+    try { sql.exec('DELETE FROM raids WHERE sid=?', sid); } catch (e) {}
     try { sql.exec('DELETE FROM squads WHERE id=?', sid); } catch (e) {}
     return this.j({ ok: true, disbanded: true });
   }
@@ -25454,6 +25516,9 @@ export class UserStore {
     if (amt <= 0 || this._sqBusy) return;            // _sqBusy: a level-up pays its members XP, which must not re-enter here
     uid = String(uid).replace(/^u:/, '');
     if (!this._sqUids().has(uid)) return;
+    // the MVP week: xp_life BEFORE this grant, once per member per UTC week - this hook sits at the top of
+    // _grantXp, so reading it here is reading the figure before the write
+    try { const wk = wkStartOf(Date.now()); if (!this.rows('SELECT 1 FROM squadwk WHERE uid=? AND wk=?', uid, wk)[0]) { const lf = this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0]; this.state.storage.sql.exec('INSERT OR IGNORE INTO squadwk(uid,wk,base) VALUES(?,?,?)', uid, wk, +((lf && lf.v) || 0)); } } catch (e) {}
     let m = null; try { m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; } catch (e) {}
     if (m) this._sqAddXp(m.sid, amt);
   }
@@ -25478,6 +25543,64 @@ export class UserStore {
       }
     } catch (e) {}
     this._sqBusy = false;
+  }
+  // ── Raids (2026-10-01) ──
+  _raidPub(r) { let det = null; try { det = r.detail ? JSON.parse(r.detail) : null; } catch (e) {} return { id: r.id, sid: r.sid, coin: r.coin, start: +r.start_ts || 0, end: +r.end_ts || 0, target: +r.target || 0, status: r.status, progress: r.progress == null ? 0 : +r.progress, settled: +r.settled || 0, detail: det, marginMax: RAID_MARGIN_MAX, oneShare: RAID_ONE_SHARE }; }
+  _raidActive(sid) { return this.rows("SELECT * FROM raids WHERE sid=? AND status='active' AND settled=0 ORDER BY created DESC LIMIT 1", sid)[0] || null; }
+  _raidProgress(r) { // realized PnL on the coin by the squad's members inside the window; losses count, a huge trade is capped
+    const uids = this._squadUids(r.sid), per = {}, cap = (+r.target || 0) * RAID_ONE_SHARE;
+    let total = 0, n = 0, skippedMargin = 0, skippedEarly = 0;
+    for (const uid of uids) {
+      const rows = this.rows("SELECT ts, pnl, margin, tid FROM tradeev WHERE user_id=? AND kind='close' AND UPPER(sym)=? AND ts>=? AND ts<? ORDER BY ts ASC", uid, String(r.coin).toUpperCase(), +r.start_ts, +r.end_ts);
+      for (const e of rows) {
+        const ot = tradeOpenTs(String(e.tid || '')); if (ot != null && ot < +r.start_ts) { skippedEarly++; continue; }
+        if ((+e.margin || 0) > RAID_MARGIN_MAX) { skippedMargin++; continue; }
+        let p = +e.pnl || 0; if (!isFinite(p)) continue;
+        if (p > cap) p = cap;                      // one close fills at most half the target
+        per[uid] = per[uid] || { pnl: 0, n: 0 }; per[uid].pnl += p; per[uid].n++; total += p; n++;
+      }
+    }
+    const names = {}; try { inChunks(uids, (part, ph) => this.rows('SELECT id, username FROM users WHERE id IN (' + ph + ')', ...part)).forEach(u => { names[String(u.id)] = u.username || ''; }); } catch (e) {}
+    const members = uids.map(u => ({ name: names[u] || '', pnl: +((per[u] || {}).pnl || 0).toFixed(2), n: (per[u] || {}).n || 0 })).sort((a, b) => b.pnl - a.pnl);
+    return { total: +total.toFixed(2), n, members, contributors: Object.keys(per), skippedMargin, skippedEarly };
+  }
+  _raidSettle(r, force) {
+    const sql = this.state.storage.sql, pr = this._raidProgress(r);
+    const cleared = pr.total >= (+r.target || 0);
+    if (!cleared && !force && Date.now() < +r.end_ts) return null;   // still running
+    const status = cleared ? 'cleared' : 'failed';
+    sql.exec('UPDATE raids SET status=?, progress=?, settled=1, detail=? WHERE id=?', status, pr.total, JSON.stringify({ members: pr.members, n: pr.n, skippedMargin: pr.skippedMargin, skippedEarly: pr.skippedEarly, at: Date.now() }), r.id);
+    const sq = this.rows('SELECT name, sxp FROM squads WHERE id=?', r.sid)[0] || {};
+    if (cleared) {
+      const lv = squadLevel(+sq.sxp || 0).lv, tk = RAID_PAY.ticks + RAID_PAY.ticksPerLevel * (lv - 1);
+      for (const uid of pr.contributors) { // only members who closed a COUNTED trade on the coin are paid
+        try { this._giveTicks(uid, tk, 'Raid cleared: ' + r.coin); } catch (e) {}
+        try { this._grantXp(uid, 'duel', RAID_PAY.xp, { dayCap: 800, note: 'Raid cleared on ' + r.coin }); } catch (e) {}
+      }
+      try { this._sqAddXp(r.sid, RAID_PAY.squadXp); } catch (e) {}
+    }
+    const line = cleared ? ('Raid cleared: ' + (sq.name || 'your squad') + ' took ' + r.coin + ' - $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Everyone who traded it is paid.')
+      : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Try again in a day.');
+    for (const uid of this._squadUids(r.sid)) this._pushNotif(uid, 'squad', line, '/squads/');
+    return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
+  }
+  _mvpSettle(wk) { // the member who gained the most XP in that UTC week, per squad
+    const out = [], now = Date.now(), sql = this.state.storage.sql;
+    for (const sq of this.rows('SELECT id, name FROM squads')) {
+      let best = null;
+      for (const m of this.rows('SELECT m.uid, u.username, COALESCE(u.xp_life,0) life, w.base FROM squadm m LEFT JOIN users u ON u.id=m.uid LEFT JOIN squadwk w ON w.uid=m.uid AND w.wk=? WHERE m.sid=?', wk, sq.id)) {
+        if (m.base == null) continue;                  // never granted that week -> gained nothing in it
+        const gain = Math.max(0, (+m.life || 0) - (+m.base || 0));
+        if (gain > 0 && (!best || gain > best.gain)) best = { uid: String(m.uid), name: m.username || '', gain };
+      }
+      if (!best) continue;
+      sql.exec('UPDATE squads SET mvp=?, mvp_name=?, mvp_until=? WHERE id=?', best.uid, best.name, now + MVP_WEAR_MS, sq.id);
+      try { this._giveTicks(best.uid, MVP_TICKS, 'MVP of the week - ' + (sq.name || 'squad')); } catch (e) {}
+      try { this._sqAddXp(sq.id, MVP_SQUAD_XP); } catch (e) {}
+      for (const uid of this._squadUids(sq.id)) this._pushNotif(uid, 'squad', (uid === best.uid ? 'You are ' : '@' + best.name + ' is ') + (sq.name || 'the squad') + "'s MVP of the week with " + best.gain.toLocaleString() + ' XP. The mark stays on the card for seven days.', '/squads/');
+      out.push({ sid: sq.id, name: sq.name, mvp: best.name, gain: best.gain });
+    }
+    return out;
   }
   _duelLabel(m) { return ({ roe: 'ROE', wr: 'win rate', win: 'biggest win', pnl: 'profit', survival: 'survival', streak: 'win streak', sniper: 'sniper' })[m] || 'ROE'; }
   _durLabel(ms) { return ({ '3600000': '1 hour', '86400000': '24 hours', '259200000': '3 days', '604800000': '7 days' })[String(ms)] || '7 days'; }
@@ -28184,7 +28307,7 @@ export class UserStore {
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
         const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
-        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv'];
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk'];
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -28527,7 +28650,7 @@ export class UserStore {
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
-        followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id) } : null; } catch (e) { return null; } }).call(this) });
+        followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
       const rows = this.rows('SELECT username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
@@ -29009,7 +29132,9 @@ export class UserStore {
       if (!m) return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can });
       const sq = this._squadPub(m.sid, true);
       if (!sq) { try { this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', uid); } catch (e) {} return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can }); }
-      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can,
+      const raidA = this._raidActive(m.sid); const raidPub = raidA ? Object.assign(this._raidPub(raidA), { live: this._raidProgress(raidA) }) : null;
+      const raidHist = this.rows('SELECT * FROM raids WHERE sid=? AND settled=1 ORDER BY created DESC LIMIT 6', m.sid).map(r => this._raidPub(r));
+      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS,
         duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
     if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
@@ -29040,7 +29165,8 @@ export class UserStore {
             .filter(x => x.who);
         } catch (e) { feed = []; }
       }
-      return this.j({ squad: { sid: sq.id, name: sq.name, tag: sq.tag, crest: crestNorm(sq.crest), n: rows.length, max: squadSlots(+sq.sxp || 0), level: squadLevel(+sq.sxp || 0) }, season: { start: ws, end: we, total, members }, feed });
+      let raidL = null; try { const ra = this._raidActive(sq.id); if (ra) { const pr = this._raidProgress(ra); if (pr.total >= +ra.target) { raidL = this._raidSettle(ra, true); } else raidL = Object.assign(this._raidPub(ra), { live: pr }); } } catch (e) {} // a clear is settled the moment the room sees it, not at the next cron
+      return this.j({ squad: { sid: sq.id, name: sq.name, tag: sq.tag, crest: crestNorm(sq.crest), n: rows.length, max: squadSlots(+sq.sxp || 0), level: squadLevel(+sq.sxp || 0), mvp: (sq.mvp && +sq.mvp_until > Date.now()) ? { name: sq.mvp_name || '' } : null }, season: { start: ws, end: we, total, members }, feed, raid: raidL });
     }
     if (path === '/squad/get') { // one squad, public view (no member uids leave here)
       const sid = String((b && b.sid) || url.searchParams.get('sid') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
@@ -29316,6 +29442,46 @@ export class UserStore {
       this._pushNotif(u.id, 'squad', 'You were added to ' + (sq.name || 'a squad') + '.', '/squads/');
       return this.j({ ok: true, added: u.username, forced: !!(b && b.force), squad: this._squadPub(sid, true) });
     }
+    if (path === '/squad/raid') { // {uid, op:'start'|'abandon', coin, targetBase}
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const op = String((b && b.op) || 'start'), now = Date.now(), sql = this.state.storage.sql;
+      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=? WHERE id=?", this._raidProgress(r0).total, r0.id); return this.j({ ok: true, abandoned: r0.coin }); }
+      const coin = String((b && b.coin) || '').toUpperCase();
+      if (RAID_COINS.indexOf(coin) < 0) return this.j({ error: 'bad_coin', coins: RAID_COINS }, 400);
+      if (this._raidActive(sq.id)) return this.j({ error: 'raid_running' }, 409);
+      const last = this.rows("SELECT end_ts, status FROM raids WHERE sid=? AND coin=? AND status='cleared' ORDER BY end_ts DESC LIMIT 1", sq.id, coin)[0];
+      if (last && now - (+last.end_ts || 0) < RAID_COOLDOWN_MS) return this.j({ error: 'coin_cooldown', wait: RAID_COOLDOWN_MS - (now - (+last.end_ts || 0)) }, 429);
+      const target = raidTarget(+((b && b.targetBase)) || RAID_TARGET_DEFAULT, +sq.sxp || 0);
+      const id = 'rd' + now.toString(36) + Math.random().toString(36).slice(2, 6);
+      sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created) VALUES(?,?,?,?,?,?,?,0,0,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now);
+      for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target + ' of realized profit between you in 48 hours. Losses count against it. Positions over $' + RAID_MARGIN_MAX.toLocaleString() + ' margin do not count.', '/squads/');
+      return this.j({ ok: true, raid: this._raidPub(this.rows('SELECT * FROM raids WHERE id=?', id)[0]) });
+    }
+    if (path === '/squad/raidsettle') { // the cron, and {id} for one raid on demand (support + E2E)
+      const now = +((b && b.now)) || Date.now(); const out = [];
+      if (b && b.id) { const r = this.rows('SELECT * FROM raids WHERE id=?', String(b.id))[0]; if (!r) return this.j({ error: 'not_found' }, 404); if (r.status !== 'active') return this.j({ error: 'not_active', status: r.status }, 409); const x = this._raidSettle(r, true); return this.j({ ok: true, raid: x }); }
+      for (const r of this.rows("SELECT * FROM raids WHERE status='active' AND settled=0 LIMIT 40")) { const x = (+r.end_ts <= now) ? this._raidSettle(r, true) : this._raidSettle(r, false); if (x) out.push(x); }
+      return this.j({ settled: out.length, raids: out });
+    }
+    if (path === '/squad/mvp') { // {wk} settle that UTC week for every squad (idempotent per week from the worker's KV flag)
+      const wk = +((b && b.wk)) || wkStartOf(Date.now() - 7 * 86400000);
+      return this.j({ ok: true, wk, awarded: this._mvpSettle(wk) });
+    }
+    if (path === '/squad/raidcal') { // CALIBRATION, read-only: realized PnL per (member, coin, 48h bucket) over 14 days, so the target is a measurement
+      const since = Date.now() - 14 * 86400000, out = {};
+      for (const coin of RAID_COINS) {
+        const sums = {};
+        for (const e of this.rows("SELECT user_id, ts, pnl, margin FROM tradeev WHERE kind='close' AND UPPER(sym)=? AND ts>=? AND user_id NOT LIKE 'e2e%'", coin, since)) {
+          if ((+e.margin || 0) > RAID_MARGIN_MAX) continue;
+          const k = String(e.user_id) + '|' + Math.floor(+e.ts / RAID_MS); sums[k] = (sums[k] || 0) + (+e.pnl || 0);
+        }
+        const v = Object.values(sums).sort((a, c) => a - c), q = p => v.length ? +v[Math.min(v.length - 1, Math.floor(p * v.length))].toFixed(2) : null;
+        out[coin] = { buckets: v.length, p25: q(.25), p50: q(.5), p75: q(.75), p90: q(.9), max: v.length ? +v[v.length - 1].toFixed(2) : null };
+      }
+      return this.j({ days: 14, bucketHours: 48, marginMax: RAID_MARGIN_MAX, byCoin: out });
+    }
     if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
       const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
@@ -29327,8 +29493,8 @@ export class UserStore {
       const out = {};
       if (ids.length) {
         try {
-          inChunks(ids, (part, ph) => this.rows('SELECT m.uid, s.id, s.name, s.tag, s.crest FROM squadm m JOIN squads s ON s.id=m.sid WHERE m.uid IN (' + ph + ')', ...part))
-            .forEach(r => { out[String(r.uid)] = { sid: r.id, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest) }; });
+          inChunks(ids, (part, ph) => this.rows('SELECT m.uid, s.id, s.name, s.tag, s.crest, s.mvp, s.mvp_until FROM squadm m JOIN squads s ON s.id=m.sid WHERE m.uid IN (' + ph + ')', ...part))
+            .forEach(r => { out[String(r.uid)] = { sid: r.id, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest), mvp: !!(r.mvp && +r.mvp_until > Date.now() && String(r.mvp) === String(r.uid)) }; });
         } catch (e) {}
       }
       return this.j({ squads: out });
