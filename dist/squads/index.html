@@ -346,6 +346,14 @@
   .sqidesc{font-size:12.5px;color:var(--dim);line-height:1.45;flex:1}
   .sqiact{margin-top:3px}.sqiact .btn{width:100%}
   .shoplk{display:block;font-size:12px;color:var(--faint);text-align:center;padding:7px 0}
+  /* Squad activity tabs - raids / shop / duels / settings open on click instead of stacking (2026-10-01) */
+  .sqtabs{display:flex;gap:8px;margin:22px 0 2px;flex-wrap:wrap}
+  .sqtab{appearance:none;border:1px solid var(--line,#232a33);background:#0f1118;color:var(--dim);font-family:inherit;font-weight:800;font-size:13.5px;padding:9px 16px;border-radius:11px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;gap:6px}
+  .sqtab:hover{color:var(--ink);border-color:#36404c}
+  .sqtab.on{background:color-mix(in srgb,var(--sq,#c2f64a) 16%,#0f1118);border-color:var(--sq,#c2f64a);color:#fff}
+  .tabn{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--sq,#c2f64a);color:#0a0b0d;font-size:11px;font-weight:800;line-height:1}
+  .sqpanel>.sect:first-child{margin-top:16px}
+  @media(max-width:560px){.sqtabs{gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-top:18px}.sqtab{flex:0 0 auto;padding:9px 14px}}
   @media(max-width:560px){.sqshop{grid-template-columns:1fr 1fr;gap:10px}.sqpv{height:78px}.valn{font-size:22px}.valh{margin-left:0;width:100%}}
 </style>
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
@@ -717,30 +725,45 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + (isL ? '<div id="invBox" hidden style="margin-top:11px"><div class="row"><div class="grow"><input type="text" id="invName" placeholder="username" maxlength="24" autocomplete="off" /></div><button class="btn p" id="invGo" type="button">Send invite</button></div><div class="msg" id="invMsg"></div>' + pendingInvHtml() + '</div>' : '')
       + '</div>';
 
-    h += raidSection(s, isL);
-    h += '<div class="sect"><h2>' + __esT_squadsindex("squadShop", 'Squad shop') + '</h2><p class="sub">' + (isL ? __esT_squadsindex("shopSubLeader", "Spend the squad's Valor on exclusive borders and badges - earned only by playing together. You buy; every member can then wear what the squad owns.") : __esT_squadsindex("shopSubMember", "Borders and badges bought with the squad's Valor. The leader unlocks them; you equip any the squad owns.")) + '</p><div id="sqShop"><div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div></div>';
-    h += '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader",'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe",'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
-    h += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning",'<div class="empty">No duel running.</div>');
-    if (isL && !live.some(function (d) { return d.status === 'active'; })) h += challengeHtml();
-    h += '</div>';
+    // ── The activity lives in TABS, not stacked (owner 2026-10-01: "da se neki elementi kao raids otvaraju na klik,
+    //    ne da trpamo sve na stranicu"). Hero + members stay; Raids / Shop / Duels / Settings are one tap apart and
+    //    the choice is remembered. Panels are rendered once and shown/hidden on tab click, so no tab switch refetches.
+    var tab = S._tab; if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) tab = 'raids'; }
+    S._tab = tab;
+    var liveN = live.length, nBadge = function (n) { return n ? ' <span class="tabn">' + n + '</span>' : ''; };
+    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
+    var pan = function (id, body) { return '<div class="sqpanel" data-panel="' + id + '"' + (id === tab ? '' : ' hidden') + '>' + body + '</div>'; };
+    h += '<div class="sqtabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" class="sqtab' + (t[0] === tab ? ' on' : '') + '" data-tab="' + t[0] + '" role="tab">' + t[1] + '</button>'; }).join('') + '</div>';
 
-    if (past.length) h += __esT_squadsindex("pastDuels",'<div class="sect"><h2>Past duels</h2>') + past.slice(0, 8).map(function (d) { return duelCard(d, s.sid); }).join('') + '</div>';
+    // RAIDS
+    h += pan('raids', raidSection(s, isL));
 
-    h += __esT_squadsindex("openChallengesSquadsLookin",'<div class="sect"><h2>Open challenges</h2><p class="sub">Squads looking for anyone to take them on.</p><div id="openD"><div class="empty">Loading…</div></div></div>');
+    // SHOP
+    h += pan('shop', '<div class="sect"><h2>' + __esT_squadsindex("squadShop", 'Squad shop') + '</h2><p class="sub">' + (isL ? __esT_squadsindex("shopSubLeader", "Spend the squad's Valor on exclusive borders and badges - earned only by playing together. You buy; every member can then wear what the squad owns.") : __esT_squadsindex("shopSubMember", "Borders and badges bought with the squad's Valor. The leader unlocks them; you equip any the squad owns.")) + '</p><div id="sqShop"><div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div></div>');
 
-    h += '<div class="sect"><h2>Leader controls</h2>';
+    // DUELS (live + challenge + past + open challenges, all in one place)
+    var dH = '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader", 'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe", 'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
+    dH += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning", '<div class="empty">No duel running.</div>');
+    if (isL && !live.some(function (d) { return d.status === 'active'; })) dH += challengeHtml();
+    dH += '</div>';
+    if (past.length) dH += __esT_squadsindex("pastDuels", '<div class="sect"><h2>Past duels</h2>') + past.slice(0, 8).map(function (d) { return duelCard(d, s.sid); }).join('') + '</div>';
+    dH += __esT_squadsindex("openChallengesSquadsLookin", '<div class="sect"><h2>Open challenges</h2><p class="sub">Squads looking for anyone to take them on.</p><div id="openD"><div class="empty">Loading…</div></div></div>');
+    h += pan('duels', dH);
+
+    // SETTINGS / LEADER CONTROLS
+    var setH = '';
     if (isL) {
       if (!S.draft) S.draft = Object.assign({}, s.crest);
-      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Logo</h3><div id="bld">' + builderHtml(S.draft, s.name, s.tag) + '</div>'
+      setH += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Logo</h3><div id="bld">' + builderHtml(S.draft, s.name, s.tag) + '</div>'
         + '<div class="bfield" style="margin-top:13px"><label class="fl" for="eMotto">Motto</label><input type="text" id="eMotto" maxlength="80" value="' + esc(s.motto) + '" autocomplete="off" /></div>'
-        + '<div class="chips" style="margin-bottom:13px"><button type="button" class="chip' + (s.open ? ' on' : '') + __esT_squadsindex("dataOpen1Anyone",'" data-open="1">Anyone can join</button><button type="button" class="chip') + (s.open ? '' : ' on') + __esT_squadsindex("dataOpen0Invite",'" data-open="0">Invite only</button></div>')
+        + '<div class="chips" style="margin-bottom:13px"><button type="button" class="chip' + (s.open ? ' on' : '') + __esT_squadsindex("dataOpen1Anyone", '" data-open="1">Anyone can join</button><button type="button" class="chip') + (s.open ? '' : ' on') + __esT_squadsindex("dataOpen0Invite", '" data-open="0">Invite only</button></div>')
         + '<button class="btn p" id="eGo" type="button">Save</button><div class="msg" id="eMsg"></div></div>';
-      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:5px">Leave or disband</h3><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">If you leave, the longest-serving member takes over. Disbanding removes the squad and its logo from every member\'s card.</p>'
+      setH += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:5px">Leave or disband</h3><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">If you leave, the longest-serving member takes over. Disbanding removes the squad and its logo from every member\'s card.</p>'
         + '<div class="row"><button class="btn" id="leaveGo" type="button">Leave squad</button><button class="btn d" id="disGo" type="button">Disband</button></div><div class="msg" id="lMsg"></div></div>';
     } else {
-      h += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the logo or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
+      setH += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the logo or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
     }
-    h += '</div>';
+    h += pan('settings', '<div class="sect">' + setH + '</div>');
     return h;
   }
 
@@ -854,6 +877,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+    var tb = t.closest && t.closest('.sqtab[data-tab]');
+    if (tb && app.contains(tb)) { e.preventDefault(); var tid = tb.getAttribute('data-tab'); S._tab = tid; try { localStorage.setItem('mp_sq_tab', tid); } catch (x) {} Array.prototype.forEach.call(app.querySelectorAll('.sqtab'), function (x) { x.classList.toggle('on', x === tb); }); Array.prototype.forEach.call(app.querySelectorAll('.sqpanel'), function (p) { p.hidden = p.getAttribute('data-panel') !== tid; }); try { if (window.mpNovaSweep) window.mpNovaSweep(); } catch (x2) {} return; }
     var openBtn = t.closest && t.closest('[data-open]');
     if (openBtn && app.contains(openBtn)) { e.preventDefault(); Array.prototype.forEach.call(openBtn.parentNode.querySelectorAll('[data-open]'), function (x) { x.classList.toggle('on', x === openBtn); }); return; }
     var chBtn = t.closest && t.closest('[data-ch]');
