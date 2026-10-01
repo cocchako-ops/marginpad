@@ -177,6 +177,81 @@
   .mem.empty{opacity:.42}
   .mem.empty .av{background:transparent;border:1.5px dashed var(--line2);color:var(--faint)}
   .mem.empty .who{font-weight:400;font-size:13px;color:var(--faint)}
+
+  /* ── stamps, seats, level marks: the small vocabulary every squad surface shares ─────────── */
+  .stamp{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:2px 6px;background:rgba(255,255,255,.03)}
+  .lvm{font-family:'Space Mono',ui-monospace,monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;color:#0a0b0d;background:var(--sq,var(--lime));border-radius:5px;padding:3px 6px}
+  .seats{display:inline-flex;gap:4px;align-items:center}
+  .seats i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line2);display:block}
+  .seats i.on{background:var(--sq,var(--lime));border-color:var(--sq,var(--lime));box-shadow:0 0 8px -1px var(--sq,var(--lime))}
+  .seats i.open{border-style:dashed;border-color:var(--faint)}
+  .seats i.lk{opacity:.28}
+  .rec3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
+  .rec3>div{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center}
+  .rec3 b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:22px;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .rec3 span{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:5px}
+  .rec3 .w b{color:var(--up)}.rec3 .l b{color:var(--red)}
+
+  /* ── the member's own hero ───────────────────────────────────────────────────────────────── */
+  .sqhead.big{gap:18px;align-items:center}
+  .logo-big{flex:0 0 auto;filter:drop-shadow(0 14px 30px color-mix(in srgb,var(--sq,#c2f64a) 45%,transparent))}
+  .sqhead.big .nm{font-size:clamp(26px,4.4vw,38px);letter-spacing:-.025em}
+  .sqhead.big .mt{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+  .sqhead.big .motto{margin-top:8px;color:var(--dim);font-size:14px;font-style:italic;max-width:48ch}
+  .sqhead.big .rec3{margin-left:auto;min-width:210px;margin-top:0}
+
+  /* ── the directory: a roster of clans, every card a door ─────────────────────────────────── */
+  .dir{display:grid;grid-template-columns:repeat(auto-fill,minmax(262px,1fr));gap:12px}
+  .dsq{display:block;padding:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--sq,#c2f64a) 7%,var(--panel2)),var(--panel2));min-width:0;cursor:pointer;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s}
+  .dsq:hover,.dsq:focus-visible{transform:translateY(-3px);border-color:color-mix(in srgb,var(--sq,#c2f64a) 55%,var(--line2));box-shadow:0 18px 34px -22px color-mix(in srgb,var(--sq,#c2f64a) 60%,transparent);outline:none}
+  .dsq-top{display:flex;align-items:center;gap:12px}
+  .dsq-top svg.mp-crest{filter:drop-shadow(0 8px 16px color-mix(in srgb,var(--sq,#c2f64a) 40%,transparent))}
+  .dsq-id{min-width:0;flex:1}
+  .dsq .n{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:16px;letter-spacing:-.01em;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dsq-tg{display:flex;gap:6px;align-items:center;margin-top:5px}
+  .dsq-bot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  .dsq-rec{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--faint)}
+  .dsq-rec .w{color:var(--up)}.dsq-rec .l{color:var(--red)}
+  .dsq-go{margin-left:auto}
+  .dsq-open{font-size:11.5px;color:var(--faint)}
+  .dsq .dsq-st{margin-left:0;flex:0 0 auto}
+
+  /* ── duels face off ──────────────────────────────────────────────────────────────────────── */
+  .duel.live{border-color:rgba(194,246,74,.3);box-shadow:inset 0 0 0 1px rgba(194,246,74,.08)}
+  .duel .mid{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .vsm{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:.08em;color:var(--faint)}
+  .duel.live .vsm{color:var(--lime)}
+
+  /* ── the squad sheet ─────────────────────────────────────────────────────────────────────── */
+  .sqsh{position:fixed;inset:0;z-index:2147483000;display:none}
+  .sqsh.on{display:block}
+  .sqsh-bd{position:absolute;inset:0;background:rgba(4,6,9,.74)}
+  .sqsh-p{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 28px));max-height:min(86vh,760px);overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--sq,#c2f64a) 9%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--sq,#c2f64a) 34%,var(--line));border-radius:20px;padding:22px 20px 18px;box-shadow:0 40px 90px -30px rgba(0,0,0,.85),0 0 60px -28px color-mix(in srgb,var(--sq,#c2f64a) 70%,transparent)}
+  .sqsh-x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:9px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--dim);font-size:18px;cursor:pointer;line-height:1}
+  .sqsh-x:hover{color:var(--ink)}
+  .sqsh-hero{display:flex;gap:16px;align-items:center;margin-bottom:14px}
+  .sqsh-hero svg.mp-crest{filter:drop-shadow(0 14px 30px color-mix(in srgb,var(--sq,#c2f64a) 50%,transparent))}
+  .sqsh-id{min-width:0}
+  .sqsh-nm{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:clamp(22px,4vw,30px);letter-spacing:-.02em;line-height:1.1}
+  .sqsh-tg{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:7px}
+  .sqsh-mt{margin-top:7px;color:var(--dim);font-size:13.5px;font-style:italic}
+  .sqsh-h{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:16px 0 8px;font-family:'Space Mono',ui-monospace,monospace;font-weight:700}
+  .sqsh-h small{font-weight:400;letter-spacing:0;text-transform:none;color:var(--faint)}
+  .sqsh-m{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+  .mcard{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025)}
+  .mcard .av{width:32px;height:32px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}
+  .mcard .mn{min-width:0;flex:1;display:flex;flex-direction:column}
+  .mcard .mn a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mcard .mn a:hover{text-decoration:underline}
+  .mcard .mn span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-family:'Space Mono',ui-monospace,monospace}
+  .crown{width:18px;height:18px;color:var(--amber);flex:0 0 auto}.crown svg{width:100%;height:100%}
+  .sqsh-cta{margin-top:16px;display:flex;align-items:center;gap:10px}
+  .sqsh-you{font-size:13px;color:var(--dim)}
+  body.sqsh-open{overflow:hidden}
+  @media(max-width:620px){
+    .sqsh-p{left:0;right:0;top:auto;bottom:0;transform:none;width:auto;max-height:88vh;border-radius:20px 20px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+    .sqhead.big{flex-wrap:wrap}.sqhead.big .rec3{margin-left:0;width:100%;min-width:0}
+  }
   /* the level row: the whole progression in one 44px line */
   .lvr{display:flex;align-items:center;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid var(--line);width:100%}
   .lvb{font-family:'Space Mono',ui-monospace,monospace;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:#0a0b0d;background:var(--lime);border-radius:6px;padding:3px 7px;white-space:nowrap}
@@ -269,7 +344,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_squadsindex = {"leaderSp":"Líder","removeSp":"Quitar","emptySeat":"Plaza libre","membersSp":"Miembros","fullSp":"Llena","inviteOnly2":"Solo por invitación","openSp":"Abierta","joinSp":"Unirme","lvlSp2":"NIV ","foundingIsOnThe":"Fundar es por cuenta de la casa","theOwnerGaveYou":"El dueño te regaló una escuadra: sin Ticks, sin cargo","createSquadFree":"Crear escuadra - gratis","thisOneIsOn":"Esta va por cuenta de la casa: tus Ticks se quedan donde están.","lockedSp":"bloqueado","lockedSp2":"bloqueado","lvlSp":"NIV ","xpToLevel":" XP para el nivel ","maxLevel":"Nivel máximo","seatAtLevel":"siguiente plaza en el nivel ","shape":"Forma","mark":"Marca","background":"Fondo","markColour":"Color de la marca","ring":"Anillo","surpriseMe":"Sorpréndeme","foundingASquad":"Fundar una escuadra","twoThingsOpenThe":"Dos cosas abren el creador de logos","joiningASquadIs":"Unirse a una escuadra es gratis y siempre lo será. Fundar una no: un logo que viaja en cinco tarjetas públicas está para ganárselo.","reachLevel":"Llega a ","unlocked":" - desbloqueado","nowSp":" ahora","ticksOrSp":" Ticks, o ","fromYourBalance":" de tu saldo","youHaveTheTicks":"Tienes los Ticks","isInYourBalance":" hay en tu saldo","ticksSp":" Ticks","balance":" de saldo","xpComesFromTrading":"El XP viene de operar, la Academia y las misiones diarias. Los Ticks vienen de misiones, duelos y el pase de temporada.","yourSeason":"Tu temporada","academy":"Academia","createForSp":"Crear por ","ticks":"Ticks","payFromBalance":"Pagar ","fromBalance":" del saldo","ticksAreTheCheaper":"Los Ticks son la vía más barata: valen casi lo mismo y te los ganaste jugando.","youAreInvited":"Te han invitado","byAt":"de @","joinAndTheirCrest":"Únete y su logo pasa a tu tarjeta de perfil, entras en su sala y cuentas en cada duelo de escuadra que peleen.","joinSquad":"Unirme a la escuadra","noThanks":"No, gracias","orJoinOneOpen2":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando...</div></div></div>","squadCreated2":"Escuadra creada.","openSquadRoom2":"Abrir sala de escuadra","justNow":"ahora mismo","signInFirst":"Inicia sesión primero.","finishSettingUpYour":"Termina de configurar tu cuenta primero.","thisAccountCannotJoin":"Esta cuenta no puede unirse a una escuadra.","youAreAlreadyIn":"Ya estás en una escuadra. Sal de ella primero.","thatNameIsTaken":"Ese nombre ya está tomado.","thatTagIsTaken":"Esa etiqueta ya está tomada.","aNameIs2":"Un nombre tiene de 2 a 24 caracteres, letras y números.","aTagIs2":"Una etiqueta tiene de 2 a 4 letras o números.","onlyTheLeaderCan":"Solo el líder puede hacer eso.","youAreNotIn":"No estás en una escuadra.","thatSquadIsFull":"Esa escuadra está llena: cinco es el límite.","thatSquadIsInvite":"Esa escuadra es solo por invitación.","theyAlreadyHaveAn":"Ya tienen una invitación.","noMemberWithThat":"No hay ningún miembro con ese nombre de usuario.","theyAreAlreadyIn":"Ya están en una escuadra.","thatIsYourOwn":"Esa es tu propia escuadra.","tooManyInvitesOut":"Demasiadas invitaciones enviadas a la vez.","notWhileADuel":"No mientras haya un duelo en curso.","yourSquadIsAlready":"Tu escuadra ya está en un duelo.","thatSquadIsAlready":"Esa escuadra ya está en un duelo.","youFoughtThemRecently":"Los enfrentaste hace poco: espera unas horas.","youAlreadyHaveThree":"Ya tienes tres retos enviados.","notEnoughTicksFor":"No tienes suficientes Ticks para esa apuesta.","thatChallengeIsNo":"Ese reto ya no está abierto.","thatChallengeIsNot":"Ese reto no es tuyo.","notFound":"No encontrado.","busyTryAgainIn":"Ocupado: inténtalo de nuevo en un momento.","notEnoughTicksThat":"No tienes suficientes Ticks: esa apuesta necesita ","andYouHave":" y tú tienes ","yourTag":"Tu etiqueta","yourSquad":"Tu escuadra","signIn":"<button class=\"btn p\" data-auth-open type=\"button\">Iniciar sesión</button></div>","squadsLookingForPeople":"<div class=\"sect\"><h2>Escuadras que buscan gente</h2><p class=\"sub\">Escuadras abiertas a las que podrías entrar una vez que inicies sesión.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","orJoinOneOpen":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","youHaveBeenInvited":"<div class=\"sect\"><h2>Te han invitado</h2><div class=\"dir\">","openChallenge":"<span class=\"st open\">Reto abierto</span>","waitingForASquad":"Esperando a una escuadra","noStake":"<span>Sin apuesta</span>","openSquadRoom":"\">Abrir sala de escuadra</a>","youAreTheLeader":"Eres el líder, así que la apuesta la pones tú. Si ganas, vuelve, más la apuesta de la otra escuadra repartida entre todos.","yourLeaderPutsThe":"Tu líder pone la apuesta. Cada miembro que cierre una operación durante el duelo gana XP: ganes, empates o pierdas.","noDuelRunning":"<div class=\"empty\">No hay ningún duelo en curso.</div>","pastDuels":"<div class=\"sect\"><h2>Duelos anteriores</h2>","openChallengesSquadsLookin":"<div class=\"sect\"><h2>Retos abiertos</h2><p class=\"sub\">Escuadras que buscan a quien las enfrente.</p><div id=\"openD\"><div class=\"empty\">Cargando…</div></div></div>","dataOpen1Anyone":"\" data-open=\"1\">Cualquiera puede unirse</button><button type=\"button\" class=\"chip","dataOpen0Invite":"\" data-open=\"0\">Solo por invitación</button></div>","waitingOn":"<div class=\"note\">Pendientes de: ","totalProfit":"Beneficio total","biggestWin":"Mayor ganancia","winRate":"Tasa de acierto","noStake2":"Sin apuesta","scoredOn":"<div class=\"bfield\"><label class=\"fl\">Se puntúa por</label>","runsFor":"<div class=\"bfield\"><label class=\"fl\">Dura</label>","yourStakeYouHave":"<div class=\"bfield\"><label class=\"fl\">Tu apuesta <span style=\"color:var(--faint)\">(tienes ","squadTagOrId":"<div class=\"bfield\"><label class=\"fl\" for=\"chSid\">Etiqueta o id de escuadra <span style=\"color:var(--faint)\">(déjalo vacío para publicar un reto abierto)</span></label><input type=\"text\" id=\"chSid\" maxlength=\"8\" placeholder=\"p. ej. 7KQM2P\" autocomplete=\"off\" /></div>","sendChallenge":"<button class=\"btn p\" id=\"chGo\" type=\"button\">Enviar reto</button><div class=\"msg\" id=\"chMsg\"></div>","onTotalProfitOnly":"<div class=\"note\">En beneficio total solo cuentan los mejores miembros de cada escuadra, tantos como tenga la escuadra más pequeña, así que cinco no pueden ganar a tres por pura aritmética.</div></div>","noOpenSquadsRight":"<div class=\"empty\">Ahora mismo no hay escuadras abiertas. Empieza la primera.</div>","signIn2":"<button class=\"btn sm\" data-auth-open type=\"button\">Iniciar sesión</button>","couldNotLoad":"<div class=\"empty\">No se pudo cargar.</div>","onlyYoursIsOpen":"Ahora mismo solo está el tuyo, arriba.","nobodyHasPostedOne":"Nadie ha publicado ninguno.","openAnyone":"<div class=\"mid\"><span class=\"st open\">Abierto</span></div><div class=\"sd r\"><span class=\"n\" style=\"color:var(--faint)\">cualquiera</span></div></div>","couldNotLoadRetry":"<div class=\"card\"><div class=\"empty\">No se pudo cargar. <button class=\"btn sm\" onclick=\"location.reload()\">Reintentar</button></div></div>","inviteSent":"Invitación enviada.","leaveThisSquad":"¿Salir de esta escuadra?","youLeftTheSquad":"Has salido de la escuadra.","disbandTheSquadThe":"¿Disolver la escuadra? El logo desaparece de la tarjeta de cada miembro.","challengeSentYourStake":"Reto enviado: tu apuesta queda retenida hasta que se resuelva.","challengeSent":"Reto enviado.","youAreIn":"Ya estás dentro.","duelIsLive":"El duelo está en marcha.","middotLedBy":" &middot; liderada por ","youNeedPlatinumTo":"Necesitas Platino para fundar una escuadra.","notEnoughBalanceFor":"No tienes saldo suficiente para eso.","thatPaymentIsStill":"Ese pago todavía se está procesando: dale un momento.","theBalanceIsUnreachable":"Ahora mismo no se puede consultar el saldo: inténtalo de nuevo en un momento.","foundingASquadNeeds":"Fundar una escuadra requiere ","xpYouHave":" XP. Tú tienes ","yourSquadHasNot":"Tu escuadra todavía no ha desbloqueado esa pieza."};
+var __esD_squadsindex = {"lvlShort":"NIV","joinThisSquad":"Unirme a esta escuadra","thisIsYourSquad":"Esta es tu escuadra","seatsOpenWithLevels":"se abren más plazas con los niveles","askLeader":"pregunta a ","signInToJoin":"Inicia sesión para unirte","wonSp":"Ganados","drawnSp":"Empatados","lostSp":"Perdidos","viewSp":"Ver","couldNotLoad2":"No se pudo cargar.","leaderSp":"Líder","removeSp":"Quitar","emptySeat":"Plaza libre","membersSp":"Miembros","fullSp":"Llena","inviteOnly2":"Solo por invitación","openSp":"Abierta","joinSp":"Unirme","lvlSp2":"NIV ","foundingIsOnThe":"Fundar es por cuenta de la casa","theOwnerGaveYou":"El dueño te regaló una escuadra: sin Ticks, sin cargo","createSquadFree":"Crear escuadra - gratis","thisOneIsOn":"Esta va por cuenta de la casa: tus Ticks se quedan donde están.","lockedSp":"bloqueado","lockedSp2":"bloqueado","lvlSp":"NIV ","xpToLevel":" XP para el nivel ","maxLevel":"Nivel máximo","seatAtLevel":"siguiente plaza en el nivel ","shape":"Forma","mark":"Marca","background":"Fondo","markColour":"Color de la marca","ring":"Anillo","surpriseMe":"Sorpréndeme","foundingASquad":"Fundar una escuadra","twoThingsOpenThe":"Dos cosas abren el creador de logos","joiningASquadIs":"Unirse a una escuadra es gratis y siempre lo será. Fundar una no: un logo que viaja en cinco tarjetas públicas está para ganárselo.","reachLevel":"Llega a ","unlocked":" - desbloqueado","nowSp":" ahora","ticksOrSp":" Ticks, o ","fromYourBalance":" de tu saldo","youHaveTheTicks":"Tienes los Ticks","isInYourBalance":" hay en tu saldo","ticksSp":" Ticks","balance":" de saldo","xpComesFromTrading":"El XP viene de operar, la Academia y las misiones diarias. Los Ticks vienen de misiones, duelos y el pase de temporada.","yourSeason":"Tu temporada","academy":"Academia","createForSp":"Crear por ","ticks":"Ticks","payFromBalance":"Pagar ","fromBalance":" del saldo","ticksAreTheCheaper":"Los Ticks son la vía más barata: valen casi lo mismo y te los ganaste jugando.","youAreInvited":"Te han invitado","byAt":"de @","joinAndTheirCrest":"Únete y su logo pasa a tu tarjeta de perfil, entras en su sala y cuentas en cada duelo de escuadra que peleen.","joinSquad":"Unirme a la escuadra","noThanks":"No, gracias","orJoinOneOpen2":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando...</div></div></div>","squadCreated2":"Escuadra creada.","openSquadRoom2":"Abrir sala de escuadra","justNow":"ahora mismo","signInFirst":"Inicia sesión primero.","finishSettingUpYour":"Termina de configurar tu cuenta primero.","thisAccountCannotJoin":"Esta cuenta no puede unirse a una escuadra.","youAreAlreadyIn":"Ya estás en una escuadra. Sal de ella primero.","thatNameIsTaken":"Ese nombre ya está tomado.","thatTagIsTaken":"Esa etiqueta ya está tomada.","aNameIs2":"Un nombre tiene de 2 a 24 caracteres, letras y números.","aTagIs2":"Una etiqueta tiene de 2 a 4 letras o números.","onlyTheLeaderCan":"Solo el líder puede hacer eso.","youAreNotIn":"No estás en una escuadra.","thatSquadIsFull":"Esa escuadra está llena: cinco es el límite.","thatSquadIsInvite":"Esa escuadra es solo por invitación.","theyAlreadyHaveAn":"Ya tienen una invitación.","noMemberWithThat":"No hay ningún miembro con ese nombre de usuario.","theyAreAlreadyIn":"Ya están en una escuadra.","thatIsYourOwn":"Esa es tu propia escuadra.","tooManyInvitesOut":"Demasiadas invitaciones enviadas a la vez.","notWhileADuel":"No mientras haya un duelo en curso.","yourSquadIsAlready":"Tu escuadra ya está en un duelo.","thatSquadIsAlready":"Esa escuadra ya está en un duelo.","youFoughtThemRecently":"Los enfrentaste hace poco: espera unas horas.","youAlreadyHaveThree":"Ya tienes tres retos enviados.","notEnoughTicksFor":"No tienes suficientes Ticks para esa apuesta.","thatChallengeIsNo":"Ese reto ya no está abierto.","thatChallengeIsNot":"Ese reto no es tuyo.","notFound":"No encontrado.","busyTryAgainIn":"Ocupado: inténtalo de nuevo en un momento.","notEnoughTicksThat":"No tienes suficientes Ticks: esa apuesta necesita ","andYouHave":" y tú tienes ","yourTag":"Tu etiqueta","yourSquad":"Tu escuadra","signIn":"<button class=\"btn p\" data-auth-open type=\"button\">Iniciar sesión</button></div>","squadsLookingForPeople":"<div class=\"sect\"><h2>Escuadras que buscan gente</h2><p class=\"sub\">Escuadras abiertas a las que podrías entrar una vez que inicies sesión.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","orJoinOneOpen":"<div class=\"sect\"><h2>O únete a una</h2><p class=\"sub\">Escuadras abiertas con sitio. Una escuadra por cuenta.</p><div class=\"dir\" id=\"dir\"><div class=\"empty\">Cargando…</div></div></div>","youHaveBeenInvited":"<div class=\"sect\"><h2>Te han invitado</h2><div class=\"dir\">","openChallenge":"<span class=\"st open\">Reto abierto</span>","waitingForASquad":"Esperando a una escuadra","noStake":"<span>Sin apuesta</span>","openSquadRoom":"\">Abrir sala de escuadra</a>","youAreTheLeader":"Eres el líder, así que la apuesta la pones tú. Si ganas, vuelve, más la apuesta de la otra escuadra repartida entre todos.","yourLeaderPutsThe":"Tu líder pone la apuesta. Cada miembro que cierre una operación durante el duelo gana XP: ganes, empates o pierdas.","noDuelRunning":"<div class=\"empty\">No hay ningún duelo en curso.</div>","pastDuels":"<div class=\"sect\"><h2>Duelos anteriores</h2>","openChallengesSquadsLookin":"<div class=\"sect\"><h2>Retos abiertos</h2><p class=\"sub\">Escuadras que buscan a quien las enfrente.</p><div id=\"openD\"><div class=\"empty\">Cargando…</div></div></div>","dataOpen1Anyone":"\" data-open=\"1\">Cualquiera puede unirse</button><button type=\"button\" class=\"chip","dataOpen0Invite":"\" data-open=\"0\">Solo por invitación</button></div>","waitingOn":"<div class=\"note\">Pendientes de: ","totalProfit":"Beneficio total","biggestWin":"Mayor ganancia","winRate":"Tasa de acierto","noStake2":"Sin apuesta","scoredOn":"<div class=\"bfield\"><label class=\"fl\">Se puntúa por</label>","runsFor":"<div class=\"bfield\"><label class=\"fl\">Dura</label>","yourStakeYouHave":"<div class=\"bfield\"><label class=\"fl\">Tu apuesta <span style=\"color:var(--faint)\">(tienes ","squadTagOrId":"<div class=\"bfield\"><label class=\"fl\" for=\"chSid\">Etiqueta o id de escuadra <span style=\"color:var(--faint)\">(déjalo vacío para publicar un reto abierto)</span></label><input type=\"text\" id=\"chSid\" maxlength=\"8\" placeholder=\"p. ej. 7KQM2P\" autocomplete=\"off\" /></div>","sendChallenge":"<button class=\"btn p\" id=\"chGo\" type=\"button\">Enviar reto</button><div class=\"msg\" id=\"chMsg\"></div>","onTotalProfitOnly":"<div class=\"note\">En beneficio total solo cuentan los mejores miembros de cada escuadra, tantos como tenga la escuadra más pequeña, así que cinco no pueden ganar a tres por pura aritmética.</div></div>","noOpenSquadsRight":"<div class=\"empty\">Ahora mismo no hay escuadras abiertas. Empieza la primera.</div>","signIn2":"<button class=\"btn sm\" data-auth-open type=\"button\">Iniciar sesión</button>","couldNotLoad":"<div class=\"empty\">No se pudo cargar.</div>","onlyYoursIsOpen":"Ahora mismo solo está el tuyo, arriba.","nobodyHasPostedOne":"Nadie ha publicado ninguno.","openAnyone":"<div class=\"mid\"><span class=\"st open\">Abierto</span></div><div class=\"sd r\"><span class=\"n\" style=\"color:var(--faint)\">cualquiera</span></div></div>","couldNotLoadRetry":"<div class=\"card\"><div class=\"empty\">No se pudo cargar. <button class=\"btn sm\" onclick=\"location.reload()\">Reintentar</button></div></div>","inviteSent":"Invitación enviada.","leaveThisSquad":"¿Salir de esta escuadra?","youLeftTheSquad":"Has salido de la escuadra.","disbandTheSquadThe":"¿Disolver la escuadra? El logo desaparece de la tarjeta de cada miembro.","challengeSentYourStake":"Reto enviado: tu apuesta queda retenida hasta que se resuelva.","challengeSent":"Reto enviado.","youAreIn":"Ya estás dentro.","duelIsLive":"El duelo está en marcha.","middotLedBy":" &middot; liderada por ","youNeedPlatinumTo":"Necesitas Platino para fundar una escuadra.","notEnoughBalanceFor":"No tienes saldo suficiente para eso.","thatPaymentIsStill":"Ese pago todavía se está procesando: dale un momento.","theBalanceIsUnreachable":"Ahora mismo no se puede consultar el saldo: inténtalo de nuevo en un momento.","foundingASquadNeeds":"Fundar una escuadra requiere ","xpYouHave":" XP. Tú tienes ","yourSquadHasNot":"Tu escuadra todavía no ha desbloqueado esa pieza."};
 function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_squadsindex[k] != null) return __esD_squadsindex[k]; } catch (e) {} return en; }
 
 (function () {
@@ -508,11 +583,11 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   function duelCard(d, sid) {
     var mineA = d.a && d.a.sid === sid, us = mineA ? d.a : d.b, them = mineA ? d.b : d.a;
     var st = d.status === 'active' ? '<span class="st live">Live</span>' : d.status === 'open' ? __esT_squadsindex("openChallenge",'<span class="st open">Open challenge</span>') : d.status === 'pending' ? '<span class="st pend">Waiting</span>' : '<span class="st">' + esc(d.status) + '</span>';
-    var seat = '<span style="width:26px;height:26px;border-radius:8px;border:1.5px dashed var(--line2);display:inline-block;flex:0 0 auto"></span>';
-    var side = function (s, right) { var c = s ? crest(s.crest, 26, s.tag) : seat, n = '<span class="n"' + (s ? '' : ' style="color:var(--faint)"') + '>' + esc((s && s.name) || __esT_squadsindex("waitingForASquad",'Waiting for a squad')) + '</span>'; return '<div class="sd' + (right ? ' r' : '') + '">' + (right ? n + c : c + n) + '</div>'; };
+    var seat = '<span style="width:34px;height:34px;border-radius:10px;border:1.5px dashed var(--line2);display:inline-block;flex:0 0 auto"></span>';
+    var side = function (s, right) { var c = s ? crest(s.crest, 34, s.tag, s.level && s.level.lv) : seat, n = '<span class="n"' + (s ? '' : ' style="color:var(--faint)"') + '>' + esc((s && s.name) || __esT_squadsindex("waitingForASquad",'Waiting for a squad')) + '</span>'; return '<div class="sd' + (right ? ' r' : '') + '">' + (right ? n + c : c + n) + '</div>'; };
     var sc = function (v) { return v == null ? '<span class="sc n">-</span>' : '<span class="sc' + (d.winner && ((d.winner === d.a.sid && v === d.aScore) || (d.b && d.winner === d.b.sid && v === d.bScore)) ? ' w' : '') + '">' + (d.metric === 'pnl' || d.metric === 'win' ? '$' + v : v + (d.metric === 'roe' || d.metric === 'wr' ? '%' : '')) + '</span>'; };
-    var h = '<div class="duel">'
-      + '<div class="vs">' + side(d.a) + '<div class="mid">' + st + '</div>' + side(d.b, true) + '</div>';
+    var h = '<div class="duel' + (d.status === 'active' ? ' live' : '') + '">'
+      + '<div class="vs">' + side(d.a) + '<div class="mid"><span class="vsm">VS</span>' + st + '</div>' + side(d.b, true) + '</div>';
     if (d.settled) h += '<div class="vs" style="margin-top:9px">' + sc(d.aScore) + '<div class="mid">' + (d.winner ? '' : 'dead heat') + '</div><div style="text-align:right">' + sc(d.bScore) + '</div></div>';
     h += '<div class="meta"><span>' + esc(d.metricLabel) + '</span>'
       + (d.stake > 0 ? '<span>Stake <b>' + d.stake + ' T</b> a side</span>' : __esT_squadsindex("noStake",'<span>No stake</span>'))
@@ -534,13 +609,15 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     var past = duels.filter(function (d) { return d.settled; });
     var h = '<div class="card hero">'
       + '<div class="heroglow"></div>'
-      + '<div class="sqhead">' + crest(s.crest, 62, s.tag, s.level && s.level.lv)
-      + '<div style="min-width:0"><div class="nm">' + esc(s.name) + '</div><div class="mt">' + (s.motto ? esc(s.motto) + ' &middot; ' : '') + '<span class="mono">' + esc(s.tag) + '</span> &middot; ' + s.n + ' of ' + s.max + (s.max < (s.cap || 5) ? '<span class="seatx"> &middot; ' + __esT_squadsindex("seatAtLevel", 'next seat at level ') + (s.max < 4 ? 3 : 8) + '</span>' : '') + '</div></div>'
-      + '<div class="rec"><div class="w"><b>' + s.wins + '</b><span>Won</span></div><div class="d"><b>' + s.draws + '</b><span>Drawn</span></div><div class="l"><b>' + s.losses + '</b><span>Lost</span></div></div>'
+      + '<div class="sqhead big"><div class="logo-big">' + crest(s.crest, 88, s.tag, s.level && s.level.lv) + '</div>'
+      + '<div style="min-width:0;flex:1"><div class="nm">' + esc(s.name) + '</div>'
+      + '<div class="mt"><span class="stamp">' + esc(s.tag) + '</span>' + lvlMark(s.level && s.level.lv) + seatDots(s.n, s.max, s.cap) + (s.max < (s.cap || 5) ? '<span class="seatx">' + __esT_squadsindex("seatAtLevel", 'next seat at level ') + (s.max < 4 ? 3 : 8) + '</span>' : '') + '</div>'
+      + (s.motto ? '<div class="motto">' + esc(s.motto) + '</div>' : '') + '</div>'
+      + '<div class="rec3"><div class="w"><b>' + s.wins + '</b><span>' + __esT_squadsindex("wonSp", 'Won') + '</span></div><div><b>' + s.draws + '</b><span>' + __esT_squadsindex("drawnSp", 'Drawn') + '</span></div><div class="l"><b>' + s.losses + '</b><span>' + __esT_squadsindex("lostSp", 'Lost') + '</span></div></div>'
       + '</div>' + lvlRow(s) + '</div>';
 
     var empties = ''; for (var q = (s.members || []).length; q < s.max; q++) empties += '<div class="mem empty"><div class="av">+</div><div class="who">' + __esT_squadsindex("emptySeat", 'Empty seat') + '</div></div>';
-    h += '<div class="card"><h2 style="font-size:16px;font-weight:800;margin-bottom:8px">' + __esT_squadsindex("membersSp", 'Members') + ' <small class="cnt">' + (s.members || []).length + '/' + s.max + '</small></h2>' + (s.members || []).map(memberRow).join('') + empties
+    h += '<div class="card"><h2 style="font-size:16px;font-weight:800;margin-bottom:8px">' + __esT_squadsindex("membersSp", 'Members') + ' <small class="cnt">' + (s.members || []).length + '/' + s.max + '</small> ' + seatDots((s.members || []).length, s.max, s.cap) + '</h2>' + (s.members || []).map(memberRow).join('') + empties
       + '<div class="row" style="margin-top:13px">'
       + '<button class="btn" type="button" id="roomGo" data-room="' + esc(s.sid) + '">' + __esT_squadsindex("openSquadRoom2", 'Open squad room') + '</button>'
       + (isL && s.n < s.max ? '<button class="btn" id="invBtn" type="button">Invite someone</button>' : '')
@@ -610,10 +687,11 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
         var act = s.joinable
           ? (signedIn() ? '<button class="btn sm" data-join="' + esc(s.sid) + '">' + __esT_squadsindex("joinSp", 'Join') + '</button>' : __esT_squadsindex("signIn2", '<button class="btn sm" data-auth-open type="button">Sign in</button>'))
           : '';
-        return '<div class="dsq">' + crest(s.crest, 34, s.tag, lv) + '<div style="min-width:0"><div class="n">' + esc(s.name) + ' ' + st + '</div>'
-          + '<div class="s">' + __esT_squadsindex("lvlSp2", 'LVL ') + lv + ' &middot; ' + s.n + '/' + s.max + ' &middot; ' + s.wins + 'W ' + s.losses + 'L</div></div>'
-          + '<div class="go">' + act + '</div></div>';
+        return '<div class="dsq" data-sid="' + esc(s.sid) + '" style="--sq:' + esc((s.crest && s.crest.bg) || '#c2f64a') + '" role="button" tabindex="0">'
+          + '<div class="dsq-top">' + crest(s.crest, 48, s.tag, lv) + '<div class="dsq-id"><div class="n">' + esc(s.name) + '</div><div class="dsq-tg"><span class="stamp">' + esc(s.tag) + '</span>' + lvlMark(lv) + '</div></div>' + st + '</div>'
+          + '<div class="dsq-bot">' + seatDots(s.n, s.max, s.cap) + '<span class="dsq-rec"><b class="w">' + s.wins + 'W</b> <b class="l">' + s.losses + 'L</b></span><span class="dsq-go">' + (act || '<span class="dsq-open">' + __esT_squadsindex("viewSp", 'View') + '</span>') + '</span></div></div>';
       }).join('');
+      reveal(el);
     }).catch(function () { el.innerHTML = __esT_squadsindex("couldNotLoad",'<div class="empty">Could not load.</div>'); });
   }
   function loadOpen() {
@@ -636,13 +714,14 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   /* ── render + wiring ────────────────────────────────────────────────────────────────────── */
   function render() {
     S._invShown = '';
-    if (!signedIn()) { app.innerHTML = guestView(); loadDir(); return; }
+    if (!signedIn()) { app.innerHTML = guestView(); loadDir(); reveal(app); return; }
     if (!S.me) { app.innerHTML = '<div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div></div>'; return; }
     app.innerHTML = S.me.squad ? squadView() : createView();
     var bld = $('#bld', app);
     if (bld) wireBuilder(bld, function () { var n = $('#cName'); return n ? n.value : (S.me.squad && S.me.squad.name); }, function () { var t = $('#cTag'); return t ? t.value : (S.me.squad && S.me.squad.tag); });
     ['#cName', '#cTag'].forEach(function (sel) { var el = $(sel); if (el) el.addEventListener('input', function () { if (sel === '#cTag') el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); repaintPrev(bld, function () { return $('#cName').value; }, function () { return $('#cTag').value; }); }); });
     if (S.me.squad) loadOpen(); else loadDir();
+    reveal(app);
   }
 
   function load(soft) {
@@ -704,21 +783,77 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   });
 
   window.addEventListener('mp-auth-change', function () { load(); });
-  /* ?sid= arrives from a profile card - show that squad even when the reader is in none */
-  try {
-    var want = new URLSearchParams(location.search).get('sid');
-    if (want) api('get?sid=' + encodeURIComponent(want)).then(function (j) {
-      if (!j || !j.squad) return;
-      var s = j.squad;
-      var box = document.createElement('div'); box.className = 'sect';
-      box.innerHTML = '<h2>' + esc(s.name) + '</h2><div class="card"><div class="sqhead">' + crest(s.crest, 56, s.tag)
-        + '<div style="min-width:0"><div class="nm">' + esc(s.name) + '</div><div class="mt">' + (s.motto ? esc(s.motto) + ' &middot; ' : '') + '<span class="mono">' + esc(s.tag) + '</span> &middot; ' + s.n + ' of ' + s.max + __esT_squadsindex("middotLedBy",' &middot; led by ') + esc(s.leaderName || '') + '</div></div>'
-        + '<div class="rec"><div class="w"><b>' + s.wins + '</b><span>Won</span></div><div class="d"><b>' + s.draws + '</b><span>Drawn</span></div><div class="l"><b>' + s.losses + '</b><span>Lost</span></div></div></div>'
-        + (s.members || []).map(function (m) { return '<div class="mem"><div class="av">' + esc((m.name || '?').slice(0, 1).toUpperCase()) + '</div><div class="who"><a href="#" data-lbu="' + esc(m.name) + '" style="color:inherit;text-decoration:none">' + esc(m.name) + '</a></div><div class="sp">' + (m.leader ? '<span class="tagpill ld">Leader</span>' : '') + '</div></div>'; }).join('')
-        + '</div>';
-      app.parentNode.insertBefore(box, app);
-    });
-  } catch (e) {}
+  /* THE SQUAD SHEET (2026-10-01, owner: "hocu da vidim ko su clanovi nekog squada ako kliknem na njega").
+     One panel for any squad - its logo large, who is in it, its level and record, and Join when the viewer
+     may. Opened by a directory card, by ?sid= from a profile card, and closed by the backdrop, the X or Esc.
+     A bottom sheet on a phone, centred on a desktop; role=dialog so mp-auth's scroll containment covers it. */
+  var SH = null;
+  function seatDots(n, max, cap) {
+    var h = '<span class="seats" aria-label="' + n + ' of ' + max + '">';
+    for (var k = 0; k < (cap || 5); k++) h += '<i class="' + (k < n ? 'on' : k < max ? 'open' : 'lk') + '"></i>';
+    return h + '</span>';
+  }
+  function lvlMark(lv) { return lv ? '<span class="lvm">' + __esT_squadsindex("lvlShort", 'LVL') + ' ' + lv + '</span>' : ''; }
+  function openSquadSheet(sid) {
+    if (!sid) return;
+    if (!SH) {
+      SH = document.createElement('div'); SH.className = 'sqsh'; SH.setAttribute('role', 'dialog'); SH.setAttribute('aria-modal', 'true');
+      SH.innerHTML = '<div class="sqsh-bd"></div><div class="sqsh-p"><button type="button" class="sqsh-x" aria-label="Close">&times;</button><div class="sqsh-b"><div class="skel" style="width:40%"></div></div></div>';
+      document.body.appendChild(SH);
+      SH.addEventListener('click', function (e) { if (e.target.classList.contains('sqsh-bd') || e.target.closest('.sqsh-x')) closeSquadSheet(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && SH && SH.classList.contains('on')) closeSquadSheet(); });
+    }
+    var body = SH.querySelector('.sqsh-b');
+    body.innerHTML = '<div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div>';
+    SH.classList.add('on'); document.body.classList.add('sqsh-open');
+    api('get?sid=' + encodeURIComponent(sid)).then(function (j) {
+      if (!j || !j.squad) { body.innerHTML = '<div class="empty">' + __esT_squadsindex("notFound", 'Not found.') + '</div>'; return; }
+      var q = j.squad, lv = (q.level && q.level.lv) || 1, col = (q.crest && q.crest.bg) || '#c2f64a';
+      SH.style.setProperty('--sq', col);
+      var mineSid = S.me && S.me.squad && S.me.squad.sid;
+      var canJoin = q.open && q.n < q.max && signedIn() && !mineSid;
+      var cta = canJoin ? '<button class="btn p" data-join="' + esc(q.sid) + '">' + __esT_squadsindex("joinThisSquad", 'Join this squad') + '</button>'
+        : mineSid === q.sid ? '<span class="sqsh-you">' + __esT_squadsindex("thisIsYourSquad", 'This is your squad') + '</span>'
+        : q.n >= q.max ? '<span class="sqsh-you">' + __esT_squadsindex("fullSp", 'Full') + ' &middot; ' + __esT_squadsindex("seatsOpenWithLevels", 'more seats open with levels') + '</span>'
+        : !q.open ? '<span class="sqsh-you">' + __esT_squadsindex("inviteOnly2", 'Invite only') + ' &middot; ' + __esT_squadsindex("askLeader", 'ask ') + '@' + esc(q.leaderName || '') + '</span>'
+        : !signedIn() ? '<button class="btn p" data-auth-open type="button">' + __esT_squadsindex("signInToJoin", 'Sign in to join') + '</button>' : '';
+      body.innerHTML = '<div class="sqsh-hero">' + crest(q.crest, 92, q.tag, lv)
+        + '<div class="sqsh-id"><div class="sqsh-nm">' + esc(q.name) + '</div>'
+        + '<div class="sqsh-tg"><span class="stamp">' + esc(q.tag) + '</span>' + lvlMark(lv) + seatDots(q.n, q.max, q.cap) + '</div>'
+        + (q.motto ? '<div class="sqsh-mt">' + esc(q.motto) + '</div>' : '') + '</div></div>'
+        + '<div class="rec3"><div><b>' + q.wins + '</b><span>' + __esT_squadsindex("wonSp", 'Won') + '</span></div><div><b>' + q.draws + '</b><span>' + __esT_squadsindex("drawnSp", 'Drawn') + '</span></div><div><b>' + q.losses + '</b><span>' + __esT_squadsindex("lostSp", 'Lost') + '</span></div></div>'
+        + lvlRow(q)
+        + '<h3 class="sqsh-h">' + __esT_squadsindex("membersSp", 'Members') + ' <small>' + q.n + '/' + q.max + '</small></h3>'
+        + '<div class="sqsh-m">' + (q.members || []).map(function (m) {
+          var c = (m.level && m.level.col) || '#9aa3ad';
+          return '<div class="mcard"><div class="av" style="color:' + esc(c) + ';box-shadow:inset 0 0 0 1.5px ' + esc(c) + '66">' + esc((m.name || '?').slice(0, 1).toUpperCase()) + '</div>'
+            + '<div class="mn"><a href="#" data-lbu="' + esc(m.name) + '">' + esc(m.name) + '</a><span style="color:' + esc(c) + '">' + esc((m.level && m.level.name) || '') + '</span></div>'
+            + (m.leader ? '<span class="crown" title="' + __esT_squadsindex("leaderSp", 'Leader') + '">' + CROWN + '</span>' : '') + '</div>';
+        }).join('') + '</div>'
+        + '<div class="sqsh-cta">' + cta + '</div>';
+      reveal(body);
+    }).catch(function () { body.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoad2", 'Could not load.') + '</div>'; });
+  }
+  function closeSquadSheet() { if (!SH) return; SH.classList.remove('on'); document.body.classList.remove('sqsh-open'); try { if (new URLSearchParams(location.search).get('sid')) history.replaceState(null, '', location.pathname); } catch (e) {} }
+  var CROWN = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 18h18l-1.6-9.3-4.4 3.6L12 5l-3 7.3-4.4-3.6z"/></svg>';
+  /* motion is JS, never @keyframes - the owner's machine runs with animation effects off and would see none of it */
+  function reveal(root) {
+    try {
+      var els = root.querySelectorAll('.card, .dsq, .mcard, .rec3 > div');
+      Array.prototype.forEach.call(els, function (el, i) {
+        if (i > 24) return;
+        el.animate([{ opacity: 0.001, transform: 'translateY(9px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: Math.min(i, 12) * 38, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'backwards' });
+      });
+      var bars = root.querySelectorAll('.lvt i, .mxp i, .mpsq-track i');
+      Array.prototype.forEach.call(bars, function (b) { var w = b.style.width; if (!w) return; b.animate([{ width: '0%' }, { width: w }], { duration: 700, easing: 'cubic-bezier(.2,.7,.3,1)' }); });
+    } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest && e.target.closest('.dsq[data-sid]');
+    if (!card || e.target.closest('button, a')) return;
+    e.preventDefault(); openSquadSheet(card.getAttribute('data-sid'));
+  });
+  try { var want0 = new URLSearchParams(location.search).get('sid'); if (want0) openSquadSheet(want0); } catch (e) {}
 
   load();
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);

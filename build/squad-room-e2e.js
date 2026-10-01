@@ -91,6 +91,32 @@ const R4 = () => { const A = 'ABCDFGHJKLMNPQRSTVWXYZ0123456789'; let v = ''; for
     ok(String(sees.room).trim().toUpperCase() === TAG, 'the second member lands on the same room', sees);
     ok(sees.has, 'AND SEES THE OTHER MEMBER\'S MESSAGE', sees);
 
+    // ---- THE SHEET (2026-10-01): clicking a squad in the directory shows who is in it. The third member is in
+    //      no squad, so the directory is their page - the card must open the sheet, name the members, mark the
+    //      leader, offer Join to a signed-in outsider, and close on Escape. Checked on a phone too, where it is
+    //      a bottom sheet and must sit entirely inside the viewport.
+    for (const [w, h, tag] of [[1366, 900, 'desktop'], [390, 844, 'phone']]) {
+      const D = await mk('e2esqrm3');
+      await D.setViewport({ width: w, height: h, isMobile: w < 500, hasTouch: w < 500 });
+      await D.setCacheEnabled(false);
+      try { const cdp = await D.target().createCDPSession(); await cdp.send('Network.enable'); await cdp.send('Network.setBypassServiceWorker', { bypass: true }); } catch (e) {}
+      await D.goto(B + '/squads/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 60000 });
+      await new Promise(r => setTimeout(r, 3000));
+      const card = await D.evaluate(sid => { const c = document.querySelector('.dsq[data-sid="' + sid + '"]'); if (!c) return null; c.click(); return true; }, SID);
+      ok(card === true, tag + ': the squad is in the directory and its card is clickable');
+      await new Promise(r => setTimeout(r, 2600));
+      const sh = await D.evaluate(() => { const el = document.querySelector('.sqsh.on .sqsh-p'); const r = el ? el.getBoundingClientRect() : null;
+        return { open: !!el, members: [...document.querySelectorAll('.sqsh .mcard .mn a')].map(a => a.textContent.trim()), crown: document.querySelectorAll('.sqsh .crown').length, cta: ((document.querySelector('.sqsh-cta') || {}).textContent || '').trim(), inView: !!r && r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1 }; });
+      ok(sh.open, tag + ': THE SHEET OPENS', sh);
+      ok(sh.members.indexOf('e2e_e2esqrm1') >= 0 && sh.members.indexOf('e2e_e2esqrm2') >= 0, tag + ': and names every member', sh.members);
+      ok(sh.crown === 1, tag + ': exactly one crown, on the leader', { crowns: sh.crown });
+      ok(/Join this squad/i.test(sh.cta), tag + ': a signed-in outsider is offered Join', sh.cta);
+      ok(sh.inView, tag + ': the panel sits entirely inside the viewport', sh);
+      await D.keyboard.press('Escape');
+      await new Promise(r => setTimeout(r, 300));
+      ok(await D.evaluate(() => !document.querySelector('.sqsh.on')), tag + ': Escape closes it');
+      await D.close();
+    }
     // ---- a non-member must not even have the room in their list
     const C = await mk('e2esqrm3');
     await C.goto(B + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 60000 });
