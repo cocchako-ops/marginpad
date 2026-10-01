@@ -1311,7 +1311,8 @@ VIEWS['people/activity'] = { render: function (el, arg) {
     var GROUPS = {
       trades: ['open', 'close', 'liq', 'trim', 'sltp', 'order', 'sync', 'paper', 'limitorder', 'ratelimit', 'twin'],
       money: ['claim', 'withdraw', 'wdpaid', 'wdreject', 'wdcancel', 'mission', 'shopbuy', 'gift', 'sale', 'checkout', 'refpaid', 'promopaid', 'lbpaid', 'exsignpaid', 'pass', 'premgrant', 'refclick', 'exchange', 'tool', 'promo', 'exsign', 'code'],
-      social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift'],
+      social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift', 'squad', 'sduel', 'raid', 'sqlevel', 'mvp'],
+      squads: ['squad', 'sduel', 'raid', 'sqlevel', 'mvp'],
       account: ['signup', 'login', 'logout', 'signin', 'otp', 'otpfail', 'username', 'profile_edit', 'push', 'alert', 'support', 'telegram', 'lang', 'frame', 'admin'],
       progress: ['academy', 'goal', 'predict', 'xpboost', 'pass', 'premview', 'premgate', 'brief', 'ai', 'ind', 'draw', 'watch', 'search', 'coin', 'screener', 'tab', 'nav', 'prod', 'hotpair', 'nudge', 'grad', 'sect'],
       spot: ['spottrade'],
@@ -1319,7 +1320,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
       problems: ['otpfail', 'ratelimit', 'jserr', 'liq', 'wdreject', 'admin', 'premgate'],
       system: ['backup', 'wrap', 'signal', 'sigresult', 'digest', 'liqalert', 'alertfired', 'cpaper', 'bot', 'cfgchange', 'subkick']
     };
-    var SEV = { liq: 'red', otpfail: 'amber', ratelimit: 'amber', jserr: 'amber', wdreject: 'amber', admin: 'info', withdraw: 'gold', claim: 'gold', sale: 'gold', shopbuy: 'gold', gift: 'gold', exchange: 'gold', code: 'gold', signup: 'ok', login: 'ok' };
+    var SEV = { liq: 'red', otpfail: 'amber', ratelimit: 'amber', jserr: 'amber', wdreject: 'amber', admin: 'info', withdraw: 'gold', claim: 'gold', sale: 'gold', shopbuy: 'gold', gift: 'gold', exchange: 'gold', code: 'gold', signup: 'ok', login: 'ok', squad: 'info', sduel: 'info', raid: 'info', sqlevel: 'ok', mvp: 'gold' };
     var lc = function (s) { return String(s || '').toLowerCase(); };
     function sev(e) { if (e.t === 'pv') return e._arr ? (e.nv ? 'ok' : 'pv') : 'hop'; return SEV[e.t] || ''; }
     function pvLabel(e) {
@@ -1344,6 +1345,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
         academy: 'Academy lesson ' + X, goal: 'season goal ' + X, predict: 'daily call ' + X, xpboost: 'XP boost ' + X, premview: 'viewed Premium', premgate: 'hit the Premium gate ' + X, brief: 'read the daily brief', ai: 'asked the AI ' + X,
         ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
         spottrade: 'Demo Spot ' + X, jserr: '<b class="dn">JS error</b> ' + X, ratelimit: '<b class="dn">rate limit</b> ' + X, twin: '<b class="warn">sync:</b> ' + X,
+        squad: '<b class="up">squad:</b> ' + x, sduel: '<b>squad duel:</b> ' + x, raid: '<b>raid:</b> ' + x, sqlevel: '<b class="up">squad level:</b> ' + x, mvp: '<b class="gold">MVP:</b> ' + x,
         backup: 'backup ' + X, wrap: 'daily wrap ' + X, signal: 'signal ' + X, sigresult: 'signal result ' + X, digest: 'digest ' + X, liqalert: 'liquidation alert ' + X, alertfired: 'price alert fired ' + X, cpaper: 'signal paper trade ' + X, bot: 'Telegram bot ' + X, cfgchange: 'config changed ' + X, subkick: 'subscription ended ' + X
       };
       var s = M[t] || (esc(t) + ' ' + X);
@@ -1386,7 +1388,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
     function head() {
       var chips = function (list, cur, attr) { return '<div class="chips" style="margin:0">' + list.map(function (f) { return '<span class="chip ' + (cur === f[0] ? 'on' : '') + '" data-' + attr + '="' + f[0] + '">' + f[1] + '</span>'; }).join('') + '</div>'; };
       var sum = '<span class="acsum" id="acSum"><b>Filters</b><span class="meta" id="acSumT"></span><i>open</i></span>';
-      return '<div class="bar acfil' + (PH ? ' fold' : '') + '" id="acFil">' + sum + chips([['all', 'All'], ['pages', 'Pages'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
+      return '<div class="bar acfil' + (PH ? ' fold' : '') + '" id="acFil">' + sum + chips([['all', 'All'], ['pages', 'Pages'], ['trades', 'Trades'], ['money', 'Money'], ['social', 'Social'], ['squads', 'Squads'], ['account', 'Account'], ['progress', 'Progress'], ['spot', 'Spot'], ['problems', 'Problems'], ['system', 'System']], st.g, 'g')
         + chips([['all', 'Everyone'], ['users', 'Members'], ['guests', 'Guests'], ['system', 'System']], st.who, 'who')
         + '<input class="in" id="acq" placeholder="filter: @user, guest id, coin, page, country, ip, source" value="' + esc(st.q) + '" style="flex:1 1 200px"><select class="in" id="ach" style="flex:0 0 auto">' + [[1, '1h'], [3, '3h'], [6, '6h'], [12, '12h'], [24, '24h']].map(function (o) { return '<option value="' + o[0] + '"' + (st.h === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'
         + chips([['stream', 'Stream'], ['visitors', 'Visitors']], st.lay, 'lay')
@@ -1396,7 +1398,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
     function setLive() { var c = $('aclive'), t = $('acLv'); if (!c) return; c.classList.toggle('on', st.live); c.classList.toggle('ok', st.live && wsOk); c.classList.toggle('warn', st.live && !wsOk); if (t) t.textContent = !st.live ? 'paused' : wsOk ? 'live' : 'connecting…'; }
     function shell() {
       el.innerHTML = head() + '<div class="grid g4" id="acTiles"></div><div id="acOnline"></div><div class="jm" style="margin-top:12px"><div>' + card('<span id="acTitle">' + (st.lay === 'visitors' ? 'Visitors' : 'Activity') + '</span> <span id="acN"></span>', '<div class="feed acfeed" id="acStream"><div class="empty">loading…</div></div>', st.lay === 'visitors' ? 'one card per person, latest first · the path is every page in order · click a card for the full timeline' : (PH ? 'newest first · tap a guest id or @user for everything that person did' : 'newest first · hover to hold the stream · click a guest id or @user for everything that person did')) + '</div><div class="jm-rail" id="acRail"></div></div>';
-      var GN = { all: 'All', pages: 'Pages', trades: 'Trades', money: 'Money', social: 'Social', account: 'Account', progress: 'Progress', spot: 'Spot', problems: 'Problems', system: 'System' };
+      var GN = { all: 'All', pages: 'Pages', trades: 'Trades', money: 'Money', social: 'Social', squads: 'Squads', account: 'Account', progress: 'Progress', spot: 'Spot', problems: 'Problems', system: 'System' };
       var WN = { all: 'Everyone', users: 'Members', guests: 'Guests', system: 'System' };
       function sumTxt() { var e = $('acSumT'); if (!e) return; e.textContent = (GN[st.g] || st.g) + ' · ' + (WN[st.who] || st.who) + ' · ' + st.h + 'h · ' + (st.lay === 'visitors' ? 'Visitors' : 'Stream') + (st.q ? ' · "' + st.q + '"' : ''); }
       var fil = $('acFil'), sm = $('acSum');

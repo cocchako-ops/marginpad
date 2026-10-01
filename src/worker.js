@@ -20970,8 +20970,9 @@ export default {
       const who = await usersDO(env, '/xpdiag', { username: String(fb.username || ''), uid: String(fb.uid || '') });
       if (!who || !who.user) return J({ error: 'not_found', who: fb.username || fb.uid }, 404);
       const fid = String(who.user.id);
-      if (fb.on === false) { try { await env.STATS.delete(squadFreeKey(fid)); } catch (e) {} return J({ ok: true, username: who.user.username, free: false }); }
+      if (fb.on === false) { try { await env.STATS.delete(squadFreeKey(fid)); } catch (e) {} try { await evPush(env, request, 'squad', 'free squad founding taken back from @' + who.user.username + ' by admin', '/squads/', { uid: fid, act: 'freerevoke' }); } catch (e) {} return J({ ok: true, username: who.user.username, free: false }); }
       try { await env.STATS.put(squadFreeKey(fid), JSON.stringify({ ts: Date.now(), by: 'owner', note: String(fb.note || '') }), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+      try { await evPush(env, request, 'squad', '@' + who.user.username + ' granted a free squad founding by admin', '/squads/', { uid: fid, act: 'freegrant' }); } catch (e) {}
       try { await tgAdmin(env, '<b>Free squad</b> @' + who.user.username + ' can found one at no cost', { kind: 'squad grant', sev: 'info' }); } catch (e) {}
       return J({ ok: true, username: who.user.username, uid: fid, free: true });
     }
@@ -25420,6 +25421,7 @@ export class UserStore {
     // an open challenge this squad posted still holds its leader's Ticks - give them back before the row is gone
     for (const d of this.rows("SELECT * FROM sduels WHERE a_sid=? AND status IN ('open','pending') AND escrowed>=1", sid)) this._giveTicks(this._squadLeader(sid), +d.stake || 0, 'Squad disbanded - stake returned');
     try { sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE (a_sid=? OR b_sid=?) AND status IN ('open','pending')", sid, sid); } catch (e) {}
+    try { const _dr = (this.rows('SELECT name, tag, leader FROM squads WHERE id=?', sid)[0] || {}); this._opsEv(_dr.leader || '', 'squad', 'disbanded ' + (_dr.name || sid) + ' [' + (_dr.tag || '') + '] - ' + (why || 'disbanded'), '/squads/', { sid: sid, act: 'disband' }); } catch (e) {}
     for (const uid of this._squadUids(sid)) this._pushNotif(uid, 'squad', 'Your squad is gone - ' + (why || 'it was disbanded') + '.', 'squads');
     try { sql.exec('DELETE FROM squadm WHERE sid=?', sid); } catch (e) {}
     this._sqBust();
@@ -25506,6 +25508,7 @@ export class UserStore {
         : ('Dead heat: ' + mine + ' vs ' + theirs + ' on ' + ml + (stake > 0 ? '. Stakes returned' : '') + '.');
     for (const uid of this._squadUids(d.a_sid)) this._pushNotif(uid, 'squad', line(d.a_name, d.b_name, winner ? (winner === d.a_sid ? 'win' : 'loss') : 'draw'), 'squads');
     for (const uid of this._squadUids(d.b_sid)) this._pushNotif(uid, 'squad', line(d.b_name, d.a_name, winner ? (winner === d.b_sid ? 'win' : 'loss') : 'draw'), 'squads');
+    try { this._opsEv(this._squadLeader(d.a_sid) || '', 'sduel', winner ? ('squad duel: ' + (winner === d.a_sid ? d.a_name : d.b_name) + ' beat ' + (winner === d.a_sid ? d.b_name : d.a_name) + ' on ' + ml) : ('squad duel drawn: ' + d.a_name + ' vs ' + d.b_name + ' on ' + ml), '/squads/', { winner: winner ? 1 : 0, act: 'settle' }); } catch (e) {}
     return this._sduelPub(Object.assign({}, d, { status: 'done', winner, a_score: A.score, b_score: B.score, settled: 1, escrowed: 0, detail: JSON.stringify(detail) }));
   }
   // Every member's XP moves the squad, so a lesson or a mission counts for the clan too. The set keeps the
@@ -25541,6 +25544,7 @@ export class UserStore {
           if (r.ticks) { try { this._giveTicks(uid, r.ticks, 'Squad level ' + lv); } catch (e) {} }
           this._pushNotif(uid, 'squad', (row.name || 'Your squad') + ' reached level ' + lv + '. ' + (r.note || '') + (r.ticks ? ' +' + r.ticks + ' Ticks' : '') + (r.xp ? ' +' + r.xp + ' XP' : '') + '.', '/squads/');
         }
+        try { this._opsEv(this._squadLeader(sid) || '', 'sqlevel', (row.name || 'Squad') + ' reached level ' + lv + (r.note ? ' - ' + r.note : ''), '/squads/', { sid: sid, lv: lv, act: 'levelup' }); } catch (e) {}
       }
     } catch (e) {}
     this._sqBusy = false;
@@ -25583,6 +25587,7 @@ export class UserStore {
     const line = cleared ? ('Raid cleared: ' + (sq.name || 'your squad') + ' took ' + r.coin + ' - $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Everyone who traded it is paid.')
       : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Try again in a day.');
     for (const uid of this._squadUids(r.sid)) this._pushNotif(uid, 'squad', line, '/squads/');
+    try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target), '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
     return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
   }
   _mvpSettle(wk) { // the member who gained the most XP in that UTC week, per squad
@@ -25599,6 +25604,7 @@ export class UserStore {
       try { this._giveTicks(best.uid, MVP_TICKS, 'MVP of the week - ' + (sq.name || 'squad')); } catch (e) {}
       try { this._sqAddXp(sq.id, MVP_SQUAD_XP); } catch (e) {}
       for (const uid of this._squadUids(sq.id)) this._pushNotif(uid, 'squad', (uid === best.uid ? 'You are ' : '@' + best.name + ' is ') + (sq.name || 'the squad') + "'s MVP of the week with " + best.gain.toLocaleString() + ' XP. The mark stays on the card for seven days.', '/squads/');
+      try { this._opsEv(best.uid, 'mvp', best.name + ' is ' + (sq.name || 'the squad') + "'s MVP of the week (" + best.gain.toLocaleString() + ' XP)', '/squads/', { sid: sq.id, gain: best.gain, act: 'mvp' }); } catch (e) {}
       out.push({ sid: sq.id, name: sq.name, mvp: best.name, gain: best.gain });
     }
     return out;
@@ -29222,6 +29228,7 @@ export class UserStore {
       const sql = this.state.storage.sql;
       sql.exec('INSERT INTO squads(id,name,tag,leader,crest,motto,created,openj,wins,draws,losses,sxp) VALUES(?,?,?,?,?,?,?,?,0,0,0,0)', id, name, tag, uid, JSON.stringify(crest), String(b.motto || '').slice(0, 80), now, b.open ? 1 : 0);
       sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, id, 'leader', now);
+      this._opsEv(uid, 'squad', 'founded ' + name + ' [' + tag + ']' + (b.paid ? '' : ' - 5,000 Ticks'), '/squads/', { sid: id, tag: tag, act: 'create' });
       this._sqBust();
       return this.j({ ok: true, squad: this._squadPub(id, true) });
     }
@@ -29256,7 +29263,8 @@ export class UserStore {
       if (this.rows('SELECT 1 FROM squadinv WHERE k=? AND ts > ?', k, now - SQUAD_INV_MS)[0]) return this.j({ error: 'already_invited' }, 409);
       const me = this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {};
       this.state.storage.sql.exec('INSERT OR REPLACE INTO squadinv(k,sid,uid,byname,ts) VALUES(?,?,?,?,?)', k, sq.id, t.id, me.username || '', now);
-      this._pushNotif(t.id, 'squad', '@' + (me.username || 'A leader') + ' invited you to join ' + sq.name + ' [' + sq.tag + ']. Tap to see the squad.', '/squads/?inv=' + sq.id); // a PATH, so the notification row actually goes somewhere - 'squads' alone matched none of the handler's cases and did nothing
+      this._pushNotif(t.id, 'squad', '@' + (me.username || 'A leader') + ' invited you to join ' + sq.name + ' [' + sq.tag + ']. Tap to see the squad.', '/squads/?inv=' + sq.id);
+      this._opsEv(uid, 'squad', 'invited @' + (t.username || '') + ' to ' + sq.name + ' [' + sq.tag + ']', '/squads/', { sid: sq.id, to: t.username || '', act: 'invite' }); // a PATH, so the notification row actually goes somewhere - 'squads' alone matched none of the handler's cases and did nothing
       return this.j({ ok: true, invited: t.username });
     }
     if (path === '/squad/join') { // accepting an invite, or walking into an open squad
@@ -29273,6 +29281,7 @@ export class UserStore {
       { const slots = squadSlots(+s.sxp || 0); if (this._squadN(sid) >= slots) return this.j({ error: 'squad_full', max: slots, lv: squadLevel(+s.sxp || 0).lv }, 409); }
       // A squad in the middle of a duel cannot grow: the opponent accepted a fight against a squad of a size
       sql.exec('INSERT INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', uid, sid, 'member', now);
+      this._opsEv(uid, 'squad', 'joined ' + (s.name || sid) + ' [' + (s.tag || '') + ']', '/squads/', { sid: sid, act: 'join' });
       this._sqBust();
       sql.exec('DELETE FROM squadinv WHERE uid=?', uid); // joining answers every other invite too
       this._pushNotif(s.leader, 'squad', '@' + me.username + ' joined ' + s.name + '.', 'squads');
@@ -29297,6 +29306,7 @@ export class UserStore {
         this._pushNotif(next.uid, 'squad', 'You are now the leader of ' + sq.name + '.', 'squads');
       }
       sql.exec('DELETE FROM squadm WHERE uid=?', uid);
+      this._opsEv(uid, 'squad', 'left ' + (sq.name || '') + ' [' + (sq.tag || '') + ']' + (String(sq.leader) === uid ? ' (was leader)' : ''), '/squads/', { sid: sq.id, act: 'leave' });
       return this.j({ ok: true, left: true });
       this._sqBust();
     }
@@ -29313,6 +29323,7 @@ export class UserStore {
       this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', t.id);
       this._sqBust();
       this._pushNotif(t.id, 'squad', 'You were removed from ' + sq.name + '.', 'squads');
+      this._opsEv(uid, 'squad', 'removed @' + (t.username || '') + ' from ' + (sq.name || ''), '/squads/', { sid: sq.id, who: t.username || '', act: 'kick' });
       return this.j({ ok: true, removed: t.username });
     }
     if (path === '/squad/disband') {
@@ -29348,6 +29359,7 @@ export class UserStore {
       this.state.storage.sql.exec('INSERT INTO sduels(id,a_sid,b_sid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,rules,detail) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)',
         id, sq.id, target ? target.id : '', sq.name, target ? target.name : '', metric, now, target ? 'pending' : 'open', '', dur, stake, stake > 0 ? 1 : 0, JSON.stringify({}), '');
       if (target) for (const m of this.rows('SELECT uid FROM squadm WHERE sid=?', target.id)) this._pushNotif(m.uid, 'squad', sq.name + ' [' + sq.tag + '] challenged your squad on ' + SQUAD_METRICS[metric].label + (stake > 0 ? ' for ' + stake + ' Ticks' : '') + '.', 'squads');
+      this._opsEv(uid, 'sduel', sq.name + ' challenged ' + (target ? target.name : 'anyone') + ' on ' + (SQUAD_METRICS[metric] || {}).label + (stake > 0 ? ' for ' + stake + ' Ticks' : ''), '/squads/', { sid: sq.id, metric: metric, stake: stake, act: 'challenge' });
       return this.j({ ok: true, id, duel: this._sduelPub(this.rows('SELECT * FROM sduels WHERE id=?', id)[0]) });
     }
     if (path === '/squad/openduels') { // the board of challenges anyone may take - what a squad with nobody to fight needs
@@ -29376,6 +29388,7 @@ export class UserStore {
       sql.exec('UPDATE sduels SET b_sid=?, b_name=?, status=?, start_ts=?, end_ts=?, escrowed=? WHERE id=?', sq.id, sq.name, 'active', now, now + (+d.dur || 604800000), stake > 0 ? 2 : 0, d.id);
       const ml = (SQUAD_METRICS[d.metric] || {}).label || d.metric;
       for (const m of this.rows('SELECT uid FROM squadm WHERE sid=? OR sid=?', d.a_sid, sq.id)) this._pushNotif(m.uid, 'squad', 'Squad duel is live: ' + d.a_name + ' vs ' + sq.name + ' on ' + ml + '. Every trade you close now counts.', 'squads');
+      this._opsEv(uid, 'sduel', 'squad duel live: ' + d.a_name + ' vs ' + sq.name + ' on ' + ml + (+d.stake > 0 ? ' for ' + d.stake + ' Ticks a side' : ''), '/squads/', { metric: d.metric, stake: +d.stake || 0, act: 'accept' });
       return this.j({ ok: true, duel: this._sduelPub(this.rows('SELECT * FROM sduels WHERE id=?', d.id)[0]) });
     }
     if (path === '/squad/decline') {
@@ -29420,9 +29433,10 @@ export class UserStore {
       if (op === 'remove') {
         if (!this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', u.id, sid)[0]) return this.j({ error: 'not_a_member' }, 404);
         // removing the LEADER hands the squad on rather than leaving it headless
-        if (String(sq.leader) === String(u.id)) { this._squadRemoveUser(u.id); this._sqBust(); return this.j({ ok: true, removed: u.username, handedOver: true, squad: this._squadPub(sid, true) }); }
+        if (String(sq.leader) === String(u.id)) { this._squadRemoveUser(u.id); this._sqBust(); this._opsEv(u.id, 'squad', 'leader @' + (u.username || '') + ' removed from ' + (sq.name || '') + ' by admin (squad handed over)', '/squads/', { sid: sid, act: 'adminremove' }); return this.j({ ok: true, removed: u.username, handedOver: true, squad: this._squadPub(sid, true) }); }
         sql.exec('DELETE FROM squadm WHERE uid=?', u.id); this._sqBust();
         this._pushNotif(u.id, 'squad', 'You were removed from ' + (sq.name || 'your squad') + '.', '/squads/');
+        this._opsEv(u.id, 'squad', '@' + (u.username || '') + ' removed from ' + (sq.name || '') + ' by admin', '/squads/', { sid: sid, act: 'adminremove' });
         return this.j({ ok: true, removed: u.username, squad: this._squadPub(sid, true) });
       }
       if (op === 'lead') {
@@ -29431,6 +29445,7 @@ export class UserStore {
         sql.exec('UPDATE squads SET leader=? WHERE id=?', u.id, sid);
         sql.exec("UPDATE squadm SET role='leader' WHERE uid=?", u.id);
         this._pushNotif(u.id, 'squad', 'You are now the leader of ' + (sq.name || 'your squad') + '.', '/squads/');
+        this._opsEv(u.id, 'squad', '@' + (u.username || '') + ' made leader of ' + (sq.name || '') + ' by admin', '/squads/', { sid: sid, act: 'adminlead' });
         return this.j({ ok: true, leader: u.username, squad: this._squadPub(sid, true) });
       }
       if (this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]) return this.j({ error: 'already_in_a_squad', who: u.username }, 409);
@@ -29442,6 +29457,7 @@ export class UserStore {
       sql.exec('DELETE FROM squadinv WHERE uid=?', u.id);
       this._sqBust();
       this._pushNotif(u.id, 'squad', 'You were added to ' + (sq.name || 'a squad') + '.', '/squads/');
+      this._opsEv(u.id, 'squad', '@' + (u.username || '') + ' added to ' + (sq.name || '') + ' by admin', '/squads/', { sid: sid, act: 'adminadd' });
       return this.j({ ok: true, added: u.username, forced: !!(b && b.force), squad: this._squadPub(sid, true) });
     }
     if (path === '/squad/raid') { // {uid, op:'start'|'abandon', coin, targetBase}
@@ -29449,7 +29465,7 @@ export class UserStore {
       const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
       if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
       const op = String((b && b.op) || 'start'), now = Date.now(), sql = this.state.storage.sql;
-      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=? WHERE id=?", this._raidProgress(r0).total, r0.id); return this.j({ ok: true, abandoned: r0.coin }); }
+      if (op === 'abandon') { const r0 = this._raidActive(sq.id); if (!r0) return this.j({ error: 'no_raid' }, 404); sql.exec("UPDATE raids SET status='abandoned', settled=1, progress=? WHERE id=?", this._raidProgress(r0).total, r0.id); this._opsEv(uid, 'raid', sq.name + ' abandoned the ' + r0.coin + ' raid', '/squads/', { coin: r0.coin, act: 'abandon' }); return this.j({ ok: true, abandoned: r0.coin }); }
       const coin = String((b && b.coin) || '').toUpperCase();
       if (RAID_COINS.indexOf(coin) < 0) return this.j({ error: 'bad_coin', coins: RAID_COINS }, 400);
       if (this._raidActive(sq.id)) return this.j({ error: 'raid_running' }, 409);
@@ -29459,6 +29475,7 @@ export class UserStore {
       const id = 'rd' + now.toString(36) + Math.random().toString(36).slice(2, 6);
       sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created) VALUES(?,?,?,?,?,?,?,0,0,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now);
       for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target + ' of realized profit between you in 48 hours. Losses count against it. Positions over $' + RAID_MARGIN_MAX.toLocaleString() + ' margin do not count.', '/squads/');
+      this._opsEv(uid, 'raid', sq.name + ' started a raid on ' + coin + ' - target $' + target, '/squads/', { sid: sq.id, coin: coin, target: target, act: 'start' });
       return this.j({ ok: true, raid: this._raidPub(this.rows('SELECT * FROM raids WHERE id=?', id)[0]) });
     }
     if (path === '/squad/raidsettle') { // the cron, and {id} for one raid on demand (support + E2E)
