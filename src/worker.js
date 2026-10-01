@@ -7257,7 +7257,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=16b59dee" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3fb5455b" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12061,6 +12061,32 @@ const SQUAD_METRICS = {
   win: { label: 'biggest win', agg: 'best', how: 'The biggest single winning trade in the squad.' },
   wr: { label: 'win rate', agg: 'rate', how: 'Wins divided by trades across the whole squad. Needs at least 3 trades a side.' },
 };
+// VALOR - the squad currency (2026-10-01, owner: "izmislimo novu valutu koja ce da se dobija iz squad stvari ...
+// sa kojom ce moci da kupuju squad profile borders i badges"). It is a SQUAD TREASURY, never a personal balance:
+// any member's squad achievement credits it, and the LEADER spends it in the Squad Shop to unlock a cosmetic for
+// the WHOLE squad, which every member may then wear. It can never be bought, gifted or withdrawn - the only way
+// in is playing as a squad, which is the entire point of a squad-exclusive look. No real money touches it.
+const SQUAD_VALOR = { duelWin: 40, raidClear: 60, level: 50, mvp: 30 };
+// The Squad Shop. Borders ride the existing profile-card FRAME slot (so one border shows wherever a card is drawn,
+// with zero new render wiring) and are gated to squad ownership at equip; badges are a NEW card slot (users.sqbadge).
+// These are deliberately HEAVIER and darker than any player frame (owner: "dosta napucaniji ... crna vatra ... shadow")
+// and their motion is JS-driven off the same rAF sweep the apex frames use (--nvA/--nvP/--nvF), because the owner's
+// machine runs with animation effects off and never renders @keyframes. CSS lives in dist/assets/mp-auth.js.
+const SQUAD_SHOP = [
+  { id: 'sqdarkfire', name: 'Dark Fire',  kind: 'frame', price: 1200, tier: 'legendary', desc: 'Black flame wraps the whole card, embers flickering around the edge - earned, never for sale.' },
+  { id: 'sqshadow',   name: 'Shadow',     kind: 'frame', price: 800,  tier: 'epic',      desc: 'A living shadow aura that breathes and drifts around the card in deep indigo-black.' },
+  { id: 'sqvoidstar', name: 'Void Star',  kind: 'frame', price: 1800, tier: 'mythic',    desc: 'Collapsed-star rim: a black core ringed by a thin violet event horizon that turns.' },
+  { id: 'sqember',    name: 'Ember Sigil',kind: 'badge', price: 350,  tier: 'rare',      desc: 'A black-fire sigil that smoulders in the card corner.' },
+  { id: 'sqwraith',   name: 'Wraith',     kind: 'badge', price: 500,  tier: 'epic',      desc: 'A drifting shadow wisp that coils and fades.' },
+];
+const SQUAD_SHOP_IDS = SQUAD_SHOP.map(x => x.id);
+function squadShopItem(id) { return SQUAD_SHOP.find(x => x.id === id) || null; }
+// A HIDDEN squad (MP-One, owner 2026-10-01: "napravis i meni jedan hidden squad koji ce moci sve ali nigde nece da
+// se prikazuje"). It is excluded from the directory, the boards, the stats and the ops list; /squad/get refuses it to
+// everyone, so no one can open it or see its members - only its own member sees it, through /squad/mine, and it shows
+// on that member's profile card (non-clickable). It is seeded at max level and max treasury with every shop item owned.
+const SQUAD_MAX_SXP = 10000000;         // far past level 10 (min 32,000), so a hidden squad is permanently maxed
+const SQUAD_HIDDEN_VALOR = 1000000;     // a treasury it can never run down
 // The crest is PARAMETRIC, never an uploaded image: nothing to store, nothing to moderate, and it renders as SVG
 // on a 22px chat line and a 380px profile card alike. Client renderer: window.mpSquadCrest in mp-auth.js.
 const CREST_SHAPES = ['shield', 'circle', 'hex', 'banner'];
@@ -16510,7 +16536,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '8f0fd2d1';
+const ASSET_V = '5e0937c7';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20976,6 +21002,14 @@ export default {
       try { await tgAdmin(env, '<b>Free squad</b> @' + who.user.username + ' can found one at no cost', { kind: 'squad grant', sev: 'info' }); } catch (e) {}
       return J({ ok: true, username: who.user.username, uid: fid, free: true });
     }
+    if (url.pathname === '/api/admin/squadhidden' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // set up the hidden MP-One squad for a member (2026-10-01)
+      let hb = {}; try { hb = await request.json(); } catch (e) {}
+      if (!env.USERS) return J({ error: 'unavailable' }, 503);
+      const stub = env.USERS.get(env.USERS.idFromName('main'));
+      let j = {}; try { const r = await stub.fetch(new Request('https://do/squad/mkhidden', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(hb) })); j = await r.json(); } catch (e) { return J({ error: 'busy' }, 503); }
+      try { if (j && j.ok) await tgAdmin(env, '<b>Hidden squad</b> ' + (hb.name || 'MP-One') + ' set up for @' + (hb.username || ''), { kind: 'squad grant', sev: 'info' }); } catch (e) {}
+      return J(j, j && j.error ? (j.error === 'no_such_member' ? 404 : 400) : 200);
+    }
  if (url.pathname === '/api/admin/raidsettle' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // settle ONE raid now - the cron's own _raidSettle, never a second copy of the rules
       let rb = {}; try { rb = await request.json(); } catch (e) {}
       return J(await usersDO(env, '/squad/raidsettle', { id: String(rb.id || ''), now: +rb.now || 0 }) || { error: 'busy' });
@@ -20992,6 +21026,10 @@ export default {
  if (url.pathname === '/api/admin/squadxp' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // grant squad XP by hand (support + E2E) - runs the SAME _sqAddXp the member path runs, so a test cannot pass against rules production does not use
       let xb = {}; try { xb = await request.json(); } catch (e) {}
       return J(await usersDO(env, '/squad/addxp', { sid: String(xb.sid || ''), amt: +xb.amt || 0 }) || { error: 'busy' });
+    }
+ if (url.pathname === '/api/admin/squadvalor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // grant squad Valor by hand (support + E2E)
+      let vb = {}; try { vb = await request.json(); } catch (e) {}
+      return J(await usersDO(env, '/squad/addvalor', { sid: String(vb.sid || ''), amt: +vb.amt || 0 }) || { error: 'busy' });
     }
  if (url.pathname === '/api/admin/squadsettle' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // settle ONE squad duel now (support + E2E) - runs the cron's own _sduelSettle, never a second copy of the rules
       let sb = {}; try { sb = await request.json(); } catch (e) {}
@@ -22406,6 +22444,7 @@ export default {
       if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook, same pattern as /api/duel/
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       if (sub === 'live') return call('/squad/live', { uid: su.id });
+      if (sub === 'shop') return call('/squad/shop', { uid: su.id });
       if (sub === 'raid') {
         if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
         let rb = {}; try { rb = await request.json(); } catch (e) {}
@@ -22428,7 +22467,7 @@ export default {
       }
       if (request.method !== 'POST') return new Response('{"error":"post_only"}', { status: 405, headers: jh });
       let bd = {}; try { bd = await request.json(); } catch (e) {}
-      const OPS = { create: 1, edit: 1, invite: 1, join: 1, declineinv: 1, leave: 1, kick: 1, disband: 1, challenge: 1, accept: 1, decline: 1 };
+      const OPS = { create: 1, edit: 1, invite: 1, join: 1, declineinv: 1, leave: 1, kick: 1, disband: 1, challenge: 1, accept: 1, decline: 1, shopbuy: 1, shopequip: 1 };
       if (!OPS[sub]) return new Response('{"error":"not_found"}', { status: 404, headers: jh });
       // FOUNDING A SQUAD COSTS: Ticks (taken inside the store) or the rewards balance (taken HERE, because the
       // ledger is another DO). A cash payment is debited first and REFUNDED if the store refuses, so a taken
@@ -25135,7 +25174,7 @@ export class UserStore {
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING - so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
-    for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
+    for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT', 'sqbadge TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv); sqbadge = equipped squad badge (2026-10-01)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS cosmetics(user_id TEXT, item_id TEXT, ts INTEGER, src TEXT, PRIMARY KEY(user_id,item_id))');
     try { s.exec('ALTER TABLE cosmetics ADD COLUMN via TEXT'); } catch (e) {} // who gifted it (username) - the Shop log could not say who gave what before 2026-09-04 // The Vault: purchased/granted cosmetic items (frames F1) // XP earn/adjust history (ring-buffered ~150/user)
@@ -25285,7 +25324,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS sduels(id TEXT PRIMARY KEY, a_sid TEXT, b_sid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0, dur INTEGER, stake INTEGER, escrowed INTEGER, rules TEXT, detail TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS raids(id TEXT PRIMARY KEY, sid TEXT, coin TEXT, start_ts INTEGER, end_ts INTEGER, target REAL, status TEXT, progress REAL, settled INTEGER DEFAULT 0, detail TEXT, created INTEGER)'); // squad raids (2026-10-01): status active / cleared / failed / abandoned
     s.exec('CREATE TABLE IF NOT EXISTS squadwk(uid TEXT, wk INTEGER, base INTEGER, PRIMARY KEY(uid, wk))'); // xp_life at a member's FIRST grant of a UTC week -> weekly gain = xp_life - base (trim-proof, same idea as xpseason)
-    ['mvp TEXT', 'mvp_name TEXT', 'mvp_until INTEGER'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} });
+    ['mvp TEXT', 'mvp_name TEXT', 'mvp_until INTEGER', 'valor INTEGER DEFAULT 0', 'shop TEXT', 'hidden INTEGER DEFAULT 0'].forEach(c => { try { s.exec('ALTER TABLE squads ADD COLUMN ' + c); } catch (e) {} }); // valor = squad shop currency, shop = JSON of unlocked ids, hidden = MP-One style squad (2026-10-01)
     try { s.exec('CREATE INDEX IF NOT EXISTS raids_sid ON raids(sid, status)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS squadm_sid ON squadm(sid)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS sduels_a ON sduels(a_sid, status)'); } catch (e) {}
@@ -25386,12 +25425,22 @@ export class UserStore {
   _squadOf(uid) { uid = String(uid || '').replace(/^u:/, ''); if (!uid) return null; const m = this.rows('SELECT sid FROM squadm WHERE uid=?', uid)[0]; if (!m) return null; return this.rows('SELECT * FROM squads WHERE id=?', m.sid)[0] || null; }
   _squadN(sid) { return (this.rows('SELECT COUNT(*) c FROM squadm WHERE sid=?', sid)[0] || { c: 0 }).c; }
   _squadLeader(sid) { return (this.rows('SELECT leader FROM squads WHERE id=?', sid)[0] || {}).leader || ''; }
+  _sqAddValor(sid, amt, note) { amt = Math.round(+amt || 0); if (!sid || amt <= 0) return; try { this.state.storage.sql.exec('UPDATE squads SET valor=COALESCE(valor,0)+? WHERE id=?', amt, sid); } catch (e) {} }
+  _sqShopOwned(sid) { try { const r = this.rows('SELECT shop FROM squads WHERE id=?', sid)[0]; if (!r || !r.shop) return []; const a = JSON.parse(r.shop); return Array.isArray(a) ? a.filter(x => SQUAD_SHOP_IDS.indexOf(x) >= 0) : []; } catch (e) { return []; } }
+  _sqOwnsShop(uid, itemId) { const sq = this._squadOf(uid); if (!sq) return false; return this._sqShopOwned(sq.id).indexOf(itemId) >= 0; }
+  _sqStripCosmetics(uid) { // leaving a squad takes its exclusive look with it - a squad border/badge is squad-bound (2026-10-01)
+    uid = String(uid || '').replace(/^u:/, ''); if (!uid) return;
+    try { const u = this.rows('SELECT frame, sqbadge FROM users WHERE id=?', uid)[0]; if (!u) return;
+      if (u.frame && SQUAD_SHOP_IDS.indexOf(u.frame) >= 0) this.state.storage.sql.exec("UPDATE users SET frame='default' WHERE id=?", uid);
+      if (u.sqbadge) this.state.storage.sql.exec("UPDATE users SET sqbadge='' WHERE id=?", uid);
+    } catch (e) {}
+  }
   _squadUids(sid) { return this.rows('SELECT uid FROM squadm WHERE sid=? ORDER BY ts ASC', sid).map(r => String(r.uid)); }
   _sduelLive(sid) { return !!this.rows("SELECT 1 FROM sduels WHERE (a_sid=? OR b_sid=?) AND status='active' AND settled=0", sid, sid)[0]; }
   _squadPub(sid, withMembers) { // never leaks a member uid - the card shows names, levels and crests
     const s = this.rows('SELECT * FROM squads WHERE id=?', sid)[0]; if (!s) return null;
     const o = { sid: s.id, name: s.name || '', tag: s.tag || '', crest: crestNorm(s.crest), motto: s.motto || '', created: +s.created || 0,
-      open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: squadSlots(+s.sxp || 0), cap: SQUAD_MAX, level: squadLevel(+s.sxp || 0), opts: squadCrestOpts(+s.sxp || 0), leader: s.leader };
+      open: !!s.openj, wins: +s.wins || 0, draws: +s.draws || 0, losses: +s.losses || 0, sxp: +s.sxp || 0, n: this._squadN(s.id), max: squadSlots(+s.sxp || 0), cap: SQUAD_MAX, level: squadLevel(+s.sxp || 0), opts: squadCrestOpts(+s.sxp || 0), leader: s.leader, valor: +s.valor || 0, shopOwned: this._sqShopOwned(s.id), hidden: !!s.hidden };
     const lead = this.rows('SELECT username FROM users WHERE id=?', s.leader)[0];
     o.leaderName = (lead && lead.username) || '';
     o.mvp = (s.mvp && +s.mvp_until > Date.now()) ? { name: s.mvp_name || '', until: +s.mvp_until } : null;
@@ -25408,6 +25457,7 @@ export class UserStore {
     if (!m) return;
     const sq = this.rows('SELECT id, leader FROM squads WHERE id=?', m.sid)[0];
     try { sql.exec('DELETE FROM squadm WHERE uid=?', uid); sql.exec('DELETE FROM squadinv WHERE uid=?', uid); } catch (e) {}
+    this._sqStripCosmetics(uid);
     this._sqBust();
     if (!sq) return;
     if (String(sq.leader) !== uid) return;
@@ -25422,7 +25472,7 @@ export class UserStore {
     for (const d of this.rows("SELECT * FROM sduels WHERE a_sid=? AND status IN ('open','pending') AND escrowed>=1", sid)) this._giveTicks(this._squadLeader(sid), +d.stake || 0, 'Squad disbanded - stake returned');
     try { sql.exec("UPDATE sduels SET status='declined', escrowed=0 WHERE (a_sid=? OR b_sid=?) AND status IN ('open','pending')", sid, sid); } catch (e) {}
     try { const _dr = (this.rows('SELECT name, tag, leader FROM squads WHERE id=?', sid)[0] || {}); this._opsEv(_dr.leader || '', 'squad', 'disbanded ' + (_dr.name || sid) + ' [' + (_dr.tag || '') + '] - ' + (why || 'disbanded'), '/squads/', { sid: sid, act: 'disband' }); } catch (e) {}
-    for (const uid of this._squadUids(sid)) this._pushNotif(uid, 'squad', 'Your squad is gone - ' + (why || 'it was disbanded') + '.', 'squads');
+    for (const uid of this._squadUids(sid)) { this._pushNotif(uid, 'squad', 'Your squad is gone - ' + (why || 'it was disbanded') + '.', 'squads'); this._sqStripCosmetics(uid); }
     try { sql.exec('DELETE FROM squadm WHERE sid=?', sid); } catch (e) {}
     this._sqBust();
     try { sql.exec('DELETE FROM squadinv WHERE sid=?', sid); } catch (e) {}
@@ -25483,6 +25533,7 @@ export class UserStore {
       const loser = winner === d.a_sid ? d.b_sid : d.a_sid;
       sql.exec('UPDATE squads SET wins=COALESCE(wins,0)+1 WHERE id=?', winner);
       sql.exec('UPDATE squads SET losses=COALESCE(losses,0)+1 WHERE id=?', loser);
+      this._sqAddValor(winner, SQUAD_VALOR.duelWin, 'squad duel won'); // Valor to the winning squad's treasury (2026-10-01)
     } else { sql.exec('UPDATE squads SET draws=COALESCE(draws,0)+1 WHERE id=?', d.a_sid); sql.exec('UPDATE squads SET draws=COALESCE(draws,0)+1 WHERE id=?', d.b_sid); }
     // the pot: the LEADER put the stake up for the whole squad, so the leader is made whole first and the other
     // squad's stake is then split equally across everyone, the leader included. That is what makes leading worth it.
@@ -25544,6 +25595,7 @@ export class UserStore {
           if (r.ticks) { try { this._giveTicks(uid, r.ticks, 'Squad level ' + lv); } catch (e) {} }
           this._pushNotif(uid, 'squad', (row.name || 'Your squad') + ' reached level ' + lv + '. ' + (r.note || '') + (r.ticks ? ' +' + r.ticks + ' Ticks' : '') + (r.xp ? ' +' + r.xp + ' XP' : '') + '.', '/squads/');
         }
+        this._sqAddValor(sid, SQUAD_VALOR.level, 'squad level ' + lv); // Valor for every level reached (2026-10-01)
         try { this._opsEv(this._squadLeader(sid) || '', 'sqlevel', (row.name || 'Squad') + ' reached level ' + lv + (r.note ? ' - ' + r.note : ''), '/squads/', { sid: sid, lv: lv, act: 'levelup' }); } catch (e) {}
       }
     } catch (e) {}
@@ -25587,6 +25639,7 @@ export class UserStore {
     const line = cleared ? ('Raid cleared: ' + (sq.name || 'your squad') + ' took ' + r.coin + ' - $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Everyone who traded it is paid.')
       : ('Raid failed: ' + r.coin + ' ended at $' + pr.total.toFixed(2) + ' of $' + Math.round(+r.target) + '. Try again in a day.');
     for (const uid of this._squadUids(r.sid)) this._pushNotif(uid, 'squad', line, '/squads/');
+    if (cleared) this._sqAddValor(r.sid, SQUAD_VALOR.raidClear, 'raid cleared'); // Valor for clearing a raid (2026-10-01)
     try { this._opsEv(this._squadLeader(r.sid) || '', 'raid', (sq.name || 'squad') + ' raid on ' + r.coin + ' ' + (cleared ? 'CLEARED' : 'failed') + ' - $' + pr.total.toFixed(0) + ' of $' + Math.round(+r.target), '/squads/', { coin: r.coin, cleared: cleared ? 1 : 0, act: 'settle' }); } catch (e) {}
     return Object.assign(this._raidPub(Object.assign({}, r, { status, progress: pr.total, settled: 1 })), { live: pr });
   }
@@ -25604,6 +25657,7 @@ export class UserStore {
       try { this._giveTicks(best.uid, MVP_TICKS, 'MVP of the week - ' + (sq.name || 'squad')); } catch (e) {}
       try { this._sqAddXp(sq.id, MVP_SQUAD_XP); } catch (e) {}
       for (const uid of this._squadUids(sq.id)) this._pushNotif(uid, 'squad', (uid === best.uid ? 'You are ' : '@' + best.name + ' is ') + (sq.name || 'the squad') + "'s MVP of the week with " + best.gain.toLocaleString() + ' XP. The mark stays on the card for seven days.', '/squads/');
+      this._sqAddValor(sq.id, SQUAD_VALOR.mvp, 'weekly MVP'); // Valor to the squad when it crowns an MVP (2026-10-01)
       try { this._opsEv(best.uid, 'mvp', best.name + ' is ' + (sq.name || 'the squad') + "'s MVP of the week (" + best.gain.toLocaleString() + ' XP)', '/squads/', { sid: sq.id, gain: best.gain, act: 'mvp' }); } catch (e) {}
       out.push({ sid: sq.id, name: sq.name, mvp: best.name, gain: best.gain });
     }
@@ -28603,7 +28657,7 @@ export class UserStore {
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
-      const u = this.rows('SELECT id, username, xp, created, bio, avatar, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      const u = this.rows('SELECT id, username, xp, created, bio, avatar, coins, frame, cardbg, sqbadge FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const records = this._pbSeason(u.id) || this._pbGet(u.id); // the public card shows SEASON records (close ledger), upb stays the toast/all-time source
@@ -28659,7 +28713,7 @@ export class UserStore {
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
-        followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
+        sqbadge: u.sqbadge || '', followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
       const rows = this.rows('SELECT username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
@@ -29178,16 +29232,49 @@ export class UserStore {
       let raidL = null; try { const ra = this._raidActive(sq.id); if (ra) { const pr = this._raidProgress(ra); if (pr.total >= +ra.target) { raidL = this._raidSettle(ra, true); } else raidL = Object.assign(this._raidPub(ra), { live: pr }); } } catch (e) {} // a clear is settled the moment the room sees it, not at the next cron
       return this.j({ squad: { sid: sq.id, name: sq.name, tag: sq.tag, crest: crestNorm(sq.crest), n: rows.length, max: squadSlots(+sq.sxp || 0), level: squadLevel(+sq.sxp || 0), mvp: (sq.mvp && +sq.mvp_until > Date.now()) ? { name: sq.mvp_name || '' } : null }, season: { start: ws, end: we, total, members }, feed, raid: raidL });
     }
+    if (path === '/squad/shop') { // the squad shop: catalogue + the squad's treasury + what it owns (member view)
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      const me = this.rows('SELECT frame, sqbadge FROM users WHERE id=?', uid)[0] || {};
+      return this.j({ ok: true, valor: +sq.valor || 0, isLeader: String(sq.leader) === uid, owned: this._sqShopOwned(sq.id), items: SQUAD_SHOP, myFrame: me.frame || '', myBadge: me.sqbadge || '' });
+    }
+    if (path === '/squad/shopbuy') { // the LEADER spends the squad treasury to UNLOCK a cosmetic for the whole squad
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      if (String(sq.leader) !== uid) return this.j({ error: 'not_leader' }, 403);
+      const item = squadShopItem(String((b && b.id) || '')); if (!item) return this.j({ error: 'no_item' }, 404);
+      const owned = this._sqShopOwned(sq.id); if (owned.indexOf(item.id) >= 0) return this.j({ error: 'already_owned' }, 409);
+      if ((+sq.valor || 0) < item.price) return this.j({ error: 'need_valor', need: item.price, have: +sq.valor || 0 }, 402);
+      const next = owned.concat([item.id]);
+      try { this.state.storage.sql.exec('UPDATE squads SET valor=valor-?, shop=? WHERE id=?', item.price, JSON.stringify(next), sq.id); } catch (e) { return this.j({ error: 'write' }, 503); }
+      this._opsEv(uid, 'squad', (sq.name || 'Squad') + ' unlocked ' + item.name + ' (-' + item.price + ' Valor)', '/squads/', { sid: sq.id, item: item.id, act: 'shopbuy' });
+      return this.j({ ok: true, valor: (+sq.valor || 0) - item.price, owned: next });
+    }
+    if (path === '/squad/shopequip') { // any member equips (or removes) a squad cosmetic the squad has unlocked
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const sq = this._squadOf(uid); if (!sq) return this.j({ error: 'not_in_squad' }, 404);
+      const off = !!(b && b.off);
+      const item = off ? null : squadShopItem(String((b && b.id) || ''));
+      if (!off && !item) return this.j({ error: 'no_item' }, 404);
+      if (!off && this._sqShopOwned(sq.id).indexOf(item.id) < 0) return this.j({ error: 'not_unlocked' }, 403);
+      const slot = off ? String((b && b.slot) || 'frame') : item.kind;
+      const sql = this.state.storage.sql;
+      if (slot === 'frame') { try { sql.exec('UPDATE users SET frame=? WHERE id=?', off ? 'default' : item.id, uid); } catch (e) {} }
+      else { try { sql.exec('UPDATE users SET sqbadge=? WHERE id=?', off ? '' : item.id, uid); } catch (e) {} }
+      const me = this.rows('SELECT frame, sqbadge FROM users WHERE id=?', uid)[0] || {};
+      return this.j({ ok: true, myFrame: me.frame || '', myBadge: me.sqbadge || '' });
+    }
     if (path === '/squad/get') { // one squad, public view (no member uids leave here)
       const sid = String((b && b.sid) || url.searchParams.get('sid') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
       const sq = sid ? this._squadPub(sid, true) : null;
+      if (sq && sq.hidden) return this.j({ error: 'not_found' }, 404); // a hidden squad (MP-One) cannot be opened by anyone - only its own members see it, via /squad/mine
       return sq ? this.j({ squad: sq }) : this.j({ error: 'not_found' }, 404);
     }
     if (path === '/squad/browse') { // EVERY squad, with the state of each - the only public view there is
       // It used to list only the ones with a free seat, so a squad VANISHED from the site the moment it filled
       // (Mistrlefty's did, three members in, at level 1 where a squad holds three). A directory that hides its
       // subject is not a directory: a full squad is the most convincing thing a newcomer can see.
-      const rows = this.rows('SELECT id FROM squads ORDER BY sxp DESC, created DESC LIMIT 60');
+      const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY sxp DESC, created DESC LIMIT 60'); // hidden squads (MP-One) never appear in the directory
       const out = [];
       for (const r of rows) {
         const s = this._squadPub(r.id, false); if (!s) continue;
@@ -29197,6 +29284,24 @@ export class UserStore {
       }
       out.sort((a, c) => (c.joinable - a.joinable) || (c.sxp - a.sxp) || (c.n - a.n));
       return this.j({ squads: out, total: (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c });
+    }
+    if (path === '/squad/mkhidden') { // admin: a hidden, fully-unlocked squad (MP-One) - shows on the owner's card, opens for no one
+      const who = String((b && b.username) || '').trim().replace(/^@/, '');
+      const u = this.rows('SELECT id, username FROM users WHERE LOWER(username)=?', who.toLowerCase())[0];
+      if (!u) return this.j({ error: 'no_such_member', who }, 404);
+      const name = String((b && b.name) || 'MP-One').slice(0, 40);
+      const tag = (String((b && b.tag) || 'MP1').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5)) || 'MP1';
+      const id = (String((b && b.sid) || 'MPONE').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8)) || 'MPONE';
+      const sql = this.state.storage.sql, now = Date.now();
+      const cur = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0];
+      if (cur && cur.sid !== id) this._squadRemoveUser(u.id); // the member must not already be in a different squad
+      const ex = this.rows('SELECT id FROM squads WHERE id=?', id)[0];
+      if (ex) { try { sql.exec('UPDATE squads SET name=?, tag=?, leader=?, hidden=1, sxp=?, valor=?, shop=? WHERE id=?', name, tag, u.id, SQUAD_MAX_SXP, SQUAD_HIDDEN_VALOR, JSON.stringify(SQUAD_SHOP_IDS), id); } catch (e) {} }
+      else { const crest = crestNorm((b && b.crest) || { shape: 'hex', sym: 'crown', bg: '#0a0b0d', fg: '#ff5a1a', ring: 'aura' });
+        try { sql.exec('INSERT INTO squads(id,name,tag,leader,crest,motto,created,openj,wins,draws,losses,sxp,valor,shop,hidden) VALUES(?,?,?,?,?,?,?,0,0,0,0,?,?,?,1)', id, name, tag, u.id, JSON.stringify(crest), String((b && b.motto) || ''), now, SQUAD_MAX_SXP, SQUAD_HIDDEN_VALOR, JSON.stringify(SQUAD_SHOP_IDS)); } catch (e) { return this.j({ error: 'write' }, 503); } }
+      try { sql.exec('INSERT OR REPLACE INTO squadm(uid,sid,role,ts) VALUES(?,?,?,?)', u.id, id, 'leader', now); } catch (e) {}
+      this._sqBust();
+      return this.j({ ok: true, sid: id, squad: this._squadPub(id, true) });
     }
     if (path === '/squad/create') {
       const uid = String((b && b.uid) || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'no_uid' }, 400);
@@ -29308,6 +29413,7 @@ export class UserStore {
         this._pushNotif(next.uid, 'squad', 'You are now the leader of ' + sq.name + '.', 'squads');
       }
       sql.exec('DELETE FROM squadm WHERE uid=?', uid);
+      this._sqStripCosmetics(uid);
       this._opsEv(uid, 'squad', 'left ' + (sq.name || '') + ' [' + (sq.tag || '') + ']' + (String(sq.leader) === uid ? ' (was leader)' : ''), '/squads/', { sid: sq.id, act: 'leave' });
       return this.j({ ok: true, left: true });
       this._sqBust();
@@ -29323,6 +29429,7 @@ export class UserStore {
       const m = this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', t.id, sq.id)[0];
       if (!m) return this.j({ error: 'not_a_member' }, 404);
       this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', t.id);
+      this._sqStripCosmetics(t.id);
       this._sqBust();
       this._pushNotif(t.id, 'squad', 'You were removed from ' + sq.name + '.', 'squads');
       this._opsEv(uid, 'squad', 'removed @' + (t.username || '') + ' from ' + (sq.name || ''), '/squads/', { sid: sq.id, who: t.username || '', act: 'kick' });
@@ -29414,10 +29521,11 @@ export class UserStore {
       return this.j({ settled: out.length, duels: out });
     }
     if (path === '/squad/addxp') { const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); const amt = Math.round(+((b && b.amt)) || 0); if (!sid || !amt) return this.j({ error: 'bad' }, 400); this._sqAddXp(sid, amt); const r = this.rows('SELECT sxp FROM squads WHERE id=?', sid)[0]; return this.j({ ok: true, sxp: r ? +r.sxp || 0 : 0, level: squadLevel(r ? +r.sxp || 0 : 0) }); }
+    if (path === '/squad/addvalor') { const sid = String((b && b.sid) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); const amt = Math.round(+((b && b.amt)) || 0); if (!sid || !amt) return this.j({ error: 'bad' }, 400); this._sqAddValor(sid, amt, 'admin grant'); const r = this.rows('SELECT valor FROM squads WHERE id=?', sid)[0]; return this.j({ ok: true, valor: r ? +r.valor || 0 : 0 }); }
     if (path === '/squad/settleone') { const d = this.rows('SELECT * FROM sduels WHERE id=?', String((b && b.id) || ''))[0]; if (!d) return this.j({ error: 'not_found' }, 404); if (d.status !== 'active' || +d.settled) return this.j({ error: 'not_active', status: d.status }, 409); if (b && b.now) { try { this.state.storage.sql.exec('UPDATE sduels SET end_ts=? WHERE id=?', Math.min(+b.now, Date.now()), d.id); d.end_ts = Math.min(+b.now, Date.now()); } catch (e) {} } return this.j({ ok: true, duel: this._sduelSettle(d) }); }
     if (path === '/squad/admin') { // the owner's view: every squad with its members, and who leads it
       const out = [];
-      for (const r of this.rows('SELECT id FROM squads ORDER BY sxp DESC, created DESC LIMIT 200')) {
+      for (const r of this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY sxp DESC, created DESC LIMIT 200')) { // a hidden squad (MP-One) stays off even the owner's admin list
         const s = this._squadPub(r.id, true); if (!s) continue;
         s.state = s.n >= s.max ? 'full' : s.open ? 'open' : 'invite';
         out.push(s);
@@ -29436,7 +29544,7 @@ export class UserStore {
         if (!this.rows('SELECT 1 FROM squadm WHERE uid=? AND sid=?', u.id, sid)[0]) return this.j({ error: 'not_a_member' }, 404);
         // removing the LEADER hands the squad on rather than leaving it headless
         if (String(sq.leader) === String(u.id)) { this._squadRemoveUser(u.id); this._sqBust(); this._opsEv(u.id, 'squad', 'leader @' + (u.username || '') + ' removed from ' + (sq.name || '') + ' by admin (squad handed over)', '/squads/', { sid: sid, act: 'adminremove' }); return this.j({ ok: true, removed: u.username, handedOver: true, squad: this._squadPub(sid, true) }); }
-        sql.exec('DELETE FROM squadm WHERE uid=?', u.id); this._sqBust();
+        sql.exec('DELETE FROM squadm WHERE uid=?', u.id); this._sqStripCosmetics(u.id); this._sqBust();
         this._pushNotif(u.id, 'squad', 'You were removed from ' + (sq.name || 'your squad') + '.', '/squads/');
         this._opsEv(u.id, 'squad', '@' + (u.username || '') + ' removed from ' + (sq.name || '') + ' by admin', '/squads/', { sid: sid, act: 'adminremove' });
         return this.j({ ok: true, removed: u.username, squad: this._squadPub(sid, true) });
@@ -29504,16 +29612,16 @@ export class UserStore {
       return this.j({ days: 14, bucketHours: 48, marginMax: RAID_MARGIN_MAX, byCoin: out });
     }
     if (path === '/squad/stats') { // ONE small citable summary (2026-10-01): totals + the standout squad, so an AI can quote a number without listing every team
-      const squads = (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c;
-      const members = (this.rows('SELECT COUNT(*) c FROM squadm')[0] || { c: 0 }).c;
-      const active = (this.rows('SELECT COUNT(*) c FROM (SELECT sid FROM squadm GROUP BY sid HAVING COUNT(*) >= 2)')[0] || { c: 0 }).c;
+      const squads = (this.rows('SELECT COUNT(*) c FROM squads WHERE COALESCE(hidden,0)=0')[0] || { c: 0 }).c;
+      const members = (this.rows('SELECT COUNT(*) c FROM squadm m JOIN squads s ON s.id=m.sid WHERE COALESCE(s.hidden,0)=0')[0] || { c: 0 }).c;
+      const active = (this.rows('SELECT COUNT(*) c FROM (SELECT m.sid FROM squadm m JOIN squads s ON s.id=m.sid WHERE COALESCE(s.hidden,0)=0 GROUP BY m.sid HAVING COUNT(*) >= 2)')[0] || { c: 0 }).c;
       const raidsCleared = (this.rows("SELECT COUNT(*) c FROM raids WHERE status='cleared'")[0] || { c: 0 }).c;
-      const topRow = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 1')[0];
+      const topRow = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY wins DESC, sxp DESC LIMIT 1')[0];
       const top = topRow ? this._squadPub(topRow.id, false) : null;
       return this.j({ squads, members, active, raidsCleared, max: SQUAD_MAX, levels: SQUAD_LEVELS.length, top: top ? { name: top.name, tag: top.tag, level: (top.level || {}).lv || 1, members: top.n, wins: top.wins, sxp: top.sxp } : null });
     }
   if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
-      const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');
+      const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
       return this.j({ squads: out });
     }
@@ -29523,8 +29631,8 @@ export class UserStore {
       const out = {};
       if (ids.length) {
         try {
-          inChunks(ids, (part, ph) => this.rows('SELECT m.uid, s.id, s.name, s.tag, s.crest, s.mvp, s.mvp_until FROM squadm m JOIN squads s ON s.id=m.sid WHERE m.uid IN (' + ph + ')', ...part))
-            .forEach(r => { out[String(r.uid)] = { sid: r.id, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest), mvp: !!(r.mvp && +r.mvp_until > Date.now() && String(r.mvp) === String(r.uid)) }; });
+          inChunks(ids, (part, ph) => this.rows('SELECT m.uid, s.id, s.name, s.tag, s.crest, s.mvp, s.mvp_until, s.hidden FROM squadm m JOIN squads s ON s.id=m.sid WHERE m.uid IN (' + ph + ')', ...part))
+            .forEach(r => { out[String(r.uid)] = { sid: r.id, name: r.name || '', tag: r.tag || '', crest: crestNorm(r.crest), hidden: !!r.hidden, mvp: !!(r.mvp && +r.mvp_until > Date.now() && String(r.mvp) === String(r.uid)) }; });
         } catch (e) {}
       }
       return this.j({ squads: out });

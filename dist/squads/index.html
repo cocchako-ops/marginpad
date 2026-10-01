@@ -330,6 +330,23 @@
     .duel .sd.r{justify-content:flex-start}
     .duel .mid{text-align:left}
   }
+  /* Squad shop */
+  .valbar{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:11px 14px;border-radius:12px;background:linear-gradient(120deg,rgba(255,74,0,.08),rgba(120,70,220,.08)),#0f1118;border:1px solid var(--line,#232a33)}
+  .valn{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:#ffb056}
+  .vall{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .valh{margin-left:auto;font-size:12px;color:var(--faint)}
+  .sqshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+  .sqitem{display:flex;flex-direction:column;gap:7px;padding:13px;border-radius:14px;background:#0d0f15;border:1px solid var(--line,#232a33);min-width:0}
+  .sqitem.worn{border-color:var(--sq,#c2f64a)}
+  .sqpv{position:relative;height:92px;border-radius:18px;background:radial-gradient(120% 90% at 50% 40%,#161821,#0a0b11);--fs:.56;margin:2px 4px 6px;display:flex;align-items:center;justify-content:center}
+  .sqinm{font-weight:800;font-size:14.5px;min-width:0}
+  .wornb{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sq,#c2f64a)}
+  .sqitier{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .sqitier.t-legendary{color:#ff8a2a}.sqitier.t-mythic{color:#b78cff}.sqitier.t-epic{color:#c06bff}.sqitier.t-rare{color:#5ad0ff}
+  .sqidesc{font-size:12.5px;color:var(--dim);line-height:1.45;flex:1}
+  .sqiact{margin-top:3px}.sqiact .btn{width:100%}
+  .shoplk{display:block;font-size:12px;color:var(--faint);text-align:center;padding:7px 0}
+  @media(max-width:560px){.sqshop{grid-template-columns:1fr 1fr;gap:10px}.sqpv{height:78px}.valn{font-size:22px}.valh{margin-left:0;width:100%}}
 </style>
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
@@ -410,7 +427,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     not_found: __esT_squadsindex("notFound",'Not found.'), busy: __esT_squadsindex("busyTryAgainIn",'Busy - try again in a moment.'),
     locked_piece: __esT_squadsindex("yourSquadHasNot",'Your squad has not unlocked that piece yet.'),
         need_level: __esT_squadsindex("youNeedPlatinumTo",'You need Platinum to found a squad.'), insufficient: __esT_squadsindex("notEnoughBalanceFor",'Not enough balance for that.'),
-    in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.')
+    in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.'),
+    need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.')
   };
   function say(el, j, good) {
     if (!el) return;
@@ -698,6 +716,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + '</div>';
 
     h += raidSection(s, isL);
+    h += '<div class="sect"><h2>' + __esT_squadsindex("squadShop", 'Squad shop') + '</h2><p class="sub">' + (isL ? __esT_squadsindex("shopSubLeader", "Spend the squad's Valor on exclusive borders and badges - earned only by playing together. You buy; every member can then wear what the squad owns.") : __esT_squadsindex("shopSubMember", "Borders and badges bought with the squad's Valor. The leader unlocks them; you equip any the squad owns.")) + '</p><div id="sqShop"><div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div></div>';
     h += '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader",'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe",'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
     h += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning",'<div class="empty">No duel running.</div>');
     if (isL && !live.some(function (d) { return d.status === 'active'; })) h += challengeHtml();
@@ -785,6 +804,32 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   }
 
   /* ── render + wiring ────────────────────────────────────────────────────────────────────── */
+  // ── Squad shop (2026-10-01): Valor treasury, exclusive animated borders + badges. One fetch, rendered in place. ──
+  function shopItemHtml(it, d) {
+    var owned = (d.owned || []).indexOf(it.id) >= 0, isFrame = it.kind === 'frame';
+    var wearing = isFrame ? (d.myFrame === it.id) : (d.myBadge === it.id);
+    var pv = isFrame ? ('<div class="sqpv frame-' + it.id + '"></div>') : ('<div class="sqpv"><span class="mp-sqbadge sqbadge-' + it.id + '" style="width:46px;height:46px"></span></div>');
+    var act;
+    if (!owned) act = d.isLeader
+      ? ('<button class="btn sm p" data-shopbuy="' + it.id + '"' + ((d.valor || 0) < it.price ? ' disabled' : '') + '>' + __esT_squadsindex("unlockSp", 'Unlock') + ' &middot; ' + it.price + ' ' + __esT_squadsindex("valorSp", 'Valor') + '</button>')
+      : ('<span class="shoplk">' + it.price + ' ' + __esT_squadsindex("valorSp", 'Valor') + ' &middot; ' + __esT_squadsindex("leaderUnlocks", 'leader unlocks') + '</span>');
+    else if (wearing) act = '<button class="btn sm" data-shopoff="' + it.kind + '">' + __esT_squadsindex("unequipSp", 'Unequip') + '</button>';
+    else act = '<button class="btn sm p" data-shopequip="' + it.id + '">' + __esT_squadsindex("equipSp", 'Equip') + '</button>';
+    return '<div class="sqitem' + (owned ? ' owned' : '') + (wearing ? ' worn' : '') + '">' + pv
+      + '<div class="sqinm">' + esc(it.name) + (wearing ? ' <span class="wornb">' + __esT_squadsindex("wearingSp", 'worn') + '</span>' : '') + '</div>'
+      + '<div class="sqitier t-' + esc(it.tier) + '">' + esc(it.tier) + ' &middot; ' + (it.kind === 'badge' ? __esT_squadsindex("badgeSp", 'badge') : __esT_squadsindex("borderSp", 'border')) + '</div>'
+      + '<div class="sqidesc">' + esc(it.desc) + '</div><div class="sqiact">' + act + '</div></div>';
+  }
+  function loadShop() {
+    var box = $('#sqShop'); if (!box) return;
+    api('shop').then(function (d) {
+      if (!d || d.error) { box.innerHTML = '<div class="empty">' + (ERR[d && d.error] || __esT_squadsindex("couldNotLoadShop", 'Could not load the shop.')) + '</div>'; return; }
+      S._shop = d;
+      box.innerHTML = '<div class="valbar"><span class="valn">' + (d.valor || 0).toLocaleString() + '</span> <span class="vall">' + __esT_squadsindex("valorSp", 'Valor') + '</span><span class="valh">' + __esT_squadsindex("valorHow", 'earned from duel wins, raids, levels and MVP') + '</span></div>'
+        + '<div class="sqshop">' + (d.items || []).map(function (it) { return shopItemHtml(it, d); }).join('') + '</div>';
+      if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} } // the previews are JS-animated like the real cards
+    }).catch(function () { box.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoadShop", 'Could not load the shop.') + '</div>'; });
+  }
   function render() {
     S._invShown = '';
     if (!signedIn()) { app.innerHTML = guestView(); loadDir(); reveal(app); return; }
@@ -793,7 +838,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     var bld = $('#bld', app);
     if (bld) wireBuilder(bld, function () { var n = $('#cName'); return n ? n.value : (S.me.squad && S.me.squad.name); }, function () { var t = $('#cTag'); return t ? t.value : (S.me.squad && S.me.squad.tag); });
     ['#cName', '#cTag'].forEach(function (sel) { var el = $(sel); if (el) el.addEventListener('input', function () { if (sel === '#cTag') el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); repaintPrev(bld, function () { return $('#cName').value; }, function () { return $('#cTag').value; }); }); });
-    if (S.me.squad) loadOpen(); else loadDir();
+    if (S.me.squad) { loadOpen(); loadShop(); } else loadDir();
     reveal(app);
   }
 
@@ -821,6 +866,9 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
         if (j && !j.error) { toast(good, 'good'); load(); }
       });
     };
+    if (b.getAttribute && b.getAttribute('data-shopbuy')) { e.preventDefault(); var sbId = b.getAttribute('data-shopbuy'); b.disabled = true; api('shopbuy', { id: sbId }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || (j.error === 'need_valor' ? (__esT_squadsindex("needValor", 'Not enough Valor - need ') + j.need + '.') : __esT_squadsindex("thatDidNotWork", 'That did not work.')), 'warn'); return; } toast(__esT_squadsindex("unlockedForSquad", 'Unlocked for the squad.'), 'good'); loadShop(); }); return; }
+    if (b.getAttribute && b.getAttribute('data-shopequip')) { e.preventDefault(); var seId = b.getAttribute('data-shopequip'); b.disabled = true; api('shopequip', { id: seId }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || __esT_squadsindex("thatDidNotWork", 'That did not work.'), 'warn'); return; } toast(__esT_squadsindex("equippedCard", 'Equipped - it shows on your profile card.'), 'good'); loadShop(); }); return; }
+    if (b.getAttribute && b.getAttribute('data-shopoff')) { e.preventDefault(); var soSlot = b.getAttribute('data-shopoff'); b.disabled = true; api('shopequip', { off: true, slot: soSlot }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || __esT_squadsindex("thatDidNotWork", 'That did not work.'), 'warn'); return; } toast(__esT_squadsindex("removedSp", 'Removed.'), 'good'); loadShop(); }); return; }
     if (b.id === 'roomGo') {
       e.preventDefault();
       var rid = b.getAttribute('data-room');
@@ -940,7 +988,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=8f0fd2d1"></script>
-<script defer src="/assets/mp-nav.js?v=16b59dee"></script>
+<script defer src="/assets/mp-auth.js?v=5e0937c7"></script>
+<script defer src="/assets/mp-nav.js?v=3fb5455b"></script>
 </body>
 </html>
