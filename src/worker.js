@@ -22391,7 +22391,7 @@ export default {
       const sub = url.pathname.slice('/api/squad/'.length);
       const call = async (p, bd) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bd) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       // ── public reads (no account needed): the squad directory is how a newcomer finds anyone at all
-      if (sub === 'browse' || sub === 'board' || sub === 'openduels') {
+      if (sub === 'browse' || sub === 'board' || sub === 'openduels' || sub === 'stats') {
         const ck = new Request('https://marginpad.io/__squad_' + sub + '_v1');
         if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
         let body = '{}'; try { const r = await stub.fetch(new Request('https://do/squad/' + sub, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); body = await r.text(); } catch (e) {}
@@ -29484,7 +29484,16 @@ export class UserStore {
       }
       return this.j({ days: 14, bucketHours: 48, marginMax: RAID_MARGIN_MAX, byCoin: out });
     }
-    if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
+    if (path === '/squad/stats') { // ONE small citable summary (2026-10-01): totals + the standout squad, so an AI can quote a number without listing every team
+      const squads = (this.rows('SELECT COUNT(*) c FROM squads')[0] || { c: 0 }).c;
+      const members = (this.rows('SELECT COUNT(*) c FROM squadm')[0] || { c: 0 }).c;
+      const active = (this.rows('SELECT COUNT(*) c FROM (SELECT sid FROM squadm GROUP BY sid HAVING COUNT(*) >= 2)')[0] || { c: 0 }).c;
+      const raidsCleared = (this.rows("SELECT COUNT(*) c FROM raids WHERE status='cleared'")[0] || { c: 0 }).c;
+      const topRow = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 1')[0];
+      const top = topRow ? this._squadPub(topRow.id, false) : null;
+      return this.j({ squads, members, active, raidsCleared, max: SQUAD_MAX, levels: SQUAD_LEVELS.length, top: top ? { name: top.name, tag: top.tag, level: (top.level || {}).lv || 1, members: top.n, wins: top.wins, sxp: top.sxp } : null });
+    }
+  if (path === '/squad/board') { // every squad ranked by duel record - not a prize board, the standing
       const rows = this.rows('SELECT id FROM squads ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
       return this.j({ squads: out });
