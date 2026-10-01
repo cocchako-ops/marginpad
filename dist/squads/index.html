@@ -695,6 +695,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   function squadView() {
     var s = S.me.squad, isL = S.me.isLeader;
     try { document.documentElement.style.setProperty('--sq', (s.crest && s.crest.bg) || '#c2f64a'); } catch (e) {}
+    // the shop previews wear the squad's OWN colours (2026-10-01); a hidden squad (MP-One) keeps the designed look
+    try { var ds = document.documentElement.style; if (s.crest && !s.hidden) { var _bg = s.crest.bg || '#0a0b0d', _fg = s.crest.fg || '#c2f64a'; var _lum = function (h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return 0.299 * (parseInt(h.slice(0, 2), 16) || 0) + 0.587 * (parseInt(h.slice(2, 4), 16) || 0) + 0.114 * (parseInt(h.slice(4, 6), 16) || 0); }; var _a = _lum(_fg) >= _lum(_bg) ? _fg : _bg; ds.setProperty('--sqc', _a); ds.setProperty('--sqc2', _a === _fg ? _bg : _fg); } else { ds.removeProperty('--sqc'); ds.removeProperty('--sqc2'); } } catch (e) {}
     var duels = S.me.duels || [], live = duels.filter(function (d) { return d.status === 'active' || d.status === 'pending' || d.status === 'open'; });
     var past = duels.filter(function (d) { return d.settled; });
     var h = '<div class="card hero">'
@@ -988,7 +990,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   setInterval(function () { if (!document.hidden && signedIn()) load(true); }, 45000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=00b2e6a2"></script>
-<script defer src="/assets/mp-nav.js?v=b440e4d1"></script>
+<script defer src="/assets/mp-auth.js?v=99d168b5"></script>
+<script defer src="/assets/mp-nav.js?v=48cc0b6f"></script>
 </body>
 </html>

@@ -623,8 +623,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=00b2e6a2', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=00b2e6a2"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=99d168b5', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=99d168b5"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -637,7 +637,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=5142ddf2', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=29874540', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
       if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
