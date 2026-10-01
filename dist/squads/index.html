@@ -229,6 +229,11 @@
   .rc:hover{transform:translateY(-2px);border-color:var(--rc);box-shadow:0 14px 28px -20px var(--rc)}
   .rc-c{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;color:var(--rc)}
   .rc-t{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--faint)}
+  .rc-left{font-size:10px;color:var(--dim);margin-top:1px}
+  .rc.off{opacity:.42;cursor:not-allowed}
+  .rc.off:hover{transform:none;border-color:var(--line2);box-shadow:none}
+  .raid-how{margin-top:11px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:12.5px;line-height:1.5;color:var(--dim)}
+  .raid-how b{color:var(--ink);font-weight:700}
   .card.raid{--rc:#c2f64a;position:relative;overflow:hidden;border-color:color-mix(in srgb,var(--rc) 34%,var(--line));background:radial-gradient(90% 130% at 0 0,color-mix(in srgb,var(--rc) 10%,transparent),transparent 58%),var(--panel)}
   .raid-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .raid-coin{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:var(--rc)}
@@ -436,7 +441,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     locked_piece: __esT_squadsindex("yourSquadHasNot",'Your squad has not unlocked that piece yet.'),
         need_level: __esT_squadsindex("youNeedPlatinumTo",'You need Platinum to found a squad.'), insufficient: __esT_squadsindex("notEnoughBalanceFor",'Not enough balance for that.'),
     in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.'),
-    need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.')
+    need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.'),
+    coin_daily_limit: __esT_squadsindex("coinDailyLimit",'That coin is used up for today. Raids per coin per day grow with your level - five at level 10.'), raid_running: __esT_squadsindex("raidRunning",'A raid is already running. Finish or abandon it first.'), bad_coin: __esT_squadsindex("badCoin",'Pick a major coin.')
   };
   function say(el, j, good) {
     if (!el) return;
@@ -653,10 +659,13 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     return h + '</div>';
   }
   function raidPicker(coins, s) {
-    var tgt = Math.round((S.me.raidTargetHint) || 200 * (1 + 0.15 * (((s.level || {}).lv || 1) - 1)));
+    var tgt = Math.round((S.me.raidTargetHint) || 350);
+    var cap = S.me.raidDailyCap || 1, today = S.me.raidToday || {};
+    var note = __esT_squadsindex("raidPickCap", 'Up to ') + cap + ' ' + (cap === 1 ? __esT_squadsindex("raidSingular", 'raid') : __esT_squadsindex("raidPlural", 'raids')) + ' ' + __esT_squadsindex("raidPickCap2", 'per coin per day (5 at level 10). The target is the realized profit your squad closes on that coin in 48 hours - it grows with your level and squad size. Each closed trade adds at most half the target, a loss pulls it down, and a position opened with over $10,000 margin does not count.');
     return '<div class="card rpick"><div class="rpick-g">' + coins.map(function (c) {
-      return '<button type="button" class="rc" data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt + '</span></button>';
-    }).join('') + '</div><div class="note">' + __esT_squadsindex("raidPickNote", '48 hours, winner-takes-the-Ticks for everyone who traded it. Losses count.') + '</div><div class="msg" id="raidMsg"></div></div>';
+      var used = today[String(c).toUpperCase()] || 0, left = Math.max(0, cap - used), full = left <= 0;
+      return '<button type="button" class="rc' + (full ? ' off' : '') + '"' + (full ? ' disabled' : '') + ' data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt.toLocaleString() + '</span><span class="rc-left">' + (full ? __esT_squadsindex("usedUpToday", 'used up today') : left + ' ' + __esT_squadsindex("leftToday", 'left today')) + '</span></button>';
+    }).join('') + '</div><div class="note">' + note + '</div><div class="msg" id="raidMsg"></div></div>';
   }
   function raidCard(r, isL) {
     var col = RAIDCOIN[r.coin] || '#c2f64a', live = r.live || {};
@@ -670,6 +679,9 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + '<div class="raid-st">' + (ended ? (cl ? '<span class="rwin">' + __esT_squadsindex("clearedSp", 'Cleared') + '</span>' : '<span class="rlose">' + __esT_squadsindex("failedSp", 'Failed') + '</span>') : '<span class="rlive">' + hh + 'h ' + mm + 'm ' + __esT_squadsindex("leftSp", 'left') + '</span>') + '</div></div>'
       + '<div class="raid-nums"><b class="' + (neg ? 'neg' : '') + '">' + (neg ? '-$' + Math.abs(prog).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '$' + prog.toLocaleString(undefined, { maximumFractionDigits: 0 })) + '</b><span>' + __esT_squadsindex("ofSp", 'of') + ' $' + r.target.toLocaleString() + '</span></div>'
       + '<div class="raid-bar"><i style="width:' + pct + '%"></i></div>';
+    // Why a big win does not fill the bar in one go (owner 2026-10-01: closed $500, bar moved ~$200 and wondered why).
+    // State the per-trade cap in real dollars right where the number is, so the partial fill explains itself.
+    h += (function () { var capEach = Math.round((+r.target || 0) * (r.oneShare || 0.5)); var mm2 = (r.marginMax || 10000); return '<div class="raid-how"><b>' + __esT_squadsindex("howItFills", 'How the bar fills') + '</b> ' + __esT_squadsindex("raidFillA", 'Each closed trade adds up to') + ' <b>$' + capEach.toLocaleString() + '</b> ' + __esT_squadsindex("raidFillB", '- half the target - so it takes the whole squad, not one big win, to clear it. A loss pulls the pool down, and a position opened with over') + ' $' + mm2.toLocaleString() + ' ' + __esT_squadsindex("raidFillC", 'margin does not count.') + '</div>'; })();
     var mem = (live.members || []).filter(function (m) { return m.n > 0; });
     if (mem.length) h += '<div class="raid-m">' + mem.map(function (m) {
       return '<span class="rm"><b>' + esc(m.name) + '</b> <span class="' + (m.pnl < 0 ? 'neg' : 'pos') + '">' + (m.pnl < 0 ? '-$' + Math.abs(m.pnl).toFixed(0) : '+$' + m.pnl.toFixed(0)) + '</span></span>';

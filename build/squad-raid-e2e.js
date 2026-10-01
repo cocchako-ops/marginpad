@@ -88,19 +88,24 @@ async function trade(uid, coin, side, margin, lvl, exit) {
   await trade('e2erd2', 'BTC', 'long', 9000, +(px * 1.02).toFixed(2), (px * 1.03).toFixed(2));
   await new Promise(r => setTimeout(r, 2500));
   const tkBefore3 = await tk('e2erd3');
-  const st = await adm('/api/admin/raidsettle', { id: m1.raid.id });
-  ok(st.raid && st.raid.progress > 0, 'THE WINNING TRADES RAISED THE POOL above zero', st.raid && { progress: st.raid.progress });
-  ok(st.ok && st.raid, 'the raid can be settled on demand', st.raid && { status: st.raid.status, progress: st.raid.progress });
-  const cleared = st.raid.status === 'cleared';
-  ok(cleared, 'IT CLEARED once the pool passed the target', { progress: st.raid.progress, target });
+  // The raid now auto-clears the MOMENT /mine (or the room) sees the pool pass the target (owner 2026-10-01: instant
+  // finish). So poll /mine: the clear shows as the active raid flipping to 'cleared' and then moving into raidHistory.
+  // Fall back to an explicit settle only if it somehow has not cleared yet.
+  const done = await poll(function (m) { var h = (m.raidHistory || []).filter(function (x) { return x.coin === 'BTC' && x.status === 'cleared'; }); return (m.raid && m.raid.status === 'cleared') || h.length > 0; }, 12);
+  let rr = (done && done.raid && done.raid.status === 'cleared') ? done.raid : ((done && done.raidHistory || []).filter(function (x) { return x.coin === 'BTC' && x.status === 'cleared'; })[0]);
+  if (!rr) { const st = await adm('/api/admin/raidsettle', { id: m1.raid.id }); rr = st.raid; }
+  ok(rr && rr.progress > 0, 'THE WINNING TRADES RAISED THE POOL above zero', rr && { progress: rr.progress });
+  ok(!!rr, 'the raid settled', rr && { status: rr.status, progress: rr.progress });
+  const cleared = !!(rr && rr.status === 'cleared');
+  ok(cleared, 'IT CLEARED the moment the pool passed the target', { progress: rr && rr.progress, target });
   if (cleared) {
     ok((await tk('e2erd1')) > 0, 'a member who traded it is paid Ticks', { t: await tk('e2erd1') });
     ok((await tk('e2erd3')) === tkBefore3, 'a member whose only trade was OVER the cap is paid nothing', { before: tkBefore3, after: await tk('e2erd3') });
   }
 
-  // a cleared coin is on cooldown
+  // a cleared coin cannot be raided again the same day at level 1 (daily cap = 1; it grows to 5 at level 10)
   const again = await sq('raid', real['e2erd1'], { op: 'start', coin: 'BTC' });
-  ok(again.error === 'coin_cooldown' || again.error === 'raid_running', 'the same coin is on cooldown after a clear', again);
+  ok(again.error === 'coin_daily_limit' || again.error === 'raid_running', 'the same coin is used up for the day after a raid', again);
 
   // ── A LOSING TRADE LOWERS THE POOL (owner's rule), measured cleanly on its own raid ──────────
   // One losing ETH trade, nothing else, settled - so the settled progress is exactly that loss, negative.

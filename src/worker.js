@@ -11994,10 +11994,15 @@ const RAID_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB'];
 const RAID_MS = 48 * 3600000;
 const RAID_MARGIN_MAX = 10000;
 const RAID_ONE_SHARE = 0.5;
-const RAID_COOLDOWN_MS = 24 * 3600000;        // the same coin again, after a clear
-const RAID_TARGET_DEFAULT = 200;              // USD of realized PnL at level 1; KV raid:cfg.target overrides, calibrated from /api/admin/raidcal
+const RAID_TARGET_DEFAULT = 350;              // USD of realized PnL, a SOLO level-1 squad; KV raid:cfg.target overrides, calibrated from /api/admin/raidcal
 const RAID_PAY = { ticks: 40, ticksPerLevel: 10, xp: 80, squadXp: 300 };
-function raidTarget(base, sxp) { const lv = squadLevel(sxp).lv; return Math.round((+base || RAID_TARGET_DEFAULT) * (1 + 0.15 * (lv - 1))); } // a level-10 squad holds five and is asked for 2.35x
+// The pool a squad has to fill, scaling with the LEVEL (the squad's investment). The base was raised 200 -> 350 on
+// 2026-10-01 (owner: a solo test bar felt too small); `members` is accepted but no longer multiplies the target -
+// scaling by size only penalised the small real squads this feature is meant to serve. Tunable via KV raid:cfg.target.
+function raidTarget(base, sxp, members) { const lv = squadLevel(sxp).lv; return Math.round((+base || RAID_TARGET_DEFAULT) * (1 + 0.15 * (lv - 1))); }
+// How many raids a squad may START on ONE coin in a UTC day. It grows with the level and reaches FIVE only at
+// level 10 (owner 2026-10-01: "maks 5 raids dnevno za jedan coin i to tek na lvl 10"). Replaces the old post-clear cooldown.
+function raidsPerDayCap(lv) { return [0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5][Math.max(1, Math.min(10, lv | 0))] || 1; }
 // MVP OF THE WEEK (owner): the member who put the most XP into the squad over a Monday-to-Monday week wears
 // a mark on their profile card for seven days and is paid. Weeks are UTC Mondays, like the season anchor.
 const MVP_TICKS = 100, MVP_SQUAD_XP = 100, MVP_WEAR_MS = 7 * 86400000;
@@ -29196,9 +29201,14 @@ export class UserStore {
       if (!m) return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can });
       const sq = this._squadPub(m.sid, true);
       if (!sq) { try { this.state.storage.sql.exec('DELETE FROM squadm WHERE uid=?', uid); } catch (e) {} return this.j({ squad: null, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can }); }
-      const raidA = this._raidActive(m.sid); const raidPub = raidA ? Object.assign(this._raidPub(raidA), { live: this._raidProgress(raidA) }) : null;
+      // A raid clears the MOMENT the target is hit, on this read too - not only when the room polls or the cron runs
+      // (owner 2026-10-01: "skupio sam koliko treba, sta sad? moze odmah da se zavrsi"). Same early-settle as /squad/live.
+      let raidPub = null; { const raidA = this._raidActive(m.sid); if (raidA) { const pr = this._raidProgress(raidA); raidPub = (pr.total >= +raidA.target) ? this._raidSettle(raidA, true) : Object.assign(this._raidPub(raidA), { live: pr }); } }
       const raidHist = this.rows('SELECT * FROM raids WHERE sid=? AND settled=1 ORDER BY created DESC LIMIT 6', m.sid).map(r => this._raidPub(r));
-      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS,
+      const _rlv = squadLevel(+sq.sxp || 0).lv, _rcap = raidsPerDayCap(_rlv);
+      const _rday = (function () { const d = new Date(); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
+      const _rToday = {}; try { for (const row of this.rows('SELECT coin, COUNT(*) c FROM raids WHERE sid=? AND created>=? GROUP BY coin', m.sid, _rday)) _rToday[String(row.coin).toUpperCase()] = +row.c || 0; } catch (e) {}
+      return this.j({ squad: sq, role: m.role || 'member', isLeader: String(sq.leader) === uid, invites: invs, ticks: this._tickBal(uid), max: SQUAD_MAX, can, raid: raidPub, raidHistory: raidHist, raidCoins: RAID_COINS, raidTargetHint: raidTarget(RAID_TARGET_DEFAULT, +sq.sxp || 0, sq.n), raidDailyCap: _rcap, raidToday: _rToday,
         duels: this._sduelList(m.sid), pendingInv: this.rows('SELECT i.uid, i.ts, u.username FROM squadinv i LEFT JOIN users u ON u.id=i.uid WHERE i.sid=? AND i.ts > ? ORDER BY i.ts DESC', m.sid, Date.now() - SQUAD_INV_MS).map(r => ({ uid: r.uid, name: r.username || '', ts: +r.ts || 0 })) });
     }
     if (path === '/squad/live') { // the room's two live things in ONE read: the squad's season XP and what its members are doing
@@ -29579,9 +29589,12 @@ export class UserStore {
       const coin = String((b && b.coin) || '').toUpperCase();
       if (RAID_COINS.indexOf(coin) < 0) return this.j({ error: 'bad_coin', coins: RAID_COINS }, 400);
       if (this._raidActive(sq.id)) return this.j({ error: 'raid_running' }, 409);
-      const last = this.rows("SELECT end_ts, status FROM raids WHERE sid=? AND coin=? AND status='cleared' ORDER BY end_ts DESC LIMIT 1", sq.id, coin)[0];
-      if (last && now - (+last.end_ts || 0) < RAID_COOLDOWN_MS) return this.j({ error: 'coin_cooldown', wait: RAID_COOLDOWN_MS - (now - (+last.end_ts || 0)) }, 429);
-      const target = raidTarget(+((b && b.targetBase)) || RAID_TARGET_DEFAULT, +sq.sxp || 0);
+      // Per-coin DAILY cap, growing with the level and reaching 5 only at level 10 (2026-10-01).
+      const _lv = squadLevel(+sq.sxp || 0).lv, _cap = raidsPerDayCap(_lv);
+      const _dayMs = (function () { const d = new Date(now); d.setUTCHours(0, 0, 0, 0); return d.getTime(); })();
+      const _usedToday = (this.rows('SELECT COUNT(*) c FROM raids WHERE sid=? AND coin=? AND created>=?', sq.id, coin, _dayMs)[0] || { c: 0 }).c;
+      if (_usedToday >= _cap) return this.j({ error: 'coin_daily_limit', cap: _cap, coin, lv: _lv, atLv10: _cap >= 5 ? 1 : 0 }, 429);
+      const target = raidTarget(+((b && b.targetBase)) || RAID_TARGET_DEFAULT, +sq.sxp || 0, this._squadN(sq.id));
       const id = 'rd' + now.toString(36) + Math.random().toString(36).slice(2, 6);
       sql.exec('INSERT INTO raids(id,sid,coin,start_ts,end_ts,target,status,progress,settled,detail,created) VALUES(?,?,?,?,?,?,?,0,0,?,?)', id, sq.id, coin, now, now + RAID_MS, target, 'active', '', now);
       for (const m of this._squadUids(sq.id)) this._pushNotif(m, 'squad', 'Raid on ' + coin + ' is live: $' + target + ' of realized profit between you in 48 hours. Losses count against it. Positions over $' + RAID_MARGIN_MAX.toLocaleString() + ' margin do not count.', '/squads/');
