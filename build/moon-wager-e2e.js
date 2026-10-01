@@ -160,6 +160,23 @@ Total Deposits
   const mf2 = await post({ markFinal: false });
   ok(mf2.ok && mf2.final === false, 'and un-marked again');
   ok(!(await get()).isActive, 'an e2e contest never becomes the live one (moon:active untouched)');
+  // ── A COLLIDING MASK CAN BE RESOLVED BY HAND (2026-10-01) ──────────────────────────────────
+  // Moon masks only the middle of a username, so two members can land on the same mask - *****786 was
+  // salma786 and azmat786, both real, both wagering, neither rankable. The only field that separates two
+  // such rows is the REGISTRATION DATE, which is why a pin is keyed on mask|reg rather than on the mask.
+  const pinMask = '*****786';
+  const p0 = await post({ pin: { mask: pinMask, reg: '09/22/2026', moon: 'azmat786' } });
+  ok(p0.ok && p0.pins[pinMask + '|09/22/2026'] === 'azmat786', 'a row can be pinned to one of its candidates', p0.pins);
+  const p1 = await post({ pin: { mask: pinMask, reg: '09/25/2026', moon: 'salma786' } });
+  ok(p1.ok && Object.keys(p1.pins).length === 2, 'and the second row to the other', p1.pins);
+  const pBad = await post({ pin: { mask: pinMask } });
+  ok(pBad.error === 'need_mask_and_reg', 'a pin without the date is refused - the mask alone is the ambiguous thing', pBad);
+  const pList = await post({ pins: 1 });
+  ok(pList.ok && Object.keys(pList.pins || {}).length === 2, 'the pins can be read back', pList.pins);
+  const pClr = await post({ pin: { mask: pinMask, reg: '09/22/2026' } });
+  ok(pClr.ok && !pClr.pins[pinMask + '|09/22/2026'], 'and cleared by sending no username', pClr.pins);
+  await post({ pin: { mask: pinMask, reg: '09/25/2026' } });
+
   // 4. clear both
   const c1 = await post({ phase: 'start', clear: true }), c2 = await post({ phase: 'end', clear: true });
   ok(c1.cleared === 'start' && c2.cleared === 'end', 'both snapshots cleared');

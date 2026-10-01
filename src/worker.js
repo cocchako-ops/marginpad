@@ -13541,14 +13541,25 @@ async function moonMembers(env) { // every Moon sign-up row we hold: acct, full 
   let prof = {}; try { prof = await resolveProfiles(env, [...new Set(rows.map(x => x.acct).filter(Boolean))]); } catch (e) {}
   return rows.map(x => ({ id: x.id, acct: x.acct, moon: String(x.uid || ''), status: x.status, name: (prof[String(x.acct || '').slice(2)] && prof[String(x.acct || '').slice(2)].username) || '', ts: +x.decided_ts || +x.ts || 0 }));
 }
-function moonResolve(rows, members) { // each pasted mask -> the ONE approved member whose full Moon username fits it
+// MOON MASKS COLLIDE, AND THE ONLY THING THAT SEPARATES TWO ROWS IS THE REGISTRATION DATE (2026-10-01).
+// Moon printed *****786 twice - two real members, salma786 and azmat786, both wagering, neither rankable,
+// because a mask alone cannot say which is which. Their Moon registration dates (22 and 25 Sep) matched their
+// $1 bonus claims on our side to the DAY, so the pair IS resolvable; it just needed somewhere to record it.
+// A pin is keyed on `mask|reg` for exactly that reason - the mask alone is the thing that is ambiguous.
+function moonPinKey(contest) { return 'moon:pin:' + String(contest || '').slice(0, 40); }
+function moonPinOf(row) { return String(row.mask || '') + '|' + String(row.reg || ''); }
+function moonResolve(rows, members, pins) { // each pasted mask -> the ONE approved member whose full Moon username fits it
   const approved = members.filter(m => m.status === 'approved'), used = new Set();
   const out = rows.map(r => {
-    const c = approved.filter(m => moonMaskFits(m.moon, r.mask));
+    let c = approved.filter(m => moonMaskFits(m.moon, r.mask));
+    // a pin set by the owner decides a row the mask cannot: it names ONE of the candidates, so the row stops
+    // being ambiguous without the resolver ever guessing
+    const pinned = pins && pins[moonPinOf(r)];
+    if (pinned) { const p = c.filter(m => String(m.moon).toLowerCase() === String(pinned).toLowerCase()); if (p.length === 1) c = p; }
     const other = c.length ? [] : members.filter(m => m.status !== 'approved' && moonMaskFits(m.moon, r.mask));
-    const status = c.length > 1 ? 'ambiguous' : r.dupMask ? 'dup_mask' : c.length === 1 ? 'ok' : other.length ? 'not_approved' : 'unregistered';
+    const status = c.length > 1 ? 'ambiguous' : (r.dupMask && !pinned) ? 'dup_mask' : c.length === 1 ? 'ok' : other.length ? 'not_approved' : 'unregistered';
     if (status === 'ok') used.add(c[0].acct);
-    return { ...r, status, acct: c.length === 1 ? c[0].acct : '', name: c.length === 1 ? c[0].name : '', moon: c.length === 1 ? c[0].moon : '', cands: c.length > 1 ? c.map(m => m.moon + ' (' + (m.name || '?') + ')') : other.map(m => m.moon + ' (' + m.status + ')') };
+    return { ...r, status, pinned: pinned || '', acct: c.length === 1 ? c[0].acct : '', name: c.length === 1 ? c[0].name : '', moon: c.length === 1 ? c[0].moon : '', cands: c.length > 1 ? c.map(m => m.moon + ' (' + (m.name || '?') + ')') : other.map(m => m.moon + ' (' + m.status + ')') };
   });
   const missing = approved.filter(m => !used.has(m.acct)).map(m => ({ acct: m.acct, name: m.name, moon: m.moon, mask: moonMaskOf(m.moon) }));
   return { rows: out, missing };
@@ -20509,6 +20520,19 @@ export default {
       const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       let activeId = ''; try { activeId = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
       const contest = String((request.method === 'POST' ? mb.contest : url.searchParams.get('contest')) || activeId || 'kotm1').replace(/[^a-z0-9_-]/gi, '').slice(0, 24) || 'kotm1'; // no id = the live contest
+      // PIN A ROW TO A MEMBER (2026-10-01). Moon masks collide - *****786 was two real members - and the
+      // only field that separates two rows is the registration date, so a pin is keyed on mask|reg.
+      // {pin:{mask, reg, moon}} sets one, {pin:{mask, reg}} with no moon clears it, {pins:1} lists them.
+      if (mb && mb.pins && request.method === 'POST') { let pp = {}; try { pp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {} return J({ ok: true, contest, pins: pp }); }
+      if (mb && mb.pin && request.method === 'POST') {
+        const pk = String(mb.pin.mask || '') + '|' + String(mb.pin.reg || '');
+        if (!mb.pin.mask || !mb.pin.reg) return J({ error: 'need_mask_and_reg' }, 400);
+        let pp = {}; try { pp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
+        if (mb.pin.moon) pp[pk] = String(mb.pin.moon).slice(0, 40); else delete pp[pk];
+        try { await env.STATS.put(moonPinKey(contest), JSON.stringify(pp), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+        let pub = null; try { pub = await moonBoardRebuild(env, contest); } catch (e) {} // the board must reflect it at once, not at the next paste
+        return J({ ok: true, contest, pins: pp, pub });
+      }
       if (request.method === 'POST') {
         if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} const pubc = await moonBoardRebuild(env, contest); return J({ ok: true, cleared: mb.phase, contest, pub: pubc }); }
         if (mb.activate) { try { await env.STATS.put('moon:active', contest); } catch (e) {} const puba = await moonBoardRebuild(env, contest); return J({ ok: true, activated: contest, pub: puba }); }
@@ -20528,7 +20552,9 @@ export default {
           let updated = 0, added = 0;
           for (const r of manual.rows) { const i = rows.findIndex(x => x.mask.toLowerCase() === r.mask.toLowerCase()); if (i >= 0) { rows[i] = { ...rows[i], wager: r.wager, manual: true }; updated++; } else { rows.push({ ...keep(r), manual: true }); added++; } }
           const seenp = {}; for (const r of rows) { const k = r.mask.toLowerCase(); seenp[k] = (seenp[k] || 0) + 1; } for (const r of rows) r.dupMask = seenp[r.mask.toLowerCase()] > 1;
-          const membersp = await moonMembers(env), resp = moonResolve(rows, membersp);
+          const membersp = await moonMembers(env);
+          let pinsp = {}; try { pinsp = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
+          const resp = moonResolve(rows, membersp, pinsp);
           const snapp = { ts: Date.now(), contest, final: !!(endp && endp.final), rows: resp.rows, missing: resp.missing, n: resp.rows.length, ok: resp.rows.filter(r => r.status === 'ok').length, diag: { pasted: 0, manual: manual.rows.length, skipped: [], skippedN: 0, patched: true } };
           try { await env.STATS.put('moon:snap:' + contest + ':end', JSON.stringify(snapp), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
           const pubp = await moonBoardRebuild(env, contest);
@@ -20538,7 +20564,8 @@ export default {
         const pasted = moonParseDump(mb.text), manual = moonParseDump(String(mb.manual || '').split(/\n/).map(l => l.trim()).filter(Boolean).join('\n'));
         const typed = new Map(); for (const r of manual.rows) typed.set(r.mask.toLowerCase(), r); // a typed pair beats the paste; pasted duplicates are KEPT (two Moon accounts with one mask must stay visible)
         const merged = [...pasted.rows.filter(r => !typed.has(r.mask.toLowerCase())), ...[...typed.values()].map(r => ({ ...r, manual: true }))]; const seen = {}; for (const r of merged) { const k = r.mask.toLowerCase(); seen[k] = (seen[k] || 0) + 1; } for (const r of merged) r.dupMask = seen[r.mask.toLowerCase()] > 1 || !!r.dupMask;
-        const res = moonResolve(merged, members);
+        let pins = {}; try { pins = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
+        const res = moonResolve(merged, members, pins);
         const snap = { ts: Date.now(), contest, final: mb.phase === 'end' && mb.final === true, rows: res.rows, missing: res.missing, n: res.rows.length, ok: res.rows.filter(r => r.status === 'ok').length, diag: { pasted: pasted.rows.length, manual: manual.rows.length, skipped: pasted.skipped, skippedN: pasted.skippedN } };
         let saved = null;
         if (mb.save && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.put('moon:snap:' + contest + ':' + mb.phase, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); saved = mb.phase; if (mb.phase === 'start' && !/^e2e/i.test(contest)) { try { await env.STATS.put('moon:active', contest); } catch (e) {} } } catch (e) { return J({ error: 'kv' }, 500); } } // saving a START makes this the ACTIVE contest the public board reads
