@@ -27933,7 +27933,7 @@ export class UserStore {
       const tgLinked = (this.rows("SELECT COUNT(*) n FROM users WHERE tg_chat IS NOT NULL AND tg_chat!=''")[0] || { n: 0 }).n;
       const flagged = (this.rows("SELECT COUNT(*) n FROM users WHERE COALESCE(status,'active')!='active' OR COALESCE(muted,0)=1")[0] || { n: 0 }).n;
       const byDay = this.rows("SELECT date(created/1000,'unixepoch') d, COUNT(*) n FROM users WHERE created>=? GROUP BY d", Date.now() - 13 * 86400000);
-      const byCc = this.rows("SELECT cc, COUNT(*) n FROM users WHERE cc IS NOT NULL AND cc!='' GROUP BY cc ORDER BY n DESC LIMIT 8");
+      const byCc = this.rows("SELECT cc, COUNT(*) n FROM users WHERE cc IS NOT NULL AND cc!='' GROUP BY cc ORDER BY n DESC LIMIT 60"); // was 8 - the Users view now lets the owner click any country to filter the list, so it needs the whole picker
       const byDev = this.rows("SELECT COALESCE(dev,'?') dev, COUNT(*) n FROM users GROUP BY dev ORDER BY n DESC LIMIT 4");
       // trades = lifetime (journal length is trimmed to 100, life_* counters are not); sTrades = closes this season + open positions (season-scoped by the counters' season stamp)
       const _ws9 = lbPeriodStart(Date.now());
@@ -27950,6 +27950,8 @@ export class UserStore {
       else if (flt === 'premium') { W.push('COALESCE(premium,0)>?'); A.push(Date.now()); }                                                                                              // column-timed Premium (grants/IPN); founders on the allow-list are not a column
       else if (flt === 'premexp') { W.push('COALESCE(premium,0)>? AND COALESCE(premium,0)<?'); A.push(Date.now(), Date.now() + 7 * 86400000); }
       else if (flt === 'tg') { W.push("tg_chat IS NOT NULL AND tg_chat!=''"); }
+      const ccF = String(url.searchParams.get('cc') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2); // filter the list to one country (ops Users, 2026-10-01)
+      if (ccF) { W.push('UPPER(cc)=?'); A.push(ccF); }
       const whereSql = W.length ? (' WHERE ' + W.join(' AND ')) : '';
       const ORD = { new: 'created DESC', seen: 'last_seen DESC', pv: 'pv DESC', trades: 'trades DESC', logins: 'logins DESC' };
       const orderSql = ORD[sort] || ORD.new;
@@ -27965,7 +27967,7 @@ export class UserStore {
       for (let _c = 0; _c < _refUids.length; _c += 100) { const _chunk = _refUids.slice(_c, _c + 100); const ph = _chunk.map(() => '?').join(','); try { this.rows('SELECT id, username, email FROM users WHERE id IN (' + ph + ')', ..._chunk).forEach(u => { _refName[u.id] = u.username || (u.email ? String(u.email).split('@')[0] : '') || u.id; }); } catch (e) {} }
       users = users.map(u => { const r = _refMap[u.id]; return { ...u, vpn: isVpnOrg(u.org, u.asn), refBy: r ? (_refName[r.uid] || r.uid) : '', refByUid: r ? r.uid : '', refStatus: r ? r.status : '' }; });
       const banned = (this.rows("SELECT COUNT(*) n FROM users WHERE status='banned'")[0] || { n: 0 }).n;
-      return this.j({ count: total, newToday, activeToday, active7, withUname, tgLinked, flagged, byDay, byCc, byDev, matched, banned, limit, offset, users });
+      return this.j({ count: total, newToday, activeToday, active7, withUname, tgLinked, flagged, byDay, byCc, byDev, matched, banned, limit, offset, cc: ccF, users });
     }
     if (path === '/user') {
       const email = String(url.searchParams.get('email') || '').toLowerCase();
