@@ -637,7 +637,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=65dd5485', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=b833e9e7', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
       if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }

@@ -876,7 +876,10 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       SH = document.createElement('div'); SH.className = 'sqsh'; SH.setAttribute('role', 'dialog'); SH.setAttribute('aria-modal', 'true');
       SH.innerHTML = '<div class="sqsh-bd"></div><div class="sqsh-p"><button type="button" class="sqsh-x" aria-label="Close">&times;</button><div class="sqsh-b"><div class="skel" style="width:40%"></div></div></div>';
       document.body.appendChild(SH);
-      SH.addEventListener('click', function (e) { if (e.target.classList.contains('sqsh-bd') || e.target.closest('.sqsh-x')) closeSquadSheet(); });
+      // Clicking a member opens their profile card. That card lives below this sheet's z-index, so it used to open
+      // BEHIND it (owner 2026-10-01). Close the sheet first and let the click keep bubbling to mp-nav's data-lbu
+      // handler, which opens the profile on a clear screen - one thing at a time, never two stacked.
+      SH.addEventListener('click', function (e) { if (e.target.classList.contains('sqsh-bd') || e.target.closest('.sqsh-x')) closeSquadSheet(); else if (e.target.closest('[data-lbu]')) closeSquadSheet(); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && SH && SH.classList.contains('on')) closeSquadSheet(); });
     }
     var body = SH.querySelector('.sqsh-b');
@@ -938,6 +941,6 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=8f0fd2d1"></script>
-<script defer src="/assets/mp-nav.js?v=63750fd0"></script>
+<script defer src="/assets/mp-nav.js?v=16b59dee"></script>
 </body>
 </html>

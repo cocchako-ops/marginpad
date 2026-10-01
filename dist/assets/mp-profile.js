@@ -110,19 +110,8 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
           + stat(moneyC(s2.realized || 0), 'Realized P&L', (s2.realized >= 0 ? '#34d99a' : '#ff6c5c'))
           + stat(moneyC(s2.weekPnl || 0), (s2.weekTrades || 0) + __esT_mpprofile("tradesWk",' trades · wk'), (s2.weekPnl >= 0 ? '#34d99a' : '#ff6c5c'))
         + '</div>'
-        // Personal records. SEASON records since 2026-09-12 (owner: the "all time" table was fed only by closes after 2026-09-06, so a
-        // veteran's real bests were missing) - the server computes them from the close ledger of the current 14-day season (records.scope).
-        // Values are compacted (k/M, whole-number ROE past 100%) because a 96px tile with nowrap+ellipsis cut "+$12,345.67" in half.
-        + (function () { var R = d.records; if (!R || (R.roe == null && R.pnl == null && !R.streak && !R.day)) return '';
-            var rec = function (v, l, t) { return '<div class="lbm-r"' + (t ? ' title="' + new Date(t).toISOString().slice(0, 10) + '"' : '') + '><b>' + v + '</b><span>' + l + '</span></div>'; };
-            var cm = function (x) { x = +x || 0; var a = Math.abs(x); return (x < 0 ? '-' : '') + '$' + (a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e4 ? (a / 1e3).toFixed(1) + 'k' : a.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); };
-            var cr = function (r) { r = +r || 0; return (r >= 0 ? '+' : '') + (Math.abs(r) >= 100 ? Math.round(r).toLocaleString('en-US') : r.toFixed(1)) + '%'; };
-            return '<div class="lbm-rech">Records <span>' + (R.scope === 'season' ? __esT_mpprofile("thisSeason",'this season') : 'since Sep 6, 2026') + '</span></div><div class="lbm-rec">'
-              + (R.roe != null ? rec(cr(R.roe), 'best ROE', R.roeTs) : '')
-              + (R.pnl != null ? rec(cm(R.pnl), __esT_mpprofile("biggestWin",'biggest win'), R.pnlTs) : '')
-              + (R.streak >= 2 ? rec(R.streak + __esT_mpprofile("inARow",' in a row'), __esT_mpprofile("winStreak",'win streak'), R.streakTs) : '')
-              + (R.day >= 3 ? rec(R.day, __esT_mpprofile("closesInADay",'closes in a day'), R.dayTs) : '')
-              + '</div>'; })()
+        // The "Records" card was removed from the profile card on 2026-10-01 (owner). The server still sends d.records; it is simply not rendered.
+        + ''
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + '</span>' + mBtn + '</div>';
     }).catch(function () { body.innerHTML = __esT_mpprofile("couldNotLoadThis",'<div class="lbm-load">Could not load this trader.</div>'); });
   };
