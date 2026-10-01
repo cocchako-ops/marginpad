@@ -430,7 +430,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     /* A LOCKED PIECE IS SHOWN, NOT HIDDEN. Hiding it means the reader never learns the squad is going to get
        it; shown greyed with a padlock, the maker itself is the reason to level up. `opts` comes from the
        server, so the picker and the save agree on what is open. */
-    var op = (S.me && S.me.squad && S.me.squad.opts) || null;
+    var op = (S.me && S.me.squad && S.me.squad.opts) || (S.me && S.me.can && S.me.can.opts) || null; // founding: no squad yet, so gate the maker to the level-1 set the server will accept
     var cols = window.mpSquadCrestCols || ['#4aa3f6'];
     var shapes = window.mpSquadCrestShapes || ['shield'], syms = window.mpSquadCrestSyms || ['tag'], rings = window.mpSquadCrestRings || ['solid'];
     var open = function (kind, v) { if (!op) return true; var L = kind === 'shape' ? op.shapes : kind === 'sym' ? op.syms : kind === 'ring' ? op.rings : op.cols; return !L || L.indexOf(v) >= 0; };
@@ -938,6 +938,6 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=8f0fd2d1"></script>
-<script defer src="/assets/mp-nav.js?v=bcd22941"></script>
+<script defer src="/assets/mp-nav.js?v=63750fd0"></script>
 </body>
 </html>

@@ -100,6 +100,12 @@ const xplog = async uid => ((await J('/api/admin/xpdiag?u=' + encodeURIComponent
   const lkTk = await ticks('e2esqc1');
   const lkTry = await sq('create', real['e2esqc1'], { name: NAME + ' L', tag: 'ZY6', crest: { shape: 'banner', sym: 'bolt', bg: '#4aa3f6', fg: '#e9e7df', ring: 'solid' } });
   ok(lkTry.error === 'locked_piece' && (await ticks('e2esqc1')) === lkTk, 'AND A LOCKED LOGO PIECE COSTS NOTHING EITHER', { err: lkTry.error, before: lkTk, after: await ticks('e2esqc1') });
+  // THE FOUNDING BUILDER MUST BE HANDED THE LEVEL-1 LOGO SET (esPX, 2026-10-01: "your squad has not unlocked
+  // that piece yet" on a free create). /squad/mine for a member with NO squad carries can.opts, and the page
+  // gates the picker to it - without this it offered every piece and the create refused.
+  const foundMine = await mine(real['e2esqc1']);
+  const fopts = foundMine.can && foundMine.can.opts;
+  ok(fopts && fopts.shapes && fopts.shapes.length === 2 && fopts.syms.length === 8 && fopts.rings.length === 2, 'a squadless member is told the level-1 logo set, so the founding picker cannot offer a locked piece', fopts && { sh: fopts.shapes.length, sy: fopts.syms.length, r: fopts.rings });
 
   const bogus = await sq('edit', real['e2esqa1'], { crest: { shape: 'skull', sym: '<script>', bg: 'red', ring: 'x' } });
   ok(bogus.ok && bogus.squad.crest.shape === 'shield' && bogus.squad.crest.sym === 'tag' && bogus.squad.crest.bg === '#4aa3f6', 'a junk crest snaps to safe values instead of being stored', bogus.squad && bogus.squad.crest);
