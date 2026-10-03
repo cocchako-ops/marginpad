@@ -37,7 +37,7 @@
 {"@type":"Question","name":"How do I earn XP on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"You earn XP for real activity: closing profitable paper trades, daily check-ins and streaks, completing daily missions, claiming from the faucet, promoting the platform on X, and placing in the 14-day season competitions. Every source has a daily cap so it can't be farmed."}},
 {"@type":"Question","name":"How long does it take to reach Diamond?","acceptedAnswer":{"@type":"Answer","text":"Deliberately long. Diamond sits at 60,000 XP and even a highly active daily user peaks around 150 XP/day, so Diamond takes close to a year of consistent activity. It is meant to be rare."}},
 {"@type":"Question","name":"Can I skip levels by finishing the Academy?","acceptedAnswer":{"@type":"Answer","text":"No. Academy XP is capped so it can only help a new user reach the early tiers. Even after completing every lesson you'll still be far from Diamond - the long-term progression can only be earned through consistent use."}},
-{"@type":"Question","name":"What do higher levels unlock?","acceptedAnswer":{"@type":"Answer","text":"Bigger faucet claim rewards (up to +75% at Legendary), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%)."}},
+{"@type":"Question","name":"What do higher levels unlock?","acceptedAnswer":{"@type":"Answer","text":"Bigger faucet claim rewards (up to +90% at Legendary), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%)."}},
 {"@type":"Question","name":"Do I lose XP if I stop being active?","acceptedAnswer":{"@type":"Answer","text":"No - your XP and level are permanent. But your daily streak resets if you miss a day, so consistency is rewarded."}}
 ]}</script>
 <style>
@@ -192,10 +192,14 @@ footer a{color:var(--dim)}
       <div class="tier-h"><div class="tier-badge" data-tb="diamond"></div><div class="tier-nm">Diamond</div><div class="tier-xp"><b>60,000</b> XP</div></div>
       <ul><li><b>+50%</b> faucet claim rewards</li><li><b>+10% withdrawal bonus</b> - the house pays extra</li><li>Rarest badge + full cosmetic set</li><li>Invite-only Diamond events</li></ul>
     </div>
+    <div class="tier" style="--c:#ff4d6d">
+      <div class="tier-h"><div class="tier-badge" data-tb="master"></div><div class="tier-nm">Master</div><div class="tier-xp"><b>120,000</b> XP</div></div>
+      <ul><li><b>+75%</b> faucet claim rewards</li><li><b>2x</b> your daily earning cap</li><li>Master badge in the rose-red tier colour</li><li>Everything Diamond unlocks, carried up</li></ul>
+    </div>
 
     <div class="tier" style="--c:#ff7a1a">
-      <div class="tier-h"><div class="tier-badge" data-tb="legendary"></div><div class="tier-nm">Legendary</div><div class="tier-xp"><b>120,000</b> XP · the 1%</div></div>
-      <ul><li><b>+75%</b> faucet claim rewards</li><li><b>15%</b> withdrawal bonus</li><li>Legendary crown badge - the rarest mark on MarginPad</li><li>First access to every new feature &amp; special events</li></ul>
+      <div class="tier-h"><div class="tier-badge" data-tb="legendary"></div><div class="tier-nm">Legendary</div><div class="tier-xp"><b>250,000</b> XP · the 1%</div></div>
+      <ul><li><b>+90%</b> faucet claim rewards</li><li><b>15%</b> withdrawal bonus</li><li>Legendary crown badge - the rarest mark on MarginPad</li><li>First access to every new feature &amp; special events</li></ul>
       <p class="tier-note"><b>Prestige.</b> The ladder does not stop here. Every <b>100,000 XP</b> past Legendary adds one star next to your badge, in chat, on the boards and on your card. Your level, colour and perks stay Legendary; the stars say how far past it you went.</p>
     </div></div>
 
@@ -241,7 +245,7 @@ footer a{color:var(--dim)}
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p=/levels/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
-  var TCOL={unranked:'#5c6b7a',bronze:'#c97f4a',silver:'#b7c2d0',gold:'#ffcf3f',platinum:'#7ee0ff',diamond:'#8b5cff',legendary:'#ff7a1a'};
+  var TCOL={unranked:'#5c6b7a',bronze:'#c97f4a',silver:'#b7c2d0',gold:'#ffcf3f',platinum:'#7ee0ff',diamond:'#8b5cff',master:'#ff4d6d',legendary:'#ff7a1a'};
   /* self-contained tier insignia (mp-auth.js may load later; identical shape) */
   function lvlSvg(k,col){col=col||'#c97f4a';
     if(window.mpLvlSvg)return window.mpLvlSvg(k,col);
