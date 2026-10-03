@@ -241,7 +241,7 @@ footer a{color:var(--dim)}
   </footer>
 </div>
 
-<script defer src="/assets/mp-auth.js?v=9ef485ce"></script>
+<script defer src="/assets/mp-auth.js?v=b957f1cc"></script>
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p=/levels/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
@@ -249,7 +249,7 @@ footer a{color:var(--dim)}
   /* self-contained tier insignia (mp-auth.js may load later; identical shape) */
   function lvlSvg(k,col){col=col||'#c97f4a';
     if(window.mpLvlSvg)return window.mpLvlSvg(k,col);
-    if(k==='legendary')return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="'+col+'30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="'+col+'" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="'+col+'"/></svg>';
+    if(k==='legendary')return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M3.5 18.3L5 8.4L9 12.9L12 6.2L15 12.9L19 8.4L20.5 18.3Z M3.2 18.1H20.8V21H3.2Z" fill="'+col+'33"/><path d="M3.5 18.3L5 8.4L9 12.9L12 6.2L15 12.9L19 8.4L20.5 18.3M3.2 18.1H20.8V21H3.2" stroke="'+col+'" stroke-width="1.3" stroke-linejoin="round"/><circle cx="5" cy="8.4" r="1.15" fill="'+col+'"/><circle cx="12" cy="6.2" r="1.45" fill="'+col+'"/><circle cx="19" cy="8.4" r="1.15" fill="'+col+'"/><circle cx="12" cy="19.5" r="1" fill="'+col+'"/></svg>';if(k==='master')return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 1.5L13.6 8.1L19.4 4.6L15.9 10.4L22.5 12L15.9 13.6L19.4 19.4L13.6 15.9L12 22.5L10.4 15.9L4.6 19.4L8.1 13.6L1.5 12L8.1 10.4L4.6 4.6L10.4 8.1Z" fill="'+col+'33" stroke="'+col+'" stroke-width="1.1" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="'+col+'"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="'+col+'" stroke-width=".8" opacity=".5"/></svg>';
     if(k==='diamond')return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="'+col+'30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="'+col+'" stroke-width="1.25" stroke-linejoin="round"/></svg>';
     return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="'+col+'22" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="'+col+'"/></svg>';}
   function flame(){return window.mpFlameSvg?window.mpFlameSvg():'<svg viewBox="0 0 24 24" width="11" height="11" fill="#ff6a3d" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z"/></svg>';}
@@ -297,6 +297,6 @@ footer a{color:var(--dim)}
 })();
 </script>
 <script defer src="/assets/mp-profile.js?v=29874540"></script>
-<script defer src="/assets/mp-nav.js?v=90abd0dc"></script>
+<script defer src="/assets/mp-nav.js?v=22da7979"></script>
 </body>
 </html>
