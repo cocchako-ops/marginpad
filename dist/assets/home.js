@@ -1692,7 +1692,14 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;} _finishOpen(_tLocal);try{if((window.mpSignedInCookie&&window.mpSignedInCookie())&&window.mpLimitToast)window.mpLimitToast(__esT_home("openedOnThisDevice",'Opened on this device only - our server did not take it, so this one cannot count on the leaderboards. Check your connection and open it again if you want it ranked.'));}catch(_e){}});
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;}
+        /* NO PHANTOM LOCAL OPEN (2026-10-03, owner: a trade must never live only on the client). The signed-in open
+           reached the server or it did not: on failure we open NOTHING and tell the trader to retry, instead of the
+           old local fallback that produced a position the boards could never see. SAFE because pullTrades() unions the
+           server journal into this device every 40 s - so if the server actually filled on a timeout, it comes back as
+           a proper srv row on the next pull; if it did not, nothing lingers. */
+        try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Check your connection and try again.'));}catch(_e){}
+        try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(_e2){}});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
@@ -3215,7 +3222,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=f6fdb2ab'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=f01acc5b'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3700,7 +3707,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=00c50769'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=75607d12'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

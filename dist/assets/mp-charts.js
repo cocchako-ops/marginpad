@@ -2224,7 +2224,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4); // this click's id: filed on the server position and on a local fallback, so the two can never coexist (2026-09-08)
       if(doOpenPos._busy)return; /* a second click while the server open was in flight opened a SECOND real position (2026-09-12) */
       doOpenPos._busy=true;var _qd=function(){doOpenPos._busy=false;};setTimeout(_qd,12000);
-      if(window.mpSrvOpen){msg.style.color='#9aa3ad';msg.textContent='Opening…';window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null,cid:_cid},function(t){_qd();open(p,t);},function(err){_qd();if(err&&err.blocked){msg.textContent='';return;}open(p,null,_cid);});}
+      if(window.mpSrvOpen){msg.style.color='#9aa3ad';msg.textContent='Opening…';window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null,cid:_cid},function(t){_qd();open(p,t);},function(err){_qd();if(err&&err.blocked){msg.textContent='';return;}
+        /* no phantom local open (2026-10-03): the server did not take it, so open NOTHING and say so. pullTrades re-adds a timeout that actually filled. */
+        msg.style.color='#ff6258';msg.textContent=__esT_mpcharts("openDidNotGoThrough",'Could not open - try again.');try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(_e){}});}
       else{_qd();open(p);}};
     if(entry>0)openVia(entry);
     else{msg.style.color='#9aa3ad';msg.textContent=__esT_mpcharts("fetchingPrice",'Fetching price…');fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent=__esT_mpcharts("couldNotGetPrice",'Could not get price. Try again.');}});} }

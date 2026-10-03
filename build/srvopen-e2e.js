@@ -22,7 +22,10 @@ const UID = 'e2e-srvopen1';
   ok(/window\.mpSignedInCookie=function/.test(js), 'home.js publishes mpSignedInCookie');
   ok(/if\(\(!me&&!window\.mpSignedInCookie\(\)\)\|\|!window\.fetch\)\{fail\(\);return;\}/.test(js), 'mpSrvOpen bails only when BOTH mpAuth and the cookie say signed out');
   ok(/if\(!_me&&window\.mpSignedInCookie&&window\.mpSignedInCookie\(\)\)_me=1;/.test(js), 'the terminal tries the server when the cookie says there is a session');
-  ok(/openedOnThisDevice/.test(js), 'a local-only fallback tells the trader it cannot count');
+  // 2026-10-03: the local-only fallback is GONE. A signed-in open that the server refuses opens NOTHING and says so,
+  // because pullTrades re-adds a timeout that actually filled. The bundle must NOT finish a local trade in the fail path.
+  ok(/openDidNotGoThrough/.test(js), 'a refused server open tells the trader nothing was opened (no phantom)');
+  ok(!/openedOnThisDevice/.test(js), 'the old local-fallback toast is gone from the open path (no phantom that cannot rank)');
 
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) }).catch(() => {});
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'mk' }) });
@@ -63,6 +66,7 @@ const UID = 'e2e-srvopen1';
     // FALSIFICATION: take the cookie reader away and the old behaviour comes back - a local row the boards can never see.
     const old = await page.evaluate(async () => {
       window.mpSignedInCookie = function () { return false; };
+      try { window.mpAuth = null; } catch (e) {} // truly signed-out: no cookie AND no mpAuth -> the guest local path (kept on purpose)
       const set = (id, v) => { const e = document.getElementById(id); if (!e) return; e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); };
       set('planMargin', '26'); set('planLev', '5');
       const seen = () => { try { return JSON.parse(localStorage.getItem('mp_journal') || localStorage.getItem('mp_trades') || '[]').filter(x => x.status === 'open').length; } catch (e) { return 0; } };
@@ -73,7 +77,7 @@ const UID = 'e2e-srvopen1';
       const o = j.filter(x => x.status === 'open');
       return { n: o.length, ids: o.map(x => x.id), local: o.filter(x => !/^srv/.test(String(x.id || ''))).map(x => x.id) };
     });
-    ok(old.n > 1 && old.local.length === 1, 'falsified: with the cookie reader removed the same click opens a LOCAL row (' + old.local.join() + ')', old);
+    ok(old.local.length === 1, 'falsified: signed out (no cookie, no mpAuth) the same click opens a LOCAL guest row (' + old.local.join() + ')', old);
     await ctx.close();
   });
   // the server's own record is the proof

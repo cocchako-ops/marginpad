@@ -591,7 +591,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
-        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));}catch(e){}return;}_locT.cid=_locT.id;_finMc(_locT);});} // cid = this local id: a local fallback of a server-filled open is dropped by the sync (2026-09-08)
+        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));if(err&&err.blocked)return;
+          /* no phantom local open (2026-10-03): server did not take it, open NOTHING. pullTrades re-adds a timeout that actually filled. */
+          try{if(window.mpLimitToast)window.mpLimitToast(__esT_mpmcharts("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Try again.'));}catch(e){}try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(e2){}});}
         else{_mcDone();_finMc(_locT);}
         panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
       });
