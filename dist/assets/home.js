@@ -1689,10 +1689,17 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
          local id as cid, waits up to 5 s, retries once with the same cid, and only then opens locally (carrying the cid, so the sync drops
          the local copy if the server had filled it after all). The old 1.4 s abort + blind local open made ~9% of site opens double. */
       _tLocal.cid=_tLocal.id; add._busy=true; add._wait=true; window._mpOpenWait=true; // window-scoped: setBtn() in the plan IIFE repaints the label every tick and must keep "Opening…"
+      /* OPTIMISTIC OPEN (2026-10-03, owner: the Stake/Moon instant feel). Show the position the INSTANT it is clicked,
+         then the (patient, idempotent) server call reconciles it: on success the optimistic row is swapped for the real
+         srv row, on failure it is removed. SAFE because pullTrades() unions the server journal every 40 s - a timeout
+         that actually filled returns as a proper srv row, so removing the optimistic copy can never lose a real trade. */
+      window._mpPendingOpens=window._mpPendingOpens||{};window._mpPendingOpens[_tLocal.id]=1; // hold it out of syncTrades until the server call resolves
+      (function(){try{var _d0=load();_d0.push(_tLocal);if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:_tLocal.entry,t:Date.now()};store(_d0);render();drawLines();window._mpLastOpenTs=Date.now();if(window.mpHaptic)window.mpHaptic('ok');}catch(_e){}})();
+      var _rmOpt=function(){try{delete window._mpPendingOpens[_tLocal.id];}catch(_x){}try{var _d1=load().filter(function(x){return String(x.id)!==String(_tLocal.id);});store(_d1);render();drawLines();}catch(_e){}};
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;}
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();_rmOpt();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();_rmOpt();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;}
         /* NO PHANTOM LOCAL OPEN (2026-10-03, owner: a trade must never live only on the client). The signed-in open
            reached the server or it did not: on failure we open NOTHING and tell the trader to retry, instead of the
            old local fallback that produced a position the boards could never see. SAFE because pullTrades() unions the
@@ -3222,7 +3229,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=f01acc5b'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=42c5e631'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3707,7 +3714,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=75607d12'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=4fb5dc2e'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }

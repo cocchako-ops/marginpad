@@ -54,12 +54,18 @@ const UID = 'e2e-srvopen1';
       set('planMargin', '25'); set('planLev', '5');
       const b = document.getElementById('planSave'); if (!b) return { err: 'no button' };
       b.click();
+      // 2026-10-03: the open is OPTIMISTIC now - a local row shows instantly, then reconciles to the srv row. Wait for
+      // the srv row (an open row with an srv id), not just the first open row, which would be the optimistic local one.
+      var firstLocal = false;
       for (let i = 0; i < 90; i++) { await new Promise(r => setTimeout(r, 200));
         let j = []; try { j = JSON.parse(localStorage.getItem('mp_journal') || localStorage.getItem('mp_trades') || '[]'); } catch (e) {}
         const open = j.filter(x => x.status === 'open');
-        if (open.length) return { id: open[0].id, src: open[0].src || '', cid: open[0].cid || '', sym: open[0].sym };
+        if (open.some(x => /^\d{13}_/.test(String(x.id || '')))) firstLocal = true; // saw the optimistic local row first
+        const srv = open.filter(x => /^srv/.test(String(x.id || '')))[0];
+        if (srv) return { id: srv.id, src: srv.src || '', cid: srv.cid || '', sym: srv.sym, sawOptimistic: firstLocal };
       }
-      return { err: 'nothing opened' };
+      const anyOpen = (function () { try { return JSON.parse(localStorage.getItem('mp_journal') || '[]').filter(x => x.status === 'open'); } catch (e) { return []; } })();
+      return anyOpen.length ? { id: anyOpen[0].id, src: anyOpen[0].src || '', cid: anyOpen[0].cid || '', sym: anyOpen[0].sym, sawOptimistic: firstLocal } : { err: 'nothing opened' };
     });
     ok(!opened.err, 'a position opened from the terminal', opened);
     ok(/^srv/.test(String(opened.id || '')), 'and it is a SERVER position, not a local one (id ' + opened.id + ')', opened);

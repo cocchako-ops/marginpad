@@ -591,7 +591,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
-        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){_mcDone();var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));if(err&&err.blocked)return;
+        if(window.mpSrvOpen){
+          /* OPTIMISTIC (2026-10-03, Stake-feel): render the position instantly, reconcile it in place to the srv row on
+             success, remove it on failure. SAFE because pullTrades re-adds a timeout that actually filled. */
+          window._mpPendingOpens=window._mpPendingOpens||{};window._mpPendingOpens[_locT.id]=1; // hold out of syncTrades until resolved
+          _locT.cid=_locT.id;_locT.trail=_tr9;_locT.be=_be9;_finMc(_locT);
+          var _rmMc=function(){try{delete window._mpPendingOpens[_locT.id];}catch(x){}try{var d=JSON.parse(localStorage.getItem('mp_journal'))||[];d=d.filter(function(x){return String(x.id)!==String(_locT.id)&&String(x.cid||'')!==String(_locT.id);});window.mpJStore(d);if(window.mpJournalRender)window.mpJournalRender();}catch(e){}};
+          window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,cid:_locT.id},function(t){_mcDone();try{delete window._mpPendingOpens[_locT.id];}catch(x){}t.trail=_tr9;t.be=_be9;t.hwm=null;try{var d=JSON.parse(localStorage.getItem('mp_journal'))||[],sw=false;for(var i=0;i<d.length;i++){if(String(d[i].id)===String(_locT.id)||String(d[i].cid||'')===String(_locT.id)){d[i]=t;sw=true;break;}}if(!sw)d.push(t);if(window.mpLivePrices)window.mpLivePrices[tSym]={p:+t.entry,t:Date.now()};window.mpJStore(d);if(window.mpJournalRender)window.mpJournalRender();}catch(e){_rmMc();_finMc(t);}},function(err){_mcDone();_rmMc();var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen',__esT_mpmcharts("openDemoTrade",'Open demo trade'));if(err&&err.blocked)return;
           /* no phantom local open (2026-10-03): server did not take it, open NOTHING. pullTrades re-adds a timeout that actually filled. */
           try{if(window.mpLimitToast)window.mpLimitToast(__esT_mpmcharts("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Try again.'));}catch(e){}try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(e2){}});}
         else{_mcDone();_finMc(_locT);}

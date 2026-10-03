@@ -2224,8 +2224,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4); // this click's id: filed on the server position and on a local fallback, so the two can never coexist (2026-09-08)
       if(doOpenPos._busy)return; /* a second click while the server open was in flight opened a SECOND real position (2026-09-12) */
       doOpenPos._busy=true;var _qd=function(){doOpenPos._busy=false;};setTimeout(_qd,12000);
-      if(window.mpSrvOpen){msg.style.color='#9aa3ad';msg.textContent='Opening…';window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null,cid:_cid},function(t){_qd();open(p,t);},function(err){_qd();if(err&&err.blocked){msg.textContent='';return;}
-        /* no phantom local open (2026-10-03): the server did not take it, so open NOTHING and say so. pullTrades re-adds a timeout that actually filled. */
+      if(window.mpSrvOpen){
+        /* OPTIMISTIC (2026-10-03, Stake-feel): render the position instantly, then reconcile it in place to the srv row
+           on success, or remove it on failure. SAFE because pullTrades re-adds a timeout that actually filled. */
+        window._mpPendingOpens=window._mpPendingOpens||{};window._mpPendingOpens[_cid]=1; // hold out of syncTrades until resolved
+        open(p,null,_cid);msg.style.color='#9aa3ad';msg.textContent='Opening…';
+        var _rm2=function(){try{delete window._mpPendingOpens[_cid];}catch(x){}try{var d=jload().filter(function(x){return String(x.id)!==String(_cid)&&String(x.cid||'')!==String(_cid);});jstore(d);if(window.mpJournalRender)window.mpJournalRender();}catch(e){}};
+        window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null,cid:_cid},function(t){_qd();try{delete window._mpPendingOpens[_cid];}catch(x){}try{var d=jload(),sw=false;for(var i=0;i<d.length;i++){if(String(d[i].id)===String(_cid)||String(d[i].cid||'')===String(_cid)){d[i]=t;sw=true;break;}}if(!sw)d.push(t);if(window.mpLivePrices)window.mpLivePrices[sym]={p:+t.entry,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();msg.style.color='#2ebd85';msg.innerHTML=(qtSide==='long'?'Long':'Short')+' '+sym+' '+lev+__esT_mpcharts("timesOpenedSeeIt",'&times; opened - see it in <b>My Trades</b>.');}catch(e){_rm2();open(p,t);}},function(err){_qd();_rm2();if(err&&err.blocked){msg.textContent='';return;}
+        /* no phantom local open (2026-10-03): the server did not take it, so open NOTHING and say so. */
         msg.style.color='#ff6258';msg.textContent=__esT_mpcharts("openDidNotGoThrough",'Could not open - try again.');try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(_e){}});}
       else{_qd();open(p);}};
     if(entry>0)openVia(entry);

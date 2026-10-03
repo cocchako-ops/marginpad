@@ -1994,6 +1994,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (!Array.isArray(arr)) return;
     lastJ = j;
     arr = arr.filter(function (e) { return !(e && e.status === 'planned'); }); // plan-form drafts are not trades - never sync them (they re-appeared as $0 XRP opens in the activity feed, 2026-09-13)
+    // An OPTIMISTIC open (2026-10-03, Stake-feel) is on screen while its server call is still in flight. It must NOT be
+    // pushed to the server yet: if the server-open then fails and we remove it locally, a copy pushed mid-flight would
+    // be stored server-side and resurrect on the next pull. The opener holds its id in window._mpPendingOpens until the
+    // call resolves (success swaps it for the srv row; failure removes it), so skipping it here closes that race.
+    try { var _po = window._mpPendingOpens; if (_po) arr = arr.filter(function (e) { return !(e && e.id && _po[e.id]) && !(e && e.cid && _po[e.cid]); }); } catch (e) {}
     // send the most-recent ~200 trades (the server keeps the recent/best 100 anyway) so the payload stays bounded for heavy traders.
     var send = arr;
     if (arr.length > 200) { try {
