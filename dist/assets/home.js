@@ -3234,7 +3234,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=108ff43f'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=5946d3b1'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3584,7 +3584,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=41fac836';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=b4eb8571';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open

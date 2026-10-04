@@ -201,5 +201,32 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
   document.addEventListener('click',function(ev){var pk=ev.target.closest&&ev.target.closest('[data-pick]');if(!pk)return;var sym=pk.getAttribute('data-pick');for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){openSheet(DATA[i]);break;}}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
   var _luT=0;document.addEventListener('mp:price',function(){var n=Date.now();if(n-_luT<450)return;_luT=n;updLive();}); // throttle: emit() fires sub-second per major → this was doing dozens of full row sweeps/sec; the 2s interval below already backstops
+
+  /* AI OPPORTUNITY SCANNER (2026-10-04, owner): the 3 best setups across the majors, above the screener, Plus-only.
+     A click opens /charts on that pair where the AI prepares and draws the setup. 402/401 = not Plus → upsell teaser. */
+  function aiScanCard(s){var side=/^(long|short|wait)$/.test(s.side)?s.side:'wait';
+    return '<button type="button" class="scr-ai-card" data-aiscan="'+esc(s.coin)+'">'
+      +'<div class="scr-ai-top"><span class="scr-ai-co">'+esc(s.coin)+'</span><span class="scr-ai-side '+side+'">'+side.toUpperCase()+'</span>'
+      +'<span class="scr-ai-conf"><b>'+(+s.confidence||0)+'</b>% '+__esT_mpscreener("confSp","conf")+'</span></div>'
+      +'<div class="scr-ai-th">'+esc(s.thesis||'')+'</div>'
+      +'<div class="scr-ai-go">'+__esT_mpscreener("openDrawChart","Open & draw on chart")+' &rarr;</div></button>';}
+  function renderAiScan(j){var el=document.getElementById('scrAiScan');if(!el)return;var setups=(j&&j.setups)||[];
+    if(!setups.length){el.hidden=true;return;}
+    var age=j.ts?Math.max(0,Math.round((Date.now()-j.ts)/60000)):0;
+    el.innerHTML='<div class="scr-ai-h"><span class="ic"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/></svg></span>'
+      +'<span class="t">'+__esT_mpscreener("aiBestSetups","AI best setups")+'</span><span class="pl">Plus</span>'
+      +'<span class="age">'+(age<1?__esT_mpscreener("justNow","just now"):(age+'m '+__esT_mpscreener("agoSp","ago")))+'</span></div>'
+      +'<div class="scr-ai-grid">'+setups.map(aiScanCard).join('')+'</div>';
+    el.hidden=false;}
+  function renderAiLock(){var el=document.getElementById('scrAiScan');if(!el)return;
+    el.innerHTML='<a class="scr-ai-lock" href="/premium/">'
+      +'<span class="lk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>'
+      +'<span class="lx"><b>'+__esT_mpscreener("aiBestSetups","AI best setups")+'</b><i>'+__esT_mpscreener("aiScanTease","The 3 strongest setups across the majors, ranked by AI - tap to open and draw.")+'</i></span>'
+      +'<span class="cta">'+__esT_mpscreener("plusSp","Premium Plus")+'</span></a>';
+    el.hidden=false;}
+  function loadAiScan(){fetch('/api/ai/scan',{cache:'no-store'}).then(function(r){if(r.status===402||r.status===401){renderAiLock();return null;}return r.json();}).then(function(j){if(j)renderAiScan(j);}).catch(function(){});}
+  document.addEventListener('click',function(ev){var ac=ev.target.closest&&ev.target.closest('[data-aiscan]');if(!ac)return;var co=ac.getAttribute('data-aiscan');if(co){try{window.__mpTrack&&window.__mpTrack('aiscan',co);}catch(_){}location.href='/charts?coin='+encodeURIComponent(co)+'&aiscan=1';}});
+
   load();loadLogos();setInterval(load,30000);setInterval(updLive,2000);
+  loadAiScan();setInterval(loadAiScan,300000);
 })();

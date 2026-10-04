@@ -2793,6 +2793,34 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 /* charts: explicit dark background under the transparent LWC canvas - with no container bg the plot area could
    render WHITE inside the dark app on some mobile paths (UX audit, mobile paper-trade). */
 #ptChart,.mfc-chart{background:#0a0d11;}
+/* ===== AI opportunity scanner (Plus-only), compact, above the screener (2026-10-04) ===== */
+.scr-ai{margin:0 0 14px;border:1px solid color-mix(in srgb,#9d7bff 32%,var(--line-bright,#2f3742));border-radius:15px;background:linear-gradient(180deg,rgba(157,123,255,.07),rgba(157,123,255,.015));padding:12px 13px}
+.scr-ai-h{display:flex;align-items:center;gap:9px;margin:0 0 10px}
+.scr-ai-h .ic{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:rgba(157,123,255,.16);display:flex;align-items:center;justify-content:center;color:#b9a3ff}
+.scr-ai-h .t{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:14.5px;letter-spacing:-.01em}
+.scr-ai-h .pl{font-family:'Space Mono',ui-monospace,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#b9a3ff;border:1px solid rgba(157,123,255,.4);border-radius:999px;padding:2px 7px}
+.scr-ai-h .age{margin-left:auto;font-family:'Space Mono',ui-monospace,monospace;font-size:10.5px;color:var(--faint,#6b7480)}
+.scr-ai-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.scr-ai-card{border:1px solid var(--line,#23272e);border-radius:12px;background:var(--panel2,#171a1f);padding:11px 12px;cursor:pointer;transition:transform .15s cubic-bezier(.2,.7,.3,1),border-color .15s,box-shadow .15s;min-width:0;text-align:left;display:block;width:100%;font:inherit;color:inherit}
+.scr-ai-card:hover,.scr-ai-card:focus-visible{transform:translateY(-2px);border-color:rgba(157,123,255,.5);box-shadow:0 12px 26px -20px rgba(157,123,255,.7);outline:none}
+.scr-ai-top{display:flex;align-items:center;gap:7px}
+.scr-ai-co{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:15px}
+.scr-ai-side{font-family:'Space Mono',ui-monospace,monospace;font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:6px}
+.scr-ai-side.long{color:#2ebd85;background:rgba(46,189,133,.14)}
+.scr-ai-side.short{color:#ff5a4d;background:rgba(255,90,77,.14)}
+.scr-ai-side.wait{color:#ffd75a;background:rgba(255,215,90,.13)}
+.scr-ai-conf{margin-left:auto;font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--faint,#6b7480)}
+.scr-ai-conf b{color:#b9a3ff}
+.scr-ai-th{font-size:12.5px;color:var(--dim,#9aa3af);margin-top:7px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.scr-ai-go{font-family:'Space Mono',ui-monospace,monospace;font-size:10.5px;color:#b9a3ff;margin-top:8px}
+.scr-ai-lock{display:flex;align-items:center;gap:11px;cursor:pointer;text-decoration:none;color:inherit}
+.scr-ai-lock .lk{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:rgba(157,123,255,.14);display:flex;align-items:center;justify-content:center;color:#b9a3ff}
+.scr-ai-lock .lx{min-width:0;flex:1}
+.scr-ai-lock .lx b{display:block;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:14px}
+.scr-ai-lock .lx i{font-style:normal;font-size:12px;color:var(--dim,#9aa3af)}
+.scr-ai-lock .cta{flex:0 0 auto;font-weight:700;font-size:12.5px;color:#0a0b0d;background:#b9a3ff;border-radius:9px;padding:8px 14px;white-space:nowrap}
+.scr-ai-empty{font-size:12.5px;color:var(--faint,#6b7480);font-family:'Space Mono',ui-monospace,monospace}
+@media(max-width:620px){.scr-ai-grid{grid-template-columns:1fr}.scr-ai-th{-webkit-line-clamp:3}}
 /* ===== screener: mode switcher (Perp | On-chain) + on-chain pool rows ===== */
 .scr-mode{display:flex;gap:6px;margin:0 0 14px;background:rgba(255,255,255,.03);border:1px solid var(--line-bright,#2f3742);border-radius:12px;padding:4px;width:fit-content}
 .scr-mode button{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.02em;color:#9aa3ad;background:none;border:none;border-radius:9px;padding:9px 16px;cursor:pointer;transition:.14s;display:inline-flex;align-items:center;gap:7px}

@@ -103,7 +103,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=af0f9b4d">
+<link rel="stylesheet" href="/assets/home.css?v=4ef5e250">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -284,6 +284,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Free trade signals on Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">the daily market wrap at 16:00 UTC - what moved, what is next</i></span>
       <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Join free</span>
     </a>
+    <div class="scr-ai" id="scrAiScan" hidden></div>
     <div class="scr-mode" id="scrMode" role="tablist" aria-label="Screener mode"><button type="button" data-mode="perp" class="on" role="tab">Perp futures</button><button type="button" data-mode="onchain" role="tab">On-chain · Memecoins <em>NEW</em></button></div>
     <div class="scr-stats" id="scrStats"></div>
     <div class="scr-meta" id="scrMeta"></div>
@@ -841,7 +842,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=af0f9b4d"></script>
+<script src="/assets/home.js?v=4ef5e250"></script>
 <script defer src="/assets/mp-nav.js?v=5e2d5297"></script>
 </body>
 </html>

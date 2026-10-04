@@ -1436,6 +1436,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(me)aiHistPull(w,function(all){if(all&&aiW===w&&!aiBusy&&aiEl&&!aiEl.hidden&&!aiEl.classList.contains('gated')){aiRenderBody(w);aiSetChips(w);}});
     if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(d.dailyByPlan){if(d.dailyByPlan.premium>0)aiPlans.premium=d.dailyByPlan.premium;if(d.dailyByPlan.plus>0)aiPlans.plus=d.dailyByPlan.plus;}if(!aiPremium){aiShowPremiumGate();}else{var wasGated=!!(aiEl&&aiEl.classList.contains('gated'));aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);if(wasGated&&aiW===w&&!aiBusy&&!aiEl.hidden){aiSetChips(w);aiRenderBody(w);}/* the FIRST open of a session showed the Premium gate until this answer came back and then never painted the thread (the gate HTML stayed in the body until the next question) - now that the thread persists, that was the thread "lost" on every reload */}}}).catch(function(){});
   }
+  /* ARRIVING FROM THE SCREENER'S AI SCANNER (2026-10-04): /charts?coin=X&aiscan=1 opens the pair, then opens the AI
+     panel and asks it to draw the best setup - "prepares the drawing for you". The user is Plus (the scanner is
+     Plus-only), so the panel's own premium gate passes; we just wait for the window + account + quota to be ready. */
+  function aiScanAuto(sym){
+    sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return;var tries=0;
+    (function go(){
+      var w=null;for(var i=0;i<wins.length;i++){if(wins[i].sym===sym){w=wins[i];break;}}
+      var ready=w&&w.bars&&w.bars.length>=50&&window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+      if(!ready){if(tries++<100){setTimeout(go,150);return;}if(!w)return;}
+      openAiPanel(w);
+      try{chartToast(__esT_mpcharts("preparingSetup",'Preparing your setup - drawing it now…'));}catch(e){}
+      var t2=0;(function fire(){
+        if(aiBusy)return;
+        if(aiPremium&&aiEl&&!aiEl.hidden){askAi(__esT_mpcharts("drawBestSetup",'Draw the best setup on this chart right now - the structure, the key levels, and the trade with entry, stop and targets.'));return;}
+        if(t2++<80)setTimeout(fire,200);
+      })();
+    })();
+  }
   /* Set a price alert straight from the chart - tap a level, it creates a real /api/alerts alert + draws an anchored line */
   // remove an alert's line + cancel it server-side (silent skips the toast / used on failed creates)
   function chAlertDel(w,a,silent){if(!a)return;if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}
@@ -2501,7 +2519,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
   function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
-    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}if(wins.length)return;}}
+    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}var _as=false;try{_as=/[?&]aiscan=1/i.test(location.search);}catch(e){}if(_as){try{history.replaceState(null,'','/charts?coin='+_fc);}catch(e){}try{aiScanAuto(_fc);}catch(e){}}if(wins.length)return;}}
     var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left - windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
     else { showEmpty(true); /* nothing on this device -> restore the account's workspace (new phone, cleared cache) */

@@ -15039,6 +15039,59 @@ async function aiBrief(sym, iv, env) {
 }
 // NOTE: `ctx` inside this function is the chart BRIEF (body.context) - it has been that since the first version.
 // The execution context is therefore `ectx`; do not "tidy" it back to ctx, that is a redeclaration SyntaxError.
+// ── AI OPPORTUNITY SCANNER (2026-10-04, owner: "najbolji setupovi" on the screener, Plus-only) ───────────────
+// The worker builds a LIGHT 1h signal per major coin (trend / RSI / ATR / position-in-range / momentum / volume),
+// hands them ALL to ONE AI call that returns the 3 best actionable setups right now. The PRECISE plan is drawn on
+// /charts when the user clicks - this only names coin + side + thesis, so the exact levels stay accurate (drawn
+// there from the full brief). ONE scan is shared across every Plus reader (cached), so cost is per-scan, not per-user.
+const SCAN_COINS = HM_COINS;
+async function scanSignals(env) {
+  const out = [];
+  await Promise.all(SCAN_COINS.map(async sym => {
+    try {
+      const r = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=' + sym + '&interval=60'), env);
+      const bars = await r.json(); if (!Array.isArray(bars) || bars.length < 60) return;
+      const c = bars.map(b => +b.close), h = bars.map(b => +b.high), l = bars.map(b => +b.low), v = bars.map(b => +b.vol || 0);
+      const n = c.length, px = c[n - 1]; if (!(px > 0)) return;
+      const e21 = _emaSeries(c, 21), e50 = _emaSeries(c, 50), e200 = _emaSeries(c, 200);
+      const rsi = _rsi(c, 14), atr = _atr(h, l, c, 14);
+      const seg = l.slice(-90), segH = h.slice(-90); const lo = Math.min.apply(null, seg), hi = Math.max.apply(null, segH);
+      const vt = v.slice(-21, -1).slice().sort((a, b) => a - b), vMed = vt[Math.floor(vt.length / 2)] || 0;
+      out.push({ coin: sym, price: +px.toPrecision(6),
+        chg24hPct: c[n - 25] ? +(((px - c[n - 25]) / c[n - 25]) * 100).toFixed(2) : null,
+        trend: (e50[n - 1] > e200[n - 1]) ? 'up' : 'down',
+        emaStack: (e21[n - 1] > e50[n - 1] && e50[n - 1] > e200[n - 1]) ? 'bull' : (e21[n - 1] < e50[n - 1] && e50[n - 1] < e200[n - 1]) ? 'bear' : 'mixed',
+        rsi14: rsi != null ? Math.round(rsi) : null,
+        atrPct: atr ? +((atr / px) * 100).toFixed(2) : null,
+        rangePosPct: hi > lo ? Math.round((px - lo) / (hi - lo) * 100) : null,
+        volVsMedian: vMed ? +(v[n - 1] / vMed).toFixed(2) : null,
+        distToHighPct: hi > px ? +(((hi - px) / px) * 100).toFixed(2) : 0,
+        distToLowPct: px > lo ? +(((px - lo) / px) * 100).toFixed(2) : 0 });
+    } catch (e) {}
+  }));
+  return out;
+}
+async function scanOpportunities(env, ctx) {
+  if (!env.ANTHROPIC_API_KEY) return { ts: Date.now(), setups: [], error: 'ai_unconfigured' };
+  const sigs = await scanSignals(env);
+  if (!sigs.length) return { ts: Date.now(), setups: [], error: 'no_data' };
+  const model = (await env.STATS.get('ai:cfg.model')) || 'claude-sonnet-5';
+  const sys = "You are a crypto futures desk scanner. You are given a light 1-hour snapshot of several coins. Pick the THREE best ACTIONABLE setups right now - the ones a disciplined trader would actually take or wait for today. For each: coin, side (long|short|wait), a ONE-sentence thesis in plain English naming the setup and its trigger, confidence 0-100, and a rough entry zone {from,to} near the current price. Do NOT invent precise levels - the exact plan is drawn later on the chart. Favour clean trend-with-momentum continuations and clean reversals at range edges; avoid the middle of a chop. Return STRICT JSON only, no prose: {\"setups\":[{\"coin\":\"BTC\",\"side\":\"long\",\"thesis\":\"...\",\"confidence\":72,\"entry\":{\"from\":0,\"to\":0}}]}. Exactly 3, strongest first.";
+  let data = null;
+  try { const ar = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model, max_tokens: 900, system: sys, messages: [{ role: 'user', content: 'Coins now:\n' + JSON.stringify(sigs) }] }) }, 22000, env, 'aiscan'); if (ar.ok) data = await ar.json(); } catch (e) {}
+  let txt = ''; try { txt = (data.content || []).filter(x => x.type === 'text').map(x => x.text).join(''); } catch (e) {}
+  let raw = []; try { const m = txt.match(/\{[\s\S]*\}/); if (m) raw = JSON.parse(m[0]).setups || []; } catch (e) {}
+  const byCoin = {}; sigs.forEach(s => { byCoin[s.coin] = s; });
+  const setups = (Array.isArray(raw) ? raw : []).filter(s => s && byCoin[String(s.coin || '').toUpperCase()]).slice(0, 3).map(s => {
+    const co = String(s.coin).toUpperCase(), sg = byCoin[co], side = /^(long|short|wait)$/.test(String(s.side)) ? s.side : 'wait';
+    return { coin: co, side, thesis: String(s.thesis || '').slice(0, 160), confidence: Math.max(0, Math.min(100, Math.round(+s.confidence || 0))), price: sg.price, rsi: sg.rsi14, trend: sg.trend,
+      entry: (s.entry && +s.entry.from > 0) ? { from: +s.entry.from, to: +(s.entry.to || s.entry.from) } : null };
+  });
+  const result = { ts: Date.now(), setups };
+  try { await env.STATS.put('ai:scan:v1', JSON.stringify(result), { expirationTtl: 3600 }); } catch (e) {}
+  try { aiUsageLog(env, ctx, { usage: data && data.usage, model, surface: 'scan' }); } catch (e) {}
+  return result;
+}
 async function handleAiChart(url, request, env, ectx) {
   const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -19580,6 +19633,23 @@ export default {
     }
     if (url.pathname.startsWith('/api/whsink/')) return handleWhSink(url, request, env); // Bot API 2.3 webhook test sink
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env, ctx); // ctx: the token meter finishes after the stream does
+    if (url.pathname === '/api/ai/scan') { // AI opportunity scanner (Plus-only): 3 best setups across the majors, shared + cached
+      const J2 = (o, s = 200) => J(o, s);
+      const stp = await premiumFor(env, request);
+      // the E2E/admin hook runs the real scan as a Plus caller
+      const _adm = isAdminKey(env, adminKeyFrom(request, url)) && request.headers.get('x-mp-e2e') === '1';
+      if (!(stp.plus || _adm)) return J2({ error: 'plus_required', plan_needed: 'plus', upgrade: 'https://marginpad.io/premium/' }, 402);
+      let cached = null; try { cached = JSON.parse(await env.STATS.get('ai:scan:v1') || 'null'); } catch (e) {}
+      const fresh = cached && (Date.now() - (+cached.ts || 0) < 15 * 60000);
+      if (url.searchParams.get('run') === '1' && _adm) { const r = await scanOpportunities(env, ctx); return J2(r); }
+      if (fresh) return J2(cached);
+      // stale or missing: refresh in the background (throttled by a KV lock) and serve what we have
+      let locked = false; try { locked = !!(await env.STATS.get('ai:scan:lock')); } catch (e) {}
+      if (!locked) { try { await env.STATS.put('ai:scan:lock', '1', { expirationTtl: 90 }); } catch (e) {}
+        if (cached) { try { ctx.waitUntil(scanOpportunities(env, ctx)); } catch (e) {} return J2(cached); } // serve stale now, refresh behind
+        const r = await scanOpportunities(env, ctx); return J2(r); } // nothing cached: compute synchronously
+      return J2(cached || { ts: Date.now(), setups: [], building: true });
+    }
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
     if (url.pathname === '/unsubscribe') return handleUnsubscribe(url, env);
     if (url.pathname === '/api/tgclaim') { // import a position opened from Telegram into the site's My Trades
