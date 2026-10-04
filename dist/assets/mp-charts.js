@@ -906,7 +906,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(_rrLow!=='')h+=__esT_mpcharts("notWorthItThe",'<div class="aipc-inv aipc-rr"><span>Not worth it</span>The first target pays ')+_rrLow+__esT_mpcharts("xTheRiskUnder",'x the risk - under the 1.5x this assistant will call a trade, so the levels are marked to watch, not to take.</div>');
     if(plan.invalidation)h+=__esT_mpcharts("wrongIf",'<div class="aipc-inv"><span>Wrong if</span>')+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
     if(plan.manage)h+=__esT_mpcharts("yourPosition",'<div class="aipc-inv"><span>Your position</span>')+escHtml(String(plan.manage).slice(0,160))+'</div>';
-    h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("onChart",'">On chart</button>')+(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("tradeIt",'">Trade it</button>'):'')+'</div></div>';return h;}
+    var _hasLv=(+plan.entry>0||(plan.targets||[]).some(function(t){return +t>0;}));
+    h+='<div class="aipc-act"><button type="button" class="aipc-on on" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("onChart",'">On chart</button>')
+      +(_hasLv?'<button type="button" class="aipc-alert" data-plan="'+escAttr(JSON.stringify(plan))+'" title="Get an alert when price reaches these levels">'+__esT_mpcharts("alertMe",'Alert me')+'</button>':'')
+      +(!isW&&plan.entry&&plan.stop?'<button type="button" class="aipc-trade" data-plan="'+escAttr(JSON.stringify(plan))+__esT_mpcharts("tradeIt",'">Trade it</button>'):'')+'</div></div>';return h;}
   /* Pull a trade-plan JSON block off the prose. Robust to ```plan, ```json or a plain ``` fence - and to the closing fence not having streamed in yet. */
   /* Every fenced JSON block comes off the prose: the ```plan object (bias/entry/stop...), the ```actions object ({actions:[],chips:[]})
      or a bare array of actions. Prose = everything before the first parsed block; a fence still streaming in is hidden too. */
@@ -1379,6 +1382,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=aiUndoBatch(aiW,+un.getAttribute('data-b'));un.remove();chartToast(k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):__esT_mpcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'));return;}
       var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){aiClearPlan(aiW);}else{try{aiDrawPlan(aiW,JSON.parse(ob.getAttribute('data-plan')));}catch(_){}}return;}
       var tb=e.target.closest&&e.target.closest('.aipc-trade');if(tb){try{var _pl=JSON.parse(tb.getAttribute('data-plan'));openQuickTrade({sym:aiW&&aiW.sym,side:_pl.bias==='short'?'short':'long',sl:+_pl.stop||null,tp:(+((_pl.targets||[])[0])||null),lev:+_pl.leverage||null});try{if(window.__mpTrack)window.__mpTrack('aitrade',(aiW&&aiW.sym)+' '+_pl.bias);}catch(_e){}}catch(_){}return;}
+      var alb=e.target.closest&&e.target.closest('.aipc-alert');if(alb){try{aiAlertPlan(aiW,JSON.parse(alb.getAttribute('data-plan')));try{if(window.__mpTrack)window.__mpTrack('aialert',(aiW&&aiW.sym)||'');}catch(_e){}}catch(_){}return;}
       var b=e.target.closest&&e.target.closest('.aicopy');if(!b)return;var t=b.parentNode.querySelector('.aitxt');if(t&&navigator.clipboard){navigator.clipboard.writeText(t.innerText||t.textContent||'').then(function(){var o=b.innerHTML;b.textContent='✓';setTimeout(function(){b.innerHTML=o;},1200);}).catch(function(){});}
     });
     aiEl.querySelector('.cwin-ai-h').addEventListener('pointerdown',aiDragStart);
@@ -1481,6 +1485,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(w.chAlerts)w.chAlerts=w.chAlerts.filter(function(x){return x!==a;});
     if(a.id)fetch('/api/alerts/delete',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:a.id})}).catch(function(){});
     if(!silent)chartToast(__esT_mpcharts("alertRemoved",'Alert removed.'));}
+  /* ALERTS ON THE AI'S LEVELS (2026-10-04, owner approved): one tap sets a price alert at the plan's entry, stop and
+     each target, so a one-off analysis becomes a reason to come back. Reuses the normal /api/alerts (email + push). */
+  function aiAlertPlan(w,plan){
+    if(!w||!plan)return;
+    var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
+    if(!me){chartToast(__esT_mpcharts("signInFreeTo",'Sign in (free) to set price alerts.'));try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return;}
+    var cur=(w.lastBar&&+w.lastBar.close)||(w.bars&&w.bars.length?+w.bars[w.bars.length-1].close:0);if(!(cur>0))return;
+    var raw=[];if(+plan.entry>0)raw.push(+plan.entry);if(+plan.stop>0)raw.push(+plan.stop);(plan.targets||[]).forEach(function(t){if(+t>0)raw.push(+t);});
+    var out=[];raw.forEach(function(p){if(!out.some(function(x){return Math.abs(x-p)/p<0.0015;}))out.push(p);});
+    if(!out.length){chartToast(__esT_mpcharts("noLevelsToAlert",'No levels to set an alert on.'));return;}
+    var done=0,ok=0,lastErr=null;
+    out.forEach(function(p){var dir=p>=cur?'up':'down';
+      fetch('/api/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:w.sym,target:p,dir:dir,channel:'email'})}).then(function(r){return r.json();}).then(function(d){
+        done++;if(d&&d.ok){ok++;try{if(w.candle){var pl=w.candle.createPriceLine({price:p,color:'#ffb347',lineWidth:1,lineStyle:2,axisLabelVisible:false,title:''});(w.chAlerts=w.chAlerts||[]).push({id:d.id,price:p,dir:dir,pl:pl});}}catch(e){}}else lastErr=d&&d.error;
+        if(done===out.length){if(ok)chartToast(__esT_mpcharts("alertsSetOn",'Alerts set on ')+ok+__esT_mpcharts("levelsWeLlEmail",' level'+(ok===1?'':'s')+' - we will email you when ')+w.sym+__esT_mpcharts("reachesThem",' reaches them.'));else chartToast(lastErr==='too_many'?__esT_mpcharts("tooManyActiveAlerts",'Too many active alerts (max 25). Remove some on /alerts.'):__esT_mpcharts("couldnTSetThe",'Couldn’t set the alert. Try again.'));}
+      }).catch(function(){done++;if(done===out.length)chartToast(__esT_mpcharts("couldnTSetThe",'Couldn’t set the alert. Try again.'));});});
+  }
   function createChartAlert(w,y){
     if(!w.candle)return;var price;try{price=w.candle.coordinateToPrice(y);}catch(e){}
     if(!(price>0))return;

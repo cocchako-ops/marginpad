@@ -1499,6 +1499,7 @@
   .aipc-act button{flex:1;font:700 11.5px 'Familjen Grotesk',sans-serif;border-radius:8px;padding:7px 9px;cursor:pointer;border:1px solid #3a567c;background:#16283d;color:#9bd6ff;transition:.12s;}
   .aipc-act .aipc-on.on{color:#41e3a3;border-color:rgba(46,189,133,.5);background:rgba(46,189,133,.1);}
   .aipc-act .aipc-trade{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d;}
+  .aipc-act .aipc-alert{color:#ffcf6b;border-color:rgba(255,183,71,.5);background:rgba(255,183,71,.1);}
   .aipc-act button:hover{filter:brightness(1.08);}
   .mfc-ai-msg .aiplan-card{margin-top:8px;}.mfc-ai-msg .aipc-act .aipc-trade{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
   .mfc-ai-msg.ai b{color:#fff;}.mfc-ai-msg.ai code{font-family:'Space Mono',monospace;font-size:.9em;}

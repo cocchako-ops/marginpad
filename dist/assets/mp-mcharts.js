@@ -412,6 +412,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}mAiClear(p);try{if(window.__mpAi&&window.__mpAi.ghostClear&&p&&p.w)window.__mpAi.ghostClear(p.w);}catch(e){}}/* the forecast candles belong to the symbol+TF that was on screen */
   /* the AI plan on a pane: price lines only (the pane's canvas belongs to the user's drawings) */
   function mAiClear(p){if(p&&p._aiPlan){p._aiPlan.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p._aiPlan=null;}try{if(p&&p.w){p.w._aiPlanObj=null;if(p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}}catch(e){} /* clear the shared legend too */}
+  /* ALERTS ON THE AI'S LEVELS (2026-10-04): one tap sets a price alert at the plan's entry/stop/targets (mobile) */
+  function mAiAlert(p,plan){
+    if(!p||!plan)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
+    if(!me){if(window.mpToast)window.mpToast({msg:__esT_mpmcharts("signInFreeTo",'Sign in (free) to set price alerts.'),kind:'warn'});try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return;}
+    var cur=(p.bars&&p.bars.length?+p.bars[p.bars.length-1].close:0);if(!(cur>0))return;
+    var raw=[];if(+plan.entry>0)raw.push(+plan.entry);if(+plan.stop>0)raw.push(+plan.stop);(plan.targets||[]).forEach(function(t){if(+t>0)raw.push(+t);});
+    var out=[];raw.forEach(function(x){if(!out.some(function(y){return Math.abs(y-x)/x<0.0015;}))out.push(x);});
+    if(!out.length)return;var done=0,ok=0;
+    out.forEach(function(x){var dir=x>=cur?'up':'down';fetch('/api/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:p.sym,target:x,dir:dir,channel:'email'})}).then(function(r){return r.json();}).then(function(d){done++;if(d&&d.ok)ok++;if(done===out.length&&window.mpToast)window.mpToast({msg:ok?('Alerts set on '+ok+' level'+(ok===1?'':'s')+' - we will email you.'):'Could not set alerts.',kind:ok?'good':'warn'});}).catch(function(){done++;});});
+  }
   /* VISION (2026-10-04): a downscaled JPEG of the pane's chart so the model sees the formations (numbers stay from the brief) */
   function mChartSnap(p){try{if(!p||!p.chart||!p.chart.takeScreenshot)return null;var src=p.chart.takeScreenshot();if(!src||!(src.width>0))return null;var maxW=900,scale=Math.min(1,maxW/src.width),cv=document.createElement('canvas');cv.width=Math.round(src.width*scale);cv.height=Math.round(src.height*scale);var cx=cv.getContext('2d');if(!cx)return null;cx.drawImage(src,0,0,cv.width,cv.height);var u=cv.toDataURL('image/jpeg',0.6);return (u&&u.length>1200&&u.length<3500000)?u:null;}catch(e){return null;}}
   function mAiDraw(p,plan){if(!p||!p.candle||!plan)return;mAiClear(p);p._aiPlan=[];
@@ -698,7 +708,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       }).catch(function(){busy=false;bub.textContent=__esT_mpmcharts("networkErrorTryAgain",'Network error - try again.');});}
     msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}
       var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=(AI&&p.w)?AI.undo(p.w,+un.getAttribute('data-b')):0;un.remove();if(window.mpToast)window.mpToast({msg:k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):__esT_mpmcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'),kind:'info',ms:3000});return;}
-      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent=__esT_mpmcharts("showOnChart",'Show on chart');}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent=__esT_mpmcharts("onChart",'On chart');}catch(_){}}}});
+      var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent=__esT_mpmcharts("showOnChart",'Show on chart');}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent=__esT_mpmcharts("onChart",'On chart');}catch(_){}}return;}
+      var alb=e.target.closest&&e.target.closest('.aipc-alert');if(alb){try{mAiAlert(p,JSON.parse(alb.getAttribute('data-plan')));}catch(_){}}});
     chipsEl.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.cwin-ai-chip');if(c)send(c.getAttribute('data-q'));});
     btn.addEventListener('click',function(){send();});inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});
     render();if(AI)AI.histPull(WK,function(all){if(all&&!busy&&body.isConnected)render();});
