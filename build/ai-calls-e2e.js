@@ -19,10 +19,12 @@ const ok = (c, m, d) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
 
 // lift the real settler out of the worker
 const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
-const i = src.indexOf('function aiCallSettle(');
-if (i < 0) { console.log('aiCallSettle not found in worker.js'); process.exit(1); }
-let d = 0, started = false, end = i;
-for (let j = i; j < src.length; j++) {
+// lift BOTH aiCallFilled (the entry-fill finder) and aiCallSettle - the settler calls the finder (2026-10-04)
+const i = src.indexOf('function aiCallFilled(');
+const iSettle = src.indexOf('function aiCallSettle(');
+if (i < 0 || iSettle < 0) { console.log('aiCallFilled/aiCallSettle not found in worker.js'); process.exit(1); }
+let d = 0, started = false, end = iSettle;
+for (let j = iSettle; j < src.length; j++) {
   if (src[j] === '{') { d++; started = true; }
   else if (src[j] === '}') { d--; if (started && d === 0) { end = j + 1; break; } }
 }
@@ -65,6 +67,16 @@ ok(aiCallSettle(null, [bar(1, 1)]) === null && aiCallSettle(LONG, []) === null,
 
 ok(aiCallSettle(LONG, [bar(104, 99)]).state === 'win' && aiCallSettle(LONG, [bar(103.99, 99)]) === null,
   'the target counts when it is touched exactly, not only when it is passed');
+
+// 2026-10-04 (owner #1): a call settles FROM the fill, not from the moment it was made. A pending entry the market
+// never reached is NOT a loss - it is still waiting (the caller expires it as a no-fill, kept out of the hit rate).
+ok(aiCallSettle(LONG, [bar(110, 105), bar(112, 106)]) === null,
+  'a long whose entry (100) price never came back to does NOT settle - it is a no-fill, not a loss');
+// entry reached only on the second candle, then the stop below the un-reached entry is ignored until after the fill
+ok(aiCallSettle({ bias: 'long', entry: 100, stop: 98, tp1: 104 }, [bar(108, 101), bar(101, 99), bar(105, 100)]).state === 'win',
+  'the clock starts when the entry is filled, and the target after it counts');
+ok(typeof aiCallFilled === 'function' && aiCallFilled(LONG, [bar(110, 105), bar(101, 99)]) === 1 && aiCallFilled(LONG, [bar(110, 105)]) === -1,
+  'aiCallFilled finds the fill candle, or -1 when the entry was never reached');
 
 console.log('\nLIVE - the desk that reads it');
 (async () => {
