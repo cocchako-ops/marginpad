@@ -132,6 +132,8 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ct-head{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid var(--line);}
 .ct-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;color:var(--ink);}
 .ct-online{font-size:11px;color:var(--up);font-family:'Space Mono',monospace;}
+.ct-online{display:inline-flex;align-items:center;gap:5px}
+.ct-ondot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 6px var(--up);display:inline-block;flex:none}
 .ct-x{margin-left:auto;background:none;border:none;color:var(--ink-faint);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1;}
 .ct-x:hover{color:var(--ink);}
 .ct-gate{padding:24px 18px;text-align:center;display:flex;flex-direction:column;gap:12px;}

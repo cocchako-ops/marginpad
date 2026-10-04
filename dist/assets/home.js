@@ -2210,7 +2210,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(window.mpEnsureProfile){window.mpEnsureProfile(go);return;}
     go();}
   if(msgs)msgs.addEventListener('click',function(e){var tr=e.target.closest&&e.target.closest('.ct-trade[data-trade]');if(tr){e.stopPropagation();e.preventDefault();if(window.mpOpenTrade)window.mpOpenTrade(tr.getAttribute('data-trade'));return;}var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
-  function setOnline(n){/* online count removed per owner */}
+  function setOnline(n){n=+n||0;var el=onlineEl||document.getElementById('ctOnline');if(!el)return;if(n>0){el.innerHTML='<i class="ct-ondot"></i>'+n+' online';el.hidden=false;}else{el.hidden=true;}} /* live count of open chat sockets in this room (2026-10-04, owner: show how many are online at the top of chat) */
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
     if(fab){fab.classList.toggle('ct-alert',on);var fd=fab.querySelector('.ctfab-dot');if(on&&!fd){fd=document.createElement('span');fd.className='ctfab-dot';fab.appendChild(fd);}else if(!on&&fd){fd.remove();}}

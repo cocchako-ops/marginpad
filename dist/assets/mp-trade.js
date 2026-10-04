@@ -712,7 +712,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function pollChatLast(){try{if(!box.hidden)return;fetch('/chat/last?room='+encodeURIComponent(room),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.ts&&d.ts>chatSeenTs()&&d.ts>Date.now()-259200000)chatAlert(true);}).catch(function(){});}catch(e){}}
   setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
-  function setOnline(n){/* online count removed per owner */}
+  function setOnline(n){n=+n||0;var el=onlineEl||document.getElementById('ctOnline');if(!el)return;if(n>0){el.innerHTML='<i class="ct-ondot"></i>'+n+(n===1?' online':' online');el.hidden=false;}else{el.hidden=true;}} /* live count of open chat sockets in this room (2026-10-04, owner: show how many are online at the top of chat) */
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
  var LB_META={1:{t:__esT_mptrade("greenDays",'Green days'),k:'topGreen'},4:{t:'Top ROE',k:'top'},2:{t:__esT_mptrade("bestWinRate",'Best win rate'),k:'topWr'},3:{t:__esT_mptrade("seasonXp",'Season XP'),k:'topXp'},5:{t:'The Gold Room',k:'topGold'}};
   function showLeaderboard(board){board=(board===2||board===3||board===4||board===5)?board:1;var meta=LB_META[board];
