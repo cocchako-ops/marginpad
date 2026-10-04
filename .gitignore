@@ -77,6 +77,8 @@ build/pt-shots/
 
 # Vault cosmetics E2E screenshots (build/vault-shots.js)
 build/vault-shots/
+# chart-AI vision-check screenshots (build/ai-draw-vision-check.js, offline admin QA)
+build/ai-vision-shots/
 
 # Spanish translation work files (transient; the catalog is the source)
 build/data/es/chunks/

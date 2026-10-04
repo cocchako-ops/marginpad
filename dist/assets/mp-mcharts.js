@@ -686,7 +686,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           var h2=hist();h2.push(entry);save(h2,true);bub.innerHTML=aiHtml(entry);fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();
           if(sp.plan){mAiDraw(p,sp.plan);p._aiPlanObj=sp.plan;}
           mAiExec(p,sp.actions,entry.b).then(function(acts){
-            if(acts&&acts.length){entry.acts=acts;var h3=hist();for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts;break;}}save(h3);if(bub.isConnected){bub.innerHTML=aiHtml(entry);fixTrade();}if(window.mpToast&&!acts.some(function(a){return /^Switched to/.test(a);}))window.mpToast({msg:acts.join(' · '),kind:'info',ms:3600,key:'aiacts'});}
+            var _geo=(acts&&acts.geo&&acts.geo.length)?acts.geo:null;
+            if(acts&&acts.length){entry.acts=acts;if(_geo)entry.geo=_geo;var h3=hist();for(var i=h3.length-1;i>=0;i--){if(h3[i].role==='ai'&&h3[i].ts===entry.ts){h3[i].acts=acts;if(_geo)h3[i].geo=_geo;break;}}save(h3);if(bub.isConnected){bub.innerHTML=aiHtml(entry);fixTrade();}if(window.mpToast&&!acts.some(function(a){return /^Switched to/.test(a);}))window.mpToast({msg:acts.join(' · '),kind:'info',ms:3600,key:'aiacts'});}
             else save(hist());
             if(String(p.sym).toUpperCase()!==String(WK.sym).toUpperCase()){var nk={sym:p.sym},hn=hist(nk);hn.push(uEntry,entry);save(hn,false,nk);WK=nk;inp.placeholder=mcT('mcAskPh','Ask about')+' '+p.sym+'…';render();}});}
         (function pump(){rd.read().then(function(res){if(res.done){finish();return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){acc+=ev.delta.text;show();}}catch(e){}}pump();}).catch(function(){finish();});})();
@@ -707,18 +708,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else if(a.a==='timeframe'&&a.tf){var tf=String(a.tf),ok=false;for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)ok=true;if(ok&&tf!==p.tf){p.tf=tf;clearPaneDraw(p);loadKlines(p);syncBar();mfcSave();reload=true;out.push(__esT_mpmcharts("switchedTo",'Switched to ')+tfLabel(tf));}}
     }catch(e){}});
     var pr=reload?new Promise(function(res){var t0=Date.now();(function poll(){if(p.dead){res(false);return;}if(p.bars!==b0&&p.bars&&p.bars.length){res(true);return;}if(Date.now()-t0>9000){res(false);return;}setTimeout(poll,120);})();}):Promise.resolve(true);
-    return pr.then(function(){var drawn=0,cleared=0,AI=window.__mpAi||null,al=mAllowed();
+    return pr.then(function(){var drawn=0,cleared=0,geo=[],AI=window.__mpAi||null,al=mAllowed();
       acts.forEach(function(a){if(!a||typeof a!=='object')return;try{
         if(a.a==='indicator'&&a.id){var id=String(a.id).toLowerCase(),on=a.on!==false,ids=[];
           if((id==='ema'||id==='sma')&&Array.isArray(a.periods)&&a.periods.length)a.periods.forEach(function(per){ids.push(id+Math.round(+per));});else if(id==='ema'||id==='sma')ids.push(id==='ema'?'ema21':'sma50');else ids.push(id);
           ids.forEach(function(k){var known=false;for(var i=0;i<INDS.length;i++)if(INDS[i][0]===k)known=true;if(!known)return;if(mEx(k)&&!al){out.push(mIndName(k)+__esT_mpmcharts("isLockedPremiumIndicator",' is locked (Premium indicator)'));return;}p.inds[k]=on;out.push((on?'Opened ':'Closed ')+mIndName(k));try{if(on&&window.__mpTrack)window.__mpTrack('ind',mIndName(k)+' (ai)');}catch(_){}});
           applyInds(p);mfcSave();}
         else if(a.a==='clear_ai'&&AI&&p.w){cleared+=AI.clearAi(p.w);}
-        else if(a.a==='draw'&&AI&&p.w){drawn+=AI.draw(p.w,[a],batch);}
+        else if(a.a==='draw'&&AI&&p.w){drawn+=AI.draw(p.w,[a],batch);if(AI.geom)geo=geo.concat(AI.geom());}
         else if(a.a==='zoom'&&+a.bars>0&&p.chart&&p.bars&&p.bars.length){var n=p.bars.length,k2=Math.max(20,Math.min(600,Math.round(+a.bars)));p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,n-k2),to:n+6});out.push(__esT_mpmcharts("zoomedTo",'Zoomed to ')+k2+' candles');}
       }catch(e){}});
       if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
       if(drawn){out.push('Drew '+drawn+' shape'+(drawn===1?'':'s'));try{if(window.__mpTrack)window.__mpTrack('draw',(p.sym||'')+' (ai)');}catch(e){}}
+      out.geo=geo; // geometric feedback for the model next turn (2026-10-04), same as desktop aiExec
       return out;});}
   // ---- open / close ----
   var entered=false;
