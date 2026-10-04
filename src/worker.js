@@ -7257,7 +7257,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=728eaaba" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=5e2d5297" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19570,6 +19570,14 @@ export default {
       return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=3600', ...CORS } });
     }
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
+    if (url.pathname === '/api/online') { // public: how many PEOPLE are on the whole site now (2026-10-04, owner: show it at the top of chat). Just a number, edge-cached.
+      const ck = new Request('https://marginpad.io/__online_count_v1');
+      if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+      let online = 0; try { const r = await opslogDo(env).fetch(new Request('https://do/onlinecount')); const j = await r.json(); online = +((j && j.online) || 0); } catch (e) {}
+      const resp = new Response(JSON.stringify({ online }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=12', ...CORS } });
+      try { ctx.waitUntil(caches.default.put(ck, resp.clone())); } catch (e) {}
+      return resp;
+    }
     if (url.pathname.startsWith('/api/whsink/')) return handleWhSink(url, request, env); // Bot API 2.3 webhook test sink
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env, ctx); // ctx: the token meter finishes after the stream does
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
@@ -22509,7 +22517,7 @@ export default {
       const sub = url.pathname.slice('/api/squad/'.length);
       const call = async (p, bd) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bd) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       // ── public reads (no account needed): the squad directory is how a newcomer finds anyone at all
-      if (sub === 'browse' || sub === 'board' || sub === 'openduels' || sub === 'stats') {
+      if (sub === 'browse' || sub === 'board' || sub === 'leaderboard' || sub === 'openduels' || sub === 'stats') {
         const ck = new Request('https://marginpad.io/__squad_' + sub + '_v1');
         if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
         let body = '{}'; try { const r = await stub.fetch(new Request('https://do/squad/' + sub, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); body = await r.text(); } catch (e) {}
@@ -23261,6 +23269,7 @@ export class OpsLog {
       const y = this.rows('SELECT ts, n FROM onhist WHERE ts>=? AND ts<? ORDER BY n DESC, ts ASC LIMIT 1', day0 - 86400000, day0)[0] || null;
       return this.j({ now, rows, hist, usual: this.usual(now), peak: pk ? { n: +pk.n, ts: +pk.ts } : null, peakYday: y ? { n: +y.n, ts: +y.ts } : null, socks: (this.socks && this.socks.size) || 0, samples: +(this.rows('SELECT COUNT(*) c FROM onhist')[0] || {}).c || 0 });
     }
+    if (path === '/onlinecount') { return this.j({ online: this.onPeople() }); } // public whole-site online-people count (one per account), nothing identifying
     if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
       const keys = String(url.searchParams.get('k') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
       const n = Math.min(6000, +url.searchParams.get('n') || 0) || 0;
@@ -29712,6 +29721,13 @@ export class UserStore {
       const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY wins DESC, sxp DESC LIMIT 50');
       const out = []; for (const r of rows) { const s = this._squadPub(r.id, false); if (s) out.push(s); }
       return this.j({ squads: out });
+    }
+    if (path === '/squad/leaderboard') { // EVERY squad ranked by squad XP - the one view everyone sees, member or not (2026-10-04)
+      const rows = this.rows('SELECT id FROM squads WHERE COALESCE(hidden,0)=0 ORDER BY sxp DESC, wins DESC, created ASC LIMIT 100');
+      const out = []; let rank = 0;
+      for (const r of rows) { const s = this._squadPub(r.id, false); if (!s) continue; rank++;
+        out.push({ rank, sid: s.sid, name: s.name, tag: s.tag, crest: s.crest, sxp: s.sxp, level: s.level, n: s.n, max: s.max, cap: s.cap, wins: s.wins, draws: s.draws, losses: s.losses, open: s.open, leaderName: s.leaderName, mvp: s.mvp, state: s.n >= s.max ? 'full' : s.open ? 'open' : 'invite', joinable: !!(s.open && s.n < s.max) }); }
+      return this.j({ squads: out, total: (this.rows('SELECT COUNT(*) c FROM squads WHERE COALESCE(hidden,0)=0')[0] || { c: 0 }).c });
     }
     if (path === '/squad/of') { // the crest for a set of accounts - what the public profile card and the boards ask for
       const qIds = String(url.searchParams.get('uids') || '').split(',').filter(Boolean); // doJ() in the /xp poll is a GET helper, so the ids arrive on the query there
