@@ -15349,6 +15349,11 @@ async function handleTrade(url, request, env, ctx) {
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
   wantDrain = request.method === 'POST' && ['/open', '/close', '/sltp', '/order', '/ordersweep', '/tradesweep', '/trades'].indexOf(path) >= 0;
+  // BUST THE POSITIONS SWEEP-RESULT CACHE on this account's own mutating call, so a poll right after an open/close
+  // sees it instantly and never serves a pre-write snapshot (2026-10-04). Per-isolate, which is where a client's
+  // own write and its next poll almost always land; the 2 s TTL + the mutation response (which carries the position
+  // itself) cover the rare cross-isolate case.
+  if (wantDrain) { try { if (globalThis.__botPosR) delete globalThis.__botPosR[uid]; if (globalThis.__botSyms) delete globalThis.__botSyms[uid]; } catch (e) {} }
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
   // XP promos ride ALONG every call that can close a trade - the DO can't read KV, so a missing promos field
   // silently disqualifies server-side closes from owner-defined boosts (papisdiakite600 ticket 2026-08-12:
@@ -15565,7 +15570,19 @@ async function handleTrade(url, request, env, ctx) {
     }
     const prices = {};
     for (const sym2 of syms) { try { const pd2 = await fetchPriceCached(sym2); if (pd2 && +pd2.price > 0) { prices[sym2] = +pd2.price; prices[sym2 + 'USDT'] = +pd2.price; } } catch (e) {} }
+    // SWEEP-RESULT CACHE (2026-10-04, UserStore load relief): the DO sweep (/botpositions) is a PURE function of the
+    // journal + the prices passed in - no candles, no other I/O (see DO handler) - so for the SAME prices it returns
+    // the SAME result and the SAME closes. fetchPriceCached is itself 5 s-cached, so rapid polls pass identical
+    // prices; serving the last result for an identical price key skips a redundant DO round trip and can NEVER hide a
+    // sweep action, because any price move that could cross a level changes the key and forces a fresh sweep. A short
+    // TTL backstops journal changes from other paths (site trade, cron), and _botPosBust(uid) clears it on this
+    // account's own mutating API calls. Per-isolate, like __botSyms.
+    const _rc = globalThis.__botPosR = globalThis.__botPosR || {};
+    const _pk = syms.map(s => s + ':' + (prices[s] || 0)).join('|');
+    const _rh = _rc[uid];
+    if (_rh && _rh.pk === _pk && Date.now() - _rh.t < 2000 && _rh.r) return jt(_rh.r);
     const r = await usersDO(env, '/botpositions', { uid, prices }); // sweeps SL/TP/liq with fresh prices and returns the live list
+    if (r && !r.error) { _rc[uid] = { pk: _pk, t: Date.now(), r }; if (Object.keys(_rc).length > 2000) { for (const k of Object.keys(_rc).slice(0, 1000)) delete _rc[k]; } }
     return jt(r || { positions: [] });
   }
   return jt({ error: 'not_found' }, 404);
