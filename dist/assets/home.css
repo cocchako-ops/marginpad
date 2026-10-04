@@ -1463,8 +1463,8 @@
   .cwin-ai-quota.low{color:#ffb020}
   .cwin-ai-quota{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:#5c656f;white-space:nowrap;}
   .cwin-ai-quota.low{color:#ffb347;}
-  .cwin-ai-clear,.cwin-ai-x{background:none;border:none;color:#5c656f;cursor:pointer;padding:2px 3px;line-height:1;display:inline-flex;}
-  .cwin-ai-clear:hover{color:#ff8a80;}.cwin-ai-x{font-size:15px;}.cwin-ai-x:hover{color:#e9e7df;}
+  .cwin-ai-clear,.cwin-ai-x,.cwin-ai-share{background:none;border:none;color:#5c656f;cursor:pointer;padding:2px 3px;line-height:1;display:inline-flex;}
+  .cwin-ai-clear:hover{color:#ff8a80;}.cwin-ai-x{font-size:15px;}.cwin-ai-x:hover{color:#e9e7df;}.cwin-ai-share:hover{color:#c2f64a;}
   .cwin-ai-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:13px 12px;display:flex;flex-direction:column;gap:9px;font-size:13px;line-height:1.6;}
   .aimsg{max-width:90%;padding:9px 12px;border-radius:13px;word-wrap:break-word;}
   .aimsg.user{align-self:flex-end;background:linear-gradient(180deg,#26486f,#1f3a5a);color:#eaf3ff;border-bottom-right-radius:4px;}
