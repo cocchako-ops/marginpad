@@ -1227,6 +1227,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var ghost=0;
     (acts||[]).forEach(function(a){if(!a||a.a!=='draw')return;
       var _sh=String(a.shape||'').toLowerCase();
+      if((_sh==='position'||_sh==='rr')&&w._aiPlanObj)return; // the plan block + legend already render the trade - a position shape here just reprints it (declutter 2026-10-04)
       if(_sh==='arrow'||_sh==='forecast'||_sh==='path'){ // the expected path is a run of translucent candles now, not a line
         var hp2=(function(){var v=+a.p2;return v>0?v:0;})();
         if(!(hp2>0))return;
@@ -1237,7 +1238,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           var lb2=String(a.label||'').trim().slice(0,40);
           if(lb2)w.dr.shapes.push({t:'text',l:n-1+5,p:pp[pp.length-1].p,txt:lb2,color:/^#[0-9a-fA-F]{6}$/.test(String(a.color||''))?a.color:'#3fd8e6',w:2,ar:1,bg:1,by:'ai',aiB:batch});}
         return;}
-      var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;var _gn=_geoNote(a,sh,lo,hi);if(_gn)_aiGeo.push(_gn);});
+      var sh=aiShapeOf(a,n,px,ctx);if(!sh)return;
+      // AFTER snapping: a horizontal level/line that landed on a plan price (entry/stop/target) is a duplicate of a
+      // line the plan already drew - drop it, it was the right-axis pile-up the vision gate kept flagging (2026-10-04)
+      if(w._aiPlanObj&&sh.length===1&&(sh[0].t==='hray'||sh[0].t==='hline')){var _hp=+sh[0].p||0;if(_hp>0){var _plo=w._aiPlanObj,_ps=[+_plo.entry||0,+_plo.stop||0].concat((_plo.targets||[]).map(Number));if(_ps.some(function(x){return x>0&&Math.abs(x-_hp)/_hp<0.002;}))return;}}
+      sh.forEach(function(s){s.aiB=batch;w.dr.shapes.push(s);});k++;var _gn=_geoNote(a,sh,lo,hi);if(_gn)_aiGeo.push(_gn);});
     if(ghost)try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr)w.chart.timeScale().setVisibleLogicalRange({from:_vr.from,to:n-1+ghost+2});}catch(e){}
     if(k){if(w.dr.shapes.length>120)w.dr.shapes=w.dr.shapes.slice(-120);
       /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
@@ -1284,8 +1289,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
   function aiClearPlan(w){aiGhostClear(w);if(w&&w._aiPlan){w._aiPlan.forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w._aiPlan=null;}
-    if(w&&w.dr&&w.dr.shapes){var before=w.dr.shapes.length;w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.shapes.length!==before&&w.dr.redraw)w.dr.redraw();}
-    w&&(w._aiPlanObj=null);if(w)aiRescale(w);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent=__esT_mpcharts("showOnChart",'Show on chart');});}}catch(e){}}
+    w&&(w._aiPlanObj=null); // null it FIRST so the legend (which reads _aiPlanObj) is gone on the redraw below
+    if(w&&w.dr&&w.dr.shapes){w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.redraw)w.dr.redraw();}
+    if(w)aiRescale(w);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent=__esT_mpcharts("showOnChart",'Show on chart');});}}catch(e){}}
   /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
   function aiFlash(w,price){if(!w||!w.candle||!(price>0))return;try{var l=w.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{w.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
   /* drew = the model drew the setup itself with actions. Then the plan contributes ONLY the trade levels (entry, stop, targets):
@@ -1293,32 +1299,33 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      of lines on one price is exactly the clutter the owner called out (2026-09-17). */
   function aiDrawPlan(w,plan,drew){
     if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];var noZones=drew;
-    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title}));}catch(e){}}
+    /* the LINE shows WHERE, the legend box shows WHAT + the number - so the axis price tag is OFF (axisLabelVisible:false),
+       or the plan's 3-4 close prices stack into an unreadable column on the right AND repeat the legend (declutter 2026-10-04) */
+    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:false,title:''}));}catch(e){}}
     w._aiPlanObj=plan;
     var _tradable=aiTradable(plan);
     /* two targets within 0.4% of each other print two labels nobody can read apart (2026-10-04 vision gate: the
        WOULD TP1/TP2 stack) - draw only targets that are meaningfully separated, keeping their original numbering */
     var _tgKeep=[],_tgLast=0;(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tgLast&&Math.abs(t-_tgLast)/_tgLast<0.004)return;_tgLast=t;_tgKeep.push({t:t,i:i});});
+    /* DECLUTTER (2026-10-04): the lines carry only a SHORT tag on the axis; the full number + distance + R:R live in
+       the clean legend box the canvas draws (drawPlanLegend). Repeating "AI ENTRY 84,123.4" on the chart face AND in
+       the legend was the pile-up the vision gate scored 2/5. */
     if(_tradable){
-      if(plan.entry)pl(plan.entry,'#3fd8e6','AI ENTRY',0,2);
-      if(plan.stop)pl(plan.stop,'#ff5a4d','AI STOP',2,2);
-      _tgKeep.forEach(function(o){pl(o.t,'#2ebd85','AI TP'+(o.i+1),2,1);});
+      if(plan.entry)pl(plan.entry,'#3fd8e6','E',0,2);
+      if(plan.stop)pl(plan.stop,'#ff5a4d','SL',2,2);
+      _tgKeep.forEach(function(o){pl(o.t,'#2ebd85','TP'+(o.i+1),2,1);});
     }else{
-      /* still worth seeing, just not as a trade: the same prices as plain watch levels */
-      if(plan.entry)pl(plan.entry,'#6b7c93',__esT_mpcharts("waitFor",'WAIT FOR'),3,1);
-      if(plan.stop)pl(plan.stop,'#8a6a66',__esT_mpcharts("wouldStop",'WOULD STOP'),3,1);
-      _tgKeep.forEach(function(o){pl(o.t,'#6b7c93',__esT_mpcharts("wouldTp",'WOULD TP')+(o.i+1),3,1);});
+      if(plan.entry)pl(plan.entry,'#6b7c93',__esT_mpcharts("waitTag",'WAIT'),3,1);
+      if(plan.stop)pl(plan.stop,'#8a6a66','SL',3,1);
+      _tgKeep.forEach(function(o){pl(o.t,'#6b7c93','TP'+(o.i+1),3,1);});
     }
-    if(!drew)(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'AI').slice(0,16),3,1);});
+    if(!drew)(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'').slice(0,12),3,1);});
     /* the risk and the reward as ZONES ahead of the last candle (owner 2026-09-17: show the target, not only a line):
        drawing-engine rects flagged ai - drawn by the same canvas as the user's shapes, excluded from persistence */
+    /* the risk and reward as translucent ZONES ahead of price (the shape, not the text - the numbers are in the legend now) */
     try{if(_tradable&&w.dr&&w.dr.shapes&&w.bars&&w.bars.length>2&&plan.entry>0){var n=w.bars.length-1,hb=Math.max(6,Math.min(60,Math.round(+plan.horizonBars||14))),e=+plan.entry,st=+plan.stop,tg=(plan.targets||[]).map(Number).filter(function(x){return x>0;});
-      var lbl=function(p){var d=(p-e)/e*100;return (d>=0?'+':'')+d.toFixed(2)+'%';};
       if(st>0&&!noZones)w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:st,color:'#ff5a4d',w:1,dash:true,ai:1});
       if(tg.length&&!noZones){var far=tg[tg.length-1];w.dr.shapes.push({t:'rect',l1:n,p1:e,l2:n+hb,p2:far,color:'#2ebd85',w:1,dash:true,ai:1});}
-      if(st>0&&!noZones)w.dr.shapes.push({t:'text',l:n+1,p:st,txt:'STOP '+lbl(st),color:'#ff7b72',w:2,ai:1,bg:1});
-      if(!noZones)tg.forEach(function(t,i){w.dr.shapes.push({t:'text',l:n+1,p:t,txt:'TP'+(i+1)+' '+lbl(t),color:'#34d99a',w:2,ai:1,bg:1});});
-      var rr=aiRR(plan);if(rr!=null&&!noZones)w.dr.shapes.push({t:'text',l:n+Math.round(hb*0.55),p:e,txt:'R:R '+rr,color:'#3fd8e6',w:2,ai:1,bg:1});
       if(!noZones&&plan.zone&&+plan.zone.from>0&&+plan.zone.to>0)w.dr.shapes.push({t:'rect',l1:Math.max(0,n-hb),p1:+plan.zone.from,l2:n+hb,p2:+plan.zone.to,color:'#ffb020',w:1,dash:true,ai:1});
       if(w.dr.redraw)w.dr.redraw();}}catch(e){}
     try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.add('on');b.textContent=__esT_mpcharts("onChart2",'On chart');});}}catch(e){}
@@ -1403,7 +1410,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         bub.innerHTML=aiAiInner(entry);if(atB)body.scrollTop=body.scrollHeight;
         var h2=aiHistLoad(wk);h2.push(entry);aiHistSave(wk,h2,true);aiSetChips(wk);
         var hasDraw=(sp.actions||[]).some(function(a){return a&&a.a==='draw';});
-        if(sp.plan){try{aiDrawPlan(w,sp.plan,hasDraw);}catch(e){}}
+        /* only a POSITION shape suppresses the plan's own R:R zones - structure the model draws (trend/zone) must NOT,
+           or a plan with a drawn trendline would show no trade zones at all (declutter 2026-10-04) */
+        var hasPos=(sp.actions||[]).some(function(a){return a&&a.a==='draw'&&/^(position|rr)$/i.test(String(a.shape||''));});
+        if(sp.plan){try{aiDrawPlan(w,sp.plan,hasPos);}catch(e){}}
         /* EXECUTE, then write the receipt onto the message (thread + server) and re-render the bubble with it */
         aiExec(w,sp.actions,entry.b).then(function(acts){
           var _rj=(typeof aiRejections==='function')?aiRejections():[];
@@ -1754,7 +1764,36 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ls.forEach(function(o){var y=o.y,c,g=0;if(y-prev<GAP)y=prev+GAP;while((c=clash(y))!=null&&g++<8){y=c+GAP;if(y-prev<GAP)y=prev+GAP;}o.s._dy=y-o.y;prev=y;});}
     /* `tight` below 430px is the phone the owner photographed: there genuinely is not room for everything, so the
        numbers step down one size rather than overlap. Reset per FRAME - the register is what is on screen now. */
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);}
+    /* THE PLAN LEGEND (2026-10-04): the AI plan's numbers live in ONE clean box top-left, not scattered on the chart
+       face. Fixed screen position, redrawn every frame, so it never drifts; reads w._aiPlanObj and clears with it. */
+    function drawPlanLegend(){
+      var pl=w._aiPlanObj;if(!pl)return;
+      var e=+pl.entry||0,st=+pl.stop||0,tg=(pl.targets||[]).map(Number).filter(function(x){return x>0;});
+      if(!(e>0)&&!(st>0)&&!tg.length)return;
+      var trad=(typeof aiTradable==='function')?aiTradable(pl):true,bias=String(pl.bias||'').toLowerCase();
+      var pct=function(p){if(!(e>0)||!(p>0))return '';var d=(p-e)/e*100;return '  '+(d>=0?'+':'')+d.toFixed(2)+'%';};
+      var head=trad?(bias==='short'?'SHORT PLAN':bias==='long'?'LONG PLAN':'PLAN'):'WAITING - not a trade yet';
+      var headCol=bias==='short'?'#ff5a4d':bias==='long'?'#2ebd85':'#9aa3af';
+      var rows=[];
+      if(e>0)rows.push(['#3fd8e6',(trad?'Entry  ':'Wait for  ')+cwFmt(e)]);
+      if(st>0)rows.push(['#ff5a4d',(trad?'Stop   ':'Would stop  ')+cwFmt(st)+pct(st)]);
+      tg.forEach(function(t,i){rows.push(['#2ebd85','TP'+(i+1)+'    '+cwFmt(t)+pct(t)]);});
+      var rr=(typeof aiRR==='function')?aiRR(pl):null;if(rr!=null)rows.push(['#9d7bff','R:R    '+rr]);
+      if(!rows.length)return;
+      ctx.save();
+      var small=(w.dr.W||0)<430,fs=small?10:11,rh=small?14:16,pad=small?7:9,sw=9,gap=8,x0=10,y0=10;
+      ctx.font='700 '+fs+"px 'Space Mono',monospace";
+      var maxw=ctx.measureText(head).width;rows.forEach(function(r){var ww=sw+gap+ctx.measureText(r[1]).width;if(ww>maxw)maxw=ww;});
+      var boxW=Math.min((w.dr.W||300)-20,maxw+pad*2),boxH=pad*2+(rows.length+1)*rh;
+      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x0,y0,boxW,boxH,9);else ctx.rect(x0,y0,boxW,boxH);
+      ctx.fillStyle='rgba(10,11,13,.82)';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='rgba(120,130,145,.3)';ctx.stroke();
+      ctx.textBaseline='middle';ctx.textAlign='left';
+      ctx.fillStyle=headCol;ctx.font='800 '+fs+"px 'Space Mono',monospace";ctx.fillText(head,x0+pad,y0+pad+rh/2);
+      ctx.font='700 '+fs+"px 'Space Mono',monospace";
+      rows.forEach(function(r,i){var ry=y0+pad+rh*(i+1)+rh/2;ctx.fillStyle=r[0];ctx.fillRect(x0+pad,ry-sw/2,sw,sw);ctx.fillStyle='#e8ecf1';ctx.fillText(r[1],x0+pad+sw+gap,ry);});
+      ctx.restore();
+    }
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
     function grid(){var b=w.bars;if(!b||b.length<2)return null;var iv=(b[b.length-1].time-b[0].time)/(b.length-1);return iv>0?{t0:b[0].time,iv:iv}:null;}

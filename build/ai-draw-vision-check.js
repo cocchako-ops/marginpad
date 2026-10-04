@@ -84,6 +84,10 @@ COMBOS = COMBOS.slice(0, 10);
         // let the draw, the forecast candles and any zoom settle, and make sure nothing is still loading, before the shot
         await page.waitForFunction('(function(){var w=window.__mpWinsDbg[0];var sk=w.el&&w.el.querySelector(".cwin-skel");return !sk||sk.offsetParent===null;})()', { timeout: 10000 }).catch(() => {});
         await new Promise(r => setTimeout(r, 3500));
+        // collapse the /charts left workspace rail so it does not cover the plan legend (a real user hides it; the rail is a probe artifact)
+        await page.evaluate(() => { try { var hide = [...document.querySelectorAll('button,a')].find(b => /^\s*hide\s*$/i.test(b.textContent || '')); if (hide && hide.offsetParent !== null) hide.click(); } catch (e) {}
+          try { var r = document.querySelector('.cws-side, .cws-rail, .cws-left, #cwsSide'); if (r) r.style.display = 'none'; } catch (e) {} });
+        await new Promise(r => setTimeout(r, 500));
         const info = await page.evaluate(() => {
           const w = window.__mpWinsDbg[0];
           const p = document.querySelector('.cwin-ai-panel');
