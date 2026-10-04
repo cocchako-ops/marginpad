@@ -16117,7 +16117,7 @@ async function handleBot(url, request, env, ctx) {
   const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(planH || {}), ...(extra || {}) });
   let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
-    if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; } catch (e) {} } // a mutating call changes the position list - drop the symbol + sweep-result caches so the next poll is fresh and the bot sees its own trade at once
+    if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; } catch (e) {} } // a mutating call changes the position list - drop the caches so the next poll is fresh and the bot sees its own trade at once
     if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
@@ -16293,6 +16293,26 @@ async function handleBot(url, request, env, ctx) {
   const priceMapFill = async (syms) => { if (rp) return rpPrices(); const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceFill(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const priceMapCached = async (syms) => { if (rp) return rpPrices(); const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceCached(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {}, replay: !!rp }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
+  // THE ONE SWEPT-POSITIONS READ for /v1/positions, /v1/account and /v1/balance - they all need the same priced sweep,
+  // so they SHARE the symbol cache (skips the seed DO call) AND the sweep-result cache (keyed by the exact prices, so an
+  // unchanged price returns an identical result and can never hide a close; any price move is a new key -> fresh sweep).
+  // 2 s TTL backstops other paths; busted on this account's own open/close/order (jb + fast-close). Not cached for replay.
+  const sweptPositions = async () => {
+    let syms;
+    if (rp) syms = await openSymsOf();
+    else { const _ss = globalThis.__botSymsV1 = globalThis.__botSymsV1 || {}; const _sh = _ss[uid];
+      syms = (_sh && Date.now() - _sh.t < 30000) ? _sh.syms : null;
+      if (!syms) { syms = await openSymsOf(); _ss[uid] = { t: Date.now(), syms }; if (Object.keys(_ss).length > 2000) { for (const k of Object.keys(_ss).slice(0, 1000)) delete _ss[k]; } } }
+    const prices = await priceMapCached(syms);
+    if (rp) return await doCall('/botpositions', { uid, prices, promos, replay: true });
+    const _rc = globalThis.__botPosRV1 = globalThis.__botPosRV1 || {};
+    const _pk = (syms || []).map(s => s + ':' + (prices[s] || 0)).join('|');
+    const _rh = _rc[uid];
+    if (_rh && _rh.pk === _pk && Date.now() - _rh.t < 2000 && _rh.r) return _rh.r;
+    const r = await doCall('/botpositions', { uid, prices, promos });
+    if (r && !r.error) { _rc[uid] = { pk: _pk, t: Date.now(), r }; if (Object.keys(_rc).length > 2000) { for (const k of Object.keys(_rc).slice(0, 1000)) delete _rc[k]; } }
+    return r;
+  };
   // ── REPLAY control (2.6): POST {symbol, day, speed} starts; GET = status + candles up to the cursor; POST {act:"stop"} closes everything at the cursor and returns the summary ──
   if (path === '/v1/replay') {
     const bookUid = uidLive;
@@ -16409,6 +16429,9 @@ async function handleBot(url, request, env, ctx) {
     return jb(r && r.position ? { ok: true, position: r.position, ...(r.idempotent ? { idempotent: true } : {}) } : { ok: true }, 200);
   }
   if (path === '/v1/orders') { // resting limit orders + the last 20 that filled/cancelled/expired
+    // NOT CACHED: a resting-order list has no price key to guarantee freshness the way the positions sweep does, so a
+    // per-isolate time cache can show an add/cancel from another isolate <=TTL late (an intermittent limit-e2e failure
+    // proved it). Orders change rarely and /order/list is a cheap pure read, so it stays a direct call. (2026-10-04)
     const r = await doCall('/order/list', { uid });
     if (!r) return jb({ error: 'unavailable' }, 503);
     const typeOf = (o) => ((o.side === 'long') ? o.dir === 'up' : o.dir === 'down') ? 'stop' : 'limit'; // a level on the breakout side is a stop entry
@@ -16477,31 +16500,7 @@ async function handleBot(url, request, env, ctx) {
     return jb(r, r.error ? 400 : 200);
   }
   if (path === '/v1/positions') {
-    // SKIP THE SYMBOL-SEED DO CALL for a steady poll - the SAME proven cache handleTrade already uses (__botSyms).
-    // The sweep (doCall below) still runs on EVERY poll, so the position LIST is always fresh from the store; only
-    // symbol DISCOVERY is cached, which halves the two-round-trips-per-poll this path used to cost. A symbol opened
-    // via another isolate since the last refresh simply gets no mark price for <=30 s and is swept next time or by
-    // the cron - exactly handleTrade's accepted behaviour. Busted on this account's own open (jb, on wantDrain).
-    // Not for replay, which carries its own prices/semantics.
-    let syms;
-    if (rp) syms = await openSymsOf();
-    else { const _ss = globalThis.__botSymsV1 = globalThis.__botSymsV1 || {}; const _sh = _ss[uid];
-      syms = (_sh && Date.now() - _sh.t < 30000) ? _sh.syms : null;
-      if (!syms) { syms = await openSymsOf(); _ss[uid] = { t: Date.now(), syms }; if (Object.keys(_ss).length > 2000) { for (const k of Object.keys(_ss).slice(0, 1000)) delete _ss[k]; } } }
-    const prices = await priceMapCached(syms);
-    // SWEEP-RESULT CACHE keyed by the exact price set (same safe logic as handleTrade Phase 1): the DO sweep is a
-    // PURE function of the journal + these prices (no candles), so an identical price returns an identical result
-    // and can NEVER hide a close - any price move is a new key and forces a fresh sweep. 2 s TTL backstops other
-    // paths; busted on this account's own open/close/order (jb on wantDrain + the fast-close). Not for replay.
-    let r;
-    if (rp) r = await doCall('/botpositions', { uid, prices, promos, replay: true });
-    else {
-      const _rc = globalThis.__botPosRV1 = globalThis.__botPosRV1 || {};
-      const _pk = (syms || []).map(s => s + ':' + (prices[s] || 0)).join('|');
-      const _rh = _rc[uid];
-      if (_rh && _rh.pk === _pk && Date.now() - _rh.t < 2000 && _rh.r) r = _rh.r;
-      else { r = await doCall('/botpositions', { uid, prices, promos }); if (r && !r.error) { _rc[uid] = { pk: _pk, t: Date.now(), r }; if (Object.keys(_rc).length > 2000) { for (const k of Object.keys(_rc).slice(0, 1000)) delete _rc[k]; } } }
-    }
+    const r = await sweptPositions();
     if (!r) return jb({ error: 'unavailable' }, 503);
     // the DO now also returns lifetime totals for /account - keep them OUT of the v1 positions body (frozen shape);
     // v2 surfaces them, because there they are a documented part of the envelope's data.
@@ -16534,9 +16533,7 @@ async function handleBot(url, request, env, ctx) {
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
   if (path === '/v1/account') {
-    const syms = await openSymsOf();
-    const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
+    const r = await sweptPositions();
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let openN = 0, marginUse = 0, upnl = 0, realized = 0, wins = 0, losses = 0;
     r.positions.forEach(p => { if (p.status === 'open') { openN++; marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } else { realized += (p.pnl_usd || 0); if ((p.pnl_usd || 0) >= 0) wins++; else losses++; } });
@@ -16560,9 +16557,7 @@ async function handleBot(url, request, env, ctx) {
     });
   }
   if (path === '/v1/balance') { // developers went looking for this one by name before it existed (measured in botuse)
-    const syms = await openSymsOf();
-    const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
+    const r = await sweptPositions();
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let marginUse = 0, upnl = 0;
     r.positions.forEach(p => { if (p.status === 'open') { marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } });
