@@ -1299,25 +1299,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      of lines on one price is exactly the clutter the owner called out (2026-09-17). */
   function aiDrawPlan(w,plan,drew){
     if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];var noZones=drew;
-    /* the LINE shows WHERE, the legend box shows WHAT + the number - so the axis price tag is OFF (axisLabelVisible:false),
-       or the plan's 3-4 close prices stack into an unreadable column on the right AND repeat the legend (declutter 2026-10-04) */
-    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:false,title:''}));}catch(e){}}
+    /* The line carries a SHORT tag on the axis (E / SL / TP1), coloured to match the legend swatch; the legend box carries
+       the full number + distance + R:R. Owner 2026-10-04: a bare line with no tag read as "we drew nothing", and a grey
+       wait-line did not match the coloured legend swatch. So: ALWAYS the semantic colours (cyan entry, red stop, green
+       target), a dashed style when it is a wait rather than a live trade, and the axis tag back on. */
+    function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{w._aiPlan.push(w.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title||''}));}catch(e){}}
     w._aiPlanObj=plan;
     var _tradable=aiTradable(plan);
     /* two targets within 0.4% of each other print two labels nobody can read apart (2026-10-04 vision gate: the
        WOULD TP1/TP2 stack) - draw only targets that are meaningfully separated, keeping their original numbering */
     var _tgKeep=[],_tgLast=0;(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tgLast&&Math.abs(t-_tgLast)/_tgLast<0.004)return;_tgLast=t;_tgKeep.push({t:t,i:i});});
-    /* DECLUTTER (2026-10-04): the lines carry only a SHORT tag on the axis; the full number + distance + R:R live in
-       the clean legend box the canvas draws (drawPlanLegend). Repeating "AI ENTRY 84,123.4" on the chart face AND in
-       the legend was the pile-up the vision gate scored 2/5. */
     if(_tradable){
       if(plan.entry)pl(plan.entry,'#3fd8e6','E',0,2);
       if(plan.stop)pl(plan.stop,'#ff5a4d','SL',2,2);
       _tgKeep.forEach(function(o){pl(o.t,'#2ebd85','TP'+(o.i+1),2,1);});
     }else{
-      if(plan.entry)pl(plan.entry,'#6b7c93',__esT_mpcharts("waitTag",'WAIT'),3,1);
-      if(plan.stop)pl(plan.stop,'#8a6a66','SL',3,1);
-      _tgKeep.forEach(function(o){pl(o.t,'#6b7c93','TP'+(o.i+1),3,1);});
+      /* a WAIT plan: SAME semantic colours as a live trade (so the legend swatch matches the line) but DASHED, which reads
+         as "not armed yet" at a glance (2026-10-04 owner: grey lines did not match the coloured legend) */
+      if(plan.entry)pl(plan.entry,'#3fd8e6','E',3,2);
+      if(plan.stop)pl(plan.stop,'#ff5a4d','SL',3,1);
+      _tgKeep.forEach(function(o){pl(o.t,'#2ebd85','TP'+(o.i+1),3,1);});
     }
     if(!drew)(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'').slice(0,12),3,1);});
     /* the risk and the reward as ZONES ahead of the last candle (owner 2026-09-17: show the target, not only a line):
@@ -1784,23 +1785,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var pct=function(p){if(!(e>0)||!(p>0))return '';var d=(p-e)/e*100;return '  '+(d>=0?'+':'')+d.toFixed(2)+'%';};
       var head=trad?(bias==='short'?'SHORT PLAN':bias==='long'?'LONG PLAN':'PLAN'):'WAITING - not a trade yet';
       var headCol=bias==='short'?'#ff5a4d':bias==='long'?'#2ebd85':'#9aa3af';
+      var dash=!trad; // a wait plan's lines are dashed - the swatch matches
       var rows=[];
-      if(e>0)rows.push(['#3fd8e6',(trad?'Entry  ':'Wait for  ')+cwFmt(e)]);
-      if(st>0)rows.push(['#ff5a4d',(trad?'Stop   ':'Would stop  ')+cwFmt(st)+pct(st)]);
-      tg.forEach(function(t,i){rows.push(['#2ebd85','TP'+(i+1)+'    '+cwFmt(t)+pct(t)]);});
-      var rr=(typeof aiRR==='function')?aiRR(pl):null;if(rr!=null)rows.push(['#9d7bff','R:R    '+rr]);
+      if(e>0)rows.push({c:'#3fd8e6',d:dash,t:(trad?'Entry  ':'Wait for  ')+cwFmt(e)});
+      if(st>0)rows.push({c:'#ff5a4d',d:dash,t:(trad?'Stop   ':'Would stop  ')+cwFmt(st)+pct(st)});
+      tg.forEach(function(t,i){rows.push({c:'#2ebd85',d:dash,t:'TP'+(i+1)+'    '+cwFmt(t)+pct(t)});});
+      var rr=(typeof aiRR==='function')?aiRR(pl):null;if(rr!=null)rows.push({c:null,t:'R:R    '+rr}); // a stat, not a line - no swatch
       if(!rows.length)return;
       ctx.save();
-      var small=(w.dr.W||0)<430,fs=small?10:11,rh=small?14:16,pad=small?7:9,sw=9,gap=8,x0=10,y0=10;
+      var small=(w.dr.W||0)<430,fs=small?10:11,rh=small?15:17,pad=small?8:10,sw=16,gap=9,x0=10,y0=10;
       ctx.font='700 '+fs+"px 'Space Mono',monospace";
-      var maxw=ctx.measureText(head).width;rows.forEach(function(r){var ww=sw+gap+ctx.measureText(r[1]).width;if(ww>maxw)maxw=ww;});
+      var maxw=ctx.measureText(head).width;rows.forEach(function(r){var ww=sw+gap+ctx.measureText(r.t).width;if(ww>maxw)maxw=ww;});
       var boxW=Math.min((w.dr.W||300)-20,maxw+pad*2),boxH=pad*2+(rows.length+1)*rh;
-      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x0,y0,boxW,boxH,9);else ctx.rect(x0,y0,boxW,boxH);
-      ctx.fillStyle='rgba(10,11,13,.82)';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='rgba(120,130,145,.3)';ctx.stroke();
+      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x0,y0,boxW,boxH,10);else ctx.rect(x0,y0,boxW,boxH);
+      ctx.fillStyle='rgba(12,14,18,.9)';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='rgba(130,140,155,.34)';ctx.stroke();
       ctx.textBaseline='middle';ctx.textAlign='left';
       ctx.fillStyle=headCol;ctx.font='800 '+fs+"px 'Space Mono',monospace";ctx.fillText(head,x0+pad,y0+pad+rh/2);
       ctx.font='700 '+fs+"px 'Space Mono',monospace";
-      rows.forEach(function(r,i){var ry=y0+pad+rh*(i+1)+rh/2;ctx.fillStyle=r[0];ctx.fillRect(x0+pad,ry-sw/2,sw,sw);ctx.fillStyle='#e8ecf1';ctx.fillText(r[1],x0+pad+sw+gap,ry);});
+      rows.forEach(function(r,i){var ry=y0+pad+rh*(i+1)+rh/2;
+        if(r.c){ctx.strokeStyle=r.c;ctx.lineWidth=2.4;ctx.setLineDash(r.d?[3,2.5]:[]);ctx.beginPath();ctx.moveTo(x0+pad,ry);ctx.lineTo(x0+pad+sw,ry);ctx.stroke();ctx.setLineDash([]);}
+        ctx.fillStyle='#e8ecf1';ctx.fillText(r.t,x0+pad+sw+gap,ry);});
       ctx.restore();
     }
     function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
