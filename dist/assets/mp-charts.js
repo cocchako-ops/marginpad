@@ -1383,6 +1383,16 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     aiEl.querySelector('.cwin-ai-h').addEventListener('pointerdown',aiDragStart);
     document.addEventListener('pointerdown',function(e){if(aiEl&&!aiEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ai-panel')||e.target.closest('.cwin-ai'))))aiClose();},true);
   }
+  /* VISION (2026-10-04): a downscaled JPEG of the exact chart, so the model SEES the formations. LWC's own
+     takeScreenshot gives the candles + indicators + plan lines; the numbers still come from the brief (server rule). */
+  function chartSnapshot(w){try{
+    if(!w||!w.chart||!w.chart.takeScreenshot)return null;
+    var src=w.chart.takeScreenshot();if(!src||!(src.width>0))return null;
+    var maxW=900,scale=Math.min(1,maxW/src.width),cv=document.createElement('canvas');
+    cv.width=Math.round(src.width*scale);cv.height=Math.round(src.height*scale);
+    var cx=cv.getContext('2d');if(!cx)return null;cx.drawImage(src,0,0,cv.width,cv.height);
+    var u=cv.toDataURL('image/jpeg',0.6);return (u&&u.length>1200&&u.length<3500000)?u:null;
+  }catch(e){return null;}}
   function askAi(question){
     if(aiBusy||!aiW||!aiEl)return;
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
@@ -1399,7 +1409,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var bub=document.createElement('div');bub.className='aimsg ai streaming';bub.innerHTML='<span class="aitype"><i></i><i></i><i></i></span>';body.appendChild(bub);body.scrollTop=body.scrollHeight;
     var acc='',got=false;
     function fail(msg){aiBusy=false;bub.classList.remove('streaming');bub.innerHTML='<span style="color:#ff8a80">'+escHtml(msg)+'</span>';}
-    fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:aiContext(w),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
+    fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:aiContext(w),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en'),image:chartSnapshot(w)})}).then(function(resp){
       if(!resp.ok){resp.json().then(function(d){aiBusy=false;if(resp.status===401){bub.remove();aiShowGate();}else if(resp.status===402){bub.remove();aiShowPremiumGate();}else if(resp.status===429){fail((d&&d.plan==='premium')?(__esT_mpcharts("thatWasYour",'That was your ')+((d&&d.limit)||aiPlans.premium)+__esT_mpcharts("readForTodayIt",' read for today - it resets at midnight UTC. Premium Plus is ')+((d&&d.plus_daily)||aiPlans.plus)+' a day.'):(__esT_mpcharts("youVeUsedAll",'You’ve used all ')+((d&&d.limit)||aiLimit)+__esT_mpcharts("aiQuestionsTodayResets",' AI questions today - resets tomorrow.')));aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail(__esT_mpcharts("aiIsNotSwitched",'AI is not switched on yet.'));}else{fail(__esT_mpcharts("couldNotReachAi",'Could not reach AI - please try again.'));}}).catch(function(){fail(__esT_mpcharts("couldNotReachAi",'Could not reach AI - please try again.'));});return;}
       var u=resp.headers.get('x-ai-used'),l=resp.headers.get('x-ai-limit');if(u)aiSetQuota(+u,+l);
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail(__esT_mpcharts("streamingNotSupportedHere",'Streaming not supported here.'));});return;}

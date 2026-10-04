@@ -83,6 +83,8 @@ COMBOS = COMBOS.slice(0, 10);
         await page.waitForFunction('window.__mpWinsDbg[0].dr.shapes.filter(function(s){return s.by===\"ai\";}).length>0', { timeout: 45000 }).catch(() => {});
         // let the draw, the forecast candles and any zoom settle, and make sure nothing is still loading, before the shot
         await page.waitForFunction('(function(){var w=window.__mpWinsDbg[0];var sk=w.el&&w.el.querySelector(".cwin-skel");return !sk||sk.offsetParent===null;})()', { timeout: 10000 }).catch(() => {});
+        // AND the price scale must have settled to the data (not mid-reload at the old symbol's range): the last close must map inside the plot
+        await page.waitForFunction('(function(){try{var w=window.__mpWinsDbg[0];if(!w||!w.candle||!w.bars||!w.bars.length)return false;var y=w.candle.priceToCoordinate(+w.bars[w.bars.length-1].close);return y!=null&&y>10&&y<(w.dr&&w.dr.H?w.dr.H-10:700);}catch(e){return false;}})()', { timeout: 10000 }).catch(() => {});
         await new Promise(r => setTimeout(r, 3500));
         // collapse the /charts left workspace rail so it does not cover the plan legend (a real user hides it; the rail is a probe artifact)
         await page.evaluate(() => { try { var hide = [...document.querySelectorAll('button,a')].find(b => /^\s*hide\s*$/i.test(b.textContent || '')); if (hide && hide.offsetParent !== null) hide.click(); } catch (e) {}
