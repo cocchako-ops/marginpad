@@ -16117,6 +16117,7 @@ async function handleBot(url, request, env, ctx) {
   const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(planH || {}), ...(extra || {}) });
   let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
+    if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; } catch (e) {} } // a mutating call (esp. an open) may add a symbol - drop the cached symbol list so the next poll re-discovers
     if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
@@ -16473,7 +16474,17 @@ async function handleBot(url, request, env, ctx) {
     return jb(r, r.error ? 400 : 200);
   }
   if (path === '/v1/positions') {
-    const syms = await openSymsOf();
+    // SKIP THE SYMBOL-SEED DO CALL for a steady poll - the SAME proven cache handleTrade already uses (__botSyms).
+    // The sweep (doCall below) still runs on EVERY poll, so the position LIST is always fresh from the store; only
+    // symbol DISCOVERY is cached, which halves the two-round-trips-per-poll this path used to cost. A symbol opened
+    // via another isolate since the last refresh simply gets no mark price for <=30 s and is swept next time or by
+    // the cron - exactly handleTrade's accepted behaviour. Busted on this account's own open (jb, on wantDrain).
+    // Not for replay, which carries its own prices/semantics.
+    let syms;
+    if (rp) syms = await openSymsOf();
+    else { const _ss = globalThis.__botSymsV1 = globalThis.__botSymsV1 || {}; const _sh = _ss[uid];
+      syms = (_sh && Date.now() - _sh.t < 30000) ? _sh.syms : null;
+      if (!syms) { syms = await openSymsOf(); _ss[uid] = { t: Date.now(), syms }; if (Object.keys(_ss).length > 2000) { for (const k of Object.keys(_ss).slice(0, 1000)) delete _ss[k]; } } }
     const prices = await priceMapCached(syms);
     const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
     if (!r) return jb({ error: 'unavailable' }, 503);
