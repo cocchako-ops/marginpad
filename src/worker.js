@@ -16117,7 +16117,7 @@ async function handleBot(url, request, env, ctx) {
   const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(planH || {}), ...(extra || {}) });
   let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
-    if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; } catch (e) {} } // a mutating call (esp. an open) may add a symbol - drop the cached symbol list so the next poll re-discovers
+    if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; } catch (e) {} } // a mutating call changes the position list - drop the symbol + sweep-result caches so the next poll is fresh and the bot sees its own trade at once
     if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
@@ -16223,6 +16223,9 @@ async function handleBot(url, request, env, ctx) {
     const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot', coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; botPresence(env, ctx, request, key, a, 'close'); }
+    // FAST-CLOSE runs before `uid` is resolved, so jb's bust cannot reach it - clear this account's positions caches
+    // explicitly from the auth uid, so the next poll reflects the close at once. Harmless on a failed close.
+    try { if (a && a.uid) { if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[a.uid]; if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[a.uid]; } } catch (e) {}
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
     if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
     if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute', ...((+r.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
@@ -16486,7 +16489,19 @@ async function handleBot(url, request, env, ctx) {
       syms = (_sh && Date.now() - _sh.t < 30000) ? _sh.syms : null;
       if (!syms) { syms = await openSymsOf(); _ss[uid] = { t: Date.now(), syms }; if (Object.keys(_ss).length > 2000) { for (const k of Object.keys(_ss).slice(0, 1000)) delete _ss[k]; } } }
     const prices = await priceMapCached(syms);
-    const r = await doCall('/botpositions', { uid, prices, promos, replay: !!rp });
+    // SWEEP-RESULT CACHE keyed by the exact price set (same safe logic as handleTrade Phase 1): the DO sweep is a
+    // PURE function of the journal + these prices (no candles), so an identical price returns an identical result
+    // and can NEVER hide a close - any price move is a new key and forces a fresh sweep. 2 s TTL backstops other
+    // paths; busted on this account's own open/close/order (jb on wantDrain + the fast-close). Not for replay.
+    let r;
+    if (rp) r = await doCall('/botpositions', { uid, prices, promos, replay: true });
+    else {
+      const _rc = globalThis.__botPosRV1 = globalThis.__botPosRV1 || {};
+      const _pk = (syms || []).map(s => s + ':' + (prices[s] || 0)).join('|');
+      const _rh = _rc[uid];
+      if (_rh && _rh.pk === _pk && Date.now() - _rh.t < 2000 && _rh.r) r = _rh.r;
+      else { r = await doCall('/botpositions', { uid, prices, promos }); if (r && !r.error) { _rc[uid] = { pk: _pk, t: Date.now(), r }; if (Object.keys(_rc).length > 2000) { for (const k of Object.keys(_rc).slice(0, 1000)) delete _rc[k]; } } }
+    }
     if (!r) return jb({ error: 'unavailable' }, 503);
     // the DO now also returns lifetime totals for /account - keep them OUT of the v1 positions body (frozen shape);
     // v2 surfaces them, because there they are a documented part of the envelope's data.
