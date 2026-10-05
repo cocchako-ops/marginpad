@@ -3355,7 +3355,7 @@ async function handleCgHyper(url, env) {
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
  // positions >= $1M) - the chain is the primary source, no aggregator in between.
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
- const ck = new Request('https://marginpad.io/__whales_v3'); // bumped: the response now carries the executed-trade feed
+ const ck = new Request('https://marginpad.io/__whales_v4'); // bumped: the response now carries the executed-trade feed
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { ts: Date.now(), active: false };
   try {
@@ -3378,7 +3378,7 @@ async function handleCgHyper(url, env) {
  j.positions.forEach(p => { if (p.long) longUsd += p.val; else shortUsd += p.val; upnl += (+p.pnl || 0); });
  out.positions = j.positions;
  out.agg = { longUsd, shortUsd, upnl, count: j.positions.length };
- out.alerts = (j.alerts || []).map(a => ({ user: a.user, sym: a.sym, long: a.long, liq: a.liq, val: a.val, ts: a.ts }));
+ out.alerts = (j.alerts || []).map(a => ({ user: a.user, sym: a.sym, long: a.long, liq: a.liq, val: a.val, ts: a.ts, kind: a.kind || '', lev: a.lev != null ? a.lev : undefined })); // kind (opened/closed/flipped/increased/reduced) was dropped here since the feed was built - the page never had a "position changes" list to draw (2026-10-05)
  out.tracked = j.tracked;
       out.active = true;
     }

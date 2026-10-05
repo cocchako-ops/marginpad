@@ -7,7 +7,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esR=((document.documentElement.lang||'').slice(0,2).toLowerCase()==='es');var __esD_rektindex = {"balancedPain":"DOLOR EQUILIBRADO","notAvailable":"no disponible","wipedAt":" liquidado a $","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener sponsored\" title=\"Operar ","liquidationForDetails":" - detalles de la liquidación\"></button><span class=\"tk-serial\">№ ","noLiquidationsMatchThis":"<div class=\"rk-empty\">Todavía no hay liquidaciones que coincidan con este filtro…</div>","openThisTicket":"Abrir este ticket","startOfTheDay":"- inicio del día (UTC) -","quietWaitingForLiquidation":"Tranquilo - esperando liquidaciones…","longsAreGettingRekt":"▼ LOS LONGS ESTÁN SIENDO LIQUIDADOS","shortsAreGettingRekt":"▲ LOS SHORTS ESTÁN SIENDO LIQUIDADOS","titleFilterTheTape":"\" title=\"Filtrar la cinta a ","liveCryptoFuturesLiquidati":"Liquidaciones de futuros cripto en vivo · mira a los traders quedar liquidados en marginpad.io/rekt","ticketImageSavedDrag":"Imagen del ticket guardada - arrástrala a tu publicación en X","liquidationPrice":"<div><div class=\"l\">Precio de liquidación</div><div class=\"v\">$","longForceClosed":"Long cerrado forzosamente","shortForceClosed":"Short cerrado forzosamente","inCryptoFuturesLiquidated":" en futuros cripto liquidados en la última hora. Mira a los traders quedar liquidados en vivo en MarginPad.","linkCopied":"Enlace copiado ✓","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño y más","liquidationPrice2":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","seeWhereTheDanger":"Descubre dónde están las zonas de peligro","claimEvery5Minutes":"Reclama cada 5 minutos"};
+var __esR=((document.documentElement.lang||'').slice(0,2).toLowerCase()==='es');var __esD_rektindex = {"balancedPain":"DOLOR EQUILIBRADO","notAvailable":"no disponible","wipedAt":" liquidado a $","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener sponsored\" title=\"Operar ","liquidationForDetails":" - detalles de la liquidación\"></button><span class=\"tk-serial\">№ ","noLiquidationsMatchThis":"<div class=\"rk-empty\">Todavía no hay liquidaciones que coincidan con este filtro…</div>","openThisTicket":"Abrir este ticket","startOfTheDay":"- inicio del día (UTC) -","quietWaitingForLiquidation":"Tranquilo - esperando liquidaciones…","longsAreGettingRekt":"▼ LOS LONGS ESTÁN SIENDO LIQUIDADOS","shortsAreGettingRekt":"▲ LOS SHORTS ESTÁN SIENDO LIQUIDADOS","titleFilterTheTape":"\" title=\"Filtrar la cinta a ","liveCryptoFuturesLiquidati":"Liquidaciones de futuros cripto en vivo · mira a los traders quedar liquidados en marginpad.io/rekt","ticketImageSavedDrag":"Imagen del ticket guardada - arrástrala a tu publicación en X","liquidationPrice":"<div><div class=\"l\">Precio de liquidación</div><div class=\"v\">$","longForceClosed":"Long cerrado forzosamente","shortForceClosed":"Short cerrado forzosamente","inCryptoFuturesLiquidated":" en futuros cripto liquidados en la última hora. Mira a los traders quedar liquidados en vivo en MarginPad.","linkCopied":"Enlace copiado ✓","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño y más","liquidationPrice2":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","seeWhereTheDanger":"Descubre dónde están las zonas de peligro","claimEvery5Minutes":"Reclama cada 5 minutos","sizeMeasured":"Tamaño","sizeEst":"Tamaño (est.)","biggestHit24h":"Mayor golpe · 24h · todas las bolsas","filterTheTapeTo":"Filtrar la cinta a ","clickToFilter":"clic para filtrar","longsL":"largos","shortsL":"cortos","longsVsShorts":"largos vs cortos","nothingYetToday":"Nada todavía hoy","printsSinceMidnight":"liquidaciones desde medianoche","busiestHour":"hora más activa","cappedNote":"primeras horas recortadas","printsSince":"liquidaciones desde las","noDataBefore":"antes de nuestra ventana"};
 function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_rektindex[k] != null) return __esD_rektindex[k]; } catch (e) {} return en; }
 
     (function(m,e,t,r,i,k,a){
@@ -541,6 +541,57 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
 .rk-q:focus{border-color:#3fd8e6}
 .rk-pause{flex:0 0 auto;background:#0c0f13;border:1px solid #2c3540;border-radius:10px;padding:9px 13px;color:#9aa3ad;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
 .rk-pause.on{border-color:#ffb347;color:#ffb347;background:rgba(255,179,71,.08)}
+
+  /* ===== 2026-10-05: the tape is the product (owner: "dosta vise cool i jos vise informacija") ===== */
+  @media(max-width:860px){
+    .rkh-sub{display:none} /* eight lines of prose stood between a phone and the first liquidation; the crawler still reads it */
+    .rkh-grid>*{min-width:0} /* a grid item defaults to min-width:auto, so the nowrap chip row below widened the hero column to 883px on a 390px phone */
+    .rkh-src{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:12px;padding-bottom:2px;min-width:0}
+    .rkh-src::-webkit-scrollbar{display:none}
+    .rkh-src .t{white-space:nowrap}
+    .rkh-eyebrow{margin-bottom:8px}
+    .rkh-tot{font-size:clamp(40px,11vw,56px)}
+    .rkh-tiles{gap:6px}
+    .rkh-tile{padding:9px 11px}
+    .rkh-tile .l{font-size:8.5px;margin-bottom:4px}
+    .rkh-tile .v{font-size:17px}
+    .rkh-meter{padding:9px 11px}
+    .rk-stats,.rk-meter,.rk-meter-lbl{display:none!important} /* the hero already carries these four figures on a phone - they were printed twice */
+  }
+  .rkt-win{display:flex;gap:4px;align-items:center;margin:0 0 10px;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7f8994}
+  .rkt-win span{margin-right:4px}
+  .rkt-win button{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:4px 9px;border-radius:7px;border:1px solid rgba(255,255,255,.1);background:transparent;color:#aab3bd;cursor:pointer}
+  .rkt-win button.on{background:rgba(194,246,74,.14);border-color:rgba(194,246,74,.5);color:#c2f64a}
+  .rkt-hit{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px}
+  .rkt-hit:last-child{border-bottom:0}
+  .rkt-hit .i{color:#5c656f;font-size:9.5px}
+  .rkt-hit .c{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#eceef2;font-weight:700}
+  .rkt-hit .c small{font-weight:400;color:#7f8994;margin-left:5px;text-transform:uppercase;font-size:9px}
+  .rkt-hit .c i{font-style:normal;font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;font-weight:800}
+  .rkt-hit .c i.l{background:rgba(255,90,77,.16);color:#ff8a80}.rkt-hit .c i.s{background:rgba(46,189,133,.16);color:#41e3a3}
+  .rkt-hit .n{font-weight:800;color:#eceef2;font-variant-numeric:tabular-nums}
+  .rkt-hit:hover .c{color:#c2f64a}
+  .rkt-hours{display:flex;align-items:flex-end;gap:2px;height:64px;margin-top:4px}
+  .rkt-hours .hc{flex:1 1 0;min-width:0;display:flex;flex-direction:column-reverse;height:100%;border-radius:2px 2px 0 0;overflow:hidden;background:rgba(255,255,255,.03)}
+  .rkt-hours .hc i{display:block;width:100%}
+  .rkt-hours .hc i.l{background:linear-gradient(180deg,#ff8a80,#ff5a4d)}.rkt-hours .hc i.s{background:linear-gradient(180deg,#41e3a3,#2ebd85)}
+  .rkt-hours .hc.now{outline:1px solid rgba(255,255,255,.35);outline-offset:-1px}
+  .rkt-hours .hc.nd{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px)} /* hours before the oldest print we hold: no data, not zero */
+  .rkt-hlbl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#5c656f;margin-top:4px}
+  .rkt-hsum{font-family:'Space Mono',monospace;font-size:10px;color:#7f8994;margin-top:6px}
+  .rkt-hsum b{color:#eceef2}
+  /* the phone gets the two new reads too, compact, between the filters and the feed */
+  .rkmob{display:none}
+  @media(max-width:860px){
+    .rkmob{display:block;margin:0 0 12px;background:linear-gradient(165deg,#12151c,#0c0e12);border:1px solid rgba(255,255,255,.085);border-radius:14px;padding:11px 12px}
+    .rkmob h3{margin:0 0 6px;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7f8994;font-weight:700;display:flex;justify-content:space-between}
+    .rkmob h3 small{font-weight:400;letter-spacing:.04em;text-transform:none}
+    .rkmob .rkt-hours{height:46px}
+    .rkmob-top{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:10px;padding-bottom:2px}
+    .rkmob-top::-webkit-scrollbar{display:none}
+    .rkmob-top .rkt-hit{flex:0 0 auto;display:inline-flex;gap:6px;padding:6px 9px;border:1px solid rgba(255,255,255,.08);border-radius:999px;border-bottom-width:1px}
+    .rkmob-top .rkt-hit .i{display:none}
+  }
 </style>
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
@@ -578,7 +629,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
           <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">-</div></div>
           <div class="rkh-tile"><div class="l">Most rekt · 24h</div><div class="v" id="rkhBig">-</div></div>
           <div class="rkh-tile pace"><div class="l">Pace · 5-min average</div><div class="v" id="rkhPace">-</div></div>
-          <div class="rkh-tile"><div class="l">Biggest hit · today</div><div class="v" id="rkhRec">-</div></div>
+          <div class="rkh-tile"><div class="l" id="rkhRecL">Biggest hit · today</div><div class="v" id="rkhRec">-</div></div>
           <div class="rkh-meter"><div class="bar"><i class="bl" id="rkhML" style="width:50%"></i><i class="bs" id="rkhMS" style="width:50%"></i></div><div class="lbl"><span class="ll" id="rkhMLl">Longs -</span><span class="ls" id="rkhMSl">- Shorts</span></div></div>
         </div>
       </div>
@@ -608,6 +659,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
         <p>The live liquidations feed is temporarily offline while we upgrade the data pipeline. It'll be back shortly - thanks for your patience.</p>
       </div>
     </div>
+    <div class="rkmob" id="rkmob"><h3>By hour <small>today · UTC · ≥ $1K</small></h3><div class="rkt-hours" id="rkmHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><h3 style="margin-top:10px">Top hits today <small>tap to open</small></h3><div class="rkmob-top" id="rkmTop"></div></div>
     <div class="rk-feed" id="rkFeed"><div class="rk-empty">Loading live liquidations…</div></div>
     <div class="rkt" id="rkTerm">
       <div class="rkt-main">
@@ -624,8 +676,11 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
           <div class="rkt-press-lbl"><span class="l" id="rktPLl">Longs -</span><span class="s" id="rktPSl">- Shorts</span></div>
           <div class="rkt-press-verdict" id="rktPV">Waiting for data…</div></div>
         <div class="rkt-card"><h3>Biggest hit <small>today · UTC</small></h3><div class="rkt-rec" id="rktRec"><span class="sub">No liquidations yet…</span></div></div>
-        <div class="rkt-card"><h3>Most rekt coins <small>24h · click to filter</small></h3><div id="rktCoins"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
-        <div class="rkt-card"><h3>Venue split <small>today · UTC</small></h3><div class="rkt-mini" id="rktEx">-</div></div>
+        <div class="rkt-card"><h3>Top hits <small>today · UTC · click to open</small></h3><div id="rktTop"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
+        <div class="rkt-card"><h3>By hour <small>today · UTC · prints ≥ $1K</small></h3><div class="rkt-hours" id="rktHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><div class="rkt-hsum" id="rktHsum"></div></div>
+        <div class="rkt-win" id="rktWin"><span>Window</span><button type="button" data-w="h1">1H</button><button type="button" data-w="h4">4H</button><button type="button" data-w="h12">12H</button><button type="button" data-w="h24" class="on">24H</button></div>
+        <div class="rkt-card"><h3>Most rekt coins <small id="rktCoinsL">24h · click to filter</small></h3><div id="rktCoins"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
+        <div class="rkt-card"><h3>Venue split <small id="rktExL">24h · longs vs shorts</small></h3><div class="rkt-mini" id="rktEx">-</div></div>
         <div class="rkt-card"><h3>Size distribution <small>today · UTC</small></h3><div class="rkt-mini" id="rktHist">-</div></div>
       </aside>
     </div>
@@ -750,7 +805,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var mny=money(e.notional), um=mny.match(/[KMB]$/), unit=um?um[0]:'', num=unit?mny.slice(0,-1):mny;
     var cls='tk '+(lng?'long':'short')+(huge?' huge':'')+(fresh?' fresh':'');
     var shareTxt=esc(e.symbol+' '+(lng?'LONG':'SHORT')+' liquidated - $'+money(e.notional)+__esT_rektindex("wipedAt",' wiped at $')+px(e.price)+' on '+String(e.exchange).toUpperCase()+'. Live crypto liquidations on MarginPad:');
-    return '<div class="'+cls+'" data-side="'+(lng?'long':'short')+'" data-n="'+e.notional+'" data-sym="'+esc(e.symbol)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-share="'+shareTxt+'"><div class="tk-paper">'
+    return '<div class="'+cls+'" data-side="'+(lng?'long':'short')+'" data-n="'+e.notional+'" data-sym="'+esc(e.symbol)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-qty="'+(+e.qty||0)+'" data-share="'+shareTxt+'"><div class="tk-paper">'
       +'<div class="tk-stub" title="Tap to share this liquidation"><span class="tk-dir">'+(lng?'LONG':'SHORT')+'</span><span class="tk-arrow">'+(!lng?'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 5l8 13H4z"/></svg>':'<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M12 19 4 6h16z"/></svg>')+'</span><span class="tk-rekt">REKT</span></div>'
       +'<div class="tk-body">'
         +'<div class="tk-head"><a class="tk-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+__esT_rektindex("targetBlankRelNoopener",'" target="_blank" rel="noopener sponsored" title="Trade ')+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a><span class="tk-tag">PERP · '+esc(String(e.exchange).toUpperCase())+'</span></div>'
@@ -790,6 +845,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var hml=document.getElementById('rkhML'),hms=document.getElementById('rkhMS');if(hml)hml.style.width=lp+'%';if(hms)hms.style.width=(100-lp)+'%';
     var hmll=document.getElementById('rkhMLl');if(hmll)hmll.textContent='Longs rekt '+(sum>1?lp+'% · $'+money(l):'-');
     var hmsl=document.getElementById('rkhMSl');if(hmsl)hmsl.textContent=(sum>1?(100-lp)+'% · $'+money(s):'-')+' Shorts rekt';
+    if(d.big&&+d.big.usd>0){var hb=document.getElementById('rkhRec'),hl=document.getElementById('rkhRecL');if(hb&&(!sessBig||+d.big.usd>+sessBig.notional)){hb.innerHTML='<span style="color:'+(String(d.big.side).indexOf('long')>=0?'#ff8a80':'#41e3a3')+'">$'+money(d.big.usd)+'</span> <small>'+esc(d.big.s||'')+'</small>';if(hl)hl.textContent=__esT_rektindex("biggestHit24h",'Biggest hit · 24h');}}
     window.__cgLast=d;try{deskCoins(d);loadFunding();}catch(_e){} // feed the terminal rail's "Most rekt coins" + funding enrichment
   }).catch(function(){liqStatsDown();});}
   loadLiqStats();setInterval(loadLiqStats,60000);
@@ -862,7 +918,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     // the same data the ticket card carries, so a desktop row opens the SAME ticket window (tkData reads these attributes).
     // Without this the window - which is now where the venues live - was reachable only from the phone feed's barcode.
     el.setAttribute('data-sym',e.symbol);el.setAttribute('data-side',lng?'long':'short');el.setAttribute('data-n',n);
-    el.setAttribute('data-px',e.price);el.setAttribute('data-exch',String(e.exchange).toUpperCase());el.setAttribute('data-ts',e.ts);
+    el.setAttribute('data-px',e.price);el.setAttribute('data-exch',String(e.exchange).toUpperCase());el.setAttribute('data-ts',e.ts);el.setAttribute('data-qty',+e.qty||0);
     el.title=__esT_rektindex("openThisTicket",'Open this ticket');
     var w=Math.min(100,Math.round(n/1e6*100)); // notional bar: full width = $1M
     el.innerHTML='<span class="rkt-t">'+tm+'</span><span class="rkt-ex">'+esc(e.exchange)+'</span><span class="rkt-symw"><a class="rkt-sym" data-mpex="'+esc(affName(e.exchange))+'" href="'+affLink(e.exchange,e.symbol)+__esT_rektindex("targetBlankRelNoopener",'" target="_blank" rel="noopener sponsored" title="Trade ')+esc(e.symbol)+'USDT →">'+esc(e.symbol)+'</a></span><span class="rkt-side '+(lng?'l':'s')+'">'+(lng?'LONG REKT':'SHORT REKT')+'</span><span class="rkt-px">$'+px(e.price)+'</span><span class="rkt-n">$'+money(n)+'</span>'+(w>3?'<i class="rkt-nb" style="width:'+w+'%"></i>':'');
@@ -876,7 +932,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   function deskPush(fresh){fresh.forEach(deskAgg);try{sndCheck(fresh);}catch(_e){}if(!deskOn()||!tapeEl)return;if(paused){deskSide();return;}
     var f=fresh.filter(matchF).sort(function(a,b){return a.ts-b.ts;});
     if(f.length){if(tapeEl.querySelector('.rk-empty'))tapeEl.innerHTML='';
-      f.forEach(function(e){tapeEl.insertBefore(tRow(e,true),tapeEl.firstChild);});
+      f.forEach(function(e){var nr=tRow(e,true);tapeEl.insertBefore(nr,tapeEl.firstChild);try{if(nr.animate)nr.animate([{backgroundColor:+e.notional>=1e6?'rgba(255,90,77,.28)':'rgba(255,255,255,.12)'},{backgroundColor:'rgba(0,0,0,0)'}],{duration:1100,easing:'ease-out'});}catch(_a){}});
       while(tapeEl.children.length>2000)tapeEl.removeChild(tapeEl.lastChild);} // generous DOM ceiling for a leave-open tab
     deskSide();}
   function tapeMore(){ // append the next chunk of the day when the user scrolls near the bottom
@@ -904,7 +960,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
        that were 63 s old. Five minutes is still "now" for a liquidation stream and rarely lands on an empty window. */
     var rate=document.getElementById('rktRate');if(rate){var c5=0,s5=0;win10.forEach(function(x){if(x.t>=now-300000){c5++;s5+=x.n;}});var cM=Math.round(c5/5),sM=s5/5;rate.textContent=cM+' liq/min · $'+money(sM)+'/min';
       var hp=document.getElementById('rkhPace');if(hp)hp.innerHTML='$'+money(sM)+'<small>/min · '+cM+' liq</small>';}
-    var hr=document.getElementById('rkhRec');if(hr&&sessBig)hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
+    var hr=document.getElementById('rkhRec');if(hr&&sessBig&&!(window.__cgLast&&window.__cgLast.big&&+window.__cgLast.big.usd>+sessBig.notional))hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
     var cas=document.getElementById('rktCascade');if(cas){var on=c90>=2000000||n90>=25;cas.hidden=!on;if(on){var cv=document.getElementById('rktCasV');if(cv)cv.textContent='$'+money(c90);}}
     var rec=document.getElementById('rktRec');if(rec&&sessBig){var lg=sessBig.side==='long_liquidated';
       rec.innerHTML='<span class="amt" style="color:'+(lg?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span><span class="sub">'+esc(sessBig.symbol)+' '+(lg?'LONG':'SHORT')+' liquidated @ $'+px(sessBig.price)+'<br>'+esc(String(sessBig.exchange).toUpperCase())+' · '+(__esR?'hace '+ago(sessBig.ts):ago(sessBig.ts)+' ago')+'</span>';}
@@ -914,6 +970,43 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
       hs.innerHTML=lbl.map(function(l,i){return '<div class="mr"><span>'+l+'</span><i class="mb" style="width:'+Math.max(3,Math.round(sessB[i]/mx2*100))+'%"></i><span>'+sessB[i]+'</span></div>';}).join('');}
     // hero source chips: a venue lights green the moment it actually prints in the live stream (live proof, not a claim)
     var srcBox=document.getElementById('rkhSrc');if(srcBox){for(var xk in sessEx){var ch=srcBox.querySelector('.chip[data-x="'+String(xk).toLowerCase().replace('binance-coin','binance')+'"]');if(ch)ch.classList.add('on');}}}
+  /* ---- the time window (2026-10-05): /api/v1/pulse carries 1h/4h/12h/24h per coin and per venue, long vs short.
+     The rail's coin list and venue split read the chosen window; the hero and the stream are untouched. ---- */
+  var PULSE=null,deskWin='h24';
+  function loadPulse(){if(document.hidden)return;fetch('/api/v1/pulse',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.h24){PULSE=j;paintWin();}}).catch(function(){});}
+  loadPulse();setInterval(loadPulse,60000);
+  var WINL={h1:'1h',h4:'4h',h12:'12h',h24:'24h'};
+  function paintWin(){var w=PULSE&&PULSE[deskWin];if(!w)return;
+    var box=document.getElementById('rktCoins'),lab=document.getElementById('rktCoinsL');
+    var rows=(w.bySym||[]).map(function(x){return {s:x.s,l:+x.l||0,sh:+x.sh||0,t:(+x.l||0)+(+x.sh||0)};}).filter(function(x){return x.t>0;}).sort(function(a,b){return b.t-a.t;}).slice(0,8);
+    if(box&&rows.length){box.innerHTML=rows.map(function(c){var lp2=Math.round(c.l/c.t*100),f=fund[c.s];
+      var fh=(f!=null&&isFinite(f))?'<span class="cf'+(Math.abs(f)>=0.05?' hot':'')+'">fund '+(f>0?'+':'')+(+f).toFixed(3)+'%</span>':'';
+      return '<div class="rkt-coin'+(fSym===String(c.s).toUpperCase()?' on':'')+'" data-c="'+esc(c.s)+'" title="'+__esT_rektindex("filterTheTapeTo",'Filter the tape to ')+esc(c.s)+'"><span class="cs">'+esc(c.s)+'</span><span class="cb"><i class="bl" style="width:'+lp2+'%"></i><i class="bs" style="width:'+(100-lp2)+'%"></i></span><span class="cv">$'+money(c.t)+fh+'</span></div>';}).join('');
+      if(lab)lab.textContent=WINL[deskWin]+' · '+__esT_rektindex("clickToFilter",'click to filter');}
+    var ex=document.getElementById('rktEx'),exl=document.getElementById('rktExL');
+    var vs=(w.byEx||[]).map(function(x){return {e:x.e,l:+x.l||0,sh:+x.sh||0,t:(+x.l||0)+(+x.sh||0)};}).filter(function(x){return x.t>0;}).sort(function(a,b){return b.t-a.t;}).slice(0,7);
+    if(ex&&vs.length){var mx=vs[0].t||1;ex.innerHTML=vs.map(function(v){var lw=Math.round(v.l/v.t*100);return '<div class="mr"><span>'+esc(v.e)+'</span><i class="mb" style="width:'+Math.max(4,Math.round(v.t/mx*100))+'%;background:linear-gradient(90deg,#ff5a4d '+lw+'%,#2ebd85 '+lw+'%)" title="'+__esT_rektindex("longsL",'longs')+' $'+money(v.l)+' · '+__esT_rektindex("shortsL",'shorts')+' $'+money(v.sh)+'"></i><span>$'+money(v.t)+'</span></div>';}).join('');
+      if(exl)exl.textContent=WINL[deskWin]+' · '+__esT_rektindex("longsVsShorts",'longs vs shorts');}}
+  (function(){var wb=document.getElementById('rktWin');if(!wb)return;wb.addEventListener('click',function(ev){var b=ev.target.closest('button[data-w]');if(!b)return;deskWin=b.getAttribute('data-w');wb.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});paintWin();try{window.__mpTrack&&window.__mpTrack('nav','rekt-win-'+deskWin);}catch(_e){}});})();
+  /* ---- top hits of the day + the hourly histogram, from the same full-day store the tape scrolls over ---- */
+  function hitRow(e,i){var lng=e.side==='long_liquidated';return '<div class="rkt-hit" data-sym="'+esc(e.symbol)+'" data-side="'+(lng?'long':'short')+'" data-n="'+(+e.notional)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-qty="'+(+e.qty||0)+'" title="'+__esT_rektindex("openThisTicket",'Open this ticket')+'"><span class="i">'+(i+1)+'</span><span class="c">'+esc(e.symbol)+'<i class="'+(lng?'l':'s')+'">'+(lng?'LONG':'SHORT')+'</i><small>'+esc(e.exchange)+'</small></span><span class="n">$'+money(e.notional)+'</span></div>';}
+  var _hitsT=0;
+  function paintHits(){var now=Date.now();if(now-_hitsT<4000)return;_hitsT=now;
+    var top=dayAll.slice().sort(function(a,b){return b.notional-a.notional;}).slice(0,8);
+    var tb=document.getElementById('rktTop');if(tb)tb.innerHTML=top.length?top.map(hitRow).join(''):'<span style="font-family:\'Space Mono\',monospace;font-size:11px;color:var(--lqink3)">'+__esT_rektindex("nothingYetToday",'Nothing yet today')+'</span>';
+    var mt=document.getElementById('rkmTop');if(mt)mt.innerHTML=top.slice(0,5).map(hitRow).join('');
+    var H=[],i;for(i=0;i<24;i++)H.push({l:0,s:0,n:0});
+    dayAll.forEach(function(e){var hh=new Date(e.ts).getUTCHours();if(e.side==='long_liquidated')H[hh].l+=+e.notional;else H[hh].s+=+e.notional;H[hh].n++;});
+    /* the backfill is the newest 3,000 prints of the day, not the whole day - on a busy day that is a few hours. Hours before
+       the oldest print we hold are drawn as "no data", never as zero, and the summary says since WHEN the window starts. */
+    var oldest=Infinity;dayAll.forEach(function(e){if(e.ts<oldest)oldest=e.ts;});var fromH=isFinite(oldest)?new Date(oldest).getUTCHours():0,fromMin=isFinite(oldest)?new Date(oldest).getUTCMinutes():0;
+    var mx=1;H.forEach(function(x){if(x.l+x.s>mx)mx=x.l+x.s;});var cur=new Date().getUTCHours();
+    var html=H.map(function(x,k){var lh=Math.round(x.l/mx*100),sh=Math.round(x.s/mx*100),nd=k<fromH;return '<div class="hc'+(k===cur?' now':'')+(nd?' nd':'')+'" title="'+('0'+k).slice(-2)+':00 UTC · '+(nd?__esT_rektindex("noDataBefore",'before our window'):(x.n+' liq · '+__esT_rektindex("longsL",'longs')+' $'+money(x.l)+' · '+__esT_rektindex("shortsL",'shorts')+' $'+money(x.s)))+'"><i class="l" style="height:'+lh+'%"></i><i class="s" style="height:'+sh+'%"></i></div>';}).join('');
+    var hb=document.getElementById('rktHours');if(hb)hb.innerHTML=html;var mh=document.getElementById('rkmHours');if(mh)mh.innerHTML=html;
+    var tot=0,cnt=0,bh=0;H.forEach(function(x,k){tot+=x.l+x.s;cnt+=x.n;if(x.l+x.s>H[bh].l+H[bh].s)bh=k;});
+    var hs=document.getElementById('rktHsum');if(hs)hs.innerHTML=cnt?('<b>$'+money(tot)+'</b> · '+cnt.toLocaleString('en-US')+' '+__esT_rektindex("printsSince",'prints since')+' <b>'+('0'+fromH).slice(-2)+':'+('0'+fromMin).slice(-2)+' UTC</b> · '+__esT_rektindex("busiestHour",'busiest hour')+' <b>'+('0'+bh).slice(-2)+':00</b>'):'';}
+  document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('a'))return;var r=ev.target.closest&&ev.target.closest('.rkt-hit');if(r)openModal(tkData(r));});
+  var _ds0=deskSide;deskSide=function(){_ds0();try{paintHits();}catch(_e){}};
   setInterval(function(){if(!document.hidden)deskSide();},5000); // rolling windows decay even when quiet; also feeds the hero pace tile + venue chips on MOBILE (rail is display:none there but the writes are cheap)
   function deskCoins(d){var box=document.getElementById('rktCoins');if(!box||!d||!d.coins||!d.coins.length)return;
     box.innerHTML=d.coins.slice(0,8).map(function(c){var t=(+c.long||0)+(+c.short||0)||1,lp2=Math.round((+c.long||0)/t*100);var f=fund[c.s];
@@ -986,7 +1079,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
       toast(__esT_rektindex("ticketImageSavedDrag",'Ticket image saved - drag it into your X post'));
     },'image/png');
   }
-  function tkData(tk){return {sym:tk.getAttribute('data-sym')||'',side:tk.getAttribute('data-side')||'long',not:+tk.getAttribute('data-n')||0,px:+tk.getAttribute('data-px')||0,exch:tk.getAttribute('data-exch')||'',ts:+tk.getAttribute('data-ts')||0};}
+  function tkData(tk){return {sym:tk.getAttribute('data-sym')||'',side:tk.getAttribute('data-side')||'long',not:+tk.getAttribute('data-n')||0,px:+tk.getAttribute('data-px')||0,exch:tk.getAttribute('data-exch')||'',ts:+tk.getAttribute('data-ts')||0,qty:+tk.getAttribute('data-qty')||0};}
   function fmtQty(q){if(!(q>0))return '-';if(q>=1e6)return (q/1e6).toFixed(2)+'M';if(q>=1e3)return (q/1e3).toFixed(1)+'K';if(q>=1)return q.toFixed(2);return q.toFixed(q>=0.01?4:8);}
   // ---- scan modal: focused liquidation detail, blurred + scroll-locked backdrop ----
   var _mY=0,_mLock=false,_mData=null;
@@ -1001,7 +1094,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var qty=d.px>0?d.not/d.px:0;
     document.getElementById('rkmGrid').innerHTML=
       __esT_rektindex("liquidationPrice",'<div><div class="l">Liquidation price</div><div class="v">$')+px(d.px)+'</div></div>'+
-      '<div><div class="l">Size (est.)</div><div class="v">'+fmtQty(qty)+' '+esc(d.sym)+'</div></div>'+
+      '<div><div class="l">'+(d.qty>0?__esT_rektindex("sizeMeasured",'Size'):__esT_rektindex("sizeEst",'Size (est.)'))+'</div><div class="v">'+fmtQty(d.qty>0?d.qty:qty)+' '+esc(d.sym)+'</div></div>'+
       '<div><div class="l">Exchange</div><div class="v">'+esc(d.exch)+' PERP</div></div>'+
       '<div><div class="l">Direction</div><div class="v">'+(lng?__esT_rektindex("longForceClosed",'Long force-closed'):__esT_rektindex("shortForceClosed",'Short force-closed'))+'</div></div>'+
       '<div><div class="l">Notional wiped</div><div class="v">$'+money(d.not)+'</div></div>'+
