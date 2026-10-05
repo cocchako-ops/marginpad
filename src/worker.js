@@ -534,7 +534,7 @@ async function handlePrices(env, ctx, prof) {
   mk('cache_put', tP);
   return withProf(resp, 'cold');
 }
-async function screenerKvWarm(env) { // */10 cron: keep the scr:cache6 floor fresh so NO visitor ever pays the ~11s 33-subrequest compute (profiled 2026-07-24 - the floor was only written when a user paid it)
+async function screenerKvWarm(env) { // */10 cron: keep the scr:cache7 floor fresh so NO visitor ever pays the ~11s 33-subrequest compute (profiled 2026-07-24 - the floor was only written when a user paid it)
   try { const kv = await env.STATS.get('scr:cache7'); if (kv) { const o = JSON.parse(kv); if (o && Date.now() - (+o.ts || 0) < 420000) return; } } catch (e) {}
   try { await handleScreener(env, true); } catch (e) {}
 }
@@ -4342,7 +4342,7 @@ const fmtUsdShort = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(1) + 'B' : v >= 1e6 
 const fmtPx = v => { v = +v; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 0 : v >= 1 ? 3 : 6 }); };
 
 // B) Daily market wrap - once/day at wrap:hour UTC (default 16), free channel. Kill: KV wrap:on='0'.
-// All data internal: prices:last (1-min KV floor), scr:cache6 (screener floor), collector /pulse (ours),
+// All data internal: prices:last (1-min KV floor), scr:cache7 (screener floor), collector /pulse (ours),
 // handleCalendar (pure compute). Any core source missing -> unstamp + retry next */10, never a half-wrap.
 async function checkDailyWrap(env) {
   if (!env.STATS || !env.TELEGRAM_TOKEN) return;
@@ -6310,7 +6310,7 @@ async function handleTrack(url, request, env, ctx) {
     // A click-out that resolves to no partner is not a money click and not a reader action: it is a scanner hitting
     // /api/track. It stays COUNTED (aff:junk + affjunk:day + affjunk:lbl) and gets one radar line, but never a row.
     const _junkClick = (type === 'exchange' || type === 'tool') && !partner;
-    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad' || type === 'openfail')) { // 'openfail' (2026-09-29) = an open the server did not take, with the reason: 12.1% of journal rows were local-only and nothing recorded WHY // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    if (!_clientTrade && !_junkClick && (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile' || type === 'limitorder' || type === 'telegram' || type === 'screener' || type === 'premview' || type === 'nudge' || type === 'jserr' || type === 'grad' || type === 'openfail' || type === 'aiscan')) { // 'openfail' (2026-09-29) = an open the server did not take, with the reason: 12.1% of journal rows were local-only and nothing recorded WHY // live activity ring buffer - every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
         let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);

@@ -248,6 +248,11 @@
   .rc:hover{transform:translateY(-2px);border-color:var(--rc);box-shadow:0 14px 28px -20px var(--rc)}
   .rc-c{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;color:var(--rc)}
   .rc-t{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--faint)}
+  .rc-left{font-size:10px;color:var(--dim);margin-top:1px}
+  .rc.off{opacity:.42;cursor:not-allowed}
+  .rc.off:hover{transform:none;border-color:var(--line2);box-shadow:none}
+  .raid-how{margin-top:11px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid var(--line);font-size:12.5px;line-height:1.5;color:var(--dim)}
+  .raid-how b{color:var(--ink);font-weight:700}
   .card.raid{--rc:#c2f64a;position:relative;overflow:hidden;border-color:color-mix(in srgb,var(--rc) 34%,var(--line));background:radial-gradient(90% 130% at 0 0,color-mix(in srgb,var(--rc) 10%,transparent),transparent 58%),var(--panel)}
   .raid-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .raid-coin{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:var(--rc)}
@@ -349,6 +354,31 @@
     .duel .sd.r{justify-content:flex-start}
     .duel .mid{text-align:left}
   }
+  /* Squad shop */
+  .valbar{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:11px 14px;border-radius:12px;background:linear-gradient(120deg,rgba(255,74,0,.08),rgba(120,70,220,.08)),#0f1118;border:1px solid var(--line,#232a33)}
+  .valn{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:#ffb056}
+  .vall{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .valh{margin-left:auto;font-size:12px;color:var(--faint)}
+  .sqshop{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+  .sqitem{display:flex;flex-direction:column;gap:7px;padding:13px;border-radius:14px;background:#0d0f15;border:1px solid var(--line,#232a33);min-width:0}
+  .sqitem.worn{border-color:var(--sq,#c2f64a)}
+  .sqpv{position:relative;height:92px;border-radius:18px;background:radial-gradient(120% 90% at 50% 40%,#161821,#0a0b11);--fs:.56;margin:2px 4px 6px;display:flex;align-items:center;justify-content:center}
+  .sqinm{font-weight:800;font-size:14.5px;min-width:0}
+  .wornb{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sq,#c2f64a)}
+  .sqitier{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .sqitier.t-legendary{color:#ff8a2a}.sqitier.t-mythic{color:#b78cff}.sqitier.t-epic{color:#c06bff}.sqitier.t-rare{color:#5ad0ff}
+  .sqidesc{font-size:12.5px;color:var(--dim);line-height:1.45;flex:1}
+  .sqiact{margin-top:3px}.sqiact .btn{width:100%}
+  .shoplk{display:block;font-size:12px;color:var(--faint);text-align:center;padding:7px 0}
+  /* Squad activity tabs - raids / shop / duels / settings open on click instead of stacking (2026-10-01) */
+  .sqtabs{display:flex;gap:8px;margin:22px 0 2px;flex-wrap:wrap}
+  .sqtab{appearance:none;border:1px solid var(--line,#232a33);background:#0f1118;color:var(--dim);font-family:inherit;font-weight:800;font-size:13.5px;padding:9px 16px;border-radius:11px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;display:inline-flex;align-items:center;gap:6px}
+  .sqtab:hover{color:var(--ink);border-color:#36404c}
+  .sqtab.on{background:color-mix(in srgb,var(--sq,#c2f64a) 16%,#0f1118);border-color:var(--sq,#c2f64a);color:#fff}
+  .tabn{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--sq,#c2f64a);color:#0a0b0d;font-size:11px;font-weight:800;line-height:1}
+  .sqpanel>.sect:first-child{margin-top:16px}
+  @media(max-width:560px){.sqtabs{gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-top:18px}.sqtab{flex:0 0 auto;padding:9px 14px}}
+  @media(max-width:560px){.sqshop{grid-template-columns:1fr 1fr;gap:10px}.sqpv{height:78px}.valn{font-size:22px}.valh{margin-left:0;width:100%}}
 </style>
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
@@ -378,8 +408,8 @@
 </div>
 
 <section class="sect" id="lbSect">
-  <h2>Clasificación de escuadras</h2>
-  <p class="sub">Todas las escuadras, ordenadas por XP de escuadra. Toca una para ver quién está dentro - esto aparece estés o no en una escuadra.</p>
+  <h2>Clasificación de squads</h2>
+  <p class="sub">Cada squad, ordenado por XP de squad. Toca uno para ver quién está dentro - esto está aquí estés o no en un squad.</p>
   <div id="sqlb"><div class="empty">Cargando…</div></div>
 </section>
 
@@ -434,7 +464,9 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     not_found: __esT_squadsindex("notFound",'Not found.'), busy: __esT_squadsindex("busyTryAgainIn",'Busy - try again in a moment.'),
     locked_piece: __esT_squadsindex("yourSquadHasNot",'Your squad has not unlocked that piece yet.'),
         need_level: __esT_squadsindex("youNeedPlatinumTo",'You need Platinum to found a squad.'), insufficient: __esT_squadsindex("notEnoughBalanceFor",'Not enough balance for that.'),
-    in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.')
+    in_progress: __esT_squadsindex("thatPaymentIsStill",'That payment is still going through - give it a moment.'), ledger_unavailable: __esT_squadsindex("theBalanceIsUnreachable",'The balance is unreachable right now - try again in a moment.'),
+    need_valor: __esT_squadsindex("notEnoughValor",'Not enough Valor yet - win duels, clear raids and level up.'), already_owned: __esT_squadsindex("alreadyUnlocked",'The squad already owns that.'), not_unlocked: __esT_squadsindex("notUnlockedYet",'Your squad has not unlocked that yet.'), no_item: __esT_squadsindex("noSuchItem",'No such item.'),
+    coin_daily_limit: __esT_squadsindex("coinDailyLimit",'That coin is used up for today. Raids per coin per day grow with your level - five at level 10.'), raid_running: __esT_squadsindex("raidRunning",'A raid is already running. Finish or abandon it first.'), bad_coin: __esT_squadsindex("badCoin",'Pick a major coin.')
   };
   function say(el, j, good) {
     if (!el) return;
@@ -454,7 +486,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     /* A LOCKED PIECE IS SHOWN, NOT HIDDEN. Hiding it means the reader never learns the squad is going to get
        it; shown greyed with a padlock, the maker itself is the reason to level up. `opts` comes from the
        server, so the picker and the save agree on what is open. */
-    var op = (S.me && S.me.squad && S.me.squad.opts) || null;
+    var op = (S.me && S.me.squad && S.me.squad.opts) || (S.me && S.me.can && S.me.can.opts) || null; // founding: no squad yet, so gate the maker to the level-1 set the server will accept
     var cols = window.mpSquadCrestCols || ['#4aa3f6'];
     var shapes = window.mpSquadCrestShapes || ['shield'], syms = window.mpSquadCrestSyms || ['tag'], rings = window.mpSquadCrestRings || ['solid'];
     var open = function (kind, v) { if (!op) return true; var L = kind === 'shape' ? op.shapes : kind === 'sym' ? op.syms : kind === 'ring' ? op.rings : op.cols; return !L || L.indexOf(v) >= 0; };
@@ -651,10 +683,13 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
     return h + '</div>';
   }
   function raidPicker(coins, s) {
-    var tgt = Math.round((S.me.raidTargetHint) || 200 * (1 + 0.15 * (((s.level || {}).lv || 1) - 1)));
+    var tgt = Math.round((S.me.raidTargetHint) || 350);
+    var cap = S.me.raidDailyCap || 1, today = S.me.raidToday || {};
+    var note = __esT_squadsindex("raidPickCap", 'Up to ') + cap + ' ' + (cap === 1 ? __esT_squadsindex("raidSingular", 'raid') : __esT_squadsindex("raidPlural", 'raids')) + ' ' + __esT_squadsindex("raidPickCap2", 'per coin per day (5 at level 10). The target is the realized profit your squad closes on that coin in 48 hours - it grows with your level and squad size. Each closed trade adds at most half the target, a loss pulls it down, and a position opened with over $10,000 margin does not count.');
     return '<div class="card rpick"><div class="rpick-g">' + coins.map(function (c) {
-      return '<button type="button" class="rc" data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt + '</span></button>';
-    }).join('') + '</div><div class="note">' + __esT_squadsindex("raidPickNote", '48 hours, winner-takes-the-Ticks for everyone who traded it. Losses count.') + '</div><div class="msg" id="raidMsg"></div></div>';
+      var used = today[String(c).toUpperCase()] || 0, left = Math.max(0, cap - used), full = left <= 0;
+      return '<button type="button" class="rc' + (full ? ' off' : '') + '"' + (full ? ' disabled' : '') + ' data-raid="' + esc(c) + '" style="--rc:' + (RAIDCOIN[c] || '#c2f64a') + '"><span class="rc-c">' + esc(c) + '</span><span class="rc-t">$' + tgt.toLocaleString() + '</span><span class="rc-left">' + (full ? __esT_squadsindex("usedUpToday", 'used up today') : left + ' ' + __esT_squadsindex("leftToday", 'left today')) + '</span></button>';
+    }).join('') + '</div><div class="note">' + note + '</div><div class="msg" id="raidMsg"></div></div>';
   }
   function raidCard(r, isL) {
     var col = RAIDCOIN[r.coin] || '#c2f64a', live = r.live || {};
@@ -668,6 +703,9 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + '<div class="raid-st">' + (ended ? (cl ? '<span class="rwin">' + __esT_squadsindex("clearedSp", 'Cleared') + '</span>' : '<span class="rlose">' + __esT_squadsindex("failedSp", 'Failed') + '</span>') : '<span class="rlive">' + hh + 'h ' + mm + 'm ' + __esT_squadsindex("leftSp", 'left') + '</span>') + '</div></div>'
       + '<div class="raid-nums"><b class="' + (neg ? 'neg' : '') + '">' + (neg ? '-$' + Math.abs(prog).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '$' + prog.toLocaleString(undefined, { maximumFractionDigits: 0 })) + '</b><span>' + __esT_squadsindex("ofSp", 'of') + ' $' + r.target.toLocaleString() + '</span></div>'
       + '<div class="raid-bar"><i style="width:' + pct + '%"></i></div>';
+    // Why a big win does not fill the bar in one go (owner 2026-10-01: closed $500, bar moved ~$200 and wondered why).
+    // State the per-trade cap in real dollars right where the number is, so the partial fill explains itself.
+    h += (function () { var capEach = Math.round((+r.target || 0) * (r.oneShare || 0.5)); var mm2 = (r.marginMax || 10000); return '<div class="raid-how"><b>' + __esT_squadsindex("howItFills", 'How the bar fills') + '</b> ' + __esT_squadsindex("raidFillA", 'Each closed trade adds up to') + ' <b>$' + capEach.toLocaleString() + '</b> ' + __esT_squadsindex("raidFillB", '- half the target - so it takes the whole squad, not one big win, to clear it. A loss pulls the pool down, and a position opened with over') + ' $' + mm2.toLocaleString() + ' ' + __esT_squadsindex("raidFillC", 'margin does not count.') + '</div>'; })();
     var mem = (live.members || []).filter(function (m) { return m.n > 0; });
     if (mem.length) h += '<div class="raid-m">' + mem.map(function (m) {
       return '<span class="rm"><b>' + esc(m.name) + '</b> <span class="' + (m.pnl < 0 ? 'neg' : 'pos') + '">' + (m.pnl < 0 ? '-$' + Math.abs(m.pnl).toFixed(0) : '+$' + m.pnl.toFixed(0)) + '</span></span>';
@@ -701,6 +739,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   function squadView() {
     var s = S.me.squad, isL = S.me.isLeader;
     try { document.documentElement.style.setProperty('--sq', (s.crest && s.crest.bg) || '#c2f64a'); } catch (e) {}
+    // the shop previews wear the squad's OWN colours (2026-10-01); a hidden squad (MP-One) keeps the designed look
+    try { var ds = document.documentElement.style; if (s.crest && !s.hidden) { var _bg = s.crest.bg || '#0a0b0d', _fg = s.crest.fg || '#c2f64a'; var _lum = function (h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return 0.299 * (parseInt(h.slice(0, 2), 16) || 0) + 0.587 * (parseInt(h.slice(2, 4), 16) || 0) + 0.114 * (parseInt(h.slice(4, 6), 16) || 0); }; var _a = _lum(_fg) >= _lum(_bg) ? _fg : _bg; ds.setProperty('--sqc', _a); ds.setProperty('--sqc2', _a === _fg ? _bg : _fg); } else { ds.removeProperty('--sqc'); ds.removeProperty('--sqc2'); } } catch (e) {}
     var duels = S.me.duels || [], live = duels.filter(function (d) { return d.status === 'active' || d.status === 'pending' || d.status === 'open'; });
     var past = duels.filter(function (d) { return d.settled; });
     var h = '<div class="card hero">'
@@ -721,29 +761,45 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       + (isL ? '<div id="invBox" hidden style="margin-top:11px"><div class="row"><div class="grow"><input type="text" id="invName" placeholder="username" maxlength="24" autocomplete="off" /></div><button class="btn p" id="invGo" type="button">Send invite</button></div><div class="msg" id="invMsg"></div>' + pendingInvHtml() + '</div>' : '')
       + '</div>';
 
-    h += raidSection(s, isL);
-    h += '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader",'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe",'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
-    h += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning",'<div class="empty">No duel running.</div>');
-    if (isL && !live.some(function (d) { return d.status === 'active'; })) h += challengeHtml();
-    h += '</div>';
+    // ── The activity lives in TABS, not stacked (owner 2026-10-01: "da se neki elementi kao raids otvaraju na klik,
+    //    ne da trpamo sve na stranicu"). Hero + members stay; Raids / Shop / Duels / Settings are one tap apart and
+    //    the choice is remembered. Panels are rendered once and shown/hidden on tab click, so no tab switch refetches.
+    var tab = S._tab; if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) { try { tab = localStorage.getItem('mp_sq_tab') || 'raids'; } catch (e) { tab = 'raids'; } if (['raids', 'shop', 'duels', 'settings'].indexOf(tab) < 0) tab = 'raids'; }
+    S._tab = tab;
+    var liveN = live.length, nBadge = function (n) { return n ? ' <span class="tabn">' + n + '</span>' : ''; };
+    var TABS = [['raids', __esT_squadsindex("raidsH", 'Raids')], ['shop', __esT_squadsindex("squadShop", 'Squad shop')], ['duels', __esT_squadsindex("duelsH", 'Duels') + nBadge(liveN)], ['settings', isL ? __esT_squadsindex("settingsH", 'Settings') : __esT_squadsindex("leaveH", 'Leave')]];
+    var pan = function (id, body) { return '<div class="sqpanel" data-panel="' + id + '"' + (id === tab ? '' : ' hidden') + '>' + body + '</div>'; };
+    h += '<div class="sqtabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" class="sqtab' + (t[0] === tab ? ' on' : '') + '" data-tab="' + t[0] + '" role="tab">' + t[1] + '</button>'; }).join('') + '</div>';
 
-    if (past.length) h += __esT_squadsindex("pastDuels",'<div class="sect"><h2>Past duels</h2>') + past.slice(0, 8).map(function (d) { return duelCard(d, s.sid); }).join('') + '</div>';
+    // RAIDS
+    h += pan('raids', raidSection(s, isL));
 
-    h += __esT_squadsindex("openChallengesSquadsLookin",'<div class="sect"><h2>Open challenges</h2><p class="sub">Squads looking for anyone to take them on.</p><div id="openD"><div class="empty">Loading…</div></div></div>');
+    // SHOP
+    h += pan('shop', '<div class="sect"><h2>' + __esT_squadsindex("squadShop", 'Squad shop') + '</h2><p class="sub">' + (isL ? __esT_squadsindex("shopSubLeader", "Spend the squad's Valor on exclusive borders and badges - earned only by playing together. You buy; every member can then wear what the squad owns.") : __esT_squadsindex("shopSubMember", "Borders and badges bought with the squad's Valor. The leader unlocks them; you equip any the squad owns.")) + '</p><div id="sqShop"><div class="empty">' + __esT_squadsindex("loadingEl", 'Loading…') + '</div></div></div>');
 
-    h += '<div class="sect"><h2>Leader controls</h2>';
+    // DUELS (live + challenge + past + open challenges, all in one place)
+    var dH = '<div class="sect"><h2>Duels</h2><p class="sub">' + (isL ? __esT_squadsindex("youAreTheLeader", 'You are the leader, so the stake is yours to put up. Win and it comes back, plus the other squad\'s stake split across everyone.') : __esT_squadsindex("yourLeaderPutsThe", 'Your leader puts the stake up. Every member who closes a trade in the window earns XP - win, draw or lose.')) + '</p>';
+    dH += live.length ? live.map(function (d) { return duelCard(d, s.sid); }).join('') : __esT_squadsindex("noDuelRunning", '<div class="empty">No duel running.</div>');
+    if (isL && !live.some(function (d) { return d.status === 'active'; })) dH += challengeHtml();
+    dH += '</div>';
+    if (past.length) dH += __esT_squadsindex("pastDuels", '<div class="sect"><h2>Past duels</h2>') + past.slice(0, 8).map(function (d) { return duelCard(d, s.sid); }).join('') + '</div>';
+    dH += __esT_squadsindex("openChallengesSquadsLookin", '<div class="sect"><h2>Open challenges</h2><p class="sub">Squads looking for anyone to take them on.</p><div id="openD"><div class="empty">Loading…</div></div></div>');
+    h += pan('duels', dH);
+
+    // SETTINGS / LEADER CONTROLS
+    var setH = '';
     if (isL) {
       if (!S.draft) S.draft = Object.assign({}, s.crest);
-      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Logo</h3><div id="bld">' + builderHtml(S.draft, s.name, s.tag) + '</div>'
+      setH += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:9px">Logo</h3><div id="bld">' + builderHtml(S.draft, s.name, s.tag) + '</div>'
         + '<div class="bfield" style="margin-top:13px"><label class="fl" for="eMotto">Motto</label><input type="text" id="eMotto" maxlength="80" value="' + esc(s.motto) + '" autocomplete="off" /></div>'
-        + '<div class="chips" style="margin-bottom:13px"><button type="button" class="chip' + (s.open ? ' on' : '') + __esT_squadsindex("dataOpen1Anyone",'" data-open="1">Anyone can join</button><button type="button" class="chip') + (s.open ? '' : ' on') + __esT_squadsindex("dataOpen0Invite",'" data-open="0">Invite only</button></div>')
+        + '<div class="chips" style="margin-bottom:13px"><button type="button" class="chip' + (s.open ? ' on' : '') + __esT_squadsindex("dataOpen1Anyone", '" data-open="1">Anyone can join</button><button type="button" class="chip') + (s.open ? '' : ' on') + __esT_squadsindex("dataOpen0Invite", '" data-open="0">Invite only</button></div>')
         + '<button class="btn p" id="eGo" type="button">Save</button><div class="msg" id="eMsg"></div></div>';
-      h += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:5px">Leave or disband</h3><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">If you leave, the longest-serving member takes over. Disbanding removes the squad and its logo from every member\'s card.</p>'
+      setH += '<div class="card"><h3 style="font-size:15px;font-weight:800;margin-bottom:5px">Leave or disband</h3><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">If you leave, the longest-serving member takes over. Disbanding removes the squad and its logo from every member\'s card.</p>'
         + '<div class="row"><button class="btn" id="leaveGo" type="button">Leave squad</button><button class="btn d" id="disGo" type="button">Disband</button></div><div class="msg" id="lMsg"></div></div>';
     } else {
-      h += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the logo or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
+      setH += '<div class="card"><p style="margin:0 0 11px;color:var(--dim);font-size:13.5px">Only the leader can change the logo or start duels.</p><button class="btn" id="leaveGo" type="button">Leave squad</button><div class="msg" id="lMsg"></div></div>';
     }
-    h += '</div>';
+    h += pan('settings', '<div class="sect">' + setH + '</div>');
     return h;
   }
 
@@ -791,6 +847,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       reveal(el);
     }).catch(function () { el.innerHTML = __esT_squadsindex("couldNotLoad",'<div class="empty">Could not load.</div>'); });
   }
+  /* THE ONE VIEW EVERYONE SEES (2026-10-04, owner: a member could no longer see other squads). A persistent section
+     outside #app, ranked by squad XP, rendered in every state - member, founder or guest. Tap a row to open the sheet. */
   function loadLeaderboard() {
     var el = $('#sqlb'); if (!el) return;
     api('leaderboard').then(function (j) {
@@ -829,16 +887,42 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   }
 
   /* ── render + wiring ────────────────────────────────────────────────────────────────────── */
+  // ── Squad shop (2026-10-01): Valor treasury, exclusive animated borders + badges. One fetch, rendered in place. ──
+  function shopItemHtml(it, d) {
+    var owned = (d.owned || []).indexOf(it.id) >= 0, isFrame = it.kind === 'frame';
+    var wearing = isFrame ? (d.myFrame === it.id) : (d.myBadge === it.id);
+    var pv = isFrame ? ('<div class="sqpv frame-' + it.id + '"></div>') : ('<div class="sqpv"><span class="mp-sqbadge sqbadge-' + it.id + '" style="width:46px;height:46px"></span></div>');
+    var act;
+    if (!owned) act = d.isLeader
+      ? ('<button class="btn sm p" data-shopbuy="' + it.id + '"' + ((d.valor || 0) < it.price ? ' disabled' : '') + '>' + __esT_squadsindex("unlockSp", 'Unlock') + ' &middot; ' + it.price + ' ' + __esT_squadsindex("valorSp", 'Valor') + '</button>')
+      : ('<span class="shoplk">' + it.price + ' ' + __esT_squadsindex("valorSp", 'Valor') + ' &middot; ' + __esT_squadsindex("leaderUnlocks", 'leader unlocks') + '</span>');
+    else if (wearing) act = '<button class="btn sm" data-shopoff="' + it.kind + '">' + __esT_squadsindex("unequipSp", 'Unequip') + '</button>';
+    else act = '<button class="btn sm p" data-shopequip="' + it.id + '">' + __esT_squadsindex("equipSp", 'Equip') + '</button>';
+    return '<div class="sqitem' + (owned ? ' owned' : '') + (wearing ? ' worn' : '') + '">' + pv
+      + '<div class="sqinm">' + esc(it.name) + (wearing ? ' <span class="wornb">' + __esT_squadsindex("wearingSp", 'worn') + '</span>' : '') + '</div>'
+      + '<div class="sqitier t-' + esc(it.tier) + '">' + esc(it.tier) + ' &middot; ' + (it.kind === 'badge' ? __esT_squadsindex("badgeSp", 'badge') : __esT_squadsindex("borderSp", 'border')) + '</div>'
+      + '<div class="sqidesc">' + esc(it.desc) + '</div><div class="sqiact">' + act + '</div></div>';
+  }
+  function loadShop() {
+    var box = $('#sqShop'); if (!box) return;
+    api('shop').then(function (d) {
+      if (!d || d.error) { box.innerHTML = '<div class="empty">' + (ERR[d && d.error] || __esT_squadsindex("couldNotLoadShop", 'Could not load the shop.')) + '</div>'; return; }
+      S._shop = d;
+      box.innerHTML = '<div class="valbar"><span class="valn">' + (d.valor || 0).toLocaleString() + '</span> <span class="vall">' + __esT_squadsindex("valorSp", 'Valor') + '</span><span class="valh">' + __esT_squadsindex("valorHow", 'earned from duel wins, raids, levels and MVP') + '</span></div>'
+        + '<div class="sqshop">' + (d.items || []).map(function (it) { return shopItemHtml(it, d); }).join('') + '</div>';
+      if (window.mpNovaSweep) { try { window.mpNovaSweep(); } catch (e) {} } // the previews are JS-animated like the real cards
+    }).catch(function () { box.innerHTML = '<div class="empty">' + __esT_squadsindex("couldNotLoadShop", 'Could not load the shop.') + '</div>'; });
+  }
   function render() {
     S._invShown = '';
-    loadLeaderboard();
+    loadLeaderboard(); // persistent section, shown in every state (member, founder, guest)
     if (!signedIn()) { app.innerHTML = guestView(); loadDir(); reveal(app); return; }
     if (!S.me) { app.innerHTML = '<div class="card"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div></div>'; return; }
     app.innerHTML = S.me.squad ? squadView() : createView();
     var bld = $('#bld', app);
     if (bld) wireBuilder(bld, function () { var n = $('#cName'); return n ? n.value : (S.me.squad && S.me.squad.name); }, function () { var t = $('#cTag'); return t ? t.value : (S.me.squad && S.me.squad.tag); });
     ['#cName', '#cTag'].forEach(function (sel) { var el = $(sel); if (el) el.addEventListener('input', function () { if (sel === '#cTag') el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); repaintPrev(bld, function () { return $('#cName').value; }, function () { return $('#cTag').value; }); }); });
-    if (S.me.squad) loadOpen(); else loadDir();
+    if (S.me.squad) { loadOpen(); loadShop(); } else loadDir();
     reveal(app);
   }
 
@@ -852,6 +936,8 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
 
   document.addEventListener('click', function (e) {
     var t = e.target;
+    var tb = t.closest && t.closest('.sqtab[data-tab]');
+    if (tb && app.contains(tb)) { e.preventDefault(); var tid = tb.getAttribute('data-tab'); S._tab = tid; try { localStorage.setItem('mp_sq_tab', tid); } catch (x) {} Array.prototype.forEach.call(app.querySelectorAll('.sqtab'), function (x) { x.classList.toggle('on', x === tb); }); Array.prototype.forEach.call(app.querySelectorAll('.sqpanel'), function (p) { p.hidden = p.getAttribute('data-panel') !== tid; }); try { if (window.mpNovaSweep) window.mpNovaSweep(); } catch (x2) {} return; }
     var openBtn = t.closest && t.closest('[data-open]');
     if (openBtn && app.contains(openBtn)) { e.preventDefault(); Array.prototype.forEach.call(openBtn.parentNode.querySelectorAll('[data-open]'), function (x) { x.classList.toggle('on', x === openBtn); }); return; }
     var chBtn = t.closest && t.closest('[data-ch]');
@@ -866,6 +952,9 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
         if (j && !j.error) { toast(good, 'good'); load(); }
       });
     };
+    if (b.getAttribute && b.getAttribute('data-shopbuy')) { e.preventDefault(); var sbId = b.getAttribute('data-shopbuy'); b.disabled = true; api('shopbuy', { id: sbId }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || (j.error === 'need_valor' ? (__esT_squadsindex("needValor", 'Not enough Valor - need ') + j.need + '.') : __esT_squadsindex("thatDidNotWork", 'That did not work.')), 'warn'); return; } toast(__esT_squadsindex("unlockedForSquad", 'Unlocked for the squad.'), 'good'); loadShop(); }); return; }
+    if (b.getAttribute && b.getAttribute('data-shopequip')) { e.preventDefault(); var seId = b.getAttribute('data-shopequip'); b.disabled = true; api('shopequip', { id: seId }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || __esT_squadsindex("thatDidNotWork", 'That did not work.'), 'warn'); return; } toast(__esT_squadsindex("equippedCard", 'Equipped - it shows on your profile card.'), 'good'); loadShop(); }); return; }
+    if (b.getAttribute && b.getAttribute('data-shopoff')) { e.preventDefault(); var soSlot = b.getAttribute('data-shopoff'); b.disabled = true; api('shopequip', { off: true, slot: soSlot }).then(function (j) { b.disabled = false; if (j && j.error) { toast(ERR[j.error] || __esT_squadsindex("thatDidNotWork", 'That did not work.'), 'warn'); return; } toast(__esT_squadsindex("removedSp", 'Removed.'), 'good'); loadShop(); }); return; }
     if (b.id === 'roomGo') {
       e.preventDefault();
       var rid = b.getAttribute('data-room');
@@ -921,7 +1010,10 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
       SH = document.createElement('div'); SH.className = 'sqsh'; SH.setAttribute('role', 'dialog'); SH.setAttribute('aria-modal', 'true');
       SH.innerHTML = '<div class="sqsh-bd"></div><div class="sqsh-p"><button type="button" class="sqsh-x" aria-label="Close">&times;</button><div class="sqsh-b"><div class="skel" style="width:40%"></div></div></div>';
       document.body.appendChild(SH);
-      SH.addEventListener('click', function (e) { if (e.target.classList.contains('sqsh-bd') || e.target.closest('.sqsh-x')) closeSquadSheet(); });
+      // Clicking a member opens their profile card. That card lives below this sheet's z-index, so it used to open
+      // BEHIND it (owner 2026-10-01). Close the sheet first and let the click keep bubbling to mp-nav's data-lbu
+      // handler, which opens the profile on a clear screen - one thing at a time, never two stacked.
+      SH.addEventListener('click', function (e) { if (e.target.classList.contains('sqsh-bd') || e.target.closest('.sqsh-x')) closeSquadSheet(); else if (e.target.closest('[data-lbu]')) closeSquadSheet(); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && SH && SH.classList.contains('on')) closeSquadSheet(); });
     }
     var body = SH.querySelector('.sqsh-b');

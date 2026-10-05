@@ -103,7 +103,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=15c3fb83">
+<link rel="stylesheet" href="/assets/home.css?v=871e34b9">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -277,33 +277,36 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   </section>
 
   <section id="screener" class="scrwrap" style="display:none" aria-label="Market screener">
-    <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Markets</span><h2>Screener</h2></div>
-    <p class="sec-sub" data-i18n="scrSub">Live USDT-perp markets, each with a 0–100 MarginPad score (RSI, MACD, moving averages, ATR, funding &amp; volume on 4h candles). Tap any coin for the full analysis, trade setup and live derivatives.</p>
-    <a class="scr-tg" href="https://t.me/marginpad" target="_blank" rel="noopener" onclick="try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}" style="display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)">
+    <!-- 2026-10-05: the TABLE is the product, so it comes first. Measured before: zero coins in the first screen on desktop and
+         phone (Telegram banner + Plus upsell + tiles + picks + search stood in front of a 16,786px list of cards). The mode
+         switch now sits on the title row, the stats are one line, the Telegram banner follows the data, and the Plus strip is
+         one slim line for a guest (its three cards still render above the table for a Plus member - they paid for them). -->
+    <div class="sec-head scr-head"><div><span class="eyebrow" data-i18n="ebMarkets">Markets</span><h2>Screener</h2></div>
+      <div class="scr-mode" id="scrMode" role="tablist" aria-label="Screener mode"><button type="button" data-mode="perp" class="on" role="tab">Perp futures</button><button type="button" data-mode="onchain" role="tab">On-chain · Memecoins <em>NEW</em></button></div></div>
+    <p class="sec-sub" data-i18n="scrSub">Live USDT-perp markets, each with a 0–100 MarginPad score (RSI, MACD, moving averages, ATR, funding &amp; volume on 4h candles). Sort any column, tap any coin for the full analysis, trade setup and live derivatives.</p>
+    <div class="scr-ai" id="scrAiScan" hidden></div>
+    <div class="scr-top" id="scrTop"><div class="scr-stats" id="scrStats"></div><div class="scr-picks" id="scrPicks"></div></div>
+    <div class="scr-fbar" id="scrFbar">
+      <input class="scr-search" id="scrSearch" type="search" placeholder="Search any coin… (e.g. SOL)" autocomplete="off" spellcheck="false" aria-label="Search pairs">
+      <div class="scr-filters" id="scrFilters">
+        <button type="button" data-sort="score" class="on">Top Score</button>
+        <button type="button" data-sort="gain">Gainers</button>
+        <button type="button" data-sort="lose">Losers</button>
+        <button type="button" data-sort="vol">Volume</button>
+        <button type="button" data-sort="fund">Funding</button>
+        <button type="button" data-sort="vol24">Volatile</button>
+        <span class="scr-fdiv" aria-hidden="true"></span>
+        <button type="button" data-filter="long">▲ Long setups</button>
+        <button type="button" data-filter="short">▼ Short setups</button>
+        <button type="button" data-filter="watch">★ Watchlist</button>
+      </div>
+    </div>
+    <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
+    <a class="scr-tg" href="https://t.me/marginpad" target="_blank" rel="noopener" onclick="try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}" style="display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)">
       <span style="flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="23" height="23" fill="#fff"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z"/></svg></span>
       <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Free trade signals on Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">the daily market wrap at 16:00 UTC - what moved, what is next</i></span>
       <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Join free</span>
     </a>
-    <div class="scr-ai" id="scrAiScan" hidden></div>
-    <div class="scr-mode" id="scrMode" role="tablist" aria-label="Screener mode"><button type="button" data-mode="perp" class="on" role="tab">Perp futures</button><button type="button" data-mode="onchain" role="tab">On-chain · Memecoins <em>NEW</em></button></div>
-    <div class="scr-stats" id="scrStats"></div>
-    <div class="scr-meta" id="scrMeta"></div>
-    <div class="scr-picks" id="scrPicks"></div>
-    <input class="scr-search" id="scrSearch" type="search" placeholder="Search any coin… (e.g. SOL)" autocomplete="off" spellcheck="false" aria-label="Search pairs">
-    <div class="scr-filters" id="scrFilters">
-      <button type="button" data-sort="score" class="on">Top Score</button>
-      <button type="button" data-sort="gain">Gainers</button>
-      <button type="button" data-sort="lose">Losers</button>
-      <button type="button" data-sort="vol">Volume</button>
-      <button type="button" data-sort="fund">Funding</button>
-      <button type="button" data-sort="oi">Open Int.</button>
-      <button type="button" data-sort="vol24">Volatile</button>
-      <span class="scr-fdiv" aria-hidden="true"></span>
-      <button type="button" data-filter="long">▲ Long setups</button>
-      <button type="button" data-filter="short">▼ Short setups</button>
-      <button type="button" data-filter="watch">★ Watchlist</button>
-    </div>
-    <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
     <div id="scrOnchain" hidden>
       <div class="scr-oc-tabs" id="scrOcTabs"><button type="button" data-oct="trending" class="on">Trending</button><button type="button" data-oct="fresh">New pairs</button></div>
       <div class="scr-list" id="scrOcList"><div class="scr-loading">Loading on-chain pools…</div></div>
@@ -842,7 +845,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=15c3fb83"></script>
+<script src="/assets/home.js?v=871e34b9"></script>
 <script defer src="/assets/mp-nav.js?v=5e2d5297"></script>
 </body>
 </html>

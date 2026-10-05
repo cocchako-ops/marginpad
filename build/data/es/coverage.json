@@ -1736,7 +1736,7 @@
  {
   "rel": "levels/index.html",
   "cover": 1,
-  "hit": 114,
+  "hit": 120,
   "missing": 0
  },
  {
@@ -2084,7 +2084,7 @@
  {
   "rel": "squads/index.html",
   "cover": 1,
-  "hit": 20,
+  "hit": 23,
   "missing": 0
  },
  {
@@ -2306,7 +2306,7 @@
  {
   "rel": "app.html → app-es.html",
   "cover": 1,
-  "hit": 462,
+  "hit": 459,
   "missing": 0
  }
 ]

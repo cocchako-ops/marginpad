@@ -1,12 +1,13 @@
 {
  "meta": {
-  "generated": "2026-09-30T01:55:21.266Z",
+  "generated": "2026-10-05T14:15:23.768Z",
   "pages": 385,
-  "occurrences": 26420,
-  "unique": 13963,
-  "words": 265738,
+  "occurrences": 26426,
+  "unique": 13970,
+  "words": 265789,
   "untranslated": 0,
-  "untranslatedWords": 0
+  "untranslatedWords": 0,
+  "merged": "2026-10-05T14:16:32.482Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -682,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1675,
+   "n": 1673,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -11494,7 +11495,7 @@
     "/calendar/",
     "/defi/"
    ],
-   "n": 14,
+   "n": 15,
    "w": 1
   },
   "L9Y6UqV1Bb": {
@@ -11767,30 +11768,6 @@
    "n": 3,
    "w": 1
   },
-  "pKRj0PYO9X": {
-   "en": "Live USDT-perp markets, each with a 0–100 MarginPad score (RSI, MACD, moving averages, ATR, funding &amp; volume on 4h candles). Tap any coin for the full analysis, trade setup and live derivatives.",
-   "es": "Mercados USDT-perp en vivo, cada uno con un puntaje MarginPad de 0 a 100 (RSI, MACD, medias móviles, ATR, funding &amp; volumen en velas de 4h). Toca cualquier moneda para ver el análisis completo, el setup de la operación y los derivados en vivo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 30
-  },
-  "RSJiwNB6zn": {
-   "en": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Free trade signals on Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">the daily market wrap at 16:00 UTC - what moved, what is next</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Join free</span> </a>",
-   "es": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Señales de trading gratis en Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">el resumen diario del mercado a las 16:00 UTC - qué se movió y qué viene</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Únete gratis</span> </a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 19
-  },
   "HcjEOqAAWP": {
    "en": "Perp futures",
    "es": "Futuros perpetuos",
@@ -11814,6 +11791,18 @@
    ],
    "n": 1,
    "w": 3
+  },
+  "8LiNOpMOtW": {
+   "en": "Live USDT-perp markets, each with a 0–100 MarginPad score (RSI, MACD, moving averages, ATR, funding &amp; volume on 4h candles). Sort any column, tap any coin for the full analysis, trade setup and live derivatives.",
+   "es": "Mercados de perpetuos USDT en vivo, cada uno con un score MarginPad de 0–100 (RSI, MACD, medias móviles, ATR, funding &amp; volumen en velas de 4h). Ordena cualquier columna y toca cualquier moneda para ver el análisis completo, el setup de trading y los derivados en vivo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 33
   },
   "_mDsNXrXqQ": {
    "en": "Top Score",
@@ -11881,18 +11870,6 @@
    "n": 1,
    "w": 1
   },
-  "tLwNfX6m29": {
-   "en": "Open Int.",
-   "es": "Int. abierto",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/app.html"
-   ],
-   "n": 1,
-   "w": 2
-  },
   "rDAi4RNELb": {
    "en": "Volatile",
    "es": "Volátil",
@@ -11953,6 +11930,18 @@
    ],
    "n": 1,
    "w": 3
+  },
+  "tDaAj85U8-": {
+   "en": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Free trade signals on Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">the daily market wrap at 16:00 UTC - what moved, what is next</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Join free</span> </a>",
+   "es": "<a class=\"scr-tg\" href=\"https://t.me/marginpad\" target=\"_blank\" rel=\"noopener\" onclick=\"try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}\" style=\"display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)\"> <span style=\"flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center\"><svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" fill=\"#fff\"><path d=\"M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z\"/></svg></span> <span style=\"flex:1;min-width:0;line-height:1.32\"><b style=\"display:block;color:#e9e7df;font-size:14.5px;font-weight:700\">Señales de trading gratis en Telegram</b><i style=\"color:#9bb9c9;font-size:12px;font-style:normal\">el resumen diario del mercado a las 16:00 UTC - qué se movió y qué viene</i></span> <span style=\"flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap\">Únete gratis</span> </a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 19
   },
   "ihLVYm_j0n": {
    "en": "Trending",
@@ -122307,6 +122296,78 @@
    "n": 1,
    "w": 3
   },
+  "ePOELwIByZ": {
+   "en": "Master",
+   "es": "Master",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "tGBZ6KSvwp": {
+   "en": "<b>120,000</b> XP",
+   "es": "<b>120,000</b> XP",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "G5jb4hZwJQ": {
+   "en": "<b>+75%</b> faucet claim rewards",
+   "es": "<b>+75%</b> en las recompensas del faucet",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "C90wA75kti": {
+   "en": "<b>2x</b> your daily earning cap",
+   "es": "<b>2x</b> tu límite diario de ganancias",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "QpSrG8TjJ5": {
+   "en": "Master badge in the rose-red tier colour",
+   "es": "Insignia Master en el color rojo rosado del nivel",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "PRc8Dj_E1E": {
+   "en": "Everything Diamond unlocks, carried up",
+   "es": "Todo lo que desbloquea Diamante, heredado hacia arriba",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/levels/"
+   ],
+   "n": 1,
+   "w": 5
+  },
   "t-iRZQW_ct": {
    "en": "Legendary",
    "es": "Legendario",
@@ -122319,9 +122380,9 @@
    "n": 1,
    "w": 1
   },
-  "d2272uxUX6": {
-   "en": "<b>120,000</b> XP · the 1%",
-   "es": "<b>120,000</b> XP · el 1%",
+  "RX7iGsPttT": {
+   "en": "<b>250,000</b> XP · the 1%",
+   "es": "<b>250,000</b> XP · el 1%",
    "kind": [
     "html"
    ],
@@ -122331,9 +122392,9 @@
    "n": 1,
    "w": 4
   },
-  "G5jb4hZwJQ": {
-   "en": "<b>+75%</b> faucet claim rewards",
-   "es": "<b>+75%</b> en las recompensas del faucet",
+  "pCYnjnoGVs": {
+   "en": "<b>+90%</b> faucet claim rewards",
+   "es": "<b>+90%</b> en recompensas por reclamo del faucet",
    "kind": [
     "html"
    ],
@@ -122992,9 +123053,9 @@
    "n": 1,
    "w": 37
   },
-  "ujtf4HYxxf": {
-   "en": "Bigger faucet claim rewards (up to +75% at Legendary), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
-   "es": "Recompensas de reclamo del faucet más grandes (hasta +75% en Legendario), límites diarios más altos, insignias de perfil y cosméticos exclusivos, acceso a competiciones especiales, y bonos de retiro para Diamante (10%) y Legendario (15%).",
+  "PV4-LQRtmB": {
+   "en": "Bigger faucet claim rewards (up to +90% at Legendary), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and withdrawal bonuses for Diamond (10%) and Legendary (15%).",
+   "es": "Mayores recompensas por reclamo del faucet (hasta +90% en Legendario), límites diarios más altos, insignias de perfil y cosméticos exclusivos, acceso a competiciones especiales y bonos de retiro para Diamante (10%) y Legendario (15%).",
    "kind": [
     "ld"
    ],
@@ -149767,6 +149828,30 @@
    ],
    "n": 1,
    "w": 47
+  },
+  "EeL_dW5P65": {
+   "en": "Squad leaderboard",
+   "es": "Clasificación de squads",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Se9CTglnSE": {
+   "en": "Every squad, ranked by squad XP. Tap one to see who is in it - this is here whether or not you are in a squad.",
+   "es": "Cada squad, ordenado por XP de squad. Toca uno para ver quién está dentro - esto está aquí estés o no en un squad.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/squads/"
+   ],
+   "n": 1,
+   "w": 24
   },
   "nedM_k5vVt": {
    "en": "How a squad works",
