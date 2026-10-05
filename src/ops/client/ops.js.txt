@@ -1340,7 +1340,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
       social: ['chatmsg', 'chat', 'dm', 'follow', 'duel', 'post', 'comment', 'like', 'save', 'profile', 'myprofile', 'share', 'gift', 'squad', 'sduel', 'raid', 'sqlevel', 'mvp'],
       squads: ['squad', 'sduel', 'raid', 'sqlevel', 'mvp'],
       account: ['signup', 'login', 'logout', 'signin', 'otp', 'otpfail', 'username', 'profile_edit', 'push', 'alert', 'support', 'telegram', 'lang', 'frame', 'admin'],
-      progress: ['academy', 'goal', 'predict', 'xpboost', 'pass', 'premview', 'premgate', 'brief', 'ai', 'ind', 'draw', 'watch', 'search', 'coin', 'screener', 'tab', 'nav', 'prod', 'hotpair', 'nudge', 'grad', 'sect'],
+      progress: ['academy', 'goal', 'predict', 'xpboost', 'pass', 'premview', 'premgate', 'brief', 'ai', 'ind', 'draw', 'watch', 'search', 'coin', 'screener', 'lb', 'aiscan', 'tab', 'nav', 'prod', 'hotpair', 'nudge', 'grad', 'sect'],
       spot: ['spottrade'],
       pages: ['pv'],
       problems: ['otpfail', 'ratelimit', 'jserr', 'liq', 'wdreject', 'admin', 'premgate'],
@@ -1369,7 +1369,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
         signup: '<b class="up">created an account</b> ' + X, login: 'signed in', logout: 'signed out', signin: 'opened the sign-in box', otp: 'asked for a sign-in code ' + X, otpfail: '<b class="dn">wrong or expired code</b> ' + X, username: 'changed username <b>@' + esc(e.u || '?') + '</b> → <b>@' + x + '</b>', profile_edit: 'edited profile (' + x + ')',
         push: 'enabled push notifications', alert: 'set a price alert ' + X, support: 'wrote to support', telegram: 'clicked Telegram', lang: 'switched language to ' + X, frame: 'equipped frame ' + X, admin: '<b>owner:</b> ' + x,
         academy: 'Academy lesson ' + X, goal: 'season goal ' + X, predict: 'daily call ' + X, xpboost: 'XP boost ' + X, premview: 'viewed Premium', premgate: 'hit the Premium gate ' + X, brief: 'read the daily brief', ai: 'asked the AI ' + X,
-        ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
+        ind: 'added indicator ' + X, draw: 'drew on the chart', watch: 'watchlist ' + X, search: 'searched ' + X, coin: 'opened coin ' + X, screener: 'screener ' + X, lb: 'leaderboards ' + X, aiscan: 'AI scan ' + X, tab: 'calculator ' + X, nav: 'nav ' + X, prod: 'opened ' + X, hotpair: 'hot pair ' + X, nudge: 'activation card ' + X, grad: X, sect: 'scrolled to ' + X,
         spottrade: 'Demo Spot ' + X, jserr: '<b class="dn">JS error</b> ' + X, ratelimit: '<b class="dn">rate limit</b> ' + X, twin: '<b class="warn">sync:</b> ' + X,
         squad: '<b class="up">squad:</b> ' + x, sduel: '<b>squad duel:</b> ' + x, raid: '<b>raid:</b> ' + x, sqlevel: '<b class="up">squad level:</b> ' + x, mvp: '<b class="gold">MVP:</b> ' + x,
         backup: 'backup ' + X, wrap: 'daily wrap ' + X, signal: 'signal ' + X, sigresult: 'signal result ' + X, digest: 'digest ' + X, liqalert: 'liquidation alert ' + X, alertfired: 'price alert fired ' + X, cpaper: 'signal paper trade ' + X, bot: 'Telegram bot ' + X, cfgchange: 'config changed ' + X, subkick: 'subscription ended ' + X

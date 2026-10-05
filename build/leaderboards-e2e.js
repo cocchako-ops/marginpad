@@ -48,7 +48,7 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
           twScrolls: tw ? tw.scrollHeight > tw.clientHeight + 2 : false,
           count: (document.getElementById('bCount') || {}).textContent || '',
           pageH: document.documentElement.scrollHeight,
-          eye: (document.getElementById('sEye') || {}).textContent, left: (document.getElementById('sLeft') || {}).textContent, days: document.querySelectorAll('#sDays i.on').length, tabs: document.querySelectorAll('.tab').length, leaders: [...document.querySelectorAll('.tab .l')].map(x => x.textContent).filter(t => /leads|open/.test(t)).length, names: rows.map(tr => (tr.querySelector('td.who') || {}).textContent), prizes: rows.slice(0, 5).map(tr => (tr.querySelector('td.prz') || {}).textContent), // A NAME OPENS THE PROFILE CARD, IT DOES NOT NAVIGATE (owner 2026-09-20: a click used to land on
+          eye: (document.getElementById('sEye') || {}).textContent, left: (document.getElementById('sLeft') || {}).textContent, days: document.querySelectorAll('#sDays i.on').length, tabs: document.querySelectorAll('.tab').length, leaders: [...document.querySelectorAll('.tab .l')].map(x => x.textContent).filter(t => /leads|open/.test(t)).length, names: rows.map(tr => (tr.querySelector('td.who a') || tr.querySelector('td.who') || {}).textContent), /* the name is the card link; since 2026-10-05 the cell also carries the pair as a phone-only sub-line */ prizes: rows.slice(0, 5).map(tr => (tr.querySelector('td.prz') || {}).textContent), // A NAME OPENS THE PROFILE CARD, IT DOES NOT NAVIGATE (owner 2026-09-20: a click used to land on
           // /community/u/<name>, the Community profile page, which reads like a blog post). The old check asserted
           // exactly that link, so it was pinned to the bug; this one asserts the card handle and that nothing
           // carries an href that would take the reader off the board.
@@ -65,6 +65,10 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
       chk(vp.t + ': a guest is asked to sign in to see where they stand', /Sign in/.test(g.you || ''), g.you);
       const sw = await page.evaluate(async () => { document.querySelector('.tab[data-b="bybit"]').click(); await new Promise(r => setTimeout(r, 200)); return { head: [...document.querySelectorAll('#bHead th')].map(x => x.textContent), title: (document.getElementById('bT') || {}).textContent, hash: location.hash, pz: document.querySelectorAll('#bPz .pz').length, first: (document.querySelector('#bPz .pz b') || {}).textContent, openRows: document.querySelectorAll('#bBody tr.open').length, namedRows: document.querySelectorAll('#bBody tr:not(.open) td.who a').length }; });
       chk(vp.t + ': switching to the Bybit board swaps the columns, prizes and title', /Volume traded/.test(sw.head.join('|')) && /Bybit/.test(sw.title) && /pool \$\d+\.\d\d · \$100 start \+ \d+% of fees/.test(sw.title) && sw.hash === '#bybit' && sw.pz === 0 && sw.openRows >= 1 && sw.openRows + sw.namedRows === 10, sw); /* the Bybit board (2026-09-28): no prize chips - every paid place is a ROW, the open ones grey with their prize; the title line states the pool, the start and the share */
+      // 2026-10-05: the find box filters the list by name, the arrow keys walk the boards, and the board is remembered
+      const fx = await page.evaluate(async () => { window.__lbPage.set('roe'); await new Promise(r => setTimeout(r, 150)); const all = document.querySelectorAll('#bBody tr').length; const inp = document.getElementById('bFind'); inp.value = 'a'; inp.dispatchEvent(new Event('input', { bubbles: true })); await new Promise(r => setTimeout(r, 150)); const rows = [...document.querySelectorAll('#bBody tr td.who a')].map(a => a.textContent); const count = document.getElementById('bCount').textContent; inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); await new Promise(r => setTimeout(r, 150)); const back = document.querySelectorAll('#bBody tr').length; document.querySelector('.tab[data-b="roe"]').focus(); document.getElementById('tabs').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })); await new Promise(r => setTimeout(r, 150)); let last = ''; try { last = localStorage.getItem('mp_lb_last'); } catch (e) {} return { all, filtered: rows.length, allMatch: rows.every(n => /a/i.test(n)), count, back, cur: window.__lbPage.cur(), hash: location.hash, last }; });
+      chk(vp.t + ': the find box narrows the list to matching names and says how many match, clearing it brings everyone back', fx.all > 10 && fx.filtered > 0 && fx.filtered < fx.all && fx.allMatch && /match/.test(fx.count) && fx.back === fx.all, fx);
+      chk(vp.t + ': ArrowRight on the tab list moves to the next board, writes the hash and remembers it', fx.cur === 'green' && fx.hash === '#green' && fx.last === 'green', { cur: fx.cur, hash: fx.hash, last: fx.last });
       chk(vp.t + ': no page errors', errs.length === 0, errs);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'leaderboards-' + vp.t + '.png') });
       await ctx.close();
@@ -76,6 +80,16 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
       await page.waitForFunction("/You are #/.test((document.getElementById('bYou')||{}).textContent||'')", { timeout: 20000 }).catch(() => {});
       const m = await page.evaluate(() => ({ you: (document.getElementById('bYou') || {}).textContent, me: document.querySelectorAll('#bBody tr.me').length }));
       chk('member (simulated as the ROE leader): the you-line says #1 with the prize, the row is highlighted', /You are #1/.test(m.you || '') && /\$\d+/.test(m.you || '') && m.me === 1, m);
+      await ctx.close();
+    }
+    {
+      // a member on NO board: the you-line names what THIS board needs (it said "close ten trades" on every board
+      // without its own branch until 2026-10-05 - Highest ROE needs one trade, Season XP needs no trade at all)
+      const { ctx, page } = await fresh(1366, 900, 'e2e_nobody_' + Date.now().toString(36));
+      await page.goto(ORIGIN + '/leaderboards/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+      await page.waitForFunction("/not on this board/.test((document.getElementById('bYou')||{}).textContent||'')", { timeout: 20000 }).catch(() => {});
+      const nb = await page.evaluate(async () => { const y = () => (document.getElementById('bYou') || {}).textContent || ''; const roe = y(); window.__lbPage.set('xp'); await new Promise(r => setTimeout(r, 150)); const xp = y(); window.__lbPage.set('green'); await new Promise(r => setTimeout(r, 150)); const green = y(); return { roe, xp, green, meBtn: !!document.getElementById('bMe') && document.getElementById('bMe').hidden }; });
+      chk('member on no board: ROE asks for ONE trade, Season XP for XP, Green days for ten, and Find me stays hidden', /Close one trade/.test(nb.roe) && !/ten trades/.test(nb.roe) && /Earn XP/.test(nb.xp) && /ten trades/.test(nb.green) && nb.meBtn, nb);
       await ctx.close();
     }
     {

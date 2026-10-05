@@ -104,7 +104,7 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
         };
       });
       ok(r.over === 0, '[' + tag + '] never scrolls sideways', r.over);
-      ok(r.facts >= 3 && /^\$\d+$/.test(r.pot || ''), '[' + tag + '] the desk states the pot and the entry facts', { pot: r.pot, facts: r.facts });
+      ok(r.facts >= 3 && /^\$\d+(\.\d\d)?$/.test(r.pot || ''), '[' + tag + '] the desk states the pot and the entry facts', { pot: r.pot, facts: r.facts }); /* the pot carries cents since the Bybit rebate pool (2026-09-28): $276.72 is the true figure, not a defect */
       ok(r.ticks === 14 && r.ticksOn >= 1 && r.ticksOn <= 14, '[' + tag + '] the season meter has one tick per day, with the elapsed ones lit', { ticks: r.ticks, on: r.ticksOn });
       ok(r.faq === 8, '[' + tag + '] eight questions answered', r.faq);
       ok(r.ctaHit && r.ctaHref === '/season/', '[' + tag + '] the entry button is reachable and goes to the season', r);
