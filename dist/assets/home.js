@@ -3584,7 +3584,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=d10a975d';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=9949a99c';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open

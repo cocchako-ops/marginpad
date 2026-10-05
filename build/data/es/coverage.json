@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 229,
-  "missing": 0
+  "cover": 0.9429824561403509,
+  "hit": 215,
+  "missing": 13
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 1,
-  "hit": 83,
-  "missing": 0
+  "cover": 0.9418604651162791,
+  "hit": 81,
+  "missing": 5
  },
  {
   "rel": "levels/index.html",

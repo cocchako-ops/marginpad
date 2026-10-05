@@ -3288,7 +3288,7 @@ async function handleCompetition(url, request, env, ctx) {
   try { cfg = await rewardCfg(env); } catch (e) {}
 
   const boards = COMP_BOARDS.map(b => {
-    const rows = (lb && lb[b.key]) || [];
+    const rows = ((lb && lb[b.key]) || []).filter(r => !(r && r.reg)); // a registered-only Bybit row (vol 0, rank 0) is not a standing
     const bp = b.id === 'bybit' ? (lb && lb.bybitPool) || null : null;
     const prizes = bp ? bp.prizes : ((cfg && b.prize && cfg[b.prize]) || []);
     const pool = bp ? bp.usd : prizes.reduce((a, x) => a + (+x || 0), 0);
@@ -3583,31 +3583,57 @@ async function handleGeckoMarkets(url, env) {
 // CoinGecko files it under symbol "AI", id "gensyn"). Only add entries verified against the coin's page.
 // Verified 2026-08-16 against coins/markets?ids= (gensyn/pepe/bonk/shiba-inu/floki) and search (pump-fun).
 // '1000RATS' is NOT here: CoinGecko has an id of exactly that name, so the normal symbol path finds it.
-const ICON_ALIAS = { aigensyn: 'gensyn', '1000pepe': 'pepe', '1000bonk': 'bonk', '1000shib': 'shiba-inu', '1000floki': 'floki', pumpfun: 'pump-fun' };
-async function handleCoinIcon(url, env) {
+const ICON_ALIAS = { aigensyn: 'gensyn', '1000pepe': 'pepe', '1000bonk': 'bonk', '1000shib': 'shiba-inu', shib1000: 'shiba-inu', '1000floki': 'floki', pumpfun: 'pump-fun' };
+// Symbols CoinGecko must NOT be asked about (2026-10-05, owner: "svaki simbol da ima logo"): Bybit lists perps on tokenized
+// STOCKS and on commodities, and CoinGecko answers a ticker like MU or MCD with whatever memecoin wears that ticker - a wrong
+// logo is worse than a letter. Stocks (the STOCKS table + the Bybit stock perps measured on the screener that day) come from
+// a stock-logo CDN; metals and oil are our own SVGs under /assets/icons. ICON_STOCK_EXTRA is the measured list - extend it
+// when a new stock perp shows a letter, never widen it to "any short ticker".
+const ICON_STOCK_EXTRA = { sndk: 1, mu: 1, klac: 1, mcd: 1, crcl: 1, soxl: 1, soxs: 1 };
+const ICON_OWN = { xau: '/assets/icons/xau.svg', xag: '/assets/icons/xag.svg', cl: '/assets/icons/oil.svg', bz: '/assets/icons/oil.svg' };
+async function handleCoinIcon(url, env, request) {
   const sym = String(url.searchParams.get('sym') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
   const bad = (s) => new Response('', { status: s, headers: { 'cache-control': 'public, max-age=86400', ...CORS } });
   if (!sym) return bad(400);
+  if (ICON_OWN[sym]) return Response.redirect('https://marginpad.io' + ICON_OWN[sym], 302);
+  if (STOCKS[sym.toUpperCase()] || ICON_STOCK_EXTRA[sym]) { // a stock or ETF: its own logo, never a CoinGecko look-alike
+    const ck0 = new Request('https://marginpad.io/__coinicon_stk_' + sym);
+    try { const hit = await caches.default.match(ck0); if (hit) return hit; } catch (e) {}
+    try {
+      const img = await fetch('https://financialmodelingprep.com/image-stock/' + sym.toUpperCase() + '.png', { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+      if (img.ok && /image/.test(img.headers.get('content-type') || '')) {
+        const resp = new Response(img.body, { status: 200, headers: { 'content-type': img.headers.get('content-type') || 'image/png', 'cache-control': 'public, max-age=2592000, immutable', ...CORS } });
+        try { await caches.default.put(ck0, resp.clone()); } catch (e) {}
+        return resp;
+      }
+    } catch (e) {}
+    return bad(404);
+  }
   const ck = new Request('https://marginpad.io/__coinicon_' + sym);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let src = null;
   try { src = await env.STATS.get('icon:' + sym); } catch (e) {}     // '' = known-missing
+  if (src === '' && ICON_ALIAS[sym]) src = null; // an alias is curated by hand: a negative entry written before the alias existed (or during a CoinGecko outage) must not outlive the fix for six hours (2026-10-05: 1000FLOKI / SHIB1000 stayed a letter through two deploys)
   if (src == null) {
     const ok = (u) => (u && /^https:\/\/[a-z0-9.-]*coingecko\.com\//i.test(u)) ? String(u).split('?')[0] : null;
     try {
       const h = { headers: { accept: 'application/json' } };
       if (env.COINGECKO_API_KEY) h.headers['x-cg-demo-api-key'] = env.COINGECKO_API_KEY;
+      // CoinGecko 403s the Worker egress at times (2026-09-30), which left every NEW symbol as a letter for ever: a direct
+      // miss falls back to the collector's /api/v1/cg proxy (coins/markets is on its allowlist), the same escape hatch cgCached uses
+      const cgMarkets = async (qs) => {
+        const path = '/coins/markets?vs_currency=usd&' + qs;
+        try { const r = await fetch('https://api.coingecko.com/api/v3' + path, h); if (r.ok) { const j = await r.json(); if (Array.isArray(j)) return j; } } catch (e) {}
+        try { if (env.COLLECTOR_URL) { const r2 = await fetch(env.COLLECTOR_URL + '/api/v1/cg?path=' + encodeURIComponent(path), { signal: AbortSignal.timeout(6000) }); if (r2.ok) { const j2 = await r2.json(); if (Array.isArray(j2)) return j2; } } } catch (e) {}
+        return null;
+      };
       const id = ICON_ALIAS[sym];
       if (id) { // our exchange ticker differs from CoinGecko's symbol (AIGENSYN is CoinGecko's "AI" / id gensyn)
-        const r0 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' + id, h);
-        if (r0.ok) { const j0 = await r0.json(); if (Array.isArray(j0) && j0[0]) src = ok(j0[0].image); }
+        const j0 = await cgMarkets('ids=' + id); if (j0 && j0[0]) src = ok(j0[0].image);
       }
       if (!src) {
-        const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=' + sym, h);
-        if (r.ok) {
-          const j = await r.json();
-          if (Array.isArray(j) && j.length) src = ok(j.sort((a, b) => (+b.market_cap || 0) - (+a.market_cap || 0))[0].image);
-        }
+        const j = await cgMarkets('symbols=' + sym);
+        if (j && j.length) src = ok(j.sort((a, b) => (+b.market_cap || 0) - (+a.market_cap || 0))[0].image);
       }
       if (!src) { // second chance: search only accepts an EXACT ticker match, so a wrong logo can't sneak in
         const r2 = await fetch('https://api.coingecko.com/api/v3/search?query=' + sym, h);
@@ -3620,9 +3646,12 @@ async function handleCoinIcon(url, env) {
     } catch (e) {}
     try { await env.STATS.put('icon:' + sym, src || '', { expirationTtl: src ? 2592000 : 21600 }); } catch (e) {} // 30d hit / 6h miss (a new listing usually reaches CoinGecko within hours, and a 3d negative cache made every fix invisible until it expired)
   }
-  if (!src) return bad(404);
+  const dbg = url.searchParams.get('debug') === '1' && request && isAdminKey(env, adminKeyFrom(request, url)); // support probe (admin header): what the resolver saw
+  const DJ = (o) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+  if (!src) return dbg ? DJ({ sym, src: null, note: 'nothing resolved (alias/markets/search all empty or blocked)' }) : bad(404);
   try {
     const img = await fetch(src, { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+    if (dbg) return DJ({ sym, src, imgStatus: img.status, ct: img.headers.get('content-type') });
     if (!img.ok) return bad(404);
     const resp = new Response(img.body, { status: 200, headers: { 'content-type': img.headers.get('content-type') || 'image/png', 'cache-control': 'public, max-age=2592000, immutable', ...CORS } });
     try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -14264,6 +14293,18 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
     matched.push(row); if (!row.e2e && row.listed && !row.banned && row.vol > 0) rows.push(row);
   }
   rows.sort((a, b) => b.vol - a.vol); matched.sort((a, b) => b.vol - a.vol);
+  const ranked = rows.length; // ranks are for volume only; what follows carries rank 0
+  // EVERY REGISTERED MEMBER IS ON THE BOARD (owner 2026-10-05: "ubaci sve na leaderboard, nije bitan iznos") - reversing the
+  // 2026-09-14 rule that a $0 row stays off the public board. A member who registered a UID but has no volume yet is appended
+  // AFTER the ranked rows with vol 0 and `reg:true`: the pages print them grey under the open places, with no prize, and the
+  // payer still pays vol > 0 only. Current season only - a past (paid) season must not grow today's registrations.
+  if (ws === lbPeriodStart(Date.now())) {
+    const seen = new Set(rows.map(r => String(r.uid)));
+    for (const [buid, w] of reg.entries()) {
+      if (!w || seen.has(String(w.uid)) || w.e2e || !allow.has(String(buid)) || banned[String(w.uid)]) continue;
+      seen.add(String(w.uid)); rows.push({ uid: w.uid, name: w.name, buid: String(buid), vol: 0, com: 0, listed: true, e2e: false, banned: false, reg: true });
+    }
+  }
   // THE POOL IS THE COMMISSION OF THE ROWS ON THE BOARD, and only those: what the competitors made this season (a banned or
   // unregistered UID's commission is not returned to anyone). The payer and every page read this same object.
   const cfg = await rewardCfg(env);
@@ -14273,11 +14314,11 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
   // has only just typed (2026-09-19): a pending row that cannot say who it belongs to is the same blank he complained
   // about. Small by construction - one entry per registration, 22 of them the day this was added.
   const regs = [...reg.entries()].map(([buid, w]) => ({ buid: String(buid), uid: w.uid, name: w.name, listed: allow.has(String(buid)), e2e: !!w.e2e }));
-  return { rows: rows.map((r, i) => ({ rank: i + 1, ...r })), matched, unmatched, regs, pool, poolAll, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
+  return { rows: rows.map((r, i) => ({ rank: i < ranked ? i + 1 : 0, ...r })), ranked, matched, unmatched, regs, pool, poolAll, upload: up ? { ts: +up.ts || 0, n: (up.rows || []).length, final: !!up.final, by: up.by || '' } : null, registered: reg.size, listed: allow.size };
 }
 async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volume + the pool, never per-user commission) → KV, and the /lb edge copy is dropped
   const b = await bybitVolBoard(env, ws);
-  const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => ({ rank: r.rank, who: r.name, vol: r.vol })), n: b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
+  const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 60 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
@@ -18792,7 +18833,7 @@ async function handleReward(url, request, env) {
         (bybit.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         if (moon) (moon.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
-          bybit: (bybit.rows || []).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length };
+          bybit: (bybit.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
         const people = Object.keys(who).length;
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
@@ -19189,7 +19230,7 @@ export default {
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
-    if (url.pathname === '/api/coinicon') return handleCoinIcon(url, env);
+    if (url.pathname === '/api/coinicon') return handleCoinIcon(url, env, request);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app

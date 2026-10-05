@@ -65,7 +65,7 @@ const near = (a, b) => Math.abs(a - b) < 0.006;
   const season = await fetch(B + '/season/?cb=' + Date.now()).then(r => r.text());
   ok(/function bybPool\(/.test(season) && /data-tier=/.test(season) && /The pool starts at \$100 every season/.test(season) && /\$50, \$25, \$10, \$5, \$5 and \$1 each/.test(season) && !/\$200/.test(season), '/season/: pool helpers, tier attribute, the $100-start rule with the per-rank split, no $200 left');
   const lbp = await fetch(B + '/leaderboards/?cb=' + Date.now()).then(r => r.text());
-  ok(/START · GROWS WITH VOLUME/.test(lbp) && /\$100 is the start, volume adds to it/.test(lbp) && !/\$200/.test(lbp), '/leaderboards/: the tab says $100 start, the rule says volume adds to it, no $200 left');
+  ok(/START · GROWS( WITH VOLUME)?/.test(lbp) && /* the one-row tab (2026-10-05) prints "START · GROWS"; the rule text below still says it in full */ /\$100 is the start, volume adds to it/.test(lbp) && !/\$200/.test(lbp), '/leaderboards/: the tab says $100 start, the rule says volume adds to it, no $200 left');
   // clean up
   await J('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: H, body: JSON.stringify({ clear: true }) });
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });

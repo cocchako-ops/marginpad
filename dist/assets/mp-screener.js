@@ -72,7 +72,10 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
   function scoreCls(s){return s==null?'neu':s>=75?'bull':s>=60?'bull2':s>=40?'neu':s>=25?'bear2':'bear';}
   function trendTxt(t){return t==='up'?T("trendUp",'↗ Up'):t==='down'?T("trendDown",'↘ Down'):T("trendSide",'→ Side');}
   function symColor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return 'hsl('+h+',60%,56%)';}
-  function icHtml(s){return '<span class="scr-ic" style="--c:'+symColor(s)+'">'+s.charAt(0)+(LOGOS[s]?'<img src="'+LOGOS[s]+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+'</span>';}
+  /* a coin outside CoinGecko's top 250 (the slim list) used to get a letter: 45 of 127 rows on 2026-10-05. The worker's
+     /api/coinicon resolves the long tail (aliases, exact-ticker search, stock logos, our own metal/oil icons) and caches it;
+     a symbol nothing resolves keeps the letter - a wrong logo would be worse. */
+  function icHtml(s){var src=LOGOS[s]||('/api/coinicon?sym='+encodeURIComponent(s));return '<span class="scr-ic" style="--c:'+symColor(s)+'">'+s.charAt(0)+'<img src="'+src+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"></span>';}
   function loadLogos(){fetch('/api/gecko/markets?slim=1',{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(a){if(!a||!a.length)return;a.forEach(function(c){var sym=(c.symbol||'').toUpperCase();if(sym){if(c.image)LOGOS[sym]=c.image;if(c.name)NAMES[sym]=c.name;}});if(DATA.length)render();}).catch(function(){});}
   function anHtml(e){if(e.score==null)return T("technicalAnalysisNotAvaila",'<div class="scr-an-note">Technical analysis not available for this pair yet.</div>');
     var cls=scoreCls(e.score),h='<div class="scr-an"><div class="scr-an-top sc-'+cls+'"><div class="scr-an-num">'+e.score+'<small>/100</small></div><div class="scr-an-v"><b>'+(e.verdict||'')+'</b><span>'+T("technicalScore4h",'technical score · 4h')+'</span></div></div>';

@@ -113,6 +113,12 @@ const beacons = (page, pre) => page._track.filter(x => x.t === 'screener' && (!p
     const s4 = await p.evaluate(() => ({ shown: window.__mpScreener.shown(), rows: window.__mpScreener.rows(), more: !!document.querySelector('#scrMore') }));
     ok('desktop: Show all renders every pair and the button is gone', s4.shown === s4.rows && !s4.more, s4.shown + '/' + s4.rows);
     ok('desktop: Show all sent a beacon', beacons(p, 'more').length === 1);
+    // every symbol has a logo (owner 2026-10-05): the slim CoinGecko list covered 82 of 127; the rest resolve through /api/coinicon
+    // (aliases, exact-ticker search, stock logos, own metal/oil icons). Images are lazy, so walk the page before counting.
+    await p.evaluate(async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 200)); } });
+    await p.waitForFunction(() => { const im = [...document.querySelectorAll('tr.scr-row .scr-ic img')]; return im.length > 50 && im.every(i => i.complete); }, { timeout: 30000 }).catch(() => {});
+    const lg = await p.evaluate(() => { const rows = [...document.querySelectorAll('tr.scr-row')]; const miss = rows.filter(tr => { const i = tr.querySelector('.scr-ic img'); return !i || !(i.complete && i.naturalWidth > 0) || getComputedStyle(i).display === 'none'; }).map(tr => tr.getAttribute('data-sym')); return { rows: rows.length, miss }; });
+    ok('desktop: at least 95% of the rows show a real logo (the rest are tokens no source knows)', lg.rows > 60 && lg.miss.length <= Math.ceil(lg.rows * 0.05), lg.rows + ' rows, missing ' + lg.miss.length + ': ' + lg.miss.join(' '));
     // the sheet from a row
     await p.evaluate(() => { const r = [...document.querySelectorAll('tr.scr-row')].find(x => /^(BTC|ETH|SOL)$/.test(x.getAttribute('data-sym'))); r.scrollIntoView({ block: 'center' }); r.click(); });
     await sleep(900);
