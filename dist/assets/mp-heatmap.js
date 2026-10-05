@@ -543,9 +543,17 @@ function bkSelect(cls, opts, cur) {
         }
       } else if (S.sel.type === 'pool') { var sp = S.sel.ref;
         if (sp.price >= pLo && sp.price <= pHi) {
-          var shh = Math.max(3, PH * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
-          ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, W - sx0, shh);
-          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.4; ctx.strokeRect(sx0 + 0.5, sy0 - 2, W - sx0 - 1, shh + 4);
+          // Match the zone's OWN rectangle, recorded by the band loop this frame (S.bandRects), so the highlight
+          // stops exactly where the line does. A zone the price has gone through is CUT at the crossing; the old
+          // fill always ran to the right edge W, so selecting a swept zone drew a band across the whole map.
+          var sbr = null; for (var _bri = 0; _bri < S.bandRects.length; _bri++) { if (S.bandRects[_bri].s === sp) { sbr = S.bandRects[_bri]; break; } }
+          var _pcx = sp.tsw || (poolGone(sp) ? crossAt(sp) : 0), _pGone = sp.dead || poolGone(sp);
+          var shh = sbr ? sbr.h : Math.max(3, PH * (P.binH / (pHi - pLo)) * 1.15);
+          var sy0 = sbr ? sbr.y : (Y(sp.price) - shh / 2);
+          var sx0 = sbr ? sbr.x0 : Math.max(0, X(sp.t0));
+          var sx1 = sbr ? sbr.x1 : (_pGone ? (_pcx ? X(_pcx) : W) : W), swd = Math.max(2, sx1 - sx0);
+          ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, swd, shh);
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.4; ctx.strokeRect(sx0 + 0.5, sy0 - 2, swd - 1, shh + 4);
         }
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref, swts = sw.t / 1000;
         if (swts >= v.t0 && swts <= v.t1 && sw.p >= pLo && sw.p <= pHi) {
@@ -2412,9 +2420,13 @@ var BM_BANDS = [['near', 'At the price'], ['wide', 'Wide 5%']];
       if (bmState.sel) {
         var sl = bmState.sel, sy = null, sx0 = 0, sx1 = PW;
         if (sl.kind === 'cell') {
-          sy = yOf(sl.payload.bucket);
-          var si = cols.indexOf(sl.payload.col);
-          if (si >= 0) { sx0 = si * cw; sx1 = sx0 + Math.max(2, cw); }
+          // Match the column by its stable timestamp, not by object identity: bmState.data is REPLACED every 5s,
+          // so the clicked col object is orphaned and indexOf returned -1, which left sx0=0/sx1=PW and outlined
+          // the WHOLE ROW instead of the one cell. A ts match survives the refetch; a column that has scrolled
+          // out of the window leaves sy null, so nothing is outlined rather than a stray full-row box.
+          var _cts = sl.payload.col && sl.payload.col.ts, si = -1;
+          for (var _ci = 0; _ci < cols.length; _ci++) { if (cols[_ci].ts === _cts) { si = _ci; break; } }
+          if (si >= 0) { sy = yOf(sl.payload.bucket); sx0 = si * cw; sx1 = sx0 + Math.max(2, cw); }
         } else if (sl.kind === 'wall') {
           sy = yOf(sl.payload.price / step) ;
           sx0 = xOfT(sl.payload.first || t0);
