@@ -17469,7 +17469,7 @@ async function handleAuth(url, request, env, ctx) {
     const notify9 = async (uid9, kind9, body9, link9) => { try { await users.fetch(new Request('https://do/notify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: uid9, kind: kind9, body: body9, link: link9 }) })); } catch (e) {} };
     try {
       if (cmd9 === '/cmds') return jr({ ok: true, cmds: [ // structured list for the client command palette (typing '/' in chat) - role-gated above, invisible to everyone else
-        { c: '/gift', u: '/gift $0.30 user', d: 'Send USDT from the house (max $5) - fires the gift celebration' },
+        { c: '/gift', u: '/gift $0.30 user', d: 'Send USDT from the house (max $20) - fires the gift celebration' },
         { c: '/xp', u: '/xp 100 user', d: 'Send XP (max 5000)' },
         { c: '/item', u: '/item realtrader user', d: 'Gift any frame / ticket skin / background by catalog id' },
         { c: '/bal', u: '/bal user', d: 'Check a rewards balance (private)' },
@@ -17487,10 +17487,12 @@ async function handleAuth(url, request, env, ctx) {
       if (cmd9 === '/help' || cmd9 === '/admin') return jr({ ok: true, reply: full9 ? 'Your commands: /gift $0.30 user · /xp 100 user · /item <id> user · /bal user · /user user · /mute user · /unmute user · /say text · /price SYM · /poll Q | A | B · /pollclose · /delmsg <ts> · /clearchat yes · /admin' : 'Your commands: /mute user · /unmute user · /delmsg <ts> · /user user · /admin' });
       if (cmd9 === '/gift') { // /gift $0.30 whyme - credits the rewards balance AND fires the full-screen gift celebration
         const amt9 = Math.round(parseFloat(String(rest9[0] || '').replace(/^\$/, '')) * 100); const un9 = rest9[1];
-        if (!(amt9 > 0) || amt9 > 500 || !un9) return jr({ ok: false, reply: 'Usage: /gift $0.30 username (max $5)' });
+        // $20 ceiling since 2026-10-05 (owner: "da mogu da posaljem tip do 20 dolara max"); it was $5. The ledger reads the `tip` flag for the
+        // same ceiling, and `once:60` makes an identical gift inside a minute a retry rather than a second credit (the 2026-09-02 double $5).
+        if (!(amt9 > 0) || amt9 > 2000 || !un9) return jr({ ok: false, reply: 'Usage: /gift $0.30 username (max $20)' });
         const t = await resolve9(un9); if (!t) return jr({ ok: false, reply: 'No trader called ' + un9 });
-        const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + t.uid, cents: amt9, from: u.username || 'chat' }) })); // /gift, NOT /mission - the mission path clamps at 50 cents (a $1 gift silently became $0.50, ibrar ticket 2026-08-16)
-        const cd = await cr.json(); if (cd.error) return jr({ ok: false, reply: 'Credit failed: ' + cd.error });
+        const cr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/gift', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + t.uid, cents: amt9, from: u.username || 'chat', tip: true, once: 60 }) })); // /gift, NOT /mission - the mission path clamps at 50 cents (a $1 gift silently became $0.50, ibrar ticket 2026-08-16)
+        const cd = await cr.json(); if (cd.error === 'dup') return jr({ ok: false, reply: 'That exact gift to @' + (t.username || un9) + ' went out less than a minute ago - not sent twice.' }); if (cd.error) return jr({ ok: false, reply: 'Credit failed: ' + cd.error });
         await notify9(t.uid, 'gift', '@' + (u.username || 'MarginPad') + ' sent you $' + (amt9 / 100).toFixed(2) + ' - it just landed on your rewards balance', '/rewards/');
         try { await evPush(env, request, 'mission', 'chatgift +$' + (amt9 / 100).toFixed(2), '/rewards/'); } catch (e) {}
         return jr({ ok: true, reply: 'Sent $' + (amt9 / 100).toFixed(2) + ' to @' + (t.username || un9) + ' - they get the celebration.' });
@@ -24658,7 +24660,7 @@ export class RewardLedger {
       return this.j({ ok: true });
     }
     if (path === '/gift') { // chat /gift credit - same shape as /mission but WITHOUT its 50-cent clamp (ibrar ticket 2026-08-16: a $1 gift silently landed as $0.50); cap mirrors the /gift command max ($5), logged as 'gift' for audit
-      const gcap = body.big ? 10000 : 500; // big = the owner's own /api/admin/credit route (giveaway prizes, $20 a winner 2026-09-10); the chat command stays at $5
+      const gcap = body.big ? 10000 : body.tip ? 2000 : 500; // big = the owner's own /api/admin/credit route (giveaway prizes, $100); tip = the owner's chat /gift ($20 since 2026-10-05); anything else stays at $5
       const gacct = String(body.acct || ''), gcents = Math.max(0, Math.min(gcap, Math.round(+body.cents || 0)));
       if (!gacct || gacct.indexOf('u:') !== 0 || !gcents) return this.j({ error: 'bad' }, 400);
       const grow = this.rows('SELECT banned FROM accounts WHERE address=?', gacct)[0];
