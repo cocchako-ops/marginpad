@@ -7447,10 +7447,19 @@ async function checkOpsAlerts(env) {
       if (ring.length >= 30) { // this project's own rule: no p95 below n=30
  const p95 = Math.round(+_b0.p95 || 0);
  const errRate = (+_b0.err || 0) / ring.length;
-        // CALIBRATED PROPERLY (2026-08-20). I first set this to 150 from an n=10 sample of my own requests, which
-        // is exactly the shortcut this project forbids - n>=30 or it is not a p95. Real traffic, n=239: p50 54ms,
-        // p95 227ms. House formula max(round(p95*1.5), p95+150) gives 377. The old value would have paged nightly.
-        const BUDGET = 377;
+        // CALIBRATED 2026-08-20 at 377 from n=239 (p50 54ms, p95 227ms). RECALIBRATED 2026-10-05: that was a light
+        // early sample. Bot API traffic grew ~300x (70k-114k do-bot calls/DAY) and the heaviest keys connect from
+        // Asia, far from the region-pinned store - so the HONEST sustained baseline over 14 days (perfhist) is p50
+        // ~150ms, p95 ~375ms (daily range 341-383, 2h-window peaks ~401). That is physics, not a regression: every
+        // call must check the key against the store for rate-limiting (one unavoidable distant hop), and the
+        // positions/account caches already removed the redundant calls + the old 560-580 contention spikes. The
+        // 377 budget therefore fired on NORMAL operation (an alarm that cries wolf trains you to ignore the real
+        // one). House formula max(round(p95*1.5), p95+150) on the measured p95=375 gives 563 - above normal peak
+        // (~401) with margin, below the 566-580 contention this would need to catch. The errRate arm (>2%) is the
+        // real "store is broken" detector regardless of latency. Lowering the LATENCY itself needs Smart Placement
+        // (whole-worker, would regress human page loads) or a per-user store (migration) - neither is warranted for
+        // a healthy API nobody is constrained by. Re-tighten here only if the 14-day baseline itself drops.
+        const BUDGET = 563;
         if (p95 > BUDGET || errRate > 0.02) {
           const dk = 'alrt:boterr:' + new Date().toISOString().slice(0, 13);
           if (!(await env.STATS.get(dk))) {
