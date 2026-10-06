@@ -22,6 +22,7 @@
 // The group carries BOTH ends of that execution, because "13:00 to 13:14" is the honest answer to
 // when it happened.
 import { log } from './logger.js';
+import { scanLeaderboard } from './lbscan.js';
 
 const LEADERBOARD_URL = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 const INFO_URL = 'https://api.hyperliquid.xyz/info';
@@ -65,30 +66,35 @@ async function refreshLeaderboard() {
     const r = await fetch(LEADERBOARD_URL, { signal: AbortSignal.timeout(60000) });
     if (!r.ok) throw new Error('lb ' + r.status);
     const t0 = Date.now();
-    const j = await r.json(); // ~36MB parsed synchronously - on this 512MB box that is a real event-loop pause, so it is measured
-    const parseMs = Date.now() - t0; if (parseMs > 800) log.warn('[whales] slow leaderboard parse', { ms: parseMs });
-    const rows = Array.isArray(j.leaderboardRows) ? j.leaderboardRows : [];
-    if (rows.length < 1000) throw new Error('lb too small: ' + rows.length);
+    // THE FILE IS NEVER PARSED WHOLE. `r.json()` on this ~39 MB / ~47k-row body is what killed the
+    // collector on 2026-10-05 23:42 UTC ("Reached heap limit") - see lbscan.js. Each row is reduced
+    // to the few numbers the page keeps the moment it arrives, and the `windowPerformances` arrays,
+    // which are most of the file, are dropped row by row.
+    const win = (w, k) => { const e = (w || []).find(z => z[0] === k); const o = e && e[1] || {};
+      return { pnl: Math.round(+o.pnl || 0), roi: +(+o.roi || 0).toFixed(6), vlm: Math.round(+o.vlm || 0) }; };
+    const clean = [];
+    const scanned = await scanLeaderboard(r, (x) => {
+      const a = String(x.ethAddress || ''), v = +x.accountValue || 0;
+      if (!/^0x[0-9a-fA-F]{40}$/.test(a) || !(v > 0)) return;
+      const w = x.windowPerformances;
+      clean.push({ a, v, n: x.displayName || null, d: win(w, 'day'), w: win(w, 'week'), m: win(w, 'month'), al: win(w, 'allTime') });
+    });
+    const parseMs = Date.now() - t0; if (parseMs > 800) log.warn('[whales] slow leaderboard parse', { ms: parseMs, rows: scanned.rows });
+    if (scanned.rows < 1000) throw new Error('lb too small: ' + scanned.rows);
     // Every leaderboard row carries pnl / roi / volume for day, week, month and allTime, and until
     // 2026-09-14 all of it was thrown away and only the address kept. That is the whole track-record
     // layer of the page - who is actually good, not merely large - and it costs nothing extra.
-    const clean = rows
-      .map(x => ({ a: String(x.ethAddress || ''), v: +x.accountValue || 0, w: x.windowPerformances, n: x.displayName || null }))
-      .filter(x => /^0x[0-9a-fA-F]{40}$/.test(x.a) && x.v > 0)
-      .sort((p, q) => q.v - p.v);
+    clean.sort((p, q) => q.v - p.v);
     state.tracked = clean.slice(0, TRACK_N).map(x => x.a);
-    const win = (w, k) => { const e = (w || []).find(z => z[0] === k); const o = e && e[1] || {};
-      return { pnl: Math.round(+o.pnl || 0), roi: +(+o.roi || 0).toFixed(6), vlm: Math.round(+o.vlm || 0) }; };
     state.perf = {};
-    for (const x of clean.slice(0, TRACK_N)) state.perf[x.a] = { v: Math.round(x.v), name: x.n, d: win(x.w, 'day'), w: win(x.w, 'week'), m: win(x.w, 'month'), a: win(x.w, 'allTime') };
+    for (const x of clean.slice(0, TRACK_N)) state.perf[x.a] = { v: Math.round(x.v), name: x.n, d: x.d, w: x.w, m: x.m, a: x.al };
     // the month board is ranked over the WHOLE leaderboard, not just the accounts we track by size:
     // the best trader of the month is often not the biggest account
     state.best = clean
-      .map(x => ({ a: x.a, v: Math.round(x.v), name: x.n, m: win(x.w, 'month'), a30: win(x.w, 'month').roi }))
       .filter(x => x.m.vlm > 1e6 && x.v >= 1e4)   // a LIVE account: one that has been emptied prints "account $0" beside a huge return
       .sort((p, q) => q.m.pnl - p.m.pnl)
       .slice(0, 25)
-      .map(x => ({ user: x.a, v: x.v, name: x.name, pnl: x.m.pnl, roi: x.m.roi, vlm: x.m.vlm }));
+      .map(x => ({ user: x.a, v: Math.round(x.v), name: x.n, pnl: x.m.pnl, roi: x.m.roi, vlm: x.m.vlm }));
     state.lbTs = Date.now();
     log.info('[whales] leaderboard refreshed', { tracked: state.tracked.length });
   } catch (e) { state.lastErr = 'lb: ' + String(e).slice(0, 120); log.warn('[whales] leaderboard failed', { e: String(e).slice(0, 160) }); }
