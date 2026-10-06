@@ -30455,9 +30455,10 @@ const MISSION_POOL = [
   { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', cents: 2, vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
   { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', cents: 2, vt: 'win', va: '', n: 2, cat: 'trade' },
   { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', cents: 2, vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
-  // chat / social / community
-  { mid: 'chat3', title: 'Send 3 chat messages', desc: 'Three messages - the floor is better when you talk', cents: 2, vt: 'ev', va: 'chat', n: 3, cat: 'chat' },
-  { mid: 'chat', title: 'Post in the trader chat', desc: 'Say something on the floor. Lurking earns nothing', cents: 1, vt: 'ev', va: 'chat', n: 1, cat: 'chat' },
+  // social / community. THE CHAT MISSIONS ARE GONE (2026-10-07, owner: "ukinemo misiju za chat, skroz da je izbacimo"):
+  // `chat` (1c, one message) and `chat3` (2c, three) paid for messages whose only reason to exist was the cent. The
+  // `chat` beacon itself still records (activity feed, radar), only nothing pays for it any more. A day already
+  // claimed keeps its claim; from this deploy the set simply never contains them (missionsForDay re-derives per day).
   { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board - follow someone worth studying', cents: 2, vt: 'follow', va: '', n: 1, cat: 'social' },
   { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 2, vt: 'dm', va: '', n: 1, cat: 'social' },
   { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 2, vt: 'duel', va: '', n: 1, cat: 'social' },
@@ -30520,7 +30521,7 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
  // Academy is finished, and the Ask-AI mission for non-Premium members (Ask-AI has been Premium-only since
  // 2026-07-25; the mission kept rotating in for everyone and could never be finished - three chat reports on 09-01).
  const skip = (m) => (opts.academyDone && m.vt === 'academy') || (opts.nonPremium && m.va === 'ai');
-  const CAPS = { academy: 1, chat: 1, community: 1, social: 3, trade: 2, market: 2 }; // per-day category quotas (2026-08-15 owner: same money, higher-value actions - social 2->3, market pageviews 3->2; every follow/duel raises switching cost, a pageview raises nothing)
+  const CAPS = { academy: 1, community: 1, social: 3, trade: 2, market: 2 }; // `chat: 1` left with the chat missions (2026-10-07) // per-day category quotas (2026-08-15 owner: same money, higher-value actions - social 2->3, market pageviews 3->2; every follow/duel raises switching cost, a pageview raises nothing)
   const used = {}; const pick = [];
   const PICKS = promo2M ? 5 : 6; // 6 until 2026-09-28 (the mission budget was halved: see SET_CENTS in handleMissions); a member who already took the Telegram mission gets an ordinary sixth pick instead, so every day is still seven
   for (let i = 0; i < rest.length && pick.length < PICKS; i++) {
