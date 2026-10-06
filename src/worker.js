@@ -8,6 +8,35 @@ import OPS_SHELL from './ops/shell.html';
 import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
+/* ---- COLLECTOR CIRCUIT BREAKER (2026-10-06) ----
+   The droplet died overnight and the site crawled all day: every worker route that asks the collector waited for
+   Cloudflare's 522 (~19 s) or its own 8 s abort, on every request - /rekt/ HTML 8 s, mp-ops attention 20 s, every
+   /api/v1 proxy 19 s. Twenty-five call sites, each with its own fetch, so the guard sits on fetch itself: a call to
+   COLLECTOR_URL gets a 4 s ceiling (no healthy answer needs more; /api/v1/export is a file and is exempt), and after
+   one failure (network, timeout, 5xx/52x) the next 60 s of calls in this isolate fail INSTANTLY into their existing
+   fallbacks. After 60 s one call probes again. Per isolate on purpose: no KV read on the hot path. */
+const __realFetch = globalThis.fetch.bind(globalThis);
+let COL_BASE = '', COL_DOWN_UNTIL = 0, COL_TRIPS = 0;
+function colBase(env) { try { const b = String((env && env.COLLECTOR_URL) || '').replace(/\/$/, ''); if (b) COL_BASE = b; } catch (e) {} }
+function colTrip() { COL_DOWN_UNTIL = Date.now() + 60000; COL_TRIPS++; }
+async function colGuardedFetch(u, init) {
+  if (Date.now() < COL_DOWN_UNTIL) throw new Error('collector_breaker_open');
+  const cap = u.indexOf('/api/v1/export') >= 0 ? 0 : 4000;
+  init = Object.assign({}, init || {});
+  let timer = null;
+  if (cap) { const ctrl = new AbortController(); timer = setTimeout(() => ctrl.abort(), cap); try { if (init.signal) init.signal.addEventListener('abort', () => ctrl.abort()); } catch (e) {} init.signal = ctrl.signal; }
+  try {
+    const r = await __realFetch(u, init);
+    if (timer) clearTimeout(timer);
+    if (r.status >= 500) colTrip(); else COL_DOWN_UNTIL = 0;
+    return r;
+  } catch (e) { if (timer) clearTimeout(timer); colTrip(); throw e; }
+}
+globalThis.fetch = function (input, init) {
+  try { const u = typeof input === 'string' ? input : ((input && input.url) || ''); if (COL_BASE && u.indexOf(COL_BASE) === 0) return colGuardedFetch(u, init); } catch (e) {}
+  return __realFetch(input, init);
+};
+
 const CORS = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, OPTIONS',
@@ -19057,6 +19086,7 @@ export default {
   /* Every response leaves through here so the security headers cannot be forgotten on a new route.
      The real handler is _fetchInner; this wrapper only adds headers and never changes a body. */
   async fetch(request, env, ctx) {
+    colBase(env); // arm the collector circuit breaker for this isolate (see the top of the file)
     const res = await this._fetchInner(request, env, ctx);
     return secureResponse(res, request);
   },
@@ -19223,7 +19253,7 @@ export default {
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
       const age = hb ? Math.round((Date.now() - hb) / 60000) : -1, ok = hb > 0 && age <= 25;
-      return new Response(JSON.stringify({ ok, cronAgeMin: age, ledgerBackupAgeMin: l6 && l6.ts ? Math.round((Date.now() - l6.ts) / 60000) : -1 }), { status: ok ? 200 : 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+      return new Response(JSON.stringify({ ok, cronAgeMin: age, ledgerBackupAgeMin: l6 && l6.ts ? Math.round((Date.now() - l6.ts) / 60000) : -1, collector: COL_DOWN_UNTIL > Date.now() ? 'down' : 'ok', collectorTrips: COL_TRIPS }), { status: ok ? 200 : 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); // collector = this isolate's circuit breaker (2026-10-06); the status code stays about the cron so the uptime monitor's meaning does not change
     }
     if (url.pathname === '/api/now') return new Response(JSON.stringify({ t: Date.now() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } }); // ms server clock for the client offset sync - candle boundaries/countdown must NOT trust the device clock (measured: a 46s-skewed device rolled bars into wrong buckets, then the 30s re-sync visibly repainted them)
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
@@ -23083,6 +23113,7 @@ export default {
    }
   },
   async scheduled(event, env, ctx) {
+    colBase(env);
     if (env.ENVIRONMENT === 'staging') return; // BELT: staging never runs cron (payouts, Telegram signals, emails, IPN follow-ups). Suspenders = [env.staging.triggers] crons = [] in wrangler.toml. (belt PROVEN 2026-07-25: temp cron → tail showed STAGING_CRON_GUARD_HIT + zero downstream work)
     // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
     // still fire on candle close but detected within ~1 min instead of ~10). Everything else stays on */10.
