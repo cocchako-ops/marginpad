@@ -258,13 +258,19 @@ const LAYOUT = () => {
       const s2 = window.__mpHeat.state();
       if (!s2.sweptY || !s2.sweptY.length) return { skip: true };
       const cv = document.querySelector('.hm-cv'), r = cv.getBoundingClientRect();
+      // THE HEADING DECIDES WHAT WAS HIT, never the body text: a STANDING zone's calibration line says
+      // "measured on N of our own swept levels", so a bare /SWEPT/ over the whole box accepted a standing
+      // band as a cut line and the next check then asked it for a sweep's dollars (2026-10-06, 125/126).
+      // A cut line stops at the candle that crossed it, so the click walks left until it lands on it.
       for (const z of s2.sweptY) {
-        const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none';
         const y = r.top + (s2.yHi - z.price) / (s2.yHi - s2.yLo) * s2.plotH;
-        cv.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width * 0.4, clientY: y, bubbles: true }));
-        await new Promise((q) => setTimeout(q, 320));
-        const sb = document.querySelector('.hm-selbox');
-        if (sb && getComputedStyle(sb).display !== 'none' && /SWEPT/i.test(sb.textContent)) return { txt: sb.textContent.replace(/\s+/g, ' ').trim() };
+        for (const fx of [0.4, 0.22, 0.08]) {
+          const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none';
+          cv.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width * fx, clientY: y, bubbles: true }));
+          await new Promise((q) => setTimeout(q, 320));
+          const sb = document.querySelector('.hm-selbox'), k = sb && sb.querySelector('.k');
+          if (sb && k && getComputedStyle(sb).display !== 'none' && /^SWEPT$/i.test(k.textContent.trim())) return { txt: sb.textContent.replace(/\s+/g, ' ').trim() };
+        }
       }
       return { txt: '' };
     });
@@ -285,7 +291,7 @@ const LAYOUT = () => {
     ok('a zone still standing quotes what bands this heavy have really liquidated, with its n',
       !cal || (/have liquidated a median of/.test(cal) && /measured on \d+ of our own swept levels/.test(cal)), cal.slice(0, 220));
     ok('and it still refuses to price the model itself', !cal || /not a dollar figure/.test(cal), cal.slice(0, 120));
-    ok('clicking a cut line says it was swept, and when', !!swRead.skip || /SWEPT/i.test(swRead.txt || ''),
+    ok('clicking a cut line says it was swept, and when', !!swRead.skip || /^SWEPT/i.test(swRead.txt || ''),
       (swRead.txt || '').slice(0, 90));
     // MEASURED OR HONESTLY ABSENT - never a confident blank. The figure comes from our own collector and
     // the feed raises its size floor to reach further back, so the basis is printed with the number.
