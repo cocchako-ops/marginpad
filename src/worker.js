@@ -7563,6 +7563,14 @@ async function checkOpsAlerts(env) {
       const _ae = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'aierr' AND timestamp > NOW() - INTERVAL '1' HOUR")) || [];
       const nAi = Math.round(+((_ae[0] || {}).n) || 0);
       if (nAi >= 5) { const last = +(await env.STATS.get('alrt:aierr') || 0); if (Date.now() - last > 6 * 3600000) { await env.STATS.put('alrt:aierr', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Anthropic: ' + nAi + ' failed calls in the last hour</b>\nAsk-the-AI (Premium) and news briefs are degraded. Check the API key / credits at console.anthropic.com.'); } }
+      // A DEAD ACCOUNT NEEDS NO COUNT (2026-10-07): Ask AI was refused with "credit balance is too low" and the owner found out
+      // from a member, because five failures an hour never happened - nobody could use the feature, so nobody called it.
+      // The upstream's last error body is kept in `ai:lasterr`; a billing/auth refusal pages at once, one line per 6 h.
+      try { const le = JSON.parse(await env.STATS.get('ai:lasterr') || 'null');
+        if (le && Date.now() - (+le.ts || 0) < 3 * 3600000 && /credit balance|billing|invalid x-api-key|authentication_error/i.test(String(le.body || ''))) {
+          const lastB = +(await env.STATS.get('alrt:aibill') || 0);
+          if (Date.now() - lastB > 6 * 3600000) { await env.STATS.put('alrt:aibill', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Anthropic refuses every call</b> (' + le.status + '): ' + String(le.body || '').replace(/<[^>]+>/g, '').slice(0, 160) + '\nAsk AI is down for everyone until the account is topped up at console.anthropic.com.', { kind: 'ai-billing', sev: 'red' }); }
+        } } catch (e) {}
     } catch (e) {}
     // DEMO SPOT STORE FAILURES (2026-09-03): every 'transient' answer from /api/spot/* writes an AE row; >=5 in an hour pages once per 6h.
     try {
@@ -15329,7 +15337,13 @@ async function handleAiChart(url, request, env, ectx) {
   let ar;
   try { ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal, headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: reqBody }); }
   catch (e) { clearTimeout(to); aiFail(env, 'chart', 0); await refund(); return J({ error: 'ai_error' }, 502); }
-  if (!ar.ok) { clearTimeout(to); aiFail(env, 'chart', ar.status); await refund(); return J({ error: 'ai_error', status: ar.status }, 502); }
+  if (!ar.ok) { clearTimeout(to); aiFail(env, 'chart', ar.status); await refund();
+    // THE UPSTREAM'S OWN WORDS ARE KEPT (2026-10-07): a 400 from Anthropic answered "ai_error" and nothing anywhere said
+    // why, so the owner's "Ask AI ne radi" cost a probe round. The body goes to KV `ai:lasterr` (read on the admin
+    // aicost view) and, on the E2E path only, back to the caller.
+    let _ub = ''; try { _ub = (await ar.text()).slice(0, 600); } catch (e) {}
+    try { await env.STATS.put('ai:lasterr', JSON.stringify({ ts: Date.now(), where: 'chart', status: ar.status, model: aiModel, body: _ub }), { expirationTtl: 7 * 86400 }); } catch (e) {}
+    return J(_e2eAi ? { error: 'ai_error', status: ar.status, model: aiModel, upstream: _ub } : { error: 'ai_error', status: ar.status }, 502); }
   try { await env.STATS.put(rk, String(used + 1), { expirationTtl: 172800 }); } catch (e) {} // KV mirror only (admin panel reads it); the DO count is authoritative
   try { await env.STATS.put(gk, String(g + 1), { expirationTtl: 172800 }); } catch (e) {}
  // Mission credit ("Ask the AI about a chart") from the server, not from a client beacon: the desktop panel sent
@@ -15492,14 +15506,21 @@ async function handleTrade(url, request, env, ctx) {
     const match = seed && seed.positions ? seed.positions.filter(p => String(p.id) === String(b.id))[0] : null;
     if (!match) return jt({ error: 'not_found' }, 404);
     const symC = String(match.symbol || match.sym || '').toUpperCase();
-    const pd = await fetchPriceCached(symC);
+    // SUPPORT CLOSE AT A STATED PRICE (2026-10-07, Light / BR): a member whose close never reached the server (the
+    // client close was fire-and-forget until that day) is made whole at the price THEIR screen booked, never at
+    // today's price. Admin key + ?uid= + px; the position's own symbol, no market-hours check (the member's close
+    // already happened), via 'site' so the DO books it like any member close, TG line so every correction is seen.
+    const _spx = (adminUid && +b.px > 0) ? +b.px : 0;
+    const pd = _spx ? { price: _spx } : await fetchPriceCached(symC);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
     // Exiting at a frozen price is a one-sided bet: favourable overnight gaps still land at the open, while
     // an unfavourable one can be dodged by closing before it. The price cannot move while the exchange is
     // shut, so refusing here costs the trader nothing except that optionality.
-    { const ms9 = marketSession(symC, pd); if (!ms9.open) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); }
+    if (!_spx) { const ms9 = marketSession(symC, pd); if (!ms9.open) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); }
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
-    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm, e2: !!adminUid });
+    // e2 marks TEST traffic (hidden from the daily read) - an owner acting on a real member's account is not a test
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm, e2: !!adminUid && /^e2e/i.test(String(uid)) });
+    if (_spx && r && !r.error) { try { await tgAdmin(env, '<b>Support close</b> ' + uid.slice(0, 8) + ' ' + symC + ' at ' + _spx + (b.note ? ' - ' + String(b.note).slice(0, 120) : ''), { kind: 'support-close', sev: 'info' }); } catch (e) {} }
     try { const xc = globalThis.__xpC; if (xc && tok) xc.delete(tok); } catch (e) {} // the 45s /xp cache would otherwise hide this close's XP and records from the very next poll
     if (r && r.error) return jt(r, 400);
     return jt(r);
@@ -20150,6 +20171,17 @@ export default {
       const body = JSON.stringify({ tabs: rows.map(r => ({ tab: r.tab, n: Math.round(+r.n || 0), last: r.last })), since: '30d', ts: Date.now() });
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/srvopen' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // every open server position on the site, priced (2026-10-07)
+      const minDays = +url.searchParams.get('minDays') || 0, e2e = url.searchParams.get('e2e') === '1';
+      let d = null; try { d = await usersDO(env, '/srvopen', { minDays, e2e, limit: +url.searchParams.get('limit') || 2000 }); } catch (e) {}
+      if (!d || !d.ok) return new Response(JSON.stringify({ error: 'do_failed' }), { status: 502, headers: { 'content-type': 'application/json' } });
+      const rows = d.rows || [], syms = Array.from(new Set(rows.map(r => String(r.sym || '').toUpperCase()))).slice(0, 120), px = {};
+      await Promise.all(syms.map(async (s) => { try { const p = await fetchPriceCached(s); if (p && +p.price > 0) px[s] = +p.price; } catch (e) {} }));
+      const uids = Array.from(new Set(rows.map(r => r.uid)));
+      let names = {}; try { names = await resolveProfiles(env, uids.map(u => 'u:' + u)); } catch (e) {}
+      for (const r of rows) { const p = px[String(r.sym || '').toUpperCase()] || 0; r.now = p || null; r.roe = (p && r.entry) ? Math.round(((p - r.entry) / r.entry) * (r.side === 'short' ? -1 : 1) * r.lev * 1000) / 10 : null; r.ageDays = Math.round((Date.now() - r.ts) / 864e5 * 10) / 10; const n = names[r.uid]; r.un = n && (n.username || n.un || n.name) || null; }
+      return new Response(JSON.stringify({ ok: true, users: d.users, n: rows.length, minDays, rows }), { headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname === '/api/admin/lbpaid' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // WHY WAS X (NOT) PAID (2026-09-28): the win-rate list exactly as payWeeklyPrizes computes it
       const ws = +url.searchParams.get('ws') || (lbPeriodStart(Date.now()) - LB_PERIOD), we = ws + LB_PERIOD;
@@ -26688,6 +26720,27 @@ export class UserStore {
     // per-close ledger, not the 100-row journal blob, so a busy month is not silently truncated. tradeev keeps 30
     // days, which is exactly the report's horizon; every bucket carries its own n so the reader can see what a
     // number is built on, and anything thin stays thin rather than being dressed up.
+    if (path === '/srvopen') { // SUPPORT: every open server-filled position on the site, oldest first (2026-10-07, found through Light)
+      // A position the member closed on their screen while the server never heard of it stays open here for ever,
+      // with no SL/TP and a P&L nobody is watching. This is the list that shows how many such rows exist.
+      const minDays = Math.max(0, +b.minDays || 0), lim = Math.min(5000, Math.max(1, +b.limit || 2000)), now2 = Date.now();
+      const out = []; let users = 0;
+      for (const r of this.rows('SELECT user_id FROM active_srv LIMIT 5000')) {
+        const uid2 = r.user_id; if (!b.e2e && /^e2e/i.test(uid2)) continue;
+        let jn; try { jn = this._loadJournal(uid2); } catch (e) { continue; }
+        let any = false;
+        for (const t of jn) {
+          if (!t || (t.src !== 'srv' && t.src !== 'bot') || t.status === 'win' || t.status === 'loss') continue;
+          if ((now2 - (+t.ts || 0)) < minDays * 86400000) continue;
+          any = true; out.push({ uid: uid2, id: t.id, sym: t.sym, side: t.side, lev: +t.lev || 0, margin: +t.margin || 0, entry: +t.entry || 0, ts: +t.ts || 0, sl: t.stop != null ? +t.stop : null, tp: t.tp != null ? +t.tp : null, src: t.src, cid: t.coid || t.cid || null });
+          if (out.length >= lim) break;
+        }
+        if (any) users++;
+        if (out.length >= lim) break;
+      }
+      out.sort((a, c) => a.ts - c.ts);
+      return this.j({ ok: true, users, rows: out });
+    }
     if (path === '/tradereport') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       const days = Math.min(90, Math.max(1, +b.days || 30)); // 90 since 2026-09-15: a paid API plan keeps 90 days of tradeev, and the caller that is allowed to ask for it is gated in the worker (free stays 30 there)
