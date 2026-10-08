@@ -1360,6 +1360,28 @@
   @media(min-width:881px){body.charts-page .wrap{padding-left:6px;padding-right:6px;}}/* the page gutter is for reading; a workspace wants the width */
   .cwin .cwin-head{flex-wrap:nowrap;}
   .cwin .cwin-head .cwin-x{margin-left:auto;}
+  /* ONE FAMILY OF HEADER CONTROLS (2026-10-08, owner: "ikone, dugmici i overall design"): every control in the window header is
+     30px tall on the same dark ground with the same 1px rule and 8px radius - the symbol pill, the timeframe group, the AI
+     button, Indicators and the three icon buttons used to be five different shapes at four heights. AI keeps its blue, the
+     active state is cyan everywhere, the close is a quiet icon that turns red on hover. */
+  .cwin .cwin-head .cwin-sym,.cwin .cwin-head .cwin-tf,.cwin .cwin-head .cwin-ai,.cwin .cwin-head .cwin-ind-btn,.cwin .cwin-head .cwin-mt,.cwin .cwin-head .cwin-notes-btn,.cwin .cwin-head .cwin-draw-tg,.cwin .cwin-head .cwin-x{height:30px;box-sizing:border-box;border-radius:8px;border:1px solid #2b323b;background:#0f1319;}
+  .cwin .cwin-head .cwin-sym{padding-top:0;padding-bottom:0;line-height:28px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23c2f64a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center/9px,#0f1319;}/* the shared rule's background shorthand took the chevron with it */
+  .cwin .cwin-head .cwin-mt[hidden],.cwin .cwin-head .cwin-notes-btn[hidden]{display:none!important;}/* the family rule's inline-flex must not resurrect a hidden button */
+  .cwin .cwin-head .cwin-tf{padding:2px;}
+  .cwin .cwin-head .cwin-tf button{padding:0 7px;height:24px;line-height:24px;}
+  .cwin .cwin-head .cwin-ai{background:linear-gradient(180deg,#1b2436,#141b28);border-color:#34425a;padding:0 9px;}
+  .cwin .cwin-head .cwin-ind-btn{padding:0 10px;background:#0f1319;}
+  .cwin .cwin-head .cwin-ind-btn.active{background:#3fd8e6;border-color:#3fd8e6;color:#06222a;}
+  .cwin .cwin-head .cwin-mt,.cwin .cwin-head .cwin-notes-btn,.cwin .cwin-head .cwin-draw-tg,.cwin .cwin-head .cwin-x{width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;color:#8a929c;}
+  .cwin .cwin-head .cwin-draw-tg.on{background:#3fd8e6;border-color:#3fd8e6;color:#06222a;}
+  .cwin .cwin-head .cwin-x{font-size:13px;}
+  .cwin .cwin-head .cwin-x:hover{color:#ff6258;border-color:#3a2422;}
+  .cwin .cwin-head .cwin-num{height:18px;min-width:18px;border-radius:6px;}
+  .cwin .cwin-head .cwin-cd{font-size:10.5px;}
+  @container (max-width:720px){.cwin .cwin-head .cwin-ind-btn{width:30px;padding:0;justify-content:center;}}
+  @container (max-width:600px){.cwin .cwin-head .cwin-ai{width:30px;padding:0;justify-content:center;}}
+  body.charts-page.ch-light .cwin .cwin-head .cwin-sym,body.charts-page.ch-light .cwin .cwin-head .cwin-tf,body.charts-page.ch-light .cwin .cwin-head .cwin-ind-btn,body.charts-page.ch-light .cwin .cwin-head .cwin-mt,body.charts-page.ch-light .cwin .cwin-head .cwin-notes-btn,body.charts-page.ch-light .cwin .cwin-head .cwin-draw-tg,body.charts-page.ch-light .cwin .cwin-head .cwin-x{background:#ffffff;background-color:#ffffff;border-color:#d6dade;color:#5a6472;}
+  body.charts-page.ch-light .cwin .cwin-head .cwin-ai{background:#eaf2ff;border-color:#bcd3f5;color:#1f4d8f;}
   @container (max-width:720px){.cwin .cwin-head .cwin-cd{display:none;}.cwin .cwin-head .cwin-ind-lbl{display:none;}.cwin .cwin-head .cwin-ind-btn{padding:6px 7px;}.cwin .cwin-head .cwin-grip{display:none;}}
   @container (max-width:600px){.cwin .cwin-head .cwin-ai span{display:none;}.cwin .cwin-head .cwin-ai{padding:6px 7px;}}
   @container (max-width:470px){.cwin .cwin-head .cwin-tf button{padding:5px 5px;font-size:10.5px;}.cwin .cwin-head .cwin-sym{width:66px!important;padding-left:8px;}}
