@@ -278,6 +278,40 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // 85.640 and cut 5-decimal FX short. `bars` is optional: without it this degrades to the magnitude floor.
   function applyPrec(series,p,bars){try{var n=window.mpPricePrec?window.mpPricePrec(bars||null,p):2;series.applyOptions({priceFormat:{type:'price',precision:n,minMove:Math.pow(10,-n)}});}catch(e){}}
   function _legHidden(){try{return localStorage.getItem('mp:leghide')==='1';}catch(e){return false;}}
+  /* THE INDICATOR STRIP READS ITS OWN LINES (2026-10-08, owner: "prostor charta indikatora konacno dobijen a nije iskoriscen"):
+     one card per band, at the top of that band - the value, a STATE the reader can act on (overbought / oversold, a cross
+     and how many bars ago, a divergence against price, volume against its average, ATR as a stop distance) and, for the
+     four MarginPad indicators, the readout the legend used to cram into one line: Cascade's fuel side, Brain's lean and
+     the factors driving it, Memory's analogs and projection, Magnet's two pools. Shared with the phone (window.__mpSubCards). */
+  function subCardsHtml(o){var order=o.order||[],groups=o.groups||{},bars=o.bars||[],prem=o.prem||{},fmt=o.fmt||function(v){return String(v);},valOf=o.valOf||function(it){return it.last;};
+    var n=order.length,band=0.92/Math.max(1,n),last=bars.length?bars[bars.length-1]:null,px=last?+last.close:0;
+    var vals=function(k){return (groups[k]||[]).map(function(it){return {l:it.label,v:valOf(it),c:it.color,arr:it.arr||[]};});};
+    var tail=function(arr,m){var out=[];for(var i=Math.max(0,arr.length-m);i<arr.length;i++){var v=arr[i]&&arr[i].value;if(isFinite(v))out.push(+v);}return out;};
+    var crossAgo=function(a,b){var A=tail(a,40),B=tail(b,40),m=Math.min(A.length,B.length);if(m<3)return null;for(var i=1;i<m;i++){var s0=A[m-1-i]-B[m-1-i],s1=A[m-i]-B[m-i];if(s0*s1<0||(s0===0&&s1!==0))return {ago:i-1,up:s1>0};}return null;};
+    var ago=function(k){return k===0?'now':k===1?'1 bar ago':k+' bars ago';};
+    var diverg=function(arr){var A=tail(arr,30);if(A.length<20||bars.length<30)return '';var P=bars.slice(-A.length);var h=function(xs,f){var best=-1,bi=-1;for(var i=0;i<xs.length;i++){var v=f(xs[i]);if(v>best){best=v;bi=i;}}return bi;};var lo=function(xs,f){var best=Infinity,bi=-1;for(var i=0;i<xs.length;i++){var v=f(xs[i]);if(v<best){best=v;bi=i;}}return bi;};
+      var half=Math.floor(A.length/2),pH1=h(P.slice(0,half),function(b){return +b.high;}),pH2=h(P.slice(half),function(b){return +b.high;})+half,iH1=h(A.slice(0,half),function(v){return v;}),iH2=h(A.slice(half),function(v){return v;})+half;
+      if(+P[pH2].high>+P[pH1].high&&A[iH2]<A[iH1]&&A[iH1]>60)return '<span class="st dn">bearish divergence</span>';
+      var pL1=lo(P.slice(0,half),function(b){return +b.low;}),pL2=lo(P.slice(half),function(b){return +b.low;})+half,iL1=lo(A.slice(0,half),function(v){return v;}),iL2=lo(A.slice(half),function(v){return v;})+half;
+      if(+P[pL2].low<+P[pL1].low&&A[iL2]>A[iL1]&&A[iL1]<40)return '<span class="st up">bullish divergence</span>';return '';};
+    var bar=function(v,lo,hi,col){var p=Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));return '<i class="bar"><i style="width:'+p.toFixed(0)+'%;background:'+(col||'#8b95a1')+'"></i></i>';};
+    var money=function(x){x=+x||0;return x>=1e9?'$'+(x/1e9).toFixed(2)+'B':x>=1e6?'$'+(x/1e6).toFixed(1)+'M':x>=1e3?'$'+(x/1e3).toFixed(0)+'K':'$'+x.toFixed(0);};
+    return order.map(function(k,i){var top=((i*band+0.04)*100).toFixed(2)+'%',V=vals(k),h='';
+      if(o.hidden){var nm={vol:'Volume',rsi:'RSI',macd:'MACD',stoch:'Stoch',atr:'ATR',wr:'%R',cci:'CCI',casc:'Cascade',brain:'Brain',memory:'Memory'}[k]||k;return '<div class="cwin-subcard" style="top:'+top+'"><b class="k">'+nm+'</b></div>';}
+      if(k==='rsi'&&V[0]){var r=+V[0].v;h='<b class="k">RSI 14</b><span class="v" style="color:'+V[0].c+'">'+fmt(r,0)+'</span>'+bar(r,0,100,V[0].c)+(r>=70?'<span class="st dn">overbought</span>':r<=30?'<span class="st up">oversold</span>':r>=55?'<span class="st">leaning up</span>':r<=45?'<span class="st">leaning down</span>':'<span class="st">neutral</span>')+diverg(V[0].arr);}
+      else if(k==='macd'&&V.length>=2){var m=+V[0].v,s=+V[1].v,hs=m-s,cx=crossAgo(V[0].arr,V[1].arr);h='<b class="k">MACD</b><span class="v" style="color:'+V[0].c+'">'+fmt(m)+'</span><span class="sv">signal '+fmt(s)+'</span><span class="st '+(hs>=0?'up':'dn')+'">hist '+(hs>=0?'+':'')+fmt(hs)+'</span>'+(cx?'<span class="st '+(cx.up?'up':'dn')+'">'+(cx.up?'bull':'bear')+' cross '+ago(cx.ago)+'</span>':'');}
+      else if(k==='stoch'&&V.length>=2){var kk=+V[0].v,dd=+V[1].v,cs=crossAgo(V[0].arr,V[1].arr);h='<b class="k">Stoch</b><span class="v" style="color:'+V[0].c+'">'+fmt(kk,0)+'</span><span class="sv">%D '+fmt(dd,0)+'</span>'+bar(kk,0,100,V[0].c)+(kk>=80?'<span class="st dn">overbought</span>':kk<=20?'<span class="st up">oversold</span>':'')+(cs&&cs.ago<=5?'<span class="st '+(cs.up?'up':'dn')+'">'+(cs.up?'%K over %D':'%K under %D')+' '+ago(cs.ago)+'</span>':'');}
+      else if(k==='atr'&&V[0]){var a=+V[0].v,ap=px>0?a/px*100:0;h='<b class="k">ATR 14</b><span class="v" style="color:'+V[0].c+'">'+fmt(a)+'</span>'+(px>0?'<span class="sv">'+ap.toFixed(2)+'% per candle</span><span class="st">a 1.5x ATR stop = '+(ap*1.5).toFixed(2)+'%</span>':'');}
+      else if(k==='wr'&&V[0]){var wv=+V[0].v;h='<b class="k">Williams %R</b><span class="v" style="color:'+V[0].c+'">'+fmt(wv,0)+'</span>'+bar(wv,-100,0,V[0].c)+(wv>=-20?'<span class="st dn">overbought</span>':wv<=-80?'<span class="st up">oversold</span>':'<span class="st">mid-range</span>');}
+      else if(k==='cci'&&V[0]){var cv=+V[0].v;h='<b class="k">CCI 20</b><span class="v" style="color:'+V[0].c+'">'+fmt(cv,0)+'</span>'+(cv>=100?'<span class="st dn">stretched up</span>':cv<=-100?'<span class="st up">stretched down</span>':'<span class="st">inside the band</span>');}
+      else if(k==='vol'&&last){var vs=bars.slice(-21,-1).map(function(b){return +b.vol||0;}).filter(function(x){return x>0;}),avg=vs.length?vs.reduce(function(s,x){return s+x;},0)/vs.length:0,cur=+last.vol||0,rel=avg>0?cur/avg:0;h='<b class="k">Volume</b><span class="v">'+(cur>=1e6?(cur/1e6).toFixed(2)+'M':cur>=1e3?(cur/1e3).toFixed(1)+'K':cur.toFixed(0))+'</span>'+(avg>0?'<span class="st '+(rel>=1.5?(last.close>=last.open?'up':'dn'):'')+'">'+rel.toFixed(1)+'x the 20-bar average</span>':'');}
+      else if(k==='casc'&&prem.casc){var sc=prem.casc.score,cl=+sc[sc.length-1],dr=(prem.casc.dir&&prem.casc.dir[prem.casc.dir.length-1])||0;h='<b class="k mp">Cascade Radar</b><span class="v" style="color:'+(cl>=90?'#ff6258':cl>=70?'#ffb020':'#8fa3c4')+'">'+Math.round(cl)+'<small>/100</small></span>'+bar(cl,0,100,cl>=90?'#ff6258':cl>=70?'#ffb020':'#8fa3c4')+'<span class="st '+(cl>=90?'dn':'')+'">'+(cl>=90?'EXTREME fragility':cl>=70?'fragile':'calm')+'</span>'+(Math.abs(dr)>=0.3?'<span class="st">fuel '+(dr>0?'BELOW price (long liqs) - a dip can run':'ABOVE price (short liqs) - a pop can run')+'</span>':'<span class="st">fuel balanced</span>');}
+      else if(k==='brain'&&prem.brain){var bs=prem.brain.score,bl=+bs[bs.length-1],tf=prem.brain.top||[];/* not `top` - that is the card's CSS offset, and shadowing it parked the Brain card over Volume */h='<b class="k mp">Market Brain</b><span class="v" style="color:'+(bl>=55?'#2ebd85':bl<=-55?'#ff6258':'#8fa3c4')+'">'+(bl>=0?'+':'')+Math.round(bl)+'</span>'+bar(bl,-100,100,bl>=0?'#2ebd85':'#ff6258')+'<span class="st '+(bl>=55?'up':bl<=-55?'dn':'')+'">'+(bl>=55?'strong bullish lean':bl<=-55?'strong bearish lean':bl>=25?'mild bullish lean':bl<=-25?'mild bearish lean':'no strong edge')+'</span>'+(tf.length?'<span class="sv">driven by '+tf.slice(0,3).join(' + ')+'</span>':'');}
+      else if(k==='memory'&&prem.mem){var pj=prem.mem.proj;h='<b class="k mp">Market Memory</b>'+(pj?'<span class="v" style="color:'+(pj.ret>=0?'#2ebd85':'#ff6258')+'">'+(pj.ret>=0?'+':'')+(pj.ret*100).toFixed(2)+'%</span><span class="sv">projected over 6 bars</span><span class="st '+(pj.up>=0.65?'up':pj.up<=0.35?'dn':'')+'">'+Math.round(pj.up*100)+'% of '+pj.n+' analogs went up</span>':'<span class="sv">collecting analogs</span>');}
+      else if(k==='magnet'&&prem.mag){var mg=prem.mag;h='<b class="k mp">Liquidation Magnet</b>'+(mg.up?'<span class="st '+(mg.side==='up'?'dn':'')+'">above '+fmt(mg.up.price)+' · '+money(mg.up.w)+' shorts</span>':'')+(mg.dn?'<span class="st '+(mg.side==='down'?'up':'')+'">below '+fmt(mg.dn.price)+' · '+money(mg.dn.w)+' longs</span>':'')+(mg.side?'<span class="sv">pulled '+(mg.side==='up'?'UP':'DOWN')+'</span>':'');}
+      else if(V.length)h='<b class="k">'+V[0].l+'</b><span class="v" style="color:'+V[0].c+'">'+fmt(V[0].v)+'</span>';
+      return h?'<div class="cwin-subcard'+(o.cross?' x':'')+'" style="top:'+top+'">'+h+'</div>':'';}).join('');}
+  try{window.__mpSubCards=subCardsHtml;}catch(e){}
   function cwLeg(w,param){if(!w||!w.legEl)return;if(!w.legItems||!w.legItems.length){w.legEl.style.display='none';w.legEl.innerHTML='';return;}w.legEl.style.display='';
     if(!w.legEl._tgw){w.legEl._tgw=1;w.legEl.addEventListener('click',function(e){var t=e.target.closest('[data-legtg]');if(!t)return;try{localStorage.setItem('mp:leghide',_legHidden()?'0':'1');}catch(_){}wins.forEach(function(x){try{cwLeg(x);}catch(_){}});});}
     var _tg='<span data-legtg style="cursor:pointer;color:#5c656f;border:1px solid #2a3140;border-radius:7px;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:.06em" title="Show / hide indicator values">'+(_legHidden()?'VALUES':'HIDE')+'</span>';
@@ -287,10 +321,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var valOf=function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);else if(param.time!=null&&it.arr){var lo=0,hi=it.arr.length-1;while(lo<hi){var mid=(lo+hi+1)>>1;if(it.arr[mid].time<=param.time)lo=mid;else hi=mid-1;}if(it.arr[lo]&&it.arr[lo].time===param.time&&isFinite(it.arr[lo].value))v=it.arr[lo].value;}}return v;};
     var sh=w.el&&w.el.querySelector('.cwin-sub'),sl=sh&&sh.querySelector('.cwin-subleg');
     if(sh&&!sl){sl=document.createElement('div');sl.className='cwin-subleg';sh.appendChild(sl);}
-    var subItems=w.legItems.filter(function(it){return it.sub&&!it.raw;}),mainItems=w.legItems.filter(function(it){return !it.sub||it.raw;});
-    if(sl){if(!subItems.length||_legHidden()||!w.sub)sl.innerHTML='';else{var groups={},order=[];subItems.forEach(function(it){if(!groups[it.key]){groups[it.key]=[];order.push(it.key);}groups[it.key].push(it);});
-      var n=order.length,band=0.92/Math.max(1,n);
-      sl.innerHTML=order.map(function(k,i){return '<div class="cwin-subleg-row" style="top:'+((i*band+0.04)*100).toFixed(2)+'%">'+groups[k].map(function(it){return '<span style="color:'+it.color+'">'+it.label+' <b>'+cwFmt(valOf(it),it.dec)+'</b></span>';}).join('')+'</div>';}).join('');}}
+    var subItems=w.legItems.filter(function(it){return it.sub&&!it.raw;}),mainItems=w.legItems.filter(function(it){if(it.sub&&!it.raw)return false;if(it.raw&&w.sub&&/^(Cascade |Brain |BRAIN driven|Memory:)/.test(String(it.label||'')))return false;/* the strip's card carries this now */return true;});
+    if(sl){var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory'].filter(function(k){return w.inds&&w.inds[k];});
+      if(!paneKeys.length||!w.sub)sl.innerHTML='';else{var groups={};subItems.forEach(function(it){(groups[it.key]=groups[it.key]||[]).push(it);});
+        sl.innerHTML=subCardsHtml({order:paneKeys,groups:groups,valOf:valOf,bars:w.bars||[],prem:{casc:w._casc,brain:w._brain,mem:w._mem,mag:w._mag},fmt:cwFmt,hidden:_legHidden(),cross:!!(param&&param.time!=null)});}}
     if(_legHidden()){w.legEl.innerHTML=_tg;return;}
     w.legEl.innerHTML=_tg+mainItems.map(function(it){if(it.raw)return '<span style="color:'+it.color+';font-weight:700"'+(it.title?' title="'+it.title+'"':'')+'>'+it.label+'</span>';return '<span style="color:'+it.color+'">'+it.label+' <b>'+cwFmt(valOf(it),it.dec)+'</b></span>';}).join('');}
   function sma(v,p){var o=[],s=0;for(var i=0;i<v.length;i++){s+=v[i];if(i>=p)s-=v[i-p];o.push(i>=p-1?s/p:NaN);}return o;}
@@ -313,6 +347,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!on){if(w.sub){try{w.sub.remove();}catch(e){}w.sub=null;}w.subSeries=[];if(sh){sh.style.display='none';sh.style.height='0px';}if(host)host.style.bottom='0px';if(dc)dc.style.bottom='0px';return null;}
     var _bh=body.clientHeight||360,_sv=0;try{_sv=parseInt(localStorage.getItem('mp:subh'))||0;}catch(e){}
     var H=Math.max(60,Math.min(Math.round(_bh*0.6),_sv||Math.max(88,Math.min(200,Math.round(_bh*0.28)))));
+    var _pn=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory'].filter(function(k){return w.inds&&w.inds[k];}).length;
+    if(_pn>1)H=Math.max(H,Math.min(Math.round(_bh*0.6),_pn*44));/* each band needs room for its card (2026-10-08) - six bands in 175px stacked the cards on each other */
     if(sh){sh.style.display='block';sh.style.height=H+'px';}if(host)host.style.bottom=H+'px';if(dc)dc.style.bottom=H+'px';
     if(sh&&!sh.querySelector('.cwin-subrz')){var rz=document.createElement('div');rz.className='cwin-subrz';rz.title=__esT_mpcharts("dragToResizeThe",'Drag to resize the indicator panel');sh.appendChild(rz);
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
@@ -1544,23 +1580,52 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      extension / pitchfork / pattern (poly) / volume profile since the broker-kit pass, but the picker offered ten shapes. The
      picker is grouped now so nineteen entries read as five short lists, not one long one; the gesture for each new tool lives
      in the pointerdown branch below (`MULTI` = tap-tap-tap tools, previewed as you go). */
+  /* DRAWN ICONS, NOT GLYPHS (2026-10-08, owner: "meni za biranje alata izgleda jako lose"): every tool is a 24-box stroke icon
+     in one weight, the picker is tabs + a tile grid instead of a long list, and the current tool's own icon sits on the
+     palette chip. `TOOL_ICON` is the one place an icon is drawn. */
+  var TOOL_ICON={
+    select:'<path d="M5 3l14 9-6 1-3 6z"/>',
+    trend:'<path d="M4 19L20 5"/><circle cx="4" cy="19" r="1.6"/><circle cx="20" cy="5" r="1.6"/>',
+    ray:'<path d="M4 19L21 6"/><circle cx="4" cy="19" r="1.8" fill="currentColor"/><path d="M15 6h6v6"/>',
+    hline:'<path d="M3 12h18"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/>',
+    level:'<path d="M8 12h13"/><circle cx="7" cy="12" r="2.2" fill="currentColor"/><path d="M7 7v10" opacity=".45"/>',
+    vline:'<path d="M12 3v18"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/>',
+    arrow:'<path d="M4 20L19 5M10 5h9v9"/>',
+    rect:'<rect x="4" y="6" width="16" height="12" rx="1.5"/>',
+    zone:'<rect x="3" y="9" width="18" height="6" fill="currentColor" opacity=".25" stroke="none"/><path d="M3 9h18M3 15h18"/>',
+    channel:'<path d="M3 15L17 4M7 20L21 9"/>',
+    pattern:'<path d="M3 18l4-9 4 6 4-10 6 11"/>',
+    fib:'<path d="M3 5h18M3 9.5h18M3 14h18M3 19h18"/><path d="M3 19L21 5" opacity=".45"/>',
+    fibext:'<path d="M3 20h18M3 15h18M3 9h18M3 4h18"/><path d="M4 20l6-11 4 6 7-11" opacity=".55"/>',
+    pitchfork:'<path d="M5 20L12 7l7 13M12 7V3"/><path d="M8 14h8" opacity=".45"/>',
+    position:'<rect x="4" y="4" width="16" height="7" fill="#2ebd85" opacity=".35" stroke="none"/><rect x="4" y="13" width="16" height="7" fill="#ff5a4d" opacity=".35" stroke="none"/><path d="M4 12h16"/>',
+    measure:'<path d="M4 12h16M8 7l-4 5 4 5M16 7l4 5-4 5"/>',
+    volprofile:'<path d="M3 6h11M3 10h17M3 14h8M3 18h13"/>',
+    text:'<path d="M5 5h14M12 5v14M9 19h6"/>',
+    pen:'<path d="M4 19c3-7 7-9 11-5 2 2 3 2 5-1"/><circle cx="4" cy="19" r="1.4" fill="currentColor"/>',
+    alert:'<path d="M6 17h12l-1.6-2.3V11a4.4 4.4 0 0 0-8.8 0v3.7z M10 20h4"/>'
+  };
+  function toolSvg(k){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+(TOOL_ICON[k]||'')+'</svg>';}
   var TOOL_GROUPS=[
-    ['Lines',[['trend','╱','Trend line','Drag between two candles'],['ray','⇗','Ray','Drag - extends to the right'],['hline','―','Horizontal line','One click'],['level','⊢','Level','One click: a line from that candle to the right'],['vline','│','Vertical line','One click'],['arrow','➔','Arrow','Drag']]],
-    ['Shapes',[['rect','▭','Rectangle','Drag'],['zone','≡','Zone','Drag top to bottom: a supply / demand band from that candle to the right edge'],['channel','∥','Channel','Drag the base line, then click where the parallel goes'],['pattern','⋀','Pattern','Click each point (head and shoulders, triangle, wedge...), then Done or click the last point again']]],
-    ['Fibonacci',[['fib','F','Fib retracement','Drag from the swing low to the swing high'],['fibext','Fx','Fib extension','Three clicks: A, B, C'],['pitchfork','Ψ','Pitchfork','Three clicks: the pivot, then the two points of the next swing']]],
-    ['Trade',[['position','R','Position (R:R)','Three clicks: entry, stop, target - prints the reward-to-risk'],['measure','⇕','Measure','Drag: price, percent and candles between two points'],['volprofile','▤','Volume profile','Drag across a range of candles']]],
-    ['Notes',[['text','T','Text label','Click, then type'],['pen','✎','Freehand','Draw']]]
+    ['Lines',[['trend','Trend','Drag between two candles'],['ray','Ray','Drag - extends to the right'],['hline','Horizontal','One click'],['level','Level','One click: a line from that candle to the right'],['vline','Vertical','One click'],['arrow','Arrow','Drag']]],
+    ['Shapes',[['rect','Box','Drag'],['zone','Zone','Drag top to bottom: a supply / demand band from that candle to the right edge'],['channel','Channel','Drag the base line, then click where the parallel goes'],['pattern','Pattern','Click each point (head and shoulders, triangle, wedge...), then Done or click the last point again']]],
+    ['Fib',[['fib','Retrace','Drag from the swing low to the swing high'],['fibext','Extension','Three clicks: A, B, C'],['pitchfork','Pitchfork','Three clicks: the pivot, then the two points of the next swing']]],
+    ['Trade',[['position','Position','Three clicks: entry, stop, target - prints the reward-to-risk'],['measure','Measure','Drag: price, percent and candles between two points'],['volprofile','Volume','Drag across a range of candles']]],
+    ['Notes',[['text','Text','Click, then type'],['pen','Pen','Draw']]]
   ];
   function drawToolsHtml(withAlert){
-    var items='';
-    for(var g=0;g<TOOL_GROUPS.length;g++){var T=TOOL_GROUPS[g][1].slice();if(withAlert&&TOOL_GROUPS[g][0]==='Trade')T.push(['alert','',__esT_mpcharts("priceAlert",'Price alert'),'One click at the price']);
-      items+='<div class="cpop-g">'+TOOL_GROUPS[g][0]+'</div>';
-      for(var i=0;i<T.length;i++)items+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button" title="'+(T[i][3]||'')+'"><i>'+T[i][1]+'</i><span>'+T[i][2]+'</span></button>';}
+    var tabs='',grids='';
+    for(var g=0;g<TOOL_GROUPS.length;g++){var T=TOOL_GROUPS[g][1].slice();if(withAlert&&TOOL_GROUPS[g][0]==='Trade')T.push(['alert',__esT_mpcharts("priceAlert",'Alert'),'One click at the price']);
+      tabs+='<button type="button" class="cpop-g'+(g===0?' on':'')+'" data-g="'+g+'">'+TOOL_GROUPS[g][0]+'</button>';
+      grids+='<div class="cpop-grid" data-g="'+g+'"'+(g===0?'':' hidden')+'>';
+      for(var i=0;i<T.length;i++)grids+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button" title="'+(T[i][2]||'')+'">'+toolSvg(T[i][0])+'<span>'+T[i][1]+'</span></button>';
+      grids+='</div>';}
+    var items='<div class="cpop-tabs">'+tabs+'</div>'+grids;
     var COLS=['#3fd8e6','#c2f64a','#ff6258','#ff9f4d','#b48cff','#ffffff'],cols='';
     for(var j=0;j<COLS.length;j++)cols+='<span class="cwin-color'+(j===0?' on':'')+'" data-color="'+COLS[j]+'" style="background:'+COLS[j]+'"></span>';
     return '<div class="cwin-tools">'
-      +'<button class="cwin-tool" data-tool="select" title="Select / move / edit - tap a drawing" type="button">↖</button>'
-      +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">╱</span><span class="car">▾</span></button>'
+      +'<button class="cwin-tool cwin-tool-ic" data-tool="select" title="Select / move / edit - tap a drawing" type="button">'+toolSvg('select')+'</button>'
+      +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">'+toolSvg('trend')+'</span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-done" data-done title="Finish this shape" type="button" hidden>Done</button>'
@@ -1585,7 +1650,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var body=bodyEl||w.el.querySelector('.cwin-body'), cv=body&&body.querySelector('.cwin-draw');
     if(!body||!cv)return; var ctx=cv.getContext('2d');
     w.dr={on:false,tool:'trend',color:'#3fd8e6',lw:2,dash:false,shapes:[],cur:null,sel:null,W:0,H:0};
-    function size(){var r=body.getBoundingClientRect(),dpr=window.devicePixelRatio||1;w.dr.W=r.width;w.dr.H=r.height;cv.width=Math.max(1,Math.round(r.width*dpr));cv.height=Math.max(1,Math.round(r.height*dpr));cv.style.width=r.width+'px';cv.style.height=r.height+'px';ctx.setTransform(dpr,0,0,dpr,0,0);redraw();}
+    /* THE CANVAS IS THE PRICE PANE, NOT THE WHOLE BODY (2026-10-08, owner: "crtez probija preko charta za indikator"): it was
+       sized from `body`, so once an oscillator strip opened below the candles every h-line, zone and position block ran
+       straight across it. It now takes the chart host's rect and observes the host, which shrinks when the strip opens. */
+    var drHost=body.querySelector('.cwin-chart,.mfc-chart')||body;
+    function size(){var r=drHost.getBoundingClientRect(),dpr=window.devicePixelRatio||1;w.dr.W=r.width;w.dr.H=r.height;cv.width=Math.max(1,Math.round(r.width*dpr));cv.height=Math.max(1,Math.round(r.height*dpr));cv.style.width=r.width+'px';cv.style.height=r.height+'px';ctx.setTransform(dpr,0,0,dpr,0,0);redraw();}
     var FIBLV=[0,0.236,0.382,0.5,0.618,0.786,1];
     function xOf(l){if(l==null||!w.chart)return null;try{var c=w.chart.timeScale().logicalToCoordinate(l);return c==null?null:c;}catch(e){return null;}}
     function yOf(p){if(p==null||!w.candle)return null;try{var c=w.candle.priceToCoordinate(p);return c==null?null:c;}catch(e){return null;}}
@@ -2040,7 +2109,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else if(e.key==='Escape'&&w._drCancelMulti&&w._drCancelMulti()){e.preventDefault();}
       else if(e.key==='Enter'&&w.dr.cur&&w.dr.cur._multi){finishMulti();e.preventDefault();}
       else if(e.key==='Escape'&&w.dr.sel){w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();}};window.addEventListener('keydown',w._drKey); // handler ref kept on w so closeWin can removeEventListener (was leaking per window over preset/layout switches)
-    if('ResizeObserver'in window){try{w.dr.ro=new ResizeObserver(function(){size();});w.dr.ro.observe(body);}catch(_){}}
+    if('ResizeObserver'in window){try{w.dr.ro=new ResizeObserver(function(){size();});w.dr.ro.observe(drHost);if(drHost!==body)w.dr.ro.observe(body);}catch(_){}}
     // re-project drawings whenever the chart pans/zooms (its time scale exists once buildChart finishes - poll briefly)
     w._drawC=function(){if(w._drRaf||w.dead)return;w._drRaf=true;requestAnimationFrame(function(){w._drRaf=false;if(!w.dead)redraw();});}; // rAF-coalesce: pan/zoom + live ticks fire many times/frame; one canvas re-projection per frame is enough
     (function attach(tries){if(w.dead)return;if(w.chart){try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(){w._drawC();});}catch(e){}return;}if((tries||0)<50)setTimeout(function(){attach((tries||0)+1);},120);})(0);
@@ -2078,7 +2147,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       tools.querySelectorAll('.cpop-it[data-tool]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-tool')===tl);});
       var sb=tools.querySelector('.cwin-tool[data-tool="select"]');if(sb)sb.classList.toggle('on',tl==='select');
       var tp=tools.querySelector('[data-tpick]');if(tp)tp.classList.toggle('on',tl!=='select');
-      if(tl!=='select'){var it=tools.querySelector('.cpop-it[data-tool="'+tl+'"] i'),cur=tools.querySelector('.tcur');if(it&&cur)cur.textContent=it.textContent;}}
+      if(tl!=='select'){var it=tools.querySelector('.cpop-it[data-tool="'+tl+'"] svg'),cur=tools.querySelector('.tcur');if(it&&cur)cur.innerHTML=it.outerHTML;}}
     function syncUI(){if(!w.dr)return;var s=w.dr.sel,col=s?s.color:w.dr.color,lw=s?(s.w||2):w.dr.lw,da=s?!!s.dash:!!w.dr.dash;
       tools.querySelectorAll('.cwin-color').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-color')===col);});
       var cd=tools.querySelector('.cdot');if(cd)cd.style.background=col;
@@ -2090,7 +2159,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();
       var dn=tools.querySelector('[data-done]');if(dn)dn.hidden=!/^(pattern|position|fibext|pitchfork|channel)$/.test(tl);/* Done only while a tap-tap-tap tool is live */};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr - wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
     tools.addEventListener('pointerdown',function(e){e.stopPropagation();});
-    tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
+    tools.addEventListener('click',function(e){
+      var gt=e.target.closest('.cpop-g[data-g]');if(gt){e.stopPropagation();var gi=gt.getAttribute('data-g');tools.querySelectorAll('.cpop-g').forEach(function(x){x.classList.toggle('on',x===gt);});tools.querySelectorAll('.cpop-grid').forEach(function(x){x.hidden=x.getAttribute('data-g')!==gi;});return;}/* picker tabs */
+      var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
       if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
       if(b.hasAttribute('data-cpick')){togglePop('color',b);return;}
       if(b.hasAttribute('data-spick')){togglePop('style',b);return;}

@@ -185,9 +185,9 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     ok('Draw swaps the dock for the palette, pinned to the bottom edge', dm.tools && dm.drawing && dm.dockHidden && dm.bottom <= 1, JSON.stringify(dm));
     ok('the tool picker chip is reachable and the palette carries its own exit', dm.reach && dm.exit, JSON.stringify(dm));
     await page.tap('.mfc-pane.drawing [data-tpick]'); await sleep(300);
-    const mp = await page.evaluate(() => { const pop = document.querySelector('.mfc-pane.drawing .cwin-pop-tool'); const r = pop.getBoundingClientRect(); const rows = [...pop.querySelectorAll('.cpop-it')].map(b => Math.round(b.getBoundingClientRect().height)); return { shown: !pop.hidden && r.height > 0, bottom: Math.round(innerHeight - r.bottom), n: rows.length, minH: Math.min(...rows), maxH: Math.round(r.height) }; });
+    const mp = await page.evaluate(() => { const pop = document.querySelector('.mfc-pane.drawing .cwin-pop-tool'); const r = pop.getBoundingClientRect(); const all = pop.querySelectorAll('.cpop-it').length; const vis = [...pop.querySelectorAll('.cpop-grid:not([hidden]) .cpop-it')].map(b => Math.round(b.getBoundingClientRect().height)); const tabs = pop.querySelectorAll('.cpop-g').length; return { shown: !pop.hidden && r.height > 0, bottom: Math.round(innerHeight - r.bottom), n: all, tabs, visN: vis.length, minH: Math.min(...vis), maxH: Math.round(r.height) }; });
     await shot(page, 'phone-picker');
-    ok('on a phone the tool list is a bottom sheet of thumb-sized rows', mp.shown && mp.bottom <= 1 && mp.n >= 18 && mp.minH >= 40 && mp.maxH <= innerHeightOf(844) * 0.7, JSON.stringify(mp));
+    ok('on a phone the tool picker is a bottom sheet: five tabs, thumb-sized icon tiles', mp.shown && mp.bottom <= 1 && mp.n >= 18 && mp.tabs === 5 && mp.visN >= 4 && mp.minH >= 56 && mp.maxH <= innerHeightOf(844) * 0.7, JSON.stringify(mp));
     await page.tap('.mfc-pane.drawing .cpop-it[data-tool="level"]'); await sleep(200);
     const cvr = await page.evaluate(() => { const c = document.querySelector('.mfc-pane.drawing canvas.cwin-draw').getBoundingClientRect(); return { x: c.left + c.width * 0.4, y: c.top + c.height * 0.4 }; });
     await page.touchscreen.tap(cvr.x, cvr.y); await sleep(300);
