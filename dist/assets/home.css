@@ -3424,3 +3424,9 @@ undefined
   .mfc-chart .cwin-golive{right:68px;bottom:44px;width:40px;height:40px;}
   body.charts-page.ch-light .cwin-golive,.mfc.light .cwin-golive{background:rgba(255,255,255,.95);border-color:#d6dade;color:#4f7a00;}
   body.charts-page.ch-light .cwin-share,body.charts-page.ch-light .cwin-cmp-in,.mfc.light .mfc-cmp-in{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+
+  /* the indicator strip scrolls over its bands (2026-10-08) */
+  .cwin-sub,.mfc-pane .mfc-sub{overflow:hidden;}
+  .cwin-subsc{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+  .cwin-subin{position:relative;width:100%;min-height:100%;}
+  .cwin-subcard{z-index:3;}

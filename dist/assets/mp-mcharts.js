@@ -378,30 +378,33 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _tg='<span data-legtg style="cursor:pointer;color:#5c656f;border:1px solid #2a3140;border-radius:7px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:.06em">'+(_mLegHidden()?'VALUES':'HIDE')+'</span>';
     var valOf=function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);else if(param.time!=null&&it.arr){var lo=0,hi=it.arr.length-1;while(lo<hi){var mid=(lo+hi+1)>>1;if(it.arr[mid].time<=param.time)lo=mid;else hi=mid-1;}if(it.arr[lo]&&it.arr[lo].time===param.time&&isFinite(it.arr[lo].value))v=it.arr[lo].value;}}return v;};
     /* oscillator values print inside the oscillator strip, each at the top of its own band (mirror of desktop cwLeg, 2026-10-08) */
-    var sh=p.el.querySelector('.mfc-sub'),sl=sh&&sh.querySelector('.cwin-subleg');if(sh&&!sl){sl=document.createElement('div');sl.className='cwin-subleg';sh.appendChild(sl);}
+    var sh=p.el.querySelector('.mfc-sub'),_in=sh&&sh.querySelector('.cwin-subin'),sl=sh&&sh.querySelector('.cwin-subleg');if(sh&&!sl){sl=document.createElement('div');sl.className='cwin-subleg';(_in||sh).appendChild(sl);}
     try{if(sl&&window.__mpWireCardTaps)window.__mpWireCardTaps(sl,{sheet:true,remove:function(k){p.inds[k]=false;applyInds(p);mfcSave();}});}catch(e){}
     var subItems=p.legItems.filter(function(it){return it.sub&&!it.raw;}),mainItems=p.legItems.filter(function(it){if(it.sub&&!it.raw)return false;if(it.raw&&p.sub&&/^(Cascade |Brain |BRAIN:|Memory:|Magnet:)/.test(String(it.label||'')))return false;return true;});
     if(sl){var S=mSig(),IA=!!(S&&S.indAllowed&&S.indAllowed()),oscs=['rsi','macd','stoch','atr','vol','wr','cci'].concat(IA?['casc','brain','memory','magnet']:[]).filter(function(k){return p.inds[k]&&(k!=='magnet'||p._mag);});/* the same order applyInds bands them in */
       if(!oscs.length||!p.sub||!window.__mpSubCards)sl.innerHTML='';else{var groups={};subItems.forEach(function(it){(groups[it.key]=groups[it.key]||[]).push(it);});
-        sl.innerHTML=window.__mpSubCards({order:oscs,groups:groups,valOf:valOf,bars:p.bars||[],prem:{casc:p._casc,brain:p._brain,mem:p._mem,mag:p._mag},fmt:legFmt,hidden:false,cross:!!(param&&param.time!=null)});}}
+        sl.innerHTML=window.__mpSubCards({order:oscs,groups:groups,valOf:valOf,bars:p.bars||[],prem:{casc:p._casc,brain:p._brain,mem:p._mem,mag:p._mag},fmt:legFmt,hidden:false,cross:!!(param&&param.time!=null),bandPx:p._subBand});}}
     if(_mLegHidden()){el.innerHTML=_tg;return;}
     if(!mainItems.length){el.style.display='none';el.innerHTML='';return;}
     el.innerHTML=_tg+mainItems.map(function(it){return it.raw?'<span style="color:'+it.color+';font-weight:700">'+it.label+'</span>':'<span style="color:'+it.color+'">'+it.label+' <b>'+legFmt(valOf(it),it.dec)+'</b></span>';}).join('');}
   // ---- indicators ----
   /* OSCILLATOR SUB-PANE (owner 2026-08-13, mirror of desktop mp-charts): oscillators render in their OWN synced
      chart strip below the candles - free vertical pan can never slide candles through them. */
+  var SUBM_MIN_BAND=104,SUBM_CARD=30;
   function ensureSubM(p,on){var el=p.el;if(!el)return null;var sh=el.querySelector('.mfc-sub'),dc=el.querySelector('canvas.cwin-draw'),host=p.host;
     if(!on){if(p.sub){try{p.sub.remove();}catch(e){}p.sub=null;}p.subSeries=[];if(sh){sh.style.display='none';sh.style.height='0px';}if(host)host.style.bottom='0px';if(dc)dc.style.bottom='0px';return null;}
     var _eh=el.clientHeight||300,_sv=0;try{_sv=parseInt(localStorage.getItem('mp:subhm'))||0;}catch(e){}
     var H=Math.max(56,Math.min(Math.round(_eh*0.55),_sv||Math.max(70,Math.min(150,Math.round(_eh*0.26)))));
     var _pn=['rsi','macd','stoch','atr','vol','wr','cci','casc','brain','memory','magnet'].filter(function(k){return p.inds[k]&&(k!=='magnet'||p._mag);}).length;
     if(_pn>1)H=Math.max(H,Math.min(Math.round(_eh*0.55),_pn*48));/* room for each band's card (mirror of desktop ensureSub) */
+    var inner=sh&&sh.querySelector('.cwin-subin');if(sh&&!inner){var sc=document.createElement('div');sc.className='cwin-subsc';inner=document.createElement('div');inner.className='cwin-subin';sc.appendChild(inner);sh.appendChild(sc);}
+    var inH=Math.max(H,_pn*SUBM_MIN_BAND);p._subH=H;p._subInH=inH;p._subN=_pn;p._subBand=inH/Math.max(1,_pn);if(inner)inner.style.height=inH+'px';/* the strip scrolls over bands of at least SUBM_MIN_BAND (mirror of desktop) */
     if(sh){sh.style.display='block';sh.style.height=H+'px';}if(host)host.style.bottom=H+'px';if(dc)dc.style.bottom=H+'px';
     if(sh&&!sh.querySelector('.mfc-subrz')){var rz=document.createElement('div');rz.className='mfc-subrz';sh.appendChild(rz);
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
-      rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=el.getBoundingClientRect();var nh=Math.max(56,Math.min(Math.round(br.height*0.55),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
-      rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subhm',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
-    if(!p.sub&&window.LightweightCharts&&sh){try{var _ts=themeM();p.sub=mpCreateChart(sh,{layout:_ts.layout,grid:_ts.grid,rightPriceScale:_ts.rightPriceScale,timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+      rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=el.getBoundingClientRect();var nh=Math.max(56,Math.min(Math.round(br.height*0.55),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';var _in=sh.querySelector('.cwin-subin');if(_in)_in.style.height=Math.max(nh,(p._subN||1)*SUBM_MIN_BAND)+'px';e.preventDefault();},true);
+      rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subhm',String(parseInt(sh.style.height)||0));}catch(_){}try{applyInds(p);}catch(_){}},true);})();}
+    if(!p.sub&&window.LightweightCharts&&sh){try{var _ts=themeM();p.sub=mpCreateChart(sh.querySelector('.cwin-subin')||sh,{layout:_ts.layout,grid:_ts.grid,rightPriceScale:_ts.rightPriceScale,timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       p.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.chart||p._subSync)return;p._subSync=1;try{p.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;});
       try{p.sub.subscribeCrosshairMove(function(prm){mLeg(p,prm);});}catch(e){} /* touch-scrub over the indicator strip drives the value legend */
       try{var _r0=p.chart.timeScale().getVisibleLogicalRange();if(_r0)p.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){p.sub=null;}}
@@ -432,7 +435,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var oscs=['rsi','macd','stoch','atr','vol','wr','cci'].concat((S&&IA)?['casc','brain','memory','magnet']:[]).filter(function(k){return p.inds[k]&&(k!=='magnet'||p._mag);}),oN=oscs.length;
     try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:0.08}});}catch(e){} /* candles own the full pane - oscillators live in the sub strip */
     ensureSubM(p,oN>0);
-    function band(key){var idx=oscs.indexOf(key),b=0.92/Math.max(1,oN);return {top:idx*b+0.04,bottom:(oN-1-idx)*b+0.04};}
+    function band(key){var idx=oscs.indexOf(key),inH=p._subInH||1,b=p._subBand||(inH/Math.max(1,oN));return {top:Math.min(0.9,(idx*b+SUBM_CARD)/inH),bottom:Math.min(0.9,((oN-1-idx)*b+4)/inH)};}
     function setScale(id){try{if(p.sub)p.sub.priceScale(id).applyOptions({scaleMargins:band(id)});}catch(e){}}
     MA.forEach(function(m){if(p.inds[m[0]])add(m[2]==='e'?ema(c,m[1]):sma(c,m[1]),{color:m[3]},{label:(m[2]==='e'?'EMA ':'SMA ')+m[1],dec:null});});
     if(p.inds.bb){var bb=boll(c,20,2);add(bb.u,{color:'rgba(154,163,173,.7)'});add(bb.m,{color:'rgba(154,163,173,.55)',lineStyle:2});add(bb.l,{color:'rgba(154,163,173,.7)'});}

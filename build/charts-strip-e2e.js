@@ -18,7 +18,7 @@ async function prep(browser, mobile, w, h) {
   await page.setViewport({ width: w, height: h, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: mobile ? 2 : 1 });
   const errors = [];
   page.on('pageerror', e => errors.push(String(e && e.message || e)));
-  page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR|403|402/.test(m.text())) errors.push(m.text()); });
+  page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR|403|402|Ignored attempt to cancel a touchmove/.test(m.text())) errors.push(m.text());/* the touchmove line is Chrome's intervention notice while a native scroll is in flight, not a script error */ });
   await page.setCacheEnabled(false);
   await page.setRequestInterception(true);
   try { const cdp = await page.target().createCDPSession(); await cdp.send('Network.enable'); await cdp.send('Network.setBypassServiceWorker', { bypass: true }); } catch (e) {}
@@ -99,6 +99,20 @@ async function deskInd(page, k, on) {
     ok('the chosen style survives a reload', st.style === 'bars' && st.shadow === 'Bar', JSON.stringify(st));
     await setStyle('candles'); st = await styleState();
     ok('back to candles: filled bodies, no shadow', st.style === 'candles' && !st.shadow && st.up === '#10b981', JSON.stringify(st));
+    // round seven: the card never covers the plot; many bands = a strip that scrolls
+    for (const k of ['rsi', 'atr', 'stoch', 'cci']) await deskInd(page, k, true);
+    await sleep(900);
+    const g7 = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const sh = document.querySelector('.cwin .cwin-sub'), sc = sh.querySelector('.cwin-subsc'), inn = sh.querySelector('.cwin-subin'); const ir = inn.getBoundingClientRect(); const cards = [...inn.querySelectorAll('.cwin-subcard[data-ix]')]; const bands = cards.map(c => { const k = c.getAttribute('data-ix'); const r = c.getBoundingClientRect(); const s = (w.subSeries || []).find(x => { try { return x.seriesType() === 'Line' && x.options().priceScaleId === k; } catch (e) { return false; } }); const hi = k === 'rsi' || k === 'stoch' ? 100 : k === 'wr' ? 0 : null; let topY = null; if (s && hi != null) { const y = s.priceToCoordinate(hi); if (y != null) topY = Math.round(ir.top + y); } return { k, cardBottom: Math.round(r.bottom), plotTop: topY }; }); return { n: cards.length, visH: Math.round(sh.getBoundingClientRect().height), innerH: Math.round(ir.height), scrollable: sc.scrollHeight > sc.clientHeight + 2, scrollTop0: sc.scrollTop, bands }; });
+    ok('seven bands: the inner strip is at least 92px a band and taller than the visible strip, so it scrolls', g7.n >= 7 && g7.innerH >= g7.n * 92 - 2 && g7.innerH > g7.visH && g7.scrollable, JSON.stringify({ n: g7.n, visH: g7.visH, innerH: g7.innerH, scrollable: g7.scrollable }));
+    const covered = g7.bands.filter(b => b.plotTop != null && b.plotTop < b.cardBottom - 1);
+    ok('the top of every bounded plot (RSI 100, Stoch 100) sits BELOW its card - the card never covers a peak', g7.bands.some(b => b.plotTop != null) && covered.length === 0, JSON.stringify(g7.bands));
+    await page.evaluate(() => { const sc = document.querySelector('.cwin .cwin-subsc'); const r = sc.getBoundingClientRect(); window.__scPt = { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+    const pt = await page.evaluate(() => window.__scPt);
+    await page.mouse.move(pt.x, pt.y); await page.mouse.wheel({ deltaY: 400 }); await sleep(400);
+    const w7 = await page.evaluate(() => { const sc = document.querySelector('.cwin .cwin-subsc'); const last = [...sc.querySelectorAll('.cwin-subcard[data-ix]')].pop(); const r = last.getBoundingClientRect(); const sr = sc.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + 20, r.top + r.height / 2); const vr = window.__mpWinsDbg[0].chart.timeScale().getVisibleLogicalRange(); return { scrollTop: sc.scrollTop, lastInView: r.top >= sr.top - 1 && r.bottom <= sr.bottom + 1, lastReach: !!(hit && (hit === last || last.contains(hit))), lastKey: last.getAttribute('data-ix'), to: vr && Math.round(vr.to) }; });
+    ok('the wheel scrolls the strip (not the time axis) and the last band becomes visible and tappable', w7.scrollTop > 100 && w7.lastInView && w7.lastReach, JSON.stringify(w7));
+    await shot(page, 'strip-desk-scrolled');
+    for (const k of ['rsi', 'atr', 'stoch', 'cci']) await deskInd(page, k, false);
     // round six: sessions, compare, share, back to live
     await deskInd(page, 'sess', true);
     const ss = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const cv = document.querySelector('.cwin canvas.cwin-draw'); const ctx = cv.getContext('2d'); const y = Math.round(cv.height * 0.5); const d = ctx.getImageData(0, y, cv.width, 1).data; let lit = 0; const tones = new Set(); for (let i = 3; i < d.length; i += 4) if (d[i] > 0) { lit++; tones.add(d[i - 3] + ',' + d[i - 2] + ',' + d[i - 1]); } return { spans: (w._sess || []).length, kinds: [...new Set((w._sess || []).map(s => s.k))], litPct: Math.round(lit / cv.width * 100), tones: tones.size, tf: w.tf }; });
@@ -147,6 +161,19 @@ async function deskInd(page, k, on) {
     await page.tap('#mpIndX [data-act="rm"]'); await sleep(600);
     const prm = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; return { macd: !!p.inds.macd, cards: document.querySelectorAll('.mfc-sub .cwin-subleg .cwin-subcard[data-ix]').length }; });
     ok('"Remove from chart" works on the phone too', !prm.macd && prm.cards === 1, JSON.stringify(prm));
+    // round seven on the phone: six bands, a finger scrolls the strip, the last card is reachable after
+    await page.tap('.mfc-dock [data-act="ind"]'); await sleep(500);
+    for (const k of ['macd', 'stoch', 'atr', 'wr', 'cci']) { await page.evaluate((k) => { const i = document.querySelector('.mfc-sheet input[data-ind="' + k + '"]'); if (i && !i.checked) { i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); } }, k); await sleep(300); }
+    await page.tap('.mfc-sheet [data-x]'); await sleep(700);
+    const m7 = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; const sh = p.el.querySelector('.mfc-sub'), sc = sh.querySelector('.cwin-subsc'), inn = sh.querySelector('.cwin-subin'); const ir = inn.getBoundingClientRect(); const cards = [...inn.querySelectorAll('.cwin-subcard[data-ix]')]; const rsi = cards.find(c => c.getAttribute('data-ix') === 'rsi'); const s = (p.subSeries || []).find(x => { try { return x.seriesType() === 'Line' && x.options().priceScaleId === 'rsi'; } catch (e) { return false; } }); const y = s ? s.priceToCoordinate(100) : null; const sr = sc.getBoundingClientRect(); return { n: cards.length, innerH: Math.round(ir.height), visH: Math.round(sr.height), scrollable: sc.scrollHeight > sc.clientHeight + 2, rsiCardBottom: rsi ? Math.round(rsi.getBoundingClientRect().bottom) : null, rsiPlotTop: y != null ? Math.round(ir.top + y) : null, cx: Math.round(sr.left + sr.width / 2), y0: Math.round(sr.bottom - 20), y1: Math.round(sr.top + 20) }; });
+    ok('phone: six bands at >= 104px each in a strip that scrolls, RSI 100 below its card', m7.n === 6 && m7.innerH >= 6 * 104 - 2 && m7.scrollable && m7.rsiPlotTop != null && m7.rsiPlotTop >= m7.rsiCardBottom - 1, JSON.stringify(m7));
+    for (let d = 0; d < 5; d++) { await page.touchscreen.touchStart(m7.cx, m7.y0); for (let i = 1; i <= 8; i++) { await page.touchscreen.touchMove(m7.cx, m7.y0 - (m7.y0 - m7.y1) * i / 8); await sleep(30); } await page.touchscreen.touchEnd(); await sleep(450); const atEnd = await page.evaluate(() => { const sc = window.__mpMfcDbg()[0].el.querySelector('.cwin-subsc'); return sc.scrollTop >= sc.scrollHeight - sc.clientHeight - 2; }); if (atEnd) break; }
+    const m7b = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; const sc = p.el.querySelector('.cwin-subsc'); const last = [...sc.querySelectorAll('.cwin-subcard[data-ix]')].pop(); const r = last.getBoundingClientRect(); const sr = sc.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + 20, r.top + r.height / 2); return { scrollTop: sc.scrollTop, lastInView: r.top >= sr.top - 1 && r.bottom <= sr.bottom + 1, lastReach: !!(hit && (hit === last || last.contains(hit))), lastKey: last.getAttribute('data-ix') }; });
+    await shot(page, 'strip-phone-scrolled');
+    ok('phone: a finger drag scrolls the strip and the last band comes into reach', m7b.scrollTop > 60 && m7b.lastInView && m7b.lastReach, JSON.stringify(m7b));
+    await page.tap('.mfc-dock [data-act="ind"]'); await sleep(400);
+    for (const k of ['macd', 'stoch', 'atr', 'wr', 'cci']) { await page.evaluate((k) => { const i = document.querySelector('.mfc-sheet input[data-ind="' + k + '"]'); if (i && i.checked) { i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); } }, k); await sleep(200); }
+    await page.tap('.mfc-sheet [data-x]'); await sleep(400);
     // round six on the phone
     await page.tap('.mfc-dock [data-act="ind"]'); await sleep(500);
     await page.evaluate(() => { const i = document.querySelector('.mfc-sheet input[data-ind="sess"]'); if (i && !i.checked) { i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); } }); await sleep(400);

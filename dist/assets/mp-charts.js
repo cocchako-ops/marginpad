@@ -296,7 +296,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(+P[pL2].low<+P[pL1].low&&A[iL2]>A[iL1]&&A[iL1]<40)return '<span class="st up">bullish divergence</span>';return '';};
     var bar=function(v,lo,hi,col){var p=Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));return '<i class="bar"><i style="width:'+p.toFixed(0)+'%;background:'+(col||'#8b95a1')+'"></i></i>';};
     var money=function(x){x=+x||0;return x>=1e9?'$'+(x/1e9).toFixed(2)+'B':x>=1e6?'$'+(x/1e6).toFixed(1)+'M':x>=1e3?'$'+(x/1e3).toFixed(0)+'K':'$'+x.toFixed(0);};
-    return order.map(function(k,i){var top=((i*band+0.04)*100).toFixed(2)+'%',V=vals(k),h='';
+    return order.map(function(k,i){var top=o.bandPx?(Math.round(i*o.bandPx)+2)+'px':((i*band+0.04)*100).toFixed(2)+'%',V=vals(k),h='';
       if(o.hidden){var nm={vol:'Volume',rsi:'RSI',macd:'MACD',stoch:'Stoch',atr:'ATR',wr:'%R',cci:'CCI',casc:'Cascade',brain:'Brain',memory:'Memory',magnet:'Magnet'}[k]||k;return '<div class="cwin-subcard" data-ix="'+k+'" style="top:'+top+'"><b class="k">'+nm+'</b></div>';}
       if(k==='rsi'&&V[0]){var r=+V[0].v;h='<b class="k">RSI 14</b><span class="v" style="color:'+V[0].c+'">'+fmt(r,0)+'</span>'+bar(r,0,100,V[0].c)+(r>=70?'<span class="st dn">overbought</span>':r<=30?'<span class="st up">oversold</span>':r>=55?'<span class="st">leaning up</span>':r<=45?'<span class="st">leaning down</span>':'<span class="st">neutral</span>')+diverg(V[0].arr);}
       else if(k==='macd'&&V.length>=2){var m=+V[0].v,s=+V[1].v,hs=m-s,cx=crossAgo(V[0].arr,V[1].arr);h='<b class="k">MACD</b><span class="v" style="color:'+V[0].c+'">'+fmt(m)+'</span><span class="sv">signal '+fmt(s)+'</span><span class="st '+(hs>=0?'up':'dn')+'">hist '+(hs>=0?'+':'')+fmt(hs)+'</span>'+(cx?'<span class="st '+(cx.up?'up':'dn')+'">'+(cx.up?'bull':'bear')+' cross '+ago(cx.ago)+'</span>':'');}
@@ -416,12 +416,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        vrednosti, a mogli bi da iskoristimo taj prostor"): items drawn on the sub-chart print at the top of their own band in
        `.cwin-subleg`, not in the price legend; the price legend keeps overlays and the signal lines. */
     var valOf=function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);else if(param.time!=null&&it.arr){var lo=0,hi=it.arr.length-1;while(lo<hi){var mid=(lo+hi+1)>>1;if(it.arr[mid].time<=param.time)lo=mid;else hi=mid-1;}if(it.arr[lo]&&it.arr[lo].time===param.time&&isFinite(it.arr[lo].value))v=it.arr[lo].value;}}return v;};
-    var sh=w.el&&w.el.querySelector('.cwin-sub'),sl=sh&&sh.querySelector('.cwin-subleg');
-    if(sh&&!sl){sl=document.createElement('div');sl.className='cwin-subleg';sh.appendChild(sl);}
+    var sh=w.el&&w.el.querySelector('.cwin-sub'),_in=sh&&sh.querySelector('.cwin-subin'),sl=sh&&sh.querySelector('.cwin-subleg');
+    if(sh&&!sl){sl=document.createElement('div');sl.className='cwin-subleg';(_in||sh).appendChild(sl);}
     var subItems=w.legItems.filter(function(it){return it.sub&&!it.raw;}),mainItems=w.legItems.filter(function(it){if(it.sub&&!it.raw)return false;if(it.raw&&w.sub&&/^(Cascade |Brain |BRAIN driven|Memory:|Magnet:)/.test(String(it.label||'')))return false;/* the strip's card carries this now */return true;});
     if(sl){wireCardTaps(sl,{remove:function(k){w.inds[k]=false;applyInds(w);updateIndN(w);savePersist();}});var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory','magnet'].filter(function(k){return w.inds&&w.inds[k]&&(k!=='magnet'||w._mag);});
       if(!paneKeys.length||!w.sub)sl.innerHTML='';else{var groups={};subItems.forEach(function(it){(groups[it.key]=groups[it.key]||[]).push(it);});
-        sl.innerHTML=subCardsHtml({order:paneKeys,groups:groups,valOf:valOf,bars:w.bars||[],prem:{casc:w._casc,brain:w._brain,mem:w._mem,mag:w._mag},fmt:cwFmt,hidden:_legHidden(),cross:!!(param&&param.time!=null)});}}
+        sl.innerHTML=subCardsHtml({order:paneKeys,groups:groups,valOf:valOf,bars:w.bars||[],prem:{casc:w._casc,brain:w._brain,mem:w._mem,mag:w._mag},fmt:cwFmt,hidden:_legHidden(),cross:!!(param&&param.time!=null),bandPx:w._subBand});}}
     if(_legHidden()){w.legEl.innerHTML=_tg;return;}
     w.legEl.innerHTML=_tg+mainItems.map(function(it){if(it.raw)return '<span style="color:'+it.color+';font-weight:700"'+(it.title?' title="'+it.title+'"':'')+'>'+it.label+'</span>';return '<span style="color:'+it.color+'">'+it.label+' <b>'+cwFmt(valOf(it),it.dec)+'</b></span>';}).join('');}
   function sma(v,p){var o=[],s=0;for(var i=0;i<v.length;i++){s+=v[i];if(i>=p)s-=v[i-p];o.push(i>=p-1?s/p:NaN);}return o;}
@@ -440,18 +440,25 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* OSCILLATOR SUB-PANE (owner 2026-08-13): oscillators used to live in the bottom 30% of the SAME canvas via
      scaleMargins - with free vertical pan the candles slide straight through them ("floating"). They now render in
      their OWN synced LWC chart below the price pane: candles can never overlap them, and each keeps its banded slot. */
+  var SUB_MIN_BAND=92,SUB_CARD=26;/* px: the least a band may be, and the row above its plot that belongs to the card */
   function ensureSub(w,on){var body=w.el&&w.el.querySelector('.cwin-body');if(!body)return null;var sh=body.querySelector('.cwin-sub'),dc=body.querySelector('.cwin-draw'),host=body.querySelector('.cwin-chart');
     if(!on){if(w.sub){try{w.sub.remove();}catch(e){}w.sub=null;}w.subSeries=[];if(sh){sh.style.display='none';sh.style.height='0px';}if(host)host.style.bottom='0px';if(dc)dc.style.bottom='0px';return null;}
     var _bh=body.clientHeight||360,_sv=0;try{_sv=parseInt(localStorage.getItem('mp:subh'))||0;}catch(e){}
     var H=Math.max(60,Math.min(Math.round(_bh*0.6),_sv||Math.max(88,Math.min(200,Math.round(_bh*0.28)))));
     var _pn=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory','magnet'].filter(function(k){return w.inds&&w.inds[k]&&(k!=='magnet'||w._mag);}).length;
     if(_pn>1)H=Math.max(H,Math.min(Math.round(_bh*0.6),_pn*44));/* each band needs room for its card (2026-10-08) - six bands in 175px stacked the cards on each other */
+    /* THE STRIP SCROLLS (2026-10-08, owner: cards sat over the peaks, and with many bands some were never reachable): every band
+       is at least SUB_MIN_BAND tall with SUB_CARD px reserved ABOVE its plot for the card, the chart lives in an inner element as
+       tall as the bands need, and the visible strip scrolls over it. Geometry is kept on the window for pm() and cwLeg(). */
+    var inner=sh&&sh.querySelector('.cwin-subin');if(sh&&!inner){var sc=document.createElement('div');sc.className='cwin-subsc';inner=document.createElement('div');inner.className='cwin-subin';sc.appendChild(inner);sh.appendChild(sc);}
+    var inH=Math.max(H,_pn*SUB_MIN_BAND);w._subH=H;w._subInH=inH;w._subN=_pn;w._subBand=inH/Math.max(1,_pn);
+    if(inner)inner.style.height=inH+'px';
     if(sh){sh.style.display='block';sh.style.height=H+'px';}if(host)host.style.bottom=H+'px';if(dc)dc.style.bottom=H+'px';
     if(sh&&!sh.querySelector('.cwin-subrz')){var rz=document.createElement('div');rz.className='cwin-subrz';rz.title=__esT_mpcharts("dragToResizeThe",'Drag to resize the indicator panel');sh.appendChild(rz);
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
-      rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=body.getBoundingClientRect();var nh=Math.max(60,Math.min(Math.round(br.height*0.6),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
-      rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subh',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
-    if(!w.sub&&window.LightweightCharts&&sh){try{w.sub=mpCreateChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+      rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=body.getBoundingClientRect();var nh=Math.max(60,Math.min(Math.round(br.height*0.6),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';var _in=sh.querySelector('.cwin-subin');if(_in)_in.style.height=Math.max(nh,(w._subN||1)*SUB_MIN_BAND)+'px';e.preventDefault();},true);
+      rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subh',String(parseInt(sh.style.height)||0));}catch(_){}try{applyInds(w);}catch(_){}/* the band geometry follows the new height */},true);})();}
+    if(!w.sub&&window.LightweightCharts&&sh){try{w.sub=mpCreateChart(sh.querySelector('.cwin-subin')||sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       w.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.chart||w._subSync)return;w._subSync=1;try{w.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;});
       try{w.sub.subscribeCrosshairMove(function(prm){cwLeg(w,prm);});}catch(e){} /* hovering the indicator panel drives the value legend too */
       try{var _r0=w.chart.timeScale().getVisibleLogicalRange();if(_r0)w.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}try{if(chTheme==='light')w.sub.applyOptions(themeOpts());}catch(e){}}catch(e){w.sub=null;}}
@@ -474,7 +481,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory','magnet'].filter(function(k){return w.inds[k]&&(k!=='magnet'||w._mag);}); var paneN=paneKeys.length;
     try{w.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:0.08}});}catch(e){} /* candles own the full price pane now - oscillators live in the sub-chart */
     ensureSub(w,paneN>0);
-    function pm(key){var idx=paneKeys.indexOf(key),band=0.92/Math.max(1,paneN);return {top:idx*band+0.04,bottom:(paneN-1-idx)*band+0.04};}
+    function pm(key){var idx=paneKeys.indexOf(key),inH=w._subInH||1,band=w._subBand||(inH/Math.max(1,paneN));return {top:Math.min(0.9,(idx*band+SUB_CARD)/inH),bottom:Math.min(0.9,((paneN-1-idx)*band+4)/inH)};}
     function pscale(id,key){try{if(w.sub)w.sub.priceScale(id).applyOptions({scaleMargins:pm(key)});}catch(e){}}
     if(!bars.length){cwLeg(w);return;}
     function addS(opts,data,leg){try{var _tc=(opts.priceScaleId&&w.sub)?w.sub:w.chart;var s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));s.setData(data);if(_tc===w.sub)w.subSeries.push(s);else w.indSeries.push(s);if(leg){var last=null;for(var i=data.length-1;i>=0;i--){if(data[i]&&data[i].value!=null&&isFinite(data[i].value)){last=data[i].value;break;}}w.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:data,sub:_tc===w.sub,key:opts.priceScaleId||''});}return s;}catch(e){}}
