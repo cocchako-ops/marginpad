@@ -3374,3 +3374,41 @@ undefined
 /* /swap had no visible heading (audit 2026-09-25): the shell h1 is the SPA route title, hidden on tool routes */
 .swap-title{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,3.4vw,32px);letter-spacing:-.02em;text-align:center;margin:8px 0 6px;color:var(--ink,#e9e7df)}
 
+
+  /* tap a strip card -> the indicator explains itself; chart style chips (2026-10-08) */
+  .cwin-subcard{pointer-events:auto;cursor:pointer;transition:background .15s;}
+  .cwin-subcard:hover{background:rgba(20,26,34,.96);}
+  .cwin-indx{position:fixed;z-index:2147483000;width:min(340px,calc(100vw - 16px));background:linear-gradient(180deg,#161b22,#0e1218);border:1px solid #2f3a47;border-radius:14px;box-shadow:0 18px 48px rgba(0,0,0,.55);color:#cdd3da;font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:12.5px;line-height:1.45;padding:12px 13px 11px;}
+  .cwin-indx[hidden]{display:none;}
+  .cwin-indx .ix-h{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .cwin-indx .ix-h b{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;color:#e9e7df;}
+  .cwin-indx .ix-h b.mp{color:#c2f64a;}
+  .cwin-indx .ix-x{margin-left:auto;width:28px;height:28px;border-radius:8px;background:#1a1f27;border:1px solid #2c3540;color:#e9e7df;font-size:12px;cursor:pointer;}
+  .cwin-indx .ix-now{font-family:'Space Mono',monospace;font-size:11px;color:#c2f64a;background:rgba(194,246,74,.08);border:1px solid rgba(194,246,74,.2);border-radius:8px;padding:5px 8px;margin-bottom:9px;}
+  .cwin-indx .ix-r{margin:0 0 7px;}
+  .cwin-indx .ix-r i{display:block;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7c8794;margin-bottom:1px;}
+  .cwin-indx .ix-r.up i{color:#41e3a3;}
+  .cwin-indx .ix-r.dn i{color:#ff8a80;}
+  .cwin-indx .ix-r p{margin:0;}
+  .cwin-indx .ix-f{display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:9px;border-top:1px solid #1e2530;}
+  .cwin-indx .ix-f a{color:#c2f64a;font-weight:700;text-decoration:none;}
+  .cwin-indx .ix-f button{margin-left:auto;background:#1a1f27;border:1px solid #2c3540;color:#aab3bf;border-radius:8px;padding:6px 10px;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .cwin-indx .ix-f button:hover{color:#ff8a80;border-color:#5a2f2c;}
+  .cwin-indx.sheet{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-height:78vh;overflow-y:auto;border-radius:16px 16px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom));}
+  body.charts-page.ch-light .cwin-indx,.mfc.light ~ .cwin-indx,html.mfc-light .cwin-indx{background:#fff;border-color:#dfe4e9;color:#3a434f;}
+  body.charts-page.ch-light .cwin-indx .ix-h b,html.mfc-light .cwin-indx .ix-h b{color:#1b2028;}
+  body.charts-page.ch-light .cwin-indx .ix-h b.mp,html.mfc-light .cwin-indx .ix-h b.mp,body.charts-page.ch-light .cwin-indx .ix-f a,html.mfc-light .cwin-indx .ix-f a{color:#4f7a00;}
+  body.charts-page.ch-light .cwin-indx .ix-x,body.charts-page.ch-light .cwin-indx .ix-f button,html.mfc-light .cwin-indx .ix-x,html.mfc-light .cwin-indx .ix-f button{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+  body.charts-page.ch-light .cwin-indx .ix-now,html.mfc-light .cwin-indx .ix-now{color:#4f7a00;background:rgba(79,122,0,.07);border-color:rgba(79,122,0,.25);}
+  .cwin-ind-styles{padding:6px 8px 8px;border-bottom:1px solid #1e2530;margin-bottom:4px;}
+  .cwin-ind-styles span{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7c8794;margin:0 0 5px 2px;}
+  .cwin-ind-styles div{display:flex;flex-wrap:wrap;gap:4px;}
+  .cis{background:#141920;border:1px solid #27303b;color:#aab3bf;border-radius:7px;padding:4px 8px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;}
+  .cis.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.5);color:#c2f64a;}
+  .mfc-styles{margin:0 0 10px;}
+  .mfc-styles-r{display:flex;flex-wrap:wrap;gap:6px;}
+  .mfs{background:#141920;border:1px solid #27303b;color:#aab3bf;border-radius:9px;padding:9px 12px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;min-height:40px;}
+  .mfs.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.5);color:#c2f64a;}
+  .mfc.light .mfs,body.charts-page.ch-light .cis{background:#f1f3f6;border-color:#dfe4e9;color:#3a434f;}
+  .mfc.light .mfs.on,body.charts-page.ch-light .cis.on{background:rgba(79,122,0,.09);border-color:rgba(79,122,0,.45);color:#4f7a00;}
+  @media(max-width:520px){.cwin-subcard{gap:5px;padding:2px 6px;font-size:10px;}.cwin-subcard .v{font-size:12px;}.cwin-subcard .bar{width:40px;}.cwin-subcard .st{font-size:9px;padding:1px 5px;}}
