@@ -1333,7 +1333,40 @@
     body.charts-page.cws-side-off .cws-reopen{display:flex;}
     body.charts-page .cws-reopen{position:absolute;left:0;top:50%;transform:translateY(-50%);align-items:center;justify-content:center;width:20px;height:80px;background:linear-gradient(180deg,#c2f64a,#9fe000);color:#06210a;border:none;border-radius:0 10px 10px 0;cursor:pointer;z-index:30;box-shadow:0 0 20px -4px rgba(194,246,74,.75);writing-mode:vertical-rl;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;}
     body.charts-page .cws-reopen:hover{box-shadow:0 0 26px -2px rgba(194,246,74,.95);width:23px;}
+    /* ---- the rail has three widths and the board is never under it (2026-10-08) ---- */
+    body.charts-page #chartspace{padding-left:var(--rail,56px);transition:padding-left .22s cubic-bezier(.2,.7,.2,1);}
+    body.charts-page .cws-bar{width:var(--rail,56px);box-sizing:border-box;transition:width .22s cubic-bezier(.2,.7,.2,1),transform .22s cubic-bezier(.2,.7,.2,1),opacity .16s ease;}/* border-box, or 56px of rail is 80px of rail and the board padding lies by 24px */
+    body.charts-page .cws-rail-tg{display:inline-flex;align-items:center;justify-content:center;width:100%;flex:0 0 auto;height:30px;background:#10141a;border:1px solid #232932;border-radius:9px;color:#9aa3ad;font-size:15px;line-height:1;cursor:pointer;}
+    body.charts-page .cws-rail-tg:hover{color:#c2f64a;border-color:#3a434f;}
+    body.charts-page.cws-mini .cws-bar{padding:8px 6px;gap:6px;overflow:visible;}
+    body.charts-page.cws-mini .cws-side-x,body.charts-page.cws-mini .cws-widgets,body.charts-page.cws-mini .cws-hint,body.charts-page.cws-mini .cws-btn span,body.charts-page.cws-mini .cws-btn small{display:none;}
+    body.charts-page.cws-mini .cws-bar .cws-actions{gap:5px;margin-top:0;}
+    body.charts-page.cws-mini .cws-bar .cws-btn{width:42px;height:40px;justify-content:center;padding:0;border-radius:10px;}
+    body.charts-page.cws-mini .cws-bar .cws-btn svg{width:17px;height:17px;}
+    body.charts-page.cws-mini .cws-bar .cws-tiles{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:42px;justify-content:center;}
+    body.charts-page.cws-mini .cws-bar .cws-tile{width:19px;height:17px;padding:2px;}
+    /* a tooltip that reads like a label - the icons must be learnable at a glance */
+    body.charts-page.cws-mini .cws-bar .cws-btn{position:relative;}
+    body.charts-page.cws-mini .cws-bar .cws-btn:hover::after{content:attr(title);position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);white-space:nowrap;background:#0d1014;border:1px solid #2b323b;color:#e9e7df;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 9px;border-radius:7px;box-shadow:0 10px 24px -10px rgba(0,0,0,.9);z-index:40;pointer-events:none;}
   }
+  /* ONE ROW OF HEADER PER WINDOW (2026-10-08): in a 428px window the header wrapped to two rows (measured ~70px); a
+     container query trims what a narrow window cannot afford - countdown, the "Indicators" word, the grip - and the row
+     stays one row down to ~330px. Browsers without container queries keep the wrapping fallback. */
+  .cwin{container-type:inline-size;}
+  .cwin .cwin-head{padding:4px 8px;gap:6px;}/* `.cwin .cwin-head` on purpose: the base .cwin-head rule sits LATER in this file and would win a plain-selector tie */
+  .cwin .cwin-tf button{padding:4px 7px;}
+  .cwin .cwin-sym{padding-top:4px;padding-bottom:4px;}
+  .cwin .cwin-ind-btn,.cwin .cwin-ai{padding-top:5px;padding-bottom:5px;}
+  @media(min-width:881px){body.charts-page .wrap{padding-left:6px;padding-right:6px;}}/* the page gutter is for reading; a workspace wants the width */
+  .cwin .cwin-head{flex-wrap:nowrap;}
+  .cwin .cwin-head .cwin-x{margin-left:auto;}
+  @container (max-width:720px){.cwin .cwin-head .cwin-cd{display:none;}.cwin .cwin-head .cwin-ind-lbl{display:none;}.cwin .cwin-head .cwin-ind-btn{padding:6px 7px;}.cwin .cwin-head .cwin-grip{display:none;}}
+  @container (max-width:600px){.cwin .cwin-head .cwin-ai span{display:none;}.cwin .cwin-head .cwin-ai{padding:6px 7px;}}
+  @container (max-width:470px){.cwin .cwin-head .cwin-tf button{padding:5px 5px;font-size:10.5px;}.cwin .cwin-head .cwin-sym{width:66px!important;padding-left:8px;}}
+  @container (max-width:380px){.cwin .cwin-head{flex-wrap:wrap;}}
+  .cwin .cwin-pop-tool{grid-template-columns:repeat(2,max-content);}
+  @container (min-width:760px){.cwin .cwin-pop-tool{grid-template-columns:repeat(3,max-content);}}
+  @media(min-width:881px){body.charts-page.cws-mini .cws-bar{justify-content:flex-start;}}/* the base .cws-bar is space-between, which parked the icon stack at the bottom of the rail */
   @media(max-width:880px){body.charts-page .cws-board{height:auto;}}
   /* ---- mobile single-chart (Charts on phones) ---- */
   .cwm{display:flex;flex-direction:column;height:calc(100vh - 128px);height:calc(100dvh - 128px);min-height:430px;background:#0a0b0d;}
@@ -1610,7 +1643,14 @@
   .cwin-pick .scur{line-height:1;}
   .cwin-pop{position:absolute;top:calc(100% + 7px);right:0;left:auto;z-index:7;background:rgba(10,13,17,.97);border:1px solid #2b323b;border-radius:11px;padding:6px;box-shadow:0 16px 34px -12px rgba(0,0,0,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}/* right-anchored with the palette (2026-07-30) so popups stay inside the window */
   .cwin-pop[hidden]{display:none;}
-  .cwin-pop-tool{display:grid;grid-template-columns:repeat(2,minmax(118px,1fr));gap:2px;}
+  .cwin-pop-tool{display:grid;grid-template-columns:repeat(3,minmax(118px,1fr));gap:2px;max-height:min(52vh,400px);overflow-y:auto;scrollbar-width:thin;}/* nineteen tools in five named groups (2026-10-08) - three columns so the panel stays shorter than the chart it floats over */
+  .cpop-g{grid-column:1/-1;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#5c656f;padding:7px 10px 2px;}
+  .cpop-g:not(:first-child){margin-top:3px;border-top:1px solid #1c2229;padding-top:8px;}
+  .cwin-done{color:#06222a;background:#c2f64a;border-color:#c2f64a;font-size:11px;padding:0 9px;}
+  .cwin-done[hidden]{display:none!important;}
+  .cwin-drawx{color:#ff8a80;}
+  /* PHONE: the tool list is a bottom sheet, never a popover hanging off a 30px chip - every row a thumb-sized target (2026-10-08) */
+  @media(max-width:880px){.cwin-pop-tool{position:fixed;left:0;right:0;bottom:0;top:auto;grid-template-columns:repeat(2,minmax(0,1fr));max-height:62vh;border-radius:16px 16px 0 0;padding:8px 10px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -18px 50px -16px rgba(0,0,0,.9);z-index:60;}.cwin-pop-tool .cpop-it{padding:11px 12px;font-size:13px;}.cwin-pop-tool .cpop-it i{width:22px;font-size:14px;}}
   .cwin-pop-color{display:flex;gap:9px;padding:10px 12px;}
   .cwin-pop-color .cwin-color{width:20px;height:20px;}
   .cwin-pop-style{display:flex;flex-direction:column;gap:2px;min-width:132px;}
@@ -1771,6 +1811,7 @@
   html{scrollbar-color:#262d37 #0a0b0d;scrollbar-width:thin;}
   /* sticky header - transparent over the hero, blurred full-bleed bar once scrolled */
   header{position:sticky;top:0;z-index:40;transition:padding .25s ease;}
+  @media(min-width:881px){body.charts-page header{padding-top:7px;padding-bottom:7px;}}/* the workspace page: a slim header, every pixel of height below it is chart (2026-10-08) */
   header::after{content:'';position:absolute;top:0;left:calc(50% - 50vw);width:100vw;height:100%;z-index:-1;background:rgba(10,11,13,.92);-webkit-backdrop-filter:blur(9px) saturate(1.2);backdrop-filter:blur(9px) saturate(1.2);border-bottom:1px solid var(--line-bright);opacity:0;transition:opacity .28s ease;}
   /* header height stays CONSTANT on scroll - only the backdrop fades in. Previously the padding shrank when
      scrolled, which shifted the TradingView ticker-tape below it and made the header shake/jitter whenever the
@@ -2538,10 +2579,13 @@
   .mfc-b svg{width:15px;height:15px;flex:0 0 auto;}
   .mfc-x{color:#ff8a80;border-color:#3a2422;}
   .mfc-grow{flex:1 1 auto;}
-  .mfc-stage{flex:1 1 auto;display:flex;flex-direction:column;gap:5px;padding:5px;min-height:0;}
+  /* EDGE TO EDGE (2026-10-08): the pane had a 1px border, a 12px radius and 5px of stage padding on every side - 32px of a
+     390px screen given to a frame. The chart owns the full width now; the active pane in a split is marked by a 2px cyan
+     rule along its top edge, which costs nothing. */
+  .mfc-stage{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;padding:0;min-height:0;background:#070809;}
   @media(orientation:landscape){.mfc-stage.split{flex-direction:row;}}
-  .mfc-pane{position:relative;flex:1 1 0;min-height:0;min-width:0;border:1px solid #1c2025;border-radius:12px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0,#0f141a,#0a0c0f);}
-  .mfc-pane.active{border-color:rgba(63,216,230,.6);box-shadow:inset 0 0 0 1px rgba(63,216,230,.3);}
+  .mfc-pane{position:relative;flex:1 1 0;min-height:0;min-width:0;border:0;border-radius:0;overflow:hidden;background:#0a0c0f;}
+  .mfc-stage.split .mfc-pane.active::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:rgba(63,216,230,.75);z-index:6;pointer-events:none;}
   .mfc-pane .mfc-chart{position:absolute;inset:0;}
   .mfc-pane .mfc-sub{position:absolute;left:0;right:0;bottom:0;height:0;display:none;border-top:1px solid #232932;background:#0a0d11;}
   .mfc-pane .mfc-subrz{position:absolute;left:0;right:0;top:-2px;height:16px;cursor:ns-resize;z-index:6;touch-action:none;}
@@ -2653,6 +2697,40 @@
   .mfc-rot-x{flex:0 0 auto;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;background:#141a22;border:1px solid #2c3540;border-radius:50%;color:#8a929c;font-size:11px;line-height:1;cursor:pointer;padding:0;}
   @media(orientation:landscape){.mfc-rot{display:none;}}
   @keyframes mfcRotPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+  /* ===== Mobile charts, two bars (2026-10-08) =====
+     PORTRAIT: top = identity (close · coin · timeframe · AI), bottom DOCK = the six actions in the thumb zone, each a
+     48px target with an icon over a label. LANDSCAPE: 390px of height cannot afford two bars, so the dock hides and the
+     same six actions sit in the top row as icons (their `.mfc-dockable` copies). Nothing ever scrolls off the screen. */
+  .mfc-bar{overflow:hidden;flex-wrap:nowrap;}
+  .mfc-bar .mfc-dockable{display:none;}
+  .mfc-car{font-size:8px;color:#7f8893;margin-left:2px;}
+  .mfc-b.on .mfc-car{color:inherit;}
+  .mfc-tfrow{display:flex;gap:6px;padding:6px 8px 8px;background:#0a0b0d;border-bottom:1px solid #1c2025;flex:0 0 auto;}
+  .mfc-tfrow[hidden]{display:none;}
+  .mfc-tfrow button{flex:1 1 0;min-width:0;background:#12161c;border:1px solid #232932;border-radius:9px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;padding:10px 0;cursor:pointer;}
+  .mfc-tfrow button.on{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d;}
+  .mfc-dock{display:flex;align-items:stretch;gap:2px;padding:4px 4px calc(4px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#0a0b0d,#0d0f13);border-top:1px solid #1c2025;flex:0 0 auto;}
+  .mfc-dock .mfc-b{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:6px 2px 5px;min-height:48px;border-radius:10px;background:transparent;border-color:transparent;color:#9aa3ad;font-size:10px;letter-spacing:0;}
+  .mfc-dock .mfc-b svg{width:20px;height:20px;}
+  .mfc-dock .mfc-b .mfc-bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+  .mfc-dock .mfc-b.on{background:rgba(63,216,230,.12);border-color:rgba(63,216,230,.35);color:#3fd8e6;}
+  .mfc-dock .mfc-b.mfc-tradebtn{color:#c2f64a!important;background:rgba(194,246,74,.1)!important;border-color:rgba(194,246,74,.3)!important;}
+  .mfc.drawing .mfc-dock{display:none;}/* the palette takes the dock's place while drawing */
+  .mfc-rot{bottom:calc(72px + env(safe-area-inset-bottom));}/* above the dock - it used to sit exactly on the two middle dock buttons */
+  @media(orientation:portrait){
+    .mfc-pane.drawing .cwin-tools{position:fixed;left:0;right:0;bottom:0;top:auto;max-width:none;border-radius:14px 14px 0 0;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:6px;z-index:45;}
+    .mfc-pane.drawing .cwin-tools .cwin-tool{min-width:40px;min-height:40px;font-size:16px;}
+    .mfc-pane.drawing .cwin-tools .cwin-pop{bottom:calc(100% + 6px);top:auto;}
+    .mfc-pane.drawing .cwin-tools .cwin-pop-tool{bottom:0;}
+  }
+  @media(orientation:landscape){
+    .mfc-dock{display:none!important;}
+    .mfc-bar .mfc-dockable{display:inline-flex;padding:8px 9px;}
+    .mfc-bar .mfc-dockable .mfc-bl{display:none;}
+    .mfc-bar .mfc-x .mfc-bl{display:none;}
+    .mfc-bar .mfc-ai .mfc-bl{display:none;}
+    .mfc-bar{gap:5px;padding-top:calc(5px + env(safe-area-inset-top));padding-bottom:5px;}
+  }
 
 /* ══════════ UX pass (2026-07) ══════════ */
 /* bottom-nav Trades badge - open-position count */

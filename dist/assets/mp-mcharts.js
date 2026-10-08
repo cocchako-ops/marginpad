@@ -115,23 +115,40 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // ---- build overlay ----
   function build(){
     ov=document.createElement('div');ov.className='mfc';ov.hidden=true;
+    /* TWO BARS, ONE SET OF ACTIONS (2026-10-08, owner: "dosta mesta za chart, alati pregledni i na dohvat ruke").
+       Measured before: ten chips in ONE scrolling top row, half of them off the right edge of a 390px screen ("1 ch…"),
+       and the chart in a bordered card with 16px of margin. Now the TOP bar is identity only (close, coin, timeframe, AI)
+       and the six actions live in a thumb-zone DOCK at the bottom; in landscape, where height is the scarce axis, the dock
+       hides and the same six actions sit in the top row as icons (the `.mfc-dockable` copies). One delegated handler
+       (`onBarClick`) serves both copies; state is synced to every `[data-act]` button, never to the one that was tapped. */
+    var ACT=function(act,svg,label,cls){return '<button class="mfc-b'+(cls?' '+cls:'')+'" data-act="'+act+'">'+svg+'<span class="mfc-bl">'+label+'</span></button>';};
+    var SV={ind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>',
+      split:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+      draw:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/></svg>',
+      trades:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 7 3 12 8 17"/></svg>',
+      calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/></svg>',
+      trade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'};
+    var actions=function(dock){var c=dock?'':'mfc-dockable';return ACT('ind',SV.ind,dock?mcT('mcIndShort',__esT_mpmcharts("indShort",'Indicators')):mcT('indBtn','Indicators'),c)
+      +ACT('draw',SV.draw,mcT('mcDraw','Draw'),c)
+      +'<button class="mfc-b '+c+'" data-act="split">'+SV.split+'<span class="mfc-bl mfc-splitL">'+mcT('mc2charts','2 charts')+'</span></button>'
+      +ACT('trades',SV.trades,dock?mcT('mcTradesShort',__esT_mpmcharts("tradesShort",'Trades')):mcT('mtMyTrades',__esT_mpmcharts("myTrades",'My trades')),c)
+      +ACT('calc',SV.calc,mcT('mcCalc','Calc'),c)
+      +ACT('trade',SV.trade,dock?mcT('mcTradeShort',__esT_mpmcharts("tradeShort",'Trade')):mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade')),c+' mfc-tradebtn');};/* the dock is six 65px cells on a 390px phone: "Indicators" and "Demo trade" truncated to "Indicato…" (screenshot 2026-10-08) */
     ov.innerHTML='<div class="mfc-bar">'
-      +'<button class="mfc-b mfc-x" data-act="close" aria-label="Close charts">✕ '+mcT('mcClose','Close')+'</button>'
+      +'<button class="mfc-b mfc-x" data-act="close" aria-label="Close charts">✕<span class="mfc-bl"> '+mcT('mcClose','Close')+'</span></button>'
       +'<button class="mfc-b" data-act="sym"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="mfc-symL">BTC</span></button>'
-      +'<button class="mfc-b" data-act="tf"><span class="mfc-tfL">1m</span></button>'
-      +'<button class="mfc-b" data-act="ind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>'+mcT('indBtn','Indicators')+'</button>'
-      +'<button class="mfc-b" data-act="split"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span class="mfc-splitL">'+mcT('mc2charts','2 charts')+'</span></button>'
-      +'<button class="mfc-b" data-act="draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/></svg>'+mcT('mcDraw','Draw')+'</button>'
-      +'<button class="mfc-b" data-act="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 7 3 12 8 17"/></svg>'+mcT('mtMyTrades',__esT_mpmcharts("myTrades",'My trades'))+'</button>'
-      +'<button class="mfc-b" data-act="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/></svg>'+mcT('mcCalc','Calc')+'</button>'
-      +'<button class="mfc-b mfc-tradebtn" data-act="trade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'+mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade'))+'</button>'
+      +'<button class="mfc-b" data-act="tf"><span class="mfc-tfL">1m</span><span class="mfc-car">▾</span></button>'
+      +actions(false)
       +'<span class="mfc-grow"></span>'
-      +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>'+mcT('mcAi','AI')+'</button>'
+      +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg><span class="mfc-bl">'+mcT('mcAi','AI')+'</span></button>'
       +'</div>'
+      +'<div class="mfc-tfrow" id="mfcTfRow" hidden>'+TFS.map(function(t){return '<button type="button" data-tfpick="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
+      +'<div class="mfc-dock">'+actions(true)+'</div>'
       +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate',__esT_mpmcharts("rotateYourPhoneFor",'↻ Rotate your phone for a wider chart'))+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss">✕</button></div>';
     document.body.appendChild(ov);
     var rx=ov.querySelector('.mfc-rot-x');if(rx)rx.addEventListener('click',function(e){e.stopPropagation();var r=ov.querySelector('.mfc-rot');if(r)r.hidden=true;try{localStorage.setItem('mp_mfc_rot_off','1');}catch(_){}});
+    setTimeout(function(){var r=ov&&ov.querySelector('.mfc-rot');if(r)r.hidden=true;},7000);/* a hint, not a resident: portrait is a first-class mode, so it leaves by itself */
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
@@ -157,13 +174,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     bar.style.width=(vv.width*sc)+'px';
     bar.style.transform='translate('+ox+'px,'+oy+'px) scale('+(1/sc)+')';
   }catch(e){}}
-  function onBarClick(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
+  function onBarClick(e){
+    var tp=e.target.closest&&e.target.closest('[data-tfpick]');
+    if(tp){var p0=panes[activeI];if(p0){p0.tf=tp.getAttribute('data-tfpick');clearPaneDraw(p0);loadKlines(p0);syncBar();mfcSave();}tfRow(false);return;}
+    var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
+    if(a!=='tf')tfRow(false);
     if(a==='close')return close();
     if(a==='split')return toggleSplit();
     if(a==='draw')return toggleDraw(b);
     if(a==='trades')return toggleTrades(b);
     if(a==='sym')return openSheet('sym');
-    if(a==='tf')return openSheet('tf');
+    if(a==='tf')return tfRow();/* one tap: the six timeframes appear as a chip row under the bar - a sheet was a tap too many for the control used most */
     if(a==='ind')return openSheet('ind');
     if(a==='calc')return openCalc();
     if(a==='trade')return openTrade();
@@ -408,7 +429,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     for(var gk in _g){var g=_g[gk];try{p.tradeLines.push(p.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:0,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}}} // one line per level (×N) - stacked labels covered the candles (UX audit, mobile)
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
-  function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);} // draw event also fires on MOBILE (2026-08-11) - the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
+  function tfRow(on){var r=ov&&ov.querySelector('#mfcTfRow');if(!r)return;var want=(on==null)?r.hidden:!!on;r.hidden=!want;var p=panes[activeI];
+    Array.prototype.forEach.call(r.querySelectorAll('[data-tfpick]'),function(x){x.classList.toggle('on',!!p&&x.getAttribute('data-tfpick')===String(p.tf));});
+    Array.prototype.forEach.call(ov.querySelectorAll('[data-act="tf"]'),function(x){x.classList.toggle('on',want);});}
+  function syncAct(act,on){Array.prototype.forEach.call(ov.querySelectorAll('[data-act="'+act+'"]'),function(x){x.classList.toggle('on',!!on);});}/* both copies (top row + dock) always agree */
+  function toggleDraw(){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}
+    if(!p.w.dr.on&&p.w._drCancelMulti)p.w._drCancelMulti();
+    p.el.classList.toggle('drawing',p.w.dr.on);ov.classList.toggle('drawing',p.w.dr.on);syncAct('draw',p.w.dr.on);
+    p.w._drExit=function(){if(p.w.dr.on)toggleDraw();};} // draw event also fires on MOBILE (2026-08-11) - the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
   function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}mAiClear(p);try{if(window.__mpAi&&window.__mpAi.ghostClear&&p&&p.w)window.__mpAi.ghostClear(p.w);}catch(e){}}/* the forecast candles belong to the symbol+TF that was on screen */
   /* the AI plan on a pane: price lines only (the pane's canvas belongs to the user's drawings) */
   function mAiClear(p){if(p&&p._aiPlan){p._aiPlan.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p._aiPlan=null;}try{if(p&&p.w){p.w._aiPlanObj=null;if(p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}}catch(e){} /* clear the shared legend too */}
@@ -432,11 +460,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(plan.entry)pl(plan.entry,'#3fd8e6','E',_tr?0:3,2);if(plan.stop)pl(plan.stop,'#ff5a4d','SL',_es,2);var _tL=0;(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tL&&Math.abs(t-_tL)/_tL<0.004)return;_tL=t;pl(t,'#2ebd85','TP'+(i+1),_es,1);});(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'').slice(0,12),3,1);});
     try{if(p.w){p.w._aiPlanObj=plan;if(p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}}catch(e){} /* the shared legend + the position-guard both read p.w._aiPlanObj */}
   function mAiFlash(p,price){if(!p||!p.candle||!(price>0))return;try{var l=p.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{p.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
-  function toggleTrades(btn){var on=!btn.classList.contains('on');btn.classList.toggle('on',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
-  function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));mfcSave();}
+  function toggleTrades(btn){var on=!btn.classList.contains('on');syncAct('trades',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
+  function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var ap=panes[activeI],dOn=!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on);syncAct('draw',dOn);if(ov)ov.classList.toggle('drawing',dOn);mfcSave();}
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}
   // ---- split ----
-  function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage'),sL=ov.querySelector('.mfc-splitL');st.classList.toggle('split',split===2);if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
+  function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage');st.classList.toggle('split',split===2);Array.prototype.forEach.call(ov.querySelectorAll('.mfc-splitL'),function(sL){sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');});/* both copies of the label (top row + dock) */
     if(split===2&&panes.length<2){var base=panes[activeI]||panes[0];var _bi=-1;for(var _ti=0;_ti<TFS.length;_ti++)if(TFS[_ti][0]===String(base&&base.tf))_bi=_ti;var _ntf=_bi<0?'240':(_bi<TFS.length-1?TFS[_bi+1][0]:TFS[_bi-1][0]);/* dual view = SAME symbol on the NEXT LARGER timeframe (BTC 5m -> +BTC 15m); at 1d (no larger) fall back to the next smaller (4h). Was hardcoded "other coin at 1h" (ETH 60), which ignored what the user was looking at (2026-07-30). */var p=mkPane(base?base.sym:'BTC',_ntf);panes.push(p);st.appendChild(p.el);loadLib(function(){initChart(p);});}
     else if(split===1&&panes.length>1){var rem=panes.pop();if(rem.w)rem.w.dead=true;try{if(rem.chart)rem.chart.remove();}catch(e){}try{if(rem.sub)rem.sub.remove();}catch(e){}rem.sub=null;if(rem.el.parentNode)rem.el.parentNode.removeChild(rem.el);if(activeI>0)setActive(0);}
     setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);

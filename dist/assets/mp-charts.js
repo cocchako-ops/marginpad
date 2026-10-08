@@ -1529,10 +1529,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function drawStoreAll(){try{return JSON.parse(localStorage.getItem(DRAW_LS)||'{}')||{};}catch(e){return {};}}
   // Shared drawing palette - ONE tidy row that never wraps: [select] [tool▾] [color▾] [style▾] | [delete] [undo] [clear].
   // Tools/colors/line-styles live in labeled dropdown panels (.cwin-pop) so a first-time visitor reads names, not glyphs.
+  /* THE TOOLS THE AI DRAWS WITH ARE THE READER'S TOO (2026-10-08, owner: "za AI smo ubacili neke alate da ima da crta ali nismo
+     odradili update da ih damo korisnicima"). The engine has rendered zone / level (hray) / channel / position (R:R) / fib
+     extension / pitchfork / pattern (poly) / volume profile since the broker-kit pass, but the picker offered ten shapes. The
+     picker is grouped now so nineteen entries read as five short lists, not one long one; the gesture for each new tool lives
+     in the pointerdown branch below (`MULTI` = tap-tap-tap tools, previewed as you go). */
+  var TOOL_GROUPS=[
+    ['Lines',[['trend','╱','Trend line','Drag between two candles'],['ray','⇗','Ray','Drag - extends to the right'],['hline','―','Horizontal line','One click'],['level','⊢','Level','One click: a line from that candle to the right'],['vline','│','Vertical line','One click'],['arrow','➔','Arrow','Drag']]],
+    ['Shapes',[['rect','▭','Rectangle','Drag'],['zone','≡','Zone','Drag top to bottom: a supply / demand band from that candle to the right edge'],['channel','∥','Channel','Drag the base line, then click where the parallel goes'],['pattern','⋀','Pattern','Click each point (head and shoulders, triangle, wedge...), then Done or click the last point again']]],
+    ['Fibonacci',[['fib','F','Fib retracement','Drag from the swing low to the swing high'],['fibext','Fx','Fib extension','Three clicks: A, B, C'],['pitchfork','Ψ','Pitchfork','Three clicks: the pivot, then the two points of the next swing']]],
+    ['Trade',[['position','R','Position (R:R)','Three clicks: entry, stop, target - prints the reward-to-risk'],['measure','⇕','Measure','Drag: price, percent and candles between two points'],['volprofile','▤','Volume profile','Drag across a range of candles']]],
+    ['Notes',[['text','T','Text label','Click, then type'],['pen','✎','Freehand','Draw']]]
+  ];
   function drawToolsHtml(withAlert){
-    var T=[['trend','╱','Trend line'],['ray','⇗','Ray'],['arrow','➔','Arrow'],['hline','―','Horizontal line'],['vline','│','Vertical line'],['rect','▭','Rectangle'],['fib','F','Fibonacci'],['measure','⇕','Measure'],['pen','✎','Freehand'],['text','T','Text label']];
-    if(withAlert)T.push(['alert','',__esT_mpcharts("priceAlert",'Price alert')]);
-    var items='';for(var i=0;i<T.length;i++)items+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button"><i>'+T[i][1]+'</i><span>'+T[i][2]+'</span></button>';
+    var items='';
+    for(var g=0;g<TOOL_GROUPS.length;g++){var T=TOOL_GROUPS[g][1].slice();if(withAlert&&TOOL_GROUPS[g][0]==='Trade')T.push(['alert','',__esT_mpcharts("priceAlert",'Price alert'),'One click at the price']);
+      items+='<div class="cpop-g">'+TOOL_GROUPS[g][0]+'</div>';
+      for(var i=0;i<T.length;i++)items+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button" title="'+(T[i][3]||'')+'"><i>'+T[i][1]+'</i><span>'+T[i][2]+'</span></button>';}
     var COLS=['#3fd8e6','#c2f64a','#ff6258','#ff9f4d','#b48cff','#ffffff'],cols='';
     for(var j=0;j<COLS.length;j++)cols+='<span class="cwin-color'+(j===0?' on':'')+'" data-color="'+COLS[j]+'" style="background:'+COLS[j]+'"></span>';
     return '<div class="cwin-tools">'
@@ -1540,10 +1553,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">╱</span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
+      +'<button class="cwin-tool cwin-done" data-done title="Finish this shape" type="button" hidden>Done</button>'
       +'<span class="cwin-sep"></span>'
       +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing" type="button"></button>'
       +'<button class="cwin-tool cwin-undo" data-undo title="Undo last" type="button">↶</button>'
       +'<button class="cwin-tool cwin-clear" data-clear title="Clear all" type="button">Clear</button>'
+      +(withAlert?'':'<button class="cwin-tool cwin-drawx" data-drawx title="Exit drawing" type="button">✕</button>')
       +'<div class="cwin-pop cwin-pop-tool" data-pop="tool" hidden>'+items+'</div>'
       +'<div class="cwin-pop cwin-pop-color" data-pop="color" hidden>'+cols+'</div>'
       +'<div class="cwin-pop cwin-pop-style" data-pop="style" hidden>'
@@ -1749,8 +1764,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ctx.globalAlpha=.25;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(xb,yb);ctx.lineTo(xc,yc);ctx.stroke();
       ctx.restore();anchDot(xa,ya,s.color);anchDot(xb,yb,s.color);anchDot(xc,yc,s.color);
       if(s.txt)inkTxt(en.x,en.y-6,String(s.txt).slice(0,18),s.color,10,'r');}
+    /* CHANNEL (user tool, 2026-10-08): the base line plus a parallel `off` (a PRICE delta) away, the band tinted. The AI's
+       channel is two separate shapes; the reader's is one, so it moves, deletes and undoes as one thing. */
+    function drawChannel(s){var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null)return;
+      var y3=yOf(+s.p1+(+s.off||0)),y4=yOf(+s.p2+(+s.off||0));if(y3==null||y4==null)return;
+      var a=rayEnd(q.x1,q.y1,q.x2,q.y2),b=rayEnd(q.x1,y3,q.x2,y4);
+      ctx.save();ctx.fillStyle=s.color;ctx.globalAlpha=.08;ctx.beginPath();ctx.moveTo(q.x1,q.y1);ctx.lineTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(q.x1,y3);ctx.closePath();ctx.fill();ctx.restore();
+      ctx.save();setStyle(s);ctx.beginPath();ctx.moveTo(q.x1,q.y1);ctx.lineTo(a.x,a.y);ctx.moveTo(q.x1,y3);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();
+      anchDot(q.x1,q.y1,s.color);anchDot(q.x2,q.y2,s.color);anchDot(q.x1,y3,s.color);
+      if(s.txt)inkTxt(q.x1+8,q.y1-6,String(s.txt).slice(0,20),s.color,10);}
     function strokeShape(s){
       if(s.t==='path'){drawPath(s);return;}
+      if(s.t==='channel'){drawChannel(s);return;}
+      if(s.t==='vprange'){var qv=proj2(s);if(qv.x1==null||qv.x2==null)return;ctx.save();ctx.fillStyle=s.color;ctx.globalAlpha=.08;ctx.fillRect(Math.min(qv.x1,qv.x2),0,Math.abs(qv.x2-qv.x1),w.dr.H);ctx.globalAlpha=.6;ctx.setLineDash([4,3]);ctx.strokeStyle=s.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(qv.x1,0);ctx.lineTo(qv.x1,w.dr.H);ctx.moveTo(qv.x2,0);ctx.lineTo(qv.x2,w.dr.H);ctx.stroke();ctx.restore();return;}/* the range being dragged for a volume profile */
       if(s.t==='zone'){drawZone(s);return;}
       if(s.t==='vp'){drawVp(s);return;}
       if(s.t==='hray'){drawHray(s);return;}
@@ -1838,7 +1864,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function save(){var g=grid(),k=dKey();if(!g||!k)return;var all=drawStoreAll();
       var ser=[];w.dr.shapes.filter(function(s){return !s.ai;}).slice(-80).forEach(function(s){var o;try{o=JSON.parse(JSON.stringify(s));}catch(e){return;}delete o._bb;
         var tm=function(l){return g.t0+l*g.iv;};
-        if(o.l!=null)o.l=tm(o.l);if(o.l1!=null)o.l1=tm(o.l1);if(o.l2!=null)o.l2=tm(o.l2);
+        if(o.l!=null)o.l=tm(o.l);if(o.l1!=null)o.l1=tm(o.l1);if(o.l2!=null)o.l2=tm(o.l2);if(o.l3!=null)o.l3=tm(o.l3);
         if(o.pts)o.pts=o.pts.filter(function(pt){return pt&&pt.l!=null&&pt.p!=null;}).map(function(pt){return {l:tm(pt.l),p:pt.p};});
         ser.push(o);});
       if(ser.length)all[k]={ts:Date.now(),shapes:ser};else delete all[k];
@@ -1847,7 +1873,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function reload(){var g=grid(),k=dKey();if(!g||!k)return;var rec=drawStoreAll()[k];w.dr.sel=null;w.dr.cur=null;
       w.dr.shapes=((rec&&rec.shapes)||[]).map(function(o){var s;try{s=JSON.parse(JSON.stringify(o));}catch(e){return null;}
         var lg=function(t){return (t-g.t0)/g.iv;};
-        if(s.l!=null)s.l=lg(s.l);if(s.l1!=null)s.l1=lg(s.l1);if(s.l2!=null)s.l2=lg(s.l2);
+        if(s.l!=null)s.l=lg(s.l);if(s.l1!=null)s.l1=lg(s.l1);if(s.l2!=null)s.l2=lg(s.l2);if(s.l3!=null)s.l3=lg(s.l3);
         if(s.pts)s.pts.forEach(function(pt){pt.l=lg(pt.l);});
         return s;}).filter(Boolean);
       redraw();}
@@ -1861,7 +1887,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(s.t==='vline'){var vx=xOf(s.l);return vx!=null&&Math.abs(x-vx)<=TH;}
       if(s.t==='text'){var b=s._bb;return !!b&&x>=b.x-6&&x<=b.x+b.w+6&&y>=b.y-b.h-6&&y<=b.y+6;}
       if(s.t==='hray'){var hy2=yOf(s.p),hx2=xOf(s.l1);return hy2!=null&&Math.abs(y-hy2)<=TH&&(hx2==null||x>=hx2-TH);}
-      if(s.t==='zone'||s.t==='vp'||s.t==='pos'||s.t==='fibx'||s.t==='fork'){return false;}/* composite tools are not draggable - they are rebuilt from the analysis */
+      if(s.by==='ai'&&(s.t==='zone'||s.t==='vp'||s.t==='pos'||s.t==='fibx'||s.t==='fork'))return false;/* the AI's composite shapes are rebuilt from the analysis, never dragged; the reader's own (same types, drawn by hand since 2026-10-08) select and move like anything else */
+      if(s.t==='vp')return false;
+      if(s.t==='zone'){var zy1=yOf(s.p1),zy2=yOf(s.p2),zx1=(s.l1==null)?0:xOf(s.l1);if(zy1==null||zy2==null)return false;return y>=Math.min(zy1,zy2)-TH&&y<=Math.max(zy1,zy2)+TH&&(zx1==null||x>=zx1-TH);}
+      if(s.t==='pos'){var py=yOf(s.p),px1=(s.l1==null)?0:xOf(s.l1),ps=yOf(s.stop),pt=(s.tgts&&s.tgts.length)?yOf(+s.tgts[s.tgts.length-1]):null;if(py==null)return false;var lo=Math.min(py,ps==null?py:ps,pt==null?py:pt),hi=Math.max(py,ps==null?py:ps,pt==null?py:pt);return x>=(px1==null?0:px1)-TH&&y>=lo-TH&&y<=hi+TH;}
+      if(s.t==='fibx'||s.t==='fork'){var A=[[s.l1,s.p1],[s.l2,s.p2],[s.l3,s.p3]];for(var k=0;k<3;k++){var ax=xOf(A[k][0]),ay=yOf(A[k][1]);if(ax!=null&&ay!=null&&Math.hypot(x-ax,y-ay)<=11)return true;}if(s.t==='fork'){var fx=xOf(s.l1),fy=yOf(s.p1),mx=(xOf(s.l2)+xOf(s.l3))/2,my=(yOf(s.p2)+yOf(s.p3))/2;if(fx!=null&&isFinite(mx)){var fe=rayEnd(fx,fy,mx,my);return d2seg(x,y,fx,fy,fe.x,fe.y)<=TH;}}return false;}
+      if(s.t==='channel'){var qc=proj2(s);if(qc.x1==null||qc.y1==null||qc.x2==null||qc.y2==null)return false;var ca=rayEnd(qc.x1,qc.y1,qc.x2,qc.y2),cy3=yOf(+s.p1+(+s.off||0)),cy4=yOf(+s.p2+(+s.off||0));if(d2seg(x,y,qc.x1,qc.y1,ca.x,ca.y)<=TH)return true;if(cy3!=null&&cy4!=null){var cb=rayEnd(qc.x1,cy3,qc.x2,cy4);if(d2seg(x,y,qc.x1,cy3,cb.x,cb.y)<=TH)return true;}return false;}
       if(s.t==='pen'||s.t==='path'||s.t==='poly'){var p=s.pts||[],lx=null,ly=null;for(var i=0;i<p.length;i++){var xx=xOf(p[i].l),yy=yOf(p[i].p);if(xx==null||yy==null)continue;if(lx!=null&&d2seg(x,y,lx,ly,xx,yy)<=TH)return true;lx=xx;ly=yy;}return false;}
       if(s.t==='fib'){for(var j=0;j<FIBLV.length;j++){var fy=yOf(s.p1+(s.p2-s.p1)*FIBLV[j]);if(fy!=null&&Math.abs(y-fy)<=5)return true;}return false;}
       var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null)return false;
@@ -1890,24 +1921,82 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else if(tl==='hline')placed(Object.assign({t:'hline',p:P},st));
       else if(tl==='vline')placed(Object.assign({t:'vline',l:L},st));
       else if(tl==='text'){var txt=prompt(mpDrawT('Text:'),'');if(txt&&txt.trim())placed(Object.assign({t:'text',l:L,p:P,txt:txt.trim().slice(0,80)},st));}
+      else if(tl==='level')placed(Object.assign({t:'hray',l1:L,p:P},st));/* a level that starts at THIS candle and runs right - the AI's hray, by hand */
+      else if(tl==='zone')w.dr.cur=Object.assign({t:'zone',l1:L,p1:P,l2:null,p2:P},st);/* drag top to bottom; from this candle to the right edge */
+      else if(tl==='volprofile')w.dr.cur=Object.assign({t:'vprange',l1:L,p1:P,l2:L,p2:P},st);/* drag a range of candles; the profile is computed from their volume on release */
+      else if(tl==='channel'&&w.dr.cur&&w.dr.cur._multi==='channel'){finishMulti();}/* the tap that sets the channel's width */
+      else if(MULTI[tl]!=null){
+        /* TAP-TAP-TAP TOOLS: the shape stays in `cur` while points are added, previewing the next point under the pointer.
+           pointerup must NOT place it (endStroke skips `_multi`); the last tap, Done or Escape does. */
+        var c=w.dr.cur;
+        if(!c||!c._multi){c=w.dr.cur=Object.assign(mkMulti(tl,L,P),st);c._multi=tl;c._n=1;if(w._drSyncUI)w._drSyncUI();redraw();return;}
+        var n=c._n;
+        if(tl==='position'){if(n===1)c.stop=P;else if(n===2)c.tgts=[P];c._n=n+1;if(c._n>=3)finishMulti();}
+        else if(tl==='fibext'||tl==='pitchfork'){if(n===1){c.l2=L;c.p2=P;}else if(n===2){c.l3=L;c.p3=P;}c._n=n+1;if(c._n>=3)finishMulti();}
+        else if(tl==='pattern'){var last=c.pts[c.pts.length-2],lx=xOf(last.l),ly=yOf(last.p);/* [len-1] is the preview vertex riding under the pointer - comparing against it closed every pattern on its second tap */
+          if(lx!=null&&Math.hypot(p.x-lx,p.y-ly)<10){finishMulti();return;}/* tapping the last FIXED point again closes the pattern */
+          c.pts.push({l:L,p:P});c._n=n+1;}
+        redraw();}
       else w.dr.cur=Object.assign({t:tl,l1:L,p1:P,l2:L,p2:P},st);});
+    var MULTI={position:3,fibext:3,pitchfork:3,pattern:0};
+    function mkMulti(tl,L,P){
+      if(tl==='position')return {t:'pos',l1:L,p:P,stop:P,tgts:[]};
+      if(tl==='fibext')return {t:'fibx',l1:L,p1:P,l2:L,p2:P,l3:null,p3:null};
+      if(tl==='pitchfork')return {t:'fork',l1:L,p1:P,l2:L,p2:P,l3:null,p3:null};
+      return {t:'poly',pts:[{l:L,p:P},{l:L,p:P}]};}
+    /* the preview point rides under the pointer: for a position it is the stop then the target, for A-B-C tools B then C, for a pattern the next vertex */
+    function multiPreview(c,L,P){var n=c._n;
+      if(c._multi==='position'){if(n===1)c.stop=P;else if(n===2)c.tgts=[P];}
+      else if(c._multi==='fibext'||c._multi==='pitchfork'){if(n===1){c.l2=L;c.p2=P;}else if(n===2){c.l3=L;c.p3=P;}}
+      else if(c._multi==='pattern'){var lp=c.pts[c.pts.length-1];lp.l=L;lp.p=P;}
+      else if(c._multi==='channel'&&L!=null&&P!=null){var dl=(c.l2-c.l1)||1,at=+c.p1+(+c.p2-+c.p1)*((L-c.l1)/dl);c.off=P-at;}}
+    function finishMulti(){var c=w.dr.cur;if(!c||!c._multi)return;w.dr.cur=null;
+      var ok=true;
+      if(c._multi==='position')ok=c._n>=3&&c.tgts&&c.tgts.length&&Math.abs(+c.stop-+c.p)>0;
+      else if(c._multi==='fibext'||c._multi==='pitchfork')ok=c._n>=3&&c.l3!=null;
+      else if(c._multi==='pattern'){c.pts=c.pts.slice(0,-1);/* the preview vertex */ok=c.pts.length>=2;}
+      else if(c._multi==='channel')ok=Math.abs(+c.off||0)>0;
+      if(c._multi==='pitchfork'&&ok)c.p3=+c.p3;
+      delete c._multi;delete c._n;
+      if(ok){w.dr.shapes.push(c);w.dr.sel=c;}
+      if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';redraw();save();if(w._drSyncUI)w._drSyncUI();}
+    w._drFinishMulti=finishMulti;
+    w._drCancelMulti=function(){if(w.dr.cur&&w.dr.cur._multi){w.dr.cur=null;redraw();if(w._drSyncUI)w._drSyncUI();return true;}return false;};
+    /* VOLUME PROFILE from the candles the reader dragged over: 24 price bins, each bin's share of the range's volume, the
+       point of control and a 70% value area - the same fields the AI's profile carries, so drawVp paints both alike. */
+    function vpFromRange(l1,l2){var b=w.bars||[];if(!b.length)return null;var a=Math.max(0,Math.round(Math.min(l1,l2))),z=Math.min(b.length-1,Math.round(Math.max(l1,l2)));if(z-a<3)return null;
+      var lo=Infinity,hi=-Infinity,i;for(i=a;i<=z;i++){if(+b[i].low<lo)lo=+b[i].low;if(+b[i].high>hi)hi=+b[i].high;}if(!(hi>lo))return null;
+      var N=24,step=(hi-lo)/N,vol=new Array(N).fill(0),tot=0;
+      for(i=a;i<=z;i++){var v=+b[i].vol||1,bl=+b[i].low,bh=+b[i].high,k0=Math.max(0,Math.floor((bl-lo)/step)),k1=Math.min(N-1,Math.floor((bh-lo)/step)),span=k1-k0+1;for(var k=k0;k<=k1;k++)vol[k]+=v/span;tot+=v;}
+      var mx=0,pi=0;for(i=0;i<N;i++)if(vol[i]>mx){mx=vol[i];pi=i;}
+      var va=vol[pi],li=pi,hi2=pi;while(va<tot*0.7&&(li>0||hi2<N-1)){var up=hi2<N-1?vol[hi2+1]:-1,dn=li>0?vol[li-1]:-1;if(up>=dn){hi2++;va+=up;}else{li--;va+=dn;}}
+      var bins=[];for(i=0;i<N;i++)bins.push({p:lo+step*(i+0.5),rel:mx?vol[i]/mx:0});
+      return {bins:bins,step:step,poc:lo+step*(pi+0.5),vah:lo+step*(hi2+1),val:lo+step*li};}
     cv.addEventListener('pointermove',function(e){if(!w.dr.on)return;var p=pos(e),L=toL(p.x),P=toP(p.y);
       if(drag&&drag.s){var s=drag.s;
         if(drag.mode==='move'&&drag.snap){var o=drag.snap,dL=(L!=null&&drag.l0!=null)?L-drag.l0:0,dP=(P!=null&&drag.p0!=null)?P-drag.p0:0;
           if(o.l!=null)s.l=o.l+dL;if(o.l1!=null)s.l1=o.l1+dL;if(o.l2!=null)s.l2=o.l2+dL;
           if(o.p!=null)s.p=o.p+dP;if(o.p1!=null)s.p1=o.p1+dP;if(o.p2!=null)s.p2=o.p2+dP;
-          if(o.pts)s.pts=o.pts.map(function(pt){return {l:pt.l+dL,p:pt.p+dP};});}
+          if(o.pts)s.pts=o.pts.map(function(pt){return {l:pt.l+dL,p:pt.p+dP};});
+          if(o.l3!=null)s.l3=o.l3+dL;if(o.p3!=null)s.p3=o.p3+dP;if(o.stop!=null)s.stop=o.stop+dP;if(o.tgts)s.tgts=o.tgts.map(function(v){return +v+dP;});}
         else if(drag.mode==='h1'){if(L!=null)s.l1=L;if(P!=null)s.p1=P;}
         else if(drag.mode==='h2'){if(L!=null)s.l2=L;if(P!=null)s.p2=P;}
         redraw();return;}
       if(!w.dr.cur)return;
-      if(w.dr.cur.t==='pen')w.dr.cur.pts.push({l:L,p:P});
+      if(w.dr.cur._multi)multiPreview(w.dr.cur,L,P);
+      else if(w.dr.cur.t==='pen')w.dr.cur.pts.push({l:L,p:P});
+      else if(w.dr.cur.t==='zone'){if(P!=null)w.dr.cur.p2=P;}
       else{w.dr.cur.l2=L;w.dr.cur.p2=P;}
       redraw();});
     function endStroke(){
       if(drag){drag=null;save();return;}
+      if(w.dr.cur&&w.dr.cur._multi)return;/* tap-tap-tap tools place on the last tap, Done or Escape - never on pointerup */
       if(w.dr.cur){var c=w.dr.cur;w.dr.cur=null;
-        var degenerate=(c.l1!=null&&c.l2!=null&&c.p1!=null&&c.p2!=null&&Math.abs((xOf(c.l2)||0)-(xOf(c.l1)||0))<3&&Math.abs((yOf(c.p2)||0)-(yOf(c.p1)||0))<3);
+        if(c.t==='channel'){/* the drag drew the base line; the next tap sets the width - the shape waits in `cur` */
+          if(Math.abs((xOf(c.l2)||0)-(xOf(c.l1)||0))<3){redraw();return;}
+          c._multi='channel';c._n=2;c.off=0;w.dr.cur=c;redraw();if(w._drSyncUI)w._drSyncUI();return;}
+        if(c.t==='vprange'){var vp=vpFromRange(c.l1,c.l2);if(!vp){redraw();return;}c=Object.assign({t:'vp',l1:Math.min(c.l1,c.l2),l2:Math.max(c.l1,c.l2),color:c.color,w:c.w,dash:c.dash},vp);}
+        var degenerate=c.t==='zone'?Math.abs((yOf(c.p2)||0)-(yOf(c.p1)||0))<3:(c.l1!=null&&c.l2!=null&&c.p1!=null&&c.p2!=null&&Math.abs((xOf(c.l2)||0)-(xOf(c.l1)||0))<3&&Math.abs((yOf(c.p2)||0)-(yOf(c.p1)||0))<3);
         if(!degenerate){w.dr.shapes.push(c);if(c.t!=='pen'){w.dr.sel=c;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';}}/* TV parity: placed → select tool + shape selected; pen keeps drawing */
         redraw();save();if(w._drSyncUI)w._drSyncUI();}}
     cv.addEventListener('pointerup',endStroke);cv.addEventListener('pointercancel',endStroke);
@@ -1938,6 +2027,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     body.addEventListener('pointerdown',w._drBodyPd,true); // dies with the window DOM - no closeWin cleanup needed (unlike the window/document-level w._drKey/w._drPd)
     w._drKey=function(e){if(!w.dr||!w.dr.on||w.dead)return;var tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable))return;
       if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){var ix=w.dr.shapes.indexOf(w.dr.sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();e.preventDefault();}
+      else if(e.key==='Escape'&&w._drCancelMulti&&w._drCancelMulti()){e.preventDefault();}
+      else if(e.key==='Enter'&&w.dr.cur&&w.dr.cur._multi){finishMulti();e.preventDefault();}
       else if(e.key==='Escape'&&w.dr.sel){w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();}};window.addEventListener('keydown',w._drKey); // handler ref kept on w so closeWin can removeEventListener (was leaking per window over preset/layout switches)
     if('ResizeObserver'in window){try{w.dr.ro=new ResizeObserver(function(){size();});w.dr.ro.observe(body);}catch(_){}}
     // re-project drawings whenever the chart pans/zooms (its time scale exists once buildChart finishes - poll briefly)
@@ -1969,7 +2060,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.dr._auto=0;/* a manual toggle always ends any auto edit-session */w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',(w&&w.sym)||'');}catch(_){}}if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
     if(!tools)return;
     function closePops(){tools.querySelectorAll('.cwin-pop').forEach(function(x){x.hidden=true;});tools.querySelectorAll('.cwin-pick').forEach(function(x){x.classList.remove('open');});}
-    function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');}}
+    function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');
+      /* the tool list is as tall as the WINDOW allows, never a fixed 400px - a 330px window in a 2x2 grid cannot hold that (2026-10-08); on a phone it is a fixed bottom sheet and sizes itself */
+      if(name==='tool'){try{var body=tools.parentElement,fixed=getComputedStyle(p).position==='fixed';if(!fixed&&body){var room=body.clientHeight-(tools.offsetTop+tools.offsetHeight+12);if(room>120)p.style.maxHeight=Math.min(400,room)+'px';}}catch(e){}}}}
     document.addEventListener('pointerdown',function(e){if(!tools.isConnected)return;if(!tools.contains(e.target))closePops();},true);
     function setToolUI(tl){
       tools.querySelectorAll('.cpop-it[data-tool]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-tool')===tl);});
@@ -1984,20 +2077,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var sc=tools.querySelector('.scur');if(sc){sc.textContent=da?'┄':'━';sc.style.fontSize=(lw===1?'9px':(lw===3?'15px':'12px'));}
       var del=tools.querySelector('[data-del]');if(del)del.classList.toggle('sel',!!s);}
     w._drSyncUI=syncUI;
-    w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr - wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
+    w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();
+      var dn=tools.querySelector('[data-done]');if(dn)dn.hidden=!/^(pattern|position|fibext|pitchfork|channel)$/.test(tl);/* Done only while a tap-tap-tap tool is live */};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr - wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
     tools.addEventListener('pointerdown',function(e){e.stopPropagation();});
     tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
       if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
       if(b.hasAttribute('data-cpick')){togglePop('color',b);return;}
       if(b.hasAttribute('data-spick')){togglePop('style',b);return;}
       var sel=w.dr.sel;
-      if(b.hasAttribute('data-undo')){w.dr.shapes.pop();w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
+      if(b.hasAttribute('data-done')){if(w._drFinishMulti)w._drFinishMulti();closePops();return;}
+      if(b.hasAttribute('data-drawx')){if(w._drCancelMulti)w._drCancelMulti();closePops();if(w._drExit)w._drExit();return;}/* mobile: the palette's own exit (the dock is hidden while drawing) */
+      if(b.hasAttribute('data-undo')){if(w._drCancelMulti&&w._drCancelMulti()){closePops();return;}w.dr.shapes.pop();w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
       if(b.hasAttribute('data-clear')){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
       if(b.hasAttribute('data-del')){if(sel){var ix=w.dr.shapes.indexOf(sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();}closePops();return;}
       if(b.hasAttribute('data-lw')){var lw=+b.getAttribute('data-lw')||2;if(sel){sel.w=lw;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.lw=lw;syncUI();return;}
       if(b.hasAttribute('data-dash')){if(sel){sel.dash=!sel.dash;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.dash=!w.dr.dash;syncUI();return;}
       if(b.classList.contains('cwin-color')){var c=b.getAttribute('data-color');if(sel){sel.color=c;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}w.dr.color=c;closePops();syncUI();return;}
-      var tl=b.getAttribute('data-tool');if(tl){if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}w._drSetTool(tl);closePops();}});
+      var tl=b.getAttribute('data-tool');if(tl){if(w._drCancelMulti)w._drCancelMulti();if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}w._drSetTool(tl);closePops();}});
     syncUI();
   }
   // ── candle-close countdown (2026-07-30): ONE 1s ticker for ALL windows (never per-window). Boundary math = TF grid
@@ -2526,6 +2622,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var over=wins.some(function(w){if(!w.el)return false;var l=parseFloat(w.el.style.left)||0,ww=w.el.offsetWidth||0;return l+ww>bw+6;});
     if(over)reflowWins();},250);});
   /* re-tile the CURRENT windows (keeps their symbols/data) to fill the board - used when the sidebar collapses so charts reclaim the freed space */
+  /* the rail changed width (home.js railSet): after its 220ms transition, re-tile so no window sits under it or short of the new edge */
+  var _refitT=null,_refitBW=0;
+  function refitWins(){if(isMobile())return;clearTimeout(_refitT);var bw0=board.clientWidth||0;
+    _refitT=setTimeout(function(){var bw1=board.clientWidth||0;if(!wins.length||!bw0||!bw1||bw0===bw1)return;var k=bw1/bw0;
+      /* SCALE, never re-grid: a "Top 3" row of three must stay a row of three when the rail changes width - reflowWins
+         would turn it into a 2x2 grid with an empty quarter. Every window keeps its row and its share of the width. */
+      wins.forEach(function(w){if(!w.el)return;var l=parseFloat(w.el.style.left)||0,ww=w.el.offsetWidth||0;w.el.style.left=Math.round(l*k)+'px';w.el.style.width=Math.max(200,Math.round(ww*k))+'px';});
+      try{savePersist();}catch(e){}try{window.dispatchEvent(new Event('resize'));}catch(e){}},250);}
   function reflowWins(){if(isMobile()||!wins.length)return;var bw=board.clientWidth||900,bh=board.clientHeight||600,gap=8,n=wins.length;var g=gridFor(n,bw,bh),cols=g.cols,rows=g.rows;var cw=Math.floor((bw-gap*(cols+1))/cols),chh=Math.floor((bh-gap*(rows+1))/rows);wins.forEach(function(w,i){var r=Math.floor(i/cols),c=i%cols;w.el.style.left=(gap+c*(cw+gap))+'px';w.el.style.top=(gap+r*(chh+gap))+'px';w.el.style.width=cw+'px';w.el.style.height=chh+'px';});try{savePersist();}catch(e){}try{window.dispatchEvent(new Event('resize'));}catch(e){}}
   function openSymbolW(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym||isMobile())return;if(wins.length<MAXn()){addWin({sym:sym,tf:'60'});setTimeout(reflowWins,40);return;}var w=wins[wins.length-1];if(!w)return;w.sym=sym;var inp=w.el.querySelector('.cwin-sym');if(inp)inp.value=sym;loadData(w,true);try{updateMTBtn(w);}catch(e){}bringFront(w);}
   /* open a coin from "Top signals" → fully-drawn 4h chart (EMA21/50 + RSI + MACD) + a "why this is a good setup" panel with the 50–100x setup */
@@ -2647,7 +2751,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&mw.candle&&!mw.dead)loadData(mw,false);});
     window.addEventListener('storage',updMT);
   }
-  window.mpCharts={ activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) - owner request
+  window.mpCharts={ refit:function(){refitWins();}, activate:function(){ if(built)return; built=true; try{fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});window.addEventListener('mp-auth-change',function(){fetchIndAccess(function(){try{for(var _i=0;_i<wins.length;_i++)applyInds(wins[_i]);}catch(e){}});});}catch(e){} setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test((location.pathname||'').replace(/^\/es(?=\/|$)/,''))){try{var _rv=localStorage.getItem('mp_cws_rail');if(window.__mpCwsRail)window.__mpCwsRail(_rv==='full'?'full':'mini');else{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) - owner request
     setTheme:function(m){chTheme=(m==='light')?'light':'dark';try{localStorage.setItem('mp_ch_theme',chTheme);}catch(e){}applyTheme();},
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},

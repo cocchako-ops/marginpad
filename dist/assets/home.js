@@ -3234,7 +3234,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=65857e31'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=7289308f'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3388,12 +3388,23 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 /* /charts workspace - collapsible left control panel (neon reopen tab) + Ctrl+wheel to grow the working area. Desktop only. */
 (function(){
   function isCharts(){return document.body.classList.contains('charts-page')&&window.matchMedia('(min-width:881px)').matches;}
-  var sx=document.getElementById('cwsSideX'),re=document.getElementById('cwsReopen'),board=document.getElementById('cwsBoard'),cs=document.getElementById('chartspace');
-  // the sidebar OVERLAYS the board now - opening/closing must NOT move or re-tile the charts
-  function setOff(off){document.body.classList.toggle('cws-side-off',off);try{localStorage.setItem('mp_cws_side',off?'0':'1');}catch(e){}}
-  if(sx)sx.addEventListener('click',function(){setOff(true);});
-  if(re)re.addEventListener('click',function(){setOff(false);});
-  try{if(localStorage.getItem('mp_cws_side')==='0')document.body.classList.add('cws-side-off');}catch(e){}
+  var sx=document.getElementById('cwsSideX'),re=document.getElementById('cwsReopen'),tg=document.getElementById('cwsRailTg'),board=document.getElementById('cwsBoard'),cs=document.getElementById('chartspace');
+  /* THREE RAIL STATES (2026-10-08, owner: "dosta mesta za chart, alati na dohvat ruke"): `mini` (56px of icons, the
+     default - every control one click away and 16% of a 1366px screen given back to the charts), `full` (the 216px
+     panel with labels and widgets) and `off` (hidden, the neon reopen tab). Measured before: the panel OVERLAID the
+     board, so with a preset applied the first chart column sat underneath it. The board is padded by `--rail` now and
+     the windows are re-tiled when the rail changes width, so nothing is ever covered. */
+  function railGet(){try{var v=localStorage.getItem('mp_cws_rail');if(v==='full'||v==='mini'||v==='off')return v;if(localStorage.getItem('mp_cws_side')==='0')return 'off';}catch(e){}return 'mini';}
+  function railSet(v){document.body.classList.toggle('cws-side-off',v==='off');document.body.classList.toggle('cws-mini',v==='mini');
+    if(cs)cs.style.setProperty('--rail',v==='full'?'216px':(v==='mini'?'56px':'0px'));
+    if(tg){tg.textContent=v==='mini'?'»':'«';tg.title=v==='mini'?'Show labels':'Icons only';}
+    try{localStorage.setItem('mp_cws_rail',v);localStorage.setItem('mp_cws_side',v==='off'?'0':'1');}catch(e){}
+    try{if(window.mpCharts&&window.mpCharts.refit)window.mpCharts.refit();}catch(e){}}
+  window.__mpCwsRail=railSet;
+  if(sx)sx.addEventListener('click',function(){railSet('off');});
+  if(re)re.addEventListener('click',function(){railSet('mini');});
+  if(tg)tg.addEventListener('click',function(){railSet(document.body.classList.contains('cws-mini')?'full':'mini');});
+  railSet(railGet());
   if(board&&cs){var zoom=1;
     board.addEventListener('wheel',function(ev){
       if(!ev.ctrlKey||!isCharts())return;            // plain scroll inside a chart still pans/zooms it
@@ -3719,7 +3730,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=3005f902'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=2e1ea620'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     document.head.appendChild(sc);
   }
