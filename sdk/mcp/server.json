@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.json",
-  "name": "io.github.marginpad/sdk",
+  "name": "io.github.Marginpad/sdk",
   "description": "Free crypto-futures paper trading and live market data for AI agents. 28 tools; no key for data.",
   "status": "active",
   "repository": { "url": "https://github.com/marginpad/sdk", "source": "github" },
