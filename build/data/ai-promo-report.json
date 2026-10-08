@@ -1,0 +1,347 @@
+[
+  {
+    "file": "ai-opportunity",
+    "sym": "ETH",
+    "tf": "240",
+    "q": "Find me an opportunity here and draw it on the chart.",
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Bear OB",
+      "zone:Long liqs $780M",
+      "text:Lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 63,
+      "reason": "Downtrend; sell a bounce into the unfilled bearish order block.",
+      "entry": 2612,
+      "stop": 2655,
+      "targets": [
+        2533.25,
+        2460.65
+      ],
+      "invalidation": "A 4h close back above 2655 (anchored VWAP) kills the short.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 2742.05,
+          "label": "Resistance x2",
+          "kind": "resistance"
+        },
+        {
+          "price": 2533.25,
+          "label": "Recent low",
+          "kind": "support"
+        },
+        {
+          "price": 2416.79,
+          "label": "Long liqs $780M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 2603.41,
+        "to": 2622.9,
+        "label": "Bear OB"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 2568.32,
+    "prose": "**ETH 4-hour: lean DOWN — but don't chase here, sell the bounce.** - Price has fallen hard and RSI is 27 (oversold = stretched, bounce likely), so shorting right now is late. The opportunity is a rally back into the bearish order block at **2603–2623** (the last supply candle before the drop) — that's the entry. - The 16-hour frame is a clear downtrend and lost its 2549 shelf; funding is negative and open interest is falling (leverage leaving), so rallies are weak. A huge long-liquidation pool sits at **2416** — a magnet below. - Tape right now: sellers are the aggressors (-39% of flow), and most order-book walls here get withdrawn, not traded — so don't trust 2577 as a ceiling. Not financial advice - learn and decide for yourself.",
+    "at": "2026-10-08T04:33:20.164Z"
+  },
+  {
+    "file": "ai-risk",
+    "sym": "SOL",
+    "tf": "15",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Sell zone",
+      "hray:Swept low",
+      "text:Lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 66,
+      "reason": "Downtrend under all MAs; bounce into the 116.55 liquidation magnet is the sell.",
+      "entry": 116.55,
+      "stop": 117.3,
+      "targets": [
+        114.1,
+        107.33
+      ],
+      "invalidation": "A 15m close above 117.18 breaks the lower-high structure.",
+      "horizonBars": 40,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 117.18,
+          "label": "Res x3",
+          "kind": "resistance"
+        },
+        {
+          "price": 116.55,
+          "label": "Short liqs $4M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 115.17,
+          "label": "Swept low",
+          "kind": "support"
+        },
+        {
+          "price": 114.1,
+          "label": "Range low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 116.55,
+        "to": 117.18,
+        "label": "Sell zone"
+      }
+    },
+    "receipts": [
+      "Opened Liquidation MagnetDrew 4 shapesUndo drawings"
+    ],
+    "lastClose": 115.36,
+    "prose": "**15-minute SOL leans DOWN — but don't chase here; sell the bounce into 116.55.** - Structure is lower highs and lower lows, price under every moving average (EMA50 116.22, EMA200 117.97). Sellers in control. - Above price sits ~$4.0M of short liquidations at **116.55** — a magnet that can pull a bounce up. That's your gift entry, not a reason to be long. Resistance 117.18 held on its last 3 approaches, so the stop goes just above it at **117.30**. - Caution: volatility is at the top of its own range (stops get run) and 71.9% of the crowd is long — fuel for another flush toward 114.10. Small lesson: entering on a bounce into resistance gives you a tight stop; chasing the breakdown gives you a wide one for the same target. Not financial advice - learn and decide for yourself.",
+    "at": "2026-10-08T04:33:45.209Z"
+  },
+  {
+    "file": "ai-structure",
+    "sym": "XRP",
+    "tf": "60",
+    "q": "Mark the structure and the levels that actually matter here.",
+    "shapes": [
+      "ray:Downtrend",
+      "hray:Support x3",
+      "zone:Long liqs $80M",
+      "text:Toward pool"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 66,
+      "reason": "Downtrend into a huge long-liquidation pool; sell a bounce into the volume POC.",
+      "entry": 1.4178,
+      "stop": 1.4414,
+      "targets": [
+        1.3569,
+        1.3513
+      ],
+      "invalidation": "An hourly close back above 1.4414 breaks the lower-high sequence.",
+      "horizonBars": 24,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 1.4178,
+          "label": "POC / entry shelf",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.4414,
+          "label": "FVG cap",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.3569,
+          "label": "Long liqs $67M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 1.3513,
+        "to": 1.3569,
+        "label": "Long liqs $80M"
+      },
+      "manage": null
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 1.4056,
+    "prose": "**XRP 1-hour: downtrend — sell the bounce, don't catch this knife.** - Structure is lower highs and lower lows, price is 3.4% under the 50-candle average (trend line) and the 16-hour frame is also down. BTC is soft too — no help for alts. - RSI 28.5 (speed meter, under 30 = oversold) says stretched, not reversing. Below sits an $80M pile of long liquidations at ~1.3513–1.3569 — a magnet. - The level that matters: 1.4178, where the most volume on screen traded. A bounce back into there is the sensible short entry, not here. One idea: oversold in a downtrend means cheap, not safe — wait for the retrace. Not financial advice - learn and decide for yourself.",
+    "at": "2026-10-08T04:34:09.670Z"
+  },
+  {
+    "file": "ai-liquidity",
+    "sym": "LINK",
+    "tf": "240",
+    "q": "Show me where the liquidation pools sit and what they mean for a trade.",
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Long liqs $14M",
+      "zone:Short liqs $3.7M",
+      "text:Flush first"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 62,
+      "reason": "$14M of long liquidations below price pulls LINK into 12.72-12.83 before any bounce.",
+      "entry": 12.724,
+      "stop": 12.045,
+      "targets": [
+        13.8795,
+        14.1683
+      ],
+      "invalidation": "A 4h close below 12.045 means the flush kept going, not reversed.",
+      "horizonBars": 30,
+      "levels": [
+        {
+          "price": 12.829,
+          "label": "Long liqs $7.8M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 12.724,
+          "label": "Long liqs $6.8M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 13.6956,
+          "label": "Short liqs $1.7M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 12.045,
+          "label": "Swing low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 12.724,
+        "to": 12.829,
+        "label": "Liquidation magnet"
+      },
+      "manage": null
+    },
+    "receipts": [
+      "Opened Liquidation MagnetDrew 4 shapesUndo drawings"
+    ],
+    "lastClose": 13.125,
+    "prose": "**LINK 4-hour — the fuel is below price, so don't buy here; wait for the flush into 12.72–12.83.** - **Liquidation pools** = clusters of leveraged positions that get force-closed if price reaches them. Below you there's ~$7.8M at **12.829** and ~$6.8M at **12.724** — long liquidations. Above, only ~$1.7–2.0M at 13.70 / 13.88. Heavier side wins: price is magnetised **down** first. - Backing it up: 71.7% of traders are long, funding mildly positive, RSI 31.2 (momentum meter, nearly oversold), structure is lower highs/lower lows. A crowded long book below price is fuel, not support. - The trade: let the pool get eaten, then buy the reaction at **12.724**, stop under the 12.045 swing, targets 13.88 / 14.17. Not financial advice — learn and decide for yourself.",
+    "at": "2026-10-08T04:34:36.919Z"
+  },
+  {
+    "file": "ai-setup",
+    "sym": "BTC",
+    "tf": "60",
+    "q": "Read this chart and draw the setup on it.",
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Sweep zone",
+      "text:Bounce"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 58,
+      "reason": "Support 82,658 swept and reclaimed with oversold RSI; bounce toward the 84,008 volume shelf.",
+      "entry": 82658.7,
+      "stop": 81711.5,
+      "targets": [
+        84007.9,
+        84556
+      ],
+      "invalidation": "An hourly close below 82,019 means the liquidation pool broke and the support is gone.",
+      "horizonBars": 24,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 82658.7,
+          "label": "Support x4",
+          "kind": "support"
+        },
+        {
+          "price": 82019.9,
+          "label": "Long liqs $1.0B",
+          "kind": "liquidity"
+        },
+        {
+          "price": 84007.9,
+          "label": "Heaviest volume",
+          "kind": "resistance"
+        },
+        {
+          "price": 84556,
+          "label": "Resistance x3",
+          "kind": "resistance"
+        }
+      ],
+      "zone": {
+        "from": 82019.9,
+        "to": 82658.7,
+        "label": "Sweep zone"
+      },
+      "manage": null
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 82741.7,
+    "prose": "**1-hour BTC: downtrend, but price is sitting on a support that keeps holding — I'd buy the retest, not here.** - Structure is lower highs/lower lows and price is under every major average, so this is a bounce trade, not a trend trade. The one bullish fact: 82,658 has held 4 of 4 approaches and just got swept (stops hit, price closed back above) — classic bottom tell. - RSI 31.6 (speed meter, under 30 = oversold) and longs took $77M of the $94M liquidations in 24h — the weak hands are already out. - Careful: a $1.02B long-liquidation pool sits at 82,019 just below. Stop must go *under* it, not above it. Book walls look big but 22 of the last 24 vanished without trading — weak evidence. Buying the 82,658 retest, targeting the heavy-volume shelf at 84,007. Not financial advice - learn and decide for yourself.",
+    "at": "2026-10-08T04:36:23.209Z"
+  },
+  {
+    "file": "ai-wait",
+    "sym": "DOGE",
+    "tf": "60",
+    "q": "Is there anything worth taking here right now? Draw your answer.",
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Retest short zone",
+      "zone:Long liqs $39M",
+      "text:Toward liq pool"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 64,
+      "reason": "Downtrend broke 0.08772 on heavy volume with $15M of long liquidations stacked just below.",
+      "entry": 0.08772,
+      "stop": 0.08905,
+      "targets": [
+        0.08488,
+        0.08401
+      ],
+      "invalidation": "An hourly close back above 0.08905 reclaims the broken support and kills the short.",
+      "horizonBars": 24,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 0.08772,
+          "label": "Broken support",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.08811,
+          "label": "VWAP from low",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.08488,
+          "label": "Long liqs $15M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 0.08401,
+          "label": "Long liqs $24M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 0.08772,
+        "to": 0.08811,
+        "label": "Retest short zone"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 0.08745,
+    "prose": "**DOGE 1-hour: leans DOWN — but don't chase the breakdown candle.** - Structure is lower highs/lower lows, price is under every moving average (ema50 0.0908, ema200 0.0932), and it just lost the 0.08772 support on volume 5.8x the normal bar. That's a real break, not a wick. - The fuel is below: $15.2M of long liquidations at 0.08488 and $23.7M at 0.08401, with 77.6% of traders positioned long. Crowded longs below price is where moves accelerate. - Don't sell here at 0.08742 after a 1.3% drop with RSI at 29.7 (oversold = stretched). Wait for a bounce back to the broken level 0.08772 / the swing-low VWAP 0.08811 and short the retest. One idea: broken support usually becomes resistance — that retest is your cheap entry. Not financial advice - learn and decide for yourself.",
+    "at": "2026-10-08T04:36:48.227Z"
+  }
+]

@@ -22,7 +22,11 @@ const { withBrowser } = require('./e2e-browser');
 const ORIGIN = 'https://marginpad.io';
 const KEY = fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').split('\n')[1].replace('\r', '').trim();
 const OUT = path.join(__dirname, '..', 'dist', 'assets', 'plus');
-const W = 1320, H = 880, Q = 0.82;
+/* 1040x680 since 2026-10-08 (was 1320x880): the chart's labels are fixed-size pixels, so a smaller window shows them LARGER
+   on the page - at the 620px the grid gives a figure on a desktop the old frame was 47% scale and every number on the drawing
+   was illegible, which defeats a section whose argument is the arithmetic. A second file per read, `-zoom.jpg`, is the
+   plan's own neighbourhood cut out of the 2x render for phones, where even 1040 lands at 34%. */
+const W = 1040, H = 680, Q = 0.84;
 
 const SHOTS = [
   { file: 'ai-setup', sym: 'BTC', tf: '60', q: 'Read this chart and draw the setup on it.' },
@@ -100,7 +104,10 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         // the REAL brief this chart would send
         const brief = await page.evaluate(() => window.__mpAiContext(window.__mpWinsDbg[0]));
         const t0 = Date.now();
-        const r = await fetch(ORIGIN + '/api/ai/chart', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
+        // ?uid=e2e-promo: the E2E path reads THAT account's record and open calls. The default e2e-ai uid is shared with
+        // ai-chart-e2e, whose runs leave open calls behind - the first BTC capture opened with "My earlier long is dead"
+        // (2026-10-08). A promo read must start from a clean dossier.
+        const r = await fetch(ORIGIN + '/api/ai/chart?uid=e2e-promo', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
           body: JSON.stringify({ context: brief, question: shot.q, stream: false, lang: 'en' }) });
         const j = await r.json();
         if (!j.answer) { console.log(shot.sym + ': model gave nothing - ' + JSON.stringify(j).slice(0, 140)); await ctxB.close(); continue; }
@@ -121,8 +128,10 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         const info = await page.evaluate(() => {
           const w = window.__mpWinsDbg[0], ai = w.dr.shapes.filter(s => s.by === 'ai');
           const pm = (window.__mpAi && w._aiPlanObj) || null;
+          const rec = [...document.querySelectorAll('.cwin-ai-panel .aiacts')].map(e => (e.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+          const last = w.bars.length ? +w.bars[w.bars.length - 1].close : 0;
           return { sym: w.sym, tf: w.tf, shapes: ai.map(s => s.t + (s.txt ? ':' + s.txt : '')), plan: pm,
-            ghost: (w._ghostBars || []).length, lines: (w._aiPlan || []).length,
+            ghost: (w._ghostBars || []).length, lines: (w._aiPlan || []).length, receipts: rec, lastClose: last,
             prose: '' };
         });
         console.log('  shapes: ' + info.shapes.join(' | '));
@@ -130,7 +139,7 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         console.log('  price lines ' + info.lines + ', forecast candles ' + info.ghost);
         const proseTxt = String(answer).split('```')[0].replace(/\s+/g, ' ').trim();
         console.log('  prose: ' + proseTxt.slice(0, 300));
-        report.push({ file: shot.file, sym: shot.sym, tf: shot.tf, shapes: info.shapes, plan: info.plan, prose: proseTxt.slice(0, 900) });
+        report.push({ file: shot.file, sym: shot.sym, tf: shot.tf, q: shot.q, shapes: info.shapes, plan: info.plan, receipts: info.receipts, lastClose: info.lastClose, prose: proseTxt.slice(0, 1200), at: new Date().toISOString() });
 
         // FRAME IT ON THE ANALYSIS. The default view showed 120 candles, so the whole read - entry, stop, both
         // targets, the block - sat squashed into the top-right tenth of the picture while nine tenths was old
@@ -191,6 +200,25 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         const buf = Buffer.from(jpg, 'base64');
         fs.writeFileSync(path.join(OUT, shot.file + '.jpg'), buf);
         console.log('  -> ' + shot.file + '.jpg  ' + W + 'x' + H + '  ' + (buf.length / 1024).toFixed(0) + 'KB');
+        // THE ZOOM: the plan's own neighbourhood - the last ~48 candles plus the price axis, centred on the plan's prices - cut
+        // out of the 2x render at 1:1, so a phone shows the numbers at 2/3 of their real size instead of a third.
+        const zoom = await page.evaluate(async (b64, W0, H0, q) => {
+          const w = window.__mpWinsDbg[0], plan = w._aiPlanObj || {}, el = w.el.getBoundingClientRect();
+          const ch = w.el.querySelector('.cwin-chart').getBoundingClientRect();
+          const prices = [+plan.entry, +plan.stop].concat((plan.targets || []).map(Number)).concat(w.dr.shapes.filter(s => s.by === 'ai').flatMap(s => [+s.p, +s.p1, +s.p2])).filter(v => v > 0);
+          const ys = prices.map(v => w.candle.priceToCoordinate(v)).filter(v => v != null);
+          const cw = 560, chh = 373; // css px, 3:2
+          let cy = ys.length ? (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2 : ch.height / 2;
+          let top = (ch.top - el.top) + cy - chh / 2; top = Math.max(0, Math.min(H0 - chh, top));
+          const left = Math.max(0, W0 - cw);
+          const img = new Image(); await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = 'data:image/png;base64,' + b64; });
+          const c = document.createElement('canvas'); c.width = cw * 2; c.height = chh * 2;
+          const g = c.getContext('2d'); g.drawImage(img, left * 2, top * 2, cw * 2, chh * 2, 0, 0, cw * 2, chh * 2);
+          return { b64: c.toDataURL('image/jpeg', q).split(',')[1], top: Math.round(top), left: left, w: cw * 2, h: chh * 2 };
+        }, png, W, H, Q);
+        const zbuf = Buffer.from(zoom.b64, 'base64');
+        fs.writeFileSync(path.join(OUT, shot.file + '-zoom.jpg'), zbuf);
+        console.log('  -> ' + shot.file + '-zoom.jpg  ' + zoom.w + 'x' + zoom.h + ' (crop at ' + zoom.left + ',' + zoom.top + ')  ' + (zbuf.length / 1024).toFixed(0) + 'KB');
       } catch (e) {
         console.log(shot.sym + ': FAILED - ' + String(e.message).slice(0, 160));
       }
@@ -198,6 +226,9 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
     }
   }, { timeoutMs: 900000 });
 
-  fs.writeFileSync(path.join(__dirname, 'ask-shots', 'promo-report.json'), JSON.stringify(report, null, 2));
-  console.log('\nreport -> build/ask-shots/promo-report.json  (write the captions from it)');
+  const rp = path.join(__dirname, 'data', 'ai-promo-report.json');
+  let prev = []; try { prev = JSON.parse(fs.readFileSync(rp, 'utf8')); } catch (e) {}
+  const merged = prev.filter(p => !report.some(r => r.file === p.file)).concat(report); // a partial run keeps the other reads
+  fs.writeFileSync(rp, JSON.stringify(merged, null, 2));
+  console.log('\nreport -> build/data/ai-promo-report.json  (gen-premium-aishow.js builds the section from it - never write a caption from memory)');
 })();
