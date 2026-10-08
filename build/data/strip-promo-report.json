@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-08T12:06:09.076Z",
+  "sym": "BTC",
+  "tf": "60",
+  "w": 1040,
+  "h": 720,
+  "file": "strip-btc.jpg",
+  "price": 82319.2,
+  "cards": [
+    {
+      "k": "casc",
+      "name": "Cascade Radar",
+      "value": "77/100",
+      "states": [
+        "fragile",
+        "fuel BELOW price (long liqs) - a dip can run"
+      ],
+      "sub": []
+    },
+    {
+      "k": "brain",
+      "name": "Market Brain",
+      "value": "+76",
+      "states": [
+        "strong bullish lean"
+      ],
+      "sub": [
+        "driven by structure + fragility"
+      ]
+    },
+    {
+      "k": "memory",
+      "name": "Market Memory",
+      "value": "-0.21%",
+      "states": [
+        "28% of 25 analogs went up"
+      ],
+      "sub": [
+        "projected over 6 bars"
+      ]
+    },
+    {
+      "k": "magnet",
+      "name": "Liquidation Magnet",
+      "value": "-42",
+      "states": [
+        "above 87,360.83 · $1.37B shorts",
+        "below 82,091.19 · $1.11B longs"
+      ],
+      "sub": [
+        "pulled DOWN"
+      ]
+    }
+  ]
+}

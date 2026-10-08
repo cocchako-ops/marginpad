@@ -148,15 +148,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<div class="mfc-tfrow" id="mfcTfRow" hidden>'+TFS.map(function(t){return '<button type="button" data-tfpick="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
       +'<div class="mfc-dock">'+actions(true)+'</div>'
-      +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate',__esT_mpmcharts("rotateYourPhoneFor",'↻ Rotate your phone for a wider chart'))+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss">✕</button></div>';
+      +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate',__esT_mpmcharts("rotateYourPhoneFor",'↻ Rotate your phone for a wider chart'))+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
     document.body.appendChild(ov);
     var rx=ov.querySelector('.mfc-rot-x');if(rx)rx.addEventListener('click',function(e){e.stopPropagation();var r=ov.querySelector('.mfc-rot');if(r)r.hidden=true;try{localStorage.setItem('mp_mfc_rot_off','1');}catch(_){}});
     setTimeout(function(){var r=ov&&ov.querySelector('.mfc-rot');if(r)r.hidden=true;},7000);/* a hint, not a resident: portrait is a first-class mode, so it leaves by itself */
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
-    gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
+    gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
       +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
       +'<h3>'+mcT('mcGateT2',__esT_mpmcharts("rotateYourPhone",'Rotate your phone'))+'</h3><p>'+mcT('mcGateS2',__esT_mpmcharts("chartsWorkInLandscape",'Charts work in landscape - turn your phone sideways and they open instantly.'))+'</p>'
-      +'<button class="mfc-gate-go" data-gx style="background:none;border:1px solid #2c3540;color:#9aa3ad">'+mcT('mcClose','Close')+' ✕</button>';
+      +'<button class="mfc-gate-go" data-gx style="background:none;border:1px solid #2c3540;color:#9aa3ad">'+mcT('mcClose','Close')+'</button>';
     ov.appendChild(gate);
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
@@ -252,7 +252,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // shared core and NEVER touches the time position (safe default); the edge-jump exists ONLY in loadKlines.
   function _applyKlines(p){ if(!p.candle)return Promise.resolve(false);if(p._rp){if(p._rpKeep)return Promise.resolve(false);try{window.__mpReplay.exit(p);}catch(e){}}var sym=p.sym,tf=p.tf;p.reload=Date.now();var _q=p._kq=(p._kq||0)+1;/* request ticket (2026-09-02): only the newest full-window request for this pane may apply */
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return false;
+      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq||p._rp)return false;
       var ok=false;
       if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
@@ -304,7 +304,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var sym=p.sym,tf=p.tf,end=p.bars[0].time*1000-1; p._lm=true;
     var _lmg=setTimeout(function(){p._lm=false;},12000); // a hung fetch must not pin p._lm forever (that would also disable the 60s resync)
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      clearTimeout(_lmg); p._lm=false; if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
+      clearTimeout(_lmg); p._lm=false; if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||p._rp)return;
       if(!kd||!kd.length){p._noMore=true;return;} // empty page → the deepest source ran out
       var first=p.bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));
       if(!older.length){p._noMore=true;return;} // oldest bar didn't move back = source can't go deeper (real test, not "returned few")
@@ -443,8 +443,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(p.inds.bb){var bb=boll(c,20,2);add(bb.u,{color:'rgba(154,163,173,.7)'});add(bb.m,{color:'rgba(154,163,173,.55)',lineStyle:2});add(bb.l,{color:'rgba(154,163,173,.7)'});}
     if(p.inds.vwap)add(vwap(p.bars),{color:'#46e0e6',lineWidth:2},{label:'VWAP',dec:null});
     if(p.inds.hma)add(hma(c,21),{color:'#ff7bd5'},{label:'HMA 21',dec:null});
-    if(p.cmp){var _ck=p.cmp+'|'+p.tf;if(p._cmpK===_ck&&p._cmpBars){try{var _cs=p.chart.addLineSeries({color:'#7fb6ff',lineWidth:1.5,priceScaleId:'cmp',priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});_cs.setData(p._cmpBars.map(function(b){return {time:b.time,value:+b.close};}));p.indSeries.push(_cs);p.chart.priceScale('cmp').applyOptions({scaleMargins:{top:0.06,bottom:0.08},visible:false});
-        var _c0=p._cmpBars.length>24?+p._cmpBars[p._cmpBars.length-25].close:null,_c1=+p._cmpBars[p._cmpBars.length-1].close,_cp=_c0>0?(_c1/_c0-1)*100:null;p.legItems.push({raw:true,color:'#7fb6ff',label:'vs '+p.cmp+(_cp!=null?' '+(_cp>=0?'+':'')+_cp.toFixed(2)+'% / 24 bars':'')});}catch(e){}}
+    if(p.cmp){var _ck=p.cmp+'|'+p.tf;if(p._cmpK===_ck&&p._cmpBars&&window.__mpCmpSeries){try{var _cs=window.__mpCmpSeries(p.chart,p._cmpBars,window.__mpChStyle?window.__mpChStyle.get():'candles');p.indSeries.push(_cs);
+        var _c0=p._cmpBars.length>24?+p._cmpBars[p._cmpBars.length-25].close:null,_c1=+p._cmpBars[p._cmpBars.length-1].close,_cp=_c0>0?(_c1/_c0-1)*100:null;var _tl=p.tf;for(var _ti3=0;_ti3<TFS.length;_ti3++)if(TFS[_ti3][0]===String(p.tf))_tl=TFS[_ti3][1];p.legItems.push({raw:true,color:'#7fb6ff',label:'vs '+p.cmp+' '+_tl+(_cp!=null?' '+(_cp>=0?'+':'')+_cp.toFixed(2)+'% / 24 bars':'')});}catch(e){}}
       else if(p._cmpReq!==_ck){p._cmpReq=_ck;fetch('/api/klines?symbol='+encodeURIComponent(p.cmp)+'&interval='+p.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(p.dead||p._cmpReq!==_ck)return;if(kd&&kd.length){p._cmpBars=sanitizeBars(kd);p._cmpK=_ck;try{applyInds(p);}catch(e){}}else{p._cmpReq='';p.cmp='';mfcSave();}});}}
     if(p.inds.rsi){addZone('rsi',70,100,'rgba(255,98,88,.11)');addZone('rsi',30,0,'rgba(46,189,133,.11)');add(rsi(c,14),{color:'#e0a0ff',priceScaleId:'rsi'},{label:'RSI 14',dec:0});add(c.map(function(){return 70;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'rsi'});add(c.map(function(){return 30;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'rsi'});setScale('rsi');}
     if(p.inds.macd){var mc=macd(c);addHist('macd',mc.hist||mc.macd.map(function(v,i){return (v!=null&&mc.signal[i]!=null)?v-mc.signal[i]:null;}),'rgba(46,189,133,.55)','rgba(255,98,88,.55)');add(mc.macd,{color:'#3fd8e6',priceScaleId:'macd'},{label:'MACD',dec:null});add(mc.signal,{color:'#ff9f4d',priceScaleId:'macd'},{label:'Signal',dec:null});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.4)',lineStyle:2,priceScaleId:'macd'});setScale('macd');}
@@ -551,7 +551,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function closeFloat(){if(floatEl&&floatEl.parentNode)floatEl.parentNode.removeChild(floatEl);floatEl=null;}
   // floating, draggable calculator - sits at the top so the keyboard never covers it, easy to type, easy to dismiss
   function openCalc(){closeFloat();var p=panes[activeI];floatEl=document.createElement('div');floatEl.className='mfc-float';
-    floatEl.innerHTML='<div class="mfc-float-h"><b>'+mcT('mcCalcTitle','Liquidation calculator')+'</b><button class="mfc-float-x" data-fx aria-label="Close">✕</button></div><div class="mfc-float-b" id="mfcFB"></div>';
+    floatEl.innerHTML='<div class="mfc-float-h"><b>'+mcT('mcCalcTitle','Liquidation calculator')+'</b><button class="mfc-float-x" data-fx aria-label="Close"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="mfc-float-b" id="mfcFB"></div>';
     ov.appendChild(floatEl);floatEl.querySelector('[data-fx]').addEventListener('click',closeFloat);
     buildCalc(floatEl.querySelector('#mfcFB'),p);dragFloat(floatEl,floatEl.querySelector('.mfc-float-h'));}
   function dragFloat(panel,handle){var sx,sy,ox,oy,drag=false;
@@ -564,7 +564,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var old=ov.querySelector('.mfc-trbd');if(old){old.remove();return;}
     var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005,oType='market';
     var el=document.createElement('div');el.className='mfc-trbd';
-    el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade'))+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
+    el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade'))+'</b><button class="mfc-trf-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>'
       +'<div class="mfc-trf-b">'
       +'<label class="mtr-lbl">'+mcT('mtCoin','Coin')+'</label>'
       +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search" hidden></div>'
@@ -727,7 +727,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function openSheet(kind){closeSheet();var p=panes[activeI];sheet=document.createElement('div');sheet.className='mfc-sheet';
     var title={sym:mcT('mcChooseCoin',__esT_mpmcharts("chooseCoin",'Choose coin')),tf:mcT('mcTimeframe','Timeframe'),ind:mcT('indBtn','Indicators'),calc:mcT('mcCalcTitle2',__esT_mpmcharts("calculators",'Calculators')),ai:mcT('mcAiTitle','AI chart assistant'),trades:mcT('mtMyTrades',__esT_mpmcharts("myTrades",'My trades'))}[kind]||'';
-    sheet.innerHTML='<div class="mfc-sheet-h"><b>'+title+'</b><button class="mfc-sheet-x" data-x>✕</button></div><div class="mfc-sheet-b" id="mfcSB"></div>';
+    sheet.innerHTML='<div class="mfc-sheet-h"><b>'+title+'</b><button class="mfc-sheet-x" data-x aria-label="Close">'+(window.__mpIcons?window.__mpIcons.x:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>')+'</button></div><div class="mfc-sheet-b" id="mfcSB"></div>';
     ov.appendChild(sheet);sheet.querySelector('[data-x]').addEventListener('click',closeSheet);
     var body=sheet.querySelector('#mfcSB');
     if(kind==='sym')buildSym(body,p);

@@ -1981,9 +1981,10 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.6327433628318584,
-  "hit": 143,
-  "missing": 83
+  "cover": 0.5991561181434599,
+  "hit": 142,
+  "missing": 95,
+  "skipped": true
  },
  {
   "rel": "privacy/index.html",

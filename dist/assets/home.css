@@ -3454,3 +3454,7 @@ undefined
   body.charts-page.ch-light .cwin-replay .rp-row button,.mfc.light .cwin-replay .rp-row button,body.charts-page.ch-light .cwin-replay .rp-x,.mfc.light .cwin-replay .rp-x{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
   body.charts-page.ch-light .cwin-replay .rp-lbl,.mfc.light .cwin-replay .rp-lbl{color:#4f7a00;}
   .cis-rp,.mfs-rp{border-color:rgba(127,174,255,.45)!important;color:#7fb6ff!important;}
+
+  .cwin-replay .rp-row button svg,.cwin-replay .rp-x svg,.cwin-indx .ix-x svg,.mfc-sheet-x svg,.mfc-gate-x svg{display:block;}
+  .cwin-replay .rp-row button{display:inline-flex;align-items:center;justify-content:center;}
+  .cwin-replay .rp-x,.cwin-indx .ix-x,.mfc-sheet-x,.mfc-gate-x{display:inline-flex;align-items:center;justify-content:center;}
