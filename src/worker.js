@@ -20,8 +20,14 @@ let COL_BASE = '', COL_DOWN_UNTIL = 0, COL_TRIPS = 0;
 function colBase(env) { try { const b = String((env && env.COLLECTOR_URL) || '').replace(/\/$/, ''); if (b) COL_BASE = b; } catch (e) {} }
 function colTrip() { COL_DOWN_UNTIL = Date.now() + 60000; COL_TRIPS++; }
 async function colGuardedFetch(u, init) {
-  if (Date.now() < COL_DOWN_UNTIL) throw new Error('collector_breaker_open');
-  const cap = u.indexOf('/api/v1/export') >= 0 ? 0 : 4000;
+  // THE PROBE IS NEVER SHORT-CIRCUITED (2026-10-08): collectorStatusInfo asks /api/v1/status twice, 2.5 s apart. With the
+  // breaker open after the first miss the second attempt threw at once, so a single 6 s event-loop stall on the droplet
+  // became "Collector je PAO (UNREACHABLE)" on Telegram while pm2 had the process up for 30 h. The probe exists to find
+  // out whether the collector is back, so it always goes out, with a ceiling the stall fits under; its result still
+  // closes or re-opens the breaker for everyone else.
+  const probe = u.indexOf('/api/v1/status') >= 0;
+  if (!probe && Date.now() < COL_DOWN_UNTIL) throw new Error('collector_breaker_open');
+  const cap = u.indexOf('/api/v1/export') >= 0 ? 0 : (probe ? 9000 : 4000);
   init = Object.assign({}, init || {});
   let timer = null;
   if (cap) { const ctrl = new AbortController(); timer = setTimeout(() => ctrl.abort(), cap); try { if (init.signal) init.signal.addEventListener('abort', () => ctrl.abort()); } catch (e) {} init.signal = ctrl.signal; }
