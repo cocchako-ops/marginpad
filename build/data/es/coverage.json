@@ -1981,9 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 1,
-  "hit": 159,
-  "missing": 0
+  "cover": 0.6327433628318584,
+  "hit": 143,
+  "missing": 83
  },
  {
   "rel": "privacy/index.html",
@@ -2305,8 +2305,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 1,
-  "hit": 459,
-  "missing": 0
+  "cover": 0.9829059829059829,
+  "hit": 460,
+  "missing": 8
  }
 ]
