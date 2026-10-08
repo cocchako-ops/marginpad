@@ -3234,7 +3234,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=dcdf7069'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=f914ca54'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3416,6 +3416,9 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
     },{passive:false});
   }
   // chart background toggle (Dark / Light)
+  var th=document.getElementById('cwsTheme');/* one button in the icon rail (2026-10-08, owner: light/dark) - the Dark/Light segment below is hidden in mini mode */
+  if(th)th.addEventListener('click',function(){var cur='dark';try{cur=localStorage.getItem('mp_ch_theme')==='light'?'light':'dark';}catch(e){}var nx=cur==='light'?'dark':'light';try{localStorage.setItem('mp_ch_theme',nx);}catch(e){}try{if(window.mpCharts&&window.mpCharts.setTheme)window.mpCharts.setTheme(nx);}catch(_){}document.body.classList.toggle('ch-light',nx==='light');var bg2=document.getElementById('cwsBg');if(bg2)Array.prototype.forEach.call(bg2.children,function(x){x.classList.toggle('on',x.getAttribute('data-bg')===nx);});});
+  try{if(localStorage.getItem('mp_ch_theme')==='light')document.body.classList.add('ch-light');}catch(e){}
   var bg=document.getElementById('cwsBg');
   if(bg){ try{var cur=(localStorage.getItem('mp_ch_theme')==='light')?'light':'dark';Array.prototype.forEach.call(bg.children,function(b){b.classList.toggle('on',b.getAttribute('data-bg')===cur);});}catch(e){}
     bg.addEventListener('click',function(e){var b=e.target.closest('[data-bg]');if(!b)return;var m=b.getAttribute('data-bg');Array.prototype.forEach.call(bg.children,function(x){x.classList.toggle('on',x===b);});try{if(window.mpCharts&&window.mpCharts.setTheme)window.mpCharts.setTheme(m);}catch(_){}});
@@ -3730,7 +3733,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=dfd4a5b2'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=bcd477c9'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);

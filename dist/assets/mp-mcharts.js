@@ -135,7 +135,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +ACT('calc',SV.calc,mcT('mcCalc','Calc'),c)
       +ACT('trade',SV.trade,dock?mcT('mcTradeShort',__esT_mpmcharts("tradeShort",'Trade')):mcT('mcDemoTrade',__esT_mpmcharts("demoTrade",'Demo trade')),c+' mfc-tradebtn');};/* the dock is six 65px cells on a 390px phone: "Indicators" and "Demo trade" truncated to "Indicato…" (screenshot 2026-10-08) */
     ov.innerHTML='<div class="mfc-bar">'
-      +'<button class="mfc-b mfc-x" data-act="close" aria-label="Close charts">✕<span class="mfc-bl"> '+mcT('mcClose','Close')+'</span></button>'
+      +'<button class="mfc-b mfc-x" data-act="close" aria-label="'+mcT('mcClose','Close')+'" title="'+mcT('mcClose','Close')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+      +'<button class="mfc-b mfc-th" data-act="theme" aria-label="Light / dark" title="Light / dark"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>'
       +'<button class="mfc-b" data-act="sym"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="mfc-symL">BTC</span></button>'
       +'<button class="mfc-b" data-act="tf"><span class="mfc-tfL">1m</span><span class="mfc-car">▾</span></button>'
       +actions(false)
@@ -180,6 +181,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
     if(a!=='tf')tfRow(false);
     if(a==='close')return close();
+    if(a==='theme')return toggleTheme();
     if(a==='split')return toggleSplit();
     if(a==='draw')return toggleDraw(b);
     if(a==='trades')return toggleTrades(b);
@@ -195,14 +197,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
-    el.innerHTML='<div class="mfc-chart"></div><div class="mfc-sub"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-cd"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
+    el.innerHTML='<div class="mfc-chart"></div><div class="mfc-sub"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-cd"></span> <span class="mfc-pl-p"></span><div class="mfc-pl-ohlc" hidden></div></div><div class="cwin-leg"></div>';
     var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
   }
+  /* LIGHT / DARK (2026-10-08, owner): one key with the desktop workspace (`mp_ch_theme`), so a reader who picks light on the
+     phone gets light on the desktop too. The overlay recolours through `.mfc.light`; the chart itself through applyOptions. */
+  function isLight(){try{return localStorage.getItem('mp_ch_theme')==='light';}catch(e){return false;}}
+  function themeM(){return isLight()
+    ?{layout:{background:{color:'#ffffff'},textColor:'#2a2f37',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(0,0,0,.06)'},horzLines:{color:'rgba(0,0,0,.06)'}},rightPriceScale:{borderColor:'#d6dade'},timeScale:{borderColor:'#d6dade'}}
+    :{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932'}};}
+  function applyThemeM(){if(!ov)return;var L=isLight();ov.classList.toggle('light',L);panes.forEach(function(p){try{if(p.chart)p.chart.applyOptions(themeM());}catch(e){}try{if(p.sub)p.sub.applyOptions(themeM());}catch(e){}try{if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}catch(e){}});}
+  function toggleTheme(){try{localStorage.setItem('mp_ch_theme',isLight()?'dark':'light');}catch(e){}applyThemeM();try{if(window.mpCharts&&window.mpCharts.setTheme)window.mpCharts.setTheme(isLight()?'light':'dark');}catch(e){}}
   function initChart(p){ if(p.chart||!window.LightweightCharts||!p.host.clientWidth){return;}
-    p.chart=mpCreateChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
-    try{p.chart.subscribeCrosshairMove(function(param){mLeg(p,param);});}catch(e){}
+    var _th=themeM();
+    p.chart=mpCreateChart(p.host,{layout:_th.layout,grid:_th.grid,rightPriceScale:_th.rightPriceScale,timeScale:{borderColor:_th.timeScale.borderColor,timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
+    try{p.chart.subscribeCrosshairMove(function(param){mLeg(p,param);labelAt(p,param);});}catch(e){}
     try{p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreM(p);});}catch(e){} // scrolled near the start → page older history (mirror desktop loadMoreW). Per-pane: closes over THIS p.
     /* FREE PAN (owner 2026-08-13): vertical pane drag -> manual price scale (pan up/down freely); axis drag remembered; p._userPS gates every periodic autoScale re-assert; a fresh symbol/TF load (loadKlines) or price-axis double-tap re-arms autofit. */
     (function(pp){var st={d:0};pp.host.addEventListener('pointerdown',function(e){var r=pp.host.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-56);st.dec=0;},true);pp.host.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){pp._userPS=true;return;}if(dy>dx){pp._userPS=true;try{pp.chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);pp.host.addEventListener('dblclick',function(e){var r=pp.host.getBoundingClientRect();if(e.clientX>r.right-56){pp._userPS=false;try{pp.chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});})(p);
@@ -341,7 +352,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       try{var _TKm=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKm&&p._lgp>0){var _mm=[_TKm.cur,_TKm.prev];for(var _mi9=0;_mi9<2;_mi9++){var _mk=_mm[_mi9];if(!_mk)continue;if(_mk.t<p.lastBar.time||_mk.t>=p.lastBar.time+iv)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_mk.h>p.lastBar.high&&_mk.h<p._lgp*1.025)p.lastBar.high=_mk.h;if(_mk.l<p.lastBar.low&&_mk.l>p._lgp*0.975)p.lastBar.low=_mk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
     try{p.candle.update(p.lastBar);}catch(e){}label(p);
   }
-  function label(p){var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);if(pe&&pr)pe.textContent=fp(pr);}
+  function label(p){if(p._scrub)return;/* a finger on a candle owns the label until it lifts */var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);
+    var lp=window.mpLivePrices&&window.mpLivePrices[p.sym],chg=lp&&isFinite(lp.chg)?+lp.chg:null;
+    if(pe&&pr)pe.innerHTML=fp(pr)+(chg!=null?' <i class="mfc-chg '+(chg>=0?'up':'dn')+'">'+(chg>=0?'+':'')+chg.toFixed(2)+'%</i>':'');
+    var oh=p.el.querySelector('.mfc-pl-ohlc');if(oh)oh.hidden=true;}
+  /* OHLC UNDER THE FINGER (2026-10-08): touch a candle and the label shows that candle's open / high / low / close and its
+     move, like every exchange app; lift and the live price returns. */
+  function labelAt(p,param){var oh=p.el.querySelector('.mfc-pl-ohlc');if(!oh)return;
+    var bar=null;try{if(param&&param.time!=null&&param.seriesData){var sd=param.seriesData.get(p.candle);if(sd&&sd.open!=null)bar=sd;}}catch(e){}
+    if(!bar){p._scrub=false;oh.hidden=true;label(p);return;}
+    p._scrub=true;var d=(bar.close-bar.open)/bar.open*100,up=bar.close>=bar.open;
+    oh.hidden=false;oh.innerHTML='<span>O <b>'+fp(bar.open)+'</b></span><span>H <b>'+fp(bar.high)+'</b></span><span>L <b>'+fp(bar.low)+'</b></span><span>C <b class="'+(up?'up':'dn')+'">'+fp(bar.close)+'</b></span><span class="'+(up?'up':'dn')+'">'+(d>=0?'+':'')+d.toFixed(2)+'%</span>'+(param.time?'<span class="t">'+new Date(param.time*1000).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})+'</span>':'');}
   // ---- indicator value legend (owner request: RSI etc. must SHOW their number) ----
   function legFmt(v,dec){if(v==null||!isFinite(v))return '\u2014';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
   function _mLegHidden(){try{var v=localStorage.getItem('mp:leghide');return v==null?true:v==='1';}catch(e){return true;}} /* mobile defaults to a clean chart - values one tap away */
@@ -371,7 +392,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
       rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=el.getBoundingClientRect();var nh=Math.max(56,Math.min(Math.round(br.height*0.55),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
       rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subhm',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
-    if(!p.sub&&window.LightweightCharts&&sh){try{p.sub=mpCreateChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+    if(!p.sub&&window.LightweightCharts&&sh){try{var _ts=themeM();p.sub=mpCreateChart(sh,{layout:_ts.layout,grid:_ts.grid,rightPriceScale:_ts.rightPriceScale,timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       p.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.chart||p._subSync)return;p._subSync=1;try{p.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;});
       try{p.sub.subscribeCrosshairMove(function(prm){mLeg(p,prm);});}catch(e){} /* touch-scrub over the indicator strip drives the value legend */
       try{var _r0=p.chart.timeScale().getVisibleLogicalRange();if(_r0)p.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){p.sub=null;}}
@@ -697,15 +718,39 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function buildTf(body,p){body.innerHTML='<div class="mfc-sl">'+TFS.map(function(t){return '<button class="'+(t[0]===p.tf?'on':'')+'" data-tf="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
     body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;p.tf=b.getAttribute('data-tf');clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();mfcSave();});}
-  function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search"><div class="mfc-sl" id="mfcSyl"></div>';
+  /* THE COIN SHEET IS A MARKET LIST, NOT A GRID OF LETTERS (2026-10-08): every row carries the live price and the 24h move,
+     favourites (star, remembered) and recent coins sit on top, and the search still finds any ticker. */
+  var PX={};function pullPx(cb){var now=Date.now();if(PX._t&&now-PX._t<60000){cb&&cb();return;}fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.pairs){PX._t=now;j.pairs.forEach(function(x){var s=String(x.symbol||'').replace(/USDT$/,'');PX[s]={p:+x.price,c:+x.changePct};});}cb&&cb();}).catch(function(){cb&&cb();});}
+  function favs(){try{return JSON.parse(localStorage.getItem('mp_mfc_fav')||'[]')||[];}catch(e){return [];}}
+  function recents(){try{return JSON.parse(localStorage.getItem('mp_mfc_recent')||'[]')||[];}catch(e){return [];}}
+  function noteRecent(s){try{var r=recents().filter(function(x){return x!==s;});r.unshift(s);localStorage.setItem('mp_mfc_recent',JSON.stringify(r.slice(0,8)));}catch(e){}}
+  function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker',__esT_mpmcharts("searchAnyTicker",'Search any ticker…'))+'" inputmode="search"><div class="mfc-syl" id="mfcSyl"></div>';
     var inp=body.querySelector('.mfc-ss'),list=body.querySelector('#mfcSyl');
-    if(window.mpLoadTokens)window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;});
-    function render(q){q=String(q||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var arr=q?(window.mpTokens||tokens).filter(function(t){return t.indexOf(q)===0;}).concat((window.mpTokens||tokens).filter(function(t){return t.indexOf(q)>0;})):tokens.slice(0,12);list.innerHTML=arr.slice(0,40).map(function(t){return '<button class="'+(t===p.sym?'on':'')+'" data-pick="'+t+'">'+t+'</button>';}).join('');}
-    render('');inp.addEventListener('input',function(){render(this.value);});
-    list.addEventListener('click',function(e){var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();mfcSave();});
-    setTimeout(function(){inp.focus();},40);}
-  function buildInd(body,p){var al=mAllowed();body.innerHTML='<div class="mfc-indm">'+INDS.map(function(d){var lk=mEx(d[0])&&!al,st=mEx(d[0])?' style="color:#c2f64a;font-weight:700'+(lk?';opacity:.5':'')+'"':'';return '<button class="'+(p.inds[d[0]]?'on':'')+(lk?' locked':'')+'" data-ind="'+d[0]+'"'+st+'>'+d[1]+(lk?' LOCKED':'')+'</button>';}).join('')+'</div><p style="color:#9aa3ad;font-size:11.5px;margin-top:12px">'+mcT('mcIndNote',__esT_mpmcharts("sameIndicatorFamiliesAs",'Same indicator families as the desktop workspace. Applies to the selected chart.'))+'</p>';
-    body.addEventListener('click',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');if(mEx(k)&&!mAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpmcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));return;}p.inds[k]=!p.inds[k];b.classList.toggle('on',!!p.inds[k]);applyInds(p);mfcSave();});}
+    /* rowOf/sec are defined BEFORE mpLoadTokens - its callback can run synchronously when the list is already cached, and render() would meet an unassigned `sec` */
+    var rowOf=function(t){var fv=favs().indexOf(t)>=0,px=PX[t],lp=price(t)||(px&&px.p)||0,ch=px&&isFinite(px.c)?px.c:(window.mpLivePrices&&window.mpLivePrices[t]&&isFinite(window.mpLivePrices[t].chg)?+window.mpLivePrices[t].chg:null);
+      return '<div class="mfc-sr'+(t===p.sym?' on':'')+'" data-pick="'+t+'"><button type="button" class="st'+(fv?' on':'')+'" data-fav="'+t+'" aria-label="Favourite">'+(fv?'★':'☆')+'</button><b>'+t+'</b><span class="px">'+(lp>0?fp(lp):'')+'</span><span class="ch '+(ch==null?'':ch>=0?'up':'dn')+'">'+(ch==null?'':(ch>=0?'+':'')+ch.toFixed(2)+'%')+'</span></div>';};
+    var sec=function(h,arr){return arr.length?'<div class="mfc-sh">'+h+'</div>'+arr.map(rowOf).join(''):'';};
+    function render(q){q=String(q||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var all=window.mpTokens||tokens;
+      if(q){var arr=all.filter(function(t){return t.indexOf(q)===0;}).concat(all.filter(function(t){return t.indexOf(q)>0;})).slice(0,40);list.innerHTML=arr.length?arr.map(rowOf).join(''):'<p class="mfc-note">'+mcT('mcNoMatch',__esT_mpmcharts("noTickerMatches",'No ticker matches - try the exchange symbol, like BTC or SOL.'))+'</p>';return;}
+      var MAJ=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK','LTC','TRX','TON','DOT','SUI','HYPE','PEPE'];/* `tokens` becomes the full exchange list (indices first) once mpLoadTokens answers - the majors section is a fixed list */
+      var fv=favs(),rc=recents().filter(function(x){return fv.indexOf(x)<0;}),top=MAJ.filter(function(x){return fv.indexOf(x)<0&&rc.indexOf(x)<0&&all.indexOf(x)>=0;});
+      list.innerHTML=sec(mcT('mcFavs',__esT_mpmcharts("favourites",'Favourites')),fv)+sec(mcT('mcRecent',__esT_mpmcharts("recent",'Recent')),rc)+sec(mcT('mcMajors',__esT_mpmcharts("majors",'Majors')),top);}
+    if(window.mpLoadTokens)window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;render(inp.value);});
+    render('');pullPx(function(){render(inp.value);});inp.addEventListener('input',function(){render(this.value);});
+    list.addEventListener('click',function(e){var st=e.target.closest('[data-fav]');if(st){var s=st.getAttribute('data-fav'),f=favs();if(f.indexOf(s)>=0)f=f.filter(function(x){return x!==s;});else f.unshift(s);try{localStorage.setItem('mp_mfc_fav',JSON.stringify(f.slice(0,20)));}catch(_){}render(inp.value);return;}
+      var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');noteRecent(p.sym);clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();mfcSave();});
+    setTimeout(function(){try{inp.focus({preventScroll:true});}catch(e){}},60);}
+  /* INDICATORS IN GROUPS, EACH WITH ONE LINE OF MEANING (2026-10-08): 25 buttons in a flat grid asked the reader to already know
+     what Hull MA or CCI is. Four groups, a switch per row, the sentence that says what the line shows, a count on the title
+     and Clear all. The four MarginPad indicators link to their guide. */
+  var IND_DESC={sig:'Supertrend buy / sell arrows on the candles',sr:'Recent pivot highs and lows as lines',ema9:'Fast exponential average - short-term trend',ema21:'The swing trader’s trend line',ema50:'Medium-term trend; price above = uptrend',ema100:'Slow trend filter',ema200:'The long-term trend line most desks watch',sma20:'Simple 20-bar average',sma50:'Simple 50-bar average',sma100:'Simple 100-bar average',sma200:'Simple 200-bar average - the classic bull / bear line',hma:'Hull MA 21 - a smooth, fast-turning average',vwap:'Volume-weighted average price of the session',bb:'Bollinger bands - volatility envelope around a 20 average',vol:'Volume per candle',rsi:'RSI 14 - momentum; above 70 stretched, below 30 washed out',macd:'MACD - trend momentum and its signal line',stoch:'Stochastic - where the close sits in the recent range',atr:'ATR 14 - how much this market moves per candle',wr:'Williams %R - overbought / oversold',cci:'CCI 20 - distance from the average, in deviations',casc:'Liquidation fuel within 5% of price, 0-100',brain:'Learned 8-factor lean, -100 to +100',memory:'What price did after the 25 most similar moments',magnet:'The dominant liquidation pool pulling price'};
+  var IND_GROUPS=[['Signals & levels',['sig','sr']],['Moving averages',['ema9','ema21','ema50','ema100','ema200','sma20','sma50','sma100','sma200','hma','vwap','bb']],['Oscillators & volume',['rsi','macd','stoch','atr','wr','cci','vol']],['MarginPad AI',['casc','brain','memory','magnet']]];
+  function buildInd(body,p){var al=mAllowed(),byK={};INDS.forEach(function(d){byK[d[0]]=d[1];});
+    var on=Object.keys(p.inds).filter(function(k){return p.inds[k];}).length;
+    body.innerHTML='<div class="mfc-ih"><span>'+on+' '+mcT('mcOn',__esT_mpmcharts("onThisChart",'on this chart'))+'</span><button type="button" class="mfc-clr" data-clear-ind'+(on?'':' hidden')+'>'+mcT('mcClearAll',__esT_mpmcharts("clearAll",'Clear all'))+'</button></div>'
+      +IND_GROUPS.map(function(g){return '<div class="mfc-ig"><div class="mfc-sh">'+g[0]+(g[0]==='MarginPad AI'?' <a href="/ai-indicators/" target="_blank" rel="noopener">'+mcT('mcGuide',__esT_mpmcharts("guide",'guide'))+'</a>':'')+'</div>'+g[1].map(function(k){var lk=mEx(k)&&!al;return '<label class="mfc-ir'+(lk?' locked':'')+'"><span class="mfc-irt"><b'+(mEx(k)?' class="mp"':'')+'>'+byK[k]+(lk?' <i class="lk">'+mcT('mcLocked',__esT_mpmcharts("premium",'Premium'))+'</i>':'')+'</b><small>'+(IND_DESC[k]||'')+'</small></span><input type="checkbox" data-ind="'+k+'"'+(p.inds[k]?' checked':'')+'><i class="sw"></i></label>';}).join('')+'</div>';}).join('');
+    body.addEventListener('change',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');if(mEx(k)&&!mAllowed()){b.checked=false;if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpmcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));return;}p.inds[k]=!!b.checked;applyInds(p);mfcSave();var n=Object.keys(p.inds).filter(function(x){return p.inds[x];}).length,h=body.querySelector('.mfc-ih span'),c=body.querySelector('[data-clear-ind]');if(h)h.textContent=n+' '+mcT('mcOn',__esT_mpmcharts("onThisChart",'on this chart'));if(c)c.hidden=!n;});
+    body.addEventListener('click',function(e){if(!e.target.closest('[data-clear-ind]'))return;Object.keys(p.inds).forEach(function(k){p.inds[k]=false;});applyInds(p);mfcSave();buildInd(body,p);});}
   /* THREE CALCULATORS, MADE FOR THE CHART (2026-10-08, owner: "razvijemo kalkulatore bolje, vise opcija, prilagodjeno za charts"):
      Liquidation (where it dies), Position size (how much to open for a given risk), Target (what the trade pays at the target
      and costs at the stop, reward-to-risk). The entry starts at the live price of the chart's coin, every price field has a
@@ -852,7 +897,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function mfcLoad(){try{return JSON.parse(localStorage.getItem('mp_mfc_state')||'null');}catch(e){return null;}}
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
-  function open(sym){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
+  function open(sym){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden'; applyThemeM();
     if(sym){var _S=String(sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_S){forcePair=_S;if(panes.length){try{var _st=ov.querySelector('#mfcStage');panes.forEach(function(pp){try{if(pp.chart)pp.chart.remove();}catch(e){}try{if(pp.sub)pp.sub.remove();}catch(e){}pp.sub=null;});if(_st)_st.innerHTML='';panes=[];activeI=0;}catch(e){}}}}
     showGate(false);proceed(); // portrait works too - the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }

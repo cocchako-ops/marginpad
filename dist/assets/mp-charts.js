@@ -321,7 +321,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!w.sub&&window.LightweightCharts&&sh){try{w.sub=mpCreateChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       w.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.chart||w._subSync)return;w._subSync=1;try{w.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;});
       try{w.sub.subscribeCrosshairMove(function(prm){cwLeg(w,prm);});}catch(e){} /* hovering the indicator panel drives the value legend too */
-      try{var _r0=w.chart.timeScale().getVisibleLogicalRange();if(_r0)w.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){w.sub=null;}}
+      try{var _r0=w.chart.timeScale().getVisibleLogicalRange();if(_r0)w.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}try{if(chTheme==='light')w.sub.applyOptions(themeOpts());}catch(e){}}catch(e){w.sub=null;}}
     return w.sub;}
   function applyInds(w){ if(!w.candle)return; var bars=w.bars||[];
     var mk=[],_ss={},IA=indAllowed();
@@ -2183,10 +2183,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function themeOpts(){return chTheme==='light'
     ?{layout:{background:{color:'#ffffff'},textColor:'#2a2f37'},grid:{vertLines:{color:'rgba(0,0,0,.06)'},horzLines:{color:'rgba(0,0,0,.06)'}},rightPriceScale:{borderColor:'#d6dade'},timeScale:{borderColor:'#d6dade'}}
     :{layout:{background:{color:'transparent'},textColor:'#9aa3ad'},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932'}};}
-  function applyTheme(){try{var bd=document.getElementById('cwsBoard');if(bd)bd.classList.toggle('cws-light',chTheme==='light');}catch(e){}for(var i=0;i<wins.length;i++){if(wins[i].chart)try{wins[i].chart.applyOptions(themeOpts());}catch(e){}}}
+  function applyTheme(){try{var bd=document.getElementById('cwsBoard');if(bd)bd.classList.toggle('cws-light',chTheme==='light');document.body.classList.toggle('ch-light',chTheme==='light');}catch(e){}for(var i=0;i<wins.length;i++){if(wins[i].chart)try{wins[i].chart.applyOptions(themeOpts());}catch(e){}if(wins[i].sub)try{wins[i].sub.applyOptions(themeOpts());}catch(e){}try{if(wins[i].dr&&wins[i].dr.redraw)wins[i].dr.redraw();}catch(e){}}}
   function buildChart(w){ loadLib(function(){ if(w.dead||!window.LightweightCharts)return;
     var host=w.el.querySelector('.cwin-chart');
     try{ w.chart=mpCreateChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:6,barSpacing:6},crosshair:{mode:0},autoSize:true});
+      try{if(chTheme==='light')w.chart.applyOptions(themeOpts());}catch(e){}
       w.candle=w.chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',autoscaleInfoProvider:mtAutoscale(w)});
       try{if(chTheme==='light')w.chart.applyOptions(themeOpts());}catch(e){}
       /* FREE PAN (owner 2026-08-13): a vertical drag in the pane flips the price scale to manual so the user can pan

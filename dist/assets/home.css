@@ -2640,7 +2640,7 @@
   .mtr-open{width:100%;background:#2ebd85;border:none;border-radius:11px;color:#06231d;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;letter-spacing:.03em;padding:11px 0;cursor:pointer;}
   .mtr-open.short{background:#ff5a4d;color:#fff;}
   .mtr-msg{font-size:12px;margin-top:8px;min-height:15px;font-family:'Space Mono',monospace;}
-  .mfc-pane .cwin-leg{top:34px;left:10px;}
+  .mfc-pane .cwin-leg{top:42px;left:10px;}/* clear of the pane label, which now carries the 24h change beside the price */
   .mfc-pane.drawing .cwin-leg{display:none!important;}
   /* entry rotate gate (only on open, in portrait) */
   .mfc-gate{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:30px;background:#070809;}
@@ -2696,6 +2696,103 @@
   .mfc-calc-out{margin-top:14px;background:#0e1217;border:1px solid #232c38;border-radius:12px;padding:14px;}
   .mfc-calc-out .big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;color:#ff8a80;}
   .mfc-calc-out .sub{font-family:'Space Mono',monospace;font-size:11.5px;color:#9aa3ad;margin-top:4px;}
+  /* ---- top bar + dock polish, OHLC readout, coin rows, indicator switches, light theme (2026-10-08) ---- */
+  .mfc-b{border-radius:11px;border-color:#222a34;min-height:40px;}
+  .mfc-x{width:40px;padding:0;justify-content:center;color:#cfd4da;border-color:#222a34;}
+  .mfc-x svg{width:16px;height:16px;}
+  .mfc-th{width:40px;padding:0;justify-content:center;color:#9aa3ad;}
+  .mfc-th .sun{display:none;}.mfc.light .mfc-th .sun{display:block;}.mfc.light .mfc-th .moon{display:none;}
+  .mfc-chg{font-style:normal;font-size:10px;font-weight:700;padding:1px 5px;border-radius:5px;margin-left:5px;}
+  .mfc-chg.up{color:#2ebd85;background:rgba(46,189,133,.14);}.mfc-chg.dn{color:#ff6258;background:rgba(255,98,88,.14);}
+  .mfc-pl-ohlc{display:flex;gap:9px;flex-wrap:wrap;margin-top:4px;font-size:10.5px;color:#9aa3ad;}
+  .mfc-pl-ohlc[hidden]{display:none;}
+  .mfc-pl-ohlc b{color:#e9e7df;font-weight:700;}.mfc-pl-ohlc .up,.mfc-pl-ohlc b.up{color:#2ebd85;}.mfc-pl-ohlc .dn,.mfc-pl-ohlc b.dn{color:#ff6258;}.mfc-pl-ohlc .t{color:#6e7885;}
+  .mfc-syl{display:flex;flex-direction:column;gap:4px;}
+  .mfc-sh{font:800 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#7c8794;margin:12px 2px 6px;display:flex;align-items:center;gap:10px;}
+  .mfc-sh:first-child{margin-top:0;}
+  .mfc-sh a{font-weight:700;letter-spacing:0;text-transform:none;color:#c2f64a;text-decoration:underline;}
+  .mfc-sr{display:grid;grid-template-columns:34px 1fr auto auto;align-items:center;gap:8px;background:#12161c;border:1px solid #232932;border-radius:11px;padding:9px 11px 9px 6px;cursor:pointer;}
+  .mfc-sr.on{border-color:#3fd8e6;}
+  .mfc-sr b{font-family:'Space Mono',monospace;font-size:14px;color:#e9e7df;}
+  .mfc-sr .px{font-family:'Space Mono',monospace;font-size:12.5px;color:#cfd4da;}
+  .mfc-sr .ch{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;min-width:58px;text-align:right;color:#7c8794;}
+  .mfc-sr .ch.up{color:#2ebd85;}.mfc-sr .ch.dn{color:#ff6258;}
+  .mfc-sr .st{width:34px;height:34px;background:none;border:0;color:#5c656f;font-size:17px;cursor:pointer;padding:0;}
+  .mfc-sr .st.on{color:#ffcf3f;}
+  .mfc-ih{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#9aa3ad;margin-bottom:4px;}
+  .mfc-clr{background:none;border:1px solid #2c3540;color:#ff8a80;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;border-radius:8px;padding:6px 10px;cursor:pointer;}
+  .mfc-clr[hidden]{display:none;}
+  .mfc-ig{margin-bottom:6px;}
+  .mfc-ir{display:flex;align-items:center;gap:10px;padding:9px 4px 9px 2px;border-bottom:1px solid #1a2029;cursor:pointer;}
+  .mfc-ir:last-child{border-bottom:0;}
+  .mfc-irt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .mfc-irt b{font-size:13.5px;color:#e9e7df;font-weight:700;}
+  .mfc-irt b.mp{color:#c2f64a;}
+  .mfc-irt small{font-size:11.5px;color:#7c8794;line-height:1.35;}
+  .mfc-ir .lk{font-style:normal;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#ffb020;margin-left:6px;}
+  .mfc-ir.locked .mfc-irt b{opacity:.75;}
+  .mfc-ir input{position:absolute;opacity:0;width:0;height:0;}
+  .mfc-ir .sw{flex:0 0 auto;width:40px;height:24px;border-radius:12px;background:#232932;position:relative;transition:background .15s;}
+  .mfc-ir .sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#8b95a1;transition:transform .15s,background .15s;}
+  .mfc-ir input:checked+.sw{background:rgba(63,216,230,.35);}
+  .mfc-ir input:checked+.sw::after{transform:translateX(16px);background:#3fd8e6;}
+  /* light theme for the phone layer */
+  .mfc.light{background:#f4f6f8;color:#1b2028;}
+  .mfc.light .mfc-bar{background:#ffffff;border-bottom-color:#e2e6ea;}
+  .mfc.light .mfc-b{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+  .mfc.light .mfc-b.on{background:rgba(31,160,180,.12);border-color:#1fa0b4;color:#15707e;}
+  .mfc.light .mfc-b.mfc-ai{background:#eaf2ff;border-color:#bcd3f5;color:#1f4d8f;}
+  .mfc.light .mfc-b.mfc-ai svg{color:#2f6fd0;}
+  .mfc.light .mfc-stage{background:#e4e8ec;}
+  .mfc.light .mfc-pane{background:#ffffff;}
+  .mfc.light .mfc-pl{background:rgba(255,255,255,.85);color:#4a5260;}
+  .mfc.light .mfc-pl b{color:#1b2028;}
+  .mfc.light .mfc-pl-cd{color:#5a8a00;}
+  .mfc.light .mfc-dock{background:#ffffff;border-top-color:#e2e6ea;}
+  .mfc.light .mfc-dock .mfc-b{color:#5a6472;}
+  .mfc.light .mfc-dock .mfc-b.on{background:rgba(31,160,180,.12);border-color:rgba(31,160,180,.35);color:#15707e;}
+  .mfc.light .mfc-tfrow{background:#ffffff;border-bottom-color:#e2e6ea;}
+  .mfc.light .mfc-tfrow button{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+  .mfc.light .mfc-tfrow button.on{background:#c2f64a;border-color:#a8dc2e;color:#1b2400;}
+  .mfc.light .mfc-sheet{background:#ffffff;border-top-color:#dfe4e9;color:#1b2028;}
+  .mfc.light .mfc-sheet-h{border-bottom-color:#e8ecf0;}
+  .mfc.light .mfc-sheet-x,.mfc.light .mfc-float-x,.mfc.light .mfc-trf-x{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+  .mfc.light .mfc-sr,.mfc.light .mfc-tr,.mfc.light .mfc-plan,.mfc.light .mfc-calc-out,.mfc.light .mfc-ctabs,.mfc.light .mfc-ss,.mfc.light .mfc-calc-grid input,.mfc.light .mfc-calc-seg,.mfc.light .mfc-indm button,.mfc.light .mfc-sl button{background:#f6f8fa;border-color:#dfe4e9;color:#1b2028;}
+  .mfc.light .mfc-sr b,.mfc.light .mfc-irt b,.mfc.light .mfc-tr-m b,.mfc.light .mfc-cex .r b{color:#1b2028;}
+  .mfc.light .mfc-ctabs button.on{background:#ffffff;color:#1b2028;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .mfc.light .mfc-ir{border-bottom-color:#eceff2;}
+  .mfc.light .mfc-ir .sw{background:#d9dee4;}
+  .mfc.light .mfc-cwin-leg,.mfc.light .cwin-leg{color:#4a5260;text-shadow:none;}
+  .mfc.light .cwin-subleg-row{color:#4a5260;text-shadow:none;}
+  .mfc.light .cwin-tools{background:rgba(255,255,255,.95);border-color:#dfe4e9;}
+  .mfc.light .cwin-tool{background:#f1f3f6;border-color:#dfe4e9;color:#2a2f37;}
+  .mfc.light .cwin-pop{background:#ffffff;border-color:#dfe4e9;}
+  .mfc.light .cpop-it{color:#2a2f37;}.mfc.light .cpop-it:hover{background:#f1f3f6;}
+  .mfc.light .mfc-ai-msg.ai{background:#f1f3f6;border-color:#e2e6ea;color:#1b2028;}
+  .mfc.light .mfc-trwin{background:#ffffff;border-color:#dfe4e9;color:#1b2028;}
+  .mfc.light .mfc-pl-ohlc b{color:#1b2028;}
+  /* light theme for the desktop workspace - the chart plot was already white, the chrome around it was not */
+  body.charts-page.ch-light .cws-board{background:#e9ebee;background-image:none;box-shadow:none;}
+  body.charts-page.ch-light .cwin{background:#ffffff;border-color:#d6dade;box-shadow:0 14px 34px -18px rgba(0,0,0,.35);}
+  body.charts-page.ch-light .cwin-head{background:#f6f7f9;border-bottom-color:#e2e6ea;}
+  body.charts-page.ch-light .cwin-body,body.charts-page.ch-light .cwin-sub{background:#ffffff;}
+  body.charts-page.ch-light .cwin-tf{background:#ffffff;border-color:#d6dade;}
+  body.charts-page.ch-light .cwin-tf button{color:#5a6472;}
+  body.charts-page.ch-light .cwin-sym{background-color:#ffffff;background-image:none;color:#4f7a00;text-shadow:none;border-color:#d6dade;}
+  body.charts-page.ch-light .cwin-ind-btn,body.charts-page.ch-light .cwin-draw-tg,body.charts-page.ch-light .cwin-mt,body.charts-page.ch-light .cwin-notes-btn{background:#ffffff;border-color:#d6dade;color:#5a6472;}
+  body.charts-page.ch-light .cwin-x{color:#5a6472;}
+  body.charts-page.ch-light .cwin-leg,body.charts-page.ch-light .cwin-subleg-row{color:#4a5260;text-shadow:none;}
+  body.charts-page.ch-light .cwin-tools{background:rgba(255,255,255,.95);border-color:#d6dade;}
+  body.charts-page.ch-light .cwin-tool{background:#f1f3f6;border-color:#d6dade;color:#2a2f37;}
+  body.charts-page.ch-light .cwin-pop{background:#ffffff;border-color:#d6dade;}
+  body.charts-page.ch-light .cpop-it{color:#2a2f37;}body.charts-page.ch-light .cpop-it:hover{background:#f1f3f6;}
+  body.charts-page.ch-light .cws-bar{background:#ffffff;border-color:#d6dade;}
+  body.charts-page.ch-light .cws-btn{background:#f6f7f9;border-color:#d6dade;color:#4a5260;}
+  body.charts-page.ch-light .cws-rail-tg{background:#f6f7f9;border-color:#d6dade;color:#4a5260;}
+  body.charts-page.ch-light .cws-tile{background:#f6f7f9;border-color:#d6dade;}
+  body.charts-page.ch-light .cwin-ind-menu,body.charts-page.ch-light .cwin-sym-menu{background:#ffffff;border-color:#d6dade;color:#1b2028;}
+  body.charts-page.ch-light .cwin-sym-opt{color:#2a2f37;}
+  body.charts-page.ch-light .cwin-sym-search{background:#f6f7f9;border-color:#d6dade;color:#1b2028;}
   /* ---- calculators sheet, three tabs (2026-10-08) ---- */
   .mfc-ctabs{display:flex;gap:4px;background:#0e1217;border:1px solid #232c38;border-radius:11px;padding:3px;margin-bottom:6px;}
   .mfc-ctabs button{flex:1;background:none;border:0;border-radius:8px;color:#9aa3ad;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:9px 0;cursor:pointer;}
@@ -2753,7 +2850,9 @@
   .mfc-dock{display:flex;align-items:stretch;gap:2px;padding:4px 4px calc(4px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#0a0b0d,#0d0f13);border-top:1px solid #1c2025;flex:0 0 auto;}
   .mfc-dock .mfc-b{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:6px 2px 5px;min-height:48px;border-radius:10px;background:transparent;border-color:transparent;color:#9aa3ad;font-size:10px;letter-spacing:0;}
   .mfc-dock .mfc-b svg{width:20px;height:20px;}
-  .mfc-dock .mfc-b .mfc-bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-size:9.5px;}
+  .mfc-dock .mfc-b .mfc-bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-size:9px;letter-spacing:0;font-weight:600;}
+  .mfc-dock .mfc-b{padding-left:0;padding-right:0;}
+  .mfc.light .mfc-dock .mfc-b{border-color:transparent;background:transparent;}
   .mfc-dock .mfc-b.on{background:rgba(63,216,230,.12);border-color:rgba(63,216,230,.35);color:#3fd8e6;}
   .mfc-dock .mfc-b.mfc-tradebtn{color:#c2f64a!important;background:rgba(194,246,74,.1)!important;border-color:rgba(194,246,74,.3)!important;}
   .mfc.drawing .mfc-dock{display:none;}/* the palette takes the dock's place while drawing */
