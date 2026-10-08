@@ -69,6 +69,8 @@ NUL
 scratch-*.js
 scratch-*.png
 
+# charts layout E2E screenshots (build/charts-layout-e2e.js)
+build/charts-shots/
 # ops E2E screenshots (build/ops-e2e.js)
 build/ops-shots/
 
