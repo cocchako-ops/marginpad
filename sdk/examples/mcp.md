@@ -1,6 +1,6 @@
 # Trade on paper from Claude Desktop, ChatGPT or Cursor (MCP)
 
-MarginPad runs a remote MCP server with 27 tools (prices, candles, screener, liquidations, the full paper-trading account, books, reset, the equity curve and a replay of any past day).
+MarginPad runs a remote MCP server with 28 tools (prices, candles, screener, liquidations, the full paper-trading account, books, reset, the equity curve and a replay of any past day).
 
 Claude Desktop `claude_desktop_config.json`:
 

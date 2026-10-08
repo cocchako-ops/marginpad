@@ -20703,9 +20703,17 @@ export default {
           meaning: 'a zero here now means the tool did not come' } });
     }
 
+    // THE ONE list of assistant referrer hosts (pageview blob4 = referrer host). SQL half for the AE queries, name half for
+    // the labels. A host that is not here is reported as plain referral traffic - add both halves together.
+    const AI_REF_SQL = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%' OR blob4 LIKE '%you.com%' OR blob4 LIKE '%phind%' OR blob4 LIKE 'meta.ai%' OR blob4 LIKE '%.meta.ai%' OR blob4 LIKE 'grok.%' OR blob4 LIKE '%deepseek%' OR blob4 LIKE '%mistral.ai%' OR blob4 LIKE '%kimi.%' OR blob4 LIKE '%qwen%')";
+    const aiRefName = (s) => /chatgpt|openai/i.test(s) ? 'ChatGPT' : /perplexity/i.test(s) ? 'Perplexity' : /claude/i.test(s) ? 'Claude' : /gemini/i.test(s) ? 'Gemini' : /copilot/i.test(s) ? 'Copilot'
+      : /meta\.ai/i.test(s) ? 'Meta AI' : /grok/i.test(s) ? 'Grok' : /deepseek/i.test(s) ? 'DeepSeek' : /mistral/i.test(s) ? 'Mistral' : /you\.com/i.test(s) ? 'You.com' : /phind/i.test(s) ? 'Phind' : /kimi/i.test(s) ? 'Kimi' : /qwen/i.test(s) ? 'Qwen' : s || 'other';
     if (url.pathname === '/api/admin/aiseo' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
-      const AI = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%' OR blob4 LIKE '%you.com%' OR blob4 LIKE '%phind%')";
+      // Every assistant that sends a referrer. Measured 2026-10-08: meta-externalagent made 4,291 crawls in 30 days and
+      // meta.ai was not in this list, so Meta AI's referrals (and Grok's, DeepSeek's, Mistral's) were counted as "other"
+      // traffic - a channel we could not see is a channel we could not grow.
+      const AI = AI_REF_SQL;
       const SEARCH = "(blob4 LIKE 'google.%' OR blob4 LIKE 'bing%' OR blob4 LIKE 'duckduckgo%' OR blob4 LIKE 'yahoo%' OR blob4 LIKE 'yandex%' OR blob4 LIKE 'ecosia%' OR blob4 LIKE 'brave%')";
       const [byBot, botPaths, botDay, aiRows, aiDay, totalPv, searchPv] = await Promise.all([
         aeQuery(env, `SELECT blob2 AS bot, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND ${D} GROUP BY bot ORDER BY n DESC LIMIT 30`),
@@ -20720,7 +20728,7 @@ export default {
       const pv = num(totalPv), search = num(searchPv);
       const bySrc = {}, byLand = {};
       for (const r of aiRows || []) {
-        const s = String(r.src || '').replace(/^www\./, ''), k = /chatgpt|openai/i.test(s) ? 'ChatGPT' : /perplexity/i.test(s) ? 'Perplexity' : /claude/i.test(s) ? 'Claude' : /gemini/i.test(s) ? 'Gemini' : /copilot/i.test(s) ? 'Copilot' : s || 'other';
+        const s = String(r.src || '').replace(/^www\./, ''), k = aiRefName(s);
         bySrc[k] = (bySrc[k] || 0) + (+r.n || 0);
         byLand[r.path] = (byLand[r.path] || 0) + (+r.n || 0);
       }
@@ -20751,7 +20759,7 @@ export default {
     }
     if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
-      const AI = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%')"; // AI-assistant referrers (their crawlers run NO JavaScript → they only ever see the static HTML)
+      const AI = AI_REF_SQL; // AI-assistant referrers (their crawlers run NO JavaScript → they only ever see the static HTML)
       const [srcTop, totalPv, googleOrgPv, searchOrgPv, pathsTotal, pathsGoogle, pathsAI] = await Promise.all([
         aeQuery(env, `SELECT blob4 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D} GROUP BY src ORDER BY n DESC LIMIT 40`),
         aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D}`),
