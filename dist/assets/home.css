@@ -3458,3 +3458,23 @@ undefined
   .cwin-replay .rp-row button svg,.cwin-replay .rp-x svg,.cwin-indx .ix-x svg,.mfc-sheet-x svg,.mfc-gate-x svg{display:block;}
   .cwin-replay .rp-row button{display:inline-flex;align-items:center;justify-content:center;}
   .cwin-replay .rp-x,.cwin-indx .ix-x,.mfc-sheet-x,.mfc-gate-x{display:inline-flex;align-items:center;justify-content:center;}
+
+  /* the symbol wheel (2026-10-08) */
+  .mfc-wheel{position:absolute;inset:0;z-index:95;background:rgba(6,8,11,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);touch-action:none;overflow:hidden;}
+  .mfc-wheel-hint{position:absolute;left:0;right:0;top:calc(12px + env(safe-area-inset-top));text-align:center;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7c8794;}
+  .mfc-wheel-lens{position:absolute;left:14px;right:14px;top:46%;height:58px;transform:translateY(-50%);border:1px solid rgba(194,246,74,.55);border-radius:14px;background:rgba(194,246,74,.07);box-shadow:0 0 0 1px rgba(0,0,0,.4),0 10px 40px rgba(0,0,0,.5);pointer-events:none;}
+  .mfc-wheel-drum{position:absolute;left:0;right:0;top:0;will-change:transform;transition:transform .12s ease-out;}
+  .mfc-wrow{height:58px;box-sizing:border-box;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px;padding:0 30px;color:#7c8794;opacity:.55;transform:scale(.94);transition:opacity .12s,transform .12s,color .12s;}
+  .mfc-wrow b{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#aab3bf;letter-spacing:.02em;}
+  .mfc-wrow .nm{font-size:12px;color:#5c656f;}
+  .mfc-wrow .px{font-family:'Space Mono',monospace;font-size:13px;color:#aab3bf;}
+  .mfc-wrow .ch{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;min-width:60px;text-align:right;}
+  .mfc-wrow .ch.up{color:#2ebd85;}.mfc-wrow .ch.dn{color:#ff6258;}
+  .mfc-wrow.on{opacity:1;transform:scale(1);color:#e9e7df;}
+  .mfc-wrow.on b{color:#c2f64a;font-size:23px;}
+  .mfc-wrow.on .nm,.mfc-wrow.on .px{color:#e9e7df;}
+  .mfc.light .mfc-wheel{background:rgba(245,247,250,.9);}
+  .mfc.light .mfc-wrow b{color:#4a5260;}.mfc.light .mfc-wrow.on b{color:#4f7a00;}.mfc.light .mfc-wrow.on .nm,.mfc.light .mfc-wrow.on .px{color:#1b2028;}
+  .mfc.light .mfc-wheel-lens{border-color:rgba(79,122,0,.55);background:rgba(79,122,0,.07);}
+  .mfc-sr .st svg{display:block;}
+  .mfc-sr .st.on{color:#ffd75a;}

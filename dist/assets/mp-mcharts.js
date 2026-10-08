@@ -160,6 +160,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     ov.appendChild(gate);
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
+    try{wireWheel(ov.querySelector('.mfc-bar'));}catch(e){}
     function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}
       // portrait no longer walls off the charts - they WORK in portrait (verified by the real-browser UX audit); the
       // full-screen gate was blocking a functional experience. The inline .mfc-rot hint still nudges toward landscape.
@@ -533,11 +534,46 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(e.target.closest('[data-tclose]')){if(window.mpCloseSheet)window.mpCloseSheet(id,function(){try{openSheet('trades');}catch(_){}});else if(window.mpToast)window.mpToast({msg:__esT_mpmcharts("closeFromPaperTrade",'Close it from Paper Trade.'),kind:'warn'});return;}
       if(e.target.closest('[data-tsl]')){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){try{openSheet('trades');}catch(_){}});else if(window.mpToast)window.mpToast({msg:__esT_mpmcharts("setFromPaperTrade",'Set it from Paper Trade.'),kind:'warn'});return;}
       /* the row itself, or Show on chart: that coin on the active pane, with the lines on */
-      var pp=panes[activeI];if(pp&&sym&&pp.sym!==sym){pp.sym=sym;clearPaneDraw(pp);try{if(window.mpWS)window.mpWS.sub(pp.sym);}catch(_){}loadKlines(pp);syncBar();mfcSave();}
+      setSymM(sym);
       setTradeLines(true);closeSheet();});
   }
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var ap=panes[activeI],dOn=!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on);syncAct('draw',dOn);if(ov)ov.classList.toggle('drawing',dOn);mfcSave();}
+  function setSymM(sym){var pp=panes[activeI];sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!pp||!sym||pp.sym===sym)return false;pp.sym=sym;clearPaneDraw(pp);try{if(window.mpWS)window.mpWS.sub(pp.sym);}catch(_){}loadKlines(pp);syncBar();mfcSave();try{noteRecent(sym);}catch(_){}return true;}
+  /* THE SYMBOL WHEEL (2026-10-08, owner: TradingView's quick switch - "zadrzi prst na dugmetu gde se bira par"): hold the coin
+     button and a drum of favourites rises under the finger; sliding up or down turns it, the row under the lens is the pick,
+     lifting the finger switches the chart. Favourites first; with none saved, five majors, gold and three stocks. The gesture
+     lives on pointer events with capture, so the finger can leave the button; the click that follows the release is
+     swallowed, or the sheet would open over the pick. */
+  var WHEEL_DEF=['BTC','ETH','SOL','XRP','BNB','XAU','AAPL','NVDA','TSLA'],WHEEL_NAME={XAU:'Gold',XAG:'Silver',AAPL:'Apple',NVDA:'Nvidia',TSLA:'Tesla',MSFT:'Microsoft',AMZN:'Amazon',META:'Meta',GOOGL:'Alphabet'},WPX={};
+  function wheelClass(s){if(/^(XAU|XAG)$/.test(s))return 'metal';if(window.mpAssetClass){try{var c=window.mpAssetClass(s);if(c&&c!=='crypto')return c;}catch(e){}}if(/^(AAPL|NVDA|TSLA|MSFT|AMZN|META|GOOGL|NFLX|AMD|COIN|MSTR)$/.test(s))return 'stock';return 'crypto';}
+  function wheelPx(s,cb){var now=Date.now(),lp=price(s),px=PX[s];if(lp>0||(px&&px.p>0)){cb({p:lp||px.p,c:px&&isFinite(px.c)?px.c:null});return;}var c=WPX[s];if(c&&now-c.t<60000){cb(c.v);return;}
+    fetch('/api/price?symbol='+encodeURIComponent(s),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){var p=j?+(j.price||j.p||j.last||j.c||0):0,ch=j&&isFinite(+j.changePct)?+j.changePct:(j&&isFinite(+j.chg)?+j.chg:null);WPX[s]={t:now,v:{p:p,c:ch}};cb(WPX[s].v);}).catch(function(){cb({p:0,c:null});});}
+  function wheelList(){var f=favs();return (f.length?f:WHEEL_DEF).slice(0,14);}
+  var wheel=null;
+  function wheelOpen(btn,x0,y0){if(wheel)return;var p=panes[activeI];if(!p)return;var list=wheelList(),cur=Math.max(0,list.indexOf(p.sym)),RH=58;
+    var el=document.createElement('div');el.className='mfc-wheel';el.setAttribute('role','listbox');el.setAttribute('aria-label','Quick symbol switch');
+    el.innerHTML='<div class="mfc-wheel-hint">'+mcT('mcWheelHint',__esT_mpmcharts("slideToTurnRelease",'Slide to turn, release to pick'))+'</div><div class="mfc-wheel-lens"></div><div class="mfc-wheel-drum">'+list.map(function(s,i){var k=wheelClass(s);return '<div class="mfc-wrow'+(i===cur?' on':'')+'" data-i="'+i+'" role="option"><b>'+esc(s)+'</b><span class="nm">'+esc(WHEEL_NAME[s]||(k==='crypto'?'Crypto':k==='metal'?'Metal':k==='stock'?'Stock':k))+'</span><span class="px" data-px="'+esc(s)+'"></span><span class="ch" data-ch="'+esc(s)+'"></span></div>';}).join('')+'</div>';
+    ov.appendChild(el);wheel={el:el,list:list,i:cur,i0:cur,y0:y0,RH:RH,drum:el.querySelector('.mfc-wheel-drum'),btn:btn,moved:false};
+    wheelSet(cur,true);
+    var fill=function(){list.forEach(function(s){wheelPx(s,function(v){if(!wheel)return;var a=el.querySelector('[data-px="'+s+'"]'),b=el.querySelector('[data-ch="'+s+'"]');if(a)a.textContent=v.p>0?fp(v.p):'';if(b){b.textContent=v.c==null?'':((v.c>=0?'+':'')+v.c.toFixed(2)+'%');b.className='ch '+(v.c==null?'':v.c>=0?'up':'dn');}});});};
+    fill();pullPx(fill);/* the 24h change for crypto comes from /api/prices (cached a minute) - the live map carries the price only */
+    try{if(window.mpBuzz)window.mpBuzz(12);else if(navigator.vibrate)navigator.vibrate(12);}catch(e){}
+    try{window.__mpTrack&&window.__mpTrack('ind','wheel');}catch(e){}}
+  function wheelSet(i,silent){if(!wheel)return;var n=wheel.list.length;i=Math.max(0,Math.min(n-1,i));var changed=i!==wheel.i;wheel.i=i;var lensY=Math.round(window.innerHeight*0.46);wheel.drum.style.transform='translateY('+(lensY-wheel.RH/2-i*wheel.RH)+'px)';
+    Array.prototype.forEach.call(wheel.drum.children,function(r,k){r.classList.toggle('on',k===i);r.setAttribute('aria-selected',k===i?'true':'false');});
+    if(changed&&!silent){try{if(window.mpBuzz)window.mpBuzz(6);else if(navigator.vibrate)navigator.vibrate(6);}catch(e){}}}
+  function wheelMove(y){if(!wheel)return;var dy=y-wheel.y0;/* the button sits at the TOP of the screen, so the finger travels DOWN: down = the next row (the lens is a cursor walking the list) */if(Math.abs(dy)>6)wheel.moved=true;wheelSet(wheel.i0+Math.round(dy/wheel.RH));}
+  function wheelClose(pick){if(!wheel)return;var w=wheel;wheel=null;var s=pick?w.list[w.i]:null;try{w.el.remove();}catch(e){}if(s){setSymM(s);try{if(window.mpBuzz)window.mpBuzz(14);}catch(e){}}}
+  function wireWheel(bar){var hold=null,sx=0,sy=0,swallow=false;
+    bar.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('[data-act="sym"]');if(!b||e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sy=e.clientY;clearTimeout(hold);
+      hold=setTimeout(function(){hold=null;try{b.setPointerCapture(e.pointerId);}catch(_){}wheelOpen(b,sx,sy);},380);},true);
+    bar.addEventListener('pointermove',function(e){if(wheel){wheelMove(e.clientY);e.preventDefault();return;}if(hold&&(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)){clearTimeout(hold);hold=null;}},true);
+    var up=function(e){if(hold){clearTimeout(hold);hold=null;}if(wheel){swallow=true;wheelClose(true);e.preventDefault();e.stopPropagation();}};
+    bar.addEventListener('pointerup',up,true);bar.addEventListener('pointercancel',function(){if(hold){clearTimeout(hold);hold=null;}if(wheel){swallow=true;wheelClose(false);}},true);
+    bar.addEventListener('click',function(e){if(swallow){swallow=false;e.stopPropagation();e.preventDefault();}},true);/* the release's own click must not open the sheet */
+    document.addEventListener('keydown',function(e){if(wheel&&e.key==='Escape')wheelClose(false);});}
+  try{window.__mpWheel={open:function(){var b=ov&&ov.querySelector('[data-act="sym"]');if(b){var r=b.getBoundingClientRect();wheelOpen(b,r.left+r.width/2,r.top+r.height/2);}},set:wheelSet,close:wheelClose,list:wheelList,state:function(){return wheel?{i:wheel.i,list:wheel.list.slice()}:null;}};}catch(e){}
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}
   // ---- split ----
   function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage');st.classList.toggle('split',split===2);Array.prototype.forEach.call(ov.querySelectorAll('.mfc-splitL'),function(sL){sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');});/* both copies of the label (top row + dock) */
@@ -749,7 +785,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var inp=body.querySelector('.mfc-ss'),list=body.querySelector('#mfcSyl');
     /* rowOf/sec are defined BEFORE mpLoadTokens - its callback can run synchronously when the list is already cached, and render() would meet an unassigned `sec` */
     var rowOf=function(t){var fv=favs().indexOf(t)>=0,px=PX[t],lp=price(t)||(px&&px.p)||0,ch=px&&isFinite(px.c)?px.c:(window.mpLivePrices&&window.mpLivePrices[t]&&isFinite(window.mpLivePrices[t].chg)?+window.mpLivePrices[t].chg:null);
-      return '<div class="mfc-sr'+(t===p.sym?' on':'')+'" data-pick="'+t+'"><button type="button" class="st'+(fv?' on':'')+'" data-fav="'+t+'" aria-label="Favourite">'+(fv?'★':'☆')+'</button><b>'+t+'</b><span class="px">'+(lp>0?fp(lp):'')+'</span><span class="ch '+(ch==null?'':ch>=0?'up':'dn')+'">'+(ch==null?'':(ch>=0?'+':'')+ch.toFixed(2)+'%')+'</span></div>';};
+      return '<div class="mfc-sr'+(t===p.sym?' on':'')+'" data-pick="'+t+'"><button type="button" class="st'+(fv?' on':'')+'" data-fav="'+t+'" aria-label="Favourite" aria-pressed="'+(fv?'true':'false')+'"><svg viewBox="0 0 24 24" width="16" height="16" fill="'+(fv?'currentColor':'none')+'" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.5l6.1-.7z"/></svg></button><b>'+t+'</b><span class="px">'+(lp>0?fp(lp):'')+'</span><span class="ch '+(ch==null?'':ch>=0?'up':'dn')+'">'+(ch==null?'':(ch>=0?'+':'')+ch.toFixed(2)+'%')+'</span></div>';};
     var sec=function(h,arr){return arr.length?'<div class="mfc-sh">'+h+'</div>'+arr.map(rowOf).join(''):'';};
     function render(q){q=String(q||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var all=window.mpTokens||tokens;
       if(q){var arr=all.filter(function(t){return t.indexOf(q)===0;}).concat(all.filter(function(t){return t.indexOf(q)>0;})).slice(0,40);list.innerHTML=arr.length?arr.map(rowOf).join(''):'<p class="mfc-note">'+mcT('mcNoMatch',__esT_mpmcharts("noTickerMatches",'No ticker matches - try the exchange symbol, like BTC or SOL.'))+'</p>';return;}

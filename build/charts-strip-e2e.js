@@ -198,6 +198,22 @@ async function deskInd(page, k, on) {
     ok('phone: replay controls sit above the dock, play is reachable and advances, exit restores the book', prp.ui && prp.aboveDock && prp.reach && prp.i1 > prp.i0 && prp.exited && prp.n > prp.i1, JSON.stringify(prp));
     await page.tap('.mfc-dock [data-act="ind"]'); await sleep(400);
     await page.tap('.mfc-sheet [data-x]'); await sleep(400);
+    // the symbol wheel: hold the coin button, slide two rows, release
+    const wb = await page.evaluate(() => { const b = document.querySelector('.mfc-bar [data-act="sym"]'); const r = b.getBoundingClientRect(); return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), sym: window.__mpMfcDbg()[0].sym }; });
+    await page.touchscreen.touchStart(wb.x, wb.y); await sleep(600);
+    const w1 = await page.evaluate(() => { const el = document.querySelector('.mfc-wheel'); if (!el) return { open: false }; const st = window.__mpWheel.state(); const on = el.querySelector('.mfc-wrow.on'); const lens = el.querySelector('.mfc-wheel-lens').getBoundingClientRect(); const r = on.getBoundingClientRect(); return { open: true, n: st.list.length, i: st.i, onSym: on.querySelector('b').textContent, inLens: Math.abs((r.top + r.height / 2) - (lens.top + lens.height / 2)) <= 4, hasGold: st.list.indexOf('XAU') >= 0, stocks: st.list.filter(s => /^(AAPL|NVDA|TSLA)$/.test(s)).length, sheet: !!document.querySelector('.mfc-sheet') }; });
+    ok('holding the coin button opens the wheel: nine rows (5 majors, gold, 3 stocks), the current symbol under the lens, no sheet', w1.open && w1.n === 9 && w1.onSym === wb.sym && w1.inLens && w1.hasGold && w1.stocks === 3 && !w1.sheet, JSON.stringify(w1));
+    for (let i = 1; i <= 6; i++) { await page.touchscreen.touchMove(wb.x, wb.y + 116 * i / 6); await sleep(30); }
+    await sleep(250);
+    const w2 = await page.evaluate(() => { const st = window.__mpWheel.state(); const on = document.querySelector('.mfc-wrow.on'); return { i: st.i, onSym: on && on.querySelector('b').textContent, px: (on && on.querySelector('.px').textContent) || '' }; });
+    await shot(page, 'wheel-phone');
+    ok('sliding the finger two rows turns the drum two rows (the lens follows the finger, with the live price)', w2.i === w1.i + 2 && w2.onSym !== wb.sym, JSON.stringify(w2));
+    await page.touchscreen.touchEnd(); await sleep(1200);
+    const w3 = await page.evaluate((want) => { const p = window.__mpMfcDbg()[0]; return { sym: p.sym, want, label: (document.querySelector('.mfc-symL') || {}).textContent, wheel: !!document.querySelector('.mfc-wheel'), sheet: !!document.querySelector('.mfc-sheet') }; }, w2.onSym);
+    ok('releasing picks the lensed symbol: the pane and the bar switch, the wheel is gone, and the release did not open the sheet', w3.sym === w3.want && w3.label === w3.want && !w3.wheel && !w3.sheet, JSON.stringify(w3));
+    await page.evaluate((s) => { try { window.__mpWheel.open(); window.__mpWheel.set(0); window.__mpWheel.close(true); } catch (e) {} }, wb.sym); await sleep(1500);
+    const w4 = await page.evaluate(() => window.__mpMfcDbg()[0].sym);
+    ok('and back to the first row through the same wheel', w4 === 'BTC', w4);
     // round six on the phone
     await page.tap('.mfc-dock [data-act="ind"]'); await sleep(500);
     await page.evaluate(() => { const i = document.querySelector('.mfc-sheet input[data-ind="sess"]'); if (i && !i.checked) { i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); } }); await sleep(400);
