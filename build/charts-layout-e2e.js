@@ -162,7 +162,7 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     const m1 = await page.evaluate(() => { const bar = document.querySelector('.mfc-bar'), dock = document.querySelector('.mfc-dock'), dr = dock.getBoundingClientRect(); return { barOverflow: bar.scrollWidth - bar.clientWidth, barH: Math.round(bar.getBoundingClientRect().height), dockShown: dr.height > 0 && dr.bottom <= innerHeight + 1, dockH: Math.round(dr.height), dockN: dock.querySelectorAll('.mfc-b').length, dockBtns: [...dock.querySelectorAll('.mfc-b')].map(b => Math.round(b.getBoundingClientRect().height)), topActs: [...bar.querySelectorAll('.mfc-b')].filter(b => b.getBoundingClientRect().width > 0).map(b => b.getAttribute('data-act')), sx: document.documentElement.scrollWidth - innerWidth, pct: 0 }; });
     await shot(page, 'phone-portrait');
     m1.pct = await page.evaluate(CHART_PCT);
-    ok('the top bar holds identity only (close, theme, coin, timeframe, AI) and nothing scrolls off it', m1.barOverflow <= 1 && JSON.stringify(m1.topActs) === JSON.stringify(['close', 'theme', 'sym', 'tf', 'ai']), JSON.stringify(m1.topActs) + ' overflow=' + m1.barOverflow);
+    ok('the top bar holds identity only (close, theme, coin, timeframe, share, AI) and nothing scrolls off it', m1.barOverflow <= 1 && JSON.stringify(m1.topActs) === JSON.stringify(['close', 'theme', 'sym', 'tf', 'share', 'ai']), JSON.stringify(m1.topActs) + ' overflow=' + m1.barOverflow);
     ok('the six actions sit in a bottom dock, every one at least 44px tall', m1.dockShown && m1.dockN === 6 && m1.dockBtns.every(h => h >= 44), JSON.stringify(m1.dockBtns));
     const reach = await page.evaluate(() => ['[data-act="ind"]', '[data-act="draw"]', '[data-act="split"]', '[data-act="trades"]', '[data-act="calc"]', '[data-act="trade"]'].map(s => { const el = document.querySelector('.mfc-dock ' + s); const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return (hit && (hit === el || el.contains(hit))) ? 'ok' : s; }));
     ok('and each dock button is reachable at its centre', reach.every(r => r === 'ok'), reach.join(','));
@@ -209,7 +209,7 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     const l1 = await page.evaluate(() => { const bar = document.querySelector('.mfc-bar'), dock = document.querySelector('.mfc-dock'); return { barOverflow: bar.scrollWidth - bar.clientWidth, dockH: Math.round(dock.getBoundingClientRect().height), acts: [...bar.querySelectorAll('.mfc-b')].filter(b => b.getBoundingClientRect().width > 0).map(b => b.getAttribute('data-act')), sx: document.documentElement.scrollWidth - innerWidth, barH: Math.round(bar.getBoundingClientRect().height) }; });
     await shot(page, 'phone-landscape');
     l1.pct = await page.evaluate(CHART_PCT);
-    ok('landscape: the dock is gone and all eleven actions fit in the top row as icons', l1.dockH === 0 && l1.acts.length === 11 && l1.barOverflow <= 1, JSON.stringify(l1));
+    ok('landscape: the dock is gone and all twelve actions fit in the top row as icons', l1.dockH === 0 && l1.acts.length === 12 && l1.barOverflow <= 1, JSON.stringify(l1));
     ok('chart area >= 82% of a landscape phone', l1.pct >= 82, l1.pct + '%');
     ok('no sideways scroll', l1.sx <= 0, 'sx=' + l1.sx);
     console.log('     measured: chart ' + l1.pct + '% | top bar ' + l1.barH + 'px');

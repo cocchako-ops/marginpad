@@ -99,6 +99,28 @@ async function deskInd(page, k, on) {
     ok('the chosen style survives a reload', st.style === 'bars' && st.shadow === 'Bar', JSON.stringify(st));
     await setStyle('candles'); st = await styleState();
     ok('back to candles: filled bodies, no shadow', st.style === 'candles' && !st.shadow && st.up === '#10b981', JSON.stringify(st));
+    // round six: sessions, compare, share, back to live
+    await deskInd(page, 'sess', true);
+    const ss = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const cv = document.querySelector('.cwin canvas.cwin-draw'); const ctx = cv.getContext('2d'); const y = Math.round(cv.height * 0.5); const d = ctx.getImageData(0, y, cv.width, 1).data; let lit = 0; const tones = new Set(); for (let i = 3; i < d.length; i += 4) if (d[i] > 0) { lit++; tones.add(d[i - 3] + ',' + d[i - 2] + ',' + d[i - 1]); } return { spans: (w._sess || []).length, kinds: [...new Set((w._sess || []).map(s => s.k))], litPct: Math.round(lit / cv.width * 100), tones: tones.size, tf: w.tf }; });
+    ok('Trading sessions: spans per session block, the pane is shaded in MORE THAN ONE tone (one tone = every span painted over the whole pane)', ss.spans >= 2 && ss.kinds.length >= 2 && ss.litPct >= 40 && ss.tones >= 2, JSON.stringify(ss));
+    await deskInd(page, 'sess', false);
+    const ss2 = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; return !w._sess; });
+    ok('switching sessions off clears the shading', ss2);
+    await page.evaluate(() => { const w = document.querySelector('.cwin'); w.querySelector('.cwin-ind-btn').click(); document.querySelector('.cwin-ind-menu [data-cmp="ETH"]').click(); w.querySelector('.cwin-ind-btn').click(); });
+    await sleep(4000);
+    const cm = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; const leg = (document.querySelector('.cwin .cwin-leg') || {}).textContent || ''; const ser = (w.indSeries || []).some(s => { try { return s.options().priceScaleId === 'cmp'; } catch (e) { return false; } }); let saved = null; try { saved = JSON.parse(localStorage.getItem('mp_charts'))[0].cmp; } catch (e) {} return { cmp: w.cmp, bars: (w._cmpBars || []).length, ser, leg: /vs ETH/.test(leg), saved }; });
+    ok('Compare with ETH: its candles arrive, draw on an overlay scale, the legend says so, and the choice is saved', cm.cmp === 'ETH' && cm.bars > 50 && cm.ser && cm.leg && cm.saved === 'ETH', JSON.stringify(cm));
+    await shot(page, 'strip-desk-compare');
+    await page.evaluate(() => { const w = document.querySelector('.cwin'); w.querySelector('.cwin-ind-btn').click(); document.querySelector('.cwin-ind-menu [data-cmp=""]').click(); w.querySelector('.cwin-ind-btn').click(); });
+    await sleep(500);
+    const cm2 = await page.evaluate(() => { const w = window.__mpWinsDbg[0]; return { cmp: w.cmp, ser: (w.indSeries || []).some(s => { try { return s.options().priceScaleId === 'cmp'; } catch (e) { return false; } }) }; });
+    ok('Compare off removes the overlay', cm2.cmp === '' && !cm2.ser, JSON.stringify(cm2));
+    const sh = await page.evaluate(() => { const b = document.querySelector('.cwin .cwin-share'); if (!b) return { missing: true }; const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const head = document.querySelector('.cwin .cwin-head').getBoundingClientRect(); return { reach: !!(hit && (hit === b || b.contains(hit))), headH: Math.round(head.height) }; });
+    ok('the share button is reachable in a one-row header', sh.reach && sh.headH <= 48, JSON.stringify(sh));
+    const snap = await page.evaluate(() => new Promise((res) => { const rec = { name: null, size: 0 }; const oc = URL.createObjectURL; URL.createObjectURL = (b) => { rec.size = b && b.size || 0; return 'blob:x'; }; const ok0 = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function () { rec.name = this.download; }; try { navigator.share = undefined; } catch (e) {} document.querySelector('.cwin .cwin-share').click(); setTimeout(() => { URL.createObjectURL = oc; HTMLAnchorElement.prototype.click = ok0; res(rec); }, 2500); }));
+    ok('Share produces a PNG named after the chart (header + chart + strip + footer)', /^marginpad-[A-Z0-9]+-.+\.png$/.test(snap.name || '') && snap.size > 20000, JSON.stringify(snap));
+    const gl = await page.evaluate(async () => { const w = window.__mpWinsDbg[0]; const b = document.querySelector('.cwin .cwin-chart .cwin-golive'); if (!b) return { missing: true }; const before = b.hidden; w.chart.timeScale().scrollToPosition(-80, false); await new Promise(r => setTimeout(r, 250)); const shown = !b.hidden; const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const reach = !!(hit && (hit === b || b.contains(hit))); b.click(); await new Promise(r => setTimeout(r, 400)); return { before, shown, reach, after: b.hidden, to: Math.round(w.chart.timeScale().getVisibleLogicalRange().to), n: w.bars.length }; });
+    ok('Back to live: hidden at rest, shown once the newest candle leaves the screen, reachable, and a click returns to it', gl.before === true && gl.shown && gl.reach && gl.after === true && gl.to >= gl.n - 2, JSON.stringify(gl));
     ok('no page errors on the desktop', page._errors.length === 0, page._errors.join(' | '));
     await page.close();
 
@@ -125,6 +147,17 @@ async function deskInd(page, k, on) {
     await page.tap('#mpIndX [data-act="rm"]'); await sleep(600);
     const prm = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; return { macd: !!p.inds.macd, cards: document.querySelectorAll('.mfc-sub .cwin-subleg .cwin-subcard[data-ix]').length }; });
     ok('"Remove from chart" works on the phone too', !prm.macd && prm.cards === 1, JSON.stringify(prm));
+    // round six on the phone
+    await page.tap('.mfc-dock [data-act="ind"]'); await sleep(500);
+    await page.evaluate(() => { const i = document.querySelector('.mfc-sheet input[data-ind="sess"]'); if (i && !i.checked) { i.checked = true; i.dispatchEvent(new Event('change', { bubbles: true })); } }); await sleep(400);
+    await page.tap('.mfc-sheet [data-cmp="ETH"]'); await sleep(3500);
+    await page.tap('.mfc-sheet [data-x]'); await sleep(500);
+    const p6 = await page.evaluate(() => { const p = window.__mpMfcDbg()[0]; const bar = document.querySelector('.mfc-bar'); const sb = bar.querySelector('[data-act="share"]'); const r = sb && sb.getBoundingClientRect(); const hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); let saved = null; try { saved = JSON.parse(localStorage.getItem('mp_mfc_state')).panes[0].cmp; } catch (e) {} return { sess: (p.w && p.w._sess || []).length, cmp: p.cmp, bars: (p._cmpBars || []).length, leg: /vs ETH/.test((p.el.querySelector('.cwin-leg') || {}).textContent || ''), saved, shareReach: !!(hit && (hit === sb || sb.contains(hit))), barOverflow: bar.scrollWidth - bar.clientWidth }; });
+    await shot(page, 'strip-phone-compare');
+    ok('phone: sessions shade the pane, Compare with ETH draws and is saved, the share button sits in the top bar without overflow', p6.sess >= 2 && p6.cmp === 'ETH' && p6.bars > 50 && p6.leg && p6.saved === 'ETH' && p6.shareReach && p6.barOverflow <= 0, JSON.stringify(p6));
+    const pgl = await page.evaluate(async () => { const p = window.__mpMfcDbg()[0]; const b = p.host.querySelector('.cwin-golive'); if (!b) return { missing: true }; const before = b.hidden; p.chart.timeScale().scrollToPosition(-60, false); await new Promise(r => setTimeout(r, 250)); const shown = !b.hidden; const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const reach = !!(hit && (hit === b || b.contains(hit))); const size = Math.round(Math.min(r.width, r.height)); b.click(); await new Promise(r => setTimeout(r, 400)); return { before, shown, reach, size, after: b.hidden }; });
+    ok('phone: back-to-live appears when scrolled back, is thumb-sized and reachable, and a tap returns to the newest candle', pgl.before === true && pgl.shown && pgl.reach && pgl.size >= 38 && pgl.after === true, JSON.stringify(pgl));
+    await page.tap('.mfc-dock [data-act="ind"]'); await sleep(400); await page.tap('.mfc-sheet [data-cmp=""]'); await sleep(300); await page.tap('.mfc-sheet [data-x]'); await sleep(200);
     ok('no page errors on the phone', page._errors.length === 0, page._errors.join(' | '));
     await page.close();
   });
