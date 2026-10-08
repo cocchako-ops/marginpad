@@ -66,16 +66,34 @@ const uid = 'e2eslt' + Math.random().toString(36).slice(2, 6);
       });
 
       // 1. a decimal COMMA - the separator on most of our audience's keyboards
-      let el = await openSheet('tp'); await page.keyboard.type('105,50'); await save();
+      // THE TARGET IS DERIVED FROM THE ENTRY, NEVER TYPED IN (2026-10-09). This typed a hardcoded 105,50 and asserted
+      // 105.5 back; it was written when SOL traded under 105, and the day SOL crossed it the take-profit sat BELOW a
+      // long's entry, the server refused it as wrong-side, and three checks went red with nothing wrong - the same
+      // shape as the stop check right below, which has always computed entry * 0.9. The thing under test is the comma,
+      // so the comma is what stays literal.
+      const TPV = Math.round(op.position.entry * 1.1 * 10) / 10;
+      let el = await openSheet('tp'); await page.keyboard.type(String(TPV).replace('.', ',')); await save();
       let st = await state();
-      chk('a price typed with a comma is saved as 105.5, not 10550', st.tp === 105.5, st);
-      chk('and the ticket shows it', /105\.5/.test(st.ticket), { ticket: st.ticket });
+      // A COMMA IS A DECIMAL POINT, and the proof is the MAGNITUDE: read as a thousands separator the same keystrokes
+      // make a price ten times too big, which is the bug this check exists for (2026-09-10). The exact stored figure is
+      // not asserted - the level is snapped to the symbol's own precision, so SOL keeps one decimal - but it has to
+      // land within that snap of what was typed, and above the entry where a long's take-profit belongs.
+      chk('a price typed with a comma is read as ' + TPV + ', not ' + String(TPV).replace('.', ''),
+        st.tp > op.position.entry && Math.abs(st.tp - TPV) <= 0.1, { tp: st.tp, typed: String(TPV).replace('.', ','), entry: op.position.entry });
+      const SET = st.tp; // whatever the product stored is what must survive below
+      chk('and the ticket shows it', st.ticket.indexOf(String(SET)) >= 0, { ticket: st.ticket, want: SET });
 
       // 2. garbage is refused OUT LOUD, and nothing is wiped
-      el = await openSheet('tp'); await page.keyboard.type('abc'); await save();
+      // THE GARBAGE HAS TO REACH THE FIELD (2026-10-09). This typed into whatever the sheet had focused after a
+      // triple-click; in headless Chrome the selection does not take, the keystrokes land nowhere, and the save then
+      // re-saved the prefilled price - so the check was grading a path it never exercised. Set the value and fire the
+      // input event, the way check 3 below already clears the fields.
+      el = await openSheet('tp');
+      await page.evaluate(() => { const i = document.querySelector('.mpss-sec[data-k="tp"] .mpss-row .p'); i.value = '12x5'; i.dispatchEvent(new Event('input', { bubbles: true })); });
+      await save();
       st = await state();
       chk('unparseable text is refused with a visible reason', !!st.warn && st.open === true, { warn: st.warn, open: st.open });
-      chk('and the take-profit that was already set survives it', st.tp === 105.5, { tp: st.tp });
+      chk('and the take-profit that was already set survives it', st.tp === SET, { tp: st.tp, want: SET });
 
       // 3. Save with nothing typed must not wipe
       await page.evaluate(() => { const b = document.querySelector('.mpss .mpcs-x'); if (b) b.click(); }); await sleep(400);

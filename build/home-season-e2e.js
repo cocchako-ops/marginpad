@@ -75,7 +75,12 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       });
       chk(vp.t + ' guest: band 04 gone, competition card is the SECOND tile of band 01 and links /leaderboards/', !g.old && g.idx === 1 && g.href === '/leaderboards/', { old: g.old, idx: g.idx, href: g.href });
       chk(vp.t + ' guest: card reachable at its centre, full width, no horizontal scroll', g.reach && !g.sx && g.w >= g.pageW * 0.85, { reach: g.reach, sx: g.sx, w: g.w, pageW: g.pageW });
-      chk(vp.t + ' guest: pool equals /api/competition, day strip has 14 cells with today marked', g.pool === '$' + Math.round(comp.prize_pool_usd_per_season) && /* the card prints a whole dollar; the API carries cents since the Bybit rebate pool (2026-09-28) - this check had been red on $276.72 vs "$277" */ g.days === 14 && g.dayNow === 1 && g.dayOn === comp.season.day_of_season && /day \d+ of 14/.test(g.eye), { pool: g.pool, eye: g.eye, left: g.left, dayOn: g.dayOn });
+      // THE HEADLINE IS EVERY BOARD (2026-10-09, owner: the card said $277 because the 25-day Moon contest was not in
+      // prize_pool_usd_per_season). It is prize_pool_usd_all_boards now - what is on the table across all eight boards
+      // right now - and the figure must be bigger than the season-only one for as long as Moon runs, which is the half
+      // of this check that would catch a silent fall back to the old field. The card prints a whole dollar; the API
+      // carries cents since the Bybit rebate pool (2026-09-28) - this check had been red on $276.72 vs "$277".
+      chk(vp.t + ' guest: pool is every board on /api/competition, day strip has 14 cells with today marked', g.pool === '$' + Math.round(comp.prize_pool_usd_all_boards) && comp.prize_pool_usd_all_boards >= comp.prize_pool_usd_per_season && g.days === 14 && g.dayNow === 1 && g.dayOn === comp.season.day_of_season && /day \d+ of 14/.test(g.eye), { pool: g.pool, all: comp.prize_pool_usd_all_boards, season: comp.prize_pool_usd_per_season, eye: g.eye, dayOn: g.dayOn });
       const liveBoards = comp.boards.filter(b => b.leader && b.leader.name);
       const named = g.boards.filter(b => b.who && b.who !== '-' && !/nobody/.test(b.who));
       chk(vp.t + ' guest: eight board tiles, each with a pool and the live leader from the API', g.boards.length === 8 && named.length === liveBoards.length && g.boards.every(b => /^\$\d+\s*pool · \$\d+ first$/.test(b.pool) || (b.id === 'bybit' && /^\$\d+\.\d\d\s*pool · \$\d+ start, grows with volume$/.test(b.pool))) && liveBoards.every(b => named.some(n => n.id === b.id && n.who === b.leader.name)), g.boards.map(b => b.id + ':' + b.who + ' ' + b.v));

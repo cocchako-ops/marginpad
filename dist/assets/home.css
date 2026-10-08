@@ -552,7 +552,11 @@
 .pt2-open.cd-nudge{animation:ptNudge .34s ease;}
 @keyframes ptCooldown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 @keyframes ptNudge{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-  .ptl-live{margin-left:auto;color:var(--ink-dim);}
+  /* The live price is the one thing on this card that repaints every tick, so it is also the one thing that must not
+     move: nowrap + flex:none keeps it on the header's line whatever its length, fpx() keeps the length fixed. */
+  .ptl-live{margin-left:auto;color:var(--ink-dim);white-space:nowrap;flex:0 0 auto;display:inline-flex;align-items:baseline;gap:4px;}
+  .ptl-live b{font-variant-numeric:tabular-nums;transition:color .28s ease;}
+  .ptl-px.up{color:#34d99a;}.ptl-px.dn{color:#ff7b72;}
   .ptl-pnl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0;}
   .ptl-pnl .big{font-family:'Space Mono',monospace;font-weight:800;font-size:19px;}
   .pt-last.pf .big,.pt-last.pf .roe{color:#34d99a;}.pt-last.ls .big,.pt-last.ls .roe{color:#ff7b72;}.pt-last.be .big{color:#aab2bd;}
@@ -560,7 +564,29 @@
   .ptl-cut{position:relative;height:0;border-top:2px dashed rgba(255,255,255,.10);margin:10px -16px 7px;}
   .ptl-cut::before,.ptl-cut::after{content:'';position:absolute;top:-7px;width:13px;height:13px;border-radius:50%;background:var(--bg);border:1px solid var(--line-bright);}
   .ptl-cut::before{left:-8px;}.ptl-cut::after{right:-8px;}
-  .ptl-meta{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.7;letter-spacing:.01em;}
+  /* ENTRY / LIQ / MARGIN AS CELLS, NOT A SENTENCE (2026-10-09). The middot-joined line wrapped mid-figure in a narrow
+     column; three labelled cells put the label above its number and keep the figures on a column the eye can run down. */
+  .ptl-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-dim);line-height:1.45;letter-spacing:.01em;min-width:0;}
+  .ptl-c{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .ptl-c.ptl-cwide{grid-column:1 / -1;}
+  .ptl-c i{font-style:normal;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:var(--faint,#5c656f);text-rendering:optimizeLegibility;}
+  .ptl-c b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ptl-c u{text-decoration:none;font-size:9.5px;color:#ff9a90;font-variant-numeric:tabular-nums;}
+  .ptl-c.ptl-cwide{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:3px 7px;}
+  .ptl-c.ptl-cwide i{align-self:center;}
+  /* HOW FAR THE PRICE HAS WALKED FROM THE ENTRY TOWARDS THE LIQUIDATION. Entry 0, liq 100. */
+  .ptl-bar{display:flex;align-items:center;gap:9px;margin:10px 0 2px;}
+  .ptl-bar u{flex:1 1 auto;min-width:0;height:4px;border-radius:4px;background:rgba(255,255,255,.11);overflow:hidden;text-decoration:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+  .ptl-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#2ebd85,#8fd14f);transition:width .45s cubic-bezier(.3,.8,.3,1),background .45s;box-shadow:0 0 8px -2px currentColor;}
+  .ptl-bar em{flex:0 0 auto;font:700 9.5px 'Space Mono',monospace;font-style:normal;letter-spacing:.06em;color:var(--faint,#5c656f);font-variant-numeric:tabular-nums;}
+  .ptl-bar.warm i{background:linear-gradient(90deg,#8fd14f,#ffd75a);}
+  .ptl-bar.warm em{color:#d8bd63;}
+  .ptl-bar.hot i{background:linear-gradient(90deg,#ffd75a,#ff5a4d);}
+  .ptl-bar.hot em{color:#ff8a80;}
+  /* The server has not acknowledged this position yet, so it carries no Close button - nobody may act on it. */
+  .ptl-conf{margin-left:auto;font:700 9.5px 'Space Mono',monospace;letter-spacing:.06em;color:#ffd75a;background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.3);border-radius:8px;padding:5px 10px;white-space:nowrap;}
+  .pt-last.pend{opacity:.86;}
+  .pt-last.pend .ptl-sym::after{content:'';display:inline-block;width:5px;height:5px;margin-left:6px;border-radius:50%;background:#ffd75a;vertical-align:middle;}
   /* WHAT CLOSING COSTS, ON THE OPEN TICKET (2026-09-24). Same type as the meta line so it reads as one block,
      but the booked figure is the only thing with colour - it is the number the trader is deciding on. */
   .ptl-cost{font-family:"Space Mono",monospace;font-size:10.5px;line-height:1.7;letter-spacing:.01em;color:var(--ink-dim);}

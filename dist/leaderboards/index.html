@@ -257,7 +257,7 @@
 
   <section class="season" aria-label="Season">
     <div class="sc"><div class="k">Season</div><div class="v" id="sEye">Season · 14 days</div><div class="days" id="sDays"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="s" id="sLeft">ends every other Monday 00:00 UTC</div></div>
-    <div class="sc"><div class="k">Prize pool</div><div class="v"><b id="sPool">$270+</b> a season</div><div class="s" id="sPoolS">$100 of it is the Bybit pool's start, which grows with volume · plus $300 King of the Moon every two seasons · paid in USD, withdrawable</div></div>
+    <div class="sc"><div class="k">Prize pool</div><div class="v"><b id="sPool">$570+</b> across 8 boards</div><div class="s" id="sPoolS">$100 of it is the Bybit pool's start, which grows with volume · plus $300 King of the Moon every two seasons · paid in USD, withdrawable</div></div>
     <div class="sc ent"><div class="k">Entry</div><div class="v">Free</div><div class="s">four paper boards need nothing, the BTC call board one call a day, the Gold Room needs Gold; two need a real account opened through MarginPad</div></div>
   </section>
 
@@ -402,7 +402,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
     $('sDays').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?T("onNow",'on now'):'')+'"></i>';}).join('');
     $('sLeft').textContent=T("endsIn",'ends in ')+left(we-now)+' · '+new Date(we).toUTCString().slice(0,16)+' 00:00 UTC';
     var P=LB.boardPrizes||{}, pool=0, moonPool=(P.moon||[]).reduce(function(a,c){return a+(+c||0);},0); Object.keys(P).forEach(function(k){if(k!=='moon')pool+=(P[k]||[]).reduce(function(a,c){return a+(+c||0);},0);});
-    if(pool>0){$('sPool').textContent='$'+int(pool);$('sPoolS').textContent=(LB.bybitPool?T("inclBybitPool",'incl. the Bybit pool as it stands · '):'')+(moonPool>0?'+ $'+int(moonPool)+T("kingOfTheMoon2",' King of the Moon every two seasons · '):'$'+int(Math.round(pool*30/14/10)*10)+' a month · ')+T("paidInUsdWithdrawable",'paid in USD, withdrawable');}
+    if(pool>0){$('sPool').textContent='$'+int(pool+moonPool); /* every board, the homepage figure (2026-10-09) - the per-season sum left King of the Moon out and put a different total on three pages; the breakdown stays in the line below */$('sPoolS').textContent=(LB.bybitPool?T("inclBybitPool",'incl. the Bybit pool as it stands · '):'')+(moonPool>0?'+ $'+int(moonPool)+T("kingOfTheMoon2",' King of the Moon every two seasons · '):'$'+int(Math.round(pool*30/14/10)*10)+' a month · ')+T("paidInUsdWithdrawable",'paid in USD, withdrawable');}
     Object.keys(B).forEach(function(k){var rows=LB[B[k].key]||[],pz=(P[PK[k]]||[]).reduce(function(a,c){return a+(+c||0);},0);
       var t=document.querySelector('.tab[data-b="'+k+'"]'); if(t&&pz>0)t.querySelector('.p').innerHTML=(k==='bybit'&&LB.bybitPool)?'$'+(+LB.bybitPool.usd).toFixed(2)+'<small>POOL · '+esc(String(LB.bybitPool.tier.name).toUpperCase())+'</small>':'$'+int(pz)+'<small>POOL</small>';
       var l=$('tl-'+k); if(l)l.innerHTML=rows.length?'<b>'+esc(rows[0].who)+'</b>'+T("leads"," leads"):(k==='moon'&&LB.moonContest?T("dayL","day ")+Math.min(LB.moonContest.days||28,Math.max(1,Math.floor((Date.now()-LB.moonContest.start)/86400000)+1))+T("ofSp"," of ")+(LB.moonContest.days||28)+' · open':'open');});
@@ -503,7 +503,7 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   window.__lbPage={get:function(){return LB;},cur:function(){return CUR;},set:setBoard};
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=1fc609a2"></script>
-<script defer src="/assets/mp-nav.js?v=5e2d5297"></script>
+<script defer src="/assets/mp-auth.js?v=3ad3b10f"></script>
+<script defer src="/assets/mp-nav.js?v=617c925b"></script>
 </body>
 </html>

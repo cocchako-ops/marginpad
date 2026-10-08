@@ -100,6 +100,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     _eligPop={el:el,btn:btn,onDoc:onDoc,onKey:onKey};setTimeout(function(){if(_eligPop&&_eligPop.el===el){document.addEventListener('click',onDoc,true);document.addEventListener('keydown',onKey,true);window.addEventListener('scroll',eligClose,true);window.addEventListener('resize',eligClose);}},0);}
   function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat',__esT_mptrade("shareToChat",'Share to chat'))+'" aria-label="'+MT('jShareChat',__esT_mptrade("shareToChat",'Share to chat'))+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  /* Mirror of home.js fpx - a live price on a card is repainted every second, and fp() drops trailing zeros, so the
+     string changes LENGTH tick to tick and the row twitches. Decimals are pinned off the ENTRY price (fixed for the
+     life of the position) and padded, so the width never moves. See the 2026-10-09 note in home.js. */
+  function fpDp(v){v=Math.abs(+v)||0;return v>=100?2:v>=10?3:v>=1?4:v>=0.1?5:v>=0.01?6:v>=0.001?7:8;}
+  function fpx(x,dp){x=+x||0;dp=(dp!=null&&dp>=0)?dp:fpDp(x);return '$'+x.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
@@ -118,7 +123,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -418,7 +423,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
       var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl state class - wholesale card.className= dropped pp-gold every tick (balance tickets flickered gold→normal on each price change)
-      var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
+      var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry));if(lv.textContent!==lvv)lv.textContent=lvv;}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var bb=card.querySelector('.ppb');if(bb){var bbv=pctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
@@ -1094,7 +1099,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function collect(isTp,bad){var sec=ov.querySelector('.mpss-sec[data-k="'+(isTp?'tp':'sl')+'"]'),out=[];
     Array.prototype.forEach.call(sec.querySelectorAll('.mpss-row'),function(row){
       var raw=String(row.querySelector('.p').value||'').trim();if(raw==='')return; // empty price row = removed
-      var v=parseFloat(raw.replace(/\s/g,'').replace(',','.'));
+      /* THE WHOLE STRING HAS TO BE A PRICE, NOT ITS BEGINNING (2026-10-09). parseFloat stops at the first character it
+         cannot use and hands back what it got, so "0.0801abc" came back as 0.0801 and "105.5O" as 105.5 - silently
+         truncated, never flagged, in direct contradiction of the note above this function. A level the trader cannot
+         see was altered is the same failure as one they cannot see was rejected. A leading $ is forgiven because it is
+         what a pasted price carries; the comma stays a decimal point, which is the 2026-09-10 decision. */
+      var s=raw.replace(/\s/g,'').replace(/^\$/,'').replace(',','.');
+      var v=/^(?:\d+\.?\d*|\.\d+)$/.test(s)?parseFloat(s):NaN; // "105." is a price mid-typing, "." and "105.5O" are not
       if(!isFinite(v)||!(v>0)){if(bad)bad.push(raw.slice(0,16));return;}
       out.push({p:v,pct:+row.querySelector('.pc').value||100});
     });return out;}

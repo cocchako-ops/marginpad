@@ -2006,6 +2006,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (!Array.isArray(arr)) return;
     lastJ = j;
     arr = arr.filter(function (e) { return !(e && e.status === 'planned'); }); // plan-form drafts are not trades - never sync them (they re-appeared as $0 XRP opens in the activity feed, 2026-09-13)
+    // A row still AWAITING the server's acknowledgement (pend, 2026-10-09) is not ours to push either. _mpPendingOpens
+    // below covers the in-flight window, but it is window state: a reload during the confirm pass would drop the guard
+    // and hand the server a client-authored position - the very thing the 2026-09-29 audit found 215 of. The flag is on
+    // the row, so it survives the reload; the confirm pass clears it or removes the row.
+    arr = arr.filter(function (e) { return !(e && e.pend); });
     // An OPTIMISTIC open (2026-10-03, Stake-feel) is on screen while its server call is still in flight. It must NOT be
     // pushed to the server yet: if the server-open then fails and we remove it locally, a copy pushed mid-flight would
     // be stored server-side and resurrect on the next pull. The opener holds its id in window._mpPendingOpens until the

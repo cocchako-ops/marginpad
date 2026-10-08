@@ -77,6 +77,17 @@ function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTz
    widened to a double), so a string count says "12 decimals" for a market that quotes 2. Asking which rounding
    reproduces the number ignores that noise and returns 2. */
 function mpDecOf(v){ v=Math.abs(+v); if(!isFinite(v)||v===0)return 0; var tol=v*1e-6; for(var d=0;d<=12;d++){var f=Math.pow(10,d);if(Math.abs(v-Math.round(v*f)/f)<=tol)return d;} return 12; }
+/* A TICKET PRICE MUST NOT MOVE UNDER THE READER (2026-10-09, owner: "live price of a pair na njemu se mrda jer se
+   brisu i pojavljuju decimale"). fp() sets only maximumFractionDigits, so toLocaleString DROPS trailing zeros and the
+   string changes LENGTH tick to tick ($85.6 -> $85.6400 -> $85.64); tabular-nums equalises digit WIDTH but cannot help
+   when the character COUNT changes. fpx() pins the decimals for the life of a ticket - taken from the ENTRY price,
+   which never changes - and pads with minimumFractionDigits, so the width is constant by construction.
+   THESE LIVE AT FILE LEVEL ON PURPOSE: home.js is a stack of sibling IIFEs, each with its OWN fp(), and the tickets are
+   rendered from two of them (the terminal card and the My Trades drawer). Declaring the pair inside one of those scopes
+   is what took the terminal down on 2026-10-09 - the drawer's openCard threw "fpx is not defined" on first paint, and a
+   throw there leaves the whole plan surface uninitialised. One declaration, visible to every IIFE. */
+function fpDp(v){v=Math.abs(+v)||0;return v>=100?2:v>=10?3:v>=1?4:v>=0.1?5:v>=0.01?6:v>=0.001?7:8;}
+function fpx(x,dp){x=+x||0;dp=(dp!=null&&dp>=0)?dp:fpDp(x);return '$'+x.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});}
 function mpPricePrec(bars,live){
   var p=Math.abs(+live)||0;
   if(!(p>0)&&bars&&bars.length){for(var j=bars.length-1;j>=0&&!(p>0);j--){if(bars[j])p=Math.abs(+bars[j].close)||0;}}
@@ -661,9 +672,25 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var op=(+e.feeOpen>0)?+e.feeOpen:q*(+e.entry||0)*r, cl=q*(+m.live||0)*r;
     if(!isFinite(op)||!isFinite(cl))return null;
     return {open:op,close:cl,working:Math.max(0,mg-op),stake:mg,book:(m.pnlNet!=null?m.pnlNet:null)};}
-  function _tkMeta(e,m){var f=_tkFees(e,m);
+  /* THREE FACTS, THREE CELLS (2026-10-09, owner: "moze da bude malo lepse rasporedjeno i da bude dobro organizovano").
+     This was one run-on monospace line joined by middots, which wrapped mid-figure on a narrow column and made the
+     reader hunt for the number. Same three facts, now a labelled grid. The label text stays "Entry"/"Liq"/"Margin" in
+     the DOM and carries a real space before its value: innerText is what fee-open-e2e reads, and CSS text-transform
+     WOULD change it (Chrome applies it to innerText), so the labels are styled dim, never uppercased. */
+  function _tkMeta(e,m){var f=_tkFees(e,m),dp=fpDp(e.entry);
     var mg=(f?('<b title="'+money(f.stake)+' committed, '+money(f.open)+' taken as the opening fee">'+money(f.working)+'</b> '+((window.mpT&&window.mpT('rOfStake'))||'of')+' '+money(f.stake)):('<b>'+money((+e.margin||+e.riskAmt||0))+'</b>'));
-    return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin '+mg;}
+    return '<span class="ptl-c"><i>Entry</i> <b>'+fpx(e.entry,dp)+'</b></span>'
+      +'<span class="ptl-c"><i>Liq</i> <b>'+fpx(m.liq,dp)+'</b></span>'
+      +'<span class="ptl-c ptl-cwide"><i>Margin</i> '+mg+'</span>';}
+  /* HOW CLOSE THE PRICE IS TO TAKING THE POSITION (2026-10-09). Entry sits at 0, the liquidation price at 100, and the
+     bar fills as the market walks from one to the other - the one thing a leveraged trader checks that the ticket made
+     them compute from two numbers. Pure geometry off figures already on the card, so it cannot disagree with them. */
+  function _tkBar(e,m){var en=+e.entry||0,lq=+m.liq||0,lv=+m.live||0;
+    if(!(en>0)||!(lq>0)||!(lv>0))return '';
+    var span=Math.abs(en-lq);if(!(span>0)||!isFinite(span))return '';
+    var used=Math.max(0,Math.min(100,(1-Math.abs(lv-lq)/span)*100));
+    var away=Math.abs(+m.liqDist||0);
+    return '<div class="ptl-bar'+(used>=75?' hot':used>=45?' warm':'')+'" title="'+used.toFixed(0)+'% of the way from your entry to the liquidation price"><u><i style="width:'+used.toFixed(1)+'%"></i></u><em>'+away.toFixed(away<1?2:1)+'% to liq</em></div>';}
   /* The one line the owner asked for: what a close costs, BEFORE it is pressed. */
   function _tkCost(e,m){var f=_tkFees(e,m);if(!f||f.book==null)return '';
     var b=f.book,bs=(b>=0?'+':'−')+'$'+Math.abs(b).toFixed(2);
@@ -689,9 +716,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _prevIds=_lastSig?_lastSig.split(','):[];
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
-      return '<div class="pt-last '+_tkCls(m)+(window.mpBalTkt(e)?' pt-gold':'')+'" data-tid="'+e.id+'">'
-        +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'-')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
-        +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
+      return '<div class="pt-last '+_tkCls(m)+(window.mpBalTkt(e)?' pt-gold':'')+(e.pend?' pend':'')+'" data-tid="'+e.id+'">'
+        +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'-')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fpx(m.live,fpDp(e.entry))+'</b></span></div>'
+        +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span>'+(e.pend?'<span class="ptl-conf" title="'+__esT_home("waitingServerConfirm",'Waiting for our server to confirm this position')+'">confirming…</span>':'<button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button>')+'</div>'
+        +_tkBar(e,m)
         +'<div class="ptl-cut"></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'+_tkCost(e,m)
         +'<div class="ptl-risk">'+_tkRisk(e)+'</div>'
@@ -706,9 +734,11 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(!open.length){if(_lastSig!=='')renderLast();return;}
     var list=open.slice(-5).reverse(),sig=list.map(function(e){return e.id;}).join(',');
     if(sig!==_lastSig){renderLast();return;} // a trade opened/closed → structural rebuild (re-animates once, intentionally)
+    if(list.some(function(e){var r=el.querySelector('.pt-last[data-tid="'+e.id+'"]');return r&&r.classList.contains('pend')!==!!e.pend;})){renderLast();return;} // the confirm state changed - the Close button appears or goes, so it is a structural repaint
     list.forEach(function(e){var row=el.querySelector('.pt-last[data-tid="'+e.id+'"]');if(!row)return;var m=metrics(e);
       var pnlc=_tkCls(m);if(!row.classList.contains(pnlc)){row.classList.remove('pf','ls','be');row.classList.add(pnlc);} // swap ONLY the pnl state class - the old wholesale row.className='pt-last '+pnlc dropped pt-gold every tick (Balance Mode gold on the small ticket)
-      var px=row.querySelector('.ptl-px');if(px){var pv=fp(m.live);if(px.textContent!==pv)px.textContent=pv;}
+      var px=row.querySelector('.ptl-px');if(px){var pv=fpx(m.live,fpDp(e.entry));if(px.textContent!==pv){var _up=(m.live>(+px.getAttribute('data-p')||m.live));px.textContent=pv;px.setAttribute('data-p',m.live);px.classList.remove('up','dn');void px.offsetWidth;px.classList.add(_up?'up':'dn');}}
+      var bar=row.querySelector('.ptl-bar');var bv2=_tkBar(e,m);if(bar&&!bv2)bar.remove();else if(bar){if(bar.outerHTML!==bv2)bar.outerHTML=bv2;}else if(bv2){var _pn=row.querySelector('.ptl-pnl');if(_pn)_pn.insertAdjacentHTML('afterend',bv2);}
       var big=row.querySelector('.big');if(big){var bv=_tkPnl(m);if(big.textContent!==bv)big.textContent=bv;}
       var roe=row.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var meta=row.querySelector('.ptl-meta');if(meta){var mv=_tkMeta(e,m);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
@@ -1182,6 +1212,18 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();renderLastLive();});});
   pollPrices();setInterval(pollPrices,3000);
   tick();setInterval(tick,1000);
+  /* A CONFIRM PASS CANNOT SURVIVE A RELOAD, SO THE ROW IT LEFT BEHIND MUST BE SETTLED HERE (2026-10-09). A `pend` row
+     is a position the server never acknowledged: it is held out of every sync, so it can only be resolved one way -
+     ask the server once, and if the real srv row is not there, drop it rather than leave a trade that exists on one
+     device and on no board. */
+  setTimeout(function(){try{
+    if(!load().some(function(x){return x&&x.pend;}))return;
+    try{if(window.mpPullTrades)window.mpPullTrades();}catch(_e){}
+    setTimeout(function(){try{
+      var d=load(),keep=d.filter(function(x){return !(x&&x.pend);}); // the pull brings the real srv row and the twin guard takes ours; whatever is still pending was never filled
+      if(keep.length!==d.length){store(keep);render();try{drawLines();}catch(_e){}}
+    }catch(_e){}},6000);
+  }catch(_e){}},3500);
   setInterval(function(){if(document.body.getAttribute('data-prod')==='plan'&&chart&&candle)refreshKlinesQuiet();},30000); // self-heal phantom wicks + any freeze by re-syncing with true klines every 30s
   /* CHART LIVENESS WATCHDOG - the permanent cure for "the chart stands still" (esp. on higher TFs like 5m where new bars are
      rare, so the per-new-bar autoscale re-assert almost never fires). Every 5s while the Paper Trade chart is visible:
@@ -1325,7 +1367,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,pnlNet:pnlNet,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'-')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -1671,7 +1713,12 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var _finishOpen=function(t){
       try{if(window.mpBal&&window.mpBal.tag)window.mpBal.tag(t);}catch(_){} // stamp the trade with the current Balance Mode session so it (and only it) counts toward the balance
       var data=load();
-      data.push(t);
+      /* RECONCILE, NEVER BLINDLY PUSH (2026-10-09). A pullTrades() landing inside the open's in-flight window has
+         already unioned the real srv row in (and twin-guarded the optimistic one away), so a bare push put a SECOND
+         copy of the same srv id on the card until the next pull collapsed them. mp-charts and mp-mcharts have always
+         reconciled by id here; home.js did not. */
+      var _sw=false;for(var _k=0;_k<data.length;_k++){if(String(data[_k].id)===String(t.id)){data[_k]=t;_sw=true;break;}}
+      if(!_sw)data.push(t);
       if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:t.entry,t:Date.now()}; // start P&L at exactly 0 - kills the phantom -100% / instant-liquidation at open
       store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer - no popup; stamp the open so the ticket pop only fires for a REAL open */
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
@@ -1699,14 +1746,40 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var _bw=document.getElementById('planSave'),_sw=_bw&&_bw.querySelector('span'),_ow=_sw?_sw.textContent:'';
       if(_bw&&_sw){_bw.classList.add('cooldown');_sw.textContent=MT('jOpening','Opening…');}
       var _done=function(){add._wait=false;add._busy=false;window._mpOpenWait=false;if(_bw&&_sw&&_sw.textContent===MT('jOpening','Opening…')){_sw.textContent=_ow;_bw.classList.remove('cooldown');}};
-      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();_rmOpt();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();_rmOpt();if(err&&err.blocked){_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;}
-        /* NO PHANTOM LOCAL OPEN (2026-10-03, owner: a trade must never live only on the client). The signed-in open
-           reached the server or it did not: on failure we open NOTHING and tell the trader to retry, instead of the
-           old local fallback that produced a position the boards could never see. SAFE because pullTrades() unions the
-           server journal into this device every 40 s - so if the server actually filled on a timeout, it comes back as
-           a proper srv row on the next pull; if it did not, nothing lingers. */
-        try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Check your connection and try again.'));}catch(_e){}
-        try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(_e2){}});
+      /* A TIMEOUT IS NOT A REFUSAL (2026-10-09, owner: "otvorim trejd i on jednostavno nestane pa i do minut dva, kao
+         da ga nisam otvorio, i posle se pojavi odjednom"). mpSrvOpen gave up after ~11 s of client-side aborts and this
+         callback DELETED the optimistic row - but the server had usually already filled it, so the position existed
+         everywhere except on the trader's screen until pullTrades' 40 s interval unioned it back in: 11 s + up to 40 s,
+         and up to ~90 s if a cycle was missed. Exactly the reported minute or two. Now the row STAYS, marked
+         "confirming" and with its Close button withheld (nobody may act on a position the server has not acknowledged),
+         while we ask the server on a short backoff. The ask is the ETag'd journal GET pullTrades already makes, and the
+         twin guard swaps our copy for the real srv row by cid the moment it lands. Only a server that still does not
+         have it after ~30 s removes the row - and only then is the trader told nothing was opened. */
+      var _confirmOpen=function(){
+        try{var _dp=load();for(var _i=0;_i<_dp.length;_i++){if(String(_dp[_i].id)===String(_tLocal.id)){_dp[_i].pend=1;break;}}store(_dp);render();}catch(_e){}
+        var waits=[1200,2500,5000,8000,13000],n=0; // ~30 s of asking, in rising steps
+        var landed=function(){try{return load().some(function(x){return x&&String(x.cid||'')===String(_tLocal.cid)&&String(x.id||'').slice(0,3)==='srv';});}catch(_e){return false;}};
+        var dropped=function(){try{return !load().some(function(x){return x&&String(x.id)===String(_tLocal.id);});}catch(_e){return true;}};
+        (function step(){
+          if(landed()||dropped()){_rmOpt();try{drawLines();}catch(_e){}return;} // the real row is here (the twin guard took ours) - the trader never saw a gap
+          if(n>=waits.length){_rmOpt();
+            try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Check your connection and try again.'));}catch(_e){}
+            return;}
+          try{if(window.mpPullTrades)window.mpPullTrades();}catch(_e){}
+          setTimeout(step,waits[n++]);
+        })();
+      };
+      window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null,cid:_tLocal.cid,feeVenue:window.mpFeeVenue||''},function(t){_done();_rmOpt();t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.feeVenue=window.mpFeeVenue||'';t.rr=isFinite(rr)?rr:null;_finishOpen(t);},function(err){_done();
+        if(err&&err.blocked){_rmOpt();_say(err.message||__esT_home("thisMarketIsClosed",'This market is closed right now.'));return;}
+        /* NO PHANTOM LOCAL OPEN (2026-10-03, owner: a trade must never live only on the client). A server that ANSWERS
+           and refuses is final: remove the row and say so. Only silence gets the confirm pass above. */
+        if(err&&err.error){_rmOpt();
+          try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Check your connection and try again.'));}catch(_e){}
+          try{if(window.mpPullTrades)setTimeout(window.mpPullTrades,1500);}catch(_e2){}
+          return;}
+        if(err&&err.timeout){_confirmOpen();return;}
+        _rmOpt();
+        try{if(window.mpLimitToast)window.mpLimitToast(__esT_home("openDidNotGoThrough",'Could not open - our server did not take it, so nothing was opened. Check your connection and try again.'));}catch(_e){}});
     }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
@@ -1754,7 +1827,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
       var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl class - wholesale className= dropped pp-gold every tick (2nd copy: the My Trades drawer, same flicker as the terminal list)
-      var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
+      var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fpx(m.live,fpDp(e.entry));if(lv.textContent!==lvv)lv.textContent=lvv;}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
       var bb=card.querySelector('.ppb');if(bb){var bbv=pctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
@@ -3617,7 +3690,9 @@ window.mpSrvOpen=function(payload,ok,fail){
      fallback - which carries the cid too, so the journal sync drops it the moment the server copy turns out to exist. */
   if(!payload.cid)payload.cid=String(Date.now())+'_'+Math.floor(Math.random()*1e4);
   var tries=0;
-  function retry(){if(tries<2){attempt();return;}try{if(window.__mpTrack)window.__mpTrack('openfail','timeout');}catch(_t){}fail({cid:payload.cid});}
+  /* `timeout:true` says WHICH kind of failure this is (2026-10-09): the server never answered, so it may well have
+     filled - the caller must confirm before it removes anything. A server that answers and refuses carries `error`. */
+  function retry(){if(tries<2){attempt();return;}try{if(window.__mpTrack)window.__mpTrack('openfail','timeout');}catch(_t){}fail({cid:payload.cid,timeout:true});}
   function attempt(){
     tries++;
     var ac=(typeof AbortController!=='undefined')?new AbortController():null;
