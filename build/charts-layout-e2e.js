@@ -150,9 +150,15 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     // ---------------- PHONE portrait 390x844 ----------------
     console.log('\nphone portrait 390x844');
     page = await prep(browser, true, 390, 844);
-    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.goto(BASE + '/charts?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
+    // THE OWNER'S PHOTOS (2026-10-08): the desktop template picker and the old single-chart fallback each painted for a frame
+    // before the full-screen layer covered them. At DOMContentLoaded nothing of the shell may be visible - only black.
+    const early = await page.evaluate(() => { const vis = (sel) => { const el = document.querySelector(sel); if (!el) return 'absent'; return getComputedStyle(el).visibility; }; return { route: document.documentElement.classList.contains('route-charts'), header: vis('body>header'), wrap: vis('body>.wrap'), cs: vis('#chartspace'), bg: getComputedStyle(document.body).backgroundColor }; });
+    ok('phone /charts paints nothing of the shell before the layer is up (black, no template picker, no fallback)', early.route && early.header !== 'visible' && early.wrap !== 'visible' && early.cs !== 'visible', JSON.stringify(early));
     await page.waitForFunction(() => document.querySelector('.mfc') && !document.querySelector('.mfc').hidden && document.querySelector('.mfc-pane canvas'), { timeout: 40000 });
     await sleep(3500);
+    const layerVis = await page.evaluate(() => getComputedStyle(document.querySelector('.mfc')).visibility);
+    ok('and the charts layer itself is visible', layerVis === 'visible', layerVis);
     const m1 = await page.evaluate(() => { const bar = document.querySelector('.mfc-bar'), dock = document.querySelector('.mfc-dock'), dr = dock.getBoundingClientRect(); return { barOverflow: bar.scrollWidth - bar.clientWidth, barH: Math.round(bar.getBoundingClientRect().height), dockShown: dr.height > 0 && dr.bottom <= innerHeight + 1, dockH: Math.round(dr.height), dockN: dock.querySelectorAll('.mfc-b').length, dockBtns: [...dock.querySelectorAll('.mfc-b')].map(b => Math.round(b.getBoundingClientRect().height)), topActs: [...bar.querySelectorAll('.mfc-b')].filter(b => b.getBoundingClientRect().width > 0).map(b => b.getAttribute('data-act')), sx: document.documentElement.scrollWidth - innerWidth, pct: 0 }; });
     await shot(page, 'phone-portrait');
     m1.pct = await page.evaluate(CHART_PCT);
