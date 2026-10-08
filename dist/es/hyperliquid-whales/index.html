@@ -19,11 +19,11 @@
 <meta property="og:description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/es/hyperliquid-whales/" />
-<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og/hyperliquid-whales.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Rastreador de Ballenas de Hyperliquid - Mayores Posiciones en Vivo" />
 <meta name="twitter:description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
-<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/hyperliquid-whales.jpg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -326,6 +326,8 @@
   }
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un rastreador de ballenas de Hyperliquid?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid es un exchange de perpetuos descentralizado donde cada posición es on-chain y pública. Un rastreador de ballenas muestra las mayores posiciones abiertas - su tamaño, dirección, apalancamiento, entrada, precio de liquidación y ganancia o pérdida no realizada en vivo - para que puedas ver exactamente en qué están apostando los traders más grandes en tiempo real."}},{"@type":"Question","name":"¿Por qué vigilar las posiciones de las ballenas?","acceptedAnswer":{"@type":"Answer","text":"Las posiciones grandes pueden mover los mercados, y sus niveles de liquidación suelen actuar como imanes para el precio. Vigilar si las ballenas están netas en long o en short, y dónde se agrupan sus precios de liquidación, aporta un contexto que las tasas de funding y el interés abierto por sí solos no dan."}},{"@type":"Question","name":"¿Los datos de ballenas son en vivo?","acceptedAnswer":{"@type":"Answer","text":"Sí. Las posiciones y las acciones recientes de las ballenas se leen de la API pública on-chain de Hyperliquid mediante el rastreador de ballenas de MarginPad, y se actualizan cada pocos minutos. Como Hyperliquid es on-chain, los tamaños, el apalancamiento y los precios de liquidación son valores reales, no estimaciones."}}]}</script>
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 </head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
@@ -359,7 +361,7 @@
         <div class="wl-tile"><div class="k">La apuesta más grande ahora mismo</div><div class="v" id="wlBig">-</div></div>
         <div class="wl-tile"><div class="k">Exposición neta</div><div class="v" id="wlNet">-</div></div>
         <div class="wl-tile"><div class="k">P&amp;L no realizado agregado</div><div class="v" id="wlUpnl">-</div></div>
-        <div class="wl-tile"><div class="k">Closest to liquidation</div><div class="v" id="wlNear">-</div></div>
+        <div class="wl-tile"><div class="k">Más cerca de la liquidación</div><div class="v" id="wlNear">-</div></div>
       </div>
       <div class="wl-pulse" id="wlPulse"></div>
     </div>
@@ -384,7 +386,7 @@
     <section class="wl-view" id="vPos">
       <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros</button><span class="wl-fsum" id="wlFsumPos">Todos los mercados &middot; Long y short &middot; por tamaño</span></div>
       <div class="wl-tbl">
-        <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Entry</span><span class="cl r">Liq price</span><span class="r">Unrealized</span></div>
+        <div class="wl-thd"><span></span><span>Ballena / mercado</span><span class="cl" style="text-align:center">Apalanc.</span><span class="r">Tamaño</span><span class="cl r">Entrada</span><span class="cl r">Precio liq.</span><span class="r">No realizado</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
       <p class="wl-note">Haz clic en cualquier fila para abrir esa wallet: todo su libro, su historial de los últimos 30 días y cada ejecución que hemos registrado.</p>
@@ -395,9 +397,9 @@
       <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros</button><span class="wl-fsum" id="wlFsumTr">Todos los mercados &middot; Abiertas y cerradas &middot; hora local</span></div>
       <div class="wl-trades" id="wlTrades"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       <p class="wl-note" id="wlTrNote"></p>
-      <div class="wl-h2 wl-alh">Position changes <span class="n" id="wlAlN"></span></div>
+      <div class="wl-h2 wl-alh">Cambios de posición <span class="n" id="wlAlN"></span></div>
       <div class="wl-feed" id="wlAlerts"></div>
-      <p class="wl-note">What changed between two position sweeps (every four minutes) on the tracked wallets: a position <b>opened</b>, <b>closed</b>, <b>flipped</b> side, or moved by a quarter or more. Different clock from the executions above - this is the book, those are the fills.</p>
+      <p class="wl-note">Lo que cambió entre dos barridos de posiciones (cada cuatro minutos) en las wallets rastreadas: una posición se <b>abrió</b>, se <b>cerró</b>, <b>cambió</b> de lado o se movió un cuarto o más. Es un reloj distinto al de las ejecuciones de arriba - esto es el libro, aquello son las ejecuciones.</p>
     </section>
 
     <!-- BY MARKET -->

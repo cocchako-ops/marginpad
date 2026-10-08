@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-05T14:15:23.768Z",
+  "generated": "2026-10-08T20:02:35.045Z",
   "pages": 385,
-  "occurrences": 26426,
-  "unique": 13970,
-  "words": 265789,
+  "occurrences": 26510,
+  "unique": 14040,
+  "words": 266437,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-05T14:16:32.482Z"
+  "merged": "2026-10-08T20:11:07.475Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -575,7 +575,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 31,
+   "n": 30,
    "w": 6
   },
   "6tBMzjk8aD": {
@@ -590,7 +590,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 196,
+   "n": 195,
    "w": 15
   },
   "DXzxMSnuDb": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1673,
+   "n": 1669,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -2754,9 +2754,9 @@
    "n": 1,
    "w": 19
   },
-  "FVT6QLPVDJ": {
-   "en": "Aave (AAVE) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de Aave (AAVE) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "1o9q-DHW4K": {
+   "en": "Aave (AAVE) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aave (AAVE) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -2764,7 +2764,7 @@
     "/aave-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "VZHB3SZ5xg": {
    "en": "<a href=\"/calculators\">Calculators</a><a href=\"/heatmap\">Heatmap</a><a href=\"/blog/\">Blog</a>",
@@ -3167,9 +3167,9 @@
    "n": 32,
    "w": 7
   },
-  "_GhAdLAB15": {
-   "en": "Live Aave (AAVE) liquidation map: real AAVE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Aave (AAVE) en vivo: liquidaciones reales de AAVE de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "jnp1sMxLW1": {
+   "en": "See where AAVE longs and shorts are getting liquidated right now: real Aave liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de AAVE ahora mismo: liquidaciones reales de Aave de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -3177,11 +3177,11 @@
     "/aave-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "-_lbHYb4G2": {
-   "en": "Aave (AAVE) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Aave (AAVE) - En Vivo",
+  "aqwR8DQ2xr": {
+   "en": "Aave (AAVE) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aave (AAVE) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -3189,7 +3189,7 @@
     "/aave-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "ieezyHIGMQ": {
    "en": "What is a Aave liquidation map?",
@@ -3308,9 +3308,9 @@
    "n": 1,
    "w": 3
   },
-  "5F5rh0y7Pr": {
-   "en": "Aave (AAVE) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de Aave (AAVE) - En Vivo, Gratis, Sin Registro",
+  "RWs4GFWdV1": {
+   "en": "Aave (AAVE) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aave (AAVE) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -3318,7 +3318,7 @@
     "/aave-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "qbd7tdm3vJ": {
    "en": "About MarginPad - Free Crypto Futures Toolkit",
@@ -6539,9 +6539,9 @@
    "n": 1,
    "w": 19
   },
-  "mJYY8z3Bjb": {
-   "en": "Cardano (ADA) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de Cardano (ADA) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "D0HHIkWbyf": {
+   "en": "Cardano (ADA) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cardano (ADA) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -6549,7 +6549,7 @@
     "/ada-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "ymq47WqJX-": {
    "en": "<a href=\"/\">Home</a> / ADA Liquidation Map",
@@ -6755,9 +6755,9 @@
    "n": 1,
    "w": 20
   },
-  "CIrheCgalR": {
-   "en": "Live Cardano (ADA) liquidation map: real ADA liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Cardano (ADA) en vivo: liquidaciones reales de ADA de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "x74edpz7rR": {
+   "en": "See where ADA longs and shorts are getting liquidated right now: real Cardano liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de ADA ahora mismo: liquidaciones reales de Cardano de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -6765,11 +6765,11 @@
     "/ada-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "aNrIbuwzc2": {
-   "en": "Cardano (ADA) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Cardano (ADA) - En Vivo",
+  "V5XGulY8zR": {
+   "en": "Cardano (ADA) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cardano (ADA) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -6777,7 +6777,7 @@
     "/ada-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "jCexIO1ZcX": {
    "en": "What is a Cardano liquidation map?",
@@ -6851,9 +6851,9 @@
    "n": 1,
    "w": 3
   },
-  "Tk4Pr4bWTv": {
-   "en": "Cardano (ADA) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de Cardano (ADA) - En Vivo, Gratis, Sin Registro",
+  "IKwmtS5eDG": {
+   "en": "Cardano (ADA) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cardano (ADA) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -6861,7 +6861,7 @@
     "/ada-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "BskYgCTMuJ": {
    "en": "The 4 MarginPad AI Indicators, Explained - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory",
@@ -11399,6 +11399,18 @@
    "n": 1,
    "w": 1
   },
+  "tDlV1cMhbv": {
+   "en": "<span>Light / dark</span>",
+   "es": "<span>Claro / oscuro</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
   "R-y5inLLvW": {
    "en": "<span>Share</span>",
    "es": "<span>Compartir</span>",
@@ -14692,6 +14704,30 @@
    "n": 2,
    "w": 2
   },
+  "sKaHh2pV9s": {
+   "en": "Show labels",
+   "es": "Mostrar etiquetas",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "MFaQ_ySVcc": {
+   "en": "Expand or collapse the tools panel",
+   "es": "Expandir o contraer el panel de herramientas",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 6
+  },
   "3mO7OR73wB": {
    "en": "Hide the panel for more chart space",
    "es": "Oculta el panel para más espacio de gráfico",
@@ -14703,6 +14739,30 @@
    ],
    "n": 1,
    "w": 7
+  },
+  "EXFSv3ILJW": {
+   "en": "Add a chart",
+   "es": "Añadir un gráfico",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "LImVAhc715": {
+   "en": "Open Paper Trade",
+   "es": "Abrir Paper Trade",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 3
   },
   "lyrY2KUDl7": {
    "en": "Layout",
@@ -14779,6 +14839,80 @@
    ],
    "n": 1,
    "w": 9
+  },
+  "34X0CMH3fe": {
+   "en": "Sticky note",
+   "es": "Nota adhesiva",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "oypUNb-wKo": {
+   "en": "Liquidation calculator",
+   "es": "Calculadora de liquidación",
+   "kind": [
+    "attr:title",
+    "html"
+   ],
+   "ctx": [
+    "/app.html",
+    "/wordpress-crypto-widgets/"
+   ],
+   "n": 2,
+   "w": 2
+  },
+  "BNYIxc7jrD": {
+   "en": "Save layout",
+   "es": "Guardar diseño",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "59JPOBIWzN": {
+   "en": "Saved layouts",
+   "es": "Diseños guardados",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "4ZYzf40Ny-": {
+   "en": "Light / dark",
+   "es": "Claro / oscuro",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "heAdkGcgBW": {
+   "en": "Share a screenshot of the workspace",
+   "es": "Compartir una captura del espacio de trabajo",
+   "kind": [
+    "attr:title"
+   ],
+   "ctx": [
+    "/app.html"
+   ],
+   "n": 1,
+   "w": 5
   },
   "O9VjR7eTTM": {
    "en": "Liquidation heatmap",
@@ -16253,9 +16387,9 @@
    "n": 1,
    "w": 19
   },
-  "vdlruNtlHo": {
-   "en": "Aptos (APT) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de Aptos (APT) - En Vivo, Gratis, Sin Login | MarginPad",
+  "A5EhpoGXIV": {
+   "en": "Aptos (APT) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aptos (APT) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -16263,7 +16397,7 @@
     "/apt-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "HG1Bg96WtG": {
    "en": "<a href=\"/\">Home</a> / APT Liquidation Map",
@@ -16469,9 +16603,9 @@
    "n": 1,
    "w": 20
   },
-  "BpTIHP6zqF": {
-   "en": "Live Aptos (APT) liquidation map: real APT liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Aptos (APT) en vivo: liquidaciones reales de APT de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "4SmLNkR2WE": {
+   "en": "See where APT longs and shorts are getting liquidated right now: real Aptos liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de APT ahora mismo: liquidaciones reales de Aptos de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -16479,11 +16613,11 @@
     "/apt-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "Quxop5J3Ik": {
-   "en": "Aptos (APT) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Aptos (APT) - En Vivo",
+  "Wt5bBPmzGb": {
+   "en": "Aptos (APT) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aptos (APT) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -16491,7 +16625,7 @@
     "/apt-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "C8lJyolA31": {
    "en": "What is a Aptos liquidation map?",
@@ -16565,9 +16699,9 @@
    "n": 1,
    "w": 3
   },
-  "Ob_FGOyK8w": {
-   "en": "Aptos (APT) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de Aptos (APT) - En Vivo, Gratis, Sin Login",
+  "rCUmOeVIwc": {
+   "en": "Aptos (APT) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Aptos (APT) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -16575,7 +16709,7 @@
     "/apt-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "W2QhjBLORr": {
    "en": "ARB Liquidation Calculator - Arbitrum Futures (Long & Short) | MarginPad",
@@ -16989,9 +17123,9 @@
    "n": 1,
    "w": 19
   },
-  "8vsyggpYO7": {
-   "en": "Arbitrum (ARB) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de Arbitrum (ARB) - En Vivo, Gratis, Sin Login | MarginPad",
+  "HMJyNhSjQF": {
+   "en": "Arbitrum (ARB) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Arbitrum (ARB) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -16999,7 +17133,7 @@
     "/arb-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "XGzM2We9Xp": {
    "en": "<a href=\"/\">Home</a> / ARB Liquidation Map",
@@ -17205,9 +17339,9 @@
    "n": 1,
    "w": 20
   },
-  "F5IW6TN4IT": {
-   "en": "Live Arbitrum (ARB) liquidation map: real ARB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Arbitrum (ARB) en vivo: liquidaciones reales de ARB de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "yADOKjHHgo": {
+   "en": "See where ARB longs and shorts are getting liquidated right now: real Arbitrum liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de ARB ahora mismo: liquidaciones reales de Arbitrum de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -17215,11 +17349,11 @@
     "/arb-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "j8mMvO43kz": {
-   "en": "Arbitrum (ARB) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Arbitrum (ARB) - En Vivo",
+  "7hgI-8bA11": {
+   "en": "Arbitrum (ARB) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Arbitrum (ARB) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -17227,7 +17361,7 @@
     "/arb-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "1wFuuqs_Q6": {
    "en": "What is a Arbitrum liquidation map?",
@@ -17301,9 +17435,9 @@
    "n": 1,
    "w": 3
   },
-  "Dv373oOvVi": {
-   "en": "Arbitrum (ARB) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Arbitrum (ARB) - En vivo, gratis, sin registro",
+  "jqLnVUeSdE": {
+   "en": "Arbitrum (ARB) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Arbitrum (ARB) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -17311,7 +17445,7 @@
     "/arb-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "RlPf0hdGHB": {
    "en": "Bot Arena - trading bots ranked on live paper trades | MarginPad",
@@ -18089,9 +18223,9 @@
    "n": 1,
    "w": 19
   },
-  "-Hou6uu6ff": {
-   "en": "Cosmos (ATOM) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Cosmos (ATOM) - En vivo, gratis, sin registro | MarginPad",
+  "8YlCyyyvq7": {
+   "en": "Cosmos (ATOM) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cosmos (ATOM) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -18099,7 +18233,7 @@
     "/atom-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "nONarMSvRY": {
    "en": "<a href=\"/\">Home</a> / ATOM Liquidation Map",
@@ -18305,9 +18439,9 @@
    "n": 1,
    "w": 20
   },
-  "jUlBE2p1vP": {
-   "en": "Live Cosmos (ATOM) liquidation map: real ATOM liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Cosmos (ATOM) en vivo: liquidaciones reales de ATOM de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "6kGkkagLiF": {
+   "en": "See where ATOM longs and shorts are getting liquidated right now: real Cosmos liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de ATOM ahora mismo: liquidaciones reales de Cosmos de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -18315,11 +18449,11 @@
     "/atom-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "1QifFKbNUB": {
-   "en": "Cosmos (ATOM) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Cosmos (ATOM) - En Vivo",
+  "GDszCYls89": {
+   "en": "Cosmos (ATOM) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cosmos (ATOM) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -18327,7 +18461,7 @@
     "/atom-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "maLscjOhPI": {
    "en": "What is a Cosmos liquidation map?",
@@ -18401,9 +18535,9 @@
    "n": 1,
    "w": 3
   },
-  "UVFQxYPcx8": {
-   "en": "Cosmos (ATOM) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Cosmos (ATOM) - En vivo, gratis, sin registro",
+  "tTcfiE5dEM": {
+   "en": "Cosmos (ATOM) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Cosmos (ATOM) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -18411,7 +18545,7 @@
     "/atom-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "XC4LXvkrDr": {
    "en": "AVAX Liquidation Calculator - Avalanche Futures (Long & Short) | MarginPad",
@@ -18813,9 +18947,9 @@
    "n": 1,
    "w": 19
   },
-  "NpL32H7NLZ": {
-   "en": "Avalanche (AVAX) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Avalanche (AVAX) - En vivo, gratis, sin registro | MarginPad",
+  "erXJgYyIr1": {
+   "en": "Avalanche (AVAX) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Avalanche (AVAX) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -18823,7 +18957,7 @@
     "/avax-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "tJlK_9aN_E": {
    "en": "<a href=\"/\">Home</a> / AVAX Liquidation Map",
@@ -19029,9 +19163,9 @@
    "n": 1,
    "w": 20
   },
-  "1IkmPDU8vJ": {
-   "en": "Live Avalanche (AVAX) liquidation map: real AVAX liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Avalanche (AVAX) en vivo: liquidaciones reales de AVAX de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "ry5i-jF-Sb": {
+   "en": "See where AVAX longs and shorts are getting liquidated right now: real Avalanche liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de AVAX ahora mismo: liquidaciones reales de Avalanche de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -19039,11 +19173,11 @@
     "/avax-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "Z6h3iGyhun": {
-   "en": "Avalanche (AVAX) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Avalanche (AVAX) - En Vivo",
+  "JEwoPm87Ns": {
+   "en": "Avalanche (AVAX) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Avalanche (AVAX) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -19051,7 +19185,7 @@
     "/avax-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "sA3P3Xtb5f": {
    "en": "What is a Avalanche liquidation map?",
@@ -19125,9 +19259,9 @@
    "n": 1,
    "w": 3
   },
-  "ZH5QdXr520": {
-   "en": "Avalanche (AVAX) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Avalanche (AVAX) - En vivo, gratis, sin registro",
+  "8w5h8iMmhx": {
+   "en": "Avalanche (AVAX) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Avalanche (AVAX) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -19135,7 +19269,7 @@
     "/avax-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "gFuMbARh__": {
    "en": "AXS Liquidation Calculator - Axie Infinity Futures (Long & Short) | MarginPad",
@@ -25457,7 +25591,7 @@
     "/coinglass-alternative/",
     "/coins/"
    ],
-   "n": 11,
+   "n": 10,
    "w": 3
   },
   "CSJxbR5tsS": {
@@ -25472,7 +25606,7 @@
     "/coinglass-alternative/",
     "/coins/"
    ],
-   "n": 11,
+   "n": 10,
    "w": 19
   },
   "xvw_Ba3yKv": {
@@ -73232,9 +73366,9 @@
    "n": 1,
    "w": 19
   },
-  "G74HSfpCNU": {
-   "en": "BNB (BNB) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de BNB (BNB) - En vivo, gratis, sin registro | MarginPad",
+  "OcIh1J9r6i": {
+   "en": "BNB (BNB) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de BNB (BNB) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -73242,7 +73376,7 @@
     "/bnb-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "k3dy-K4scy": {
    "en": "<a href=\"/\">Home</a> / BNB Liquidation Map",
@@ -73448,9 +73582,9 @@
    "n": 1,
    "w": 20
   },
-  "UCJVhAoKD8": {
-   "en": "Live BNB (BNB) liquidation map: real BNB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de BNB (BNB) en vivo: liquidaciones reales de BNB de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "Hf3-plzFPn": {
+   "en": "See where BNB longs and shorts are getting liquidated right now: real BNB liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de BNB ahora mismo: liquidaciones reales de BNB de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -73458,11 +73592,11 @@
     "/bnb-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "SEPpS1xAD8": {
-   "en": "BNB (BNB) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de BNB (BNB) - En Vivo",
+  "RnS6pbZcFT": {
+   "en": "BNB (BNB) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de BNB (BNB) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -73470,7 +73604,7 @@
     "/bnb-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "0QBuBOTe16": {
    "en": "What is a BNB liquidation map?",
@@ -73544,9 +73678,9 @@
    "n": 1,
    "w": 3
   },
-  "ci98HM4vCZ": {
-   "en": "BNB (BNB) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de BNB (BNB) - En vivo, gratis, sin registro",
+  "jYmY9PaxSq": {
+   "en": "BNB (BNB) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de BNB (BNB) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -73554,7 +73688,7 @@
     "/bnb-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "HzncggfN1V": {
    "en": "BONK Liquidation Calculator - Bonk Futures (Long & Short) | MarginPad",
@@ -73969,9 +74103,9 @@
    "n": 1,
    "w": 19
   },
-  "aSFkNbuVGK": {
-   "en": "Bonk (BONK) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Bonk (BONK) - En vivo, gratis, sin registro | MarginPad",
+  "YSPvNeuwGH": {
+   "en": "Bonk (BONK) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bonk (BONK) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -73979,7 +74113,7 @@
     "/bonk-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "W8G0gIf5V6": {
    "en": "<a href=\"/\">Home</a> / BONK Liquidation Map",
@@ -74185,9 +74319,9 @@
    "n": 1,
    "w": 20
   },
-  "HlteS9b2ad": {
-   "en": "Live Bonk (BONK) liquidation map: real BONK liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Bonk (BONK) en vivo: liquidaciones reales de BONK de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "8ixxU2j7RJ": {
+   "en": "See where BONK longs and shorts are getting liquidated right now: real Bonk liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de BONK ahora mismo: liquidaciones reales de Bonk de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -74195,11 +74329,11 @@
     "/bonk-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "UxPBnLYPbn": {
-   "en": "Bonk (BONK) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Bonk (BONK) - En Vivo",
+  "G06cHXWYDs": {
+   "en": "Bonk (BONK) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bonk (BONK) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -74207,7 +74341,7 @@
     "/bonk-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "_JeJjPIPJV": {
    "en": "What is a Bonk liquidation map?",
@@ -74281,9 +74415,9 @@
    "n": 1,
    "w": 3
   },
-  "1nR4K1k6yQ": {
-   "en": "Bonk (BONK) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Bonk (BONK) - En vivo, gratis, sin registro",
+  "J1qXnyELwZ": {
+   "en": "Bonk (BONK) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bonk (BONK) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -74291,7 +74425,7 @@
     "/bonk-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "h7KcS6kHRl": {
    "en": "BTC Liquidation Calculator - Bitcoin Futures (Long & Short) | MarginPad",
@@ -74693,9 +74827,9 @@
    "n": 1,
    "w": 19
   },
-  "QVJprMVlzC": {
-   "en": "Bitcoin (BTC) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Bitcoin (BTC) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "xHSs0Z0LPa": {
+   "en": "Bitcoin (BTC) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bitcoin (BTC) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -74703,7 +74837,7 @@
     "/btc-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "oEVwAtTw0a": {
    "en": "<a href=\"/\">Home</a> / BTC Liquidation Map",
@@ -74909,9 +75043,9 @@
    "n": 1,
    "w": 20
   },
-  "MZTk11KeSe": {
-   "en": "Live Bitcoin (BTC) liquidation map: real BTC liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Bitcoin (BTC) en vivo: liquidaciones reales de BTC de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "MsLnvCGbH0": {
+   "en": "See where BTC longs and shorts are getting liquidated right now: real Bitcoin liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de BTC ahora mismo: liquidaciones reales de Bitcoin de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -74919,11 +75053,11 @@
     "/btc-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "E1LwAngXSs": {
-   "en": "Bitcoin (BTC) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Bitcoin (BTC) - En Vivo",
+  "U3Yh_89VhF": {
+   "en": "Bitcoin (BTC) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bitcoin (BTC) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -74931,7 +75065,7 @@
     "/btc-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "nIidIwFGDe": {
    "en": "What is a Bitcoin liquidation map?",
@@ -75005,9 +75139,9 @@
    "n": 1,
    "w": 3
   },
-  "fS3TfI5l_H": {
-   "en": "Bitcoin (BTC) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Bitcoin (BTC) - En Vivo, Gratis, Sin Registro",
+  "swNfrpaVh3": {
+   "en": "Bitcoin (BTC) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bitcoin (BTC) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -75015,7 +75149,7 @@
     "/btc-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "eVhgh1Do9S": {
    "en": "Bybit Liquidation Calculator (2026) - Long & Short, Any Leverage | MarginPad",
@@ -80262,7 +80396,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 8
   },
   "t5ZAk3UKyo": {
@@ -80289,7 +80423,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 7
   },
   "YLSW-kY2V1": {
@@ -80304,7 +80438,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 3
   },
   "jAYNamQ-dW": {
@@ -80319,7 +80453,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 2
   },
   "DIvuQj17qc": {
@@ -80334,7 +80468,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 36
   },
   "tDHRtbveGf": {
@@ -89629,9 +89763,9 @@
    "n": 1,
    "w": 19
   },
-  "IqW_K9B-w1": {
-   "en": "Dogecoin (DOGE) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidación de Dogecoin (DOGE) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "1WwbULRnoK": {
+   "en": "Dogecoin (DOGE) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Dogecoin (DOGE) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -89639,7 +89773,7 @@
     "/doge-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "BY3x1Ym_ca": {
    "en": "<a href=\"/\">Home</a> / DOGE Liquidation Map",
@@ -89845,9 +89979,9 @@
    "n": 1,
    "w": 20
   },
-  "KiItDTEgd_": {
-   "en": "Live Dogecoin (DOGE) liquidation map: real DOGE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Dogecoin (DOGE) en vivo: liquidaciones reales de DOGE de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "fphqQ8mT7y": {
+   "en": "See where DOGE longs and shorts are getting liquidated right now: real Dogecoin liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de DOGE ahora mismo: liquidaciones reales de Dogecoin de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -89855,11 +89989,11 @@
     "/doge-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "2B53z6ohAy": {
-   "en": "Dogecoin (DOGE) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Dogecoin (DOGE) - En Vivo",
+  "sKGf8rpSuY": {
+   "en": "Dogecoin (DOGE) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Dogecoin (DOGE) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -89867,7 +90001,7 @@
     "/doge-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "k6S7gaIIbN": {
    "en": "What is a Dogecoin liquidation map?",
@@ -89941,9 +90075,9 @@
    "n": 1,
    "w": 3
   },
-  "h-a-J9Bbcq": {
-   "en": "Dogecoin (DOGE) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidación de Dogecoin (DOGE) - En vivo, gratis, sin inicio de sesión",
+  "uA666Ryhrj": {
+   "en": "Dogecoin (DOGE) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Dogecoin (DOGE) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -89951,7 +90085,7 @@
     "/doge-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "Al5nzgbzg4": {
    "en": "DOT Liquidation Calculator - Polkadot Futures (Long & Short) | MarginPad",
@@ -90365,9 +90499,9 @@
    "n": 1,
    "w": 19
   },
-  "t_orYX2Xto": {
-   "en": "Polkadot (DOT) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidación de Polkadot (DOT) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "FoWV_Y17Iw": {
+   "en": "Polkadot (DOT) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Polkadot (DOT) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -90375,7 +90509,7 @@
     "/dot-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "OF_mIawEPQ": {
    "en": "<a href=\"/\">Home</a> / DOT Liquidation Map",
@@ -90581,9 +90715,9 @@
    "n": 1,
    "w": 20
   },
-  "Nc60CJfZ3l": {
-   "en": "Live Polkadot (DOT) liquidation map: real DOT liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Polkadot (DOT) en vivo: liquidaciones reales de DOT de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "C-QFdNxefX": {
+   "en": "See where DOT longs and shorts are getting liquidated right now: real Polkadot liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de DOT ahora mismo: liquidaciones reales de Polkadot de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -90591,11 +90725,11 @@
     "/dot-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "G_i8BPmZth": {
-   "en": "Polkadot (DOT) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Polkadot (DOT) - En Vivo",
+  "i_BCR713os": {
+   "en": "Polkadot (DOT) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Polkadot (DOT) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -90603,7 +90737,7 @@
     "/dot-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "u_DKN5s2gN": {
    "en": "What is a Polkadot liquidation map?",
@@ -90677,9 +90811,9 @@
    "n": 1,
    "w": 3
   },
-  "G2yc_sxxrx": {
-   "en": "Polkadot (DOT) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidación de Polkadot (DOT) - En vivo, gratis, sin inicio de sesión",
+  "2JyZpkN9LZ": {
+   "en": "Polkadot (DOT) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Polkadot (DOT) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -90687,7 +90821,7 @@
     "/dot-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "mjhyFS2LNT": {
    "en": "Crypto Economic Calendar Widget - MarginPad",
@@ -92722,9 +92856,9 @@
    "n": 1,
    "w": 19
   },
-  "DBtBFZ3GRn": {
-   "en": "Ethereum (ETH) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Ethereum (ETH) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "g-hZCKJGZN": {
+   "en": "Ethereum (ETH) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Ethereum (ETH) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -92732,7 +92866,7 @@
     "/eth-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "s4ifseOqwM": {
    "en": "<a href=\"/\">Home</a> / ETH Liquidation Map",
@@ -92938,9 +93072,9 @@
    "n": 1,
    "w": 20
   },
-  "lbiaRZT_3A": {
-   "en": "Live Ethereum (ETH) liquidation map: real ETH liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Ethereum (ETH) en vivo: liquidaciones reales de ETH de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "75erpk2TyY": {
+   "en": "See where ETH longs and shorts are getting liquidated right now: real Ethereum liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de ETH ahora mismo: liquidaciones reales de Ethereum de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -92948,11 +93082,11 @@
     "/eth-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "hDvkVJdhLK": {
-   "en": "Ethereum (ETH) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Ethereum (ETH) - En Vivo",
+  "-FljaXb1Hz": {
+   "en": "Ethereum (ETH) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Ethereum (ETH) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -92960,7 +93094,7 @@
     "/eth-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "DtAOqWjQIw": {
    "en": "What is a Ethereum liquidation map?",
@@ -93034,9 +93168,9 @@
    "n": 1,
    "w": 3
   },
-  "4fOKxaUkg1": {
-   "en": "Ethereum (ETH) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Ethereum (ETH) - En vivo, gratis, sin inicio de sesión",
+  "V7lUu7n1dJ": {
+   "en": "Ethereum (ETH) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Ethereum (ETH) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -93044,7 +93178,7 @@
     "/eth-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "TLbM3FpWCP": {
    "en": "Crypto Exchange Comparison 2026 - Fees, Leverage, Liquidity & Trust | MarginPad",
@@ -97704,9 +97838,9 @@
    "n": 1,
    "w": 19
   },
-  "JKlha2LzKj": {
-   "en": "Filecoin (FIL) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidación de Filecoin (FIL) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "tWvPe7P2RS": {
+   "en": "Filecoin (FIL) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Filecoin (FIL) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -97714,7 +97848,7 @@
     "/fil-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "KSv4-3ru75": {
    "en": "<a href=\"/\">Home</a> / FIL Liquidation Map",
@@ -97920,9 +98054,9 @@
    "n": 1,
    "w": 20
   },
-  "bU02fVBlOZ": {
-   "en": "Live Filecoin (FIL) liquidation map: real FIL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Filecoin (FIL) en vivo: liquidaciones reales de FIL de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "9etdQIC6kf": {
+   "en": "See where FIL longs and shorts are getting liquidated right now: real Filecoin liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de FIL ahora mismo: liquidaciones reales de Filecoin de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -97930,11 +98064,11 @@
     "/fil-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "q-V6OKSz3b": {
-   "en": "Filecoin (FIL) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Filecoin (FIL) - En Vivo",
+  "cvqC2XKSuD": {
+   "en": "Filecoin (FIL) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Filecoin (FIL) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -97942,7 +98076,7 @@
     "/fil-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "a4Ef1GpUeA": {
    "en": "What is a Filecoin liquidation map?",
@@ -98016,9 +98150,9 @@
    "n": 1,
    "w": 3
   },
-  "xKOUwtGVma": {
-   "en": "Filecoin (FIL) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidación de Filecoin (FIL) - En vivo, gratis, sin inicio de sesión",
+  "bfHTZh2L_3": {
+   "en": "Filecoin (FIL) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Filecoin (FIL) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -98026,7 +98160,7 @@
     "/fil-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "og_fjrg7lU": {
    "en": "FLOKI Liquidation Calculator - Floki Futures (Long & Short) | MarginPad",
@@ -98440,9 +98574,9 @@
    "n": 1,
    "w": 19
   },
-  "GcOqzsSLHT": {
-   "en": "Floki (FLOKI) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidación de Floki (FLOKI) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "zToVtZka8b": {
+   "en": "Floki (FLOKI) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Floki (FLOKI) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -98450,7 +98584,7 @@
     "/floki-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "Sa8rei25BU": {
    "en": "<a href=\"/\">Home</a> / FLOKI Liquidation Map",
@@ -98620,9 +98754,9 @@
    "n": 1,
    "w": 20
   },
-  "0ZcDWEw3a6": {
-   "en": "Live Floki (FLOKI) liquidation map: real FLOKI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Floki (FLOKI) en vivo: liquidaciones reales de FLOKI de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "A2H4_r209g": {
+   "en": "See where FLOKI longs and shorts are getting liquidated right now: real Floki liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de FLOKI ahora mismo: liquidaciones reales de Floki de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -98630,11 +98764,11 @@
     "/floki-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "h8LBbv6ySy": {
-   "en": "Floki (FLOKI) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Floki (FLOKI) - En Vivo",
+  "u7elZvmTfk": {
+   "en": "Floki (FLOKI) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Floki (FLOKI) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -98642,7 +98776,7 @@
     "/floki-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "ffpdxNYL-m": {
    "en": "What is a Floki liquidation map?",
@@ -98716,9 +98850,9 @@
    "n": 1,
    "w": 3
   },
-  "jvyYRioMiN": {
-   "en": "Floki (FLOKI) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidación de Floki (FLOKI) - En vivo, gratis, sin inicio de sesión",
+  "IDpg3sgOrw": {
+   "en": "Floki (FLOKI) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Floki (FLOKI) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -98726,7 +98860,7 @@
     "/floki-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "ZDdT9C0TA6": {
    "en": "Free Forex Trading Simulator - Practice EUR/USD &amp; Majors, $0 Risk | MarginPad",
@@ -109981,9 +110115,9 @@
    "n": 1,
    "w": 19
   },
-  "yzQ7idSkC5": {
-   "en": "Hyperliquid (HYPE) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Hyperliquid (HYPE) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "aaA8U9IlXR": {
+   "en": "Hyperliquid (HYPE) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Hyperliquid (HYPE) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -109991,7 +110125,7 @@
     "/hype-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "uau25N_p4W": {
    "en": "<a href=\"/\">Home</a> / HYPE Liquidation Map",
@@ -110197,9 +110331,9 @@
    "n": 1,
    "w": 20
   },
-  "IdM6D-v2tv": {
-   "en": "Live Hyperliquid (HYPE) liquidation map: real HYPE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Hyperliquid (HYPE) en vivo: liquidaciones reales de HYPE de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "4xUKaW2d8Y": {
+   "en": "See where HYPE longs and shorts are getting liquidated right now: real Hyperliquid liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de HYPE ahora mismo: liquidaciones reales de Hyperliquid de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -110207,11 +110341,11 @@
     "/hype-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "S16UVw-_pK": {
-   "en": "Hyperliquid (HYPE) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Hyperliquid (HYPE) - En Vivo",
+  "uyI-JNAaLY": {
+   "en": "Hyperliquid (HYPE) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Hyperliquid (HYPE) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -110219,7 +110353,7 @@
     "/hype-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "6J03qj4sNc": {
    "en": "What is a Hyperliquid liquidation map?",
@@ -110293,9 +110427,9 @@
    "n": 1,
    "w": 3
   },
-  "Lw28cZznf-": {
-   "en": "Hyperliquid (HYPE) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Hyperliquid (HYPE) - En Vivo, Gratis, Sin Registro",
+  "sMRZzEyd9e": {
+   "en": "Hyperliquid (HYPE) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Hyperliquid (HYPE) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -110303,7 +110437,7 @@
     "/hype-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "p8RmNY5o_C": {
    "en": "Hyperliquid Liquidation Calculator - Real HL Margin Formula | MarginPad",
@@ -113119,6 +113253,18 @@
    "n": 1,
    "w": 2
   },
+  "aZpqKG7rbu": {
+   "en": "Closest to liquidation",
+   "es": "Más cerca de la liquidación",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 3
+  },
   "HXRNDcmANU": {
    "en": "Where whale money sits <span class=\"sub\">top markets by whale exposure</span>",
    "es": "Dónde está el dinero de las ballenas <span class=\"sub\">principales mercados por exposición de ballenas</span>",
@@ -113216,9 +113362,9 @@
    "n": 1,
    "w": 6
   },
-  "kcTylh3S5J": {
-   "en": "<span></span><span>Whale / market</span><span class=\"cl\" style=\"text-align:center\">Lev</span><span class=\"r\">Size</span><span class=\"cl r\">Liq price</span><span class=\"r\">Unrealized</span>",
-   "es": "<span></span><span>Ballena / mercado</span><span class=\"cl\" style=\"text-align:center\">Apalanc.</span><span class=\"r\">Tamaño</span><span class=\"cl r\">Precio liq.</span><span class=\"r\">No realizado</span>",
+  "QNoCuhf-hF": {
+   "en": "<span></span><span>Whale / market</span><span class=\"cl\" style=\"text-align:center\">Lev</span><span class=\"r\">Size</span><span class=\"cl r\">Entry</span><span class=\"cl r\">Liq price</span><span class=\"r\">Unrealized</span>",
+   "es": "<span></span><span>Ballena / mercado</span><span class=\"cl\" style=\"text-align:center\">Apalanc.</span><span class=\"r\">Tamaño</span><span class=\"cl r\">Entrada</span><span class=\"cl r\">Precio liq.</span><span class=\"r\">No realizado</span>",
    "kind": [
     "html"
    ],
@@ -113226,7 +113372,7 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 7
+   "w": 8
   },
   "PWvBQtrpR0": {
    "en": "Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it.",
@@ -113251,6 +113397,30 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "vqFL25JgoA": {
+   "en": "Position changes <span class=\"n\" id=\"wlAlN\"></span>",
+   "es": "Cambios de posición <span class=\"n\" id=\"wlAlN\"></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "bIP536xwUn": {
+   "en": "What changed between two position sweeps (every four minutes) on the tracked wallets: a position <b>opened</b>, <b>closed</b>, <b>flipped</b> side, or moved by a quarter or more. Different clock from the executions above - this is the book, those are the fills.",
+   "es": "Lo que cambió entre dos barridos de posiciones (cada cuatro minutos) en las wallets rastreadas: una posición se <b>abrió</b>, se <b>cerró</b>, <b>cambió</b> de lado o se movió un cuarto o más. Es un reloj distinto al de las ejecuciones de arriba - esto es el libro, aquello son las ejecuciones.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 38
   },
   "gQVKPYUwML": {
    "en": "<span>Market</span><span class=\"r\">24h</span><span>Whale money: long vs short</span><span class=\"cl r\">Avg lev</span><span class=\"cl r\">Funding / day</span><span class=\"cl r\">Share of OI</span>",
@@ -113371,30 +113541,6 @@
    ],
    "n": 1,
    "w": 17
-  },
-  "LS4bpOwE0m": {
-   "en": "<i></i>TRADE THE SAME BOOK AS THE WHALES",
-   "es": "<i></i>OPERA EN EL MISMO LIBRO QUE LAS BALLENAS",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "CXWDvw6QmP": {
-   "en": "Every position on this page is on Hyperliquid, fully on-chain and readable by anyone - including yours, once you have one.",
-   "es": "Cada posición de esta página está en Hyperliquid, totalmente on-chain y visible para cualquiera - incluida la tuya, en cuanto tengas una.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 20
   },
   "NyNVX9pAIV": {
    "en": "<b id=\"wlFiltT\">Filter positions</b>",
@@ -113559,13 +113705,12 @@
    "en": "Hyperliquid Whale Tracker - Biggest Whale Positions Live",
    "es": "Rastreador de Ballenas de Hyperliquid - Mayores Posiciones en Vivo",
    "kind": [
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/hyperliquid-whales/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 7
   },
   "iOMRnNaWdA": {
@@ -114892,13 +115037,12 @@
    "es": "MarginPad - Terminal Gratis de Futuros Cripto, Paper Trade y Liquidaciones",
    "kind": [
     "title",
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/"
    ],
-   "n": 4,
+   "n": 3,
    "w": 8
   },
   "JF8_cqkXLq": {
@@ -115226,9 +115370,9 @@
    "n": 1,
    "w": 5
   },
-  "eM9qTzHasK": {
-   "en": "Paper trades, <b>real prize money</b>",
-   "es": "Operaciones en simulado, <b>dinero real en premios</b>",
+  "vF1BRMWN7u": {
+   "en": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">a season in real prize money · paper trades, free to enter · paid in USD to your rewards balance</span>",
+   "es": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">por temporada en premios reales · paper trades, gratis para participar · pagado en USD a tu saldo de recompensas</span>",
    "kind": [
     "html"
    ],
@@ -115236,19 +115380,7 @@
     "/"
    ],
    "n": 1,
-   "w": 5
-  },
-  "EPv7HzRYap": {
-   "en": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">a season, paid in USD to your rewards balance. Four paper boards open with your first closed trade, one with your first daily BTC call, the Gold Room at Gold, and two are scored on real accounts - Bybit volume and King of the Moon.</span>",
-   "es": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">por temporada, pagados en USD a tu saldo de recompensas. Cuatro tablas de paper abren con tu primera operación cerrada, una con tu primera predicción diaria de BTC, la Gold Room en Gold, y dos se puntúan con cuentas reales - volumen en Bybit y King of the Moon.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 44
+   "w": 18
   },
   "yQoImNITtr": {
    "en": "<span class=\"cp-left\" id=\"cpLeft\">14-day seasons</span>",
@@ -115262,9 +115394,9 @@
    "n": 1,
    "w": 2
   },
-  "qW-jKQiA8i": {
-   "en": "Filled server-side against real exchange candles. A win needs 5% ROE and a real 0.2% move. Standings are public.",
-   "es": "Se ejecutan del lado del servidor contra velas reales del exchange. Para ganar se necesita un 5% de ROE y un movimiento real del 0.2%. La clasificación es pública.",
+  "Bmte1Wv2fo": {
+   "en": "<span class=\"cp-go\">All eight boards<i>&rarr;</i></span>",
+   "es": "<span class=\"cp-go\">Las ocho tablas<i>&rarr;</i></span>",
    "kind": [
     "html"
    ],
@@ -115272,11 +115404,11 @@
     "/"
    ],
    "n": 1,
-   "w": 17
+   "w": 3
   },
-  "RCWt_FDtVj": {
-   "en": "<span>Free to enter</span><em>paper trades or one BTC call a day · no deposit · every 14 days</em>",
-   "es": "<span>Gratis para entrar</span><em>operaciones en paper o una predicción de BTC al día · sin depósito · cada 14 días</em>",
+  "TWGeUw15Ee": {
+   "en": "<span>Free to enter</span><em>paper trades or one BTC call a day · no deposit</em>",
+   "es": "<span>Gratis para participar</span><em>paper trades o una predicción de BTC al día · sin depósito</em>",
    "kind": [
     "html"
    ],
@@ -115284,11 +115416,11 @@
     "/"
    ],
    "n": 1,
-   "w": 15
+   "w": 12
   },
-  "1wziG0A87f": {
-   "en": "<span class=\"cp-bn\">Highest ROE</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">ROE más alto</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "R9IXHAfwO-": {
+   "en": "<span>Gold level</span>",
+   "es": "<span>Nivel Gold</span>",
    "kind": [
     "html"
    ],
@@ -115296,11 +115428,11 @@
     "/"
    ],
    "n": 1,
-   "w": 4
+   "w": 2
   },
-  "z9Vum-mB4c": {
-   "en": "<span class=\"cp-bn\">Green days</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">Días verdes</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "DEct7hgWBC": {
+   "en": "<span>Trade to enter</span><em>real accounts through MarginPad</em>",
+   "es": "<span>Opera para participar</span><em>cuentas reales a través de MarginPad</em>",
    "kind": [
     "html"
    ],
@@ -115308,60 +115440,11 @@
     "/"
    ],
    "n": 1,
-   "w": 4
+   "w": 7
   },
-  "e-VZyjFkGc": {
-   "en": "<span class=\"cp-bn\">Best win rate</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">Mejor tasa de acierto</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "EPJzLYCwZf": {
-   "en": "<span class=\"cp-bn\">Season XP</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">XP de temporada</span><span class=\"cp-bp\">$30<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "J1QiOx7j0R": {
-   "en": "<span class=\"cp-bn\">Daily BTC call</span><span class=\"cp-bp\">$20<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\">Predicción diaria de BTC</span><span class=\"cp-bp\">$20<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "V9Z62aVlPz": {
-   "en": "<span>Gold level</span><em>12,000 XP and up</em>",
-   "es": "<span>Nivel Gold</span><em>12,000 XP o más</em>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/",
-    "/leaderboards/"
-   ],
-   "n": 2,
-   "w": 6
-  },
-  "KhyidvtVnW": {
-   "en": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>bote</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "NyPOrYlZT7": {
+   "en": "<span class=\"cp-bn\">Highest ROE</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\">Mayor ROE</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "kind": [
     "html"
    ],
@@ -115371,9 +115454,9 @@
    "n": 1,
    "w": 6
   },
-  "X4Ln0ebcRC": {
-   "en": "<span>Trade to enter</span><em>real accounts through MarginPad · Bybit every season · Moon every two</em>",
-   "es": "<span>Opera para entrar</span><em>cuentas reales vía MarginPad · Bybit cada temporada · Moon cada dos</em>",
+  "SEyL-46qFW": {
+   "en": "<span class=\"cp-bn\">Green days</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\">Días en verde</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "kind": [
     "html"
    ],
@@ -115381,7 +115464,55 @@
     "/"
    ],
    "n": 1,
-   "w": 13
+   "w": 6
+  },
+  "n-_TYQoTue": {
+   "en": "<span class=\"cp-bn\">Best win rate</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\">Mejor tasa de acierto</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "lG063ihp9D": {
+   "en": "<span class=\"cp-bn\">Season XP</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\">XP de temporada</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "rTP6NPAU2t": {
+   "en": "<span class=\"cp-bn\">Daily BTC call</span><span class=\"cp-bp\">$20<small>pool · $12 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\">Predicción diaria de BTC</span><span class=\"cp-bp\">$20<small>bolsa · $12 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "kUKhSVa_VQ": {
+   "en": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 8
   },
   "gVrWiOkh89": {
    "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"cp-bp\">$100<small>start · grows with volume</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -115395,9 +115526,9 @@
    "n": 1,
    "w": 7
   },
-  "AlNPHK6xnk": {
-   "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>pool</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
-   "es": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>bolsa</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+  "0-L2PeNg54": {
+   "en": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>pool · $150 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "<span class=\"cp-bn\"><i class=\"cp-dot\" style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"cp-bp\">$300<small>bolsa · $150 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "kind": [
     "html"
    ],
@@ -115405,7 +115536,7 @@
     "/"
    ],
    "n": 1,
-   "w": 6
+   "w": 8
   },
   "QnIsgtzEqS": {
    "en": "<span class=\"dot\"></span> Top movers · 24h · live",
@@ -116983,6 +117114,18 @@
    "n": 1,
    "w": 5
   },
+  "l6un4DZGJ4": {
+   "en": "MarginPad - Demo homepage (full-width)",
+   "es": "MarginPad - Página de inicio demo (ancho completo)",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 4
+  },
   "LVxj-Abynu": {
    "en": "INJ Liquidation Calculator - Injective Futures (Long & Short) | MarginPad",
    "es": "Calculadora de Liquidación de INJ - Futuros de Injective (Long y Short) | MarginPad",
@@ -117395,9 +117538,9 @@
    "n": 1,
    "w": 19
   },
-  "BbQx1yZoay": {
-   "en": "Injective (INJ) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Injective (INJ) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "aUApYRpdIm": {
+   "en": "Injective (INJ) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Injective (INJ) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -117405,7 +117548,7 @@
     "/inj-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "fha7E-sDWj": {
    "en": "<a href=\"/\">Home</a> / INJ Liquidation Map",
@@ -117611,9 +117754,9 @@
    "n": 1,
    "w": 20
   },
-  "LKW-2mg93n": {
-   "en": "Live Injective (INJ) liquidation map: real INJ liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Injective (INJ) en vivo: liquidaciones reales de INJ de nueve exchanges representadas como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratuita, sin registro.",
+  "ML2wODTvnS": {
+   "en": "See where INJ longs and shorts are getting liquidated right now: real Injective liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de INJ ahora mismo: liquidaciones reales de Injective de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -117621,11 +117764,11 @@
     "/inj-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "7zW3o0j7ee": {
-   "en": "Injective (INJ) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Injective (INJ) - En Vivo",
+  "KMfiOYopQj": {
+   "en": "Injective (INJ) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Injective (INJ) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -117633,7 +117776,7 @@
     "/inj-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "PKGW4OZ7X_": {
    "en": "What is a Injective liquidation map?",
@@ -117707,9 +117850,9 @@
    "n": 1,
    "w": 3
   },
-  "U_mxtidtCS": {
-   "en": "Injective (INJ) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Injective (INJ) - En Vivo, Gratis, Sin Registro",
+  "Bt3M9RVNhB": {
+   "en": "Injective (INJ) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Injective (INJ) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -117717,7 +117860,7 @@
     "/inj-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "1lL1Yvhym8": {
    "en": "Is Crypto Funding Positive or Negative Right Now? - Live Rates | MarginPad",
@@ -120946,9 +121089,9 @@
    "n": 1,
    "w": 2
   },
-  "ljlTZ1PJOO": {
-   "en": "Eight boards, real prize money paid in USD to your rewards balance. Four are free paper-trading boards, one is the daily BTC call, one is the Gold Room, and two are scored on real accounts opened through MarginPad: Bybit volume every season and King of the Moon over two seasons. Every ranked trader, every prize, and the exact rule each board is scored by.",
-   "es": "Ocho tablas, dinero real en premios pagado en USD a tu saldo de recompensas. Cuatro son tablas gratuitas de paper trading, una es la predicción diaria de BTC, una es la Gold Room, y dos se puntúan con cuentas reales abiertas a través de MarginPad: volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, cada premio, y la regla exacta con la que se puntúa cada tabla.",
+  "ScbFSwSsDV": {
+   "en": "Eight boards, real prize money paid in USD to your rewards balance: five free, the Gold Room, and two scored on real Bybit and Moon accounts. Every ranked trader, every prize, the exact rule.",
+   "es": "Ocho tablas, premios reales pagados en USD a tu saldo de recompensas: cinco gratis, The Gold Room, y dos puntuadas sobre cuentas reales de Bybit y Moon. Cada trader clasificado, cada premio, la regla exacta.",
    "kind": [
     "html"
    ],
@@ -120956,7 +121099,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 64
+   "w": 34
   },
   "YiVfVnHoo4": {
    "en": "Season",
@@ -121040,9 +121183,10 @@
     "html"
    ],
    "ctx": [
-    "/leaderboards/"
+    "/leaderboards/",
+    "/premium/"
    ],
-   "n": 1,
+   "n": 6,
    "w": 1
   },
   "ltA-x27WTg": {
@@ -121129,6 +121273,18 @@
    "n": 1,
    "w": 5
   },
+  "V9Z62aVlPz": {
+   "en": "<span>Gold level</span><em>12,000 XP and up</em>",
+   "es": "<span>Nivel Gold</span><em>12,000 XP o más</em>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leaderboards/"
+   ],
+   "n": 1,
+   "w": 6
+  },
   "P67Gjq8-n1": {
    "en": "<i class=\"rib\">GOLD+</i><span class=\"n\">The Gold Room</span><span class=\"p\">$30<small>POOL</small></span><span class=\"l\" id=\"tl-gold\">-</span>",
    "es": "<i class=\"rib\">GOLD+</i><span class=\"n\">The Gold Room</span><span class=\"p\">$30<small>BOTE</small></span><span class=\"l\" id=\"tl-gold\">-</span>",
@@ -121153,9 +121309,9 @@
    "n": 1,
    "w": 8
   },
-  "1zZI5zwneR": {
-   "en": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"p\">$100<small>START · GROWS WITH VOLUME</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
-   "es": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Volumen en Bybit</span><span class=\"p\">$100<small>DE INICIO · CRECE CON EL VOLUMEN</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
+  "nNyQFj_nDq": {
+   "en": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Bybit volume</span><span class=\"p\">$100<small>START · GROWS</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
+   "es": "<span class=\"n\"><i style=\"--d:#f7a600\"></i>Volumen Bybit</span><span class=\"p\">$100<small>INICIO · CRECE</small></span><span class=\"l\" id=\"tl-bybit\">-</span>",
    "kind": [
     "html"
    ],
@@ -121163,7 +121319,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 7
+   "w": 5
   },
   "xkHxeUXreh": {
    "en": "<span class=\"n\"><i style=\"--d:#b39dff\"></i>King of the Moon</span><span class=\"p\">$300<small>POOL · 2 SEASONS</small></span><span class=\"l\" id=\"tl-moon\">-</span>",
@@ -121188,6 +121344,18 @@
    ],
    "n": 1,
    "w": 11
+  },
+  "9JAgABfG1M": {
+   "en": "Find me",
+   "es": "Encuéntrame",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leaderboards/"
+   ],
+   "n": 1,
+   "w": 2
   },
   "Er7XDew_RQ": {
    "en": "Loading the standings…",
@@ -121548,6 +121716,19 @@
    ],
    "n": 1,
    "w": 1
+  },
+  "RJv3u0FWiC": {
+   "en": "Find a trader",
+   "es": "Buscar un trader",
+   "kind": [
+    "attr:placeholder",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/leaderboards/"
+   ],
+   "n": 2,
+   "w": 2
   },
   "gHrUibYVrT": {
    "en": "The eight MarginPad leaderboards in full: four free paper-trading boards, the daily BTC call, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over two seasons. Every ranked trader, the prize each rank pays, the exact rules.",
@@ -124821,9 +125002,9 @@
    "n": 1,
    "w": 19
   },
-  "1QjjGKU-7Y": {
-   "en": "Chainlink (LINK) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Chainlink (LINK) - En vivo, gratis, sin inicio de sesión | MarginPad",
+  "en49NReOg7": {
+   "en": "Chainlink (LINK) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Chainlink (LINK) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -124831,7 +125012,7 @@
     "/link-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "gHIg1WgfNm": {
    "en": "<a href=\"/\">Home</a> / LINK Liquidation Map",
@@ -125037,9 +125218,9 @@
    "n": 1,
    "w": 20
   },
-  "zYFOL6rIvl": {
-   "en": "Live Chainlink (LINK) liquidation map: real LINK liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Chainlink (LINK) en vivo: liquidaciones reales de LINK de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "By4HcDwlwW": {
+   "en": "See where LINK longs and shorts are getting liquidated right now: real Chainlink liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de LINK ahora mismo: liquidaciones reales de Chainlink de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -125047,11 +125228,11 @@
     "/link-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "oi8rUTRGx9": {
-   "en": "Chainlink (LINK) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Chainlink (LINK) - en vivo",
+  "S4apNItiF9": {
+   "en": "Chainlink (LINK) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Chainlink (LINK) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -125059,7 +125240,7 @@
     "/link-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "6NE55Tmebr": {
    "en": "What is a Chainlink liquidation map?",
@@ -125133,9 +125314,9 @@
    "n": 1,
    "w": 3
   },
-  "IW5dYs_sYq": {
-   "en": "Chainlink (LINK) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Chainlink (LINK) - En vivo, gratis, sin inicio de sesión",
+  "9mWD-G4tHp": {
+   "en": "Chainlink (LINK) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Chainlink (LINK) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -125143,7 +125324,7 @@
     "/link-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "rjnIQvNimG": {
    "en": "Crypto Liquidation Statistics - Live 24h Totals by Coin | MarginPad",
@@ -127908,9 +128089,9 @@
    "n": 1,
    "w": 19
   },
-  "dx-T_GFSgd": {
-   "en": "Litecoin (LTC) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Litecoin (LTC) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "cv9YIyUVcr": {
+   "en": "Litecoin (LTC) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Litecoin (LTC) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -127918,7 +128099,7 @@
     "/ltc-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "q_vfLoBcVF": {
    "en": "<a href=\"/\">Home</a> / LTC Liquidation Map",
@@ -128124,9 +128305,9 @@
    "n": 1,
    "w": 20
   },
-  "VA3XXHLANB": {
-   "en": "Live Litecoin (LTC) liquidation map: real LTC liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Litecoin (LTC) en vivo: liquidaciones reales de LTC de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "5NwuKGgQHQ": {
+   "en": "See where LTC longs and shorts are getting liquidated right now: real Litecoin liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de LTC ahora mismo: liquidaciones reales de Litecoin de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -128134,11 +128315,11 @@
     "/ltc-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "gGTsa0OOCw": {
-   "en": "Litecoin (LTC) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Litecoin (LTC) - en vivo",
+  "JGuOJQMo_-": {
+   "en": "Litecoin (LTC) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Litecoin (LTC) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -128146,7 +128327,7 @@
     "/ltc-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "ZSLkaCsa1C": {
    "en": "What is a Litecoin liquidation map?",
@@ -128220,9 +128401,9 @@
    "n": 1,
    "w": 3
   },
-  "iu8jprDdVe": {
-   "en": "Litecoin (LTC) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Litecoin (LTC) - En Vivo, Gratis, Sin Registro",
+  "6wig2Veyl5": {
+   "en": "Litecoin (LTC) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Litecoin (LTC) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -128230,7 +128411,7 @@
     "/ltc-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "btbWHjeYrw": {
    "en": "MANA Liquidation Calculator - Decentraland Futures (Long & Short) | MarginPad",
@@ -131298,9 +131479,9 @@
    "n": 1,
    "w": 19
   },
-  "A-6WLhCEaW": {
-   "en": "NEAR Protocol (NEAR) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de NEAR Protocol (NEAR) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "mktKHtdwM7": {
+   "en": "NEAR Protocol (NEAR) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de NEAR Protocol (NEAR) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -131308,7 +131489,7 @@
     "/near-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 11
   },
   "8e1c15sun1": {
    "en": "<a href=\"/\">Home</a> / NEAR Liquidation Map",
@@ -131514,9 +131695,9 @@
    "n": 1,
    "w": 20
   },
-  "OrQ4oYUcPd": {
-   "en": "Live NEAR Protocol (NEAR) liquidation map: real NEAR liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de NEAR Protocol (NEAR) en vivo: liquidaciones reales de NEAR de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "hePkK0JWHQ": {
+   "en": "See where NEAR longs and shorts are getting liquidated right now: real NEAR Protocol liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de NEAR ahora mismo: liquidaciones reales de NEAR Protocol de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -131524,11 +131705,11 @@
     "/near-liquidation-map/"
    ],
    "n": 3,
-   "w": 24
+   "w": 26
   },
-  "_6tGqS1NRF": {
-   "en": "NEAR Protocol (NEAR) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de NEAR Protocol (NEAR) - en vivo",
+  "-a3qMyidOR": {
+   "en": "NEAR Protocol (NEAR) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de NEAR Protocol (NEAR) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -131536,7 +131717,7 @@
     "/near-liquidation-map/"
    ],
    "n": 2,
-   "w": 6
+   "w": 7
   },
   "fdu04XOXVd": {
    "en": "What is a NEAR Protocol liquidation map?",
@@ -131610,9 +131791,9 @@
    "n": 1,
    "w": 3
   },
-  "egmJgj9LpL": {
-   "en": "NEAR Protocol (NEAR) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de NEAR Protocol (NEAR) - En vivo, gratis, sin registro",
+  "HSD69wNkp3": {
+   "en": "NEAR Protocol (NEAR) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de NEAR Protocol (NEAR) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -131620,7 +131801,7 @@
     "/near-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "4X7O2nwLVS": {
    "en": "Crypto News - Latest Headlines, Live | MarginPad",
@@ -133831,9 +134012,9 @@
    "n": 1,
    "w": 19
   },
-  "rZEOwJNe-m": {
-   "en": "Optimism (OP) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Optimism (OP) - En vivo, gratis, sin registro | MarginPad",
+  "ZyW476WzzK": {
+   "en": "Optimism (OP) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Optimism (OP) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -133841,7 +134022,7 @@
     "/op-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "Qdt7r9OvmM": {
    "en": "<a href=\"/\">Home</a> / OP Liquidation Map",
@@ -134047,9 +134228,9 @@
    "n": 1,
    "w": 20
   },
-  "OFddCvacsy": {
-   "en": "Live Optimism (OP) liquidation map: real OP liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Optimism (OP) en vivo: liquidaciones reales de OP de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "D0haQKmO4T": {
+   "en": "See where OP longs and shorts are getting liquidated right now: real Optimism liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de OP ahora mismo: liquidaciones reales de Optimism de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -134057,11 +134238,11 @@
     "/op-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "lxYie_HgVv": {
-   "en": "Optimism (OP) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Optimism (OP) - en vivo",
+  "OI8pvrJnUS": {
+   "en": "Optimism (OP) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Optimism (OP) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -134069,7 +134250,7 @@
     "/op-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "mWGZ1h1jmY": {
    "en": "What is a Optimism liquidation map?",
@@ -134143,9 +134324,9 @@
    "n": 1,
    "w": 3
   },
-  "tCk6itltNE": {
-   "en": "Optimism (OP) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Optimism (OP) - En vivo, gratis, sin registro",
+  "97fcaHLaP5": {
+   "en": "Optimism (OP) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Optimism (OP) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -134153,7 +134334,7 @@
     "/op-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "i3P3P9EuVR": {
    "en": "Crypto Open Interest - Live OI Tracker | MarginPad",
@@ -134796,9 +134977,9 @@
    "n": 1,
    "w": 19
   },
-  "dmEyL2raMA": {
-   "en": "ORDI (ORDI) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de ORDI (ORDI) - En vivo, gratis, sin registro | MarginPad",
+  "2FTzYWSXTQ": {
+   "en": "ORDI (ORDI) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de ORDI (ORDI) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -134806,7 +134987,7 @@
     "/ordi-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "2ooML5h1sI": {
    "en": "<a href=\"/\">Home</a> / ORDI Liquidation Map",
@@ -134976,9 +135157,9 @@
    "n": 1,
    "w": 20
   },
-  "iVf9bqDncX": {
-   "en": "Live ORDI (ORDI) liquidation map: real ORDI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de ORDI (ORDI) en vivo: liquidaciones reales de ORDI de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "WOD24wLQW_": {
+   "en": "See where ORDI longs and shorts are getting liquidated right now: real ORDI liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de ORDI ahora mismo: liquidaciones reales de ORDI de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -134986,11 +135167,11 @@
     "/ordi-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "2MgltBRNtD": {
-   "en": "ORDI (ORDI) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de ORDI (ORDI) - en vivo",
+  "ESCXZrt98L": {
+   "en": "ORDI (ORDI) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de ORDI (ORDI) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -134998,7 +135179,7 @@
     "/ordi-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "JlIyUR7E_t": {
    "en": "What is a ORDI liquidation map?",
@@ -135072,9 +135253,9 @@
    "n": 1,
    "w": 3
   },
-  "_JbYp7J-76": {
-   "en": "ORDI (ORDI) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de ORDI (ORDI) - En vivo, gratis, sin registro",
+  "cvUfpPrwAy": {
+   "en": "ORDI (ORDI) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de ORDI (ORDI) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -135082,7 +135263,7 @@
     "/ordi-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "9pmuUtTHyF": {
    "en": "Paper Trading: The Complete Guide (2026) - Practice Trading Free, Earn Real Rewards | MarginPad",
@@ -136567,9 +136748,9 @@
    "n": 1,
    "w": 19
   },
-  "MCOkNRf0Pj": {
-   "en": "Pepe (PEPE) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Pepe (PEPE) - En Vivo, Gratis, Sin Login | MarginPad",
+  "iwzemXj-ja": {
+   "en": "Pepe (PEPE) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Pepe (PEPE) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -136577,7 +136758,7 @@
     "/pepe-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "REB3iyTtMy": {
    "en": "<a href=\"/\">Home</a> / PEPE Liquidation Map",
@@ -136783,9 +136964,9 @@
    "n": 1,
    "w": 20
   },
-  "HEBgIdBNaa": {
-   "en": "Live Pepe (PEPE) liquidation map: real PEPE liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Pepe (PEPE) en vivo: liquidaciones reales de PEPE de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "k67rBA8Lx5": {
+   "en": "See where PEPE longs and shorts are getting liquidated right now: real Pepe liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de PEPE ahora mismo: liquidaciones reales de Pepe de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -136793,11 +136974,11 @@
     "/pepe-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "EeMf5Ksj0o": {
-   "en": "Pepe (PEPE) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Pepe (PEPE) - en vivo",
+  "4GJRA11fcr": {
+   "en": "Pepe (PEPE) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Pepe (PEPE) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -136805,7 +136986,7 @@
     "/pepe-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "D9RwEFCd4A": {
    "en": "What is a Pepe liquidation map?",
@@ -136879,9 +137060,9 @@
    "n": 1,
    "w": 3
   },
-  "AVgev5dFm8": {
-   "en": "Pepe (PEPE) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Pepe (PEPE) - En Vivo, Gratis, Sin Login",
+  "KB_RpBjEEt": {
+   "en": "Pepe (PEPE) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Pepe (PEPE) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -136889,7 +137070,7 @@
     "/pepe-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "eVSGo6_aUp": {
    "en": "Pivot Point Calculator for Crypto - Daily &amp; Weekly Levels | MarginPad",
@@ -138818,9 +138999,9 @@
    "n": 1,
    "w": 2
   },
-  "0kdOtQKJqg": {
-   "en": "Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - four readouts built on our own liquidation data that no other chart has, each grading its own live hit-rate on the chart you are looking at.",
-   "es": "Cascade Radar, Liquidation Magnet, Market Brain y Market Memory - cuatro lecturas construidas sobre nuestros propios datos de liquidaciones, que ningún otro gráfico tiene, y cada una califica su propia tasa de acierto en vivo sobre el gráfico que estás viendo.",
+  "Ya94tW30l0": {
+   "en": "Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - four readouts built on our own liquidation data that no other chart has, each grading its own live hit-rate on the chart you are looking at. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
+   "es": "Cascade Radar, Liquidation Magnet, Market Brain y Market Memory - cuatro indicadores construidos sobre nuestros propios datos de liquidaciones que ningún otro gráfico tiene, cada uno calificando su propio acierto en vivo en el gráfico que estás mirando. Cada uno lleva una tarjeta que describe su estado en palabras, y un toque lo explica antes de un long y antes de un short.",
    "kind": [
     "html"
    ],
@@ -138828,7 +139009,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 35
+   "w": 54
   },
   "ahM393ItOf": {
    "en": "<span class=\"tapk\">What each one tells you &rarr;</span>",
@@ -139081,6 +139262,114 @@
    ],
    "n": 1,
    "w": 48
+  },
+  "p8fNPCu_CD": {
+   "en": "<span class=\"k\">THE CHART READS ITSELF</span>",
+   "es": "<span class=\"k\">EL GRÁFICO SE LEE SOLO</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "Yzx4vU_0Qa": {
+   "en": "Every indicator says what its line means, right where the line is",
+   "es": "Cada indicador dice qué significa su línea, justo donde está la línea",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "PFQ3J43mZ_": {
+   "en": "A real capture of BTC on the 1-hour chart with the four MarginPad indicators on. Each band carries a card with its value and the state a trader acts on - overbought or oversold, a cross and how many candles ago, a divergence against price, where the liquidation fuel sits, what is driving the Brain. Tap any card and the indicator explains itself: what you see, what it means, before a long, before a short.",
+   "es": "Una captura real de BTC en el gráfico de 1 hora con los cuatro indicadores de MarginPad activados. Cada banda lleva una tarjeta con su valor y el estado sobre el que actúa un trader - sobrecompra o sobreventa, un cruce y hace cuántas velas, una divergencia contra el precio, dónde está el combustible de liquidación, qué está impulsando al Brain. Toca cualquier tarjeta y el indicador se explica solo: qué ves, qué significa, antes de un long, antes de un short.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 67
+  },
+  "UwC89p-45v": {
+   "en": "Captured 2026-10-08 12:06 UTC. The cards below are the cards in the picture.",
+   "es": "Capturado el 2026-10-08 12:06 UTC. Las tarjetas de abajo son las tarjetas de la imagen.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "ZlTZnFxjxe": {
+   "en": "<b>Cascade Radar</b><span class=\"v\">77/100</span><span class=\"st\">fragile &middot; fuel BELOW price (long liqs) - a dip can run</span>",
+   "es": "<b>Cascade Radar</b><span class=\"v\">77/100</span><span class=\"st\">frágil &middot; combustible DEBAJO del precio (liqs de longs) - una caída puede extenderse</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "pzyzUYhxlO": {
+   "en": "<b>Market Brain</b><span class=\"v\">+76</span><span class=\"st\">strong bullish lean</span><span class=\"sv\">driven by structure + fragility</span>",
+   "es": "<b>Market Brain</b><span class=\"v\">+76</span><span class=\"st\">sesgo alcista fuerte</span><span class=\"sv\">impulsado por estructura + fragilidad</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "aZik97WCpi": {
+   "en": "<b>Market Memory</b><span class=\"v\">-0.21%</span><span class=\"st\">28% of 25 analogs went up</span><span class=\"sv\">projected over 6 bars</span>",
+   "es": "<b>Market Memory</b><span class=\"v\">-0.21%</span><span class=\"st\">28% de 25 análogos subieron</span><span class=\"sv\">proyectado sobre 6 velas</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "2ZCvM5jyYo": {
+   "en": "<b>Liquidation Magnet</b><span class=\"v\">-42</span><span class=\"st\">above 87,360.83 · $1.37B shorts &middot; below 82,091.19 · $1.11B longs</span><span class=\"sv\">pulled DOWN</span>",
+   "es": "<b>Liquidation Magnet</b><span class=\"v\">-42</span><span class=\"st\">arriba de 87,360.83 · $1.37B shorts &middot; debajo de 82,091.19 · $1.11B longs</span><span class=\"sv\">atraído HACIA ABAJO</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "r4KjKm0lfQ": {
+   "en": "Free members get every standard indicator with the same cards. Premium adds the four MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
+   "es": "Los miembros gratis tienen todos los indicadores estándar con las mismas tarjetas. Premium añade los cuatro indicadores de MarginPad de arriba, construidos sobre nuestros propios datos de liquidaciones. También nuevo en cada gráfico: repetición de velas, comparar con una segunda moneda, sesiones de trading, niveles diarios, seis estilos de gráfico.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 2,
+   "w": 41
   },
   "k_IBY1pA08": {
    "en": "Building a bot? <b style=\"color:#fff\">The Bot API is its own product</b> with its own Free, Pro, Max and Business plans since 15 September 2026 - Premium does not change any API limit, and an API plan does not unlock the features above. <a href=\"/trading-api/#plans\" style=\"color:var(--lime)\">See the API plans &rarr;</a>",
@@ -139478,9 +139767,333 @@
    "n": 1,
    "w": 38
   },
-  "fKLiqZbCZB": {
-   "en": "Six reads, as they came out",
-   "es": "Seis lecturas, tal como salieron",
+  "AzfkTTrKAM": {
+   "en": "6 reads, as they came out",
+   "es": "6 lecturas, tal como salieron",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "QPeLwJg1-0": {
+   "en": "Untouched from the charts on 8 October 2026: the assistant picked the levels, drew them and printed its own verdict. Beside each capture is exactly what it did and every number it put on the chart - nothing retyped, and one of them is a refusal to trade.",
+   "es": "Sin retoques, directo de los gráficos del 8 de octubre de 2026: el asistente eligió los niveles, los dibujó e imprimió su propio veredicto. Junto a cada captura está exactamente lo que hizo y cada número que puso en el gráfico - nada reescrito, y una de ellas es una negativa a operar.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 45
+  },
+  "qvVhzDY7DI": {
+   "en": "<span class=\"k\">You asked</span><q>Find me an opportunity here and draw it on the chart.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Encuéntrame una oportunidad aquí y dibújala en el gráfico.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 15
+  },
+  "S97t3uTgYd": {
+   "en": "<span class=\"k\">What it did</span>Opened RSI (14) · Drew 4 shapes",
+   "es": "<span class=\"k\">Qué hizo</span>Abrió RSI (14) · Dibujó 4 figuras",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 3,
+   "w": 8
+  },
+  "ziOPDOxjsc": {
+   "en": "SHORT<small>confidence 63%</small>",
+   "es": "SHORT<small>confianza 63%</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "kJngDWCCvI": {
+   "en": "2,612 <small>+1.70% from the price when asked</small>",
+   "es": "2,612 <small>+1.70% desde el precio al momento de preguntar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "niU0cMh27m": {
+   "en": "Stop",
+   "es": "Stop",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 5,
+   "w": 1
+  },
+  "W7ZGX2dAlc": {
+   "en": "Target 1",
+   "es": "Objetivo 1",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 5,
+   "w": 1
+  },
+  "qdKHAy3sMT": {
+   "en": "Target 2",
+   "es": "Objetivo 2",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 5,
+   "w": 1
+  },
+  "shfQYjP7ef": {
+   "en": "Reward to risk",
+   "es": "Beneficio sobre riesgo",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 6,
+   "w": 3
+  },
+  "Iq7Fe3O3mt": {
+   "en": "1.83 <small>acceptable</small>",
+   "es": "1.83 <small>aceptable</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "nPVFCpW8Gl": {
+   "en": "ETH 4-hour: lean DOWN — but don't chase here, sell the bounce.",
+   "es": "ETH 4 horas: sesgo A LA BAJA — pero no persigas aquí, vende el rebote.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "UcU3IIKPK0": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 2,612, stop 2,655, targets 2,533.3 and 2,460.7 - reward to risk <b>1.83</b> written on the block. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Bear OB&rdquo;, &ldquo;Long liqs $780M&rdquo;. It opened an indicator on its own to check the move.",
+   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 2,612, stop 2,655, objetivos 2,533.3 y 2,460.7 - beneficio sobre riesgo <b>1.83</b> escrito en el bloque. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Bear OB&rdquo;, &ldquo;Long liqs $780M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 48
+  },
+  "J4ahJuUwDy": {
+   "en": "<span class=\"k\">You asked</span><q>Where would you enter, and where does the stop go? Draw it.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>¿Dónde entrarías, y dónde va el stop? Dibújalo.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "dVusR2gJEK": {
+   "en": "<span class=\"k\">What it did</span>Opened Liquidation Magnet · Drew 4 shapes",
+   "es": "<span class=\"k\">Qué hizo</span>Abrió Liquidation Magnet · Dibujó 4 figuras",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 2,
+   "w": 8
+  },
+  "arw9K8llew": {
+   "en": "SHORT<small>confidence 66%</small>",
+   "es": "SHORT<small>confianza 66%</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 2,
+   "w": 3
+  },
+  "1h8j3yPsZ1": {
+   "en": "116.55 <small>+1.03% from the price when asked</small>",
+   "es": "116.55 <small>+1.03% desde el precio al momento de preguntar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "5ODPxsO_yK": {
+   "en": "3.27 <small>well paid</small>",
+   "es": "3.27 <small>bien pagado</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "6zG29tDkx7": {
+   "en": "15-minute SOL leans DOWN — but don't chase here; sell the bounce into 116.55.",
+   "es": "SOL en 15 minutos tiene sesgo A LA BAJA — pero no persigas aquí; vende el rebote hacia 116.55.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "KBNNUex67d": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 116.55, stop 117.3, targets 114.1 and 107.33 - reward to risk <b>3.27</b> written on the block. On the chart: a ray, a zone, a level, labelled &ldquo;Downtrend&rdquo;, &ldquo;Sell zone&rdquo;, &ldquo;Swept low&rdquo;.",
+   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 116.55, stop 117.3, objetivos 114.1 y 107.33 - beneficio sobre riesgo <b>3.27</b> escrito en el bloque. En el gráfico: un rayo, una zona, un nivel, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Sell zone&rdquo;, &ldquo;Swept low&rdquo;.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 37
+  },
+  "CouGEtWfoo": {
+   "en": "<span class=\"k\">You asked</span><q>Mark the structure and the levels that actually matter here.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Marca la estructura y los niveles que realmente importan aquí.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "XA1KnvWLtr": {
+   "en": "1.4178 <small>+0.87% from the price when asked</small>",
+   "es": "1.4178 <small>+0.87% desde el precio al momento de preguntar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "-xEIiF51n3": {
+   "en": "2.58 <small>well paid</small>",
+   "es": "2.58 <small>bien pagado</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "p3KnxKkuka": {
+   "en": "XRP 1-hour: downtrend — sell the bounce, don't catch this knife.",
+   "es": "XRP en 1 hora: tendencia bajista — vende el rebote, no atrapes este cuchillo.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "VuRf0n_Os-": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 1.4178, stop 1.4414, targets 1.3569 and 1.3513 - reward to risk <b>2.58</b> written on the block. On the chart: a ray, a level, a zone, labelled &ldquo;Downtrend&rdquo;, &ldquo;Support x3&rdquo;, &ldquo;Long liqs $80M&rdquo;. It opened an indicator on its own to check the move.",
+   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 1.4178, stop 1.4414, objetivos 1.3569 y 1.3513 - beneficio sobre riesgo <b>2.58</b> escrito en el bloque. En el gráfico: un rayo, un nivel, una zona, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Support x3&rdquo;, &ldquo;Long liqs $80M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 49
+  },
+  "aoJhirMPx_": {
+   "en": "Show the other 3 reads",
+   "es": "Mostrar las otras 3 lecturas",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "HLlO583OuZ": {
+   "en": "<span class=\"k\">You asked</span><q>Show me where the liquidation pools sit and what they mean for a trade.</q><span class=\"ai-sym\">LINK &middot; 4h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Muéstrame dónde están los pools de liquidación y qué significan para una operación.</q><span class=\"ai-sym\">LINK &middot; 4h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "3xdBwh_v5Q": {
+   "en": "WAIT - not a trade yet<small>confidence 62%</small>",
+   "es": "ESPERAR - aún no es una operación<small>confianza 62%</small>",
    "kind": [
     "html"
    ],
@@ -139490,9 +140103,9 @@
    "n": 1,
    "w": 6
   },
-  "3vh-g1f_eP": {
-   "en": "Untouched from the charts: the assistant picked the levels, drew them and printed its own verdict on each one. Two of the six are a refusal to trade.",
-   "es": "Sin retoques, directo de los gráficos: el asistente eligió los niveles, los dibujó e imprimió su propio veredicto en cada uno. Dos de las seis son una negativa a operar.",
+  "IOCxl5aReO": {
+   "en": "Waiting for",
+   "es": "Esperando",
    "kind": [
     "html"
    ],
@@ -139500,11 +140113,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 27
+   "w": 2
   },
-  "rdG01V-ru8": {
-   "en": "<b>It draws the trade, and prints the arithmetic.</b> Short at 81,415.6, stop 81,796, targets 80,188.1 and 78,890.3 - with <b>R:R 3.64</b> written across the block so nobody has to work it out. The trend line rests on two real pivots it found itself, and the faded candles are its own forecast of the path, not a promise.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short en 81,415.6, stop en 81,796, objetivos en 80,188.1 y 78,890.3 - con el <b>R:R 3.64</b> escrito sobre el bloque para que nadie tenga que calcularlo. La línea de tendencia se apoya en dos pivotes reales que encontró por sí mismo, y las velas difuminadas son su propio pronóstico del camino, no una promesa.",
+  "8uyNrreq6N": {
+   "en": "12.724 <small>-3.06% from the price when asked</small>",
+   "es": "12.724 <small>-3.06% desde el precio al momento de preguntar</small>",
    "kind": [
     "html"
    ],
@@ -139512,11 +140125,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 55
+   "w": 7
   },
-  "JCscYu3q8e": {
-   "en": "<b>Every level is one the market actually printed.</b> The stop sits on the swing high it names, 2,670.98; the target zone on a shelf price <b>respected three times</b>; entry 2,615 for a reward-to-risk of 2.44. It does not invent a tidy round number in between - if the brief has nothing suitable, it says so instead.",
-   "es": "<b>Cada nivel es uno que el mercado realmente marcó.</b> El stop se apoya en el máximo swing que nombra, 2,670.98; la zona objetivo en un precio de repisa <b>respetado tres veces</b>; entrada en 2,615 para un riesgo/beneficio de 2.44. No inventa un número redondo cómodo en el medio - si el resumen no tiene nada adecuado, lo dice.",
+  "0nradcaeoO": {
+   "en": "Would stop",
+   "es": "Stop potencial",
    "kind": [
     "html"
    ],
@@ -139524,11 +140137,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 52
+   "w": 2
   },
-  "eZ5p77x9D7": {
-   "en": "<b>A wait is an answer - with a price on it.</b> Nothing worth taking here, so it marks what it is waiting FOR: 110.88, dashed, alongside the stop and both targets the trade <i>would</i> carry. The two liquidation pools are labelled with their size, $35M above and $12M below. It opened MACD on its own.",
-   "es": "<b>Esperar también es una respuesta - con un precio puesto.</b> Aquí no hay nada que valga la pena tomar, así que marca aquello que está esperando: 110.88, punteado, junto al stop y ambos objetivos que la operación <i>tendría</i>. Los dos pools de liquidación están etiquetados con su tamaño, $35M arriba y $12M abajo. Abrió el MACD por su cuenta.",
+  "4UKDOvN-aS": {
+   "en": "Would target 1",
+   "es": "Objetivo 1 potencial",
    "kind": [
     "html"
    ],
@@ -139536,11 +140149,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 52
+   "w": 2
   },
-  "44op5UbCKX": {
-   "en": "<b>It reads the structure before it reads the price.</b> An uptrend line anchored on two real lows, a buy zone at the pullback rather than at the candle you are staring at, and both targets named for what they are - 4H resistance at 1.4330, a short liquidation pool at 1.4910. Entry 1.3730, R:R 2.41.",
-   "es": "<b>Lee la estructura antes de leer el precio.</b> Una línea de tendencia alcista anclada en dos mínimos reales, una zona de compra en el retroceso y no en la vela que estás mirando, y ambos objetivos nombrados por lo que son - resistencia de 4H en 1.4330, un pool de liquidación short en 1.4910. Entrada 1.3730, R:R 2.41.",
+  "sWFJRdCuTD": {
+   "en": "Would target 2",
+   "es": "Objetivo 2 potencial",
    "kind": [
     "html"
    ],
@@ -139548,11 +140161,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 52
+   "w": 2
   },
-  "FcVRGY2hgR": {
-   "en": "<b>Data a screenshot cannot contain.</b> The buy zone sits on our own model of where <b>long</b> positions get liquidated; the first target stops under a <b>short</b> pool at 12.496. Those are measurements from our own collector - nothing a chatbot reading pixels can infer. It opened the volume pane to check the move behind it.",
-   "es": "<b>Datos que una captura de pantalla no puede contener.</b> La zona de compra se apoya en nuestro propio modelo de dónde se liquidan las posiciones <b>long</b>; el primer objetivo se detiene bajo un pool <b>short</b> en 12.496. Son mediciones de nuestro propio recolector - nada que un chatbot que lee píxeles pueda inferir. Abrió el panel de volumen para revisar el movimiento detrás de esto.",
+  "pH9wQ2T3ho": {
+   "en": "1.70 <small>acceptable</small>",
+   "es": "1.70 <small>aceptable</small>",
    "kind": [
     "html"
    ],
@@ -139560,11 +140173,107 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 51
+   "w": 2
   },
-  "O6JSM2buB7": {
-   "en": "<b>It refuses to chase.</b> Price had already run, so the entry goes back to 0.0846, where support has been counted <b>four times</b> - not where the reader happens to be looking. R:R 2.05, with the short-liquidation band above marked as the fuel the move would run into.",
-   "es": "<b>Se niega a perseguir el precio.</b> El precio ya se había movido, así que la entrada retrocede a 0.0846, donde el soporte se ha contado <b>cuatro veces</b> - no donde el lector está mirando por casualidad. R:R 2.05, con la banda de liquidación short marcada arriba como el combustible con el que chocaría el movimiento.",
+  "LggB1Qepn3": {
+   "en": "LINK 4-hour — the fuel is below price, so don't buy here; wait for the flush into 12.72–12.83.",
+   "es": "LINK en 4 horas — el combustible está debajo del precio, así que no compres aquí; espera el lavado hacia 12.72–12.83.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "e5aiENG33d": {
+   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 12.724, with the stop and target the trade would carry if that level is reached. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Long liqs $14M&rdquo;, &ldquo;Short liqs $3.7M&rdquo;.",
+   "es": "<b>Esperar también es una respuesta - con un precio puesto.</b> Rechaza la operación y marca qué está esperando en 12.724, con el stop y el objetivo que tendría la operación si se alcanza ese nivel. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Long liqs $14M&rdquo;, &ldquo;Short liqs $3.7M&rdquo;.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 48
+  },
+  "gl-KWWiSc1": {
+   "en": "<span class=\"k\">You asked</span><q>Read this chart and draw the setup on it.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Lee este gráfico y dibuja el setup en él.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "_1vxjcT2__": {
+   "en": "<span class=\"k\">What it did</span>Opened RSI (14) · Drew 3 shapes",
+   "es": "<span class=\"k\">Qué hizo</span>Abrió RSI (14) · Dibujó 3 figuras",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "wI0VHisAVh": {
+   "en": "LONG<small>confidence 58%</small>",
+   "es": "LONG<small>confianza 58%</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "dprvh3qoYA": {
+   "en": "82,658.7 <small>-0.10% from the price when asked</small>",
+   "es": "82,658.7 <small>-0.10% desde el precio al momento de preguntar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "jpaNjDn16b": {
+   "en": "1.42 <small>thin</small>",
+   "es": "1.42 <small>ajustado</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "3TSA9qp7-R": {
+   "en": "1-hour BTC: downtrend, but price is sitting on a support that keeps holding — I'd buy the retest, not here.",
+   "es": "BTC en 1 hora: tendencia bajista, pero el precio está sobre un soporte que sigue resistiendo — compraría el retest, no aquí.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 18
+  },
+  "kY33Ceaf6J": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Long from 82,658.7, stop 81,711.5, targets 84,007.9 and 84,556 - reward to risk <b>1.42</b>, and it says so. On the chart: a ray, a zone, labelled &ldquo;Downtrend&rdquo;, &ldquo;Sweep zone&rdquo;, &ldquo;Bounce&rdquo;. It opened an indicator on its own to check the move.",
+   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Long desde 82,658.7, stop 81,711.5, objetivos 84,007.9 y 84,556 - beneficio sobre riesgo <b>1.42</b>, y lo dice así. En el gráfico: un rayo, una zona, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Sweep zone&rdquo;, &ldquo;Bounce&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
    "kind": [
     "html"
    ],
@@ -139574,9 +140283,9 @@
    "n": 1,
    "w": 46
   },
-  "HXjyoc3MqZ": {
-   "en": "Captured from the live product, untouched. Individual reads, not a track record - Ask AI is a research tool and it will be wrong plenty of times. Nothing here is financial advice.",
-   "es": "Capturado del producto en vivo, sin retoques. Lecturas individuales, no un historial de resultados - Ask AI es una herramienta de investigación y se equivocará muchas veces. Nada aquí es asesoría financiera.",
+  "VouD9SuO4d": {
+   "en": "<span class=\"k\">You asked</span><q>Is there anything worth taking here right now? Draw your answer.</q><span class=\"ai-sym\">DOGE &middot; 1h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>¿Hay algo que valga la pena tomar aquí ahora mismo? Dibuja tu respuesta.</q><span class=\"ai-sym\">DOGE &middot; 1h</span>",
    "kind": [
     "html"
    ],
@@ -139584,7 +140293,79 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 29
+   "w": 15
+  },
+  "YF0K4vVUEZ": {
+   "en": "SHORT<small>confidence 64%</small>",
+   "es": "SHORT<small>confianza 64%</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "pwj6gpGdJG": {
+   "en": "0.08772 <small>+0.31% from the price when asked</small>",
+   "es": "0.08772 <small>+0.31% desde el precio al momento de preguntar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "f56hZCX76N": {
+   "en": "2.14 <small>acceptable</small>",
+   "es": "2.14 <small>aceptable</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "rrCsHNzrwd": {
+   "en": "DOGE 1-hour: leans DOWN — but don't chase the breakdown candle.",
+   "es": "DOGE en 1 hora: sesgo A LA BAJA — pero no persigas la vela de ruptura.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "xHMnQ02Mpe": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 0.08772, stop 0.08905, targets 0.08488 and 0.08401 - reward to risk <b>2.14</b> written on the block. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Retest short zone&rdquo;, &ldquo;Long liqs $39M&rdquo;. It opened an indicator on its own to check the move.",
+   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 0.08772, stop 0.08905, objetivos 0.08488 y 0.08401 - beneficio sobre riesgo <b>2.14</b> escrito en el bloque. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Retest short zone&rdquo;, &ldquo;Long liqs $39M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 49
+  },
+  "6agErqYer7": {
+   "en": "Captured from the live product, untouched; the cards are read out of the same answers. Individual reads, not a track record - Ask AI is a research tool and it will be wrong plenty of times. Nothing here is financial advice.",
+   "es": "Capturado del producto en vivo, sin retoques; las tarjetas se leen de las mismas respuestas. Lecturas individuales, no un historial de resultados - Ask AI es una herramienta de investigación y se equivocará muchas veces. Nada aquí es asesoría financiera.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 38
   },
   "cakJSiOvhW": {
    "en": "How to use it, in three steps",
@@ -140090,9 +140871,21 @@
    "n": 1,
    "w": 4
   },
-  "_wUS3j2CmW": {
-   "en": "Open full size",
-   "es": "Abrir a tamaño completo",
+  "7OsWy0hGpB": {
+   "en": "MarginPad charts: the indicator strip with Cascade Radar, Market Brain, Market Memory and the Liquidation Magnet cards reading their state",
+   "es": "Gráficos de MarginPad: la franja de indicadores con las tarjetas de Cascade Radar, Market Brain, Market Memory y Liquidation Magnet mostrando su estado",
+   "kind": [
+    "attr:alt"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "f5Bt0zgmss": {
+   "en": "Open the full capture",
+   "es": "Abrir la captura completa",
    "kind": [
     "attr:title"
    ],
@@ -140100,11 +140893,47 @@
     "/premium/"
    ],
    "n": 6,
-   "w": 3
+   "w": 4
   },
-  "ShGnyzLw90": {
-   "en": "Ask AI marks a short on Bitcoin with the reward-to-risk printed on the block",
-   "es": "Ask AI marca un short en Bitcoin con el riesgo/beneficio impreso en el bloque",
+  "3JuuflBlpg": {
+   "en": "Ask AI on ETH 4h: short, entry 2,612, stop 2,655",
+   "es": "Ask AI en ETH 4h: short, entrada 2,612, stop 2,655",
+   "kind": [
+    "attr:alt"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "Vi0_PWLri7": {
+   "en": "Ask AI on SOL 15m: short, entry 116.55, stop 117.3",
+   "es": "Ask AI en SOL 15m: short, entrada 116.55, stop 117.3",
+   "kind": [
+    "attr:alt"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "eYHqtmBKMy": {
+   "en": "Ask AI on XRP 1h: short, entry 1.4178, stop 1.4414",
+   "es": "Ask AI en XRP 1h: short, entrada 1.4178, stop 1.4414",
+   "kind": [
+    "attr:alt"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 10
+  },
+  "X9sTURqJ6E": {
+   "en": "Ask AI on LINK 4h: wait - not a trade yet, entry 12.724, stop 12.045",
+   "es": "Ask AI en LINK 4h: esperar - aún no es una operación, entrada 12.724, stop 12.045",
    "kind": [
     "attr:alt"
    ],
@@ -140114,9 +140943,9 @@
    "n": 1,
    "w": 13
   },
-  "-4lvqozqTO": {
-   "en": "Ask AI anchors a stop on the swing high and a target on a level touched three times",
-   "es": "Ask AI ancla un stop en el máximo swing y un objetivo en un nivel tocado tres veces",
+  "KZttyYDdc7": {
+   "en": "Ask AI on BTC 1h: long, entry 82,658.7, stop 81,711.5",
+   "es": "Ask AI en BTC 1h: long, entrada 82,658.7, stop 81,711.5",
    "kind": [
     "attr:alt"
    ],
@@ -140124,11 +140953,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 15
+   "w": 10
   },
-  "dGARDL6F1p": {
-   "en": "Ask AI declines the trade and marks the price it is waiting for on Solana",
-   "es": "Ask AI rechaza la operación y marca el precio que está esperando en Solana",
+  "s9BE0g6kdc": {
+   "en": "Ask AI on DOGE 1h: short, entry 0.08772, stop 0.08905",
+   "es": "Ask AI en DOGE 1h: short, entrada 0.08772, stop 0.08905",
    "kind": [
     "attr:alt"
    ],
@@ -140136,43 +140965,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 15
-  },
-  "J0wR1615ka": {
-   "en": "Ask AI draws an uptrend line, a pullback buy zone and two named targets on XRP",
-   "es": "Ask AI dibuja una línea de tendencia alcista, una zona de compra en el retroceso y dos objetivos nombrados en XRP",
-   "kind": [
-    "attr:alt"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 15
-  },
-  "fq2gm1o33o": {
-   "en": "Ask AI places a buy zone on long liquidations and a target under a short liquidation pool",
-   "es": "Ask AI coloca una zona de compra sobre liquidaciones long y un objetivo bajo un pool de liquidación short",
-   "kind": [
-    "attr:alt"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "ANNugK_gPN": {
-   "en": "Ask AI puts the entry back at support counted four times instead of at the current price",
-   "es": "Ask AI retrocede la entrada a un soporte contado cuatro veces en lugar del precio actual",
-   "kind": [
-    "attr:alt"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 17
+   "w": 10
   },
   "TJcoCvcTJT": {
    "en": "Unlock MarginPad Premium: 4 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
@@ -141340,6 +142133,30 @@
    "n": 1,
    "w": 21
   },
+  "bFxEkn0Org": {
+   "en": "By hour <small>today · UTC · ≥ $1K</small>",
+   "es": "Por hora <small>hoy · UTC · ≥ $1K</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "qDzHT5Urn3": {
+   "en": "Top hits today <small>tap to open</small>",
+   "es": "Mayores golpes hoy <small>toca para abrir</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 6
+  },
   "aE_eTjWHi2": {
    "en": "Loading live liquidations…",
    "es": "Cargando liquidaciones en vivo…",
@@ -141460,9 +142277,9 @@
    "n": 1,
    "w": 3
   },
-  "ZIVypBNfzj": {
-   "en": "Most rekt coins <small>24h · click to filter</small>",
-   "es": "Monedas más liquidadas <small>24h · clic para filtrar</small>",
+  "UWV-Pvh0iC": {
+   "en": "Top hits <small>today · UTC · click to open</small>",
+   "es": "Mayores golpes <small>hoy · UTC · haz clic para abrir</small>",
    "kind": [
     "html"
    ],
@@ -141481,12 +142298,12 @@
    "ctx": [
     "/rekt/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1
   },
-  "oM6UGXiU4o": {
-   "en": "Venue split <small>today · UTC</small>",
-   "es": "División por exchange <small>hoy · UTC</small>",
+  "iJLEzVNYBz": {
+   "en": "By hour <small>today · UTC · prints ≥ $1K</small>",
+   "es": "Por hora <small>hoy · UTC · registros ≥ $1K</small>",
    "kind": [
     "html"
    ],
@@ -141494,7 +142311,43 @@
     "/rekt/"
    ],
    "n": 1,
-   "w": 4
+   "w": 6
+  },
+  "DA7ocOZYBt": {
+   "en": "<span>Window</span>",
+   "es": "<span>Ventana</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "rff-wzNQXr": {
+   "en": "Most rekt coins <small id=\"rktCoinsL\">24h · click to filter</small>",
+   "es": "Monedas más liquidadas <small id=\"rktCoinsL\">24h · haz clic para filtrar</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "BW-jF9IJ_f": {
+   "en": "Venue split <small id=\"rktExL\">24h · longs vs shorts</small>",
+   "es": "Reparto por exchange <small id=\"rktExL\">24h · longs vs shorts</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/rekt/"
+   ],
+   "n": 1,
+   "w": 6
   },
   "-Dyvth-0ap": {
    "en": "Size distribution <small>today · UTC</small>",
@@ -147108,9 +147961,9 @@
    "n": 1,
    "w": 19
   },
-  "S04DO2hjnT": {
-   "en": "Sei (SEI) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Sei (SEI) - En Vivo, Gratis, Sin Inicio de Sesión | MarginPad",
+  "bJjRuubYtv": {
+   "en": "Sei (SEI) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sei (SEI) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -147118,7 +147971,7 @@
     "/sei-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "pntMRDvArA": {
    "en": "<a href=\"/\">Home</a> / SEI Liquidation Map",
@@ -147324,9 +148177,9 @@
    "n": 1,
    "w": 20
   },
-  "N2QP5vsax-": {
-   "en": "Live Sei (SEI) liquidation map: real SEI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Sei (SEI) en vivo: liquidaciones reales de SEI de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "hMQd7h4vj2": {
+   "en": "See where SEI longs and shorts are getting liquidated right now: real Sei liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de SEI ahora mismo: liquidaciones reales de Sei de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -147334,11 +148187,11 @@
     "/sei-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "OiJ8lIwXIw": {
-   "en": "Sei (SEI) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Sei (SEI) - en vivo",
+  "OxTqHG1DDy": {
+   "en": "Sei (SEI) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sei (SEI) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -147346,7 +148199,7 @@
     "/sei-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "CPOAQaC8h9": {
    "en": "What is a Sei liquidation map?",
@@ -147420,9 +148273,9 @@
    "n": 1,
    "w": 3
   },
-  "CmkJHTdwwy": {
-   "en": "Sei (SEI) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Sei (SEI) - En Vivo, Gratis, Sin Inicio de Sesión",
+  "DqpgrP7_02": {
+   "en": "Sei (SEI) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sei (SEI) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -147430,7 +148283,7 @@
     "/sei-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "tovvpmU2SY": {
    "en": "SHIB Liquidation Calculator - Shiba Inu Futures (Long & Short) | MarginPad",
@@ -147832,9 +148685,9 @@
    "n": 1,
    "w": 19
   },
-  "XOZCfXj-3v": {
-   "en": "Shiba Inu (SHIB) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Shiba Inu (SHIB) - En Vivo, Gratis, Sin Inicio de Sesión | MarginPad",
+  "P_mbETGsKV": {
+   "en": "Shiba Inu (SHIB) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Shiba Inu (SHIB) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -147842,7 +148695,7 @@
     "/shib-liquidation-map/"
    ],
    "n": 1,
-   "w": 10
+   "w": 11
   },
   "h0bRtqcARc": {
    "en": "<a href=\"/\">Home</a> / SHIB Liquidation Map",
@@ -148048,9 +148901,9 @@
    "n": 1,
    "w": 20
   },
-  "aMD8yupisq": {
-   "en": "Live Shiba Inu (SHIB) liquidation map: real SHIB liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Shiba Inu (SHIB) en vivo: liquidaciones reales de SHIB de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "YIMnhB52vd": {
+   "en": "See where SHIB longs and shorts are getting liquidated right now: real Shiba Inu liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de SHIB ahora mismo: liquidaciones reales de Shiba Inu de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -148058,11 +148911,11 @@
     "/shib-liquidation-map/"
    ],
    "n": 3,
-   "w": 24
+   "w": 26
   },
-  "9S3jePCUAe": {
-   "en": "Shiba Inu (SHIB) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Shiba Inu (SHIB) - en vivo",
+  "mydAIhoAgs": {
+   "en": "Shiba Inu (SHIB) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Shiba Inu (SHIB) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -148070,7 +148923,7 @@
     "/shib-liquidation-map/"
    ],
    "n": 2,
-   "w": 6
+   "w": 7
   },
   "U_PtySwKZd": {
    "en": "What is a Shiba Inu liquidation map?",
@@ -148144,9 +148997,9 @@
    "n": 1,
    "w": 3
   },
-  "LAm3AfgIuE": {
-   "en": "Shiba Inu (SHIB) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Shiba Inu (SHIB) - En Vivo, Gratis, Sin Inicio de Sesión",
+  "wCSbxt2BXl": {
+   "en": "Shiba Inu (SHIB) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Shiba Inu (SHIB) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -148154,7 +149007,7 @@
     "/shib-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "JjYjAOWuUr": {
    "en": "SOL Liquidation Calculator - Solana Futures (Long & Short) | MarginPad",
@@ -148568,9 +149421,9 @@
    "n": 1,
    "w": 19
   },
-  "Zf2WVArklr": {
-   "en": "Solana (SOL) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Solana (SOL) - En Vivo, Gratis, Sin Inicio de Sesión | MarginPad",
+  "q7wqya_jRE": {
+   "en": "Solana (SOL) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Solana (SOL) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -148578,7 +149431,7 @@
     "/sol-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "5fpuzMRiK7": {
    "en": "<a href=\"/\">Home</a> / SOL Liquidation Map",
@@ -148784,9 +149637,9 @@
    "n": 1,
    "w": 20
   },
-  "aJLq2BMLC1": {
-   "en": "Live Solana (SOL) liquidation map: real SOL liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Solana (SOL) en vivo: liquidaciones reales de SOL de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "XTPPcQgRLW": {
+   "en": "See where SOL longs and shorts are getting liquidated right now: real Solana liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de SOL ahora mismo: liquidaciones reales de Solana de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -148794,11 +149647,11 @@
     "/sol-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "0jjiFnvY7N": {
-   "en": "Solana (SOL) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Solana (SOL) - en vivo",
+  "Y4OTAVSBI6": {
+   "en": "Solana (SOL) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Solana (SOL) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -148806,7 +149659,7 @@
     "/sol-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "pqkWVMWW8o": {
    "en": "What is a Solana liquidation map?",
@@ -148880,9 +149733,9 @@
    "n": 1,
    "w": 3
   },
-  "MlWmbFVXfI": {
-   "en": "Solana (SOL) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidaciones de Solana (SOL) - En Vivo, Gratis, Sin Inicio de Sesión",
+  "GZZ6bDQ7D1": {
+   "en": "Solana (SOL) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Solana (SOL) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -148890,7 +149743,7 @@
     "/sol-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "Oxu9RfV3Si": {
    "en": "Free Demo Spot Trading - $10,000 Practice Card | MarginPad",
@@ -151688,9 +152541,9 @@
    "n": 1,
    "w": 19
   },
-  "E1qV5DNgQL": {
-   "en": "Sui (SUI) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidaciones de Sui (SUI) - En Vivo, Gratis, Sin Inicio de Sesión | MarginPad",
+  "EWpV1G419o": {
+   "en": "Sui (SUI) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sui (SUI) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -151698,7 +152551,7 @@
     "/sui-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "xhE45AaQ1t": {
    "en": "<a href=\"/\">Home</a> / SUI Liquidation Map",
@@ -151904,9 +152757,9 @@
    "n": 1,
    "w": 20
   },
-  "vDWy7K5xBx": {
-   "en": "Live Sui (SUI) liquidation map: real SUI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Sui (SUI) en vivo: liquidaciones reales de SUI de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "yK_4ghVBQT": {
+   "en": "See where SUI longs and shorts are getting liquidated right now: real Sui liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de SUI ahora mismo: liquidaciones reales de Sui de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -151914,11 +152767,11 @@
     "/sui-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "3UGSpUVTV6": {
-   "en": "Sui (SUI) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Sui (SUI) - en vivo",
+  "-93NRemWIE": {
+   "en": "Sui (SUI) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sui (SUI) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -151926,7 +152779,7 @@
     "/sui-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "kWxO-4ZZJ0": {
    "en": "What is a Sui liquidation map?",
@@ -152000,9 +152853,9 @@
    "n": 1,
    "w": 3
   },
-  "PiwTnHxiLK": {
-   "en": "Sui (SUI) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Sui (SUI) - En vivo, gratis, sin registro",
+  "fBA8wgoU5M": {
+   "en": "Sui (SUI) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Sui (SUI) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -152010,7 +152863,7 @@
     "/sui-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "fpPadjqJOK": {
    "en": "TAO Liquidation Calculator - Bittensor Futures (Long & Short) | MarginPad",
@@ -152424,9 +153277,9 @@
    "n": 1,
    "w": 19
   },
-  "37AoxsiWh1": {
-   "en": "Bittensor (TAO) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Bittensor (TAO) - En vivo, gratis, sin registro | MarginPad",
+  "xI4geHhx0v": {
+   "en": "Bittensor (TAO) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bittensor (TAO) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -152434,7 +153287,7 @@
     "/tao-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "CspA0zLvFY": {
    "en": "<a href=\"/\">Home</a> / TAO Liquidation Map",
@@ -152640,9 +153493,9 @@
    "n": 1,
    "w": 20
   },
-  "dpdigw9M_n": {
-   "en": "Live Bittensor (TAO) liquidation map: real TAO liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Bittensor (TAO) en vivo: liquidaciones reales de TAO de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "4TxUOZiNtr": {
+   "en": "See where TAO longs and shorts are getting liquidated right now: real Bittensor liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de TAO ahora mismo: liquidaciones reales de Bittensor de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -152650,11 +153503,11 @@
     "/tao-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "UKGng3BBuC": {
-   "en": "Bittensor (TAO) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Bittensor (TAO) - en vivo",
+  "QPDqHAMq9O": {
+   "en": "Bittensor (TAO) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bittensor (TAO) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -152662,7 +153515,7 @@
     "/tao-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "4wkzx_Cvwt": {
    "en": "What is a Bittensor liquidation map?",
@@ -152736,9 +153589,9 @@
    "n": 1,
    "w": 3
   },
-  "bz_RPJO3TE": {
-   "en": "Bittensor (TAO) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Bittensor (TAO) - En vivo, gratis, sin registro",
+  "F7yO9lmHof": {
+   "en": "Bittensor (TAO) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Bittensor (TAO) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -152746,7 +153599,7 @@
     "/tao-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "ayQsWc7iWo": {
    "en": "Terms of Service | MarginPad",
@@ -154713,9 +155566,9 @@
    "n": 1,
    "w": 19
   },
-  "oAGA1QNjx9": {
-   "en": "Toncoin (TON) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de liquidaciones de Toncoin (TON) - En vivo, gratis, sin registro | MarginPad",
+  "TEYNEovIKN": {
+   "en": "Toncoin (TON) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Toncoin (TON) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -154723,7 +155576,7 @@
     "/ton-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "nxbEftAV38": {
    "en": "<a href=\"/\">Home</a> / TON Liquidation Map",
@@ -154893,9 +155746,9 @@
    "n": 1,
    "w": 20
   },
-  "I54_b6jHOG": {
-   "en": "Live Toncoin (TON) liquidation map: real TON liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Toncoin (TON) en vivo: liquidaciones reales de TON de nueve exchanges como burbujas más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "NIislE6oy9": {
+   "en": "See where TON longs and shorts are getting liquidated right now: real Toncoin liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de TON ahora mismo: liquidaciones reales de Toncoin de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -154903,11 +155756,11 @@
     "/ton-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "27W7tSIfDE": {
-   "en": "Toncoin (TON) Liquidation Map - Live",
-   "es": "Mapa de liquidaciones de Toncoin (TON) - en vivo",
+  "8sQMJGdSJV": {
+   "en": "Toncoin (TON) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Toncoin (TON) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -154915,7 +155768,7 @@
     "/ton-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "Wf0vZPYATP": {
    "en": "What is a Toncoin liquidation map?",
@@ -154989,9 +155842,9 @@
    "n": 1,
    "w": 3
   },
-  "gLcSDuWKto": {
-   "en": "Toncoin (TON) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de liquidaciones de Toncoin (TON) - En vivo, gratis, sin registro",
+  "AxFaNWzC8W": {
+   "en": "Toncoin (TON) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Toncoin (TON) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -154999,7 +155852,7 @@
     "/ton-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "AC6tANUT98": {
    "en": "Free Crypto Trading Tools - Backtester, Journal, Risk &amp; More | MarginPad",
@@ -163034,9 +163887,9 @@
    "n": 1,
    "w": 19
   },
-  "ZfOHNH7Whp": {
-   "en": "TRON (TRX) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de TRON (TRX) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "7BZ1GS0tQc": {
+   "en": "TRON (TRX) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de TRON (TRX) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -163044,7 +163897,7 @@
     "/trx-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "lw4oLWFW_d": {
    "en": "<a href=\"/\">Home</a> / TRX Liquidation Map",
@@ -163250,9 +164103,9 @@
    "n": 1,
    "w": 20
   },
-  "Va6YB9gwcX": {
-   "en": "Live TRON (TRX) liquidation map: real TRX liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de TRON (TRX) en vivo: liquidaciones reales de TRX de nueve exchanges como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "jtgOEYamp5": {
+   "en": "See where TRX longs and shorts are getting liquidated right now: real TRON liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de TRX ahora mismo: liquidaciones reales de TRON de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -163260,11 +164113,11 @@
     "/trx-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "j9qC6r3AbZ": {
-   "en": "TRON (TRX) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de TRON (TRX) - En Vivo",
+  "96vJu-UGp9": {
+   "en": "TRON (TRX) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de TRON (TRX) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -163272,7 +164125,7 @@
     "/trx-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "iJ2RJ4XHje": {
    "en": "What is a TRON liquidation map?",
@@ -163346,9 +164199,9 @@
    "n": 1,
    "w": 3
   },
-  "bCo1PKdcvn": {
-   "en": "TRON (TRX) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de TRON (TRX) - En Vivo, Gratis, Sin Registro",
+  "hDYvbVSw4f": {
+   "en": "TRON (TRX) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de TRON (TRX) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -163356,7 +164209,7 @@
     "/trx-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "b2a-3ZLdeF": {
    "en": "UNI Liquidation Calculator - Uniswap Futures (Long & Short) | MarginPad",
@@ -163758,9 +164611,9 @@
    "n": 1,
    "w": 19
   },
-  "dhHD3IHZDT": {
-   "en": "Uniswap (UNI) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de Uniswap (UNI) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "55nzUjj8EY": {
+   "en": "Uniswap (UNI) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Uniswap (UNI) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -163768,7 +164621,7 @@
     "/uni-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "xLDtHgV_R3": {
    "en": "<a href=\"/\">Home</a> / UNI Liquidation Map",
@@ -163974,9 +164827,9 @@
    "n": 1,
    "w": 20
   },
-  "4NLwOwWccf": {
-   "en": "Live Uniswap (UNI) liquidation map: real UNI liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de Uniswap (UNI) en vivo: liquidaciones reales de UNI de nueve exchanges como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "sdNjRoKmM8": {
+   "en": "See where UNI longs and shorts are getting liquidated right now: real Uniswap liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de UNI ahora mismo: liquidaciones reales de Uniswap de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -163984,11 +164837,11 @@
     "/uni-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "wfgeF-zMZr": {
-   "en": "Uniswap (UNI) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de Uniswap (UNI) - En Vivo",
+  "rbxHU2GHCw": {
+   "en": "Uniswap (UNI) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Uniswap (UNI) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -163996,7 +164849,7 @@
     "/uni-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "OZkQBUJBSe": {
    "en": "What is a Uniswap liquidation map?",
@@ -164070,9 +164923,9 @@
    "n": 1,
    "w": 3
   },
-  "EnqIYifezu": {
-   "en": "Uniswap (UNI) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de Uniswap (UNI) - En Vivo, Gratis, Sin Registro",
+  "mcFZmysYww": {
+   "en": "Uniswap (UNI) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de Uniswap (UNI) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -164080,7 +164933,7 @@
     "/uni-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "bHp4joymXi": {
    "en": "The Vault - Frames, Levels &amp; Cosmetics | MarginPad",
@@ -167290,9 +168143,9 @@
    "n": 1,
    "w": 19
   },
-  "EwK5Sqrjnh": {
-   "en": "dogwifhat (WIF) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de dogwifhat (WIF) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "lTeZVcuKll": {
+   "en": "dogwifhat (WIF) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de dogwifhat (WIF) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -167300,7 +168153,7 @@
     "/wif-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "DLE1NEHPF6": {
    "en": "<a href=\"/\">Home</a> / WIF Liquidation Map",
@@ -167506,9 +168359,9 @@
    "n": 1,
    "w": 20
   },
-  "wFj-4XYze-": {
-   "en": "Live dogwifhat (WIF) liquidation map: real WIF liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de dogwifhat (WIF) en vivo: liquidaciones reales de WIF de nueve exchanges como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "E6hQu-Y0uY": {
+   "en": "See where WIF longs and shorts are getting liquidated right now: real dogwifhat liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de WIF ahora mismo: liquidaciones reales de dogwifhat de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -167516,11 +168369,11 @@
     "/wif-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "L-ptk2C3zh": {
-   "en": "dogwifhat (WIF) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de dogwifhat (WIF) - En Vivo",
+  "0Ve4viWrjc": {
+   "en": "dogwifhat (WIF) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de dogwifhat (WIF) - En Vivo",
    "kind": [
     "attr:content"
    ],
@@ -167528,7 +168381,7 @@
     "/wif-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "3Knlesmu8F": {
    "en": "What is a dogwifhat liquidation map?",
@@ -167602,9 +168455,9 @@
    "n": 1,
    "w": 3
   },
-  "DQIjMiXkNF": {
-   "en": "dogwifhat (WIF) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de dogwifhat (WIF) - En Vivo, Gratis, Sin Registro",
+  "ms0_hzDQON": {
+   "en": "dogwifhat (WIF) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de dogwifhat (WIF) - En Vivo, Gratis, Sin Registro",
    "kind": [
     "ld"
    ],
@@ -167612,7 +168465,7 @@
     "/wif-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "7cEmMEorsh": {
    "en": "WLD Liquidation Calculator - Worldcoin Futures (Long & Short) | MarginPad",
@@ -168277,18 +169130,6 @@
    ],
    "n": 1,
    "w": 29
-  },
-  "oypUNb-wKo": {
-   "en": "Liquidation calculator",
-   "es": "Calculadora de liquidación",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/wordpress-crypto-widgets/"
-   ],
-   "n": 1,
-   "w": 2
   },
   "POF0JNC7dV": {
    "en": "The widget most trading blogs want: readers enter an entry price, leverage and direction and immediately see where the position would be force-closed. It is the natural companion to any article about <a href=\"/blog/crypto-leverage-explained/\">leverage</a> or <a href=\"/blog/what-is-liquidation-in-crypto/\">liquidation</a>.",
@@ -169972,9 +170813,9 @@
    "n": 1,
    "w": 19
   },
-  "KozZETRntk": {
-   "en": "XRP (XRP) Liquidation Map - Live, Free, No Login | MarginPad",
-   "es": "Mapa de Liquidación de XRP (XRP) - En Vivo, Gratis, Sin Registro | MarginPad",
+  "AH3vU1My6N": {
+   "en": "XRP (XRP) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad",
+   "es": "Mapa de Liquidaciones y Mapa de Calor de XRP (XRP) - En Vivo, Gratis, Sin Registro | MarginPad",
    "kind": [
     "title"
    ],
@@ -169982,7 +170823,7 @@
     "/xrp-liquidation-map/"
    ],
    "n": 1,
-   "w": 9
+   "w": 10
   },
   "fwKinw3E7i": {
    "en": "<a href=\"/\">Home</a> / XRP Liquidation Map",
@@ -170188,9 +171029,9 @@
    "n": 1,
    "w": 20
   },
-  "FUiUn7ZdLF": {
-   "en": "Live XRP (XRP) liquidation map: real XRP liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.",
-   "es": "Mapa de liquidaciones de XRP (XRP) en vivo: liquidaciones reales de XRP de nueve exchanges como burbujas, más un histograma por nivel de precio, con clústeres estimados. Vista previa gratis, sin registro.",
+  "lfurVRPMnl": {
+   "en": "See where XRP longs and shorts are getting liquidated right now: real XRP liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.",
+   "es": "Mira dónde se están liquidando los longs y shorts de XRP ahora mismo: liquidaciones reales de XRP de 9 exchanges, un mapa de calor por nivel de precio y clústeres de liquidez estimados. Gratis, sin cuenta.",
    "kind": [
     "attr:content"
    ],
@@ -170198,11 +171039,11 @@
     "/xrp-liquidation-map/"
    ],
    "n": 3,
-   "w": 23
+   "w": 25
   },
-  "hFKXbTMrT1": {
-   "en": "XRP (XRP) Liquidation Map - Live",
-   "es": "Mapa de Liquidaciones de XRP (XRP) - En Vivo",
+  "cIUwiV9QLu": {
+   "en": "XRP (XRP) Liquidation Map & Heatmap - Live",
+   "es": "Mapa de liquidaciones y mapa de calor de XRP (XRP) - En vivo",
    "kind": [
     "attr:content"
    ],
@@ -170210,7 +171051,7 @@
     "/xrp-liquidation-map/"
    ],
    "n": 2,
-   "w": 5
+   "w": 6
   },
   "3Qa7ct8U6v": {
    "en": "What is a XRP liquidation map?",
@@ -170284,9 +171125,9 @@
    "n": 1,
    "w": 3
   },
-  "WeitBUMJ03": {
-   "en": "XRP (XRP) Liquidation Map - Live, Free, No Login",
-   "es": "Mapa de Liquidación de XRP (XRP) - En Vivo, Gratis, Sin Registro",
+  "VqFTAAS6bt": {
+   "en": "XRP (XRP) Liquidation Map &amp; Heatmap - Live, Free, No Login",
+   "es": "Mapa de liquidaciones &amp; mapa de calor de XRP (XRP) - En vivo, gratis, sin registro",
    "kind": [
     "ld"
    ],
@@ -170294,7 +171135,7 @@
     "/xrp-liquidation-map/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "YYD2fdM9nH": {
    "en": "ZEC Liquidation Calculator - Zcash Futures (Long & Short) | MarginPad",

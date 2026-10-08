@@ -1627,9 +1627,9 @@
  },
  {
   "rel": "hyperliquid-whales/index.html",
-  "cover": 0.948051948051948,
-  "hit": 73,
-  "missing": 4
+  "cover": 1,
+  "hit": 77,
+  "missing": 0
  },
  {
   "rel": "icp-liquidation-calculator/index.html",
@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.9429824561403509,
-  "hit": 215,
-  "missing": 13
+  "cover": 1,
+  "hit": 228,
+  "missing": 0
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.9418604651162791,
-  "hit": 81,
-  "missing": 5
+  "cover": 1,
+  "hit": 86,
+  "missing": 0
  },
  {
   "rel": "levels/index.html",
@@ -1981,10 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.5991561181434599,
-  "hit": 142,
-  "missing": 95,
-  "skipped": true
+  "cover": 1,
+  "hit": 237,
+  "missing": 0
  },
  {
   "rel": "privacy/index.html",
@@ -1994,9 +1993,9 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.9473684210526315,
-  "hit": 126,
-  "missing": 7
+  "cover": 1,
+  "hit": 133,
+  "missing": 0
  },
  {
   "rel": "rewards/index.html",
@@ -2306,8 +2305,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 0.9787234042553191,
-  "hit": 460,
-  "missing": 10
+  "cover": 1,
+  "hit": 470,
+  "missing": 0
  }
 ]

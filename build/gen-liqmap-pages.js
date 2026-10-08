@@ -38,7 +38,7 @@ function page(sym, name) {
   const F = faq(name, sym);
   const faqLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[${F.map(f => `{"@type":"Question","name":${JSON.stringify(f.q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(f.a)}}}`).join(',')}]}</script>`;
   const crumbLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${sym} Liquidation Map","item":"${url}"}]}</script>`;
-  const desc = `Live ${name} (${sym}) liquidation map: real ${sym} liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.`;
+  const desc = `See where ${sym} longs and shorts are getting liquidated right now: real ${name} liquidations from 9 exchanges, a price-level heatmap and estimated liquidity clusters. Free, no account.`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,17 +46,17 @@ function page(sym, name) {
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${name} (${sym}) Liquidation Map - Live, Free, No Login | MarginPad</title>
+<title>${name} (${sym}) Liquidation Map &amp; Heatmap - Live, Free, No Login | MarginPad</title>
 <meta name="description" content="${desc}" />
 <meta name="keywords" content="${sym} liquidation map, ${name} liquidations, ${sym} liquidation heatmap, crypto liquidations, ${sym} liquidation levels, liquidation chart" />
 <link rel="canonical" href="${url}" />
-<meta property="og:title" content="${name} (${sym}) Liquidation Map - Live" />
+<meta property="og:title" content="${name} (${sym}) Liquidation Map & Heatmap - Live" />
 <meta property="og:description" content="${desc}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="${name} (${sym}) Liquidation Map - Live" />
+<meta name="twitter:title" content="${name} (${sym}) Liquidation Map & Heatmap - Live" />
 <meta name="twitter:description" content="${desc}" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
