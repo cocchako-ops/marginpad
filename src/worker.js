@@ -20178,6 +20178,10 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/goaldbg' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // season-goal check-in provenance for one uid (2026-10-08)
+      let d = null, st = 0; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/goal/dbg?uid=' + encodeURIComponent(url.searchParams.get('uid') || ''))); st = r.status; d = await r.json(); } catch (e) { d = { error: 'do_failed', e: String(e).slice(0, 120) }; }
+      return new Response(JSON.stringify(Object.assign({ doStatus: st }, d)), { headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname === '/api/admin/srvopen' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // every open server position on the site, priced (2026-10-07)
       const minDays = +url.searchParams.get('minDays') || 0, e2e = url.searchParams.get('e2e') === '1';
       let d = null; try { d = await usersDO(env, '/srvopen', { minDays, e2e, limit: +url.searchParams.get('limit') || 2000 }); } catch (e) {}
@@ -22716,7 +22720,10 @@ export default {
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
       const stub = env.USERS.get(env.USERS.idFromName('main'));
       const sub = url.pathname.slice('/api/dm/'.length);
-      const tok = getCookie(request, SESS_COOKIE); const su = tok ? await sessionUser(env, tok) : null;
+      const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
+      // SUPPORT READ (2026-10-08, owner: "nesto mi je pisao u dm ... pogledaj sta je u pitanju"): the admin key + ?uid= reads
+      // that account's inbox/thread. GET only - sending, editing or reacting as a member is never offered here.
+      { const au = url.searchParams.get('uid'); if (au && request.method === 'GET' && isAdminKey(env, adminKeyFrom(request, url))) su = { id: String(au).replace(/^u:/, '') }; }
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       const call = async (p, body) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       if (sub === 'send' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
@@ -26222,7 +26229,12 @@ export class UserStore {
       if (k === 'green') { const byDay = {}; this.rows("SELECT ts, pnl FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND ts<?", uid, from, to).forEach(r => { const d = new Date(+r.ts).toISOString().slice(0, 10); byDay[d] = (byDay[d] || 0) + (+r.pnl || 0); }); return Object.values(byDay).filter(v => v > 0).length; }
       if (k === 'lessons') return +(this.rows("SELECT COUNT(*) c FROM academy WHERE user_id=? AND ts>=? AND ts<? AND lesson NOT LIKE '%:%'", uid, from, to)[0] || {}).c || 0;
       if (k === 'calls') return +(this.rows('SELECT COUNT(*) c FROM upred WHERE user_id=? AND day>=? AND day<?', uid, sk.from, sk.to)[0] || {}).c || 0;
-      if (k === 'checkins') return +(this.rows("SELECT COUNT(*) c FROM xplog WHERE user_id=? AND src='checkin' AND ts>=? AND ts<?", uid, from, to)[0] || {}).c || 0;
+      // CHECK-IN DAYS MUST NOT SHRINK (2026-10-08, Sami_Sings1 in the owner's DMs: "today's supposed to be 7 but it's back to 5").
+      // This counted xplog rows, and xplog is trimmed to 150 per account - an active member burns that in days, so the
+      // oldest check-ins of the season fell out and the goal went backwards. tickday (one row per user, day and source,
+      // never trimmed) records every check-in since Ticks launched; xplog is unioned in only so days it still holds are
+      // not lost for the season in progress. Distinct days, never rows.
+      if (k === 'checkins') return +(this.rows("SELECT COUNT(*) c FROM (SELECT day FROM tickday WHERE user_id=? AND src='checkin' AND day>=? AND day<? UNION SELECT substr(datetime(ts/1000,'unixepoch'),1,10) FROM xplog WHERE user_id=? AND src='checkin' AND ts>=? AND ts<?)", uid, sk.from, sk.to, uid, from, to)[0] || {}).c || 0;
     } catch (e) {}
     return 0;
   }
@@ -28963,6 +28975,16 @@ export class UserStore {
         if (touched) { users++; sql.exec('UPDATE upass SET claimed=? WHERE user_id=? AND season=?', JSON.stringify(claimed), r.user_id, idx); }
       }
       return this.j({ ok: true, season: idx, users, grants, credits: Object.keys(credits).map(u => ({ uid: u, cents: credits[u] })), skipped });
+    }
+    if (path === '/goal/dbg') { // SUPPORT (2026-10-08): where a check-in count comes from, day by day - the question behind "my days went down"
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());
+      const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
+      const td = this.rows("SELECT day, n FROM tickday WHERE user_id=? AND src='checkin' AND day>=? AND day<? ORDER BY day", uid, sk.from, sk.to);
+      const xl = this.rows("SELECT ts, note FROM xplog WHERE user_id=? AND src='checkin' AND ts>=? AND ts<? ORDER BY ts", uid, from, to).map(r => ({ day: new Date(+r.ts).toISOString().slice(0, 10), ts: +r.ts, note: r.note }));
+      const u = this.rows('SELECT streak, streak_day, freezes FROM users WHERE id=?', uid)[0] || {};
+      const xlN = +(this.rows('SELECT COUNT(*) c FROM xplog WHERE user_id=?', uid)[0] || {}).c || 0;
+      const xlOld = +(this.rows('SELECT MIN(ts) t FROM xplog WHERE user_id=?', uid)[0] || {}).t || 0;
+      return this.j({ season: sk, streak: u, tickdayCheckins: td, xplogCheckins: xl, xplogRows: xlN, xplogOldest: xlOld, progress: this._goalProgress(uid, 'checkins', from, to, sk) });
     }
     if (path === '/goal/me') { // the member's season goals with live progress, plus the catalogue
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());
