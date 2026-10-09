@@ -53,6 +53,17 @@ a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}butto
 .sup-msgs{flex:1;overflow:auto;padding:14px}.sup-msg{margin-bottom:12px;max-width:82%}.sup-msg.out{margin-left:auto}.sup-bub{background:#161c26;border:1px solid var(--line2);border-radius:14px;padding:10px 13px;font-size:13.5px;line-height:1.5;white-space:normal;word-break:break-word}.sup-msg.out .sup-bub{background:#1a2a14;border-color:#2e4a1f}.sup-ts{font:600 10.5px var(--mono);color:var(--faint);margin-top:4px}.sup-msg.out .sup-ts{text-align:right}
 .sup-comp{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:8px}.sup-comp textarea{width:100%;resize:vertical;font:inherit}.sup-comp .bar{margin:0}
 .sup-u{padding:14px;overflow:auto}.sup-uh{display:flex;gap:10px;align-items:center}.sup-uav{width:42px;height:42px;border-radius:50%;background:#1b2a52;color:#cfe0ff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;overflow:hidden;flex:0 0 auto}.sup-uav img{width:100%;height:100%;object-fit:cover}.sup-un{font-weight:800;font-size:15px}
+/* Time on pages (quick user card, 2026-10-09): path | bar | duration | share · visits · last. The bar is
+   against the heaviest page so the ten compare at a glance; everything else is the number. */
+.ucd{display:flex;flex-direction:column;gap:3px;margin:4px 0 2px}
+.ucd-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(40px,1fr) 52px minmax(0,1fr);gap:8px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+.ucd-row:last-child{border-bottom:0}
+.ucd-p{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ucd-b{height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+.ucd-b i{display:block;height:100%;border-radius:3px;background:var(--lime)}
+.ucd-t{text-align:right;color:var(--ink)}
+.ucd-m{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+@media(max-width:560px){.ucd-row{grid-template-columns:minmax(0,1.3fr) 52px;grid-template-areas:"p t" "b m"}.ucd-p{grid-area:p}.ucd-t{grid-area:t}.ucd-b{grid-area:b}.ucd-m{grid-area:m}}
 .sup-kv{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--dim)}.sup-kv b{color:var(--ink);font-family:var(--mono);font-weight:600}.sup-u .sup-sec{padding:12px 0 4px;color:var(--dim)}
 @media(max-width:1180px){.sup{grid-template-columns:280px minmax(0,1fr)}.sup-u{display:none}}
 @media(max-width:760px){.sup{display:block;height:auto}.sup>div{display:none;height:calc(100vh - 120px)}.sup[data-pane="list"] .sup-l{display:flex}.sup[data-pane="thread"] .sup-t{display:flex}.sup-back{display:inline-block}}

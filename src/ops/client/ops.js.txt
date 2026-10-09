@@ -290,6 +290,23 @@
           + '<div id="ucBoards" class="sup-kv"><span>season boards</span><b class="meta">…</b></div>'
           + (function () { var tr = (d.trades || []).filter(function (t) { return t && (t.status === 'win' || t.status === 'loss' || t.status === 'open'); }).sort(function (a, b) { return (b.closeTs || b.ts || 0) - (a.closeTs || a.ts || 0); }).slice(0, 5); return tr.length ? '<div class="sup-sec">Last trades</div>' + tr.map(function (t) { var p = +t.pnl || 0, m2 = +t.margin || 0, roe = m2 ? p / m2 * 100 : 0; return '<div class="row" style="padding:4px 0;font-size:12px"><span class="mono" style="width:92px">' + esc(String(t.sym || '').toUpperCase()) + ' <span class="' + (t.side === 'short' ? 'dn' : 'up') + '">' + (t.side === 'short' ? 'S' : 'L') + '</span> ' + (+t.lev || 1) + 'x</span><span class="mono grow ' + (t.status === 'open' ? 'meta' : p >= 0 ? 'up' : 'dn') + '">' + (t.status === 'open' ? 'open · $' + N(Math.round(m2)) : (p >= 0 ? '+' : '-') + USD(Math.abs(p)) + ' <small>' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '%</small>') + (t.src === 'srv' && t.sc ? '' : t.status === 'open' ? '' : ' <span class="badge" title="not settled by the server: never counts on the boards">local</span>') + '</span><span class="meta">' + agoT(t.closeTs || t.ts) + '</span></div>'; }).join('') : ''; })()
           + '<div class="sup-sec">Rewards <button type="button" class="btn sm" data-money="u:' + esc(usr.id) + '" data-money-t="@' + esc(usr.username || email) + '" style="margin-left:8px;text-transform:none;letter-spacing:0">Money history</button></div>' + kv('balance', USD(acct.balanceUsd)) + kv('earned total', USD(acct.earnedUsd)) + kv('claims', N(acct.claims)) + kv('withdrawals', N((rw && rw.withdrawals && rw.withdrawals.length) || 0)) + flags + '<div id="ucMoney"></div>'
+          + (function () {
+            // TIME ON PAGES - the top ten by visible-tab seconds, each against the heaviest so the bars compare.
+            var dw = (d.dwell || []).filter(function (x) { return x && +x.secs > 0; }).sort(function (a, b) { return (+b.secs) - (+a.secs); });
+            if (!dw.length) return '';
+            var tot = +d.dwellTotal || dw.reduce(function (t, x) { return t + (+x.secs || 0); }, 0), top = +dw[0].secs || 1;
+            var fd = function (sec) { sec = +sec || 0; if (sec < 60) return sec + 's'; if (sec < 3600) return Math.round(sec / 60) + 'm'; var h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60); return h + 'h' + (m ? ' ' + m + 'm' : ''); };
+            var rows = dw.slice(0, 10).map(function (x) {
+              var pc = Math.max(2, Math.round((+x.secs || 0) / top * 100)), sh = tot ? Math.round((+x.secs || 0) / tot * 100) : 0;
+              return '<div class="ucd-row">'   // no title attribute: agoT() returns markup carrying its own title="", which closed this one early and leaked text into the row
+                + '<span class="ucd-p">' + esc(String(x.path || '/')) + '</span>'
+                + '<span class="ucd-b"><i style="width:' + pc + '%"></i></span>'
+                + '<b class="ucd-t mono">' + fd(x.secs) + '</b>'
+                + '<span class="ucd-m meta">' + sh + '% · ' + N(+x.hits || 0) + 'x' + (x.last ? ' · ' + agoT(x.last) : '') + '</span>'
+                + '</div>';
+            }).join('');
+            return '<div class="sup-sec">Time on pages <span class="meta" style="text-transform:none;letter-spacing:0;font-weight:400">top ' + Math.min(10, dw.length) + ' of ' + dw.length + ' · tab visible · ' + fd(tot) + ' total</span></div><div class="ucd">' + rows + '</div>';
+          })()
           + '<div class="sup-sec">Recent activity</div>' + (evs || '<div class="meta">no tracked activity</div>')
           + '<div class="bar" style="margin-top:10px"><a class="btn sm lime" href="/api/admin/user?email=' + encodeURIComponent(email) + '" target="_blank">Full profile</a><a class="btn sm" href="#people/journeys/' + encodeURIComponent(usr.username || email) + '">Journey</a><a class="btn sm" href="#inbox/mail/' + encodeURIComponent(email) + '">Email</a><a class="btn sm" href="#inbox/support/' + encodeURIComponent(email) + '">Tickets</a></div>';
         ucCache[k] = { ts: Date.now(), html: html }; u.innerHTML = html;
