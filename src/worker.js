@@ -830,11 +830,16 @@ async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC 
   try { const cl = await env.STATS.get('hmp:cal:' + sym); if (body && cl) { const o = JSON.parse(body); o.calib = JSON.parse(cl); body = JSON.stringify(o); } } catch (e) {}
   // The measured layers ride along: no new poll, and the whole thing stays one shared edge-cached object
   // with nothing user-specific in it. A layer that could not be read is simply absent - never a zero.
-  try { const ex = await heatExtras(env, sym); if (body && ex && Object.keys(ex).length) { const o = JSON.parse(body); Object.assign(o, ex); body = JSON.stringify(o); } } catch (e) {}
+  // A FAILED OPTIONAL LAYER MUST NOT BE CACHED FOR A FULL MINUTE. The whole response is one edge object, so
+  // a single collector blip while one request happened to be composing it shipped a body with no whale layer
+  // to everybody for 60 s (seen live: two cache generations empty, then five straight with it). Absence still
+  // renders as nothing - it just retries four times sooner.
+  let exOk = false;
+  try { const ex = await heatExtras(env, sym); if (body && ex && Object.keys(ex).length) { const o = JSON.parse(body); Object.assign(o, ex); body = JSON.stringify(o); exOk = !!(ex.whales || ex.whaleNear || ex.oi); } } catch (e) {}
   // The model's own parameters, published rather than described, so the ladder on the page and the ladder in
   // the cron can never disagree about what was assumed (and the mv says which generation of the model it is).
   try { if (body) { const o = JSON.parse(body); o.model = { mv: HM_MODEL_V, mmr: HM_MMR, levs: HM_LEVS.map((x) => x[0]), w: HM_LEVS.map((x) => x[1]) }; body = JSON.stringify(o); } } catch (e) {}
-  const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+  const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + (exOk ? 60 : 15), ...CORS } });
   try { await caches.default.put(ck, r.clone()); } catch (e) {}
   return r;
 }
