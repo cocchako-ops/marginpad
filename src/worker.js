@@ -7804,9 +7804,16 @@ async function collectorStatusInfo(env) {
   // never crashed. This is the most important alarm on the site - the collector was once down for seven days
   // and took Rekt with it - and an alarm that cries wolf on every restart is one he learns to ignore. A real
   // outage outlives a retry by hours, so the second probe costs nothing in detection and removes the whole class.
+  // AND A RETRY MUST OUTLIVE A STALL (2026-10-09). Two probes 2.5 s apart span five seconds, and on the night of
+  // 10-09 the droplet's ring persist collided with four scheduled socket refreshes and blocked its event loop for
+  // 12.9 s - both probes landed inside it and the owner was paged RED for the second night running on a collector
+  // that was up 19 h with all ten feeds connected. The persist is fixed at the root (see collector/src/index.js),
+  // but the probe should not be the thing that decides a GC pause or a disk hiccup is a death: three attempts
+  // spanning ~15 s cost nothing against an outage measured in hours.
   let st = null, probeFail = '';
-  for (let attempt = 0; attempt < 2; attempt++) {
-    if (attempt) await new Promise((res) => setTimeout(res, 2500));
+  const GAPS = [0, 3000, 12000];
+  for (let attempt = 0; attempt < GAPS.length; attempt++) {
+    if (GAPS[attempt]) await new Promise((res) => setTimeout(res, GAPS[attempt]));
     try {
       const r = await fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 } });
       if (!r.ok) { probeFail = 'HTTP ' + r.status; continue; }
