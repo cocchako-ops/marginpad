@@ -2080,13 +2080,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function dwAccrue() { if (dwVis) { dwAcc += Date.now() - dwSince; dwSince = Date.now(); } }
   function dwFlush() {
     if (!ME) return;
-    dwAccrue(); var secs = Math.round(dwAcc / 1000);
-    if (secs < 2) return; dwAcc = 0;
+    dwAccrue(); var secs = Math.floor(dwAcc / 1000);
+    if (secs < 2) return;
+    dwAcc -= secs * 1000;   // keep the remainder: zeroing it loses up to a second on EVERY flush, and this now runs once a minute rather than once a session
     var payload = JSON.stringify({ path: dwPath, secs: secs });
     try { if (navigator.sendBeacon) navigator.sendBeacon('/api/auth/dwell', new Blob([payload], { type: 'application/json' })); else fetch('/api/auth/dwell', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true }); } catch (_) {}
   }
   document.addEventListener('visibilitychange', function () { dwAccrue(); dwVis = document.visibilityState === 'visible'; dwSince = Date.now(); if (!dwVis) { dwFlush(); syncTrades(); } });
   window.addEventListener('pagehide', dwFlush);
+  // EVERY MINUTE WHILE VISIBLE, the same cadence and the same condition as the presence heartbeat - the two
+  // measure the same thing and must not be able to disagree by hours (2026-10-09: 13 h of presence against
+  // 1.85 h recorded, because the tab was still open). The DO accumulates with secs=secs+?, so partial
+  // flushes simply add up.
+  setInterval(function () {
+    if (document.hidden || !ME) return;
+    // A path change without a reload belongs to the page the time was spent on, not the one the tab ends
+    // on: flush what is owed to the old path first, then start accruing against the new one.
+    if (location.pathname !== dwPath) { dwFlush(); dwPath = location.pathname; dwAcc = 0; dwSince = Date.now(); return; }
+    dwFlush();
+  }, 60000);
   setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync - flushed on pagehide + next visible tick
   window.addEventListener('pagehide', function () { try { var j2 = localStorage.getItem('mp_journal') || ''; if (ME && j2 && j2 !== lastJ && j2.length < 60000 && navigator.sendBeacon) { lastJ = j2; navigator.sendBeacon('/api/auth/trades', new Blob([JSON.stringify({ journal: JSON.parse(j2) })], { type: 'application/json' })); } } catch (e) {} });
   // pull the server journal periodically so trades opened elsewhere - cross-device AND via the Bot API - appear LIVE in My Trades
