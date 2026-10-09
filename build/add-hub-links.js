@@ -142,10 +142,28 @@ const REGIONAL_LINKS = [
   ['/dolar-cripto/', 'Dólar cripto - cotizaciones y brecha (Español, Argentina)'],
 ].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
 const REGIONAL_INTRO = 'The same live numbers, written for two markets that price crypto against a currency of their own.';
+/* THE COMPARISONS RANK ON PAGE TWO AND NOTHING LINKS THEM (2026-10-09, read out of Google Search Console the first
+   time it was opened). Measured over 90 days on Google: the exchange-comparison queries are the site's largest
+   non-brand cluster - "kucoin vs kraken" 340 impressions at position 19.5, "bybit vs kraken" 287 at 23.7, "kraken vs
+   binance" 192 at 29.8, "kucoin vs binance" 163 at 37.5, "bybit vs kucoin" 127 at 15.7, "okx vs kraken" 120 at 21.8,
+   "kucoin vs bitget" 99 at 26.6 - about 1,741 impressions and ZERO clicks. The titles are already an exact match for
+   the query, so this is not a snippet problem the way the liquidation maps were: page two gets no clicks whatever it
+   says. It is a ranking problem, and the cheapest lever we own is the one the comparison pages have never had -
+   MEASURED median inbound internal links per comparison page: 2. The coin pages and the two liquidation pages carry
+   most of the crawl budget and convert almost none of it; this is the same move that took /trading-api/ from zero
+   crawls to 39 assistant visits. Seven links chosen BY DEMAND, not alphabetically - a block of all 25 is dilution.
+   The direction is resolved against what exists on disk: /kucoin-vs-kraken/ is a 301 to /kraken-vs-kucoin/, and a
+   link must point at the destination, never at a hop (the 2026-09-21 lesson, one line above). */
+const VS_DEMAND = [['kucoin', 'kraken'], ['bybit', 'kraken'], ['kraken', 'binance'], ['kucoin', 'binance'], ['bybit', 'kucoin'], ['okx', 'kraken'], ['kucoin', 'bitget']];
+const VS_LINKS = VS_DEMAND
+  .map(([a, b]) => { const f = a + '-vs-' + b, r = b + '-vs-' + a; const d = has(f) ? f : (has(r) ? r : null); return d ? ['/' + d + '/', exName(a) + ' vs ' + exName(b) + ' for futures - fees, leverage, liquidation'] : null; })
+  .filter(Boolean);
+const VS_INTRO = 'Fees, maximum leverage, maintenance margin and how each venue actually liquidates you, side by side - measured from what the exchanges publish, with the date they were checked.';
 const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
 for (const c of COINS) {
   const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
   const b = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (VS_LINKS.length) b.push(block('Where to trade it', VS_INTRO, VS_LINKS));
   if (REGIONAL_LINKS.length) b.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
   if (others.length) b.push(block('Other coins', '', others));
   if (inject(path.join(COINDIR, c, 'index.html'), null, b)) n++;
@@ -154,6 +172,7 @@ for (const c of COINS) {
 for (const d of ['liquidation-statistics', 'liquidations/by-exchange']) {
   const f = path.join(DIST, d, 'index.html');
   const bl = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (VS_LINKS.length) bl.push(block('Where to trade it', VS_INTRO, VS_LINKS));
   if (REGIONAL_LINKS.length) bl.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
   if (fs.existsSync(f) && inject(f, null, bl)) n++;
 }

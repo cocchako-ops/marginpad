@@ -1100,37 +1100,37 @@
  {
   "rel": "coin/bnb/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "coin/btc/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "coin/doge/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "coin/eth/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "coin/sol/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "coin/xrp/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
@@ -1628,7 +1628,7 @@
  {
   "rel": "hyperliquid-whales/index.html",
   "cover": 1,
-  "hit": 77,
+  "hit": 79,
   "missing": 0
  },
  {
@@ -1772,13 +1772,13 @@
  {
   "rel": "liquidation-statistics/index.html",
   "cover": 1,
-  "hit": 83,
+  "hit": 87,
   "missing": 0
  },
  {
   "rel": "liquidations/by-exchange/index.html",
   "cover": 1,
-  "hit": 75,
+  "hit": 79,
   "missing": 0
  },
  {
@@ -2084,7 +2084,7 @@
  {
   "rel": "squads/index.html",
   "cover": 1,
-  "hit": 23,
+  "hit": 25,
   "missing": 0
  },
  {

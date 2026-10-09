@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-08T20:02:35.045Z",
+  "generated": "2026-10-09T09:27:59.591Z",
   "pages": 385,
-  "occurrences": 26510,
-  "unique": 14040,
-  "words": 266437,
+  "occurrences": 26546,
+  "unique": 14043,
+  "words": 266521,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-08T20:11:07.475Z"
+  "merged": "2026-10-09T09:31:08.830Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1669,
+   "n": 1673,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -52194,9 +52194,9 @@
    "n": 1,
    "w": 67
   },
-  "5-aAwTA2Vs": {
-   "en": "Every major coin also has its own live page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> and more - with the 24-hour total, the long-versus-short split, and where that coin ranks among the most-liquidated markets. Check the coin you trade before you size up: a market that has just flushed a huge cluster of longs behaves very differently from a quiet one. Then rehearse the whole plan risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price, and keep the <a href=\"/calendar/\">economic calendar</a> open - the most violent cascades cluster around CPI and FOMC.",
-   "es": "Cada moneda importante tiene además su propia página en vivo - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> y más - con el total de 24 horas, el reparto entre longs y shorts y el puesto que ocupa esa moneda entre los mercados más liquidados. Mira la moneda que operas antes de subir el tamaño: un mercado que acaba de barrer un cúmulo enorme de longs se comporta muy distinto a uno tranquilo. Después ensaya todo el plan sin riesgo en el <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo, y ten abierto el <a href=\"/calendar/\">calendario económico</a>: las cascadas más violentas se concentran alrededor del CPI y de la FOMC.",
+  "drEcTrq6xC": {
+   "en": "Every major coin also has its own live page - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> and more - with the 24-hour total, the long-versus-short split, and where that coin ranks among the most-liquidated markets. Check the coin you trade before you size up: a market that has just flushed a huge cluster of longs behaves very differently from a quiet one. Then rehearse the whole plan risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price, and keep the <a href=\"/calendar/\">economic calendar</a> open - the most violent cascades cluster around CPI and FOMC.",
+   "es": "Cada moneda importante también tiene su propia página en vivo - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> y más - con el total de las últimas 24 horas, el reparto entre longs y shorts, y en qué puesto queda esa moneda entre los mercados más liquidados. Revisa la moneda que operas antes de aumentar el tamaño: un mercado que acaba de barrer un gran clúster de longs se comporta muy distinto a uno tranquilo. Luego ensaya todo el plan sin riesgo en la <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo, y mantén abierto el <a href=\"/calendar/\">calendario económico</a> - las cascadas más violentas se concentran alrededor del CPI y el FOMC.",
    "kind": [
     "html"
    ],
@@ -52850,9 +52850,9 @@
    "n": 1,
    "w": 5
   },
-  "owYxjnQYOy": {
-   "en": "Numbers land harder when you watch them play out. The <a href=\"/liquidations/\">live liquidations feed</a> shows exactly how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the <a href=\"/calculators?c=liq\">liquidation calculator</a>, size the trade from your stop with the <a href=\"/calculators?c=size\">position-size calculator</a>, and rehearse the whole thing risk-free at the live price on the <a href=\"/paper-trade\">paper-trading terminal</a>. Learning liquidation with fake money is far cheaper than learning it with your own.",
-   "es": "Los números calan más cuando los ves en acción. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> muestra exactamente cuánto apalancamiento se está barriendo ahora mismo en nueve exchanges, y cada moneda importante tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre longs y shorts. Antes de comprometerte, mete tu entrada y tu apalancamiento en la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, dimensiona la operación desde tu stop con la <a href=\"/calculators?c=size\">calculadora de tamaño de posición</a> y ensáyalo todo sin riesgo al precio en vivo en el <a href=\"/paper-trade\">terminal de paper trading</a>. Aprender qué es una liquidación con dinero ficticio sale mucho más barato que aprenderlo con el tuyo.",
+  "JougY9385s": {
+   "en": "Numbers land harder when you watch them play out. The <a href=\"/liquidations/\">live liquidations feed</a> shows exactly how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> - with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the <a href=\"/calculators?c=liq\">liquidation calculator</a>, size the trade from your stop with the <a href=\"/calculators?c=size\">position-size calculator</a>, and rehearse the whole thing risk-free at the live price on the <a href=\"/paper-trade\">paper-trading terminal</a>. Learning liquidation with fake money is far cheaper than learning it with your own.",
+   "es": "Los números calan más cuando los ves en acción. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> muestra exactamente cuánto apalancamiento se está liquidando ahora mismo en nueve exchanges, y cada moneda importante tiene su propia página - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> - con el total de las últimas 24 horas y el reparto entre longs y shorts. Antes de comprometerte, introduce tu entrada y tu apalancamiento en la <a href=\"/calculators?c=liq\">calculadora de liquidación</a>, calcula el tamaño de la operación desde tu stop con la <a href=\"/calculators?c=size\">calculadora de tamaño de posición</a>, y ensaya todo el proceso sin riesgo al precio en vivo en la <a href=\"/paper-trade\">terminal de paper trading</a>. Aprender sobre liquidación con dinero falso es mucho más barato que aprenderlo con el tuyo.",
    "kind": [
     "html"
    ],
@@ -64368,9 +64368,9 @@
    "n": 1,
    "w": 9
   },
-  "1NqnBsp1CE": {
-   "en": "<b>1. Rewards cash out straight to Moon.</b> MarginPad's <a href=\"/rewards\">rewards faucet</a> pays real money for using the site - and at withdrawal you can choose a <b>Moon username</b> as the destination instead of an exchange UID. Practice funds earned here become a live Moon balance there. There is also a Moon sign-up reward on the same page.",
-   "es": "<b>1. Las recompensas se retiran directamente a Moon.</b> El <a href=\"/rewards\">faucet de recompensas</a> de MarginPad paga dinero real por usar el sitio - y al retirar puedes elegir un <b>nombre de usuario de Moon</b> como destino en lugar del UID de un exchange. Los fondos que ganas practicando aquí se convierten allí en saldo real de Moon. En esa misma página también hay un bono por registrarte en Moon.",
+  "JjXE88B_4H": {
+   "en": "<b>1. Rewards cash out straight to Moon.</b> MarginPad's <a href=\"/rewards/\">rewards faucet</a> pays real money for using the site - and at withdrawal you can choose a <b>Moon username</b> as the destination instead of an exchange UID. Practice funds earned here become a live Moon balance there. There is also a Moon sign-up reward on the same page.",
+   "es": "<b>1. Las recompensas se retiran directo a Moon.</b> El <a href=\"/rewards/\">faucet de recompensas</a> de MarginPad paga dinero real por usar el sitio - y al retirar puedes elegir un <b>nombre de usuario de Moon</b> como destino en lugar de un UID de exchange. Los fondos de práctica que ganas aquí se convierten en saldo real en Moon. También hay una recompensa por registrarte en Moon en la misma página.",
    "kind": [
     "html"
    ],
@@ -71399,9 +71399,9 @@
    "n": 1,
    "w": 6
   },
-  "TPGnOePgXd": {
-   "en": "The concept sticks once you watch it in real time. MarginPad&apos;s <a href=\"/liquidations/\">live liquidations feed</a> shows how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.",
-   "es": "El concepto se te queda cuando lo ves en tiempo real. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> de MarginPad muestra cuánto apalancamiento se está barriendo ahora mismo en nueve exchanges, y cada moneda grande tiene su propia página - <a href=\"/liquidations/btc/\">BTC</a>, <a href=\"/liquidations/eth/\">ETH</a>, <a href=\"/liquidations/sol/\">SOL</a> - con el total de 24 horas y el reparto entre long y short. Después ensaya los hábitos de arriba sin riesgo en el <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo. Sale mucho más barato aprender qué es una liquidación con dinero ficticio que con el tuyo.",
+  "fkiY5oTWlg": {
+   "en": "The concept sticks once you watch it in real time. MarginPad&apos;s <a href=\"/liquidations/\">live liquidations feed</a> shows how much leverage is being wiped out across nine exchanges right now, and every major coin has its own page - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> - with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the <a href=\"/paper-trade\">paper-trading terminal</a> at the live price. It is far cheaper to learn liquidation with fake money than with your own.",
+   "es": "El concepto se entiende de verdad en cuanto lo ves en tiempo real. El <a href=\"/liquidations/\">feed de liquidaciones en vivo</a> de MarginPad muestra cuánto apalancamiento se está liquidando ahora mismo en nueve exchanges, y cada moneda importante tiene su propia página - <a href=\"/btc-liquidation-map/\">BTC</a>, <a href=\"/eth-liquidation-map/\">ETH</a>, <a href=\"/sol-liquidation-map/\">SOL</a> - con el total de las últimas 24 horas y el reparto entre longs y shorts. Luego ensaya los hábitos anteriores sin riesgo en la <a href=\"/paper-trade\">terminal de paper trading</a> al precio en vivo. Aprender sobre liquidación con dinero falso es mucho más barato que hacerlo con el tuyo.",
    "kind": [
     "html"
    ],
@@ -78238,6 +78238,52 @@
    ],
    "n": 8,
    "w": 54
+  },
+  "LvXy8f7lkk": {
+   "en": "Where to trade it",
+   "es": "Dónde operarlo",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 16,
+   "w": 4
+  },
+  "VEPMF2Ca12": {
+   "en": "Fees, maximum leverage, maintenance margin and how each venue actually liquidates you, side by side - measured from what the exchanges publish, with the date they were checked.",
+   "es": "Comisiones, apalancamiento máximo, margen de mantenimiento y cómo te liquida realmente cada plataforma, lado a lado - medido a partir de lo que publican los exchanges, con la fecha en que se verificó.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 8,
+   "w": 27
+  },
+  "rRTEu8mZ7O": {
+   "en": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance for futures - fees, leverage, liquidation</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance for futures - fees, leverage, liquidation</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin for futures - fees, leverage, liquidation</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken for futures - fees, leverage, liquidation</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget for futures - fees, leverage, liquidation</a>",
+   "es": "<a href=\"/kucoin-vs-kraken/\">KuCoin vs Kraken en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/bybit-vs-kraken/\">Bybit vs Kraken en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/kraken-vs-binance/\">Kraken vs Binance en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/binance-vs-kucoin/\">KuCoin vs Binance en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/bybit-vs-kucoin/\">Bybit vs KuCoin en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/okx-vs-kraken/\">OKX vs Kraken en futuros - comisiones, apalancamiento, liquidación</a><a href=\"/bitget-vs-kucoin/\">KuCoin vs Bitget en futuros - comisiones, apalancamiento, liquidación</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 8,
+   "w": 56
   },
   "fsGeU00H25": {
    "en": "In another language",
@@ -115370,9 +115416,9 @@
    "n": 1,
    "w": 5
   },
-  "vF1BRMWN7u": {
-   "en": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">a season in real prize money · paper trades, free to enter · paid in USD to your rewards balance</span>",
-   "es": "<b id=\"cpPool\">$270+</b><span id=\"cpPoolS\">por temporada en premios reales · paper trades, gratis para participar · pagado en USD a tu saldo de recompensas</span>",
+  "7L2ebtsusv": {
+   "en": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">in live prize pools across 8 boards · paid in USD to your rewards balance</span>",
+   "es": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">en bolsas de premios activas en 8 tablas · pagado en USD a tu saldo de recompensas</span>",
    "kind": [
     "html"
    ],
@@ -115380,7 +115426,7 @@
     "/"
    ],
    "n": 1,
-   "w": 18
+   "w": 14
   },
   "yQoImNITtr": {
    "en": "<span class=\"cp-left\" id=\"cpLeft\">14-day seasons</span>",
@@ -121152,9 +121198,9 @@
    "n": 1,
    "w": 2
   },
-  "BRsNhHuwFy": {
-   "en": "<b id=\"sPool\">$270+</b> a season",
-   "es": "<b id=\"sPool\">$270+</b> por temporada",
+  "f5XQ8jcgXc": {
+   "en": "<b id=\"sPool\">$570+</b> across 8 boards",
+   "es": "<b id=\"sPool\">$570+</b> en 8 tablas",
    "kind": [
     "html"
    ],
@@ -121162,7 +121208,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 2
+   "w": 3
   },
   "p9tMqJdAky": {
    "en": "$100 of it is the Bybit pool's start, which grows with volume · plus $300 King of the Moon every two seasons · paid in USD, withdrawable",

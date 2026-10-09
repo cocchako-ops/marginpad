@@ -19209,6 +19209,14 @@ export default {
       // 2026-09-12: /es/ is a full site now (see esSite above), the other eleven still 301.
       const _I18N_SUB = url.pathname.match(/^\/(ar|de|fr|id|ja|ko|nl|pt|ru|tr|zh)\/(.+)$/);
       if (_I18N_SUB && _I18N_SUB[2].replace(/\/$/, '')) return Response.redirect(url.origin + '/' + _I18N_SUB[2], 301);
+      /* TWO LANGUAGES WE NEVER SHIPPED ARE IN GOOGLE'S INDEX AS 404s (2026-10-09, read off the Page indexing report the
+         first time Search Console was opened: /it/ and /pl/, both http and https, crawled as recently as 3 Oct, among
+         the 50 under "Not found"). There has never been an Italian or Polish homepage - the twelve language entry
+         points are the ones listed above plus /es/ - so these are the fossils of an old sitemap or an old link. A 404
+         is the one answer that wastes the crawl AND the visitor; the English homepage is what they were always meant
+         to reach. Same treatment as a retired subpage, one level up. */
+      const _I18N_DEAD = url.pathname.match(/^\/(it|pl)\/?$/);
+      if (_I18N_DEAD) return Response.redirect(url.origin + '/', 301);
     }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     // AI-crawler telemetry (SEO kompas 2026-08-16): count AI search/assistant bot hits per page. ChatGPT-User = a human
