@@ -56,14 +56,18 @@ a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}butto
 /* Time on pages (quick user card, 2026-10-09): path | bar | duration | share · visits · last. The bar is
    against the heaviest page so the ten compare at a glance; everything else is the number. */
 .ucd{display:flex;flex-direction:column;gap:3px;margin:4px 0 2px}
-.ucd-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(40px,1fr) 52px minmax(0,1fr);gap:8px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+/* the duration column is minmax(52px,auto)+nowrap, not a fixed 52px: "160h 58m" wrapped to two lines and
+   made that one row taller than the rest */
+.ucd-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(40px,1fr) minmax(52px,auto) minmax(0,1fr);gap:8px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
 .ucd-row:last-child{border-bottom:0}
 .ucd-p{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ucd-b{height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
 .ucd-b i{display:block;height:100%;border-radius:3px;background:var(--lime)}
-.ucd-t{text-align:right;color:var(--ink)}
+.ucd-t{text-align:right;color:var(--ink);white-space:nowrap}
 .ucd-m{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
-@media(max-width:560px){.ucd-row{grid-template-columns:minmax(0,1.3fr) 52px;grid-template-areas:"p t" "b m"}.ucd-p{grid-area:p}.ucd-t{grid-area:t}.ucd-b{grid-area:b}.ucd-m{grid-area:m}}
+/* Phone: path|duration on line one, bar|meta on line two. `auto` on the second column, not a fixed 52px -
+   the meta is "73% · 7x · 42m ago" and 52px cut it to "73% · 7x ..." while the bar had room to spare. */
+@media(max-width:560px){.ucd-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"p t" "b m";row-gap:3px;padding:5px 0}.ucd-p{grid-area:p}.ucd-t{grid-area:t}.ucd-b{grid-area:b;align-self:center}.ucd-m{grid-area:m;text-align:right}}
 .sup-kv{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--dim)}.sup-kv b{color:var(--ink);font-family:var(--mono);font-weight:600}.sup-u .sup-sec{padding:12px 0 4px;color:var(--dim)}
 @media(max-width:1180px){.sup{grid-template-columns:280px minmax(0,1fr)}.sup-u{display:none}}
 @media(max-width:760px){.sup{display:block;height:auto}.sup>div{display:none;height:calc(100vh - 120px)}.sup[data-pane="list"] .sup-l{display:flex}.sup[data-pane="thread"] .sup-t{display:flex}.sup-back{display:inline-block}}
