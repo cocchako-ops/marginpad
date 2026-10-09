@@ -760,7 +760,11 @@ async function heatExtras(env, sym) {
     if (pts.length) {
       const now = pts[pts.length - 1];
       const cur = now && now.m ? +now.m[sym] : 0;
-      if (cur > 0) {
+      // A STALE RING MUST NOT READ AS "FLAT". The first live read after deploy found the newest point four
+      // hours old (the cron had a hole), so the 4h comparison landed on the SAME point and published
+      // chg4h = 0 - "leverage is flat" - which was not a measurement of anything. Older than 90 minutes,
+      // the block is absent, and absent is rendered as nothing (the /open-interest/ rule: never a zero).
+      if (cur > 0 && Date.now() - (+now.t || 0) <= 90 * 60000) {
         const o = { oi: cur, at: +now.t || 0 };
         const p4 = oiRingAt(pts, 4 * 3600000, 65 * 60000);
         const p24 = oiRingAt(pts, 24 * 3600000, 2 * 3600000);

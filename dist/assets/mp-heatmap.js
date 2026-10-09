@@ -116,6 +116,7 @@ function bkSelect(cls, opts, cur) {
     '.hm-bar{order:1}.hm-targets{order:2}.hm-stage{order:3}.hm-foot{order:6}' +
     '.hm-tg-h{display:none;font:700 10px "Space Mono",monospace;letter-spacing:.1em;color:#c2f64a;margin-bottom:6px}' +
     '.hm-tg-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}' +
+    '.hm-tg-g.has-real{grid-template-columns:1fr 1fr 1fr}' +
     '.hm-tg-r{display:flex;align-items:center;gap:8px;min-width:0}' +
     '.hm-tg-d{font:700 9.5px "Space Mono",monospace;letter-spacing:.1em;flex:none;width:42px}' +
     '.hm-tg-d.up{color:#ff8f86}.hm-tg-d.dn{color:#66d3a5}' +
@@ -123,7 +124,10 @@ function bkSelect(cls, opts, cur) {
     '.hm-tg-d.rl{color:#c2f64a}' +
     '.hm-tgb.w{border-left-style:solid;border-left-width:3px;background:#0c1118}' +
     '.hm-oi{order:3;width:100%;font:11px "Space Mono",monospace;color:#8fa3c4;margin:2px 0 0}' +
+    /* phone: the OI sentence lives in the readout and the whale chips are the lines already on the map */
+    '@media(max-width:980px){.hm-targets .hm-oi,.hm-targets .hm-tg-r.rl{display:none}.hm-tg-g.has-real{grid-template-columns:1fr}}' +
     '.hm-oi span{color:#5c6b84}' +
+    '.hm-selbox .hm-oi{display:block!important;margin:4px 0 0;font-size:10.5px}' +
     '.hm-risk{order:3;width:100%;font:11px "Space Mono",monospace;color:#8fa3c4;margin:3px 0 0;padding:5px 8px;background:#0d1116;border:1px solid #1d242f;border-radius:8px}' +
     '.hm-risk b{color:#e9e7df}.hm-risk span{color:#5c6b84}.hm-risk .l{color:#66d3a5}.hm-risk .s{color:#ff8f86}' +
     '.hm-risk.lk{cursor:pointer;color:#8fa3c4;border-color:#2a3444;display:flex;align-items:center;gap:6px}' +
@@ -505,6 +509,11 @@ function bkSelect(cls, opts, cur) {
       var isGone = s.dead || s._gone;
       var x1 = isGone ? (cx ? X(cx) : W) : W;
       if (x1 <= x0 + 0.5) continue;
+      // CLIP TO THE PLOT (2026-10-09). A swept band whose cut candle sits outside the visible time range came
+      // back with x0 past the canvas width after a time-zoom, was painted off-canvas (harmless) and RECORDED in
+      // bandRects (not harmless: the hit list and the E2E mirror both held rectangles nobody could click).
+      if (x0 >= W || x1 <= 0) continue;
+      x0 = Math.max(0, x0); x1 = Math.min(W, x1);
       var al = heatAlpha(s._h), col = heatCol(s._h);
       ctx.fillStyle = 'rgba(' + col + ',' + al.toFixed(3) + ')';
       ctx.fillRect(x0, y, x1 - x0, bh);
@@ -1145,7 +1154,7 @@ function bkSelect(cls, opts, cur) {
     var cells = here.length
       ? here.slice(0, 3).map(function (x) { return chip(x, 0); }).join('')
       : chip(S.whaleNear, String(S.whaleNear.sym || '').toUpperCase() !== S.coin);
-    return '<div class="hm-tg-r"><span class="hm-tg-d rl">' + __esT_mpheatmap('tgReal', 'REAL') + '</span><div class="hm-tg-c">' + cells
+    return '<div class="hm-tg-r rl"><span class="hm-tg-d rl">' + __esT_mpheatmap('tgReal', 'REAL') + '</span><div class="hm-tg-c">' + cells
       + '</div></div>';
   }
   function esc2(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
@@ -1218,7 +1227,8 @@ function bkSelect(cls, opts, cur) {
         (arr.length ? arr.slice(0, 3).map(cell).join('') : '<span class="hm-tg-none">none within 12%</span>') + '</div></div>';
     };
     var h = __esT_mpheatmap("targetsU2014WhereLiquidity",'<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>') .replace('</div>', q('targets') + '</div>');
-    h += '<div class="hm-tg-g">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + '</div>';
+    var wr = whaleRow();
+    h += '<div class="hm-tg-g' + (wr ? ' has-real' : '') + '">' + side(up, 'up', 'ABOVE') + side(dn, 'dn', 'BELOW') + wr + '</div>';
     // squeeze: strong pools close on BOTH sides
     var wMax = P.alive.length ? P.alive[0].w : 0;
     var nu = up[0], nd = dn[0];
@@ -1226,9 +1236,7 @@ function bkSelect(cls, opts, cur) {
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span class="hm-tg-sq">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += whaleRow();
-    h += oiLine();
-    h += riskLine();
+    h += riskLine();   // the OI sentence is in the readout (oiLine inside showSel) - as a standing row it put the map 6px below the fold on a 1366x768 desktop
     h += __esT_mpheatmap("theNearestLevelsWhere",'<div class="hm-tg-exp">The nearest levels where leveraged positions get liquidated - <span style="color:#66d3a5">green</span> is where longs go, <span style="color:#ff8f86">red</span> is where shorts go. Estimated from price history, not a record of what has been liquidated. Tap one to show it on the map.</div>');
     S.tgEl.innerHTML = h;
   }
@@ -1427,7 +1435,7 @@ function bkSelect(cls, opts, cur) {
               ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + __esT_mpheatmap("obsReallyIn", '</b> really was liquidated here in ') + obsWinTxt() + '.'
               : '<span style="color:#8b95a1">' + __esT_mpheatmap("obsNoneIn", 'Nothing has actually been liquidated here in ') + obsWinTxt() + '.</span>')
           + __esT_mpheatmap("buildingFor",'<br><span style="color:#8b95a1">Building for ') + ago2(pl2.t0 * 1000).replace(' ago', '') + '.</span>'
-          + zalRow(pl2);
+          + oiLine() + zalRow(pl2);
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.classList.toggle('lo', !!S._selLo); el2.style.display = 'block';
