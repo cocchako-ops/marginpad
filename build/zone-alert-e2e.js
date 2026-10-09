@@ -189,8 +189,10 @@ if (PURE_ONLY) {
   if (!ADMIN) { console.log('  skip the member half (no ADMIN_KEY.local.txt)'); }
   else {
     const uid = 'e2ezal' + Math.random().toString(36).slice(2, 6);
+    const uname = 'e2e_' + uid;
     const H = { 'x-admin-key': ADMIN, 'content-type': 'application/json' };
     const po = (p, b) => fetch(BASE + p, { method: 'POST', headers: H, body: JSON.stringify(b) }).then((r) => r.json().catch(() => ({}))).catch(() => ({}));
+    const ga = (p) => fetch(BASE + p, { headers: H }).then((r) => r.json().catch(() => ({}))).catch(() => ({}));
     await po('/api/admin/e2euser', { uid, op: 'mk' });
     const se = await po('/api/admin/e2euser', { uid, op: 'sess' });
     const tok = se && se.token;
@@ -206,27 +208,36 @@ if (PURE_ONLY) {
       const wj = await w.json().catch(() => ({}));
       ok('an ordinary member CANNOT switch it on', w.status === 402, 'status ' + w.status + ' ' + JSON.stringify(wj).slice(0, 120));
       ok('and the refusal points at Premium', /premium/i.test(JSON.stringify(wj)), JSON.stringify(wj).slice(0, 160));
-      // Grant Premium and try again. With no Telegram and no push the save must still refuse - an alert
-      // that is saved and has nowhere to go is the worst outcome of the three.
-      await po('/api/admin/premium', { username: 'e2e_' + uid, days: 1 }).catch(() => ({}));
-      const w2 = await fetch(BASE + '/api/alerts/zonealert', { method: 'POST', headers: CK, body: JSON.stringify({ on: 1, coins: ['BTC'], rel: 4 }) });
-      const w2j = await w2.json().catch(() => ({}));
-      if (w2.status === 400) {
-        ok('a Premium member with no chat is refused, with a reason', w2j.error === 'telegram_required', JSON.stringify(w2j).slice(0, 160));
-      } else if (w2.status === 200) {
-        ok('a Premium member saves it', !!w2j.ok, JSON.stringify(w2j).slice(0, 160));
-        ok('and the stored threshold is the one that was sent', +((w2j.cfg || {}).rel) === 4, JSON.stringify(w2j.cfg));
-      } else {
-        ok('a Premium member is answered 200 or 400, never anything else', false, 'status ' + w2.status + ' ' + JSON.stringify(w2j).slice(0, 160));
-      }
-      // Switching OFF must never need a chat - it is the one direction that cannot leave a dead alert behind.
-      const w3 = await fetch(BASE + '/api/alerts/zonealert', { method: 'POST', headers: CK, body: JSON.stringify({ on: 0, coins: [] }) });
-      ok('switching it off never needs Telegram', w3.status === 200, 'status ' + w3.status);
+      // Switching OFF is never a Premium action - a lapsed member must be able to silence a bell they set.
+      const w0 = await fetch(BASE + '/api/alerts/zonealert', { method: 'POST', headers: CK, body: JSON.stringify({ on: 0, coins: [] }) });
+      ok('but switching it OFF needs neither Premium nor Telegram', w0.status === 200, 'status ' + w0.status);
     }
+    // GRANT PREMIUM, THEN MINT A NEW SESSION: the grant revokes every session the member holds.
+    const gr = await ga('/api/admin/premium?add=' + encodeURIComponent(uname) + '&days=1');
+    const se2 = await po('/api/admin/e2euser', { uid, op: 'sess' });
+    const tok2 = se2 && se2.token;
+    ok('Premium was granted and a fresh session minted', !!tok2 && !(gr && gr.error), JSON.stringify(gr).slice(0, 120));
+    if (tok2) {
+      const CK2 = { cookie: 'mp_sess=' + tok2, 'content-type': 'application/json' };
+      const rd2 = await fetch(BASE + '/api/alerts/zonealert', { headers: CK2 }).then((r) => r.json()).catch(() => null);
+      ok('the member now reads as Premium', !!(rd2 && rd2.premium === true), JSON.stringify(rd2 && rd2.premium));
+      // With no Telegram and no push the save must still refuse - an alert that is saved and has nowhere
+      // to go is the worst outcome of the three.
+      const w2 = await fetch(BASE + '/api/alerts/zonealert', { method: 'POST', headers: CK2, body: JSON.stringify({ on: 1, coins: ['BTC'], rel: 4 }) });
+      const w2j = await w2.json().catch(() => ({}));
+      ok('a Premium member with no chat and no push is refused, with a reason', w2.status === 400 && w2j.error === 'telegram_required', 'status ' + w2.status + ' ' + JSON.stringify(w2j).slice(0, 160));
+      const w3 = await fetch(BASE + '/api/alerts/zonealert', { method: 'POST', headers: CK2, body: JSON.stringify({ on: 0, coins: [] }) });
+      ok('and switching it off is always accepted', w3.status === 200, 'status ' + w3.status);
+    }
+    await ga('/api/admin/premium?remove=' + encodeURIComponent(uname));   // off the owner's roster again
     await po('/api/admin/e2euser', { uid, op: 'rm' });
-    // The cron: it must stamp even when nobody is opted in, or "nobody opted in" reads as "it never ran".
-    const cr = await fetch(BASE + '/api/admin/runcron?task=zonealerts', { headers: { 'x-admin-key': ADMIN } }).then((r) => r.json()).catch(() => null);
+    // The cron: cookie-only, so mint an ops session from the key. It must stamp even when nobody is opted
+    // in, or "nobody opted in" reads as "it never ran".
+    const os = await fetch(BASE + '/api/stats/session', { method: 'POST', headers: H }).then((r) => r.json()).catch(() => null);
+    const cr = os && os.token ? await fetch(BASE + '/api/admin/runcron?task=zonealerts', { headers: { cookie: 'mp_sadm=' + os.token } }).then((r) => r.json()).catch(() => null) : null;
     ok('the cron task is registered and runs', !!cr && !cr.error, JSON.stringify(cr).slice(0, 200));
+    const st = await ga('/api/admin/runcron?task=zonealerts');
+    void st;
   }
 
   console.log('\nzone-alert-e2e: ' + pass + ' passed, ' + fail + ' failed');

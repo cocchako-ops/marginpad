@@ -42,6 +42,11 @@ if (minUsd != null && !(minUsd > 0)) { console.error('--min-usd must be a positi
 
 const dbPath = path.resolve(process.env.SQLITE_PATH || config.db.sqlitePath);
 const db = new DatabaseSync(dbPath);
+// THE COLLECTOR IS WRITING WHILE THIS RUNS. WAL lets many readers in beside one writer, but a second writer
+// that finds the lock held gets SQLITE_BUSY at once unless it is told to wait - the first live run of this
+// tool rolled back with "database is locked" inside the collector's two-minute ring persist. Ten seconds is
+// longer than any single write the collector makes (measured worst: 6.8 s on the film).
+db.exec('PRAGMA busy_timeout = 10000');
 
 const where = [], args = [];
 if (id != null) { where.push('id=?'); args.push(id); }

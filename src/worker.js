@@ -17222,9 +17222,12 @@ async function handleAlerts(url, env, request) {
       try { const r = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const d = await r.json(); linked = !!(d && d.linked); } catch (e) {}
       return jr({ premium: !!pf.premium, telegram: linked, cfg: zoneAlertCfg(cur), defaults: ZONEALERT_DEF, coins: ZONE_ALERT_COINS, maxCoins: ZONE_ALERT_MAX_COINS, lastRun: last && last.ts ? last.ts : null });
     }
-    if (!pf.premium) return jr({ error: 'premium_only', message: 'Zone alerts are a Premium feature.', upgrade: 'https://marginpad.io/premium/' }, 402);
     let zb = {}; try { zb = await request.json(); } catch (e) {}
     const zcfg = zoneAlertCfg(zb);
+    // Switching it ON is the Premium action. Switching it OFF never is: a member whose Premium has lapsed with
+    // the alert on would otherwise see a bell they can never turn off (the cron already skips them, but the
+    // page would say "on" for ever).
+    if (!pf.premium && zcfg.on) return jr({ error: 'premium_only', message: 'Zone alerts are a Premium feature.', upgrade: 'https://marginpad.io/premium/' }, 402);
     // Turning it ON with nowhere to send it is the one refusal worth making loudly: a member would otherwise
     // set an alert, see it saved, and never hear from it. Turning it OFF never needs a chat.
     if (zcfg.on) {
