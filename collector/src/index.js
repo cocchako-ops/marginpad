@@ -95,19 +95,50 @@ function restoreRings() {
   }
   log.info('rings restored', { tapeRows, filmCols });
 }
-function persistRings(why) {
+/* THE PERSIST WAS THE STALL, AND THE FILM WAS THE PERSIST (2026-10-09, after a second night of "Collector je PAO"
+   on Telegram at 00:01 UTC with the process up 19 h and all ten feeds connected).
+   MEASURED on the box, from the state table's own byte column: 13.9 MB rewritten every two minutes, of which
+   ring:film is 9.86 MB - 71% - and the five tape rings 0.8 MB each. JSON.stringify of the film alone is 470 ms;
+   the rest of the 3-5 s is SQLite writing ~14 MB. All of it in ONE synchronous block on the thread that reads the
+   exchange sockets, so every pass logged an "event loop stalled" of its own length. At 00:01:20 it collided with
+   four scheduled socket refreshes and ran 12.9 s - past the 9 s ceiling the status probe uses to see through an
+   open breaker, which is how a healthy collector was reported dead.
+   Two changes, in the order the measurement justifies them:
+   1. ONE KEY PER TURN. The pass yields to the event loop between keys, so the longest block is the longest single
+      write, never their sum. Sockets get read in between.
+   2. THE FILM IS NOT TAPE. The tape is "the newest $1M prints", the thing a restart must not lose, and it is cheap.
+      The film is twenty minutes of book-map columns for a picture; losing a few of them to a crash costs a reader
+      nothing. It goes every FILM_EVERY_TICKS passes instead of every one - and always on shutdown, where a few
+      seconds are free. That takes the two-minute cost from 13.9 MB to 4.0 MB.
+   Deliberately NOT touched: the two-minute interval itself (longer = more tape lost on a crash, the 2026-09-25
+   reason it exists). If this is still not enough, the next step is a writer thread, not a slower timer. */
+const FILM_EVERY_TICKS = 5; // the film every ~10 minutes, the tape every 2
+let ringTick = 0, persistBusy = false;
+async function persistRings(why) {
+  const forced = why !== 'timer'; // shutdown and manual calls write everything, synchronously enough to finish
+  if (persistBusy && !forced) { log.warn('rings persist skipped - previous pass still running', { why }); return; }
+  persistBusy = true;
   const t0 = Date.now();
-  let bytes = 0;
-  for (const c of tapeCols) {
-    try { if (c.dump) bytes += storage.saveState('ring:tape:' + c.venue, c.dump()); }
-    catch (e) { log.warn('tape persist failed', { venue: c.venue, e: String((e && e.message) || e) }); }
-  }
-  if (bookMap) {
-    try { bytes += storage.saveState('ring:film', bookMap.dump()); }
-    catch (e) { log.warn('film persist failed', { e: String((e && e.message) || e) }); }
-  }
+  const withFilm = forced || (ringTick % FILM_EVERY_TICKS === 0);
+  if (!forced) ringTick++;
+  let bytes = 0, worstMs = 0, worstKey = '';
+  const one = (k, make) => {
+    const s = Date.now();
+    try { bytes += storage.saveState(k, make()); }
+    catch (e) { log.warn('ring persist failed', { k, e: String((e && e.message) || e) }); }
+    const ms = Date.now() - s;
+    if (ms > worstMs) { worstMs = ms; worstKey = k; }
+  };
+  try {
+    for (const c of tapeCols) {
+      if (!c.dump) continue;
+      one('ring:tape:' + c.venue, () => c.dump());
+      if (!forced) await new Promise((r) => setImmediate(r)); // let the sockets be read between keys
+    }
+    if (bookMap && withFilm) one('ring:film', () => bookMap.dump());
+  } finally { persistBusy = false; }
   // logged with its cost every time, because this runs on the thread that reads the exchange sockets
-  log.info('rings persisted', { why, kb: Math.round(bytes / 1024), ms: Date.now() - t0 });
+  log.info('rings persisted', { why, kb: Math.round(bytes / 1024), ms: Date.now() - t0, film: withFilm, worst: worstKey, worstMs });
 }
 
 
@@ -164,7 +195,7 @@ async function main() {
     restoreRings();   // BEFORE any socket opens, so the first live print lands on top of the history, not instead of it
     for (const c of [...bookCols, ...tapeCols]) { try { c.start(); } catch (e) { log.error('book/tape start failed', { name: c.name, e: String(e) }); } }
     if (bookMap) bookMap.start();
-    ringTimer = setInterval(() => persistRings('timer'), STATE_EVERY_MS);
+    ringTimer = setInterval(() => { persistRings('timer').catch((e) => log.warn('ring persist failed', { e: String((e && e.message) || e) })); }, STATE_EVERY_MS);
     ringTimer.unref?.();
   } else log.info('book + tape disabled (MP_BOOK=0)');
 startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
@@ -201,7 +232,10 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
     // the rings go to disk AFTER the sockets are closed (nothing lands mid-dump) and BEFORE the database
     // does - this is the write that makes a deploy stop being a reset
     if (ringTimer) clearInterval(ringTimer);
-    try { persistRings(sig); } catch (e) { log.warn('ring persist on shutdown failed', { e: String((e && e.message) || e) }); }
+    // persistRings is async now, but a FORCED pass takes no yields: its writes are done before it returns, which is
+    // what keeps this safe in front of storage.close() below. The catch is on the promise, not the call.
+    try { Promise.resolve(persistRings(sig)).catch((e) => log.warn('ring persist on shutdown failed', { e: String((e && e.message) || e) })); }
+    catch (e) { log.warn('ring persist on shutdown failed', { e: String((e && e.message) || e) }); }
     try { aggregateTick(); } catch {}
     try { api.close(() => {}); } catch {}
     try { storage.close(); } catch {}
