@@ -154,6 +154,41 @@ const LAYOUT = () => {
     ok('no page or console errors', errs.length === 0, errs.join(' | '));
     ok('the map renders standing bands', S.bands > 5, 'bands=' + S.bands);
 
+    // ── THE HEADLINE TOTAL IS A MEASUREMENT, NOT THIS BROWSER'S SAMPLE (2026-10-09) ──────────────────
+    // It used to be the sum of the liquidation rows the page had managed to download, and
+    // /api/v1/liquidations/live caps a request at 1,000 rows with no time filter, so the backfill
+    // stretches its reach by RAISING the size threshold - older hours therefore hold only the big ones.
+    // Measured the day this was fixed: BTC 81.7% of the collector's own aggregate, ETH 87.3%, SOL 92.4%,
+    // and three of the twenty-four hours empty on BTC. This is the load-bearing check of that fix: the
+    // number on screen must equal the aggregate for the same window, and the page's own loaded-row count
+    // must NOT be able to produce it. Restoring the old sum turns both of these red.
+    const agg = await fetch('https://marginpad.io/api/v1/liquidations/recent?symbol=' + S.coin + '&minutes=1440')
+      .then((r) => r.json()).then((j) => { let usd = 0, n = 0; ((j && j.buckets) || []).forEach((b) => { usd += (+b.long || 0) + (+b.short || 0); n += (+b.count || 0); }); return { usd, n, min: +((j && j.minutes) || 0) }; })
+      .catch(() => null);
+    ok('the measured total is published at all', !!(S.obs && S.obs.usd > 0 && S.obs.n > 0), JSON.stringify(S.obs));
+    if (agg && agg.usd > 0 && S.obs) {
+      // 3% of slack for the half-minute between the two reads, not for a different definition of the total.
+      const d = Math.abs(S.obs.usd - agg.usd) / agg.usd;
+      ok('the total on screen IS the collector aggregate for the window', d < 0.03,
+        'page $' + (S.obs.usd / 1e6).toFixed(1) + 'M vs aggregate $' + (agg.usd / 1e6).toFixed(1) + 'M (' + (d * 100).toFixed(1) + '% apart)');
+      ok('and it counts more liquidations than this browser downloaded', S.obs.n > S.events,
+        'measured ' + S.obs.n + ' vs ' + S.events + ' rows loaded');
+      ok('the measured window is the one the picker shows', S.obs.mins === 1440, 'mins=' + S.obs.mins);
+    } else { ok('the collector aggregate could be read', false, 'no buckets came back - cannot grade the total'); }
+    // The masthead prints what the mirror holds, with a thousands separator and the window named.
+    const stTxt = await page.evaluate(() => (document.querySelector('.hm-stats') || {}).textContent || '');
+    ok('the masthead names the window beside the total', /liquidated/.test(stTxt) && /\b1D\b/.test(stTxt), JSON.stringify(stTxt));
+
+    // ── THE MODEL PUBLISHES ITS OWN PARAMETERS, so the page and the cron cannot disagree about them ───
+    // mv 2 is the 2026-10-09 generation: the exchange liquidation formula. Before it every band stood
+    // mmr*(1-1/lev) of the price further from its entry than the calculators say - 5 bins at 100x, where
+    // the band sat at DOUBLE the right distance. Absent means the worker has not been deployed yet.
+    if (S.model) {
+      ok('the model declares the exchange-formula generation', +S.model.mv >= 2, 'mv=' + S.model.mv);
+      ok('and the maintenance rate it assumed', +S.model.mmr === 0.005, 'mmr=' + S.model.mmr);
+      ok('and its leverage ladder reaches 2x at the bottom', (S.model.levs || [])[0] === 2, JSON.stringify(S.model.levs));
+    } else { console.log('  note  the pools response carries no model block - worker not deployed yet'); }
+
     // THE central regression: a heat field with no mid-tone is the bug this whole pass existed to fix.
     const levels = [S.bandsFaint, S.bandsMid, S.bandsStrong].filter(n => n > 0).length;
     ok('the heat field occupies more than one level', levels >= 2,
@@ -254,26 +289,37 @@ const LAYOUT = () => {
     ok('the cut is visible: some lines stop before the right edge and others run to it', cut.short > 0 && cut.full > 0,
       JSON.stringify(cut));
     // clicking a cut line has to answer with what was really liquidated there
-    const swRead = await page.evaluate(async () => {
-      const s2 = window.__mpHeat.state();
-      if (!s2.sweptY || !s2.sweptY.length) return { skip: true };
-      const cv = document.querySelector('.hm-cv'), r = cv.getBoundingClientRect();
-      // THE HEADING DECIDES WHAT WAS HIT, never the body text: a STANDING zone's calibration line says
-      // "measured on N of our own swept levels", so a bare /SWEPT/ over the whole box accepted a standing
-      // band as a cut line and the next check then asked it for a sweep's dollars (2026-10-06, 125/126).
-      // A cut line stops at the candle that crossed it, so the click walks left until it lands on it.
-      for (const z of s2.sweptY) {
-        const y = r.top + (s2.yHi - z.price) / (s2.yHi - s2.yLo) * s2.plotH;
-        for (const fx of [0.4, 0.22, 0.08]) {
-          const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none';
-          cv.dispatchEvent(new MouseEvent('click', { clientX: r.left + r.width * fx, clientY: y, bubbles: true }));
-          await new Promise((q) => setTimeout(q, 320));
-          const sb = document.querySelector('.hm-selbox'), k = sb && sb.querySelector('.k');
-          if (sb && k && getComputedStyle(sb).display !== 'none' && /^SWEPT$/i.test(k.textContent.trim())) return { txt: sb.textContent.replace(/\s+/g, ' ').trim() };
-        }
-      }
-      return { txt: '' };
+    // THE HEADING DECIDES WHAT WAS HIT, never the body text: a STANDING zone's calibration line says
+    // "measured on N of our own swept levels", so a bare /SWEPT/ over the whole box accepted a standing
+    // band as a cut line and then asked it for a sweep's dollars (2026-10-06, 125/126).
+    //
+    // AND THE TARGET IS PICKED BY ITS OWN `dead` FLAG, never by price (2026-10-09). The old version read a
+    // price out of sweptY and computed a y from it - but a price can carry BOTH a swept band and a living
+    // one rebuilt in the same bin, and when it did, the click selected the living twin, the heading came
+    // back "LIQUIDATION LEVEL" and two checks went red with nothing wrong. Proven by clicking the centre of
+    // rects chosen by the flag instead: four dead rects, four SWEPT headings, every time. A cut line also
+    // stops at the candle that crossed it, so its rect is where the pixels are - which is the other reason
+    // to click the rect rather than guess an x.
+    const swPt = await page.evaluate(() => {
+      const S = window.__mpHeat.state(), R = (S.bandRects || []).filter((q) => q.dead && q.x1 - q.x0 > 30);
+      if (!R.length) return null;
+      const r = document.querySelector('.hm-cv').getBoundingClientRect();
+      const q = R.sort((a, b) => (b.x1 - b.x0) - (a.x1 - a.x0))[0];
+      return { x: r.x + (q.x0 + q.x1) / 2, y: r.y + q.y + q.h / 2, price: q.price };
     });
+    let swRead = { skip: true };
+    if (swPt) {
+      await page.evaluate(() => { const b = document.querySelector('.hm-selbox'); if (b) b.style.display = 'none'; });
+      await page.mouse.click(swPt.x, swPt.y);
+      await new Promise((r) => setTimeout(r, 420));
+      swRead = await page.evaluate(() => {
+        const sb = document.querySelector('.hm-selbox'), k = sb && sb.querySelector('.k');
+        if (!sb || !k || getComputedStyle(sb).display === 'none') return { txt: '' };
+        return { head: k.textContent.trim(), txt: sb.textContent.replace(/\s+/g, ' ').trim() };
+      });
+      // a dead rect, clicked at its own centre, must open the SWEPT readout - no walking, no second guess
+      ok('a cut line is selectable at its own rectangle', swRead.head === 'SWEPT', JSON.stringify({ price: swPt.price, head: swRead.head }));
+    } else { console.log('  note  no cut line is drawn wide enough to click in this frame'); }
     // A STANDING ZONE CARRIES A MEASURED DOLLAR FIGURE AND STILL REFUSES TO PRICE THE MODEL. Those are
     // two different claims in the same box and both have to survive: the crowding is an ESTIMATE and says
     // so, and the dollars are the RECORD of what really liquidated at bands of this weight, with its n.
@@ -900,6 +946,34 @@ const LAYOUT = () => {
     return out;
   };
   const g = await wall(null);
+  // ── THE PREMIUM ZONE ALERT IS VISIBLE TO A GUEST, LOCKED (2026-10-09) ──────────────────────────────
+  // The Vault rule: a locked piece is shown greyed with a padlock, never hidden - hidden, the reader
+  // never learns it exists. The refusal itself is the server's job and is checked in zone-alert-e2e.
+  await withBrowser(async (browser) => {
+    const { page } = await open(browser, { width: 1366, height: 768 });
+    // A REAL mouse click at real coordinates, the way the leg above does it. A synthetic MouseEvent on the
+    // canvas reaches the listener but selects nothing, so it graded a working panel as missing.
+    const pt = await page.evaluate(() => {
+      const S = window.__mpHeat.state(), R = (S.bandRects || []).filter((r) => r.x1 - r.x0 > 40).sort((x, y) => (y.x1 - y.x0) - (x.x1 - x.x0));
+      const b = R[0] || (window.__mpHeat.state().bandRects || [])[0];
+      if (!b) return null;
+      const r = document.querySelector('.hm-cv').getBoundingClientRect();
+      return { cx: r.x + (b.x0 + b.x1) / 2, cy: r.y + b.y + b.h / 2 };
+    });
+    if (pt) { await page.mouse.click(pt.cx, pt.cy); await new Promise((r) => setTimeout(r, 420)); }
+    const z = await page.evaluate(() => {
+      const S = window.__mpHeat.state();
+      const box = document.querySelector('.hm-selbox');
+      const zal = box && box.querySelector('.hm-zal');
+      return { prem: S.prem, sel: !!(S.sel), zal: !!zal, locked: !!(zal && zal.classList.contains('lk')), txt: zal ? zal.textContent.trim().slice(0, 90) : '', lock: !!(zal && zal.querySelector('svg')) };
+    });
+    ok('a selected band offers the zone alert', !!z.zal, JSON.stringify(z));
+    ok('and for a guest it is locked, not missing', z.locked === true, JSON.stringify(z));
+    ok('the locked state carries a padlock', z.lock === true, JSON.stringify(z));
+    ok('and says what it would do', /zone/i.test(z.txt || '') && /Premium/i.test(z.txt || ''), JSON.stringify(z.txt));
+    await page.close();
+  }, { timeoutMs: 180000 });
+
   ok('a guest hits the wall', g.shown);
   ok('a guest is offered the sign-in path', g.signIn, g.txt);
   ok('and the buy path', g.buy);

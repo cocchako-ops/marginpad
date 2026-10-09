@@ -38,9 +38,21 @@ bus.setMaxListeners(0);
 const recent = new Map();
 function track(ex) { let a = recent.get(ex); if (!a) { a = []; recent.set(ex, a); } a.push(Date.now()); if (a.length > 4000) a.splice(0, a.length - 2000); }
 
-let inserted = 0, deduped = 0;
+let inserted = 0, deduped = 0, rejected = 0;
+// THE LAST TWENTY ROWS THE CEILING REFUSED. A guard that drops data silently is worse than the bug it
+// stops: the only way to tell "the market printed a record" from "an adapter is double-counting a position
+// field" is to look at what was refused. See config.maxEventUsd for the measurement behind the number.
+const rejectLog = [];
 function onEvent(e) {
   track(e.exchange);
+  const usd = +e.notional;
+  if (!(usd >= 0) || usd > config.maxEventUsd) {
+    rejected++;
+    rejectLog.unshift({ ts: Date.now(), exchange: e.exchange, symbol: e.symbol, side: e.side, price: e.price, qty: e.qty, notional: isFinite(usd) ? usd : null });
+    if (rejectLog.length > 20) rejectLog.pop();
+    log.warn('implausible liquidation rejected', { exchange: e.exchange, symbol: e.symbol, qty: e.qty, usd: isFinite(usd) ? Math.round(usd) : String(e.notional), cap: config.maxEventUsd });
+    return;
+  }
   if (storage.insert(e)) { inserted++; bus.emit('liq', e); } else deduped++;
 }
 
@@ -82,9 +94,20 @@ const bookMap = config.book.enabled
 // its socket opens. A dump older than three days is refused: a blob that old is not "recent".
 const STATE_MAX_AGE_MS = 3 * 86400000;
 const STATE_EVERY_MS = 2 * 60000;
+// A DEDUP MEMORY IS NOT A RING, so it gets its own age. A tape blob from three days ago is not "recent big
+// prints" and is right to refuse; the set of position ids already counted is only useful BECAUSE it is old,
+// and it is what stops the same Bitfinex position being written again days later (2026-10-09). Seven days,
+// matching the in-process prune, after which the exchange has stopped re-listing it anyway.
+const DEDUP_MAX_AGE_MS = 7 * 86400000;
+// Collectors whose in-memory dedup must survive a restart. Keyed by collector name, so adding one is a line.
+const DEDUP_COLS = () => collectors.filter((c) => typeof c.dump === 'function' && typeof c.restore === 'function');
 let ringTimer = null;
 function restoreRings() {
   let tapeRows = 0, filmCols = 0;
+  for (const c of DEDUP_COLS()) {
+    try { const s = storage.loadState('dedup:' + c.name, DEDUP_MAX_AGE_MS); if (s) log.info('dedup restored', { venue: c.name, ids: c.restore(s.obj) }); }
+    catch (e) { log.warn('dedup restore failed', { venue: c.name, e: String((e && e.message) || e) }); }
+  }
   for (const c of tapeCols) {
     try { const s = storage.loadState('ring:tape:' + c.venue, STATE_MAX_AGE_MS); if (s && c.restore) tapeRows += c.restore(s.obj); }
     catch (e) { log.warn('tape restore failed', { venue: c.venue, e: String((e && e.message) || e) }); }
@@ -130,6 +153,12 @@ async function persistRings(why) {
     if (ms > worstMs) { worstMs = ms; worstKey = k; }
   };
   try {
+    // The dedup memories first and always: they are a few kilobytes between them, and losing one costs a
+    // phantom liquidation in every figure the site publishes (2026-10-09).
+    for (const c of DEDUP_COLS()) {
+      one('dedup:' + c.name, () => c.dump());
+      if (!forced) await new Promise((r) => setImmediate(r));
+    }
     for (const c of tapeCols) {
       if (!c.dump) continue;
       one('ring:tape:' + c.venue, () => c.dump());
@@ -164,6 +193,10 @@ function getStatus() {
     ok: exchanges.some((e) => e.connected),
     startedAt, uptimeSec: Math.floor((now - startedAt) / 1000),
     symbols: config.symbols, inserted, deduped,
+    // What the plausibility ceiling refused, and what it was. `rejected` staying at 0 is the normal state;
+    // anything in `rejectLog` is either an adapter double-counting a position field (which is what this
+    // guard exists for) or a genuine record print, and only the row itself can tell them apart.
+    rejected, maxEventUsd: config.maxEventUsd, rejectLog: rejectLog.slice(0, 20),
     loopLag, slowCalls: slowStorageCalls(),
     exchanges, // db: filled by the /status handler from the reader thread (never a main-thread scan)
     // Everything needed to tell a healthy book from a quietly wrong one, without opening a shell: how many

@@ -23,6 +23,17 @@ export const config = {
   defaultBucketDivisor: 800, // fallback bucket size = price / 800 (rounded) for symbols without an explicit size
 
   tickerMinNotional: 50000,  // live ticker only shows events above this USD notional (UI-adjustable)
+
+  // ONE IMPLAUSIBLE ROW CAN OWN EVERY FIGURE WE PUBLISH (2026-10-09). Measured across the whole 14-day
+  // retention and all nine venues: the largest REAL liquidation is $11.85M (Binance BTC), and the only two
+  // rows above $20M were the SAME Bitfinex position re-reported after a restart - $195.4M and $192.6M, qty
+  // 2284.77 and 2284.92 BTC. Between them they inflated the published 24h total by 15.9% and the 7-day total
+  // by 34%, put Bitfinex third on the venue table at 16% of all flow, and the $192.6M one was being served
+  // as "the biggest liquidation today" on a page assistants cite.
+  // A print above this is rejected and COUNTED, never dropped in silence: /api/v1/status carries `rejected`
+  // and the last twenty refused rows, so a genuine record-breaking print reads as a ceiling to raise rather
+  // than as data that quietly went missing. 4.2x the largest real event ever observed here.
+  maxEventUsd: Number(process.env.MP_MAX_EVENT_USD || 50_000_000),
   retentionDays: 14,         // raw events kept 14 days (live/feed/pulse read <=7d; every day is archived to R2 liq/<day>.csv.gz by the worker before it ages out). Was 30 until 2026-09-02: 743MB DB, 2M rows, aggregate queries stalling the socket thread.
   aggRetentionDays: 90,      // 5-min aggregates (histogram windows, max 30d) kept 90 days — were kept forever (196MB and growing)
   aggIntervalMs: 60_000,     // roll new raw rows into 5-min aggregates every 60s

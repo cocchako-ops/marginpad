@@ -130,6 +130,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      swept when a bar trades through) -> fragility = proximity-weighted liq mass within 5% of price vs the
      market's absorbing volume, scaled 0-100. Same math family as the server heatmap model, computed locally
      so it works on ANY symbol/timeframe. */
+  /* THE ONE LIQUIDATION FORMULA (2026-09-25), for the two pool models below. Both were still on the retired
+     `close*(1-0.995/lev)` until 2026-10-09, which places a pool mmr*(1-1/lev) of the price FURTHER from its
+     entry than the figure the site's own calculators, glossary and /trading-api/ print - 0.45% of price at
+     10x rising to 0.495% at 100x, where the pool sat at double the right distance (0.995% vs 0.500%). These
+     prices are not only drawn: the Magnet and Cascade Radar read them, and poolsNow() feeds the chart
+     assistant's brief as `liquidationPools` and is one of the tables aiShapeOf snaps a drawing onto - so the
+     offset reached the AI's plans too. mmr is the flat 0.5% both models have always assumed. */
+  function plLiq(entry,lev,long){
+    if(window.mpLiqPx)return window.mpLiqPx(entry,lev,0.005,long,0);
+    var im=Math.max(1e-6,1/lev),me=Math.min(0.005,im/2);
+    return long?entry*(1-im+me):entry*(1+im-me);
+  }
   function cascadeCalc(d){var n=d?d.length:0;if(n<60)return null;
     var LEVS=[[5,0.16],[10,0.26],[25,0.24],[50,0.18],[100,0.16]];
     var px0=d[n-1].close,binH=px0*0.002;if(!(binH>0))return null;
@@ -138,7 +150,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       for(k in alive){var pr=(+k+0.5)*binH;if(pr>=b.low&&pr<=b.high)delete alive[k];}
       if(i>0){var pv=d[i-1],noti=((+pv.vol||0)*pv.close)||Math.abs(pv.close-pv.open)*1e4;
         for(var L2=0;L2<LEVS.length;L2++){var lv=LEVS[L2][0],wg=noti*LEVS[L2][1]*0.5;
-          var bl=Math.floor(pv.close*(1-0.995/lv)/binH),bs=Math.floor(pv.close*(1+0.995/lv)/binH);
+          var bl=Math.floor(plLiq(pv.close,lv,true)/binH),bs=Math.floor(plLiq(pv.close,lv,false)/binH);
           var al=alive[bl];if(al&&al.long)al.w+=wg;else if(!al)alive[bl]={w:wg,long:1};
           var as2=alive[bs];if(as2&&!as2.long)as2.w+=wg;else if(!as2)alive[bs]={w:wg,long:0};}}
       if(i%50===49){for(k in alive){var pr2=(+k+0.5)*binH;if(Math.abs(pr2-b.close)/b.close>0.35)delete alive[k];}}
@@ -240,7 +252,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* current liquidation pools (local leverage-ladder snapshot - same model as Cascade Radar / the heatmap) */
   function poolsNow(bars){var n=bars?bars.length:0;if(n<40)return [];var LEVS=[[5,0.16],[10,0.26],[25,0.24],[50,0.18],[100,0.16]];var px0=bars[n-1].close,binH=px0*0.002;if(!(binH>0))return [];var alive={},i,k;
     for(i=0;i<n;i++){var b=bars[i];for(k in alive){var pr=(+k+0.5)*binH;if(pr>=b.low&&pr<=b.high)delete alive[k];}
-      if(i>0){var pv=bars[i-1],noti=((+pv.vol||0)*pv.close)||Math.abs(pv.close-pv.open)*1e4;for(var L=0;L<LEVS.length;L++){var lv=LEVS[L][0],wg=noti*LEVS[L][1]*0.5;var bl=Math.floor(pv.close*(1-0.995/lv)/binH),bs=Math.floor(pv.close*(1+0.995/lv)/binH);var al=alive[bl];if(al&&al.long)al.w+=wg;else if(!al)alive[bl]={w:wg,long:1};var as2=alive[bs];if(as2&&!as2.long)as2.w+=wg;else if(!as2)alive[bs]={w:wg,long:0};}}
+      if(i>0){var pv=bars[i-1],noti=((+pv.vol||0)*pv.close)||Math.abs(pv.close-pv.open)*1e4;for(var L=0;L<LEVS.length;L++){var lv=LEVS[L][0],wg=noti*LEVS[L][1]*0.5;var bl=Math.floor(plLiq(pv.close,lv,true)/binH),bs=Math.floor(plLiq(pv.close,lv,false)/binH);var al=alive[bl];if(al&&al.long)al.w+=wg;else if(!al)alive[bl]={w:wg,long:1};var as2=alive[bs];if(as2&&!as2.long)as2.w+=wg;else if(!as2)alive[bs]={w:wg,long:0};}}
       if(i%50===49){for(k in alive){var pr2=(+k+0.5)*binH;if(Math.abs(pr2-b.close)/b.close>0.35)delete alive[k];}}}
     var out=[];for(k in alive){out.push({price:(+k+0.5)*binH,w:alive[k].w,long:!!alive[k].long});}return out;}
   /* Liquidation Magnet: the dominant pool above and below price PULL it. Returns the strongest magnet on each
@@ -2756,7 +2768,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var mmr=0.005,_qRate=(window.mpFeeRate?window.mpFeeRate(lev,sym):0.00055);
     /* the quick-trade preview quotes the liq the fill will write: the open fee is taken at the fill, so less
        margin backs the position (2026-09-24). window.mpLiqPx lives in home.js, which the app shell always loads. */
-    var liq=(window.mpLiqPx?window.mpLiqPx(px,lev,mmr,qtSide==='long',_qRate):(qtSide==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev))),notional=amt*lev;
+    var liq=(window.mpLiqPx?window.mpLiqPx(px,lev,mmr,qtSide==='long',_qRate):(function(){var _im=Math.max(1e-6,1/(lev)),_me=Math.min(mmr,_im/2);return (qtSide==='long')?(px)*(1-_im+_me):(px)*(1+_im-_me);})()),notional=amt*lev;
     if(eE)eE.textContent=fmtP(px);if(eL)eL.textContent=fmtP(liq);if(eS)eS.textContent=fmtP(notional);qtLimHint();}
   function doOpenPos(){ var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,msg=qtEl.querySelector('.cqt-msg');
     if(amt>100000){amt=100000;qtEl.querySelector('.cqt-amt').value='100000';if(msg)msg.textContent=__esT_mpcharts("maxTradeSizeIs",'Max trade size is $100,000');} // owner rule
@@ -2779,7 +2791,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     }
     function open(p,srvT,cid){if(!srvT&&window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+__esT_mpcharts("marketIsClosedYou",' market is closed - you can trade it when it reopens.'));return;} // stocks: block client opens while the exchange is shut (consistent with the plan form)
       var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,_fRate=(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L)));
-      var liq=(window.mpLiqPx?window.mpLiqPx(p,L,mmr,qtSide==='long',_fRate):(qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L)));
+      var liq=(window.mpLiqPx?window.mpLiqPx(p,L,mmr,qtSide==='long',_fRate):(function(){var _im=Math.max(1e-6,1/(L)),_me=Math.min(mmr,_im/2);return (qtSide==='long')?(p)*(1-_im+_me):(p)*(1+_im-_me);})());
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
       if(isFinite(_sl)&&((_lng&&_sl>=p)||(!_lng&&_sl<=p)))_sl=NaN;

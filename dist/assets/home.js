@@ -1021,7 +1021,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(_smP)requestAnimationFrame(smoothLoopP);
   }
   document.addEventListener('visibilitychange',function(){if(!document.hidden)startSmoothP();});
-  function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));}
+  function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);if(e.liq)return e.liq;return window.mpLiqPx?window.mpLiqPx(e.entry,lev,mmr,long,0):(long?e.entry*(1-1/lev+Math.min(mmr,1/(2*lev))):e.entry*(1+1/lev-Math.min(mmr,1/(2*lev))));} // a filled position carries its own liq; this is the fallback for a row that has none, and it uses the ONE formula (2026-09-25) - it was still on the retired one until 2026-10-09
   // ENTRY AS A LINE, OR AS A MARK ON THE CANDLE (owner 2026-09-13). "line" keeps the horizontal entry price line;
   // "mark" drops it and puts a small circle on the bar the position opened in - green B for a long, red S for a short.
   // Markers are series markers, anchored to a bar time, so they stay glued to the candles under pan and zoom. The mark
@@ -1689,7 +1689,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))_bad.push('take-profit');
     if(_bad.length){_say('Your '+_bad.join(' and ')+__esT_home("isOnTheWrong",' is on the wrong side of the entry price - fix it (or clear the field) to open the trade.'));try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
     var notional=amt*L, qty=notional/entry;
-    var liq=(window.mpLiqPx?window.mpLiqPx(entry,L,mmr,side==='long',feeRate):(side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L)));  // always on the correct side of entry, even at extreme leverage; the open fee is already out of the backing margin
+    var liq=(window.mpLiqPx?window.mpLiqPx(entry,L,mmr,side==='long',feeRate):(function(){var _im=Math.max(1e-6,1/(L)),_me=Math.min(mmr,_im/2);return (side==='long')?(entry)*(1-_im+_me):(entry)*(1+_im-_me);})());  // always on the correct side of entry, even at extreme leverage; the open fee is already out of the backing margin
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
@@ -2706,10 +2706,10 @@ window.addEventListener('load', function () {
     levLines=[];
     if(cur.price>0){ var mmr=0.005, levs=[5,10,25,50,100];
       for(var L=0;L<levs.length;L++){ var lev=levs[L]; if(!levSet[lev])continue;
-        if(sideMode!=='short'){ var pl=cur.price*(1-1/lev+mmr),yl=candle.priceToCoordinate(pl); if(yl!=null&&yl>=0&&yl<=H){ levLines.push({y:yl,price:pl,lev:lev,side:'long'});
+        if(sideMode!=='short'){ var pl=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,true,0):cur.price*(1-1/lev+mmr),yl=candle.priceToCoordinate(pl); if(yl!=null&&yl>=0&&yl<=H){ levLines.push({y:yl,price:pl,lev:lev,side:'long'});
           octx.strokeStyle='rgba(255,92,92,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yl); octx.lineTo(paneW,yl); octx.stroke(); octx.setLineDash([]);
           octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='bottom'; octx.fillStyle='rgba(255,150,150,0.95)'; octx.fillText(lev+'× long',5,yl-1); } }
-        if(sideMode!=='long'){ var psr=cur.price*(1+1/lev-mmr),yr=candle.priceToCoordinate(psr); if(yr!=null&&yr>=0&&yr<=H){ levLines.push({y:yr,price:psr,lev:lev,side:'short'});
+        if(sideMode!=='long'){ var psr=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,false,0):cur.price*(1+1/lev-mmr),yr=candle.priceToCoordinate(psr); if(yr!=null&&yr>=0&&yr<=H){ levLines.push({y:yr,price:psr,lev:lev,side:'short'});
           octx.strokeStyle='rgba(46,211,154,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yr); octx.lineTo(paneW,yr); octx.stroke(); octx.setLineDash([]);
           octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='top'; octx.fillStyle='rgba(120,235,190,0.95)'; octx.fillText(lev+'× short',5,yr+1); } }
       } }
@@ -2785,13 +2785,13 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.applyOptions({priceFormat:mpPriceFmt(kd,kd[kd.length-1]&&kd[kd.length-1].close)});}catch(e){} /* the heatmap axis quoted every market at LWC's default 2 decimals - sub-penny coins collapsed to 0.00 */ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=55eaafff
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js?v=f38c0dc8
     // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
     // is the RETIRED v1 - dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
     var sec=document.getElementById('heatmap');
     if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
     if(window.__mpHmLd)return; window.__mpHmLd=1;
-    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=55eaafff';
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js?v=f38c0dc8';
     s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
     s.onerror=function(){window.__mpHmLd=0;};
     document.head.appendChild(s);
@@ -3307,7 +3307,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=68fda65a'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=248b6671'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3755,7 +3755,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(window.mpTradeGate&&!window.mpTradeGate(p.sym,long?'long':'short')){cleanUrl();return;} // respect open-trade limits + one-way mode for Telegram imports too
       var notional=margin*lev,qty=entry>0?notional/entry:0,mmr=0.005;
       var _tgRate=window.mpFeeRate(lev,p.sym);
-      var liq=(window.mpLiqPx?window.mpLiqPx(entry,lev,mmr,long,_tgRate):(long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev)));
+      var liq=(window.mpLiqPx?window.mpLiqPx(entry,lev,mmr,long,_tgRate):(function(){var _im=Math.max(1e-6,1/(lev)),_me=Math.min(mmr,_im/2);return (long)?(entry)*(1-_im+_me):(entry)*(1+_im-_me);})());
       arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev,p.sym),status:'open',pnl:null,src:'telegram',tgClaim:tok});
       try{window.mpJStore(arr);}catch(e){}
       try{window.mpLivePrices=window.mpLivePrices||{};if(!(window.mpLivePrices[p.sym]&&window.mpLivePrices[p.sym].p>0))window.mpLivePrices[p.sym]={p:entry,t:Date.now()};}catch(e){}
@@ -3808,7 +3808,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=581d9bcc'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=b13ec85f'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
@@ -4082,7 +4082,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
     build();
     var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
-    var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
+    var liq=e.liq||(window.mpLiqPx?window.mpLiqPx(e.entry,lev,mmr,long,0):(long?e.entry*(1-1/lev+Math.min(mmr,1/(2*lev))):e.entry*(1+1/lev-Math.min(mmr,1/(2*lev))))); // the ONE formula (2026-09-25); was the retired one until 2026-10-09
     ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'-')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
     ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
     Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){

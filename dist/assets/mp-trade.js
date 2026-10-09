@@ -1077,7 +1077,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
     build();
     var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
-    var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
+    var liq=e.liq||(window.mpLiqPx?window.mpLiqPx(e.entry,lev,mmr,long,0):(long?e.entry*(1-1/lev+Math.min(mmr,1/(2*lev))):e.entry*(1+1/lev-Math.min(mmr,1/(2*lev))))); // the ONE formula (2026-09-25); was the retired one until 2026-10-09
     ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'-')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
     ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
     Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){

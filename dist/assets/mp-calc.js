@@ -81,7 +81,11 @@ function __esT_mpcalc(k, en) { try { if ((document.documentElement.lang || "").s
     const entry=num('liqEntry'), lev=num('liqLev'), mmr=num('liqMmr')/100, out=$('liqOut');
     if(!isFinite(entry)||!isFinite(lev)||lev<=0||!isFinite(mmr)){ muted(out); $('liqDist').textContent=$('liqMove').textContent=$('liqMargin').textContent='-'; return; }
     const long=sides.liqSide==='long';
-    const liq=long?entry*(1-1/lev+mmr):entry*(1+1/lev-mmr);
+    // mmr_eff = min(mmr, im/2), the clamp that keeps a long's liq strictly below its entry: without it a
+    // 200x long at the default 0.5% printed a liquidation AT the entry price and 1000x printed one above it
+    // (measured 2026-10-09). Mirror of mpLiqPx / mpcLiq - the ONE formula since 2026-09-25.
+    const im=Math.max(1e-6,1/lev), me=Math.min(Math.max(0,mmr),im/2);
+    const liq=long?entry*(1-im+me):entry*(1+im-me);
     const dist=(liq-entry)/entry*100;
     out.className='rvalue '+(dist<0?'neg':'pos'); animateNum(out, liq, v=>'$'+fmtUSD(v));
     $('liqDist').textContent=fmtPct(dist); $('liqDist').className='v '+(dist<0?'neg':'pos');

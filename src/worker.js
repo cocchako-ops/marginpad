@@ -581,6 +581,17 @@ async function screenerKvWarm(env) { // */10 cron: keep the scr:cache7 floor fre
 // when price trades through, and every visitor sees the same map. Client keeps its local build as fallback.
 const HM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
 const HM_LEVS = [[2, 0.08], [3, 0.10], [5, 0.16], [10, 0.26], [25, 0.20], [50, 0.12], [100, 0.08]]; // 2x/3x/5x rungs added 2026-07-25 - without them the deepest pool was only -10% from price (owner: 'nothing below 55k')
+// THE MAP WAS PLACING ITS BANDS WITH THE RETIRED FORMULA (fixed 2026-10-09). On 2026-09-25 the whole site
+// moved to the exchange's own liquidation formula and the mirrors were listed - the heatmap was not one of
+// them, so this cron and the client fallback both kept `close * (1 - 0.995 / L)`, i.e. a distance of
+// (1 - mmr)/L instead of 1/L - mmr. The error is mmr * (1 - 1/L) of the price, so with 0.1% bins every band
+// stood 2.5 bins (2x) to 5.0 bins (100x) FURTHER from its entry than the number the calculators, the
+// glossary and /trading-api/ print - and in relative terms the 100x band sat at double the right distance
+// (0.995% vs 0.500%). Measured on BTC at $82,305: the 100x long band was drawn at $81,486 where the rest of
+// the site says $81,893. The near rungs are the ones TARGETS reads, so they were the most wrong.
+// `mpcLiq` is the one formula; `rate` is 0 here because a model crowd pays no open fee we can know of.
+const HM_MMR = 0.005;
+const HM_MODEL_V = 2; // bump on ANY change to HM_LEVS, HM_MMR or the liquidation formula - the stored bins are keyed by price, so the accumulation has to be thrown away (heatPoolsCron does it by itself)
 async function heatPoolsCron(env) {
   // WHAT EACH COIN DID THIS RUN. The model is otherwise completely invisible: it writes to KV, the page
   // reads a published snapshot, and when a change to it produces nothing there is no way to tell whether
@@ -594,7 +605,14 @@ async function heatPoolsCron(env) {
       const bars = kd.closed;
       let st = null; try { st = JSON.parse(await env.STATS.get('hmp:st:' + sym) || 'null'); } catch (e) {}
       const px = kd.bars[kd.bars.length - 1].close; // freshest close (forming bar when present) - prune + published price track the LIVE market, not a 15-min-old close
-      if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {}, dead: {} }; // fixed ~0.1% price bins per coin
+      // A MODEL CHANGE MUST NOT NEED SOMEBODY TO REMEMBER AN OPS STEP. Every bin is keyed by PRICE, so
+      // changing the ladder or the liquidation formula makes every accumulated bin wrong - and the old ones
+      // do not go away, they stand beside the new ones as a second, shifted set of bands. That is what
+      // `?reset=1` was for, and a manual reset is a step that gets forgotten. The version is stored with the
+      // state now: bump HM_MODEL_V and the next run throws the accumulation away and rebuilds it from the
+      // kline window by itself (one run, ~10 days of candles). 2 = the 2026-10-09 move to the exchange formula.
+      const wipe = !!(st && st.binH > 0 && +st.mv !== HM_MODEL_V);
+      if (!st || !(st.binH > 0) || wipe) st = { last: 0, binH: px * 0.001, alive: {}, dead: {}, mv: HM_MODEL_V }; // fixed ~0.1% price bins per coin
       // A SWEPT POOL IS NOT DELETED ANY MORE, IT IS MOVED (owner, 2026-09-24). Until today the moment a
       // candle's range covered a bin the pool was thrown away, so the map could only ever show leverage
       // that is still standing - and the most useful thing on a liquidation map is the record that a crowd
@@ -609,7 +627,7 @@ async function heatPoolsCron(env) {
         for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: b.time * 1000, p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); dead[k] = { w: a0.w, long: a0.long, t0: a0.t0, lev: a0.lev, tsw: b.time }; delete alive[k]; } } // consumed - big ones get logged (post-sweep annotations)
         const prev = bars[i - 1], notion = (prev.vol || 0) * prev.close || Math.abs(prev.close - prev.open) * 1e4;
         for (const [L, wgt] of HM_LEVS) { const w = notion * wgt * 0.5;
-          const bl = Math.floor(prev.close * (1 - 0.995 / L) / binH), bs = Math.floor(prev.close * (1 + 0.995 / L) / binH);
+          const bl = Math.floor(mpcLiq(prev.close, L, HM_MMR, true, 0) / binH), bs = Math.floor(mpcLiq(prev.close, L, HM_MMR, false, 0) / binH);
           const al = alive[bl]; if (al && al.long) al.w += w; else if (!al) alive[bl] = { w: w, long: 1, t0: prev.time, lev: L };
           const as2 = alive[bs]; if (as2 && !as2.long) as2.w += w; else if (!as2) alive[bs] = { w: w, long: 0, t0: prev.time, lev: L };
         }
@@ -625,7 +643,7 @@ async function heatPoolsCron(env) {
       if (!processed && !liveSwept && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
       // prune: keep bins within ±30% of price, cap to the 400 strongest
       const ent = [];
-      for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.55) { delete alive[k]; continue; } ent.push([k, alive[k]]); } // ±55% keeps the 2x pools (liq at -49.75%)
+      for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.55) { delete alive[k]; continue; } ent.push([k, alive[k]]); } // ±55% keeps the 2x pools (liq at -49.5% under the exchange formula)
       if (ent.length > 650) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 650; i < ent.length; i++) delete alive[ent[i][0]]; }
       // The dead prune on the same rules plus one of their own: a sweep older than the longest window the
       // page can show is history nobody can see. Capped well below the living - the living answer "where
@@ -642,7 +660,8 @@ async function heatPoolsCron(env) {
       const pub = ent.slice(0, 650).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
       const pubDead = dent.slice(0, 400).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev, tsw: a.tsw }));
       await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub, dead: pubDead }), { expirationTtl: 86400 });
-      diag[sym] = { bars: bars.length, processed, liveSwept, swept: swept.length, alive: pub.length, dead: pubDead.length };
+      diag[sym] = { bars: bars.length, processed, liveSwept, swept: swept.length, alive: pub.length, dead: pubDead.length, mv: HM_MODEL_V };
+      if (wipe) diag[sym].rebuilt = 1; // the model version changed and the accumulation was thrown away on purpose
       await new Promise(r => setTimeout(r, 80));
     } catch (e) { diag[sym] = { err: String((e && e.message) || e).slice(0, 90) }; }
   }
@@ -716,6 +735,88 @@ async function heatCalibCron(env) {
   }
   return out;
 }
+// WHAT THE MODEL CANNOT SAY, FROM THINGS THAT ARE MEASURED (2026-10-09).
+//
+// The map's honest weakness is in its own footer: the band weight is a MULTIPLE, not a dollar amount,
+// because open interest overstated an average BTC band by about thirty times when that was tried. Two
+// measured layers answer the same question from the other direction, and both ride on THIS response -
+// the page is already close to the keyless rate ceiling (2026-09-24: 56 of 60 calls a minute, 429s on
+// 15 of 66 requests), so a new panel may not cost a new poll.
+//
+// 1. WHALE LIQUIDATION PRICES. Hyperliquid publishes every account's positions, so for positions over $1M
+//    we know the real liquidation price and the real dollar value - no model anywhere in it. Measured the
+//    day this shipped: of 40 tracked positions only ONE had its liq within 12% of the price (HYPE, a $117M
+//    short), so a BTC-only layer would be empty most of the time and an empty panel is worse than none.
+//    Hence `near`: the nearest real whale liquidation across EVERY coin, which is never empty, plus the
+//    ones on this coin when there are any.
+// 2. OPEN INTEREST INTO THE BAND. Our own hourly ring of open CONTRACTS (not dollars - a price move alone
+//    must never read as positions being opened). Rising OI into a zone means leverage is still being built
+//    there; falling means it is being unwound before price arrives.
+async function heatExtras(env, sym) {
+  const out = {};
+  // ---- open interest, from our own ring ----
+  try {
+    const pts = await oiRingRead(env);
+    if (pts.length) {
+      const now = pts[pts.length - 1];
+      const cur = now && now.m ? +now.m[sym] : 0;
+      if (cur > 0) {
+        const o = { oi: cur, at: +now.t || 0 };
+        const p4 = oiRingAt(pts, 4 * 3600000, 65 * 60000);
+        const p24 = oiRingAt(pts, 24 * 3600000, 2 * 3600000);
+        const v4 = p4 && p4.m ? +p4.m[sym] : 0;
+        const v24 = p24 && p24.m ? +p24.m[sym] : 0;
+        if (v4 > 0) o.chg4h = (cur - v4) / v4 * 100;
+        if (v24 > 0) o.chg24h = (cur - v24) / v24 * 100;
+        // Only published when there is something to compare against: a null is rendered as a dash, never 0
+        // (the /open-interest/ lesson - isFinite(null) is true and printed +0.00% on every row for a month).
+        if (o.chg4h != null || o.chg24h != null) out.oi = o;
+      }
+    }
+  } catch (e) {}
+  // ---- real whale liquidation prices, ours by way of the collector ----
+  try {
+    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (base) {
+      // THIS RESPONSE IS ON THE MAP'S FIRST PAINT (loadAll awaits it in one Promise.all with the klines), so
+      // the layer gets 1.5 s and not the breaker's 4 s: the droplet logged 92 event-loop stalls in 15 h on
+      // 2026-10-09 and a stall must cost the page a whale row, never the map. The edge keeps the answer for
+      // a minute, so one PoP pays this at most once a minute.
+      // Through the RAW fetch, not the guarded one: the guard trips the breaker on ANY abort, and a 1.5 s
+      // ceiling of our own firing on a slow-but-alive collector would then fail /rekt/, pulse and every
+      // /api/v1 proxy for a minute over one optional panel. An open breaker is still honoured.
+      let r = null;
+      if (Date.now() >= COL_DOWN_UNTIL) {
+        const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 1500);
+        try { r = await __realFetch(base + '/api/v1/whales', { signal: ctl.signal, cf: { cacheTtl: 60, cacheEverything: true } }); } catch (e) { r = null; } finally { clearTimeout(tmr); }
+      }
+      if (r && r.ok) {
+        const j = await r.json();
+        const pos = Array.isArray(j && j.positions) ? j.positions : [];
+        if (pos.length) {
+          const row = (p) => ({
+            sym: String(p.sym || ''), long: !!p.long, lev: +p.lev || 0,
+            val: Math.round(+p.val || 0), liq: +p.liq || 0, mark: +p.mark || 0,
+            distPct: (+p.liq > 0 && +p.mark > 0) ? (+p.liq - +p.mark) / +p.mark * 100 : null,
+            user: String(p.user || '').slice(0, 10),   // the wallet prefix only - the page links the full one itself
+          });
+          const ok = pos.filter((p) => +p.liq > 0 && +p.mark > 0 && +p.val > 0);
+          // On this coin: the ones whose liquidation is inside the widest view the map can hold.
+          const here = ok.filter((p) => String(p.sym || '').toUpperCase() === sym)
+            .map(row).filter((p) => Math.abs(p.distPct) <= 55)
+            .sort((a, b) => Math.abs(a.distPct) - Math.abs(b.distPct)).slice(0, 6);
+          if (here.length) out.whales = here;
+          // Across every coin: the single real forced close the market is nearest to. Ranked by distance and
+          // then by size, because at the same distance the bigger position is the one that matters.
+          const near = ok.map(row).sort((a, b) => (Math.abs(a.distPct) - Math.abs(b.distPct)) || (b.val - a.val))[0];
+          if (near) out.whaleNear = near;
+          out.whaleN = ok.length;
+        }
+      }
+    }
+  } catch (e) {}
+  return out;
+}
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const ck = new Request('https://marginpad.io/__hmp_' + sym);
@@ -723,6 +824,12 @@ async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC 
   let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
   try { const sw = await env.STATS.get('hmp:swp:' + sym); if (body && sw) { const o = JSON.parse(body); o.sweeps = JSON.parse(sw); body = JSON.stringify(o); } } catch (e) {}
   try { const cl = await env.STATS.get('hmp:cal:' + sym); if (body && cl) { const o = JSON.parse(body); o.calib = JSON.parse(cl); body = JSON.stringify(o); } } catch (e) {}
+  // The measured layers ride along: no new poll, and the whole thing stays one shared edge-cached object
+  // with nothing user-specific in it. A layer that could not be read is simply absent - never a zero.
+  try { const ex = await heatExtras(env, sym); if (body && ex && Object.keys(ex).length) { const o = JSON.parse(body); Object.assign(o, ex); body = JSON.stringify(o); } } catch (e) {}
+  // The model's own parameters, published rather than described, so the ladder on the page and the ladder in
+  // the cron can never disagree about what was assumed (and the mv says which generation of the model it is).
+  try { if (body) { const o = JSON.parse(body); o.model = { mv: HM_MODEL_V, mmr: HM_MMR, levs: HM_LEVS.map((x) => x[0]), w: HM_LEVS.map((x) => x[1]) }; body = JSON.stringify(o); } } catch (e) {}
   const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   try { await caches.default.put(ck, r.clone()); } catch (e) {}
   return r;
@@ -7005,6 +7112,173 @@ async function checkTapePrints(env) {
   } catch (e) {}
 }
 
+// ─── ZONE ALERTS (2026-10-09, Premium) ───────────────────────────────────────────────────────────────────
+// A reader taps a band on the liquidation heatmap and asks to be told when price goes for one that heavy.
+// This is the only genuinely per-member thing on that page: the map itself is public data behind a
+// presentation wall, but an alert is work the server does on somebody's behalf, every ten minutes, for ever
+// - so it is Premium and the SWITCH is what refuses, not the page (the posalert rule).
+//
+// WHY THE THRESHOLD IS A MULTIPLE AND NOT A DOLLAR AMOUNT. The model knows where crowds stack relative to
+// each other and not how many dollars are in them - that was measured in 2026-09-24 and the attempt to
+// anchor it to open interest overstated an average BTC band by about thirty times. So the alert is set in
+// the only unit the model supports, the same one the page prints: x the average standing band on screen.
+// The reader never types it. They tap the zone they care about and its own ratio becomes the threshold.
+//
+// TWO EVENTS, ONE SWITCH, because they are the two halves of the same question: price is CLOSING IN on a
+// heavy zone, and a heavy zone has just been TAKEN OUT. Splitting them would mean explaining the
+// difference before anybody has seen either.
+const ZONE_ALERT_COINS = HM_COINS;                 // the ten the model is accumulated for - there is no map for anything else
+const ZONEALERT_DEF = { on: 0, rel: 2, dist: 0.6, swept: 1, coins: ['BTC'] };
+const ZONE_ALERT_MAX_COINS = 3;                    // one KV read per coin per run; three keeps the cron honest
+const ZONE_ALERT_MIN_W = 500000;                   // the weight the sweep ring itself logs at - below it a sweep is noise
+function zoneAlertCfg(v) {
+  let c = {}; try { c = (typeof v === 'string') ? JSON.parse(v || '{}') : (v || {}); } catch (e) { c = {}; }
+  const num = (x, d, lo, hi) => { const n = +x; return isFinite(n) ? Math.min(hi, Math.max(lo, n)) : d; };
+  let coins = Array.isArray(c.coins) ? c.coins.map((x) => String(x || '').toUpperCase()).filter((x) => ZONE_ALERT_COINS.indexOf(x) >= 0) : [];
+  if (!coins.length) coins = ZONEALERT_DEF.coins.slice();
+  // Deduplicated, because the page sends the coin that was tapped and a reader can tap the same one twice.
+  coins = Array.from(new Set(coins)).slice(0, ZONE_ALERT_MAX_COINS);
+  return {
+    on: c.on ? 1 : 0,
+    rel: num(c.rel, ZONEALERT_DEF.rel, 1, 50),       // x the average standing band
+    dist: num(c.dist, ZONEALERT_DEF.dist, 0.1, 5),   // percent of price that counts as "closing in"
+    swept: c.swept === 0 || c.swept === false ? 0 : 1,
+    coins,
+  };
+}
+// Pure, so the E2E runs the real decision rather than a copy of it: given the published bands, the live
+// price and a config, what should fire? Returns [{k, t, b, price, rel}] - k is the dedupe key.
+function zoneAlertHits(cfg, sym, pub, sweeps, live) {
+  const out = [];
+  if (!cfg || !cfg.on || !(live > 0) || !pub) return out;
+  const alive = Array.isArray(pub.alive) ? pub.alive : [];
+  if (!alive.length) return out;
+  // The denominator is the one the page uses: the average standing band. relOf() on the client divides by
+  // the average of the VISIBLE set; the cron has no viewport, so it uses every standing band in the model
+  // and says so in the message rather than quoting a figure the page would print differently.
+  let wSum = 0;
+  for (const b of alive) wSum += (+b.w || 0);
+  const wAvg = alive.length ? wSum / alive.length : 0;
+  if (!(wAvg > 0)) return out;
+  const near = [];
+  for (const b of alive) {
+    const p = +b.p || 0, w = +b.w || 0;
+    if (!(p > 0) || !(w > 0)) continue;
+    const rel = w / wAvg;
+    if (rel < cfg.rel) continue;
+    // A band the price has already gone through is spent and waiting for the next sweep pass - the client
+    // calls this poolGone() and must not be told price is "approaching" it.
+    if (b.long ? p >= live : p <= live) continue;
+    const dPct = Math.abs(p - live) / live * 100;
+    if (dPct > cfg.dist) continue;
+    near.push({ p, rel, long: !!b.long, dPct });
+  }
+  // THE NEAREST ONE ON EACH SIDE, not the nearest one overall. A cluster of bands 0.4% below the price is
+  // one piece of news and must not be six messages - but a heavy band above AND a heavy band below is a
+  // squeeze, which is a different thing from either of them alone, and collapsing them to whichever
+  // happened to be a hair closer threw half of it away (caught by zone-alert-e2e, not by reading).
+  near.sort((a, b) => a.dPct - b.dPct);
+  for (const side of [true, false]) {
+    const mine = near.filter((x) => x.long === side);
+    const n = mine[0];
+    if (!n) continue;
+    out.push({
+      t: 'near', sym, price: n.p, rel: n.rel, long: n.long, dPct: n.dPct, n: mine.length,
+      // Keyed on the band's own price as a fraction of the live price, so drifting through the same zone
+      // for an hour is one alert and not twelve.
+      k: 'near:' + sym + ':' + (n.long ? 'L' : 'S') + ':' + Math.round(n.p * 1000 / Math.max(1e-9, live)),
+    });
+  }
+  if (cfg.swept) {
+    for (const s of (Array.isArray(sweeps) ? sweeps : [])) {
+      const w = +s.w || 0, p = +s.p || 0, t = +s.t || 0;
+      if (!(w >= ZONE_ALERT_MIN_W) || !(p > 0) || !t) continue;
+      if (Date.now() - t > 20 * 60000) continue;        // the ring keeps 30; only a fresh sweep is news
+      const rel = w / wAvg;
+      if (rel < cfg.rel) continue;
+      out.push({ t: 'swept', sym, price: p, rel, long: !!s.long, at: t, k: 'swept:' + sym + ':' + t + ':' + Math.round(p * 100) });
+      break;                                            // one per coin per run
+    }
+  }
+  return out;
+}
+function zoneAlertText(h) {
+  const rel = h.rel >= 10 ? String(Math.round(h.rel)) : h.rel.toFixed(1);
+  const side = h.long ? 'long' : 'short';
+  if (h.t === 'swept') {
+    return '<b>' + h.sym + ' - a heavy liquidation zone was just taken out</b>\n'
+      + 'Price traded through <b>' + _spx(h.price) + '</b>, where our model had ' + side + 's stacked <b>' + rel + 'x</b> heavier than an average standing band.\n'
+      + '<i>The zone is an estimate of where leverage sits, not a record of what closed. The map shows what our collector really measured there.</i>\n'
+      + '<a href="https://marginpad.io/heatmap?coin=' + h.sym + '">See it on the map</a>';
+  }
+  return '<b>' + h.sym + ' is closing in on a heavy liquidation zone</b>\n'
+    + '<b>' + _spx(h.price) + '</b> is <b>' + h.dPct.toFixed(2) + '%</b> away, and our model puts <b>' + rel + 'x</b> an average standing band of ' + side + 's there'
+    + (h.n > 1 ? ' (' + h.n + ' zones that heavy are within range)' : '') + '.\n'
+    + '<i>An estimate of where leverage sits, from price history - not a record of what has been liquidated.</i>\n'
+    + '<a href="https://marginpad.io/heatmap?coin=' + h.sym + '">Open the map</a>';
+}
+// The cron half. One KV read of the published model per WATCHED COIN for the whole site, not per
+// subscriber - everybody is matched against the same bands, so a thousand members cost three reads.
+async function checkZoneAlerts(env) {
+  try {
+    if (!env || !env.STATS || !env.USERS) return;
+    // ALWAYS stamp: a null conflates "nobody opted in" with "the cron never ran" (the sweep:last lesson).
+    const stamp = (o) => { try { return env.STATS.put('zonealert:last', JSON.stringify(Object.assign({ ts: Date.now() }, o)), { expirationTtl: 3600 }); } catch (e) {} };
+    let watch = [];
+    try { const r = await usersDO(env, '/zonealertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ watched: 0, premium: 0, fired: 0, err: 1 }); return; }
+    if (!watch.length) { await stamp({ watched: 0, premium: 0, fired: 0 }); return; }
+    // Premium standing, resolved once per run from the same sources syncBotTiers and checkPositionAlerts use.
+    const allow = new Set(PREM_FOUNDERS);
+    try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach((x) => allow.add(x)); } catch (e) {}
+    const now = Date.now();
+    const live = [];
+    for (const w of watch) {
+      let prem = allow.has(String(w.username || '').toLowerCase());
+      if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) {} }
+      if (prem) live.push(w);
+    }
+    if (!live.length) { await stamp({ watched: watch.length, premium: 0, fired: 0 }); return; }
+    const want = new Set();
+    live.forEach((w) => zoneAlertCfg(w.cfg).coins.forEach((c) => want.add(c)));
+    const model = {};
+    for (const sym of Array.from(want).slice(0, ZONE_ALERT_COINS.length)) {
+      let pub = null, swp = null, px = 0;
+      try { pub = JSON.parse(await env.STATS.get('hmp:pub:' + sym) || 'null'); } catch (e) {}
+      try { swp = JSON.parse(await env.STATS.get('hmp:swp:' + sym) || '[]'); } catch (e) {}
+      try { const pd = await fetchPriceCached(sym); px = pd && +pd.price > 0 ? +pd.price : 0; } catch (e) {}
+      if (pub && px > 0) model[sym] = { pub, swp: swp || [], px };
+    }
+    const fired = [];
+    for (const w of live) {
+      const cfg = zoneAlertCfg(w.cfg);
+      for (const sym of cfg.coins) {
+        const m = model[sym]; if (!m) continue;
+        for (const h of zoneAlertHits(cfg, sym, m.pub, m.swp, m.px)) {
+          const kk = 'zal:' + w.uid + ':' + h.k;
+          // Six hours per zone per member: a price hovering on a level must not become a siren.
+          try { if (await env.STATS.get(kk)) continue; await env.STATS.put(kk, '1', { expirationTtl: 6 * 3600 }); } catch (e) { continue; }
+          const txt = zoneAlertText(h);
+          fired.push({ uid: w.uid, sym, t: h.t, title: h.sym + (h.t === 'swept' ? ' zone taken out' : ' near a heavy zone'), body: _spx(h.price) });
+          if (w.tg && env.TELEGRAM_TOKEN) {
+            try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: txt }); } catch (e) {}
+          }
+        }
+      }
+    }
+    if (fired.length && env.VAPID_JWK) {
+      try {
+        const uids = [...new Set(fired.map((f) => f.uid))];
+        const r = await usersDO(env, '/push/byuid', { uids });
+        const subs = (r && r.subs) || [];
+        const byUid = {}; subs.forEach((s) => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
+        for (const f of fired) { for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, { title: f.title, body: f.body, url: 'https://marginpad.io/heatmap?coin=' + f.sym + '&ref=push' }); } catch (e) {} } }
+      } catch (e) {}
+    }
+    await stamp({ watched: watch.length, premium: live.length, coins: Array.from(want), fired: fired.length });
+    return { watched: watch.length, premium: live.length, fired: fired.length };
+  } catch (e) {}
+}
+
 async function checkPositionAlerts(env) {
   try {
     if (!env.USERS || !env.STATS) return;
@@ -7327,7 +7601,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=617c925b" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=ff172e8e" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -16846,7 +17120,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '3ad3b10f';
+const ASSET_V = 'e64a172a';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -16931,6 +17205,37 @@ async function handleAlerts(url, env, request) {
     const cfg = posAlertCfg(pb);
     try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'posalert', v: JSON.stringify(cfg) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
     return jr({ ok: true, cfg });
+  }
+  // ZONE ALERTS: the heatmap's heavy bands. Premium, and gated HERE - the page shows the bell to everyone
+  // on purpose (a locked thing has to be visible to be wanted), so the switch is what has to refuse.
+  // A GET is answered for anybody signed in, because the page needs to know whether the bell is already on
+  // and what it is set to before it can draw it correctly.
+  if (sub === '/zonealert') {
+    const pf = await premiumFor(env, request);
+    if (!pf || !pf.uid) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method === 'GET') {
+      let cur = null;
+      try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, keys: ['zonealert'] }) })); const d = await r.json(); cur = d && d.prefs && d.prefs.zonealert ? d.prefs.zonealert.v : null; } catch (e) {}
+      let last = null; try { last = JSON.parse(await env.STATS.get('zonealert:last') || 'null'); } catch (e) {}
+      // Whether a chat is linked decides whether the alert has anywhere to go. Asked the same way /tapealert asks.
+      let linked = false;
+      try { const r = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const d = await r.json(); linked = !!(d && d.linked); } catch (e) {}
+      return jr({ premium: !!pf.premium, telegram: linked, cfg: zoneAlertCfg(cur), defaults: ZONEALERT_DEF, coins: ZONE_ALERT_COINS, maxCoins: ZONE_ALERT_MAX_COINS, lastRun: last && last.ts ? last.ts : null });
+    }
+    if (!pf.premium) return jr({ error: 'premium_only', message: 'Zone alerts are a Premium feature.', upgrade: 'https://marginpad.io/premium/' }, 402);
+    let zb = {}; try { zb = await request.json(); } catch (e) {}
+    const zcfg = zoneAlertCfg(zb);
+    // Turning it ON with nowhere to send it is the one refusal worth making loudly: a member would otherwise
+    // set an alert, see it saved, and never hear from it. Turning it OFF never needs a chat.
+    if (zcfg.on) {
+      let linked = false;
+      try { const r = await stub.fetch(new Request('https://do/alerts/tginfo?token=' + encodeURIComponent(tok))); const d = await r.json(); linked = !!(d && d.linked); } catch (e) {}
+      let hasPush = false;
+      try { const r = await usersDO(env, '/push/byuid', { uids: [pf.uid] }); hasPush = !!((r && r.subs) || []).length; } catch (e) {}
+      if (!linked && !hasPush) return jr({ error: 'telegram_required', message: 'Link Telegram first - the alert has nowhere to go otherwise.' }, 400);
+    }
+    try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'zonealert', v: JSON.stringify(zcfg) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, cfg: zcfg });
   }
   if (request.method === 'GET') { const r = await stub.fetch(new Request('https://do/alerts/list?token=' + encodeURIComponent(tok))); return jr(await r.json()); }
   let b = {}; try { b = await request.json(); } catch (e) {}
@@ -22163,7 +22468,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, liqarch: archiveLiq, liqrecap: liqRecapDaily };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -23323,6 +23628,7 @@ export default {
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkTapePrints, 'tapealerts'); // the tape filter a reader set, delivered to Telegram
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
+    bg(checkZoneAlerts, 'zonealerts'); // Premium: the heatmap's heavy bands - price closing in on one, or one being taken out
     bg(payWeeklyPrizes, 'prizes');
     bg(payBybitPrizes, 'bybitprizes');
     bg(payMoonPrizes, 'moonprizes'); // King of the Moon: pays an ended 28-day contest once its closing paste is marked FINAL (2026-09-17) // Bybit volume board: pays an ended season once its report is marked FINAL (2026-09-13)
@@ -26857,6 +27163,22 @@ export class UserStore {
     }
     // Who wants to hear about a big print. The pref row doubles as the INDEX, so an account that never
     // switched it on is never walked - the same shape posalert uses, and the reason that cron is cheap.
+    // ZONE ALERTS: the heatmap's heavy bands. Same shape as /tapealertwatch - uprefs is its own index, so
+    // only the accounts that opted in are ever walked, and an account with no Telegram AND no push
+    // subscription is dropped here rather than costing the cron a model read it cannot deliver on.
+    if (path === '/zonealertwatch') {
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='zonealert' LIMIT 4000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || !cfg.on) continue;
+        const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', r.user_id)[0] || {};
+        let push = 0; try { push = (this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', r.user_id)[0] || {}).n || 0; } catch (e) { push = 0; }
+        if (!u.tg_chat && !push) continue;
+        out.push({ uid: r.user_id, cfg, tg: u.tg_chat || '', push: +push || 0, username: u.username || '' });
+      }
+      return this.j({ watch: out });
+    }
     if (path === '/tapealertwatch') {
       const out = [];
       let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='tapealert' LIMIT 4000"); } catch (e) { return this.j({ watch: [] }); }

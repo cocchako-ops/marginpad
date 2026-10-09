@@ -22,6 +22,30 @@ export class BitfinexCollector extends BaseCollector {
     // 2026-08-21). A liquidation is ONE event: emit each POS_ID once, remember it for 7 days.
     this._seenPos = new Map();
   }
+
+  // AND THAT MEMORY HAS TO OUTLIVE THE PROCESS (2026-10-09). The Map above stops a position being counted
+  // twice inside one run, and it is RAM - so every restart forgot it, while Bitfinex re-lists everything
+  // still in progress in its subscribe snapshot with a fresh MTS and a fresh PRICE_ACQUIRED, which the DB
+  // dedup key (ts, price, qty) cannot catch. Measured on production: the same ~2284-BTC BTC long was
+  // written twice two days apart, $195.4M and $192.6M - 15.9% of the published 24h total, 34% of the
+  // 7-day one, Bitfinex third on the venue table at 16% of all flow, and the newer of the two served as
+  // "the biggest liquidation today" on an SSR page that assistants cite. The 2026-08-21 fix was right and
+  // only half applied: it was never persisted, and this collector reconnects dozens of times a day.
+  // Dumped with the tape rings every two minutes and read back once before the socket opens; a few hundred
+  // entries, so it costs neither time nor bytes worth measuring.
+  dump() { return { v: 1, pos: Array.from(this._seenPos.entries()) }; }
+  restore(obj) {
+    const rows = (obj && Array.isArray(obj.pos)) ? obj.pos : [];
+    const cut = Date.now() - 7 * 86400000;   // the same 7-day memory the live prune keeps
+    let n = 0;
+    for (const row of rows) {
+      if (!Array.isArray(row) || row.length < 2) continue;
+      const ts = Number(row[1]);
+      if (!(ts >= cut)) continue;            // older than the memory window: it can no longer be re-reported as new
+      this._seenPos.set(row[0], ts); n++;
+    }
+    return n;
+  }
   url() { return 'wss://api-pub.bitfinex.com/ws/2'; }
   subscribeFrames() { return [{ event: 'subscribe', channel: 'status', key: 'liq:global' }]; }
 

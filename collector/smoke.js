@@ -31,6 +31,22 @@ const CHECKS = [
   ['bookmap', '/bookmap?symbol=BTC&mins=5&only=walls', (j) => (j && (j.cols || j.building || j.wallsStanding)) ? '' : 'no film'],
   ['feed', '/feed?limit=5', (j) => Array.isArray(j) || Array.isArray(j && j.events) ? '' : 'no liquidation events'],
   ['pulse', '/pulse', (j) => j && typeof j === 'object' ? '' : 'empty'],
+  // THE PLAUSIBILITY CEILING HAS TO BE VISIBLE, or a rejected row is indistinguishable from a row that
+  // never arrived (2026-10-09). It is also the check that would have caught the Bitfinex artefact: one
+  // position re-reported across a restart put $192.6M on top of the 24-hour total and was being served
+  // as "the biggest liquidation today". `rejected` staying at 0 is the normal state - anything in
+  // `rejectLog` is either an adapter double-counting a position field or a genuine record print, and only
+  // the row itself can tell them apart.
+  ['the event ceiling is declared', '/status', (j) => (j && +j.maxEventUsd > 0 && Array.isArray(j.rejectLog)) ? '' : 'no maxEventUsd / rejectLog on /status'],
+  // And the single biggest liquidation in the last day must be plausible: every real one measured across
+  // all nine venues over a fortnight topped out at $11.85M, so anything above the ceiling means the guard
+  // is not being applied to what is already stored.
+  ['the biggest 24h liquidation is plausible', '/pulse', (j) => {
+    const big = j && j.h24 && j.h24.big;
+    if (!big) return '';                                  // a quiet day is not a failure
+    const usd = +big.notional || 0;
+    return usd <= 50000000 ? '' : 'biggest 24h liquidation is $' + Math.round(usd / 1e6) + 'M on ' + big.exchange + ' - above the ceiling, so a stored row is an artefact (see tools/drop-liq.js)';
+  }],
 ];
 
 (async () => {

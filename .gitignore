@@ -97,6 +97,8 @@ sdk/python/*.egg-info/
 # Browse drawer E2E screenshots (build/browse-e2e.js / shots)
 build/browse-shots/
 
+# heatmap render check (scratchpad shots.js, offline QA)
+build/heatmap-shots/
 # where-to-start E2E screenshots
 build/wts-shots/
 
