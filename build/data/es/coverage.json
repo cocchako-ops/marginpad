@@ -2124,6 +2124,12 @@
   "missing": 0
  },
  {
+  "rel": "support/index.html",
+  "cover": 1,
+  "hit": 35,
+  "missing": 0
+ },
+ {
   "rel": "tao-liquidation-calculator/index.html",
   "cover": 1,
   "hit": 68,
@@ -2168,7 +2174,7 @@
  {
   "rel": "trading-api/index.html",
   "cover": 1,
-  "hit": 447,
+  "hit": 519,
   "missing": 0
  },
  {
