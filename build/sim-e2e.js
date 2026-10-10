@@ -154,7 +154,14 @@ function partA() {
   })());
   ok('realistic enforces the book and costs something', (() => { const p = simNorm({ ...SIM_DEF, ...PRE.realistic.sim }); return p.margin_enforced && p.slippage && p.margin_tiers; })());
   ok('bybit quotes bybit’s own maintenance margin', simNorm({ ...SIM_DEF, ...PRE.bybit.sim }).margin_venue === 'bybit');
-  ok('bybit quotes a fee taken from the one FEE_VENUES table, not a literal', (() => { const p = simNorm({ ...SIM_DEF, ...PRE.bybit.sim }); const f = mod.SIM_PRESETS && 0.055 * (1 - 20 / 100); return near(p.taker_bps, f, 1e-9); })(), JSON.stringify(simNorm({ ...SIM_DEF, ...PRE.bybit.sim }).taker_bps));
+  // THE UNIT IS THE WHOLE POINT. This check used to assert taker_bps === 0.055 * 0.8 - the PERCENT - which
+  // is exactly the mistake the builder was making, so it stayed green while every venue preset charged a
+  // hundredth of the real fee. It asserts the EFFECTIVE PERCENT a fill is charged, which is unit-safe.
+  ok('a venue preset charges that venue’s own published percent, in the right unit', (() => {
+    const p = simNorm({ ...SIM_DEF, ...PRE.bybit.sim });
+    return near(p.taker_bps / 100, 0.055 * (1 - 20 / 100), 1e-9) && near(mod.simNorm && p.taker_bps, 4.4, 1e-9);
+  })(), 'taker_bps=' + simNorm({ ...SIM_DEF, ...PRE.bybit.sim }).taker_bps + ' => ' + (simNorm({ ...SIM_DEF, ...PRE.bybit.sim }).taker_bps / 100) + '%');
+  ok('and every venue preset lands in a plausible fee band (1-10 bps), never a hundredth of one', ['binance', 'bybit', 'okx', 'hyperliquid'].every((k) => { const t = simNorm({ ...SIM_DEF, ...PRE[k].sim }).taker_bps; return t >= 1 && t <= 10; }), ['binance', 'bybit', 'okx', 'hyperliquid'].map((k) => k + '=' + simNorm({ ...SIM_DEF, ...PRE[k].sim }).taker_bps).join(' '));
   ok('brutal is genuinely hostile on every axis', (() => { const p = simNorm({ ...SIM_DEF, ...PRE.brutal.sim }); return p.slippage_bps >= 50 && p.reject_rate_pct > 0 && p.partial_fills && p.latency_ms >= 500 && p.margin_enforced && p.impact_bps_per_100k >= 100; })());
   ok('every preset survives a round trip through simNorm unchanged', want.every(k => { const a = simNorm({ ...SIM_DEF, ...PRE[k].sim }); return JSON.stringify(simNorm(a)) === JSON.stringify(a); }));
 
@@ -253,8 +260,14 @@ async function partB() {
     await setSim({ margin_enforced: true });
     const over = await openIt({ symbol: 'SOL', side: 'long', margin_usd: 9000, leverage: 2 });
     ok('an open over the book is refused 402 insufficient_margin', over.s === 402 && over.j.error && over.j.error.code === 'insufficient_margin', over.s + ' ' + JSON.stringify(over.j).slice(0, 160));
-    const accE = await g('/v1/account');
-    ok('and /v1/account now says the book IS enforced', accE.j.margin_enforced === true);
+    // /account is built from the positions answer, which is cached for 2 SECONDS per isolate and keyed on the
+    // price vector - and the isolate that handled the profile write is not necessarily the one answering this
+    // read (the 2026-09-16 lesson). The write drops that cache in its own isolate; across isolates the stale
+    // window is at most two seconds. So this polls it out rather than racing it: it still goes red if the flag
+    // never propagates, which is the thing being checked. A flaky check is a broken check.
+    let accE = await g('/v1/account');
+    for (let i = 0; i < 6 && accE.j.margin_enforced !== true; i++) { await new Promise(r => setTimeout(r, 900)); accE = await g('/v1/account'); }
+    ok('and /v1/account now says the book IS enforced', accE.j.margin_enforced === true, JSON.stringify({ enforced: accE.j.margin_enforced, book: accE.j.starting_balance_usd }));
     const fits = track(await openIt({ symbol: 'SOL', side: 'long', margin_usd: 50, leverage: 2 }));
     ok('an open inside the book is allowed', fits.s === 200, fits.s + ' ' + JSON.stringify(fits.j).slice(0, 140));
     const bal2 = await g('/v1/balance');
@@ -358,6 +371,18 @@ async function partB() {
     const fee1 = track(await openIt({ symbol: 'SOL', side: 'long', margin_usd: 100, leverage: 10 }));
     ok('and a real open is filled at it', near(+fee1.j.data.fill.taker_fee_pct, 0.25, 1e-6), JSON.stringify(fee1.j.data.fill || {}).slice(0, 140));
 
+    // ---- /markets MUST QUOTE THE FEE THIS CALLER WILL PAY, not the house rate (found by writing a bot
+    // with the published client: the profile charged one rate and "at what fee" answered another).
+    const mkt = await g('/v2/markets?class=crypto');
+    const btcRow = ((mkt.j.data || mkt.j).markets || []).filter(m => m.symbol === 'BTC')[0];
+    ok('/markets quotes the profile fee for a keyed caller', btcRow && near(btcRow.taker_fee_pct, 0.25, 1e-5), JSON.stringify(btcRow));
+    ok('and keeps the house rate beside it', btcRow && near(btcRow.default_taker_fee_pct, 0.055, 1e-5), JSON.stringify(btcRow));
+    ok('and names where the fee came from', /taker_bps/.test(String((mkt.j.data || mkt.j).fee_source || '')), (mkt.j.data || mkt.j).fee_source);
+    // /markets is a KEYED endpoint - the first draft of this check assumed it was keyless market data (that is
+    // /api/v1/*) and asserted a house rate on a body that is a 401. The real contract is the refusal.
+    const mktAnon = await fetch(BASE + '/api/bot/v2/markets?class=crypto').then(async r => ({ s: r.status, j: await r.json() }));
+    ok('/markets without a key is refused, so there is always an account to read the fee from', mktAnon.s === 401 && mktAnon.j.error && mktAnon.j.error.code === 'missing_api_key', mktAnon.s + ' ' + JSON.stringify(mktAnon.j).slice(0, 110));
+
     // ---- WHAT EXECUTION COST, ON THE REPORT
     await closeIt(fee1.j.data.position.id, 'SOL');
     const rep = await g('/v1/report?days=1');
@@ -368,6 +393,34 @@ async function partB() {
     ok('gross = net + what it cost, to the cent', C && near(C.pnl_gross_usd, C.pnl_net_usd + C.total_usd, 0.02), JSON.stringify(C || {}).slice(0, 220));
     ok('a missing cost is counted as unknown, never as zero', C && typeof C.unknown_n === 'number' && /unknown_n/.test(C.note));
     ok('kept_pct is only printed when there is a gross to divide by', !C || C.kept_pct === null || (C.kept_pct >= -100000 && C.pnl_gross_usd > 0));
+
+    // ---- THE PER-TRADE COST, and the two papercuts the developer walk found
+    await setSim({ reset: true });
+    const pc = track(await openIt({ symbol: 'SOL', side: 'long', margin_usd: 20, leverage: 5 }));
+    const pcId = pc.j.data.position.id;
+    const pcC = await closeIt(pcId, 'SOL');
+    const cp = pcC.j.data.position;
+    ok('a CLOSED position carries its own fees_usd', cp && cp.fees_usd > 0, JSON.stringify(cp).slice(0, 200));
+    ok('and its own funding_usd (0, not missing, on a trade that accrued none)', cp && cp.funding_usd === 0, JSON.stringify({ f: cp && cp.funding_usd }));
+    ok('and the fee matches qty x (entry + exit) x rate to the cent', (() => {
+      const want = cp.qty * (cp.entry_price + cp.exit_price) * (cp.fee_rate_pct / 100);
+      return near(cp.fees_usd, want, 0.02);
+    })(), JSON.stringify({ got: cp && cp.fees_usd, qty: cp && cp.qty, rate: cp && cp.fee_rate_pct }));
+
+    const pr2 = track(await openIt({ symbol: 'SOL', side: 'long', margin_usd: 15, leverage: 3 }));
+    const st = await p('/v2/sltp', { id: pr2.j.data.position.id, trail_pct: 1.4 });
+    ok('v2 /sltp answers in the Position shape, not the journal row', st.s === 200 && st.j.data.position && st.j.data.position.trail_pct === 1.4 && st.j.data.position.sl != null, JSON.stringify((st.j.data || {}).position || st.j).slice(0, 200));
+    const st1 = await fetch(BASE + '/api/bot/v1/sltp', { method: 'POST', headers: KH, body: JSON.stringify({ id: pr2.j.data.position.id, trail_pct: 1.4 }) }).then(r => r.json());
+    ok('v1 /sltp still answers the frozen journal row, with no extra key', st1.position && st1.position.stop != null && st1.api === undefined, Object.keys(st1.position || {}).slice(0, 8).join(','));
+
+    await setSim({ margin_enforced: true, start_balance_usd: 1000 });
+    const bz = await g('/v2/balance');
+    const bd = bz.j.data || bz.j;
+    ok('v2 /balance states the biggest position this book can fund', bd.max_margin_usd != null && bd.max_margin_usd <= 1000, JSON.stringify({ max: bd.max_margin_usd, free: bd.free_margin_usd }));
+    ok('and asking for a dollar more than that is refused', (await openIt({ symbol: 'SOL', side: 'long', margin_usd: Math.ceil(bd.max_margin_usd) + 50, leverage: 2 })).s === 402);
+    const bz1 = await fetch(BASE + '/api/bot/v1/balance', { headers: KH }).then(r => r.json());
+    ok('v1 /balance does NOT carry it (frozen body)', bz1.max_margin_usd === undefined, Object.keys(bz1).join(','));
+    await setSim({ reset: true });
 
     // ---- v1 IS BYTE-FROZEN
     await setSim({ reset: true });

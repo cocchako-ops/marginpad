@@ -5784,15 +5784,20 @@ async function leanKlines(sym, ivMin, n, env) {
 //   apierr:ep:<day>:<ep>:<error>  and on which endpoint
 // AE blob3 marks `first` when the key has never had a successful call - a developer whose FIRST request
 // is refused is the one who leaves, and that is the row worth reading.
-async function apiErrLog(env, ctx, ep, err, status, keyHash, everOk) {
+async function apiErrLog(env, ctx, ep, err, status, keyHash, everOk, uid) {
   if (!env || !env.STATS || !err) return;
+  // A REFUSAL FROM A TEST ACCOUNT IS NOT A SIGNAL. Every E2E in build/ mints an e2e-prefixed account and
+  // deliberately provokes refusals - the first day's reading was 125 of them and almost all were mine.
+  // They are still counted, under their own prefix, so `?e2e=1` can show them and the default cannot lie.
+  const e2 = /^e2e/i.test(String(uid || '').split(':')[0]);
+  const NS = e2 ? 'apierr:e2e:' : 'apierr:';
   const day = new Date().toISOString().slice(0, 10);
   const e = String(err).slice(0, 40).replace(/[^a-z0-9_]/gi, '');
   const p = String(ep || '?').slice(0, 24).replace(/[^a-z0-9_\/]/gi, '');
   const bump = async (k) => { try { const n = +(await env.STATS.get(k)) || 0; await env.STATS.put(k, String(n + 1), { expirationTtl: 40 * 86400 }); } catch (x) {} };
-  const work = Promise.all([bump('apierr:day:' + day + ':' + e), bump('apierr:ep:' + day + ':' + p + ':' + e)]);
+  const work = Promise.all([bump(NS + 'day:' + day + ':' + e), bump(NS + 'ep:' + day + ':' + p + ':' + e)]);
   if (ctx && ctx.waitUntil) ctx.waitUntil(work); else await work;
-  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['apierr'], blobs: ['apierr', p, everOk ? 'again' : 'first', e, String(status), String(keyHash || '')], doubles: [1] }); } catch (x) {}
+  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['apierr'], blobs: [e2 ? 'apierr_e2e' : 'apierr', p, everOk ? 'again' : 'first', e, String(status), String(keyHash || '')], doubles: [1] }); } catch (x) {}
 }
 async function handleV1Book(url, request, env, tier) {
   // A PLAN BUYS DEPTH, NOT THE DATA. The first cut of this deleted `levels` outright below the tier - and
@@ -12273,7 +12278,9 @@ function SIM_PRESETS() {
       label: (f && f.name) || (m && m.name) || k,
       about: 'The taker fee and maintenance margin ' + ((f && f.name) || k) + ' publishes, with the book crossing cost we measure, margin enforced and the risk-limit ladder on.',
       sim: { margin_enforced: true, slippage: true, slippage_bps: slipBps, impact_bps_per_100k: impact, margin_tiers: true,
-        ...(m ? { margin_venue: k } : {}), ...(f ? { taker_bps: +(f.taker * (1 - f.disc / 100)).toFixed(4) } : {}) },
+        ...(m ? { margin_venue: k } : {}), // FEE_VENUES.taker is a PERCENT and taker_bps is BASIS POINTS - x100, or the preset charges a hundredth
+      // of what the venue does. Bybit 0.055% less a 20% referral discount = 0.044% = 4.4 bps.
+      ...(f ? { taker_bps: +(f.taker * (1 - f.disc / 100) * 100).toFixed(4) } : {}) },
     };
   };
   return {
@@ -16892,7 +16899,7 @@ async function handleBot(url, request, env, ctx) {
     if (s >= 400 && o && o.error) {
       // `key` and `auth` are declared BELOW this closure, so reading them from a refusal raised before
       // they exist would throw a TDZ ReferenceError. Only what is certainly in scope is read.
-      try { apiErrLog(env, ctx, rawPath.replace(/^\/v[12]\//, ''), o.error, s, '', !!uid); } catch (e) {}
+      try { apiErrLog(env, ctx, rawPath.replace(/^\/v[12]\//, ''), o.error, s, '', !!uid, uid); } catch (e) {}
     }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
@@ -17283,7 +17290,11 @@ async function handleBot(url, request, env, ctx) {
     const r = await doCall('/tradesltp', { uid, id: String(b.id), sl: sl9, tp: tp9, ...(b.trail_pct !== undefined ? { trail: b.trail_pct } : {}) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, 400);
-    return jb(r, 200); // v1 shape is frozen: {ok, position: <journal row>} - the row now also carries trail/hwm when trailing is on
+    // v1's shape is FROZEN: {ok, position: <journal row>}, which calls the stop `stop` and the trail `trail`.
+    // v2 answers in the Position shape every other endpoint uses, so a bot can read back the protection it
+    // just set under the names it set it with. Same split as /v1/positions stripping `life` and `sim`.
+    const { api: _apiShape, ...v1Sltp } = r;
+    return jb(isV2 && _apiShape ? { ok: true, position: _apiShape } : v1Sltp, 200);
   }
   if (path === '/v1/close' && request.method === 'POST') {
     if (!b.id) return jb({ error: 'id_required' }, 400);
@@ -17382,7 +17393,12 @@ async function handleBot(url, request, env, ctx) {
     // computed from the balance when it is the figure that will actually be enforced. Without enforcement it
     // keeps its old meaning (equity-based) so nothing anybody parses today moves.
     const _free = _enf ? ((_book + realizedLife) - marginUse) : (equity - marginUse);
-    return jb({ starting_balance_usd: _book, balance_usd: Math.round((_book + realizedLife) * 100) / 100, equity_usd: Math.round(equity * 100) / 100, margin_in_use_usd: Math.round(marginUse * 100) / 100, free_margin_usd: Math.round(_free * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, margin_enforced: _enf });
+    // THE BIGGEST POSITION THIS BOOK CAN FUND RIGHT NOW, on v2. A bot sizing by risk routinely lands above it
+    // and, without this, learns so from a 402. It is free margin against the per-trade margin ceiling, which
+    // is arithmetic no caller should have to rediscover. v1's body stays frozen.
+    const _maxM = Math.max(0, Math.min(100000, Math.floor(_free * 100) / 100));
+    return jb({ starting_balance_usd: _book, balance_usd: Math.round((_book + realizedLife) * 100) / 100, equity_usd: Math.round(equity * 100) / 100, margin_in_use_usd: Math.round(marginUse * 100) / 100, free_margin_usd: Math.round(_free * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, margin_enforced: _enf,
+      ...(isV2 ? { max_margin_usd: _enf ? _maxM : 100000, max_margin_note: _enf ? 'The largest margin_usd this book can fund right now: free margin, capped at the 100,000 per-trade ceiling. Ask for more and the open is refused 402 insufficient_margin.' : 'margin_enforced is off, so nothing is refused for lack of funds and the only ceiling is the 100,000 per-trade cap.' } : {}) });
   }
   // ── Bot API 2.5 (2026-09-12): books (sub-accounts), reset, equity curve ─────────────────────────────────────────
   if (path === '/v1/accounts') { // every book of the account behind this key, with lifetime numbers; the key's own book is `account` on /v1/account
@@ -17439,12 +17455,29 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/markets') { // "what can I trade, at what leverage, at what fee" - one call instead of trial and error
     const cls = String(url.searchParams.get('class') || '').toLowerCase();
     const out = [];
-    const push = (s) => { const c = assetClassOf(s); if (cls && c !== cls) return; out.push({ symbol: s, asset_class: c, max_leverage: maxLevFor(s), taker_fee_pct: +(feeRateFor(1, s) * 100).toFixed(4) }); };
+    // THE FEE A KEYED CALLER WILL ACTUALLY BE CHARGED (2026-10-10). This endpoint says "at what fee", and
+    // answering with the house class rate while the caller's own profile or fee venue charges something
+    // else puts a wrong number straight into a bot's position sizing. Keyless keeps the class rate - there
+    // is no account to read - and a keyed answer carries BOTH, so nothing that already parses
+    // taker_fee_pct has to work out which one it is holding.
+    let _mSim = null, _mFv = '';
+    if (uid) {
+      // `auth` is null on a keyless call; this block only runs with a uid, but reading auth.owner defensively
+      // keeps it true for every future caller of this path rather than only the ones that happen to be keyed.
+      try { const [_s9, _pg] = await Promise.all([realismOf(env, (auth && auth.owner) || uid), doCall('/prefsget', { uid, keys: ['feevenue'] })]); _mSim = _s9; _mFv = feeVenueNorm(_pg && _pg.prefs && _pg.prefs.feevenue && _pg.prefs.feevenue.v) || ''; } catch (e) {}
+    }
+    const push = (s) => { const c = assetClassOf(s); if (cls && c !== cls) return;
+      const house = +(feeRateFor(1, s) * 100).toFixed(4);
+      const mine = _mSim ? +(simFeeRate(_mSim, 1, s, _mFv) * 100).toFixed(5) : house;
+      out.push({ symbol: s, asset_class: c, max_leverage: maxLevFor(s), taker_fee_pct: mine,
+        ...(_mSim && mine !== house ? { default_taker_fee_pct: house } : {}) }); };
     Object.keys(MAXLEV).forEach(push);
     Object.keys(STOCKS).forEach(push);
     Object.keys(YAHOO_MKT).forEach((s) => { if (!MAXLEV[s]) push(s); });
     out.sort((a, x) => (a.asset_class === x.asset_class ? a.symbol.localeCompare(x.symbol) : a.asset_class.localeCompare(x.asset_class)));
-    return jb({ markets: out, count: out.length, note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close.' });
+    return jb({ markets: out, count: out.length,
+      ...(_mSim ? { fee_source: (_mSim.taker_bps != null ? 'your simulation profile (taker_bps)' : (_mFv ? _mFv + ' (your default fee venue)' : 'the MarginPad class rate')) } : {}),
+      note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close. With a key, taker_fee_pct is the rate YOUR account would be charged (fee_source names why) and default_taker_fee_pct appears beside it when the two differ; without a key it is the class rate. The leverage taper above roughly 180x still applies on top.' });
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
@@ -17483,6 +17516,12 @@ async function handleBot(url, request, env, ctx) {
       if (ap.error) return jb(ap, 400);
       const r = await doCall('/prefsput', { uid: _own, k: 'realism', v: JSON.stringify(ap.next) });
       if (!r || !r.ok) return jb({ error: 'unavailable' }, 503);
+      // A PROFILE WRITE CHANGES WHAT /account AND /balance SAY, so the cached positions answer they are built
+      // from has to go. Those two are 77% of all Bot API traffic and therefore the most cached thing here; the
+      // book size and margin_enforced ride along on that same answer, so without this a developer sets the
+      // book and reads the old one back for as long as the cache lives - which is exactly how a setting looks
+      // like it did not apply. (Measured: sim-e2e's "account now says the book IS enforced" went red on it.)
+      try { if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; } catch (e) {}
       let fv9 = ''; try { const pg = await doCall('/prefsget', { uid: _own, keys: ['feevenue'] }); fv9 = feeVenueNorm(pg && pg.prefs && pg.prefs.feevenue && pg.prefs.feevenue.v) || ''; } catch (e) {}
       const info = simInfo(ap.next, fv9);
       return jb({ ok: true, profile: ap.next, changed: ap.changed, preset_applied: ap.preset, effective: info.effective, applies_to: info.applies_to }, 200);
@@ -21276,18 +21315,22 @@ export default {
       const days = Math.max(1, Math.min(40, +url.searchParams.get('days') || 7));
       const dayKeys = []; for (let i = 0; i < days; i++) dayKeys.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
       const byErr = {}, byEp = {}, byDay = {};
+      // DEFAULT IS REAL TRAFFIC. ?e2e=1 shows the test accounts instead - never mixed, because a count that
+      // silently includes the suites is worse than no count (the wrong-number-on-the-desk rule).
+      const wantE2 = url.searchParams.get('e2e') === '1';
       let listed = [];
-      try { const l = await env.STATS.list({ prefix: 'apierr:', limit: 1000 }); listed = l.keys.map((k) => k.name); } catch (e) {}
+      try { const l = await env.STATS.list({ prefix: wantE2 ? 'apierr:e2e:' : 'apierr:', limit: 1000 }); listed = l.keys.map((k) => k.name).filter((n) => wantE2 || n.indexOf('apierr:e2e:') !== 0); } catch (e) {}
       const want = listed.filter((n) => dayKeys.some((d) => n.indexOf(':' + d + ':') > 0 || n.indexOf(':' + d) > 0));
       for (const n of want) {
         let v = 0; try { v = +(await env.STATS.get(n)) || 0; } catch (e) {}
         if (!v) continue;
-        const p = n.split(':');
+        // 'apierr:day:<day>:<err>' or 'apierr:e2e:day:<day>:<err>' - drop the namespace, then the shape is one.
+        const p = n.replace('apierr:e2e:', 'apierr:').split(':');
         if (p[1] === 'day') { byErr[p[3]] = (byErr[p[3]] || 0) + v; byDay[p[2]] = (byDay[p[2]] || 0) + v; }
         else if (p[1] === 'ep') { const k = p[3] + ' :: ' + p.slice(4).join(':'); byEp[k] = (byEp[k] || 0) + v; }
       }
       const sortObj = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ what: k, n }));
-      return J({ ok: true, days, total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date.' });
+      return J({ ok: true, days, scope: wantE2 ? 'e2e test accounts only' : 'real traffic (e2e accounts excluded)', total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date. Refusals from e2e-prefixed test accounts are kept under their own prefix; add ?e2e=1 to read those instead.' });
     }
     if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
@@ -27033,7 +27076,23 @@ export class UserStore {
     // /botclose and like the site's own metrics(). It used to be gross, so every open position looked better than
     // it could ever settle and a strategy tuned on it was tuned on a number that does not exist at exit.
     if (open) { if (live > 0) { const dir = long ? 1 : -1, q = +t.qty || 0, e = +t.entry || 0, m = +t.margin || 0; let pnl = q * (live - e) * dir - (+t.fund || 0); if (pnl < -m) pnl = -m; o.mark_price = live; /* unrealized = gross minus funding; the taker fee settles at close (2026-09-02) */ o.unrealized_pnl_usd = Math.round(pnl * 100) / 100; o.fees_usd = Math.round((q * (e + live) * (+t.feeRate || 0)) * 100) / 100; o.funding_usd = Math.round((+t.fund || 0) * 100) / 100; } }
-    else { o.exit_price = (t.exit != null ? +t.exit : null); o.pnl_usd = (t.pnl != null ? +t.pnl : null); o.closed_ts = (t.closeTs != null ? +t.closeTs : null); if (t.partial) o.partial_pct = +t.partial; }
+    else {
+      o.exit_price = (t.exit != null ? +t.exit : null); o.pnl_usd = (t.pnl != null ? +t.pnl : null); o.closed_ts = (t.closeTs != null ? +t.closeTs : null); if (t.partial) o.partial_pct = +t.partial;
+      // WHAT THE TRADE COST, kept instead of thrown away. fees_usd and funding_usd are already in this shape
+      // on an OPEN position and used to vanish the moment it closed, so a bot logging its own trades had to
+      // re-derive the fee - the number that decides whether an edge survives a real venue. Same formula the
+      // P&L subtracts: qty * (entry + exit) * feeRate.
+      const _q = +t.qty || 0, _e = +t.entry || 0, _x = +t.exit || 0, _r = +t.feeRate || 0;
+      o.fees_usd = (_q > 0 && _e > 0 && _x > 0 && _r > 0) ? Math.round(_q * (_e + _x) * _r * 100) / 100 : null;
+      // ZERO, NOT NULL. A position that never reached a funding slot paid nothing, and that is a KNOWN fact -
+      // the open branch above already answers 0 for the same row, so a null here would have made the same
+      // position report differently either side of its own close. (`fees_usd` genuinely can be unknown: a
+      // legacy row with no exit price cannot state one, and null is the honest answer there.)
+      o.funding_usd = Math.round((+t.fund || 0) * 100) / 100;
+      // A liquidation books exactly -margin, so there these are what was CHARGED, not a decomposition of
+      // the loss - said out loud rather than left for a caller to assume the three numbers add up.
+      if (t.liquidated) o.costs_are_charges_not_a_decomposition = true;
+    }
     return o;
   }
   // Merge `incoming` trades into the user's stored journal (union by id, close beats open, trim opens-safe) and persist,
@@ -28743,12 +28802,23 @@ export class UserStore {
       const upd = Object.assign({}, t, { stop: sl, tp: tp });
       // Bot API 2.3: trail = trailing-stop distance in percent, moved by the server sweep (see /tradesweepall). Omitted =
       // untouched; null / 0 = off. The high-water mark starts at the entry so the first ratchet needs real progress.
-      if (b.trail !== undefined) { const tr = (b.trail == null || b.trail === '' || !(+b.trail > 0)) ? 0 : Math.min(50, Math.max(0.05, +b.trail)); if (tr > 0) { upd.trail = tr; if (!(+upd.hwm > 0)) upd.hwm = entry; } else { delete upd.trail; delete upd.hwm; } }
+      if (b.trail !== undefined) { const tr = (b.trail == null || b.trail === '' || !(+b.trail > 0)) ? 0 : Math.min(50, Math.max(0.05, +b.trail)); if (tr > 0) { upd.trail = tr; if (!(+upd.hwm > 0)) upd.hwm = entry;
+        // A TRAIL TURNED ON MUST PROTECT FROM THIS MOMENT, NOT FROM THE NEXT SWEEP (2026-10-10). /v1/open has
+        // always given a trailing position an initial stop at trail distance "so the position is protected
+        // from the first tick"; turning the same trail on through /sltp left `stop` null until a sweep
+        // ratcheted it, which can be ten minutes. A bot that replaces a fixed stop with a trail was briefly
+        // unprotected and had no way to tell. Measured from the high-water mark, so an already-winning
+        // position keeps the ground it has made.
+        if (upd.stop == null) { const _hw = +upd.hwm > 0 ? +upd.hwm : entry; upd.stop = Number((long ? _hw * (1 - tr / 100) : _hw * (1 + tr / 100)).toPrecision(10)); }
+      } else { delete upd.trail; delete upd.hwm; } }
       this._syncJournal(uid, [upd], null, true, 'sltp');
       try { this._whEnqueue(uid, 'position.updated', Object.assign(this._j2bot(upd, null), { via: 'sltp' })); } catch (e7) {}
       this._opsEv(uid, 'sltp', (t.side === 'short' ? 'SHORT ' : 'LONG ') + String(t.sym || '').toUpperCase().slice(0, 12) + ' SL ' + (sl == null ? 'off' : sl) + ' / TP ' + (tp == null ? 'off' : tp), '/paper-trade', { sym: String(t.sym || '').toUpperCase().slice(0, 12), sl, tp, id: String(t.id || '').slice(0, 24) });
       try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff
-      return this.j({ ok: true, position: upd });
+      // THE API SHAPE, BESIDE THE JOURNAL ROW. v1 has always returned the raw row (frozen) and a bot reading
+      // position.sl after this call got undefined, because the row says `stop`. v2 serves `api` instead; the
+      // worker strips it for v1.
+      return this.j({ ok: true, position: upd, api: this._j2bot(upd, null) });
     }
     if (path === '/delist') { // DELISTING SETTLEMENT (2026-09-12): close every open server/bot position on `sym` at its ENTRY price. P&L 0, fees waived, sc:1 final,
       // note on the ticket, NO tradeev row (boards / report / records untouched), no XP, webhook position.closed with reason 'delisted'. {sym, dry, reason}
