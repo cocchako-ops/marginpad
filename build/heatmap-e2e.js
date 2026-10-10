@@ -24,6 +24,7 @@ const URL_ = 'https://marginpad.io/heatmap?nc=1';
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
 let pass = 0, fail = 0;
+let FAIL_BOOK = false; // the "a missed book poll" leg flips this; see the interceptor in open()
 const ok = (name, cond, detail) => {
   if (cond) { pass++; console.log('  ok   ' + name); }
   else { fail++; console.log('  FAIL ' + name + (detail != null ? '  -> ' + detail : '')); }
@@ -38,6 +39,9 @@ async function open(browser, vp, ua) {
   await cdp.send('Network.setBypassServiceWorker', { bypass: true });
   page.on('request', r => {
     if (SRC && /\/assets\/mp-heatmap\.js/.test(r.url())) r.respond({ status: 200, contentType: 'application/javascript', body: SRC });
+    // Set by the "a missed book poll" leg: the shape the worker's collector breaker really returns when the
+    // droplet is mid-stall. It lives on the shared interceptor so every page opened here honours it.
+    else if (FAIL_BOOK && r.url().indexOf('/api/v1/book') >= 0) r.respond({ status: 503, contentType: 'application/json', body: '{"error":"collector_unreachable","fallback":true}' });
     else r.continue();
   });
   const errs = [];
@@ -894,6 +898,85 @@ const LAYOUT = () => {
     const hdr = await page.evaluate(() => ({ bell: !!document.querySelector('.hm-bm-bell'), size: !!document.querySelector('.hm-bm-h select'), coin: !!document.querySelector('[data-bmcoin]') }));
     ok('the film header carries no alert bell and no size picker', !hdr.bell && !hdr.size && hdr.coin, JSON.stringify(hdr));
     ok('no page errors while driving it', o.errs.length === 0, JSON.stringify(o.errs.slice(0, 3)));
+    await page.close();
+  }, { timeoutMs: 280000 });
+
+  // ---- A MISSED BOOK POLL MUST NOT TAKE THE TAPE DOWN -------------------------------------------------
+  // Owner, 2026-10-10: "dok sam gledao Tape, ceo prozor je nestao pa se vratio posle 1-2 sekunde". The card
+  // holds three columns - the order book, the TAPE and THE READ - off two independent feeds, and bkRender()
+  // used to hide all three the moment /api/v1/book answered anything but a usable body. One 503 was enough.
+  // The trigger is ours and measured: the collector's ring persist blocks its main thread, and over 42 h of
+  // its own log 192 passes ran past 4,000 ms, which is the ceiling the worker's collector breaker aborts at.
+  // So this leg breaks the BOOK and asserts nothing happens to the TAPE, whose feed never missed a beat.
+  // Falsified against the pre-fix bundle: six of these go red, the first one on a nine-second outage.
+  console.log('\na missed book poll');
+  await withBrowser(async (browser) => {
+    const o = await open(browser, { width: 1366, height: 900 });
+    const page = o.page;
+    const look = () => page.evaluate(() => {
+      const bk = document.querySelector('.hm-bk'), tp = document.querySelector('.hm-tp'), obA = document.querySelector('.hm-ob-a');
+      const r = tp ? tp.getBoundingClientRect() : null;
+      return {
+        card: bk ? getComputedStyle(bk).display : 'no-card',
+        tapeVisible: !!(r && r.width > 0 && r.height > 0),
+        rows: document.querySelectorAll('.hm-tp-row').length,
+        stale: !!(bk && bk.classList.contains('hm-bk-stale')),
+        marker: (document.querySelector('.hm-bkold') || {}).textContent || '',
+        obDim: obA ? +getComputedStyle(obA).opacity : 1,
+        read: document.querySelectorAll('.hm-sm-l .hm-pn-row, .hm-sm-l *').length > 0,
+      };
+    });
+    const hold = ms => new Promise(r => setTimeout(r, ms));
+    const start = await look();
+    ok('the card is up with tape rows before anything is broken', start.card === 'block' && start.rows > 0, JSON.stringify(start));
+    const errs0 = o.errs.length; // the page's own health before this leg breaks anything
+
+    // nine seconds = two missed polls, the length of a real persist stall. Nothing may move on screen.
+    FAIL_BOOK = true;
+    let hid = false, early = false, minRows = 99;
+    for (let i = 0; i < 9; i++) { const s = await look(); if (s.card === 'none') hid = true; if (s.stale) early = true; minRows = Math.min(minRows, s.rows); await hold(1000); }
+    ok('a two-poll book outage never hides the card', !hid);
+    ok('and is not even marked, being inside the 12s mark', !early);
+    ok('the tape keeps its rows through it', minRows > 0, 'minRows=' + minRows);
+
+    // twenty-five seconds is longer than any stall in the log: the card stays, but a late ladder must LOOK late.
+    let hid2 = false, tapeGone = false, sawStale = false, marker = '', dim = 1;
+    for (let i = 0; i < 16; i++) {
+      const s = await look();
+      if (s.card === 'none') hid2 = true;
+      if (!s.tapeVisible) tapeGone = true;
+      if (s.stale) { sawStale = true; marker = s.marker; dim = Math.min(dim, s.obDim); }
+      await hold(1000);
+    }
+    FAIL_BOOK = false;
+    ok('a 25s book outage still does not hide the card', !hid2);
+    ok('the tape stayed visible the whole time', !tapeGone);
+    ok('past 12s the card marks itself stale', sawStale);
+    ok('and the header says how old the reading is', /\d+s ago/.test(marker), JSON.stringify(marker));
+    ok('the ladder is dimmed while it is late', dim < 0.9, 'opacity=' + dim);
+    ok('THE READ is still rendered with no book poll landing', (await look()).read);
+    await hold(6000);
+    const back = await look();
+    ok('the mark clears when the book comes back', back.card === 'block' && !back.stale && back.obDim > 0.9, JSON.stringify(back));
+
+    // the kept reading belongs to ONE coin: a BTC ladder drawn while the picker says ETH would be the
+    // price of holding state across a poll, and is the thing bookSym/tapeSym exist to prevent.
+    await page.evaluate(() => { const s = document.querySelector('#heatmap .hm-sel'); s.value = 'ETH'; s.dispatchEvent(new Event('change')); });
+    let cross = false;
+    for (let i = 0; i < 6; i++) {
+      const s = await page.evaluate(() => ({ px: ((document.querySelector('.hm-ob-px b') || {}).textContent || '').replace(/\s/g, ''), coin: (document.querySelector('#heatmap .hm-sel') || {}).value }));
+      if (s.coin === 'ETH' && /^\$?1[0-9][0-9],/.test(s.px)) cross = true;
+      await hold(700);
+    }
+    ok('switching coin never draws the previous coin\'s ladder', !cross);
+    // WHAT THIS LEG IS ENTITLED TO CATCH IS A THROWN SCRIPT, NOT A NETWORK STATUS. Two reasons it cannot
+    // read refusals: it manufactures them itself (and the console line for one carries no path at all -
+    // "Failed to load resource: ... 503" - so filtering by the book's URL kept every one and failed the
+    // check on its own fixture); and it runs against live production, where a collector mid-stall answers
+    // a real 503 on some other route and turned this red with nothing wrong. So: only what appeared AFTER
+    // the outage began, and only the kind of error a bug in the kept-state code would actually produce.
+    const real = o.errs.slice(errs0).filter(e => !/^HTTP \d+ \/api\//.test(e) && !/Failed to load resource/.test(e));
+    ok('nothing threw while the book was down', real.length === 0, JSON.stringify(real.slice(0, 3)));
     await page.close();
   }, { timeoutMs: 280000 });
 
