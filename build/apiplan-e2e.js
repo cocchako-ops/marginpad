@@ -243,6 +243,60 @@ const usage = async () => (await bot('/usage')).body.data || {};
   await admin('/api/admin/apiplans', { uid: UID2, plan: 'free' });
   await admin('/api/admin/e2euser', { uid: UID2, op: 'rm' });
 
+  // ── EVERY PUBLIC SURFACE AGREES WITH API_PLANS (2026-10-10) ──────────────────────────────────────────────
+  // Added after a reprice to $39/$99/$199 on 2026-09-22 left FIVE surfaces on $29/$79/$159 for nineteen days:
+  // BOT_ERR.plan_required, the webhooks refusal hint, the page's hero note, its comparison table and its
+  // JSON-LD Offers - so one response body quoted two prices for one plan, and search engines indexed a 26%
+  // discount that did not exist. API_PLANS in src/worker.js is the authority; everything else must match it.
+  {
+    const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const tbl = src.slice(src.indexOf('const API_PLANS = ['), src.indexOf('\n];', src.indexOf('const API_PLANS = [')));
+    const PL = {};
+    for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'/g)) PL[m[1]] = { usd: Math.round(+m[2] / 100), label: m[3] };
+    chk('API_PLANS parses, four plans', ['free', 'pro', 'max', 'business'].every(id => PL[id]), Object.keys(PL));
+    const P1 = PL.pro, M1 = PL.max, B1 = PL.business;
+
+    // 1. the live plan catalogue
+    const cat = await site('/api/apiplan');
+    const byId = {}; ((cat.body && cat.body.plans) || []).forEach(p => { byId[p.plan] = p; });
+    chk('/api/apiplan prices match API_PLANS', ['pro', 'max', 'business'].every(id => byId[id] && +byId[id].price_usd === PL[id].usd),
+      ['pro', 'max', 'business'].map(id => id + ':' + (byId[id] && byId[id].price_usd)).join(' '));
+
+    // 2. THE REFUSAL A DEVELOPER ACTUALLY RECEIVES. A free key asking for webhooks gets plan_required plus
+    //    the upgrade hint; both used to be literals, and one of them was stale.
+    const UIDP = 'e2eprice' + Math.random().toString(36).slice(2, 5);
+    await admin('/api/admin/e2euser', { uid: UIDP, op: 'mk' });
+    const sp = await admin('/api/admin/e2euser', { uid: UIDP, op: 'sess' });
+    const kp = await (await fetch(ORIGIN + '/api/bot/key', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sp.body.token }, body: '{}' })).json().catch(() => ({}));
+    const KP = kp.key || (kp.keys && kp.keys[0] && kp.keys[0].key) || '';
+    const wh = await (await fetch(ORIGIN + '/api/bot/v2/webhooks', { headers: { 'x-api-key': KP } })).json().catch(() => ({}));
+    const whTxt = JSON.stringify(wh);
+    const stale = [29, 79, 159, 49, 89].filter(n => new RegExp('\\$' + n + '(?:/month| a month)').test(whTxt) && ![P1.usd, M1.usd, B1.usd].includes(n));
+    chk('the webhooks refusal quotes no stale price', stale.length === 0, 'stale: ' + stale.join(','));
+    chk('and it quotes the live ones', [P1.usd, M1.usd, B1.usd].every(n => whTxt.indexOf('$' + n) >= 0), [P1.usd, M1.usd, B1.usd].join('/'));
+    await admin('/api/admin/e2euser', { uid: UIDP, op: 'rm' });
+
+    // 3. THE PAGE, including the structured data a search engine indexes rather than the price a human sees.
+    const pg = await (await fetch(ORIGIN + '/trading-api/?cb=' + Date.now())).text();
+    const offers = [...pg.matchAll(/"@type":"Offer","name":"API (\w+)","price":"(\d+)"/g)].map(m => [m[1], +m[2]]);
+    chk('the page JSON-LD Offers match API_PLANS', offers.length === 3 && offers.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
+      offers.map(o => o.join(':')).join(' '));
+    const card = [...pg.matchAll(/class="appx">\$(\d+)<small>/g)].map(m => +m[1]);
+    chk('the price CARDS match API_PLANS', card.length === 3 && card[0] === P1.usd && card[1] === M1.usd && card[2] === B1.usd, card.join('/'));
+    const tblHdr = (pg.match(/Pro &middot; \$(\d+)<\/th><th>Max &middot; \$(\d+)/) || []).slice(1).map(Number);
+    chk('the comparison TABLE matches the cards (it disagreed by $10 for 19 days)', tblHdr.length === 2 && tblHdr[0] === P1.usd && tblHdr[1] === M1.usd, tblHdr.join('/'));
+    const faqP = +((pg.match(/API Pro \(\$(\d+) a month\)/) || [])[1] || 0);
+    chk('the JSON-LD FAQ answer matches too', faqP === P1.usd, faqP);
+    const heroP = +((pg.match(/Pro is \$(\d+)<\/a>/) || [])[1] || 0);
+    chk('and the hero note', heroP === P1.usd, heroP);
+
+    // 4. the AI layer, which is how an assistant answers "what does it cost"
+    for (const f of ['/llms.txt', '/llms-full.txt']) {
+      const t = await (await fetch(ORIGIN + f)).text();
+      const m = t.match(/API Pro \$(\d+)\/mo, API Max \$(\d+)\/mo, API Business \$(\d+)\/mo/);
+      chk(f + ' quotes the live plan prices', !!m && +m[1] === P1.usd && +m[2] === M1.usd && +m[3] === B1.usd, m && m.slice(1).join('/'));
+    }
+  }
   // ── cleanup ──────────────────────────────────────────────────────────────────────────────────────────────
   await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });
   const after = await site('/api/apiplan');

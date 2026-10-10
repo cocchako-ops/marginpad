@@ -16800,6 +16800,10 @@ function BOT_TIER_LIMITS(tier) {
 const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
 // Built FROM API_PLANS, never typed: the literal version said $29/$79/$159 and "AI reads" for ten days after the
 // plans were repriced to $39/$99/$199 with no AI on any tier (audit 2026-09-25) - every 402/429 a bot received quoted it.
+// Every sentence that names a plan price reads one of these. The 2026-09-25 audit derived ONE sentence and
+// left two literals, which is how one response body came to quote $29 and $39 for the same plan.
+const API_PRICE = (id) => '$' + Math.round(((API_PLANS.find((x) => x.id === id) || {}).cents || 0) / 100);
+const API_HOOKS = (id) => (API_PLANS.find((x) => x.id === id) || {}).hooks;
 const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), pro = p('pro'), max = p('max'), biz = p('business');
   return 'API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
@@ -16864,7 +16868,8 @@ const BOT_ERR = {
   bad_sim_field: 'One or more simulation-profile fields are outside their published range, or are not fields at all. Out-of-range input is refused rather than clamped. GET /api/bot/v2/sim for every field, its range and what it changes.',
   unknown_preset: 'No such simulation preset. GET /api/bot/v2/sim lists them.',
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
-  plan_required: 'This is on API Pro ($29/month), Max ($79/month) and Business ($159/month). Site Premium does not raise API limits: https://marginpad.io/trading-api/#plans',
+  // DERIVED, never typed - see the API_PRICE note. This string is read by every 402 a developer meets.
+  plan_required: 'This is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month). Site Premium does not raise API limits: ' + API_UPGRADE + '',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
   bad_event: 'Unknown webhook event name.',
@@ -17481,7 +17486,7 @@ async function handleBot(url, request, env, ctx) {
   }
   // ── Bot API 2.3 (2026-09-11) ──────────────────────────────────────────────────────────────────────────────
   if (path === '/v1/webhooks') { // API Pro and above: push trading events to the bot's own URL, signed. GET = list; POST {act:add|delete|test}
-    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro ($29/month, 3 hooks), Max ($79/month, 15) and Business ($159/month, 50). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (!BOT_TIER_LIMITS(+auth.tier || 0).hooks) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'Webhooks are on API Pro (' + API_PRICE('pro') + '/month, ' + API_HOOKS('pro') + ' hooks), Max (' + API_PRICE('max') + '/month, ' + API_HOOKS('max') + ') and Business (' + API_PRICE('business') + '/month, ' + API_HOOKS('business') + '). The WebSocket stream (wss://marginpad.io/api/bot/v2/stream) stays free on every plan. ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     const act = request.method === 'POST' ? String(b.act || 'add') : 'list';
     if (act === 'add') {
       const u = String(b.url || '').trim();
@@ -26278,6 +26283,14 @@ async function sampleUptime(env) {
     await env.STATS.put(k, JSON.stringify(d), { expirationTtl: UP_KEEP_D * 86400 });
     await env.STATS.put('up:last', JSON.stringify(Object.assign({ ts: t0 }, c)), { expirationTtl: 86400 });
   } catch (e) {}
+  // HOW MUCH THIS API HAS SERVED, for the proof strip on /trading-api/. It was a hardcoded "1.1M" with a
+  // dead id for weeks while the real figure passed 4.4M - a page that exists to be believed must not
+  // undersell itself by four times. Refreshed here because this pass already talks to the store.
+  try {
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botcalls', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
+    const j = await r.json();
+    if (j && j.ok && +j.calls > 0) await env.STATS.put('api:served', JSON.stringify({ calls: +j.calls, keys: +j.keys, accounts: +j.accounts, ts: Date.now() }), { expirationTtl: 7 * 86400 });
+  } catch (e) {}
 }
 async function handleStatusApi(env) {
   const hdr = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS };
@@ -26293,8 +26306,12 @@ async function handleStatusApi(env) {
   const rows = await Promise.all(dayKeys.map(d => env.STATS.get('up:day:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); // 90 reads in parallel: sequential they took 2-4 s and the page sat on "Checking…"
   dayKeys.forEach((d, i) => { const r = rows[i]; if (!r) days.push({ d, n: 0 }); else days.push({ d, n: r.n, first: r.first || null, store: r.store, coll: r.coll, px: r.px, storeP95: p95(r.storeMs), collP95: p95(r.collMs) }); });
   const expected = 144; // */10 = 144 samples a day; today's expectation is pro-rated by the page
+  // The API's own usage, so /trading-api/ can state it live off the fetch it already makes for the status
+  // bar. Absent rather than zero when the sampler has not written yet - a zero here would read as "nobody
+  // uses this", which is the opposite of what it measures.
+  let served = null; try { const v = JSON.parse(await env.STATS.get('api:served') || 'null'); if (v && +v.calls > 0) served = { calls_served: +v.calls, keys: +v.keys || 0, accounts: +v.accounts || 0, as_of: +v.ts || 0 }; } catch (e) {}
   const cronOk = hb > 0 && now - hb <= 25 * 60000;
-  const out = { ok: true, ts: now, now: { cron: { ok: cronOk, ageMin: hb ? Math.round((now - hb) / 60000) : null }, store: last ? { ok: !!last.store, ms: last.storeMs, sampledAgoMin: Math.round((now - last.ts) / 60000) } : null, collector: coll, prices: px }, days, expectedPerDay: expected, keepDays: UP_KEEP_D };
+  const out = { ok: true, ts: now, ...(served ? { api: served } : {}), now: { cron: { ok: cronOk, ageMin: hb ? Math.round((now - hb) / 60000) : null }, store: last ? { ok: !!last.store, ms: last.storeMs, sampledAgoMin: Math.round((now - last.ts) / 60000) } : null, collector: coll, prices: px }, days, expectedPerDay: expected, keepDays: UP_KEEP_D };
   const resp = new Response(JSON.stringify(out), { headers: hdr });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -27901,6 +27918,15 @@ export class UserStore {
         const exact = !!+t.life_seed; const closes = exact ? +t.life_closes || 0 : (+t.wins || 0) + (+t.losses || 0), pnl = exact ? +t.life_pnl || 0 : +t.pnl || 0;
         return { account: bk || 'main', open_positions: +t.opens || 0, closed_trades: closes, wins: exact ? +t.life_wins || 0 : +t.wins || 0, realized_pnl_usd: Math.round(pnl * 100) / 100, best_trade_usd: t.best_pnl == null ? null : +t.best_pnl, reset_ts: rts || null, keys: keys.filter(r => !r.revoked && String(r.book || '') === bk).map(r => ({ name: r.name, key_prefix: String(r.k).slice(0, 10) + '…', last_call_ts: +r.last || 0, calls: +r.calls || 0 })) }; });
       return this.j({ accounts: out, count: out.length });
+    }
+    if (path === '/botcalls') {
+      // ONE aggregate over botkeys2, asked once every ten minutes by the uptime sampler. Test accounts are
+      // excluded by uid prefix for the same reason they are excluded everywhere else: a public figure that
+      // quietly counts my own E2E runs is a wrong number on a page that exists to be trusted.
+      try {
+        const r = this.rows("SELECT COUNT(*) keys, COUNT(DISTINCT uid) accts, COALESCE(SUM(calls),0) calls FROM botkeys2 WHERE uid NOT LIKE 'e2e%'")[0] || {};
+        return this.j({ ok: true, calls: +r.calls || 0, keys: +r.keys || 0, accounts: +r.accts || 0 });
+      } catch (e) { return this.j({ error: 'unavailable' }); }
     }
     if (path === '/botreset') { // start the book from zero: refuses while positions are open; resting orders are cancelled; the closed journal is archived
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
