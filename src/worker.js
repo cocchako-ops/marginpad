@@ -887,7 +887,32 @@ async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC 
   return r;
 }
 async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor copy cold colos serve instantly (≤1440 KV writes/day - negligible vs the A5 diet)
-  try { const r = await handlePrices(env, null, 2); if (r && r.ok) { const txt = await r.text(); if (txt && txt.length > 50) await env.STATS.put('prices:last', txt, { expirationTtl: 300 }); } } catch (e) {}
+  const t0 = Date.now(); let note = null;
+  try {
+    const r = await handlePrices(env, null, 2);
+    if (!r || !r.ok) note = { ok: false, why: 'upstream', status: r ? r.status : 0 };
+    else {
+      const txt = await r.text();
+      if (!txt || txt.length <= 50) note = { ok: false, why: 'empty', len: txt ? txt.length : 0 };
+      else {
+        await env.STATS.put('prices:last', txt, { expirationTtl: 300 });
+        let pairs = 0; try { pairs = (JSON.parse(txt).pairs || []).length; } catch (e) {}
+        note = { ok: true, pairs };
+      }
+    }
+  } catch (e) { note = { ok: false, why: 'threw', err: String((e && e.message) || e).slice(0, 120) }; }
+  // WHY THIS IS RECORDED AT ALL: see the header above - the floor fails in blocks and the empty catch
+  // this replaced made every block indistinguishable from a healthy minute. The write is cheap (one KV
+  // put a minute on top of the one already here) and it is the only thing that can name the cause.
+  try {
+    note.ms = Date.now() - t0; note.ts = t0;
+    await env.STATS.put('px:warm', JSON.stringify(note), { expirationTtl: 86400 });
+    if (!note.ok) {
+      const k = 'px:warmfail:' + new Date(t0).toISOString().slice(0, 10);
+      const n = (+(await env.STATS.get(k)) || 0) + 1;
+      await env.STATS.put(k, String(n), { expirationTtl: 40 * 86400 });
+    }
+  } catch (e) {}
 }
 // market screener: a curated set of top USDT markets with 24h move + best-effort funding (edge-cached 30s)
 // ---------- screener technical analysis (operates on close/high/low/volume arrays from 4h candles) ----------
@@ -26301,6 +26326,11 @@ async function handleStatusApi(env) {
   let last = null; try { last = JSON.parse(await env.STATS.get('up:last') || 'null'); } catch (e) {}
   let coll = null; try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const r = await fetch(base + '/api/v1/status', { signal: AbortSignal.timeout(6000), cf: { cacheTtl: 30 } }); const j = await r.json(); const ex = (j && j.exchanges) || []; coll = { ok: r.ok && ex.length > 0, connected: ex.filter(x => x.connected).length, total: ex.length, uptimeSec: +j.uptimeSec || 0, venues: ex.map(x => ({ name: x.name, connected: !!x.connected, lastEventAgeMin: x.lastEventAt ? Math.round((now - x.lastEventAt) / 60000) : null })) }; } } catch (e) { coll = { ok: false, connected: 0, total: 0, venues: [] }; }
   let px = null; try { const p = JSON.parse(await env.STATS.get('prices:last') || 'null'); const ts = p && (+p.ts || +p.t || 0); px = { ok: !!(p && p.pairs && p.pairs.length) && (!ts || now - ts <= 180000), ageSec: ts ? Math.round((now - ts) / 1000) : null, pairs: p && p.pairs ? p.pairs.length : 0 }; } catch (e) { px = { ok: false }; }
+  // The AGE above is read through Workers KV, whose read cache is 60 s at its shortest, so it carries up
+  // to a minute of read staleness on top of the real one - which is worth knowing before anybody reads a
+  // bad day as a dead feed. lastWrite is the writer's own account of its last run and has no such lag.
+  try { const w = JSON.parse(await env.STATS.get('px:warm') || 'null'); if (w) px.lastWrite = { ok: !!w.ok, agoSec: Math.round((now - (+w.ts || 0)) / 1000), ms: +w.ms || 0, why: w.why || undefined, pairs: w.pairs }; } catch (e) {}
+  try { const fk = 'px:warmfail:' + new Date(now).toISOString().slice(0, 10); const fn = +(await env.STATS.get(fk)) || 0; if (px.lastWrite) px.lastWrite.failsToday = fn; } catch (e) {}
   const days = []; const p95 = (a) => { if (!a || !a.length) return null; const s = a.slice().sort((x, y) => x - y); return s[Math.max(0, Math.ceil(s.length * 0.95) - 1)]; };
   const dayKeys = []; for (let i = UP_KEEP_D - 1; i >= 0; i--) dayKeys.push(new Date(now - i * 86400000).toISOString().slice(0, 10));
   const rows = await Promise.all(dayKeys.map(d => env.STATS.get('up:day:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); // 90 reads in parallel: sequential they took 2-4 s and the page sat on "Checking…"
@@ -29787,6 +29817,14 @@ export class UserStore {
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
+        // botuse2 IS KEYED BY THE API KEY, NOT BY uid, so neither list above can reach it - and it is the LIVE
+        // usage table (botuse, which both lists name, is the retired uid-keyed one). Measured 2026-10-10: 695 of
+        // 1,355 rows in the 40-day window belonged to keys whose account was already gone. Only 0.22% of CALLS,
+        // but the damage lands exactly where the owner is trying to read uptake: `sim` showed 387 calls of which
+        // every one was a test run, `webhooks` 151, and 7 of the stream's 15. It runs AFTER the BY_UID loop on
+        // purpose: that loop has just cleared this account's botkeys2 rows, so its usage is now unreachable by
+        // definition and this one statement catches it without needing the key strings it can no longer read.
+        try { sql.exec('DELETE FROM botuse2 WHERE NOT EXISTS (SELECT 1 FROM botkeys2 b WHERE b.k = botuse2.k)'); } catch (e) {}
         try { sql.exec('DELETE FROM users WHERE id=?', uid); } catch (e) {}
         try { this._whUids = null; } catch (e) {} // the hook-owner Set is memoised in the isolate - a removal must drop it
         return this.j({ ok: true, removed: uid });
@@ -29800,6 +29838,15 @@ export class UserStore {
       // merely inactive is never touched.
       if (b.op === 'orphans') {
         const out = { checked: 0, removed: 0, tables: {}, uids: [] }, seen = new Set();
+        // A KEY IS NEVER DELETED BY ITS OWNER - revoking and rotating both set revoked=1 and keep the row, because
+        // usage history is evidence. So a botuse2 row whose key is absent from botkeys2 can only have come from an
+        // account that was removed, and it is unattributable by construction: nothing can ever say whose it was.
+        // That is why this one needs no test-prefix check, unlike every uid-keyed table below it.
+        try {
+          const n0 = (this.rows('SELECT COUNT(*) n FROM botuse2 WHERE NOT EXISTS (SELECT 1 FROM botkeys2 b WHERE b.k = botuse2.k)')[0] || {}).n || 0;
+          out.botuse2 = { orphans: n0, total: (this.rows('SELECT COUNT(*) n FROM botuse2')[0] || {}).n || 0 };
+          if (n0) { out.tables.botuse2 = n0; out.removed += n0; if (!dry) sql.exec('DELETE FROM botuse2 WHERE NOT EXISTS (SELECT 1 FROM botkeys2 b WHERE b.k = botuse2.k)'); }
+        } catch (e) { out.botuse2 = { error: String((e && e.message) || e).slice(0, 140) }; }
         for (const t of ['botwh', 'botwhq', 'botkeys2', 'botkeys', 'botpos', 'botuse', 'botidem', 'porders']) {
           let rowsO = [];
           try { rowsO = this.rows('SELECT DISTINCT uid FROM ' + t + ' WHERE uid IS NOT NULL'); } catch (e) { continue; }
