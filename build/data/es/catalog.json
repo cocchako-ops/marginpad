@@ -1,13 +1,12 @@
 {
  "meta": {
-  "generated": "2026-10-09T09:27:59.591Z",
-  "pages": 385,
-  "occurrences": 26546,
-  "unique": 14043,
-  "words": 266521,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-10-09T09:31:08.830Z"
+  "generated": "2026-10-10T23:20:03.712Z",
+  "pages": 386,
+  "occurrences": 26653,
+  "unique": 14137,
+  "words": 268370,
+  "untranslated": 153,
+  "untranslatedWords": 3079
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +682,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1673,
+   "n": 1677,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -8363,9 +8362,10 @@
    ],
    "ctx": [
     "/alerts/",
-    "/privacy/"
+    "/privacy/",
+    "/support/"
    ],
-   "n": 2,
+   "n": 3,
    "w": 1
   },
   "iskDw8N-IY": {
@@ -9507,9 +9507,10 @@
    "ctx": [
     "/api-docs/",
     "/arena/",
-    "/status/"
+    "/status/",
+    "/support/"
    ],
-   "n": 3,
+   "n": 4,
    "w": 2
   },
   "tiOVyGSsbP": {
@@ -10097,9 +10098,10 @@
     "html"
    ],
    "ctx": [
-    "/api/"
+    "/api/",
+    "/trading-api/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 3
   },
   "YgwixK7l7j": {
@@ -100924,9 +100926,9 @@
    "n": 1,
    "w": 16
   },
-  "CM6KzsBRRA": {
-   "en": "The full machine-readable spec lives at <a href=\"/api/openapi.json\"><b>/api/openapi.json</b></a> (OpenAPI 3.1, function-calling friendly descriptions). Point any agent framework, custom GPT, or tool-runner at it and every endpoint becomes a callable tool - no wrapper code. A remote MCP server is live at https://marginpad.io/mcp (28 tools). Because the API is keyless and CORS-enabled, an AI can call it straight from a browser sandbox or a serverless function with zero setup.",
-   "es": "La especificación completa legible por máquina está en <a href=\"/api/openapi.json\"><b>/api/openapi.json</b></a> (OpenAPI 3.1, con descripciones pensadas para function calling). Apunta cualquier framework de agentes, GPT personalizado o ejecutor de herramientas hacia ella y cada endpoint se convierte en una herramienta invocable - sin código intermedio. Hay un servidor MCP remoto activo en https://marginpad.io/mcp (28 herramientas). Como la API no necesita clave y admite CORS, una IA puede llamarla directamente desde un sandbox de navegador o una función serverless sin ninguna configuración.",
+  "s8LvHIV262": {
+   "en": "The full machine-readable spec lives at <a href=\"/api/openapi.json\"><b>/api/openapi.json</b></a> (OpenAPI 3.1, function-calling friendly descriptions). Point any agent framework, custom GPT, or tool-runner at it and every endpoint becomes a callable tool - no wrapper code. A remote MCP server is live at https://marginpad.io/mcp (29 tools). Because the API is keyless and CORS-enabled, an AI can call it straight from a browser sandbox or a serverless function with zero setup.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -101332,9 +101334,9 @@
    "n": 1,
    "w": 10
   },
-  "IqfmtEpsTy": {
-   "en": "Yes - <a href=\"/api/openapi.json\">/api/openapi.json</a> (OpenAPI 3.1). It is designed for LLM function-calling and agent tools. A remote MCP server is live at https://marginpad.io/mcp (28 tools) - point any MCP client at it.",
-   "es": "Sí - <a href=\"/api/openapi.json\">/api/openapi.json</a> (OpenAPI 3.1). Está diseñada para function calling de LLM y herramientas de agentes. Hay un servidor MCP remoto activo en https://marginpad.io/mcp (28 herramientas) - apunta hacia él cualquier cliente MCP.",
+  "y0xFUdn2tD": {
+   "en": "Yes - <a href=\"/api/openapi.json\">/api/openapi.json</a> (OpenAPI 3.1). It is designed for LLM function-calling and agent tools. A remote MCP server is live at https://marginpad.io/mcp (29 tools) - point any MCP client at it.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -101536,9 +101538,9 @@
    "n": 1,
    "w": 12
   },
-  "cXvYqZUxG6": {
-   "en": "Yes, at https://marginpad.io/api/openapi.json (OpenAPI 3.1), designed for LLM function-calling and agent tools. A remote MCP server is live at https://marginpad.io/mcp (28 tools) - point any MCP client at it.",
-   "es": "Sí, en https://marginpad.io/api/openapi.json (OpenAPI 3.1), diseñada para function calling de LLM y herramientas de agentes. Hay un servidor MCP remoto activo en https://marginpad.io/mcp (28 herramientas) - apunta hacia él cualquier cliente MCP.",
+  "Ql1bHeDT-P": {
+   "en": "Yes, at https://marginpad.io/api/openapi.json (OpenAPI 3.1), designed for LLM function-calling and agent tools. A remote MCP server is live at https://marginpad.io/mcp (29 tools) - point any MCP client at it.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -121232,7 +121234,7 @@
     "/leaderboards/",
     "/premium/"
    ],
-   "n": 6,
+   "n": 3,
    "w": 1
   },
   "ltA-x27WTg": {
@@ -138973,9 +138975,9 @@
    "n": 1,
    "w": 3
   },
-  "26UiZzq2e6": {
-   "en": "<span><b>Pay with crypto</b> · BTC, USDT & more</span><span>Cancel anytime</span><span><b>Instant</b> access</span>",
-   "es": "<span><b>Paga con cripto</b> · BTC, USDT y más</span><span>Cancela cuando quieras</span><span>Acceso <b>instantáneo</b></span>",
+  "wcgE1xAOAS": {
+   "en": "<span><b>Pay with crypto</b> · BTC, USDT & more</span><span>No auto-renewal</span><span><b>Instant</b> access</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139501,9 +139503,9 @@
    "n": 1,
    "w": 6
   },
-  "BTaTKO5hrT": {
-   "en": "Renews monthly · cancel anytime",
-   "es": "Se renueva cada mes · cancela cuando quieras",
+  "w4EhRAEZvG": {
+   "en": "30 days - nothing renews on its own",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139511,7 +139513,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 4
+   "w": 7
   },
   "Z_19j4febC": {
    "en": "Instant access after payment",
@@ -139825,9 +139827,9 @@
    "n": 1,
    "w": 5
   },
-  "QPeLwJg1-0": {
-   "en": "Untouched from the charts on 8 October 2026: the assistant picked the levels, drew them and printed its own verdict. Beside each capture is exactly what it did and every number it put on the chart - nothing retyped, and one of them is a refusal to trade.",
-   "es": "Sin retoques, directo de los gráficos del 8 de octubre de 2026: el asistente eligió los niveles, los dibujó e imprimió su propio veredicto. Junto a cada captura está exactamente lo que hizo y cada número que puso en el gráfico - nada reescrito, y una de ellas es una negativa a operar.",
+  "XGKnJvLqec": {
+   "en": "Untouched from the charts on 10 October 2026: the assistant picked the levels, drew them and printed its own verdict. Beside each capture is exactly what it did and every number it put on the chart - nothing retyped, and 4 of the 6 are a refusal to trade.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139837,9 +139839,9 @@
    "n": 1,
    "w": 45
   },
-  "qvVhzDY7DI": {
-   "en": "<span class=\"k\">You asked</span><q>Find me an opportunity here and draw it on the chart.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
-   "es": "<span class=\"k\">Preguntaste</span><q>Encuéntrame una oportunidad aquí y dibújala en el gráfico.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
+  "J4ahJuUwDy": {
+   "en": "<span class=\"k\">You asked</span><q>Where would you enter, and where does the stop go? Draw it.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>¿Dónde entrarías, y dónde va el stop? Dibújalo.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
    "kind": [
     "html"
    ],
@@ -139847,11 +139849,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 15
+   "w": 16
   },
-  "S97t3uTgYd": {
-   "en": "<span class=\"k\">What it did</span>Opened RSI (14) · Drew 4 shapes",
-   "es": "<span class=\"k\">Qué hizo</span>Abrió RSI (14) · Dibujó 4 figuras",
+  "oUnTeUPeP6": {
+   "en": "<span class=\"k\">What it did</span>Drew 4 shapes",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139859,23 +139861,23 @@
     "/premium/"
    ],
    "n": 3,
-   "w": 8
+   "w": 5
   },
-  "ziOPDOxjsc": {
-   "en": "SHORT<small>confidence 63%</small>",
-   "es": "SHORT<small>confianza 63%</small>",
+  "wI0VHisAVh": {
+   "en": "LONG<small>confidence 58%</small>",
+   "es": "LONG<small>confianza 58%</small>",
    "kind": [
     "html"
    ],
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 3
   },
-  "kJngDWCCvI": {
-   "en": "2,612 <small>+1.70% from the price when asked</small>",
-   "es": "2,612 <small>+1.70% desde el precio al momento de preguntar</small>",
+  "QZb7dDaocQ": {
+   "en": "110.16 <small>-0.24% from the price when asked</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139894,7 +139896,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 5,
+   "n": 2,
    "w": 1
   },
   "W7ZGX2dAlc": {
@@ -139906,7 +139908,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 5,
+   "n": 2,
    "w": 1
   },
   "qdKHAy3sMT": {
@@ -139918,7 +139920,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 5,
+   "n": 2,
    "w": 1
   },
   "shfQYjP7ef": {
@@ -139933,9 +139935,9 @@
    "n": 6,
    "w": 3
   },
-  "Iq7Fe3O3mt": {
-   "en": "1.83 <small>acceptable</small>",
-   "es": "1.83 <small>aceptable</small>",
+  "inNa1e__Wz": {
+   "en": "1.69 <small>acceptable</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139945,9 +139947,9 @@
    "n": 1,
    "w": 2
   },
-  "nPVFCpW8Gl": {
-   "en": "ETH 4-hour: lean DOWN — but don't chase here, sell the bounce.",
-   "es": "ETH 4 horas: sesgo A LA BAJA — pero no persigas aquí, vende el rebote.",
+  "6_2sOijFIl": {
+   "en": "15-minute SOL is coiled — don't buy into the wall at 110.61.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139957,9 +139959,9 @@
    "n": 1,
    "w": 11
   },
-  "UcU3IIKPK0": {
-   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 2,612, stop 2,655, targets 2,533.3 and 2,460.7 - reward to risk <b>1.83</b> written on the block. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Bear OB&rdquo;, &ldquo;Long liqs $780M&rdquo;. It opened an indicator on its own to check the move.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 2,612, stop 2,655, objetivos 2,533.3 y 2,460.7 - beneficio sobre riesgo <b>1.83</b> escrito en el bloque. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Bear OB&rdquo;, &ldquo;Long liqs $780M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
+  "JDPHjD_S3W": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Long from 110.16, stop 109.74, targets 110.87 and 111.4 - reward to risk <b>1.69</b> written on the block. On the chart: a level, a zone, a pattern, labelled &ldquo;Offer wall&rdquo;, &ldquo;Buy zone&rdquo;, &ldquo;Break up&rdquo;.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139967,163 +139969,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 48
-  },
-  "J4ahJuUwDy": {
-   "en": "<span class=\"k\">You asked</span><q>Where would you enter, and where does the stop go? Draw it.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
-   "es": "<span class=\"k\">Preguntaste</span><q>¿Dónde entrarías, y dónde va el stop? Dibújalo.</q><span class=\"ai-sym\">SOL &middot; 15m</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "dVusR2gJEK": {
-   "en": "<span class=\"k\">What it did</span>Opened Liquidation Magnet · Drew 4 shapes",
-   "es": "<span class=\"k\">Qué hizo</span>Abrió Liquidation Magnet · Dibujó 4 figuras",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 2,
-   "w": 8
-  },
-  "arw9K8llew": {
-   "en": "SHORT<small>confidence 66%</small>",
-   "es": "SHORT<small>confianza 66%</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 2,
-   "w": 3
-  },
-  "1h8j3yPsZ1": {
-   "en": "116.55 <small>+1.03% from the price when asked</small>",
-   "es": "116.55 <small>+1.03% desde el precio al momento de preguntar</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "5ODPxsO_yK": {
-   "en": "3.27 <small>well paid</small>",
-   "es": "3.27 <small>bien pagado</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "6zG29tDkx7": {
-   "en": "15-minute SOL leans DOWN — but don't chase here; sell the bounce into 116.55.",
-   "es": "SOL en 15 minutos tiene sesgo A LA BAJA — pero no persigas aquí; vende el rebote hacia 116.55.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "KBNNUex67d": {
-   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 116.55, stop 117.3, targets 114.1 and 107.33 - reward to risk <b>3.27</b> written on the block. On the chart: a ray, a zone, a level, labelled &ldquo;Downtrend&rdquo;, &ldquo;Sell zone&rdquo;, &ldquo;Swept low&rdquo;.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 116.55, stop 117.3, objetivos 114.1 y 107.33 - beneficio sobre riesgo <b>3.27</b> escrito en el bloque. En el gráfico: un rayo, una zona, un nivel, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Sell zone&rdquo;, &ldquo;Swept low&rdquo;.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 37
-  },
-  "CouGEtWfoo": {
-   "en": "<span class=\"k\">You asked</span><q>Mark the structure and the levels that actually matter here.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
-   "es": "<span class=\"k\">Preguntaste</span><q>Marca la estructura y los niveles que realmente importan aquí.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "XA1KnvWLtr": {
-   "en": "1.4178 <small>+0.87% from the price when asked</small>",
-   "es": "1.4178 <small>+0.87% desde el precio al momento de preguntar</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "-xEIiF51n3": {
-   "en": "2.58 <small>well paid</small>",
-   "es": "2.58 <small>bien pagado</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "p3KnxKkuka": {
-   "en": "XRP 1-hour: downtrend — sell the bounce, don't catch this knife.",
-   "es": "XRP en 1 hora: tendencia bajista — vende el rebote, no atrapes este cuchillo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "VuRf0n_Os-": {
-   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 1.4178, stop 1.4414, targets 1.3569 and 1.3513 - reward to risk <b>2.58</b> written on the block. On the chart: a ray, a level, a zone, labelled &ldquo;Downtrend&rdquo;, &ldquo;Support x3&rdquo;, &ldquo;Long liqs $80M&rdquo;. It opened an indicator on its own to check the move.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 1.4178, stop 1.4414, objetivos 1.3569 y 1.3513 - beneficio sobre riesgo <b>2.58</b> escrito en el bloque. En el gráfico: un rayo, un nivel, una zona, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Support x3&rdquo;, &ldquo;Long liqs $80M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 49
-  },
-  "aoJhirMPx_": {
-   "en": "Show the other 3 reads",
-   "es": "Mostrar las otras 3 lecturas",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 4
+   "w": 38
   },
   "HLlO583OuZ": {
    "en": "<span class=\"k\">You asked</span><q>Show me where the liquidation pools sit and what they mean for a trade.</q><span class=\"ai-sym\">LINK &middot; 4h</span>",
@@ -140137,6 +139983,78 @@
    "n": 1,
    "w": 17
   },
+  "JjX39RqAgq": {
+   "en": "<span class=\"k\">What it did</span>Drew 6 shapes",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "gBuMIhbm1d": {
+   "en": "12.756 <small>-2.04% from the price when asked</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "45po-qpbL6": {
+   "en": "1.57 <small>acceptable</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "M00EhHaEdJ": {
+   "en": "LINK, 4-hour: the fuel is stacked both ways, but it's lopsided below — wait for a dip to buy.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "mIDjEA3-fN": {
+   "en": "<b>It draws the trade and prints the arithmetic.</b> Long from 12.756, stop 12.08, targets 13.816 and 14.103 - reward to risk <b>1.57</b> written on the block. On the chart: a trend line, 3 zones, a level, labelled &ldquo;Lower highs&rdquo;, &ldquo;Buy zone / FVG&rdquo;, &ldquo;Short liqs $6M&rdquo;.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 41
+  },
+  "qvVhzDY7DI": {
+   "en": "<span class=\"k\">You asked</span><q>Find me an opportunity here and draw it on the chart.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Encuéntrame una oportunidad aquí y dibújala en el gráfico.</q><span class=\"ai-sym\">ETH &middot; 4h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 15
+  },
   "3xdBwh_v5Q": {
    "en": "WAIT - not a trade yet<small>confidence 62%</small>",
    "es": "ESPERAR - aún no es una operación<small>confianza 62%</small>",
@@ -140146,7 +140064,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 6
   },
   "IOCxl5aReO": {
@@ -140158,12 +140076,12 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 4,
    "w": 2
   },
-  "8uyNrreq6N": {
-   "en": "12.724 <small>-3.06% from the price when asked</small>",
-   "es": "12.724 <small>-3.06% desde el precio al momento de preguntar</small>",
+  "37M5NNtMyh": {
+   "en": "2,549.2 <small>+1.60% from the price when asked</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140182,7 +140100,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 4,
    "w": 2
   },
   "4UKDOvN-aS": {
@@ -140194,7 +140112,7 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 4,
    "w": 2
   },
   "sWFJRdCuTD": {
@@ -140206,72 +140124,12 @@
    "ctx": [
     "/premium/"
    ],
-   "n": 1,
+   "n": 4,
    "w": 2
   },
-  "pH9wQ2T3ho": {
-   "en": "1.70 <small>acceptable</small>",
-   "es": "1.70 <small>aceptable</small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "LggB1Qepn3": {
-   "en": "LINK 4-hour — the fuel is below price, so don't buy here; wait for the flush into 12.72–12.83.",
-   "es": "LINK en 4 horas — el combustible está debajo del precio, así que no compres aquí; espera el lavado hacia 12.72–12.83.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 17
-  },
-  "e5aiENG33d": {
-   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 12.724, with the stop and target the trade would carry if that level is reached. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Long liqs $14M&rdquo;, &ldquo;Short liqs $3.7M&rdquo;.",
-   "es": "<b>Esperar también es una respuesta - con un precio puesto.</b> Rechaza la operación y marca qué está esperando en 12.724, con el stop y el objetivo que tendría la operación si se alcanza ese nivel. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Long liqs $14M&rdquo;, &ldquo;Short liqs $3.7M&rdquo;.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 48
-  },
-  "gl-KWWiSc1": {
-   "en": "<span class=\"k\">You asked</span><q>Read this chart and draw the setup on it.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
-   "es": "<span class=\"k\">Preguntaste</span><q>Lee este gráfico y dibuja el setup en él.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "_1vxjcT2__": {
-   "en": "<span class=\"k\">What it did</span>Opened RSI (14) · Drew 3 shapes",
-   "es": "<span class=\"k\">Qué hizo</span>Abrió RSI (14) · Dibujó 3 figuras",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 8
-  },
-  "wI0VHisAVh": {
-   "en": "LONG<small>confidence 58%</small>",
-   "es": "LONG<small>confianza 58%</small>",
+  "5ODPxsO_yK": {
+   "en": "3.27 <small>well paid</small>",
+   "es": "3.27 <small>bien pagado</small>",
    "kind": [
     "html"
    ],
@@ -140281,9 +140139,9 @@
    "n": 1,
    "w": 3
   },
-  "dprvh3qoYA": {
-   "en": "82,658.7 <small>-0.10% from the price when asked</small>",
-   "es": "82,658.7 <small>-0.10% desde el precio al momento de preguntar</small>",
+  "21KmOXjKld": {
+   "en": "ETH, 4-hour: the opportunity is a short into 2549, not a buy here.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140291,11 +140149,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 7
+   "w": 11
   },
-  "jpaNjDn16b": {
-   "en": "1.42 <small>thin</small>",
-   "es": "1.42 <small>ajustado</small>",
+  "e8cvMnLrT2": {
+   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 2,549.2, with the stop and target the trade would carry if that level is reached. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Bear OB&rdquo;, &ldquo;Long liqs $420M&rdquo;.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140303,11 +140161,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 2
+   "w": 47
   },
-  "3TSA9qp7-R": {
-   "en": "1-hour BTC: downtrend, but price is sitting on a support that keeps holding — I'd buy the retest, not here.",
-   "es": "BTC en 1 hora: tendencia bajista, pero el precio está sobre un soporte que sigue resistiendo — compraría el retest, no aquí.",
+  "aoJhirMPx_": {
+   "en": "Show the other 3 reads",
+   "es": "Mostrar las otras 3 lecturas",
    "kind": [
     "html"
    ],
@@ -140315,19 +140173,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 18
-  },
-  "kY33Ceaf6J": {
-   "en": "<b>It draws the trade and prints the arithmetic.</b> Long from 82,658.7, stop 81,711.5, targets 84,007.9 and 84,556 - reward to risk <b>1.42</b>, and it says so. On the chart: a ray, a zone, labelled &ldquo;Downtrend&rdquo;, &ldquo;Sweep zone&rdquo;, &ldquo;Bounce&rdquo;. It opened an indicator on its own to check the move.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Long desde 82,658.7, stop 81,711.5, objetivos 84,007.9 y 84,556 - beneficio sobre riesgo <b>1.42</b>, y lo dice así. En el gráfico: un rayo, una zona, etiquetados &ldquo;Downtrend&rdquo;, &ldquo;Sweep zone&rdquo;, &ldquo;Bounce&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 46
+   "w": 4
   },
   "VouD9SuO4d": {
    "en": "<span class=\"k\">You asked</span><q>Is there anything worth taking here right now? Draw your answer.</q><span class=\"ai-sym\">DOGE &middot; 1h</span>",
@@ -140341,9 +140187,9 @@
    "n": 1,
    "w": 15
   },
-  "YF0K4vVUEZ": {
-   "en": "SHORT<small>confidence 64%</small>",
-   "es": "SHORT<small>confianza 64%</small>",
+  "G9N5MVnteA": {
+   "en": "<span class=\"k\">What it did</span>Opened ATR (14) · Drew 4 shapes",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140351,11 +140197,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 3
+   "w": 8
   },
-  "pwj6gpGdJG": {
-   "en": "0.08772 <small>+0.31% from the price when asked</small>",
-   "es": "0.08772 <small>+0.31% desde el precio al momento de preguntar</small>",
+  "dW926AmTzd": {
+   "en": "0.08614 <small>+0.27% from the price when asked</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140365,9 +140211,93 @@
    "n": 1,
    "w": 7
   },
-  "f56hZCX76N": {
-   "en": "2.14 <small>acceptable</small>",
-   "es": "2.14 <small>aceptable</small>",
+  "-tXonqvy10": {
+   "en": "4.26 <small>well paid</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "FSTPDYchV7": {
+   "en": "DOGE 1-hour: nothing to take yet — this is a squeeze, wait for the break.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "6tNFk8M8BD": {
+   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 0.08614, with the stop and target the trade would carry if that level is reached. On the chart: a trend line, 2 zones, a level, labelled &ldquo;Downtrend&rdquo;, &ldquo;Bull OB trigger&rdquo;, &ldquo;Bear OB&rdquo;.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 49
+  },
+  "gl-KWWiSc1": {
+   "en": "<span class=\"k\">You asked</span><q>Read this chart and draw the setup on it.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Lee este gráfico y dibuja el setup en él.</q><span class=\"ai-sym\">BTC &middot; 1h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "8jELQzXQzj": {
+   "en": "<span class=\"k\">What it did</span>Drew 2 shapes",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "fp58ns_tOV": {
+   "en": "WAIT - not a trade yet<small>confidence 58%</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 2,
+   "w": 6
+  },
+  "-HrdQoPFE4": {
+   "en": "82,658.7 <small>-0.47% from the price when asked</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "XwkCBvN1hh": {
+   "en": "1.90 <small>acceptable</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140377,9 +140307,9 @@
    "n": 1,
    "w": 2
   },
-  "rrCsHNzrwd": {
-   "en": "DOGE 1-hour: leans DOWN — but don't chase the breakdown candle.",
-   "es": "DOGE en 1 hora: sesgo A LA BAJA — pero no persigas la vela de ruptura.",
+  "u5EzarYHvp": {
+   "en": "BTC 1-hour: coiled and going nowhere — this is a wait.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140387,11 +140317,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 10
+   "w": 9
   },
-  "xHMnQ02Mpe": {
-   "en": "<b>It draws the trade and prints the arithmetic.</b> Short from 0.08772, stop 0.08905, targets 0.08488 and 0.08401 - reward to risk <b>2.14</b> written on the block. On the chart: a ray, 2 zones, labelled &ldquo;Downtrend&rdquo;, &ldquo;Retest short zone&rdquo;, &ldquo;Long liqs $39M&rdquo;. It opened an indicator on its own to check the move.",
-   "es": "<b>Dibuja la operación e imprime la aritmética.</b> Short desde 0.08772, stop 0.08905, objetivos 0.08488 y 0.08401 - beneficio sobre riesgo <b>2.14</b> escrito en el bloque. En el gráfico: un rayo, 2 zonas, etiquetadas &ldquo;Downtrend&rdquo;, &ldquo;Retest short zone&rdquo;, &ldquo;Long liqs $39M&rdquo;. Abrió un indicador por su cuenta para verificar el movimiento.",
+  "_G7xOSwBhx": {
+   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 82,658.7, with the stop and target the trade would carry if that level is reached. On the chart: 2 zones, labelled &ldquo;Buy zone&rdquo;, &ldquo;Bull OB&rdquo;.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140399,7 +140329,67 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 49
+   "w": 44
+  },
+  "CouGEtWfoo": {
+   "en": "<span class=\"k\">You asked</span><q>Mark the structure and the levels that actually matter here.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
+   "es": "<span class=\"k\">Preguntaste</span><q>Marca la estructura y los niveles que realmente importan aquí.</q><span class=\"ai-sym\">XRP &middot; 1h</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "kVutlQowHM": {
+   "en": "1.4125 <small>+0.61% from the price when asked</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "mDrCM497ER": {
+   "en": "1.00 <small>risks more than it makes</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "fM0QQE6OgX": {
+   "en": "1-hour XRP: coiled and undecided — mark it, don't trade it yet.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "xk2I_vbyI0": {
+   "en": "<b>A wait is an answer - with a price on it.</b> It declines the trade and marks what it is waiting for at 1.4125, with the stop and target the trade would carry if that level is reached. On the chart: a ray, a level, a zone, labelled &ldquo;Rising lows&rdquo;, &ldquo;Swing low&rdquo;, &ldquo;Bear OB&rdquo;.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 48
   },
   "6agErqYer7": {
    "en": "Captured from the live product, untouched; the cards are read out of the same answers. Individual reads, not a track record - Ask AI is a research tool and it will be wrong plenty of times. Nothing here is financial advice.",
@@ -140941,9 +140931,9 @@
    "n": 6,
    "w": 4
   },
-  "3JuuflBlpg": {
-   "en": "Ask AI on ETH 4h: short, entry 2,612, stop 2,655",
-   "es": "Ask AI en ETH 4h: short, entrada 2,612, stop 2,655",
+  "W4ie3s_zOc": {
+   "en": "Ask AI on SOL 15m: long, entry 110.16, stop 109.74",
+   "es": "",
    "kind": [
     "attr:alt"
    ],
@@ -140953,9 +140943,9 @@
    "n": 1,
    "w": 10
   },
-  "Vi0_PWLri7": {
-   "en": "Ask AI on SOL 15m: short, entry 116.55, stop 117.3",
-   "es": "Ask AI en SOL 15m: short, entrada 116.55, stop 117.3",
+  "CBr2D1mdk5": {
+   "en": "Ask AI on LINK 4h: long, entry 12.756, stop 12.08",
+   "es": "",
    "kind": [
     "attr:alt"
    ],
@@ -140965,21 +140955,9 @@
    "n": 1,
    "w": 10
   },
-  "eYHqtmBKMy": {
-   "en": "Ask AI on XRP 1h: short, entry 1.4178, stop 1.4414",
-   "es": "Ask AI en XRP 1h: short, entrada 1.4178, stop 1.4414",
-   "kind": [
-    "attr:alt"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 10
-  },
-  "X9sTURqJ6E": {
-   "en": "Ask AI on LINK 4h: wait - not a trade yet, entry 12.724, stop 12.045",
-   "es": "Ask AI en LINK 4h: esperar - aún no es una operación, entrada 12.724, stop 12.045",
+  "57G8w47cJC": {
+   "en": "Ask AI on ETH 4h: wait - not a trade yet, entry 2,549.2, stop 2,576.2",
+   "es": "",
    "kind": [
     "attr:alt"
    ],
@@ -140989,9 +140967,9 @@
    "n": 1,
    "w": 13
   },
-  "KZttyYDdc7": {
-   "en": "Ask AI on BTC 1h: long, entry 82,658.7, stop 81,711.5",
-   "es": "Ask AI en BTC 1h: long, entrada 82,658.7, stop 81,711.5",
+  "og78l7uqpa": {
+   "en": "Ask AI on DOGE 1h: wait - not a trade yet, entry 0.08614, stop 0.08686",
+   "es": "",
    "kind": [
     "attr:alt"
    ],
@@ -140999,11 +140977,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 10
+   "w": 13
   },
-  "s9BE0g6kdc": {
-   "en": "Ask AI on DOGE 1h: short, entry 0.08772, stop 0.08905",
-   "es": "Ask AI en DOGE 1h: short, entrada 0.08772, stop 0.08905",
+  "QnhWb6YrEg": {
+   "en": "Ask AI on BTC 1h: wait - not a trade yet, entry 82,658.7, stop 82,217.5",
+   "es": "",
    "kind": [
     "attr:alt"
    ],
@@ -141011,7 +140989,19 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 10
+   "w": 13
+  },
+  "vk4WvwmhfY": {
+   "en": "Ask AI on XRP 1h: wait - not a trade yet, entry 1.4125, stop 1.3977",
+   "es": "",
+   "kind": [
+    "attr:alt"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
   },
   "TJcoCvcTJT": {
    "en": "Unlock MarginPad Premium: 4 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
@@ -150945,9 +150935,9 @@
    "n": 1,
    "w": 2
   },
-  "3UmF1vLjy6": {
-   "en": "What a bot depends on, checked every 10 minutes: the paper-trading store, the liquidation collector and the price feed. Days are UTC. Nothing here needs a login.",
-   "es": "De qué depende un bot, verificado cada 10 minutos: el almacén de paper trading, el recolector de liquidaciones y el feed de precios. Los días están en UTC. Nada aquí requiere iniciar sesión.",
+  "wcbbkHVkE8": {
+   "en": "What a bot depends on, checked every 10 minutes: the paper-trading store, the liquidation collector and the price floor. Days are UTC. Nothing here needs a login.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -151017,9 +151007,9 @@
    "n": 1,
    "w": 4
   },
-  "aY5GhlnXl2": {
-   "en": "Price feed <small id=\"upPx\"></small>",
-   "es": "Feed de precios <small id=\"upPx\"></small>",
+  "n-hvNPyDBP": {
+   "en": "Price floor <small id=\"upPx\"></small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -151090,9 +151080,9 @@
    "n": 1,
    "w": 2
   },
-  "EZqiab2rSi": {
-   "en": "Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. Thin venues (BitMEX, dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href=\"/api/changelog.xml\">RSS</a>.",
-   "es": "Cada día muestra la proporción de muestras que pasaron. Un día con menos muestras de las esperadas significa que el programador mismo no estaba funcionando, y eso cuenta en nuestra contra en lugar de ocultarse. Las plataformas con poco volumen (BitMEX, dYdX, Bitfinex) legítimamente pasan horas sin una liquidación; un socket conectado con un último evento antiguo está en silencio, no roto. Legible por máquinas: <code>GET /api/status</code>, los monitores externos pueden usar <code>GET /api/health</code> (200 mientras el programador esté vivo). Cambios en la API: <a href=\"/api/changelog.xml\">RSS</a>.",
+  "ypimicMnh7": {
+   "en": "Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed sample means that copy was more than three minutes old, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (BitMEX, dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href=\"/api/changelog.xml\">RSS</a>.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -151100,11 +151090,11 @@
     "/status/"
    ],
    "n": 1,
-   "w": 72
+   "w": 138
   },
-  "Zsee7HU6Xu": {
-   "en": "Live status of the MarginPad Bot API, the paper-trading store, the liquidation collector and the price feed, with 90 days of sampled uptime. No login.",
-   "es": "Estado en vivo de la Bot API de MarginPad, el almacén de paper trading, el collector de liquidaciones y el feed de precios, con 90 días de uptime muestreado. Sin inicio de sesión.",
+  "n9B5MNq5o0": {
+   "en": "Live status of the MarginPad Bot API, the paper-trading store, the liquidation collector and the price floor, with 90 days of sampled uptime. No login.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -151126,9 +151116,9 @@
    "n": 1,
    "w": 2
   },
-  "ppCkyAnoy4": {
-   "en": "Bot API, trading store, liquidation feed and price feed: live checks and 90 days of uptime.",
-   "es": "Bot API, almacén de trading, feed de liquidaciones y feed de precios: verificaciones en vivo y 90 días de uptime.",
+  "5CLJiozLdP": {
+   "en": "Bot API, trading store, liquidation feed and price floor: live checks and 90 days of uptime.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -152910,6 +152900,343 @@
    ],
    "n": 1,
    "w": 9
+  },
+  "KYXTq9u3jv": {
+   "en": "MarginPad Support - how to get help, and what to include",
+   "es": "",
+   "kind": [
+    "title",
+    "ld"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 2,
+   "w": 10
+  },
+  "TlMx2DDhkq": {
+   "en": "<a href=\"/trading-api/\">Bot API</a><a href=\"/status/\">Status</a><a href=\"/api-docs/\" class=\"hide\">Reference</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "8y1aOxfmFC": {
+   "en": "Support",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "qVMziXdDX-": {
+   "en": "One address, read by a person. There is no ticket number to quote and no form to fill in - write in your own words, include the few things below, and you will not have to send a second message to be understood.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 40
+  },
+  "0-yoJN68wz": {
+   "en": "Email us",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "hP5jz6r0jT": {
+   "en": "<a class=\"addr\" href=\"mailto:support@marginpad.io\">support@marginpad.io</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "J5rJ5nNc1b": {
+   "en": "Account questions, a trade that looks wrong, a payout, a leaderboard place, the API - all of it goes here. Write from the address your MarginPad account uses if you can; it is how we find you without asking.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "qt6kPoyva5": {
+   "en": "We read everything. We do not publish a response time, because we would rather be slow than promise a number we miss.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "P0FOuQ5sap": {
+   "en": "The bot handles alerts, your account and the daily wrap: <a href=\"https://t.me/MarginPadBot\">@MarginPadBot</a>. Announcements go out on <a href=\"https://t.me/marginpad\">@marginpad</a>. For anything that needs a human answer, use the email above.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "GyP7i8Qy_k": {
+   "en": "Other traders",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "rnimPGvKVj": {
+   "en": "The chat on any page and <a href=\"/community/\">the community</a> are often faster for \"how does this work\" than we are, and the people there have usually hit the same thing.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "z_fJvM9BI1": {
+   "en": "What to include",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "DrqBqUT6Bv": {
+   "en": "Most messages that take a week to resolve take a week because the first reply has to ask for one of these.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "JjvEx696KZ": {
+   "en": "<b>Your username</b> - not your display name on a board, the one you sign in with.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "HnmIhoEiV5": {
+   "en": "<b>The trade id</b>, if it is about a trade. Open the ticket on My Trades and copy it; it looks like <code>trade:e8b4cb68d7</code>. Without it we are guessing which of your trades you mean.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 32
+  },
+  "ABqHeKpu-F": {
+   "en": "<b>What you expected and what happened</b>, in that order. \"My SEI long closed at 4,300% and is not on the ROE board\" is answerable on the first reply. \"The leaderboard is broken\" is not.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 34
+  },
+  "7pfIzndW7M": {
+   "en": "<b>When</b>, roughly, and in UTC if you know it. Everything we store is stamped in UTC.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "MaHYUzQi-c": {
+   "en": "<b>For the API</b>: the endpoint, the exact error body we sent back, and whether the key is the one you created most recently.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 23
+  },
+  "BEdHtElcdw": {
+   "en": "Answer it yourself, faster",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "p-IfJOn_8w": {
+   "en": "Three things come up often enough to be worth checking before you write.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "keEj3yY96Q": {
+   "en": "<b>Is something actually down?</b> <a href=\"/status/\">The status page</a> is live, ungated and keeps 90 days. If the trading store is green there, the problem is your account or your code, not ours.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 31
+  },
+  "fHKNVObn6S": {
+   "en": "<b>Did the API refuse you?</b> Every refusal carries a reason and a hint in the body - read that first; <a href=\"/trading-api/#errors\">the error table</a> explains each one in full.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 25
+  },
+  "kAajyZ3mY7": {
+   "en": "<b>Is your plan what you think it is?</b> <code>GET /api/bot/v1/usage</code> states your plan, every ceiling on it, and when it ends.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "72NRmoY1Ci": {
+   "en": "<a href=\"/trading-api/\">Bot API</a><a href=\"/api-docs/\">Full reference</a><a href=\"/status/\">Status</a><a href=\"/api/changelog.xml\">Changelog RSS</a><a href=\"/terms/\">Terms</a><a href=\"/privacy/\">Privacy</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "B32g30D5jX": {
+   "en": "Security problems go to the same address with <b>SECURITY</b> in the subject; please do not post them publicly before we have answered. Business and partnership mail goes to <a href=\"mailto:hello@marginpad.io\">hello@marginpad.io</a>. What we promise and do not promise about the API - availability, plans, breaking changes - is written out in <a href=\"/terms/#api\">section 9 of the terms</a>, including the fact that there is no SLA.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 59
+  },
+  "lbSETzajXH": {
+   "en": "How to reach MarginPad: one email address that goes to a person, the Telegram bot, and what to put in a message so it can be answered on the first reply. Status and API reference included.",
+   "es": "",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 34
+  },
+  "5DTdq3cHx8": {
+   "en": "MarginPad Support",
+   "es": "",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Kl6nz03tO4": {
+   "en": "One address that reaches a person, and what to include so your first message can be answered.",
+   "es": "",
+   "kind": [
+    "attr:content"
+   ],
+   "ctx": [
+    "/support/"
+   ],
+   "n": 1,
+   "w": 16
   },
   "fpPadjqJOK": {
    "en": "TAO Liquidation Calculator - Bittensor Futures (Long & Short) | MarginPad",
@@ -156443,9 +156770,9 @@
    "n": 1,
    "w": 7
   },
-  "nBI6QUxxU_": {
-   "en": "No card, no KYC, no deposit. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $29</a> when one bot becomes four. Market data stays keyless on every plan.",
-   "es": "Sin tarjeta, sin KYC, sin depósito. Gratis para siempre con 120 peticiones por minuto - <a href=\"#plans\">Pro cuesta $29</a> cuando un bot se convierte en cuatro. Los datos de mercado siguen sin clave en todos los planes.",
+  "AkwnKt4s0B": {
+   "en": "No card, no KYC, no deposit. Every fill condition is yours to set - book size, slippage, latency, partial fills, refusals, fees. Free forever at 120 requests a minute - <a href=\"#plans\">Pro is $39</a> when one bot becomes four. Market data stays keyless on every plan.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -156453,7 +156780,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 27
+   "w": 42
   },
   "B48mKJEUe6": {
    "en": "<span class=\"dot\"></span><span class=\"dot\"></span><span class=\"dot\"></span><span>marginpad.io/api/bot/v1</span><span class=\"lbl\" id=\"termLbl\">live now</span>",
@@ -156779,9 +157106,9 @@
    "n": 1,
    "w": 14
   },
-  "YecjtaeRNM": {
-   "en": "<b>5 strategies, and the server calls you</b><span>five separate books &middot; webhooks &middot; 90-day history</span>",
-   "es": "<b>5 estrategias, y el servidor te llama</b><span>cinco libros separados &middot; webhooks &middot; 90 días de historial</span>",
+  "Qqa4NjhN0i": {
+   "en": "<b>10 keys, and 90 days of history</b><span>a key per bot &middot; 5 books &middot; webhooks &middot; report breakdowns</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -156789,7 +157116,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 12
+   "w": 14
   },
   "q3wLzPykgm": {
    "en": "<b>10</b> keys &middot; <b>200</b> open positions &middot; <b>600</b> req/min",
@@ -156887,9 +157214,9 @@
    "n": 1,
    "w": 15
   },
-  "kIl7tFw9eY": {
-   "en": "<b>20 strategies</b><span>twenty books &middot; 15 webhooks</span>",
-   "es": "<b>20 estrategias</b><span>veinte libros &middot; 15 webhooks</span>",
+  "cVfkwnfS0z": {
+   "en": "<b>30 keys, 20 books</b><span>deeper order book &middot; 15 webhooks</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -156897,7 +157224,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 6
+   "w": 9
   },
   "rkYhr_sm6t": {
    "en": "<b>30</b> keys &middot; <b>500</b> open positions &middot; <b>2000</b> req/min",
@@ -157043,9 +157370,9 @@
    "n": 1,
    "w": 2
   },
-  "Q9V3HkZPYU": {
-   "en": "<b>Rate limits are rarely the reason to upgrade, and we would rather tell you than sell you.</b>",
-   "es": "<b>Los límites de peticiones raramente son el motivo para mejorar de plan, y preferimos decírtelo a venderte.</b>",
+  "9olr5xYNT-": {
+   "en": "<b>Choose on keys and history, not on throughput - and here is the measurement.</b>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157053,11 +157380,11 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 17
+   "w": 13
   },
-  "nnBFSlaItT": {
-   "en": "Measured across every key on this API over the last fortnight: the busiest bot in production sits at <b>46 requests a minute</b> - 38% of what the Free plan already allows - and <b>no key has ever been rate-limited</b>, on any plan. If you are choosing between these, choose on the <a href=\"#books\">books</a>, the <a href=\"#webhooks\">webhooks</a> and the history, which is what actually runs out. The throughput is there when you need it. Most bots never touch it.",
-   "es": "Medido en todas las claves de esta API durante las últimas dos semanas: el bot más activo en producción está en <b>46 peticiones por minuto</b> - el 38% de lo que ya permite el plan Free - y <b>ninguna clave ha sido limitada jamás</b>, en ningún plan. Si estás elegiendo entre estos, elige según los <a href=\"#books\">libros</a>, los <a href=\"#webhooks\">webhooks</a> y el historial, que es lo que realmente se agota. La capacidad está ahí cuando la necesitas. La mayoría de los bots nunca la tocan.",
+  "H4Zc5zhPhg": {
+   "en": "Across 125 accounts and 174 keys, the busiest bot in production peaks at <b>66 requests a minute of the 120 Free already allows</b>, and <b>no key has ever been rate-limited on any plan</b>. The one Free ceiling that does get reached is <b>keys</b>: 12 of those 125 accounts sit at or over the three-key limit, because a serious setup wants one key per bot so a backtest and a live strategy never share a rate budget. Webhooks and extra books are on the paid plans and <b>have had no uptake at all so far</b> - we would rather say that than sell you a tier for them. Everything that decides whether a result is real - the engine, every market, limit and stop orders, replay, the WebSocket stream, the whole configurable simulation and the cost breakdown on your report - is on Free.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157065,7 +157392,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 73
+   "w": 133
   },
   "crELTr-Zz0": {
    "en": "What changes with the plan",
@@ -157079,9 +157406,9 @@
    "n": 1,
    "w": 5
   },
-  "8WuG6ZSvAS": {
-   "en": "Pro &middot; $29",
-   "es": "Pro &middot; $29",
+  "5jSVUNE7P2": {
+   "en": "Pro &middot; $39",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157091,9 +157418,9 @@
    "n": 1,
    "w": 2
   },
-  "UIv_XykVhR": {
-   "en": "Max &middot; $79",
-   "es": "Max &middot; $79",
+  "6iqMOCtb1B": {
+   "en": "Max &middot; $99",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157103,9 +157430,9 @@
    "n": 1,
    "w": 2
   },
-  "NtPUbASe6J": {
-   "en": "<span class=\"apn\">Business</span> &middot; $159",
-   "es": "<span class=\"apn\">Business</span> &middot; $159",
+  "T0i6v5Fv9y": {
+   "en": "<span class=\"apn\">Business</span> &middot; $199",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157571,9 +157898,9 @@
    "n": 1,
    "w": 2
   },
-  "H0WsNLs0Va": {
-   "en": "<b style=\"color:var(--ink)\">Measured, and the reason this tab exists:</b> 99.4% of every call ever made to this API was a poll of <code>/positions</code> or <code>/account</code>, and the WebSocket had been opened six times. The stream is free on every plan on purpose - gating it would push everyone back onto polling, which costs us more than the stream does. If you must poll, send back the <code>ETag</code>: an unchanged poll then costs a 304 with an empty body.",
-   "es": "<b style=\"color:var(--ink)\">Medido, y por eso existe esta pestaña:</b> el 99.4% de todas las llamadas que ha recibido esta API han sido sondeos de <code>/positions</code> o <code>/account</code>, y el WebSocket se había abierto seis veces. El stream es gratis en todos los planes a propósito: ponerlo detrás de un muro empujaría a todo el mundo de vuelta al sondeo, que nos cuesta más que el stream. Si tienes que sondear, devuelve el <code>ETag</code>: un sondeo sin cambios te cuesta entonces un 304 con el cuerpo vacío.",
+  "VY3GRRI0oO": {
+   "en": "<b style=\"color:var(--ink)\">Measured, and the reason this tab exists:</b> 76.4% of every call to this API over the last 40 days was a poll of <code>/positions</code> or <code>/account</code> - 890,921 and 471,390 calls - while the WebSocket was opened 15 times in its whole life. The stream is free on every plan on purpose - gating it would push everyone back onto polling, which costs us more than the stream does. If you must poll, send back the <code>ETag</code>: an unchanged poll then costs a 304 with an empty body.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157581,7 +157908,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 73
+   "w": 83
   },
   "5XLjk0-rFl": {
    "en": "Authenticate with <code>X-API-Key</code> on every call except <code>/price</code>, <code>/klines</code> and <code>/time</code>. <b style=\"color:var(--ink)\">Official clients</b>, zero dependencies - <code>npm install marginpad</code> or <code>pip install marginpad</code>, or one file each: <a href=\"/assets/sdk/marginpad.py\">marginpad.py</a> · <a href=\"/assets/sdk/marginpad.js\">marginpad.js</a> - REST, WebSocket, ETag polling, 429 back-off and webhook signature verification built in.",
@@ -157630,6 +157957,18 @@
    ],
    "n": 1,
    "w": 9
+  },
+  "R3IPVs-1vo": {
+   "en": "markets on one key: crypto perps, US stocks, forex, indices and metals",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 12
   },
   "lWwnd5xDGe": {
    "en": "calls served for the bots already running on it",
@@ -157690,6 +158029,42 @@
    ],
    "n": 1,
    "w": 35
+  },
+  "g3uca-XJBr": {
+   "en": "<span class=\"dn\">Simulation</span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "zKl_egEUJL": {
+   "en": "Build the venue you will actually trade",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "5ryNOoJCjn": {
+   "en": "Eighteen fields and eight presets: the size of the book and whether it is a real budget, what crossing the order book costs on the way in <em>and out</em>, how long your order is in flight, partial fills, how often the venue refuses, your own fee, funding, and where liquidation sits. <b>Freqtrade lets you set the starting balance and nothing else</b>; a testnet gives you whatever its book gives you. <a href=\"#sim\">Every field, with its range &rarr;</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 73
   },
   "FJtVh3_bcr": {
    "en": "<span class=\"dn\">Execution</span>",
@@ -157943,9 +158318,9 @@
    "n": 1,
    "w": 4
   },
-  "WsbiEE-Ofn": {
-   "en": "<a href=\"#fees\">Venue fees</a> <a href=\"#realism\">Fill realism</a>",
-   "es": "<a href=\"#fees\">Comisiones del exchange</a> <a href=\"#realism\">Realismo de ejecución</a>",
+  "Y2_W3tNM4U": {
+   "en": "<a href=\"#fees\">Venue fees</a> <a href=\"#realism\">Fill realism</a> <a href=\"#sim\">The simulation profile</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157953,7 +158328,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 4
+   "w": 7
   },
   "uyfnDZjZ5Y": {
    "en": "<a href=\"#reliable\">Bots that do not break</a>",
@@ -158879,9 +159254,9 @@
    "n": 1,
    "w": 33
   },
-  "79ZZqwudev": {
-   "en": "A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href=\"#arena\">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.",
-   "es": "Una posición conserva el margen de mantenimiento con el que fue ejecutada, así que activar esto nunca reescribe una operación que ya tienes abierta, y cada cierre registra con qué se ejecutó. De ahí viene la columna <i>Ejecuciones</i> del <a href=\"#arena\">arena</a>: una tabla que clasifica bots debería decir cuáles jugaron en modo fácil.",
+  "1oQmNYxUKh": {
+   "en": "<b>These three are a subset.</b> <a href=\"#sim\">The whole simulation is configurable</a> - the book size and whether it is a real budget, your own slippage and fee figures, size impact, latency, partial fills, refusals and funding - and eight presets set it in one call. A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href=\"#arena\">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -158889,7 +159264,751 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 50
+   "w": 90
+  },
+  "2AMOWY7euf": {
+   "en": "Build the venue you are actually going to trade",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "9dyn-f0F61": {
+   "en": "The three switches above are part of something larger. <b>Everything this engine assumes is a field you can set</b>: the size of the book and whether it is a real budget, what crossing the order book costs on the way in and on the way out, how long your order is in flight, whether an order fills part-way, how often the venue says no, what you pay in fees, whether funding is charged at all, and where the liquidation price sits.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 79
+  },
+  "_voe2Y07oc": {
+   "en": "<b>The defaults are deliberately easy, and that is worth saying plainly.</b> A market order fills whole at the live price, maintenance margin is a flat 0.5%, the balance is a scorecard that never refuses an open, and there is no latency and no size impact. That is the right place to get a bot <em>running</em>. It is the wrong place to judge whether it has an edge. One call changes that.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 67
+  },
+  "EIWCFQuJza": {
+   "en": "Out-of-range values are <b>refused, never clamped</b> - a strategy must never be measured under a setting you did not choose. A position keeps the maintenance margin, the fee rate and the exit crossing cost it was filled under, for life; turning anything on never rewrites a trade you already hold.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 45
+  },
+  "VySBxeOYTd": {
+   "en": "Eight presets, so you do not have to invent eighteen numbers",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "S_BjNDzxPo": {
+   "en": "frictionless",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "uXRgyl_UA8": {
+   "en": "The engine as it has always been. Get the bot running, see trades land, then change it.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "Ta1oKVpM9Q": {
+   "en": "realistic",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "UH5BP-pV7E": {
+   "en": "The one to measure an edge on: the book costs what we measure on both legs, size costs more, the risk-limit ladder is on, funding is charged, and the book refuses what it cannot fund.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "ysCIC8fbWT": {
+   "en": "binance &middot; bybit &middot; okx &middot; hyperliquid",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "ecHu9MoJMj": {
+   "en": "That venue&rsquo;s own published taker fee and maintenance margin, with our measured crossing cost, margin enforced and the ladder on.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "4xTH-YyubU": {
+   "en": "thin_book &middot; brutal",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "6zQFYGm2oK": {
+   "en": "A mid-cap perp at an unkind hour, and then worse than anything you will meet: 60 bps to cross, 120 bps per $100k of size, fills from a quarter upwards, one open in twenty refused, a second of latency. <b>Ours, not any venue&rsquo;s figures.</b> If a strategy still works here it is not living on execution luck.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 53
+  },
+  "iTLVzf6uRl": {
+   "en": "Every field, its range and what it changes",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 8
+  },
+  "wyakZgtnTS": {
+   "en": "Field",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "oWxbvkv5ln": {
+   "en": "Range",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "zMN11yAjm0": {
+   "en": "The book &mdash; what the bot is allowed to risk",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "BpCMrw9NVh": {
+   "en": "<code>start_balance_usd</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "DLjTo20k-k": {
+   "en": "The book your results are measured against: <code>return_pct</code>, the equity curve and max drawdown all follow it. Test on the account size you will really trade.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "Dq9et_2foM": {
+   "en": "<code>margin_enforced</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "2jbwF66fcu": {
+   "en": "off / on",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 4,
+   "w": 2
+  },
+  "OJrd1YPNLq": {
+   "en": "<b>The single biggest difference between a scorecard and a venue.</b> On, an open needing more than your free margin is refused <code>402 insufficient_margin</code>. Free margin is balance minus committed margin &mdash; unrealized profit on an open position is not collateral for a new one, because every position here is isolated margin.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 47
+  },
+  "JGE8XsKHFQ": {
+   "en": "<code>leverage_max</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "2WDWswmzSO": {
+   "en": "Your own ceiling below the per-market cap. Proves a strategy never quietly drifted into 100&times;. 0 = the market cap.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "jneofiYol6": {
+   "en": "<code>max_notional_usd</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "uEJ013p64J": {
+   "en": "Your own ceiling on one position&rsquo;s notional. 0 = none of your own.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "4kGUH1xA05": {
+   "en": "The fill &mdash; what crossing the book costs",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "sZ_H1lCC0B": {
+   "en": "<code>slippage</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "csv98MiaEL": {
+   "en": "Fill against yourself the way walking a real book does: 0.01% crypto majors, 0.05% thinner crypto, 0.005% forex, 0.02% stocks, metals and indices. A buy pays up, a sell sells down.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 28
+  },
+  "zV2_kIrXXV": {
+   "en": "<code>slippage_bps</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "pIP3cTdEsV": {
+   "en": "Your own figure instead of that table. 10 = 0.10%. <code>null</code> goes back to the table.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 15
+  },
+  "ghu7rLtxBG": {
+   "en": "<code>impact_bps_per_100k</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "LsrXejjVJP": {
+   "en": "Size costs more, because a bigger order walks further down the book: this many basis points on top per $100,000 of notional.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 21
+  },
+  "u4RBo82GCF": {
+   "en": "<code>exit_slippage</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "RNMMuisnMr": {
+   "en": "on / off",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 2,
+   "w": 2
+  },
+  "LNopMiZ3Xc": {
+   "en": "Pay the crossing cost on the way out as well as in. <b>Without it a scalping strategy reads better than it can ever trade.</b> A stop, take-profit or liquidation still fills at its own level &mdash; see the limits below.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 37
+  },
+  "nbSlMMcw3x": {
+   "en": "<code>latency_ms</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "AYLOcD4iF-": {
+   "en": "Your order is in flight this long, and <b>the price is re-read afterwards</b> &mdash; so the fill is the market as it was when your order arrived, not when you sent it.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 31
+  },
+  "GPTqC4V1OB": {
+   "en": "<code>partial_fills</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "I4qZu3JofA": {
+   "en": "A market order may fill less than it asked for. The filled size is <code>position.margin_usd</code>; the ratio is the <code>X-MP-Fill-Pct</code> header and the <code>fill</code> object on v2.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "nYVy6ZDLr0": {
+   "en": "<code>min_fill_pct</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "ra1tzIA3dP": {
+   "en": "The worst ratio you can be handed. 40 means anywhere from 40% to 100% of what you asked for.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 19
+  },
+  "pJbNjD_kr5": {
+   "en": "<code>reject_rate_pct</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "BA5HQW4s-_": {
+   "en": "This share of opens are refused <code>503 venue_rejected</code> on purpose. <b>A bot that cannot handle a refusal is not finished</b>, and this is the cheap place to find that out.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 28
+  },
+  "KTy9HpX3R4": {
+   "en": "The cost",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "om3l6fmi02": {
+   "en": "<code>taker_bps</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "ys9e4x6LY-": {
+   "en": "Your own per-side fee instead of a venue schedule. 5.5 = 0.055%. The leverage taper still applies, so no setting can make a round trip eat the whole stake.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "EO-MFR8lSg": {
+   "en": "<code>funding</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "Shb2E-SOCT": {
+   "en": "Off, funding is never charged. <b>This is how you tell an execution edge from a carry edge</b> &mdash; a short held through positive funding may be profitable only because of the funding.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "Otwi4nzqNy": {
+   "en": "<code>funding_mult</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "cQ7jmtDncq": {
+   "en": "Scale the real 8-hourly rate.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "J8HFZUt1Fa": {
+   "en": "The liquidation",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "qylse9TzvL": {
+   "en": "<code>margin_venue</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "F1FCFRrahl": {
+   "en": "10 venues",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Vi8M7JV-YD": {
+   "en": "Whose published maintenance-margin rate decides where liquidation sits. Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. It moves <b>only</b> the liquidation price.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 26
+  },
+  "5OPoxaQMpb": {
+   "en": "<code>margin_tiers</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "ddwZB_pFzw": {
+   "en": "Maintenance margin rises with notional the way a risk-limit ladder does, so a large position is liquidated <b>sooner</b>. The whole ladder is published in <code>GET /v2/realism</code>.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 24
+  },
+  "NoFZCaN6iv": {
+   "en": "<code>mmr_pct</code>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "FQoI08e4rO": {
+   "en": "Your own maintenance margin, beating <code>margin_venue</code> and our default.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "C4XrvV5myC": {
+   "en": "What this does not model, stated rather than discovered",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "P_FDVU3Mlt": {
+   "en": "A stop-loss, take-profit or liquidation fills <b>at its own level</b> and never pays the crossing cost: the server-side sweep runs over every account at once and cannot read a profile per pass. There is no order book with real depth behind the impact model &mdash; <code>impact_bps_per_100k</code> is a declared linear cost, not a simulated book. And the whole crossing cost on the exit is charged against the mark, which is one spread, not a bid and an ask you can quote separately. Everything else above is applied exactly as written.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 84
+  },
+  "fv-tBWrAQG": {
+   "en": "Every figure in this profile is readable back from <code>GET /api/bot/v2/sim</code>, including what a fill would look like right now &mdash; a number a bot cannot read back is a number it has to guess at. <code>GET /api/bot/v2/report</code> then tells you what execution actually cost: fees, funding, gross against net, and <code>kept_pct</code>, the share of the gross that survived. That one is free on every plan, because it is not a breakdown of where your edge is &mdash; it is whether the edge is real.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 78
   },
   "-IDZNYIdT3": {
    "en": "Fees as on the exchange you will actually use",
@@ -159167,9 +160286,9 @@
    "n": 1,
    "w": 8
   },
-  "s17oMZjT0c": {
-   "en": "Measured before this existed: <b>89.5% of every call to this API was polling</b> <code>/positions</code> and <code>/account</code> for events. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.",
-   "es": "Medido antes de que esto existiera: <b>el 89.5% de cada llamada a esta API era hacer polling</b> a <code>/positions</code> y <code>/account</code> en busca de eventos. Un webhook invierte eso - te enviamos un POST cuando algo realmente ocurre, con la misma forma de <code>Position</code> que habría devuelto un poll, y funciona mientras tu bot está desconectado, reiniciando o desplegado en algún lugar que no puede mantener un socket.",
+  "fBQRME6Cy-": {
+   "en": "Measured over the last 40 days: <b>76.4% of every call to this API is a poll</b> of <code>/positions</code> and <code>/account</code> looking for events that have not happened yet. A webhook turns that around - we POST to you when something actually happens, with the same <code>Position</code> shape a poll would have returned, and it works while your bot is offline, restarting or deployed somewhere that cannot hold a socket.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -159177,7 +160296,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 55
+   "w": 64
   },
   "ZnwoHvsCr3": {
    "en": "<b>Events:</b> <code>position.opened</code> · <code>position.updated</code> (a stop or target moved) · <code>position.closed</code> · <code>position.liquidated</code> · <code>order.filled</code> (carries the position it created) · <code>order.expired</code> · <code>order.cancelled</code>. Omit <code>events</code> to receive all of them. Site-side trades on the same account fire them too.",
@@ -159886,6 +161005,18 @@
    ],
    "n": 1,
    "w": 4
+  },
+  "3CN1Jm_1-s": {
+   "en": "Still stuck? The error body is the first place to look, and <a href=\"/status/\">status</a> is the second. If neither answers it, write to <a href=\"mailto:support@marginpad.io\">support@marginpad.io</a> with the endpoint and the exact body we sent back - <a href=\"/support/\">what else to include</a> is on the support page. A person reads it.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 45
   },
   "QguMv2F3Iu": {
    "en": "Free liquidation data API <span class=\"tag data\">LIVE DATA</span>",
@@ -161172,9 +162303,9 @@
    "n": 1,
    "w": 4
   },
-  "ZdxeVrIZHW": {
-   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($29 a month): 600 requests per minute, 10 keys, 200 open positions, 3 webhooks. API Max ($79 a month): 2000 requests per minute, 30 keys, 500 open positions, 15 webhooks. API Business ($159 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 webhooks. Every plan allows $1 to $100,000 margin per trade and leverage from 1x to 1000x, and keyless market data, the WebSocket stream and MCP are included on all four.",
-   "es": "Free: 120 peticiones por minuto y clave, 3 claves por cuenta, 50 posiciones abiertas. API Pro ($29 al mes): 600 peticiones por minuto, 10 claves, 200 posiciones abiertas, 3 webhooks. API Max ($79 al mes): 2000 peticiones por minuto, 30 claves, 500 posiciones abiertas, 15 webhooks. API Business ($159 al mes): 5000 peticiones por minuto, 100 claves, 1000 posiciones abiertas, 50 webhooks. Todos los planes permiten de $1 a $100,000 de margen por operación y apalancamiento de 1x a 1000x, y los datos de mercado sin clave, el stream WebSocket y MCP están incluidos en los cuatro.",
+  "jxuBBT8VYJ": {
+   "en": "Free: 120 requests per minute per key, 3 keys per account, 50 open positions. API Pro ($39 a month): 600 requests per minute, 10 keys, 200 open positions, 5 strategy books, 3 webhooks and 90 days of trade history. API Max ($99 a month): 2000 requests per minute, 30 keys, 500 open positions, 20 books, 15 webhooks. API Business ($199 a month): 5000 requests per minute, 100 keys, 1000 open positions, 50 books, 50 webhooks. No key has ever been rate-limited on any plan.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -161182,7 +162313,7 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 86
+   "w": 78
   },
   "40rLeTkS3b": {
    "en": "Does MarginPad Premium include the API?",
