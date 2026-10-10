@@ -139,14 +139,24 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         console.log('  price lines ' + info.lines + ', forecast candles ' + info.ghost);
         const proseTxt = String(answer).split('```')[0].replace(/\s+/g, ' ').trim();
         console.log('  prose: ' + proseTxt.slice(0, 300));
-        report.push({ file: shot.file, sym: shot.sym, tf: shot.tf, q: shot.q, shapes: info.shapes, plan: info.plan, receipts: info.receipts, lastClose: info.lastClose, prose: proseTxt.slice(0, 1200), at: new Date().toISOString() });
+        // held back until the picture passes the look below - a read whose capture is refused must not leave a
+        // caption behind on the page describing an image nobody can see.
+        const entry = { file: shot.file, sym: shot.sym, tf: shot.tf, q: shot.q, shapes: info.shapes, plan: info.plan, receipts: info.receipts, lastClose: info.lastClose, prose: proseTxt.slice(0, 1200), at: new Date().toISOString() };
 
         // FRAME IT ON THE ANALYSIS. The default view showed 120 candles, so the whole read - entry, stop, both
         // targets, the block - sat squashed into the top-right tenth of the picture while nine tenths was old
         // price history. This walks the window in until every price the plan names is inside the plot, with
         // forward room for the labels (they are right-aligned past the last candle and were clipping the axis).
+        /* FRAMED BY TIME, NOT BY LOGICAL INDEX (2026-10-11). `setVisibleLogicalRange({from: n - bars})` counts
+           from the end of the SERIES, and `n` is the length of `w.bars` - two numbers that are not the same
+           number. After a load-more doubled LINK 4h to 2,000 bars they disagreed, so the window opened ~114 bars
+           past the newest candle and the time axis printed 17-29 on the 11th of October (and, on the run before,
+           November into December). The candles and the drawing looked right, which is how it shipped. A visible
+           range asked for in SECONDS cannot be offset by a bookkeeping mismatch. */
         const framed = await page.evaluate(async (fwd) => {
           const w = window.__mpWinsDbg[0], n = w.bars.length;
+          const bt = (x) => { let v = +((x && (x.time || x.t)) || 0); return v > 1e12 ? v / 1000 : v; };
+          const lastT = bt(w.bars[n - 1]), step = Math.max(60, bt(w.bars[n - 1]) - bt(w.bars[n - 2]) || 60);
           const plan = w._aiPlanObj || {};
           const want = [+plan.entry, +plan.stop].concat((plan.targets || []).map(Number))
             .concat(w.dr.shapes.filter(s => s.by === 'ai').flatMap(s => [+s.p, +s.p1, +s.p2, +s.from, +s.to]))
@@ -155,7 +165,7 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
             .flatMap(s => [s.l1, s.l2, s.l]).filter(v => typeof v === 'number').map(v => n - 1 - v)));
           let bars = Math.max(38, Math.min(110, oldest + 10));
           for (let tries = 0; tries < 5; tries++) {
-            w.chart.timeScale().setVisibleLogicalRange({ from: n - bars, to: n + fwd });
+            w.chart.timeScale().setVisibleRange({ from: lastT - bars * step, to: lastT + fwd * step });
             await new Promise(r => setTimeout(r, 420));
             const h = w.candle.priceToCoordinate ? 1 : 1;
             const ys = want.map(v => w.candle.priceToCoordinate(v));
@@ -166,7 +176,12 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
             if (bars > 150) return { bars: bars, prices: want.length, fits: false };
           }
           return { bars: bars, prices: want.length, fits: false };
-        }, 30);
+          /* FORWARD ROOM IS MEASURED, NOT A CONSTANT. It was a flat 30 candles, which on a read that drew no
+             forecast left the right THIRD of the picture empty and the candles squeezed into the left 62% - a
+             sparse image for a section whose job is to show a dense piece of work. The AI's labels are parked at
+             last+5 and right-aligned (they extend leftward), and the price tags sit outside the plot, so the only
+             thing that genuinely needs room to the right is the forecast. */
+        }, Math.max(10, (info.ghost || 0) + 8));
         console.log('  framed on ' + framed.bars + ' candles, ' + framed.prices + ' plan prices, all inside: ' + framed.fits);
 
         // hide the chat panel - the picture is the chart and what the assistant drew on it
@@ -182,6 +197,67 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
             if (r.width > 0 && r.width < 46 && r.height > 50 && r.left < 46 && /TOOL/i.test(e.textContent || '')) e.style.display = 'none';
           }); });
         await new Promise(r2 => setTimeout(r2, 700));
+
+        /* THE PICTURE IS CHECKED BEFORE IT IS SAVED (2026-10-11, owner: "ne svidja mi se ova slika").
+           The SOL 15m capture shipped on 08-10 carried the word "loading...", not one candle, and a price axis
+           reading 90000 down to 20000 on a $116 chart - a single stale BTC bar had survived the symbol switch, the
+           series autoscaled to it, and every price the plan named was crushed into the bottom 2% of the frame. It
+           sat on /premium/ for three days under a card promising that every number is a measurement.
+           Nothing in this run could have noticed. The wait at the top asks for sym/tf/bars.length, and `w.sym`
+           flips the instant the picker changes while `w.bars` is replaced only when the fetch lands - so the
+           condition passes against the PREVIOUS symbol's candles. A capture is a PICTURE: the check has to be on
+           what is on screen at the moment of the shot, never on state that was true a minute earlier. */
+        const look = () => page.evaluate((sym, tf, fwd) => {
+          const w = window.__mpWinsDbg[0], bars = w.bars || [];
+          const closes = bars.map(b => +b.close).filter(v => v > 0).sort((a, b) => a - b);
+          const med = closes.length ? closes[closes.length >> 1] : 0;
+          // a bar four times off the median is not this market - it is the previous symbol's data left in the series
+          const strays = closes.filter(v => v < med / 4 || v > med * 4).length;
+          const loading = [...document.querySelectorAll('#promoWin *')].some(e => {
+            if (e.childElementCount || !/^loading/i.test((e.textContent || '').trim())) return false;
+            const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0;
+          });
+          const plan = w._aiPlanObj || {};
+          const want = [+plan.entry, +plan.stop].concat((plan.targets || []).map(Number)).filter(v => v > 0);
+          const ph = (w.el.querySelector('.cwin-chart') || {}).clientHeight || 600;
+          const off = w.candle && w.candle.priceToCoordinate
+            ? want.map(v => w.candle.priceToCoordinate(v)).filter(y => y == null || y < 8 || y > ph - 8).length : want.length;
+          const lr = w.chart.timeScale().getVisibleLogicalRange() || { from: 0, to: 0 };
+          const shown = Math.min(bars.length, Math.round(lr.to)) - Math.max(0, Math.round(lr.from));
+          /* AND THE NEWEST CANDLE HAS TO BE NOW. The LINK 4h capture passed every other check and printed a time
+             axis running "18 20 22 24 26 28 Dec 3 5 7" on the 11th of October - the series had been extended to
+             2000 bars by a load-more and the merge left the book dated two months into the future. A reader
+             checks the date on a screenshot before anything else. */
+          let lastT = bars.length ? +(bars[bars.length - 1].time || bars[bars.length - 1].t || 0) : 0;
+          if (lastT > 1e12) lastT /= 1000;
+          const step = (+tf || 1) * 60;
+          const ageBars = lastT > 0 ? (Date.now() / 1000 - lastT) / step : 1e9;
+          /* AND THE AXIS UNDER THE CANDLES HAS TO BE THEIR OWN DATES. The right edge of the visible range is what
+             the time axis prints; when it sits far past the newest candle the axis reads a month that never
+             happened, which is the first thing a reader checks on a screenshot. */
+          const vr = w.chart.timeScale().getVisibleRange() || {};
+          const vt = (v) => { if (v == null) return 0; let n2 = typeof v === 'object' ? Date.UTC(v.year, v.month - 1, v.day) / 1000 : +v; return n2 > 1e12 ? n2 / 1000 : n2; };
+          const edgeBars = lastT > 0 && vt(vr.to) ? (vt(vr.to) - lastT) / step : 1e9;
+          return { sym: w.sym, tf: w.tf, n: bars.length, med: med, strays: strays, loading: loading, offscreen: off, inView: shown,
+            lastBar: lastT ? new Date(lastT * 1000).toISOString().slice(0, 16) : '-', ageBars: Math.round(ageBars * 10) / 10,
+            axisEnds: vt(vr.to) ? new Date(vt(vr.to) * 1000).toISOString().slice(0, 16) : '-', edgeBars: Math.round(edgeBars * 10) / 10,
+            ok: w.sym === sym && w.tf === tf && bars.length > 50 && !strays && !loading && !off && shown >= 20
+              && ageBars > -1 && ageBars < 6 && edgeBars > -2 && edgeBars <= fwd + 6 };
+        }, shot.sym, shot.tf, Math.max(10, (info.ghost || 0) + 8));
+
+        let seen = await look();
+        for (let t = 0; t < 6 && !seen.ok; t++) {
+          await new Promise(r2 => setTimeout(r2, 1600));
+          await page.evaluate((b, fwd) => { const w = window.__mpWinsDbg[0], n = w.bars.length;
+            const bt = (x) => { let v = +((x && (x.time || x.t)) || 0); return v > 1e12 ? v / 1000 : v; };
+            const lastT = bt(w.bars[n - 1]), step = Math.max(60, lastT - bt(w.bars[n - 2]) || 60);
+            w.chart.timeScale().setVisibleRange({ from: lastT - b * step, to: lastT + fwd * step });
+          }, framed.bars, Math.max(10, (info.ghost || 0) + 8)).catch(() => {});
+          await new Promise(r2 => setTimeout(r2, 500));
+          seen = await look();
+        }
+        if (!seen.ok) throw new Error('picture REFUSED, nothing written: ' + JSON.stringify(seen));
+        console.log('  picture checked: ' + seen.n + ' bars (' + seen.inView + ' in view), newest ' + seen.lastBar + ', axis ends ' + seen.axisEnds + ' (+' + seen.edgeBars + ' bars), median ' + seen.med + ', no stray bars, nothing loading, every plan price on screen');
 
         const handle = await page.$('#promoWin');
         if (!handle) throw new Error('chart window element not found');
@@ -219,6 +295,7 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         const zbuf = Buffer.from(zoom.b64, 'base64');
         fs.writeFileSync(path.join(OUT, shot.file + '-zoom.jpg'), zbuf);
         console.log('  -> ' + shot.file + '-zoom.jpg  ' + zoom.w + 'x' + zoom.h + ' (crop at ' + zoom.left + ',' + zoom.top + ')  ' + (zbuf.length / 1024).toFixed(0) + 'KB');
+        report.push(entry);
       } catch (e) {
         console.log(shot.sym + ': FAILED - ' + String(e.message).slice(0, 160));
       }
@@ -228,7 +305,11 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
 
   const rp = path.join(__dirname, 'data', 'ai-promo-report.json');
   let prev = []; try { prev = JSON.parse(fs.readFileSync(rp, 'utf8')); } catch (e) {}
-  const merged = prev.filter(p => !report.some(r => r.file === p.file)).concat(report); // a partial run keeps the other reads
+  // a partial run keeps the other reads - and keeps them in SHOTS order. Concatenating the new ones on the end
+  // silently reordered the section (one re-run of LINK moved it from fifth to last, i.e. off the visible three).
+  const byFile = {}; prev.concat(report).forEach(r => { byFile[r.file] = r; });
+  const merged = SHOTS.map(s => byFile[s.file]).filter(Boolean)
+    .concat(prev.filter(p => !SHOTS.some(s => s.file === p.file)));
   fs.writeFileSync(rp, JSON.stringify(merged, null, 2));
   console.log('\nreport -> build/data/ai-promo-report.json  (gen-premium-aishow.js builds the section from it - never write a caption from memory)');
 })();

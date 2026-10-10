@@ -51,8 +51,17 @@ function card(r) {
   return { bias, biasTxt, rows, rec, say, why, conf: isFinite(conf) && conf > 0 ? Math.round(conf <= 1 ? conf * 100 : conf) : null };
 }
 function section(report) {
+  /* THE THREE ON THE PAGE ARE THE FIRST THREE, so the order is a decision. A capture run on a quiet day can come
+     back with five refusals out of six - every one of them honest, and an opening of "WAIT, WAIT, WAIT" says the
+     product has nothing to show. The reads that found a trade lead, the refusals follow, most confident first.
+     Nothing is hidden by this: all six stay in the HTML a crawler reads, the lead sentence counts the refusals out
+     loud, and not one number in any read is touched. */
+  const wait = (r) => (String((r.plan || {}).bias || 'wait').toLowerCase() === 'wait' ? 1 : 0);
+  report = report.slice().sort((a, b) => (wait(a) - wait(b)) || ((+(b.plan || {}).confidence || 0) - (+(a.plan || {}).confidence || 0)));
   const date = report.map(r => r.at).filter(Boolean).sort().pop();
-  const when = date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  // UTC, or the date on the page is whichever side of midnight the build machine happens to be on - a capture
+  // taken at 23:12Z printed as "11 October" from a CET box, on a section whose argument is that it measures.
+  const when = date ? new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : '';
   const waits = report.filter(r => String((r.plan || {}).bias || 'wait').toLowerCase() === 'wait').length;
   let h = '<div id="aishow">\n';
   h += '    <h3>' + report.length + ' reads, as they came out</h3>\n';
