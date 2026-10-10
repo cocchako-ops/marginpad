@@ -183,7 +183,11 @@ const usage = async () => (await bot('/usage')).body.data || {};
   chk('and its report is capped at 30 rather than silently short', rp.status === 200 && rp.body.data.days === 30, { days: rp.body.data && rp.body.data.days });
 
   // ── the free month ────────────────────────────────────────────────────────────────────────────────────────
-  const monthEnd = Date.UTC(2026, 8, 30, 23, 59, 59); // the grandfather window the owner set: to the end of September
+  // A TRIAL GRANT STILL IN THE FUTURE. This was hardcoded to the grandfather window the owner set (end of
+  // September 2026), so from 1 October it granted a plan that had ALREADY EXPIRED and three checks went red
+  // every run with nothing wrong - the plan resolved to free exactly as designed. What the leg tests is the
+  // MECHANISM (a src:trial grant gives the Pro ceilings and a free_month countdown), not a date in history.
+  const monthEnd = Date.now() + 12 * 86400000;
   g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', until: monthEnd, src: 'trial' });
   chk('free month granted (src trial)', g.status === 200 && g.body.src === 'trial', g.body && { src: g.body.src });
   await resync();

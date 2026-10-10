@@ -156,6 +156,21 @@ function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.
 // Measured: 10x 0.5% -> 9.45% from entry (Bybit's no-fee 9.5%), 100x -> 0.445% (was 0.940%), 1000x -> 0.023%.
 // A liquidation still books exactly -margin (the sweep does not read this for the loss, only for the level),
 // every open position keeps the liq it was filled with, and rate 0 gives the calculators Bybit's own number.
+// ONE READING OF `side`, FOR EVERY ORDER PATH (2026-10-10). It used to be `b.side === 'short' ? 'short' : 'long'`
+// on all three of them, so "sell" opened a LONG - and so did "SELL", "SHORT", "ask", "", null and "banana",
+// all with a 200. Every futures API a developer ports FROM says BUY/SELL (Binance, Bybit, OKX, Alpaca), so the
+// single most common first request to this endpoint traded the opposite way round and said nothing. Measured
+// on the live API with fifteen inputs before this existed; fourteen of them became a long.
+// Returns 'long' | 'short' | null. A caller gets a 400 naming the words we take - never a guess.
+const SIDE_LONG = new Set(['long', 'buy', 'l', 'b', 'bid', 'up', 'bull', 'bullish', '1', '+1']);
+const SIDE_SHORT = new Set(['short', 'sell', 's', 'ask', 'down', 'bear', 'bearish', '-1']);
+function parseSide(v) {
+  const x = String(v == null ? '' : v).trim().toLowerCase();
+  if (SIDE_LONG.has(x)) return 'long';
+  if (SIDE_SHORT.has(x)) return 'short';
+  return null;
+}
+const SIDE_ERR = { error: 'side_required', message: 'side must be long or short (buy / sell are accepted too, in any case).', accepted: ['long', 'short', 'buy', 'sell'] };
 function mpcLiq(entry, lev, mmr, long, rate) {
   lev = Math.max(1, +lev || 1); mmr = Math.max(0, +mmr || 0);
   const im = Math.max(1e-6, 1 / lev - Math.min(0.1 / lev, Math.max(0, +rate || 0)));
@@ -5734,6 +5749,23 @@ async function leanKlines(sym, ivMin, n, env) {
 //
 // HISTORICAL depth is not sold at any tier and the object says so out loud. We are not archiving the book
 // yet, and a page that implies otherwise would be selling something that does not exist.
+// WHAT THE BOT API REFUSED, AND TO WHOM (2026-10-10). Nothing recorded a Bot API error before this, so
+// "they tried it and gave up" had no evidence behind it at all. Two KV counters a day (cheap, and the
+// same shape as the probe/affjunk counters) plus an Analytics Engine row carrying the detail:
+//   apierr:day:<day>:<error>      how often each refusal happens
+//   apierr:ep:<day>:<ep>:<error>  and on which endpoint
+// AE blob3 marks `first` when the key has never had a successful call - a developer whose FIRST request
+// is refused is the one who leaves, and that is the row worth reading.
+async function apiErrLog(env, ctx, ep, err, status, keyHash, everOk) {
+  if (!env || !env.STATS || !err) return;
+  const day = new Date().toISOString().slice(0, 10);
+  const e = String(err).slice(0, 40).replace(/[^a-z0-9_]/gi, '');
+  const p = String(ep || '?').slice(0, 24).replace(/[^a-z0-9_\/]/gi, '');
+  const bump = async (k) => { try { const n = +(await env.STATS.get(k)) || 0; await env.STATS.put(k, String(n + 1), { expirationTtl: 40 * 86400 }); } catch (x) {} };
+  const work = Promise.all([bump('apierr:day:' + day + ':' + e), bump('apierr:ep:' + day + ':' + p + ':' + e)]);
+  if (ctx && ctx.waitUntil) ctx.waitUntil(work); else await work;
+  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['apierr'], blobs: ['apierr', p, everOk ? 'again' : 'first', e, String(status), String(keyHash || '')], doubles: [1] }); } catch (x) {}
+}
 async function handleV1Book(url, request, env, tier) {
   // A PLAN BUYS DEPTH, NOT THE DATA. The first cut of this deleted `levels` outright below the tier - and
   // within a minute the ladder on our own heatmap page was empty, because that page is a keyless caller
@@ -15763,7 +15795,8 @@ async function handleTrade(url, request, env, ctx) {
     // counter the burst spread over fresh isolates after a deploy). The DO is single-threaded, so it counts exactly.
     mk('ratelimit', tR);
     const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
-    const side = b.side === 'short' ? 'short' : 'long';
+    const side = parseSide(b.side);
+    if (!side) return jt(SIDE_ERR, 400);
     const margin = +b.margin || 0, lev = Math.min(maxLevFor(sym), Math.max(1, +b.lev || 1)); // per-coin leverage cap
     if (!sym) return jt({ error: 'symbol_required' }, 400);
     if (!(margin >= 1)) return jt({ error: 'margin_min_1' }, 400);
@@ -15903,7 +15936,8 @@ async function handleTrade(url, request, env, ctx) {
     if (action !== 'add') return jt({ error: 'bad_action' }, 400);
     // (20 orders/min is counted in UserStore /order/add since 2026-09-06 - see /open above for why not KV)
     const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
-    const side = b.side === 'short' ? 'short' : 'long', long = side === 'long';
+    const side = parseSide(b.side), long = side === 'long';
+    if (!side) return jt(SIDE_ERR, 400);
     const margin = +b.margin || 0, lev = Math.min(maxLevFor(sym), Math.max(1, +b.lev || 1));
     const px = +b.px;
     if (!sym) return jt({ error: 'symbol_required' }, 400);
@@ -16521,6 +16555,12 @@ async function handleBot(url, request, env, ctx) {
   const jb = (o, s = 200, extra) => {
     if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; } catch (e) {} } // a mutating call changes the position list - drop the caches so the next poll is fresh and the bot sees its own trade at once
     if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
+    // EVERY REFUSAL IS WRITTEN DOWN (2026-10-10). Failures only - a 2xx costs nothing extra.
+    if (s >= 400 && o && o.error) {
+      // `key` and `auth` are declared BELOW this closure, so reading them from a refusal raised before
+      // they exist would throw a TDZ ReferenceError. Only what is certainly in scope is read.
+      try { apiErrLog(env, ctx, rawPath.replace(/^\/v[12]\//, ''), o.error, s, '', !!uid); } catch (e) {}
+    }
     let body = o;
     if (isV2 && o && typeof o === 'object') {
       if (o.error) {
@@ -16756,8 +16796,14 @@ async function handleBot(url, request, env, ctx) {
 
   if (path === '/v1/open' && request.method === 'POST') {
     const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
-    const side = b.side === 'short' ? 'short' : 'long';
+    const side = parseSide(b.side);
     if (!sym) return jb({ error: 'symbol_required' }, 400);
+    if (!side) return jb(SIDE_ERR, 400);
+    // FIELDS WE DO NOT HONOUR ARE REFUSED, NEVER SWALLOWED (2026-10-10). Each of these answered 200 and did
+    // nothing, and reduce_only in particular is sent precisely to guarantee no new exposure.
+    if (b.reduce_only === true || b.reduceOnly === true) return jb({ error: 'reduce_only_unsupported', message: 'MarginPad has no reduce-only flag. To take size off an existing position use POST /v1/close with pct, which never opens anything.' }, 400);
+    if (b.post_only === true || b.postOnly === true) return jb({ error: 'post_only_unsupported', message: 'post_only is a maker instruction and every /v1/open fill is a taker fill. Rest an order instead: type:"limit" with limit_price.' }, 400);
+    if (b.margin_mode != null && !/^isolated$/i.test(String(b.margin_mode))) return jb({ error: 'margin_mode_unsupported', message: 'Every MarginPad position is isolated margin: its loss is capped at its own margin. Cross margin is not modelled.', accepted: ['isolated'] }, 400);
     const margin = +b.margin_usd || 0, levReq = b.leverage == null || b.leverage === '' ? 1 : +b.leverage, levMax = maxLevFor(sym);
     // Phase 0 (2026-09-12): out-of-range input is REFUSED, never silently clamped - a bot that asked for 5000x used to get ok:true with 1000x
     // and no way to know. Same rule trail_pct already had. leverage may be omitted (= 1x).
@@ -20826,6 +20872,25 @@ export default {
     if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money - it only sets rate-limit tiers - so it is key-accessible like the neighbouring admin reads.
       let err = null, res = null; try { res = await syncBotTiers(env); } catch (e) { err = String(e && e.message || e); }
       return new Response(JSON.stringify({ ok: !err && !!(res && !res.error), sync: res, err }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/apierrors' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // WHAT THE BOT API REFUSED. Nothing recorded a Bot API error before 2026-10-10, so the owner's
+      // question - 117 of 174 keys never made a second call, why? - had no evidence behind it at all.
+      const days = Math.max(1, Math.min(40, +url.searchParams.get('days') || 7));
+      const dayKeys = []; for (let i = 0; i < days; i++) dayKeys.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+      const byErr = {}, byEp = {}, byDay = {};
+      let listed = [];
+      try { const l = await env.STATS.list({ prefix: 'apierr:', limit: 1000 }); listed = l.keys.map((k) => k.name); } catch (e) {}
+      const want = listed.filter((n) => dayKeys.some((d) => n.indexOf(':' + d + ':') > 0 || n.indexOf(':' + d) > 0));
+      for (const n of want) {
+        let v = 0; try { v = +(await env.STATS.get(n)) || 0; } catch (e) {}
+        if (!v) continue;
+        const p = n.split(':');
+        if (p[1] === 'day') { byErr[p[3]] = (byErr[p[3]] || 0) + v; byDay[p[2]] = (byDay[p[2]] || 0) + v; }
+        else if (p[1] === 'ep') { const k = p[3] + ' :: ' + p.slice(4).join(':'); byEp[k] = (byEp[k] || 0) + v; }
+      }
+      const sortObj = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ what: k, n }));
+      return J({ ok: true, days, total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date.' });
     }
     if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
