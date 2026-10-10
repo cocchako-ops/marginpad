@@ -18,7 +18,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad Status - API, trading store, liquidation feed uptime</title>
-<meta name="description" content="Live status of the MarginPad Bot API, the paper-trading store, the liquidation collector and the price feed, with 90 days of sampled uptime. No login." />
+<meta name="description" content="Live status of the MarginPad Bot API, the paper-trading store, the liquidation collector and the price floor, with 90 days of sampled uptime. No login." />
 <link rel="canonical" href="https://marginpad.io/status/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/status/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/status/" />
@@ -26,7 +26,7 @@
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow" />
 <meta property="og:title" content="MarginPad Status" />
-<meta property="og:description" content="Bot API, trading store, liquidation feed and price feed: live checks and 90 days of uptime." />
+<meta property="og:description" content="Bot API, trading store, liquidation feed and price floor: live checks and 90 days of uptime." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/status/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -89,7 +89,7 @@
   <nav class="hnav"><a href="/trading-api/">Bot API</a><a href="/api-docs/" class="hide">Reference</a><a href="/rekt/" class="hide">Liquidations</a></nav>
 </header>
 <h1>System status</h1>
-<p class="sub">What a bot depends on, checked every 10 minutes: the paper-trading store, the liquidation collector and the price feed. Days are UTC. Nothing here needs a login.</p>
+<p class="sub">What a bot depends on, checked every 10 minutes: the paper-trading store, the liquidation collector and the price floor. Days are UTC. Nothing here needs a login.</p>
 <div class="overall" id="overall"><i></i><b id="ovT">Checking…</b><span id="ovS"></span></div>
 <div class="grid" id="cards"></div>
 
@@ -97,19 +97,19 @@
 <div class="bars" id="bStore"></div><div class="legend"><span>90 days ago</span><span id="pStore" class="pct"></span><span>today</span></div>
 <h2>Liquidation collector <small id="upColl"></small></h2>
 <div class="bars" id="bColl"></div><div class="legend"><span>90 days ago</span><span id="pColl" class="pct"></span><span>today</span></div>
-<h2>Price feed <small id="upPx"></small></h2>
+<h2>Price floor <small id="upPx"></small></h2>
 <div class="bars" id="bPx"></div><div class="legend"><span>90 days ago</span><span id="pPx" class="pct"></span><span>today</span></div>
 
 <h2>Liquidation sources <small>live from the collector</small></h2>
 <table><thead><tr><th>Venue</th><th>Socket</th><th>Last liquidation</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Loading…</td></tr></tbody></table>
 
-<p class="note">Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. Thin venues (BitMEX, dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
+<p class="note">Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed sample means that copy was more than three minutes old, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (BitMEX, dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
 </div>
 <script>
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_statusindex = {"justNow":"justo ahora","noSamples":": sin muestras","ofSamplesPassed":"% de muestras superadas","noSamplesYet":"todavía sin muestras","tradingStore":"almacén de trading","priceFeed":"feed de precios","allSystemsOperational":"Todos los sistemas operativos","lastPass":"última comprobación ","tradingStore2":"Almacén de trading","noAnswer":"sin respuesta","socketsConnectedUp":"sockets conectados · activo hace ","priceFeed2":"Feed de precios","pairsAgeOfThe":" pares · antigüedad del precio base"};
+var __esD_statusindex = {"justNow":"justo ahora","noSamples":": sin muestras","ofSamplesPassed":"% de muestras superadas","noSamplesYet":"todavía sin muestras","tradingStore":"almacén de trading","priceFeed":"precio base","allSystemsOperational":"Todos los sistemas operativos","lastPass":"última comprobación ","tradingStore2":"Almacén de trading","noAnswer":"sin respuesta","socketsConnectedUp":"sockets conectados · activo hace ","priceFeed2":"Precio base","pairsAgeOfThe":" pares · antigüedad de la copia en caché"};
 function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_statusindex[k] != null) return __esD_statusindex[k]; } catch (e) {} return en; }
 
 (function(){
@@ -127,7 +127,7 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
   fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     var n=j.now||{},st=n.store,co=n.collector,px=n.prices,cr=n.cron;
     var bad=[],warn=[];
-    if(!cr||!cr.ok)bad.push('scheduler');if(st&&!st.ok)bad.push(__esT_statusindex("tradingStore",'trading store'));if(co&&!co.ok)bad.push('liquidation collector');if(px&&!px.ok)warn.push(__esT_statusindex("priceFeed",'price feed'));
+    if(!cr||!cr.ok)bad.push('scheduler');if(st&&!st.ok)bad.push(__esT_statusindex("tradingStore",'trading store'));if(co&&!co.ok)bad.push('liquidation collector');if(px&&!px.ok)warn.push(__esT_statusindex("priceFeed",'price floor'));
     var ov=$('overall');ov.className='overall '+(bad.length?'bad':warn.length?'warn':'ok');
     $('ovT').textContent=bad.length?'Degraded: '+bad.join(', '):warn.length?'Partly degraded: '+warn.join(', '):__esT_statusindex("allSystemsOperational",'All systems operational');
     $('ovS').textContent='checked '+new Date(j.ts).toISOString().slice(11,16)+' UTC';
@@ -135,7 +135,7 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
     h+=card(cr&&cr.ok?'ok':'bad','Scheduler',cr&&cr.ok?'alive':'down',__esT_statusindex("lastPass",'last pass ')+ago(cr?cr.ageMin:null));
     h+=card(st?(st.ok?'ok':'bad'):'',__esT_statusindex("tradingStore2",'Trading store'),st?(st.ok?(st.ms+' ms'):__esT_statusindex("noAnswer",'no answer')):'-',st?'round trip, sampled '+ago(st.sampledAgoMin):'');
     h+=card(co?(co.ok?'ok':'bad'):'','Liquidation collector',co?co.connected+' / '+co.total:'-',co?__esT_statusindex("socketsConnectedUp",'sockets connected · up ')+(co.uptimeSec?Math.round(co.uptimeSec/3600)+' h':'?'):'');
-    h+=card(px?(px.ok?'ok':'warn'):'',__esT_statusindex("priceFeed2",'Price feed'),px?(px.ageSec!=null?px.ageSec+' s':'live'):'-',px?px.pairs+__esT_statusindex("pairsAgeOfThe",' pairs · age of the price floor'):'');
+    h+=card(px?(px.ok?'ok':'warn'):'',__esT_statusindex("priceFeed2",'Price floor'),px?(px.ageSec!=null?px.ageSec+' s':'live'):'-',px?px.pairs+__esT_statusindex("pairsAgeOfThe",' pairs · age of the cached copy'):'');
     $('cards').innerHTML=h;
     bars($('bStore'),j.days,'store',$('pStore'),$('upStore'));
     bars($('bColl'),j.days,'coll',$('pColl'),$('upColl'));

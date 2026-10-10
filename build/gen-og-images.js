@@ -156,6 +156,7 @@ function plan(rel, html) {
     '/about/': ['product', { title: 'What MarginPad is, and who builds it', sub: 'A free crypto futures toolkit, paid for by exchange referrals.', accent: ACCENT.lime, path: '/about/' }],
     '/free-crypto-api/': ['product', { title: 'A free crypto futures API', sub: 'Liquidations, funding, open interest and prices. No key needed.', accent: ACCENT.cyan, path: '/free-crypto-api/', tag: 'KEYLESS' }],
     '/status/': ['live', { title: 'Is MarginPad up?', eyebrow: 'Live status', accent: ACCENT.green, path: '/status/' }],
+    '/support/': ['product', { title: 'Need a hand?', sub: 'One address, read by a person - and what to include so the first reply answers you.', accent: ACCENT.lime, path: '/support/', eyebrow: 'Support', tag: 'ONE ADDRESS' }],
   };
   const key = rel.endsWith('/') ? rel : rel + '/';
   if (ONE[key]) { const [t, d] = ONE[key]; return { t, d: Object.assign({ sub: desc }, d) }; }

@@ -19,7 +19,7 @@ stream = ["websockets>=11"]
 [project.urls]
 Homepage = "https://marginpad.io/trading-api/"
 Documentation = "https://marginpad.io/api-docs/"
-Repository = "https://github.com/marginpad/sdk"
+Repository = "https://github.com/Marginpad/sdk"
 Changelog = "https://marginpad.io/api/changelog.xml"
 
 [tool.setuptools.packages.find]

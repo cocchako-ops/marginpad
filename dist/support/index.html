@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>MarginPad Support - how to get help, and what to include</title>
+<meta name="description" content="How to reach MarginPad: one email address that goes to a person, the Telegram bot, and what to put in a message so it can be answered on the first reply. Status and API reference included." />
+<link rel="canonical" href="https://marginpad.io/support/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/support/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/support/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/support/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="MarginPad Support" />
+<meta property="og:description" content="One address that reaches a person, and what to include so your first message can be answered." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/status/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:var(--lime)}
+  .wrap{max-width:820px;margin:0 auto;padding:18px 18px calc(48px + env(safe-area-inset-bottom))}
+  header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+  .brand b{color:var(--lime)}
+  .hnav{display:flex;align-items:center;gap:14px}.hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.03em;margin:0 0 6px;line-height:1.05}
+  .sub{color:var(--dim);margin:0 0 18px;max-width:64ch}
+  .overall{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 14px}
+  .overall i{width:12px;height:12px;border-radius:50%;background:var(--faint);flex:none}
+  .overall.ok i{background:var(--up);box-shadow:0 0 10px var(--up)}.overall.bad i{background:var(--red);box-shadow:0 0 10px var(--red)}.overall.warn i{background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .overall b{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;letter-spacing:-.01em}
+  .overall span{color:var(--dim);font:12px 'Space Mono',monospace;margin-left:auto;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:0 0 22px}
+  .c{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+  .c .k{font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px}
+  .c .k i{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none;margin-top:3px}
+  .c.ok .k i{background:var(--up)}.c.bad .k i{background:var(--red)}.c.warn .k i{background:var(--amber)}
+  .c b{display:block;font:700 20px 'Space Mono',monospace;letter-spacing:-.02em;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .c small{display:block;color:var(--dim);font-size:12px;margin-top:3px}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em;margin:26px 0 10px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  h2 small{font:12px 'Space Mono',monospace;color:var(--faint);font-weight:400}
+  .bars{display:grid;grid-template-columns:repeat(90,minmax(0,1fr));gap:2px;height:34px}
+  .bars i{display:block;border-radius:2px;background:#1a2027;position:relative}
+  .bars i.ok{background:var(--up)}.bars i.part{background:var(--amber)}.bars i.bad{background:var(--red)}.bars i.none{background:#1a2027}
+  .bars i:hover::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1b212a;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font:11px 'Space Mono',monospace;color:var(--ink);white-space:nowrap;z-index:5}
+  .legend{display:flex;justify-content:space-between;font:11px 'Space Mono',monospace;color:var(--faint);margin-top:6px}
+  .pct{font:700 13px 'Space Mono',monospace;color:var(--ink)}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+  th{text-align:left;font:700 10.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:8px 8px 8px 0;border-bottom:1px solid var(--line2)}
+  td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td.n{font-family:'Space Mono',monospace;white-space:nowrap}
+  .tag{display:inline-block;font:700 10px 'Space Mono',monospace;letter-spacing:.05em;border-radius:5px;padding:2px 7px}
+  .tag.ok{color:var(--up);background:rgba(46,189,133,.12)}.tag.bad{color:var(--red);background:rgba(255,98,88,.12)}.tag.quiet{color:var(--dim);background:#161b22}
+  .note{color:var(--dim);font-size:13px;max-width:70ch;margin-top:20px;line-height:1.55}
+  .note code{font-family:'Space Mono',monospace;font-size:12px;background:#12161c;border-radius:5px;padding:1px 5px}
+  @media(max-width:520px){.bars{height:28px}.hnav a.hide{display:none}}
+</style>
+<meta property="og:image" content="https://marginpad.io/assets/og/support.jpg" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/support.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
+<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad Support - how to get help, and what to include","url":"https://marginpad.io/support/","dateModified":"2026-10-10T19:43:25.609Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm-->><style>
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:0 0 12px}
+  .box h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;margin:0 0 4px;letter-spacing:-.01em}
+  .box p{margin:0;color:var(--dim);font-size:14px;line-height:1.55}
+  .box p + p{margin-top:8px}
+  .addr{display:inline-block;font:700 17px 'Space Mono',monospace;color:var(--lime);text-decoration:none;word-break:break-all;margin:2px 0 6px}
+  .addr:hover{text-decoration:underline}
+  ul.inc{margin:8px 0 0;padding-left:0;list-style:none}
+  ul.inc li{color:var(--dim);font-size:14px;line-height:1.5;padding:5px 0 5px 20px;position:relative;border-bottom:1px solid var(--line)}
+  ul.inc li:last-child{border-bottom:0}
+  ul.inc li::before{content:'';position:absolute;left:4px;top:13px;width:5px;height:5px;border-radius:50%;background:var(--lime)}
+  ul.inc b{color:var(--ink);font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:0 0 12px}
+  .two .box{margin:0}
+  .lnks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .lnks a{display:inline-block;border:1px solid var(--line2);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none}
+  .lnks a:hover{border-color:var(--lime);color:var(--lime)}
+</style></head>
+<body>
+<div class="wrap">
+<header>
+  <a href="/" class="brand">MARGIN<b>PAD</b></a>
+  <nav class="hnav"><a href="/trading-api/">Bot API</a><a href="/status/">Status</a><a href="/api-docs/" class="hide">Reference</a></nav>
+</header>
+<h1>Support</h1>
+<p class="sub">One address, read by a person. There is no ticket number to quote and no form to fill in - write in your own words, include the few things below, and you will not have to send a second message to be understood.</p>
+
+<div class="box">
+  <h3>Email us</h3>
+  <a class="addr" href="mailto:support@marginpad.io">support@marginpad.io</a>
+  <p>Account questions, a trade that looks wrong, a payout, a leaderboard place, the API - all of it goes here. Write from the address your MarginPad account uses if you can; it is how we find you without asking.</p>
+  <p>We read everything. We do not publish a response time, because we would rather be slow than promise a number we miss.</p>
+</div>
+
+<div class="two">
+  <div class="box">
+    <h3>Telegram</h3>
+    <p>The bot handles alerts, your account and the daily wrap: <a href="https://t.me/MarginPadBot">@MarginPadBot</a>. Announcements go out on <a href="https://t.me/marginpad">@marginpad</a>. For anything that needs a human answer, use the email above.</p>
+  </div>
+  <div class="box">
+    <h3>Other traders</h3>
+    <p>The chat on any page and <a href="/community/">the community</a> are often faster for "how does this work" than we are, and the people there have usually hit the same thing.</p>
+  </div>
+</div>
+
+<h2>What to include</h2>
+<div class="box">
+  <p>Most messages that take a week to resolve take a week because the first reply has to ask for one of these.</p>
+  <ul class="inc">
+    <li><b>Your username</b> - not your display name on a board, the one you sign in with.</li>
+    <li><b>The trade id</b>, if it is about a trade. Open the ticket on My Trades and copy it; it looks like <code>trade:e8b4cb68d7</code>. Without it we are guessing which of your trades you mean.</li>
+    <li><b>What you expected and what happened</b>, in that order. "My SEI long closed at 4,300% and is not on the ROE board" is answerable on the first reply. "The leaderboard is broken" is not.</li>
+    <li><b>When</b>, roughly, and in UTC if you know it. Everything we store is stamped in UTC.</li>
+    <li><b>For the API</b>: the endpoint, the exact error body we sent back, and whether the key is the one you created most recently.</li>
+  </ul>
+</div>
+
+<h2>Answer it yourself, faster</h2>
+<div class="box">
+  <p>Three things come up often enough to be worth checking before you write.</p>
+  <ul class="inc">
+    <li><b>Is something actually down?</b> <a href="/status/">The status page</a> is live, ungated and keeps 90 days. If the trading store is green there, the problem is your account or your code, not ours.</li>
+    <li><b>Did the API refuse you?</b> Every refusal carries a reason and a hint in the body - read that first; <a href="/trading-api/#errors">the error table</a> explains each one in full.</li>
+    <li><b>Is your plan what you think it is?</b> <code>GET /api/bot/v1/usage</code> states your plan, every ceiling on it, and when it ends.</li>
+  </ul>
+  <div class="lnks">
+    <a href="/trading-api/">Bot API</a><a href="/api-docs/">Full reference</a><a href="/status/">Status</a><a href="/api/changelog.xml">Changelog RSS</a><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a>
+  </div>
+</div>
+
+<p class="note">Security problems go to the same address with <b>SECURITY</b> in the subject; please do not post them publicly before we have answered. Business and partnership mail goes to <a href="mailto:hello@marginpad.io">hello@marginpad.io</a>. What we promise and do not promise about the API - availability, plans, breaking changes - is written out in <a href="/terms/#api">section 9 of the terms</a>, including the fact that there is no SLA.</p>
+</div>
+<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+</body>
+</html>

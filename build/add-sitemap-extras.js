@@ -53,6 +53,7 @@ const EXTRAS = [
   ['/bitcoin-hoje/', '0.9', D],
   ['/calendar/', '0.8', D],
   ['/status/', '0.6', D],
+  ['/support/', '0.5', M],
   // --- moves with the product ------------------------------------------------------------------------------
   // /squads/ is WEEKLY on purpose: most of the page is the explanation, and the live directory is empty on the
   // day it ships. Over-declaring is worse than under-declaring - a crawler that keeps arriving to find nothing

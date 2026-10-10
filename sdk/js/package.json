@@ -5,9 +5,9 @@
   "main": "index.js",
   "types": "index.d.ts",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/marginpad/sdk.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/Marginpad/sdk.git" },
   "homepage": "https://marginpad.io/trading-api/",
-  "bugs": { "url": "https://github.com/marginpad/sdk/issues" },
+  "bugs": { "url": "https://github.com/Marginpad/sdk/issues" },
   "keywords": ["crypto", "futures", "paper-trading", "trading-bot", "backtest", "liquidations", "bybit", "binance", "api", "mcp", "ai-agent"],
   "engines": { "node": ">=18" },
   "files": ["index.js", "index.d.ts", "README.md"]
