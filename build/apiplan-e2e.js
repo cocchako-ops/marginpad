@@ -296,6 +296,21 @@ const usage = async () => (await bot('/usage')).body.data || {};
       const m = t.match(/API Pro \$(\d+)\/mo, API Max \$(\d+)\/mo, API Business \$(\d+)\/mo/);
       chk(f + ' quotes the live plan prices', !!m && +m[1] === P1.usd && +m[2] === M1.usd && +m[3] === B1.usd, m && m.slice(1).join('/'));
     }
+
+    // 5. THE PACKAGE PAGE. npmjs.com and pypi.org render sdk/{js,python}/README.md as the SDK's own
+    //    documentation, so it is a price surface - and it was the one no script had ever looked at. It
+    //    still sold "Premium: 600/minute, 10 keys" on 2026-10-10, nineteen days after the reprice and
+    //    twenty-five after Premium stopped buying anything on this API at all.
+    //    `build/fix-sdk-readme.js` generates that table from API_PLANS; this is what notices if it is not re-run.
+    for (const rel of ['sdk/README.md', 'sdk/js/README.md', 'sdk/python/README.md']) {
+      let t = '';
+      try { t = require('fs').readFileSync(require('path').join(__dirname, '..', rel), 'utf8'); } catch (e) { t = ''; }
+      chk(rel + ' is readable', t.length > 400, t.length + ' bytes');
+      const rows = [...t.matchAll(/\|\s*(Free|Pro|Max|Business)\s+\$(\d+)\s*\|/g)].map((m2) => [m2[1], +m2[2]]);
+      chk(rel + ' prices every plan from API_PLANS', rows.length === 4 && rows.every(([lbl, usd]) => (PL[lbl.toLowerCase()] || {}).usd === usd),
+        rows.map((r) => r.join(':')).join(' '));
+      chk(rel + ' no longer sells Premium as an API plan', !/Premium:\s*600\/minute/.test(t));
+    }
   }
   // ── cleanup ──────────────────────────────────────────────────────────────────────────────────────────────
   await admin('/api/admin/apiplans', { uid: UID, plan: 'free' });

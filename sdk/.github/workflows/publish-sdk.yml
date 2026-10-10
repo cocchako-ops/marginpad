@@ -1,0 +1,163 @@
+# PUBLISH THE SDK WITH NO TOKEN ANYWHERE.
+#
+# Why this exists: npm answers EOTP on every publish from a terminal, because the owner's second factor is a
+# security key, so there is no six-digit code to read and no way to script it. Unchecking "require 2FA for
+# write actions" did not help - npm is retiring 2FA-bypassing tokens outright. The documented way out is
+# Trusted Publishing: GitHub Actions presents a short-lived OIDC identity, npm and PyPI check it against a
+# publisher configured on the package itself, and that SATISFIES two-factor. No token is minted, nothing is
+# stored in this repository, and nothing expires.
+#
+# PyPI gets the same treatment, which also removes the last reason to keep a PYPI_TOKEN around.
+#
+# One tag publishes all three registries: npm, PyPI and the MCP Registry (publish-mcp.yml fires on the same
+# tag). Version numbers are NEVER typed here - they are read from the packages, and the job refuses if the
+# three places a version is written disagree, which is the check that caught 2.9.0 shipping a 2.6.0
+# User-Agent.
+#
+#   git tag v3.0.0 && git push origin v3.0.0
+#
+# PyPI never allows a re-upload of a version, so a failed run must be fixed by bumping, not by retrying.
+
+name: Publish SDK
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Pack and check only - publish nothing"
+        type: boolean
+        default: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # A VERSION IS WRITTEN IN THREE PLACES AND THE THIRD HAD NEVER BEEN BUMPED. 2.9.0 went to PyPI
+      # announcing itself as 2.6.0 in every request's User-Agent - the one field that separates SDK traffic
+      # from hand-rolled calls in our own analytics - because the package metadata and the in-code constant
+      # were edited separately. They are compared here, before anything is uploaded.
+      - id: v
+        name: The three places a version is written must agree
+        run: |
+          set -euo pipefail
+          js_pkg=$(node -p "require('./js/package.json').version")
+          js_code=$(grep -oP "VERSION\s*=\s*'\K[^']+" js/index.js | head -1)
+          py_pkg=$(grep -oP '^version\s*=\s*"\K[^"]+' python/pyproject.toml | head -1)
+          py_code=$(grep -oP '__version__\s*=\s*"\K[^"]+' python/marginpad/__init__.py | head -1)
+          echo "js package.json      $js_pkg"
+          echo "js index.js VERSION  $js_code"
+          echo "py pyproject.toml    $py_pkg"
+          echo "py __version__       $py_code"
+          for v in "$js_code" "$py_pkg" "$py_code"; do
+            if [ "$v" != "$js_pkg" ]; then echo "::error::version mismatch: $v != $js_pkg"; exit 1; fi
+          done
+          # A tag publish must publish the version the tag names, or the tag is a lie about what shipped.
+          if [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME#v}"
+            if [ "$tag" != "$js_pkg" ]; then echo "::error::tag $GITHUB_REF_NAME does not match package version $js_pkg"; exit 1; fi
+          fi
+          echo "version=$js_pkg" >> "$GITHUB_OUTPUT"
+
+      # The package page is the first thing a developer evaluating the SDK reads, and on 2026-10-10 it was
+      # still quoting a plan that had not existed for twenty-five days. These are the two facts it must carry.
+      - name: The README must price the live plans and document sim()
+        run: |
+          set -euo pipefail
+          for f in README.md js/README.md python/README.md; do
+            grep -q 'mp.sim(' "$f" || { echo "::error::$f does not document sim()"; exit 1; }
+            grep -q 'Premium: 600/minute' "$f" && { echo "::error::$f still sells Premium as an API plan"; exit 1; }
+            grep -qE '\| Pro \$[0-9]+ \|' "$f" || { echo "::error::$f has no generated plan table"; exit 1; }
+          done
+          echo "ok"
+
+  npm:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # the OIDC identity npm checks against the package's trusted publisher
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      # Trusted publishing needs npm 11.5.1 or newer; the runner ships an older one.
+      - run: npm install -g npm@latest && npm --version
+
+      - name: Pack and show exactly what would be published
+        working-directory: js
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        if: github.event_name == 'push' || inputs.dry_run == false
+        working-directory: js
+        run: npm publish --access public
+
+      # Verify by INSTALLING it, never by reading the upload log: 2.9.0's log said OK while the installed
+      # package reported the wrong version. The registry index lags a few seconds behind an upload.
+      - name: Install the published package and print its version
+        if: github.event_name == 'push' || inputs.dry_run == false
+        run: |
+          set -euo pipefail
+          v="${{ needs.check.outputs.version }}"
+          for i in 1 2 3 4 5 6; do sleep 10; if npm view "marginpad@$v" version >/dev/null 2>&1; then break; fi; done
+          mkdir -p /tmp/verify && cd /tmp/verify && npm init -y >/dev/null
+          npm install --no-save "marginpad@$v"
+          got=$(node -p "require('marginpad').VERSION")
+          echo "installed VERSION = $got"
+          [ "$got" = "$v" ] || { echo "::error::installed package reports $got, expected $v"; exit 1; }
+          node -e "const {MarginPad}=require('marginpad');const c=new MarginPad();c.price('BTC').then(p=>{if(!p||!p.price)throw new Error('no price');console.log('keyless price call OK',p.price);}).catch(e=>{console.error(e);process.exit(1);})"
+          node -e "const {MarginPad}=require('marginpad');if(typeof MarginPad.prototype.sim!=='function')throw new Error('sim() missing from the published client');console.log('sim() present')"
+
+  pypi:
+    needs: check
+    runs-on: ubuntu-latest
+    # Deliberately NO `environment:` - PyPI's trusted publisher is configured without one, and the two have
+    # to agree. Adding an environment on one side only is a refusal at upload time, after the build passed.
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade build
+      - name: Build the wheel and the sdist
+        working-directory: python
+        run: python -m build
+      - name: Publish to PyPI
+        if: github.event_name == 'push' || inputs.dry_run == false
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist
+      - name: Install from PyPI in a clean venv and print its version
+        if: github.event_name == 'push' || inputs.dry_run == false
+        run: |
+          set -euo pipefail
+          v="${{ needs.check.outputs.version }}"
+          python -m venv /tmp/venv
+          for i in 1 2 3 4 5 6; do
+            sleep 10
+            if /tmp/venv/bin/pip install --no-cache-dir --force-reinstall "marginpad==$v" >/dev/null 2>&1; then break; fi
+          done
+          /tmp/venv/bin/pip install --no-cache-dir --force-reinstall "marginpad==$v"
+          got=$(/tmp/venv/bin/python -c "import marginpad; print(marginpad.__version__)")
+          echo "installed __version__ = $got"
+          [ "$got" = "$v" ] || { echo "::error::installed package reports $got, expected $v"; exit 1; }
+          /tmp/venv/bin/python -c "
+          from marginpad import MarginPad
+          c = MarginPad()
+          assert hasattr(c, 'sim'), 'sim() missing from the published client'
+          p = c.price('BTC')
+          assert p and p.get('price'), 'no price'
+          print('keyless price call OK', p['price'], 'and sim() is present')
+          "
