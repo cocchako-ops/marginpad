@@ -96,7 +96,16 @@ const ok = (m) => console.log('  ok     ' + m);
   for (let i = 0; i < urls.length; i += 8) {
     const batch = urls.slice(i, i + 8);
     const rs = await Promise.all(batch.map(u => fetch(u, { method: 'GET', headers: { 'user-agent': 'MarginPad-link-check' } }).then(r => r.status).catch(() => 0)));
-    rs.forEach((st, k) => { if (st !== 200) bad200.push(batch[k] + ' -> ' + st); });
+    // A KEYED ENDPOINT ANSWERING 401 IS CORRECT, NOT STALE (2026-10-10). The point of this check is that an
+    // assistant never cites a URL that 404s; `/api/bot/...` paths require an API key by design, so a 401 from
+    // one is proof it exists and is guarded. A 404 or a 5xx there still fails. Keeping the 200 rule for them
+    // would have forced either a weakened check or a documented endpoint left out of the AI layer.
+    rs.forEach((st, k) => {
+      const keyed = /\/api\/bot\//.test(batch[k]) && !/\/api\/bot\/v[12]\/(time|markets)/.test(batch[k]);
+      if (st === 200) return;
+      if (keyed && (st === 401 || st === 402)) return;
+      bad200.push(batch[k] + ' -> ' + st);
+    });
   }
   if (bad200.length) { bad += bad200.length; bad200.slice(0, 12).forEach(x => console.log('  STALE  ' + x)); console.log('  (' + bad200.length + ' of ' + urls.length + ' bad)'); }
   else ok(urls.length + ' URLs, all 200');

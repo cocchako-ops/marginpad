@@ -17,7 +17,7 @@
   else root.MarginPadSDK = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
-  var VERSION = '2.9.1';
+  var VERSION = '3.0.0';
 
   function MarginPadError(code, message, status, extra) {
     var e = new Error(code + ': ' + (message || code));
@@ -113,6 +113,22 @@
   //   await c.realism({ margin_venue: 'binance' })             -> liquidate where Binance would
   // Pass the same fields to open() to override the account for one fill only.
   MarginPad.prototype.realism = function (o) { return o === undefined ? this._get('/api/bot/v2/realism') : this._post('/api/bot/v2/realism', o); };
+
+  // ── the whole simulation (3.0) ───────────────────────────────────────────
+  // realism() above is three switches of this; sim() is all eighteen fields. The defaults are deliberately
+  // easy - a market order fills whole at the live price, maintenance margin is a flat 0.5%, the balance never
+  // refuses an open, there is no latency and no size impact - which is right for getting a bot RUNNING and
+  // optimistic for judging its edge.
+  //   await c.sim()                             -> your profile, every field with its range, the presets
+  //   await c.sim({ preset: 'realistic' })      -> the honest middle, in one call
+  //   await c.sim({ preset: 'bybit' })          -> Bybit's published fee and maintenance margin
+  //   await c.sim({ preset: 'brutal' })         -> worse than anything you will meet; if it survives this, it survives
+  //   await c.sim({ start_balance_usd: 2500, margin_enforced: true, slippage_bps: 8, latency_ms: 250 })
+  // Out-of-range values are REFUSED, never clamped, so a strategy is never measured under a setting you did
+  // not choose. A position keeps the simulation it was filled under, for life.
+  MarginPad.prototype.sim = function (o) { return o === undefined ? this._get('/api/bot/v2/sim') : this._post('/api/bot/v2/sim', o); };
+  // The eight presets, so an editor can complete them and a script can loop over them.
+  MarginPad.SIM_PRESETS = ['frictionless', 'realistic', 'binance', 'bybit', 'okx', 'hyperliquid', 'thin_book', 'brutal'];
 
   // ── webhooks (API Pro and up) ───────────────────────────────────────────────────────────────────────────────
   MarginPad.prototype.webhooks = function () { return this._get('/api/bot/v2/webhooks'); };

@@ -201,6 +201,30 @@
   .keybox{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:40px;align-items:start;overflow:hidden;padding:30px;border:1px solid var(--line2);border-radius:16px;background:radial-gradient(120% 140% at 0% 0%,rgba(194,246,74,.055),transparent 55%),var(--panel);margin-top:30px;}
   .keybox h3{font-size:21px;font-weight:700;}
   .keybox h2{font-size:27px;font-weight:700;letter-spacing:-.01em;}
+  /* THE FIRST CALL (2026-10-10). Measured: 67% of keys ever minted never made one request, so the key
+     box now hands over a working call and runs it. */
+  .akb-go{margin-top:14px;border:1px solid rgba(194,246,74,.3);border-radius:12px;padding:14px 16px;background:rgba(194,246,74,.045);}
+  .akb-go h3{margin:0 0 6px;font-size:15px;letter-spacing:.01em;}
+  .akb-go p{margin:0 0 10px;font-size:13.5px;opacity:.82;}
+  .akb-go pre{margin:0 0 10px;padding:11px 12px;background:#0b0c0e;border:1px solid rgba(255,255,255,.08);border-radius:9px;overflow-x:auto;font-size:12.5px;line-height:1.55;}
+  .akb-go .agb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .akb-go .ago{margin-top:10px;padding:11px 12px;background:#0b0c0e;border:1px solid rgba(255,255,255,.08);border-radius:9px;max-height:260px;overflow:auto;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+  .akb-go .agok{margin-top:9px;font-size:13.5px;color:#c2f64a;font-weight:600;}
+  /* THE SIMULATION PROFILE */
+  .simg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 6px;}
+  .simc{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;background:rgba(255,255,255,.02);min-width:0;}
+  .simc h3{margin:0 0 7px;font-size:14px;letter-spacing:.01em;}
+  .simc code{font-size:11.5px;}
+  .simc p{margin:0;font-size:13px;opacity:.8;line-height:1.5;}
+  .simc.lead{border-color:rgba(194,246,74,.3);background:rgba(194,246,74,.05);}
+  .simt{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:13px;}
+  .simt th,.simt td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07);vertical-align:top;}
+  .simt th{font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.55;font-weight:600;}
+  .simt td:first-child{white-space:nowrap;}
+  .simt tr.grp td{padding-top:16px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.55;border-bottom:none;}
+  .simt .rg{opacity:.6;white-space:nowrap;font-size:12px;}
+  @media(max-width:1000px){.simg{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:620px){.simg{grid-template-columns:minmax(0,1fr);}.simtw{overflow-x:auto;}.simt{min-width:520px;}}
   .keybox.kb-lead{margin-top:0;padding:34px;border-color:rgba(194,246,74,.28);}
   #getkey{margin-top:34px;}
   @media(max-width:860px){.keybox h2{font-size:23px;}.keybox.kb-lead{padding:24px;}#getkey{margin-top:24px;}}
@@ -527,6 +551,9 @@
         <p>Sign in with an email - no password, no KYC. Your bot's positions persist on your account, and one account can hold several keys so a backtest bot and a live bot never share a rate budget.</p>
         <button class="btn" id="akbBtn" type="button">Sign in &amp; get my API key</button>
         <div class="akb-key" id="akbKey"></div>
+        <!-- The first-call block lives HERE, not inside #akbKey: creating a key repaints that box and would
+             take the response with it. A confirmation must survive the repaint it triggers. -->
+        <div id="akbGoSlot"></div>
         <div class="akb-msg" id="akbMsg"></div>
       </div>
       <div>
@@ -792,7 +819,8 @@ print(r["data"]["position"]["fee_round_trip_usd"], r["data"]["position"]["liq_pr
       <li><a href="#endpoints">Endpoints</a></li>
       <li><a href="#engine">How the engine works</a></li>
       <li><a href="#fees">Venue fees</a>
-      <a href="#realism">Fill realism</a></li>
+      <a href="#realism">Fill realism</a>
+      <a href="#sim">The simulation profile</a></li>
       <li><a href="#reliable">Bots that do not break</a></li>
       <li><a href="#stream">WebSocket</a></li>
       <li><a href="#webhooks">Webhooks</a></li>
@@ -904,9 +932,62 @@ POST /api/bot/v1/open {"symbol":"BTC","side":"long","margin_usd":100,"leverage":
     <div class="dcard"><h3>Margin tiers</h3><p>Maintenance margin rises with notional size, the way an exchange risk-limit table does, so a large position is liquidated <b>sooner</b> - a higher maintenance requirement tolerates less adverse move before it closes you, which is exactly what a venue wants on size. This is our published model rather than any one venue's table, and <code>GET /realism</code> returns the whole ladder - you should never have to reverse-engineer it from a liquidation price.</p></div>
     <div class="dcard"><h3>Margin venue</h3><p>Which venue's published maintenance-margin rate to build on: Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. It moves <b>only</b> where the liquidation price sits - never size, fees or P&amp;L.</p></div>
   </div>
-  <p class="note">A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href="#arena">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.</p>
+  <p class="note"><b>These three are a subset.</b> <a href="#sim">The whole simulation is configurable</a> - the book size and whether it is a real budget, your own slippage and fee figures, size impact, latency, partial fills, refusals and funding - and eight presets set it in one call. A position keeps the maintenance margin it was filled with, so turning this on never rewrites a trade you already hold, and every close records what it ran with. That is where the <a href="#arena">arena's</a> <i>Fills</i> column comes from - a board that ranks bots ought to say which of them were on easy mode.</p>
 </section>
 
+<section id="sim">
+  <h2>Build the venue you are actually going to trade</h2>
+  <p>The three switches above are part of something larger. <b>Everything this engine assumes is a field you can set</b>: the size of the book and whether it is a real budget, what crossing the order book costs on the way in and on the way out, how long your order is in flight, whether an order fills part-way, how often the venue says no, what you pay in fees, whether funding is charged at all, and where the liquidation price sits.</p>
+  <p><b>The defaults are deliberately easy, and that is worth saying plainly.</b> A market order fills whole at the live price, maintenance margin is a flat 0.5%, the balance is a scorecard that never refuses an open, and there is no latency and no size impact. That is the right place to get a bot <em>running</em>. It is the wrong place to judge whether it has an edge. One call changes that.</p>
+<pre><code>GET  /api/bot/v2/sim                    <b># your profile, every field with its range, and the presets</b>
+POST /api/bot/v2/sim {"preset": "realistic"}
+
+<b># or exactly your own venue</b>
+POST /api/bot/v2/sim {"start_balance_usd": 2500, "margin_enforced": true,
+                      "slippage": true, "slippage_bps": 8, "impact_bps_per_100k": 15,
+                      "latency_ms": 250, "taker_bps": 5.5, "margin_venue": "bybit"}</code></pre>
+  <p>Out-of-range values are <b>refused, never clamped</b> - a strategy must never be measured under a setting you did not choose. A position keeps the maintenance margin, the fee rate and the exit crossing cost it was filled under, for life; turning anything on never rewrites a trade you already hold.</p>
+
+  <h3>Eight presets, so you do not have to invent eighteen numbers</h3>
+  <div class="simg">
+    <div class="simc"><h3>frictionless</h3><p>The engine as it has always been. Get the bot running, see trades land, then change it.</p></div>
+    <div class="simc lead"><h3>realistic</h3><p>The one to measure an edge on: the book costs what we measure on both legs, size costs more, the risk-limit ladder is on, funding is charged, and the book refuses what it cannot fund.</p></div>
+    <div class="simc"><h3>binance &middot; bybit &middot; okx &middot; hyperliquid</h3><p>That venue&rsquo;s own published taker fee and maintenance margin, with our measured crossing cost, margin enforced and the ladder on.</p></div>
+    <div class="simc"><h3>thin_book &middot; brutal</h3><p>A mid-cap perp at an unkind hour, and then worse than anything you will meet: 60 bps to cross, 120 bps per $100k of size, fills from a quarter upwards, one open in twenty refused, a second of latency. <b>Ours, not any venue&rsquo;s figures.</b> If a strategy still works here it is not living on execution luck.</p></div>
+  </div>
+
+  <h3>Every field, its range and what it changes</h3>
+  <div class="simtw"><table class="simt">
+  <thead><tr><th>Field</th><th>Range</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">The book &mdash; what the bot is allowed to risk</td></tr>
+    <tr><td><code>start_balance_usd</code></td><td class="rg">100 &ndash; 10,000,000</td><td>The book your results are measured against: <code>return_pct</code>, the equity curve and max drawdown all follow it. Test on the account size you will really trade.</td></tr>
+    <tr><td><code>margin_enforced</code></td><td class="rg">off / on</td><td><b>The single biggest difference between a scorecard and a venue.</b> On, an open needing more than your free margin is refused <code>402 insufficient_margin</code>. Free margin is balance minus committed margin &mdash; unrealized profit on an open position is not collateral for a new one, because every position here is isolated margin.</td></tr>
+    <tr><td><code>leverage_max</code></td><td class="rg">0 &ndash; 10,000</td><td>Your own ceiling below the per-market cap. Proves a strategy never quietly drifted into 100&times;. 0 = the market cap.</td></tr>
+    <tr><td><code>max_notional_usd</code></td><td class="rg">0 &ndash; 1,000,000,000</td><td>Your own ceiling on one position&rsquo;s notional. 0 = none of your own.</td></tr>
+    <tr class="grp"><td colspan="3">The fill &mdash; what crossing the book costs</td></tr>
+    <tr><td><code>slippage</code></td><td class="rg">off / on</td><td>Fill against yourself the way walking a real book does: 0.01% crypto majors, 0.05% thinner crypto, 0.005% forex, 0.02% stocks, metals and indices. A buy pays up, a sell sells down.</td></tr>
+    <tr><td><code>slippage_bps</code></td><td class="rg">0 &ndash; 500</td><td>Your own figure instead of that table. 10 = 0.10%. <code>null</code> goes back to the table.</td></tr>
+    <tr><td><code>impact_bps_per_100k</code></td><td class="rg">0 &ndash; 500</td><td>Size costs more, because a bigger order walks further down the book: this many basis points on top per $100,000 of notional.</td></tr>
+    <tr><td><code>exit_slippage</code></td><td class="rg">on / off</td><td>Pay the crossing cost on the way out as well as in. <b>Without it a scalping strategy reads better than it can ever trade.</b> A stop, take-profit or liquidation still fills at its own level &mdash; see the limits below.</td></tr>
+    <tr><td><code>latency_ms</code></td><td class="rg">0 &ndash; 2,000</td><td>Your order is in flight this long, and <b>the price is re-read afterwards</b> &mdash; so the fill is the market as it was when your order arrived, not when you sent it.</td></tr>
+    <tr><td><code>partial_fills</code></td><td class="rg">off / on</td><td>A market order may fill less than it asked for. The filled size is <code>position.margin_usd</code>; the ratio is the <code>X-MP-Fill-Pct</code> header and the <code>fill</code> object on v2.</td></tr>
+    <tr><td><code>min_fill_pct</code></td><td class="rg">10 &ndash; 100</td><td>The worst ratio you can be handed. 40 means anywhere from 40% to 100% of what you asked for.</td></tr>
+    <tr><td><code>reject_rate_pct</code></td><td class="rg">0 &ndash; 50</td><td>This share of opens are refused <code>503 venue_rejected</code> on purpose. <b>A bot that cannot handle a refusal is not finished</b>, and this is the cheap place to find that out.</td></tr>
+    <tr class="grp"><td colspan="3">The cost</td></tr>
+    <tr><td><code>taker_bps</code></td><td class="rg">0 &ndash; 100</td><td>Your own per-side fee instead of a venue schedule. 5.5 = 0.055%. The leverage taper still applies, so no setting can make a round trip eat the whole stake.</td></tr>
+    <tr><td><code>funding</code></td><td class="rg">on / off</td><td>Off, funding is never charged. <b>This is how you tell an execution edge from a carry edge</b> &mdash; a short held through positive funding may be profitable only because of the funding.</td></tr>
+    <tr><td><code>funding_mult</code></td><td class="rg">0 &ndash; 5</td><td>Scale the real 8-hourly rate.</td></tr>
+    <tr class="grp"><td colspan="3">The liquidation</td></tr>
+    <tr><td><code>margin_venue</code></td><td class="rg">10 venues</td><td>Whose published maintenance-margin rate decides where liquidation sits. Binance 0.40%, Bybit 0.50%, MEXC 0.10%, Kraken 0.60%, Hyperliquid 1.25%, Coinbase 1.33%. It moves <b>only</b> the liquidation price.</td></tr>
+    <tr><td><code>margin_tiers</code></td><td class="rg">off / on</td><td>Maintenance margin rises with notional the way a risk-limit ladder does, so a large position is liquidated <b>sooner</b>. The whole ladder is published in <code>GET /v2/realism</code>.</td></tr>
+    <tr><td><code>mmr_pct</code></td><td class="rg">0.05 &ndash; 10</td><td>Your own maintenance margin, beating <code>margin_venue</code> and our default.</td></tr>
+  </tbody></table></div>
+
+  <h3>What this does not model, stated rather than discovered</h3>
+  <p>A stop-loss, take-profit or liquidation fills <b>at its own level</b> and never pays the crossing cost: the server-side sweep runs over every account at once and cannot read a profile per pass. There is no order book with real depth behind the impact model &mdash; <code>impact_bps_per_100k</code> is a declared linear cost, not a simulated book. And the whole crossing cost on the exit is charged against the mark, which is one spread, not a bid and an ask you can quote separately. Everything else above is applied exactly as written.</p>
+  <p class="note">Every figure in this profile is readable back from <code>GET /api/bot/v2/sim</code>, including what a fill would look like right now &mdash; a number a bot cannot read back is a number it has to guess at. <code>GET /api/bot/v2/report</code> then tells you what execution actually cost: fees, funding, gross against net, and <code>kept_pct</code>, the share of the gross that survived. That one is free on every plan, because it is not a breakdown of where your edge is &mdash; it is whether the edge is real.</p>
+</section>
 <section id="fees">
   <h2>Fees as on the exchange you will actually use</h2>
   <p>By default every paper fill pays the MarginPad rate: 0.055% per side on crypto, both legs, charged as a round trip at close. That is a fair average, but it is nobody's exact bill. If you already know where the bot will run for real, <b>charge the paper account at that venue's schedule</b> - its published taker rate, less the referral discount a MarginPad sign-up gets there - so the forward test settles the way the live account will:</p>
@@ -1416,7 +1497,37 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     if(d&&d.error==='login_required'){mgr.hidden=true;btn.hidden=false;var _e3=document.getElementById('akbEmpty');if(_e3)_e3.hidden=false;return;}
     if(d&&d.keys){var live0=d.keys.filter(function(k){return !k.revoked;});if(live0.length===1&&!(live0[0].calls>0)&&!FULL[live0[0].k]){FULL[live0[0].k]=1;showNew(live0[0].k);} /* first visit: the store minted 'default' on this list call and it has never been used - show it in full once */ render(d);return;}
     msg.textContent='Could not load your keys - try again shortly.';}).catch(function(){msg.textContent='Network error - try again.';});}
-  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';}
+  function showNew(k){out.innerHTML='<div class="akb-show">'+esc(k)+'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>';out.classList.add('on');msg.textContent='';var gs=document.getElementById('akbGoSlot');if(gs&&gs.getAttribute('data-busy')!=='1'){gs.innerHTML=goHtml(k);wireGo(k);}}
+  /* MAKE THE FIRST CALL SUCCEED HERE, NOW. Two thirds of every key ever minted has never made a single
+     request - the gap is between holding a key and seeing something answer, not in the engine. So the
+     curl carries the key already, and the button makes the call from this page and prints the real body. */
+  function goHtml(k){return '<div class="akb-go" id="akbGo">'
+    +'<h3>Make your first call now</h3>'
+    +'<p>This is a real request against your real account. Run it here, or paste it into a terminal - it is the same call.</p>'
+    +'<pre><code>curl -s https://marginpad.io/api/bot/v2/account \\\n  -H "X-API-Key: '+esc(k)+'"</code></pre>'
+    +'<div class="agb"><button class="btn akb-sm" type="button" data-go="run">Run it</button>'
+    +'<button class="btn akb-sm" type="button" data-go="copy">Copy the curl</button></div>'
+    +'<div class="ago" id="akbOut" hidden></div><div class="agok" id="akbWin" hidden></div></div>';}
+  function wireGo(k){var box=document.getElementById('akbGo');if(!box||box._w)return;box._w=1;
+    box.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-go]');if(!b)return;
+      var act=b.getAttribute('data-go');
+      if(act==='copy'){try{navigator.clipboard.writeText('curl -s https://marginpad.io/api/bot/v2/account -H "X-API-Key: '+k+'"');b.textContent='copied';setTimeout(function(){b.textContent='Copy the curl';},1500);}catch(x){}return;}
+      /* EVERY WRITE LOOKS THE ELEMENT UP AGAIN. Holding `o` across the fetch is what let a repaint
+         (the key manager's first-visit auto-reveal, resolving late) swallow the answer: the body landed
+         in a detached node and the page showed a fresh, silent button. */
+      var slot=document.getElementById('akbGoSlot');
+      var at=function(id){return document.getElementById(id);};
+      var say=function(bodyTxt,winTxt,btnTxt){var o2=at('akbOut'),w2=at('akbWin'),b2=document.querySelector('#akbGo [data-go="run"]');
+        if(o2){o2.hidden=false;o2.textContent=bodyTxt;}
+        if(w2&&winTxt!=null){w2.hidden=false;w2.textContent=winTxt;}
+        if(b2){b2.disabled=false;b2.textContent=btnTxt;}
+        if(slot)slot.setAttribute('data-busy','0');};
+      if(slot)slot.setAttribute('data-busy','1');
+      b.disabled=true;b.textContent='Calling...';var o0=at('akbOut');if(o0){o0.hidden=false;o0.textContent='';}
+      fetch('/api/bot/v2/account',{headers:{'X-API-Key':k}}).then(function(r){return r.text().then(function(t){return {s:r.status,t:t};});}).then(function(d){
+        say(d.t,d.s===200?'That was your first API call. The same key works on every endpoint on this page.':'Status '+d.s+' - the body above says why. Every refusal here names what to do instead.','Run it again');
+      }).catch(function(){say('The request could not be made from this page. Copy the curl and run it in a terminal.',null,'Run it');});
+    });}
   var bookIn=document.getElementById('akbBook');
   frm.addEventListener('submit',function(e){e.preventDefault();var nm=(nameIn.value||'').trim()||'key';var bk=(bookIn&&bookIn.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,24);api({act:'create',name:nm,book:bk}).then(function(d){if(d&&d.key){FULL[d.key]=1;nameIn.value='';if(bookIn)bookIn.value='';showNew(d.key);render(d);return;}msg.textContent=d&&d.error==='max_keys'?'Key limit reached on this plan.':d&&d.error==='max_books'?('Book limit reached: '+(d.max===1?'free accounts get one book besides the main account, Premium five.':'revoke the keys of a book you no longer use.')):d&&d.error==='bad_book'?'"main" is the account itself - leave the book empty for it.':(d&&d.error==='login_required'?'Sign in first.':'Could not create a key - try again.');}).catch(function(){msg.textContent='Network error - try again.';});});
   tb.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var tr=b.closest('tr'),k=tr&&tr.getAttribute('data-k');if(!k)return;var act=b.getAttribute('data-act');
@@ -1426,7 +1537,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     if(act==='revoke'){if(!confirm('Revoke this key? Any bot using it stops working immediately.'))return;api({act:'revoke',key:k}).then(function(d){if(d&&d.keys)render(d);});}
   });
   btn.addEventListener('click',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()){load();return;}if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first - the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';});
-  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';FULL={};var _e2=document.getElementById('akbEmpty');if(_e2)_e2.hidden=false;}});
+  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())load();else{mgr.hidden=true;btn.hidden=false;out.classList.remove('on');out.innerHTML='';var _gs2=document.getElementById('akbGoSlot');if(_gs2)_gs2.innerHTML='';FULL={};var _e2=document.getElementById('akbEmpty');if(_e2)_e2.hidden=false;}});
   var n0=0,iv0=setInterval(function(){if(++n0>60){clearInterval(iv0);return;}if(!window.mpAuth||!window.mpAuth.me)return;clearInterval(iv0);if(window.mpAuth.me())load();},100); // mp-auth is deferred
 })();
 </script>

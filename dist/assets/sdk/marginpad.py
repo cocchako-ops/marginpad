@@ -21,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-__version__ = "2.9.1"
+__version__ = "3.0.0"
 __all__ = ["MarginPad", "MarginPadError", "verify_webhook"]
 
 
@@ -264,6 +264,42 @@ class MarginPad(object):
         if margin_venue is not None:
             body["margin_venue"] = margin_venue
         return self._post("/api/bot/v2/realism", **body)
+
+    # -- the whole simulation (3.0) ---------------------------------------------------------------------
+    SIM_PRESETS = ("frictionless", "realistic", "binance", "bybit", "okx", "hyperliquid",
+                   "thin_book", "brutal")
+
+    def sim(self, **fields):
+        """Read or set the WHOLE paper-trading simulation. realism() above is three switches of this one.
+
+        The defaults are deliberately easy - a market order fills whole at the live price, maintenance
+        margin is a flat 0.5%, the balance never refuses an open, and there is no latency, no size impact
+        and no partial fill. That is right for getting a bot RUNNING and optimistic for judging its edge.
+
+            c.sim()                               # your profile, every field with its range, the presets
+            c.sim(preset="realistic")             # the honest middle, in one call
+            c.sim(preset="bybit")                 # Bybit's published fee and maintenance margin
+            c.sim(preset="brutal")                # worse than anything real; surviving it means something
+            c.sim(start_balance_usd=2500, margin_enforced=True, slippage_bps=8, latency_ms=250)
+            c.sim(reset=True)                     # back to the defaults
+
+        The eighteen fields, in four groups:
+          the book       start_balance_usd, margin_enforced, leverage_max, max_notional_usd
+          the fill       slippage, slippage_bps, impact_bps_per_100k, exit_slippage, latency_ms,
+                         partial_fills, min_fill_pct, reject_rate_pct
+          the cost       taker_bps, funding, funding_mult
+          liquidation    margin_venue, margin_tiers, mmr_pct
+
+        Out-of-range values are REFUSED, never clamped, so a strategy is never measured under a setting
+        you did not choose. A position keeps the simulation it was filled under, for life.
+
+        To CLEAR one of the three nullable fields (slippage_bps, taker_bps, mmr_pct) back to "use the
+        table / the venue", pass an empty string - this client drops None from a body, so None would
+        simply leave the field alone:  c.sim(slippage_bps="")
+        """
+        if not fields:
+            return self._get("/api/bot/v2/sim")
+        return self._post("/api/bot/v2/sim", **fields)
 
     def webhooks(self):
         return self._get("/api/bot/v2/webhooks")
