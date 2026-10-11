@@ -43,7 +43,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
   const home = await text(ORIGIN + '/assets/home.js?cb=' + Date.now());
   const mm = home.body.match(/\/assets\/mp-mcharts\.js\?v=[a-f0-9]+/);
   const mmb = await text(ORIGIN + (mm ? mm[0] : '/assets/mp-mcharts.js'));
-  chk('mp-mcharts: lists the same six and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain \(adaptive AI\)'\],\['memory','Market Memory \(AI forecast\)'\],\['magnet','Liquidation Magnet'\],\['whaleliq','Whale Liquidations \(real\)'\],\['liqwall','Liquidation Wall \(measured \$\)'\]\]/.test(mmb.body) && /'MarginPad AI',\['casc','brain','memory','magnet','whaleliq','liqwall'\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
+  chk('mp-mcharts: lists the same six and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain \(adaptive AI\)'\],\['memory','Market Memory \(AI forecast\)'\],\['magnet','Liquidation Magnet'\],\['whaleliq','Big Liquidations \(24h\)'\],\['liqwall','Liquidation Wall \(measured \$\)'\]\]/.test(mmb.body) && /'MarginPad AI',\['casc','brain','memory','magnet','whaleliq','liqwall'\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
   const wk = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
   chk('worker: the Telegram brief edition carries the trading-report link', wk.indexOf('<a href="https://marginpad.io/trading-report/">Your trading report</a>') >= 0);
   const oi = await (await fetch(ORIGIN + '/api/cg/openinterest', { cache: 'no-store' })).json();
@@ -80,7 +80,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
         const sh = document.getElementById('indSheet'), p = sh.querySelector('.ish-p'); const r = p.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, Math.min(innerHeight - 10, r.top + 60));
         return { open: !sh.hidden, blocks: sh.querySelectorAll('.ish-i').length, reach: !!(hit && p.contains(hit)), names: [...sh.querySelectorAll('.ish-i h4')].map(h => h.firstChild.textContent.trim()), inView: r.top >= 0 && r.left >= 0 && r.right <= innerWidth + 1, scroll: document.documentElement.style.overflow, guide: !!sh.querySelector('a[href="/ai-indicators/"]') };
       });
-      chk(vp.t + ' guest: the sheet opens with six blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 6 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Whale Liquidations|Liquidation Wall|Liquidation Magnet|Market Brain|Market Memory', s);
+      chk(vp.t + ' guest: the sheet opens with six blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 6 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Big Liquidations (24h)|Liquidation Wall|Liquidation Magnet|Market Brain|Market Memory', s);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'premium-indsheet-' + vp.t + '.png') });
       await page.evaluate(() => { document.querySelector('#indSheet .ish-x').click(); });
       await new Promise(r => setTimeout(r, 200));

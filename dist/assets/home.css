@@ -3574,3 +3574,14 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 
 /* A 360px panel free to reach 94vw sat over most of a 2x2 tile. It belongs to its window. */
 .cwin-ai-panel{max-width:min(94vw,420px);}
+
+/* TWO COLUMNS WHERE THERE IS ROOM (2026-10-12). The menu was a 220px column holding 864px of rows inside a
+   360px box, so most of the list lived behind a scroll with empty screen beside it. 27 rows become 14.
+   Width-gated, so a narrow screen keeps the single column it needs. */
+@media (min-width:560px){
+  .cwin-ind-menu{width:392px;}
+  .cwin-ind-menu-list{display:grid;grid-template-columns:1fr 1fr;gap:2px 4px;align-content:start;}
+  .cwin-ind-menu-list>.cwin-ind-item{min-width:0;}
+  .cwin-ind-item .cwin-ind-it-lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cwin-ind-menu-h{grid-column:1/-1;}
+}
