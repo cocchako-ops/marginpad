@@ -359,7 +359,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       '<div class="c"><div class="k">Split</div><div class="v">'+lp.toFixed(0)+' / '+sp.toFixed(0)+'</div></div></div>'+
       '<div class="lq-read">'+read+'</div>'+links+ex;
     $('lqSheet').hidden=false; $('lqDim').hidden=false; document.documentElement.style.overflow='hidden';
-    try{ navigator.sendBeacon('/api/track?t=event&type=liqsheet&l='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
+    try{ navigator.sendBeacon('/api/track?t=liqsheet&e='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
   }
   function shClose(){ $('lqSheet').hidden=true; $('lqDim').hidden=true; document.documentElement.style.overflow=''; }
   document.addEventListener('click',function(e){
@@ -380,7 +380,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   load(); setInterval(load,60000);
   window.__lq={rows:rows,get:function(){return D;}};
 })();</script>
-<script defer src="/assets/mp-auth.js?v=b9c414a5"></script>
-<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+<script defer src="/assets/mp-auth.js?v=afb23de9"></script>
+<script defer src="/assets/mp-nav.js?v=8736be98"></script>
 </body>
 </html>

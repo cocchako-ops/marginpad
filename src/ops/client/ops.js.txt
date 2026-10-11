@@ -51,7 +51,7 @@
   var NAV = [
     { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
     { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support' }, { id: 'pmail', title: 'milan@' }, { id: 'chat', title: 'Trader chat' }, { id: 'mail', title: 'Email' }, { id: 'campaigns', title: 'Campaigns' }, { id: 'tgbot', title: 'Telegram bot' }] },
-    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards' }, { id: 'premium', title: 'Premium desk' }, { id: 'premfunnel', title: 'Premium page' }, { id: 'aiusage', title: 'AI usage' }, { id: 'revenue', title: 'Revenue' }, { id: 'affiliate', title: 'Affiliate' }, { id: 'bybit', title: 'Bybit UIDs' }, { id: 'rebate', title: 'Bybit rebate' }, { id: 'moon', title: 'King of the Moon' }, { id: 'shop', title: 'Shop' }] },
     { id: 'people', title: 'People', views: [{ id: 'squads', title: 'Squads' }, { id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
@@ -654,6 +654,38 @@
   // AI USAGE (2026-09-18, owner: "koji nalog i koliko trosi"). Every figure here is MEASURED - Anthropic returns
   // input/output tokens on each call and aiUsageLog records them. Test accounts are excluded by the endpoint, and
   // what they cost is shown apart rather than hidden, so the number the owner prices from is the real one.
+  /* WHAT HAPPENS ON /premium/ (2026-10-11, owner: "da mi izlaze tamo da vidim sta je ko kliknuo na toj stranici").
+     Every figure comes from the page's own beacons through Analytics Engine, which is where they are kept - the
+     activity ring is 24 hours and this is a monthly question. The page had ONE beacon before today and it recorded
+     nothing at all, so this view says out loud that there is no history behind it rather than drawing zeros. */
+  simple('money/premfunnel', { urls: ['/api/admin/premfunnel?days=30'], every: 120000, html: function (d) {
+    var pressed = (d.pressed_a_price || {}), rows = pressed.rows || [];
+    var guest = rows.filter(function (r) { return /guest/.test(r.who || '') || /:guest$/.test(r.what || ''); }).reduce(function (a, r) { return a + r.n; }, 0);
+    var paid = d.paid || null;
+    var tiles = tile(N(d.views || 0), 'views of /premium/', 'dim')
+      + tile(N(pressed.total || 0), 'pressed a price', pressed.total ? '' : 'dim', pressed.pct_of_views != null ? pressed.pct_of_views + '% of views' : '')
+      + tile(N(d.sign_in_opened || 0), 'opened the sign-in sheet', 'dim', 'from this page, any reason')
+      + tile(paid ? N(paid.n) : '-', 'paid', paid && paid.n ? 'ok' : 'dim', paid ? USD(paid.usd) : 'payment book unreadable');
+    var bar = function (label, n, tot, note) { var pct = tot ? Math.round(n / tot * 100) : 0;
+      return '<div class="row"><span class="who">' + esc(label) + '</span><span class="grow"><span class="bar" style="width:' + Math.max(2, pct) + '%"></span></span><span class="meta">' + N(n) + (note ? ' &middot; ' + esc(note) : ' &middot; ' + pct + '%') + '</span></div>'; };
+    var reached = (d.reached || []);
+    var reachedHtml = reached.length ? reached.map(function (r) { return bar(r.block, r.n, d.views || 0, (r.pct_of_views == null ? '' : r.pct_of_views + '% of views')); }).join('')
+      : '<div class="empty">nothing recorded yet - the beacons started on ' + esc(d.counting_since || '') + '</div>';
+    var pressHtml = rows.length ? '<table class="tbl"><thead><tr><th>what</th><th>who</th><th>presses</th></tr></thead><tbody>'
+      + rows.map(function (r) { return '<tr><td>' + esc(String(r.what).replace(/^buy:/, '').replace(/:guest$/, '')) + '</td><td>' + (/:guest$/.test(r.what) || r.who === 'guest' ? '<span class="badge amber">guest</span>' : '<span class="badge ok">member</span>') + '</td><td>' + N(r.n) + '</td></tr>'; }).join('')
+      + '</tbody></table>' : '<div class="empty">nobody has pressed a price in this window</div>';
+    var other = (d.other_clicks || []);
+    var otherHtml = other.length ? other.map(function (r) { return bar(r.what, r.n, pressed.total || r.n, ''); }).join('') : '<div class="empty">no other clicks recorded</div>';
+    var perDay = (d.per_day || []);
+    var dayHtml = perDay.length ? perDay.map(function (r) { return bar(r.day, r.clicks, Math.max.apply(null, perDay.map(function (x) { return x.clicks; })), r.clicks + ' clicks'); }).join('') : '<div class="empty">no days with a click yet</div>';
+    var warn = (d.ae && d.ae !== 'ok') ? '<div class="line red">' + esc(d.ae) + '</div>' : '';
+    var guestLine = pressed.total ? '<div class="line"><b>' + N(guest) + '</b> of ' + N(pressed.total) + ' presses came from somebody who was NOT signed in. That press is recorded before the sign-in sheet goes up, which is the moment most readers leave - it was invisible until 2026-10-11.</div>' : '';
+    return '<div class="grid g4">' + tiles + '</div>' + warn
+      + card('Which plan they pressed', pressHtml + guestLine, 'a press is intent, not a sale - the sale is the Premium desk')
+      + '<div class="grid g2">' + card('How far down they get', reachedHtml, 'one beacon per block per pageview') + card('Everything else they clicked', otherHtml, 'the indicators sheet, the extra AI reads') + '</div>'
+      + card('Clicks per day', dayHtml, 'last ' + (d.days || 30) + ' days')
+      + '<div class="line meta">' + esc(d.note || '') + '</div>';
+  } });
   simple('money/aiusage', { urls: ['/api/admin/aicost?days=30'], every: 120000, html: function (d) {
     var days = (d.days_list || d.byDay || []).length ? (d.days_list || d.byDay) : null;
     var series = (d.daily || d.byDay || []);

@@ -317,7 +317,7 @@ ${FAQ}
       '<div class="c"><div class="k">Split</div><div class="v">'+lp.toFixed(0)+' / '+sp.toFixed(0)+'</div></div></div>'+
       '<div class="lq-read">'+read+'</div>'+links+ex;
     $('lqSheet').hidden=false; $('lqDim').hidden=false; document.documentElement.style.overflow='hidden';
-    try{ navigator.sendBeacon('/api/track?t=event&type=liqsheet&l='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
+    try{ navigator.sendBeacon('/api/track?t=liqsheet&e='+encodeURIComponent(sym)+'&p=/liquidations/'); }catch(e){}
   }
   function shClose(){ $('lqSheet').hidden=true; $('lqDim').hidden=true; document.documentElement.style.overflow=''; }
   document.addEventListener('click',function(e){

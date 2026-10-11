@@ -36,7 +36,7 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       await page.setRequestInterception(true);
       page.on('request', (req) => {
         const u = req.url();
-        if (u.indexOf('/api/track?t=event&type=sect') >= 0) { beacons.push(decodeURIComponent((u.match(/[?&]l=([^&]*)/) || [])[1] || '')); }
+        if (u.indexOf('/api/track?t=sect') >= 0) { beacons.push(decodeURIComponent((u.match(/[?&]e=([^&]*)/) || [])[1] || '')); }
         if (u.indexOf(ORIGIN + '/api/') === 0) fetched.push(u.replace(ORIGIN, '').split('?')[0]);
         if (member) {
           if (u.indexOf('/api/auth/me') >= 0) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'e2e', username: 'e2ehome', xp: 4100, level: LV } }) });

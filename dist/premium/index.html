@@ -359,7 +359,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
       </article>
     </div>
     <p class="pnote">Captured from the live product, untouched; the cards are read out of the same answers. Individual reads, not a track record - Ask AI is a research tool and it will be wrong plenty of times. Nothing here is financial advice.</p>
-    <script>(function(){var b=document.getElementById("aiMore"),x=document.getElementById("aiMoreBox");if(!b||!x)return;b.addEventListener("click",function(){x.hidden=false;b.hidden=true;});})();</script>
+    <script>(function(){var b=document.getElementById("aiMore"),x=document.getElementById("aiMoreBox");if(!b||!x)return;b.addEventListener("click",function(){x.hidden=false;b.hidden=true;try{navigator.sendBeacon("/api/track?t=premview&e=reads%3Amore&p=/premium/");}catch(e){}});})();</script>
   </div>
   <div id="howto">
     <h3>How to use it, in three steps</h3>
@@ -410,9 +410,30 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
 <script>
   (function(){
     var msg = document.getElementById('pmsg');
+    /* HOW FAR DOWN ANYBODY GETS. Same shape as the homepage band beacons: once per block per pageview, at 30%
+       visibility OR when the block fills 60% of the screen - a section taller than the viewport can never reach
+       30% and would otherwise never be counted. */
+    try{
+      var _pvSeen={};
+      var _pvIo=new IntersectionObserver(function(es){es.forEach(function(x){
+        if(!x.isIntersecting)return;
+        if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;
+        var el=x.target,k=el.id||((el.querySelector('h1,h2,h3')||{}).textContent||'')||el.className||el.tagName;
+        k=String(k).replace(/\s+/g,' ').trim().slice(0,32);
+        if(!k||_pvSeen[k])return;_pvSeen[k]=1;
+        try{navigator.sendBeacon('/api/track?t=sect&e='+encodeURIComponent(k)+'&p=/premium/');}catch(e){}
+        _pvIo.unobserve(el);
+      });},{threshold:[.05,.15,.3]});
+      [].forEach.call(document.querySelectorAll('.hero,#stripshow,#plus,#whyplus,#aishow,#howto,section'),function(el){
+        if(el.offsetHeight>60)_pvIo.observe(el);
+      });
+    }catch(e){}
+
     function buy(plan, btn){
       var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me());
-      if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open(); else msg.textContent=__esT_premiumindex("pleaseSignInFirst",'Please sign in first.'); return; }
+      /* a GUEST pressing a price is the moment most readers leave, and it was invisible - record it first */
+      try{ navigator.sendBeacon('/api/track?t=premview&e=' + encodeURIComponent('buy:' + plan + (me ? '' : ':guest')) + '&p=/premium/'); }catch(e){}
+      if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open('buy'); /* the sheet speaks to the moment: a reader who just pressed a price must not be told an account is optional */ else msg.textContent=__esT_premiumindex("pleaseSignInFirst",'Please sign in first.'); return; }
       var label = btn && btn.textContent;
       if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Starting checkout...'; }
       if(plan==='balance'||plan==='extendbal'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent=__esT_premiumindex("premiumIsOnWelcome",'Premium is on - welcome');} msg.textContent=__esT_premiumindex("activeUntil",'Active until ')+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?(__esT_premiumindex("notEnoughBalanceYou",'Not enough balance - you have $')+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?__esT_premiumindex("youAreAlreadyPremium",'You are already Premium - thank you!'):__esT_premiumindex("couldNotActivatePlease",'Could not activate. Please try again.'); }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=__esT_premiumindex("networkErrorPleaseTry",'Network error - please try again.'); }); return; }
@@ -454,7 +475,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]',__esT_premiumindex("premiumIsActive",'Premium is active')); if(s.plus) lbl('[data-buy="plus"]',__esT_premiumindex("premiumPlusIsActive",'Premium Plus is active')); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); try{pmDecorate(s);}catch(e){} } var k=document.querySelector('section .sh .k'); if(k){ k.textContent=__esT_premiumindex("whatYouHave",'WHAT YOU HAVE'); k.nextElementSibling.textContent=__esT_premiumindex("everythingOnYourAccount",'Everything on your account'); } } }).catch(function(){});
     // the AI-indicators card opens the preview sheet
     var ish=document.getElementById('indSheet');
-    function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=event&type=indsheet&l=open&p=/premium/'); }catch(e){} }
+    function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=premview&e=indsheet&p=/premium/'); }catch(e){} }
     function ishClose(){ if(!ish) return; ish.hidden=true; document.documentElement.style.overflow=''; }
     document.addEventListener('click', function(e){ var c=e.target.closest&&e.target.closest('[data-ind-sheet]'); if(c){ e.preventDefault(); ishOpen(); return; } if(ish&&!ish.hidden&&(e.target===ish||(e.target.closest&&e.target.closest('.ish-x')))) ishClose(); });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') ishClose(); });
@@ -463,7 +484,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     showBal(); window.addEventListener('mp-auth-change', showBal);
   })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b9c414a5"></script>
-<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+<script defer src="/assets/mp-auth.js?v=afb23de9"></script>
+<script defer src="/assets/mp-nav.js?v=8736be98"></script>
 </body>
 </html>

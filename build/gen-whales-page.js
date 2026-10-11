@@ -837,7 +837,7 @@ ${ld}
     [].forEach.call(sh.querySelectorAll('.wl-fg'),function(g){g.hidden=g.getAttribute('data-for')!==v;});
     var t=document.getElementById('wlFiltT'); if(t)t.textContent=v==='trades'?'Filter trades':'Filter positions';
     sh.hidden=false; if(dim)dim.hidden=false; document.documentElement.style.overflow='hidden';
-    try{ navigator.sendBeacon('/api/track?t=event&type=whfilt&l='+v+'&p=/hyperliquid-whales/'); }catch(e){}
+    try{ navigator.sendBeacon('/api/track?t=whfilt&e='+v+'&p=/hyperliquid-whales/'); }catch(e){}
   }
   function fsClose(){
     FS.open=false;

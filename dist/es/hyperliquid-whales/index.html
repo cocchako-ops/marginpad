@@ -819,7 +819,7 @@
     [].forEach.call(sh.querySelectorAll('.wl-fg'),function(g){g.hidden=g.getAttribute('data-for')!==v;});
     var t=document.getElementById('wlFiltT'); if(t)t.textContent=v==='trades'?'Filter trades':'Filter positions';
     sh.hidden=false; if(dim)dim.hidden=false; document.documentElement.style.overflow='hidden';
-    try{ navigator.sendBeacon('/api/track?t=event&type=whfilt&l='+v+'&p=/hyperliquid-whales/'); }catch(e){}
+    try{ navigator.sendBeacon('/api/track?t=whfilt&e='+v+'&p=/hyperliquid-whales/'); }catch(e){}
   }
   function fsClose(){
     FS.open=false;
@@ -955,7 +955,7 @@
   (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=b9c414a5"></script>
-<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+<script defer src="/assets/mp-auth.js?v=afb23de9"></script>
+<script defer src="/assets/mp-nav.js?v=8736be98"></script>
 </body>
 </html>

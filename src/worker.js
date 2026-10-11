@@ -7700,7 +7700,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=158acc76" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=8736be98" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -17748,7 +17748,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'b9c414a5';
+const ASSET_V = 'afb23de9';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20312,7 +20312,7 @@ export default {
       const body = founder
         ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium - Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
         : { price_amount: PREM_USD(P.id), price_currency: 'usd', order_id: P.order + st.uid, order_description: 'MarginPad ' + P.name + ' - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
-      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $39.99' : '$11.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', P.name + ' $' + PREM_USD(P.id) + (st.premium ? ' (extending)' : ''), '/premium'); /* the label was the literal '$11.99/mo' whatever was being bought, so a $159 Plus checkout and a $11.99 one    read identically in the owner's feed and he could not tell which plan anybody had tried (2026-10-11) */ } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     // ---- API PLANS (2026-09-15, owner: "API cemo da odvojimo od premium plana") ---------------------------------
@@ -21043,6 +21043,48 @@ export default {
         }
         return new Response(JSON.stringify({ error: 'bad_kind' }), { status: 400, headers: jh });
       } catch (e) { return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh }); }
+    }
+    if (url.pathname === '/api/admin/premfunnel' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      /* WHAT HAPPENS ON THE PAGE THAT IS SUPPOSED TO MAKE MONEY (2026-10-11, owner: "da mi izlaze tamo da vidim
+         sta je ko kliknuo na toj stranici, kao i da ih cuvamo negde za analizu"). Every row here comes out of
+         Analytics Engine, which is where it is kept - the activity ring is 24 hours and this question is monthly.
+         Nothing is computed twice: the sections, the presses and the sign-ins are the beacons the page sends, and
+         the sales are the payment book. Counting starts the day the beacons were fixed - before 2026-10-11 every
+         one of them recorded the literal type "event" with an empty label, so there is NO history to show and
+         pretending otherwise would be the worst thing this view could do. */
+      const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30));
+      const IV = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
+      const num = (r, k) => { const v = r && r[k]; return v == null ? 0 : Math.round(+v) || 0; };
+      const q = async (sql) => { try { return (await aeQuery(env, sql)) || []; } catch (e) { return []; } };
+      const views = await q("SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob3='/premium/' AND " + IV);
+      const sect = await q("SELECT blob3 AS k, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='sect' AND blob5='/premium/' AND " + IV + " GROUP BY k ORDER BY n DESC LIMIT 20");
+      const acts = await q("SELECT blob3 AS k, blob7 AS who, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='premview' AND blob5='/premium/' AND " + IV + " GROUP BY k, who ORDER BY n DESC LIMIT 40");
+      const signin = await q("SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='signin' AND blob5='/premium/' AND " + IV);
+      const byDay = await q("SELECT toDate(timestamp) AS d, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='premview' AND blob5='/premium/' AND " + IV + " GROUP BY d ORDER BY d");
+      // what was actually bought in the same window, from the payment book rather than from a beacon
+      let paid = { n: 0, usd: 0 };
+      try {
+        const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/prempay/list?n=2000'));
+        const j = await r.json(); const since = Date.now() - days * 86400000;
+        for (const row of (j && j.rows) || []) { if (/^e2e/i.test(String(row.acct || '').replace(/^u:/, ''))) continue; if (+row.ts >= since) { paid.n++; paid.usd += (+row.cents || 0) / 100; } }
+        paid.usd = Math.round(paid.usd * 100) / 100;
+      } catch (e) { paid = null; }
+      const pressed = acts.filter(r => String(r.k || '').indexOf('buy:') === 0);
+      const pressTotal = pressed.reduce((a, r) => a + num(r, 'n'), 0);
+      const nViews = num(views[0], 'n');
+      const pct = (a, b) => (b > 0 ? Math.round(a / b * 1000) / 10 : null);
+      return J({
+        days, since: new Date(Date.now() - days * 86400000).toISOString().slice(0, 10),
+        counting_since: '2026-10-11', note: 'The beacons on this page recorded the literal type "event" with an empty label until 2026-10-11. Anything before that date is absent, not zero.',
+        views: nViews,
+        reached: sect.map(r => ({ block: r.k, n: num(r, 'n'), pct_of_views: pct(num(r, 'n'), nViews) })),
+        pressed_a_price: { total: pressTotal, pct_of_views: pct(pressTotal, nViews), rows: pressed.map(r => ({ what: r.k, who: r.who || '?', n: num(r, 'n') })) },
+        other_clicks: acts.filter(r => String(r.k || '').indexOf('buy:') !== 0).map(r => ({ what: r.k, who: r.who || '?', n: num(r, 'n') })),
+        sign_in_opened: num(signin[0], 'n'),
+        paid,
+        per_day: byDay.map(r => ({ day: String(r.d).slice(0, 10), clicks: num(r, 'n') })),
+        ae: env.CF_API_TOKEN ? 'ok' : 'NO CF_API_TOKEN - Analytics Engine cannot be read',
+      });
     }
     if (url.pathname === '/api/admin/premexpiry' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // WHO IS ABOUT TO LAPSE, and what they would be told. A DRY RUN BY DEFAULT - it sends nothing and is the only

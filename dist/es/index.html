@@ -1874,7 +1874,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     /* "reached" = 30% of the block on screen, OR the block filling 60% of the viewport: a band taller than 3.3 screens
        (band 01 on a phone since the competition card, 2026-09-17) can never show 30% of itself at once and would
        otherwise never be counted, however long the reader spent in it. */
-    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=event&type=sect&l='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:[.05,.15,.3]});
+    var io=new IntersectionObserver(function(en){en.forEach(function(x){if(!x.isIntersecting)return;if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;var el=x.target,k=el.id||(el.querySelector('h1,h2')||{}).textContent||el.className||el.tagName;k=String(k).replace(/\s+/g,' ').trim().slice(0,32);if(seen[k])return;seen[k]=1;try{navigator.sendBeacon('/api/track?t=sect&e='+encodeURIComponent(k)+'&p=/');}catch(e){}io.unobserve(el);});},{threshold:[.05,.15,.3]});
     els.forEach(function(el){io.observe(el);});
   })();
   /* Daily call: state comes whole from /api/predict; re-fetched on sign-in, after a call, and every 5 min. */
@@ -2263,8 +2263,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=7d2cfa1f"></script>
-<script defer src="/assets/mp-auth.js?v=b9c414a5"></script>
-<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+<script defer src="/assets/mp-auth.js?v=afb23de9"></script>
+<script defer src="/assets/mp-nav.js?v=8736be98"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
@@ -2424,6 +2424,6 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   run();
 })();
 </script>
-<script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=event&type=sect&l=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=event&type=nav&l=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
+<script>(function(){try{var T={AR:{h:"/dolar-cripto/",f:"https://flagcdn.com/w20/ar.png",t:"Estás en Argentina: mirá el <b>dólar cripto</b> en vivo, todas las casas comparadas →"},BR:{h:"/bitcoin-hoje/",f:"https://flagcdn.com/w20/br.png",t:"Você está no Brasil: veja o <b>Bitcoin hoje</b> em reais, ao vivo →"}};function show(cc){var d=T[cc];if(!d)return;var el=document.getElementById("geoTip");if(!el){el=document.createElement("a");el.id="geoTip";document.body.insertBefore(el,document.body.firstChild);}el.href=d.h;el.innerHTML="<span class=f><img src=\""+d.f+"\" alt=\"\" width=20 height=14 style=\"vertical-align:-2px;border-radius:2px\"></span>"+d.t;el.hidden=false;el.setAttribute("data-on","1");try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=sect&e=geotip-"+cc)}catch(e){}el.addEventListener("click",function(){try{navigator.sendBeacon&&navigator.sendBeacon("/api/track?t=nav&e=geotip-"+cc)}catch(e){}});}function read(){try{var v=JSON.parse(localStorage.getItem("mp_cc")||"null");if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5)return v.cc;}catch(e){}return null;}var cc=read();if(cc){show(cc);return;}fetch("/api/geo",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){if(!j||!j.cc)return;try{localStorage.setItem("mp_cc",JSON.stringify({cc:j.cc,ts:Date.now()}))}catch(e){}show(j.cc);}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>

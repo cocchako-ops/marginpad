@@ -254,7 +254,7 @@
       if(held>YR) lt+=pnl; else st+=pnl;
     });
     $('stg').value=Math.round(st); $('ltg').value=Math.round(lt);
-    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=event&type=tax_import&p=/crypto-tax-calculator/');}catch(_){}
+    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=tax_import&p=/crypto-tax-calculator/');}catch(_){}
     calc(); // calc() clears status, so set the import note AFTER it
     $('status').textContent='Imported '+closed.length+' closed trades (paper trades owe no real tax - this is an educational estimate). Short-term '+money(st)+', long-term '+money(lt)+'.';
   }
@@ -269,6 +269,6 @@
   syncFields(); calc();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=158acc76"></script>
+<script defer src="/assets/mp-nav.js?v=8736be98"></script>
 </body>
 </html>
