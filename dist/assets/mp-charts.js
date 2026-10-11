@@ -1041,6 +1041,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{_sess=sessionOf(bars);}catch(e){}
     var _avw=null;try{_avw=avwapOf(bars,_P||[],price);}catch(e){}
     /* broker-grade drawing data (2026-10-04) - all from the loaded candles */
+    var _reach=null;
+    try{var _rc=aiReachOf(w);
+      if(_rc)_reach={horizonBars:_rc.bars,
+        reachableUpPct:_rc.upPct,reachableDownPct:_rc.downPct,
+        entryBandHigh:_p6(price*(1+_rc.up)),entryBandLow:_p6(price*(1-_rc.down)),
+        measuredOverWindows:_rc.windows,
+        note:'MEASURED from these candles: half the time, within '+_rc.bars+' candles, this market gets at least '+_rc.upPct+'% above and '+_rc.downPct+'% below where it is. An `entry` outside entryBandLow..entryBandHigh is a level price will probably never come back to, and the chart will REFUSE to draw it as a trade - it shows the reader NO POSITION NOW instead. Put the entry inside the band, or say plainly that there is no position right now and give the chart read.'};
+    }catch(e){}
     var _ob=null,_harm=null,_vpvr=null;
     try{_ob=obOf(bars,price);}catch(e){}
     try{_harm=harmOf(_P||[]);}catch(e){}
@@ -1065,7 +1073,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       /* computed above - all from these same candles, nothing fetched (2026-09-18) */
       volume:_vol, volatility:_vr, anchoredVwap:_avw,
       higherTimeframes:_htfs&&_htfs.length>1?{frames:_htfs,note:__esT_mpcharts("theTwoFramesAbove",'the two frames above the one in view, from the same candles. Read all three together: the frame in view is the entry, the next one says whether the move has room, the highest says which way the whole thing leans. When they disagree, say so and let it lower your confidence.')}:null, fairValueGaps:_fvg, setups:_setups, session:_sess,
-      orderBlocks:_ob, harmonicPattern:_harm, volumeProfile:_vpvr
+      orderBlocks:_ob, harmonicPattern:_harm, volumeProfile:_vpvr,
+      /* WHAT PRICE CAN ACTUALLY REACH (2026-10-11). Measured from these same candles - no fetch - and handed over
+         so the model never has to guess how far is too far. The chart enforces the same number afterwards, but a
+         rule the model can read is worth more than a refusal it never sees: this is the one block that decides
+         whether the entry it names is a level the reader will ever be filled at. */
+      reach:_reach
     };
   }
   function aiResetIn(){var d=new Date(),ms=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1)-d.getTime();var h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?(__esT_mpcharts("resetsIn",'resets in ')+h+'h'):(__esT_mpcharts("resetsIn",'resets in ')+Math.max(1,m)+'m');}
@@ -1120,6 +1133,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(b !== 'long' && b !== 'short') return false;
     var rr = aiRR(plan);
     if(rr != null && rr < AI_MIN_RR) return false;
+    /* 3. AN ENTRY PRICE NEVER REACHES IS NOT A TRADE (2026-10-11). The prompt's own rule - "an entry is a price
+       worth WAITING for, not the price right now" - is right and had no ceiling, so the model walked the level as
+       far from the market as it liked and 30 of 30 calls in a month expired untouched. `aiReachMiss` is the
+       ceiling, measured off this market's own candles. The levels still draw and the read still stands; it simply
+       stops being dressed as a trade, which is what the owner asked for: "nema pozicije sad ali evo ti analiza
+       charta". */
+    if(aiReachMiss(plan)) return false;
     return true;
   }
   function aiWhyNotTradable(plan){
@@ -1131,13 +1151,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function aiRR(plan){var e=+plan.entry,st=+plan.stop,t=(plan.targets||[]).map(Number).filter(function(x){return x>0;})[0];if(!(e>0&&st>0&&t>0))return null;var risk=Math.abs(e-st),rew=Math.abs(t-e);return risk>0?+(rew/risk).toFixed(2):null;}
   function aiPlanCard(plan,price){if(!plan)return '';var bias=String(plan.bias||'').toLowerCase(),isW=!aiTradable(plan),_rrLow=aiWhyNotTradable(plan);
+    /* NO POSITION RIGHT NOW is a different answer from WAIT, and the owner asked for it by name. WAIT means a level
+       is coming; out of reach means it is not, and calling that "waiting for" is the thing he kept meeting. */
+    var _far=aiReachMiss(plan),_noPos=!!_far;
     var pct=function(v){v=+v;if(!(v>0&&price>0))return '';var d=(v-price)/price*100;return '<i>'+(d>=0?'+':'')+d.toFixed(2)+'%</i>';};
     var row=function(k,v,cls){v=+v;if(!(v>0))return '';return '<button type="button" class="aipr '+(cls||'')+'" data-px="'+v+'"><span>'+k+'</span><b>'+cwFmt(v)+'</b>'+pct(v)+'</button>';};
     var rr=aiRR(plan),conf=(+plan.confidence>0)?Math.min(100,Math.round(+plan.confidence)):null;
-    var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(isW?'WAIT':bias.toUpperCase())+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
+    var h='<div class="aiplan-card" data-bias="'+(isW?'wait':bias)+'"><div class="aipc-h"><span class="aipc-b '+(isW?'w':bias)+'">'+(_noPos?__esT_mpcharts("noPositionNow",'NO POSITION NOW'):(isW?'WAIT':bias.toUpperCase()))+'</span>'+(conf!=null?'<span class="aipc-c" title="How sure the coach is">'+conf+'%</span>':'')+(rr!=null?'<span class="aipc-rr" title="Reward for every 1 of risk">R:R '+rr+'</span>':'')+(plan.leverage?'<span class="aipc-lv">max '+Math.round(+plan.leverage)+'x</span>':'')+'</div>';
     var _tgL=0,_tgR='';(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tgL&&Math.abs(t-_tgL)/_tgL<0.004)return;_tgL=t;_tgR+=row('Target '+(i+1),t,'t');});/* same 0.4% dedup as aiDrawPlan so a card row exists for every drawn target line and no more */
-    var _rows=row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+_tgR;if(_rows){if(!isW)h+='<div class="aipc-rows">'+_rows+'</div>';else h+='<div class="aipc-wait">'+(_rrLow?__esT_mpcharts("notWorthTakingAt",'not worth taking at R:R ')+_rrLow+__esT_mpcharts("theLevelsForWatching",' - the levels, for watching'):__esT_mpcharts("waitingForNotA",'waiting for - not a trade yet'))+'</div><div class="aipc-rows w">'+_rows+'</div>';}
+    var _rows=row('Entry',plan.entry,'e')+row('Stop',plan.stop,'s')+_tgR;if(_rows){if(!isW)h+='<div class="aipc-rows">'+_rows+'</div>';else h+='<div class="aipc-wait">'+(_noPos?__esT_mpcharts("outOfReachTheLevels",'out of reach right now - the levels, for watching'):(_rrLow?__esT_mpcharts("notWorthTakingAt",'not worth taking at R:R ')+_rrLow+__esT_mpcharts("theLevelsForWatching",' - the levels, for watching'):__esT_mpcharts("waitingForNotA",'waiting for - not a trade yet')))+'</div><div class="aipc-rows w">'+_rows+'</div>';}
     var lv=(plan.levels||[]).filter(function(l){return l&&+l.price>0;});if(lv.length)h+='<div class="aipc-lv-rows">'+lv.slice(0,4).map(function(l){return '<button type="button" class="aipr l'+(l.kind==='liquidity'?' lq':'')+'" data-px="'+(+l.price)+'"><span>'+escHtml(String(l.label||l.kind||'level').slice(0,18))+'</span><b>'+cwFmt(+l.price)+'</b>'+pct(l.price)+'</button>';}).join('')+'</div>';
+    /* The measurement, in the reader's words: how far the entry is, against how far this market actually goes. */
+    if(_far)h+='<div class="aipc-inv aipc-rr"><span>'+__esT_mpcharts("outOfReach",'Out of reach')+'</span>'
+      +__esT_mpcharts("thatEntryIs",'That entry is ')+_far.distPct+__esT_mpcharts("pctAwayFromThePrice",'% away. Over the next ')+_far.bars
+      +__esT_mpcharts("candlesThisMarketGets",' candles this market gets about ')+_far.reachPct
+      +__esT_mpcharts("pctFromWhereItIs",'% from where it is, half the time - so the level is unlikely to come to you. No position right now; the read and the levels below stand.')+'</div>';
     if(_rrLow!=='')h+=__esT_mpcharts("notWorthItThe",'<div class="aipc-inv aipc-rr"><span>Not worth it</span>The first target pays ')+_rrLow+__esT_mpcharts("xTheRiskUnder",'x the risk - under the 1.5x this assistant will call a trade, so the levels are marked to watch, not to take.</div>');
     if(plan.invalidation)h+=__esT_mpcharts("wrongIf",'<div class="aipc-inv"><span>Wrong if</span>')+escHtml(String(plan.invalidation).slice(0,140))+'</div>';
     if(plan.manage)h+=__esT_mpcharts("yourPosition",'<div class="aipc-inv"><span>Your position</span>')+escHtml(String(plan.manage).slice(0,160))+'</div>';
@@ -1355,6 +1383,55 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(k<=travel[0].k)return travel[0].med*Math.sqrt(k/travel[0].k);
     for(var i=1;i<travel.length;i++){if(travel[i].k>=k){var a=travel[i-1],b=travel[i],f=(b.k>a.k)?(k-a.k)/(b.k-a.k):0;return a.med+(b.med-a.med)*f;}}
     var l=travel[travel.length-1];return l.med*Math.sqrt(k/l.k);}
+  /* HOW FAR PRICE ACTUALLY GETS AWAY FROM WHERE IT IS, inside k candles (2026-10-11, owner: "dosta puta ... da mi
+     neki entry ako cena padne na nivo gde ... je nemoguce da se desi, jednostavno cena je prosla taj entry nivo").
+     MEASURED over 30 days of real reads: 30 of 30 directional calls expired with price never ONCE touching the
+     entry, and each had a full seven days to do it - so the level the reader was told to wait for was, every single
+     time, a level that never came.
+     This is the EXCURSION, not the net displacement `travelOf` measures. A level is reached when price TOUCHES it,
+     and a market that ends a window exactly where it started may have crossed that level twice on the way; net
+     displacement would call such a market unreachable and it is the one statistic that cannot answer this question.
+     Median, so the plain reading is "half the time, within k candles, this market gets at least this far" - and it
+     is returned per SIDE, because a market in a downtrend does not reach as far up as it reaches down. */
+  function excursionOf(bars,px,k){
+    var n=bars.length,up=[],dn=[],i,j;
+    if(!(px>0)||!(k>0)||n<k+12)return null;
+    for(i=0;i+k<n;i++){var c=+bars[i].close;if(!(c>0))continue;
+      var hi=c,lo=c;
+      for(j=i+1;j<=i+k;j++){var b=bars[j];if(!b)continue;var h=+b.high,l=+b.low;if(h>hi)hi=h;if(l<lo)lo=l;}
+      up.push((hi-c)/px);dn.push((c-lo)/px);}
+    if(up.length<12)return null;
+    var med=function(a){a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length*0.5)]||0;};
+    return {up:med(up),down:med(dn),bars:k,n:up.length};
+  }
+  /* One reading per window, cached against the candles it was measured on. 18 candles is the forecast horizon the
+     drawing engine already uses, so the entry a plan names and the run the chart draws are judged over the same
+     stretch of future. */
+  function aiReachOf(w){
+    if(!w||!w.bars||w.bars.length<40)return null;
+    var px=+w.bars[w.bars.length-1].close;if(!(px>0))return null;
+    var key=(w.sym||'')+'|'+(w.tf||'')+'|'+w.bars.length;
+    if(w._reachC&&w._reachC.key===key)return w._reachC.v;
+    var e=null;try{e=excursionOf(w.bars,px,18);}catch(err){}
+    var v=e?{price:px,bars:e.bars,up:e.up,down:e.down,
+      upPct:+(e.up*100).toFixed(3),downPct:+(e.down*100).toFixed(3),windows:e.n}:null;
+    w._reachC={key:key,v:v};return v;
+  }
+  /* `_reach` is stamped non-enumerable: the plan object is JSON.stringify-ed into the On chart / Trade it / Alert me
+     buttons and into the saved thread, and a measurement the model never produced has no business travelling there. */
+  function aiStampReach(w,plan){if(!plan)return plan;var r=aiReachOf(w);if(!r)return plan;
+    try{Object.defineProperty(plan,'_reach',{value:r,enumerable:false,configurable:true,writable:true});}catch(e){try{plan._reach=r;}catch(e2){}}
+    return plan;}
+  /* The entry is out of reach when it sits further from price than this market gets, on that side, in the horizon.
+     Returns the numbers so the card can SAY it rather than just refuse. */
+  function aiReachMiss(plan){
+    if(!plan)return null;
+    var r=plan&&plan._reach,e=+plan.entry;if(!r||!(e>0))return null;
+    var p=+r.price;if(!(p>0))return null;
+    var above=e>p,d=Math.abs(e-p)/p,max=above?+r.up:+r.down;
+    if(!(max>0)||d<=max)return null;
+    return {distPct:+(d*100).toFixed(2),reachPct:+(max*100).toFixed(2),bars:r.bars,side:above?'above':'below'};
+  }
   function rhythmOf(bars,piv,px){var legB=[],legA=[],i;
     for(i=1;i<piv.length;i++){var db=Math.abs(piv[i].barsAgo-piv[i-1].barsAgo),dp=Math.abs(piv[i].price-piv[i-1].price);if(db>0){legB.push(db);legA.push(dp);}}
     var med=function(a){if(!a.length)return 0;a=a.slice().sort(function(x,y){return x-y;});return a[Math.floor(a.length/2)];};
@@ -1522,7 +1599,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(cleared)out.push('Cleared '+cleared+' earlier AI drawing'+(cleared===1?'':'s'));
       if(drawn){out.push('Drew '+drawn+' shape'+(drawn===1?'':'s'));try{if(window.__mpTrack)window.__mpTrack('draw',(w.sym||'')+' (ai)');}catch(e){}}
       return out;});}
-  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;h+=aiPlanCard(m.plan,_pr);}
+  function aiAiInner(m){var h='<div class="aitxt">'+mdLite(m.text)+'</div>';if(m.plan){var _pr=(aiW&&aiW.bars&&aiW.bars.length)?+aiW.bars[aiW.bars.length-1].close:0;if(aiW)aiStampReach(aiW,m.plan);h+=aiPlanCard(m.plan,_pr);}
     if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+escHtml(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';
     h+='<button class="aicopy" type="button" title="Copy">'+COPY_SVG+'</button>';return h;}
   function aiBubble(m){return m.role==='user'?('<div class="aimsg user">'+escHtml(m.text)+'</div>'):('<div class="aimsg ai">'+aiAiInner(m)+'</div>');}
@@ -1536,7 +1613,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      its `levels` list and its risk/reward rectangles would land on top of the same prices the drawing already marks, and two sets
      of lines on one price is exactly the clutter the owner called out (2026-09-17). */
   function aiDrawPlan(w,plan,drew){
-    if(!w||!w.candle||!plan)return;aiClearPlan(w);w._aiPlan=[];var noZones=drew;
+    if(!w||!w.candle||!plan)return;aiStampReach(w,plan);aiClearPlan(w);w._aiPlan=[];var noZones=drew;
     /* The line carries a SHORT tag on the axis (E / SL / TP1), coloured to match the legend swatch; the legend box carries
        the full number + distance + R:R. Owner 2026-10-04: a bare line with no tag read as "we drew nothing", and a grey
        wait-line did not match the coloured legend swatch. So: ALWAYS the semantic colours (cyan entry, red stop, green
@@ -2387,7 +2464,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
-  try{window.__mpAiContext=aiContext;window.__mpAi={ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,geom:aiGeom,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote,setSym:setWinSym,setTf:setWinTf};}catch(e){} // setSym/setTf are debug hooks for the offline vision harness (2026-10-04), same surface as the rest // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
+  try{window.__mpAiContext=aiContext;window.__mpAi={stampReach:aiStampReach,reachOf:aiReachOf,reachMiss:aiReachMiss,ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,geom:aiGeom,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote,setSym:setWinSym,setTf:setWinTf};}catch(e){} // setSym/setTf are debug hooks for the offline vision harness (2026-10-04), same surface as the rest // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}

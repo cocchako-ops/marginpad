@@ -505,6 +505,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function pl(price,color,title,style,width){price=+price;if(!(price>0))return;try{p._aiPlan.push(p.candle.createPriceLine({price:price,color:color,lineWidth:width||1,lineStyle:style==null?2:style,axisLabelVisible:true,title:title||''}));}catch(e){}} /* short coloured axis tag (E/SL/TP) back + the legend box (2026-10-04 owner: bare lines read as "nothing drawn") */
     /* short tags on the axis; the shared legend box (drawn by the engine on p.w) carries the full numbers - declutter 2026-10-04 */
     /* entry solid for a live trade, dashed for a wait - and targets deduped within 0.4% - EXACTLY as the shared card swatch shows, so the legend reads as the lines (owner 2026-10-05) */
+    try{if(window.__mpAi&&window.__mpAi.stampReach&&p)window.__mpAi.stampReach(p,plan);}catch(e){}/* the reach measurement rides on the plan, so tradable() answers the same here as on the desktop */
     var _tr=!(window.__mpAi&&window.__mpAi.tradable)||window.__mpAi.tradable(plan),_es=_tr?2:3;
     if(plan.entry)pl(plan.entry,'#3fd8e6','E',_tr?0:3,2);if(plan.stop)pl(plan.stop,'#ff5a4d','SL',_es,2);var _tL=0;(plan.targets||[]).forEach(function(t,i){t=+t;if(!(t>0))return;if(_tL&&Math.abs(t-_tL)/_tL<0.004)return;_tL=t;pl(t,'#2ebd85','TP'+(i+1),_es,1);});(plan.levels||[]).forEach(function(l){if(l)pl(l.price,l.kind==='liquidity'?'#ffb020':'#8a93a0',String(l.label||'').slice(0,12),3,1);});
     try{if(p.w){p.w._aiPlanObj=plan;if(p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}}catch(e){} /* the shared legend + the position-guard both read p.w._aiPlanObj */}
@@ -886,7 +887,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function save(arr,noPush,k){if(AI)AI.histSave(k||WK,arr,noPush);}
     function px(){return (p.bars&&p.bars.length)?+p.bars[p.bars.length-1].close:0;}
     function tradeUrl(plan){return '/paper-trade?coin='+encodeURIComponent(p.sym)+'&side='+(plan.bias==='short'?'short':'long')+(plan.stop>0?'&sl='+encodeURIComponent(+plan.stop):'')+((plan.targets||[])[0]>0?'&tp='+encodeURIComponent(+plan.targets[0]):'')+(plan.leverage>0?'&lev='+Math.round(+plan.leverage):'');}
-    function aiHtml(m){var h=AI?AI.mdLite(m.text):esc(m.text);if(m.plan&&AI)h+=AI.planCard(m.plan,px());
+    function aiHtml(m){var h=AI?AI.mdLite(m.text):esc(m.text);if(m.plan&&AI){try{if(AI.stampReach&&p)AI.stampReach(p,m.plan);}catch(e){}h+=AI.planCard(m.plan,px());}
       if(m.acts&&m.acts.length)h+='<div class="aiacts">'+m.acts.map(function(a){return '<span>'+esc(a)+'</span>';}).join('')+((m.b&&m.acts.some(function(a){return /^Drew /.test(a);}))?'<button type="button" class="aiundo" data-b="'+m.b+'">Undo drawings</button>':'')+'</div>';return h;}
     function row(m){return m.role==='user'?('<div class="mfc-ai-msg me">'+esc(m.text)+'</div>'):('<div class="mfc-ai-msg ai">'+aiHtml(m)+'</div>');}
     function fixTrade(){/* Trade it on a phone = the terminal, prefilled through the URL the terminal already understands */Array.prototype.forEach.call(msgs.querySelectorAll('button.aipc-trade'),function(tb){try{var pl=JSON.parse(tb.getAttribute('data-plan')||'{}');var a=document.createElement('a');a.className='aipc-trade';a.href=tradeUrl(pl);a.textContent=tb.textContent||__esT_mpmcharts("tradeIt",'Trade it');tb.parentNode.replaceChild(a,tb);}catch(e){}});}

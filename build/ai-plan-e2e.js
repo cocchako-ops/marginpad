@@ -35,7 +35,10 @@ console.log('\nPURE - the one rule, run out of the shipped bundle');
   const mRr = src.match(/var AI_MIN_RR *= *([0-9.]+)/);
   ok(!!mRr, 'the bundle declares a reward-to-risk floor');
   const AI_MIN_RR = mRr ? +mRr[1] : 1.5;
-  eval(grab('aiRR')); eval(grab('aiTradable')); eval(grab('aiWhyNotTradable'));
+  /* aiTradable gained a THIRD rule on 2026-10-11 - an entry outside the measured reach is not a trade - so its
+     helper has to be lifted with it. The plans below carry no `_reach`, which is exactly the no-measurement case
+     ai-reach-e2e pins: they must still be judged on the reward-to-risk rule alone. */
+  eval(grab('aiRR')); eval(grab('aiReachMiss')); eval(grab('aiTradable')); eval(grab('aiWhyNotTradable'));
 
   const long = (e, st, t) => ({ bias: 'long', entry: e, stop: st, targets: [t] });
   ok(aiTradable(long(100, 98, 104)) === true, 'a long paying 2.0x the risk is a trade', aiRR(long(100, 98, 104)));
@@ -62,7 +65,10 @@ withBrowser(async (browser) => {
     const A = window.__mpAi, w = window.__mpWinsDbg && window.__mpWinsDbg[0];
     if (!A || !w) return { err: 'not ready' };
     const px = +w.bars[w.bars.length - 1].close;
-    const scale = (v) => v == null ? v : +(px * v).toFixed(2);
+    const _r = (A.reachOf && A.reachOf(w)) || { up: 0.01, down: 0.01 };
+    const band = Math.min(+_r.up || 0.01, +_r.down || 0.01);
+    /* v is in BANDS away from price: -0.4 means four tenths of the way to the edge of what this market reaches. */
+    const scale = (v) => v == null ? v : +(px * (1 + v * band)).toFixed(6);
     const P = { bias: p.bias, confidence: 60, entry: scale(p.e), stop: scale(p.s), targets: (p.t || []).map(scale), levels: [{ price: scale(p.e), label: 'watch', kind: 'support' }] };
     try { A.clearAi && A.clearAi(w); } catch (e) {}
     try { if (w._aiPlan) { w._aiPlan.forEach(l => { try { w.candle.removePriceLine(l); } catch (e) {} }); w._aiPlan = []; } } catch (e) {}
@@ -76,14 +82,15 @@ withBrowser(async (browser) => {
     return { lines, rects, card: String(card).replace(/\s+/g, ' '), added: (w.dr.shapes || []).length - before };
   }, plan);
 
-  const sound = await run({ bias: 'long', e: 0.99, s: 0.975, t: [1.02, 1.04] });
+  const sound = await run({ bias: 'long', e: -0.4, s: -1.0, t: [0.8, 1.4] });
   if (sound.err) ok(false, 'live: ' + sound.err);
   else {
     ok(sound.lines >= 3, 'a sound long draws its entry, stop and targets (' + sound.lines + ' lines)', sound);
     ok(/ENTRY|Entry/.test(sound.card), 'and the card shows the entry row');
+    ok(!/NO POSITION NOW|aipc-wait/.test(sound.card), 'and it is dressed as a trade, not as a wait - the fixture really is sound', { card: sound.card.slice(0, 160) });
   }
 
-  const waitPlan = await run({ bias: 'wait', e: 0.99, s: 0.975, t: [1.02, 1.04] });
+  const waitPlan = await run({ bias: 'wait', e: -0.4, s: -1.0, t: [0.8, 1.4] });
   if (!waitPlan.err) {
     // 2026-09-19: a wait plan used to hide its levels, which left "wait for a pullback" with nothing to wait
     // FOR. It shows the trigger now - but it has to be unmistakably not-a-trade, and THAT is what is load-bearing
@@ -95,7 +102,7 @@ withBrowser(async (browser) => {
     ok(/WAIT/.test(waitPlan.card), 'the card says WAIT');
   }
 
-  const poor = await run({ bias: 'long', e: 1.0, s: 0.98, t: [1.016] });
+  const poor = await run({ bias: 'long', e: 0, s: -0.8, t: [0.64] });
   if (!poor.err) {
     ok(/WAIT/.test(poor.card), 'a long paying under 1.5x is presented as a WAIT, not a trade with a warning', { card: poor.card.slice(0, 140) });
     ok(/Not worth it/.test(poor.card), 'and the card says WHY, with the ratio');
