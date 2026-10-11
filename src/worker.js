@@ -21238,7 +21238,7 @@ export default {
     }
     if (url.pathname === '/api/admin/rewardkinds' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // credits by type over N days (2026-09-27)
       const days = Math.min(365, Math.max(1, +url.searchParams.get('days') || 7));
-      let r = null; try { r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/kinds', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: Date.now() - days * 86400000, type: url.searchParams.get('type') || '', rows: url.searchParams.get('rows') === '1' }) })).then(x => x.json()); } catch (e) {}
+      let r = null; try { r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/kinds', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: +url.searchParams.get('from') || (Date.now() - days * 86400000), to: +url.searchParams.get('to') || Date.now(), type: url.searchParams.get('type') || '', rows: url.searchParams.get('rows') === '1', e2e: url.searchParams.get('e2e') === '1' }) })).then(x => x.json()); } catch (e) {}
       if (r && Array.isArray(r.list) && r.list.length) { // names beside the accounts, so "who got paid" needs no second lookup
         try { const prof = await resolveProfiles(env, r.list.map(x => x.acct)); r.list = r.list.map(x => ({ ...x, username: (prof[String(x.acct).replace(/^u:/, '')] || {}).username || '' })); } catch (e) {}
       }
@@ -25637,15 +25637,20 @@ export class RewardLedger {
     }
     if (path === '/kinds') { // WHERE THE MONEY GOES (2026-09-27, owner: "which maths halves rewards without touching the boards"): credits by type over a window
       const from = +body.from || (Date.now() - 7 * 86400000), to = +body.to || Date.now();
+      /* A THROWAWAY ACCOUNT IS NOT A COST (2026-10-11). Every E2E in build/ mints an e2e-prefixed account and
+         some of them credit it real cents to exercise a buy path - 66 apiplan-e2e rows at $45 made `gift`
+         read $2,983 over 35 days when the real figure was $374. The default read is REAL money; `e2e:true`
+         shows the other, exactly as the activity ring and the API error counters do. */
+      const EX = body.e2e ? '' : " AND acct NOT LIKE 'u:e2e%'";
       let rows = [], days = [];
-      try { rows = this.rows('SELECT type, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0 GROUP BY type ORDER BY c DESC', from, to); } catch (e) { return this.j({ error: 'unavailable' }); }
-      try { days = this.rows("SELECT date(ts/1000,'unixepoch') d, type, SUM(amount) c FROM acctlog WHERE ts>=? AND ts<? AND amount>0 GROUP BY d, type ORDER BY d", from, to); } catch (e) {}
+      try { rows = this.rows('SELECT type, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0' + EX + ' GROUP BY type ORDER BY c DESC', from, to); } catch (e) { return this.j({ error: 'unavailable' }); }
+      try { days = this.rows("SELECT date(ts/1000,'unixepoch') d, type, SUM(amount) c FROM acctlog WHERE ts>=? AND ts<? AND amount>0" + EX + " GROUP BY d, type ORDER BY d", from, to); } catch (e) {}
       let details = [];
-      if (body.type) { try { details = this.rows('SELECT detail, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY detail ORDER BY c DESC LIMIT 40', from, to, String(body.type)).map(r => ({ detail: String(r.detail || '').slice(0, 120), n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })); } catch (e) {} }
+      if (body.type) { try { details = this.rows('SELECT detail, COUNT(*) n, SUM(amount) c, COUNT(DISTINCT acct) accts FROM acctlog WHERE ts>=? AND ts<? AND amount>0' + EX + ' AND type=? GROUP BY detail ORDER BY c DESC LIMIT 40', from, to, String(body.type)).map(r => ({ detail: String(r.detail || '').slice(0, 120), n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })); } catch (e) {} }
       let hist = [];
-      if (body.type) { try { hist = this.rows("SELECT n, COUNT(*) k FROM (SELECT acct, date(ts/1000,'unixepoch') d, COUNT(*) n FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? GROUP BY acct, d) GROUP BY n ORDER BY n", from, to, String(body.type)).map(r => ({ per_account_day: +r.n, account_days: +r.k })); } catch (e) {} } // how many credits of this type an account collects in a day
+      if (body.type) { try { hist = this.rows("SELECT n, COUNT(*) k FROM (SELECT acct, date(ts/1000,'unixepoch') d, COUNT(*) n FROM acctlog WHERE ts>=? AND ts<? AND amount>0" + EX + " AND type=? GROUP BY acct, d) GROUP BY n ORDER BY n", from, to, String(body.type)).map(r => ({ per_account_day: +r.n, account_days: +r.k })); } catch (e) {} } // how many credits of this type an account collects in a day
       let list = [];
-      if (body.type && body.rows) { try { list = this.rows('SELECT ts, acct, detail, amount FROM acctlog WHERE ts>=? AND ts<? AND amount>0 AND type=? ORDER BY ts DESC LIMIT 400', from, to, String(body.type)).map(r => ({ ts: +r.ts, acct: String(r.acct || ''), detail: String(r.detail || '').slice(0, 120), usd: Math.round(+r.amount) / 100 })); } catch (e) {} } // the individual credits, for "who got paid"
+      if (body.type && body.rows) { try { list = this.rows('SELECT ts, acct, detail, amount FROM acctlog WHERE ts>=? AND ts<? AND amount>0' + EX + ' AND type=? ORDER BY ts DESC LIMIT 400', from, to, String(body.type)).map(r => ({ ts: +r.ts, acct: String(r.acct || ''), detail: String(r.detail || '').slice(0, 120), usd: Math.round(+r.amount) / 100 })); } catch (e) {} } // the individual credits, for "who got paid"
       return this.j({ from, to, kinds: rows.map(r => ({ type: r.type, n: +r.n, usd: Math.round(+r.c) / 100, accounts: +r.accts })), days: days.map(r => ({ day: r.d, type: r.type, usd: Math.round(+r.c) / 100 })), details, hist, list });
     }
     if (path === '/admin') {
