@@ -754,18 +754,28 @@ async function heatCalibCron(env) {
       for (let i = 0; i < wins.length; i++) if (sums[i] && sums[i].v > 0) rows.push({ w: +dead[i].w || 0, v: +sums[i].v });
       if (rows.length < 12) continue;
       rows.sort((a, b) => a.w - b.w);
-      // Four buckets by the model's own weight, each answering with the MEASURED median of its members.
+      // Buckets by the model's own weight, each answering with the MEASURED median of its members.
       // A median, not a mean: one $80M cascade would otherwise set the expectation for every ordinary band.
-      const q = Math.max(3, Math.floor(rows.length / 4));
+      // THE BUCKET COUNT SCALES WITH THE EVIDENCE (2026-10-12). Four fixed buckets meant the top one spanned
+      // ten times its own width, so SOL's heaviest wall above (23.9M) and below (26.5M) both resolved to one
+      // median and the chart printed the same dollar figure on both sides. One bucket per ~14 observations,
+      // never fewer than 8 members, capped at 10 - resolution where the data earns it and no further.
+      const NB = Math.max(4, Math.min(10, Math.floor(rows.length / 14)));
+      const q = Math.max(8, Math.floor(rows.length / NB));
       const bands = [];
-      for (let i = 0; i < 4; i++) {
-        const part = rows.slice(i * q, i === 3 ? rows.length : (i + 1) * q);
+      for (let i = 0; i < NB; i++) {
+        const part = rows.slice(i * q, i === NB - 1 ? rows.length : (i + 1) * q);
         if (part.length < 3) continue;
         const vs = part.map((x) => x.v).sort((a, b) => a - b);
+        const ws = part.map((x) => x.w).sort((a, b) => a - b);
         bands.push({
           wFrom: Math.round(part[0].w), wTo: Math.round(part[part.length - 1].w),
+          // the band's own weight CENTRE: the x a reader's wall is interpolated against, so a wall near the
+          // top of a band is never quoted the same figure as one near its bottom
+          wMid: Math.round(ws[Math.floor(ws.length / 2)]),
           med: Math.round(vs[Math.floor(vs.length / 2)]),
           lo: Math.round(vs[Math.floor(vs.length * 0.25)]), hi: Math.round(vs[Math.floor(vs.length * 0.75)]),
+          max: Math.round(vs[vs.length - 1]),
           n: part.length,
         });
       }
@@ -863,6 +873,58 @@ async function heatExtras(env, sym) {
     }
   } catch (e) {}
   return out;
+}
+/* The floor is what makes a 1,000-row cap reach a full day, and it is measured per coin (see the patch note):
+   at these values every supported coin's thousand newest rows span well over 24 h. */
+const LIQEV_MIN = { BTC: 250000, ETH: 200000, SOL: 80000 };
+const LIQEV_MIN_DEF = 40000;
+const LIQEV_LIMIT = 150;   // measured: at these floors 150 rows still reach back 90h+ on every supported coin
+const LIQEV_MAX = 24;      // what a chart can carry without becoming confetti
+async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - the big ones, last 24h (edge 60s)
+  const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const body0 = { symbol: sym, supported: HM_COINS, rows: [], n24: 0, total24: 0, since: 0, now: Date.now() };
+  const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
+  if (HM_COINS.indexOf(sym) < 0) return J({ ...body0, unsupported: true }, 300);
+  const ck = new Request('https://marginpad.io/__liqev_' + sym);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  let rows = [];
+  if (base) {
+    try {
+      const min = LIQEV_MIN[sym] || LIQEV_MIN_DEF;
+      // THROUGH THE RAW FETCH, NOT THE GUARDED ONE: an optional chart layer must never trip the breaker that
+      // every other collector consumer shares (it did, 47 times, within an hour of shipping). An already-open
+      // breaker is still honoured - a collector judged unwell gets no extra load from this.
+      if (Date.now() >= COL_DOWN_UNTIL) {
+        const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 2500);
+        try {
+          const r = await __realFetch(base + '/api/v1/liquidations/live?symbol=' + sym + '&limit=' + LIQEV_LIMIT + '&min=' + min,
+            { signal: ctl.signal, cf: { cacheTtl: 45, cacheEverything: true } });
+          if (r && r.ok) { const j = await r.json(); const a = (j && (j.events || j.rows)) || j; if (Array.isArray(a)) rows = a; }
+        } catch (e) {} finally { clearTimeout(tmr); }
+      }
+    } catch (e) {}
+  }
+  const now = Date.now(), cut = now - 86400000;
+  const all = rows.map((x) => ({
+    t: +x.ts || 0, p: +x.price || 0, usd: Math.round(+x.notional || 0),
+    // "long_liquidated" is a long being force-SOLD. The side is what a reader needs, so it is named not echoed.
+    long: /^long/i.test(String(x.side || '')), ex: String(x.exchange || '').slice(0, 12),
+  })).filter((x) => x.t >= cut && x.p > 0 && x.usd > 0);
+  const out = {
+    symbol: sym, supported: HM_COINS, now,
+    // the window really covered, never an implied 24 h (the /rekt/ backfill lesson)
+    since: all.length ? Math.min.apply(null, all.map((x) => x.t)) : 0,
+    n24: all.length, total24: Math.round(all.reduce((a2, x) => a2 + x.usd, 0)),
+    biggest: all.length ? Math.max.apply(null, all.map((x) => x.usd)) : 0,
+    rows: all.slice().sort((a2, b2) => b2.usd - a2.usd).slice(0, LIQEV_MAX).sort((a2, b2) => a2.t - b2.t),
+  };
+  // An empty answer IS cached, briefly. Not caching it was a retry loop: every chart that asked got a miss,
+  // went to the collector, failed, cached nothing, and the next chart did it again. 20 s breaks the loop
+  // without declaring a quiet minute to be a quiet hour; a real answer keeps the full minute.
+  const res = J(out, out.n24 > 0 ? 60 : 20);
+  try { await caches.default.put(ck, res.clone()); } catch (e) {}
+  return res;
 }
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -20272,6 +20334,7 @@ export default {
     }
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
+    if (url.pathname === '/api/liq/events') return handleLiqEvents(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
       let colUp = null; try { const w = JSON.parse(await env.STATS.get('coll:upwatch') || 'null'); if (w) colUp = { restartsLastHour: (w.hits || []).filter((t) => Date.now() - t < 3600000).length, uptimeMin: Math.round((+w.up || 0) / 60), seenMinAgo: Math.round((Date.now() - (+w.t || 0)) / 60000) }; } catch (e) {}

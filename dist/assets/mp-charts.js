@@ -117,24 +117,97 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      already composes, for the charted coin, the modelled bands, the calibration that prices them in real
      dollars, and every tracked Hyperliquid position over $1M with its on-chain liquidation price. Turning both
      on therefore costs one request, not two, and the 90 s cache matches the cron that rebuilds the model. */
+  /* THE BIG LIQUIDATIONS OF THE LAST 24 HOURS (2026-10-12). One keyless request per coin, cached 90 s beside
+     the heatmap's own; `supported` comes back with it so the menu can refuse a coin we have no feed for
+     instead of offering a layer that would be empty. */
+  var LQSUP=null;  // the supported-coin list, learned from the first answer and kept for the menu
+  function loadLiqEv(w){if(!w||w.dead||!w.sym||w._lqFetch)return;if(w._lq&&w._lqSym===w.sym&&Date.now()-(w._lqT||0)<90000)return;w._lqFetch=true;
+    fetch('/api/liq/events?symbol='+encodeURIComponent(w.sym)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._lqFetch=false;if(!w||w.dead)return;
+      if(j&&j.supported&&j.supported.length)LQSUP=j.supported;
+      w._lq=j||null;w._lqSym=w.sym;w._lqT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
+  /* A LIQUIDATION MARK IS TAPPABLE WITH DRAWING SWITCHED OFF - `.cwin-draw` is `pointer-events:none` until the
+     reader draws, so the click comes from the CHART, whose point is the same pixel space the painter records in.
+     Wired LAZILY and PER CHART INSTANCE: a coin switch builds a new chart and a subscription made on the old one
+     is listening to an object nobody can click (that is exactly how this failed, silently, for a day). */
+  function liqCardClose(w){try{var b=w&&w.el&&w.el.querySelector('.cwin-body');var el=b&&b.querySelector('.cwin-liqc');if(el)el.remove();}catch(e){}}
+  function liqCardOpen(w,m,px,py){liqCardClose(w);
+    var body=w.el&&w.el.querySelector('.cwin-body');if(!body)return;
+    var live=0;try{live=+w.bars[w.bars.length-1].close||0;}catch(e){}
+    var d=(live>0&&m.p>0)?((m.p-live)/live*100):null;
+    var when=new Date(m.t),hh=function(n){return (n<10?'0':'')+n;};
+    var el=document.createElement('div');el.className='cwin-liqc';
+    el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
+      +'<div class="lqc-h" style="color:'+(m.long?'#ff6258':'#2ebd85')+'">'+money(m.usd)+'</div>'
+      +'<div class="lqc-s">'+(m.long?'A long was force-SOLD here':'A short was force-BOUGHT here')+'</div>'
+      +'<dl class="lqc-d">'
+      +'<dt>Price</dt><dd>'+cwFmt(m.p)+'</dd>'
+      +'<dt>When</dt><dd>'+hh(when.getHours())+':'+hh(when.getMinutes())+' \u00b7 '+when.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
+      +(d==null?'':'<dt>From price now</dt><dd>'+(d>=0?'+':'')+d.toFixed(2)+'%</dd>')
+      +'<dt>Venue</dt><dd>'+(m.ex||'-')+'</dd>'
+      +'</dl>'
+      +'<p class="lqc-n">A real liquidation recorded by our own feed, not a model.</p>';
+    body.appendChild(el);
+    var bw=body.clientWidth||300,bh=body.clientHeight||200,cw=el.offsetWidth||190,ch=el.offsetHeight||150;
+    el.style.left=Math.max(6,Math.min(px+14,bw-cw-6))+'px';
+    el.style.top=Math.max(6,Math.min(py-ch/2,bh-ch-6))+'px';
+    el.querySelector('.cwin-liqc-x').addEventListener('click',function(e){e.stopPropagation();liqCardClose(w);});}
+  function wireLiqClick(w){if(!w||!w.chart||w._liqWired===w.chart)return;w._liqWired=w.chart;
+    try{w.chart.subscribeClick(function(prm){
+      if(!prm||!prm.point)return;var hits=w._liqHit;
+      if(!hits||!hits.length){liqCardClose(w);return;}
+      var x=prm.point.x,y=prm.point.y,best=null,bd=1e9;
+      for(var i=0;i<hits.length;i++){var h=hits[i],dd=Math.hypot(x-h.x,y-h.y);if(dd<=h.r+7&&dd<bd){bd=dd;best=h;}}
+      if(best)liqCardOpen(w,best.m,best.x,best.y);else liqCardClose(w);
+    });}catch(e){}
+    w._liqClose=function(){liqCardClose(w);};}
+  /* The layers that are nothing without our liquidation record. Both read the same ten-coin feed. */
+  var LQ_NEEDFEED={whaleliq:1,liqwall:1};
+  function liqSupported(sym){return !LQSUP||LQSUP.indexOf(String(sym||'').toUpperCase())>=0;}
+  /* The candle an event happened inside. Binary search, because a day of marks against a few thousand bars
+     is the kind of loop that shows up on a phone. */
+  function barAtTs(bars,ms){if(!bars||!bars.length)return -1;var t=Math.floor(ms/1000),lo=0,hi=bars.length-1,bt=function(b){var v=b&&b.time;return typeof v==='number'?v:0;};
+    if(t<bt(bars[0]))return -1;if(t>=bt(bars[hi]))return hi;
+    while(lo<hi){var mid=(lo+hi+1)>>1;if(bt(bars[mid])<=t)lo=mid;else hi=mid-1;}
+    return lo;}
   function loadHeat(w){if(!w||w.dead||!w.sym||w._htFetch)return;if(w._ht&&w._htSym===w.sym&&Date.now()-(w._htT||0)<90000)return;w._htFetch=true;
     fetch('/api/heatmap/pools?symbol='+encodeURIComponent(w.sym)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._htFetch=false;if(!w||w.dead)return;w._ht=(j&&+j.price>0)?j:null;w._htSym=w.sym;w._htT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   /* A BAND'S WEIGHT IS A MULTIPLE, NOT MONEY, and that difference is the whole point of the wall indicator.
      `calib` is the only thing that turns one into the other: the median that has REALLY liquidated in bands of
      that weight, the range around it, and how many observations stand behind it. Outside the measured range it
      returns NOTHING - extrapolating past what was measured is the thing this indicator exists to refuse. */
+  /* A band's weight CENTRE against its measured median, fitted in log-log and read at the wall's own weight.
+     Cached on the calibration object itself, so a chart redrawing sixty times a minute fits once. */
+  function calibFit(cal){if(!cal||!cal.bands||!cal.bands.length)return null;if(cal._fit!==undefined)return cal._fit;
+    var pts=[],lo=Infinity,hi=0;
+    for(var i=0;i<cal.bands.length;i++){var b=cal.bands[i];
+      var wm=+b.wMid>0?+b.wMid:Math.sqrt((+b.wFrom||0)*(+b.wTo||0));
+      if(+b.wFrom<lo)lo=+b.wFrom;if(+b.wTo>hi)hi=+b.wTo;
+      if(wm>0&&+b.med>0)pts.push([Math.log(wm),Math.log(+b.med)]);}
+    if(pts.length<3||!(hi>lo)){cal._fit=null;return null;}
+    var n=pts.length,sx=0,sy=0,sxx=0,sxy=0;
+    for(var j=0;j<n;j++){sx+=pts[j][0];sy+=pts[j][1];sxx+=pts[j][0]*pts[j][0];sxy+=pts[j][0]*pts[j][1];}
+    var den=n*sxx-sx*sx;if(!den){cal._fit=null;return null;}
+    var k=(n*sxy-sx*sy)/den,c=(sy-k*sx)/n;
+    /* a fit that says a heavier wall is cheaper would be worse than no fit */
+    if(!(k>0)){cal._fit=null;return null;}
+    cal._fit={k:k,c:c,lo:lo,hi:hi};return cal._fit;}
   function calibUsd(cal,wt){if(!cal||!cal.bands||!cal.bands.length||!(wt>0))return null;
-    var bs=cal.bands,lo=+bs[0].wFrom,hi=+bs[bs.length-1].wTo;
-    if(wt<lo)return {out:'under'};   // lighter than any cascade we have measured - the lightest band's median would overstate it
-    /* Heavier than any class we have measured: the heaviest measured class is a FLOOR for it, so it carries
-       that median marked `floor` and every surface prints it as "at least". Never a blank - a band this
-       heavy is the most interesting one on the chart. */
-    if(wt>hi){var t=bs[bs.length-1];return {med:+t.med,lo:+t.lo,hi:+t.hi,n:+t.n,floor:true};}
-    for(var i=0;i<bs.length;i++){var b=bs[i];if(wt>=+b.wFrom&&wt<=+b.wTo)return {med:+b.med,lo:+b.lo,hi:+b.hi,n:+b.n};}
-    /* In a GAP between two quartiles: inside the measured span, so take the nearer boundary rather than refuse. */
-    var best=null,bd=Infinity;
-    for(var k=0;k<bs.length;k++){var q=bs[k],d=Math.min(Math.abs(wt-+q.wFrom),Math.abs(wt-+q.wTo));if(d<bd){bd=d;best=q;}}
-    return best?{med:+best.med,lo:+best.lo,hi:+best.hi,n:+best.n}:null;}
+    var f=calibFit(cal);
+    var near=null,bd=Infinity;
+    for(var i=0;i<cal.bands.length;i++){var b=cal.bands[i];
+      var wm=+b.wMid>0?+b.wMid:Math.sqrt((+b.wFrom||0)*(+b.wTo||0));
+      var d=Math.abs(Math.log(Math.max(1,wt))-Math.log(Math.max(1,wm)));
+      if(d<bd){bd=d;near=b;}}
+    if(!f){ // no usable fit: fall back to the band the weight actually falls in
+      for(var m=0;m<cal.bands.length;m++){var q=cal.bands[m];if(wt>=+q.wFrom&&wt<=+q.wTo)return {med:+q.med,lo:+q.lo,hi:+q.hi,n:+q.n};}
+      return near?{med:+near.med,lo:+near.lo,hi:+near.hi,n:+near.n}:null;}
+    // lighter than any cascade we have measured: the lightest median would OVERSTATE it, so no figure at all
+    if(wt<f.lo)return {out:'under'};
+    // heavier than any: read the fit at the measured ceiling and say "at least" - never extrapolate past the evidence
+    var at=Math.min(wt,f.hi),floor=wt>f.hi;
+    var med=Math.exp(f.k*Math.log(at)+f.c);
+    return {med:Math.round(med),lo:near?+near.lo:Math.round(med*0.5),hi:near?+near.hi:Math.round(med*2),
+      n:near?+near.n:0,all:+cal.n||0,fit:true,floor:floor};}
   function calUsdOk(u){return !!(u&&u.med>0);}
   /* Self-scoring: grade every arrow this indicator fired on the LOADED bars - 1R:1R (entry=signal close,
      target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
@@ -606,27 +679,27 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        dashed. A LONG whale liquidating is a forced SELL, so it is red and it sits under price; a SHORT whale
        is a forced BUY above. The leverage is on the label because a 20x position at 3% is a different animal
        from a 2x one at the same distance. */
-    if(w.inds.whaleliq&&IA&&w._ht){
-      var _wpx=+bars[bars.length-1].close||0;
-      var _all=(w._ht.whales||[]).filter(function(x){return +x.liq>0&&_wpx>0;}).map(function(x){
-        return {liq:+x.liq,val:+x.val||0,long:!!x.long,lev:+x.lev||0,d:Math.abs(+x.liq-_wpx)/_wpx*100};
-      }).sort(function(a,b){return a.d-b.d;});
-      /* A LINE 40% AWAY IS NOT A LINE - it is off screen with its label, and four of BTC's six sat there when
-         this was measured. Draw what a trader can see and COUNT the rest; the ones further out still tell them
-         how much forced money stands behind the move, which is what the second legend line is for. */
-      var _wl=_all.filter(function(x){return x.d<=15;}).slice(0,6),_far=_all.length-_wl.length;
-      _wl.forEach(function(x){addPL({price:x.liq,color:x.long?'#ff6258':'#2ebd85',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:money(x.val)+(x.lev?' '+x.lev+'x':'')});
-        w._htPrices.push(x.liq);});
-      if(_wl.length){var _w0=_wl[0],_lu=0,_ld=0;
-        _all.forEach(function(x){if(x.liq>_wpx)_lu+=x.val;else _ld+=x.val;});
-        w.legItems.push({raw:true,color:'#c2f64a',label:'WHALE LIQ '+money(_w0.val)+' '+(_w0.long?'long':'short')+(_w0.lev?' '+_w0.lev+'x':'')+' @ '+cwFmt(_w0.liq)+' \u00b7 '+_w0.d.toFixed(1)+'% '+(_w0.liq>_wpx?'above':'below')+(_far>0?' \u00b7 +'+_far:''),title:'On-chain liquidation prices of Hyperliquid positions over $1M - read off chain, not modelled. '+_wl.length+' drawn here'+(_far>0?', '+_far+' further than 15% away':'')+'; '+(+w._ht.whaleN||_all.length)+' tracked positions over $1M in all.'});
-        if(_lu||_ld)w.legItems.push({raw:true,color:'#8fa3c4',label:money(_ld)+' below / '+money(_lu)+' above',title:'Total size of the tracked positions that get force-closed each side of the current price.'});
-      }else{
-        /* NOTHING ON THIS COIN IS NOT NOTHING TO SAY - and it is the common case: DOGE had none at all when this
-           was measured. The nearest real one anywhere is named in WORDS, never drawn, because another market's
-           price has no meaning on this price scale. */
-        var _nr=w._ht.whaleNear;
-        w.legItems.push({raw:true,color:'#8fa3c4',label:'WHALE LIQS none within 15% on '+w.sym+(_all.length?' ('+_all.length+' further out)':'')+(_nr&&_nr.sym?' \u00b7 nearest anywhere: '+_nr.sym+' '+(_nr.long?'long':'short')+' '+money(_nr.val)+' '+Math.abs(+_nr.distPct||0).toFixed(1)+'% away':''),title:'Nothing is drawn because no tracked position over $1M liquidates inside this view.'});
+    /* WHALE LIQUIDATIONS - every big one of the last 24 h, drawn where and when it happened. The marks are
+       painted by the draw layer (it already owns the projection, the repaint and the pixel space the chart's
+       own click reports in); here we only decide WHICH events and which candle each belongs to. */
+    w._liqMarks=null;if(!w.inds.whaleliq){w._liqHit=null;liqCardClose(w);}
+    if(w.inds.whaleliq&&IA){
+      wireLiqClick(w);
+      loadLiqEv(w);
+      var _lq=w._lq;
+      if(_lq&&!_lq.unsupported&&(_lq.rows||[]).length){
+        var _mx=0;(_lq.rows||[]).forEach(function(e){if(e.usd>_mx)_mx=e.usd;});
+        var _mk=[];
+        (_lq.rows||[]).forEach(function(e){var bi=barAtTs(bars,e.t);if(bi<0)return;
+          _mk.push({i:bi,t:e.t,p:+e.p,usd:+e.usd,long:!!e.long,ex:e.ex,
+            r:4+6*Math.sqrt(Math.max(0,Math.min(1,_mx>0?e.usd/_mx:0)))});});
+        w._liqMarks=_mk.length?_mk:null;
+        var _tot=money(+_lq.total24||0),_big=money(+_lq.biggest||0);
+        w.legItems.push({raw:true,color:'#c2f64a',label:'LIQUIDATIONS 24h '+_tot+' \u00b7 biggest '+_big+' \u00b7 '+_mk.length+' marked',title:'Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. Tap a mark for the size, the side and the venue. Measured from our own feed across nine exchanges - these are events that happened, not forecasts.'});
+      } else if(_lq&&_lq.unsupported){
+        w.legItems.push({raw:true,color:'#8fa3c4',label:'LIQUIDATIONS no feed for '+w.sym,title:'We record liquidations for ten majors; this market is not one of them.'});
+      } else if(_lq){
+        w.legItems.push({raw:true,color:'#8fa3c4',label:'LIQUIDATIONS nothing over the floor on '+w.sym+' in 24h',title:'The feed is live for this coin and no liquidation large enough to mark has happened in the last day.'});
       }
     }
     /* LIQUIDATION WALL, IN DOLLARS. The model says WHERE a cluster sits - that part every chart can guess. What
@@ -646,17 +719,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         addPL({price:b.p,color:b.long?'rgba(255,98,88,.8)':'rgba(46,189,133,.8)',lineWidth:2,lineStyle:2,axisLabelVisible:true,title:calUsdOk(u)?(money(u.med)+(u.floor?'+':'')):'wall'});
         w._htPrices.push(b.p);});
       if(_walls.length){
-        /* HEADLINE THE HEAVIEST WALL WE CAN PRICE. The very heaviest is the one most likely to sit above every
-           cascade we have on record (BTC's top live band was 368M against a measured ceiling of 214M), and a
-           headline reading "outside the measured range" with no dollar figure anywhere sells nothing and
-           explains nothing. The unpriced heavier one is named after it, which is the honest order. */
-        var _byW=_walls.slice().sort(function(x,y){return y.w-x.w;}),_hv=null,_hu=null,_over=null;
-        for(var _i2=0;_i2<_byW.length;_i2++){var _u2=calibUsd(_cal,_byW[_i2].w);
-          if(calUsdOk(_u2)&&!_hv){_hv=_byW[_i2];_hu=_u2;}}
-        var _dp=function(b){return (Math.abs(b.p-_qpx)/_qpx*100).toFixed(1)+'% '+(b.p>_qpx?'above':'below');};
-        var _prov=_cal?' Calibrated on '+_cal.n+' real cascades over '+_cal.days+' days.':'';
-        if(_hv)w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+(_hu.floor?'at least ':'')+money(_hu.med)+(_hu.floor?'':'')+' @ '+cwFmt(_hv.p)+' \u00b7 '+_dp(_hv),title:(_hu.floor?'This cluster is heavier than any cascade we have on record, so the figure is a FLOOR: bands in the heaviest class we have measured liquidated a median of '+money(_hu.med)+' (range '+money(_hu.lo)+' to '+money(_hu.hi)+') over '+_hu.n+' cases, and this one is bigger than that class.':'A modelled cluster, priced from what has really liquidated in bands of this weight: median '+money(_hu.med)+', range '+money(_hu.lo)+' to '+money(_hu.hi)+' over '+_hu.n+' cases.')+_prov});
-        else w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+cwFmt(_byW[0].p)+' \u00b7 '+_dp(_byW[0])+' \u00b7 unpriced',title:'The cluster is modelled; no cascade this heavy has been measured, so it carries no dollar figure.'+_prov});
+        /* BOTH SIDES, ON ONE ROW. Each wall is priced at its OWN weight now, so the comparison is the
+           whole point - how much is standing above the price against how much below. */
+        var _dp=function(b){return (Math.abs(b.p-_qpx)/_qpx*100).toFixed(1)+'%';};
+        var _prov=_cal?' Fitted across '+_cal.n+' real cascades measured over '+_cal.days+' days (nine exchanges).':'';
+        var _side=function(arr){if(!arr.length)return null;var b=arr.slice().sort(function(x,y){return y.w-x.w;})[0];
+          var u=calibUsd(_cal,b.w);return {b:b,u:u};};
+        var _A=_side(_up),_B=_side(_dn);
+        var _txt=function(o,lab){if(!o)return null;
+          var money_=calUsdOk(o.u)?((o.u.floor?'at least ':'')+money(o.u.med)):'unpriced';
+          return money_+' '+lab+' '+cwFmt(o.b.p)+' ('+_dp(o.b)+')';};
+        var _ta=_txt(_A,'above'),_tb=_txt(_B,'below');
+        var _parts=[];if(_tb)_parts.push(_tb);if(_ta)_parts.push(_ta);
+        if(_parts.length){
+          var _any=(_A&&calUsdOk(_A.u)?_A.u:null)||(_B&&calUsdOk(_B.u)?_B.u:null);
+          w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_parts.join(' \u00b7 '),
+            title:'Where the cluster sits is a model; the dollar figure is MEASURED - what has really liquidated in clusters of this weight, read at each wall\'s own weight.'
+              +(_any&&_any.n?' The nearest measured class liquidated '+money(_any.lo)+' to '+money(_any.hi)+' over '+_any.n+' cases.':'')
+              +_prov+' "At least" means the cluster is heavier than anything on record, so the figure is a floor rather than an estimate.'});
+        }
+
       }
     }
     if(w.inds.rsi){var rv=rsiCalc(closes(bars),14);addZone('rsi',70,100,'rgba(255,98,88,.11)');addZone('rsi',30,0,'rgba(46,189,133,.11)');addS({color:'#e0a0ff',priceScaleId:'rsi'},mapVal(bars,rv),{label:'RSI 14',dec:0});addS({color:'rgba(255,98,88,.35)',lineStyle:2,priceScaleId:'rsi'},bars.map(function(b){return {time:b.time,value:70};}));addS({color:'rgba(46,189,133,.35)',lineStyle:2,priceScaleId:'rsi'},bars.map(function(b){return {time:b.time,value:30};}));pscale('rsi','rsi');}
@@ -758,10 +840,26 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function setCmp(w,v){v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);if(v===w.sym)v='';w.cmp=v;w._cmpK='';w._cmpReq='';try{if(v)window.__mpTrack&&window.__mpTrack('ind','cmp:'+v);}catch(_){}applyInds(w);savePersist();}
   function reflectCmp(w){if(!indMenuEl)return;var _ci=indMenuEl.querySelector('.cwin-cmp-in');if(_ci&&document.activeElement!==_ci)_ci.value=w.cmp||'';Array.prototype.forEach.call(indMenuEl.querySelectorAll('[data-cmp]'),function(x){x.classList.toggle('on',(x.getAttribute('data-cmp')||'')===(w.cmp||''));});}
+  /* A layer we have no liquidation feed for on THIS coin is greyed, labelled and refused - decided here
+     because the menu is one shared element that outlives any one symbol. Greyed and never hidden: the
+     reader has to be able to see that the thing exists and why it is not available on this market. */
+  function markNoData(w){if(!indMenuEl||!w)return;var ok=liqSupported(w.sym),sym=String(w.sym||'').toUpperCase();
+    Array.prototype.forEach.call(indMenuEl.querySelectorAll('.cwin-ind-item'),function(it){
+      var k=it.getAttribute('data-ind');if(!LQ_NEEDFEED[k])return;
+      var nd=!ok&&!it.classList.contains('locked');
+      it.classList.toggle('nodata',nd);
+      var lbl=it.querySelector('.cwin-ind-it-lbl');if(!lbl)return;
+      var tag=lbl.querySelector('[data-nodata]');
+      if(nd){if(!tag){tag=document.createElement('b');tag.setAttribute('data-nodata','1');
+          tag.style.cssText='color:#5c6b84;font-weight:400;font-size:9.5px;letter-spacing:.05em';lbl.appendChild(tag);}
+        tag.textContent=' NO DATA ON '+sym;
+        it.title=__esT_mpcharts("weDoNotRecordLiquidationsF",'We do not record liquidations for this market, so this indicator has nothing to show here. It works on BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX and LTC.');}
+      else{if(tag)tag.remove();if(!it.classList.contains('locked'))it.title=(ITIPS[k]||'');}
+    });}
   function openIndMenu(w,btn){
     if(!indMenuEl)buildIndMenu();reflectCmp(w);
     if(indMenuW===w&&!indMenuEl.hidden){indMenuEl.hidden=true;return;}
-    indMenuW=w;
+    indMenuW=w;markNoData(w);
     Array.prototype.forEach.call(indMenuEl.querySelectorAll('.cwin-ind-item'),function(it){it.classList.toggle('on',!!w.inds[it.getAttribute('data-ind')]);});
     Array.prototype.forEach.call(indMenuEl.querySelectorAll('.cwin-ind-pers'),function(row){var pk=row.getAttribute('data-p'),list=(pk==='ema'?(w.emaList||(w.emaP?[w.emaP]:[21])):(w.smaList||(w.smaP?[w.smaP]:[50])));Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});});
     indMenuEl.hidden=false;
@@ -2304,8 +2402,24 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         ctx.fillStyle='#e8ecf1';ctx.fillText(r.t,x0+pad+sw+gap,ry);});
       ctx.restore();
     }
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
+    function drawLiqMarks(){var mk=w._liqMarks;if(!mk||!mk.length)return;
+      var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th);
+      w._liqHit=[];
+      for(var i=0;i<mk.length;i++){var m=mk[i],x=xOf(m.i),y=yOf(m.p);
+        if(x==null||y==null||x<-20||x>(w.dr.W||0)+20||y<-20||y>plotH+20)continue;
+        var col=m.long?'#ff6258':'#2ebd85';
+        ctx.save();
+        ctx.beginPath();ctx.arc(x,y,m.r,0,6.283);
+        ctx.fillStyle=m.long?'rgba(255,98,88,.45)':'rgba(46,189,133,.45)';ctx.fill();
+        ctx.lineWidth=1.6;ctx.strokeStyle=col;ctx.stroke();
+        /* the heaviest few earn a halo so the eye finds them without a legend telling it where to look */
+        if(m.r>8.2){ctx.beginPath();ctx.arc(x,y,m.r+3.5,0,6.283);ctx.lineWidth=1;ctx.strokeStyle=m.long?'rgba(255,98,88,.38)':'rgba(46,189,133,.38)';ctx.stroke();}
+        ctx.restore();
+        w._liqHit.push({x:x,y:y,r:m.r,m:m});
+      }}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawLiqMarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
+
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
     function grid(){var b=w.bars;if(!b||b.length<2)return null;var iv=(b[b.length-1].time-b[0].time)/(b.length-1);return iv>0?{t0:b[0].time,iv:iv}:null;}
     function dKey(){var k=(w.sym||'')+':'+(w.tf||'');return k===':'?null:k;}
@@ -2492,7 +2606,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     w._pwRaf=requestAnimationFrame(function pw(){
       if(w.dead){w._pwRaf=0;return;}
       try{
-        if(w.dr&&w.dr.shapes&&(w.dr.shapes.length||w.dr.cur)&&w.candle){
+        if(w.dr&&w.dr.shapes&&(w.dr.shapes.length||w.dr.cur||(w._liqMarks&&w._liqMarks.length))&&w.candle){
           if(!(w._pwRef>0)&&w.bars&&w.bars.length){var _lc=+w.bars[w.bars.length-1].close;if(_lc>0)w._pwRef=_lc;}
           if(w._pwRef>0){var _a=w.candle.priceToCoordinate(w._pwRef),_b=w.candle.priceToCoordinate(w._pwRef*1.01);
             if(_a!==w._pwA||_b!==w._pwB){w._pwA=_a;w._pwB=_b;redraw();}}
@@ -2853,7 +2967,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var symOpts=SYMS.map(function(s){return '<option'+(s===w.sym?' selected':'')+'>'+s+'</option>';}).join('');
     var tfBtns=TFS.map(function(t){return '<button type="button" data-tf="'+t[0]+'"'+(t[0]===w.tf?' class="on"':'')+'>'+t[1]+'</button>';}).join('');
     var indBtns=INDS.map(function(t){return '<button type="button" class="cwin-ind'+(w.inds[t[0]]?' on':'')+'" data-ind="'+t[0]+'"'+(MP_INDS[t[0]]?' style="color:#c2f64a;font-weight:700"':'')+'>'+t[1]+'</button>';}).join('');
-    w.el=el('<div class="cwin"><div class="cwin-head"><span class="cwin-num"></span><span class="cwin-grip"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><circle cx="8" cy="6" r="1.4"/><circle cx="8" cy="12" r="1.4"/><circle cx="8" cy="18" r="1.4"/><circle cx="14" cy="6" r="1.4"/><circle cx="14" cy="12" r="1.4"/><circle cx="14" cy="18" r="1.4"/></svg></span><input class="cwin-sym" aria-label="Symbol" readonly value="'+w.sym+'" style="width:66px"><div class="cwin-tf">'+tfBtns+'</div><span class="cwin-cd" title="Candle closes in"></span><button class="cwin-ai" type="button" title="Ask AI about this chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>AI</span></button><button class="cwin-ind-btn" type="button" title="Indicators"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="cwin-ind-lbl">Indicators</span><span class="cwin-ind-n"></span></button><button class="cwin-mt" type="button" title="Import My Trades" hidden><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button><button class="cwin-notes-btn" type="button" title="Notes pinned here" hidden><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10l6-6V5a2 2 0 0 0-2-2z"/><path d="M15 21v-6h6"/></svg><span class="cwin-notes-n"></span></button><button class="cwin-share" type="button" title="Share a snapshot of this chart" aria-label="Share chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button><button class="cwin-draw-tg" type="button" title="Draw / annotate" aria-label="Draw"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button><button class="cwin-x" type="button" aria-label="Close chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="cwin-body"><div class="cwin-chart"></div><div class="cwin-sub"></div><canvas class="cwin-draw"></canvas>'+TOOLS_HTML+'<div class="cwin-skel">loading…</div></div><div class="cwin-rz cwin-rz-n" data-rz="n"></div><div class="cwin-rz cwin-rz-s" data-rz="s"></div><div class="cwin-rz cwin-rz-e" data-rz="e"></div><div class="cwin-rz cwin-rz-w" data-rz="w"></div><div class="cwin-rz cwin-rz-ne" data-rz="ne"></div><div class="cwin-rz cwin-rz-nw" data-rz="nw"></div><div class="cwin-rz cwin-rz-se" data-rz="se"></div><div class="cwin-rz cwin-rz-sw" data-rz="sw"></div><div class="cwin-rsz"></div></div>');
+    w.el=el('<div class="cwin"><div class="cwin-head"><span class="cwin-num"></span><span class="cwin-grip"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><circle cx="8" cy="6" r="1.4"/><circle cx="8" cy="12" r="1.4"/><circle cx="8" cy="18" r="1.4"/><circle cx="14" cy="6" r="1.4"/><circle cx="14" cy="12" r="1.4"/><circle cx="14" cy="18" r="1.4"/></svg></span><input class="cwin-sym" aria-label="Symbol" readonly value="'+w.sym+'" style="width:66px"><div class="cwin-tf">'+tfBtns+'</div><span class="cwin-cd" title="Candle closes in"></span><button class="cwin-ai" type="button" title="Ask AI about this chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>Ask AI</span></button><button class="cwin-ind-btn" type="button" title="Indicators"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span class="cwin-ind-lbl">Indicators</span><span class="cwin-ind-n"></span></button><button class="cwin-mt" type="button" title="Import My Trades" hidden><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6"/><path d="M7 13h4"/><path d="M17 10v6"/><rect x="15.2" y="11.4" width="3.6" height="3.2" rx="0.6"/></svg></button><button class="cwin-notes-btn" type="button" title="Notes pinned here" hidden><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10l6-6V5a2 2 0 0 0-2-2z"/><path d="M15 21v-6h6"/></svg><span class="cwin-notes-n"></span></button><button class="cwin-share" type="button" title="Share a snapshot of this chart" aria-label="Share chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button><button class="cwin-draw-tg" type="button" title="Draw / annotate" aria-label="Draw"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button><button class="cwin-x" type="button" aria-label="Close chart"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="cwin-body"><div class="cwin-chart"></div><div class="cwin-sub"></div><canvas class="cwin-draw"></canvas>'+TOOLS_HTML+'<div class="cwin-skel">loading…</div></div><div class="cwin-rz cwin-rz-n" data-rz="n"></div><div class="cwin-rz cwin-rz-s" data-rz="s"></div><div class="cwin-rz cwin-rz-e" data-rz="e"></div><div class="cwin-rz cwin-rz-w" data-rz="w"></div><div class="cwin-rz cwin-rz-ne" data-rz="ne"></div><div class="cwin-rz cwin-rz-nw" data-rz="nw"></div><div class="cwin-rz cwin-rz-se" data-rz="se"></div><div class="cwin-rz cwin-rz-sw" data-rz="sw"></div><div class="cwin-rsz"></div></div>');
     if(!isMobile()){var bw=board.clientWidth||board.offsetWidth||900,bh=board.clientHeight||board.offsetHeight||600,i=wins.length;
       var ww=cfg.w||Math.min(580,Math.max(300,Math.round(bw*0.52))),wh=cfg.h||Math.min(430,Math.max(240,Math.round(bh*0.56)));
       ww=Math.min(ww,bw);wh=Math.min(wh,bh);

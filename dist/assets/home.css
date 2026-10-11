@@ -3504,3 +3504,73 @@ undefined
   .mfc.light .mfc-wheel-lens{border-color:rgba(79,122,0,.55);background:rgba(79,122,0,.07);}
   .mfc-sr .st svg{display:block;}
   .mfc-sr .st.on{color:#ffd75a;}
+
+/* The card a liquidation mark opens (2026-10-12). Absolutely placed inside the window body and clamped by JS,
+   so it can never hang off a 2x2 tile; light theme gets its own ground because body.ch-light inverts the pane. */
+.cwin-liqc{position:absolute;z-index:6;min-width:186px;max-width:250px;padding:11px 12px 10px;border:1px solid #2b333f;border-radius:12px;
+  background:linear-gradient(180deg,#121720,#0c1016);box-shadow:0 14px 34px rgba(0,0,0,.5);pointer-events:auto;}
+.cwin-liqc-x{position:absolute;top:6px;right:6px;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+  border:0;background:transparent;color:#7c8794;cursor:pointer;border-radius:6px;}
+.cwin-liqc-x:hover{background:#1b2230;color:#e9edf3;}
+.cwin-liqc .lqc-h{font-family:"Space Mono",monospace;font-weight:700;font-size:19px;line-height:1.1;}
+.cwin-liqc .lqc-s{margin-top:2px;font-size:11.5px;color:#aab5c4;}
+.cwin-liqc .lqc-d{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:9px 0 0;font-size:11.5px;}
+.cwin-liqc .lqc-d dt{color:#7c8794;}
+.cwin-liqc .lqc-d dd{margin:0;text-align:right;font-family:"Space Mono",monospace;color:#e9edf3;}
+.cwin-liqc .lqc-n{margin:8px 0 0;font-size:10.5px;line-height:1.45;color:#6e7885;}
+body.ch-light .cwin-liqc{background:linear-gradient(180deg,#fff,#f3f5f8);border-color:#d3dae3;box-shadow:0 14px 34px rgba(16,24,40,.16);}
+body.ch-light .cwin-liqc .lqc-s{color:#4a5565;}
+body.ch-light .cwin-liqc .lqc-d dt{color:#6b7684;}
+body.ch-light .cwin-liqc .lqc-d dd{color:#121720;}
+body.ch-light .cwin-liqc .lqc-n{color:#6b7684;}
+body.ch-light .cwin-liqc-x{color:#6b7684;}
+body.ch-light .cwin-liqc-x:hover{background:#e8ecf2;color:#121720;}
+
+/* A layer we have no feed for on this coin: visible, explained, and not clickable (2026-10-12). */
+.cwin-ind-item.nodata{opacity:.45;cursor:not-allowed;pointer-events:none;}
+.cwin-ind-item.nodata .cwin-ind-ck{opacity:.3;}
+
+/* ASK AI IS THE ONE PAID DOOR ON THIS HEADER, so it is the one control allowed to look unlike its neighbours
+   (2026-10-12, owner: "da se dugme odradi mnogo vise cool"). It keeps the 30px row height - a taller button
+   would wrap the header, which is the thing being fixed two rules down. */
+.cwin .cwin-head .cwin-ai{width:auto;padding:0 10px;gap:6px;justify-content:center;
+  background:linear-gradient(135deg,#2a2150 0%,#1b3358 52%,#10384a 100%);
+  border-color:#4a5a8a;color:#dfe9ff;font-weight:700;letter-spacing:.02em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(124,196,255,.12);transition:box-shadow .16s,filter .16s;}
+.cwin .cwin-head .cwin-ai svg{color:#8fd8ff;}
+.cwin .cwin-head .cwin-ai:hover{filter:brightness(1.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(124,196,255,.4),0 0 16px -4px rgba(124,196,255,.55);}
+.cwin .cwin-head .cwin-ai span{font-size:11.5px;}
+body.ch-light .cwin .cwin-head .cwin-ai{background:linear-gradient(135deg,#eef0ff,#e6f2ff 55%,#e4f7ff);border-color:#b9c9ee;color:#1f3f78;}
+body.ch-light .cwin .cwin-head .cwin-ai svg{color:#2a7fb8;}
+
+/* THE ASK AI PANEL IN THE LIGHT THEME (owner: "ne vidi se lepo neka slova u chatu"). It had no light palette
+   at all - only the header button did - so every surface inside it kept a dark ground while the chart around
+   it turned white. Written as the same tokens in the other direction, not as patches on the parts noticed. */
+body.ch-light .cwin-ai-panel{background:linear-gradient(180deg,#ffffff,#f4f6fa);border-color:#d3dae3;
+  box-shadow:0 36px 80px -22px rgba(16,24,40,.26),0 0 0 1px rgba(40,90,160,.10);}
+body.ch-light .cwin-ai-h{color:#121720;border-bottom-color:#e3e8ef;}
+body.ch-light .cwin-ai-h b{color:#0b1017;}
+body.ch-light .cwin-ai-h>svg{stroke:#2a7fb8;filter:none;}
+body.ch-light .cwin-ai-sym{color:#2a7fb8;}
+body.ch-light .cwin-ai-quota,body.ch-light .cwin-ai-note{color:#5b6673;}
+body.ch-light .cwin-ai-x,body.ch-light .cwin-ai-clear,body.ch-light .cwin-ai-share{color:#5b6673;}
+body.ch-light .cwin-ai-x:hover,body.ch-light .cwin-ai-clear:hover,body.ch-light .cwin-ai-share:hover{background:#e8ecf2;color:#121720;}
+body.ch-light .cwin-ai-body{color:#1d242e;}
+body.ch-light .aimsg.ai{background:#ffffff;border-color:#dbe2ea;color:#1d242e;}
+body.ch-light .aimsg.ai b{color:#0b1017;}
+body.ch-light .aimsg.ai a{color:#1668b8;}
+body.ch-light .aimsg.ai code,body.ch-light .aimsg.ai pre{background:#eef1f6;color:#13306b;}
+body.ch-light .aimsg.user{background:linear-gradient(180deg,#2f6fbe,#255ea6);color:#fff;}
+body.ch-light .cwin-ai-chip{background:#eef1f6;border-color:#d3dae3;color:#27405f;}
+body.ch-light .cwin-ai-chip:hover{background:#e2e8f1;color:#10213a;}
+body.ch-light .cwin-ai-in{background:#fff;border-color:#d3dae3;color:#121720;}
+body.ch-light .cwin-ai-in::placeholder{color:#8a94a2;}
+body.ch-light .aiplan-card{background:#f7f9fc;border-color:#d8dfe8;}
+body.ch-light .aiplan-card .aipc-rows,body.ch-light .aiplan-card dt{color:#55606e;}
+body.ch-light .aiplan-card dd,body.ch-light .aiplan-card .aipc-h{color:#121720;}
+body.ch-light .aiacts{color:#55606e;}
+body.ch-light .aicopy{color:#6b7684;}
+body.ch-light .cwin-ai-gate{color:#1d242e;}
+
+/* A 360px panel free to reach 94vw sat over most of a 2x2 tile. It belongs to its window. */
+.cwin-ai-panel{max-width:min(94vw,420px);}
