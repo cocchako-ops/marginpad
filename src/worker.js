@@ -19552,6 +19552,14 @@ async function handleReward(url, request, env) {
     if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
     if (!acct && path === '/xengage/submit' && adminOk) { const ov = url.searchParams.get('uid'); if (ov) acct = 'u:' + ov; }
+    /* ... and for the two sign-up surfaces, so support can file a claim for a member who never did
+       (2026-10-11). The board cannot rank anybody without an approved claim, and a member who has been
+       withdrawing to their Moon account for a month is exactly the person who never files one. Same shape
+       as POST /api/admin/bybitlinks. `?acct=` takes the full u:<uid>, `?uid=` the bare id. */
+    if (!acct && (path === '/moonsign/submit' || path === '/fomosign/submit') && adminOk) {
+      const ov2 = url.searchParams.get('acct') || url.searchParams.get('uid');
+      if (ov2) acct = /^u:/.test(ov2) ? ov2 : 'u:' + ov2;
+    }
   }
   // enforce the admin per-user restrictions (profile page Controls): they were only STORED before - the toggles did nothing
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
@@ -21968,6 +21976,22 @@ export default {
     // "contact support and we will correct it", so support has to be able to. {username|uid, buid} sets it, buid:'' clears
     // it, force:true skips the affiliate-list check (a UID we know is ours before the list catches up). Every use is
     // written to the same 'bylog' ring as a member's own attempt, tagged admin, so the trail stays in one place.
+    if (url.pathname === '/api/admin/exsignuid' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // Correct the exchange username on a member's sign-up claim. The Moon/Fomo twin of /api/admin/bybitlinks,
+      // and the only way to fix a row that was approved with the wrong name - re-filing pays the bonus again.
+      let xb = {}; try { xb = await request.json(); } catch (e) {}
+      const exch = String(xb.exchange || 'moon').toLowerCase();
+      let acctX = String(xb.acct || '');
+      if (!acctX && xb.username) { try { const w = await usersDO(env, '/xpdiag', { username: String(xb.username) }); if (w && w.user && w.user.id) acctX = 'u:' + w.user.id; } catch (e) {} }
+      if (!xb.id && !acctX) return J({ error: 'need_id_or_username' }, 400);
+      let out = null;
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/setuid', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: xb.id || '', acct: acctX, exchange: exch, uid: xb.uid }) })); out = await r.json(); } catch (e) { return J({ error: 'ledger_unavailable' }, 503); }
+      if (out && out.ok && out.changed) {
+        try { await tgAdmin(env, '<b>Exchange username corrected</b>' + String.fromCharCode(10) + exch + ': ' + out.was + ' -> ' + out.uid + ' on ' + String(out.acct || '').slice(0, 12), { kind: 'exsign uid fix', sev: 'info' }); } catch (e) {}
+        if (exch === 'moon') { try { await moonBoardRebuild(env, (await env.STATS.get('moon:active')) || 'kotm1'); } catch (e) {} }
+      }
+      return J(out || { error: 'no_answer' });
+    }
     if (url.pathname === '/api/admin/moonwager' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // King of the Moon desk (mp-ops Money > King of the Moon)
       const mb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       let activeId = ''; try { activeId = (await env.STATS.get('moon:active')) || ''; } catch (e) {}
@@ -21986,6 +22010,24 @@ export default {
         return J({ ok: true, contest, pins: pp, pub });
       }
       if (request.method === 'POST') {
+        if (mb.reresolve === 'start' || mb.reresolve === 'end') {
+          /* Re-run the resolver over rows already stored, against today's approved members and pins. The verdict
+             is frozen into a snapshot when it is saved, so correcting a member's exchange username afterwards
+             would otherwise never reach the START side - and the START is where every delta is measured from. */
+          const ph = mb.reresolve;
+          const snapR = await moonSnap(env, contest, ph);
+          if (!snapR || !Array.isArray(snapR.rows)) return J({ error: 'no_' + ph, hint: 'there is no ' + ph.toUpperCase() + ' snapshot stored for ' + contest }, 400);
+          const membersR = await moonMembers(env);
+          let pinsR = {}; try { pinsR = JSON.parse(await env.STATS.get(moonPinKey(contest)) || '{}') || {}; } catch (e) {}
+          const wasOk = snapR.rows.filter(r => r.status === 'ok').length;
+          const keepR = r => ({ mask: r.mask, wager: r.wager, dep: r.dep, reg: r.reg, lastDep: r.lastDep, comm: r.comm, vip: r.vip, manual: !!r.manual, dupMask: !!r.dupMask });
+          const resR = moonResolve(snapR.rows.map(keepR), membersR, pinsR);
+          snapR.rows = resR.rows; snapR.missing = resR.missing; snapR.n = resR.rows.length; snapR.ok = resR.rows.filter(r => r.status === 'ok').length;
+          try { await env.STATS.put('moon:snap:' + contest + ':' + ph, JSON.stringify(snapR), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 500); }
+          const pubR = await moonBoardRebuild(env, contest);
+          const startR = await moonSnap(env, contest, 'start'), endR = await moonSnap(env, contest, 'end');
+          return J({ ok: true, reresolved: ph, contest, rows: snapR.n, resolved_was: wasOk, resolved_now: snapR.ok, pub: pubR, standings: moonStandings(startR, endR) });
+        }
         if (mb.clear && (mb.phase === 'start' || mb.phase === 'end')) { try { await env.STATS.delete('moon:snap:' + contest + ':' + mb.phase); } catch (e) {} const pubc = await moonBoardRebuild(env, contest); return J({ ok: true, cleared: mb.phase, contest, pub: pubc }); }
         if (mb.activate) { try { await env.STATS.put('moon:active', contest); } catch (e) {} const puba = await moonBoardRebuild(env, contest); return J({ ok: true, activated: contest, pub: puba }); }
         if (mb.markFinal != null) { // flip the FINAL flag on the stored END without pasting anything (the Bybit panel carries final on the upload; here the owner may decide after the fact)
@@ -26041,6 +26083,22 @@ export class RewardLedger {
       const decLim = url.searchParams.get('all') === '1' ? 5000 : 30; // ?all=1 = the whole history (owner export, 2026-09-17); the dashboard keeps the recent 30
       const decided = this.rows("SELECT id,acct AS address,exchange,uid,ts,status,note,amount,decided_ts FROM exsign WHERE status!='pending' ORDER BY decided_ts DESC LIMIT " + decLim);
       return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100) });
+    }
+    if (path === '/exsign/setuid') { // support: correct the exchange username on an existing row. Credits NOTHING.
+      // Re-filing cannot do this - an approved row is never paid twice, and reject-then-force-approve pays again.
+      const uidS = String(body.uid || '').trim();
+      let row = null;
+      if (body.id) row = this.rows('SELECT * FROM exsign WHERE id=?', String(body.id))[0];
+      else if (body.acct && body.exchange) row = this.rows("SELECT * FROM exsign WHERE acct=? AND exchange=? AND status!='rejected' ORDER BY ts DESC", String(body.acct), String(body.exchange).toLowerCase())[0];
+      if (!row) return this.j({ error: 'not_found' }, 404);
+      const reS = (row.exchange === 'moon' || row.exchange === 'fomo') ? /^[A-Za-z0-9_.-]{3,32}$/ : row.exchange === 'coinbase' ? /^[A-Za-z0-9_.-]{3,64}$/ : /^[A-Za-z0-9_-]{4,32}$/;
+      if (!reS.test(uidS)) return this.j({ error: 'bad_uid' }, 400);
+      // the same uniqueness the submit path enforces: one exchange username across every account
+      if (this.rows("SELECT id FROM exsign WHERE exchange=? AND lower(uid)=lower(?) AND id!=? AND status!='rejected'", row.exchange, uidS, row.id).length) return this.j({ error: 'uid_taken' }, 409);
+      const was = row.uid;
+      if (String(was) === uidS) return this.j({ ok: true, id: row.id, acct: row.acct, exchange: row.exchange, was, uid: uidS, status: row.status, changed: false });
+      sql.exec('UPDATE exsign SET uid=? WHERE id=?', uidS, row.id);
+      return this.j({ ok: true, id: row.id, acct: row.acct, exchange: row.exchange, was, uid: uidS, status: row.status, changed: true });
     }
     if (path === '/exsign/review') { // admin: approve (credits the bonus) or reject (with a note the user sees)
       const id = String(body.id || ''), action = String(body.action || '');
