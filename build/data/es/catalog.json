@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-11T22:03:04.761Z",
+  "generated": "2026-10-11T23:31:20.439Z",
   "pages": 386,
   "occurrences": 26700,
   "unique": 14176,
-  "words": 269797,
+  "words": 269980,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-11T22:08:33.841Z"
+  "merged": "2026-10-11T23:36:19.747Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6863,9 +6863,9 @@
    "n": 1,
    "w": 9
   },
-  "LXIGsSE6Mg": {
-   "en": "The 6 MarginPad AI Indicators, Explained - Real Whale Liquidations, Measured Liquidation Walls and Four More",
-   "es": "Los 6 indicadores de IA de MarginPad, explicados - Liquidaciones de ballenas reales, muros de liquidación medidos y cuatro más",
+  "dpq9ohrQd-": {
+   "en": "The 6 MarginPad AI Indicators, Explained - Real Big Liquidations, Measured Liquidation Walls and Four More",
+   "es": "Los 6 indicadores de IA de MarginPad, explicados - Big Liquidations reales, Liquidation Wall medido y otros cuatro",
    "kind": [
     "title"
    ],
@@ -7002,9 +7002,9 @@
    "n": 1,
    "w": 9
   },
-  "0hkuhuWRsp": {
-   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Whale Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
-   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Whale Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">El indicador de tasa de acierto</a><a href=\"#workflow\">Cuál abrir primero</a>",
+  "NvpUw1Njma": {
+   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
+   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">El indicador de aciertos</a><a href=\"#workflow\">Cuál abrir primero</a>",
    "kind": [
     "html"
    ],
@@ -7651,9 +7651,9 @@
    "n": 1,
    "w": 38
   },
-  "DpQ6EZZHG7": {
-   "en": "<small>5 &middot; Read off chain</small>Whale Liquidations",
-   "es": "<small>5 &middot; Leído en la cadena</small>Whale Liquidations",
+  "t5W1Cd-dUi": {
+   "en": "<small>5 &middot; A record, not a forecast</small>Big Liquidations (24h)",
+   "es": "<small>5 &middot; Un registro, no un pronóstico</small>Big Liquidations (24h)",
    "kind": [
     "html"
    ],
@@ -7661,11 +7661,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 5
+   "w": 6
   },
-  "5WDfnSg10s": {
-   "en": "At exactly what price does a whale get force-closed - and <em>which way</em> does that push the market?",
-   "es": "¿A qué precio exacto se cierra a la fuerza una ballena - y <em>en qué dirección</em> empuja eso al mercado?",
+  "irY22hJPwm": {
+   "en": "Where has leverage actually been force-closed in the last 24 hours - and <em>what happens</em> when price goes back there?",
+   "es": "¿Dónde se ha cerrado realmente el apalancamiento a la fuerza en las últimas 24 horas, y <em>qué pasa</em> cuando el precio vuelve ahí?",
    "kind": [
     "html"
    ],
@@ -7673,11 +7673,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 16
+   "w": 19
   },
-  "uoyWp5f11L": {
-   "en": "This one is not a model and cannot be. Hyperliquid publishes every account's position on chain: the size, the leverage and the price at which the exchange itself will close it. We poll the 1,000 largest wallets and draw every position over $1M whose liquidation price sits within 15% of where the market is now. The number on the line is not our estimate of what might happen - it is the trigger price of an order that has already been placed, by a trader who cannot cancel it.",
-   "es": "Este no es un modelo y no puede serlo. Hyperliquid publica la posición de cada cuenta en la cadena: el tamaño, el apalancamiento y el precio al que el propio exchange la cerrará. Consultamos las 1,000 carteras más grandes y dibujamos toda posición superior a $1M cuyo precio de liquidación esté dentro del 15% de donde está el mercado ahora. El número en la línea no es nuestra estimación de lo que podría pasar - es el precio de activación de una orden que ya ha sido colocada, por un trader que no puede cancelarla.",
+  "7T-id4W0JO": {
+   "en": "This one is not a model and cannot be. Every mark is a liquidation that already happened: our own collector records them across nine exchanges as the venues publish them, and the indicator puts each big one on the chart at the price it printed at and on the candle it printed on. Nothing here is projected forward. It is the record of where leverage died, read off the same feed that drives the liquidation heatmap and the Rekt page.",
+   "es": "Este no es un modelo y no puede serlo. Cada marca es una liquidación que ya ocurrió: nuestro propio recolector las registra en nueve exchanges a medida que las plataformas las publican, y el indicador coloca cada liquidación grande en el gráfico al precio exacto y en la vela exacta en que se produjo. Nada aquí se proyecta hacia adelante. Es el registro de dónde murió el apalancamiento, tomado del mismo feed que alimenta el mapa de calor de liquidaciones y la página Rekt.",
    "kind": [
     "html"
    ],
@@ -7685,7 +7685,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 86
+   "w": 78
   },
   "Yhem_K3Sez": {
    "en": "<i>What you see</i>",
@@ -7699,9 +7699,9 @@
    "n": 2,
    "w": 3
   },
-  "8vUUmMLBai": {
-   "en": "<b>Solid lines on the price.</b> <b style=\"color:#ff6258\">Red</b> = a LONG that gets force-SOLD there. <b style=\"color:#2ebd85\">Green</b> = a SHORT that gets force-BOUGHT there. Solid, because the four indicators above are models and these are facts - a dashed line on this chart always means something modelled.",
-   "es": "<b>Líneas sólidas sobre el precio.</b> <b style=\"color:#ff6258\">Rojo</b> = un LONG que se vende a la fuerza ahí. <b style=\"color:#2ebd85\">Verde</b> = un SHORT que se compra a la fuerza ahí. Sólidas, porque los cuatro indicadores de arriba son modelos y estos son hechos - una línea discontinua en este gráfico siempre significa algo modelado.",
+  "2G8yoZpDTt": {
+   "en": "<b>Circles on the candles.</b> <b style=\"color:#ff6258\">Red</b> = a LONG was force-SOLD there. <b style=\"color:#2ebd85\">Green</b> = a SHORT was force-BOUGHT there. The bigger the circle, the bigger the position that was closed.",
+   "es": "<b>Círculos sobre las velas.</b> <b style=\"color:#ff6258\">Rojo</b> = ahí se vendió un LONG a la fuerza. <b style=\"color:#2ebd85\">Verde</b> = ahí se compró un SHORT a la fuerza. Cuanto más grande el círculo, más grande la posición que se cerró.",
    "kind": [
     "html"
    ],
@@ -7709,11 +7709,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 38
+   "w": 25
   },
-  "KRikxKLane": {
-   "en": "<b>The label</b> carries the position's size and its leverage: <b>$98.5M 14x</b> is a different animal from $98.5M at 2x, because the 14x one is far closer to its own trigger.",
-   "es": "<b>La etiqueta</b> lleva el tamaño de la posición y su apalancamiento: <b>$98.5M 14x</b> es un animal distinto a $98.5M a 2x, porque la de 14x está mucho más cerca de su propio gatillo.",
+  "Hxy8AcJYLU": {
+   "en": "<b>Tap or click a circle</b> for a card with the size, the side in words, the venue it happened on, and how far that price sits from the price now.",
+   "es": "<b>Toca o haz clic en un círculo</b> para ver una tarjeta con el tamaño, el lado en palabras, el exchange donde ocurrió y a qué distancia está ese precio del precio actual.",
    "kind": [
     "html"
    ],
@@ -7721,11 +7721,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 29
+   "w": 28
   },
-  "BdGWDn3Gie": {
-   "en": "<b>The legend</b> names the nearest one, how far away it is, and the total forced money standing above you and below you.",
-   "es": "<b>La leyenda</b> indica cuál es la más cercana, a qué distancia está y el total del dinero forzado que hay por encima y por debajo de ti.",
+  "dbtup4RSqb": {
+   "en": "<b>The legend</b> names the total liquidated in the window, the biggest single hit and how many marks are on the chart.",
+   "es": "<b>La leyenda</b> indica el total liquidado en la ventana, el golpe más grande y cuántas marcas hay en el gráfico.",
    "kind": [
     "html"
    ],
@@ -7733,7 +7733,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 22
+   "w": 21
   },
   "iVx6u6wtH_": {
    "en": "<i>Before a trade</i>",
@@ -7747,9 +7747,9 @@
    "n": 2,
    "w": 2
   },
-  "brH8fgdy37": {
-   "en": "<b>Before a long:</b> a GREEN line above you is fuel. A short that must be bought back there is a market order nobody can cancel, and everyone else can see it coming too - moves into these levels tend to accelerate rather than stall, so it reads as a target, not a level to fade.",
-   "es": "<b>Antes de un long:</b> una línea VERDE por encima de ti es combustible. Un short que debe recomprarse ahí es una orden a mercado que nadie puede cancelar, y todos los demás también pueden verla venir - los movimientos hacia estos niveles tienden a acelerar en lugar de frenar, así que se lee como un objetivo, no como un nivel para operar en contra.",
+  "BJIT7aqLBM": {
+   "en": "<b>Before a long:</b> price coming back DOWN into a thick band of red circles is arriving where forced selling already happened once. Either it gets absorbed and that is your level, or it breaks and the same thing happens again. Green circles above you mark where shorts were squeezed out, so a move back up through them has fuel behind it.",
+   "es": "<b>Antes de un long:</b> que el precio vuelva a BAJAR hacia una banda espesa de círculos rojos significa que llega a donde ya hubo ventas forzadas una vez. O se absorbe y ese es tu nivel, o se rompe y vuelve a pasar lo mismo. Los círculos verdes por encima marcan dónde se exprimieron los shorts, así que un movimiento de vuelta hacia arriba a través de ellos tiene combustible detrás.",
    "kind": [
     "html"
    ],
@@ -7757,11 +7757,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 48
+   "w": 58
   },
-  "n7T7wmtZ1u": {
-   "en": "<b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you means standing in front of buyers who have no choice.",
-   "es": "<b>Antes de un short:</b> el espejo. Una línea ROJA por debajo de ti es tu objetivo; abrir un short hacia un cúmulo verde por encima de ti significa ponerte delante de compradores que no tienen otra opción.",
+  "PmOcONgsrX": {
+   "en": "<b>Before a short:</b> the mirror. Shorting into a band of green circles is shorting where shorts were already force-closed once, and a wall of red circles below is where the selling has already been done.",
+   "es": "<b>Antes de un short:</b> el espejo. Abrir un short hacia una banda de círculos verdes es hacerlo donde ya se cerraron shorts a la fuerza una vez, y un muro de círculos rojos abajo es donde la venta ya se hizo.",
    "kind": [
     "html"
    ],
@@ -7769,11 +7769,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 27
+   "w": 32
   },
-  "ZXEoxZLYDA": {
-   "en": "<b>What to avoid:</b> being long just above a red cluster, or short just below a green one. That is where the forced flow appears, and it appears all at once.",
-   "es": "<b>Qué evitar:</b> estar long justo por encima de un cúmulo rojo, o short justo por debajo de uno verde. Ahí es donde aparece el flujo forzado, y aparece todo de golpe.",
+  "JYzx7ZOZkZ": {
+   "en": "<b>What to avoid:</b> reading an empty chart as a signal. No circles means the market has simply been calm for 24 hours - which is information, not a setup.",
+   "es": "<b>Qué evitar:</b> leer un gráfico vacío como una señal. Que no haya círculos solo significa que el mercado ha estado tranquilo durante 24 horas, lo cual es información, no un setup.",
    "kind": [
     "html"
    ],
@@ -7781,11 +7781,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 28
+   "w": 26
   },
-  "g8i6lFiu00": {
-   "en": "<i>Example legend line</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% below &middot; +4",
-   "es": "<i>Ejemplo de línea de leyenda</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% por debajo &middot; +4",
+  "iXSur_viJh": {
+   "en": "<i>Example legend line</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked",
+   "es": "<i>Ejemplo de línea de leyenda</i>LIQUIDATIONS 24h $6.7M &middot; biggest $600K &middot; 24 marked",
    "kind": [
     "html"
    ],
@@ -7793,11 +7793,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 12
+   "w": 10
   },
-  "7Hz1nNQuUz": {
-   "en": "<b>Limits.</b> It can only see Hyperliquid, which is where the largest on-chain perp positions sit - a whale on a centralised exchange is invisible to everybody, us included. On a quiet coin there may be nothing within 15%, and the legend says so plainly rather than drawing something weak; when that happens it names the nearest real one on any coin so you know the layer is alive. A whale can also add margin and move their own liquidation price, so a level is true as of the last poll, not for ever.",
-   "es": "<b>Límites.</b> Solo puede ver Hyperliquid, que es donde se concentran las mayores posiciones de perpetuos en la cadena - una ballena en un exchange centralizado es invisible para todos, nosotros incluidos. En una moneda tranquila puede no haber nada dentro del 15%, y la leyenda lo dice claramente en lugar de dibujar algo débil; cuando eso pasa, indica la más cercana real en cualquier moneda para que sepas que la capa sigue activa. Una ballena también puede añadir margen y mover su propio precio de liquidación, así que un nivel es válido a fecha de la última consulta, no para siempre.",
+  "rW3GzHVdQR": {
+   "en": "<b>Limits.</b> It covers the ten coins our feed records - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX and LTC. On any other market the indicator cannot be switched on at all and says it has no data, rather than drawing an empty chart you might read as calm. The window is the last 24 hours and nothing older is kept on the chart, so a level that mattered last week is not marked. And an exchange only publishes what it chooses to publish: the marks are a floor on what really liquidated, never a total.",
+   "es": "<b>Límites.</b> Cubre las diez monedas que registra nuestro feed - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX y LTC. En cualquier otro mercado el indicador no se puede activar en absoluto, y avisa que no tiene datos en vez de dibujar un gráfico vacío que podrías leer como calma. La ventana son las últimas 24 horas y no se guarda nada más antiguo en el gráfico, así que un nivel que importó la semana pasada no queda marcado. Y un exchange solo publica lo que decide publicar: las marcas son un suelo de lo que realmente se liquidó, nunca un total.",
    "kind": [
     "html"
    ],
@@ -7805,7 +7805,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 87
+   "w": 93
   },
   "HMYmr-Pizz": {
    "en": "<small>6 &middot; Priced from real cascades</small>Liquidation Wall",
@@ -7831,9 +7831,9 @@
    "n": 1,
    "w": 13
   },
-  "kBQmdKs_j9": {
-   "en": "Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges; bands are grouped by weight, and each group carries the median that has actually liquidated in it, the range around that median, and how many cases it rests on.",
-   "es": "Todo mapa de liquidaciones, el nuestro incluido, te dice DÓNDE es probable que se liquiden posiciones. Ninguno puede decirte cuánto vale eso, y el método habitual - leerlo a partir del interés abierto - sobreestima una banda promedio de BTC en unas treinta veces lo que realmente se ha liquidado en una. Así que lo medimos. Hemos registrado cerca de un millón de eventos de liquidación reales en nueve exchanges; las bandas se agrupan por peso, y cada grupo lleva la mediana que realmente se ha liquidado en ella, el rango alrededor de esa mediana y en cuántos casos se basa.",
+  "q0wc8_TmnW": {
+   "en": "Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges, and the dollar figure is fitted across those measured cascades - heavier bands against what heavier bands have really cost. The fit is published rather than claimed: the day it shipped it read slope 0.916 with R&sup2; 0.867 on SOL and slope 0.708 with R&sup2; 0.933 on ETH.",
+   "es": "Todo mapa de liquidaciones, el nuestro incluido, te dice DÓNDE es probable que se liquiden posiciones. Ninguno puede decirte cuánto vale eso, y el método habitual - leerlo a partir del interés abierto - sobreestima una banda promedio de BTC en unas treinta veces lo que realmente ha liquidado alguna vez. Así que lo medimos. Hemos registrado casi un millón de eventos reales de liquidación en nueve exchanges, y la cifra en dólares se ajusta a partir de esas cascadas medidas - bandas más pesadas frente a lo que las bandas más pesadas realmente han costado. El ajuste se publica en vez de solo afirmarse: el día que se lanzó, marcaba una pendiente de 0.916 con R&sup2; 0.867 en SOL y una pendiente de 0.708 con R&sup2; 0.933 en ETH.",
    "kind": [
     "html"
    ],
@@ -7841,7 +7841,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 96
+   "w": 112
   },
   "DGGplq6dF3": {
    "en": "<b>Two dashed lines:</b> the heaviest cluster above price and the heaviest below. Dashed, because where the cluster sits is modelled.",
@@ -7855,9 +7855,9 @@
    "n": 1,
    "w": 20
   },
-  "l57CD1Ii5D": {
-   "en": "<b>A dollar figure on each</b> - and that half is measured, not modelled.",
-   "es": "<b>Una cifra en dólares en cada una</b> - y esa mitad está medida, no modelada.",
+  "8k3Vy-cJEJ": {
+   "en": "<b>A dollar figure on each, priced separately.</b> Each side is priced at its OWN weight, so the two normally carry different figures - there is no single number for the whole chart. That half is measured, not modelled.",
+   "es": "<b>Una cifra en dólares para cada lado, con precio por separado.</b> Cada lado se cotiza según su PROPIO peso, así que normalmente los dos llevan cifras distintas - no hay un número único para todo el gráfico. Esa mitad está medida, no modelada.",
    "kind": [
     "html"
    ],
@@ -7865,11 +7865,11 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 11
+   "w": 36
   },
-  "8ALEdG6xYx": {
-   "en": "<b>The legend</b> names the range behind the median and how many real cascades it came from, so you can see how much weight to put on it.",
-   "es": "<b>La leyenda</b> indica el rango detrás de la mediana y de cuántas cascadas reales proviene, para que veas cuánto peso darle.",
+  "G7rNL3OTsd": {
+   "en": "<b>The legend</b> names how many real cascades the figure was fitted from, so you can see how much weight to put on it.",
+   "es": "<b>La leyenda</b> indica a partir de cuántas cascadas reales se ajustó la cifra, para que puedas ver cuánto peso darle.",
    "kind": [
     "html"
    ],
@@ -7877,7 +7877,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 27
+   "w": 23
   },
   "vbk3ZBe-EY": {
    "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.",
@@ -7915,9 +7915,9 @@
    "n": 1,
    "w": 20
   },
-  "gdP7TemcFz": {
-   "en": "<i>Example legend line</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% above",
-   "es": "<i>Ejemplo de línea de leyenda</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% por encima",
+  "Cvxs71uRlK": {
+   "en": "<i>Example legend line</i>LIQ WALL above $2.2M @ 2,857.54 &middot; 13.1%",
+   "es": "<i>Ejemplo de línea de leyenda</i>LIQ WALL above $2.2M @ 2,857.54 &middot; 13.1%",
    "kind": [
     "html"
    ],
@@ -7927,9 +7927,9 @@
    "n": 1,
    "w": 9
   },
-  "v12A4xNwZo": {
-   "en": "<b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a band HEAVIER than any cascade we have on record prints \"at least\" and the median of the heaviest class we have measured, which is a floor rather than an estimate; a band LIGHTER than anything we have measured carries no figure at all, because the lightest measured median would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.",
-   "es": "<b>Límites.</b> La posición de la banda es un modelo y hereda los supuestos de ese modelo. La cifra en dólares se niega a adivinar: una banda MÁS PESADA que cualquier cascada registrada muestra \"al menos\" y la mediana de la clase más pesada que hemos medido, que es un suelo y no una estimación; una banda MÁS LIGERA que cualquier cosa que hayamos medido no lleva ninguna cifra, porque la mediana más ligera medida la sobreestimaría. La calibración se reconstruye a partir de una ventana móvil, así que en una semana tranquila se apoya en menos casos - y la leyenda siempre dice cuántos.",
+  "sIe0rIWftg": {
+   "en": "<b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a cluster HEAVIER than any cascade we have on record prints \"at least $X\", which is a floor rather than an estimate; one LIGHTER than anything we have measured carries no figure at all, because the lightest thing we have measured would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.",
+   "es": "<b>Límites.</b> La posición de la banda es un modelo y hereda los supuestos de ese modelo. La cifra en dólares se niega a adivinar: un cúmulo MÁS PESADO que cualquier cascada que tengamos registrada muestra \"al menos $X\", que es un suelo y no una estimación; uno MÁS LIGERO que cualquier cosa que hayamos medido no lleva ninguna cifra, porque lo más ligero que hemos medido la sobreestimaría. La calibración se reconstruye a partir de una ventana móvil, así que en una semana tranquila se apoya en menos casos - y la leyenda siempre indica cuántos.",
    "kind": [
     "html"
    ],
@@ -7937,7 +7937,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 91
+   "w": 84
   },
   "FfCb5kobcN": {
    "en": "The hit-rate chip: every arrow grades itself",
@@ -7999,9 +7999,9 @@
    "n": 1,
    "w": 5
   },
-  "rPkFqMrHpQ": {
-   "en": "The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts about the book, true whenever they are on the chart.",
-   "es": "Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. Los últimos dos no son una secuencia - son hechos sobre el libro de órdenes, verdaderos siempre que están en el gráfico.",
+  "sRMOVLwvZY": {
+   "en": "The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts rather than forecasts: one is a record of liquidations that already happened, the other prices the clusters above and below you.",
+   "es": "Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. Los últimos dos no son una secuencia - son hechos, no pronósticos: uno es un registro de liquidaciones que ya ocurrieron, el otro pone precio a los cúmulos por encima y por debajo de ti.",
    "kind": [
     "html"
    ],
@@ -8009,7 +8009,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 36
+   "w": 46
   },
   "QvIU_65SoT": {
    "en": "<i>1</i><b>Cascade Radar</b><span>Is the market fragile, and on which side? Decides your size and how wide the stop must be.</span>",
@@ -8136,9 +8136,9 @@
    "n": 2,
    "w": 8
   },
-  "vd8O_BJeHp": {
-   "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published <b>on chain</b> by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has <b>really</b> liquidated in bands of that weight across nine exchanges. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)",
-   "es": "Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados <b>en la cadena</b> por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que <b>realmente</b> se ha liquidado en bandas de ese peso en nueve exchanges. Ningún script de otro sitio de gráficos puede hacer ninguna de las dos cosas, porque esos lenguajes de scripting no pueden acceder a un libro de órdenes ni a un feed de liquidaciones en absoluto - todo indicador de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico que estás viendo. (Eran ocho hasta septiembre de 2026; los cuatro que se eliminaron eran análisis técnico genérico disponible en cualquier gráfico.)",
+  "g_nyuX_P3R": {
+   "en": "Two of the six are not models at all. Big Liquidations (24h) marks liquidations that <b>really happened</b>, each on the price and candle it printed at, from our own feed across nine exchanges; the Liquidation Wall prices the heaviest cluster above price and the heaviest below, each at its own weight, from what has <b>really</b> liquidated at that weight. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)",
+   "es": "Dos de los seis no son modelos en absoluto. Big Liquidations (24h) marca las liquidaciones que <b>realmente ocurrieron</b>, cada una al precio y en la vela en que se produjo, desde nuestro propio feed en nueve exchanges; el Liquidation Wall pone precio al cúmulo más pesado por encima del precio y al más pesado por debajo, cada uno según su propio peso, a partir de lo que <b>realmente</b> ha liquidado con ese peso. Ningún script de otro sitio de gráficos puede hacer ninguna de las dos cosas, porque esos lenguajes de script no pueden acceder a un libro de órdenes ni a un feed de liquidaciones en absoluto - todo indicador de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidación, y cada uno califica su propia tasa de acierto en vivo en el gráfico que estás viendo. (Hubo ocho hasta septiembre de 2026; los cuatro que se eliminaron eran análisis técnico genérico disponible en cualquier gráfico.)",
    "kind": [
     "html"
    ],
@@ -8146,7 +8146,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 123
+   "w": 138
   },
   "jImHGJDGGu": {
    "en": "Do I need Premium?",
@@ -8294,9 +8294,9 @@
    "n": 2,
    "w": 5
   },
-  "HkRoKk1j2f": {
-   "en": "Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
-   "es": "Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo interpretarlo antes de una posición.",
+  "BO2HmmU7Q8": {
+   "en": "Big Liquidations (24h), Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
+   "es": "Big Liquidations (24h), Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo interpretarlo antes de abrir una posición.",
    "kind": [
     "attr:content"
    ],
@@ -8304,7 +8304,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 24
+   "w": 25
   },
   "PZh3tMkMCq": {
    "en": "What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.",
@@ -8366,9 +8366,9 @@
    "n": 1,
    "w": 2
   },
-  "_U7QZcTPzo": {
-   "en": "Whale Liquidations",
-   "es": "Whale Liquidations",
+  "pFPSdkf7tT": {
+   "en": "Big Liquidations (24h)",
+   "es": "Big Liquidations (24h)",
    "kind": [
     "ld"
    ],
@@ -8376,7 +8376,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 2
+   "w": 3
   },
   "Fxffv3BziT": {
    "en": "Liquidation Wall",
@@ -8426,9 +8426,9 @@
    "n": 1,
    "w": 43
   },
-  "O7h7WZVH1l": {
-   "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published on chain by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has really liquidated in bands of that weight across nine exchanges. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
-   "es": "Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados en la cadena por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que realmente se ha liquidado en bandas de ese peso en nueve exchanges. Eso no está disponible en ningún otro lugar, porque los lenguajes de scripting de otros sitios de gráficos no pueden acceder a un libro de órdenes ni a un feed de liquidaciones - todo script de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico en el que estás.",
+  "oiWYaLL5Qd": {
+   "en": "Two of the six are not models at all. Big Liquidations (24h) marks liquidations that really happened, each on the exact price and candle it printed at, from MarginPad's own feed across nine exchanges; the Liquidation Wall prices the heaviest cluster above price and the heaviest below, each at its own weight, from what has really liquidated at that weight. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
+   "es": "Dos de los seis no son modelos en absoluto. Big Liquidations (24h) marca las liquidaciones que realmente ocurrieron, cada una al precio y en la vela exactos en que se produjo, desde el propio feed de MarginPad en nueve exchanges; el Liquidation Wall pone precio al cúmulo más pesado por encima del precio y al más pesado por debajo, cada uno según su propio peso, a partir de lo que realmente ha liquidado con ese peso. Eso no está disponible en ningún otro sitio, porque los lenguajes de script de otros sitios de gráficos no pueden acceder a un libro de órdenes ni a un feed de liquidaciones - todo script de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidación, y cada uno califica su propia tasa de acierto en vivo en el gráfico en el que estás.",
    "kind": [
     "ld"
    ],
@@ -8436,7 +8436,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 102
+   "w": 118
   },
   "OOr6V2AEVs": {
    "en": "Do I need Premium to use them?",
@@ -139446,9 +139446,9 @@
    "n": 1,
    "w": 2
   },
-  "aBKzJlUImn": {
-   "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Whale Liquidations and the Liquidation Wall - six readouts built on data no other chart has. Two of them are not models at all: one draws the REAL on-chain liquidation price of every tracked Hyperliquid position over $1M, the other prices the heaviest cluster near you from what has actually liquidated there, measured across nine exchanges. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
-   "es": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Whale Liquidations y la Liquidation Wall - seis lecturas construidas sobre datos que ningún otro gráfico tiene. Dos de ellas no son modelos en absoluto: una dibuja el precio de liquidación REAL en la cadena de cada posición rastreada en Hyperliquid superior a $1M, la otra calcula el cúmulo más pesado cerca de ti a partir de lo que realmente se ha liquidado ahí, medido en nueve exchanges. Cada una lleva una tarjeta que describe su estado en palabras, y un toque la explica antes de un long y antes de un short.",
+  "Vr4tn7AQ2N": {
+   "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations and the Liquidation Wall - six readouts built on data no other chart has. Two of them are not models at all: one marks every big liquidation of the last 24 hours on the exact candle and price it happened on, from our own feed across nine exchanges, the other prices the heaviest cluster above you and the heaviest below you from what has actually liquidated at that weight. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
+   "es": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations y el Liquidation Wall - seis lecturas construidas sobre datos que ningún otro gráfico tiene. Dos de ellas no son modelos en absoluto: una marca cada gran liquidación de las últimas 24 horas en la vela y el precio exactos en que ocurrió, desde nuestro propio feed en nueve exchanges, la otra pone precio al cúmulo más pesado por encima de ti y al más pesado por debajo de ti a partir de lo que realmente ha liquidado con ese peso. Cada una lleva una tarjeta que describe su estado en palabras, y un toque la explica antes de un long y antes de un short.",
    "kind": [
     "html"
    ],
@@ -139456,7 +139456,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 82
+   "w": 97
   },
   "ahM393ItOf": {
    "en": "<span class=\"tapk\">What each one tells you &rarr;</span>",
@@ -141054,9 +141054,9 @@
    "n": 1,
    "w": 72
   },
-  "xn1QgYIO0t": {
-   "en": "Whale Liquidations <i>REAL, NOT MODELLED</i>",
-   "es": "Whale Liquidations <i>REAL, NO MODELADO</i>",
+  "qWDUm9ik52": {
+   "en": "Big Liquidations (24h) <i>REAL EVENTS, NOT A MODEL</i>",
+   "es": "Big Liquidations (24h) <i>EVENTOS REALES, NO UN MODELO</i>",
    "kind": [
     "html"
    ],
@@ -141064,11 +141064,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 5
+   "w": 7
   },
-  "oWNyngIhPQ": {
-   "en": "At exactly what price does a whale get force-closed - and which way will that push the market?",
-   "es": "¿A qué precio exacto se cierra a la fuerza una ballena - y en qué dirección empujará eso al mercado?",
+  "LP7AiGd5Zv": {
+   "en": "Where has leverage actually been force-closed in the last 24 hours - and what happens when price goes back there?",
+   "es": "¿Dónde se ha cerrado realmente el apalancamiento a la fuerza en las últimas 24 horas, y qué pasa cuando el precio vuelve ahí?",
    "kind": [
     "html"
    ],
@@ -141076,11 +141076,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 16
+   "w": 19
   },
-  "oezea8Mj04": {
-   "en": "<b>You see:</b> solid lines on the price, each labelled with a position size and its leverage. <b>Red</b> = a long that gets force-SOLD there. <b>Green</b> = a short that gets force-BOUGHT there. The legend names the nearest one and how much forced money sits above you and below you.",
-   "es": "<b>Ves:</b> líneas sólidas sobre el precio, cada una con el tamaño de la posición y su apalancamiento. <b>Rojo</b> = un long que se vende a la fuerza ahí. <b>Verde</b> = un short que se compra a la fuerza ahí. La leyenda indica cuál es la más cercana y cuánto dinero forzado hay por encima y por debajo de ti.",
+  "s4OkHQEzvC": {
+   "en": "<b>You see:</b> circles on the candles, at the exact price and the exact candle where a big liquidation happened in the last 24 hours. <b>Red</b> = a long was force-SOLD there. <b>Green</b> = a short was force-BOUGHT there. The bigger the circle, the bigger the position. Tap one for its size, the side in words, the venue it happened on and how far that price is from the price now.",
+   "es": "<b>Ves:</b> círculos sobre las velas, en el precio exacto y la vela exacta donde ocurrió una gran liquidación en las últimas 24 horas. <b>Rojo</b> = ahí se vendió un long a la fuerza. <b>Verde</b> = ahí se compró un short a la fuerza. Cuanto más grande el círculo, más grande la posición. Toca uno para ver su tamaño, el lado en palabras, el exchange donde ocurrió y a qué distancia está ese precio del precio actual.",
    "kind": [
     "html"
    ],
@@ -141088,11 +141088,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 44
+   "w": 65
   },
-  "bWCMYYEbd4": {
-   "en": "<b>It means:</b> every other liquidation indicator you can buy anywhere is a guess, because the scripting languages on other charting sites cannot reach a liquidation feed at all. These are not guesses. Hyperliquid publishes every account’s position on chain, so the price on the line is the price the exchange itself will close that trader at - we read it, we do not model it. We poll the 1,000 largest wallets and draw the positions over $1M, which is the part of the book big enough to move a market.",
-   "es": "<b>Significa:</b> cualquier otro indicador de liquidaciones que puedas comprar en cualquier parte es una suposición, porque los lenguajes de scripting de otros sitios de gráficos no pueden acceder a un feed de liquidaciones en absoluto. Estos no son suposiciones. Hyperliquid publica la posición de cada cuenta en la cadena, así que el precio en la línea es el precio al que el propio exchange cerrará a ese trader - lo leemos, no lo modelamos. Consultamos las 1,000 carteras más grandes y dibujamos las posiciones superiores a $1M, que es la parte del libro lo bastante grande para mover un mercado.",
+  "8GsZIh6CyO": {
+   "en": "<b>It means:</b> every other liquidation indicator you can buy anywhere is a guess, because the scripting languages on other charting sites cannot reach a liquidation feed at all. These are not guesses and not forecasts - they are events our own collector recorded across nine exchanges. Where they cluster is where leverage actually died: that is where the stops sat, and where the market proved somebody was offside. A band of red circles under a drop is the cascade that caused it. It covers the ten coins our feed records - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX and LTC; on any other market it cannot be switched on and says it has no data.",
+   "es": "<b>Significa:</b> cualquier otro indicador de liquidaciones que puedas comprar en cualquier parte es una suposición, porque los lenguajes de script de otros sitios de gráficos no pueden acceder a un feed de liquidaciones en absoluto. Estos no son suposiciones ni pronósticos - son eventos que nuestro propio recolector registró en nueve exchanges. Donde se agrupan es donde realmente murió el apalancamiento: ahí estaban los stops, y ahí el mercado demostró que alguien estaba mal posicionado. Una banda de círculos rojos bajo una caída es la cascada que la causó. Cubre las diez monedas que registra nuestro feed - BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX y LTC; en cualquier otro mercado no se puede activar y avisa que no tiene datos.",
    "kind": [
     "html"
    ],
@@ -141100,11 +141100,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 86
+   "w": 111
   },
-  "mc6vNyBSxe": {
-   "en": "<b>Before a long:</b> a GREEN line above you is fuel - a short that must be bought back there, by an order nobody can cancel. Moves into it tend to accelerate rather than stall, so treat it as a target, not a level to fade. What to avoid is being long just above a RED cluster: that is where the forced sellers appear.<br><b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you is standing in front of buyers who have no choice.",
-   "es": "<b>Antes de un long:</b> una línea VERDE por encima de ti es combustible - un short que debe recomprarse ahí, mediante una orden que nadie puede cancelar. Los movimientos hacia ahí tienden a acelerar en lugar de frenar, así que trátalo como un objetivo, no como un nivel para operar en contra. Lo que hay que evitar es estar long justo por encima de un cúmulo ROJO: ahí es donde aparecen los vendedores forzados.<br><b>Antes de un short:</b> el espejo. Una línea ROJA por debajo de ti es tu objetivo; abrir un short hacia un cúmulo verde por encima de ti es ponerte delante de compradores que no tienen otra opción.",
+  "uS7q8TDC3d": {
+   "en": "<b>Before a long:</b> price coming back DOWN into a thick band of red circles is arriving where forced selling already happened once - either it gets absorbed and that is your level, or it breaks and the same thing happens again. Green circles above you mark where shorts were squeezed out, so a move back up through them has fuel behind it.<br><b>Before a short:</b> the mirror. Shorting into a band of green circles is shorting where shorts were already force-closed once. An empty chart means the market has been calm - which is information too.",
+   "es": "<b>Antes de un long:</b> que el precio vuelva a BAJAR hacia una banda espesa de círculos rojos significa que llega a donde ya hubo ventas forzadas una vez - o se absorbe y ese es tu nivel, o se rompe y vuelve a pasar lo mismo. Los círculos verdes por encima marcan dónde se exprimieron los shorts, así que un movimiento de vuelta hacia arriba a través de ellos tiene combustible detrás.<br><b>Antes de un short:</b> el espejo. Abrir un short hacia una banda de círculos verdes es hacerlo donde ya se cerraron shorts a la fuerza una vez. Un gráfico vacío significa que el mercado ha estado tranquilo, lo cual también es información.",
    "kind": [
     "html"
    ],
@@ -141112,7 +141112,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 83
+   "w": 89
   },
   "zQtuxvduKR": {
    "en": "Liquidation Wall <i>MEASURED IN DOLLARS</i>",
@@ -141138,9 +141138,9 @@
    "n": 1,
    "w": 13
   },
-  "bnT9hfkkGf": {
-   "en": "<b>You see:</b> one dashed line for the heaviest cluster above price and one below, each labelled with a dollar figure, and a legend line naming how many real cascades the figure was measured from.",
-   "es": "<b>Ves:</b> una línea discontinua para el cúmulo más pesado por encima del precio y otra por debajo, cada una con una cifra en dólares, y una línea de leyenda que indica a partir de cuántas cascadas reales se midió la cifra.",
+  "7E89jP5knM": {
+   "en": "<b>You see:</b> one dashed line for the heaviest cluster above price and one for the heaviest below, each priced at its OWN weight - so the two sides normally carry different dollar figures - and a legend line naming how many real cascades that figure was fitted from.",
+   "es": "<b>Ves:</b> una línea discontinua para el cúmulo más pesado por encima del precio y otra para el más pesado por debajo, cada una con precio según su PROPIO peso - así que los dos lados normalmente llevan cifras distintas en dólares - y una línea de leyenda que indica a partir de cuántas cascadas reales se ajustó esa cifra.",
    "kind": [
     "html"
    ],
@@ -141148,11 +141148,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 32
+   "w": 45
   },
-  "d6RrZjUI07": {
-   "en": "<b>It means:</b> WHERE the cluster sits is a model, the same leverage maths every liquidation map uses. The MONEY is not. We have recorded nearly a million real liquidations across nine exchanges, so we can say what has actually liquidated in bands of this weight: the figure is that measured median. When a band is heavier than anything we have on record the line says <b>at least</b> - a floor, never an invented number - and a band lighter than anything we have measured carries no figure at all.",
-   "es": "<b>Significa:</b> DÓNDE se ubica el cúmulo es un modelo, la misma matemática de apalancamiento que usa todo mapa de liquidaciones. El DINERO no lo es. Hemos registrado casi un millón de liquidaciones reales en nueve exchanges, así que podemos decir qué se ha liquidado realmente en bandas de este peso: la cifra es esa mediana medida. Cuando una banda es más pesada que cualquier cosa registrada, la línea dice <b>al menos</b> - un suelo, nunca un número inventado - y una banda más ligera que cualquier cosa que hayamos medido no lleva ninguna cifra.",
+  "MPHSmjwqu9": {
+   "en": "<b>It means:</b> WHERE the cluster sits is a model, the same leverage maths every liquidation map uses. The MONEY is not. We have recorded nearly a million real liquidations across nine exchanges, so we can say what has actually liquidated at a weight like this one: the figure is fitted across those measured cascades, and the fit is published rather than claimed - the day it shipped it read slope 0.916, R&sup2; 0.867 on SOL and slope 0.708, R&sup2; 0.933 on ETH. When a cluster is heavier than anything we have on record the line says <b>at least</b> - a floor, never an invented number - and one lighter than anything we have measured carries no figure at all.",
+   "es": "<b>Significa:</b> DÓNDE se ubica el cúmulo es un modelo, la misma matemática de apalancamiento que usa cualquier mapa de liquidaciones. El DINERO no lo es. Hemos registrado casi un millón de liquidaciones reales en nueve exchanges, así que podemos decir qué ha liquidado realmente con un peso como este: la cifra se ajusta a partir de esas cascadas medidas, y el ajuste se publica en vez de solo afirmarse - el día que se lanzó, marcaba una pendiente de 0.916, R&sup2; 0.867 en SOL y una pendiente de 0.708, R&sup2; 0.933 en ETH. Cuando un cúmulo es más pesado que cualquier cosa que tengamos registrada, la línea dice <b>al menos</b> - un suelo, nunca un número inventado - y uno más ligero que cualquier cosa que hayamos medido no lleva ninguna cifra.",
    "kind": [
     "html"
    ],
@@ -141160,7 +141160,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 82
+   "w": 109
   },
   "0iqRD8ip7J": {
    "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.<br><b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",

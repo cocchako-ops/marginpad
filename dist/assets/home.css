@@ -3584,4 +3584,6 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
   .cwin-ind-menu-list>.cwin-ind-item{min-width:0;}
   .cwin-ind-item .cwin-ind-it-lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .cwin-ind-menu-h{grid-column:1/-1;}
+  /* five period chips cannot share a 187px column with a label - these rows take the whole width */
+  .cwin-ind-menu-list>.cwin-ind-item:has(.cwin-ind-pers){grid-column:1/-1;}
 }

@@ -43,7 +43,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
   const home = await text(ORIGIN + '/assets/home.js?cb=' + Date.now());
   const mm = home.body.match(/\/assets\/mp-mcharts\.js\?v=[a-f0-9]+/);
   const mmb = await text(ORIGIN + (mm ? mm[0] : '/assets/mp-mcharts.js'));
-  chk('mp-mcharts: lists the same six and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain \(adaptive AI\)'\],\['memory','Market Memory \(AI forecast\)'\],\['magnet','Liquidation Magnet'\],\['whaleliq','Big Liquidations \(24h\)'\],\['liqwall','Liquidation Wall \(measured \$\)'\]\]/.test(mmb.body) && /'MarginPad AI',\['casc','brain','memory','magnet','whaleliq','liqwall'\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
+  chk('mp-mcharts: lists the same six and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain'\],\['memory','Market Memory'\],\['magnet','Liquidation Magnet'\],\['whaleliq','Big Liquidations \(24h\)'\],\['liqwall','Liquidation Wall'\]\]/.test(mmb.body) && /'MarginPad AI',\['casc','brain','memory','magnet','whaleliq','liqwall'\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
   const wk = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
   chk('worker: the Telegram brief edition carries the trading-report link', wk.indexOf('<a href="https://marginpad.io/trading-report/">Your trading report</a>') >= 0);
   const oi = await (await fetch(ORIGIN + '/api/cg/openinterest', { cache: 'no-store' })).json();
