@@ -192,6 +192,10 @@ function getStatus() {
   return {
     ok: exchanges.some((e) => e.connected),
     startedAt, uptimeSec: Math.floor((now - startedAt) / 1000),
+    // pm2 enforces its ceiling on RSS, so RSS is the number that decides whether this process lives; heapUsed
+    // beside it is what tells a leak (objects held) from the allocator keeping freed pages (which settles).
+    mem: (() => { const m = process.memoryUsage(); const mb = (v) => Math.round(v / 1048576);
+      return { rssMb: mb(m.rss), heapUsedMb: mb(m.heapUsed), heapTotalMb: mb(m.heapTotal), externalMb: mb(m.external) }; })(),
     symbols: config.symbols, inserted, deduped,
     // What the plausibility ceiling refused, and what it was. `rejected` staying at 0 is the normal state;
     // anything in `rejectLog` is either an adapter double-counting a position field (which is what this
