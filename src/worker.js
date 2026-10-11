@@ -12083,7 +12083,7 @@ async function handleNowpayIpn(request, env) {
         if (payId) await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 });
         let expiry;
         if (life) { expiry = Date.now() + 100 * 365 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry)); await env.STATS.put('prem:founder:' + uid, '1'); }
-        else { let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
+        else { let base = Date.now(); try { const cur = await premCurrentUntil(env, uid); if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
         try { await premMarkName(env, uid); } catch (e) {}
         try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
         try { await premPayLog(env, { id: 'np:' + (payId || uid + ':' + Date.now()), ts: Date.now(), acct: 'u:' + uid, kind: life ? 'founder' : 'monthly', cents: Math.round((+data.price_amount || (life ? 39.99 : PREM_USD('premium'))) * 100), via: 'nowpayments', cur: String(data.pay_currency || '').toUpperCase(), until: expiry, src: 'ipn' }); } catch (e) {} // payment book
@@ -12570,6 +12570,18 @@ const WH_EVENTS = ['position.opened', 'position.updated', 'position.closed', 'po
 const PORDER_TTL = 30 * 86400000;       // GTC with a 30-day expiry - an order nobody remembers placing is not a feature
 const PT_MAX_OPEN = 50, PT_MAX_PAIR = 10;
 // Resolve the current session user's premium standing: owner grant (premium:allow) OR active paid sub (prem:sub:<uid>).
+/* WHEN DOES THIS ACCOUNT'S PREMIUM ACTUALLY END (2026-10-11)? There are TWO stores - the KV row `prem:sub:<uid>`
+   that a payment writes, and the `users.premium` column that an owner grant writes - and `premiumFor` reads
+   whichever runs longer. Both grant paths used to extend from the KV row alone, so a member sitting on a 60-day
+   owner grant who paid for a month would have had `setPremiumDO` push their column back to 30 days from today and
+   LOSE a month by paying us. Now that extending while active is allowed at all, that path is reachable.
+   Reading both costs one store call on a route that is already talking to the ledger. */
+async function premCurrentUntil(env, uid) {
+  let until = 0;
+  try { until = +(await env.STATS.get('prem:sub:' + uid)) || 0; } catch (e) {}
+  try { const who = await usersDO(env, '/xpdiag', { uid }); const col = +((who && who.user && who.user.premium) || 0); if (col > until) until = col; } catch (e) {}
+  return until;
+}
 async function premiumFor(env, request) {
   const user = await sessionUser(env, getCookie(request, 'mp_sess'));
   const uname = (user && (user.username || '') || '').toLowerCase();
@@ -16786,6 +16798,80 @@ async function checkApiPlanExpiry(env, dry) {
   }
   return out;
 }
+/* TELL THE MEMBER, NOT ONLY THE OWNER (2026-10-11, owner approved: "1. moze").
+   MEASURED the day this was written: six people have ever paid for Premium and ZERO have ever renewed - and
+   nobody was ever asked to. The weekly digest built on 2026-09-02 goes to the OWNER on Telegram so he can decide
+   about grants; the buyer themself has never been told their month is ending, while an API-plan holder has been
+   mailed at seven days and at one since 2026-09-15. Same shape, same two steps, same idempotency mark.
+   A grant is included on purpose: almost every Premium account is one, and the day it ends is the only moment
+   that member has ever been asked whether it was worth paying for. The wording says plainly that it was a gift,
+   that nothing will be charged, and that there is nothing to cancel. */
+async function checkPremiumExpiry(env, dry) {
+  if (!env.STATS) return { skipped: 'no_kv' };
+  const now = Date.now(), out = { checked: 0, mailed: 0, rows: [] };
+  const seen = new Set(), rows = [];
+  try {
+    const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 });
+    for (const k of (l.keys || [])) {
+      const uid = k.name.slice(9); if (!uid || seen.has(uid)) continue;
+      const until = +(await env.STATS.get(k.name)) || 0; if (!(until > now)) continue;
+      // a lifetime row (Founder) is a hundred years out and must never be told it is ending
+      if (until > now + 5 * 365 * 86400000) continue;
+      if (await env.STATS.get('prem:founder:' + uid)) continue;
+      seen.add(uid); rows.push({ uid, until, src: 'paid' });
+    }
+  } catch (e) { return { error: 'list_failed' }; }
+  // column grants live in the store, not in KV - the same list the owner's Monday digest reads
+  try {
+    const r = await usersDO(env, '/premium/expiring', { from: now, to: now + 8 * 86400000 });
+    for (const u of (r && r.rows) || []) { const uid = String(u.id); if (seen.has(uid)) continue; seen.add(uid); rows.push({ uid, until: +u.premium, src: 'grant' }); }
+  } catch (e) {}
+  for (const row of rows) {
+    const { uid, until } = row;
+    if (/^e2e/i.test(uid) && !dry) continue; // throwaway accounts are never mailed; a dry run sends nothing, so it may see them
+    const days = Math.ceil((until - now) / 86400000);
+    const step = days <= 1 ? 1 : days <= 7 ? 7 : 0;   // one a week out, one the day before, and never again
+    if (!step) continue;
+    out.checked++;
+    const when = new Date(until).toISOString().slice(0, 10);
+    const mark = 'prem:exp:' + uid + ':' + step + ':' + when;
+    const already = !!(await env.STATS.get(mark));
+    if (already && !dry) continue;
+    let who = null; try { who = await usersDO(env, '/xpdiag', { uid }); } catch (e) {}
+    const u = (who && who.user) || {};
+    const gift = row.src === 'grant';
+    const body = (gift
+        ? 'Your Premium was a gift from us, and it runs out on ' + when + '.' + String.fromCharCode(10, 10)
+          + 'Nothing will be charged and there is nothing to cancel - it simply stops on that day.' + String.fromCharCode(10, 10)
+        : 'Your MarginPad Premium runs out on ' + when + '.' + String.fromCharCode(10, 10)
+          + 'Nothing renews on its own here. We do not store a card and we will not charge you again unless you ask us to - so if you do nothing, it simply ends on that day.' + String.fromCharCode(10, 10))
+      + 'What stops working:' + String.fromCharCode(10)
+      + '- the four AI indicators on your charts (Cascade Radar, Market Brain, Market Memory, Liquidation Magnet)' + String.fromCharCode(10)
+      + '- the liquidation heatmap goes back to a five-minute preview every twelve hours' + String.fromCharCode(10)
+      + '- your daily Ask AI read on any chart' + String.fromCharCode(10)
+      + '- the Daily Brief, position alerts and the breakdowns in your trading report' + String.fromCharCode(10, 10)
+      + 'Your account, your trades, your XP and everything you have earned stay exactly where they are.' + String.fromCharCode(10, 10)
+      + 'Another month is $' + PREM_USD('premium') + ': https://marginpad.io/premium/' + String.fromCharCode(10)
+      + 'You can also pay for it out of your rewards balance on that page, without spending anything.' + String.fromCharCode(10, 10)
+      + 'If you are done with it, ignore this - there is nothing to cancel.';
+    let sent = false;
+    if (dry) { out.rows.push({ uid, user: u.username || '', src: row.src, days, until: when, email: u.email ? 'on file' : 'NONE', alreadySent: already, preview: body.slice(0, 180) }); continue; }
+    if (u.email && env.RESEND_API_KEY) {
+      try { await sendSupportEmail(env, u.email, (gift ? 'Your MarginPad Premium ends ' : 'Your MarginPad Premium ends ') + when, body, 'alerts'); sent = true; } catch (e) {}
+    }
+    await env.STATS.put(mark, '1', { expirationTtl: 60 * 86400 });
+    out.mailed += sent ? 1 : 0;
+    out.rows.push({ uid, user: u.username || '', src: row.src, days, until: when, mailed: sent });
+  }
+  if (out.rows.length && !dry) {
+    try {
+      await tgAdmin(env, '<b>Premium ending - the member has been told</b>' + String.fromCharCode(10) + out.rows.map(r =>
+        (r.user ? '@' + r.user : r.uid.slice(0, 8)) + ' - ' + r.src + ' - ' + r.days + 'd left, ' + r.until + (r.mailed ? ' - emailed' : ' - NO EMAIL ON FILE')
+      ).join(String.fromCharCode(10)), { kind: 'premium expiring member', sev: 'info' });
+    } catch (e) {}
+  }
+  return out;
+}
 async function syncBotTiers(env) {
   if (!env.USERS) return;
   const users = env.USERS.get(env.USERS.idFromName('main'));
@@ -20177,15 +20263,23 @@ export default {
     if (url.pathname === '/api/premium/paybalance' && request.method === 'POST') { // pay one month of Premium straight from the rewards balance - no invoice, no redirect (owner 2026-09-02: "if they have the balance, just deduct")
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
-      if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
+      // the same rule as the checkout above: a month may always be added, a permanent standing has nothing to add to
+      if (st.premium && !st.until) return J({ error: 'already_premium', until: st.until, source: st.source, hint: 'This account already has Premium with no end date - there is nothing to extend.' });
       const uid = String(st.uid), cents = PREM_PLANS.premium.cents, lock = 'prem:paylock:' + uid; // balance buys the $11.99 Premium month; Plus is card/crypto only
       if (await env.STATS.get(lock)) return J({ error: 'in_progress' }, 429); // a double tap must never charge twice
       await env.STATS.put(lock, '1', { expirationTtl: 60 });
       let deb = null;
       try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents, item: 'premium1m', once: 120 }) })); deb = await r.json(); } catch (e) { deb = null; } // once: the ledger DO itself refuses a second premium1m debit inside 120 s (the KV lock above is not atomic)
-      if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {} return J({ error: deb && deb.error === 'dup' ? 'in_progress' : (deb && deb.error) || 'ledger_unavailable', balance: deb && deb.balance != null ? +deb.balance / 100 : undefined }, deb && deb.error === 'insufficient' ? 402 : deb && deb.error === 'dup' ? 429 : 503); }
+      /* `no_account` IS `insufficient` TO A BUYER (2026-10-11). The ledger says that when the member has never
+         held a rewards account at all - true of anybody who has not claimed from the faucet - and the page
+         turned it into "Could not activate. Please try again.", which is a sentence about us when the real
+         answer is that they have $0.00. The squad and API-plan buy routes already make exactly this mapping;
+         this one did not, and it is on the only button a member can press to renew without spending money. */
+      if (!deb || !deb.ok) { try { await env.STATS.delete(lock); } catch (e) {}
+        const de = deb && deb.error, money = de === 'insufficient' || de === 'no_account';
+        return J({ error: de === 'dup' ? 'in_progress' : money ? 'insufficient' : de || 'ledger_unavailable', balance: money ? (deb && deb.balance != null ? +deb.balance / 100 : 0) : undefined }, money ? 402 : de === 'dup' ? 429 : 503); }
       // grant exactly like the NOWPayments IPN does for a monthly order
-      let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {}
+      let base = Date.now(); try { const cur = await premCurrentUntil(env, uid); if (cur > base) base = cur; } catch (e) {}
       const expiry = base + 30 * 86400000;
       await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 });
       try { await premMarkName(env, uid); } catch (e) {}
@@ -20200,14 +20294,20 @@ export default {
     if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $11.99/mo invoice for the signed-in user
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
-      if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
+      /* A MEMBER COULD NOT PAY US AGAIN (2026-10-11). Six people have ever bought Premium and not one has ever
+         renewed - and this is why: the guard refused ANY buyer who still had a day left, while the page beside it
+         said 'pay again any time to extend' and the expiry mail now says the same. The grant path has always
+         extended rather than replaced (base = max(now, current expiry)), so taking the money was never the
+         problem; starting the invoice was. Only a PERMANENT standing is refused now - a Founder or an owner
+         allow-list grant has no expiry to push and there is nothing to buy. */
+      if (st.premium && !st.until) return J({ error: 'already_premium', until: st.until, source: st.source, hint: 'This account already has Premium with no end date - there is nothing to extend.' });
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
       // FOUNDER IS RETIRED (2026-09-18): it is no longer sold, at any price. A stale page or a bookmarked link
       // asking for it is answered plainly rather than quietly charged for something that no longer exists.
       if (url.searchParams.get('plan') === 'founder') return J({ error: 'plan_retired', hint: 'The Founder plan is no longer sold. Premium is $' + PREM_USD('premium') + ' a month and Premium Plus, which adds Ask AI on the charts, is $' + PREM_USD('plus') + '.' }, 410);
       const plus = url.searchParams.get('plan') === 'plus';
       const P = plus ? PREM_PLANS.plus : PREM_PLANS.premium;
-      if (plus && st.plus) return J({ error: 'already_premium', until: st.until, source: st.source });
+      if (plus && st.plus && !st.until) return J({ error: 'already_premium', until: st.until, source: st.source, hint: 'This account already has Premium Plus with no end date - there is nothing to extend.' });
       const founder = false;
       const body = founder
         ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium - Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
@@ -20943,6 +21043,13 @@ export default {
         }
         return new Response(JSON.stringify({ error: 'bad_kind' }), { status: 400, headers: jh });
       } catch (e) { return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh }); }
+    }
+    if (url.pathname === '/api/admin/premexpiry' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // WHO IS ABOUT TO LAPSE, and what they would be told. A DRY RUN BY DEFAULT - it sends nothing and is the only
+      // place an e2e account is visible, exactly like /api/admin/apiplans?expiring=1. `?send=1` runs the real pass.
+      const dry = url.searchParams.get('send') !== '1';
+      const r = await checkPremiumExpiry(env, dry);
+      return J(Object.assign({ dry }, r));
     }
     if (url.pathname === '/api/admin/apiplans' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // API-plan desk (2026-09-15): who is on which plan, until when, and the payment book. POST grants or revokes one.
@@ -24221,6 +24328,7 @@ export default {
     bg(settleDailyCalls, 'predict'); // Daily call: score yesterday's BTC close guesses into board points
     bg(passRollover, 'pass'); // Season pass: grant reached-but-unclaimed tiers once a season has ended
     bg(checkApiPlanExpiry, 'apiexp'); // tell an API-plan holder BEFORE it lapses - 7 days out and the day before
+    bg(checkPremiumExpiry, 'premexpiry'); // and tell a PREMIUM member the same, which nobody had ever done (2026-10-11)
     bg(squadMvpWeekly, 'squadmvp'); // every squad's MVP for the week that just ended, once per UTC week (KV flag)
     bg(leverageReportSnap, 'levrep'); // the monthly leverage report: current month rolling, previous month sealed once (2026-09-26)
     bg(checkDigest, 'digest');

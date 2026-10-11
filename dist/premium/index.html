@@ -128,6 +128,24 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
   .pmst .pmst-u b{color:#fff}
   .pmst .pmst-a{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
   .pmst .pmst-a .btn{padding:11px 16px;font-size:14px}
+  /* membership card v2 */
+  .pmst .pmst-k{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .pmst .pmst-tag{font:800 9.5px "Space Mono",monospace;letter-spacing:.12em;padding:3px 8px;border-radius:999px;background:rgba(194,246,74,.16);border:1px solid rgba(194,246,74,.45);color:var(--lime)}
+  .pmst .pmst-m{grid-column:2/-1;display:flex;align-items:center;gap:13px;margin-top:11px}
+  .pmst .pmst-m[hidden]{display:none}
+  .pmst .pmst-m i{flex:1;min-width:0;height:7px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;display:block}
+  .pmst .pmst-m i::after{content:"";position:absolute;top:0;bottom:0;left:0;width:var(--w,0%);border-radius:999px;background:var(--lime);transition:width .6s ease}
+  .pmst .pmst-m span{font:700 12.5px "Space Mono",monospace;color:var(--lime);white-space:nowrap}
+  .pmst .pmst-a{grid-column:2/-1}
+  .pmst .pmst-a[hidden]{display:none}
+  .pmst .pmst-a .btn{pointer-events:auto!important}
+  .pmst .pmst-a .pmst-note{flex-basis:100%;font-size:12px;color:var(--faint);line-height:1.5;margin:2px 0 0}
+  .pmst[data-soon="1"]{border-color:rgba(255,176,32,.5);background:linear-gradient(180deg,rgba(255,176,32,.10),rgba(255,176,32,.02))}
+  .pmst[data-soon="1"] .pmst-ic{background:#ffb020}
+  .pmst[data-soon="1"] .pmst-k,.pmst[data-soon="1"] .pmst-m span{color:#ffb020}
+  .pmst[data-soon="1"] .pmst-tag{background:rgba(255,176,32,.16);border-color:rgba(255,176,32,.45);color:#ffb020}
+  .pmst[data-soon="1"] .pmst-m i::after{background:#ffb020}
+  @media(max-width:560px){.pmst{padding:16px 15px;gap:5px 13px}.pmst .pmst-ic{width:40px;height:40px;border-radius:12px}.pmst .pmst-t{font-size:19px}.pmst .pmst-a .btn{flex:1;min-width:150px;justify-content:center}}
   body.pm-member:not(.pm-plus) [data-buy="balance"],body.pm-member:not(.pm-plus) .scarcity{display:none!important}body.pm-plus .scarcity,body.pm-plus .final,body.pm-plus [data-buy="balance"]{display:none!important}body.pm-plus [data-buy]{pointer-events:none;opacity:1;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}body.pm-member:not(.pm-plus) [data-buy="monthly"]{pointer-events:none;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}
   /* the AI-indicators card opens a preview sheet (same idea as the fee window on a closed ticket) */
   .fcard.tap{cursor:pointer}
@@ -190,9 +208,11 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     <div id="pmsg"></div>
     <div class="pmst" id="pmStatus" hidden>
       <div class="pmst-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <div class="pmst-k">YOUR MEMBERSHIP</div>
+      <div class="pmst-k">YOUR MEMBERSHIP<span class="pmst-tag" id="pmPlan">PREMIUM</span></div>
       <div class="pmst-t">Premium is active on your account</div>
       <div class="pmst-u" id="pmUntil">Checking your plan…</div>
+      <div class="pmst-m" id="pmMeter" hidden><i id="pmBar"></i><span id="pmDays"></span></div>
+      <div class="pmst-a" id="pmAct" hidden></div>
     </div>
     <div class="trustrow"><span><b>Pay with crypto</b> · BTC, USDT & more</span><span>No auto-renewal</span><span><b>Instant</b> access</span></div>
   </div>
@@ -395,7 +415,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
       if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open(); else msg.textContent=__esT_premiumindex("pleaseSignInFirst",'Please sign in first.'); return; }
       var label = btn && btn.textContent;
       if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Starting checkout...'; }
-      if(plan==='balance'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent=__esT_premiumindex("premiumIsOnWelcome",'Premium is on - welcome');} msg.textContent=__esT_premiumindex("activeUntil",'Active until ')+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?(__esT_premiumindex("notEnoughBalanceYou",'Not enough balance - you have $')+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?__esT_premiumindex("youAreAlreadyPremium",'You are already Premium - thank you!'):__esT_premiumindex("couldNotActivatePlease",'Could not activate. Please try again.'); }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=__esT_premiumindex("networkErrorPleaseTry",'Network error - please try again.'); }); return; }
+      if(plan==='balance'||plan==='extendbal'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent=__esT_premiumindex("premiumIsOnWelcome",'Premium is on - welcome');} msg.textContent=__esT_premiumindex("activeUntil",'Active until ')+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?(__esT_premiumindex("notEnoughBalanceYou",'Not enough balance - you have $')+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?__esT_premiumindex("youAreAlreadyPremium",'You are already Premium - thank you!'):__esT_premiumindex("couldNotActivatePlease",'Could not activate. Please try again.'); }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=__esT_premiumindex("networkErrorPleaseTry",'Network error - please try again.'); }); return; }
       fetch('/api/premium/checkout' + (plan==='plus'?'?plan=plus':''), {method:'POST'})
         .then(function(r){return r.json();}).then(function(j){
           if(j && j.invoice_url){ location.href = j.invoice_url; return; }
@@ -405,8 +425,33 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     }
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
     // Premium member: say what they have and until when (owner 2026-09-17), instead of a line under the buy buttons
+    function pmDecorate(s){
+      var st=document.getElementById('pmStatus'); if(!st) return;
+      var tag=document.getElementById('pmPlan'), ttl=st.querySelector('.pmst-t');
+      var m=document.getElementById('pmMeter'), bar=document.getElementById('pmBar'), dys=document.getElementById('pmDays'), act=document.getElementById('pmAct');
+      var name=s.plus?'Premium Plus':'Premium';
+      if(tag) tag.textContent=(s.source==='founder'?'FOUNDER':name.toUpperCase());
+      /* no end date = a Founder or an owner grant: there is nothing to count down and nothing to extend */
+      if(!s.until){ if(ttl) ttl.textContent=(s.source==='founder'?'Founder - yours for life':name+' is active on your account'); return; }
+      var days=Math.max(0,Math.ceil((new Date(s.until)-Date.now())/864e5)), soon=days<=7;
+      st.setAttribute('data-soon',soon?'1':'0');
+      /* THE MARK HAS TO AGREE WITH THE SENTENCE. A tick beside 'Premium ends in 3 days' reads as reassurance
+         exactly where the card is trying to get attention - it becomes a clock for that last week. */
+      var ic=st.querySelector('.pmst-ic svg');
+      if(ic) ic.innerHTML=soon?'<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path>':'<path d="M20 6L9 17l-5-5"></path>';
+      if(ttl) ttl.textContent=soon?(name+' ends in '+(days===1?'1 day':days+' days')):(name+' is active on your account');
+      if(m&&bar&&dys){ m.hidden=false; bar.style.setProperty('--w',Math.max(4,Math.min(100,Math.round(days/30*100)))+'%'); dys.textContent=(days===1?'1 day':days+' days')+' left'; }
+      /* PAYING AGAIN IS THE POINT OF THIS CARD. Until 2026-10-11 the worker refused a member who still had a day
+         left, so "pay again any time to extend" was a sentence with nothing behind it. data-buy="extend" and
+         "extendbal" go through the same handler as the buy buttons; they are deliberately NOT data-buy="monthly",
+         which the member stylesheet deadens on purpose. */
+      if(act){ act.hidden=false;
+        act.innerHTML='<button class="btn btn-primary" data-buy="extend">Add another month - $11.99</button>'
+          +'<button class="btn btn-ghost" data-buy="extendbal">Pay from my rewards balance</button>'
+          +'<p class="pmst-note">A month you add starts when this one ends, never instead of it.</p>'; }
+    }
     function memberUntil(s){ if(!s.until) return s.source==='founder'?__esT_premiumindex("founderLifetimeNoRenewals",'Founder - lifetime, no renewals, ever.'):__esT_premiumindex("lifetimeAccessOnThis",'Lifetime access on this account.'); var d=new Date(s.until), days=Math.max(0,Math.ceil((d-Date.now())/864e5)); var when=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); return __esT_premiumindex("activeUntil2",'Active until <b>')+when+'</b> - '+(days===1?'1 day':days+' days')+' left. '+(s.source==='paid'?__esT_premiumindex("nothingRenewsOnIts",'Nothing renews on its own: pay again any time to extend, or let it lapse.'):__esT_premiumindex("grantedOnYourAccount",'Granted on your account.')); }
-    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]',__esT_premiumindex("premiumIsActive",'Premium is active')); if(s.plus) lbl('[data-buy="plus"]',__esT_premiumindex("premiumPlusIsActive",'Premium Plus is active')); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); } var k=document.querySelector('section .sh .k'); if(k){ k.textContent=__esT_premiumindex("whatYouHave",'WHAT YOU HAVE'); k.nextElementSibling.textContent=__esT_premiumindex("everythingOnYourAccount",'Everything on your account'); } } }).catch(function(){});
+    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]',__esT_premiumindex("premiumIsActive",'Premium is active')); if(s.plus) lbl('[data-buy="plus"]',__esT_premiumindex("premiumPlusIsActive",'Premium Plus is active')); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); try{pmDecorate(s);}catch(e){} } var k=document.querySelector('section .sh .k'); if(k){ k.textContent=__esT_premiumindex("whatYouHave",'WHAT YOU HAVE'); k.nextElementSibling.textContent=__esT_premiumindex("everythingOnYourAccount",'Everything on your account'); } } }).catch(function(){});
     // the AI-indicators card opens the preview sheet
     var ish=document.getElementById('indSheet');
     function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=event&type=indsheet&l=open&p=/premium/'); }catch(e){} }
