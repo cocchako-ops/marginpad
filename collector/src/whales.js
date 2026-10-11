@@ -56,6 +56,8 @@ const openGroup = new Map();  // "user|coin|dir" -> the group still collecting f
 let levByKey = new Map();     // "user|coin" -> leverage, filled by the position poll
 let fillCursor = 0;           // where the rotation stands
 let fill429 = 0;
+let pos429 = 0;       // rate-limited position calls in the last cycle
+let rotN = ROTATE_N;  // the rotating slice, shrunk by the back-off below and walked back up when clean
 
 async function post(body, timeoutMs = 12000) {
   const r = await fetch(INFO_URL, {
@@ -145,11 +147,12 @@ async function pollOnce() {
     const core = state.tracked.slice(0, CORE_N);
     const tail = state.tracked.slice(CORE_N);
     const slice = [];
-    for (let i = 0; i < Math.min(ROTATE_N, tail.length); i++) slice.push(tail[(rotCursor + i) % tail.length]);
+    for (let i = 0; i < Math.min(rotN, tail.length); i++) slice.push(tail[(rotCursor + i) % tail.length]);
     if (tail.length) rotCursor = (rotCursor + slice.length) % tail.length;
     const universe = core.concat(slice);
     const polledNow = new Set(universe);
     const seen = [];
+    let hit429 = 0;
     for (const user of universe) {
       try {
         const st = await post({ type: 'clearinghouseState', user });
@@ -168,7 +171,7 @@ async function pollOnce() {
             pnl: Math.round(+p.unrealizedPnl || 0),
           });
         }
-      } catch (e) { /* one whale failing must not sink the poll */ }
+      } catch (e) { if (String(e).includes('429')) hit429++; /* one whale failing must not sink the poll */ }
       await new Promise(res => setTimeout(res, 30));
     }
     const nowTs = Date.now();
@@ -235,8 +238,17 @@ async function pollOnce() {
       };
     }).sort((a, b) => b.tot - a.tot).slice(0, 40);
 
+    /* BACK OFF BY ITSELF. A cycle that met the limit halves the rotating slice for the next one; a clean
+       cycle walks it back up. The floor is 50, so the tail is always being swept, just more slowly. */
+    pos429 = hit429;
+    if (hit429 > 5) rotN = Math.max(50, Math.floor(rotN / 2));
+    else if (!hit429 && rotN < ROTATE_N) rotN = Math.min(ROTATE_N, rotN + 50);
+    if (hit429) log.warn('[whales] positions rate limited', { n: hit429, of: universe.length, rotN });
+
     state.positions = found.slice(0, TOP_POSITIONS);
     state.posN = found.length;
+    state.pos429 = pos429;
+    state.rotN = rotN;
     state.sweptAt = nowTs;
     state.ts = nowTs;
     state.lastErr = '';
@@ -397,6 +409,7 @@ export function getWhales() {
     fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
     coins: state.coins, best: state.best, perf: perfShown(),
     posN: state.posN || 0, core: Math.min(CORE_N, state.tracked.length),
+    pos429: state.pos429 || 0, rotN: state.rotN != null ? state.rotN : ROTATE_N,
     sweepMin: state.tracked.length > CORE_N ? Math.round(((state.tracked.length - CORE_N) / Math.max(1, ROTATE_N)) * 4) : 0,
     err: state.lastErr || undefined, fillErr: state.fillErr || undefined,
   };
