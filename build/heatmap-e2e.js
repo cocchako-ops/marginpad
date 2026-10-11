@@ -985,7 +985,7 @@ const LAYOUT = () => {
   const src = SRC || await (await fetch('https://marginpad.io/assets/mp-heatmap.js?cb=' + Date.now())).text();
   ok('the venue count is stated once and correctly', !/11 venues/.test(src) && /9 exchanges/.test(src));
   ok('the share card is not misspelled', !/exchangess/.test(src));
-  ok('the paywall sells the four indicators that exist', !/8 exclusive AI indicators/.test(src) && /4 exclusive AI indicators/.test(src));
+  ok('the paywall sells the six indicators that exist', !/[48] exclusive AI indicators/.test(src) && /6 exclusive AI indicators/.test(src));
   const html = await (await fetch(URL_ + '&cb=' + Date.now())).text();
   ok('the page does not claim the heatmap has no paywall', !/no paywall on models/.test(html));
   ok('the page states the real allowance', /five minutes every 12 hours/.test(html));

@@ -17,7 +17,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>The 4 MarginPad AI Indicators, Explained - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory</title>
+<title>The 6 MarginPad AI Indicators, Explained - Real Whale Liquidations, Measured Liquidation Walls and Four More</title>
 <meta name="description" content="What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position. Built on our own liquidation data; every arrow grades its own hit-rate." />
 <link rel="canonical" href="https://marginpad.io/ai-indicators/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
@@ -25,8 +25,8 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta property="og:title" content="The 4 MarginPad AI indicators, explained" />
-<meta property="og:description" content="Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position." />
+<meta property="og:title" content="The 6 MarginPad AI indicators, explained" />
+<meta property="og:description" content="Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://marginpad.io/ai-indicators/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -103,8 +103,8 @@
   footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The 4 MarginPad AI indicators, explained","description":"What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.","url":"https://marginpad.io/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-25","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are the MarginPad AI indicators a buy or sell signal?","acceptedAnswer":{"@type":"Answer","text":"No. Each one answers a question you should ask before a position: how fragile the market is, where price is being pulled, which way the evidence leans and what happened the last times it looked like this. Arrows appear only at extremes, and every arrow indicator prints its own hit-rate on the loaded chart so you can see whether it has an edge on that symbol and timeframe."}},{"@type":"Question","name":"What data are they built on?","acceptedAnswer":{"@type":"Answer","text":"MarginPad's own liquidation feed (nine exchanges, collected in-house), a leverage-ladder model of where positions get liquidated (the same model behind the liquidation heatmap), funding history and crowd long/short positioning, plus the chart's own price and volume. None of it comes from a third-party indicator vendor."}},{"@type":"Question","name":"Why only four indicators?","acceptedAnswer":{"@type":"Answer","text":"There were eight until September 2026. Four were generic technical analysis available on any chart (MACD+RSI momentum, Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position."}},{"@type":"Question","name":"Do I need Premium to use them?","acceptedAnswer":{"@type":"Answer","text":"Yes. The four indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The 6 MarginPad AI indicators, explained","description":"What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.","url":"https://marginpad.io/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-25","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"},{"@type":"Thing","name":"Whale Liquidations"},{"@type":"Thing","name":"Liquidation Wall"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are the MarginPad AI indicators a buy or sell signal?","acceptedAnswer":{"@type":"Answer","text":"No. Each one answers a question you should ask before a position: how fragile the market is, where price is being pulled, which way the evidence leans and what happened the last times it looked like this. Arrows appear only at extremes, and every arrow indicator prints its own hit-rate on the loaded chart so you can see whether it has an edge on that symbol and timeframe."}},{"@type":"Question","name":"What data are they built on?","acceptedAnswer":{"@type":"Answer","text":"MarginPad's own liquidation feed (nine exchanges, collected in-house), a leverage-ladder model of where positions get liquidated (the same model behind the liquidation heatmap), funding history and crowd long/short positioning, plus the chart's own price and volume. None of it comes from a third-party indicator vendor."}},{"@type":"Question","name":"What makes these different from other liquidation indicators?","acceptedAnswer":{"@type":"Answer","text":"Two of the six are not models at all. Whale Liquidations draws liquidation prices published on chain by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has really liquidated in bands of that weight across nine exchanges. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on."}},{"@type":"Question","name":"Do I need Premium to use them?","acceptedAnswer":{"@type":"Answer","text":"Yes. The six indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"AI indicators","item":"https://marginpad.io/ai-indicators/"}]}</script>
 <meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
@@ -126,8 +126,8 @@
   </header>
 
   <span class="eyebrow"><i></i>MarginPad Premium</span>
-  <h1>The 4 AI indicators, <em>explained</em></h1>
-  <p class="sub">Four readouts built on data only MarginPad has. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.</p>
+  <h1>The 6 AI indicators, <em>explained</em></h1>
+  <p class="sub">Six readouts built on data only MarginPad has, two of them measured rather than modelled. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.</p>
 
   <div class="facts">
     <div class="fact"><b>Our data</b><span>Own liquidation feed across nine exchanges, own leverage-ladder model, funding and crowd positioning</span></div>
@@ -137,7 +137,7 @@
   </div>
 
   <nav class="toc" aria-label="On this page">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Whale Liquidations</a><a href="#liqwall">6 · Liquidation Wall</a><a href="#honesty">The hit-rate chip</a><a href="#workflow">Which to open first</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -287,6 +287,42 @@
     <p class="lim"><b>Limits.</b> The memory is only as long as the loaded history (a few hundred to a few thousand bars). On a coin that listed last month it has little to remember, and it needs 160 bars before it draws anything.</p>
   </section>
 
+  <section class="ind" id="whaleliq" style="--ac:#ff6258">
+    <div class="ind-h"><h2><small>5 &middot; Read off chain</small>Whale Liquidations</h2></div>
+    <p class="q">At exactly what price does a whale get force-closed - and <em>which way</em> does that push the market?</p>
+    <p>This one is not a model and cannot be. Hyperliquid publishes every account's position on chain: the size, the leverage and the price at which the exchange itself will close it. We poll the 1,000 largest wallets and draw every position over $1M whose liquidation price sits within 15% of where the market is now. The number on the line is not our estimate of what might happen - it is the trigger price of an order that has already been placed, by a trader who cannot cancel it.</p>
+    <div class="box"><i>What you see</i><ul>
+      <li><b>Solid lines on the price.</b> <b style="color:#ff6258">Red</b> = a LONG that gets force-SOLD there. <b style="color:#2ebd85">Green</b> = a SHORT that gets force-BOUGHT there. Solid, because the four indicators above are models and these are facts - a dashed line on this chart always means something modelled.</li>
+      <li><b>The label</b> carries the position's size and its leverage: <b>$98.5M 14x</b> is a different animal from $98.5M at 2x, because the 14x one is far closer to its own trigger.</li>
+      <li><b>The legend</b> names the nearest one, how far away it is, and the total forced money standing above you and below you.</li>
+    </ul></div>
+    <div class="box"><i>Before a trade</i><ul>
+      <li><b>Before a long:</b> a GREEN line above you is fuel. A short that must be bought back there is a market order nobody can cancel, and everyone else can see it coming too - moves into these levels tend to accelerate rather than stall, so it reads as a target, not a level to fade.</li>
+      <li><b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you means standing in front of buyers who have no choice.</li>
+      <li><b>What to avoid:</b> being long just above a red cluster, or short just below a green one. That is where the forced flow appears, and it appears all at once.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% below &middot; +4</div>
+    <p class="lim"><b>Limits.</b> It can only see Hyperliquid, which is where the largest on-chain perp positions sit - a whale on a centralised exchange is invisible to everybody, us included. On a quiet coin there may be nothing within 15%, and the legend says so plainly rather than drawing something weak; when that happens it names the nearest real one on any coin so you know the layer is alive. A whale can also add margin and move their own liquidation price, so a level is true as of the last poll, not for ever.</p>
+  </section>
+
+  <section class="ind" id="liqwall" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; Priced from real cascades</small>Liquidation Wall</h2></div>
+    <p class="q">The heaviest cluster near price - and <em>how much money</em> has really gone there?</p>
+    <p>Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges; bands are grouped by weight, and each group carries the median that has actually liquidated in it, the range around that median, and how many cases it rests on.</p>
+    <div class="box"><i>What you see</i><ul>
+      <li><b>Two dashed lines:</b> the heaviest cluster above price and the heaviest below. Dashed, because where the cluster sits is modelled.</li>
+      <li><b>A dollar figure on each</b> - and that half is measured, not modelled.</li>
+      <li><b>The legend</b> names the range behind the median and how many real cascades it came from, so you can see how much weight to put on it.</li>
+    </ul></div>
+    <div class="box"><i>Before a trade</i><ul>
+      <li><b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.</li>
+      <li><b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.</li>
+      <li><b>Read it with the Magnet.</b> The Magnet says which pool pulls hardest; this says what is in it, in dollars.</li>
+    </ul></div>
+    <div class="leg"><i>Example legend line</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% above</div>
+    <p class="lim"><b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a band HEAVIER than any cascade we have on record prints "at least" and the median of the heaviest class we have measured, which is a floor rather than an estimate; a band LIGHTER than anything we have measured carries no figure at all, because the lightest measured median would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.</p>
+  </section>
+
   <h3 id="honesty">The hit-rate chip: every arrow grades itself</h3>
   <div class="hon">
     <p>Any indicator can draw arrows on the past. MarginPad's arrow indicators grade every arrow they drew on the loaded chart: entry at the signal bar's close, target and stop both 1.5x the 14-bar ATR away, scanned up to 80 bars forward, and a bar that touches both counts as a loss. The chip appears once five arrows have resolved and is coloured for what it says:</p>
@@ -295,7 +331,7 @@
   </div>
 
   <h3 id="workflow">Which one to open first</h3>
-  <p style="color:var(--dim);margin:0 0 6px">The four are meant to be read in order, each narrowing what the last one said.</p>
+  <p style="color:var(--dim);margin:0 0 6px">The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts about the book, true whenever they are on the chart.</p>
   <div class="flow">
     <div class="step"><i>1</i><b>Cascade Radar</b><span>Is the market fragile, and on which side? Decides your size and how wide the stop must be.</span></div>
     <div class="step"><i>2</i><b>Liquidation Magnet</b><span>Where are the pools? Sets the first target and tells you where a stop must not be.</span></div>
@@ -307,9 +343,9 @@
   <div class="faq">
     <details><summary>Are these buy or sell signals?</summary><p>No. Each one answers a question you should ask before a position. Arrows appear only at extremes, and every arrow indicator prints its own hit-rate on the loaded chart so you can see whether it has an edge on that symbol and timeframe.</p></details>
     <details><summary>What data are they built on?</summary><p>MarginPad's own liquidation feed (nine exchanges, collected in-house), the leverage-ladder model behind the liquidation heatmap, funding history and crowd long/short positioning, plus the chart's own price and volume. None of it comes from an indicator vendor.</p></details>
-    <details><summary>Why only four?</summary><p>There were eight until September 2026. Four were generic technical analysis available on any chart (a MACD+RSI momentum cross, a Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position.</p></details>
-    <details><summary>Do I need Premium?</summary><p>Yes. The four are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href="/charts">/charts</a> and on the mobile charts. Every other indicator on the chart is free.</p></details>
-    <details><summary>Where do I turn them on?</summary><p>On <a href="/charts">/charts</a>, open a chart window's Indicators menu: the four sit at the top in lime. On a phone, the chart's indicator sheet lists the same four. The readouts appear in the legend at the top-left of the chart.</p></details>
+    <details><summary>What makes these different from other liquidation indicators?</summary><p>Two of the six are not models at all. Whale Liquidations draws liquidation prices published <b>on chain</b> by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has <b>really</b> liquidated in bands of that weight across nine exchanges. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)</p></details>
+    <details><summary>Do I need Premium?</summary><p>Yes. The six are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href="/charts">/charts</a> and on the mobile charts. Every other indicator on the chart is free.</p></details>
+    <details><summary>Where do I turn them on?</summary><p>On <a href="/charts">/charts</a>, open a chart window's Indicators menu: the six sit at the top in lime. On a phone, the chart's indicator sheet lists the same six. The readouts appear in the legend at the top-left of the chart.</p></details>
   </div>
 
   <div class="cta">
@@ -323,7 +359,7 @@
     <div style="margin-top:8px">&copy; MarginPad &middot; Educational, not financial advice. The indicators analyse data and will be wrong sometimes.</div>
   </footer>
 </div>
-<script defer src="/assets/mp-auth.js?v=afb23de9"></script>
-<script defer src="/assets/mp-nav.js?v=8736be98"></script>
+<script defer src="/assets/mp-auth.js?v=0351abec"></script>
+<script defer src="/assets/mp-nav.js?v=207a543e"></script>
 </body>
 </html>

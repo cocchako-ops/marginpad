@@ -1,14 +1,14 @@
-/* Premium page + the four AI indicators (2026-09-17).
+/* Premium page + the six AI indicators (2026-09-17, six since 2026-10-11).
 
    Owner asks, all proven here on production:
      - /premium/: the "Premium duels & lounge" card is gone (11 cards), nothing on the page says "PRO" (the term is
-       Premium), the indicators card says 4 and OPENS a preview sheet (like the fee window on a closed ticket) with
+       Premium), the indicators card says 6 and OPENS a preview sheet (like the fee window on a closed ticket) with
        one block per indicator, reachable on a phone and closable; the Spanish twin does the same in Spanish
      - /premium/ as a member (simulated /api/premium/status): the buy buttons make way for "Premium is active until
        <date> - N days left" and the section header reads WHAT YOU HAVE
-     - /ai-indicators/: the explainer exists, indexable, four sections, FAQ structured data, on the sitemap, has a card
-     - /charts: the shared engine exports exactly four Premium indicators and none of the retired four; the mobile
-       bundle lists the same four; the menu marks exactly four items lime
+     - /ai-indicators/: the explainer exists, indexable, six sections, FAQ structured data, on the sitemap, has a card
+     - /charts: the shared engine exports exactly six Premium indicators and none of the retired four; the mobile
+       bundle lists the same six; the menu marks exactly six items lime
      - the Daily Brief carries a permanent link to /trading-report/ (bundle) and the Telegram edition too (worker source)
      - /open-interest/: the 24h change is measured (most rows carry a number, none of them "+0.00%" by default)
 
@@ -24,11 +24,11 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
 (async () => {
   // ---- raw HTML / bundles (what a crawler and a cache see) ----
   const prem = await text(ORIGIN + '/premium/?cb=' + Date.now());
-  chk('/premium/ 200, 11 feature cards, no "PRO" badge wording, indicators card says 4 and is a button', prem.status === 200 && (prem.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(prem.body) && /<h3>4 AI indicators<\/h3>/.test(prem.body) && /data-ind-sheet/.test(prem.body) && !/8 (AI|exclusive)/.test(prem.body), { cards: (prem.body.match(/class="fcard/g) || []).length, pro: (prem.body.match(/\bPRO\b/g) || []).length });
+  chk('/premium/ 200, 11 feature cards, no "PRO" badge wording, indicators card says 6 and is a button', prem.status === 200 && (prem.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(prem.body) && /<h3>6 AI indicators<\/h3>/.test(prem.body) && /data-ind-sheet/.test(prem.body) && !/8 (AI|exclusive)/.test(prem.body), { cards: (prem.body.match(/class="fcard/g) || []).length, pro: (prem.body.match(/\bPRO\b/g) || []).length });
   const es = await text(ORIGIN + '/es/premium/?cb=' + Date.now());
-  chk('/es/premium/ mirrors it (11 cards, 4 indicadores, no PRO, sheet present)', es.status === 200 && (es.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(es.body) && /<h3>4 indicadores de IA<\/h3>/.test(es.body) && /id="indSheet"/.test(es.body) && /Insignia Premium/.test(es.body));
+  chk('/es/premium/ mirrors it (11 cards, 6 indicadores, no PRO, sheet present)', es.status === 200 && (es.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(es.body) && /<h3>6 indicadores de IA<\/h3>/.test(es.body) && /id="indSheet"/.test(es.body) && /Insignia Premium/.test(es.body));
   const ai = await text(ORIGIN + '/ai-indicators/?cb=' + Date.now());
-  chk('/ai-indicators/ 200, indexable, four sections, FAQPage + Article JSON-LD, canonical, own card', ai.status === 200 && /index, follow/.test(ai.body) && ['cascade', 'magnet', 'brain', 'memory'].every(id => ai.body.indexOf('id="' + id + '"') >= 0) && /"@type":"FAQPage"/.test(ai.body) && /"@type":"Article"/.test(ai.body) && /rel="canonical" href="https:\/\/marginpad.io\/ai-indicators\/"/.test(ai.body) && /og:image" content="https:\/\/marginpad.io\/assets\/og\/ai-indicators\.jpg"/.test(ai.body));
+  chk('/ai-indicators/ 200, indexable, six sections, FAQPage + Article JSON-LD, canonical, own card', ai.status === 200 && /index, follow/.test(ai.body) && ['cascade', 'magnet', 'brain', 'memory', 'whaleliq', 'liqwall'].every(id => ai.body.indexOf('id="' + id + '"') >= 0) && /"@type":"FAQPage"/.test(ai.body) && /"@type":"Article"/.test(ai.body) && /rel="canonical" href="https:\/\/marginpad.io\/ai-indicators\/"/.test(ai.body) && /og:image" content="https:\/\/marginpad.io\/assets\/og\/ai-indicators\.jpg"/.test(ai.body));
   const sm = await text(ORIGIN + '/sitemap.xml');
   chk('sitemap lists /ai-indicators/', sm.body.indexOf('https://marginpad.io/ai-indicators/') >= 0);
   const og = await fetch(ORIGIN + '/assets/og/ai-indicators.jpg?cb=' + Date.now());
@@ -37,13 +37,13 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
   const shell = await text(ORIGIN + '/paper-trade?cb=' + Date.now());
   const bv = (name) => { const m = shell.body.match(new RegExp('/assets/' + name.replace('.', '\\.') + '\\?v=[a-f0-9]+')); return m ? m[0] : '/assets/' + name; };
   const auth = await text(ORIGIN + bv('mp-auth.js'));
-  chk('mp-auth: brief section heading links /trading-report/ permanently; upsell says 4 indicators; no PRO chip', auth.body.indexOf('<a href="/trading-report/">full report</a>') >= 0 && auth.body.indexOf("'4 exclusive AI indicators'") >= 0 && auth.body.indexOf("'8 exclusive") < 0 && auth.body.indexOf('content:"PRO"') < 0 && auth.body.indexOf('>PRO</span>') < 0);
+  chk('mp-auth: brief section heading links /trading-report/ permanently; both upsell lists say 6 indicators; no PRO chip', auth.body.indexOf('<a href="/trading-report/">full report</a>') >= 0 && (auth.body.match(/'6 exclusive AI indicators'/g) || []).length === 2 && auth.body.indexOf("'4 exclusive") < 0 && auth.body.indexOf("'8 exclusive") < 0 && auth.body.indexOf('content:"PRO"') < 0 && auth.body.indexOf('>PRO</span>') < 0);
   const mch = await text(ORIGIN + bv('mp-charts.js'));
-  chk('mp-charts: MP_INDS has exactly casc/brain/memory/magnet; retired functions gone; legends name the guide', /var MP_INDS=\{casc:1,brain:1,memory:1,magnet:1\}/.test(mch.body) && !/computeMomentum|computeSqueeze|sentimentCalc|'sentf'/.test(mch.body) && (mch.body.match(/ai-indicators\//g) || []).length >= 4);
+  chk('mp-charts: MP_INDS is exactly the six, read from ONE table; retired functions gone; legends name the guide', /var MP_INDS=\{casc:1,brain:1,memory:1,magnet:1,whaleliq:1,liqwall:1\}/.test(mch.body) && !/\{casc:1,brain:1,memory:1,magnet:1\}\)\[k\]/.test(mch.body) && /var mp=!!MP_INDS\[k\]/.test(mch.body) && !/computeMomentum|computeSqueeze|sentimentCalc|'sentf'/.test(mch.body) && (mch.body.match(/ai-indicators\//g) || []).length >= 4);
   const home = await text(ORIGIN + '/assets/home.js?cb=' + Date.now());
   const mm = home.body.match(/\/assets\/mp-mcharts\.js\?v=[a-f0-9]+/);
   const mmb = await text(ORIGIN + (mm ? mm[0] : '/assets/mp-mcharts.js'));
-  chk('mp-mcharts: lists the same four and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain \(adaptive AI\)'\],\['memory','Market Memory \(AI forecast\)'\],\['magnet','Liquidation Magnet'\]\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
+  chk('mp-mcharts: lists the same six and none of the retired', /\['casc','Cascade Radar'\],\['brain','Market Brain \(adaptive AI\)'\],\['memory','Market Memory \(AI forecast\)'\],\['magnet','Liquidation Magnet'\],\['whaleliq','Whale Liquidations \(real\)'\],\['liqwall','Liquidation Wall \(measured \$\)'\]\]/.test(mmb.body) && /'MarginPad AI',\['casc','brain','memory','magnet','whaleliq','liqwall'\]/.test(mmb.body) && !/sentf|'mom'|'sqz'|'liqr'/.test(mmb.body), { url: mm && mm[0] });
   const wk = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
   chk('worker: the Telegram brief edition carries the trading-report link', wk.indexOf('<a href="https://marginpad.io/trading-report/">Your trading report</a>') >= 0);
   const oi = await (await fetch(ORIGIN + '/api/cg/openinterest', { cache: 'no-store' })).json();
@@ -80,7 +80,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
         const sh = document.getElementById('indSheet'), p = sh.querySelector('.ish-p'); const r = p.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, Math.min(innerHeight - 10, r.top + 60));
         return { open: !sh.hidden, blocks: sh.querySelectorAll('.ish-i').length, reach: !!(hit && p.contains(hit)), names: [...sh.querySelectorAll('.ish-i h4')].map(h => h.firstChild.textContent.trim()), inView: r.top >= 0 && r.left >= 0 && r.right <= innerWidth + 1, scroll: document.documentElement.style.overflow, guide: !!sh.querySelector('a[href="/ai-indicators/"]') };
       });
-      chk(vp.t + ' guest: the sheet opens with four blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 4 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Liquidation Magnet|Market Brain|Market Memory', s);
+      chk(vp.t + ' guest: the sheet opens with six blocks, reachable, in the viewport, page scroll locked, links the guide', s.open && s.blocks === 6 && s.reach && s.inView && s.scroll === 'hidden' && s.guide && s.names.join('|') === 'Cascade Radar|Whale Liquidations|Liquidation Wall|Liquidation Magnet|Market Brain|Market Memory', s);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'premium-indsheet-' + vp.t + '.png') });
       await page.evaluate(() => { document.querySelector('#indSheet .ish-x').click(); });
       await new Promise(r => setTimeout(r, 200));
@@ -102,7 +102,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
       await page.goto(ORIGIN + '/charts?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       await page.waitForFunction('!!window.__mpSig', { timeout: 30000 }).catch(() => {});
       const ch = await page.evaluate(() => { const S = window.__mpSig || {}; return { keys: Object.keys(S.MP_INDS || {}), retired: ['computeMomentum', 'computeSqueeze', 'computeLiqRev', 'sentimentCalc'].filter(k => typeof S[k] === 'function'), tips: Object.keys(S.ITIPS || {}).filter(k => ['mom', 'sqz', 'liqr', 'sentf'].indexOf(k) >= 0), lime: [...document.querySelectorAll('.cwin-ind-item')].filter(b => /c2f64a/.test((b.querySelector('.cwin-ind-it-lbl') || {}).getAttribute ? (b.querySelector('.cwin-ind-it-lbl').getAttribute('style') || '') : '')).map(b => b.getAttribute('data-ind')) }; });
-      chk('/charts: the shared engine exports exactly the four, none of the retired functions or tips', ch.keys.join(',') === 'casc,brain,memory,magnet' && ch.retired.length === 0 && ch.tips.length === 0, ch);
+      chk('/charts: the shared engine exports exactly the six, none of the retired functions or tips', ch.keys.join(',') === 'casc,brain,memory,magnet,whaleliq,liqwall' && ch.retired.length === 0 && ch.tips.length === 0, ch);
       await ctx.close();
     }
     {
@@ -117,7 +117,7 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
       const { ctx, page } = await fresh(390, 800, false);
       await page.goto(ORIGIN + '/ai-indicators/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       const a = await page.evaluate(() => ({ sx: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1, h1: (document.querySelector('h1') || {}).textContent, nav: !!document.querySelector('.mpnav, [data-mpbn="browse"], .hbot'), secs: document.querySelectorAll('section.ind').length }));
-      chk('/ai-indicators/ on a phone: no horizontal scroll, h1, four sections, site nav injected', !a.sx && /explained/.test(a.h1 || '') && a.secs === 4 && a.nav, a);
+      chk('/ai-indicators/ on a phone: no horizontal scroll, h1, six sections, site nav injected', !a.sx && /explained/.test(a.h1 || '') && a.secs === 6 && a.nav, a);
       await page.screenshot({ path: path.join(__dirname, 'vault-shots', 'ai-indicators-phone.png'), fullPage: false });
       await ctx.close();
     }
