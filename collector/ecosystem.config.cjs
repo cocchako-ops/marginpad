@@ -9,7 +9,10 @@ module.exports = {
     autorestart: true,
     max_restarts: 50,
     restart_delay: 3000,
-    max_memory_restart: '300M',
+    // 300M was right for the 458 MB droplet; the box has 1,967 MB since 2026-10 and the whale tracker
+    // (1,000 wallets since 2026-10-11) sits at ~300 MB steady state, so the old ceiling killed it every
+    // five minutes - 119 times before it was noticed. Twice the measured steady state, half of free RAM.
+    max_memory_restart: '700M',
     kill_timeout: 4000,           // give graceful SIGTERM shutdown time to flush aggregates
     env: { NODE_ENV: 'production', PORT: 8787, DB_DRIVER: 'sqlite' },
     out_file: 'logs/out.log',
