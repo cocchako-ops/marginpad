@@ -1,13 +1,12 @@
 {
  "meta": {
-  "generated": "2026-10-11T00:40:47.112Z",
+  "generated": "2026-10-11T22:03:04.761Z",
   "pages": 386,
-  "occurrences": 26663,
-  "unique": 14141,
-  "words": 268417,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-10-11T00:41:06.486Z"
+  "occurrences": 26700,
+  "unique": 14176,
+  "words": 269797,
+  "untranslated": 57,
+  "untranslatedWords": 2015
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6863,9 +6862,9 @@
    "n": 1,
    "w": 9
   },
-  "BskYgCTMuJ": {
-   "en": "The 4 MarginPad AI Indicators, Explained - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory",
-   "es": "Los 4 indicadores de IA de MarginPad, explicados - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory",
+  "LXIGsSE6Mg": {
+   "en": "The 6 MarginPad AI Indicators, Explained - Real Whale Liquidations, Measured Liquidation Walls and Four More",
+   "es": "",
    "kind": [
     "title"
    ],
@@ -6873,7 +6872,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 13
+   "w": 14
   },
   "-yzjuEHHn6": {
    "en": "<a class=\"brand\" href=\"/\">Margin<b>Pad</b></a>",
@@ -6930,9 +6929,9 @@
    "n": 1,
    "w": 2
   },
-  "u2XDM1SQXB": {
-   "en": "The 4 AI indicators, <em>explained</em>",
-   "es": "Los 4 indicadores de IA, <em>explicados</em>",
+  "sSb5ZQi4k9": {
+   "en": "The 6 AI indicators, <em>explained</em>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -6942,9 +6941,9 @@
    "n": 1,
    "w": 4
   },
-  "1EQgigLd4q": {
-   "en": "Four readouts built on data only MarginPad has. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.",
-   "es": "Cuatro lecturas construidas con datos que solo tiene MarginPad. Cada una responde una pregunta que deberías hacerte antes de abrir una posición apalancada, y aquí se explican como debieron explicarse desde el principio: qué mide, qué dibuja y qué hacer con el número.",
+  "cC5aHqSOWJ": {
+   "en": "Six readouts built on data only MarginPad has, two of them measured rather than modelled. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -6952,7 +6951,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 46
+   "w": 53
   },
   "FUOt87h0di": {
    "en": "<b>Our data</b><span>Own liquidation feed across nine exchanges, own leverage-ladder model, funding and crowd positioning</span>",
@@ -7002,9 +7001,9 @@
    "n": 1,
    "w": 9
   },
-  "mvySB4MJTu": {
-   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
-   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#honesty\">La etiqueta de tasa de acierto</a><a href=\"#workflow\">Cuál abrir primero</a>",
+  "0hkuhuWRsp": {
+   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Whale Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -7012,7 +7011,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 15
+   "w": 19
   },
   "2RV1lv50hd": {
    "en": "<small>1 · Fragility</small>Cascade Radar",
@@ -7651,6 +7650,294 @@
    "n": 1,
    "w": 38
   },
+  "DpQ6EZZHG7": {
+   "en": "<small>5 &middot; Read off chain</small>Whale Liquidations",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "5WDfnSg10s": {
+   "en": "At exactly what price does a whale get force-closed - and <em>which way</em> does that push the market?",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "uoyWp5f11L": {
+   "en": "This one is not a model and cannot be. Hyperliquid publishes every account's position on chain: the size, the leverage and the price at which the exchange itself will close it. We poll the 1,000 largest wallets and draw every position over $1M whose liquidation price sits within 15% of where the market is now. The number on the line is not our estimate of what might happen - it is the trigger price of an order that has already been placed, by a trader who cannot cancel it.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 86
+  },
+  "Yhem_K3Sez": {
+   "en": "<i>What you see</i>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 2,
+   "w": 3
+  },
+  "8vUUmMLBai": {
+   "en": "<b>Solid lines on the price.</b> <b style=\"color:#ff6258\">Red</b> = a LONG that gets force-SOLD there. <b style=\"color:#2ebd85\">Green</b> = a SHORT that gets force-BOUGHT there. Solid, because the four indicators above are models and these are facts - a dashed line on this chart always means something modelled.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 38
+  },
+  "KRikxKLane": {
+   "en": "<b>The label</b> carries the position's size and its leverage: <b>$98.5M 14x</b> is a different animal from $98.5M at 2x, because the 14x one is far closer to its own trigger.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 29
+  },
+  "BdGWDn3Gie": {
+   "en": "<b>The legend</b> names the nearest one, how far away it is, and the total forced money standing above you and below you.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 22
+  },
+  "iVx6u6wtH_": {
+   "en": "<i>Before a trade</i>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 2,
+   "w": 2
+  },
+  "brH8fgdy37": {
+   "en": "<b>Before a long:</b> a GREEN line above you is fuel. A short that must be bought back there is a market order nobody can cancel, and everyone else can see it coming too - moves into these levels tend to accelerate rather than stall, so it reads as a target, not a level to fade.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 48
+  },
+  "n7T7wmtZ1u": {
+   "en": "<b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you means standing in front of buyers who have no choice.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 27
+  },
+  "ZXEoxZLYDA": {
+   "en": "<b>What to avoid:</b> being long just above a red cluster, or short just below a green one. That is where the forced flow appears, and it appears all at once.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 28
+  },
+  "g8i6lFiu00": {
+   "en": "<i>Example legend line</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% below &middot; +4",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "7Hz1nNQuUz": {
+   "en": "<b>Limits.</b> It can only see Hyperliquid, which is where the largest on-chain perp positions sit - a whale on a centralised exchange is invisible to everybody, us included. On a quiet coin there may be nothing within 15%, and the legend says so plainly rather than drawing something weak; when that happens it names the nearest real one on any coin so you know the layer is alive. A whale can also add margin and move their own liquidation price, so a level is true as of the last poll, not for ever.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 87
+  },
+  "HMYmr-Pizz": {
+   "en": "<small>6 &middot; Priced from real cascades</small>Liquidation Wall",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "x2gQxEbaIe": {
+   "en": "The heaviest cluster near price - and <em>how much money</em> has really gone there?",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "kBQmdKs_j9": {
+   "en": "Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges; bands are grouped by weight, and each group carries the median that has actually liquidated in it, the range around that median, and how many cases it rests on.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 96
+  },
+  "DGGplq6dF3": {
+   "en": "<b>Two dashed lines:</b> the heaviest cluster above price and the heaviest below. Dashed, because where the cluster sits is modelled.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "l57CD1Ii5D": {
+   "en": "<b>A dollar figure on each</b> - and that half is measured, not modelled.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "8ALEdG6xYx": {
+   "en": "<b>The legend</b> names the range behind the median and how many real cascades it came from, so you can see how much weight to put on it.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 27
+  },
+  "vbk3ZBe-EY": {
+   "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 35
+  },
+  "CV-_Ss01e8": {
+   "en": "<b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 28
+  },
+  "OJVWJutirh": {
+   "en": "<b>Read it with the Magnet.</b> The Magnet says which pool pulls hardest; this says what is in it, in dollars.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 20
+  },
+  "gdP7TemcFz": {
+   "en": "<i>Example legend line</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% above",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "v12A4xNwZo": {
+   "en": "<b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a band HEAVIER than any cascade we have on record prints \"at least\" and the median of the heaviest class we have measured, which is a floor rather than an estimate; a band LIGHTER than anything we have measured carries no figure at all, because the lightest measured median would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 91
+  },
   "FfCb5kobcN": {
    "en": "The hit-rate chip: every arrow grades itself",
    "es": "La etiqueta de tasa de acierto: cada flecha se autoevalúa",
@@ -7711,9 +7998,9 @@
    "n": 1,
    "w": 5
   },
-  "E6ZayONDqG": {
-   "en": "The four are meant to be read in order, each narrowing what the last one said.",
-   "es": "Los cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior.",
+  "rPkFqMrHpQ": {
+   "en": "The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts about the book, true whenever they are on the chart.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -7721,7 +8008,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 16
+   "w": 36
   },
   "QvIU_65SoT": {
    "en": "<i>1</i><b>Cascade Radar</b><span>Is the market fragile, and on which side? Decides your size and how wide the stop must be.</span>",
@@ -7835,21 +8122,22 @@
    "n": 1,
    "w": 36
   },
-  "g6UbIE__gS": {
-   "en": "Why only four?",
-   "es": "¿Por qué solo cuatro?",
+  "juvl2kK0h_": {
+   "en": "What makes these different from other liquidation indicators?",
+   "es": "",
    "kind": [
-    "html"
+    "html",
+    "ld"
    ],
    "ctx": [
     "/ai-indicators/"
    ],
-   "n": 1,
-   "w": 3
+   "n": 2,
+   "w": 8
   },
-  "ZeMeG8lrq-": {
-   "en": "There were eight until September 2026. Four were generic technical analysis available on any chart (a MACD+RSI momentum cross, a Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position.",
-   "es": "Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (un cruce de momentum MACD+RSI, un squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición.",
+  "vd8O_BJeHp": {
+   "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published <b>on chain</b> by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has <b>really</b> liquidated in bands of that weight across nine exchanges. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -7857,7 +8145,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 52
+   "w": 123
   },
   "jImHGJDGGu": {
    "en": "Do I need Premium?",
@@ -7871,9 +8159,9 @@
    "n": 1,
    "w": 3
   },
-  "Xh4tCrzsSH": {
-   "en": "Yes. The four are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los cuatro forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+  "pBT4Uux68V": {
+   "en": "Yes. The six are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -7895,9 +8183,9 @@
    "n": 1,
    "w": 5
   },
-  "r4BH6wcvyg": {
-   "en": "On <a href=\"/charts\">/charts</a>, open a chart window's Indicators menu: the four sit at the top in lime. On a phone, the chart's indicator sheet lists the same four. The readouts appear in the legend at the top-left of the chart.",
-   "es": "En <a href=\"/charts\">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los cuatro están arriba, en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos cuatro. Las lecturas aparecen en la leyenda, en la esquina superior izquierda del gráfico.",
+  "oIwsE0E-xi": {
+   "en": "On <a href=\"/charts\">/charts</a>, open a chart window's Indicators menu: the six sit at the top in lime. On a phone, the chart's indicator sheet lists the same six. The readouts appear in the legend at the top-left of the chart.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -7992,9 +8280,9 @@
    "n": 1,
    "w": 34
   },
-  "WaFgFxZU79": {
-   "en": "The 4 MarginPad AI indicators, explained",
-   "es": "Los 4 indicadores de IA de MarginPad, explicados",
+  "8sVJhiqlpM": {
+   "en": "The 6 MarginPad AI indicators, explained",
+   "es": "",
    "kind": [
     "attr:content",
     "ld"
@@ -8005,9 +8293,9 @@
    "n": 2,
    "w": 5
   },
-  "GBI6WkXBXs": {
-   "en": "Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
-   "es": "Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo leerlo antes de una posición.",
+  "HkRoKk1j2f": {
+   "en": "Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -8015,7 +8303,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 20
+   "w": 24
   },
   "PZh3tMkMCq": {
    "en": "What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.",
@@ -8077,6 +8365,30 @@
    "n": 1,
    "w": 2
   },
+  "_U7QZcTPzo": {
+   "en": "Whale Liquidations",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Fxffv3BziT": {
+   "en": "Liquidation Wall",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/ai-indicators/"
+   ],
+   "n": 1,
+   "w": 2
+  },
   "d6omBOT5wQ": {
    "en": "Are the MarginPad AI indicators a buy or sell signal?",
    "es": "¿Son los indicadores de IA de MarginPad una señal de compra o venta?",
@@ -8113,9 +8425,9 @@
    "n": 1,
    "w": 43
   },
-  "edaJ9tHCbN": {
-   "en": "Why only four indicators?",
-   "es": "¿Por qué solo cuatro indicadores?",
+  "O7h7WZVH1l": {
+   "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published on chain by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has really liquidated in bands of that weight across nine exchanges. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -8123,19 +8435,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 4
-  },
-  "VeTZa8Gq_Y": {
-   "en": "There were eight until September 2026. Four were generic technical analysis available on any chart (MACD+RSI momentum, Bollinger squeeze) or overlapped with the four that remain. The four that stay are the ones that use data no other chart has, and each now explains what its reading means for a position.",
-   "es": "Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (momentum MACD+RSI, squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 50
+   "w": 102
   },
   "OOr6V2AEVs": {
    "en": "Do I need Premium to use them?",
@@ -8149,9 +8449,9 @@
    "n": 1,
    "w": 6
   },
-  "bHBQNkOg0G": {
-   "en": "Yes. The four indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los cuatro indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+  "kFiyiIwLsJ": {
+   "en": "Yes. The six indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -139133,9 +139433,9 @@
    "n": 3,
    "w": 1
   },
-  "bPsg2Ynraq": {
-   "en": "4 AI indicators",
-   "es": "4 indicadores de IA",
+  "o3hib1sHmc": {
+   "en": "6 AI indicators",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139145,9 +139445,9 @@
    "n": 1,
    "w": 2
   },
-  "Ya94tW30l0": {
-   "en": "Cascade Radar, Liquidation Magnet, Market Brain and Market Memory - four readouts built on our own liquidation data that no other chart has, each grading its own live hit-rate on the chart you are looking at. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
-   "es": "Cascade Radar, Liquidation Magnet, Market Brain y Market Memory - cuatro indicadores construidos sobre nuestros propios datos de liquidaciones que ningún otro gráfico tiene, cada uno calificando su propio acierto en vivo en el gráfico que estás mirando. Cada uno lleva una tarjeta que describe su estado en palabras, y un toque lo explica antes de un long y antes de un short.",
+  "aBKzJlUImn": {
+   "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Whale Liquidations and the Liquidation Wall - six readouts built on data no other chart has. Two of them are not models at all: one draws the REAL on-chain liquidation price of every tracked Hyperliquid position over $1M, the other prices the heaviest cluster near you from what has actually liquidated there, measured across nine exchanges. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139155,7 +139455,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 54
+   "w": 82
   },
   "ahM393ItOf": {
    "en": "<span class=\"tapk\">What each one tells you &rarr;</span>",
@@ -139205,9 +139505,9 @@
    "n": 1,
    "w": 5
   },
-  "GaH8nuA3Rk": {
-   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our four indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
-   "es": "Un analista integrado que lee cualquier gráfico en lenguaje llano y además maneja el gráfico por ti: dile “dibuja el setup” y traza líneas de tendencia, zonas y el recorrido esperado con las herramientas de dibujo reales; pregúntale “¿qué es el RSI?” y te lo explica y lo activa. Puede cambiar la temporalidad o la moneda, conoce nuestros cuatro indicadores, guarda la conversación por moneda y te ofrece un toque para operar ese setup en simulado. Una lectura al día con Premium, 50 al día con Premium Plus.",
+  "tIJwDWHou0": {
+   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our six indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139505,16 +139805,16 @@
    "n": 1,
    "w": 13
   },
-  "r4KjKm0lfQ": {
-   "en": "Free members get every standard indicator with the same cards. Premium adds the four MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
-   "es": "Los miembros gratis tienen todos los indicadores estándar con las mismas tarjetas. Premium añade los cuatro indicadores de MarginPad de arriba, construidos sobre nuestros propios datos de liquidaciones. También nuevo en cada gráfico: repetición de velas, comparar con una segunda moneda, sesiones de trading, niveles diarios, seis estilos de gráfico.",
+  "icfRmLdp89": {
+   "en": "Free members get every standard indicator with the same cards. Premium adds the six MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
+   "es": "",
    "kind": [
     "html"
    ],
    "ctx": [
     "/premium/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 41
   },
   "k_IBY1pA08": {
@@ -140561,9 +140861,9 @@
    "n": 1,
    "w": 4
   },
-  "L1uEr-uSc_": {
-   "en": "Every Premium feature above - the 4 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
-   "es": "Todas las funciones Premium de arriba: los 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (una lectura al día; 50 al día con Premium Plus), Balance Mode, los cinco formatos de duelo y el salón Premium, el Daily Brief, +5% de XP, la insignia Premium, las alertas de posición y el informe de trading completo en el sitio. Con el tiempo se añaden nuevas herramientas Premium sin coste adicional.",
+  "XrmYB7fyaX": {
+   "en": "Every Premium feature above - the 6 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140669,9 +140969,9 @@
    "n": 1,
    "w": 24
   },
-  "AOF-1QD0tQ": {
-   "en": "The 4 AI indicators",
-   "es": "Los 4 indicadores de IA",
+  "NMZIR7Rw1K": {
+   "en": "The 6 AI indicators",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140752,6 +141052,126 @@
    ],
    "n": 1,
    "w": 72
+  },
+  "xn1QgYIO0t": {
+   "en": "Whale Liquidations <i>REAL, NOT MODELLED</i>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "oWNyngIhPQ": {
+   "en": "At exactly what price does a whale get force-closed - and which way will that push the market?",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "oezea8Mj04": {
+   "en": "<b>You see:</b> solid lines on the price, each labelled with a position size and its leverage. <b>Red</b> = a long that gets force-SOLD there. <b>Green</b> = a short that gets force-BOUGHT there. The legend names the nearest one and how much forced money sits above you and below you.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 44
+  },
+  "bWCMYYEbd4": {
+   "en": "<b>It means:</b> every other liquidation indicator you can buy anywhere is a guess, because the scripting languages on other charting sites cannot reach a liquidation feed at all. These are not guesses. Hyperliquid publishes every account’s position on chain, so the price on the line is the price the exchange itself will close that trader at - we read it, we do not model it. We poll the 1,000 largest wallets and draw the positions over $1M, which is the part of the book big enough to move a market.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 86
+  },
+  "mc6vNyBSxe": {
+   "en": "<b>Before a long:</b> a GREEN line above you is fuel - a short that must be bought back there, by an order nobody can cancel. Moves into it tend to accelerate rather than stall, so treat it as a target, not a level to fade. What to avoid is being long just above a RED cluster: that is where the forced sellers appear.<br><b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you is standing in front of buyers who have no choice.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 83
+  },
+  "zQtuxvduKR": {
+   "en": "Liquidation Wall <i>MEASURED IN DOLLARS</i>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "4BFZI6ipXR": {
+   "en": "The heaviest cluster near price - and how much money has really gone there?",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "bnT9hfkkGf": {
+   "en": "<b>You see:</b> one dashed line for the heaviest cluster above price and one below, each labelled with a dollar figure, and a legend line naming how many real cascades the figure was measured from.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 32
+  },
+  "d6RrZjUI07": {
+   "en": "<b>It means:</b> WHERE the cluster sits is a model, the same leverage maths every liquidation map uses. The MONEY is not. We have recorded nearly a million real liquidations across nine exchanges, so we can say what has actually liquidated in bands of this weight: the figure is that measured median. When a band is heavier than anything we have on record the line says <b>at least</b> - a floor, never an invented number - and a band lighter than anything we have measured carries no figure at all.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 82
+  },
+  "0iqRD8ip7J": {
+   "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.<br><b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 63
   },
   "n1RHht82jL": {
    "en": "Liquidation Magnet <i>TARGETS</i>",
@@ -141065,9 +141485,9 @@
    "n": 1,
    "w": 13
   },
-  "TJcoCvcTJT": {
-   "en": "Unlock MarginPad Premium: 4 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
-   "es": "Desbloquea MarginPad Premium: 4 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, el Balance Mode, clasificaciones premium y más. $11.99/mes, y ahora incluye una lectura de Ask AI en tus gráficos cada día. Premium Plus la eleva a 50 al día por $159/mes - paga con cripto.",
+  "OA95gz7uud": {
+   "en": "Unlock MarginPad Premium: 6 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -141089,9 +141509,9 @@
    "n": 1,
    "w": 6
   },
-  "WR8F1Ev9em": {
-   "en": "4 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
-   "es": "4 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Balance Mode y más. $11.99/mes, con una lectura de Ask AI al día. Premium Plus la eleva a 50 al día por $159/mes - paga con cripto.",
+  "eGDhYfRYyv": {
+   "en": "6 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
+   "es": "",
    "kind": [
     "attr:content"
    ],

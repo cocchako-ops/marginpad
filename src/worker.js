@@ -8156,6 +8156,33 @@ async function checkOpsAlerts(env) {
     const errj = +(await env.STATS.get('err:day:' + today) || 0);
     if (errj >= 12) await once('alrt:err:' + today, () => tgAdmin(env, '<b>' + errj + ' broken pages danas</b> - pogledaj Health tab.'));
  try { const cs = await collectorStatusInfo(env); if (cs && (cs.state === 'UNREACHABLE' || cs.state === 'DOWN' || cs.state === 'STALLED' || cs.state === 'UNCONFIG')) await once('alrt:coll:' + today, () => tgAdmin(env, '<b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ') - Rekt / likvidacije feed je stao.\nRestart na VPS-u: <code>ssh root@167.172.98.147 "pm2 restart marginpad-collector"</code>'));
+ /* A RESTART LOOP IS THE ONE COLLECTOR FAILURE EVERY OTHER CHECK IS BLIND TO (2026-10-11). The probe above
+    suppresses DOWN and STALLED while uptime is under 15 minutes, deliberately, so that a `pm2 restart` cannot
+    page RED - which means a process that never REACHES 15 minutes is permanently "booting" and permanently
+    silent. pm2 killed the collector 119 times in about ten hours against a memory ceiling set for the old
+    458 MB droplet and nothing said a word; each kill lost the tape since the last persist and emptied the
+    published whale positions until the next four-minute poll.
+    No new endpoint is needed: a process that restarted between two passes reports an uptime SHORTER than the
+    time since we last looked at it. Three of those inside an hour is a loop rather than a deploy. */
+ try {
+   if (cs && cs.state !== 'UNREACHABLE' && cs.state !== 'UNCONFIG') {
+     const nowMs = Date.now(), up = +cs.uptimeSec || 0;
+     const prev = JSON.parse(await env.STATS.get('coll:upwatch') || '{}');
+     const hits = Array.isArray(prev.hits) ? prev.hits.filter((t) => nowMs - t < 3600000) : [];
+     // the gap since the last look, minus a minute of slack for cron jitter and the probe's own retries
+     const gap = prev.t ? (nowMs - prev.t) / 1000 : 0;
+     if (gap > 60 && up < gap - 60) hits.push(nowMs);
+     await env.STATS.put('coll:upwatch', JSON.stringify({ t: nowMs, up, hits }), { expirationTtl: 86400 });
+     if (hits.length >= 3) {
+       const slot = Math.floor(nowMs / 21600000);
+       await once('alrt:collloop:' + slot, () => tgAdmin(env, '<b>Collector se restartuje u krug</b> - ' + hits.length
+         + ' restarta u poslednjih sat vremena (sada gore ' + Math.round(up / 60) + ' min). Feed se vraca svaki put, pa nijedan drugi alarm ovo ne vidi.\n'
+         + 'Najcesci uzrok: pm2 memorijski plafon (<code>pm2 describe marginpad-collector | grep -i "max memory"</code>) ili pad procesa (<code>tail ~/.pm2/pm2.log</code>).\n'
+         + 'Svaki restart gubi traku od poslednjeg upisa i prazni listu kitova do sledeceg poll-a.',
+         { kind: 'collector-restart-loop', sev: 'warn' }));
+     }
+   }
+ } catch (e) {}
  // PER-VENUE SILENCE (2026-09-02). Bybit, OKX, BitMEX and Bitfinex died one by one between 08-23 and
  // 08-29 and nobody was told: the whole-collector state above only degrades below half the venues, so
  // 6/10 alive read as LIVE for ten days. A venue that stopped delivering is its own alarm now - once
@@ -20247,8 +20274,9 @@ export default {
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
       let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
+      let colUp = null; try { const w = JSON.parse(await env.STATS.get('coll:upwatch') || 'null'); if (w) colUp = { restartsLastHour: (w.hits || []).filter((t) => Date.now() - t < 3600000).length, uptimeMin: Math.round((+w.up || 0) / 60), seenMinAgo: Math.round((Date.now() - (+w.t || 0)) / 60000) }; } catch (e) {}
       const age = hb ? Math.round((Date.now() - hb) / 60000) : -1, ok = hb > 0 && age <= 25;
-      return new Response(JSON.stringify({ ok, cronAgeMin: age, ledgerBackupAgeMin: l6 && l6.ts ? Math.round((Date.now() - l6.ts) / 60000) : -1, collector: COL_DOWN_UNTIL > Date.now() ? 'down' : 'ok', collectorTrips: COL_TRIPS }), { status: ok ? 200 : 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); // collector = this isolate's circuit breaker (2026-10-06); the status code stays about the cron so the uptime monitor's meaning does not change
+      return new Response(JSON.stringify({ ok, cronAgeMin: age, ledgerBackupAgeMin: l6 && l6.ts ? Math.round((Date.now() - l6.ts) / 60000) : -1, collector: COL_DOWN_UNTIL > Date.now() ? 'down' : 'ok', collectorTrips: COL_TRIPS, collectorRestarts: colUp }), { status: ok ? 200 : 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); // collector = this isolate's circuit breaker (2026-10-06); the status code stays about the cron so the uptime monitor's meaning does not change
     }
     if (url.pathname === '/api/now') return new Response(JSON.stringify({ t: Date.now() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } }); // ms server clock for the client offset sync - candle boundaries/countdown must NOT trust the device clock (measured: a 46s-skewed device rolled bars into wrong buckets, then the 30s re-sync visibly repainted them)
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
