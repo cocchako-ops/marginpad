@@ -3580,7 +3580,7 @@ async function handleCgHyper(url, env) {
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
  // positions >= $1M) - the chain is the primary source, no aggregator in between.
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
- const ck = new Request('https://marginpad.io/__whales_v4'); // bumped: the response now carries the executed-trade feed
+ const ck = new Request('https://marginpad.io/__whales_v5'); // bumped 2026-10-11: 1,000 wallets, every position now carries its own age
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { ts: Date.now(), active: false };
   try {
@@ -3605,6 +3605,9 @@ async function handleCgHyper(url, env) {
  out.agg = { longUsd, shortUsd, upnl, count: j.positions.length };
  out.alerts = (j.alerts || []).map(a => ({ user: a.user, sym: a.sym, long: a.long, liq: a.liq, val: a.val, ts: a.ts, kind: a.kind || '', lev: a.lev != null ? a.lev : undefined })); // kind (opened/closed/flipped/increased/reduced) was dropped here since the feed was built - the page never had a "position changes" list to draw (2026-10-05)
  out.tracked = j.tracked;
+ // 2026-10-11: the tracked set went 150 -> 1,000 and the poll rotates, so a reader has to be able to see
+ // how many positions stand behind the published slice and how old the oldest observation can be
+ out.posN = +j.posN || j.positions.length; out.core = +j.core || 0; out.sweepMin = +j.sweepMin || 0;
       out.active = true;
     }
     }

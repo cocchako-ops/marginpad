@@ -26,9 +26,12 @@ import { scanLeaderboard } from './lbscan.js';
 
 const LEADERBOARD_URL = 'https://stats-data.hyperliquid.xyz/Mainnet/leaderboard';
 const INFO_URL = 'https://api.hyperliquid.xyz/info';
-const TRACK_N = 150;        // top accounts by account value we keep an eye on
+const TRACK_N = 1000;       // top accounts by account value we keep an eye on (150 until 2026-10-11)
+const CORE_N = 200;         // … of which the largest are polled EVERY cycle
+const ROTATE_N = 200;       // … and this many of the tail per cycle, so the whole 1,000 is swept in 16 min
+const STALE_MS = 52 * 60e3; // a position nobody has looked at for three sweeps stops being published
 const MIN_POS_USD = 1e6;    // a "whale position" starts at $1M notional
-const TOP_POSITIONS = 40;   // what we publish
+const TOP_POSITIONS = 120;  // what we publish (40 until 2026-10-11 - the liquidation line needs breadth)
 const ALERT_DELTA = 0.25;   // size change that counts as an alert
 const MAX_ALERTS = 60;
 
@@ -44,7 +47,9 @@ const MAX_FILLS = 120;      // published ring
 const FILL_LOOKBACK_MS = 15 * 60e3; // first sight of a wallet: how far back we read
 
 const state = { tracked: [], positions: [], alerts: [], fills: [], perf: {}, best: [], coins: [], ts: 0, lbTs: 0, fillTs: 0, lastErr: '', fillErr: '' };
-let prevByKey = null; // "user|coin" -> {val, long} from the previous poll (null on first run = no alerts)
+let prevByKey = null; // "user|coin" -> {val, long} from that WALLET's previous poll (null on first run = no alerts)
+let rotCursor = 0;    // where the rotating half of the position poll is in the tail
+const posByUser = new Map(); // user -> { rows, ts } - the last time we actually looked at this wallet
 let timers = [];
 const fillSeen = new Map();   // user -> ms of the newest fill we have already read
 const openGroup = new Map();  // "user|coin|dir" -> the group still collecting fills
@@ -100,7 +105,17 @@ async function refreshLeaderboard() {
   } catch (e) { state.lastErr = 'lb: ' + String(e).slice(0, 120); log.warn('[whales] leaderboard failed', { e: String(e).slice(0, 160) }); }
 }
 
+/* A CYCLE THAT OVERRUNS ITS TIMER MUST NOT START A SECOND ONE. Measured on a dry run: 400 calls take
+   138 s against a 240 s timer, which is comfortable until the day the API is slow - and two polls in
+   flight would put the weight spend at ~400/min for positions on top of the fills' 600, against a hard
+   1200/min per IP. The same rule the ring persist on this box already follows. */
+let polling = false;
 async function poll() {
+  if (polling) { log.warn('[whales] poll still running, skipping this tick'); return; }
+  polling = true;
+  try { await pollOnce(); } finally { polling = false; }
+}
+async function pollOnce() {
   if (!state.tracked.length) return;
   try {
     let mids = {};
@@ -123,8 +138,19 @@ async function poll() {
         };
       }
     } catch (e) { /* context is a bonus; the board must render without it */ }
-    const found = [];
-    for (const user of state.tracked) {
+    /* TWO TIERS. The biggest accounts are polled every cycle because they are the ones a reader recognises
+       and the ones whose liquidation actually moves a market; the tail rotates so 1,000 wallets cost the same
+       weight as 400. `universe` is only what we LOOK AT this cycle - what we PUBLISH is assembled below from
+       every wallet still fresh, because a wallet we did not call has not closed anything. */
+    const core = state.tracked.slice(0, CORE_N);
+    const tail = state.tracked.slice(CORE_N);
+    const slice = [];
+    for (let i = 0; i < Math.min(ROTATE_N, tail.length); i++) slice.push(tail[(rotCursor + i) % tail.length]);
+    if (tail.length) rotCursor = (rotCursor + slice.length) % tail.length;
+    const universe = core.concat(slice);
+    const polledNow = new Set(universe);
+    const seen = [];
+    for (const user of universe) {
       try {
         const st = await post({ type: 'clearinghouseState', user });
         for (const ap of (st.assetPositions || [])) {
@@ -133,7 +159,7 @@ async function poll() {
           if (val < MIN_POS_USD) continue;
           const szi = +p.szi || 0;
           if (!szi) continue;
-          found.push({
+          seen.push({
             user, sym: String(p.coin || ''), long: szi > 0,
             lev: +((p.leverage || {}).value) || null,
             val: Math.round(val),
@@ -145,23 +171,39 @@ async function poll() {
       } catch (e) { /* one whale failing must not sink the poll */ }
       await new Promise(res => setTimeout(res, 30));
     }
+    const nowTs = Date.now();
+    // what we saw this cycle replaces what we knew about those wallets, and nothing else
+    for (const u of universe) posByUser.set(u, { rows: [], ts: nowTs });
+    for (const p of seen) (posByUser.get(p.user) || { rows: [] }).rows.push(p);
+    // a wallet that has dropped off the leaderboard, or that we have not reached in three sweeps, stops counting
+    const live = new Set(state.tracked);
+    for (const [u, v] of posByUser) if (!live.has(u) || nowTs - v.ts > STALE_MS) posByUser.delete(u);
+
+    /* EVERY ROW CARRIES ITS OWN AGE. With a rotating poll a position can be sixteen minutes old, and a
+       liquidation line drawn from it has to be able to say so rather than implying it is live. */
+    const found = [];
+    for (const [, v] of posByUser) for (const p of v.rows) found.push({ ...p, age: Math.round((nowTs - v.ts) / 1000) });
     found.sort((a, b) => b.val - a.val);
 
-    // alerts = diff vs the previous poll over the same tracked universe
-    const nowByKey = new Map(found.map(p => [p.user + '|' + p.sym, p]));
+    // alerts = diff vs each WALLET's own previous observation, and only for wallets polled this cycle -
+    // otherwise every rotation would print a wave of "closed" for wallets nobody looked at
+    const nowByKey = new Map(seen.map(p => [p.user + '|' + p.sym, p]));
     if (prevByKey) {
-      const ts = Date.now(), fresh = [];
+      const ts = nowTs, fresh = [];
       for (const [k, p] of nowByKey) {
         const was = prevByKey.get(k);
         if (!was) fresh.push({ ...alertOf(p), kind: 'opened', ts });
         else if (was.long !== p.long) fresh.push({ ...alertOf(p), kind: 'flipped', ts });
         else if (Math.abs(p.val - was.val) / was.val >= ALERT_DELTA) fresh.push({ ...alertOf(p), kind: p.val > was.val ? 'increased' : 'reduced', ts });
       }
-      for (const [k, was] of prevByKey) if (!nowByKey.has(k)) fresh.push({ ...alertOf(was), kind: 'closed', ts });
+      for (const [k, was] of prevByKey) if (!nowByKey.has(k) && polledNow.has(was.user)) fresh.push({ ...alertOf(was), kind: 'closed', ts });
       fresh.sort((a, b) => b.val - a.val);
       state.alerts = fresh.concat(state.alerts).slice(0, MAX_ALERTS);
     }
-    prevByKey = nowByKey;
+    // keep every wallet's last observation, not only this cycle's, or a rotated wallet has nothing to diff against
+    if (!prevByKey) prevByKey = new Map();
+    for (const [k, v] of prevByKey) if (polledNow.has(v.user)) prevByKey.delete(k);   // one pass, not universe x map
+    for (const [k, p] of nowByKey) prevByKey.set(k, p);
     // the fill feed needs leverage, and a fill does not carry it - it lives on the POSITION. Keep the
     // whole map (not just the published top 40) so a trade in a smaller position is still labelled.
     levByKey = new Map(found.filter(p => p.lev > 0).map(p => [p.user + '|' + p.sym, p.lev]));
@@ -194,7 +236,9 @@ async function poll() {
     }).sort((a, b) => b.tot - a.tot).slice(0, 40);
 
     state.positions = found.slice(0, TOP_POSITIONS);
-    state.ts = Date.now();
+    state.posN = found.length;
+    state.sweptAt = nowTs;
+    state.ts = nowTs;
     state.lastErr = '';
   } catch (e) { state.lastErr = 'poll: ' + String(e).slice(0, 120); log.warn('[whales] poll failed', { e: String(e).slice(0, 160) }); }
 }
@@ -334,11 +378,26 @@ export const _fillsTest = {
   reset(lev) { state.fills = []; openGroup.clear(); fillSeen.clear(); pending.length = 0; levByKey = new Map(Object.entries(lev || {})); },
   consts: { GROUP_MS, MIN_TRADE_USD, MAX_FILLS, FILL_TRACK_N },
 };
+/* PUBLISH A TRACK RECORD ONLY FOR WALLETS THAT ARE ON SCREEN. `perf` used to go out whole; at 150 wallets
+   that was ~22 KB, at 1,000 it would be ~150 KB on an endpoint the whole site edge-caches and every chart
+   asks for. The page only ever looks a wallet up when it is already showing it. */
+function perfShown() {
+  const want = new Set();
+  for (const p of state.positions) want.add(p.user);
+  for (const f of state.fills) want.add(f.user);
+  for (const b of state.best) want.add(b.user);
+  for (const a of state.alerts) if (a.user) want.add(a.user);
+  const out = {};
+  for (const u of want) if (state.perf[u]) out[u] = state.perf[u];
+  return out;
+}
 export function getWhales() {
   return {
     ts: state.ts, lbTs: state.lbTs, tracked: state.tracked.length, positions: state.positions, alerts: state.alerts,
     fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
-    coins: state.coins, best: state.best, perf: state.perf,
+    coins: state.coins, best: state.best, perf: perfShown(),
+    posN: state.posN || 0, core: Math.min(CORE_N, state.tracked.length),
+    sweepMin: state.tracked.length > CORE_N ? Math.round(((state.tracked.length - CORE_N) / Math.max(1, ROTATE_N)) * 4) : 0,
     err: state.lastErr || undefined, fillErr: state.fillErr || undefined,
   };
 }
