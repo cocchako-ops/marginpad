@@ -107,7 +107,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var rs=lv.filter(function(x){return x.type==='r';}).slice(-3),ss=lv.filter(function(x){return x.type==='s';}).slice(-3);
     return rs.concat(ss);}
   var TFS=[['1','1m'],['5','5m'],['15','15m'],['60','1h'],['240','4h'],['1440','1d']];
-  var INDS=[['sig','Buy / Sell signals'],['sr','Support / Resistance'],['dl','Daily levels'],['sess','Trading sessions'],['ema9','EMA 9'],['ema21','EMA 21'],['ema50','EMA 50'],['ema100','EMA 100'],['ema200','EMA 200'],['sma20','SMA 20'],['sma50','SMA 50'],['sma100','SMA 100'],['sma200','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger'],['vol','Volume'],['rsi','RSI'],['macd','MACD'],['stoch','Stoch'],['atr','ATR'],['wr','Williams %R'],['cci','CCI'],['casc','Cascade Radar'],['brain','Market Brain (adaptive AI)'],['memory','Market Memory (AI forecast)'],['magnet','Liquidation Magnet']];
+  var INDS=[['sig','Buy / Sell signals'],['sr','Support / Resistance'],['dl','Daily levels'],['sess','Trading sessions'],['ema9','EMA 9'],['ema21','EMA 21'],['ema50','EMA 50'],['ema100','EMA 100'],['ema200','EMA 200'],['sma20','SMA 20'],['sma50','SMA 50'],['sma100','SMA 100'],['sma200','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger'],['vol','Volume'],['rsi','RSI'],['macd','MACD'],['stoch','Stoch'],['atr','ATR'],['wr','Williams %R'],['cci','CCI'],['casc','Cascade Radar'],['brain','Market Brain (adaptive AI)'],['memory','Market Memory (AI forecast)'],['magnet','Liquidation Magnet'],['whaleliq','Whale Liquidations (real)'],['liqwall','Liquidation Wall (measured $)']];
   function mSig(){return window.__mpSig||null;}
   function mEx(k){var S=mSig();return !!(S&&S.MP_INDS&&S.MP_INDS[k]);}
   function mAllowed(){var S=mSig();return !!(S&&S.indAllowed&&S.indAllowed());}
@@ -233,7 +233,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var cLo=Infinity,cHi=-Infinity;for(var i=from;i<=to;i++){var b=p.bars[i];if(!b)continue;if(b.low<cLo)cLo=b.low;if(b.high>cHi)cHi=b.high;}
         if(p.lastBar){if(p.lastBar.low<cLo)cLo=p.lastBar.low;if(p.lastBar.high>cHi)cHi=p.lastBar.high;}
         if(!(isFinite(cLo)&&isFinite(cHi)&&cHi>cLo))return orig?orig():null;
-        var cRange=cHi-cLo,lo=cLo,hi=cHi,budget=cRange*2.4,mp=p._mtPrices||[];
+        var cRange=cHi-cLo,lo=cLo,hi=cHi,budget=cRange*2.4,mp=(p._mtPrices||[]).concat(p._htPrices||[]);
         for(var k=0;k<mp.length;k++){var v=mp[k];if(!(v>0))continue;
           if(v<cLo){if((cLo-v)<=budget&&v<lo)lo=v;}
           else if(v>cHi){if((v-cHi)<=budget&&v>hi)hi=v;}}
@@ -425,10 +425,38 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(p.inds.brain){try{p._brain=S.brainCalc(p,p.bars);}catch(e){}if(p._brain)_as('BRAIN',p._brain.mk);}
       if(p.inds.memory){try{p._mem=S.memoryCalc(p,p.bars);}catch(e){}}
       if(p.inds.magnet){try{p._mag=S.magnetCalc(p.bars);}catch(e){}}else p._mag=null;
+      /* ONE request serves both measured indicators, and the re-apply hook is what lets the shared loader
+         repaint a surface it knows nothing about. */
+      p._htPrices=[];
+      if((p.inds.whaleliq||p.inds.liqwall)&&IA&&S.loadHeat){p._reapply=function(){try{applyInds(p);}catch(e){}};try{S.loadHeat(p);}catch(e){}}
     }else p._mag=null;
     try{p.candle.setMarkers(_mk.sort(function(a,b){return a.time-b.time;}));}catch(e){}
     try{for(var _sk in _ss){var _sv=_ss[_sk];p.legItems.push({raw:true,color:_sv.pct>=55?'#2ebd85':_sv.pct<=45?'#ff6258':'#8fa3c4',label:_sk+' '+_sv.pct+'% ('+_sv.w+'W/'+_sv.l+'L)'});}}catch(e){}
     if(p.inds.sr)computeSR(p.bars).forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'}));}catch(e){}});
+    if(p.inds.whaleliq&&IA&&S&&p._ht){var _wpx=+p.bars[p.bars.length-1].close||0,_PX=S.fmtPx||function(v){return v;},_MY=S.money;
+        var _all=(p._ht.whales||[]).filter(function(x){return +x.liq>0&&_wpx>0;}).map(function(x){
+          return {liq:+x.liq,val:+x.val||0,long:!!x.long,lev:+x.lev||0,d:Math.abs(+x.liq-_wpx)/_wpx*100};}).sort(function(a,b){return a.d-b.d;});
+        /* A phone pane is shorter, so it carries the four nearest rather than six, and still only what is on screen. */
+        var _wl=_all.filter(function(x){return x.d<=15;}).slice(0,4),_far=_all.length-_wl.length;
+        _wl.forEach(function(x){try{p.indLines.push(p.candle.createPriceLine({price:x.liq,color:x.long?'#ff6258':'#2ebd85',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:_MY(x.val)+(x.lev?' '+x.lev+'x':'')}));}catch(e){}p._htPrices.push(x.liq);});
+        if(_wl.length){var _w0=_wl[0],_lu=0,_ld=0;_all.forEach(function(x){if(x.liq>_wpx)_lu+=x.val;else _ld+=x.val;});
+          p.legItems.push({raw:true,color:'#c2f64a',label:'WHALE LIQ '+_MY(_w0.val)+' '+(_w0.long?'long':'short')+(_w0.lev?' '+_w0.lev+'x':'')+' @ '+_PX(_w0.liq)+' \u00b7 '+_w0.d.toFixed(1)+'% '+(_w0.liq>_wpx?'above':'below')+(_far>0?' \u00b7 +'+_far:''),title:'Real on-chain liquidation prices of Hyperliquid positions over $1M.'});
+          if(_lu||_ld)p.legItems.push({raw:true,color:'#8fa3c4',label:_MY(_ld)+' below / '+_MY(_lu)+' above',title:'Size of the tracked positions force-closed each side of price.'});
+        }else{var _nr=p._ht.whaleNear;
+          p.legItems.push({raw:true,color:'#8fa3c4',label:'WHALE LIQS none within 15% on '+p.sym+(_nr&&_nr.sym?' \u00b7 nearest anywhere: '+_nr.sym+' '+(_nr.long?'long':'short')+' '+_MY(_nr.val):'')});}
+      }
+      if(p.inds.liqwall&&IA&&S&&p._ht&&p._ht.alive&&p._ht.alive.length){var _qpx=+p.bars[p.bars.length-1].close||0,_PX2=S.fmtPx||function(v){return v;},_MY2=S.money,_cal=p._ht.calib||null,_up=[],_dn=[];
+        p._ht.alive.forEach(function(b){var pp=+b.p;if(!(pp>0)||!(_qpx>0))return;if(Math.abs(pp-_qpx)/_qpx>0.15)return;(pp>_qpx?_up:_dn).push({p:pp,w:+b.w||0,long:!!b.long});});
+        var _hv2=function(arr){return arr.sort(function(x,y){return y.w-x.w;}).slice(0,1);},_walls=_hv2(_up).concat(_hv2(_dn));
+        _walls.forEach(function(b){var u=S.calibUsd(_cal,b.w);
+          try{p.indLines.push(p.candle.createPriceLine({price:b.p,color:b.long?'rgba(255,98,88,.8)':'rgba(46,189,133,.8)',lineWidth:2,lineStyle:2,axisLabelVisible:true,title:S.calUsdOk(u)?(_MY2(u.med)+(u.floor?'+':'')):'wall'}));}catch(e){}p._htPrices.push(b.p);});
+        if(_walls.length){var _byW=_walls.slice().sort(function(x,y){return y.w-x.w;}),_pw=null,_pu=null;
+          for(var _wi=0;_wi<_byW.length;_wi++){var _u3=S.calibUsd(_cal,_byW[_wi].w);if(S.calUsdOk(_u3)){_pw=_byW[_wi];_pu=_u3;break;}}
+          var _prov=_cal?' Calibrated on '+_cal.n+' real cascades over '+_cal.days+' days.':'';
+          if(_pw)p.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+(_pu.floor?'at least ':'')+_MY2(_pu.med)+' @ '+_PX2(_pw.p)+' \u00b7 '+(Math.abs(_pw.p-_qpx)/_qpx*100).toFixed(1)+'% '+(_pw.p>_qpx?'above':'below'),title:(_pu.floor?'Heavier than any cascade on record, so this is a FLOOR: the heaviest class we have measured liquidated '+_MY2(_pu.lo)+' to '+_MY2(_pu.hi)+' over '+_pu.n+' cases.':'Priced from what has really liquidated in bands this heavy: '+_MY2(_pu.lo)+' to '+_MY2(_pu.hi)+' over '+_pu.n+' cases.')+_prov});
+          else p.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_PX2(_byW[0].p)+' \u00b7 unpriced',title:'Modelled cluster; no cascade this heavy has been measured.'+_prov});
+        }
+      }
     if(p.inds.dl&&S&&S.dailyLevels){var _dl=S.dailyLevels(p.bars,p.tf);if(_dl)_dl.forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.v,color:L.c,lineWidth:1,lineStyle:L.k==='OPEN'?0:2,axisLabelVisible:true,title:L.k}));}catch(e){}});}
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
     function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:d,sub:!!(opts.priceScaleId&&p.sub),key:opts.priceScaleId||''});}}
@@ -801,8 +829,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* INDICATORS IN GROUPS, EACH WITH ONE LINE OF MEANING (2026-10-08): 25 buttons in a flat grid asked the reader to already know
      what Hull MA or CCI is. Four groups, a switch per row, the sentence that says what the line shows, a count on the title
      and Clear all. The four MarginPad indicators link to their guide. */
-  var IND_DESC={dl:'Yesterday\'s high / low / close and today\'s open (UTC)',sess:'Asia, London and New York sessions shaded (UTC, intraday)',sig:'Supertrend buy / sell arrows on the candles',sr:'Recent pivot highs and lows as lines',ema9:'Fast exponential average - short-term trend',ema21:'The swing trader’s trend line',ema50:'Medium-term trend; price above = uptrend',ema100:'Slow trend filter',ema200:'The long-term trend line most desks watch',sma20:'Simple 20-bar average',sma50:'Simple 50-bar average',sma100:'Simple 100-bar average',sma200:'Simple 200-bar average - the classic bull / bear line',hma:'Hull MA 21 - a smooth, fast-turning average',vwap:'Volume-weighted average price of the session',bb:'Bollinger bands - volatility envelope around a 20 average',vol:'Volume per candle',rsi:'RSI 14 - momentum; above 70 stretched, below 30 washed out',macd:'MACD - trend momentum and its signal line',stoch:'Stochastic - where the close sits in the recent range',atr:'ATR 14 - how much this market moves per candle',wr:'Williams %R - overbought / oversold',cci:'CCI 20 - distance from the average, in deviations',casc:'Liquidation fuel within 5% of price, 0-100',brain:'Learned 8-factor lean, -100 to +100',memory:'What price did after the 25 most similar moments',magnet:'The dominant liquidation pool pulling price'};
-  var IND_GROUPS=[['Signals & levels',['sig','sr','dl','sess']],['Moving averages',['ema9','ema21','ema50','ema100','ema200','sma20','sma50','sma100','sma200','hma','vwap','bb']],['Oscillators & volume',['rsi','macd','stoch','atr','wr','cci','vol']],['MarginPad AI',['casc','brain','memory','magnet']]];
+  var IND_DESC={dl:'Yesterday\'s high / low / close and today\'s open (UTC)',sess:'Asia, London and New York sessions shaded (UTC, intraday)',sig:'Supertrend buy / sell arrows on the candles',sr:'Recent pivot highs and lows as lines',ema9:'Fast exponential average - short-term trend',ema21:'The swing trader’s trend line',ema50:'Medium-term trend; price above = uptrend',ema100:'Slow trend filter',ema200:'The long-term trend line most desks watch',sma20:'Simple 20-bar average',sma50:'Simple 50-bar average',sma100:'Simple 100-bar average',sma200:'Simple 200-bar average - the classic bull / bear line',hma:'Hull MA 21 - a smooth, fast-turning average',vwap:'Volume-weighted average price of the session',bb:'Bollinger bands - volatility envelope around a 20 average',vol:'Volume per candle',rsi:'RSI 14 - momentum; above 70 stretched, below 30 washed out',macd:'MACD - trend momentum and its signal line',stoch:'Stochastic - where the close sits in the recent range',atr:'ATR 14 - how much this market moves per candle',wr:'Williams %R - overbought / oversold',cci:'CCI 20 - distance from the average, in deviations',casc:'Liquidation fuel within 5% of price, 0-100',brain:'Learned 8-factor lean, -100 to +100',memory:'What price did after the 25 most similar moments',magnet:'The dominant liquidation pool pulling price',whaleliq:'Real on-chain liquidation prices of Hyperliquid positions over $1M',liqwall:'The heaviest liquidation clusters, priced in real measured dollars'};
+  var IND_GROUPS=[['Signals & levels',['sig','sr','dl','sess']],['Moving averages',['ema9','ema21','ema50','ema100','ema200','sma20','sma50','sma100','sma200','hma','vwap','bb']],['Oscillators & volume',['rsi','macd','stoch','atr','wr','cci','vol']],['MarginPad AI',['casc','brain','memory','magnet','whaleliq','liqwall']]];
   function buildInd(body,p){var al=mAllowed(),byK={};INDS.forEach(function(d){byK[d[0]]=d[1];});
     var on=Object.keys(p.inds).filter(function(k){return p.inds[k];}).length;
     var CS=window.__mpChStyle;
