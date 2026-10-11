@@ -69,7 +69,7 @@ Rookie
 Total Deposits
 0
 
-**raz
+**zzq
 Total Deposits:
 0
 Registered
@@ -112,8 +112,12 @@ Total Deposits
   ok(n6 && n6.status === 'ok' && n6.dep === 1, '*****006 resolves (' + (n6 && n6.name) + ') with 1 deposit');
   const yy = p.rows.filter(r => r.mask === '***yyy');
   ok(yy.length === 2 && yy.every(r => r.dupMask && r.status === 'dup_mask'), 'the same mask twice at Moon is flagged dup_mask on both rows');
-  const raz = p.rows.find(r => r.mask === '**raz');
-  ok(raz && raz.wager === 10.19 && raz.status !== 'ok', '**raz parses (10.19) and is not a member: ' + (raz && raz.status));
+  /* THE FIXTURE MUST BE A MASK NO REAL ACCOUNT CAN HAVE. This was `**raz` until 2026-10-11, when that mask
+     turned out to be a real member (viraz = @alefzed) and three checks here went red with nothing wrong.
+     No approved member masks to this one today, and the check below fails loudly the day one does. */
+  const raz = p.rows.find(r => r.mask === '**zzq');
+  ok(raz && raz.wager === 10.19 && raz.status !== 'ok', '**zzq parses (10.19) and is not a member: ' + (raz && raz.status));
+  ok(raz && raz.status === 'unregistered', 'and it is UNREGISTERED, not merely unresolved - if this ever fails, the fixture mask has become real; pick another');
   const nine = p.rows.find(r => r.mask === '***9th');
   ok(nine && nine.wager === 0, 'a truncated last record still parses with wagered 0');
   ok(p.diag && p.diag.skippedN === 0, 'no line of the dump was ignored (' + (p.diag && p.diag.skippedN) + ')');
@@ -132,14 +136,14 @@ Total Deposits
   const g1 = await get();
   ok(g1.start && g1.start.ok === 2 && !g1.end && g1.standings === null, 'GET shows the START (2 resolved), no END, no standings yet');
   ok(Array.isArray(g1.contests), 'contest ids come back as a list (KV list is eventually consistent, so the new id may lag: ' + g1.contests.join(',') + ')');
-  const s2 = await post({ text: '****p03 130.25\n*****006 40\n**raz 999', phase: 'end', save: true });
+  const s2 = await post({ text: '****p03 130.25\n*****006 40\n**zzq 999', phase: 'end', save: true });
   ok(s2.saved === 'end' && Array.isArray(s2.standings), 'END saved and standings returned in the same answer');
   const st = s2.standings;
   const top = st[0];
   ok(top && /^ladyp03$/i.test(top.moon) && top.delta === 30.25 && top.rank === 1, '#1 = Ladyp03 with 130.25 - 100 = 30.25 (' + (top && top.delta) + ')');
   const flat = st.find(r => /^nikki006$/i.test(r.moon));
   ok(flat && flat.delta === 0 && !flat.rank, 'a member with no movement has delta 0 and no rank');
-  ok(!st.find(r => r.mask === '**raz'), 'an unregistered Moon account is not in the standings');
+  ok(!st.find(r => r.mask === '**zzq'), 'an unregistered Moon account is not in the standings');
   const g2 = await get();
   ok(g2.end && g2.end.ok === 2 && g2.standings && g2.standings.length === 2, 'GET after: END persisted, standings from stored snapshots');
   // a member in END but not in START, registered before the start: cannot be ranked and says so
@@ -148,8 +152,8 @@ Total Deposits
   ok(!xr || xr.delta == null, '***X (not a member here) never ranks; a resolved member missing from START would carry delta null');
 
   // 3b. typed pairs PATCH the stored END (lifetime totals): one mask updated, one added, everybody else untouched; final flag flips without a paste
-  const pt = await post({ patch: true, manual: '****p03 200\n**raz 77' }); // ***X is already in the END from the save above; **raz is not
-  ok(pt.ok && pt.patch && pt.updated === 1 && pt.added === 1, 'patch: Ladyp03 updated + **raz added (' + pt.updated + '/' + pt.added + ')');
+  const pt = await post({ patch: true, manual: '****p03 200\n**zzq 77' }); // ***X is already in the END from the save above; **zzq is not
+  ok(pt.ok && pt.patch && pt.updated === 1 && pt.added === 1, 'patch: Ladyp03 updated + **zzq added (' + pt.updated + '/' + pt.added + ')');
   const g4 = await get();
   ok(g4.end && g4.end.rows.length === 4 && g4.end.rows.find(r => r.mask === '****p03').wager === 200 && g4.end.rows.find(r => r.mask === '*****006').wager === 40, 'END now holds 4 masks, Ladyp03 at 200, nikki006 still 40');
   ok(g4.standings && g4.standings[0].delta === 100, 'standings follow the patch: Ladyp03 delta 100 (' + (g4.standings && g4.standings[0].delta) + ')');
