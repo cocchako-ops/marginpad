@@ -17,7 +17,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Los 4 indicadores de IA de MarginPad, explicados - Cascade Radar, Liquidation Magnet, Market Brain, Market Memory</title>
+<title>Los 6 indicadores de IA de MarginPad, explicados - Liquidaciones de ballenas reales, muros de liquidación medidos y cuatro más</title>
 <meta name="description" content="Qué mide cada indicador de MarginPad Premium, qué dibuja en el gráfico y cómo leerlo antes de abrir una posición apalancada. Construido con nuestros propios datos de liquidaciones; cada flecha evalúa su propia tasa de acierto." />
 <link rel="canonical" href="https://marginpad.io/es/ai-indicators/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/ai-indicators/" />
@@ -25,8 +25,8 @@
 <link rel="alternate" hreflang="es" href="https://marginpad.io/es/ai-indicators/" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta property="og:title" content="Los 4 indicadores de IA de MarginPad, explicados" />
-<meta property="og:description" content="Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo leerlo antes de una posición." />
+<meta property="og:title" content="Los 6 indicadores de IA de MarginPad, explicados" />
+<meta property="og:description" content="Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo interpretarlo antes de una posición." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://marginpad.io/es/ai-indicators/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -103,8 +103,8 @@
   footer a{color:var(--dim);text-decoration:none;margin:0 8px;}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Los 4 indicadores de IA de MarginPad, explicados","description":"Qué mide cada indicador de MarginPad Premium, qué dibuja en el gráfico y cómo leerlo antes de abrir una posición apalancada.","url":"https://marginpad.io/es/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-25","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Son los indicadores de IA de MarginPad una señal de compra o venta?","acceptedAnswer":{"@type":"Answer","text":"No. Cada uno responde una pregunta que deberías hacerte antes de una posición: qué tan frágil está el mercado, hacia dónde es atraído el precio, hacia dónde se inclina la evidencia y qué pasó las últimas veces que se vio así. Las flechas aparecen solo en los extremos, y cada indicador de flechas muestra su propia tasa de acierto en el gráfico cargado para que puedas ver si tiene ventaja en ese símbolo y temporalidad."}},{"@type":"Question","name":"¿Con qué datos están construidos?","acceptedAnswer":{"@type":"Answer","text":"El feed propio de liquidaciones de MarginPad (nueve exchanges, recopilado internamente), un modelo de escalera de apalancamiento de dónde se liquidan las posiciones (el mismo modelo detrás del mapa de calor de liquidaciones), el historial de funding y el posicionamiento long/short de la multitud, además del precio y volumen del propio gráfico. Nada de esto viene de un proveedor externo de indicadores."}},{"@type":"Question","name":"¿Por qué solo cuatro indicadores?","acceptedAnswer":{"@type":"Answer","text":"Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (momentum MACD+RSI, squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición."}},{"@type":"Question","name":"¿Necesito Premium para usarlos?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los cuatro indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Los 6 indicadores de IA de MarginPad, explicados","description":"Qué mide cada indicador de MarginPad Premium, qué dibuja en el gráfico y cómo leerlo antes de abrir una posición apalancada.","url":"https://marginpad.io/es/ai-indicators/","datePublished":"2026-09-17","dateModified":"2026-09-25","author":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"about":[{"@type":"Thing","name":"Cascade Radar"},{"@type":"Thing","name":"Liquidation Magnet"},{"@type":"Thing","name":"Market Brain"},{"@type":"Thing","name":"Market Memory"},{"@type":"Thing","name":"Whale Liquidations"},{"@type":"Thing","name":"Liquidation Wall"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Son los indicadores de IA de MarginPad una señal de compra o venta?","acceptedAnswer":{"@type":"Answer","text":"No. Cada uno responde una pregunta que deberías hacerte antes de una posición: qué tan frágil está el mercado, hacia dónde es atraído el precio, hacia dónde se inclina la evidencia y qué pasó las últimas veces que se vio así. Las flechas aparecen solo en los extremos, y cada indicador de flechas muestra su propia tasa de acierto en el gráfico cargado para que puedas ver si tiene ventaja en ese símbolo y temporalidad."}},{"@type":"Question","name":"¿Con qué datos están construidos?","acceptedAnswer":{"@type":"Answer","text":"El feed propio de liquidaciones de MarginPad (nueve exchanges, recopilado internamente), un modelo de escalera de apalancamiento de dónde se liquidan las posiciones (el mismo modelo detrás del mapa de calor de liquidaciones), el historial de funding y el posicionamiento long/short de la multitud, además del precio y volumen del propio gráfico. Nada de esto viene de un proveedor externo de indicadores."}},{"@type":"Question","name":"¿Qué hace que estos sean diferentes de otros indicadores de liquidaciones?","acceptedAnswer":{"@type":"Answer","text":"Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados en la cadena por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que realmente se ha liquidado en bandas de ese peso en nueve exchanges. Eso no está disponible en ningún otro lugar, porque los lenguajes de scripting de otros sitios de gráficos no pueden acceder a un libro de órdenes ni a un feed de liquidaciones - todo script de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico en el que estás."}},{"@type":"Question","name":"¿Necesito Premium para usarlos?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los seis indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Inicio","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Premium","item":"https://marginpad.io/premium/"},{"@type":"ListItem","position":3,"name":"Indicadores de IA","item":"https://marginpad.io/es/ai-indicators/"}]}</script>
 <meta property="og:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/ai-indicators.jpg" />
@@ -125,8 +125,8 @@
   </header>
 
   <span class="eyebrow"><i></i>MarginPad Premium</span>
-  <h1>Los 4 indicadores de IA, <em>explicados</em></h1>
-  <p class="sub">Cuatro lecturas construidas con datos que solo tiene MarginPad. Cada una responde una pregunta que deberías hacerte antes de abrir una posición apalancada, y aquí se explican como debieron explicarse desde el principio: qué mide, qué dibuja y qué hacer con el número.</p>
+  <h1>Los 6 indicadores de IA, <em>explicados</em></h1>
+  <p class="sub">Seis lecturas construidas sobre datos que solo tiene MarginPad, dos de ellas medidas en lugar de modeladas. Cada una responde a una pregunta que deberías hacerte antes de abrir una posición apalancada, y aquí se explica cada una como debería haber sido desde el principio: qué mide, qué dibuja y qué hacer con el número.</p>
 
   <div class="facts">
     <div class="fact"><b>Nuestros datos</b><span>Feed propio de liquidaciones en nueve exchanges, modelo propio de escalera de apalancamiento, funding y posicionamiento de la multitud</span></div>
@@ -136,7 +136,7 @@
   </div>
 
   <nav class="toc" aria-label="En esta página">
-    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#honesty">La etiqueta de tasa de acierto</a><a href="#workflow">Cuál abrir primero</a>
+    <a href="#cascade">1 · Cascade Radar</a><a href="#magnet">2 · Liquidation Magnet</a><a href="#brain">3 · Market Brain</a><a href="#memory">4 · Market Memory</a><a href="#whaleliq">5 · Whale Liquidations</a><a href="#liqwall">6 · Liquidation Wall</a><a href="#honesty">El indicador de tasa de acierto</a><a href="#workflow">Cuál abrir primero</a>
   </nav>
 
   <section class="ind" id="cascade" style="--ac:#ffb020">
@@ -286,6 +286,42 @@
     <p class="lim"><b>Límites.</b> La memoria dura solo lo que la historia cargada (de unos cientos a unos miles de velas). En una moneda que se listó el mes pasado tiene poco que recordar, y necesita 160 velas antes de dibujar algo.</p>
   </section>
 
+  <section class="ind" id="whaleliq" style="--ac:#ff6258">
+    <div class="ind-h"><h2><small>5 &middot; Leído en la cadena</small>Whale Liquidations</h2></div>
+    <p class="q">¿A qué precio exacto se cierra a la fuerza una ballena - y <em>en qué dirección</em> empuja eso al mercado?</p>
+    <p>Este no es un modelo y no puede serlo. Hyperliquid publica la posición de cada cuenta en la cadena: el tamaño, el apalancamiento y el precio al que el propio exchange la cerrará. Consultamos las 1,000 carteras más grandes y dibujamos toda posición superior a $1M cuyo precio de liquidación esté dentro del 15% de donde está el mercado ahora. El número en la línea no es nuestra estimación de lo que podría pasar - es el precio de activación de una orden que ya ha sido colocada, por un trader que no puede cancelarla.</p>
+    <div class="box"><i>Lo que ves</i><ul>
+      <li><b>Líneas sólidas sobre el precio.</b> <b style="color:#ff6258">Rojo</b> = un LONG que se vende a la fuerza ahí. <b style="color:#2ebd85">Verde</b> = un SHORT que se compra a la fuerza ahí. Sólidas, porque los cuatro indicadores de arriba son modelos y estos son hechos - una línea discontinua en este gráfico siempre significa algo modelado.</li>
+      <li><b>La etiqueta</b> lleva el tamaño de la posición y su apalancamiento: <b>$98.5M 14x</b> es un animal distinto a $98.5M a 2x, porque la de 14x está mucho más cerca de su propio gatillo.</li>
+      <li><b>La leyenda</b> indica cuál es la más cercana, a qué distancia está y el total del dinero forzado que hay por encima y por debajo de ti.</li>
+    </ul></div>
+    <div class="box"><i>Antes de operar</i><ul>
+      <li><b>Antes de un long:</b> una línea VERDE por encima de ti es combustible. Un short que debe recomprarse ahí es una orden a mercado que nadie puede cancelar, y todos los demás también pueden verla venir - los movimientos hacia estos niveles tienden a acelerar en lugar de frenar, así que se lee como un objetivo, no como un nivel para operar en contra.</li>
+      <li><b>Antes de un short:</b> el espejo. Una línea ROJA por debajo de ti es tu objetivo; abrir un short hacia un cúmulo verde por encima de ti significa ponerte delante de compradores que no tienen otra opción.</li>
+      <li><b>Qué evitar:</b> estar long justo por encima de un cúmulo rojo, o short justo por debajo de uno verde. Ahí es donde aparece el flujo forzado, y aparece todo de golpe.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea de leyenda</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% por debajo &middot; +4</div>
+    <p class="lim"><b>Límites.</b> Solo puede ver Hyperliquid, que es donde se concentran las mayores posiciones de perpetuos en la cadena - una ballena en un exchange centralizado es invisible para todos, nosotros incluidos. En una moneda tranquila puede no haber nada dentro del 15%, y la leyenda lo dice claramente en lugar de dibujar algo débil; cuando eso pasa, indica la más cercana real en cualquier moneda para que sepas que la capa sigue activa. Una ballena también puede añadir margen y mover su propio precio de liquidación, así que un nivel es válido a fecha de la última consulta, no para siempre.</p>
+  </section>
+
+  <section class="ind" id="liqwall" style="--ac:#c2f64a">
+    <div class="ind-h"><h2><small>6 &middot; Calculado a partir de cascadas reales</small>Liquidation Wall</h2></div>
+    <p class="q">El cúmulo más pesado cerca del precio - ¿y <em>cuánto dinero</em> ha ido realmente ahí?</p>
+    <p>Todo mapa de liquidaciones, el nuestro incluido, te dice DÓNDE es probable que se liquiden posiciones. Ninguno puede decirte cuánto vale eso, y el método habitual - leerlo a partir del interés abierto - sobreestima una banda promedio de BTC en unas treinta veces lo que realmente se ha liquidado en una. Así que lo medimos. Hemos registrado cerca de un millón de eventos de liquidación reales en nueve exchanges; las bandas se agrupan por peso, y cada grupo lleva la mediana que realmente se ha liquidado en ella, el rango alrededor de esa mediana y en cuántos casos se basa.</p>
+    <div class="box"><i>Lo que ves</i><ul>
+      <li><b>Dos líneas discontinuas:</b> el cúmulo más pesado por encima del precio y el más pesado por debajo. Discontinuas, porque la ubicación del cúmulo es modelada.</li>
+      <li><b>Una cifra en dólares en cada una</b> - y esa mitad está medida, no modelada.</li>
+      <li><b>La leyenda</b> indica el rango detrás de la mediana y de cuántas cascadas reales proviene, para que veas cuánto peso darle.</li>
+    </ul></div>
+    <div class="box"><i>Antes de operar</i><ul>
+      <li><b>Antes de un long:</b> un muro pesado por encima es un rally con un sitio adonde ir y un motivo para llegar ahí. Uno justo por debajo de tu entrada es lo contrario - el suelo sobre el que te apoyas está hecho de stops.</li>
+      <li><b>Antes de un short:</b> un muro pesado por debajo es un objetivo con combustible dentro. Ten cuidado al abrir un short hacia uno que ya ha sido barrido: el dinero que había ahí ya se fue.</li>
+      <li><b>Léelo junto con el Magnet.</b> El Magnet dice qué pool tira con más fuerza; esto dice qué hay dentro, en dólares.</li>
+    </ul></div>
+    <div class="leg"><i>Ejemplo de línea de leyenda</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% por encima</div>
+    <p class="lim"><b>Límites.</b> La posición de la banda es un modelo y hereda los supuestos de ese modelo. La cifra en dólares se niega a adivinar: una banda MÁS PESADA que cualquier cascada registrada muestra "al menos" y la mediana de la clase más pesada que hemos medido, que es un suelo y no una estimación; una banda MÁS LIGERA que cualquier cosa que hayamos medido no lleva ninguna cifra, porque la mediana más ligera medida la sobreestimaría. La calibración se reconstruye a partir de una ventana móvil, así que en una semana tranquila se apoya en menos casos - y la leyenda siempre dice cuántos.</p>
+  </section>
+
   <h3 id="honesty">La etiqueta de tasa de acierto: cada flecha se autoevalúa</h3>
   <div class="hon">
     <p>Cualquier indicador puede dibujar flechas sobre el pasado. Los indicadores de flechas de MarginPad evalúan cada flecha que dibujaron en el gráfico cargado: entrada en el cierre de la vela de la señal, objetivo y stop a 1.5x el ATR de 14 velas de distancia, revisando hasta 80 velas hacia adelante, y una vela que toca ambos cuenta como pérdida. La etiqueta aparece una vez que se han resuelto cinco flechas y se colorea según lo que indica:</p>
@@ -294,7 +330,7 @@
   </div>
 
   <h3 id="workflow">Cuál abrir primero</h3>
-  <p style="color:var(--dim);margin:0 0 6px">Los cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior.</p>
+  <p style="color:var(--dim);margin:0 0 6px">Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. Los últimos dos no son una secuencia - son hechos sobre el libro de órdenes, verdaderos siempre que están en el gráfico.</p>
   <div class="flow">
     <div class="step"><i>1</i><b>Cascade Radar</b><span>¿Está frágil el mercado, y de qué lado? Decide tu tamaño y qué tan amplio debe ser el stop.</span></div>
     <div class="step"><i>2</i><b>Liquidation Magnet</b><span>¿Dónde están los pozos? Define el primer objetivo y te dice dónde no debe estar un stop.</span></div>
@@ -306,9 +342,9 @@
   <div class="faq">
     <details><summary>¿Son estas señales de compra o venta?</summary><p>No. Cada uno responde una pregunta que deberías hacerte antes de una posición. Las flechas aparecen solo en los extremos, y cada indicador de flechas muestra su propia tasa de acierto en el gráfico cargado para que puedas ver si tiene ventaja en ese símbolo y temporalidad.</p></details>
     <details><summary>¿Con qué datos están construidos?</summary><p>El feed propio de liquidaciones de MarginPad (nueve exchanges, recopilado internamente), el modelo de escalera de apalancamiento detrás del mapa de calor de liquidaciones, el historial de funding y el posicionamiento long/short de la multitud, además del precio y volumen del propio gráfico. Nada de esto viene de un proveedor de indicadores.</p></details>
-    <details><summary>¿Por qué solo cuatro?</summary><p>Había ocho hasta septiembre de 2026. Cuatro eran análisis técnico genérico disponible en cualquier gráfico (un cruce de momentum MACD+RSI, un squeeze de Bollinger) o se superponían con los cuatro que quedan. Los cuatro que se mantienen son los que usan datos que ningún otro gráfico tiene, y cada uno ahora explica qué significa su lectura para una posición.</p></details>
-    <details><summary>¿Necesito Premium?</summary><p>Sí. Los cuatro forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en <a href="/es/charts">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.</p></details>
-    <details><summary>¿Dónde los activo?</summary><p>En <a href="/es/charts">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los cuatro están arriba, en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos cuatro. Las lecturas aparecen en la leyenda, en la esquina superior izquierda del gráfico.</p></details>
+    <details><summary>¿Qué hace que estos sean diferentes de otros indicadores de liquidaciones?</summary><p>Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados <b>en la cadena</b> por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que <b>realmente</b> se ha liquidado en bandas de ese peso en nueve exchanges. Ningún script de otro sitio de gráficos puede hacer ninguna de las dos cosas, porque esos lenguajes de scripting no pueden acceder a un libro de órdenes ni a un feed de liquidaciones en absoluto - todo indicador de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico que estás viendo. (Eran ocho hasta septiembre de 2026; los cuatro que se eliminaron eran análisis técnico genérico disponible en cualquier gráfico.)</p></details>
+    <details><summary>¿Necesito Premium?</summary><p>Sí. Los seis forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en <a href="/es/charts">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.</p></details>
+    <details><summary>¿Dónde los activo?</summary><p>En <a href="/es/charts">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los seis están arriba en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos seis. Las lecturas aparecen en la leyenda en la parte superior izquierda del gráfico.</p></details>
   </div>
 
   <div class="cta">

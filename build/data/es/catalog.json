@@ -5,8 +5,9 @@
   "occurrences": 26700,
   "unique": 14176,
   "words": 269797,
-  "untranslated": 57,
-  "untranslatedWords": 2015
+  "untranslated": 0,
+  "untranslatedWords": 0,
+  "merged": "2026-10-11T22:08:33.841Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6864,7 +6865,7 @@
   },
   "LXIGsSE6Mg": {
    "en": "The 6 MarginPad AI Indicators, Explained - Real Whale Liquidations, Measured Liquidation Walls and Four More",
-   "es": "",
+   "es": "Los 6 indicadores de IA de MarginPad, explicados - Liquidaciones de ballenas reales, muros de liquidación medidos y cuatro más",
    "kind": [
     "title"
    ],
@@ -6931,7 +6932,7 @@
   },
   "sSb5ZQi4k9": {
    "en": "The 6 AI indicators, <em>explained</em>",
-   "es": "",
+   "es": "Los 6 indicadores de IA, <em>explicados</em>",
    "kind": [
     "html"
    ],
@@ -6943,7 +6944,7 @@
   },
   "cC5aHqSOWJ": {
    "en": "Six readouts built on data only MarginPad has, two of them measured rather than modelled. Each answers one question you should ask before opening a leveraged position, and each is explained here the way it should have been from the start: what it measures, what it draws, and what to do with the number.",
-   "es": "",
+   "es": "Seis lecturas construidas sobre datos que solo tiene MarginPad, dos de ellas medidas en lugar de modeladas. Cada una responde a una pregunta que deberías hacerte antes de abrir una posición apalancada, y aquí se explica cada una como debería haber sido desde el principio: qué mide, qué dibuja y qué hacer con el número.",
    "kind": [
     "html"
    ],
@@ -7003,7 +7004,7 @@
   },
   "0hkuhuWRsp": {
    "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Whale Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
-   "es": "",
+   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Whale Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">El indicador de tasa de acierto</a><a href=\"#workflow\">Cuál abrir primero</a>",
    "kind": [
     "html"
    ],
@@ -7652,7 +7653,7 @@
   },
   "DpQ6EZZHG7": {
    "en": "<small>5 &middot; Read off chain</small>Whale Liquidations",
-   "es": "",
+   "es": "<small>5 &middot; Leído en la cadena</small>Whale Liquidations",
    "kind": [
     "html"
    ],
@@ -7664,7 +7665,7 @@
   },
   "5WDfnSg10s": {
    "en": "At exactly what price does a whale get force-closed - and <em>which way</em> does that push the market?",
-   "es": "",
+   "es": "¿A qué precio exacto se cierra a la fuerza una ballena - y <em>en qué dirección</em> empuja eso al mercado?",
    "kind": [
     "html"
    ],
@@ -7676,7 +7677,7 @@
   },
   "uoyWp5f11L": {
    "en": "This one is not a model and cannot be. Hyperliquid publishes every account's position on chain: the size, the leverage and the price at which the exchange itself will close it. We poll the 1,000 largest wallets and draw every position over $1M whose liquidation price sits within 15% of where the market is now. The number on the line is not our estimate of what might happen - it is the trigger price of an order that has already been placed, by a trader who cannot cancel it.",
-   "es": "",
+   "es": "Este no es un modelo y no puede serlo. Hyperliquid publica la posición de cada cuenta en la cadena: el tamaño, el apalancamiento y el precio al que el propio exchange la cerrará. Consultamos las 1,000 carteras más grandes y dibujamos toda posición superior a $1M cuyo precio de liquidación esté dentro del 15% de donde está el mercado ahora. El número en la línea no es nuestra estimación de lo que podría pasar - es el precio de activación de una orden que ya ha sido colocada, por un trader que no puede cancelarla.",
    "kind": [
     "html"
    ],
@@ -7688,7 +7689,7 @@
   },
   "Yhem_K3Sez": {
    "en": "<i>What you see</i>",
-   "es": "",
+   "es": "<i>Lo que ves</i>",
    "kind": [
     "html"
    ],
@@ -7700,7 +7701,7 @@
   },
   "8vUUmMLBai": {
    "en": "<b>Solid lines on the price.</b> <b style=\"color:#ff6258\">Red</b> = a LONG that gets force-SOLD there. <b style=\"color:#2ebd85\">Green</b> = a SHORT that gets force-BOUGHT there. Solid, because the four indicators above are models and these are facts - a dashed line on this chart always means something modelled.",
-   "es": "",
+   "es": "<b>Líneas sólidas sobre el precio.</b> <b style=\"color:#ff6258\">Rojo</b> = un LONG que se vende a la fuerza ahí. <b style=\"color:#2ebd85\">Verde</b> = un SHORT que se compra a la fuerza ahí. Sólidas, porque los cuatro indicadores de arriba son modelos y estos son hechos - una línea discontinua en este gráfico siempre significa algo modelado.",
    "kind": [
     "html"
    ],
@@ -7712,7 +7713,7 @@
   },
   "KRikxKLane": {
    "en": "<b>The label</b> carries the position's size and its leverage: <b>$98.5M 14x</b> is a different animal from $98.5M at 2x, because the 14x one is far closer to its own trigger.",
-   "es": "",
+   "es": "<b>La etiqueta</b> lleva el tamaño de la posición y su apalancamiento: <b>$98.5M 14x</b> es un animal distinto a $98.5M a 2x, porque la de 14x está mucho más cerca de su propio gatillo.",
    "kind": [
     "html"
    ],
@@ -7724,7 +7725,7 @@
   },
   "BdGWDn3Gie": {
    "en": "<b>The legend</b> names the nearest one, how far away it is, and the total forced money standing above you and below you.",
-   "es": "",
+   "es": "<b>La leyenda</b> indica cuál es la más cercana, a qué distancia está y el total del dinero forzado que hay por encima y por debajo de ti.",
    "kind": [
     "html"
    ],
@@ -7736,7 +7737,7 @@
   },
   "iVx6u6wtH_": {
    "en": "<i>Before a trade</i>",
-   "es": "",
+   "es": "<i>Antes de operar</i>",
    "kind": [
     "html"
    ],
@@ -7748,7 +7749,7 @@
   },
   "brH8fgdy37": {
    "en": "<b>Before a long:</b> a GREEN line above you is fuel. A short that must be bought back there is a market order nobody can cancel, and everyone else can see it coming too - moves into these levels tend to accelerate rather than stall, so it reads as a target, not a level to fade.",
-   "es": "",
+   "es": "<b>Antes de un long:</b> una línea VERDE por encima de ti es combustible. Un short que debe recomprarse ahí es una orden a mercado que nadie puede cancelar, y todos los demás también pueden verla venir - los movimientos hacia estos niveles tienden a acelerar en lugar de frenar, así que se lee como un objetivo, no como un nivel para operar en contra.",
    "kind": [
     "html"
    ],
@@ -7760,7 +7761,7 @@
   },
   "n7T7wmtZ1u": {
    "en": "<b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you means standing in front of buyers who have no choice.",
-   "es": "",
+   "es": "<b>Antes de un short:</b> el espejo. Una línea ROJA por debajo de ti es tu objetivo; abrir un short hacia un cúmulo verde por encima de ti significa ponerte delante de compradores que no tienen otra opción.",
    "kind": [
     "html"
    ],
@@ -7772,7 +7773,7 @@
   },
   "ZXEoxZLYDA": {
    "en": "<b>What to avoid:</b> being long just above a red cluster, or short just below a green one. That is where the forced flow appears, and it appears all at once.",
-   "es": "",
+   "es": "<b>Qué evitar:</b> estar long justo por encima de un cúmulo rojo, o short justo por debajo de uno verde. Ahí es donde aparece el flujo forzado, y aparece todo de golpe.",
    "kind": [
     "html"
    ],
@@ -7784,7 +7785,7 @@
   },
   "g8i6lFiu00": {
    "en": "<i>Example legend line</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% below &middot; +4",
-   "es": "",
+   "es": "<i>Ejemplo de línea de leyenda</i>WHALE LIQ $98.5M long 14x @ 2,299.71 &middot; 8.9% por debajo &middot; +4",
    "kind": [
     "html"
    ],
@@ -7796,7 +7797,7 @@
   },
   "7Hz1nNQuUz": {
    "en": "<b>Limits.</b> It can only see Hyperliquid, which is where the largest on-chain perp positions sit - a whale on a centralised exchange is invisible to everybody, us included. On a quiet coin there may be nothing within 15%, and the legend says so plainly rather than drawing something weak; when that happens it names the nearest real one on any coin so you know the layer is alive. A whale can also add margin and move their own liquidation price, so a level is true as of the last poll, not for ever.",
-   "es": "",
+   "es": "<b>Límites.</b> Solo puede ver Hyperliquid, que es donde se concentran las mayores posiciones de perpetuos en la cadena - una ballena en un exchange centralizado es invisible para todos, nosotros incluidos. En una moneda tranquila puede no haber nada dentro del 15%, y la leyenda lo dice claramente en lugar de dibujar algo débil; cuando eso pasa, indica la más cercana real en cualquier moneda para que sepas que la capa sigue activa. Una ballena también puede añadir margen y mover su propio precio de liquidación, así que un nivel es válido a fecha de la última consulta, no para siempre.",
    "kind": [
     "html"
    ],
@@ -7808,7 +7809,7 @@
   },
   "HMYmr-Pizz": {
    "en": "<small>6 &middot; Priced from real cascades</small>Liquidation Wall",
-   "es": "",
+   "es": "<small>6 &middot; Calculado a partir de cascadas reales</small>Liquidation Wall",
    "kind": [
     "html"
    ],
@@ -7820,7 +7821,7 @@
   },
   "x2gQxEbaIe": {
    "en": "The heaviest cluster near price - and <em>how much money</em> has really gone there?",
-   "es": "",
+   "es": "El cúmulo más pesado cerca del precio - ¿y <em>cuánto dinero</em> ha ido realmente ahí?",
    "kind": [
     "html"
    ],
@@ -7832,7 +7833,7 @@
   },
   "kBQmdKs_j9": {
    "en": "Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges; bands are grouped by weight, and each group carries the median that has actually liquidated in it, the range around that median, and how many cases it rests on.",
-   "es": "",
+   "es": "Todo mapa de liquidaciones, el nuestro incluido, te dice DÓNDE es probable que se liquiden posiciones. Ninguno puede decirte cuánto vale eso, y el método habitual - leerlo a partir del interés abierto - sobreestima una banda promedio de BTC en unas treinta veces lo que realmente se ha liquidado en una. Así que lo medimos. Hemos registrado cerca de un millón de eventos de liquidación reales en nueve exchanges; las bandas se agrupan por peso, y cada grupo lleva la mediana que realmente se ha liquidado en ella, el rango alrededor de esa mediana y en cuántos casos se basa.",
    "kind": [
     "html"
    ],
@@ -7844,7 +7845,7 @@
   },
   "DGGplq6dF3": {
    "en": "<b>Two dashed lines:</b> the heaviest cluster above price and the heaviest below. Dashed, because where the cluster sits is modelled.",
-   "es": "",
+   "es": "<b>Dos líneas discontinuas:</b> el cúmulo más pesado por encima del precio y el más pesado por debajo. Discontinuas, porque la ubicación del cúmulo es modelada.",
    "kind": [
     "html"
    ],
@@ -7856,7 +7857,7 @@
   },
   "l57CD1Ii5D": {
    "en": "<b>A dollar figure on each</b> - and that half is measured, not modelled.",
-   "es": "",
+   "es": "<b>Una cifra en dólares en cada una</b> - y esa mitad está medida, no modelada.",
    "kind": [
     "html"
    ],
@@ -7868,7 +7869,7 @@
   },
   "8ALEdG6xYx": {
    "en": "<b>The legend</b> names the range behind the median and how many real cascades it came from, so you can see how much weight to put on it.",
-   "es": "",
+   "es": "<b>La leyenda</b> indica el rango detrás de la mediana y de cuántas cascadas reales proviene, para que veas cuánto peso darle.",
    "kind": [
     "html"
    ],
@@ -7880,7 +7881,7 @@
   },
   "vbk3ZBe-EY": {
    "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.",
-   "es": "",
+   "es": "<b>Antes de un long:</b> un muro pesado por encima es un rally con un sitio adonde ir y un motivo para llegar ahí. Uno justo por debajo de tu entrada es lo contrario - el suelo sobre el que te apoyas está hecho de stops.",
    "kind": [
     "html"
    ],
@@ -7892,7 +7893,7 @@
   },
   "CV-_Ss01e8": {
    "en": "<b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
-   "es": "",
+   "es": "<b>Antes de un short:</b> un muro pesado por debajo es un objetivo con combustible dentro. Ten cuidado al abrir un short hacia uno que ya ha sido barrido: el dinero que había ahí ya se fue.",
    "kind": [
     "html"
    ],
@@ -7904,7 +7905,7 @@
   },
   "OJVWJutirh": {
    "en": "<b>Read it with the Magnet.</b> The Magnet says which pool pulls hardest; this says what is in it, in dollars.",
-   "es": "",
+   "es": "<b>Léelo junto con el Magnet.</b> El Magnet dice qué pool tira con más fuerza; esto dice qué hay dentro, en dólares.",
    "kind": [
     "html"
    ],
@@ -7916,7 +7917,7 @@
   },
   "gdP7TemcFz": {
    "en": "<i>Example legend line</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% above",
-   "es": "",
+   "es": "<i>Ejemplo de línea de leyenda</i>LIQ WALL $2.2M @ 2,857.54 &middot; 13.1% por encima",
    "kind": [
     "html"
    ],
@@ -7928,7 +7929,7 @@
   },
   "v12A4xNwZo": {
    "en": "<b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a band HEAVIER than any cascade we have on record prints \"at least\" and the median of the heaviest class we have measured, which is a floor rather than an estimate; a band LIGHTER than anything we have measured carries no figure at all, because the lightest measured median would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.",
-   "es": "",
+   "es": "<b>Límites.</b> La posición de la banda es un modelo y hereda los supuestos de ese modelo. La cifra en dólares se niega a adivinar: una banda MÁS PESADA que cualquier cascada registrada muestra \"al menos\" y la mediana de la clase más pesada que hemos medido, que es un suelo y no una estimación; una banda MÁS LIGERA que cualquier cosa que hayamos medido no lleva ninguna cifra, porque la mediana más ligera medida la sobreestimaría. La calibración se reconstruye a partir de una ventana móvil, así que en una semana tranquila se apoya en menos casos - y la leyenda siempre dice cuántos.",
    "kind": [
     "html"
    ],
@@ -8000,7 +8001,7 @@
   },
   "rPkFqMrHpQ": {
    "en": "The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts about the book, true whenever they are on the chart.",
-   "es": "",
+   "es": "Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. Los últimos dos no son una secuencia - son hechos sobre el libro de órdenes, verdaderos siempre que están en el gráfico.",
    "kind": [
     "html"
    ],
@@ -8124,7 +8125,7 @@
   },
   "juvl2kK0h_": {
    "en": "What makes these different from other liquidation indicators?",
-   "es": "",
+   "es": "¿Qué hace que estos sean diferentes de otros indicadores de liquidaciones?",
    "kind": [
     "html",
     "ld"
@@ -8137,7 +8138,7 @@
   },
   "vd8O_BJeHp": {
    "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published <b>on chain</b> by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has <b>really</b> liquidated in bands of that weight across nine exchanges. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)",
-   "es": "",
+   "es": "Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados <b>en la cadena</b> por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que <b>realmente</b> se ha liquidado en bandas de ese peso en nueve exchanges. Ningún script de otro sitio de gráficos puede hacer ninguna de las dos cosas, porque esos lenguajes de scripting no pueden acceder a un libro de órdenes ni a un feed de liquidaciones en absoluto - todo indicador de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico que estás viendo. (Eran ocho hasta septiembre de 2026; los cuatro que se eliminaron eran análisis técnico genérico disponible en cualquier gráfico.)",
    "kind": [
     "html"
    ],
@@ -8161,7 +8162,7 @@
   },
   "pBT4Uux68V": {
    "en": "Yes. The six are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "",
+   "es": "Sí. Los seis forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "html"
    ],
@@ -8185,7 +8186,7 @@
   },
   "oIwsE0E-xi": {
    "en": "On <a href=\"/charts\">/charts</a>, open a chart window's Indicators menu: the six sit at the top in lime. On a phone, the chart's indicator sheet lists the same six. The readouts appear in the legend at the top-left of the chart.",
-   "es": "",
+   "es": "En <a href=\"/charts\">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los seis están arriba en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos seis. Las lecturas aparecen en la leyenda en la parte superior izquierda del gráfico.",
    "kind": [
     "html"
    ],
@@ -8282,7 +8283,7 @@
   },
   "8sVJhiqlpM": {
    "en": "The 6 MarginPad AI indicators, explained",
-   "es": "",
+   "es": "Los 6 indicadores de IA de MarginPad, explicados",
    "kind": [
     "attr:content",
     "ld"
@@ -8295,7 +8296,7 @@
   },
   "HkRoKk1j2f": {
    "en": "Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
-   "es": "",
+   "es": "Whale Liquidations, Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo interpretarlo antes de una posición.",
    "kind": [
     "attr:content"
    ],
@@ -8367,7 +8368,7 @@
   },
   "_U7QZcTPzo": {
    "en": "Whale Liquidations",
-   "es": "",
+   "es": "Whale Liquidations",
    "kind": [
     "ld"
    ],
@@ -8379,7 +8380,7 @@
   },
   "Fxffv3BziT": {
    "en": "Liquidation Wall",
-   "es": "",
+   "es": "Liquidation Wall",
    "kind": [
     "ld"
    ],
@@ -8427,7 +8428,7 @@
   },
   "O7h7WZVH1l": {
    "en": "Two of the six are not models at all. Whale Liquidations draws liquidation prices published on chain by the accounts that will be liquidated at them; the Liquidation Wall prices a cluster from what has really liquidated in bands of that weight across nine exchanges. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
-   "es": "",
+   "es": "Dos de los seis no son modelos en absoluto. Whale Liquidations dibuja precios de liquidación publicados en la cadena por las cuentas que se liquidarán en ellos; la Liquidation Wall calcula un cúmulo a partir de lo que realmente se ha liquidado en bandas de ese peso en nueve exchanges. Eso no está disponible en ningún otro lugar, porque los lenguajes de scripting de otros sitios de gráficos no pueden acceder a un libro de órdenes ni a un feed de liquidaciones - todo script de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en vivo en el gráfico en el que estás.",
    "kind": [
     "ld"
    ],
@@ -8451,7 +8452,7 @@
   },
   "kFiyiIwLsJ": {
    "en": "Yes. The six indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "",
+   "es": "Sí. Los seis indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "ld"
    ],
@@ -139435,7 +139436,7 @@
   },
   "o3hib1sHmc": {
    "en": "6 AI indicators",
-   "es": "",
+   "es": "6 indicadores de IA",
    "kind": [
     "html"
    ],
@@ -139447,7 +139448,7 @@
   },
   "aBKzJlUImn": {
    "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Whale Liquidations and the Liquidation Wall - six readouts built on data no other chart has. Two of them are not models at all: one draws the REAL on-chain liquidation price of every tracked Hyperliquid position over $1M, the other prices the heaviest cluster near you from what has actually liquidated there, measured across nine exchanges. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
-   "es": "",
+   "es": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Whale Liquidations y la Liquidation Wall - seis lecturas construidas sobre datos que ningún otro gráfico tiene. Dos de ellas no son modelos en absoluto: una dibuja el precio de liquidación REAL en la cadena de cada posición rastreada en Hyperliquid superior a $1M, la otra calcula el cúmulo más pesado cerca de ti a partir de lo que realmente se ha liquidado ahí, medido en nueve exchanges. Cada una lleva una tarjeta que describe su estado en palabras, y un toque la explica antes de un long y antes de un short.",
    "kind": [
     "html"
    ],
@@ -139507,7 +139508,7 @@
   },
   "tIJwDWHou0": {
    "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our six indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
-   "es": "",
+   "es": "Un analista integrado que lee cualquier gráfico en palabras claras y trabaja el gráfico por ti: dile \"dibuja el setup\" y traza líneas de tendencia, zonas y la trayectoria esperada con las herramientas de dibujo reales; pregúntale \"¿qué es el RSI?\" y lo explica y lo activa. Puede cambiar la temporalidad o la moneda, conoce nuestros seis indicadores, mantiene la conversación por moneda, y ofrece un toque para operar el setup en paper trading. Una lectura al día en Premium, 50 al día en Premium Plus.",
    "kind": [
     "html"
    ],
@@ -139807,7 +139808,7 @@
   },
   "icfRmLdp89": {
    "en": "Free members get every standard indicator with the same cards. Premium adds the six MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
-   "es": "",
+   "es": "Los miembros gratuitos obtienen todos los indicadores estándar con las mismas tarjetas. Premium añade las seis lecturas de MarginPad de arriba, construidas sobre nuestros propios datos de liquidaciones. También nuevo en cada gráfico: repetición de velas, comparación con una segunda moneda, sesiones de trading, niveles diarios, seis estilos de gráfico.",
    "kind": [
     "html"
    ],
@@ -140863,7 +140864,7 @@
   },
   "XrmYB7fyaX": {
    "en": "Every Premium feature above - the 6 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
-   "es": "",
+   "es": "Todas las funciones Premium de arriba - los 6 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (una lectura al día; 50 al día en Premium Plus), Balance Mode, los cinco formatos de duelo y el salón Premium, el Daily Brief, +5% de XP, la insignia Premium, alertas de posición y el informe de trading completo en el sitio. Se añaden nuevas herramientas Premium con el tiempo sin coste adicional.",
    "kind": [
     "html"
    ],
@@ -140971,7 +140972,7 @@
   },
   "NMZIR7Rw1K": {
    "en": "The 6 AI indicators",
-   "es": "",
+   "es": "Los 6 indicadores de IA",
    "kind": [
     "html"
    ],
@@ -141055,7 +141056,7 @@
   },
   "xn1QgYIO0t": {
    "en": "Whale Liquidations <i>REAL, NOT MODELLED</i>",
-   "es": "",
+   "es": "Whale Liquidations <i>REAL, NO MODELADO</i>",
    "kind": [
     "html"
    ],
@@ -141067,7 +141068,7 @@
   },
   "oWNyngIhPQ": {
    "en": "At exactly what price does a whale get force-closed - and which way will that push the market?",
-   "es": "",
+   "es": "¿A qué precio exacto se cierra a la fuerza una ballena - y en qué dirección empujará eso al mercado?",
    "kind": [
     "html"
    ],
@@ -141079,7 +141080,7 @@
   },
   "oezea8Mj04": {
    "en": "<b>You see:</b> solid lines on the price, each labelled with a position size and its leverage. <b>Red</b> = a long that gets force-SOLD there. <b>Green</b> = a short that gets force-BOUGHT there. The legend names the nearest one and how much forced money sits above you and below you.",
-   "es": "",
+   "es": "<b>Ves:</b> líneas sólidas sobre el precio, cada una con el tamaño de la posición y su apalancamiento. <b>Rojo</b> = un long que se vende a la fuerza ahí. <b>Verde</b> = un short que se compra a la fuerza ahí. La leyenda indica cuál es la más cercana y cuánto dinero forzado hay por encima y por debajo de ti.",
    "kind": [
     "html"
    ],
@@ -141091,7 +141092,7 @@
   },
   "bWCMYYEbd4": {
    "en": "<b>It means:</b> every other liquidation indicator you can buy anywhere is a guess, because the scripting languages on other charting sites cannot reach a liquidation feed at all. These are not guesses. Hyperliquid publishes every account’s position on chain, so the price on the line is the price the exchange itself will close that trader at - we read it, we do not model it. We poll the 1,000 largest wallets and draw the positions over $1M, which is the part of the book big enough to move a market.",
-   "es": "",
+   "es": "<b>Significa:</b> cualquier otro indicador de liquidaciones que puedas comprar en cualquier parte es una suposición, porque los lenguajes de scripting de otros sitios de gráficos no pueden acceder a un feed de liquidaciones en absoluto. Estos no son suposiciones. Hyperliquid publica la posición de cada cuenta en la cadena, así que el precio en la línea es el precio al que el propio exchange cerrará a ese trader - lo leemos, no lo modelamos. Consultamos las 1,000 carteras más grandes y dibujamos las posiciones superiores a $1M, que es la parte del libro lo bastante grande para mover un mercado.",
    "kind": [
     "html"
    ],
@@ -141103,7 +141104,7 @@
   },
   "mc6vNyBSxe": {
    "en": "<b>Before a long:</b> a GREEN line above you is fuel - a short that must be bought back there, by an order nobody can cancel. Moves into it tend to accelerate rather than stall, so treat it as a target, not a level to fade. What to avoid is being long just above a RED cluster: that is where the forced sellers appear.<br><b>Before a short:</b> the mirror. A RED line below you is your target; shorting into a green cluster above you is standing in front of buyers who have no choice.",
-   "es": "",
+   "es": "<b>Antes de un long:</b> una línea VERDE por encima de ti es combustible - un short que debe recomprarse ahí, mediante una orden que nadie puede cancelar. Los movimientos hacia ahí tienden a acelerar en lugar de frenar, así que trátalo como un objetivo, no como un nivel para operar en contra. Lo que hay que evitar es estar long justo por encima de un cúmulo ROJO: ahí es donde aparecen los vendedores forzados.<br><b>Antes de un short:</b> el espejo. Una línea ROJA por debajo de ti es tu objetivo; abrir un short hacia un cúmulo verde por encima de ti es ponerte delante de compradores que no tienen otra opción.",
    "kind": [
     "html"
    ],
@@ -141115,7 +141116,7 @@
   },
   "zQtuxvduKR": {
    "en": "Liquidation Wall <i>MEASURED IN DOLLARS</i>",
-   "es": "",
+   "es": "Liquidation Wall <i>MEDIDO EN DÓLARES</i>",
    "kind": [
     "html"
    ],
@@ -141127,7 +141128,7 @@
   },
   "4BFZI6ipXR": {
    "en": "The heaviest cluster near price - and how much money has really gone there?",
-   "es": "",
+   "es": "El cúmulo más pesado cerca del precio - ¿y cuánto dinero ha ido realmente ahí?",
    "kind": [
     "html"
    ],
@@ -141139,7 +141140,7 @@
   },
   "bnT9hfkkGf": {
    "en": "<b>You see:</b> one dashed line for the heaviest cluster above price and one below, each labelled with a dollar figure, and a legend line naming how many real cascades the figure was measured from.",
-   "es": "",
+   "es": "<b>Ves:</b> una línea discontinua para el cúmulo más pesado por encima del precio y otra por debajo, cada una con una cifra en dólares, y una línea de leyenda que indica a partir de cuántas cascadas reales se midió la cifra.",
    "kind": [
     "html"
    ],
@@ -141151,7 +141152,7 @@
   },
   "d6RrZjUI07": {
    "en": "<b>It means:</b> WHERE the cluster sits is a model, the same leverage maths every liquidation map uses. The MONEY is not. We have recorded nearly a million real liquidations across nine exchanges, so we can say what has actually liquidated in bands of this weight: the figure is that measured median. When a band is heavier than anything we have on record the line says <b>at least</b> - a floor, never an invented number - and a band lighter than anything we have measured carries no figure at all.",
-   "es": "",
+   "es": "<b>Significa:</b> DÓNDE se ubica el cúmulo es un modelo, la misma matemática de apalancamiento que usa todo mapa de liquidaciones. El DINERO no lo es. Hemos registrado casi un millón de liquidaciones reales en nueve exchanges, así que podemos decir qué se ha liquidado realmente en bandas de este peso: la cifra es esa mediana medida. Cuando una banda es más pesada que cualquier cosa registrada, la línea dice <b>al menos</b> - un suelo, nunca un número inventado - y una banda más ligera que cualquier cosa que hayamos medido no lleva ninguna cifra.",
    "kind": [
     "html"
    ],
@@ -141163,7 +141164,7 @@
   },
   "0iqRD8ip7J": {
    "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.<br><b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
-   "es": "",
+   "es": "<b>Antes de un long:</b> un muro pesado por encima es un rally con un sitio adonde ir y un motivo para llegar ahí. Uno justo por debajo de tu entrada es lo contrario - el suelo sobre el que te apoyas está hecho de stops.<br><b>Antes de un short:</b> un muro pesado por debajo es un objetivo con combustible dentro. Ten cuidado al abrir un short hacia uno que ya ha sido barrido: el dinero que había ahí ya se fue.",
    "kind": [
     "html"
    ],
@@ -141487,7 +141488,7 @@
   },
   "OA95gz7uud": {
    "en": "Unlock MarginPad Premium: 6 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
-   "es": "",
+   "es": "Desbloquea MarginPad Premium: 6 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Balance Mode, clasificaciones premium y más. $11.99/mes, y ahora incluye una lectura de Ask AI en tus gráficos cada día. Premium Plus lo eleva a 50 al día por $159/mes - paga con cripto.",
    "kind": [
     "attr:content"
    ],
@@ -141511,7 +141512,7 @@
   },
   "eGDhYfRYyv": {
    "en": "6 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
-   "es": "",
+   "es": "6 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Balance Mode y más. $11.99/mes, con una lectura de Ask AI al día. Premium Plus lo eleva a 50 al día por $159/mes - paga con cripto.",
    "kind": [
     "attr:content"
    ],
