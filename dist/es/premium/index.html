@@ -128,6 +128,24 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
   .pmst .pmst-u b{color:#fff}
   .pmst .pmst-a{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
   .pmst .pmst-a .btn{padding:11px 16px;font-size:14px}
+  /* membership card v2 */
+  .pmst .pmst-k{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .pmst .pmst-tag{font:800 9.5px "Space Mono",monospace;letter-spacing:.12em;padding:3px 8px;border-radius:999px;background:rgba(194,246,74,.16);border:1px solid rgba(194,246,74,.45);color:var(--lime)}
+  .pmst .pmst-m{grid-column:2/-1;display:flex;align-items:center;gap:13px;margin-top:11px}
+  .pmst .pmst-m[hidden]{display:none}
+  .pmst .pmst-m i{flex:1;min-width:0;height:7px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;display:block}
+  .pmst .pmst-m i::after{content:"";position:absolute;top:0;bottom:0;left:0;width:var(--w,0%);border-radius:999px;background:var(--lime);transition:width .6s ease}
+  .pmst .pmst-m span{font:700 12.5px "Space Mono",monospace;color:var(--lime);white-space:nowrap}
+  .pmst .pmst-a{grid-column:2/-1}
+  .pmst .pmst-a[hidden]{display:none}
+  .pmst .pmst-a .btn{pointer-events:auto!important}
+  .pmst .pmst-a .pmst-note{flex-basis:100%;font-size:12px;color:var(--faint);line-height:1.5;margin:2px 0 0}
+  .pmst[data-soon="1"]{border-color:rgba(255,176,32,.5);background:linear-gradient(180deg,rgba(255,176,32,.10),rgba(255,176,32,.02))}
+  .pmst[data-soon="1"] .pmst-ic{background:#ffb020}
+  .pmst[data-soon="1"] .pmst-k,.pmst[data-soon="1"] .pmst-m span{color:#ffb020}
+  .pmst[data-soon="1"] .pmst-tag{background:rgba(255,176,32,.16);border-color:rgba(255,176,32,.45);color:#ffb020}
+  .pmst[data-soon="1"] .pmst-m i::after{background:#ffb020}
+  @media(max-width:560px){.pmst{padding:16px 15px;gap:5px 13px}.pmst .pmst-ic{width:40px;height:40px;border-radius:12px}.pmst .pmst-t{font-size:19px}.pmst .pmst-a .btn{flex:1;min-width:150px;justify-content:center}}
   body.pm-member:not(.pm-plus) [data-buy="balance"],body.pm-member:not(.pm-plus) .scarcity{display:none!important}body.pm-plus .scarcity,body.pm-plus .final,body.pm-plus [data-buy="balance"]{display:none!important}body.pm-plus [data-buy]{pointer-events:none;opacity:1;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}body.pm-member:not(.pm-plus) [data-buy="monthly"]{pointer-events:none;background:#131a14!important;border:1px solid #2e5c2e!important;color:#7fdc8a!important;box-shadow:none!important}
   /* the AI-indicators card opens a preview sheet (same idea as the fee window on a closed ticket) */
   .fcard.tap{cursor:pointer}
@@ -166,7 +184,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
 <link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 <style>#howto{margin:26px 0 4px;padding:20px 22px;border:1px solid #1c2230;border-radius:16px;background:#0e1218}#howto h3{margin:0 0 14px;font-size:19px}.hsteps{margin:0;padding-left:22px}.hsteps li{margin:0 0 11px;line-height:1.55;color:#c7d2e0}.hsteps b{color:#e9e7df}.hsteps a{color:#c2f64a;text-decoration:underline}.kbd{display:inline-block;padding:1px 7px;border:1px solid #2a3442;border-radius:6px;background:#141a22;color:#7cc4ff;font-family:"Space Mono",monospace;font-size:12px}#howto .pnote{margin:14px 0 0}</style><style>#whyplus{margin:30px 0 4px}#whyplus .wpg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid #1c2230;border-radius:16px;overflow:hidden;background:#0e1218}#whyplus .wpc{padding:20px 20px 18px;border-left:1px solid #1c2230}#whyplus .wpc:first-child{border-left:0}#whyplus .wpk{font:800 10.5px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#7c8794;margin-bottom:9px}#whyplus .wpv{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,3.2vw,33px);letter-spacing:-.02em;line-height:1.05;color:#e9e7df}#whyplus .wpv small{font-size:14px;font-weight:600;color:#8b95a3;letter-spacing:0}#whyplus .wps{margin:9px 0 0;font-size:13px;line-height:1.6;color:#9aa6b8}#whyplus .wps b{color:#e9e7df}#whyplus .wpc.mine .wpv{color:#c2f64a}#whyplus .wpsrc{margin:12px 0 0;font-size:11.5px;line-height:1.65;color:#6e7885;text-align:center}@media(max-width:820px){#whyplus .wpg{grid-template-columns:1fr}#whyplus .wpc{border-left:0;border-top:1px solid #1c2230}#whyplus .wpc:first-child{border-top:0}}#aishow{margin:34px 0 8px}#aishow h3{margin:0 0 8px;font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.3px;text-align:center}.ai-lead{margin:0 auto 22px;max-width:70ch;color:#c7d2e0;line-height:1.6;text-align:center}.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;align-items:start}.ai-grid figure{margin:0}.ai-grid img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid #1c2230;background:#0a0b0d}.ai-grid figcaption{margin-top:10px;font-size:13.5px;line-height:1.6;color:#9aa6b8}.ai-grid figcaption b{color:#e9e7df}#aishow .pnote{margin-top:16px}@media(max-width:900px){.ai-grid{grid-template-columns:1fr;gap:26px}}</style><!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"MarginPad Premium - el kit de herramientas del trader profesional | $11.99/mes","url":"https://marginpad.io/es/premium/","dateModified":"2026-09-28T13:00:51.249Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--><style id="aishowcss">#aishow{margin:34px 0 8px}#aishow h3{margin:0 0 8px;font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.3px;text-align:center}.ai-lead{margin:0 auto 22px;max-width:72ch;color:#c7d2e0;line-height:1.6;text-align:center}.ai-reads{display:grid;grid-template-columns:1fr;gap:18px}.ai-read{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-areas:"ask ask" "shot card";gap:12px 18px;align-items:start;border:1px solid #1c2230;border-radius:16px;padding:14px 16px 16px;background:linear-gradient(180deg,#0e1218,#0b0e13)}.ai-ask{grid-area:ask;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:14px;color:#e9e7df}.ai-ask .k,.ai-did .k{font:800 10px "Space Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#7c8794}.ai-ask q{quotes:"\201C" "\201D";font-style:italic;color:#fff}.ai-sym{margin-left:auto;font:700 11.5px "Space Mono",monospace;color:#c2f64a;letter-spacing:.06em}.ai-shot{grid-area:shot;display:block;min-width:0}.ai-shot img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid #1c2230;background:#0a0b0d}.ai-card{grid-area:card;min-width:0;display:flex;flex-direction:column;gap:11px}.ai-did{font-size:12.5px;line-height:1.5;color:#9aa6b8;display:flex;flex-direction:column;gap:3px}.ai-plan{border:1px solid #232c38;border-radius:12px;padding:11px 13px;background:#0a0d12}.ai-bias{display:flex;align-items:baseline;gap:10px;font:800 13px "Space Mono",monospace;letter-spacing:.08em;margin-bottom:8px}.ai-bias small{font-weight:600;letter-spacing:0;color:#7c8794;font-size:11px}.ai-long .ai-bias{color:#2ebd85}.ai-short .ai-bias{color:#ff5a4d}.ai-wait .ai-bias{color:#9aa3af}.ai-plan dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0;font-size:13px}.ai-plan dt{color:#7c8794}.ai-plan dd{margin:0;font-family:"Space Mono",monospace;font-weight:700;color:#e9e7df;text-align:right}.ai-plan dd small{font-weight:600;color:#7c8794;font-size:11px;margin-left:5px}.ai-plan dd.n{color:#ff8a80}.ai-plan dd.p{color:#41e3a3}.ai-plan dd.rr{color:#3fd8e6}.ai-plan dd.rr.good{color:#41e3a3}.ai-plan dd.rr.thin{color:#ffb020}.ai-plan dd.rr.bad{color:#ff5a4d}.ai-wait .ai-plan dd{color:#aeb6c2}.ai-say{margin:0;padding:0 0 0 12px;border-left:2px solid #2a3442;font-size:13px;line-height:1.55;color:#c7d2e0;font-style:italic}.ai-why{margin:0;font-size:13.5px;line-height:1.6;color:#9aa6b8}.ai-why b{color:#e9e7df}#aishow .pnote{margin-top:16px}.ai-morebtn{display:block;margin:16px auto 0;background:#12161c;border:1px solid #2a3442;color:#e9e7df;font:700 13px "Space Mono",monospace;border-radius:11px;padding:12px 22px;cursor:pointer}.ai-morebtn:hover{border-color:#c2f64a;color:#c2f64a}.ai-morebtn[hidden]{display:none}.ai-more{margin-top:18px}.ai-more[hidden]{display:none}@media(max-width:900px){.ai-read{grid-template-columns:1fr;grid-template-areas:"ask" "shot" "card"}.ai-sym{margin-left:0}}@media(max-width:700px){.ai-read{padding:12px}.ai-shot img{aspect-ratio:3/2}}</style><style id="stripshowcss">#stripshow{margin:38px 0 10px;padding:26px 22px 22px;border:1px solid #1a212c;border-radius:18px;background:linear-gradient(180deg,#0e1218,#0a0d12)}#stripshow .ss-h .k{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;color:#c2f64a;margin-bottom:8px}#stripshow h3{margin:0 0 10px;font-size:clamp(21px,2.6vw,30px);font-weight:800;letter-spacing:-.4px;line-height:1.15;color:#e9edf3}#stripshow .ss-lead{margin:0 0 18px;max-width:820px;font-size:14.5px;line-height:1.6;color:#aab5c4}#stripshow .ss-fig{margin:0 0 16px}#stripshow .ss-fig img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #232a36;background:#0b0f14}#stripshow figcaption{margin-top:7px;font-size:11.5px;color:#5c6b84;font-family:"Space Mono",monospace}#stripshow .ss-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}#stripshow .ss-card{display:flex;flex-direction:column;gap:5px;padding:12px 13px;border-radius:12px;border:1px solid #1e2632;background:#0d1117}#stripshow .ss-card.mp{border-color:rgba(194,246,74,.28);background:linear-gradient(180deg,rgba(194,246,74,.07),rgba(194,246,74,.02))}#stripshow .ss-card b{font-size:12.5px;color:#cfd4da;letter-spacing:.02em}#stripshow .ss-card.mp b{color:#c2f64a}#stripshow .ss-card .v{font-family:"Space Mono",monospace;font-size:20px;font-weight:700;color:#e9edf3}#stripshow .ss-card .st{font-size:12px;color:#aab5c4}#stripshow .ss-card .sv{font-size:11.5px;color:#7c8794}#stripshow .ss-cards.std .ss-card{padding:9px 11px}#stripshow .ss-cards.std .v{font-size:15px}#stripshow .ss-note{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:#8b98a8}@media(max-width:560px){#stripshow{padding:18px 13px 16px;border-radius:14px}#stripshow .ss-cards{grid-template-columns:1fr 1fr;gap:8px}#stripshow .ss-card .v{font-size:17px}}</style>
-</head>
+<style id="proofcss">#proof{max-width:1000px;margin:26px auto 0;padding:0 20px}#proof .pf{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px 22px;align-items:center;border:1px solid #1c2230;border-radius:18px;padding:16px;background:linear-gradient(180deg,#0e1218,#0b0e13)}#proof .pf-k{grid-column:1/-1;font:800 10px "Space Mono",monospace;letter-spacing:.14em;color:var(--lime);display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}#proof .pf-k i{font-style:normal;color:var(--faint);letter-spacing:.02em;font-weight:600;font-size:11px}#proof a.pf-img{display:block;min-width:0;border-radius:12px;overflow:hidden;border:1px solid #1c2230;background:#0a0b0d}#proof a.pf-img img{display:block;width:100%;height:auto}#proof .pf-r{min-width:0}#proof .pf-q{margin:0 0 10px;font-size:14px;font-style:italic;color:#fff;line-height:1.45}#proof dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0 0 11px;font-size:13px}#proof dt{color:#7c8794}#proof dd{margin:0;font-family:"Space Mono",monospace;font-weight:700;color:#e9e7df;text-align:right}#proof dd small{font-weight:600;color:#7c8794;font-size:11px;margin-left:5px}#proof dd.n{color:#ff8a80}#proof dd.p{color:#41e3a3}#proof dd.rr{color:#41e3a3}#proof .pf-s{margin:0 0 12px;font-size:12.5px;color:#9aa6b8;line-height:1.55}#proof .pf-go{display:inline-flex;align-items:center;gap:7px;font:700 13px "Space Mono",monospace;color:var(--lime);text-decoration:none;border:1px solid rgba(194,246,74,.4);border-radius:10px;padding:9px 14px}#proof .pf-go:hover{background:rgba(194,246,74,.08)}@media(max-width:820px){#proof .pf{grid-template-columns:1fr;padding:13px}#proof{padding:0 14px}#proof dd small{display:none}}</style></head>
 <body>
 <div class="wrap">
   <header>
@@ -189,13 +207,28 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     <div id="pmsg"></div>
     <div class="pmst" id="pmStatus" hidden>
       <div class="pmst-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <div class="pmst-k">TU MEMBRESÍA</div>
+      <div class="pmst-k">TU MEMBRESÍA<span class="pmst-tag" id="pmPlan">PREMIUM</span></div>
       <div class="pmst-t">Premium está activo en tu cuenta</div>
       <div class="pmst-u" id="pmUntil">Comprobando tu plan…</div>
+      <div class="pmst-m" id="pmMeter" hidden><i id="pmBar"></i><span id="pmDays"></span></div>
+      <div class="pmst-a" id="pmAct" hidden></div>
     </div>
     <div class="trustrow"><span><b>Paga con cripto</b> · BTC, USDT y más</span><span>Sin renovación automática</span><span>Acceso <b>instantáneo</b></span></div>
   </div>
 </div>
+
+<div id="proof">
+    <div class="pf">
+      <span class="pf-k">ASK AI, EN UN GRÁFICO REAL<i>SOL &middot; 15m &middot; sin retoques, tal como salió</i></span>
+      <a class="pf-img" href="#aishow"><picture><source media="(max-width:700px)" srcset="/assets/plus/ai-risk-zoom.jpg"><img src="/assets/plus/ai-risk.jpg" alt="Ask AI en SOL 15m: long, entrada 110.16, stop 109.74" width="1040" height="680" loading="eager" decoding="async"></picture></a>
+      <div class="pf-r">
+        <p class="pf-q">&ldquo;¿Dónde entrarías y dónde va el stop? Dibújalo.&rdquo;</p>
+        <dl><dt>Modalidad</dt><dd>110.16 <small>-0.24% respecto al precio al momento de la pregunta</small></dd><dt>Stop</dt><dd class="n">109.74</dd><dt>Objetivo</dt><dd class="p">110.87</dd><dt>Beneficio sobre riesgo</dt><dd class="rr">1.69</dd></dl>
+        <p class="pf-s">Leyó el gráfico, dibujó 3 formas sobre él e imprimió la aritmética. Una de tus lecturas Premium, cada día.</p>
+        <a class="pf-go" href="#aishow">Ver las 6 lecturas &rarr;</a>
+      </div>
+    </div>
+  </div>
 
 <section>
   <div class="wrap">
@@ -338,7 +371,7 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
       </article>
     </div>
     <p class="pnote">Capturado del producto en vivo, sin retoques; las tarjetas se leen de las mismas respuestas. Lecturas individuales, no un historial de resultados - Ask AI es una herramienta de investigación y se equivocará muchas veces. Nada aquí es asesoría financiera.</p>
-    <script>(function(){var b=document.getElementById("aiMore"),x=document.getElementById("aiMoreBox");if(!b||!x)return;b.addEventListener("click",function(){x.hidden=false;b.hidden=true;});})();</script>
+    <script>(function(){var b=document.getElementById("aiMore"),x=document.getElementById("aiMoreBox");if(!b||!x)return;b.addEventListener("click",function(){x.hidden=false;b.hidden=true;try{navigator.sendBeacon("/api/track?t=premview&e=reads%3Amore&p=/premium/");}catch(e){}});})();</script>
   </div>
   <div id="howto">
     <h3>Cómo usarlo, en tres pasos</h3>
@@ -389,12 +422,33 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
 <script>
   (function(){
     var msg = document.getElementById('pmsg');
+    /* HOW FAR DOWN ANYBODY GETS. Same shape as the homepage band beacons: once per block per pageview, at 30%
+       visibility OR when the block fills 60% of the screen - a section taller than the viewport can never reach
+       30% and would otherwise never be counted. */
+    try{
+      var _pvSeen={};
+      var _pvIo=new IntersectionObserver(function(es){es.forEach(function(x){
+        if(!x.isIntersecting)return;
+        if(x.intersectionRatio<.3&&x.intersectionRect.height<window.innerHeight*.6)return;
+        var el=x.target,k=el.id||((el.querySelector('h1,h2,h3')||{}).textContent||'')||el.className||el.tagName;
+        k=String(k).replace(/\s+/g,' ').trim().slice(0,32);
+        if(!k||_pvSeen[k])return;_pvSeen[k]=1;
+        try{navigator.sendBeacon('/api/track?t=sect&e='+encodeURIComponent(k)+'&p=/premium/');}catch(e){}
+        _pvIo.unobserve(el);
+      });},{threshold:[.05,.15,.3]});
+      [].forEach.call(document.querySelectorAll('.hero,#stripshow,#plus,#whyplus,#aishow,#howto,section'),function(el){
+        if(el.offsetHeight>60)_pvIo.observe(el);
+      });
+    }catch(e){}
+
     function buy(plan, btn){
       var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me());
-      if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open(); else msg.textContent=__esT_premiumindex("pleaseSignInFirst",'Please sign in first.'); return; }
+      /* a GUEST pressing a price is the moment most readers leave, and it was invisible - record it first */
+      try{ navigator.sendBeacon('/api/track?t=premview&e=' + encodeURIComponent('buy:' + plan + (me ? '' : ':guest')) + '&p=/premium/'); }catch(e){}
+      if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open('buy'); /* the sheet speaks to the moment: a reader who just pressed a price must not be told an account is optional */ else msg.textContent=__esT_premiumindex("pleaseSignInFirst",'Please sign in first.'); return; }
       var label = btn && btn.textContent;
       if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Starting checkout...'; }
-      if(plan==='balance'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent=__esT_premiumindex("premiumIsOnWelcome",'Premium is on - welcome');} msg.textContent=__esT_premiumindex("activeUntil",'Active until ')+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?(__esT_premiumindex("notEnoughBalanceYou",'Not enough balance - you have $')+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?__esT_premiumindex("youAreAlreadyPremium",'You are already Premium - thank you!'):__esT_premiumindex("couldNotActivatePlease",'Could not activate. Please try again.'); }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=__esT_premiumindex("networkErrorPleaseTry",'Network error - please try again.'); }); return; }
+      if(plan==='balance'||plan==='extendbal'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent=__esT_premiumindex("premiumIsOnWelcome",'Premium is on - welcome');} msg.textContent=__esT_premiumindex("activeUntil",'Active until ')+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?(__esT_premiumindex("notEnoughBalanceYou",'Not enough balance - you have $')+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?__esT_premiumindex("youAreAlreadyPremium",'You are already Premium - thank you!'):__esT_premiumindex("couldNotActivatePlease",'Could not activate. Please try again.'); }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=__esT_premiumindex("networkErrorPleaseTry",'Network error - please try again.'); }); return; }
       fetch('/api/premium/checkout' + (plan==='plus'?'?plan=plus':''), {method:'POST'})
         .then(function(r){return r.json();}).then(function(j){
           if(j && j.invoice_url){ location.href = j.invoice_url; return; }
@@ -404,11 +458,36 @@ function __esT_premiumindex(k, en) { try { if ((document.documentElement.lang ||
     }
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
     // Premium member: say what they have and until when (owner 2026-09-17), instead of a line under the buy buttons
+    function pmDecorate(s){
+      var st=document.getElementById('pmStatus'); if(!st) return;
+      var tag=document.getElementById('pmPlan'), ttl=st.querySelector('.pmst-t');
+      var m=document.getElementById('pmMeter'), bar=document.getElementById('pmBar'), dys=document.getElementById('pmDays'), act=document.getElementById('pmAct');
+      var name=s.plus?'Premium Plus':'Premium';
+      if(tag) tag.textContent=(s.source==='founder'?'FOUNDER':name.toUpperCase());
+      /* no end date = a Founder or an owner grant: there is nothing to count down and nothing to extend */
+      if(!s.until){ if(ttl) ttl.textContent=(s.source==='founder'?'Founder - yours for life':name+' is active on your account'); return; }
+      var days=Math.max(0,Math.ceil((new Date(s.until)-Date.now())/864e5)), soon=days<=7;
+      st.setAttribute('data-soon',soon?'1':'0');
+      /* THE MARK HAS TO AGREE WITH THE SENTENCE. A tick beside 'Premium ends in 3 days' reads as reassurance
+         exactly where the card is trying to get attention - it becomes a clock for that last week. */
+      var ic=st.querySelector('.pmst-ic svg');
+      if(ic) ic.innerHTML=soon?'<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5V12l3 1.8"></path>':'<path d="M20 6L9 17l-5-5"></path>';
+      if(ttl) ttl.textContent=soon?(name+' ends in '+(days===1?'1 day':days+' days')):(name+' is active on your account');
+      if(m&&bar&&dys){ m.hidden=false; bar.style.setProperty('--w',Math.max(4,Math.min(100,Math.round(days/30*100)))+'%'); dys.textContent=(days===1?'1 day':days+' days')+' left'; }
+      /* PAYING AGAIN IS THE POINT OF THIS CARD. Until 2026-10-11 the worker refused a member who still had a day
+         left, so "pay again any time to extend" was a sentence with nothing behind it. data-buy="extend" and
+         "extendbal" go through the same handler as the buy buttons; they are deliberately NOT data-buy="monthly",
+         which the member stylesheet deadens on purpose. */
+      if(act){ act.hidden=false;
+        act.innerHTML='<button class="btn btn-primary" data-buy="extend">Add another month - $11.99</button>'
+          +'<button class="btn btn-ghost" data-buy="extendbal">Pay from my rewards balance</button>'
+          +'<p class="pmst-note">A month you add starts when this one ends, never instead of it.</p>'; }
+    }
     function memberUntil(s){ if(!s.until) return s.source==='founder'?__esT_premiumindex("founderLifetimeNoRenewals",'Founder - lifetime, no renewals, ever.'):__esT_premiumindex("lifetimeAccessOnThis",'Lifetime access on this account.'); var d=new Date(s.until), days=Math.max(0,Math.ceil((d-Date.now())/864e5)); var when=d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); return __esT_premiumindex("activeUntil2",'Active until <b>')+when+'</b> - '+(days===1?'1 day':days+' days')+' left. '+(s.source==='paid'?__esT_premiumindex("nothingRenewsOnIts",'Nothing renews on its own: pay again any time to extend, or let it lapse.'):__esT_premiumindex("grantedOnYourAccount",'Granted on your account.')); }
-    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]',__esT_premiumindex("premiumIsActive",'Premium is active')); if(s.plus) lbl('[data-buy="plus"]',__esT_premiumindex("premiumPlusIsActive",'Premium Plus is active')); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); } var k=document.querySelector('section .sh .k'); if(k){ k.textContent=__esT_premiumindex("whatYouHave",'WHAT YOU HAVE'); k.nextElementSibling.textContent=__esT_premiumindex("everythingOnYourAccount",'Everything on your account'); } } }).catch(function(){});
+    fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ document.body.classList.add('pm-member'); if(s.plus) document.body.classList.add('pm-plus'); try{ var lbl=function(sel,txt){ [].forEach.call(document.querySelectorAll(sel), function(b){ b.textContent=txt; b.setAttribute('aria-disabled','true'); }); }; lbl('[data-buy="monthly"]',__esT_premiumindex("premiumIsActive",'Premium is active')); if(s.plus) lbl('[data-buy="plus"]',__esT_premiumindex("premiumPlusIsActive",'Premium Plus is active')); }catch(e){} var st=document.getElementById('pmStatus'); if(st){ st.hidden=false; document.getElementById('pmUntil').innerHTML=memberUntil(s); try{pmDecorate(s);}catch(e){} } var k=document.querySelector('section .sh .k'); if(k){ k.textContent=__esT_premiumindex("whatYouHave",'WHAT YOU HAVE'); k.nextElementSibling.textContent=__esT_premiumindex("everythingOnYourAccount",'Everything on your account'); } } }).catch(function(){});
     // the AI-indicators card opens the preview sheet
     var ish=document.getElementById('indSheet');
-    function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=indsheet&e=open&p=/premium/'); }catch(e){} }
+    function ishOpen(){ if(!ish) return; ish.hidden=false; document.documentElement.style.overflow='hidden'; try{ navigator.sendBeacon('/api/track?t=premview&e=indsheet&p=/premium/'); }catch(e){} }
     function ishClose(){ if(!ish) return; ish.hidden=true; document.documentElement.style.overflow=''; }
     document.addEventListener('click', function(e){ var c=e.target.closest&&e.target.closest('[data-ind-sheet]'); if(c){ e.preventDefault(); ishOpen(); return; } if(ish&&!ish.hidden&&(e.target===ish||(e.target.closest&&e.target.closest('.ish-x')))) ishClose(); });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') ishClose(); });
