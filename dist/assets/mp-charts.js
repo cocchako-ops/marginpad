@@ -862,7 +862,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     Array.prototype.forEach.call(indMenuEl.querySelectorAll('.cwin-ind-item'),function(it){it.classList.toggle('on',!!w.inds[it.getAttribute('data-ind')]);});
     Array.prototype.forEach.call(indMenuEl.querySelectorAll('.cwin-ind-pers'),function(row){var pk=row.getAttribute('data-p'),list=(pk==='ema'?(w.emaList||(w.emaP?[w.emaP]:[21])):(w.smaList||(w.smaP?[w.smaP]:[50])));Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});});
     indMenuEl.hidden=false;
-    var r=btn.getBoundingClientRect(),mw=indMenuEl.offsetWidth||210,mh=indMenuEl.offsetHeight||280;
+    var r=btn.getBoundingClientRect(),mw=indMenuEl.offsetWidth||210;
+    /* the height is the room that exists on the side it opens on, capped at what the list needs - the old
+       360px literal kept 390px of indicators behind a scroll with 600px of empty screen under the menu */
+    try{indMenuEl.style.maxHeight='none';var _need=indMenuEl.scrollHeight,
+      _below=window.innerHeight-r.bottom-14,_above=r.top-14,_room=Math.max(_below,_above);
+      indMenuEl.style.maxHeight=Math.max(220,Math.min(_need,_room))+'px';}catch(_){}
+    var mh=indMenuEl.offsetHeight||280;
     var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+6; if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-6);
     indMenuEl.style.left=Math.max(8,left)+'px';indMenuEl.style.top=top+'px';
   }
@@ -2737,7 +2743,13 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     symMenuEl._list.addEventListener('click',function(e){var b=e.target.closest('[data-sym]');if(b)commitSym(b.getAttribute('data-sym'));});
     document.addEventListener('pointerdown',function(e){if(symMenuEl&&!symMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-sym-menu')||e.target.closest('.cwin-sym'))))symMenuEl.hidden=true;},true);
     window.addEventListener('scroll',function(e){if(symMenuEl&&!symMenuEl.hidden){var t=e.target;if(t&&t.closest&&t.closest('.cwin-sym-menu'))return;/* don't close when scrolling INSIDE the menu list */symMenuEl.hidden=true;}},true);}
-  function openSymMenu(input,w){if(!symMenuEl)buildSymMenu();symMenuInput=input;symMenuW=w;symMenuEl._srch.value='';renderSymList();symMenuEl.hidden=false;var r=input.getBoundingClientRect(),mw=Math.max(180,r.width),mh=symMenuEl.offsetHeight||300;symMenuEl.style.minWidth=mw+'px';var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+4;if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-4);symMenuEl.style.left=Math.max(8,left)+'px';symMenuEl.style.top=top+'px';setTimeout(function(){try{symMenuEl._srch.focus();}catch(e){}},20);}
+  function openSymMenu(input,w){if(!symMenuEl)buildSymMenu();symMenuInput=input;symMenuW=w;symMenuEl._srch.value='';renderSymList();symMenuEl.hidden=false;var r=input.getBoundingClientRect();
+    /* the list is as tall as the room there is, not a 248px literal with 600px of empty screen under it */
+    try{var _SL=symMenuEl.querySelector('.cwin-sym-list');if(_SL){_SL.style.maxHeight='none';
+      var _chr=symMenuEl.offsetHeight-_SL.offsetHeight,
+        _rm=Math.max(window.innerHeight-r.bottom-14,r.top-14)-_chr;
+      _SL.style.maxHeight=Math.max(180,_rm)+'px';}}catch(_){}
+    var mw=Math.max(180,r.width),mh=symMenuEl.offsetHeight||300;symMenuEl.style.minWidth=mw+'px';var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+4;if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-4);symMenuEl.style.left=Math.max(8,left)+'px';symMenuEl.style.top=top+'px';setTimeout(function(){try{symMenuEl._srch.focus();}catch(e){}},20);}
   /* chart background theme - dark (default) or light/white. Applies to every window + the board. */
   var chTheme='dark';try{chTheme=(localStorage.getItem('mp_ch_theme')==='light')?'light':'dark';}catch(e){}
   function themeOpts(){return chTheme==='light'
