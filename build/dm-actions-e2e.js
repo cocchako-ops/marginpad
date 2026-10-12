@@ -86,6 +86,25 @@ const as = (tok) => ({
   r = await a.post('/api/dm/act', { id, act: 'edit', txt: 'again' });
   ok(r && r.error === 'gone', 'acting on a deleted message says so rather than failing silently', r);
 
+  // ── THE CAP MUST KEEP THE NEWEST, NOT THE OLDEST (2026-10-12) ─────────────────────────────────────────────────
+  // The owner, as Chako, could not get a message to Papis: it appeared, then vanished on refresh. The thread had
+  // reached exactly 200 rows and the read was `ORDER BY ts ASC LIMIT 200`, so it returned the OLDEST 200 and every
+  // message after that was stored, delivered and invisible for ever - the inbox preview said 00:24 while the thread
+  // stopped at 23:26, and Papis was hitting it in the other direction at the same time.
+  // A behavioural test would have to create 201 messages against a 2-second rate limit (7 minutes), so the guard is
+  // a BAN ON THE RETIRED SHAPE in the shipped source - the same thing check-formulas.js does for the liquidation
+  // formula. It is load-bearing: put `ts ASC` back and this goes red.
+  {
+    const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const thread = (src.match(/FROM dms WHERE pair=\? ORDER BY ts (?:ASC|DESC) LIMIT \d+/g) || []);
+    ok(thread.length === 1 && /DESC/.test(thread[0]),
+      'the DM thread read takes the NEWEST messages, not the oldest', thread);
+    const sup = (src.match(/FROM support(?: WHERE [^']*?)? ORDER BY ts (?:ASC|DESC) LIMIT \d+/g) || []);
+    ok(sup.length > 0 && sup.every(q => /DESC/.test(q)),
+      'every capped support read takes the newest too (same trap: it would have hidden new tickets at the cap)',
+      sup.filter(q => /ASC/.test(q)));
+  }
+
   for (const u of [A, B, C]) await admin('/api/admin/e2euser', { uid: u, op: 'rm' });
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exit(fail ? 1 : 0);

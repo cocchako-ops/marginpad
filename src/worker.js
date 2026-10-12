@@ -19882,6 +19882,75 @@ async function handleReward(url, request, env) {
     }
     return jr({ uid: cur9, source: src9, eligible: !!cur9 && allow9.has(cur9), conflict, listed: allow9.size > 0, ref: BYBIT_REF_URL });
   }
+  // PAST SEASONS, PUBLIC (2026-10-12, owner: "da biraju sezonu i da vide ishode ... ko je tad pobedio i koja je
+  // bila nagrada"). Built from the ledger's `lbpay` (+ the legacy ROE-only `lbpayouts`), which is the PAYMENT
+  // record - so every row on this endpoint is money that actually left the ledger, not a board we recomputed
+  // today. Recomputing would quietly rewrite history the moment a rule changed, which is the one thing a
+  // results archive must never do. Only ENDED seasons appear, newest first; the live one is /api/reward/lb.
+  if (path === '/seasons' && request.method === 'GET') {
+    const ck = new Request('https://marginpad.io/__reward_seasons_v1');
+    if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+    let out = { seasons: [], periodDays: LB_PERIOD / 86400000 };
+    try {
+      const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/seasonwins'));
+      const d = await r.json();
+      const rows = (d && d.rows) || [];
+      const nowWs = lbPeriodStart(Date.now());
+      if (url.searchParams.get('debug') === '1' && isAdminKey(env, adminKeyFrom(request, url))) {
+        const acc = [...new Set(rows.map(x => String(x.acct || '')))];
+        let p2 = {}; try { p2 = await resolveProfiles(env, acc.filter(a => a.indexOf('u:') === 0)); } catch (e) {}
+        return new Response(JSON.stringify({ doError: (d && d.error) || null, raw: rows.length, nowWs,
+          sample: rows.slice(0, 5), accts: acc.length, acctSample: acc.slice(0, 5),
+          resolved: Object.keys(p2).length, profSample: Object.keys(p2).slice(0, 5).map(k => k + '=' + (p2[k] && p2[k].username)) }, null, 2),
+          { headers: { 'content-type': 'application/json' } });
+      }
+      const accts = [...new Set(rows.map(x => String(x.acct || '')).filter(a => a.indexOf('u:') === 0))];
+      let prof = {}; try { prof = await resolveProfiles(env, accts); } catch (e) {} // keyed by the BARE uid, the documented trap
+      const nameOf = a => { const u = String(a || '').replace(/^u:/, ''); return (prof[u] && prof[u].username) || ''; };
+      // THE PAYMENT'S OWN `week` IS NOT ALWAYS A SEASON BOUNDARY, and numbering it directly printed TWO
+      // "Season 5"s and two "Season 1"s. Three reasons, all real history: the payouts before the 14-day format
+      // (2026-06-29 / 07-06 / 07-13) were anchored WEEKLY, and the Moon contest's week is its own contest start
+      // (2026-09-17), because it deliberately spans two seasons. So each row is snapped to the season its
+      // payment week falls in, and anything older than the format's anchor goes in one labelled bucket rather
+      // than being silently dropped - it is $225 that really was paid to real members.
+      const BOARD_NAME = { wr: 'Best Win Rate', spot: 'Demo Spot bank (retired)' }; // ids `lbpay` wrote before COMP_BOARDS existed
+      const byWs = new Map();
+      for (const x of rows) {
+        const raw = Math.floor(+x.week || 0); if (!raw) continue;
+        // the pre-format bucket gets its OWN key, never 0: the picker identifies a season by ws and 0 is also what
+        // "the live board" means there, so a zero lit the oldest row up as selected whenever the live board was
+        const ws = raw >= LB_ANCHOR ? lbPeriodStart(raw) : (LB_ANCHOR - LB_PERIOD);
+        if (ws >= nowWs) continue;                             // the running season is not a result yet
+        const who = nameOf(x.acct); if (!who) continue;              // an account with no username left is not shown
+        const s = byWs.get(ws) || (ws >= LB_ANCHOR
+          ? { ws, we: ws + LB_PERIOD, n: Math.round((ws - LB_ANCHOR) / LB_PERIOD) + 1, boards: {}, paidUsd: 0, winners: 0 }
+          : { ws, we: LB_ANCHOR, n: 0, early: true, boards: {}, paidUsd: 0, winners: 0 });
+        const b = String(x.board || 'roe');
+        (s.boards[b] = s.boards[b] || []).push({ rank: Math.floor(+x.rank || 0), who, usd: Math.round(+x.amount || 0) / 100 });
+        s.paidUsd += (+x.amount || 0) / 100; s.winners++;
+        byWs.set(ws, s);
+      }
+      const seasons = [...byWs.values()].sort((a, b) => b.ws - a.ws);
+      for (const s of seasons) {
+        s.paidUsd = Math.round(s.paidUsd * 100) / 100;
+        const nm = {};
+        for (const k of Object.keys(s.boards)) {
+          // one board can be paid twice in a season when a contest's own window closes inside it - keep the best rank per person
+          s.boards[k].sort((a, b) => (a.rank || 99) - (b.rank || 99) || b.usd - a.usd);
+          const cb = COMP_BOARDS.find(c => c.id === k);
+          nm[k] = (cb && cb.name) || BOARD_NAME[k] || k;
+        }
+        s.boardNames = nm;
+      }
+      out.seasons = seasons;
+      out.totalPaidUsd = Math.round(seasons.reduce((a, s) => a + s.paidUsd, 0) * 100) / 100;
+    } catch (e) { out.error = 'unavailable'; }
+    const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+    // handleReward takes no `ctx`, so the put is awaited here the way /lb beside it does - five minutes is
+    // generous because a finished season's result never changes again.
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
     const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v11' : 'v11')); // v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
@@ -19891,10 +19960,10 @@ async function handleReward(url, request, env) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
-        let board = [], xpBoard = [], greenBoard = [], goldBoard = [];
+        let board = [], xpBoard = [], greenBoard = [], goldBoard = [], greenDiag = null; // greenDiag is read far below, where `ud` is out of scope - that ReferenceError answered the whole body `busy` for an hour
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=' + LB_CANDIDATES)); // the same set the payer reads (LB_CANDIDATES)
-          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || [];
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null;
         }
         const banned = {};
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
@@ -19942,11 +20011,14 @@ async function handleReward(url, request, env) {
         const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
           bybit: (bybit.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
         const people = Object.keys(who).length;
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
-      } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
+      // fail soft, never a 500 - but SAY WHY (2026-10-12). This catch wraps the UserStore board, the ledger bans,
+      // the Moon snapshot and the Bybit pool, and for an hour it answered a bare `busy:true` while I rolled two
+      // deploys back on a guess about which of them was failing. A swallowed reason is a swallowed afternoon.
+      } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true,"why":' + JSON.stringify(String((e && e.message) || e).slice(0, 180)) + '}'; }
     }
     let out = bodyText;
  try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: (o.bybitPool && o.bybitPool.prizes) || [], moon: cfg.lbMoon, call: cfg.lbCall }; out = JSON.stringify(o); } catch (e) {} // bybit = the rebate pool's split, computed with the board (never a config array) // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
@@ -26079,6 +26151,19 @@ export class RewardLedger {
       }
       return this.j({ ok: true, paid: out.length, payouts: out });
     }
+    // WHO WON WHICH SEASON, AND WHAT IT PAID (2026-10-12, owner: "da mogu da biraju sezonu i da vide ishode").
+    // `lbpay` has recorded every prize since the multi-board format and `lbpayouts` is the older ROE-only table,
+    // so the history was already durable - there was simply no way to read it. Payments only: a board nobody was
+    // paid on does not appear, which is the honest answer rather than an invented empty row.
+    if (path === '/seasonwins') {
+      let rows = [];
+      try {
+        rows = this.rows("SELECT week, board, acct, rank, amount, ts FROM lbpay"
+          + " UNION ALL SELECT week, 'roe' board, acct, rank, amount, ts FROM lbpayouts"
+          + " ORDER BY week DESC, board ASC, rank ASC");
+      } catch (e) { return this.j({ error: 'read', detail: String((e && e.message) || e).slice(0, 120) }, 500); }
+      return this.j({ ok: true, n: rows.length, rows });
+    }
  // ---- Social promo: $0.10 per approved X post about the site (1/day, manual review, must stay live 24h; TikTok retired 2026-07-25, re-enabled X-only 2026-08-15) ----
     if (path === '/promo/submit') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
@@ -26280,10 +26365,13 @@ export class RewardLedger {
       const em = String(body.email || '').slice(0, 120), ac = String(body.acct || '');
       const seen = {}; let rows = [];
       const take = rs => rs.forEach(r => { if (!seen['s' + r.id]) { seen['s' + r.id] = 1; rows.push(r); } });
-      if (ac) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE address=? ORDER BY ts ASC LIMIT 150', ac));
-      if (em) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE email=? ORDER BY ts ASC LIMIT 150', em));
+      // The newest 150, not the oldest - the same trap as the DM thread (2026-10-12), found here by the guard in
+      // dm-actions-e2e rather than by reading: a member past the cap would have had their LATEST support messages
+      // hidden from the person answering them. `rows.sort` below already puts them back in time order.
+      if (ac) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE address=? ORDER BY ts DESC LIMIT 150', ac));
+      if (em) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE email=? ORDER BY ts DESC LIMIT 150', em));
       rows.sort((a, b) => a.ts - b.ts);
-      const reps = em ? this.rows('SELECT ts,subject,body,conv FROM sreply WHERE email=? ORDER BY ts ASC LIMIT 150', em) : [];
+      const reps = em ? this.rows('SELECT ts,subject,body,conv FROM sreply WHERE email=? ORDER BY ts DESC LIMIT 150', em).reverse() : [];
       const LEG = '_legacy'; const convs = {}; const order = [];
       const ensure = cid => { if (!convs[cid]) { convs[cid] = { conv: cid, messages: [], lastTs: 0, closed: true, title: '' }; order.push(cid); } return convs[cid]; };
       rows.forEach(r => { const c = ensure(r.conv || LEG); c.messages.push({ ts: r.ts, dir: 'in', body: r.message, img: r.img || '', byAdmin: r.address === 'admin' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 60); });
@@ -26320,8 +26408,12 @@ export class RewardLedger {
       return this.j({ ok: true });
     }
     if (path === '/support/convs') { // admin: ALL support threads grouped into conversations (chat view)
-      const rows = this.rows('SELECT rowid AS id,ts,email,address,message,conv,img,COALESCE(closed,0) closed FROM support ORDER BY ts ASC LIMIT 400');
-      const reps = this.rows('SELECT ts,subject,body,email,conv FROM sreply ORDER BY ts ASC LIMIT 400');
+      // Same trap as the DM thread (2026-10-12): an ascending read with a cap keeps the OLDEST rows, so at 400 the
+      // owner's support inbox would silently stop showing NEW tickets. Measured that day: 309 messages across 116
+      // conversations, i.e. months from the cliff and already growing. Newest window, flipped back to ascending so
+      // the grouping and the reply matching below behave exactly as before.
+      const rows = this.rows('SELECT rowid AS id,ts,email,address,message,conv,img,COALESCE(closed,0) closed FROM support ORDER BY ts DESC LIMIT 400').reverse();
+      const reps = this.rows('SELECT ts,subject,body,email,conv FROM sreply ORDER BY ts DESC LIMIT 400').reverse();
       const LEG = '_legacy', convs = {}, order = [];
       const ensure = (cid, email) => { if (!convs[cid]) { convs[cid] = { conv: cid, email: email || '', messages: [], lastTs: 0, lastInTs: 0, closed: true, title: '' }; order.push(cid); } const c = convs[cid]; if (!c.email && email) c.email = email; return c; };
       rows.forEach(r => { const c = ensure(r.conv || LEG, r.email); if (r.address === 'affiliate') c.aff = true; const isAdmin = r.address === 'admin'; c.messages.push({ ts: r.ts, dir: isAdmin ? 'out' : 'in', body: r.message, img: r.img || '' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!isAdmin && r.ts > c.lastInTs) c.lastInTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 70); });
@@ -29954,13 +30046,67 @@ export class UserStore {
       // rather than with a viewer's local calendar.
       const green = [];
       try {
-        const gRows = this.rows("SELECT user_id uid, CAST((ts - ?) / 86400000 AS INTEGER) d, COUNT(*) n, COALESCE(SUM(pnl),0) p FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id, d", ws, ws, we);
+        // A POSITION OPENED LAST SEASON MUST NOT SCORE ON THIS ONE, AND THIS BOARD WAS THE ONE PLACE THAT RULE WAS
+        // MISSING (2026-10-12, found while auditing the first day of the 2026-10-12 season). The day bucket was built
+        // from the CLOSE timestamp alone, so a trader could carry positions across the boundary and bank them on day
+        // one. Measured on the account it handed first place to: 75 of its 100 closes were opened BEFORE the season
+        // (one on 2026-09-24, most on 2026-10-09) and carried $224.8M; what it actually opened this season was
+        // -$2,292. `_lbBest` has always refused exactly this ("no farming an old position into a new board") - which
+        // is why the ROE board correctly showed that account at 3.71% while this one printed $198,552,814.
+        // The open time comes from the trade id (`tradeOpenTs`, the rule duels and raids already use); measured on a
+        // real heavy account it parsed on 100 of 100 rows and agreed with the journal's own open time to the minute.
+        // An id we cannot parse is KEPT, which is the choice the WR/Gold path beside it already makes - a `srv`/`bot`
+        // id is server-generated and always parses (0 of 100 failed when measured), so an unparseable one is legacy
+        // data rather than anything a member can produce, and dropping it would punish an honest trader to close a
+        // hole nobody can reach. It is counted either way (`unknownId`): a paid board states what it could not judge.
+        // THE QUERY GOES INSIDE THE GUARD TOO. The first guarded cut left this line outside it, so when the read
+        // itself was what failed the exception walked straight past the fallback and 500'd the DO - which is how
+        // the whole /api/reward/lb body came back `{busy:true}` a SECOND time. A guard that does not cover the
+        // risky line is not a guard.
+        // A NEW RULE ON A PAID BOARD MUST NOT BE ABLE TO TAKE THE BOARD DOWN. The first cut of this shipped bare and
+        // the whole /api/reward/lb body came back `{busy:true}` for everyone - and the outer try there wraps the
+        // Moon read, the Bybit board and the ledger bans too, so I could not even tell whether this was the cause.
+        // It computes into its own variables inside a guard now: on any failure the board falls back to the
+        // ORIGINAL aggregation and `_greenDiag.error` says what happened, which is readable on /api/reward/lb.
         const agg = {};
-        for (const g of gRows) {
-          const a = agg[String(g.uid)] || (agg[String(g.uid)] = { days: 0, closes: 0, pnl: 0, red: 0 });
-          a.closes += +g.n || 0; a.pnl += +g.p || 0;
-          if ((+g.n || 0) >= GD_DAY) { if ((+g.p || 0) > 0) a.days++; else a.red++; }
+        let gDiag = null;
+        try {
+          // READ IT ONE DAY AT A TIME. The aggregation has to see individual rows (the open time lives in the
+          // trade id, which SQL cannot decode), and one unbounded SELECT over a whole busy season would be tens
+          // of thousands of rows in a single result. A per-day read is naturally small, needs no LIMIT, and so
+          // cannot silently drop the oldest days of a season the way a capped read would.
+          const gDay = {}; let gUnknown = 0, gCarried = 0, gRead = 0;
+          const days = Math.ceil((Math.min(Date.now(), we) - ws) / 86400000);
+          for (let d = 0; d < days; d++) {
+            const d0 = ws + d * 86400000, d1 = Math.min(d0 + 86400000, we);
+            const part = this.rows("SELECT user_id uid, pnl, tid FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", d0, d1);
+            gRead += part.length;
+            for (const r of part) {
+              const ot = tradeOpenTs(r.tid);
+              if (ot == null) gUnknown++;
+              else if (ot < ws) { gCarried++; continue; }     // opened in an earlier season - it belongs to that one
+              const k = String(r.uid) + '|' + d;
+              const c = gDay[k] || (gDay[k] = { uid: String(r.uid), n: 0, p: 0 });
+              c.n++; c.p += +r.pnl || 0;
+            }
+          }
+          for (const g of Object.values(gDay)) {
+            const a = agg[g.uid] || (agg[g.uid] = { days: 0, closes: 0, pnl: 0, red: 0 });
+            a.closes += g.n; a.pnl += g.p;
+            if (g.n >= GD_DAY) { if (g.p > 0) a.days++; else a.red++; }
+          }
+          gDiag = { rows: gRead, days: days, carriedIn: gCarried, unknownId: gUnknown, rule: 'opened-this-season' };
+        } catch (eG) {
+          for (const k of Object.keys(agg)) delete agg[k];
+          const old = this.rows("SELECT user_id uid, CAST((ts - ?) / 86400000 AS INTEGER) d, COUNT(*) n, COALESCE(SUM(pnl),0) p FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id, d", ws, ws, we);
+          for (const g of old) {
+            const a = agg[String(g.uid)] || (agg[String(g.uid)] = { days: 0, closes: 0, pnl: 0, red: 0 });
+            a.closes += +g.n || 0; a.pnl += +g.p || 0;
+            if ((+g.n || 0) >= GD_DAY) { if ((+g.p || 0) > 0) a.days++; else a.red++; }
+          }
+          gDiag = { error: String((eG && eG.message) || eG).slice(0, 140), rule: 'close-ts (fallback)' };
         }
+        this._greenDiag = gDiag;
         const gIds = Object.keys(agg).filter(u => agg[u].closes >= GD_SEASON && agg[u].days > 0 && agg[u].pnl > 0); // net-positive on the season, or you do not rank - see the note above the board
         if (gIds.length) {
           const nameOf = {};
@@ -30088,6 +30234,7 @@ export class UserStore {
       return this.j({
         top: best.slice(0, limit), xp: xp.slice(0, limit), green: green.slice(0, limit), gold: gold.slice(0, limit),
         counts: { top: best.length, green: green.length, gold: gold.length, xp: xp.length },
+        greenDiag: this._greenDiag || null, // what the Green board read and what it refused - a counter nobody can read is not a measurement
         people: Object.keys(seen).length
       });
     }
@@ -31609,7 +31756,12 @@ export class UserStore {
       if (!ou) return this.j({ error: 'no_recipient' }, 404);
       const other = String(ou.id); if (other === uid) return this.j({ error: 'self' }, 400);
       const pair = [uid, other].sort().join('|');
-      const rows = this.rows('SELECT id, from_uid, txt, ts, rx, ed FROM dms WHERE pair=? ORDER BY ts ASC LIMIT 200', pair);
+      // A CAP ON AN ASCENDING READ KEEPS THE OLDEST, WHICH IS THE WRONG END (2026-10-12, owner as Chako: "poruke u vise
+      // navrata nisu prosle ... prvo izadju kao da su prosle pa kad refresh ih vise ne vidim"). This thread had reached
+      // exactly 200 rows, so `ORDER BY ts ASC LIMIT 200` returned the oldest 200 and every message sent after that was
+      // stored, delivered and INVISIBLE for ever - the inbox preview showed 00:24 while the thread stopped at 23:26.
+      // The newest 200 are what a chat shows; they are read DESC and flipped back for rendering.
+      const rows = this.rows('SELECT id, from_uid, txt, ts, rx, ed FROM dms WHERE pair=? ORDER BY ts DESC LIMIT 200', pair).reverse();
       const meWho = chatWho(uid);   // the reader's own author hash: the only way a chip can read as theirs
       sql.exec('UPDATE dms SET seen=1 WHERE pair=? AND to_uid=? AND seen=0', pair, uid);
       // Opening the thread IS reading the "@x sent you a message" notification (owner 2026-09-12): it used to stay lit until the bell
