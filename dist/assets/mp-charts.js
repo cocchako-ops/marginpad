@@ -757,6 +757,28 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           return _rng(o.u)+' '+lab+' '+cwFmt(o.b.p)+' ('+_dp(o.b)+')';};
         var _ta=_txt(_A,'above'),_tb=_txt(_B,'below');
         var _parts=[];if(_tb)_parts.push(_tb);if(_ta)_parts.push(_ta);
+        /* WHAT GETTING THERE COSTS, measured. The walls above say what sits AT a level; this says what the
+           market has really liquidated on a move of that size - the question a reader is asking when the
+           wall is several percent away, and the reason the wall looked small next to a 24h total. */
+        try{
+          var _mvr=(w._ht&&w._ht.moves&&w._ht.moves.rows)||null;
+          if(_mvr&&_mvr.length){
+            var _near=_A&&_B?(Math.abs(_A.b.p-_qpx)<Math.abs(_B.b.p-_qpx)?_A:_B):(_A||_B);
+            if(_near){
+              /* the BIGGEST move size we have actually measured that still does not exceed the distance to the
+                 wall - so the row never claims to describe a move larger than anything observed, and on a coin
+                 whose walls sit far out it still tells the reader what a move really costs here */
+              var _dpc=Math.abs(_near.b.p-_qpx)/_qpx*100,_best=null;
+              for(var _i2=0;_i2<_mvr.length;_i2++){var _c2=_mvr[_i2];if(+_c2.pct<=_dpc&&(!_best||+_c2.pct>+_best.pct))_best=_c2;}
+              if(!_best)for(var _i3=0;_i3<_mvr.length;_i3++){var _c3=_mvr[_i3];if(!_best||+_c3.pct<+_best.pct)_best=_c3;}
+              if(_best){
+                w.legItems.push({raw:true,color:'#8fd8ff',
+                  label:'GETTING THERE a '+_best.pct+'% move has liquidated '+money(_best.med)+' (median of '+_best.n+')',
+                  title:'MEASURED, not modelled: every move of '+_best.pct+'% on '+w.sym+' in the last '+((w._ht.moves.days)||8)+' days, and what the whole market really liquidated while it happened - median '+money(_best.med)+' across '+_best.n+' of them'+((_best.lo&&_best.hi)?(', middle half '+money(_best.lo)+' to '+money(_best.hi)):'')+'. This is the run, not the level: the wall above is one price bin (0.1% of price), so the two are different quantities and should not be compared.'});
+              }
+            }
+          }
+        }catch(_mve){}
         if(_parts.length){
           var _any=(_A&&calUsdOk(_A.u)?_A.u:null)||(_B&&calUsdOk(_B.u)?_B.u:null);
           w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_parts.join(' \u00b7 '),
@@ -1251,6 +1273,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             typicalRangeUsd:calUsdOk(u)&&u.lo>0&&u.hi>u.lo?[Math.round(u.lo),Math.round(u.hi)]:null,
             isFloor:!!(u&&u.floor),measuredFromCases:calUsdOk(u)?u.n:null};};
         var _ab=_pick(_wu),_be=_pick(_wd);
+        /* what a move of a given size really costs on this coin - measured from our own feed, with its n.
+           Without it the model reasons about a wall of $2-3M on a market where a 2% move has liquidated $117M. */
+        try{var _mr=(w._ht.moves&&w._ht.moves.rows)||null;
+          if(_mr&&_mr.length)_r.whatAMoveCosts={note:'MEASURED, not modelled: every move of this size on this coin in the last '+((w._ht.moves.days)||8)+' days and what the WHOLE market liquidated while it happened. This is the run, not one level - the liquidationWall figures are a single price bin (0.1% of price) and must not be compared with these.',
+            rows:_mr.map(function(x){return {movePct:+x.pct,medianUsd:Math.round(+x.med||0),movesSeen:+x.n||0};})};}catch(_mq){}
         if(_ab||_be)_r.liquidationWall={note:__esT_mpcharts("whereTheClusterSitsIs",'Where the cluster sits is a model; the dollars are MEASURED - what has really liquidated in bands of that weight across nine exchanges. This is the cost of ONE sweep of that level, which is a different unit from a 24h liquidation total - do not compare them. measuredUsd is the midpoint and typicalRangeUsd the middle half of real outcomes: backtested on 511 real sweeps the midpoint lands within about 20% of reality on the median band but is a third of it or triple it on roughly a third of them, so quote the range. isFloor means the band is heavier than anything measured, so the figure is a lower bound.'),above:_ab,below:_be};}
       if(Object.keys(_r).length)ro=_r;}catch(e){}
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}

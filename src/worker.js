@@ -728,6 +728,63 @@ async function heatPoolsCron(env) {
 //
 // Daily, not per run: it costs one request with a few hundred windows in it, and a calibration built from
 // eight days of sweeps does not move in ten minutes.
+const MOVE_PCTS = [1, 2, 3, 5];   // the move sizes the chart can quote, in percent of price
+// Measured, never modelled: every move of this size in the last eight days and what really liquidated while
+// it happened. Stored per coin as the MEDIAN with its n, so a thin sample can be refused by the reader.
+async function moveImpactCron(env) {
+  const out = {};
+  if (!env || !env.STATS) return out;
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  if (!base) return out;
+  for (const sym of HM_COINS) {
+    try {
+      const bars = await leanKlines(sym, 60, 200, env);   // 200 hourly candles = 8.3 days, inside the raw retention
+      if (!bars || bars.length < 60) { out[sym] = { skip: 'no candles' }; continue; }
+      const px = +bars[bars.length - 1].close || 0; if (!(px > 0)) { out[sym] = { skip: 'no price' }; continue; }
+      const wins = [], tag = [];
+      for (const pct of MOVE_PCTS) {
+        // non-overlapping runs that travel >= pct within six hours, so one big day cannot supply every sample
+        for (let i = 0; i < bars.length; i++) {
+          let hit = -1;
+          for (let n = 1; n <= 6 && i + n < bars.length; n++) {
+            const a = +bars[i].close, b = +bars[i + n].close;
+            if (a > 0 && Math.abs(b - a) / a * 100 >= pct) { hit = n; break; }
+          }
+          if (hit < 0) continue;
+          const t0 = +bars[i].time * (String(bars[i].time).length > 11 ? 1 : 1000);
+          const t1 = +bars[i + hit].time * (String(bars[i + hit].time).length > 11 ? 1 : 1000) + 3600000;
+          wins.push([t0, t1, 1, px * 100]);   // every price: the question is what the MARKET liquidated
+          tag.push(pct);
+          i += hit;
+        }
+      }
+      if (!wins.length) { out[sym] = { skip: 'no moves' }; continue; }
+      let sums = null;
+      try {
+        const r = await fetch(base + '/api/v1/liqsum', { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ symbol: sym, wins: wins.slice(0, 300) }), signal: AbortSignal.timeout(20000) });
+        if (r.ok) { const j = await r.json(); sums = j && j.sums; }
+      } catch (e) {}
+      if (!sums || !sums.length) { out[sym] = { skip: 'liqsum' }; continue; }
+      const by = {};
+      for (let i = 0; i < sums.length && i < tag.length; i++) {
+        const v = (sums[i] && +sums[i].v) || 0; if (!(v > 0)) continue;   // a window with nothing recorded is not a zero observation
+        (by[tag[i]] = by[tag[i]] || []).push(v);
+      }
+      const rows = [];
+      for (const pct of MOVE_PCTS) {
+        const a = (by[pct] || []).sort((x, y) => x - y);
+        if (a.length < 3) continue;   // below three real moves there is no median worth printing
+        rows.push({ pct: pct, med: Math.round(a[Math.floor(a.length / 2)]), n: a.length,
+          lo: Math.round(a[Math.floor(a.length * 0.25)]), hi: Math.round(a[Math.floor(a.length * 0.75)]) });
+      }
+      if (!rows.length) { out[sym] = { skip: 'thin' }; continue; }
+      await env.STATS.put('hmp:mv:' + sym, JSON.stringify({ t: Date.now(), days: 8, rows }), { expirationTtl: 30 * 86400 });
+      out[sym] = rows.map((r) => r.pct + '%:$' + Math.round(r.med / 1e6) + 'M/n' + r.n).join(' ');
+    } catch (e) { out[sym] = { err: String((e && e.message) || e).slice(0, 80) }; }
+  }
+  return out;
+}
 async function heatCalibCron(env) {
   const out = {};
   if (!env || !env.STATS) return out;
@@ -976,11 +1033,14 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
 }
 async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC - server-accumulated pools (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const ck = new Request('https://marginpad.io/__hmp_' + sym);
+  const ck = new Request('https://marginpad.io/__hmp_v2_' + sym); // v2: carries `moves`, the measured cost of a move of a given size - bump on any shape change
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
   try { const sw = await env.STATS.get('hmp:swp:' + sym); if (body && sw) { const o = JSON.parse(body); o.sweeps = JSON.parse(sw); body = JSON.stringify(o); } } catch (e) {}
   try { const cl = await env.STATS.get('hmp:cal:' + sym); if (body && cl) { const o = JSON.parse(body); o.calib = JSON.parse(cl); body = JSON.stringify(o); } } catch (e) {}
+  // what a move of a given size has REALLY liquidated on this coin (measured daily, never modelled) - the
+  // figure a reader is actually asking for when they look at a wall several percent away
+  try { const mv = await env.STATS.get('hmp:mv:' + sym); if (body && mv) { const o = JSON.parse(body); o.moves = JSON.parse(mv); body = JSON.stringify(o); } } catch (e) {}
   // The measured layers ride along: no new poll, and the whole thing stays one shared edge-cached object
   // with nothing user-specific in it. A layer that could not be read is simply absent - never a zero.
   // A FAILED OPTIONAL LAYER MUST NOT BE CACHED FOR A FULL MINUTE. The whole response is one edge object, so
@@ -22914,7 +22974,7 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } const diag = await heatPoolsCron(env); const calib = url.searchParams.get('calib') ? await heatCalibCron(env) : null; return J({ ok: true, reset: !!url.searchParams.get('reset'), diag, calib }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } const diag = await heatPoolsCron(env); const calib = url.searchParams.get('calib') ? await heatCalibCron(env) : null; const moves = url.searchParams.get('moves') ? await moveImpactCron(env) : null; return J({ ok: true, reset: !!url.searchParams.get('reset'), diag, calib, moves }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }
@@ -24614,7 +24674,7 @@ export default {
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
       // Once a day is the right cadence: it costs one request carrying a few hundred windows, and a
       // calibration built from eight days of sweeps does not move in ten minutes.
-      if (new Date().getUTCHours() === 4 && new Date().getUTCMinutes() < 10) bg(heatCalibCron, 'heatcalib');
+      if (new Date().getUTCHours() === 4 && new Date().getUTCMinutes() < 10) { bg(heatCalibCron, 'heatcalib'); bg(moveImpactCron, 'moveimpact'); }
     bg(checkAlerts, 'alerts');
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkTapePrints, 'tapealerts'); // the tape filter a reader set, delivered to Telegram
