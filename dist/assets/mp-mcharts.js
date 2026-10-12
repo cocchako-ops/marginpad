@@ -448,7 +448,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           _mk2.push({i:bi,t:e.t,p:+e.p,usd:+e.usd,long:!!e.long,ex:e.ex,
             r:4+5*Math.sqrt(Math.max(0,Math.min(1,_mx>0?e.usd/_mx:0)))});});
         p.w._liqMarks=_mk2.length?_mk2:null;
-        p.legItems.push({raw:true,color:'#c2f64a',label:'LIQUIDATIONS 24h '+S.money(+_lq.total24||0)+' \u00b7 biggest '+S.money(+_lq.biggest||0)+' \u00b7 '+_mk2.length+' marked'});
+        /* the day first, the marked subset second - the marks are only the biggest events and the total
+           beside them was 32-59% of what the coin really liquidated */
+        var _aU=+_lq.all24||0,_aN=+_lq.allN24||0;
+        p.legItems.push({raw:true,color:'#c2f64a',label:_aU>0
+          ?('LIQUIDATED 24h '+S.money(_aU)+(_aN?(' \u00b7 '+_aN.toLocaleString('en-US')+' positions'):'')+' \u00b7 '+_mk2.length+' biggest marked ('+S.money(+_lq.total24||0)+')')
+          :('LIQUIDATIONS 24h '+S.money(+_lq.total24||0)+' \u00b7 biggest '+S.money(+_lq.biggest||0)+' \u00b7 '+_mk2.length+' marked')});
       } else if(_lq&&_lq.unsupported){
         p.legItems.push({raw:true,color:'#8fa3c4',label:'LIQUIDATIONS no feed for '+p.sym});
       } else if(_lq){
@@ -464,7 +469,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _dpm=function(b){return (Math.abs(b.p-_qpx)/_qpx*100).toFixed(1)+'%';};
         var _sideM=function(arr){if(!arr.length)return null;var b=arr.slice().sort(function(x,y){return y.w-x.w;})[0];return {b:b,u:S.calibUsd(_cal,b.w)};};
         var _Am=_sideM(_up),_Bm=_sideM(_dn);
-        var _txtM=function(o,lab){if(!o)return null;return (S.calUsdOk(o.u)?((o.u.floor?'at least ':'')+_MY2(o.u.med)):'unpriced')+' '+lab+' '+_PX2(o.b.p)+' ('+_dpm(o.b)+')';};
+        /* the measured range, not a point: backtested on 511 real sweeps the midpoint is honest but lands a
+           third of reality or triple it on roughly a third of them */
+        var _rngM=function(u){if(!S.calUsdOk(u))return 'unpriced';if(u.floor)return 'at least '+_MY2(u.med);
+          if(u.beyond)return 'about '+_MY2(u.med);   /* past what has been measured - mirrored from mp-charts */
+          var lo=+u.lo||0,hi=+u.hi||0;return (lo>0&&hi>lo)?(_MY2(lo)+'-'+_MY2(hi)):_MY2(u.med);};
+        var _txtM=function(o,lab){if(!o)return null;return _rngM(o.u)+' '+lab+' '+_PX2(o.b.p)+' ('+_dpm(o.b)+')';};
         var _pm=[];var _tb2=_txtM(_Bm,'below'),_ta2=_txtM(_Am,'above');
         if(_tb2)_pm.push(_tb2);if(_ta2)_pm.push(_ta2);
         if(_pm.length)p.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_pm.join(' \u00b7 ')});

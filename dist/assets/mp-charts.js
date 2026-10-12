@@ -206,11 +206,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       return near?{med:+near.med,lo:+near.lo,hi:+near.hi,n:+near.n}:null;}
     // lighter than any cascade we have measured: the lightest median would OVERSTATE it, so no figure at all
     if(wt<f.lo)return {out:'under'};
-    // heavier than any: read the fit at the measured ceiling and say "at least" - never extrapolate past the evidence
-    var at=Math.min(wt,f.hi),floor=wt>f.hi;
+    /* Heavier than anything measured: read the fit out to CAL_EXT times the ceiling and mark it `beyond`
+       (an estimate, not a measurement), then clamp and say "at least". A bounded reach keeps the two
+       sides of a heavy market apart - on BTC both walls sit past the ceiling and used to print the same
+       figure - without the unbounded extrapolation that once quoted a $132M wall on a $73M day. */
+    var at=Math.min(wt,f.hi*CAL_EXT),floor=wt>f.hi*CAL_EXT,beyond=wt>f.hi&&!floor;
     var med=Math.exp(f.k*Math.log(at)+f.c);
-    return {med:Math.round(med),lo:near?+near.lo:Math.round(med*0.5),hi:near?+near.hi:Math.round(med*2),
-      n:near?+near.n:0,all:+cal.n||0,fit:true,floor:floor};}
+    /* the quartiles are taken as RATIOS of their own band's median and carried by this wall's fitted
+       figure - lifting them raw made both walls of a market print the same range whenever they fell in
+       the same band, which is the fault the fitted midpoint was introduced to cure */
+    var nm=near&&+near.med>0?+near.med:0;
+    var rLo=nm&&+near.lo>0?(+near.lo/nm):0.5, rHi=nm&&+near.hi>0?(+near.hi/nm):2;
+    if(!(rLo>0&&rLo<1))rLo=0.5; if(!(rHi>1))rHi=2;
+    return {med:Math.round(med),lo:Math.round(med*rLo),hi:Math.round(med*rHi),
+      n:near?+near.n:0,all:+cal.n||0,fit:true,floor:floor,beyond:beyond};}
+  var CAL_EXT=3;   // how far past the measured weight ceiling the fit may be read before it refuses to be specific
   function calUsdOk(u){return !!(u&&u.med>0);}
   /* Self-scoring: grade every arrow this indicator fired on the LOADED bars - 1R:1R (entry=signal close,
      target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
@@ -694,7 +704,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             r:4+6*Math.sqrt(Math.max(0,Math.min(1,_mx>0?e.usd/_mx:0)))});});
         w._liqMarks=_mk.length?_mk:null;
         var _tot=money(+_lq.total24||0),_big=money(+_lq.biggest||0);
-        w.legItems.push({raw:true,color:'#c2f64a',label:'LIQUIDATIONS 24h '+_tot+' \u00b7 biggest '+_big+' \u00b7 '+_mk.length+' marked',title:'Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. Tap a mark for the size, the side and the venue. Measured from our own feed across nine exchanges - these are events that happened, not forecasts.'});
+        /* THE DAY FIRST, THE MARKED SUBSET SECOND. The marks are every event over the per-coin floor and the
+           list is complete for that floor, but the floor is high (BTC $250k), so the marked total was 32-59%
+           of what the coin really liquidated and read as a broken number against any other source. */
+        var _allU=+_lq.all24||0,_allN=+_lq.allN24||0;
+        var _lab=_allU>0
+          ?('LIQUIDATED 24h '+money(_allU)+(_allN?(' \u00b7 '+_allN.toLocaleString('en-US')+' positions'):'')+' \u00b7 '+_mk.length+' biggest marked ('+_tot+')')
+          :('LIQUIDATIONS 24h '+_tot+' \u00b7 biggest '+_big+' \u00b7 '+_mk.length+' marked');
+        w.legItems.push({raw:true,color:'#c2f64a',label:_lab,title:(_allU>0?('Everything this market liquidated in the last 24 hours: '+money(_allU)+' across '+_allN.toLocaleString('en-US')+' positions. The circles are the '+_mk.length+' biggest of them ('+_tot+' between them, biggest '+_big+'), drawn at the price and the candle each happened on - the rest are too small to read on a chart. '):'Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. ')+'Tap a mark for the size, the side and the venue. Measured from our own feed across nine exchanges - these are events that happened, not forecasts.'});
       } else if(_lq&&_lq.unsupported){
         w.legItems.push({raw:true,color:'#8fa3c4',label:'LIQUIDATIONS no feed for '+w.sym,title:'We record liquidations for ten majors; this market is not one of them.'});
       } else if(_lq){
@@ -725,15 +742,25 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _side=function(arr){if(!arr.length)return null;var b=arr.slice().sort(function(x,y){return y.w-x.w;})[0];
           var u=calibUsd(_cal,b.w);return {b:b,u:u};};
         var _A=_side(_up),_B=_side(_dn);
+        /* THE RANGE, NOT A POINT. Backtested on 511 real sweeps the midpoint is honest (median 1.03-1.21 of
+           what really liquidated) but the quartiles run 0.24-0.46 low and 2.2-4.9 high, so a single figure
+           claims a precision the measurement does not have. lo/hi are the p25/p75 of real cascades in that
+           weight class - already computed, never shown. */
+        var _rng=function(u){
+          if(!calUsdOk(u))return 'unpriced';
+          if(u.floor)return 'at least '+money(u.med);
+          if(u.beyond)return 'about '+money(u.med);   /* past what has been measured: a fitted estimate, said as one */
+          var lo=+u.lo||0,hi=+u.hi||0;
+          return (lo>0&&hi>lo)?(money(lo)+'-'+money(hi)):money(u.med);
+        };
         var _txt=function(o,lab){if(!o)return null;
-          var money_=calUsdOk(o.u)?((o.u.floor?'at least ':'')+money(o.u.med)):'unpriced';
-          return money_+' '+lab+' '+cwFmt(o.b.p)+' ('+_dp(o.b)+')';};
+          return _rng(o.u)+' '+lab+' '+cwFmt(o.b.p)+' ('+_dp(o.b)+')';};
         var _ta=_txt(_A,'above'),_tb=_txt(_B,'below');
         var _parts=[];if(_tb)_parts.push(_tb);if(_ta)_parts.push(_ta);
         if(_parts.length){
           var _any=(_A&&calUsdOk(_A.u)?_A.u:null)||(_B&&calUsdOk(_B.u)?_B.u:null);
           w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_parts.join(' \u00b7 '),
-            title:'Where the cluster sits is a model; the dollar figure is MEASURED - what has really liquidated in clusters of this weight, read at each wall\'s own weight.'
+            title:'What one sweep of this level has really cost, not what the market does in a day - the two are different units. Where the cluster sits is a model; the dollars are MEASURED, the middle half of what has really liquidated in clusters of this weight (a quarter of sweeps come in under the low figure and a quarter over the high one). Read at each wall\'s own weight.'
               +(_any&&_any.n?' The nearest measured class liquidated '+money(_any.lo)+' to '+money(_any.hi)+' over '+_any.n+' cases.':'')
               +_prov+' "At least" means the cluster is heavier than anything on record, so the figure is a floor rather than an estimate.'});
         }
@@ -1210,13 +1237,21 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             minutesAgo:Math.round((Date.now()-(+e.t||0))/60000),
             distancePct:_wp>0?+(((+e.p-_wp)/_wp)*100).toFixed(2):null};});
         if(_lr.length)_r.bigLiquidations={note:__esT_mpcharts("realLiquidationsThatHappened",'REAL liquidations that HAPPENED in the last 24 hours, recorded by our own feed across nine exchanges - events, not forecasts. They are drawn on the chart as circles at the price and candle each happened on.'),
-          last24hUsd:Math.round(+w._lq.total24||0),biggestUsd:Math.round(+w._lq.biggest||0),countShown:_lr.length,levels:_lr};}
+          /* the model was being given the marked subset as if it were the day - 39% of BTC's real flow - and
+             asked to reason about liquidity from it */
+          last24hUsd:Math.round(+w._lq.all24||+w._lq.total24||0),
+          last24hPositions:Math.round(+w._lq.allN24||0)||null,
+          markedUsd:Math.round(+w._lq.total24||0),markedNote:'the circles are only the biggest events, not the whole day',
+          biggestUsd:Math.round(+w._lq.biggest||0),countShown:_lr.length,levels:_lr};}
       if(w.inds.liqwall&&w._ht&&(w._ht.alive||[]).length){var _qp=+bars[bars.length-1].close||0,_c2=w._ht.calib||null,_wu=[],_wd=[];
         (w._ht.alive||[]).forEach(function(b2){var pp=+b2.p;if(!(pp>0)||!(_qp>0)||Math.abs(pp-_qp)/_qp>0.15)return;(pp>_qp?_wu:_wd).push({p:pp,w:+b2.w||0});});
         var _pick=function(arr){var h=arr.sort(function(x,y){return y.w-x.w;})[0];if(!h)return null;var u=calibUsd(_c2,h.w);
-          return {price:_p6(h.p),distancePct:+(((h.p-_qp)/_qp)*100).toFixed(2),measuredUsd:calUsdOk(u)?Math.round(u.med):null,isFloor:!!(u&&u.floor),measuredFromCases:calUsdOk(u)?u.n:null};};
+          return {price:_p6(h.p),distancePct:+(((h.p-_qp)/_qp)*100).toFixed(2),measuredUsd:calUsdOk(u)?Math.round(u.med):null,
+            /* the spread, because the midpoint alone is 3x out on a third of real sweeps (backtest, 511 bands) */
+            typicalRangeUsd:calUsdOk(u)&&u.lo>0&&u.hi>u.lo?[Math.round(u.lo),Math.round(u.hi)]:null,
+            isFloor:!!(u&&u.floor),measuredFromCases:calUsdOk(u)?u.n:null};};
         var _ab=_pick(_wu),_be=_pick(_wd);
-        if(_ab||_be)_r.liquidationWall={note:__esT_mpcharts("whereTheClusterSitsIs",'Where the cluster sits is a model; the dollar figure is MEASURED - the median that has really liquidated in bands of that weight across nine exchanges. isFloor means the band is heavier than anything measured, so the figure is a lower bound.'),above:_ab,below:_be};}
+        if(_ab||_be)_r.liquidationWall={note:__esT_mpcharts("whereTheClusterSitsIs",'Where the cluster sits is a model; the dollars are MEASURED - what has really liquidated in bands of that weight across nine exchanges. This is the cost of ONE sweep of that level, which is a different unit from a 24h liquidation total - do not compare them. measuredUsd is the midpoint and typicalRangeUsd the middle half of real outcomes: backtested on 511 real sweeps the midpoint lands within about 20% of reality on the median band but is a third of it or triple it on roughly a third of them, so quote the range. isFloor means the band is heavier than anything measured, so the figure is a lower bound.'),above:_ab,below:_be};}
       if(Object.keys(_r).length)ro=_r;}catch(e){}
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */

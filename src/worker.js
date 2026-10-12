@@ -739,7 +739,22 @@ async function heatCalibCron(env) {
       const dead = (pub && pub.dead) || [];
       const binH = +(pub && pub.binH) || 0;
       if (dead.length < 12 || !(binH > 0)) continue;   // too few sweeps to quote a median from
-      const half = binH / 2;
+      // A CASCADE IS WIDER THAN ONE BIN, AND MEASURING IT IN ONE BIN UNDER-READ EVERY WALL BY 5-12x
+      // (2026-10-12, owner: "iznosi koje oni daju su zapravo dosta manji od realnosti"). A bin is 0.1% of
+      // price; price punches through several of them in seconds, so +-half a bin saw a slice of the event and
+      // called it the event. MEASURED on the live sweeps, widening the price window against a CONTROL window
+      // at the same prices six hours earlier - the control is the part that matters, because a wider window
+      // always returns more and that alone proves nothing:
+      //   width        BTC median      ETH median      SOL median     control (quiet time)
+      //   +-0.5 bin    $1.12M          $0.59M          $47k           $0 everywhere
+      //   +-3.5 bins   $6.00M          $5.25M          $562k          $0 everywhere
+      //   +-10.5 bins  $6.21M          $9.07M          $936k          BTC $212k, SOL $8.6k
+      // The control is EXACTLY ZERO out to +-7 bins on all four coins measured, so everything inside that is
+      // the cascade and none of it is background flow. The curve has clearly bent by then and the background
+      // starts appearing past it, so +-7 bins (0.7% of price) is where this sits: the widest window that is
+      // still provably all cascade. The fit absorbs the change - x is still the band's own weight, y is now
+      // the whole event rather than its middle - and `calibWin` is published so the figure can be explained.
+      const half = binH * CALIB_CASCADE_BINS;
       const wins = dead.slice(0, 400).map((d) => [d.tsw * 1000 - 30 * 60000, d.tsw * 1000 + 30 * 60000, d.p - half, d.p + half]);
       let sums = null;
       try {
@@ -780,7 +795,9 @@ async function heatCalibCron(env) {
         });
       }
       if (!bands.length) continue;
-      const cal = { t: Date.now(), n: rows.length, days: 8, bands };
+      // `win` states the measurement width so the figure can be explained rather than just asserted, and so a
+      // later change to it is visible in the published data instead of silently re-scaling every wall
+      const cal = { t: Date.now(), n: rows.length, days: 8, win: CALIB_CASCADE_BINS, bands };
       await env.STATS.put('hmp:cal:' + sym, JSON.stringify(cal), { expirationTtl: 30 * 86400 });
       out[sym] = { sweeps: rows.length, bands: bands.length, medians: bands.map((b) => b.med) };
       await new Promise((r) => setTimeout(r, 120));
@@ -880,15 +897,19 @@ const LIQEV_MIN = { BTC: 250000, ETH: 200000, SOL: 80000 };
 const LIQEV_MIN_DEF = 40000;
 const LIQEV_LIMIT = 150;   // measured: at these floors 150 rows still reach back 90h+ on every supported coin
 const LIQEV_MAX = 24;      // what a chart can carry without becoming confetti
+// How wide a liquidation cascade is, in model bins (one bin = 0.1% of price). MEASURED 2026-10-12 against a
+// control window at the same prices six hours earlier: the control is $0 out to +-7 bins on BTC, ETH, SOL and
+// XRP, so everything inside is the cascade itself; background only appears past it. See heatCalibCron.
+const CALIB_CASCADE_BINS = 0.5;
 async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - the big ones, last 24h (edge 60s)
   const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const body0 = { symbol: sym, supported: HM_COINS, rows: [], n24: 0, total24: 0, since: 0, now: Date.now() };
   const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
   if (HM_COINS.indexOf(sym) < 0) return J({ ...body0, unsupported: true }, 300);
-  const ck = new Request('https://marginpad.io/__liqev_' + sym);
+  const ck = new Request('https://marginpad.io/__liqev_v2_' + sym); // v2: carries the whole day (all24) beside the marked subset - bump on any shape change
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
-  let rows = [];
+  let rows = [], allUsd = 0, allN = 0, allLong = 0;   // the WHOLE day, from the 5-minute aggregate
   if (base) {
     try {
       const min = LIQEV_MIN[sym] || LIQEV_MIN_DEF;
@@ -898,9 +919,30 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
       if (Date.now() >= COL_DOWN_UNTIL) {
         const ctl = new AbortController(); const tmr = setTimeout(() => ctl.abort(), 2500);
         try {
-          const r = await __realFetch(base + '/api/v1/liquidations/live?symbol=' + sym + '&limit=' + LIQEV_LIMIT + '&min=' + min,
-            { signal: ctl.signal, cf: { cacheTtl: 45, cacheEverything: true } });
+          // THE MARKS ARE A SUBSET AND THE READOUT MUST SAY WHAT OF (2026-10-12, owner: "ne daju potpune
+          // informacije ... iznosi su dosta manji od realnosti"). The event list above the floor is COMPLETE
+          // for its own definition - proven by asking for limit=1000 and getting the same 53 BTC rows - but a
+          // reader compares the total beside it against the day's real liquidations and we were printing 39%
+          // of it (BTC $27.99M of $71.85M, ETH 46%, SOL 59%, BNB 32%). The 5-minute aggregate is the complete
+          // figure for any window and costs 0.8-3.6 KB / ~100 ms against the 20 KB event call already here,
+          // so both are fetched together and the answer carries the whole day as well as the marked part.
+          const [r, rAll] = await Promise.all([
+            __realFetch(base + '/api/v1/liquidations/live?symbol=' + sym + '&limit=' + LIQEV_LIMIT + '&min=' + min,
+              { signal: ctl.signal, cf: { cacheTtl: 45, cacheEverything: true } }).catch(() => null),
+            __realFetch(base + '/api/v1/liquidations/recent?symbol=' + sym + '&minutes=1440',
+              { signal: ctl.signal, cf: { cacheTtl: 60, cacheEverything: true } }).catch(() => null),
+          ]);
           if (r && r.ok) { const j = await r.json(); const a = (j && (j.events || j.rows)) || j; if (Array.isArray(a)) rows = a; }
+          if (rAll && rAll.ok) {
+            try {
+              const ja = await rAll.json(); const bk = (ja && ja.buckets) || [];
+              if (bk.length) {
+                allUsd = Math.round(bk.reduce((a2, b2) => a2 + (+b2.long || 0) + (+b2.short || 0), 0));
+                allN = bk.reduce((a2, b2) => a2 + (+b2.count || 0), 0);
+                allLong = Math.round(bk.reduce((a2, b2) => a2 + (+b2.long || 0), 0));
+              }
+            } catch (e) {}
+          }
         } catch (e) {} finally { clearTimeout(tmr); }
       }
     } catch (e) {}
@@ -916,13 +958,19 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
     // the window really covered, never an implied 24 h (the /rekt/ backfill lesson)
     since: all.length ? Math.min.apply(null, all.map((x) => x.t)) : 0,
     n24: all.length, total24: Math.round(all.reduce((a2, x) => a2 + x.usd, 0)),
+    // the complete 24h, so the marked subset is never mistaken for the day: all24 is every liquidation the
+    // collector recorded on this coin, longs24 the share of it that was longs being force-sold
+    all24: allUsd, allN24: allN, longs24: allLong,
     biggest: all.length ? Math.max.apply(null, all.map((x) => x.usd)) : 0,
     rows: all.slice().sort((a2, b2) => b2.usd - a2.usd).slice(0, LIQEV_MAX).sort((a2, b2) => a2.t - b2.t),
   };
   // An empty answer IS cached, briefly. Not caching it was a retry loop: every chart that asked got a miss,
   // went to the collector, failed, cached nothing, and the next chart did it again. 20 s breaks the loop
   // without declaring a quiet minute to be a quiet hour; a real answer keeps the full minute.
-  const res = J(out, out.n24 > 0 ? 60 : 20);
+  // An answer that reached the event feed but not the aggregate is INCOMPLETE - the readout would state the
+  // marked subset with no day to compare it against - so it keeps the short life of an empty one and heals on
+  // the next ask instead of standing for a full minute (seen once on ETH and SOL, a transient abort).
+  const res = J(out, (out.n24 > 0 && out.all24 > 0) ? 60 : 20);
   try { await caches.default.put(ck, res.clone()); } catch (e) {}
   return res;
 }
