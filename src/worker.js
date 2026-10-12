@@ -728,7 +728,10 @@ async function heatPoolsCron(env) {
 //
 // Daily, not per run: it costs one request with a few hundred windows in it, and a calibration built from
 // eight days of sweeps does not move in ten minutes.
-const MOVE_PCTS = [1, 2, 3, 5];   // the move sizes the chart can quote, in percent of price
+// The move sizes the chart can quote, in percent of price. Extended 2026-10-12: the walls a reader asks about
+// routinely sit 6-11% away and the list stopped at 5, so the row beside a 6.4% wall quoted a 2% move. Each
+// size still has to earn its place - under three real moves of that size there is no row at all.
+const MOVE_PCTS = [1, 2, 3, 4, 5, 6, 8, 10];
 // Measured, never modelled: every move of this size in the last eight days and what really liquidated while
 // it happened. Stored per coin as the MEDIAN with its n, so a thin sample can be refused by the reader.
 async function moveImpactCron(env) {
@@ -738,31 +741,34 @@ async function moveImpactCron(env) {
   if (!base) return out;
   for (const sym of HM_COINS) {
     try {
-      const bars = await leanKlines(sym, 60, 200, env);   // 200 hourly candles = 8.3 days, inside the raw retention
-      if (!bars || bars.length < 60) { out[sym] = { skip: 'no candles' }; continue; }
-      const px = +bars[bars.length - 1].close || 0; if (!(px > 0)) { out[sym] = { skip: 'no price' }; continue; }
+      // hourly for the small sizes (a 1% move can start and finish inside two hours), two-hourly for the big
+      // ones, where 16.6 days of history is what decides whether there is a sample at all
+      const fast = await leanKlines(sym, 60, 200, env);    // 8.3 days
+      const slow = await leanKlines(sym, 120, 200, env);   // 16.6 days, ~13 of them inside the raw retention
+      if (!fast || fast.length < 60) { out[sym] = { skip: 'no candles' }; continue; }
+      const px = +fast[fast.length - 1].close || 0; if (!(px > 0)) { out[sym] = { skip: 'no price' }; continue; }
       const wins = [], tag = [];
-      for (const pct of MOVE_PCTS) {
-        // non-overlapping runs that travel >= pct within six hours, so one big day cannot supply every sample
+      const scan = (bars, barMs, pct) => {
+        if (!bars || bars.length < 30) return;
         for (let i = 0; i < bars.length; i++) {
           let hit = -1;
-          for (let n = 1; n <= 6 && i + n < bars.length; n++) {
+          for (let n = 1; n <= 6 && i + n < bars.length; n++) {   // six bars: six hours fast, twelve slow
             const a = +bars[i].close, b = +bars[i + n].close;
             if (a > 0 && Math.abs(b - a) / a * 100 >= pct) { hit = n; break; }
           }
           if (hit < 0) continue;
-          const t0 = +bars[i].time * (String(bars[i].time).length > 11 ? 1 : 1000);
-          const t1 = +bars[i + hit].time * (String(bars[i + hit].time).length > 11 ? 1 : 1000) + 3600000;
-          wins.push([t0, t1, 1, px * 100]);   // every price: the question is what the MARKET liquidated
+          const ms = (x) => +x.time * (String(x.time).length > 11 ? 1 : 1000);
+          wins.push([ms(bars[i]), ms(bars[i + hit]) + barMs, 1, px * 100]);   // every price: what the MARKET liquidated
           tag.push(pct);
-          i += hit;
+          i += hit;   // non-overlapping, so one violent day cannot supply every sample
         }
-      }
+      };
+      for (const pct of MOVE_PCTS) scan(pct <= 3 ? fast : slow, pct <= 3 ? 3600000 : 7200000, pct);
       if (!wins.length) { out[sym] = { skip: 'no moves' }; continue; }
       let sums = null;
       try {
         const r = await fetch(base + '/api/v1/liqsum', { method: 'POST', headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ symbol: sym, wins: wins.slice(0, 300) }), signal: AbortSignal.timeout(20000) });
+          body: JSON.stringify({ symbol: sym, wins: wins.slice(0, 400) }), signal: AbortSignal.timeout(25000) });
         if (r.ok) { const j = await r.json(); sums = j && j.sums; }
       } catch (e) {}
       if (!sums || !sums.length) { out[sym] = { skip: 'liqsum' }; continue; }
@@ -779,7 +785,7 @@ async function moveImpactCron(env) {
           lo: Math.round(a[Math.floor(a.length * 0.25)]), hi: Math.round(a[Math.floor(a.length * 0.75)]) });
       }
       if (!rows.length) { out[sym] = { skip: 'thin' }; continue; }
-      await env.STATS.put('hmp:mv:' + sym, JSON.stringify({ t: Date.now(), days: 8, rows }), { expirationTtl: 30 * 86400 });
+      await env.STATS.put('hmp:mv:' + sym, JSON.stringify({ t: Date.now(), days: 13, rows }), { expirationTtl: 30 * 86400 });
       out[sym] = rows.map((r) => r.pct + '%:$' + Math.round(r.med / 1e6) + 'M/n' + r.n).join(' ');
     } catch (e) { out[sym] = { err: String((e && e.message) || e).slice(0, 80) }; }
   }
@@ -950,10 +956,30 @@ async function heatExtras(env, sym) {
 }
 /* The floor is what makes a 1,000-row cap reach a full day, and it is measured per coin (see the patch note):
    at these values every supported coin's thousand newest rows span well over 24 h. */
-const LIQEV_MIN = { BTC: 250000, ETH: 200000, SOL: 80000 };
-const LIQEV_MIN_DEF = 40000;
-const LIQEV_LIMIT = 150;   // measured: at these floors 150 rows still reach back 90h+ on every supported coin
-const LIQEV_MAX = 24;      // what a chart can carry without becoming confetti
+// Floors lowered 4x on 2026-10-12: at the old ones only 12 of 24 hours held a single qualifying ETH event,
+// so the chart showed nothing through hours that really liquidated millions. Measured at limit=200 these
+// cover 18-21 hours of 24 and still reach the full day back, for 26 KB against 20 KB.
+const LIQEV_MIN = { BTC: 60000, ETH: 50000, SOL: 20000 };
+const LIQEV_MIN_DEF = 10000;
+const LIQEV_LIMIT = 200;   // measured: at these floors 200 rows still reach the whole 24h on every supported coin
+const LIQEV_MAX = 30;      // what a chart can carry without becoming confetti
+// ONE MARK PER HOUR FIRST, THEN THE BIGGEST LEFT OVER. Taking the day's top N instead left hours that
+// liquidated over a million with nothing drawn at all, which reads as "there were no liquidations".
+function liqevPick(all, max) {
+  const byHour = new Map();
+  for (const e of all) {
+    const h = Math.floor(e.t / 3600000);
+    const cur = byHour.get(h);
+    if (!cur || e.usd > cur.usd) byHour.set(h, e);
+  }
+  const picked = [...byHour.values()].sort((a, b) => b.usd - a.usd).slice(0, max);
+  const seen = new Set(picked);
+  for (const e of all.slice().sort((a, b) => b.usd - a.usd)) {
+    if (picked.length >= max) break;
+    if (!seen.has(e)) { picked.push(e); seen.add(e); }
+  }
+  return picked.sort((a, b) => a.t - b.t);
+}
 // How wide a liquidation cascade is, in model bins (one bin = 0.1% of price). MEASURED 2026-10-12 against a
 // control window at the same prices six hours earlier: the control is $0 out to +-7 bins on BTC, ETH, SOL and
 // XRP, so everything inside is the cascade itself; background only appears past it. See heatCalibCron.
@@ -963,7 +989,7 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
   const body0 = { symbol: sym, supported: HM_COINS, rows: [], n24: 0, total24: 0, since: 0, now: Date.now() };
   const J = (o, age) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + age, ...CORS } });
   if (HM_COINS.indexOf(sym) < 0) return J({ ...body0, unsupported: true }, 300);
-  const ck = new Request('https://marginpad.io/__liqev_v2_' + sym); // v2: carries the whole day (all24) beside the marked subset - bump on any shape change
+  const ck = new Request('https://marginpad.io/__liqev_v3_' + sym); // v3: lower floors, one mark per hour, hoursSeen // v2: carries the whole day (all24) beside the marked subset - bump on any shape change
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
   let rows = [], allUsd = 0, allN = 0, allLong = 0;   // the WHOLE day, from the 5-minute aggregate
@@ -1019,7 +1045,9 @@ async function handleLiqEvents(url, env) { // GET /api/liq/events?symbol=SOL - t
     // collector recorded on this coin, longs24 the share of it that was longs being force-sold
     all24: allUsd, allN24: allN, longs24: allLong,
     biggest: all.length ? Math.max.apply(null, all.map((x) => x.usd)) : 0,
-    rows: all.slice().sort((a2, b2) => b2.usd - a2.usd).slice(0, LIQEV_MAX).sort((a2, b2) => a2.t - b2.t),
+    rows: liqevPick(all, LIQEV_MAX),
+    // how much of the day the marks actually touch, so the chart can say it rather than imply it
+    hoursSeen: new Set(all.map((x) => Math.floor(x.t / 3600000))).size,
   };
   // An empty answer IS cached, briefly. Not caching it was a retry loop: every chart that asked got a miss,
   // went to the collector, failed, cached nothing, and the next chart did it again. 20 s breaks the loop

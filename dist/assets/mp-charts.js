@@ -772,8 +772,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
               for(var _i2=0;_i2<_mvr.length;_i2++){var _c2=_mvr[_i2];if(+_c2.pct<=_dpc&&(!_best||+_c2.pct>+_best.pct))_best=_c2;}
               if(!_best)for(var _i3=0;_i3<_mvr.length;_i3++){var _c3=_mvr[_i3];if(!_best||+_c3.pct<+_best.pct)_best=_c3;}
               if(_best){
+                var _mul=_dpc/(+_best.pct||1);
+                var _far=_mul>=1.35?(' \u00b7 this move is '+_mul.toFixed(1)+'x further, so expect more'):'';
                 w.legItems.push({raw:true,color:'#8fd8ff',
-                  label:'GETTING THERE a '+_best.pct+'% move has liquidated '+money(_best.med)+' (median of '+_best.n+')',
+                  label:'GETTING THERE '+(_near.b.p<_qpx?'\u2212':'+')+_dpc.toFixed(1)+'% to '+cwFmt(_near.b.p)+' \u00b7 a '+_best.pct+'% move has liquidated '+money(_best.med)+' (median of '+_best.n+')'+_far,
                   title:'MEASURED, not modelled: every move of '+_best.pct+'% on '+w.sym+' in the last '+((w._ht.moves.days)||8)+' days, and what the whole market really liquidated while it happened - median '+money(_best.med)+' across '+_best.n+' of them'+((_best.lo&&_best.hi)?(', middle half '+money(_best.lo)+' to '+money(_best.hi)):'')+'. This is the run, not the level: the wall above is one price bin (0.1% of price), so the two are different quantities and should not be compared.'});
               }
             }
@@ -781,7 +783,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         }catch(_mve){}
         if(_parts.length){
           var _any=(_A&&calUsdOk(_A.u)?_A.u:null)||(_B&&calUsdOk(_B.u)?_B.u:null);
-          w.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_parts.join(' \u00b7 '),
+          w.legItems.push({raw:true,color:'#c2f64a',label:'AT THE LEVEL '+_parts.join(' \u00b7 ')+' \u00b7 one 0.1% price bin, not the whole move',
             title:'What one sweep of this level has really cost, not what the market does in a day - the two are different units. Where the cluster sits is a model; the dollars are MEASURED, the middle half of what has really liquidated in clusters of this weight (a quarter of sweeps come in under the low figure and a quarter over the high one). Read at each wall\'s own weight.'
               +(_any&&_any.n?' The nearest measured class liquidated '+money(_any.lo)+' to '+money(_any.hi)+' over '+_any.n+' cases.':'')
               +_prov+' "At least" means the cluster is heavier than anything on record, so the figure is a floor rather than an estimate.'});

@@ -477,7 +477,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _txtM=function(o,lab){if(!o)return null;return _rngM(o.u)+' '+lab+' '+_PX2(o.b.p)+' ('+_dpm(o.b)+')';};
         var _pm=[];var _tb2=_txtM(_Bm,'below'),_ta2=_txtM(_Am,'above');
         if(_tb2)_pm.push(_tb2);if(_ta2)_pm.push(_ta2);
-        if(_pm.length)p.legItems.push({raw:true,color:'#c2f64a',label:'LIQ WALL '+_pm.join(' \u00b7 ')});
         /* what getting there costs - measured, mirrored by hand from mp-charts */
         try{var _mvr=(p._ht&&p._ht.moves&&p._ht.moves.rows)||null;
           if(_mvr&&_mvr.length){
@@ -485,8 +484,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             if(_nr){var _dq=Math.abs(_nr.b.p-_qpx)/_qpx*100,_bs=null;
               for(var _k3=0;_k3<_mvr.length;_k3++){var _c4=_mvr[_k3];if(+_c4.pct<=_dq&&(!_bs||+_c4.pct>+_bs.pct))_bs=_c4;}
               if(!_bs)for(var _k4=0;_k4<_mvr.length;_k4++){var _c5=_mvr[_k4];if(!_bs||+_c5.pct<+_bs.pct)_bs=_c5;}
-              if(_bs)p.legItems.push({raw:true,color:'#8fd8ff',label:'GETTING THERE a '+_bs.pct+'% move has liquidated '+_MY2(_bs.med)+' (median of '+_bs.n+')'});}
+              if(_bs){var _ml=_dq/(+_bs.pct||1);
+                p.legItems.push({raw:true,color:'#8fd8ff',label:'GETTING THERE '+(_nr.b.p<_qpx?'\u2212':'+')+_dq.toFixed(1)+'% \u00b7 a '+_bs.pct+'% move has liquidated '+_MY2(_bs.med)+' (median of '+_bs.n+')'+(_ml>=1.35?(' \u00b7 '+_ml.toFixed(1)+'x further'):'')});}}
           }}catch(_e9){}
+        if(_pm.length)p.legItems.push({raw:true,color:'#c2f64a',label:'AT THE LEVEL '+_pm.join(' \u00b7 ')+' \u00b7 one 0.1% bin'});
+
       }
     if(p.inds.dl&&S&&S.dailyLevels){var _dl=S.dailyLevels(p.bars,p.tf);if(_dl)_dl.forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.v,color:L.c,lineWidth:1,lineStyle:L.k==='OPEN'?0:2,axisLabelVisible:true,title:L.k}));}catch(e){}});}
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
