@@ -17186,6 +17186,38 @@ async function apiPlanOf(env, uid) {
   return { tier, plan: API_PLANS[tier].id, until: +row.until, src, trial: src === 'trial', days_left: apiPlanDays(+row.until) };
 }
 const apiPlanDays = (until) => (+until > Date.now() ? Math.max(0, Math.ceil((+until - Date.now()) / 86400000)) : 0);
+// FREE IS A 7-DAY TRIAL (2026-10-13, owner). KV api:trial:<uid> = {start, until}. Its own row, because tier 0
+// already means "no plan" everywhere else and an expired trial must not read as a lapsed paid plan.
+const API_TRIAL_DAYS = 7;
+const API_TRIAL_MS = API_TRIAL_DAYS * 86400000;
+const _trialMemo = new Map(); // uid -> {v, t}. The engine path is 77% polling and 4.2M calls a month; a KV read
+// per call would be paid on every one of them. An expiry DATE may safely be up to a minute stale - unlike the
+// realism setting, which is a toggle somebody flips and which this file forbids memoising for that reason.
+async function apiTrialState(env, uid) {
+  const u = String(uid || ''); const now = Date.now();
+  const none = { until: 0, started: 0, active: false, expired: false, days_left: null, missing: true };
+  if (!u || !env.STATS) return none;
+  const m = _trialMemo.get(u); if (m && now - m.t < 60000) return m.v;
+  let row = null; try { row = JSON.parse((await env.STATS.get('api:trial:' + u)) || 'null'); } catch (e) { return none; }
+  const v = !row || !(+row.until > 0)
+    ? none
+    : { until: +row.until, started: +row.start || 0, active: +row.until > now, expired: !(+row.until > now), days_left: apiPlanDays(+row.until), missing: false };
+  _trialMemo.set(u, { v, t: now }); if (_trialMemo.size > 4000) _trialMemo.clear();
+  return v;
+}
+// Idempotent: a trial is started once and never restarted, so re-minting a key cannot buy another seven days.
+async function apiTrialStart(env, uid, startAt) {
+  const u = String(uid || ''); if (!u || !env.STATS) return null;
+  const cur = await apiTrialState(env, u); if (!cur.missing) return cur;
+  const start = +startAt || Date.now(); const until = start + API_TRIAL_MS;
+  try { await env.STATS.put('api:trial:' + u, JSON.stringify({ start, until }), { expirationTtl: 400 * 86400 }); } catch (e) { return null; }
+  _trialMemo.delete(u);
+  return await apiTrialState(env, u);
+}
+// One sentence, read by the refusal, the catalogue, /v1/usage and the page - never typed twice.
+const API_TRIAL_NOTE = (t) => t && t.active
+  ? 'Your free trial of the paper-trading engine runs until ' + new Date(t.until).toISOString().slice(0, 10) + ' (' + t.days_left + ' day' + (t.days_left === 1 ? '' : 's') + ' left). Market data on /api/v1/* stays free and keyless after that; the engine needs a plan.'
+  : 'The free trial of the paper-trading engine has ended. Market data on /api/v1/* stays free and keyless; the engine needs a plan.';
 // Write the plan AND push the tier onto the account's keys in the same breath. Without the push a buyer would wait up to
 // ten minutes for the reconcile cron - the worst possible moment to make a paying user wait (same lesson as revokeUserSessions).
 async function apiPlanGrant(env, uid, tier, until, src) {
@@ -17236,6 +17268,7 @@ const BOT_ERR = {
   unknown_preset: 'No such simulation preset. GET /api/bot/v2/sim lists them.',
   premium_required: 'This needs a paid API plan: https://marginpad.io/trading-api/#plans', // legacy code, kept so a 2.3 bot still recognises it
   // DERIVED, never typed - see the API_PRICE note. This string is read by every 402 a developer meets.
+  trial_expired: 'The ' + API_TRIAL_DAYS + '-day free trial of the paper-trading engine has ended on this account. Market data on /api/v1/* stays free and keyless with no account at all; the engine is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month): ' + API_UPGRADE,
   plan_required: 'This is on API Pro (' + API_PRICE('pro') + '/month), Max (' + API_PRICE('max') + '/month) and Business (' + API_PRICE('business') + '/month). Site Premium does not raise API limits: ' + API_UPGRADE + '',
   too_many_webhooks: 'You already hold the maximum number of webhooks. Delete one first.',
   bad_url: 'Webhook URLs must be https:// on a public host.',
@@ -17315,6 +17348,7 @@ async function handleBot(url, request, env, ctx) {
     // every time the user opens this endpoint, plus every 10 minutes by syncBotTiers.
     // 2026-09-15: this used to read Premium. It does not any more - Premium buys nothing on the API.
     const sub = await apiPlanOf(env, kuid);
+    const trial = (await apiTrialStart(env, kuid)) || (await apiTrialState(env, kuid)); // minting a key starts the seven days; idempotent, so a second key never restarts them
     const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke', 'usage'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, book: b.book, tier: sub.tier, until: sub.until || 0, rotate: request.method === 'POST' && !!b.rotate }); // 2.5: book = the separate journal this key trades; act:'usage' = per-key per-day calls for the site panel
     if (!r) return jb({ error: 'unavailable' }, 503);
     if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
@@ -17326,7 +17360,8 @@ async function handleBot(url, request, env, ctx) {
         'Somebody is starting to build on the API.'], 'https://marginpad.io/api/stats#trading/botapi');
       if (ctx && ctx.waitUntil) ctx.waitUntil(pn4);
     } catch (e) {} }
-    if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; } // the countdown the page prints
+    if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; }
+    r.trial = trial && !trial.missing ? { days: API_TRIAL_DAYS, ends: new Date(trial.until).toISOString(), days_left: trial.days_left, active: trial.active, note: API_TRIAL_NOTE(trial) } : null; // what the page prints // the countdown the page prints
     r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
     return jb(r, 200);
   }
@@ -17405,6 +17440,16 @@ async function handleBot(url, request, env, ctx) {
     if (dleft > 0 && dleft <= 14) { planH['x-mp-plan-expires'] = new Date(+auth.until).toISOString().slice(0, 10); planH['x-mp-plan-days-left'] = String(dleft); }
   }
   if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
+  // THE TRIAL GATE. Only the engine - market data is a different product and is never refused here.
+  // A missing row FAILS OPEN and starts the clock, so a key that predates this can never be locked out by an
+  // absent row; it gets its seven days from the moment it is first seen.
+  if (!(+auth.tier > 0) && auth.uid) {
+    let tr = await apiTrialState(env, auth.uid);
+    if (tr.missing) tr = (await apiTrialStart(env, auth.uid)) || tr;
+    if (tr && tr.expired) return jb({ error: 'trial_expired', trial_ended: new Date(tr.until).toISOString(),
+      hint: API_TRIAL_NOTE(tr) + ' ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
+    if (tr && tr.active) { planH = Object.assign(planH || {}, { 'x-mp-trial-expires': new Date(tr.until).toISOString().slice(0, 10), 'x-mp-trial-days-left': String(tr.days_left) }); }
+  }
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute', ...((+auth.limit || 120) < 600 ? { upgrade: API_UPGRADE, hint: API_UPGRADE_HINT, earn: 'An API plan can also be paid from your MarginPad rewards balance: season boards pay real USDT to the top five and daily missions pay a little every day, and /trading-api/ has a pay-from-balance button once the balance covers the plan.' } : {}) }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   let uid = auth.uid; const uidLive = auth.uid;
   botPresence(env, ctx, request, key, auth, path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other'); // ops Here now: this key is live
@@ -20638,9 +20683,12 @@ export default {
     if (url.pathname === '/api/apiplan') { // the catalogue + where the caller stands. Public catalogue, personal part only when signed in.
       const u = await sessionUser(env, getCookie(request, SESS_COOKIE) || '');
       const mine = u && u.id ? await apiPlanOf(env, String(u.id)) : null;
+      const myTrial = u && u.id ? await apiTrialState(env, String(u.id)) : null; // the page prints the caller's OWN deadline, not the policy
       return J({
         plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai })),
         current: mine ? { plan: mine.plan, tier: mine.tier, until: mine.until || null, days_left: mine.until ? mine.days_left : null, source: mine.src || 'free', free_month: mine.trial } : null,
+        my_trial: myTrial && !myTrial.missing ? { ends: new Date(myTrial.until).toISOString(), days_left: myTrial.days_left, active: myTrial.active } : null,
+        free_trial: { days: API_TRIAL_DAYS, note: 'The paper-trading engine is free for ' + API_TRIAL_DAYS + ' days from the day the first key is minted. After that it needs a plan. Market data on /api/v1/* is keyless and free with no account and no trial.' },
         signedIn: !!(u && u.id), crypto: !!env.NOWPAY_API_KEY,
         note: 'API plans are separate from site Premium. Premium does not raise any API limit.',
       });
@@ -21848,6 +21896,50 @@ export default {
       }
       const sortObj = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ what: k, n }));
       return J({ ok: true, days, scope: wantE2 ? 'e2e test accounts only' : 'real traffic (e2e accounts excluded)', total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date. Refusals from e2e-prefixed test accounts are kept under their own prefix; add ?e2e=1 to read those instead.' });
+    }
+    if (url.pathname === '/api/admin/apitrial' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // Who is on a free trial, when it ends, and the one-time backfill that starts the clock for everybody
+      // who already held a key. GET = read. POST {backfill:true} = write; without it the POST is a dry run.
+      const tb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      // SET ONE ACCOUNT'S TRIAL: {set:{uid|username, days}} - days from now, 0 ends it immediately.
+      if (tb.set && request.method === 'POST') {
+        let su = String(tb.set.uid || '');
+        if (!su && tb.set.username) { try { const ru = await usersDO(env, '/lbuser', { name: String(tb.set.username) }); su = String((ru && (ru.uid || (ru.user && ru.user.uid))) || ''); } catch (e) {} }
+        if (!su) return J({ error: 'need_uid', hint: 'send set.uid, or set.username for an account that exists' }, 400);
+        const days = Math.max(0, Math.min(365, Math.round(+tb.set.days)));
+        if (!isFinite(days)) return J({ error: 'need_days' }, 400);
+        const until = Date.now() + days * 86400000;
+        try { await env.STATS.put('api:trial:' + su, JSON.stringify({ start: Date.now(), until, by: 'admin' }), { expirationTtl: 400 * 86400 }); } catch (e) { return J({ error: 'kv' }, 503); }
+        _trialMemo.delete(su); // the gate memoises for a minute; a support fix must be true at once
+        return J({ ok: true, uid: su, days, ends: new Date(until).toISOString(), active: days > 0, note: 'The memo is cleared, so the next call sees this immediately.' });
+      }
+      let ks = { keys: [] };
+      try { const rk = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); ks = await rk.json(); } catch (e) { return J({ error: 'unavailable' }, 503); }
+      const uids = Array.from(new Set((ks.keys || []).map((k) => String(k.uid || '')).filter(Boolean)));
+      const e2e = (u) => /^e2e/i.test(u);
+      const rows = [], start = +tb.start || Date.now();
+      let started = 0, already = 0, skipped = 0;
+      for (const u of uids) {
+        if (e2e(u) && !tb.e2e) { skipped++; continue; }
+        const plan = await apiPlanOf(env, u);
+        let t = await apiTrialState(env, u);
+        const act = t.missing ? 'would start' : 'has one';
+        if (t.missing && tb.backfill === true) { t = (await apiTrialStart(env, u, start)) || t; started++; }
+        else if (t.missing) { /* dry run */ }
+        else already++;
+        const k0 = (ks.keys || []).filter((k) => String(k.uid) === u);
+        rows.push({ uid: u, username: (k0[0] || {}).username || '', keys: k0.length,
+          calls: k0.reduce((a2, k) => a2 + (+k.calls || 0), 0),
+          last: Math.max.apply(null, k0.map((k) => +k.last || 0).concat([0])),
+          plan: plan.plan, paid: plan.tier > 0, plan_src: plan.src || '',
+          trial: t.missing ? null : { ends: new Date(t.until).toISOString(), days_left: t.days_left, active: t.active },
+          action: tb.backfill === true ? (act === 'would start' ? 'started' : 'left alone') : act });
+      }
+      rows.sort((a2, b2) => (b2.calls || 0) - (a2.calls || 0));
+      return J({ ok: true, trial_days: API_TRIAL_DAYS, dry_run: tb.backfill !== true, accounts: rows.length,
+        started, already_had_one: already, skipped_e2e: skipped,
+        note: 'A paid plan is never touched by this - the gate only reads the trial when the tier is 0. Market data on /api/v1/* is outside the trial and stays keyless and free.',
+        rows });
     }
     if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }

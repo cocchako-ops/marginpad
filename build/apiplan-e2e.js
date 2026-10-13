@@ -198,6 +198,10 @@ const usage = async () => (await bot('/usage')).body.data || {};
 
   // ── an expired plan falls back on its own ────────────────────────────────────────────────────────────────
   g = await admin('/api/admin/apiplans', { uid: UID, plan: 'pro', until: Date.now() - 60000, src: 'e2e' });
+  // api:sub is KV and KV is EVENTUALLY consistent: apiPlanGrant DELETES the row for an expiry in the past, and a
+  // read in the same breath still returns the copy it replaced. Measured 2026-10-13 - the row was gone 8 s later,
+  // so the mechanism was never wrong and this check was racing the store (the waitXpCache lesson, different cache).
+  await new Promise((r) => setTimeout(r, 9000));
   const cat2 = await site('/api/apiplan');
   chk('an expired row resolves to Free without a sweep', !cat2.body.current || cat2.body.current.plan === 'free' || cat2.body.current === null, cat2.body && cat2.body.current);
 
