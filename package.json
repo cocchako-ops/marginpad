@@ -7,7 +7,7 @@
     "bump": "node build/bump-home-assets.js",
     "lint": "node build/lint.js",
     "smoke": "node build/smoke-test.js",
-    "predeploy": "node build/secret-scan.js && node build/check-home-hash.js && node build/lint.js",
+    "predeploy": "node build/secret-scan.js && node build/check-home-hash.js && node build/es/check-es-ui.js && node build/lint.js",
     "deploy": "npx wrangler deploy",
     "postdeploy": "node build/smoke-test.js",
     "scan": "node build/secret-scan.js"

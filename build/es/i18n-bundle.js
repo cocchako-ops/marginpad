@@ -8,10 +8,18 @@
 //   node build/es/i18n-bundle.js --apply mp-auth.js keys.json      inject the dictionary and route the literals
 //   node build/es/i18n-bundle.js --apply mp-auth.js keys.json --dry
 //
-// WHY A DICTIONARY IN THE FILE AND NOT THE LAZY i18n PACK: the packs load over the network after first paint.
-// A toast, a refusal or a sign-in label that fires in that window would be English - which is exactly the
-// "partially translated" experience this is meant to end. An inline table is there on the first frame.
+// WHY NOT THE LAZY i18n PACK: the packs load over the network after first paint. A toast, a refusal or a
+// sign-in label that fires in that window would be English - which is exactly the "partially translated"
+// experience this is meant to end. The table has to be there on the first frame.
 // Spanish only: it is the site's one full second language, and thirteen languages inline would be 200KB.
+//
+// WHERE THE TABLE LIVES CHANGED ON 2026-10-13 and this tool writes whichever is right for the file:
+//   a BUNDLE -> dist/assets/es/<bundle>.js, loaded by a tag the twins carry and English pages do not. Inline,
+//     the ten tables were 35,858 bytes brotli on every reader of those bundles whatever language they read in.
+//   a PAGE   -> still inline. A page already has two files (dist/x/ and dist/es/x/, same markup, written by
+//     gen-pages), so its table only ever ships on the page it belongs to.
+// After a bundle round: node build/bump-home-assets.js (one ?v= covers the bundle and its sidecar) and
+// node build/es/check-es-ui.js.
 //
 // THE HELPER IS A TOP-LEVEL FUNCTION DECLARATION, ON PURPOSE. These bundles are several sibling IIFEs, and
 // routing mp-nav's cookie bar through a helper defined inside a different closure broke it on every page
@@ -132,6 +140,10 @@ const DICT_SPANS = [
   /var MPI = \{[\s\S]*?\};\r?\n/,
   /AUTH_T\s*=\s*\{[\s\S]*?\};/,
   /var __esD_[a-z0-9]+ = \{[\s\S]*?\};\r?\n/,
+  // The generated head itself (helper + __esUIMiss). It holds the BUNDLE'S OWN FILENAME as a literal, and the
+  // scanner reads "mp-profile.js" as two English words and a hint word ('profile') and duly offered it for
+  // translation on the first scan after the split. Its diagnostic strings are for a developer's console too.
+  /\/\* Spanish for this file lives in[\s\S]*?\nfunction __esUIMiss\(bundle, slug, served\) \{[\s\S]*?\n\}\n/,
 ];
 function scannable(s) {
   let out = s;
@@ -196,12 +208,23 @@ function unescapeJs(s) {
   });
 }
 const dict = '{' + items.map(x => JSON.stringify(x.key) + ':' + JSON.stringify(unescapeJs(x.es))).join(',') + '}';
-const HEAD = '/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack\n'
+
+/* A BUNDLE'S TABLE IS A SIDECAR SINCE 2026-10-13, A PAGE'S IS STILL INLINE, and the difference is not a
+   half-finished migration. A bundle serves BOTH languages from one file, so an inline table there is bytes on
+   every English reader (35,858 brotli across the ten) - it moved to dist/assets/es/<bundle>.js, which only the
+   /es/ twins load. A PAGE already has two files: dist/x/index.html and dist/es/x/index.html, written from the
+   same markup by gen-pages, so its table is only ever on the page it belongs to and a sidecar would buy an
+   English reader of that one page nothing but an extra request. (The English twin of a hand-made page does
+   still carry its inline table - measured small, named in the split's PR, deliberately left.) */
+const { headFor, sidecarFor, readTable, ES_UI_DIR } = require('./lib-es-ui');
+const HEAD = IS_PAGE
+  ? '/* Spanish for this page. Inline, not the lazy i18n pack: a string that fires before a pack\n'
   + '   arrives would be English, which is the partial translation this exists to end. A top-level function\n'
   + '   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */\n'
   + 'var ' + DICT + ' = ' + dict + ';\n'
   + 'function ' + HELPER + '(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es"'
-  + ' && ' + DICT + '[k] != null) return ' + DICT + '[k]; } catch (e) {} return en; }\n';
+  + ' && ' + DICT + '[k] != null) return ' + DICT + '[k]; } catch (e) {} return en; }\n'
+  : headFor(slug, FILE, items.length);
 
 // THE REPLACEMENT MUST NOT ESCAPE THE CODE. On a page, the same sentence often appears BOTH in the static HTML
 // (already translated by gen-pages) and in a script; a blind file-wide swap would rewrite the markup into a
@@ -265,7 +288,7 @@ let out = parts.map(p => p.text).join('');
 // desynchronise on a regex holding a quote), so a file gets routed more than once - and the first cut only
 // inserted the dictionary when the helper was absent, which meant every later key resolved to nothing and
 // silently fell back to English. Exactly the partial translation this whole exercise is closing.
-if (already) {
+if (already && IS_PAGE) {
   const m = new RegExp('var ' + DICT + ' = (\\{[\\s\\S]*?\\});\\r?\\n').exec(out);
   if (!m) { console.error('the helper is there but its dictionary is not - refusing'); process.exit(2); }
   let old; try { old = JSON.parse(m[1]); } catch (e) { console.error('existing dictionary does not parse - refusing'); process.exit(2); }
@@ -275,10 +298,26 @@ if (already) {
   console.log('   merged ' + added + ' new key(s) into the existing dictionary (' + Object.keys(old).length + ' total)');
 }
 
+// A BUNDLE'S TABLE IS WRITTEN TO ITS SIDECAR, merging into whatever is already there (a key that exists is
+// never overwritten - same rule the inline merge had). Queued here and written below with the bundle, because
+// a run that writes one of the two and then throws leaves the pair disagreeing.
+let sideWrite = null;
+if (!IS_PAGE) {
+  let table; try { table = readTable(FILE, slug); } catch (e) { console.error(e.message); process.exit(2); }
+  const before = Object.keys(table).length;
+  let added = 0;
+  for (const x of items) if (table[x.key] == null) { table[x.key] = unescapeJs(x.es); added++; }
+  sideWrite = [path.join(ES_UI_DIR, FILE), sidecarFor(slug, FILE, table)];
+  console.log('   ' + (before ? 'merged ' + added + ' new key(s) into' : 'wrote') + ' dist/assets/es/' + FILE
+    + ' (' + Object.keys(table).length + ' total)');
+  if (out.indexOf('window.__esUI && window.__esUI.' + slug) < 0) { console.error('the bundle does not read window.__esUI.' + slug + ' - run build/es/split-bundle-dicts.js first'); process.exit(2); }
+}
+
 console.log(FILE + ': routed ' + routed + ' occurrence(s) of ' + (items.length - skipped.length) + ' string(s)'
   + (skipped.length ? ', skipped ' + skipped.length : ''));
 skipped.slice(0, 12).forEach(s => console.log('   skip ' + s));
 if (DRY) { console.log('(dry run - nothing written)'); process.exit(0); }
+if (sideWrite) { fs.mkdirSync(ES_UI_DIR, { recursive: true }); fs.writeFileSync(sideWrite[0] + '.tmp', Buffer.from(sideWrite[1], 'utf8')); fs.renameSync(sideWrite[0] + '.tmp', sideWrite[0]); }
 fs.writeFileSync(SRC + '.tmp', Buffer.from(out, 'utf8'));
 fs.renameSync(SRC + '.tmp', SRC);
-console.log('written');
+console.log('written' + (sideWrite ? ' (bundle + sidecar; now run node build/bump-home-assets.js)' : ''));

@@ -33,6 +33,20 @@ function pages() {
 }
 const urlOf = (rel) => '/' + rel.replace(/index\.html$/, '');
 
+/* THE SPANISH TABLES ARE SIDECARS AND ONLY A TWIN LOADS THEM (2026-10-13). Every shared bundle used to carry
+   its Spanish dictionary inline, so an English reader downloaded it too - 35,858 bytes brotli across the ten,
+   8,772 of them on every single page. The tables live in /assets/es/<bundle>.js now and every twin needs a tag
+   for each one it loads; the injector is shared with add-es-ui-tags.js (which repairs twins already on disk)
+   so a page written by either route carries identical tags. Bundles pulled by SCRIPT rather than markup are
+   handled by __esSide inside home.js / mp-nav.js. */
+const { esUiTags: esUiInject } = require('./lib-es-ui');
+const esUiProblems = [];
+function esUiTags(html, where) {
+  const r = esUiInject(html, where);
+  for (const p of r.problems) esUiProblems.push(p);
+  return r.html;
+}
+
 function hreflangBlock(html, enUrl, esUrl) {
   // collect existing alternates, force en / es / x-default, keep the rest (12-language homepage, blog i18n)
   const re = /[ \t]*<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\s*\/?>\s*\n?/g;
@@ -89,6 +103,7 @@ function main() {
     html = html.replace(/<a\b([^>]*?)\bhref="([^"]*)"/g, (all, pre, h) => { const t = esHref(h); return t ? '<a' + pre + 'href="' + t + '"' : all; });
     // the language selector on standalone pages lands on the twin; mark the page for mp-nav
     html = html.replace('<html lang="es"', '<html lang="es" data-es-twin="' + urlOf(rel) + '"');
+    html = esUiTags(html, rel);                        // the Spanish tables for the shared bundles this page loads
     if (!dry) {
       const out = path.join(DIST, 'es', rel);
       fs.mkdirSync(path.dirname(out), { recursive: true });
@@ -107,6 +122,7 @@ function main() {
     const r = apply(src, tx);
     let html = r.html.replace(/<html([^>]*)\blang="en"/, '<html$1lang="es"');
     html = html.replace(/<a\b([^>]*?)\bhref="([^"]*)"/g, (all, pre, h) => { const t = esHref(h); return t ? '<a' + pre + 'href="' + t + '"' : all; });
+    html = esUiTags(html, 'app-es.html');
     if (!dry) fs.writeFileSync(path.join(DIST, 'app-es.html'), html);
     report.push({ rel: 'app.html → app-es.html', cover: r.hit / Math.max(1, r.hit + r.missing), hit: r.hit, missing: r.missing });
     for (const t of TOOL_ROUTES) sitemap.push(ORIGIN + '/es' + t);
@@ -123,6 +139,13 @@ function main() {
   console.log(`es pages written ${written} · skipped (<${MIN_COVER * 100}% Spanish) ${skipped} · segments ${totHit}/${totHit + totMiss} (${(100 * totHit / Math.max(1, totHit + totMiss)).toFixed(1)}%) · sitemap ${sitemap.length}`);
   if (low.length) console.log('lowest coverage:\n' + low.slice(0, 15).map(r => '  ' + (r.cover * 100).toFixed(0).padStart(3) + '%  ' + r.rel + (r.skipped ? '  SKIPPED' : '')).join('\n'));
   fs.writeFileSync(path.join(ROOT, 'build', 'data', 'es', 'coverage.json'), JSON.stringify(report, null, 1));
+  // A TWIN THAT MISSES ITS SIDECAR TAG READS AS ENGLISH AND SAYS NOTHING, so this is loud and fatal rather than
+  // a line in a log nobody greps. node build/es/check-es-ui.js re-checks the files that were actually written.
+  if (esUiProblems.length) {
+    console.error('es-ui: FAIL - ' + esUiProblems.length + ' page(s) could not be given a Spanish table:');
+    esUiProblems.slice(0, 10).forEach(x => console.error('  ' + x));
+    process.exitCode = 1;
+  }
   if (skipped && process.argv.includes('--strict')) process.exit(1);
 }
 main();

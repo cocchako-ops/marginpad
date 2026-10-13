@@ -1,9 +1,38 @@
 
-/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
-   arrives would be English, which is the partial translation this exists to end. A top-level function
-   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpmcharts = {"mcAi":"Ask AI","thisDeviceRanOut":"Este dispositivo se quedó sin espacio, así que se eliminaron de él las operaciones cerradas más antiguas. Las posiciones abiertas y tus estadísticas están a salvo - tus estadísticas viven en tu cuenta, no en este dispositivo.","myTrades":"Mis operaciones","demoTrade":"Operación demo","rotateYourPhoneFor":"↻ Gira el teléfono para un gráfico más ancho","rotateYourPhone":"Gira el teléfono","chartsWorkInLandscape":"Los gráficos funcionan en horizontal - gira el teléfono de lado y se abren al instante.","noEdge":"sin ventaja","upProj":"% arriba, proy. ","searchAnyTicker":"Busca cualquier ticker…","limitPrice":"Precio límite","stopLossOptional":"Stop-loss (opcional)","takeProfitOptional":"Take-profit (opcional)","breakEvenAtRoe":"Equilibrio en ROE","entryPrice":"Precio de entrada","positionSize":"Tamaño de posición","openDemoTrade":"Abrir operación demo","enterThePriceYou":"Introduce el precio al que quieres que se ejecute.","belowTheMarket":"por debajo del mercado","aboveTheMarket":"por encima del mercado","fillsIfItDrops":"se ejecuta si el precio cae hasta ahí","fillsIfItRises":"se ejecuta si el precio sube hasta ahí","placeLimitOrder":"Colocar orden límite","enterAnAmount":"Introduce un importe.","enterALimitPrice":"Introduce un precio límite.","waitingForALive":"Esperando un precio en vivo - inténtalo de nuevo en un segundo.","limitOrdersAreStill":"Las órdenes límite todavía se están cargando - inténtalo de nuevo en un segundo.","orderPlaced":"Orden colocada ✓","couldNotPlaceThe":"No se pudo colocar la orden - inténtalo de nuevo.","gettingLivePrice":"Obteniendo precio en vivo…","marketIsClosedYou":" tiene el mercado cerrado - podrás operarlo cuando reabra.","positionOpened":"Posición abierta ✓","chooseCoin":"Elige una moneda","sameIndicatorFamiliesAs":"Las mismas familias de indicadores que el espacio de trabajo de escritorio. Se aplica al gráfico seleccionado.","unlockThePremiumIndicators":"Desbloquea los indicadores premium","estimatedLiquidationPrice":"Precio de liquidación estimado","fromEntry":"desde la entrada","signInFreeTo":"Inicia sesión (gratis) para preguntarle a la IA sobre este gráfico.","signInFree":"Inicia sesión gratis","resetsIn":"se reinicia en ","tradeIt":"Operarlo","findMeTheBest":"Encuéntrame la mejor oportunidad en este gráfico ahora mismo - ¿dónde estaría una buena entrada y qué la convertiría en un error?","findAnOpportunity":"Buscar una oportunidad","whereWouldYouWant":"¿Dónde te gustaría que se ejecutara la orden, y por qué no al precio actual?","whatWouldMakeThis":"¿Qué convertiría esto en un error grave?","whatToAvoid":"Qué evitar","reReadNow":"Releer ahora","hiIAmYour":"Hola - soy tu asistente de gráficos.","iLookForThe":"Busco la oportunidad en la moneda y temporalidad que me indiques: dónde vale la pena tomar un setup, a qué precio, y qué lo convertiría en un error. Lo dibujo para que veas si encaja - tú decides. También te diré claramente cuando no hay nada aquí y esperar es la jugada.","youAreOn":"Estás en","movingAveragesAreSeparate":"las medias móviles son ids separados aquí: ema9 ema21 ema50 ema100 ema200 sma20 sma50 sma100 sma200","barsago0TheNewest":"barsAgo 0 = la vela más reciente; ","candlesAreLoadedNegative":" velas cargadas; un valor negativo proyecta hacia el futuro (máx. -30)","onlyAFewCandles":"Solo hay pocas velas cargadas - lectura limitada.","giveMeASharp":"Dame una lectura precisa y práctica de este gráfico ahora mismo.","thatIsYourAsk":"Esa era tu lectura de Ask AI de hoy - se reinicia a medianoche UTC. Premium Plus la sube a 50 al día.","pleaseSignInTo":"Inicia sesión para usar la IA.","askAiComesWith":"Ask AI viene incluido con MarginPad Premium ($11.99/mes) - una lectura al día, 50 al día con Premium Plus.","couldNotReachAi":"No se pudo contactar con la IA - inténtalo de nuevo.","streamingNotSupported":"Streaming no compatible.","noAnswerTryAgain":"Sin respuesta - inténtalo de nuevo.","networkErrorTryAgain":"Error de red - inténtalo de nuevo.","thoseDrawingsAreAlready":"Esos dibujos ya no están.","showOnChart":"Mostrar en el gráfico","onChart":"En el gráfico","switchedTo":"Cambiado a ","isLockedPremiumIndicator":" está bloqueado (indicador Premium)","zoomedTo":"Zoom a ","turnYourPhoneUpright":"Pon el teléfono en vertical","chartsClosedRotateBack":"Gráficos cerrados - vuelve a girar el teléfono para seguir navegando."};
-function __esT_mpmcharts(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpmcharts[k] != null) return __esD_mpmcharts[k]; } catch (e) {} return en; }
+/* Spanish table: assets/es/mp-mcharts.js (window.__esUI.mpmcharts, 70 keys), loaded by the /es/
+   twins only - it used to be inline, which shipped it to English readers too. Read at CALL time: the two
+   files are independent and neither may depend on which parsed first. Why, and the guards, in
+   build/es/split-bundle-dicts.js. */
+var __esS_mpmcharts = (document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es";
+function __esT_mpmcharts(k, en) {
+  try {
+    if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() !== "es") return en;
+    var d = window.__esUI && window.__esUI.mpmcharts;
+    if (d) return d[k] != null ? d[k] : en;
+    __esUIMiss("mp-mcharts.js", "mpmcharts", __esS_mpmcharts);
+  } catch (e) {}
+  return en;
+}
+function __esUIMiss(bundle, slug, served) {
+  /* missing table: fetch it, then speak only if THAT failed. window.__esUIMissed is the read path. */
+  try {
+    var S = window.__esUIMissed || (window.__esUIMissed = {});
+    if (S[bundle]) return; S[bundle] = served ? "served" : "switched";
+    var t = document.querySelector('script[src*="/assets/' + bundle + '?v="]'), v = "";
+    if (t) { var m = /\?v=([a-f0-9]+)/.exec(t.src || ""); if (m) v = "?v=" + m[1]; }
+    var fail = function (why) {
+      S[bundle] = why;
+      if (!served) return;
+      if (window.console && console.warn) console.warn("[es] page served as Spanish, /assets/es/" + bundle + " " + why + " - " + bundle + " fell back to English");
+      if (window.mpSentry) window.mpSentry("es-ui", new Error("es sidecar " + why + ": " + bundle));
+    };
+    var s = document.createElement("script");
+    s.src = "/assets/es/" + bundle + v; s.async = false;
+    s.onerror = function () { fail("did not load"); };
+    s.onload = function () { if (!(window.__esUI && window.__esUI[slug])) fail("loaded without its table"); };
+    document.head.appendChild(s);
+  } catch (e) {}
+}
 /* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
    every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
    trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we

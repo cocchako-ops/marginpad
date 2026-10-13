@@ -1,9 +1,57 @@
 
-/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
-   arrives would be English, which is the partial translation this exists to end. A top-level function
-   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpnav = {"squads":"Escuadras","fiveTradersOneCrest":"Cinco traders, un logo: duelos y una sala privada","squadSquadsClanTeam":"escuadra escuadras squad squads clan clanes equipo equipos grupo amigos logo logo icono insignia emblema duelo de escuadra duelos sala privada chat de escuadra cinco miembros unirse crear invitar lider líder","startWhereToStart":"empezar por dónde empezar principiante nuevo primeros pasos cómo empezar básico cero","spotWalletMemecoinMeme":"spot wallet memecoin moneda meme tarjeta comprar vender swap solana cadena degen demo cuenta portafolio","screenerScannerMoversGaine":"screener escáner movimientos ganadores perdedores volumen funding interés abierto escanear filtrar mercados acciones bolsa forex fx índices sp500 nasdaq oro plata metales","seasonPassTiersDaily":"pase de temporada niveles pronóstico diario objetivos racha tablas clasificación posición premios","everySeasonBoardIn":"Cada tabla de temporada al completo, premios y reglas","leaderboardLeaderboardsSta":"clasificación clasificaciones posiciones ranking rango tabla tablas reglas premios mejores traders quién va ganando","competitionCompetitionsCon":"competición competiciones concurso torneo premio premios bolsa ganar dinero entrada gratis clasificación competir","arenaBotArenaBots":"arena arena de bots bots bot ranking api bots robot clasificación tasa de acierto","rewardsFaucetClaimFree":"recompensas faucet reclamar gratis usdt dinero retirar retiro pago cobrar misiones tareas ganar bono referido referir invitar","levelsLevelXpExperience":"niveles nivel xp experiencia bronce plata oro platino diamante prestigio rango rangos progreso","premiumSubscriptionSubscri":"premium suscripción suscribirse mejorar plan planes de pago founder pro miembro membresía precio","liquidationsLiquidatedRekt":"liquidaciones liquidado rekt feed en vivo barrido explotó cierre forzado mayor liquidación hoy","heatmapHeatMapLiquidation":"mapa de calor mapa de calor mapa de liquidaciones mapas niveles clústeres pools zonas imán btc bitcoin eth ethereum sol solana xrp por moneda hacia dónde va el precio","liquidationsTotals24hBy":"liquidaciones totales 24h por moneda por exchange cuánto se liquidó hoy récords","whaleWhalesBigPositions":"ballena ballenas grandes posiciones grandes operaciones hyperliquid dinero inteligente rastreador wallets millones","fundingFundingRateRates":"funding tasa de funding tasas perpetuos base costo de mantener negativo positivo","openInterestOiPositions":"interés abierto oi posiciones contratos vigentes apalancamiento en el mercado","fearGreedFearAnd":"miedo codicia índice de miedo y codicia sentimiento ánimo emoción fng extremo","coinsMarketsPricesMarket":"monedas mercados precios capitalización top 100 ranking altcoins lista precio de bitcoin","defiTvlTotalValue":"defi tvl valor total bloqueado cadenas protocolos stablecoins rendimiento préstamos dex","calculatorCalculatorsCompu":"calculadora calculadoras calcular hacer cálculos","liquidationPriceLiqPrice":"precio de liquidación precio liq dónde seré liquidado aislado","positionSizeHowMuch":"tamaño de posición cuánto comprar riesgo por operación tamaño del lote apuesta","dcaAverageDownAverage":"dca promediar a la baja precio de entrada promedio añadir a la posición martingala","takeProfitTargetTp":"take profit objetivo tp precio de salida dónde vender","riskRewardRatioRr":"riesgo beneficio ratio rr stop loss objetivo expectativa","journalTradingJournalLog":"diario diario de trading registro bitácora notas revisión exportar operaciones historial","riskOfRuinBankroll":"riesgo de ruina bankroll capital explotar reventar probabilidad de supervivencia kelly quebrar cuenta","alertAlertsAlarmNotify":"alerta alertas aviso notificar notificación alerta de precio telegram email aviso cuando el precio","guidesGuideHowTo":"guías guía cómo explicado liquidación explicada apalancamiento explicado funding explicado referencia","blogArticlesPostsRead":"blog artículos publicaciones leer escritos historias","newsHeadlinesLatestToday":"noticias titulares últimas hoy última hora","apiBotRestTrading":"api bot rest trading api clave api clave api webhook webhooks mcp sdk python javascript node planes límite de peticiones desarrollador automatizar algo","freeApiJsonNo":"api gratis json sin clave api pública api de precios datos de mercado endpoint","statusUptimeIncidentsHealt":"estado tiempo de actividad incidentes salud caído interrupción está funcionando","widgetWidgetsEmbedIframe":"widget widgets insertar iframe sitio web blog poner en mi sitio","exchangesExchangeCompareCo":"exchanges exchange comparar comparación comisiones comisión bybit binance okx mexc bitget hyperliquid moon apalancamiento bono referido registrarse mejor exchange","aboutWhoWeAre":"acerca de quiénes somos equipo historia","contactSupportHelpEmail":"contacto soporte ayuda escríbenos problema error","bestCryptoPaperTrading":"Las mejores plataformas de paper trading cripto","bestPaperTradingPlatforms":"mejores plataformas de paper trading comparadas","cryptoLiquidationsToday":"Liquidaciones de cripto hoy","liquidationsTodayTotal24h":"liquidaciones hoy total 24h récord","marginPad":"<a href=\"/\" class=\"mark\" aria-label=\"MarginPad - inicio\">MARGIN<b>PAD</b></a></div>","traderChatU2715":"<div id=\"chatBox\" hidden><div class=\"ct-head\"><span class=\"ct-title\">Chat de traders</span><span class=\"ct-online\" id=\"ctOnline\"></span><button class=\"ct-x\" id=\"ctClose\" type=\"button\" aria-label=\"Cerrar\">✕</button></div>","whichCoinToAnalyze":"Qué moneda analizar - cualquier par USDT (BTC, ETH, SOL, PEPE...).","candleTimeframeTheTool":"Temporalidad de las velas con la que trabaja la herramienta. Más corta = más señales pero más ruido.","theRuleSetBeing":"El conjunto de reglas que se está probando. Las reglas de entrada/salida se explican junto con los resultados de abajo.","startingCapitalForThe":"Capital inicial para la simulación, en USD.","exchangeTakerFeePer":"Comisión taker del exchange por lado de la operación, en %. Las comisiones reales importan mucho en estrategias frecuentes.","pivotPeriodDailyUses":"Periodo del pivote: Diario usa la vela de ayer, Semanal usa la de la semana pasada.","pivotFormulaClassicIs":"Fórmula del pivote. Classic es la escalera estándar de los floor traders; Fibonacci y Camarilla ponderan los niveles de forma diferente.","howManyRecentCandles":"Cuántas velas recientes alimentan la ventana de cálculo.","winRateThePercentage":"Tasa de acierto - el porcentaje de operaciones que gana tu sistema.","rewardToRiskAverage":"Beneficio/riesgo - ganancia media frente a pérdida media (2 significa que las ganancias son el doble de grandes que las pérdidas).","howMuchOfThe":"Qué porcentaje de la cuenta arriesgas en cada operación, en %.","howManyTradesTo":"Cuántas operaciones simular en cada ejecución.","whatIsThis":"¿Qué es esto?","cookiesSignInSecurity":"Cookies: inicio de sesión, seguridad y analítica anónima. Sin rastreo publicitario."};
-function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpnav[k] != null) return __esD_mpnav[k]; } catch (e) {} return en; }
+/* Spanish table: assets/es/mp-nav.js (window.__esUI.mpnav, 62 keys), loaded by the /es/
+   twins only - it used to be inline, which shipped it to English readers too. Read at CALL time: the two
+   files are independent and neither may depend on which parsed first. Why, and the guards, in
+   build/es/split-bundle-dicts.js. */
+var __esS_mpnav = (document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es";
+function __esT_mpnav(k, en) {
+  try {
+    if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() !== "es") return en;
+    var d = window.__esUI && window.__esUI.mpnav;
+    if (d) return d[k] != null ? d[k] : en;
+    __esUIMiss("mp-nav.js", "mpnav", __esS_mpnav);
+  } catch (e) {}
+  return en;
+}
+function __esUIMiss(bundle, slug, served) {
+  /* missing table: fetch it, then speak only if THAT failed. window.__esUIMissed is the read path. */
+  try {
+    var S = window.__esUIMissed || (window.__esUIMissed = {});
+    if (S[bundle]) return; S[bundle] = served ? "served" : "switched";
+    var t = document.querySelector('script[src*="/assets/' + bundle + '?v="]'), v = "";
+    if (t) { var m = /\?v=([a-f0-9]+)/.exec(t.src || ""); if (m) v = "?v=" + m[1]; }
+    var fail = function (why) {
+      S[bundle] = why;
+      if (!served) return;
+      if (window.console && console.warn) console.warn("[es] page served as Spanish, /assets/es/" + bundle + " " + why + " - " + bundle + " fell back to English");
+      if (window.mpSentry) window.mpSentry("es-ui", new Error("es sidecar " + why + ": " + bundle));
+    };
+    var s = document.createElement("script");
+    s.src = "/assets/es/" + bundle + v; s.async = false;
+    s.onerror = function () { fail("did not load"); };
+    s.onload = function () { if (!(window.__esUI && window.__esUI[slug])) fail("loaded without its table"); };
+    document.head.appendChild(s);
+  } catch (e) {}
+}
+/* A BUNDLE PULLED BY SCRIPT HAS NO TAG IN THE HTML, SO ITS SIDECAR HAS NO TAG EITHER. gen-pages.js (and
+   add-es-ui-tags.js) put assets/es/<bundle>.js in front of every bundle a twin loads in its MARKUP - but
+   mp-trade, mp-auth and mp-profile are loaded from here, lazily, and mp-heatmap/mp-charts/mp-screener/
+   mp-mcharts from home.js. Those loaders pull the PAIR: the table first, async=false so insertion order is
+   execution order, the SAME ?v= as the bundle (read off its own src, so there is no second literal for
+   bump-home-assets to keep in sync), and only on a Spanish page. Without this a lazily loaded bundle on a twin
+   reverts to English with nothing on screen to say why.
+   MIRRORED BY HAND in dist/assets/home.js - change both. */
+function __esSide(url) {
+  try {
+    if ((document.documentElement.lang || '').slice(0, 2).toLowerCase() !== 'es') return;
+    var u = String(url || ''), q = u.indexOf('?'), b = (q < 0 ? u : u.slice(0, q)).split('/').pop();
+    if (!b || document.querySelector('script[src*="/assets/es/' + b + '"]')) return;
+    var s = document.createElement('script');
+    s.src = '/assets/es/' + b + (q < 0 ? '' : u.slice(q));
+    s.async = false;
+    document.head.appendChild(s);
+  } catch (e) {}
+}
 /* MarginPad shared desktop nav - injects a top-left hamburger that opens a searchable left drawer.
    Self-contained (own CSS), desktop-only (≥721px). Loaded on standalone pages; the homepage has its own Browse panel. */
 (function () {
@@ -594,9 +642,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       + __esT_mpnav("traderChatU2715",'<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>')
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=7d2cfa1f', CHAT_CSS = '/assets/mp-trade.css?v=3a09a025', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=74d06d8b', CHAT_CSS = '/assets/mp-trade.css?v=cebd2380', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
-    function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=3a09a025"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
+    function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=cebd2380"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
     // the FAB is on the page from load (it is how a desktop visitor finds the chat); the bundle waits for the first click
     function ensureChat(cb) {
@@ -604,7 +652,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       // chat and a second add() on the Open button (every open after a Chat tap doubled - 2026-09-12). The callback clicks #chatFab, which home.js handles.
       if (window.mpOpenChat || document.querySelector('script[src*="/assets/home.js"]')) { cb(); return; }
       chatCss(); chatMarkup();
-      if (!chatLoading) { chatLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = CHAT_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      if (!chatLoading) { chatLoading = new Promise(function (res) { __esSide(CHAT_JS); var sc = document.createElement('script'); sc.src = CHAT_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
       // identity first: chat asks who you are the moment it opens, and on a page without mp-auth that answer was
       // always "nobody" - the member got the sign-in gate with their own session in the cookie jar.
       chatLoading.then(function () { ensureAuth(function () { setTimeout(cb, 30); }); });
@@ -623,12 +671,12 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=581ded66', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=581ded66"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=9dc424a3', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=9dc424a3"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
-      if (!authLoading) { authLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = AUTH_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      if (!authLoading) { authLoading = new Promise(function (res) { __esSide(AUTH_JS); var sc = document.createElement('script'); sc.src = AUTH_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
       authLoading.then(function () { if (cb) setTimeout(cb, 20); });
     }
     window.mpEnsureAuth = ensureAuth;
@@ -637,10 +685,10 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       if (document.readyState === 'complete') setTimeout(function () { ensureAuth(); }, 400);
       else window.addEventListener('load', function () { setTimeout(function () { ensureAuth(); }, 400); });
     }
-    var PROF_JS = '/assets/mp-profile.js?v=29874540', profLoading = null;
+    var PROF_JS = '/assets/mp-profile.js?v=084505a0', profLoading = null;
     window.mpEnsureProfile = function (cb) {
       if (window.mpOpenProfile || window.lbOpenProfile) { cb(); return; }
-      if (!profLoading) { profLoading = new Promise(function (res) { var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
+      if (!profLoading) { profLoading = new Promise(function (res) { __esSide(PROF_JS); var sc = document.createElement('script'); sc.src = PROF_JS; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); }); }
       profLoading.then(function () { setTimeout(cb, 20); });
     };
     /* A name on ANY leaderboard opens the profile card (owner 2026-09-20). One delegated listener, so a new

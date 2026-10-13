@@ -31,8 +31,17 @@ if (warns.length) { console.error('lint: FAIL - esbuild warning(s) (node --check
 // editor and in a diff, so the only thing that catches them is a byte scan.
 const fsL = require('fs');
 const ASSETS = require('path').join(__dirname, '..', 'dist', 'assets');
+// dist/assets/es/*.js are shipped bundles too since 2026-10-13 (each one is a bundle's Spanish table, loaded by
+// the /es/ twins). A control character or a syntax error in one of them breaks every Spanish page, so both
+// gates below walk them as well - a readdir of the top level alone would have skipped the lot.
+const shipped = () => {
+  const list = fsL.readdirSync(ASSETS).filter(f => !fsL.statSync(require('path').join(ASSETS, f)).isDirectory());
+  const es = require('path').join(ASSETS, 'es');
+  if (fsL.existsSync(es)) for (const f of fsL.readdirSync(es)) list.push('es/' + f);
+  return list;
+};
 const bad = [];
-for (const f of fsL.readdirSync(ASSETS)) {
+for (const f of shipped()) {
   if (!/\.(js|css)$/.test(f)) continue;
   const s = fsL.readFileSync(require("path").join(ASSETS, f), 'utf8');
   for (let i = 0; i < s.length; i++) {
@@ -50,7 +59,7 @@ if (bad.length) { console.error('lint: FAIL - raw control character in a shipped
 // syntax of dist/assets/*.js was checked by nobody. /calculators served a bundle that threw on load until the
 // next deploy. This is the gate that would have stopped it.
 const synBad = [];
-for (const f of fsL.readdirSync(ASSETS)) {
+for (const f of shipped()) {
   if (!/\.js$/.test(f)) continue;
   try { require('child_process').execFileSync(process.execPath, ['--check', require('path').join(ASSETS, f)], { stdio: ['ignore', 'ignore', 'pipe'] }); }
   catch (e) { synBad.push(f + ': ' + String(e.stderr || e.message || e).split('\n').filter(Boolean).slice(-2).join(' | ').slice(0, 220)); }

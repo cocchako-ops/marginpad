@@ -1,18 +1,38 @@
 
-/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
-   arrives would be English, which is the partial translation this exists to end. A top-level function
-   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpscreener = {"loadingOnChainPools":"<div class=\"scr-loading\">Cargando pools on-chain…</div>","noPoolsRightNow":"<div class=\"scr-loading\">No hay pools por ahora - prueba la otra pestaña.</div>","technicalAnalysisNotAvaila":"<div class=\"scr-an-note\">El análisis técnico aún no está disponible para este par.</div>","openInt":"</b></div><div><span>Int. abierto</span><b>","noHighConvictionSetup":"<div class=\"scr-an-note\">Sin setup de alta convicción - zona neutral, espera confirmación.</div>","mostVolatile":"Más volátil","noPairsMatchClear":"Ningún par coincide - borra la búsqueda/filtro.","noDataRetryShortly":"Sin datos - vuelve a intentarlo en breve.","marketsUnavailableRetrySho":"<div class=\"scr-loading\">Mercados no disponibles - vuelve a intentarlo en breve.</div>","notIn":"No disponible en ","yourCountry":"tu país","tradeRarr":"Operar &rarr;","openInterest":"<div><span>Interés abierto</span><b>","liquidatedIn24hWatch":" liquidados en 24h - mira en vivo →</a>","loadingLiveDerivativesData":"<div class=\"scr-live-load\">Cargando datos de derivados en vivo…</div>",
-  "colCoin":"Moneda","colPrice":"Precio","colChg":"24h","colVol":"Vol 24h","colOi":"OI","colFund":"Funding","colOiChg":"OI Δ24h","colLiq":"Liq 24h","colRsi":"RSI","colTrend":"Tendencia","colSetup":"Setup",
-  "showAllPairs":"Ver los {n} pares","morePairs":"{n} más","bestLongSetup":"Mejor setup largo","bestShortSetup":"Mejor setup corto","score":"score","range4h":"rango · 4h",
-  "volumePairs":"Vol 24h","pairs":"pares","bullish":"Alcistas","bearish":"Bajistas","scored":"con score","avg":"media","liveExch":"bolsas en vivo",
-  "trendUp":"↗ Sube","trendDown":"↘ Baja","trendSide":"→ Lateral","up":"sube","down":"baja","side":"lateral",
-  "setupNote":"Si salta el stop pierdes el {p}% del margen · niveles por ATR 4h · simulación, no es un consejo",
-  "technicalScore4h":"score técnico · 4h","trend":"Tendencia","volatility":"Volatilidad","bullishW":"Alcista","bearishW":"Bajista","setupW":"setup",
-  "setPriceAlert":"Crear alerta de precio","openInPaperTrade":"Abrir en Paper Trade (demo)","notOnBybit":"No está en Bybit · solo ver","openChart":"Abrir en el gráfico",
-  "liveDerivatives":"Derivados en vivo","realTime":"· MarginPad · tiempo real","fundingRate":"Tasa de funding","liqLongs":"Liq 24h · largos","liqShorts":"Liq 24h · cortos","longPct":"Largos ","shortPct":" Cortos","tradeSym":"Operar ",
-  "aiBestSetups":"Mejores setups por IA","aiScanTease":"Los 3 setups más fuertes entre las grandes, ordenados por IA - toca para abrir y dibujar.","plusSp":"Premium Plus","confSp":"conf","openDrawChart":"Abrir y dibujar en el gráfico","justNow":"ahora mismo","agoSp":"atrás"};
-function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpscreener[k] != null) return __esD_mpscreener[k]; } catch (e) {} return en; }
+/* Spanish table: assets/es/mp-screener.js (window.__esUI.mpscreener, 71 keys), loaded by the /es/
+   twins only - it used to be inline, which shipped it to English readers too. Read at CALL time: the two
+   files are independent and neither may depend on which parsed first. Why, and the guards, in
+   build/es/split-bundle-dicts.js. */
+var __esS_mpscreener = (document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es";
+function __esT_mpscreener(k, en) {
+  try {
+    if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() !== "es") return en;
+    var d = window.__esUI && window.__esUI.mpscreener;
+    if (d) return d[k] != null ? d[k] : en;
+    __esUIMiss("mp-screener.js", "mpscreener", __esS_mpscreener);
+  } catch (e) {}
+  return en;
+}
+function __esUIMiss(bundle, slug, served) {
+  /* missing table: fetch it, then speak only if THAT failed. window.__esUIMissed is the read path. */
+  try {
+    var S = window.__esUIMissed || (window.__esUIMissed = {});
+    if (S[bundle]) return; S[bundle] = served ? "served" : "switched";
+    var t = document.querySelector('script[src*="/assets/' + bundle + '?v="]'), v = "";
+    if (t) { var m = /\?v=([a-f0-9]+)/.exec(t.src || ""); if (m) v = "?v=" + m[1]; }
+    var fail = function (why) {
+      S[bundle] = why;
+      if (!served) return;
+      if (window.console && console.warn) console.warn("[es] page served as Spanish, /assets/es/" + bundle + " " + why + " - " + bundle + " fell back to English");
+      if (window.mpSentry) window.mpSentry("es-ui", new Error("es sidecar " + why + ": " + bundle));
+    };
+    var s = document.createElement("script");
+    s.src = "/assets/es/" + bundle + v; s.async = false;
+    s.onerror = function () { fail("did not load"); };
+    s.onload = function () { if (!(window.__esUI && window.__esUI[slug])) fail("loaded without its table"); };
+    document.head.appendChild(s);
+  } catch (e) {}
+}
 /* Market Screener - live USDT-perp TABLE (multi-exchange via /api/screener: aggregated volume, venue count, median-price cross-check),
    sortable by every column header, with a per-coin action sheet. Runs only on /screener.
    2026-10-05: it was a list of 119 full-width cards (16,786px desktop / 25,414px phone) with ZERO coins in the first screen on

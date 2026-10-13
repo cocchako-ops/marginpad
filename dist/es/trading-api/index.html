@@ -632,7 +632,7 @@
     <p class="allplans"><b>En todos los planes, Free incluido:</b> el motor de trading completo - órdenes market, limit y stop, trailing stops, cierres parciales, dry run y <a href="#replay">replay</a> -, el <a href="#stream">stream por WebSocket</a>, el <a href="#mcp">servidor MCP</a>, las <a href="#fees">tarifas de 9 exchanges reales</a>, de $1 a $100,000 de margen por operación con hasta 1000&times; de apalancamiento, y todos los endpoints de datos de mercado sin clave a máxima velocidad. Los planes de pago mueven los topes. No desbloquean el producto.</p>
     <p class="apfoot"><b>Premium es otro producto.</b> Una suscripción a <a href="/es/premium/">MarginPad Premium</a> desbloquea funciones del sitio web - los indicadores de gráfico exclusivos, el mapa de calor de liquidaciones, Ask-AI en los gráficos - y desde el 15 de septiembre de 2026 no cambia ni un solo límite de la API. Estos planes tampoco desbloquean aquellas funciones del sitio. Compra el que de verdad vayas a usar.</p>
     <p class="apfoot">Los planes son mes a mes, pagados en cripto o directamente desde tu saldo de recompensas de MarginPad, y un mes comprado antes de tiempo se suma al que ya tienes en vez de reemplazarlo. Tus límites en vivo siempre están en <code>GET /api/bot/v1/usage</code> - <code>limits</code>, <code>features</code>, <code>plan_until</code> - para que un bot los pueda leer en vez de adivinar.</p>
-    <p class="apfoot"><b>Lo que estás comprando, por escrito.</b> La <a href="/es/terms/#api">sección 9 de los términos</a> cubre la API por su cuenta: qué incluye un plan y qué pasa el día en que termina, que nada se renueva automáticamente y que no hay nada que cancelar, a qué nos comprometemos y a qué no en materia de disponibilidad (no hay SLA - lo decimos así, y decimos a qué nos comprometemos en su lugar), treinta días de aviso antes de cualquier cambio incompatible, y que puedes construir y vender productos comerciales sobre esta API sin pedirnos permiso.</p>
+    <p class="apfoot"><b>Lo que estás comprando, por escrito.</b> La <a href="/terms/#api">sección 9 de los términos</a> cubre la API por su cuenta: qué incluye un plan y qué pasa el día en que termina, que nada se renueva automáticamente y que no hay nada que cancelar, a qué nos comprometemos y a qué no en materia de disponibilidad (no hay SLA - lo decimos así, y decimos a qué nos comprometemos en su lugar), treinta días de aviso antes de cualquier cambio incompatible, y que puedes construir y vender productos comerciales sobre esta API sin pedirnos permiso.</p>
     <p class="apfoot"><b>A tu bot se le avisa antes de que caduque el plan, no después.</b> Cada respuesta con clave lleva <code>X-MP-Plan</code>, y en los últimos catorce días lleva además <code>X-MP-Plan-Expires</code> y <code>X-MP-Plan-Days-Left</code>. Regístralos y un bot desatendido puede avisarte él mismo; la misma cuenta atrás está en esta página y en <code>/v1/usage</code>. Un plan que se agota baja la clave a Free: nunca deja de responder.</p>
   </div>
 </section>
@@ -1174,12 +1174,12 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
   <h2 style="margin-top:44px">Guías y tutoriales</h2>
   <div class="links">
-    <div class="faq"><b><a href="/es/blog/python-crypto-trading-bot-tutorial/">Tutorial de bot de trading de cripto en Python</a></b><p>Crea un bot funcional en Python y apúntalo a esta API - código completo: feed de precios, estrategia de cruce de EMA, órdenes de apertura/cierre y el bucle principal.</p></div>
-    <div class="faq"><b><a href="/es/blog/nodejs-crypto-trading-bot-tutorial/">Tutorial de bot de trading de cripto en Node.js</a></b><p>El mismo bot en JavaScript - código Node.js completo, sin dependencias, apuntado a esta API.</p></div>
-    <div class="faq"><b><a href="/es/blog/how-to-test-a-crypto-trading-bot/">Cómo probar un bot de trading de cripto gratis</a></b><p>El flujo de tres etapas que separa a los bots que funcionan de las cuentas reventadas: backtest, paper trade y luego en vivo.</p></div>
-    <div class="faq"><b><a href="/es/blog/grid-trading-bot-explained/">Bots de grid trading explicados</a></b><p>Cómo funcionan los bots de grid, dónde ganan y dónde revientan, y cómo hacerles forward testing antes de financiarlos.</p></div>
-    <div class="faq"><b><a href="/es/blog/backtesting-vs-paper-trading-vs-live/">Backtesting vs paper trading vs en vivo</a></b><p>Qué demuestra cada etapa de prueba, y el orden exacto para usarlas.</p></div>
-    <div class="faq"><b><a href="/es/blog/ai-crypto-trading-strategies-2026/">Estrategias de trading de cripto con IA para 2026</a></b><p>Las estrategias asistidas por IA que realmente funcionan - y cómo probarlas sin riesgo antes de automatizarlas.</p></div>
+    <div class="faq"><b><a href="/blog/python-crypto-trading-bot-tutorial/">Tutorial de bot de trading de cripto en Python</a></b><p>Crea un bot funcional en Python y apúntalo a esta API - código completo: feed de precios, estrategia de cruce de EMA, órdenes de apertura/cierre y el bucle principal.</p></div>
+    <div class="faq"><b><a href="/blog/nodejs-crypto-trading-bot-tutorial/">Tutorial de bot de trading de cripto en Node.js</a></b><p>El mismo bot en JavaScript - código Node.js completo, sin dependencias, apuntado a esta API.</p></div>
+    <div class="faq"><b><a href="/blog/how-to-test-a-crypto-trading-bot/">Cómo probar un bot de trading de cripto gratis</a></b><p>El flujo de tres etapas que separa a los bots que funcionan de las cuentas reventadas: backtest, paper trade y luego en vivo.</p></div>
+    <div class="faq"><b><a href="/blog/grid-trading-bot-explained/">Bots de grid trading explicados</a></b><p>Cómo funcionan los bots de grid, dónde ganan y dónde revientan, y cómo hacerles forward testing antes de financiarlos.</p></div>
+    <div class="faq"><b><a href="/blog/backtesting-vs-paper-trading-vs-live/">Backtesting vs paper trading vs en vivo</a></b><p>Qué demuestra cada etapa de prueba, y el orden exacto para usarlas.</p></div>
+    <div class="faq"><b><a href="/blog/ai-crypto-trading-strategies-2026/">Estrategias de trading de cripto con IA para 2026</a></b><p>Las estrategias asistidas por IA que realmente funcionan - y cómo probarlas sin riesgo antes de automatizarlas.</p></div>
   </div>
 </section>
 
@@ -1517,7 +1517,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 })();
 </script>
 
-<script defer src="/assets/mp-auth.js?v=581ded66"></script>
-<script defer src="/assets/mp-nav.js?v=e322eb2e"></script>
+<script defer src="/assets/es/mp-auth.js?v=9dc424a3"></script><script defer src="/assets/mp-auth.js?v=9dc424a3"></script>
+<script defer src="/assets/es/mp-nav.js?v=bccf670e"></script><script defer src="/assets/mp-nav.js?v=bccf670e"></script>
 </body>
 </html>

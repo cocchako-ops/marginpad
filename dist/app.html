@@ -79,7 +79,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <meta name="apple-mobile-web-app-title" content="MarginPad" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<script src="/assets/pwa-nav.js?v=6f01692b" defer></script>
+<script src="/assets/pwa-nav.js?v=0041b42f" defer></script>
 <link rel="stylesheet" href="/assets/fonts.css" />
 <!-- The two faces on the LCP path (variable fonts, latin subset) - fonts.css only reveals them after it has itself downloaded and parsed. -->
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" />
@@ -104,7 +104,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=8b3bc8f5">
+<link rel="stylesheet" href="/assets/home.css?v=75e45a4c">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -113,7 +113,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
      loadKlines computes (sym|tf): ?coin= wins, else localStorage mp_pt_sym, else the select default BTC; the first load
      is always tf=5 (a ?tf= link re-loads afterwards). A drifted key costs exactly one wasted request and shows up as
      __preR=miss. -->
-<link rel="preload" as="script" href="/assets/lightweight-charts-4.2.0.js?v=46fc6953">
+<link rel="preload" as="script" href="/assets/lightweight-charts-4.2.0.js?v=6fae1046">
 <script>(function(){try{
   if(!/^\/paper-trade\/?$/.test(location.pathname))return;
   var m=location.search.match(/[?&]coin=([A-Za-z0-9]+)/),s=m?m[1]:'';
@@ -772,7 +772,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 </div>
 
-<script defer src="/assets/mp-calc.js?v=47f4f451"></script>
+<script defer src="/assets/mp-calc.js?v=21dc46b1"></script>
 
 
 
@@ -804,7 +804,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   </form>
 </div>
 
-<script src="/assets/i18n.js?v=8cf7396d" defer></script>
+<script src="/assets/i18n.js?v=e3043d1b" defer></script>
 
 
 <div id="pwaBanner" class="pwa-banner" hidden>
@@ -840,7 +840,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script defer src="/assets/mp-auth.js?v=581ded66"></script>
+<script defer src="/assets/mp-auth.js?v=9dc424a3"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -848,7 +848,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=8b3bc8f5"></script>
-<script defer src="/assets/mp-nav.js?v=e322eb2e"></script>
+<script src="/assets/home.js?v=75e45a4c"></script>
+<script defer src="/assets/mp-nav.js?v=bccf670e"></script>
 </body>
 </html>
