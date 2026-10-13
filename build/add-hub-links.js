@@ -112,6 +112,7 @@ const API_LINKS = [
   ['/free-crypto-api/', 'Free keyless market-data API'],
   ['/api-docs/', 'Live API reference (try the calls)'],
   ['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot for free?'],
+  ['/mcp-server-for-crypto-trading/', 'MCP server for AI agents - 29 tools, no key for market data'],
   ['/arena/', 'Bot leaderboard - what other bots are doing'],
 ].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
 const API_INTRO = 'Every number on this page is available as free JSON, and the same account can run a paper-trading bot against it - no deposit, no KYC, and an MCP server for AI agents.';
@@ -137,6 +138,15 @@ const PRACTICE_LINKS = [
 // cadence was already daily with a fresh lastmod, so cadence was not the gap; inbound links from crawled pages are.
 // This block goes ONLY on the six coin pages and the two liquidation pages, which together carry most of the crawl
 // budget - a Portuguese link on all 220 pages would be dilution, not discovery.
+// /ai-indicators/ is the ONE page documenting the five Premium indicators and it had a single inbound link in
+// the whole of dist. Four of the five are models built on the liquidation feed these pages describe and the
+// fifth marks real liquidations on the candle they happened on, so this is the same subject, not a promotion.
+const CHART_LINKS = [
+  ['/ai-indicators/', 'The five AI indicators, explained'],
+  ['/heatmap', 'Live liquidation heatmap'],
+  ['/charts', 'Chart workspace - every big liquidation marked where it happened'],
+].filter(([h]) => h === '/heatmap' || h === '/charts' || has(h.replace(/^\/|\/$/g, '')));
+const CHART_INTRO = 'The same liquidations, read on a chart: each big one marked at the price and candle it printed at, and what a move of a given size has really cost - measured from our own feed, not modelled.';
 const REGIONAL_LINKS = [
   ['/bitcoin-hoje/', 'Bitcoin hoje - preço, funding e liquidações (Português)'],
   ['/dolar-cripto/', 'Dólar cripto - cotizaciones y brecha (Español, Argentina)'],
@@ -163,6 +173,7 @@ const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing her
 for (const c of COINS) {
   const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
   const b = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (CHART_LINKS.length) b.push(block('Read it on a chart', CHART_INTRO, CHART_LINKS));
   if (VS_LINKS.length) b.push(block('Where to trade it', VS_INTRO, VS_LINKS));
   if (REGIONAL_LINKS.length) b.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
   if (others.length) b.push(block('Other coins', '', others));
@@ -172,6 +183,7 @@ for (const c of COINS) {
 for (const d of ['liquidation-statistics', 'liquidations/by-exchange']) {
   const f = path.join(DIST, d, 'index.html');
   const bl = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];
+  if (CHART_LINKS.length) bl.push(block('Read it on a chart', CHART_INTRO, CHART_LINKS));
   if (VS_LINKS.length) bl.push(block('Where to trade it', VS_INTRO, VS_LINKS));
   if (REGIONAL_LINKS.length) bl.push(block('In another language', REGIONAL_INTRO, REGIONAL_LINKS));
   if (fs.existsSync(f) && inject(f, null, bl)) n++;
