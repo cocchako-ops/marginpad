@@ -818,7 +818,10 @@ const LAYOUT = () => {
         for (let gy = 6; gy < (S.plotH || r.height) - 6; gy += 3) for (let gx = 8; gx < r.width - 90; gx += 17) {
           let inside = false;
           for (const z of R) if (gx >= z.x0 - 9 && gx <= z.x1 + 9 && gy >= z.y - 9 && gy <= z.y + z.h + 9) { inside = true; break; }
-          if (!inside) return { cx: r.x + gx, cy: r.y + gy };
+          // REACHABILITY, not geometry: the readout box this leg's own first click opened covers part of the
+          // map, so a point clear of every band can still be under a panel - the click then never reaches the
+          // canvas and the previous selection simply stands (measured 2026-10-13: .hm-selbox at 331,213).
+          if (!inside && document.elementFromPoint(r.x + gx, r.y + gy) === c) return { cx: r.x + gx, cy: r.y + gy };
         }
         return null;
       });
@@ -985,7 +988,7 @@ const LAYOUT = () => {
   const src = SRC || await (await fetch('https://marginpad.io/assets/mp-heatmap.js?cb=' + Date.now())).text();
   ok('the venue count is stated once and correctly', !/11 venues/.test(src) && /9 exchanges/.test(src));
   ok('the share card is not misspelled', !/exchangess/.test(src));
-  ok('the paywall sells the six indicators that exist', !/[48] exclusive AI indicators/.test(src) && /6 exclusive AI indicators/.test(src));
+  ok('the paywall sells the five indicators that exist', !/[468] exclusive AI indicators/.test(src) && /5 exclusive AI indicators/.test(src));
   const html = await (await fetch(URL_ + '&cb=' + Date.now())).text();
   ok('the page does not claim the heatmap has no paywall', !/no paywall on models/.test(html));
   ok('the page states the real allowance', /five minutes every 12 hours/.test(html));

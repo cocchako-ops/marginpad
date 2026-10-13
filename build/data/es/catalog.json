@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-11T23:31:20.439Z",
+  "generated": "2026-10-12T23:35:58.719Z",
   "pages": 386,
-  "occurrences": 26700,
-  "unique": 14176,
-  "words": 269980,
+  "occurrences": 26682,
+  "unique": 14160,
+  "words": 269302,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-11T23:36:19.747Z"
+  "merged": "2026-10-12T23:36:51.861Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -6863,9 +6863,9 @@
    "n": 1,
    "w": 9
   },
-  "dpq9ohrQd-": {
-   "en": "The 6 MarginPad AI Indicators, Explained - Real Big Liquidations, Measured Liquidation Walls and Four More",
-   "es": "Los 6 indicadores de IA de MarginPad, explicados - Big Liquidations reales, Liquidation Wall medido y otros cuatro",
+  "TYwqcnu4QW": {
+   "en": "The 5 MarginPad AI Indicators, Explained - Real Big Liquidations and Four Models",
+   "es": "Los 5 indicadores de IA de MarginPad, explicados - Big Liquidations reales y cuatro modelos",
    "kind": [
     "title"
    ],
@@ -6873,7 +6873,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 14
+   "w": 11
   },
   "-yzjuEHHn6": {
    "en": "<a class=\"brand\" href=\"/\">Margin<b>Pad</b></a>",
@@ -6930,9 +6930,9 @@
    "n": 1,
    "w": 2
   },
-  "sSb5ZQi4k9": {
-   "en": "The 6 AI indicators, <em>explained</em>",
-   "es": "Los 6 indicadores de IA, <em>explicados</em>",
+  "h549NfyXQE": {
+   "en": "The 5 AI indicators, <em>explained</em>",
+   "es": "Los 5 indicadores de IA, <em>explicados</em>",
    "kind": [
     "html"
    ],
@@ -7002,9 +7002,9 @@
    "n": 1,
    "w": 9
   },
-  "NvpUw1Njma": {
-   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
-   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#liqwall\">6 · Liquidation Wall</a><a href=\"#honesty\">El indicador de aciertos</a><a href=\"#workflow\">Cuál abrir primero</a>",
+  "X98LgWQmhG": {
+   "en": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#honesty\">The hit-rate chip</a><a href=\"#workflow\">Which to open first</a>",
+   "es": "<a href=\"#cascade\">1 · Cascade Radar</a><a href=\"#magnet\">2 · Liquidation Magnet</a><a href=\"#brain\">3 · Market Brain</a><a href=\"#memory\">4 · Market Memory</a><a href=\"#whaleliq\">5 · Big Liquidations</a><a href=\"#honesty\">El sello de tasa de acierto</a><a href=\"#workflow\">Cuál abrir primero</a>",
    "kind": [
     "html"
    ],
@@ -7012,7 +7012,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 19
+   "w": 17
   },
   "2RV1lv50hd": {
    "en": "<small>1 · Fragility</small>Cascade Radar",
@@ -7696,7 +7696,7 @@
    "ctx": [
     "/ai-indicators/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 3
   },
   "2G8yoZpDTt": {
@@ -7744,7 +7744,7 @@
    "ctx": [
     "/ai-indicators/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 2
   },
   "BJIT7aqLBM": {
@@ -7807,138 +7807,6 @@
    "n": 1,
    "w": 93
   },
-  "HMYmr-Pizz": {
-   "en": "<small>6 &middot; Priced from real cascades</small>Liquidation Wall",
-   "es": "<small>6 &middot; Calculado a partir de cascadas reales</small>Liquidation Wall",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "x2gQxEbaIe": {
-   "en": "The heaviest cluster near price - and <em>how much money</em> has really gone there?",
-   "es": "El cúmulo más pesado cerca del precio - ¿y <em>cuánto dinero</em> ha ido realmente ahí?",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "q0wc8_TmnW": {
-   "en": "Every liquidation map, ours included, tells you WHERE positions are likely to be liquidated. None of them can tell you how much that is worth, and the usual workaround - reading it off open interest - overstates an average BTC band by about thirty times what has ever really liquidated in one. So we measured it instead. We have recorded close to a million real liquidation events across nine exchanges, and the dollar figure is fitted across those measured cascades - heavier bands against what heavier bands have really cost. The fit is published rather than claimed: the day it shipped it read slope 0.916 with R&sup2; 0.867 on SOL and slope 0.708 with R&sup2; 0.933 on ETH.",
-   "es": "Todo mapa de liquidaciones, el nuestro incluido, te dice DÓNDE es probable que se liquiden posiciones. Ninguno puede decirte cuánto vale eso, y el método habitual - leerlo a partir del interés abierto - sobreestima una banda promedio de BTC en unas treinta veces lo que realmente ha liquidado alguna vez. Así que lo medimos. Hemos registrado casi un millón de eventos reales de liquidación en nueve exchanges, y la cifra en dólares se ajusta a partir de esas cascadas medidas - bandas más pesadas frente a lo que las bandas más pesadas realmente han costado. El ajuste se publica en vez de solo afirmarse: el día que se lanzó, marcaba una pendiente de 0.916 con R&sup2; 0.867 en SOL y una pendiente de 0.708 con R&sup2; 0.933 en ETH.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 112
-  },
-  "DGGplq6dF3": {
-   "en": "<b>Two dashed lines:</b> the heaviest cluster above price and the heaviest below. Dashed, because where the cluster sits is modelled.",
-   "es": "<b>Dos líneas discontinuas:</b> el cúmulo más pesado por encima del precio y el más pesado por debajo. Discontinuas, porque la ubicación del cúmulo es modelada.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 20
-  },
-  "8k3Vy-cJEJ": {
-   "en": "<b>A dollar figure on each, priced separately.</b> Each side is priced at its OWN weight, so the two normally carry different figures - there is no single number for the whole chart. That half is measured, not modelled.",
-   "es": "<b>Una cifra en dólares para cada lado, con precio por separado.</b> Cada lado se cotiza según su PROPIO peso, así que normalmente los dos llevan cifras distintas - no hay un número único para todo el gráfico. Esa mitad está medida, no modelada.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 36
-  },
-  "G7rNL3OTsd": {
-   "en": "<b>The legend</b> names how many real cascades the figure was fitted from, so you can see how much weight to put on it.",
-   "es": "<b>La leyenda</b> indica a partir de cuántas cascadas reales se ajustó la cifra, para que puedas ver cuánto peso darle.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 23
-  },
-  "vbk3ZBe-EY": {
-   "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.",
-   "es": "<b>Antes de un long:</b> un muro pesado por encima es un rally con un sitio adonde ir y un motivo para llegar ahí. Uno justo por debajo de tu entrada es lo contrario - el suelo sobre el que te apoyas está hecho de stops.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 35
-  },
-  "CV-_Ss01e8": {
-   "en": "<b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
-   "es": "<b>Antes de un short:</b> un muro pesado por debajo es un objetivo con combustible dentro. Ten cuidado al abrir un short hacia uno que ya ha sido barrido: el dinero que había ahí ya se fue.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 28
-  },
-  "OJVWJutirh": {
-   "en": "<b>Read it with the Magnet.</b> The Magnet says which pool pulls hardest; this says what is in it, in dollars.",
-   "es": "<b>Léelo junto con el Magnet.</b> El Magnet dice qué pool tira con más fuerza; esto dice qué hay dentro, en dólares.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 20
-  },
-  "Cvxs71uRlK": {
-   "en": "<i>Example legend line</i>LIQ WALL above $2.2M @ 2,857.54 &middot; 13.1%",
-   "es": "<i>Ejemplo de línea de leyenda</i>LIQ WALL above $2.2M @ 2,857.54 &middot; 13.1%",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 9
-  },
-  "sIe0rIWftg": {
-   "en": "<b>Limits.</b> The position of the band is a model and inherits that model's assumptions. The dollar figure refuses to guess: a cluster HEAVIER than any cascade we have on record prints \"at least $X\", which is a floor rather than an estimate; one LIGHTER than anything we have measured carries no figure at all, because the lightest thing we have measured would overstate it. The calibration is rebuilt from a rolling window, so on a quiet week it rests on fewer cases - and the legend always says how many.",
-   "es": "<b>Límites.</b> La posición de la banda es un modelo y hereda los supuestos de ese modelo. La cifra en dólares se niega a adivinar: un cúmulo MÁS PESADO que cualquier cascada que tengamos registrada muestra \"al menos $X\", que es un suelo y no una estimación; uno MÁS LIGERO que cualquier cosa que hayamos medido no lleva ninguna cifra, porque lo más ligero que hemos medido la sobreestimaría. La calibración se reconstruye a partir de una ventana móvil, así que en una semana tranquila se apoya en menos casos - y la leyenda siempre indica cuántos.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 84
-  },
   "FfCb5kobcN": {
    "en": "The hit-rate chip: every arrow grades itself",
    "es": "La etiqueta de tasa de acierto: cada flecha se autoevalúa",
@@ -7999,9 +7867,9 @@
    "n": 1,
    "w": 5
   },
-  "sRMOVLwvZY": {
-   "en": "The first four are meant to be read in order, each narrowing what the last one said. The last two are not a sequence - they are facts rather than forecasts: one is a record of liquidations that already happened, the other prices the clusters above and below you.",
-   "es": "Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. Los últimos dos no son una secuencia - son hechos, no pronósticos: uno es un registro de liquidaciones que ya ocurrieron, el otro pone precio a los cúmulos por encima y por debajo de ti.",
+  "RInqDuFOYU": {
+   "en": "The first four are meant to be read in order, each narrowing what the last one said. The fifth is not part of that sequence - it is a record rather than a forecast: the liquidations that already happened, on the prices and candles they happened at.",
+   "es": "Los primeros cuatro están pensados para leerse en orden, cada uno acotando lo que dijo el anterior. El quinto no forma parte de esa secuencia: es un registro, no un pronóstico - las liquidaciones que ya ocurrieron, en los precios y las velas en que ocurrieron.",
    "kind": [
     "html"
    ],
@@ -8009,7 +7877,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 46
+   "w": 44
   },
   "QvIU_65SoT": {
    "en": "<i>1</i><b>Cascade Radar</b><span>Is the market fragile, and on which side? Decides your size and how wide the stop must be.</span>",
@@ -8136,9 +8004,9 @@
    "n": 2,
    "w": 8
   },
-  "g_nyuX_P3R": {
-   "en": "Two of the six are not models at all. Big Liquidations (24h) marks liquidations that <b>really happened</b>, each on the price and candle it printed at, from our own feed across nine exchanges; the Liquidation Wall prices the heaviest cluster above price and the heaviest below, each at its own weight, from what has <b>really</b> liquidated at that weight. No script on another charting site can do either, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026; the four that were dropped were generic technical analysis available on any chart.)",
-   "es": "Dos de los seis no son modelos en absoluto. Big Liquidations (24h) marca las liquidaciones que <b>realmente ocurrieron</b>, cada una al precio y en la vela en que se produjo, desde nuestro propio feed en nueve exchanges; el Liquidation Wall pone precio al cúmulo más pesado por encima del precio y al más pesado por debajo, cada uno según su propio peso, a partir de lo que <b>realmente</b> ha liquidado con ese peso. Ningún script de otro sitio de gráficos puede hacer ninguna de las dos cosas, porque esos lenguajes de script no pueden acceder a un libro de órdenes ni a un feed de liquidaciones en absoluto - todo indicador de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidación, y cada uno califica su propia tasa de acierto en vivo en el gráfico que estás viendo. (Hubo ocho hasta septiembre de 2026; los cuatro que se eliminaron eran análisis técnico genérico disponible en cualquier gráfico.)",
+  "GHXPaEJFvi": {
+   "en": "One of the five is not a model at all. Big Liquidations (24h) marks liquidations that <b>really happened</b>, each on the price and candle it printed at, from our own feed across nine exchanges. No script on another charting site can do that, because those scripting languages cannot reach an order book or a liquidation feed at all - every liquidation indicator published there is inferred from volume and open-interest spikes. The other four are models built on our own liquidation data, and each grades its own live hit-rate on the chart you are looking at. (There were eight until September 2026 and a sixth was withdrawn in October; what was dropped was either generic technical analysis available on any chart, or a figure that answered a narrower question than readers took it for.)",
+   "es": "Uno de los cinco no es un modelo en absoluto. Big Liquidations (24h) marca liquidaciones que <b>realmente ocurrieron</b>, cada una en el precio y la vela en que se imprimió, desde nuestro propio feed en nueve exchanges. Ningún script de otro sitio de gráficos puede hacer eso, porque esos lenguajes no pueden llegar a un order book ni a un feed de liquidaciones - todo indicador de liquidaciones publicado allí se infiere de picos de volumen y de open interest. Los otros cuatro son modelos construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en el gráfico que estás mirando. (Eran ocho hasta septiembre de 2026 y un sexto se retiró en octubre; lo que se quitó fue análisis técnico genérico disponible en cualquier gráfico, o una cifra que respondía a una pregunta más estrecha de lo que los lectores entendían.)",
    "kind": [
     "html"
    ],
@@ -8146,7 +8014,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 138
+   "w": 128
   },
   "jImHGJDGGu": {
    "en": "Do I need Premium?",
@@ -8160,9 +8028,9 @@
    "n": 1,
    "w": 3
   },
-  "pBT4Uux68V": {
-   "en": "Yes. The six are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los seis forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+  "iegjzY9-YV": {
+   "en": "Yes. The five are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at <a href=\"/charts\">/charts</a> and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "Sí. Los cinco forman parte de MarginPad Premium ($11.99 al mes) en el espacio multigráfico de <a href=\"/charts\">/charts</a> y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "html"
    ],
@@ -8184,9 +8052,9 @@
    "n": 1,
    "w": 5
   },
-  "oIwsE0E-xi": {
-   "en": "On <a href=\"/charts\">/charts</a>, open a chart window's Indicators menu: the six sit at the top in lime. On a phone, the chart's indicator sheet lists the same six. The readouts appear in the legend at the top-left of the chart.",
-   "es": "En <a href=\"/charts\">/charts</a>, abre el menú de Indicadores de una ventana de gráfico: los seis están arriba en color lima. En el teléfono, la hoja de indicadores del gráfico lista los mismos seis. Las lecturas aparecen en la leyenda en la parte superior izquierda del gráfico.",
+  "WTL25y05J_": {
+   "en": "On <a href=\"/charts\">/charts</a>, open a chart window's Indicators menu: the five sit at the top in lime. On a phone, the chart's indicator sheet lists the same five. The readouts appear in the legend at the top-left of the chart.",
+   "es": "En <a href=\"/charts\">/charts</a>, abre el menú Indicators de una ventana de gráfico: los cinco están arriba, en lima. En el teléfono, la hoja de indicadores del gráfico lista esos mismos cinco. Las lecturas aparecen en la leyenda, arriba a la izquierda del gráfico.",
    "kind": [
     "html"
    ],
@@ -8281,9 +8149,9 @@
    "n": 1,
    "w": 34
   },
-  "8sVJhiqlpM": {
-   "en": "The 6 MarginPad AI indicators, explained",
-   "es": "Los 6 indicadores de IA de MarginPad, explicados",
+  "VxV3InoFEz": {
+   "en": "The 5 MarginPad AI indicators, explained",
+   "es": "Los 5 indicadores de IA de MarginPad, explicados",
    "kind": [
     "attr:content",
     "ld"
@@ -8294,9 +8162,9 @@
    "n": 2,
    "w": 5
   },
-  "BO2HmmU7Q8": {
-   "en": "Big Liquidations (24h), Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
-   "es": "Big Liquidations (24h), Liquidation Wall, Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo interpretarlo antes de abrir una posición.",
+  "qMy94U4PCq": {
+   "en": "Big Liquidations (24h), Cascade Radar, Liquidation Magnet, Market Brain and Market Memory: what each one measures and how to read it before a position.",
+   "es": "Big Liquidations (24h), Cascade Radar, Liquidation Magnet, Market Brain y Market Memory: qué mide cada uno y cómo leerlo antes de una posición.",
    "kind": [
     "attr:content"
    ],
@@ -8304,7 +8172,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 25
+   "w": 23
   },
   "PZh3tMkMCq": {
    "en": "What each MarginPad Premium indicator measures, what it draws on the chart, and how to read it before you open a leveraged position.",
@@ -8378,18 +8246,6 @@
    "n": 1,
    "w": 3
   },
-  "Fxffv3BziT": {
-   "en": "Liquidation Wall",
-   "es": "Liquidation Wall",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/ai-indicators/"
-   ],
-   "n": 1,
-   "w": 2
-  },
   "d6omBOT5wQ": {
    "en": "Are the MarginPad AI indicators a buy or sell signal?",
    "es": "¿Son los indicadores de IA de MarginPad una señal de compra o venta?",
@@ -8426,9 +8282,9 @@
    "n": 1,
    "w": 43
   },
-  "oiWYaLL5Qd": {
-   "en": "Two of the six are not models at all. Big Liquidations (24h) marks liquidations that really happened, each on the exact price and candle it printed at, from MarginPad's own feed across nine exchanges; the Liquidation Wall prices the heaviest cluster above price and the heaviest below, each at its own weight, from what has really liquidated at that weight. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
-   "es": "Dos de los seis no son modelos en absoluto. Big Liquidations (24h) marca las liquidaciones que realmente ocurrieron, cada una al precio y en la vela exactos en que se produjo, desde el propio feed de MarginPad en nueve exchanges; el Liquidation Wall pone precio al cúmulo más pesado por encima del precio y al más pesado por debajo, cada uno según su propio peso, a partir de lo que realmente ha liquidado con ese peso. Eso no está disponible en ningún otro sitio, porque los lenguajes de script de otros sitios de gráficos no pueden acceder a un libro de órdenes ni a un feed de liquidaciones - todo script de liquidaciones publicado ahí se infiere de picos de volumen e interés abierto. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidación, y cada uno califica su propia tasa de acierto en vivo en el gráfico en el que estás.",
+  "NHNHlSRczp": {
+   "en": "One of the five is not a model at all. Big Liquidations (24h) marks liquidations that really happened, each on the exact price and candle it printed at, from MarginPad's own feed across nine exchanges. That is not available anywhere else, because the scripting languages on other charting sites cannot reach an order book or a liquidation feed - every liquidation script published there is inferred from volume and open-interest spikes. The other four are models, built on our own liquidation data, and each grades its own live hit-rate on the chart you are on.",
+   "es": "Uno de los cinco no es un modelo en absoluto. Big Liquidations (24h) marca liquidaciones que realmente ocurrieron, cada una en el precio y la vela exactos en que se imprimió, desde el propio feed de MarginPad en nueve exchanges. Eso no está disponible en ningún otro lugar, porque los lenguajes de scripting de otros sitios de gráficos no pueden llegar a un order book ni a un feed de liquidaciones - todo script de liquidaciones publicado allí se infiere de picos de volumen y de open interest. Los otros cuatro son modelos, construidos sobre nuestros propios datos de liquidaciones, y cada uno califica su propia tasa de acierto en el gráfico en que estás.",
    "kind": [
     "ld"
    ],
@@ -8436,7 +8292,7 @@
     "/ai-indicators/"
    ],
    "n": 1,
-   "w": 118
+   "w": 92
   },
   "OOr6V2AEVs": {
    "en": "Do I need Premium to use them?",
@@ -8450,9 +8306,9 @@
    "n": 1,
    "w": 6
   },
-  "kFiyiIwLsJ": {
-   "en": "Yes. The six indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
-   "es": "Sí. Los seis indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio de trabajo multi-gráfico en marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
+  "0XGowRtOYd": {
+   "en": "Yes. The five indicators are part of MarginPad Premium ($11.99 a month) on the multi-chart workspace at marginpad.io/charts and on the mobile charts. Every other indicator on the chart is free.",
+   "es": "Sí. Los cinco indicadores forman parte de MarginPad Premium ($11.99 al mes) en el espacio multigráfico de marginpad.io/charts y en los gráficos móviles. Todos los demás indicadores del gráfico son gratis.",
    "kind": [
     "ld"
    ],
@@ -121695,6 +121551,18 @@
    "n": 1,
    "w": 11
   },
+  "_mO7Oyjhr3": {
+   "en": "<span class=\"cl\">Viewing</span><span class=\"cv\" id=\"sDdV\">&mdash;</span>",
+   "es": "<span class=\"cl\">Viendo</span><span class=\"cv\" id=\"sDdV\">&mdash;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leaderboards/"
+   ],
+   "n": 1,
+   "w": 1
+  },
   "9JAgABfG1M": {
    "en": "Find me",
    "es": "Encuéntrame",
@@ -139434,9 +139302,9 @@
    "n": 3,
    "w": 1
   },
-  "o3hib1sHmc": {
-   "en": "6 AI indicators",
-   "es": "6 indicadores de IA",
+  "Avfl07cfeU": {
+   "en": "5 AI indicators",
+   "es": "5 indicadores de IA",
    "kind": [
     "html"
    ],
@@ -139446,9 +139314,9 @@
    "n": 1,
    "w": 2
   },
-  "Vr4tn7AQ2N": {
-   "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations and the Liquidation Wall - six readouts built on data no other chart has. Two of them are not models at all: one marks every big liquidation of the last 24 hours on the exact candle and price it happened on, from our own feed across nine exchanges, the other prices the heaviest cluster above you and the heaviest below you from what has actually liquidated at that weight. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
-   "es": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations y el Liquidation Wall - seis lecturas construidas sobre datos que ningún otro gráfico tiene. Dos de ellas no son modelos en absoluto: una marca cada gran liquidación de las últimas 24 horas en la vela y el precio exactos en que ocurrió, desde nuestro propio feed en nueve exchanges, la otra pone precio al cúmulo más pesado por encima de ti y al más pesado por debajo de ti a partir de lo que realmente ha liquidado con ese peso. Cada una lleva una tarjeta que describe su estado en palabras, y un toque la explica antes de un long y antes de un short.",
+  "xN6lWhHqfX": {
+   "en": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory and Big Liquidations - five readouts built on data no other chart has. One of them is not a model at all: it marks every big liquidation of the last 24 hours on the exact candle and price it happened on, from our own feed across nine exchanges, and a tap on any circle opens the size, the side and the venue. Each one carries a card that reads its state in words, and a tap explains it before a long and before a short.",
+   "es": "Cascade Radar, Liquidation Magnet, Market Brain, Market Memory y Big Liquidations - cinco lecturas construidas sobre datos que ningún otro gráfico tiene. Uno de ellos no es un modelo en absoluto: marca cada liquidación grande de las últimas 24 horas en la vela y el precio exactos en que ocurrió, desde nuestro propio feed en nueve exchanges, y un toque en cualquier círculo abre el tamaño, el lado y el exchange. Cada uno lleva una tarjeta que lee su estado en palabras, y un toque lo explica antes de un long y antes de un short.",
    "kind": [
     "html"
    ],
@@ -139456,7 +139324,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 97
+   "w": 86
   },
   "ahM393ItOf": {
    "en": "<span class=\"tapk\">What each one tells you &rarr;</span>",
@@ -139506,9 +139374,9 @@
    "n": 1,
    "w": 5
   },
-  "tIJwDWHou0": {
-   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our six indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
-   "es": "Un analista integrado que lee cualquier gráfico en palabras claras y trabaja el gráfico por ti: dile \"dibuja el setup\" y traza líneas de tendencia, zonas y la trayectoria esperada con las herramientas de dibujo reales; pregúntale \"¿qué es el RSI?\" y lo explica y lo activa. Puede cambiar la temporalidad o la moneda, conoce nuestros seis indicadores, mantiene la conversación por moneda, y ofrece un toque para operar el setup en paper trading. Una lectura al día en Premium, 50 al día en Premium Plus.",
+  "lMLYzxbA8Q": {
+   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our five indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
+   "es": "Un analista integrado que lee cualquier gráfico en palabras sencillas y además opera el gráfico por ti: dile \"dibuja el setup\" y traza líneas de tendencia, zonas y el camino esperado con las herramientas de dibujo reales; pregúntale \"¿qué es el RSI?\" y te lo explica y lo activa. Puede cambiar el timeframe o la moneda, conoce nuestros cinco indicadores, mantiene la conversación por moneda y ofrece un toque para hacer paper trading del setup. Una lectura al día en Premium, 50 al día en Premium Plus.",
    "kind": [
     "html"
    ],
@@ -140862,9 +140730,9 @@
    "n": 1,
    "w": 4
   },
-  "XrmYB7fyaX": {
-   "en": "Every Premium feature above - the 6 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
-   "es": "Todas las funciones Premium de arriba - los 6 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (una lectura al día; 50 al día en Premium Plus), Balance Mode, los cinco formatos de duelo y el salón Premium, el Daily Brief, +5% de XP, la insignia Premium, alertas de posición y el informe de trading completo en el sitio. Se añaden nuevas herramientas Premium con el tiempo sin coste adicional.",
+  "d_eIpaX3Qw": {
+   "en": "Every Premium feature above - the 5 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
+   "es": "Todas las funciones Premium de arriba: los 5 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (una lectura al día; 50 al día en Premium Plus), Balance Mode, los cinco formatos de duelo y el Premium lounge, el Daily Brief, +5% de XP, la insignia Premium, alertas de posición y el informe de trading completo en el sitio. Con el tiempo se añaden nuevas herramientas Premium sin coste adicional.",
    "kind": [
     "html"
    ],
@@ -140970,9 +140838,9 @@
    "n": 1,
    "w": 24
   },
-  "NMZIR7Rw1K": {
-   "en": "The 6 AI indicators",
-   "es": "Los 6 indicadores de IA",
+  "yz4Bc9fVWd": {
+   "en": "The 5 AI indicators",
+   "es": "Los 5 indicadores de IA",
    "kind": [
     "html"
    ],
@@ -141113,66 +140981,6 @@
    ],
    "n": 1,
    "w": 89
-  },
-  "zQtuxvduKR": {
-   "en": "Liquidation Wall <i>MEASURED IN DOLLARS</i>",
-   "es": "Liquidation Wall <i>MEDIDO EN DÓLARES</i>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "4BFZI6ipXR": {
-   "en": "The heaviest cluster near price - and how much money has really gone there?",
-   "es": "El cúmulo más pesado cerca del precio - ¿y cuánto dinero ha ido realmente ahí?",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 13
-  },
-  "7E89jP5knM": {
-   "en": "<b>You see:</b> one dashed line for the heaviest cluster above price and one for the heaviest below, each priced at its OWN weight - so the two sides normally carry different dollar figures - and a legend line naming how many real cascades that figure was fitted from.",
-   "es": "<b>Ves:</b> una línea discontinua para el cúmulo más pesado por encima del precio y otra para el más pesado por debajo, cada una con precio según su PROPIO peso - así que los dos lados normalmente llevan cifras distintas en dólares - y una línea de leyenda que indica a partir de cuántas cascadas reales se ajustó esa cifra.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 45
-  },
-  "MPHSmjwqu9": {
-   "en": "<b>It means:</b> WHERE the cluster sits is a model, the same leverage maths every liquidation map uses. The MONEY is not. We have recorded nearly a million real liquidations across nine exchanges, so we can say what has actually liquidated at a weight like this one: the figure is fitted across those measured cascades, and the fit is published rather than claimed - the day it shipped it read slope 0.916, R&sup2; 0.867 on SOL and slope 0.708, R&sup2; 0.933 on ETH. When a cluster is heavier than anything we have on record the line says <b>at least</b> - a floor, never an invented number - and one lighter than anything we have measured carries no figure at all.",
-   "es": "<b>Significa:</b> DÓNDE se ubica el cúmulo es un modelo, la misma matemática de apalancamiento que usa cualquier mapa de liquidaciones. El DINERO no lo es. Hemos registrado casi un millón de liquidaciones reales en nueve exchanges, así que podemos decir qué ha liquidado realmente con un peso como este: la cifra se ajusta a partir de esas cascadas medidas, y el ajuste se publica en vez de solo afirmarse - el día que se lanzó, marcaba una pendiente de 0.916, R&sup2; 0.867 en SOL y una pendiente de 0.708, R&sup2; 0.933 en ETH. Cuando un cúmulo es más pesado que cualquier cosa que tengamos registrada, la línea dice <b>al menos</b> - un suelo, nunca un número inventado - y uno más ligero que cualquier cosa que hayamos medido no lleva ninguna cifra.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 109
-  },
-  "0iqRD8ip7J": {
-   "en": "<b>Before a long:</b> a heavy wall above is a rally with somewhere to go and a reason to get there. One sitting just below your entry is the opposite - the floor you are standing on is made of stops.<br><b>Before a short:</b> a heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept: the money that was there has gone.",
-   "es": "<b>Antes de un long:</b> un muro pesado por encima es un rally con un sitio adonde ir y un motivo para llegar ahí. Uno justo por debajo de tu entrada es lo contrario - el suelo sobre el que te apoyas está hecho de stops.<br><b>Antes de un short:</b> un muro pesado por debajo es un objetivo con combustible dentro. Ten cuidado al abrir un short hacia uno que ya ha sido barrido: el dinero que había ahí ya se fue.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/premium/"
-   ],
-   "n": 1,
-   "w": 63
   },
   "n1RHht82jL": {
    "en": "Liquidation Magnet <i>TARGETS</i>",
@@ -141486,9 +141294,9 @@
    "n": 1,
    "w": 13
   },
-  "OA95gz7uud": {
-   "en": "Unlock MarginPad Premium: 6 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
-   "es": "Desbloquea MarginPad Premium: 6 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Balance Mode, clasificaciones premium y más. $11.99/mes, y ahora incluye una lectura de Ask AI en tus gráficos cada día. Premium Plus lo eleva a 50 al día por $159/mes - paga con cripto.",
+  "2Fcp0Rikpn": {
+   "en": "Unlock MarginPad Premium: 5 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
+   "es": "Activa MarginPad Premium: 5 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Balance Mode, leaderboards premium y más. $11.99 al mes, y ahora incluye una lectura de Ask AI en tus gráficos cada día. Premium Plus la sube a 50 al día por $159 al mes - paga con cripto.",
    "kind": [
     "attr:content"
    ],
@@ -141510,9 +141318,9 @@
    "n": 1,
    "w": 6
   },
-  "eGDhYfRYyv": {
-   "en": "6 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
-   "es": "6 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Balance Mode y más. $11.99/mes, con una lectura de Ask AI al día. Premium Plus lo eleva a 50 al día por $159/mes - paga con cripto.",
+  "2K_S2vl5pJ": {
+   "en": "5 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
+   "es": "5 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Balance Mode y más. $11.99/mes, con una lectura de Ask AI al día. Premium Plus lo sube a 50 al día por $159/mes - paga con cripto.",
    "kind": [
     "attr:content"
    ],

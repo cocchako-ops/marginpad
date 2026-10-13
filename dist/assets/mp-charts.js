@@ -79,12 +79,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var MAX_DESKTOP=8;
   var SYMS=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','TON','TRX','DOT','ATOM','NEAR','ARB','OP'];
   var TFS=[['1','1m'],['5','5m'],['15','15m'],['60','1H'],['240','4H'],['1440','1D']];
-  var INDS=[['sig','Buy / Sell signals (+ TP)'],['casc','Cascade Radar'],['brain','Market Brain'],['memory','Market Memory'],['magnet','Liquidation Magnet'],['whaleliq','Big Liquidations (24h)'],['liqwall','Liquidation Wall'],['ema','EMA'],['sma','SMA'],['hma','Hull MA (21)'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['ichi','Ichimoku Cloud'],['psar','Parabolic SAR'],['sr','Support / Resistance'],['pp','Pivot Points'],['dl','Daily levels (PDH / PDL / open)'],['sess','Trading sessions'],['vol','Volume'],['rsi','RSI (14)'],['macd','MACD (12/26/9)'],['stoch','Stochastic (14/3)'],['atr','ATR (14)'],['wr','Williams %R (14)'],['cci','CCI (20)']];
-  var MP_INDS={casc:1,brain:1,memory:1,magnet:1,whaleliq:1,liqwall:1}; // SIX Premium indicators since 2026-10-11 (four since 2026-09-17 (were eight: Momentum shift, Squeeze, Liquidation reversal and Sentiment Flip retired - generic TA or folded into the Brain's factors). Guide: /ai-indicators/
+  var INDS=[['sig','Buy / Sell signals (+ TP)'],['casc','Cascade Radar'],['brain','Market Brain'],['memory','Market Memory'],['magnet','Liquidation Magnet'],['whaleliq','Big Liquidations (24h)'],['ema','EMA'],['sma','SMA'],['hma','Hull MA (21)'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['ichi','Ichimoku Cloud'],['psar','Parabolic SAR'],['sr','Support / Resistance'],['pp','Pivot Points'],['dl','Daily levels (PDH / PDL / open)'],['sess','Trading sessions'],['vol','Volume'],['rsi','RSI (14)'],['macd','MACD (12/26/9)'],['stoch','Stochastic (14/3)'],['atr','ATR (14)'],['wr','Williams %R (14)'],['cci','CCI (20)']];
+  var MP_INDS={casc:1,brain:1,memory:1,magnet:1,whaleliq:1}; // FIVE Premium indicators since 2026-10-13 (the Liquidation Wall was deleted: it priced one 0.1% bin and every reader took it for the cost of a move) (four since 2026-09-17 (were eight: Momentum shift, Squeeze, Liquidation reversal and Sentiment Flip retired - generic TA or folded into the Brain's factors). Guide: /ai-indicators/
   var INDACC={ok:false};
   function indAllowed(){return !!INDACC.ok;}
   function fetchIndAccess(cb){try{fetch('/api/ind/access',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){INDACC.ok=!!(j&&j.allowed);if(cb)cb();});}catch(e){}} // MarginPad-exclusive signals - lime in every menu so they stand out
-  var ITIPS={whaleliq:'Every liquidation over the floor in the last 24 hours, marked on the chart where and when it happened. Tap one for its size, side and venue. Real events from our own feed, not a model.',liqwall:'The heaviest liquidation clusters near price, priced in REAL dollars from what has actually liquidated in bands of that weight across nine exchanges.',sig:__esT_mpcharts("greenArrowTheTrend",'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).'),memory:'Market Memory (our AI forecast): finds the past bars whose full market state (8 factors) most resembles RIGHT NOW, then shows what happened NEXT on average. The lower panel is the expected 6-bar move, the dashed line is the projected target, and the legend tells you how many analogs matched and how often they went up. It WILL be wrong sometimes \u2014 it is the market\u2019s own memory, an edge, not a crystal ball. Exclusive to MarginPad.',magnet:__esT_mpcharts("liquidationMagnetOurData",'Liquidation Magnet (our data): price is pulled toward big pools of liquidation orders. This draws the dominant pool ABOVE (short liqs, red) and BELOW (long liqs, green) the current price; the BOLD line is the stronger magnet \u2014 the more likely next target. Estimated from our liquidation model. Exclusive to MarginPad.'),brain:'Market Brain (our adaptive AI): blends 8 factors - trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure - and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market - one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:__esT_mpcharts("aFullTrendSystem",'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.'),psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:__esT_mpcharts("aSmoothLineOf",'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.'),sma:__esT_mpcharts("thePlainAveragePrice",'The plain average price over the last bars. A simple trend line - price above it is bullish.'),hma:__esT_mpcharts("aSuperSmoothFast",'A super-smooth, fast average price line - less wobble and less lag than EMA/SMA.'),vwap:__esT_mpcharts("theAveragePriceWeighted",'The average price weighted by how much was traded. Big traders treat it as today’s fair price.'),bb:__esT_mpcharts("twoBandsHuggingPrice",'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.'),kc:__esT_mpcharts("bandsBasedOnHow",'Bands based on how much price usually moves. Price popping outside them signals a strong move.'),dc:__esT_mpcharts("theHighestHighAnd",'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.'),sr:__esT_mpcharts("linesWherePriceOften",'Lines where price often bounces (support) or gets rejected (resistance).'),pp:__esT_mpcharts("keyDailyPriceLevels",'Key daily price levels (pivot) where price tends to pause or turn.'),vol:__esT_mpcharts("howMuchWasTraded",'How much was traded each bar. Tall bars = lots of people trading right then.'),rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:__esT_mpcharts("showsIfTheTrend",'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.'),stoch:__esT_mpcharts("likeRsiForTiming",'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.'),atr:__esT_mpcharts("howMuchPriceUsually",'How much price usually moves per bar. Big ATR = wild market → use wider stops.'),wr:__esT_mpcharts("williamsRLikeAn",'Williams %R - like an upside-down RSI. Near 0 = overbought, near −100 = oversold.'),cci:__esT_mpcharts("showsHowFarPrice",'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.')};
+  var ITIPS={whaleliq:'Every liquidation over the floor in the last 24 hours, marked on the chart where and when it happened. Tap one for its size, side and venue. Real events from our own feed, not a model.',sig:__esT_mpcharts("greenArrowTheTrend",'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).'),memory:'Market Memory (our AI forecast): finds the past bars whose full market state (8 factors) most resembles RIGHT NOW, then shows what happened NEXT on average. The lower panel is the expected 6-bar move, the dashed line is the projected target, and the legend tells you how many analogs matched and how often they went up. It WILL be wrong sometimes \u2014 it is the market\u2019s own memory, an edge, not a crystal ball. Exclusive to MarginPad.',magnet:__esT_mpcharts("liquidationMagnetOurData",'Liquidation Magnet (our data): price is pulled toward big pools of liquidation orders. This draws the dominant pool ABOVE (short liqs, red) and BELOW (long liqs, green) the current price; the BOLD line is the stronger magnet \u2014 the more likely next target. Estimated from our liquidation model. Exclusive to MarginPad.'),brain:'Market Brain (our adaptive AI): blends 8 factors - trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure - and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market - one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:__esT_mpcharts("aFullTrendSystem",'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.'),psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:__esT_mpcharts("aSmoothLineOf",'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.'),sma:__esT_mpcharts("thePlainAveragePrice",'The plain average price over the last bars. A simple trend line - price above it is bullish.'),hma:__esT_mpcharts("aSuperSmoothFast",'A super-smooth, fast average price line - less wobble and less lag than EMA/SMA.'),vwap:__esT_mpcharts("theAveragePriceWeighted",'The average price weighted by how much was traded. Big traders treat it as today’s fair price.'),bb:__esT_mpcharts("twoBandsHuggingPrice",'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.'),kc:__esT_mpcharts("bandsBasedOnHow",'Bands based on how much price usually moves. Price popping outside them signals a strong move.'),dc:__esT_mpcharts("theHighestHighAnd",'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.'),sr:__esT_mpcharts("linesWherePriceOften",'Lines where price often bounces (support) or gets rejected (resistance).'),pp:__esT_mpcharts("keyDailyPriceLevels",'Key daily price levels (pivot) where price tends to pause or turn.'),vol:__esT_mpcharts("howMuchWasTraded",'How much was traded each bar. Tall bars = lots of people trading right then.'),rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:__esT_mpcharts("showsIfTheTrend",'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.'),stoch:__esT_mpcharts("likeRsiForTiming",'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.'),atr:__esT_mpcharts("howMuchPriceUsually",'How much price usually moves per bar. Big ATR = wild market → use wider stops.'),wr:__esT_mpcharts("williamsRLikeAn",'Williams %R - like an upside-down RSI. Near 0 = overbought, near −100 = oversold.'),cci:__esT_mpcharts("showsHowFarPrice",'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.')};
   var wins=[], notes=[], zTop=10, built=false, libLoading=false, libCbs=[];
   function isMobile(){return !!(window.matchMedia && window.matchMedia('(max-width:880px)').matches);}
   function MAXn(){return isMobile()?1:MAX_DESKTOP;}
@@ -113,10 +113,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* async: pull recent liquidations for this window's symbol (our collector), cache 60s per symbol, re-render markers */
   function loadLiqRev(w){if(!w||w.dead||!w.sym||w._liqFetching)return;if(w._liqEvents&&w._liqSym===w.sym&&Date.now()-(w._liqT||0)<60000)return;w._liqFetching=true;
     fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(w.sym)+'&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(jj){w._liqFetching=false;if(!w||w.dead)return;w._liqEvents=(jj&&jj.events)||[];w._liqSym=w.sym;w._liqT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
-  /* MEASURED MARKET INTERNALS (2026-10-11). The two indicators below read ONE endpoint: /api/heatmap/pools
-     already composes, for the charted coin, the modelled bands, the calibration that prices them in real
-     dollars, and every tracked Hyperliquid position over $1M with its on-chain liquidation price. Turning both
-     on therefore costs one request, not two, and the 90 s cache matches the cron that rebuilds the model. */
   /* THE BIG LIQUIDATIONS OF THE LAST 24 HOURS (2026-10-12). One keyless request per coin, cached 90 s beside
      the heatmap's own; `supported` comes back with it so the menu can refuse a coin we have no feed for
      instead of offering a layer that would be empty. */
@@ -164,7 +160,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     });}catch(e){}
     w._liqClose=function(){liqCardClose(w);};}
   /* The layers that are nothing without our liquidation record. Both read the same ten-coin feed. */
-  var LQ_NEEDFEED={whaleliq:1,liqwall:1};
+  var LQ_NEEDFEED={whaleliq:1};
   function liqSupported(sym){return !LQSUP||LQSUP.indexOf(String(sym||'').toUpperCase())>=0;}
   /* The candle an event happened inside. Binary search, because a day of marks against a few thousand bars
      is the kind of loop that shows up on a phone. */
@@ -172,56 +168,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(t<bt(bars[0]))return -1;if(t>=bt(bars[hi]))return hi;
     while(lo<hi){var mid=(lo+hi+1)>>1;if(bt(bars[mid])<=t)lo=mid;else hi=mid-1;}
     return lo;}
-  function loadHeat(w){if(!w||w.dead||!w.sym||w._htFetch)return;if(w._ht&&w._htSym===w.sym&&Date.now()-(w._htT||0)<90000)return;w._htFetch=true;
-    fetch('/api/heatmap/pools?symbol='+encodeURIComponent(w.sym)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._htFetch=false;if(!w||w.dead)return;w._ht=(j&&+j.price>0)?j:null;w._htSym=w.sym;w._htT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   /* A BAND'S WEIGHT IS A MULTIPLE, NOT MONEY, and that difference is the whole point of the wall indicator.
      `calib` is the only thing that turns one into the other: the median that has REALLY liquidated in bands of
      that weight, the range around it, and how many observations stand behind it. Outside the measured range it
      returns NOTHING - extrapolating past what was measured is the thing this indicator exists to refuse. */
   /* A band's weight CENTRE against its measured median, fitted in log-log and read at the wall's own weight.
      Cached on the calibration object itself, so a chart redrawing sixty times a minute fits once. */
-  function calibFit(cal){if(!cal||!cal.bands||!cal.bands.length)return null;if(cal._fit!==undefined)return cal._fit;
-    var pts=[],lo=Infinity,hi=0;
-    for(var i=0;i<cal.bands.length;i++){var b=cal.bands[i];
-      var wm=+b.wMid>0?+b.wMid:Math.sqrt((+b.wFrom||0)*(+b.wTo||0));
-      if(+b.wFrom<lo)lo=+b.wFrom;if(+b.wTo>hi)hi=+b.wTo;
-      if(wm>0&&+b.med>0)pts.push([Math.log(wm),Math.log(+b.med)]);}
-    if(pts.length<3||!(hi>lo)){cal._fit=null;return null;}
-    var n=pts.length,sx=0,sy=0,sxx=0,sxy=0;
-    for(var j=0;j<n;j++){sx+=pts[j][0];sy+=pts[j][1];sxx+=pts[j][0]*pts[j][0];sxy+=pts[j][0]*pts[j][1];}
-    var den=n*sxx-sx*sx;if(!den){cal._fit=null;return null;}
-    var k=(n*sxy-sx*sy)/den,c=(sy-k*sx)/n;
-    /* a fit that says a heavier wall is cheaper would be worse than no fit */
-    if(!(k>0)){cal._fit=null;return null;}
-    cal._fit={k:k,c:c,lo:lo,hi:hi};return cal._fit;}
-  function calibUsd(cal,wt){if(!cal||!cal.bands||!cal.bands.length||!(wt>0))return null;
-    var f=calibFit(cal);
-    var near=null,bd=Infinity;
-    for(var i=0;i<cal.bands.length;i++){var b=cal.bands[i];
-      var wm=+b.wMid>0?+b.wMid:Math.sqrt((+b.wFrom||0)*(+b.wTo||0));
-      var d=Math.abs(Math.log(Math.max(1,wt))-Math.log(Math.max(1,wm)));
-      if(d<bd){bd=d;near=b;}}
-    if(!f){ // no usable fit: fall back to the band the weight actually falls in
-      for(var m=0;m<cal.bands.length;m++){var q=cal.bands[m];if(wt>=+q.wFrom&&wt<=+q.wTo)return {med:+q.med,lo:+q.lo,hi:+q.hi,n:+q.n};}
-      return near?{med:+near.med,lo:+near.lo,hi:+near.hi,n:+near.n}:null;}
-    // lighter than any cascade we have measured: the lightest median would OVERSTATE it, so no figure at all
-    if(wt<f.lo)return {out:'under'};
-    /* Heavier than anything measured: read the fit out to CAL_EXT times the ceiling and mark it `beyond`
-       (an estimate, not a measurement), then clamp and say "at least". A bounded reach keeps the two
-       sides of a heavy market apart - on BTC both walls sit past the ceiling and used to print the same
-       figure - without the unbounded extrapolation that once quoted a $132M wall on a $73M day. */
-    var at=Math.min(wt,f.hi*CAL_EXT),floor=wt>f.hi*CAL_EXT,beyond=wt>f.hi&&!floor;
-    var med=Math.exp(f.k*Math.log(at)+f.c);
-    /* the quartiles are taken as RATIOS of their own band's median and carried by this wall's fitted
-       figure - lifting them raw made both walls of a market print the same range whenever they fell in
-       the same band, which is the fault the fitted midpoint was introduced to cure */
-    var nm=near&&+near.med>0?+near.med:0;
-    var rLo=nm&&+near.lo>0?(+near.lo/nm):0.5, rHi=nm&&+near.hi>0?(+near.hi/nm):2;
-    if(!(rLo>0&&rLo<1))rLo=0.5; if(!(rHi>1))rHi=2;
-    return {med:Math.round(med),lo:Math.round(med*rLo),hi:Math.round(med*rHi),
-      n:near?+near.n:0,all:+cal.n||0,fit:true,floor:floor,beyond:beyond};}
   var CAL_EXT=3;   // how far past the measured weight ceiling the fit may be read before it refuses to be specific
-  function calUsdOk(u){return !!(u&&u.med>0);}
   /* Self-scoring: grade every arrow this indicator fired on the LOADED bars - 1R:1R (entry=signal close,
      target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
      its own recent hit-rate on THIS symbol+TF, so users see when it works and when it does not. */
@@ -418,7 +371,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var bar=function(v,lo,hi,col){var p=Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));return '<i class="bar"><i style="width:'+p.toFixed(0)+'%;background:'+(col||'#8b95a1')+'"></i></i>';};
     var money=function(x){x=+x||0;return x>=1e9?'$'+(x/1e9).toFixed(2)+'B':x>=1e6?'$'+(x/1e6).toFixed(1)+'M':x>=1e3?'$'+(x/1e3).toFixed(0)+'K':'$'+x.toFixed(0);};
     return order.map(function(k,i){var top=o.bandPx?(Math.round(i*o.bandPx)+2)+'px':((i*band+0.04)*100).toFixed(2)+'%',V=vals(k),h='';
-      if(o.hidden){var nm={vol:'Volume',rsi:'RSI',macd:'MACD',stoch:'Stoch',atr:'ATR',wr:'%R',cci:'CCI',casc:'Cascade',brain:'Brain',memory:'Memory',magnet:'Magnet',whaleliq:'Whale liqs',liqwall:'Liq wall'}[k]||k;return '<div class="cwin-subcard" data-ix="'+k+'" style="top:'+top+'"><b class="k">'+nm+'</b></div>';}
+      if(o.hidden){var nm={vol:'Volume',rsi:'RSI',macd:'MACD',stoch:'Stoch',atr:'ATR',wr:'%R',cci:'CCI',casc:'Cascade',brain:'Brain',memory:'Memory',magnet:'Magnet',whaleliq:'Whale liqs'}[k]||k;return '<div class="cwin-subcard" data-ix="'+k+'" style="top:'+top+'"><b class="k">'+nm+'</b></div>';}
       if(k==='rsi'&&V[0]){var r=+V[0].v;h='<b class="k">RSI 14</b><span class="v" style="color:'+V[0].c+'">'+fmt(r,0)+'</span>'+bar(r,0,100,V[0].c)+(r>=70?'<span class="st dn">overbought</span>':r<=30?'<span class="st up">oversold</span>':r>=55?'<span class="st">leaning up</span>':r<=45?'<span class="st">leaning down</span>':'<span class="st">neutral</span>')+diverg(V[0].arr);}
       else if(k==='macd'&&V.length>=2){var m=+V[0].v,s=+V[1].v,hs=m-s,cx=crossAgo(V[0].arr,V[1].arr);h='<b class="k">MACD</b><span class="v" style="color:'+V[0].c+'">'+fmt(m)+'</span><span class="sv">signal '+fmt(s)+'</span><span class="st '+(hs>=0?'up':'dn')+'">hist '+(hs>=0?'+':'')+fmt(hs)+'</span>'+(cx?'<span class="st '+(cx.up?'up':'dn')+'">'+(cx.up?'bull':'bear')+' cross '+ago(cx.ago)+'</span>':'');}
       else if(k==='stoch'&&V.length>=2){var kk=+V[0].v,dd=+V[1].v,cs=crossAgo(V[0].arr,V[1].arr);h='<b class="k">Stoch</b><span class="v" style="color:'+V[0].c+'">'+fmt(kk,0)+'</span><span class="sv">%D '+fmt(dd,0)+'</span>'+bar(kk,0,100,V[0].c)+(kk>=80?'<span class="st dn">overbought</span>':kk<=20?'<span class="st up">oversold</span>':'')+(cs&&cs.ago<=5?'<span class="st '+(cs.up?'up':'dn')+'">'+(cs.up?'%K over %D':'%K under %D')+' '+ago(cs.ago)+'</span>':'');}
@@ -524,7 +477,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
      with the card's current reading on top and a "Remove from chart" action. One dictionary, both surfaces. */
   var IND_GUIDE={
     whaleliq:{n:'Big Liquidations (24h)',see:'Circles on the chart at the exact price and candle where a big liquidation happened in the last 24 hours. Red = a long was force-SOLD there, green = a short was force-BOUGHT. The bigger the circle, the bigger the position. Tap one for its size, the venue and how far it is from the price now.',means:'These are not forecasts and not a model - they are events our own collector recorded across nine exchanges. Where they cluster is where leverage actually died, and that price tends to matter again: it is where stops sat, and it is where the market proved somebody was offside. A wall of red circles under a drop is the cascade that caused it.',L:'Price coming back DOWN into a thick band of red circles is arriving where forced selling already happened once - either it gets absorbed and that is your level, or it breaks and the same thing happens again. Green circles above you mark where shorts were squeezed out; a move back up through them has fuel behind it.',S:'The mirror. Shorting into a band of green circles means shorting where short positions were already force-closed once. The emptier the chart, the calmer the market has been - which is information too.'},
-    liqwall:{n:'Liquidation Wall (measured $)',see:'Dashed lines at the heaviest clusters within 15% of price, each labelled with a REAL dollar figure, and a legend line stating the range and how many cases that figure came from.',means:'Where the cluster sits is a model - leverage tiers applied to recent positioning, which is what every liquidation map does. The money is not. The figure is the median that has ACTUALLY liquidated in bands of that weight, measured from our own feed of real liquidations across nine exchanges, with the range around it and the number of cascades behind it. When a band falls outside anything we have measured it stays on the chart but unpriced, because a number invented for an unmeasured band is worse than no number.',L:'A heavy wall above is where a rally has somewhere to go and a reason to get there. One sitting just below your entry is the opposite: the floor you are standing on is made of stops.',S:'A heavy wall below is a target with fuel in it. Be careful shorting into one that has already been swept - the money that was there has gone, and the band will still be drawn until the model rebuilds.'},
     rsi:{n:'RSI 14',see:'One line between 0 and 100. The shaded areas are above 70 and below 30.',means:'How much of the last 14 candles went up against down. Above 70 the move is stretched, below 30 it is washed out. A divergence - price prints a new high but RSI does not - means the move is running on fewer buyers.',L:'A turn up out of the oversold area, or a pullback that holds above 40 in an uptrend. Buying at 75 is buying the stretch.',S:'A turn down out of the overbought area, or a bounce that fails under 60 in a downtrend. Shorting at 25 is shorting the washout.'},
     macd:{n:'MACD 12 / 26 / 9',see:'Two lines and a histogram around zero. The bars are the gap between the lines.',means:'Momentum. The MACD line crossing above the signal line is momentum turning up; the histogram shrinking while price still rises is momentum fading before price shows it.',L:'A bull cross from below zero is the strongest form; a cross far above zero is late. Rising bars confirm, shrinking bars warn.',S:'A bear cross from above zero. A histogram that peaks and shrinks while price makes a higher high is the classic exhaustion.'},
     stoch:{n:'Stochastic 14 / 3',see:'%K (fast) and %D (slow) between 0 and 100, with shaded areas above 80 and below 20.',means:'Where the close sits inside the recent range. High = closing near the top of the range, low = near the bottom. In a strong trend it can stay pinned for a long time - that is the trend, not a signal.',L:'%K crossing above %D inside the lower area, in an uptrend. Not a long because it is low: because it turned.',S:'%K crossing below %D inside the upper area, in a downtrend.'},
@@ -686,7 +638,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* REBUILT EVERY PASS, and empty when neither is on - a stale level in the autoscale budget would go on
        stretching the price scale towards a line that is no longer drawn. */
     w._htPrices=[];
-    if((w.inds.whaleliq||w.inds.liqwall)&&IA)loadHeat(w);
+
     /* BIG LIQUIDATIONS - a record of the last 24 h, drawn where and when each one happened. */
     /* WHALE LIQUIDATIONS - every big one of the last 24 h, drawn where and when it happened. The marks are
        painted by the draw layer (it already owns the projection, the repaint and the pixel space the chart's
@@ -711,6 +663,18 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _lab=_allU>0
           ?('LIQUIDATED 24h '+money(_allU)+(_allN?(' \u00b7 '+_allN.toLocaleString('en-US')+' positions'):'')+' \u00b7 '+_mk.length+' biggest marked ('+_tot+')')
           :('LIQUIDATIONS 24h '+_tot+' \u00b7 biggest '+_big+' \u00b7 '+_mk.length+' marked');
+        /* WHAT A MOVE OF THIS SIZE REALLY COSTS - measured daily from our own feed, every move of that size
+           in the last fortnight and what the whole market liquidated while it happened. It used to sit under
+           the Liquidation Wall; the wall is gone and this is the half that was worth keeping. */
+        try{
+          var _mv=(_lq.moves&&_lq.moves.rows)||null;
+          if(_mv&&_mv.length){
+            var _mt=_mv.slice().sort(function(a2,b2){return (+b2.pct)-(+a2.pct);}).slice(0,3)
+              .map(function(x){return 'a '+x.pct+'% move '+money(+x.med||0)+' (n'+x.n+')';});
+            w.legItems.push({raw:true,color:'#8fd8ff',label:'A MOVE COSTS '+_mt.join(' \u00b7 '),
+              title:'MEASURED, not modelled: every move of that size on '+w.sym+' in the last '+((_lq.moves.days)||13)+' days, and what the WHOLE market liquidated while it happened - the median, with the number of real moves behind it. A bigger move than any listed liquidates more than the biggest figure here. A size with fewer than three real examples is not shown at all.'});
+          }
+        }catch(_mve){}
         w.legItems.push({raw:true,color:'#c2f64a',label:_lab,title:(_allU>0?('Everything this market liquidated in the last 24 hours: '+money(_allU)+' across '+_allN.toLocaleString('en-US')+' positions. The circles are the '+_mk.length+' biggest of them ('+_tot+' between them, biggest '+_big+'), drawn at the price and the candle each happened on - the rest are too small to read on a chart. '):'Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. ')+'Tap a mark for the size, the side and the venue. Measured from our own feed across nine exchanges - these are events that happened, not forecasts.'});
       } else if(_lq&&_lq.unsupported){
         w.legItems.push({raw:true,color:'#8fa3c4',label:'LIQUIDATIONS no feed for '+w.sym,title:'We record liquidations for ten majors; this market is not one of them.'});
@@ -723,74 +687,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        weight, with its own range and sample size. A band whose weight falls outside the measured range is still
        drawn but left unpriced, because "about $1.1M, measured on 16 cases" is worth something and a number
        invented for an unmeasured band is worth less than nothing. Dashed, because it is a model. */
-    if(w.inds.liqwall&&IA&&w._ht&&w._ht.alive&&w._ht.alive.length){
-      var _qpx=+bars[bars.length-1].close||0,_cal=w._ht.calib||null,_up=[],_dn=[];
-      w._ht.alive.forEach(function(b){var pp=+b.p;if(!(pp>0)||!(_qpx>0))return;
-        if(Math.abs(pp-_qpx)/_qpx>0.15)return;(pp>_qpx?_up:_dn).push({p:pp,w:+b.w||0,long:!!b.long});});
-      /* ONE each side: see the note in the patch that made this change - three per side all carried the same
-         measured median and read as six separate walls. */
-      var _heavy=function(arr){return arr.sort(function(x,y){return y.w-x.w;}).slice(0,1);};
-      var _walls=_heavy(_up).concat(_heavy(_dn));
-      _walls.forEach(function(b){var u=calibUsd(_cal,b.w);
-        addPL({price:b.p,color:b.long?'rgba(255,98,88,.8)':'rgba(46,189,133,.8)',lineWidth:2,lineStyle:2,axisLabelVisible:true,title:calUsdOk(u)?(money(u.med)+(u.floor?'+':'')):'wall'});
-        w._htPrices.push(b.p);});
-      if(_walls.length){
-        /* BOTH SIDES, ON ONE ROW. Each wall is priced at its OWN weight now, so the comparison is the
-           whole point - how much is standing above the price against how much below. */
-        var _dp=function(b){return (Math.abs(b.p-_qpx)/_qpx*100).toFixed(1)+'%';};
-        var _prov=_cal?' Fitted across '+_cal.n+' real cascades measured over '+_cal.days+' days (nine exchanges).':'';
-        var _side=function(arr){if(!arr.length)return null;var b=arr.slice().sort(function(x,y){return y.w-x.w;})[0];
-          var u=calibUsd(_cal,b.w);return {b:b,u:u};};
-        var _A=_side(_up),_B=_side(_dn);
-        /* THE RANGE, NOT A POINT. Backtested on 511 real sweeps the midpoint is honest (median 1.03-1.21 of
-           what really liquidated) but the quartiles run 0.24-0.46 low and 2.2-4.9 high, so a single figure
-           claims a precision the measurement does not have. lo/hi are the p25/p75 of real cascades in that
-           weight class - already computed, never shown. */
-        var _rng=function(u){
-          if(!calUsdOk(u))return 'unpriced';
-          if(u.floor)return 'at least '+money(u.med);
-          if(u.beyond)return 'about '+money(u.med);   /* past what has been measured: a fitted estimate, said as one */
-          var lo=+u.lo||0,hi=+u.hi||0;
-          return (lo>0&&hi>lo)?(money(lo)+'-'+money(hi)):money(u.med);
-        };
-        var _txt=function(o,lab){if(!o)return null;
-          return _rng(o.u)+' '+lab+' '+cwFmt(o.b.p)+' ('+_dp(o.b)+')';};
-        var _ta=_txt(_A,'above'),_tb=_txt(_B,'below');
-        var _parts=[];if(_tb)_parts.push(_tb);if(_ta)_parts.push(_ta);
-        /* WHAT GETTING THERE COSTS, measured. The walls above say what sits AT a level; this says what the
-           market has really liquidated on a move of that size - the question a reader is asking when the
-           wall is several percent away, and the reason the wall looked small next to a 24h total. */
-        try{
-          var _mvr=(w._ht&&w._ht.moves&&w._ht.moves.rows)||null;
-          if(_mvr&&_mvr.length){
-            var _near=_A&&_B?(Math.abs(_A.b.p-_qpx)<Math.abs(_B.b.p-_qpx)?_A:_B):(_A||_B);
-            if(_near){
-              /* the BIGGEST move size we have actually measured that still does not exceed the distance to the
-                 wall - so the row never claims to describe a move larger than anything observed, and on a coin
-                 whose walls sit far out it still tells the reader what a move really costs here */
-              var _dpc=Math.abs(_near.b.p-_qpx)/_qpx*100,_best=null;
-              for(var _i2=0;_i2<_mvr.length;_i2++){var _c2=_mvr[_i2];if(+_c2.pct<=_dpc&&(!_best||+_c2.pct>+_best.pct))_best=_c2;}
-              if(!_best)for(var _i3=0;_i3<_mvr.length;_i3++){var _c3=_mvr[_i3];if(!_best||+_c3.pct<+_best.pct)_best=_c3;}
-              if(_best){
-                var _mul=_dpc/(+_best.pct||1);
-                var _far=_mul>=1.35?(' \u00b7 this move is '+_mul.toFixed(1)+'x further, so expect more'):'';
-                w.legItems.push({raw:true,color:'#8fd8ff',
-                  label:'GETTING THERE '+(_near.b.p<_qpx?'\u2212':'+')+_dpc.toFixed(1)+'% to '+cwFmt(_near.b.p)+' \u00b7 a '+_best.pct+'% move has liquidated '+money(_best.med)+' (median of '+_best.n+')'+_far,
-                  title:'MEASURED, not modelled: every move of '+_best.pct+'% on '+w.sym+' in the last '+((w._ht.moves.days)||8)+' days, and what the whole market really liquidated while it happened - median '+money(_best.med)+' across '+_best.n+' of them'+((_best.lo&&_best.hi)?(', middle half '+money(_best.lo)+' to '+money(_best.hi)):'')+'. This is the run, not the level: the wall above is one price bin (0.1% of price), so the two are different quantities and should not be compared.'});
-              }
-            }
-          }
-        }catch(_mve){}
-        if(_parts.length){
-          var _any=(_A&&calUsdOk(_A.u)?_A.u:null)||(_B&&calUsdOk(_B.u)?_B.u:null);
-          w.legItems.push({raw:true,color:'#c2f64a',label:'AT THE LEVEL '+_parts.join(' \u00b7 ')+' \u00b7 one 0.1% price bin, not the whole move',
-            title:'What one sweep of this level has really cost, not what the market does in a day - the two are different units. Where the cluster sits is a model; the dollars are MEASURED, the middle half of what has really liquidated in clusters of this weight (a quarter of sweeps come in under the low figure and a quarter over the high one). Read at each wall\'s own weight.'
-              +(_any&&_any.n?' The nearest measured class liquidated '+money(_any.lo)+' to '+money(_any.hi)+' over '+_any.n+' cases.':'')
-              +_prov+' "At least" means the cluster is heavier than anything on record, so the figure is a floor rather than an estimate.'});
-        }
-
-      }
-    }
     if(w.inds.rsi){var rv=rsiCalc(closes(bars),14);addZone('rsi',70,100,'rgba(255,98,88,.11)');addZone('rsi',30,0,'rgba(46,189,133,.11)');addS({color:'#e0a0ff',priceScaleId:'rsi'},mapVal(bars,rv),{label:'RSI 14',dec:0});addS({color:'rgba(255,98,88,.35)',lineStyle:2,priceScaleId:'rsi'},bars.map(function(b){return {time:b.time,value:70};}));addS({color:'rgba(46,189,133,.35)',lineStyle:2,priceScaleId:'rsi'},bars.map(function(b){return {time:b.time,value:30};}));pscale('rsi','rsi');}
     if(w.inds.macd){var mc=macdCalc(closes(bars));addHist('macd',mapVal(bars,mc.hist),'rgba(46,189,133,.55)','rgba(255,98,88,.55)');addS({color:'#3fd8e6',lineWidth:1.4,priceScaleId:'macd'},mapVal(bars,mc.macd),{label:'MACD',dec:null});addS({color:'#ff9f4d',priceScaleId:'macd'},mapVal(bars,mc.signal),{label:'Signal',dec:null});addS({color:'rgba(120,130,140,.4)',lineStyle:2,priceScaleId:'macd'},bars.map(function(b){return {time:b.time,value:0};}));pscale('macd','macd');}
     if(w.inds.stoch){var sto=stoch(bars,14,3);addZone('stoch',80,100,'rgba(255,159,77,.10)');addZone('stoch',20,0,'rgba(46,189,133,.10)');addS({color:'#2ee6a8',priceScaleId:'stoch'},mapVal(bars,sto.k),{label:'Stoch %K',dec:0});addS({color:'#ff6258',priceScaleId:'stoch'},mapVal(bars,sto.d),{label:'%D',dec:0});addS({color:'rgba(255,159,77,.3)',lineStyle:2,priceScaleId:'stoch'},bars.map(function(b){return {time:b.time,value:80};}));addS({color:'rgba(46,189,133,.3)',lineStyle:2,priceScaleId:'stoch'},bars.map(function(b){return {time:b.time,value:20};}));pscale('stoch','stoch');}
@@ -1266,21 +1162,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           last24hUsd:Math.round(+w._lq.all24||+w._lq.total24||0),
           last24hPositions:Math.round(+w._lq.allN24||0)||null,
           markedUsd:Math.round(+w._lq.total24||0),markedNote:'the circles are only the biggest events, not the whole day',
-          biggestUsd:Math.round(+w._lq.biggest||0),countShown:_lr.length,levels:_lr};}
-      if(w.inds.liqwall&&w._ht&&(w._ht.alive||[]).length){var _qp=+bars[bars.length-1].close||0,_c2=w._ht.calib||null,_wu=[],_wd=[];
-        (w._ht.alive||[]).forEach(function(b2){var pp=+b2.p;if(!(pp>0)||!(_qp>0)||Math.abs(pp-_qp)/_qp>0.15)return;(pp>_qp?_wu:_wd).push({p:pp,w:+b2.w||0});});
-        var _pick=function(arr){var h=arr.sort(function(x,y){return y.w-x.w;})[0];if(!h)return null;var u=calibUsd(_c2,h.w);
-          return {price:_p6(h.p),distancePct:+(((h.p-_qp)/_qp)*100).toFixed(2),measuredUsd:calUsdOk(u)?Math.round(u.med):null,
-            /* the spread, because the midpoint alone is 3x out on a third of real sweeps (backtest, 511 bands) */
-            typicalRangeUsd:calUsdOk(u)&&u.lo>0&&u.hi>u.lo?[Math.round(u.lo),Math.round(u.hi)]:null,
-            isFloor:!!(u&&u.floor),measuredFromCases:calUsdOk(u)?u.n:null};};
-        var _ab=_pick(_wu),_be=_pick(_wd);
-        /* what a move of a given size really costs on this coin - measured from our own feed, with its n.
-           Without it the model reasons about a wall of $2-3M on a market where a 2% move has liquidated $117M. */
-        try{var _mr=(w._ht.moves&&w._ht.moves.rows)||null;
-          if(_mr&&_mr.length)_r.whatAMoveCosts={note:'MEASURED, not modelled: every move of this size on this coin in the last '+((w._ht.moves.days)||8)+' days and what the WHOLE market liquidated while it happened. This is the run, not one level - the liquidationWall figures are a single price bin (0.1% of price) and must not be compared with these.',
-            rows:_mr.map(function(x){return {movePct:+x.pct,medianUsd:Math.round(+x.med||0),movesSeen:+x.n||0};})};}catch(_mq){}
-        if(_ab||_be)_r.liquidationWall={note:__esT_mpcharts("whereTheClusterSitsIs",'Where the cluster sits is a model; the dollars are MEASURED - what has really liquidated in bands of that weight across nine exchanges. This is the cost of ONE sweep of that level, which is a different unit from a 24h liquidation total - do not compare them. measuredUsd is the midpoint and typicalRangeUsd the middle half of real outcomes: backtested on 511 real sweeps the midpoint lands within about 20% of reality on the median band but is a third of it or triple it on roughly a third of them, so quote the range. isFloor means the band is heavier than anything measured, so the figure is a lower bound.'),above:_ab,below:_be};}
+          biggestUsd:Math.round(+w._lq.biggest||0),countShown:_lr.length,levels:_lr};
+        try{var _mq=(w._lq.moves&&w._lq.moves.rows)||null;
+          if(_mq&&_mq.length)_r.whatAMoveCosts={note:'MEASURED, not modelled: every move of this size on this coin in the last '+((w._lq.moves.days)||13)+' days and what the WHOLE market liquidated while it happened. A move bigger than any listed liquidates more than the biggest figure here.',
+            rows:_mq.map(function(x){return {movePct:+x.pct,medianUsd:Math.round(+x.med||0),movesSeen:+x.n||0};})};}catch(_mq2){}}
       if(Object.keys(_r).length)ro=_r;}catch(e){}
     var ud=null,ad=null;try{if(w.dr&&w.dr.shapes){var _ls=[],_as=[];w.dr.shapes.forEach(function(sh){if(sh.ai)return;var tgt=sh.by==='ai'?_as:_ls;if(sh.t==='hline'&&sh.p>0)tgt.push({kind:'horizontal line',price:_p6(sh.p)});else if((sh.t==='trend'||sh.t==='ray'||sh.t==='arrow')&&sh.p2>0)tgt.push({kind:sh.t==='ray'?'ray':sh.t==='arrow'?'arrow':'trend line',startsAt:_p6(sh.p1),startBarsAgo:Math.round(n-1-sh.l1),endsAt:_p6(sh.p2),endBarsAgo:Math.round(n-1-sh.l2)});else if(sh.t==='rect'&&sh.p1>0&&sh.p2>0)tgt.push({kind:'zone',from:_p6(Math.min(sh.p1,sh.p2)),to:_p6(Math.max(sh.p1,sh.p2))});else if(sh.t==='text'&&sh.by==='ai')tgt.push({kind:'label',txt:String(sh.txt||'').slice(0,40),price:_p6(sh.p)});});if(_ls.length)ud=_ls.slice(0,6);if(_as.length)ad=_as.slice(0,10);}}catch(e){}
     /* what THIS chart can do for the model (2026-09-17): indicator ids (what is on, what is locked), shapes, timeframes - so an action names a real control */
@@ -2752,7 +2637,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var stale=!w.lastBar||((nowS-w.lastBar.time)>iv*1.5+90);
       el.textContent=stale?'--:--':cdFmt(iv-(nowS%iv),iv>=3600);el.classList.toggle('stale',!!stale);}}
   function cdStart(){if(!_cdT){cdSkew();_cdT=setInterval(cdTick,1000);}}
-  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadHeat:loadHeat,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,liqSupported:liqSupported,calibUsd:calibUsd,calUsdOk:calUsdOk,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
+  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,liqSupported:liqSupported,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
   try{window.__mpAiContext=aiContext;window.__mpAi={stampReach:aiStampReach,reachOf:aiReachOf,reachMiss:aiReachMiss,ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,geom:aiGeom,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote,setSym:setWinSym,setTf:setWinTf};}catch(e){} // setSym/setTf are debug hooks for the offline vision harness (2026-10-04), same surface as the rest // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
