@@ -24,22 +24,35 @@ const hashOf = (buf) => crypto.createHash('sha256').update(buf).digest('hex').sl
 const esc = (s) => s.replace(/[.]/g, '\\.');
 function writeIfChanged(f, next) { const cur = fs.readFileSync(f, 'utf8'); if (cur === next) return false; const tmp = f + '.tmp'; fs.writeFileSync(tmp, Buffer.from(next, 'utf8')); fs.renameSync(tmp, f); return true; }
 
+/* A BUNDLE AND ITS SPANISH SIDECAR ARE ONE UNIT UNDER ONE HASH (2026-10-13). The Spanish tables moved out of the
+   bundles into dist/assets/es/<bundle>.js, which only the /es/ twins load. Hashing the PAIR means there is one
+   ?v= to stamp, the twin's two tags always carry the same one, and a translation-only round (which rewrites the
+   sidecar and not the bundle) still busts the cache - a sidecar with its own hash would have needed a second
+   literal in every loader to keep in sync, and the thing nobody keeps in sync is the thing that goes stale. */
+function pairBytes(b) {
+  const bufs = [fs.readFileSync(path.join(A, b))];
+  const side = path.join(A, 'es', b);
+  if (fs.existsSync(side)) bufs.push(fs.readFileSync(side));
+  return Buffer.concat(bufs);
+}
+
 // 1) hashes for the independent bundles (content only - they do not reference each other)
 const ver = {};
-for (const b of BUNDLES) { const f = path.join(A, b); if (fs.existsSync(f)) ver[b] = hashOf(fs.readFileSync(f)); }
+for (const b of BUNDLES) { const f = path.join(A, b); if (fs.existsSync(f)) ver[b] = hashOf(pairBytes(b)); }
 
 // 1b) mp-nav.js carries the chat-everywhere loader (mp-trade.js + mp-trade.css) since 2026-09-06: stamp those
 //     references inside it FIRST, then re-hash it, so the HTML stamps of mp-nav.js match the file that ships.
 {
   const navPath = path.join(A, 'mp-nav.js');
-  if (fs.existsSync(navPath)) { writeIfChanged(navPath, stampText(fs.readFileSync(navPath, 'utf8'))); ver['mp-nav.js'] = hashOf(fs.readFileSync(navPath)); }
+  if (fs.existsSync(navPath)) { writeIfChanged(navPath, stampText(fs.readFileSync(navPath, 'utf8'))); ver['mp-nav.js'] = hashOf(pairBytes('mp-nav.js')); }
 }
 
 // 2) stamp the dynamic loaders inside home.js ('/assets/mp-charts.js' etc.) and the worker's mp-nav injection
 function stampText(text) {
   let out = text;
   for (const b of Object.keys(ver)) {
-    const re = new RegExp('(/assets/' + esc(b) + ')(\\?v=[a-f0-9]+)?(?=["\'\\s)>?&#]|$)', 'g');
+    // (?:es/)? so the twin's sidecar tag is stamped with its bundle's hash in the same pass
+    const re = new RegExp('(/assets/(?:es/)?' + esc(b) + ')(\\?v=[a-f0-9]+)?(?=["\'\\s)>?&#]|$)', 'g');
     out = out.replace(re, '$1?v=' + ver[b]);
   }
   return out;
@@ -52,8 +65,10 @@ const workerStamped = fs.existsSync(workerPath) && writeIfChanged(workerPath, st
 // 3) home bundle hash (AFTER the loaders inside it were stamped)
 const css = fs.readFileSync(path.join(A, 'home.css'), 'utf8');
 const js = fs.readFileSync(homeJsPath, 'utf8');
-const vHome = hashOf(css + js);
-const RE_HOME = /(\/assets\/home\.(?:css|js)\?v=)[a-f0-9]+/g;
+const esHomePath = path.join(A, 'es', 'home.js');   // home.css + home.js share one hash; so does home.js's Spanish table
+const esHome = fs.existsSync(esHomePath) ? fs.readFileSync(esHomePath, 'utf8') : '';
+const vHome = hashOf(css + js + esHome);
+const RE_HOME = /(\/assets\/(?:es\/)?home\.(?:css|js)\?v=)[a-f0-9]+/g;
 
 // 4) every HTML file
 const files = htmlFiles(ROOT);

@@ -1,9 +1,38 @@
 
-/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
-   arrives would be English, which is the partial translation this exists to end. A top-level function
-   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpcalc = {"upTo30000":"Bono de depósito de hasta 30,000 USDT + 20% de descuento en comisiones","largestExchangeMostTrading":"El exchange más grande, con más pares de trading","20OffTradingFees":"20% de descuento de por vida en comisiones + bono de bienvenida","proToolsUnifiedTrading":"Herramientas pro, cuenta de trading unificada","upTo100Usdt":"Hasta 100 USDT en recompensas de registro + cajas misteriosas","copyTradingFastNew":"Copy trading, nuevos listados rápidos","upTo6200":"Paquete de bienvenida de hasta 6,200 USDT + 20% de descuento en comisiones","upTo11000":"Hasta 11,000 USDT en recompensas para nuevos usuarios","thousandsOfTokensListed":"Miles de tokens listados","upTo6666":"Bono de hasta 6,666 USDT + 20% de descuento en comisiones","socialTradingAppOne":"App de trading social, una sola comisión fija","flat005Per":"0.05% fijo por operación en perpetuos + $1 de MarginPad","securityFirstLongTrack":"Seguridad ante todo, largo historial","upTo200Bonus":"Bono de hasta $200 - regístrate y opera","highLeverageFastNew":"Alto apalancamiento, nuevos listados rápidos","upTo10000":"Bono de hasta 10,000 USDT en futuros + regalo de $20","trustedEasyFiatOn":"Confiable, entrada fácil a fiat","upTo50In":"Hasta $50 en CRO para nuevos usuarios","maxLeverage":"</b><span data-i18n=\"exMaxLev\">apalancamiento máximo</span></span></div>","noLiquidation":"Sin liquidación","noLiquidation2":"sin liquidación","tradeDemo":"\">Operar demo →</a>","levNp":"n/d","levNotPublished":"apalancamiento no publicado"};
-function __esT_mpcalc(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpcalc[k] != null) return __esD_mpcalc[k]; } catch (e) {} return en; }
+/* Spanish table: assets/es/mp-calc.js (window.__esUI.mpcalc, 24 keys), loaded by the /es/
+   twins only - it used to be inline, which shipped it to English readers too. Read at CALL time: the two
+   files are independent and neither may depend on which parsed first. Why, and the guards, in
+   build/es/split-bundle-dicts.js. */
+var __esS_mpcalc = (document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es";
+function __esT_mpcalc(k, en) {
+  try {
+    if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() !== "es") return en;
+    var d = window.__esUI && window.__esUI.mpcalc;
+    if (d) return d[k] != null ? d[k] : en;
+    __esUIMiss("mp-calc.js", "mpcalc", __esS_mpcalc);
+  } catch (e) {}
+  return en;
+}
+function __esUIMiss(bundle, slug, served) {
+  /* missing table: fetch it, then speak only if THAT failed. window.__esUIMissed is the read path. */
+  try {
+    var S = window.__esUIMissed || (window.__esUIMissed = {});
+    if (S[bundle]) return; S[bundle] = served ? "served" : "switched";
+    var t = document.querySelector('script[src*="/assets/' + bundle + '?v="]'), v = "";
+    if (t) { var m = /\?v=([a-f0-9]+)/.exec(t.src || ""); if (m) v = "?v=" + m[1]; }
+    var fail = function (why) {
+      S[bundle] = why;
+      if (!served) return;
+      if (window.console && console.warn) console.warn("[es] page served as Spanish, /assets/es/" + bundle + " " + why + " - " + bundle + " fell back to English");
+      if (window.mpSentry) window.mpSentry("es-ui", new Error("es sidecar " + why + ": " + bundle));
+    };
+    var s = document.createElement("script");
+    s.src = "/assets/es/" + bundle + v; s.async = false;
+    s.onerror = function () { fail("did not load"); };
+    s.onload = function () { if (!(window.__esUI && window.__esUI[slug])) fail("loaded without its table"); };
+    document.head.appendChild(s);
+  } catch (e) {}
+}
 ﻿  const $ = id => document.getElementById(id);
   const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
   const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '-';

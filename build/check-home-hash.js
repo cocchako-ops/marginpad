@@ -18,7 +18,9 @@ for (const f of files) {
   let h; try { h = fs.readFileSync(f, 'utf8'); } catch (e) { continue; }
   if (h.indexOf('/assets/') < 0) continue;
   for (const b of BUNDLES) {
-    const re = new RegExp('/assets/' + esc(b) + '(?:\\?v=([a-f0-9]+))?(?=["\'\\s)>?&#]|$)', 'g');
+    // (?:es/)? - a twin loads /assets/es/<bundle>.js (its Spanish table) under the SAME hash as the bundle, so a
+    // sidecar tag left behind by a missed bump is exactly the drift this guard exists to catch (2026-10-13).
+    const re = new RegExp('/assets/(?:es/)?' + esc(b) + '(?:\\?v=([a-f0-9]+))?(?=["\'\\s)>?&#]|$)', 'g');
     let m; while ((m = re.exec(h))) { const k = m[1] || ''; ((seen[b] = seen[b] || {})[k] = seen[b][k] || new Set()).add(path.relative(ROOT, f)); }
   }
 }
@@ -26,6 +28,10 @@ for (const f of files) {
 for (const [label, f] of [['dist/assets/home.js', path.join(ROOT, 'dist', 'assets', 'home.js')], ['src/worker.js', path.join(ROOT, 'src', 'worker.js')]]) {
   let h; try { h = fs.readFileSync(f, 'utf8'); } catch (e) { continue; }
   for (const b of (label === 'src/worker.js' ? ['mp-nav.js'] : BUNDLES)) { // the worker only INJECTS mp-nav.js; its other mentions are comments ("mirror of dist/assets/home.js")
+    // NOT widened to es/ here, deliberately: inside a BUNDLE a sidecar URL is always built at
+    // runtime (__esSide derives it from the bundle own src), never a literal - so the only
+    // /assets/es/<bundle>.js a scan can find in a .js file is PROSE in a comment, and flagging that
+    // is exactly how a guard starts crying wolf.
     const re = new RegExp('/assets/' + esc(b) + '(?:\\?v=([a-f0-9]+))?(?=["\'\\s)>?&#]|$)', 'g');
     let m; while ((m = re.exec(h))) { const k = m[1] || ''; ((seen[b] = seen[b] || {})[k] = seen[b][k] || new Set()).add(label); }
   }
