@@ -104,3 +104,6 @@ build/wts-shots/
 
 # liquidation-map render checks
 build/liqmap-shots/
+
+# Ask-AI replay backtest captures (build/gen-ai-backtest.js) - evidence, not site assets
+build/bt-shots/

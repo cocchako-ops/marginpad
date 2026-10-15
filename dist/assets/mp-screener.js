@@ -11,7 +11,7 @@ var __esD_mpscreener = {"loadingOnChainPools":"<div class=\"scr-loading\">Cargan
   "technicalScore4h":"score técnico · 4h","trend":"Tendencia","volatility":"Volatilidad","bullishW":"Alcista","bearishW":"Bajista","setupW":"setup",
   "setPriceAlert":"Crear alerta de precio","openInPaperTrade":"Abrir en Paper Trade (demo)","notOnBybit":"No está en Bybit · solo ver","openChart":"Abrir en el gráfico",
   "liveDerivatives":"Derivados en vivo","realTime":"· MarginPad · tiempo real","fundingRate":"Tasa de funding","liqLongs":"Liq 24h · largos","liqShorts":"Liq 24h · cortos","longPct":"Largos ","shortPct":" Cortos","tradeSym":"Operar ",
-  "aiBestSetups":"Mejores setups por IA","aiScanTease":"Los 3 setups más fuertes entre las grandes, ordenados por IA - toca para abrir y dibujar.","plusSp":"Premium Plus","confSp":"conf","openDrawChart":"Abrir y dibujar en el gráfico","justNow":"ahora mismo","agoSp":"atrás"};
+  "aiBestSetups":"Mejores setups por IA","aiScanTease":"Los 3 setups más fuertes entre las grandes, ordenados por IA - toca para abrir y dibujar.","plusSp":"Premium AI+","confSp":"conf","openDrawChart":"Abrir y dibujar en el gráfico","justNow":"ahora mismo","agoSp":"atrás"};
 function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpscreener[k] != null) return __esD_mpscreener[k]; } catch (e) {} return en; }
 /* Market Screener - live USDT-perp TABLE (multi-exchange via /api/screener: aggregated volume, venue count, median-price cross-check),
    sortable by every column header, with a per-coin action sheet. Runs only on /screener.
@@ -294,7 +294,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
     el.innerHTML='<a class="scr-ai-lock" href="/premium/" onclick="try{window.__mpTrack&&window.__mpTrack(\'premview\',\'screener-aiscan\')}catch(e){}">'
       +'<span class="lk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>'
       +'<span class="lx"><b>'+T("aiBestSetups","AI best setups")+'</b><i>'+T("aiScanTease","The 3 strongest setups across the majors, ranked by AI - tap to open and draw.")+'</i></span>'
-      +'<span class="cta">'+T("plusSp","Premium Plus")+'</span></a>';
+      +'<span class="cta">'+T("plusSp","Premium AI+")+'</span></a>';
     el.hidden=false;}
   function loadAiScan(){fetch('/api/ai/scan',{cache:'no-store'}).then(function(r){if(r.status===402||r.status===401){renderAiLock();return null;}return r.json();}).then(function(j){if(j)renderAiScan(j);}).catch(function(){});}
   document.addEventListener('click',function(ev){var ac=ev.target.closest&&ev.target.closest('[data-aiscan]');if(!ac)return;var co=ac.getAttribute('data-aiscan');if(co){try{window.__mpTrack&&window.__mpTrack('aiscan',co);}catch(_){}location.href='/charts?coin='+encodeURIComponent(co)+'&aiscan=1';}});

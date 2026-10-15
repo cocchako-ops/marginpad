@@ -711,7 +711,7 @@
     var who = acc.length ? '<table class="tbl"><thead><tr><th>account</th><th>spent</th><th>share</th></tr></thead><tbody>'
       + acc.map(function (a) { var nm = a.username ? userLink(a.username) : '<span class="mono meta" title="account id">' + esc(String(a.uid).slice(0, 12)) + '</span>'; return '<tr><td>' + nm + (a.test ? ' <span class="meta">test</span>' : '') + '</td><td>' + USD(a.usd) + '</td><td>' + (a.share_pct || 0) + '%</td></tr>'; }).join('')
       + '</tbody></table>' : '<div class="empty">nobody has used Ask AI in this window</div>';
-    var capHtml = cap ? '<div class="line">A Premium Plus member is capped at <b>50</b> chart reads a day. At the measured ceiling that is <b>' + USD(cap.per_member_day_usd) + '</b> a day and <b>' + USD(cap.per_member_month_usd) + '</b> a month per member, against a $159 subscription. The site-wide backstop of 6,000 a day prices at <b>' + USD(cap.site_day_cap_usd) + '</b>.</div>' : '';
+    var capHtml = cap ? '<div class="line">A Premium AI+ member is capped at <b>50</b> chart reads a day. At the measured ceiling that is <b>' + USD(cap.per_member_day_usd) + '</b> a day and <b>' + USD(cap.per_member_month_usd) + '</b> a month per member, against a $159 subscription. The site-wide backstop of 6,000 a day prices at <b>' + USD(cap.site_day_cap_usd) + '</b>.</div>' : '';
     var testHtml = (d.test_usd > 0) ? '<div class="line meta">Test accounts spent ' + USD(d.test_usd) + ' in this window and are excluded from every figure above.</div>' : '';
     return '<div class="grid g4">' + tiles + '</div>'
       + card('Who is spending it', who, 'measured per call from the usage Anthropic returns - not estimated from prompt sizes')

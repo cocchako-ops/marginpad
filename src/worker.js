@@ -452,7 +452,7 @@ function handleOpenApi() {
         get: { tags: ['Paper trading'], summary: 'Replay status, price and candles', description: 'While a replay runs on this key’s book: cursor (market time), the price under it, progress, finished, and the candles up to the cursor. ?interval=1|5|15|60|240 (minutes), ?bars=1-500.', security: [{ ApiKeyAuth: [] }], parameters: [q('interval', 'Candle size in minutes (aggregated from 1m).', false, '5'), q('bars', 'How many candles up to the cursor.', false, '120')], responses: { '200': { description: '{ running, symbol, day, speed, cursor_ts, cursor_iso, progress_pct, price, finished, bars:[{time,open,high,low,close}] }' } } },
         post: { tags: ['Paper trading'], summary: 'Start or stop a replay of a past day', description: 'Start: {symbol, day:"YYYY-MM-DD" (a complete past UTC day), speed (1-600 market seconds per real second, default 60)}. From then on the key’s trading calls act on a separate replay journal priced from MarginPad’s own 1-minute candles; stops, targets and liquidations are checked on every candle between two calls. Stop: {act:"stop"} closes everything at the cursor, returns the summary and empties the replay journal. One replay per key at a time; crypto only; limit and stop entries are not available in replay.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, day: { type: 'string', example: '2026-09-11' }, speed: { type: 'number', example: 60 }, act: { type: 'string', enum: ['start', 'stop'] } } } } } }, responses: { '200': { description: 'start: { ok, replay:{id, symbol, day, speed, start_ts, end_ts, candles, first_price} } · stop: { ok, replay:{closes, wins, losses, win_rate_pct, pnl_usd, return_pct, liquidations, trades} }' }, '400': { description: 'day_invalid / day_not_finished / speed_invalid / replay_crypto_only' }, '404': { description: 'no_data / no_replay' }, '409': { description: 'replay_running' } } },
       },
-      '/api/premium/status': { get: { tags: ['Plans'], summary: 'Consumer plans and where the caller stands', description: "Keyless. The live consumer plans and their prices - Premium and Premium Plus - so an assistant never has to quote a figure off a cached page. Premium ($11.99/month) covers the five AI indicators, the live liquidation heatmap, position alerts, Balance Mode, every duel format, the Premium lounge, trading-report breakdowns and the Daily Brief. Premium includes ONE Ask AI read on the charts a day; Premium Plus ($159/month) raises that to 50 a day. GET /api/ai/chart publishes the allowance as dailyByPlan. Signed in, it also answers where the caller stands (premium, plus, plan, until, source). The Founder plan is retired and is not sold.", parameters: [], responses: { '200': { description: '{ premium, plus, plan, until, source, price, plusPrice, plans[] }' } } } },
+      '/api/premium/status': { get: { tags: ['Plans'], summary: 'Consumer plans and where the caller stands', description: "Keyless. The live consumer plans and their prices - Premium and Premium AI+ - so an assistant never has to quote a figure off a cached page. Premium ($11.99/month) covers the five AI indicators, the live liquidation heatmap, position alerts, Balance Mode, every duel format, the Premium lounge, trading-report breakdowns and the Daily Brief. Premium includes five Ask AI reads on the charts a day; Premium AI+ ($119/month, down from $159) raises that to 50 a day. GET /api/ai/chart publishes the allowance as dailyByPlan. Signed in, it also answers where the caller stands (premium, plus, plan, until, source). The Founder plan is retired and is not sold.", parameters: [], responses: { '200': { description: '{ premium, plus, plan, until, source, price, plusPrice, plans[] }' } } } },
       '/api/arena': { get: { tags: ['Paper trading'], summary: 'Bot arena (public)', description: 'The current 14-day season board of bot-opened paper trades: every account or book with at least 5 closes, ranked by realized P&L. win_rate_pct counts CLOSED trades only - read it beside open_positions and open_unrealized_usd, because a bot that closes its winners and holds its losers reads 100% and is not winning; pnl_incl_open_usd is the whole book. realism.label says what the fills ran with (off = the engine defaults, no slippage and a flat 0.5% maintenance margin). No key, 60 s cache. Human page: /arena/.', responses: { '200': { description: '{ ok, season, min_closes, note, rows:[{rank, who, account, closes, wins, win_rate_pct, pnl_usd, return_pct, avg_roe_pct, liquidations, open_positions, open_margin_usd, open_unrealized_usd, pnl_incl_open_usd, realism:{slippage_closes, tiered_closes, label}}] }' } } } },
       '/api/bot/v1/report': { get: { tags: ['Paper trading'], summary: 'Trading report', description: 'The 30-day trading report for the account behind the key, measured from its own closed trades. Totals and the skill score on every plan; breakdowns by coin, leverage band, side, hour and day plus written findings on Premium (locked[] names what is withheld). Every finding carries the n it rests on.', security: [{ ApiKeyAuth: [] }], parameters: [q('days', '1-30, default 30.', false, '30')], responses: { '200': { description: 'ok' } } } },
       '/api/whsink/{token}': {
@@ -7908,7 +7908,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e322eb2e" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=a3f8036d" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12009,10 +12009,10 @@ const CAMPAIGN_TPLS = [
 
   { id: 'ai_charts', name: 'Ask AI on your charts', group: 'Product', needs: [],
     subject: 'Your charts can read themselves now',
-    lead: 'Ask AI: one read a day on Premium, 50 on Premium Plus.',
+    get lead() { return 'Ask AI: ' + AI_DAILY.premium + ' reads a day on Premium, ' + AI_DAILY.plus + ' on ' + PREM_PLANS.plus.name + '.'; }, // a GETTER: this table is built before AI_DAILY/PREM_PLANS exist, and an eager string here killed a deploy at startup ("reading 'premium'", 2026-10-15)
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">It does not look at your chart. It reads it.</p>'
       + '<p style="margin:0 0 12px">Ask AI is handed the measurements - where the liquidation pools sit, how much volume traded at which price, what the higher timeframe is doing - and then draws the setup on your chart with the same tools a desk uses.</p>'
-      + '<p style="margin:0 0 12px">Premium members get <b>one read a day</b>. It also says plainly when the honest answer is to wait.</p>',
+      + '<p style="margin:0 0 12px">Premium members get <b>' + AI_DAILY.premium + ' reads a day</b>. It also says plainly when the honest answer is to wait.</p>',
     cta: ['Try it on a chart', 'https://marginpad.io/charts'] },
 
   { id: 'demo_spot', name: 'Demo Spot - the $10,000 journey', group: 'Product', needs: [],
@@ -12035,15 +12035,15 @@ const CAMPAIGN_TPLS = [
     lead: 'Fill in the days. Use with the "Premium expiring" segment.',
     body: (v) => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">A heads-up, {name}.</p>'
       + '<p style="margin:0 0 12px">Your MarginPad Premium ends in <b>' + (v.days || '7') + ' days</b>. Nothing renews automatically and there is nothing to cancel - if you do nothing, it simply stops and your account carries on as a free one.</p>'
-      + '<p style="margin:0 0 12px">If you want to keep the indicators, the heatmap and your daily Ask AI read, one month is $11.99.</p>',
+      + '<p style="margin:0 0 12px">If you want to keep the indicators, the heatmap and your ' + AI_DAILY.premium + ' Ask AI reads a day, one month is $' + PREM_USD('premium') + '.</p>',
     cta: ['Keep Premium', 'https://marginpad.io/premium/'] },
 
   { id: 'premium_lapsed', name: 'Premium has lapsed', group: 'Premium', needs: [],
     subject: 'What you are missing since Premium ended',
     lead: 'For accounts whose Premium has already run out.',
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Your Premium ran out, {name}.</p>'
-      + '<p style="margin:0 0 12px">Since then we added Ask AI on the charts - one read a day on Premium - and rebuilt the liquidation heatmap so it actually shows where the heat is.</p>'
-      + '<p style="margin:0 0 12px">Everything you had before is still there: the six exclusive indicators, position alerts, the trading report breakdowns and the Daily Brief.</p>',
+      + '<p style="margin:0 0 12px">Since then we added Ask AI on the charts - ' + AI_DAILY.premium + ' reads a day on Premium - and rebuilt the liquidation heatmap so it actually shows where the heat is.</p>'
+      + '<p style="margin:0 0 12px">Everything you had before is still there: the five exclusive indicators, position alerts, the trading report breakdowns and the Daily Brief.</p>',
     cta: ['Come back to Premium', 'https://marginpad.io/premium/'] },
 
   { id: 'never_traded', name: 'You never placed a trade', group: 'Activation', needs: [],
@@ -12367,20 +12367,25 @@ async function handleNowpayIpn(request, env) {
 // TWO CONSUMER PLANS SINCE 2026-09-18 (owner). ONE table, the way API_PLANS is one table - a price that lives in
 // a second place is a price that will disagree with itself.
 //   Premium      $11.99/mo  - the site: indicators, heatmap, alerts, duels, lounge, report breakdowns, Daily Brief
-//   Premium Plus $159/mo    - everything in Premium, with Ask AI raised from 1 read a day to 50 (AI_DAILY)
-// Ask AI moved behind Plus because it is the one feature with a real per-use cost: measured, a member on the 50-a-day
-// cap runs to $66 a month on claude-sonnet-5 (GET /api/admin/aicost), so it could never live inside a $3.99 - or even
-// an $11.99 - subscription. Every other Premium feature costs us nothing per use.
+//                             + AI_DAILY.premium Ask AI reads a day (5 since 2026-10-15, owner: "5-10"; was 1 from 09-19)
+//   Premium AI+  $119/mo    - everything in Premium, with Ask AI raised to 50 a day (AI_DAILY). Launched 2026-09-18 as
+//                             "Premium Plus" at $159; renamed + $40 off on 2026-10-15 (owner). `was` is the struck price
+//                             the pages print beside it; the plan id, the KV rows and the `premplus_` order prefix are
+//                             deliberately unchanged - a rename is a copy change, not a data migration.
+// Ask AI is the one feature with a real per-use cost: measured, a member on the 50-a-day cap runs to $66 a month on
+// claude-sonnet-5 (GET /api/admin/aicost); five a day is at most ~$2.70 against $11.99. Every other Premium feature
+// costs us nothing per use.
 // FOUNDER IS RETIRED AND UNBUYABLE. One person paid for it (CH4RLOTT3) and keeps it for life, with Plus included -
 // `prem:founder:<uid>` resolves to plus. The checkout branch is gone; do not bring it back.
 const PREM_PLANS = {
   premium: { id: 'premium', name: 'Premium', cents: 1199, days: 30, order: 'prem_' },
-  plus: { id: 'plus', name: 'Premium Plus', cents: 15900, days: 30, order: 'premplus_' },
+  plus: { id: 'plus', name: 'Premium AI+', cents: 11900, days: 30, order: 'premplus_', was: 15900 },
 };
 const PREM_USD = (id) => ((PREM_PLANS[id] || PREM_PLANS.premium).cents / 100);
+const PREM_WAS_USD = (id) => (PREM_PLANS[id] && PREM_PLANS[id].was ? PREM_PLANS[id].was / 100 : null); // the struck-through price, null when a plan was never repriced
 // Ask-AI daily allowance per plan. Read by handleAiChart AND published on GET /api/ai/chart, /api/premium/status
 // and the pricing copy - never write one of these numbers anywhere else.
-const AI_DAILY = { plus: 50, premium: 1, free: 0 };
+const AI_DAILY = { plus: 50, premium: 5, free: 0 };
 const aiDailyFor = (st) => (st && st.plus) ? AI_DAILY.plus : ((st && st.premium) ? AI_DAILY.premium : AI_DAILY.free);
 const PREM_FOUNDERS = ['chako', 'whyme', 'gladijator']; // always premium, can't be removed
 const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + MP One Field bg). Not a permission system - chat/mod powers live in the users.role column.
@@ -16181,7 +16186,12 @@ async function handleAiChart(url, request, env, ectx) {
   const sys = AI_COACH_SYS + AI_IND_GUIDE_SYS + AI_CHART_TOOLS_SYS;
   // enrich with what only we have, before the brief is packed
   // Both are network reads against different origins, so they go out together rather than one after the other.
-  try {
+  // REPLAY (2026-10-15, the /premium/ backtest): on the E2E path, `replay:true` means the client's brief was built
+  // from a chart REWOUND with bar replay, so every LIVE block below (today's funding, OI, liquidations, order flow,
+  // macro calendar, BTC regime, the account's open calls) would date the read to now and leak the future into a
+  // historical question. They are skipped; the model reads only what the rewound chart measured. Never on a member path.
+  const _replay = _e2eAi && !!(body && body.replay);
+  if (!_replay) try {
     const _s = String(ctx.symbol || ctx.sym || '');
     const [_dv, _of] = await Promise.all([aiDerivs(env, _s).catch(() => null), aiOrderFlow(env, _s).catch(() => null)]);
     if (_dv) ctx.marketPressure = _dv;
@@ -16193,11 +16203,11 @@ async function handleAiChart(url, request, env, ectx) {
     else ctx.orderFlowUnavailable = { reason: 'our collector does not reconstruct an order book for this coin', coinsWithABook: BOOK_COINS };
   } catch (e) {}
   // macro + BTC regime (2026-10-04) - both from data we already have, so the read factors in what a candle cannot show
-  try { const _ms = await aiMacroSoon(env); if (_ms) ctx.macroSoon = _ms; } catch (e) {}
-  try { const _bc = await aiBtcContext(env, String(ctx.symbol || ctx.sym || '')); if (_bc) ctx.btcRegime = _bc; } catch (e) {}
+  if (!_replay) try { const _ms = await aiMacroSoon(env); if (_ms) ctx.macroSoon = _ms; } catch (e) {}
+  if (!_replay) try { const _bc = await aiBtcContext(env, String(ctx.symbol || ctx.sym || '')); if (_bc) ctx.btcRegime = _bc; } catch (e) {}
   const _recUid = (_e2eAi && url.searchParams.get('uid')) ? String(url.searchParams.get('uid')).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) : uid;
-  try { const _tr = await aiTraderRecord(env, _recUid); if (_tr) ctx.yourRecord = _tr; } catch (e) {}
-  try { const _lc = await aiLiveCall(env, _recUid, String(ctx.symbol || ctx.sym || ''), Number(ctx.price || ctx.last || 0)); if (_lc) ctx.yourLastCall = _lc; } catch (e) {}
+  if (!_replay) try { const _tr = await aiTraderRecord(env, _recUid); if (_tr) ctx.yourRecord = _tr; } catch (e) {}
+  if (!_replay) try { const _lc = await aiLiveCall(env, _recUid, String(ctx.symbol || ctx.sym || ''), Number(ctx.price || ctx.last || 0)); if (_lc) ctx.yourLastCall = _lc; } catch (e) {}
   if (_e2eAi && url.searchParams.get('brief') === '1') { await refund(); return J({ ok: true, brief: briefJson(ctx, AI_BRIEF_CAP), keys: Object.keys(ctx) }); } // E2E diagnostic: the packed brief, no model call (2026-09-27)
   const um = 'CHART BRIEF (JSON): ' + briefJson(ctx, AI_BRIEF_CAP) + '\n\nQUESTION: ' + (question || 'Read this chart for me in simple words - is it leaning long or short right now, and why?');
   // multi-turn: prior turns (text only) + the new user turn (which carries the live snapshot). Sanitize to strict user/assistant alternation starting with user.
@@ -17986,10 +17996,10 @@ async function handleBot(url, request, env, ctx) {
     const { ok: _ok9, ...rest } = rep;
     return jb(Object.assign({ plan: BOT_TIER_LIMITS(+auth.tier || 0).name, breakdowns: true, premium: true, findings: reportFindings(rep) }, rest), 200);
   }
-  // ASK AI IS OFF ON THE API (2026-09-18, owner). It is a SITE feature - 1 read a day on Premium, 50 on Plus - priced
+  // ASK AI IS OFF ON THE API (2026-09-18, owner). It is a SITE feature - AI_DAILY.premium reads a day on Premium, 50 on AI+ - priced
   // for it - and an API key is not a consumer subscription. The route answers plainly rather than 404ing, so a bot
   // written against 2.4 gets a reason instead of a mystery, and every claim that the API carries it has been removed.
-  if (path === '/v1/ai' && request.method === 'POST') return jb({ error: 'endpoint_retired', hint: 'AI market reads are no longer part of any API plan. Ask AI now lives on the charts at https://marginpad.io/charts as part of Premium Plus.', moved_to: 'https://marginpad.io/premium/#plus' }, 410);
+  if (path === '/v1/ai' && request.method === 'POST') return jb({ error: 'endpoint_retired', hint: 'AI market reads are no longer part of any API plan. Ask AI now lives on the charts at https://marginpad.io/charts as part of Premium (' + AI_DAILY.premium + ' reads a day) and ' + PREM_PLANS.plus.name + ' (' + AI_DAILY.plus + ').', moved_to: 'https://marginpad.io/premium/#plus' }, 410);
   if (false && path === '/v1/ai' && request.method === 'POST') { // retired body kept so the engine is one edit away if it ever returns
     if (!BOT_TIER_LIMITS(+auth.tier || 0).ai) return jb({ error: 'plan_required', plan_needed: 'pro', hint: 'AI market reads are on API Pro (50 a day), Max (200 a day) and Business (500 a day). ' + API_UPGRADE_HINT, upgrade: API_UPGRADE }, 402);
     if (!env.ANTHROPIC_API_KEY) return jb({ error: 'ai_unconfigured' }, 503);
@@ -18028,7 +18038,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '581ded66';
+const ASSET_V = 'ea7c8e69';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20614,7 +20624,7 @@ export default {
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)
       const st = await premiumFor(env, request);
-      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, plus: !!st.plus, plan: st.plan || null, signedIn: !!st.uid, until: st.until, source: st.source, price: PREM_USD('premium'), plusPrice: PREM_USD('plus'), aiDaily: AI_DAILY, plans: [{ id: 'premium', name: PREM_PLANS.premium.name, usd: PREM_USD('premium'), aiReadsPerDay: AI_DAILY.premium }, { id: 'plus', name: PREM_PLANS.plus.name, usd: PREM_USD('plus'), aiReadsPerDay: AI_DAILY.plus, adds: 'Ask AI on the charts, 50 reads a day instead of 1' }], user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, plus: !!st.plus, plan: st.plan || null, signedIn: !!st.uid, until: st.until, source: st.source, price: PREM_USD('premium'), plusPrice: PREM_USD('plus'), plusWas: PREM_WAS_USD('plus'), plusName: PREM_PLANS.plus.name, aiDaily: AI_DAILY, plans: [{ id: 'premium', name: PREM_PLANS.premium.name, usd: PREM_USD('premium'), aiReadsPerDay: AI_DAILY.premium }, { id: 'plus', name: PREM_PLANS.plus.name, usd: PREM_USD('plus'), was: PREM_WAS_USD('plus'), aiReadsPerDay: AI_DAILY.plus, adds: 'Ask AI on the charts, ' + AI_DAILY.plus + ' reads a day instead of ' + AI_DAILY.premium }], user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
     if (url.pathname === '/api/premium/brief') return handlePremiumBrief(env, request);
     if (url.pathname === '/api/brief') return handleBrief(env, request, url); // Daily Brief v2: ?teaser=1 public one-liner; GET full (Premium); POST delivery prefs
@@ -20666,10 +20676,10 @@ export default {
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
       // FOUNDER IS RETIRED (2026-09-18): it is no longer sold, at any price. A stale page or a bookmarked link
       // asking for it is answered plainly rather than quietly charged for something that no longer exists.
-      if (url.searchParams.get('plan') === 'founder') return J({ error: 'plan_retired', hint: 'The Founder plan is no longer sold. Premium is $' + PREM_USD('premium') + ' a month and Premium Plus, which adds Ask AI on the charts, is $' + PREM_USD('plus') + '.' }, 410);
+      if (url.searchParams.get('plan') === 'founder') return J({ error: 'plan_retired', hint: 'The Founder plan is no longer sold. Premium is $' + PREM_USD('premium') + ' a month and ' + PREM_PLANS.plus.name + ', which raises Ask AI on the charts to ' + AI_DAILY.plus + ' reads a day, is $' + PREM_USD('plus') + '.' }, 410);
       const plus = url.searchParams.get('plan') === 'plus';
       const P = plus ? PREM_PLANS.plus : PREM_PLANS.premium;
-      if (plus && st.plus && !st.until) return J({ error: 'already_premium', until: st.until, source: st.source, hint: 'This account already has Premium Plus with no end date - there is nothing to extend.' });
+      if (plus && st.plus && !st.until) return J({ error: 'already_premium', until: st.until, source: st.source, hint: 'This account already has ' + PREM_PLANS.plus.name + ' with no end date - there is nothing to extend.' });
       const founder = false;
       const body = founder
         ? { price_amount: 39.99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium - Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }

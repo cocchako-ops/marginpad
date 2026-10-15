@@ -21,13 +21,17 @@ const ok = (m) => console.log('  ok     ' + m);
   console.log('\n== prices quoted in the AI layer vs the live endpoints ==');
   const prem = await j('/api/premium/status');
   if (prem) {
-    for (const [label, v] of [['Premium', prem.price], ['Premium Plus', prem.plusPrice]]) {
+    for (const [label, v] of [['Premium', prem.price], [prem.plusName || 'Premium Plus', prem.plusPrice]]) {
       const s = '$' + v;
       if (BOTH.indexOf(s) < 0) fail(label + ' is ' + s + ' live and that string appears in NEITHER llms file');
       else ok(label + ' ' + s + ' is quoted');
     }
+    if (prem.plusName && BOTH.indexOf(prem.plusName) < 0) fail('the AI plan is called "' + prem.plusName + '" live and that name appears in NEITHER llms file'); else if (prem.plusName) ok('the AI plan name "' + prem.plusName + '" is quoted');
+    // the allowance in words, whatever the number is (it was "one" until 2026-10-15, "five" since)
     const daily = prem.aiDaily || {};
-    if (String(daily.premium) === '1' && /one (Ask AI )?read a day|1 read a day|one read a day/i.test(BOTH)) ok('the one-read-a-day allowance is stated');
+    const WORDS = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten' };
+    const n = +daily.premium, re = new RegExp('(' + n + '|' + (WORDS[n] || n) + ') (Ask AI )?reads? a day', 'i');
+    if (n > 0 && re.test(BOTH)) ok('the ' + (WORDS[n] || n) + '-reads-a-day allowance is stated');
     else fail('aiDaily.premium=' + daily.premium + ' but the files do not say it in words');
   } else note('could not read /api/premium/status');
 

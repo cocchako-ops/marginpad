@@ -56,7 +56,7 @@ const JS = `function pmDecorate(s){
       var st=document.getElementById('pmStatus'); if(!st) return;
       var tag=document.getElementById('pmPlan'), ttl=st.querySelector('.pmst-t');
       var m=document.getElementById('pmMeter'), bar=document.getElementById('pmBar'), dys=document.getElementById('pmDays'), act=document.getElementById('pmAct');
-      var name=s.plus?'Premium Plus':'Premium';
+      var name=s.plus?'Premium AI+':'Premium';
       if(tag) tag.textContent=(s.source==='founder'?'FOUNDER':name.toUpperCase());
       /* no end date = a Founder or an owner grant: there is nothing to count down and nothing to extend */
       if(!s.until){ if(ttl) ttl.textContent=(s.source==='founder'?'Founder - yours for life':name+' is active on your account'); return; }
@@ -115,7 +115,7 @@ const JS3 = `function pmLeft(ms){
       var st=document.getElementById('pmStatus'); if(!st) return;
       var tag=document.getElementById('pmPlan'), ttl=st.querySelector('.pmst-t');
       var m=document.getElementById('pmMeter'), bar=document.getElementById('pmBar'), dys=document.getElementById('pmDays'), act=document.getElementById('pmAct');
-      var name=s.plus?'Premium Plus':'Premium';
+      var name=s.plus?'Premium AI+':'Premium';
       if(tag) tag.textContent=(s.source==='founder'?'FOUNDER':name.toUpperCase());
       /* no end date = a Founder or an owner grant: there is nothing to count down and nothing to extend */
       if(!s.until){ if(ttl) ttl.textContent=(s.source==='founder'?__esT_premiumindex('pmFounderLife','Founder - yours for life'):name+' '+__esT_premiumindex('pmIsActiveOn','is active on your account')); return; }

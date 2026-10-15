@@ -55,20 +55,25 @@ const adm = (p, body) => api(p, { method: 'POST', headers: { 'content-type': 'ap
       ok(st.j && st.j.limit === D.premium, 'and its limit is exactly the plan allowance, never the free default', st.j && st.j.limit);
       ok(st.j && st.j.planNeeded === 'plus', 'with Plus offered as the way to more', st.j && st.j.planNeeded);
 
-      const one = await askAs(H);
-      ok(one.status === 200 || one.status === 503, 'the first read goes through', one.status);
-      if (one.status === 200) {
+      /* FIVE A DAY SINCE 2026-10-15 (owner: "5-10"; it was one). Every read inside the allowance must go through
+         and the one past it must be refused - so this leg makes D.premium real model calls, not one. At ~$0.02
+         a call that is the price of proving the wall is the NUMBER and not a hardcoded second-call refusal. */
+      let through = 0, last = null;
+      for (let i = 0; i < D.premium; i++) { last = await askAs(H); if (last.status === 200) through++; else if (last.status === 503) { console.log('  note: upstream 503 on read ' + (i + 1) + ', stopping the allowance walk'); break; } else break; }
+      ok(through === D.premium || (last && last.status === 503), 'every read inside the allowance goes through (' + through + ' of ' + D.premium + ')', last && last.status);
+      if (through === D.premium) {
         const two = await askAs(H);
-        ok(two.status === 429, 'THE SECOND READ IS REFUSED - one a day means one', two.status);
+        ok(two.status === 429, 'THE READ PAST THE ALLOWANCE IS REFUSED - ' + D.premium + ' a day means ' + D.premium, two.status);
         ok(two.j && two.j.plan === 'premium' && two.j.plan_needed === 'plus' && two.j.plus_daily === D.plus,
-          'and the refusal carries the Plus offer - that refusal IS the upgrade moment', two.j);
+          'and the refusal carries the AI+ offer - that refusal IS the upgrade moment', two.j);
 
         // The wall has to be the NUMBER rather than a hardcoded refusal. /api/ai/admin is deliberately
         // cookie-only (it is not loosened for a test), so this is asserted from the published side instead:
         // the refusal's own `limit` must equal the plan allowance the catalogue advertises, and the plan
-        // allowance must be the small one - if either drifted, one of these goes red.
+        // allowance must be the one that was ordered - if either drifted, one of these goes red.
         ok(two.j && two.j.limit === D.premium, 'the refusal quotes the same allowance the catalogue publishes', two.j && two.j.limit);
-        ok(D.premium === 1, 'and that allowance is one read a day, which is what was ordered', D);
+        ok(D.premium >= 5 && D.premium <= 10, 'and that allowance is five to ten reads a day, which is what was ordered', D);
+        ok(two.j && /AI\+/.test(String(two.j.plus_name || '')) && two.j.plus_usd === 119, 'the plan it offers is Premium AI+ at $119', two.j && { n: two.j.plus_name, usd: two.j.plus_usd });
       }
     }
   } finally {

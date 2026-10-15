@@ -561,9 +561,10 @@
     <div id="apPlanState" hidden></div>
     <div class="apgrid">
       <div class="apcard" data-plan="free">
-        <div class="aphead"><h3><span class="apn">Free</span></h3></div>
-        <div class="appx">$0</div>
-        <p class="apsub">Construye y haz correr un bot de verdad sin pagar nada.</p>
+        <div class="aphead"><h3><span class="apn">Free trial</span></h3></div>
+        <div class="appx">$0 <small style="font-size:15px;color:var(--dim);font-weight:400">for 7 days</small></div>
+        <p class="apsub">The full engine, free for <b>7 days</b> from the day you mint your first key. After that the engine needs a plan - <b>market data stays free and keyless for ever</b>, with no account at all.</p>
+        <p class="apsub" id="apTrialMine" hidden></p>
         <div class="apkey"><b>Una estrategia</b><span>un libro, un diario, un saldo</span></div>
         <ul class="apfeat">
           <li><b>3</b> claves &middot; <b>50</b> posiciones abiertas &middot; <b>120</b> peticiones/min</li>
@@ -572,7 +573,7 @@
           <li>Stream por WebSocket &middot; MCP &middot; datos de mercado sin clave</li>
           <li>Trading report: totales + skill score</li>
         </ul>
-        <button class="apbtn ghost" type="button" disabled>Tu plan de partida</button>
+        <button class="apbtn ghost" type="button" disabled>Your 7-day trial</button>
       </div>
       <div class="apcard feat" data-plan="pro">
         <div class="aphead"><h3>Pro</h3><span class="appill">MÁS ELEGIDO</span></div>
@@ -1355,7 +1356,14 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
     var c=state.current;
     if(!state.signedIn){ box.hidden=false; box.innerHTML=T('<b>Not signed in.</b> <a href="#akb">Sign in</a> to see your plan, generate a key, or pick a plan.','<b>No has iniciado sesión.</b> <a href="#akb">Inicia sesión</a> para ver tu plan, generar una clave o elegir un plan.'); return; }
     box.hidden=false;
-    if(!c||c.plan==='free'){ box.innerHTML=T('You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.','Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
+    if(!c||c.plan==='free'){ var tr=state.my_trial, dl=tr&&tr.days_left, de=tr&&tr.ends?esc(String(tr.ends).slice(0,10)):'';
+      if(tr&&tr.active){ box.innerHTML=ES
+        ? ('Estás en la <b>prueba gratuita</b> del motor. <span class="apdays">'+(dl===1?'Te queda 1 día':'Te quedan '+esc(dl)+' días')+'</span>: termina el '+de+'. Después, el motor necesita un plan; los datos de mercado en <code>/api/v1/*</code> siguen siendo gratis y sin clave.')
+        : ('You are on the <b>free trial</b> of the engine. <span class="apdays">'+(dl===1?'1 day left':esc(dl)+' days left</span>')+' - it ends on '+de+'. After that the engine needs a plan; market data on <code>/api/v1/*</code> stays free and keyless.'); }
+      else if(tr){ box.innerHTML=ES
+        ? ('Tu <b>prueba gratuita</b> del motor terminó el '+de+'. Los datos de mercado siguen siendo gratis y sin clave; el motor necesita un plan de abajo.')
+        : ('Your <b>free trial</b> of the engine ended on '+de+'. Market data stays free and keyless; the engine needs a plan below.'); }
+      else box.innerHTML=T('You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.','Estás en <b>Free</b>: 120 peticiones por minuto, 3 claves y 50 posiciones abiertas. Elige un plan de abajo para subirlo.'); }
     else if(c.free_month){ box.innerHTML=ES?('Estás en <b>Pro</b> gratis porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class="apdays">Te '+(c.days_left===1?'queda 1 día':'quedan '+esc(c.days_left)+' días')+'</span>: termina el '+esc(new Date(c.until).toISOString().slice(0,10))+' y la clave baja a Free (120 peticiones por minuto) salvo que elijas un plan.'):('You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class="apdays">'+esc(c.days_left)+' day'+(c.days_left===1?'':'s')+' left</span> - it ends on '+esc(new Date(c.until).toISOString().slice(0,10))+', and the key drops to Free (120 requests a minute) unless you pick a plan.'); }
     else { var nm=esc(c.plan==='max'?'Max':'Pro'), dd=esc(c.days_left), dt9=esc(new Date(c.until).toISOString().slice(0,10));
       box.innerHTML=ES?('Estás en <b>'+nm+'</b> hasta el '+dt9+' (<span class="apdays">'+(c.days_left===1?'1 día':dd+' días')+'</span>)'+(c.source==='owner'||c.source==='founder'?', concedido por MarginPad.':'. Comprar otro mes se suma a este, no lo reemplaza.')):('You are on <b>'+nm+'</b> until '+dt9+' (<span class="apdays">'+dd+' day'+(c.days_left===1?'':'s')+'</span>)'+(c.source==='owner'||c.source==='founder'?' - granted by MarginPad.':'. Buying another month adds to this one, it does not replace it.')); }
@@ -1517,7 +1525,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 })();
 </script>
 
-<script defer src="/assets/mp-auth.js?v=581ded66"></script>
-<script defer src="/assets/mp-nav.js?v=e322eb2e"></script>
+<script defer src="/assets/mp-auth.js?v=ea7c8e69"></script>
+<script defer src="/assets/mp-nav.js?v=a3f8036d"></script>
 </body>
 </html>
