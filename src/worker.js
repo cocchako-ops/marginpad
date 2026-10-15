@@ -21897,6 +21897,27 @@ export default {
       const sortObj = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ what: k, n }));
       return J({ ok: true, days, scope: wantE2 ? 'e2e test accounts only' : 'real traffic (e2e accounts excluded)', total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date. Refusals from e2e-prefixed test accounts are kept under their own prefix; add ?e2e=1 to read those instead.' });
     }
+    if (url.pathname === '/api/admin/supportjunk' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // What the door has turned away, and the purge for whatever got in before the door existed.
+      // GET = read. POST {purge:true} = DELETE the matching rows; without it the POST is a dry run.
+      const sb = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      const led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+      let senders = [];
+      try { const rs = await led.fetch(new Request('https://do/support/senders', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); senders = (await rs.json()).senders || []; } catch (e) { return J({ error: 'unavailable' }, 503); }
+      const judged = senders.map((x) => ({ who: x.who, n: x.n, why: supportSenderJunk(x.who) }));
+      const junk = judged.filter((x) => x.why);
+      let deleted = 0;
+      if (sb.purge === true && junk.length) {
+        try { const rp = await led.fetch(new Request('https://do/support/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ senders: junk.map((x) => x.who) }) })); deleted = (await rp.json()).deleted || 0; } catch (e) { return J({ error: 'purge_failed' }, 503); }
+      }
+      let turnedAway = [], today = 0;
+      try { turnedAway = JSON.parse((await env.STATS.get('supjunk:last')) || '[]') || []; } catch (e) {}
+      try { today = parseInt((await env.STATS.get('supjunk:day:' + new Date().toISOString().slice(0, 10))) || '0', 10) || 0; } catch (e) {}
+      return J({ ok: true, dry_run: sb.purge !== true, senders_on_the_desk: judged.length,
+        junk_senders: junk, rows_that_would_go: junk.reduce((a, x) => a + x.n, 0), deleted,
+        turned_away_at_the_door_today: today, last_turned_away: turnedAway,
+        rule: 'a From domain that is a bracketed IP literal, has no dot, or is a reserved IPv4 - measured 2026-10-15 as 44 of 44 junk and 0 of 94 real senders' });
+    }
     if (url.pathname === '/api/admin/apitrial' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // Who is on a free trial, when it ends, and the one-time backfill that starts the clock for everybody
       // who already held a key. GET = read. POST {backfill:true} = write; without it the POST is a dry run.
@@ -24862,6 +24883,21 @@ export default {
         if (env.EMAIL_FORWARD) { try { await message.forward(env.EMAIL_FORWARD); } catch (e) {} }
         return;
       }
+      // THE DOOR. A sender with no real domain is never filed as a ticket - but it is never dropped in
+      // silence either: the count and the last twenty are readable at GET /api/admin/supportjunk.
+      const junkWhy = supportSenderJunk(from);
+      if (junkWhy) {
+        try {
+          const day = new Date().toISOString().slice(0, 10);
+          const k = 'supjunk:day:' + day;
+          const n = Math.max(0, parseInt((await env.STATS.get(k)) || '0', 10) || 0) + 1;
+          await env.STATS.put(k, String(n), { expirationTtl: 90 * 86400 });
+          let ring = []; try { ring = JSON.parse((await env.STATS.get('supjunk:last')) || '[]') || []; } catch (e2) {}
+          ring.unshift({ ts: Date.now(), from: from.slice(0, 120), to: rcpt.slice(0, 60), subject: subject.slice(0, 160), why: junkWhy });
+          await env.STATS.put('supjunk:last', JSON.stringify(ring.slice(0, 20)), { expirationTtl: 90 * 86400 });
+        } catch (e) {}
+        return; // not a ticket, not forwarded
+      }
       const inbox = rcpt.indexOf('affiliate@') === 0 ? 'affiliate' : 'email'; // affiliate@marginpad.io → its own mp-ops inbox section (creator/streaming deals, owner negotiates rates there)
       if (env.REWARDS) await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: from, message: msg, address: inbox }) }));
       // optionally also forward to a verified inbox (set EMAIL_FORWARD to a Cloudflare-verified destination address)
@@ -24869,6 +24905,25 @@ export default {
     } catch (e) {}
   },
 };
+// WHO IS NEVER A REAL CORRESPONDENT. Pure, so the E2E runs exactly what production runs.
+// Returns a REASON string when the sender cannot be genuine, '' when the mail should be filed as a ticket.
+function supportSenderJunk(from) {
+  const f = String(from || '').trim().toLowerCase();
+  if (!f) return 'no sender';
+  const at = f.lastIndexOf('@'); if (at < 0) return 'no domain';
+  let dom = f.slice(at + 1).replace(/^<|>$/g, '').trim();
+  // a bracketed literal is an address with no domain name at all - [10.88.0.4], [::1]
+  if (/^\[.*\]$/.test(dom)) return 'ip literal ' + dom;
+  if (dom.indexOf('.') < 0) return 'domain has no dot';
+  // a bare IPv4 in reserved space, bracketed or not
+  const ip = dom.replace(/^\[|\]$/g, '');
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+    const p = ip.split('.').map(Number);
+    const priv = p[0] === 10 || p[0] === 127 || (p[0] === 192 && p[1] === 168) || (p[0] === 172 && p[1] >= 16 && p[1] <= 31) || (p[0] === 169 && p[1] === 254);
+    return priv ? 'private ip ' + ip : 'bare ip ' + ip;
+  }
+  return '';
+}
 // Pull a readable text body out of a raw MIME email (best-effort, no library).
 function decodeQP(s) { return String(s).replace(/=\r?\n/g, '').replace(/=([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))); }
 // Inbound mail → ticket text (rewritten 2026-09-03). The old version searched for the first "text/plain" and otherwise
@@ -26616,6 +26671,20 @@ export class RewardLedger {
       const list = order.map(id => convs[id]); list.forEach(c => { c.messages.sort((a, b) => a.ts - b.ts); if (!c.title) c.title = 'Conversation'; });
       list.sort((a, b) => b.lastTs - a.lastTs);
       return this.j({ conversations: list });
+    }
+    if (path === '/support/senders') { // every distinct sender on the desk, so the worker can judge them with ONE rule
+      // GROUP BY THE SENDER, WHICH IS `email`. `address` is the ACCOUNT the ticket belongs to - 'affiliate',
+      // 'email', a Bybit UID, a Moon handle - and grouping by it judged 'affiliate' as a domain with no dot.
+      // The dry run caught it before anything was deleted: it would have taken 58 real affiliate tickets.
+      const rows = this.rows("SELECT email, COUNT(*) n FROM support WHERE email IS NOT NULL AND email<>'' GROUP BY email");
+      return this.j({ senders: rows.map(r => ({ who: String(r.email || ''), n: +r.n || 0 })) });
+    }
+    if (path === '/support/purge') { // DELETE every row from the senders named. No undo - the worker only calls this after a dry run.
+      const who = (Array.isArray(body.senders) ? body.senders : []).map(x => String(x || '')).filter(Boolean).slice(0, 200);
+      if (!who.length) return this.j({ error: 'no_senders' }, 400);
+      let deleted = 0;
+      for (const w of who) { try { deleted += sql.exec('DELETE FROM support WHERE email=?', w).rowsWritten || 0; } catch (e) {} }
+      return this.j({ ok: true, deleted, senders: who.length });
     }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) - closes/reopens the WHOLE conversation
       const val = body.reopen ? 0 : 1; let changed = 0;
