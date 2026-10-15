@@ -18,7 +18,7 @@ const CASES=[['SOL','5',2.2],['SOL','5',0.5],['BTC','60',2.0],['ETH','240',3.0],
  for(const [sym,tf,pct] of CASES){
    await page.evaluate((sym,tf)=>{const w=window.__mpWinsDbg[0],si=w.el.querySelector('.cwin-sym');
      if(w.sym!==sym){si.value=sym;si.dispatchEvent(new Event('change',{bubbles:true}));}
-     const tb=w.el.querySelector('.cwin-tf button[data-tf="'+tf+'"]');if(tb&&w.tf!==tf)tb.click();},sym,tf);
+     if(window.mpCharts&&window.mpCharts.setTf){if(w.tf!==tf)window.mpCharts.setTf(w,tf);}else{var tb=w.el.querySelector('.cwin-tf button[data-tf="'+tf+'"]');if(tb&&w.tf!==tf)tb.click();}},sym,tf);
    await page.waitForFunction(`window.__mpWinsDbg[0].sym==='${sym}'&&window.__mpWinsDbg[0].tf==='${tf}'&&window.__mpWinsDbg[0].bars.length>60`,{timeout:30000}).catch(()=>{});
    // the bar array is replaced asynchronously after a symbol/timeframe switch - wait until it stops changing, or the rhythm is measured across two different markets
    await page.waitForFunction(()=>{const w=window.__mpWinsDbg[0];const k=w.bars.length+':'+w.bars[0].time+':'+w.bars[w.bars.length-1].time;

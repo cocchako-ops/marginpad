@@ -5892,8 +5892,11 @@ async function handleKlines(url, env, klSrc, ctx) {
   // Binance is hard-blocked (403) from Cloudflare egress, so it's not used. Gate.io is the primary source:
   // reachable from CF, deep history in one call (BTC weekly back to 2013), and supports `to` for back-pagination.
   // Bybit is the fallback (works from CF but only goes back to ~2021 and returns nothing for old `end`).
-  const gMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d', '10080': '7d' };
-  const byMap = { '1': '1', '5': '5', '15': '15', '60': '60', '240': '240', '1440': 'D', '10080': 'W' };
+  // Extra timeframes (2026-10-15, Premium): Bybit + OKX carry 3m/30m/2H/6H/12H; Gate does NOT (only 30m of them),
+  // so gMap omits the ones Gate can't serve and the Gate sources below are SKIPPED for those intervals rather than
+  // falling back to a WRONG interval (serving 1h candles for a 2h request is a data bug, not a degradation).
+  const gMap = { '1': '1m', '5': '5m', '15': '15m', '30': '30m', '60': '1h', '240': '4h', '1440': '1d', '10080': '7d' };
+  const byMap = { '1': '1', '3': '3', '5': '5', '15': '15', '30': '30', '60': '60', '120': '120', '240': '240', '360': '360', '720': '720', '1440': 'D', '10080': 'W' };
   let out = null, bestOut = null, bestFlat = 1, srcWon = '', bestSrc = '', _curSrc = '', rawOut = null, rawSrc = ''; // rawOut = the fullest non-empty candidate (ultimate fallback so a thin-but-real source, e.g. a newish perp's 5 weekly bars, is served instead of 404)
   // 0) STOCKS / FOREX / INDICES - real data via Yahoo Finance. Resolve here; the crypto sources below are all
   // gated on !out. Yahoo has NO cursor pagination (only interval+range), so on a back-page (&end) request we can't
@@ -5930,12 +5933,13 @@ async function handleKlines(url, env, klSrc, ctx) {
   // Gate spot (thin spot books leave flat no-trade candles). Only 300 bars, but 300 real > 1000 flat; loadMore extends.
   if (!out) try {
     _curSrc = 'okx';
-    const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D', '10080': '1W' };
+    const okMap = { '1': '1m', '3': '3m', '5': '5m', '15': '15m', '30': '30m', '60': '1H', '120': '2H', '240': '4H', '360': '6H', '720': '12H', '1440': '1D', '10080': '1W' };
     const r = await fetchTO('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1H') + '&limit=300' + (hasEnd ? '&after=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 12 } }, SRC_TO, env, 'okx');
     if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).filter(b => isFinite(b.time) && b.open > 0).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
-  // 3) Gate.io (spot) - deep history + coins not on Bybit/OKX perp
-  if (!out) try {
+  // 3) Gate.io (spot) - deep history + coins not on Bybit/OKX perp. SKIPPED for an interval Gate does not support
+  // (gMap has no entry) so a 3m/2h/12h request can never be answered with 1h candles mislabelled as that interval.
+  if (!out && gMap[iv]) try {
     _curSrc = 'gate-spot';
     const g = 'https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
     const r = await fetchTO(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } }, SRC_TO, env, 'gate-spot');
@@ -5943,7 +5947,8 @@ async function handleKlines(url, env, klSrc, ctx) {
       if (Array.isArray(d) && d.length) _pick(d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2], vol: +k[6] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
   // 4) Gate.io USDT-PERP futures - candles for metals/indices/forex (these live on Gate futures, not spot). Row = {t,o,h,l,c,v}
-  if (!out) try {
+  // Same skip as spot: Gate has no 3m/2h/6h/12h, so a metal on one of the Premium fine TFs returns empty rather than wrong.
+  if (!out && gMap[iv]) try {
     _curSrc = 'gate-fut';
     const g = 'https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
     const r = await fetchTO(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } }, SRC_TO, env, 'gate-fut');

@@ -90,7 +90,7 @@ const TFW = { '1': '1-minute', '5': '5-minute', '15': '15-minute', '60': '1-hour
     await page.waitForFunction('window.__mpWinsDbg && window.__mpWinsDbg[0] && window.__mpWinsDbg[0].bars && window.__mpWinsDbg[0].bars.length>50 && window.__mpWinsDbg[0].dr', { timeout: 40000 }).catch(() => {});
     await page.evaluate(async (sym, tf) => { const w = window.__mpWinsDbg[0]; const si = w.el.querySelector('.cwin-sym');
       if (w.sym !== sym) { si.value = sym; si.dispatchEvent(new Event('change', { bubbles: true })); }
-      const tb = w.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && w.tf !== tf) tb.click();
+      if (window.mpCharts && window.mpCharts.setTf) { if (w.tf !== tf) window.mpCharts.setTf(w, tf); } else { const tb = w.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && w.tf !== tf) tb.click(); }
       // make it big so the drawing has room
       w.el.style.left = '0px'; w.el.style.top = '0px'; w.el.style.width = (document.getElementById('cwsBoard').clientWidth) + 'px'; w.el.style.height = (document.getElementById('cwsBoard').clientHeight) + 'px';
       await new Promise(r => setTimeout(r, 2500));

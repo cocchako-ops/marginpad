@@ -1519,6 +1519,26 @@
   .cwin-tf button{background:none;border:none;color:#8b95a3;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 8px;border-radius:6px;cursor:pointer;transition:color .12s,background .12s;}
   .cwin-tf button:hover{color:#e2e7ee;background:rgba(255,255,255,.06);}
   .cwin-tf button.on{background:linear-gradient(180deg,#45e2ef,#28b7c7);color:#052a31;box-shadow:0 2px 9px -2px rgba(63,216,230,.65),inset 0 1px 0 rgba(255,255,255,.28);}
+  /* the timeframe picker (2026-10-15): one button + a dropdown, like the coin picker */
+  .cwin .cwin-head .cwin-tf{padding:0;background:transparent;border:0;}
+  .cwin-tf-btn{display:inline-flex;align-items:center;gap:4px;height:30px;box-sizing:border-box;padding:0 8px;background:#0f1319;border:1px solid #2b323b;border-radius:8px;color:#cdd5df;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:border-color .12s,color .12s;}
+  .cwin-tf-btn:hover{border-color:#3b4553;color:#fff;}
+  .cwin-tf-car{font-size:9px;color:#7f8a99;line-height:1;}
+  .cwin-tf-menu{position:fixed;z-index:1100;background:#0d1014;border:1px solid #2b323b;border-radius:10px;padding:5px;box-shadow:0 24px 60px -20px rgba(0,0,0,.92);display:grid;grid-template-columns:1fr 1fr;gap:3px;max-height:70vh;overflow-y:auto;overscroll-behavior:contain;}
+  .cwin-tf-menu[hidden]{display:none;}
+  .cwin-tf-it{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#0a0d11;border:1px solid #27313f;border-radius:7px;padding:7px 9px;color:#c7d2e0;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;}
+  .cwin-tf-it:hover{border-color:#4a6088;color:#fff;}
+  .cwin-tf-it.on{border-color:#45e2ef;color:#dffafe;background:#10242a;}
+  .cwin-tf-it .cwin-tf-prem{font:800 8px 'Space Mono',monospace;letter-spacing:.06em;color:#c2f64a;display:inline-flex;align-items:center;}
+  .cwin-tf-it.lock{color:#7f8a99;}.cwin-tf-it.lock .cwin-tf-prem{color:#8b95a3;}
+  body.charts-page.ch-light .cwin-tf-btn{background:#ffffff;border-color:#d6dade;color:#1b2028;}
+  body.charts-page.ch-light .cwin-tf-btn:hover{border-color:#9aa4b0;}
+  body.charts-page.ch-light .cwin-tf-car{color:#5a6472;}
+  body.charts-page.ch-light .cwin-tf-menu{background:#ffffff;border-color:#d6dade;}
+  body.charts-page.ch-light .cwin-tf-it{background:#f4f6fa;border-color:#d3dae3;color:#1d242e;}
+  body.charts-page.ch-light .cwin-tf-it.on{background:#e3f7fb;border-color:#58c6d6;color:#0c3b44;}
+  body.charts-page.ch-light .cwin-tf-it .cwin-tf-prem{color:#4f7a00;}
+  body.charts-page.ch-light .cwin-tf-it.lock{color:#8a94a2;}body.charts-page.ch-light .cwin-tf-it.lock .cwin-tf-prem{color:#8a94a2;}
   .cwin-ind-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(180deg,#141a21,#0b0e13);border:1px solid #2f3742;border-radius:8px;color:#9aa3ad;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 10px;cursor:pointer;transition:.13s;white-space:nowrap;}
   .cwin-ind-btn:hover{color:#cfd4da;border-color:#3a434f;}
   .cwin-ind-btn.active{color:#06222a;background:#3fd8e6;border-color:#3fd8e6;}
@@ -2851,6 +2871,10 @@
   .mfc-sl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
   .mfc-sl button{background:#12161c;border:1px solid #232932;border-radius:8px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:9px 4px;cursor:pointer;}
   .mfc-sl button.on{border-color:#3fd8e6;color:#3fd8e6;}
+  .mfc-tfsheet button{display:inline-flex;align-items:center;justify-content:center;gap:4px;position:relative;}
+  .mfc-tf-prem{font:800 7.5px 'Space Mono',monospace;letter-spacing:.04em;color:#c2f64a;display:inline-flex;align-items:center;}
+  .mfc-sl button.lock{color:#7f8a99;}.mfc-sl button.lock .mfc-tf-prem{color:#8b95a3;}
+  .mfc.light .mfc-tf-prem{color:#4f7a00;}.mfc.light .mfc-sl button.lock,.mfc.light .mfc-sl button.lock .mfc-tf-prem{color:#8a94a2;}
   /* AI chat */
   .mfc-ai-body{display:flex;flex-direction:column;gap:9px;}
   .mfc-ai-msg{max-width:88%;padding:9px 12px;border-radius:13px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;}

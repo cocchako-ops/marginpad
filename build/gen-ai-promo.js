@@ -94,7 +94,7 @@ const sse = (text) => { const parts = []; for (let i = 0; i < text.length; i += 
         await page.evaluate(async (sym, tf, w, h) => {
           const win = window.__mpWinsDbg[0], si = win.el.querySelector('.cwin-sym');
           if (win.sym !== sym) { si.value = sym; si.dispatchEvent(new Event('change', { bubbles: true })); }
-          const tb = win.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && win.tf !== tf) tb.click();
+          if (window.mpCharts && window.mpCharts.setTf) { if (win.tf !== tf) window.mpCharts.setTf(win, tf); } else { const tb = win.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && win.tf !== tf) tb.click(); }
           win.el.id = win.el.id || 'promoWin';
           win.el.style.left = '0px'; win.el.style.top = '0px'; win.el.style.width = w + 'px'; win.el.style.height = h + 'px';
           await new Promise(r => setTimeout(r, 2600));

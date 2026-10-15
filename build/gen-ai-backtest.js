@@ -137,7 +137,7 @@ function settle(plan, bars, i0, lastClose) {
           ['casc', 'brain', 'memory', 'magnet', 'whaleliq'].forEach(k => { if (win.inds) win.inds[k] = false; });
           if (mp) ['casc', 'brain', 'memory', 'magnet'].forEach(k => { if (win.inds) win.inds[k] = true; });
           if (win.sym !== sym) { si.value = sym; si.dispatchEvent(new Event('change', { bubbles: true })); }
-          const tb = win.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && win.tf !== tf) tb.click();
+          if (window.mpCharts && window.mpCharts.setTf) { if (win.tf !== tf) window.mpCharts.setTf(win, tf); } else { const tb = win.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && win.tf !== tf) tb.click(); }
           win.el.id = win.el.id || 'promoWin';
           win.el.style.left = '0px'; win.el.style.top = '0px'; win.el.style.width = w + 'px'; win.el.style.height = h + 'px';
           await new Promise(r => setTimeout(r, 2600));

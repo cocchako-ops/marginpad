@@ -106,7 +106,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(ph)lv.push({price:hi,type:'r'});if(pl)lv.push({price:lo,type:'s'});}
     var rs=lv.filter(function(x){return x.type==='r';}).slice(-3),ss=lv.filter(function(x){return x.type==='s';}).slice(-3);
     return rs.concat(ss);}
-  var TFS=[['1','1m'],['5','5m'],['15','15m'],['60','1h'],['240','4h'],['1440','1d']];
+  /* [tf, label, premium] (2026-10-15): free 1m 5m 15m 1h 4h 1d; Premium 3m 30m 2h 6h 12h 1w. 1s is not available as
+     history from any exchange feed, so it is not offered. Same set as the desktop. */
+  var TFS=[['1','1m',0],['3','3m',1],['5','5m',0],['15','15m',0],['30','30m',1],['60','1h',0],['120','2h',1],['240','4h',0],['360','6h',1],['720','12h',1],['1440','1d',0],['10080','1w',1]];
+  function tfPrem(tf){for(var i=0;i<TFS.length;i++)if(TFS[i][0]===String(tf))return !!TFS[i][2];return false;}
   var INDS=[['sig','Buy / Sell signals'],['sr','Support / Resistance'],['dl','Daily levels'],['sess','Trading sessions'],['ema9','EMA 9'],['ema21','EMA 21'],['ema50','EMA 50'],['ema100','EMA 100'],['ema200','EMA 200'],['sma20','SMA 20'],['sma50','SMA 50'],['sma100','SMA 100'],['sma200','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger'],['vol','Volume'],['rsi','RSI'],['macd','MACD'],['stoch','Stoch'],['atr','ATR'],['wr','Williams %R'],['cci','CCI'],['casc','Cascade Radar'],['brain','Market Brain'],['memory','Market Memory'],['magnet','Liquidation Magnet'],['whaleliq','Big Liquidations (24h)']];
   function mSig(){return window.__mpSig||null;}
   function mEx(k){var S=mSig();return !!(S&&S.MP_INDS&&S.MP_INDS[k]);}
@@ -145,7 +148,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<span class="mfc-grow"></span>'
       +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span class="mfc-bl">'+mcT('mcAi','Ask AI')+'</span></button>'
       +'</div>'
-      +'<div class="mfc-tfrow" id="mfcTfRow" hidden>'+TFS.map(function(t){return '<button type="button" data-tfpick="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
       +'<div class="mfc-dock">'+actions(true)+'</div>'
       +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate',__esT_mpmcharts("rotateYourPhoneFor",'↻ Rotate your phone for a wider chart'))+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>';
@@ -179,17 +181,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     bar.style.transform='translate('+ox+'px,'+oy+'px) scale('+(1/sc)+')';
   }catch(e){}}
   function onBarClick(e){
-    var tp=e.target.closest&&e.target.closest('[data-tfpick]');
-    if(tp){var p0=panes[activeI];if(p0){p0.tf=tp.getAttribute('data-tfpick');clearPaneDraw(p0);loadKlines(p0);syncBar();mfcSave();}tfRow(false);return;}
     var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
-    if(a!=='tf')tfRow(false);
     if(a==='close')return close();
     if(a==='theme')return toggleTheme();
     if(a==='split')return toggleSplit();
     if(a==='draw')return toggleDraw(b);
     if(a==='trades')return toggleTrades(b);
     if(a==='sym')return openSheet('sym');
-    if(a==='tf')return tfRow();/* one tap: the six timeframes appear as a chip row under the bar - a sheet was a tap too many for the control used most */
+    if(a==='tf')return openSheet('tf');/* a dropdown sheet like the coin picker (2026-10-15, owner) - the chip row is gone */
     if(a==='ind')return openSheet('ind');
     if(a==='calc')return openSheet('calc');/* a sheet, not the floating card: three tabs of fields need the height, and the card's close sat under the top bar (owner 2026-10-08: "kad ga otvorim ne mogu da ga ugasim") */
     if(a==='trade')return openTrade();
@@ -515,9 +514,6 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     for(var gk in _g){var g=_g[gk];try{p.tradeLines.push(p.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:0,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}}} // one line per level (×N) - stacked labels covered the candles (UX audit, mobile)
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
-  function tfRow(on){var r=ov&&ov.querySelector('#mfcTfRow');if(!r)return;var want=(on==null)?r.hidden:!!on;r.hidden=!want;var p=panes[activeI];
-    Array.prototype.forEach.call(r.querySelectorAll('[data-tfpick]'),function(x){x.classList.toggle('on',!!p&&x.getAttribute('data-tfpick')===String(p.tf));});
-    Array.prototype.forEach.call(ov.querySelectorAll('[data-act="tf"]'),function(x){x.classList.toggle('on',want);});}
   function syncAct(act,on){Array.prototype.forEach.call(ov.querySelectorAll('[data-act="'+act+'"]'),function(x){x.classList.toggle('on',!!on);});}/* both copies (top row + dock) always agree */
   function toggleDraw(){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;if(p.w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',p.sym||'');}catch(_){}}
     if(!p.w.dr.on&&p.w._drCancelMulti)p.w._drCancelMulti();
@@ -825,8 +821,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else if(kind==='ai')buildAi(body,p);
     else if(kind==='trades')buildTrades(body,p);
   }
-  function buildTf(body,p){body.innerHTML='<div class="mfc-sl">'+TFS.map(function(t){return '<button class="'+(t[0]===p.tf?'on':'')+'" data-tf="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
-    body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;p.tf=b.getAttribute('data-tf');clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();mfcSave();});}
+  function buildTf(body,p){var allow=mAllowed();body.innerHTML='<div class="mfc-sl mfc-tfsheet">'+TFS.map(function(t){var prem=!!t[2],lock=prem&&!allow;return '<button class="'+(t[0]===p.tf?'on':'')+(lock?' lock':'')+'" data-tf="'+t[0]+'">'+t[1]+(prem?'<i class="mfc-tf-prem">'+(lock?'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="9" rx="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>':'PRO')+'</i>':'')+'</button>';}).join('')+'</div>';
+    body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;var tf=b.getAttribute('data-tf');if(tfPrem(tf)&&!mAllowed()){if(window.mpToast)window.mpToast({msg:tfLabel(tf)+' '+__esT_mpmcharts("isPremiumTf",'is a Premium timeframe - unlock 3m, 30m, 2h, 6h, 12h and 1w with Premium.'),kind:'warn',ms:3600});return;}p.tf=tf;clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();mfcSave();});}
   /* THE COIN SHEET IS A MARKET LIST, NOT A GRID OF LETTERS (2026-10-08): every row carries the live price and the 24h move,
      favourites (star, remembered) and recent coins sit on top, and the search still finds any ticker. */
   var PX={};function pullPx(cb){var now=Date.now();if(PX._t&&now-PX._t<60000){cb&&cb();return;}fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&j.pairs){PX._t=now;j.pairs.forEach(function(x){var s=String(x.symbol||'').replace(/USDT$/,'');PX[s]={p:+x.price,c:+x.changePct};});}cb&&cb();}).catch(function(){cb&&cb();});}

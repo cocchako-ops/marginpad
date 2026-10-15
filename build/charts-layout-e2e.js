@@ -171,13 +171,13 @@ const pickTool = async (page, tool) => { await page.evaluate((t) => { const w = 
     const edge = await page.evaluate(() => { const p = document.querySelector('.mfc-pane').getBoundingClientRect(); return { l: Math.round(p.left), r: Math.round(innerWidth - p.right) }; });
     ok('the pane runs edge to edge', edge.l === 0 && edge.r === 0, JSON.stringify(edge));
     console.log('     measured: chart ' + m1.pct + '% | top bar ' + m1.barH + 'px | dock ' + m1.dockH + 'px');
-    // timeframe row
-    await page.tap('.mfc-bar [data-act="tf"]'); await sleep(300);
-    const tfr = await page.evaluate(() => { const r = document.getElementById('mfcTfRow'); return { shown: !r.hidden && r.getBoundingClientRect().height > 0, n: r.querySelectorAll('[data-tfpick]').length, hs: [...r.querySelectorAll('[data-tfpick]')].map(b => Math.round(b.getBoundingClientRect().height)) }; });
-    ok('tapping the timeframe opens a chip row under the bar, six chips >= 36px', tfr.shown && tfr.n === 6 && tfr.hs.every(h => h >= 36), JSON.stringify(tfr));
-    await page.tap('#mfcTfRow [data-tfpick="240"]'); await sleep(1500);
-    const tfAfter = await page.evaluate(() => ({ tf: window.__mfcPanes()[0].tf, hidden: document.getElementById('mfcTfRow').hidden, label: document.querySelector('.mfc-tfL').textContent }));
-    ok('a chip switches the pane to 4h and the row closes', tfAfter.tf === '240' && tfAfter.hidden && /4h/i.test(tfAfter.label), JSON.stringify(tfAfter));
+    // timeframe is a dropdown SHEET now (2026-10-15), like the coin picker - not a chip row
+    await page.tap('.mfc-bar [data-act="tf"]'); await sleep(400);
+    const tfr = await page.evaluate(() => { const b = document.querySelector('.mfc-sheet .mfc-tfsheet'); if (!b) return { shown: false, n: 0 }; const btns = [...b.querySelectorAll('[data-tf]')]; return { shown: b.getBoundingClientRect().height > 0, n: btns.length, free: btns.filter(x => !x.classList.contains('lock')).length }; });
+    ok('tapping the timeframe opens a dropdown sheet with every timeframe', tfr.shown && tfr.n === 12 && tfr.free >= 6, JSON.stringify(tfr));
+    await page.tap('.mfc-sheet .mfc-tfsheet [data-tf="240"]'); await sleep(1500);
+    const tfAfter = await page.evaluate(() => ({ tf: window.__mfcPanes()[0].tf, sheet: !!document.querySelector('.mfc-sheet'), label: document.querySelector('.mfc-tfL').textContent }));
+    ok('a free timeframe switches the pane to 4h and the sheet closes', tfAfter.tf === '240' && !tfAfter.sheet && /4h/i.test(tfAfter.label), JSON.stringify(tfAfter));
     await sleep(2500);
     // draw mode from the dock
     await page.tap('.mfc-dock [data-act="draw"]'); await sleep(400);
