@@ -914,6 +914,33 @@ async function aiLiqEdge(env, sym) {
       : 'OUR measured context: ' + what + '. Price was higher an hour later ' + m.up + '% of the time (n=' + m.n + ') - but simulated as a trade this is about BREAKEVEN, because the down swings are as big as the bounce. So this is a LEAN, not a confident trade: a reason NOT to chase the breakdown / not to short here, and at most a small, well-stopped long or a wait - NOT a full-size entry. It becomes a real trade only if open interest is also flushing (high conviction).',
   };
 }
+
+/* PHASE 3 - FORWARD-COLLECT the order-book / tape signals (2026-10-16). Book imbalance, wall withdrawal and aggressor
+   flow are REALTIME - the collector keeps no months of history, so unlike liquidations/funding/OI these cannot be
+   backtested on the past. The only honest way to find out whether they carry a causal directional edge is to LOG them
+   now with a timestamp and study them in a few weeks. This cron samples the two primary candidates per book coin into
+   Analytics Engine (index 'edgesample'); a later study reads them with aeQuery and aligns each sample's timestamp with
+   the forward price (Bybit klines) to measure the edge. Nothing reads these rows yet - they are a measurement in the
+   making. Cheap: 6 coins every 10 min, and aiOrderFlow is the same call the brief already makes. */
+async function edgeSampleCron(env) {
+  const out = {};
+  if (!env || !env.AE) return out;
+  for (const sym of BOOK_COINS) {
+    try {
+      const f = await aiOrderFlow(env, sym);
+      if (!f) { out[sym] = 'no book'; continue; }
+      const r5 = +f.bidAskDepthRatio5bp || 0;                                   // >1 bid-heavy, <1 ask-heavy
+      const dpct = (f.aggressorFlow && +f.aggressorFlow.deltaPctOfFlow) || 0;   // + buyers crossing, - sellers
+      const d = f.restingDepthUsd && f.restingDepthUsd.within5bp || {};
+      const bid5 = +d.bid || 0, ask5 = +d.ask || 0;
+      const wg = (f.walls && f.walls.recentlyGone) || {};                       // how the last walls ended
+      const pulled = +wg.pulled || 0, traded = +wg.eaten || 0;                  // withdrawn vs traded through
+      env.AE.writeDataPoint({ indexes: ['edgesample'], blobs: ['edgesample', sym], doubles: [r5, dpct, bid5, ask5, pulled, traded] });
+      out[sym] = 'r5=' + r5 + ' d%=' + dpct;
+    } catch (e) { out[sym] = String((e && e.message) || e).slice(0, 50); }
+  }
+  return out;
+}
 async function heatCalibCron(env) {
   const out = {};
   if (!env || !env.STATS) return out;
@@ -23411,6 +23438,7 @@ export default {
         try { if (prior != null) await env.STATS.put('liqedge:BTC', prior, { expirationTtl: 3 * 3600 }); else await env.STATS.put('liqedge:BTC', JSON.stringify({ t: Date.now(), fired: null }), { expirationTtl: 3 * 3600 }); } catch (e) {}
         return J({ verify: true, briefFieldTheModelWouldSee: briefField });
       }
+      if (url.searchParams.get('sample') === '1') { try { const s = await edgeSampleCron(env); return J({ sampled: s }); } catch (e) { return J({ error: String(e && e.message || e).slice(0, 200) }); } }
       let ran = null; if (url.searchParams.get('tick') === '1') { try { ran = await liqEdgeCron(env); } catch (e) { return J({ error: String(e && e.message || e).slice(0, 200) }); } }
       const state = {}; for (const sym of HM_COINS) { try { state[sym] = await env.STATS.get('liqedge:' + sym, 'json'); } catch (e) { state[sym] = null; } }
       const active = {}; for (const sym of HM_COINS) { try { const v = await aiLiqEdge(env, sym); if (v) active[sym] = v; } catch (e) {} }
@@ -25104,6 +25132,7 @@ export default {
     bg(checkIndexNow, 'indexnow');
     bg(checkAiCalls, 'aicalls'); // settle what the AI promised against what the market did
     bg(liqEdgeCron, 'liqedge'); // the ONE measured edge: fire long_cascade / sweep_low per coin into KV for the Ask AI brief
+    bg(edgeSampleCron, 'edgesample'); // phase 3: forward-log book/tape signals to AE, to study for a NEW edge in a few weeks
     bg(syncBotTiers, 'bottiers'); // reconcile each API key's tier with premium standing (grants expire silently otherwise)
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
