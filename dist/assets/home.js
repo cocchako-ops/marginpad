@@ -3808,7 +3808,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=5a3cd0ff'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=cddc8d07'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);

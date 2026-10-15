@@ -1058,11 +1058,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function proceed(){ entered=true; showGate(false);
     if(!panes.length){
       var sv=mfcLoad(),st=ov.querySelector('#mfcStage');
-      var cfgs=forcePair?[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]:((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'},{sym:'ETH',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); else default TWO charts / saved state
+      var cfgs=forcePair?[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]:((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); else default ONE chart on a phone (owner 2026-10-15: two was too cramped); the saved layout still restores up to two
       split=cfgs.length>1?2:1;
       cfgs.forEach(function(c){var p=mkPane(c.sym||'BTC',c.tf||'60');if(c.inds)p.inds=c.inds;if(c.cmp)p.cmp=String(c.cmp).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);if(+c.liqMin)p.liqMin=+c.liqMin;panes.push(p);st.appendChild(p.el);});
       st.classList.toggle('split',split===2);
-      var sL=ov.querySelector('.mfc-splitL');if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
+      /* BOTH label copies (top row + dock), or the dock keeps its hardcoded "2 charts" while at two panes and the
+         control reads as a lie - which is what "switch to 1 did nothing" was (2026-10-15). toggleSplit already syncs both. */
+      Array.prototype.forEach.call(ov.querySelectorAll('.mfc-splitL'),function(sL){sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');});
       setActive((sv&&sv.active>0&&sv.active<panes.length)?sv.active:0);
       loadLib(function(){panes.forEach(function(p){initChart(p);});});
     }

@@ -1,0 +1,201 @@
+{
+ "generatedAt": "2026-10-15T20:26:26.566Z",
+ "trailDays": 14,
+ "minWin": 80,
+ "byCoinN": {
+  "BTC": {
+   "cnt": {
+    "long_cascade": 16,
+    "sweep_low": 56
+   },
+   "usd": {
+    "long_cascade": 64,
+    "sweep_low": 59
+   }
+  },
+  "ETH": {
+   "cnt": {
+    "long_cascade": 62,
+    "sweep_low": 58
+   },
+   "usd": {
+    "long_cascade": 74,
+    "sweep_low": 59
+   }
+  },
+  "SOL": {
+   "cnt": {
+    "long_cascade": 42,
+    "sweep_low": 48
+   },
+   "usd": {
+    "long_cascade": 59,
+    "sweep_low": 58
+   }
+  },
+  "XRP": {
+   "cnt": {
+    "long_cascade": 50,
+    "sweep_low": 50
+   },
+   "usd": {
+    "long_cascade": 53,
+    "sweep_low": 47
+   }
+  },
+  "BNB": {
+   "cnt": {
+    "long_cascade": 30,
+    "sweep_low": 28
+   },
+   "usd": {
+    "long_cascade": 31,
+    "sweep_low": 27
+   }
+  },
+  "DOGE": {
+   "cnt": {
+    "long_cascade": 50,
+    "sweep_low": 38
+   },
+   "usd": {
+    "long_cascade": 46,
+    "sweep_low": 41
+   }
+  },
+  "ADA": {
+   "cnt": {
+    "long_cascade": 40,
+    "sweep_low": 44
+   },
+   "usd": {
+    "long_cascade": 40,
+    "sweep_low": 41
+   }
+  },
+  "LINK": {
+   "cnt": {
+    "long_cascade": 26,
+    "sweep_low": 31
+   },
+   "usd": {
+    "long_cascade": 32,
+    "sweep_low": 27
+   }
+  },
+  "AVAX": {
+   "cnt": {
+    "long_cascade": 26,
+    "sweep_low": 18
+   },
+   "usd": {
+    "long_cascade": 28,
+    "sweep_low": 22
+   }
+  },
+  "LTC": {
+   "cnt": {
+    "long_cascade": 30,
+    "sweep_low": 21
+   },
+   "usd": {
+    "long_cascade": 26,
+    "sweep_low": 26
+   }
+  }
+ },
+ "pooled": {
+  "cnt": {
+   "long_cascade": {
+    "h": {
+     "12": {
+      "n": 372,
+      "up": 62.1,
+      "baseUp": 49.6,
+      "mean": 0.107,
+      "baseMean": 0.001,
+      "zMean": 2.84,
+      "zUp": 4.8
+     },
+     "48": {
+      "n": 372,
+      "up": 58.1,
+      "baseUp": 51.6,
+      "mean": 0.257,
+      "baseMean": 0.045,
+      "zMean": 2.93,
+      "zUp": 2.51
+     }
+    }
+   },
+   "sweep_low": {
+    "h": {
+     "12": {
+      "n": 392,
+      "up": 62.8,
+      "baseUp": 49.6,
+      "mean": 0.161,
+      "baseMean": 0.001,
+      "zMean": 4.4,
+      "zUp": 5.19
+     },
+     "48": {
+      "n": 392,
+      "up": 62.8,
+      "baseUp": 51.6,
+      "mean": 0.168,
+      "baseMean": 0.045,
+      "zMean": 1.74,
+      "zUp": 4.44
+     }
+    }
+   }
+  },
+  "usd": {
+   "long_cascade": {
+    "h": {
+     "12": {
+      "n": 453,
+      "up": 60.3,
+      "baseUp": 49.6,
+      "mean": 0.123,
+      "baseMean": 0.001,
+      "zMean": 3.6,
+      "zUp": 4.52
+     },
+     "48": {
+      "n": 453,
+      "up": 58.1,
+      "baseUp": 51.6,
+      "mean": 0.191,
+      "baseMean": 0.045,
+      "zMean": 2.23,
+      "zUp": 2.77
+     }
+    }
+   },
+   "sweep_low": {
+    "h": {
+     "12": {
+      "n": 407,
+      "up": 61.2,
+      "baseUp": 49.6,
+      "mean": 0.101,
+      "baseMean": 0.001,
+      "zMean": 2.79,
+      "zUp": 4.66
+     },
+     "48": {
+      "n": 407,
+      "up": 59.5,
+      "baseUp": 51.6,
+      "mean": 0.152,
+      "baseMean": 0.045,
+      "zMean": 1.54,
+      "zUp": 3.19
+     }
+    }
+   }
+  }
+ }
+}
