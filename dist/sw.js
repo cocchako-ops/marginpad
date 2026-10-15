@@ -4,7 +4,11 @@
      new versions are new URLs; unversioned assets refresh in the background on every hit)
    - navigations → network-first, falling back to the cached copy (offline PWA opens instead of a dino)
    - /api/*, websockets, cross-origin, POSTs → never touched */
-var CACHE = 'mp-shell-v1';
+/* BUMP THIS ON ANY DEPLOY A STUCK CLIENT MUST BE FORCED OFF (2026-10-15, owner: an update stayed invisible for an
+   hour across a Safari reset). A new CACHE name makes `activate` DELETE every old 'mp-shell-*' entry, so a device that
+   had stale copies of the app shell or a bundle gets a clean slate the moment its browser picks up this sw.js (checked
+   on navigation; the script is max-age=0 must-revalidate). v1 -> v2. */
+var CACHE = 'mp-shell-v2';
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(['/']).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
 });
