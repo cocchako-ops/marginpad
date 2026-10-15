@@ -23484,6 +23484,17 @@ export default {
       const decided = tot.win + tot.loss;
       const pct = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
       for (const m in byModel) byModel[m].hit_pct = pct(byModel[m].win, byModel[m].loss);
+      // THE MEASUREMENT THE WHOLE EDGE BUILD IS FOR (2026-10-16): the live hit rate split by whether our liquidation
+      // edge was firing, at what conviction. blob7 = edge type|noedge, blob8 = conviction, blob9 = strategy. Without
+      // this the conv/strat blobs would be logged and unreadable (the window.__mpSrvLiq class of bug).
+      const byEdge = {};
+      try {
+        const eq = await aeQuery(env, "SELECT blob2 AS state, blob7 AS edge, blob8 AS conv, SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'aicall' AND blob6 != 'e2e' AND timestamp > NOW() - INTERVAL '" + days + "' DAY GROUP BY state, edge, conv");
+        (eq || []).forEach(r => { const st = String(r.state || ''); if (st !== 'win' && st !== 'loss') return;
+          const key = (!r.edge || r.edge === 'noedge') ? 'no_edge' : ('liq_edge/' + (r.conv || '?'));
+          byEdge[key] = byEdge[key] || { win: 0, loss: 0 }; byEdge[key][st] += +r.n || 0; });
+        for (const k in byEdge) { const v = byEdge[k]; v.decided = v.win + v.loss; v.hit_pct = pct(v.win, v.loss); }
+      } catch (e) {}
       const nofillRate = (tot.win + tot.loss + tot.nofill) ? Math.round(tot.nofill / (tot.win + tot.loss + tot.nofill) * 100) : null;
       /* OUT-OF-REACH ENTRIES, counted per day since 2026-10-11 (owner: the assistant kept naming a level price
          had already gone past). These never enter the open list - the chart refuses to draw them as a trade - so
@@ -23508,6 +23519,7 @@ export default {
         confidence_buckets: conf,
         confidence_note: 'What the model SAID against what happened. A band with fewer than 5 settled calls prints no rate. If the bands do not climb, the confidence number is decoration and should not be shown to readers.',
         hit_rate_pct: pct(tot.win, tot.loss), by_model: byModel, still_open: open.length,
+        by_edge: byEdge, by_edge_note: 'Live hit rate split by whether our liquidation edge was firing when the call was made, and at what conviction. The sim says liq_edge/high should clear ~55%+ and no_edge should sit near a coin flip - this is where we confirm it in production. Needs a few settled calls per bucket before it means anything.',
         note: decided < 20 ? 'Too few settled calls to read a hit rate - ' + decided + ' so far. A number under about 20 is noise.' : 'A call is a win when the first target was touched before the stop, on the same candles the reader saw.' });
     }
     if (url.pathname === '/api/admin/aicost' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
