@@ -3405,11 +3405,24 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      plays the haptic itself when the finger lands. A drag (the symbol wheel moving through coins) and a timer (a
      long-press firing) are NOT taps and cannot be armed - that is an Apple limitation, not ours. Android keeps
      navigator.vibrate for everything, including the wheel. */
+  /* iOS has no navigator.vibrate. The ARMED overlays (below) fire on a real TAP, which is all iOS 26.5+ allows. But a
+     DRAG (the symbol wheel turning through coins, the leverage slider) and a timer have no tap to arm - so for those we
+     still TRY the programmatic switch toggle. On older iOS (17.4-26.4) it fires the Taptic engine; on 26.5+ it is a
+     harmless no-op. Restored 2026-10-15 after the owner reported the wheel and the coin list stopped buzzing. */
+  var _sw = null;
+  function iosTick() {
+    try {
+      if (!/iPhone|iPad|iPod/.test(navigator.userAgent)) return false;
+      if (!_sw) { var l = document.createElement('label'); l.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none'; var i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); i.setAttribute('aria-hidden', 'true'); l.appendChild(i); (document.body || document.documentElement).appendChild(l); _sw = l; }
+      _sw.click();
+      return true;
+    } catch (e) { return false; }
+  }
   function fire(pattern, minGap) {
     try {
       if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
       if (off) return false;
-      if (!navigator.vibrate) return false;   // iOS: nothing to fire from code - the armed overlays do it on the tap
+      if (!navigator.vibrate) return iosTick();   // iOS: the armed overlays buzz on a tap; this covers drags the overlay cannot
       var ua = navigator.userActivation;
       if (ua && !ua.hasBeenActive) return false;   // Chrome refuses (and warns) before the first interaction
       var now = Date.now();
@@ -3451,7 +3464,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   /* The discrete tap targets worth a haptic - anything data-haptic marks, plus the mobile chart's own controls (the
      dock actions, the top bar, the Ask AI send and mode buttons) and the AI plan's Trade/On-chart buttons. Deliberately
      NOT the symbol wheel (a drag), NOT the chart canvas, NOT text inputs. Arm them now and as the UI rebuilds. */
-  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert';
+  /* #planSave = the Paper Trade Open button (owner 2026-10-15: "haptics na paper trade"); the close and the leverage
+     slider fire through the code path (mpHaptic/mpBuzz -> iosTick) because a slider is a drag with no tap to arm. */
+  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go';
   function armMatches(r) { try { if (!r.querySelectorAll) return; var els = r.querySelectorAll(HSEL); for (var i = 0; i < els.length; i++) armOne(els[i]); if (r.nodeType === 1 && r.matches && r.matches(HSEL)) armOne(r); } catch (e) {} }
   window.mpHapticArm = function (root) { try { if (!_ios) return; armMatches(root || document); } catch (e) {} };
   if (_ios) try {

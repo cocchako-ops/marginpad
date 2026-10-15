@@ -596,6 +596,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var el=document.createElement('div');el.className='mfc-wheel';el.setAttribute('role','listbox');el.setAttribute('aria-label','Quick symbol switch');
     el.innerHTML='<div class="mfc-wheel-hint">'+mcT('mcWheelHint',__esT_mpmcharts("slideToTurnRelease",'Slide to turn, release to pick'))+'</div><div class="mfc-wheel-lens"></div><div class="mfc-wheel-drum">'+list.map(function(s,i){var k=wheelClass(s);return '<div class="mfc-wrow'+(i===cur?' on':'')+'" data-i="'+i+'" role="option"><b>'+esc(s)+'</b><span class="nm">'+esc(WHEEL_NAME[s]||(k==='crypto'?'Crypto':k==='metal'?'Metal':k==='stock'?'Stock':k))+'</span><span class="px" data-px="'+esc(s)+'"></span><span class="ch" data-ch="'+esc(s)+'"></span></div>';}).join('')+'</div>';
     ov.appendChild(el);
+    /* THE LENS AND THE DRUM STEP MUST BE THE ROW'S REAL HEIGHT (2026-10-15, owner: "okvir pada preko slova" after the
+       first row). WHEEL_RH was 52 while the CSS row is 58, so the drum stepped 52 per index against 58-px rows and the
+       selection box drifted off by 6px a row. Measure the actual row height so the two can never desync again. */
+    try{var _r0=el.querySelector('.mfc-wrow');if(_r0&&_r0.offsetHeight>0)RH=_r0.offsetHeight;}catch(e){}
     var top=0;try{top=parseFloat(getComputedStyle(el).paddingTop)||0;}catch(e){}
     var lensY=Math.round(Math.max(96+top,Math.min(window.innerHeight-96,y0)));/* under the finger, kept clear of both edges */
     var lens=el.querySelector('.mfc-wheel-lens');if(lens){lens.style.top=lensY+'px';lens.style.height=RH+'px';}
