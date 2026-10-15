@@ -1,0 +1,77 @@
+{
+ "generatedAt": "2026-10-15T22:59:01.491Z",
+ "hold": "4h",
+ "nEvents": 793,
+ "nHighConv": 65,
+ "schemes": {
+  "rr1": {
+   "all": {
+    "n": 793,
+    "winRate": 45.4,
+    "expectancyR": -0.002,
+    "wins": 360,
+    "losses": 368
+   },
+   "high": {
+    "n": 65,
+    "winRate": 58.5,
+    "expectancyR": 0.333,
+    "wins": 38,
+    "losses": 17
+   },
+   "normal": {
+    "n": 728,
+    "winRate": 44.2,
+    "expectancyR": -0.032,
+    "wins": 322,
+    "losses": 351
+   }
+  },
+  "rr1.5": {
+   "all": {
+    "n": 793,
+    "winRate": 35.1,
+    "expectancyR": 0.026,
+    "wins": 278,
+    "losses": 423
+   },
+   "high": {
+    "n": 65,
+    "winRate": 47.7,
+    "expectancyR": 0.446,
+    "wins": 31,
+    "losses": 19
+   },
+   "normal": {
+    "n": 728,
+    "winRate": 33.9,
+    "expectancyR": -0.011,
+    "wins": 247,
+    "losses": 404
+   }
+  },
+  "rr2": {
+   "all": {
+    "n": 793,
+    "winRate": 27.4,
+    "expectancyR": 0.031,
+    "wins": 217,
+    "losses": 464
+   },
+   "high": {
+    "n": 65,
+    "winRate": 43.1,
+    "expectancyR": 0.631,
+    "wins": 28,
+    "losses": 21
+   },
+   "normal": {
+    "n": 728,
+    "winRate": 26,
+    "expectancyR": -0.023,
+    "wins": 189,
+    "losses": 443
+   }
+  }
+ }
+}

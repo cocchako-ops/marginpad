@@ -1,0 +1,193 @@
+{
+ "generatedAt": "2026-10-15T22:52:29.431Z",
+ "base": {
+  "8h": {
+   "n": 9180,
+   "up": 50.5,
+   "dn": 48.9
+  },
+  "24h": {
+   "n": 9180,
+   "up": 50.8,
+   "dn": 48.9
+  }
+ },
+ "signals": {
+  "breakout_long_anyvol": {
+   "8h": {
+    "n": 1288,
+    "fav": 49.8,
+    "base": 50.5,
+    "z": -0.53,
+    "meanMove": 0.143
+   },
+   "24h": {
+    "n": 1288,
+    "fav": 53.3,
+    "base": 50.8,
+    "z": 1.8,
+    "meanMove": 0.719
+   }
+  },
+  "breakout_long_squeeze": {
+   "8h": {
+    "n": 361,
+    "fav": 50.4,
+    "base": 50.5,
+    "z": -0.04,
+    "meanMove": -0.006
+   },
+   "24h": {
+    "n": 361,
+    "fav": 46.5,
+    "base": 50.8,
+    "z": -1.63,
+    "meanMove": -0.115
+   }
+  },
+  "breakout_short_squeeze": {
+   "8h": {
+    "n": 248,
+    "fav": 36.7,
+    "base": 48.9,
+    "z": -3.85,
+    "meanMove": -0.211
+   },
+   "24h": {
+    "n": 248,
+    "fav": 41.5,
+    "base": 48.9,
+    "z": -2.33,
+    "meanMove": -0.332
+   }
+  },
+  "counter_trend_short": {
+   "8h": {
+    "n": 13275,
+    "fav": 50.2,
+    "base": 48.9,
+    "z": 3.07,
+    "meanMove": -0.09
+   },
+   "24h": {
+    "n": 13275,
+    "fav": 52.2,
+    "base": 48.9,
+    "z": 7.42,
+    "meanMove": -0.252
+   }
+  },
+  "meanrev_long_range": {
+   "8h": {
+    "n": 288,
+    "fav": 54.5,
+    "base": 50.5,
+    "z": 1.36,
+    "meanMove": -0.147
+   },
+   "24h": {
+    "n": 288,
+    "fav": 54.9,
+    "base": 50.8,
+    "z": 1.37,
+    "meanMove": 0.085
+   }
+  },
+  "meanrev_long_vs_downtrend": {
+   "8h": {
+    "n": 619,
+    "fav": 58.6,
+    "base": 50.5,
+    "z": 4.05,
+    "meanMove": 0.388
+   },
+   "24h": {
+    "n": 619,
+    "fav": 59.9,
+    "base": 50.8,
+    "z": 4.53,
+    "meanMove": 0.538
+   }
+  },
+  "meanrev_short_range": {
+   "8h": {
+    "n": 368,
+    "fav": 46.2,
+    "base": 48.9,
+    "z": -1.04,
+    "meanMove": -0.332
+   },
+   "24h": {
+    "n": 368,
+    "fav": 45.4,
+    "base": 48.9,
+    "z": -1.36,
+    "meanMove": -0.888
+   }
+  },
+  "trend_pullback_long": {
+   "8h": {
+    "n": 1188,
+    "fav": 50.7,
+    "base": 50.5,
+    "z": 0.11,
+    "meanMove": 0.101
+   },
+   "24h": {
+    "n": 1188,
+    "fav": 57.3,
+    "base": 50.8,
+    "z": 4.48,
+    "meanMove": 0.406
+   }
+  },
+  "trend_pullback_short": {
+   "8h": {
+    "n": 719,
+    "fav": 47.7,
+    "base": 48.9,
+    "z": -0.64,
+    "meanMove": -0.178
+   },
+   "24h": {
+    "n": 719,
+    "fav": 49.2,
+    "base": 48.9,
+    "z": 0.16,
+    "meanMove": -0.42
+   }
+  },
+  "with_trend_long": {
+   "8h": {
+    "n": 13275,
+    "fav": 49.4,
+    "base": 50.5,
+    "z": -2.66,
+    "meanMove": 0.09
+   },
+   "24h": {
+    "n": 13275,
+    "fav": 47.6,
+    "base": 50.8,
+    "z": -7.39,
+    "meanMove": 0.252
+   }
+  },
+  "with_trend_short": {
+   "8h": {
+    "n": 9489,
+    "fav": 45.5,
+    "base": 48.9,
+    "z": -6.64,
+    "meanMove": -0.13
+   },
+   "24h": {
+    "n": 9489,
+    "fav": 44.2,
+    "base": 48.9,
+    "z": -9.27,
+    "meanMove": -0.407
+   }
+  }
+ }
+}
