@@ -1,57 +1,22 @@
-/* MarginPad service worker - web push + a light offline app-shell.
-   Caching policy (conservative, so nothing can go stale):
-   - /assets/* GETs → stale-while-revalidate (instant repeat loads; home.css/home.js carry a ?v= hash so
-     new versions are new URLs; unversioned assets refresh in the background on every hit)
-   - navigations → network-first, falling back to the cached copy (offline PWA opens instead of a dino)
-   - /api/*, websockets, cross-origin, POSTs → never touched */
-/* BUMP THIS ON ANY DEPLOY A STUCK CLIENT MUST BE FORCED OFF (2026-10-15, owner: an update stayed invisible for an
-   hour across a Safari reset). A new CACHE name makes `activate` DELETE every old 'mp-shell-*' entry, so a device that
-   had stale copies of the app shell or a bundle gets a clean slate the moment its browser picks up this sw.js (checked
-   on navigation; the script is max-age=0 must-revalidate). v1 -> v2. */
-var CACHE = 'mp-shell-v2';
-self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(['/']).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
-});
+/* MarginPad service worker - WEB PUSH ONLY (2026-10-15).
+   There is DELIBERATELY NO fetch handler. The old one cached the app shell + bundles, and on iOS Safari it served a
+   STALE app on every load after the first: the owner cleared website data, the first clean load was correct, the very
+   next load reverted to an old version and stayed there - a clean-then-stuck signature that only an SW cache can make.
+   Chrome (even with the SW) stayed fresh across loads; the bug was iOS-Safari-specific. Freshness is ALREADY guaranteed
+   without the SW: the app shell is served `no-store` (always fresh) and every bundle carries a `?v=<hash>` so a new
+   version is a new URL. An SW cache on top of that could only ever go wrong - so it is gone. Every request now goes
+   straight to the network (no respondWith anywhere), which iOS cannot get stale.
+   `activate` deletes every cache this SW ever created, so a device stuck under the old caching SW gets a clean slate the
+   moment its browser picks up this script (fetched directly from the network on navigation; sw.js is max-age=0
+   must-revalidate). If offline support is ever wanted back, add it as network-FIRST with an explicit offline page,
+   never as anything that can answer a live request from cache. */
+self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
-  e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k !== CACHE && k.indexOf('mp-shell') === 0; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
-});
-self.addEventListener('fetch', function (e) {
-  var req = e.request;
-  if (req.method !== 'GET') return;
-  var url; try { url = new URL(req.url); } catch (_) { return; }
-  if (url.origin !== self.location.origin) return;
-  if (url.pathname.indexOf('/api/') === 0 || url.pathname.indexOf('/chat/') === 0) return;
-  if (url.pathname.indexOf('/assets/') === 0) {
-    // Versioned bundles (?v=hash) + fonts/images: stale-while-revalidate - a new version is a new URL, so
-    // serving from cache can never be wrong. Unversioned JS/CSS (mp-trade.js, i18n.js, …): NETWORK-first with
-    // cache fallback, so a hotfix deploy reaches every open browser on the very next load.
-    var immutable = url.searchParams.has('v') || /\.(woff2?|png|jpe?g|webp|svg|ico)$/.test(url.pathname);
-    if (immutable) {
-      e.respondWith(caches.open(CACHE).then(function (c) {
-        return c.match(req).then(function (hit) {
-          var net = fetch(req).then(function (res) { if (res && res.ok) c.put(req, res.clone()); return res; }).catch(function () { return hit; });
-          if (hit) { e.waitUntil(net.catch(function () {})); return hit; }
-          return net;
-        });
-      }));
-    } else {
-      e.respondWith(fetch(req).then(function (res) {
-        if (res && res.ok) { var copy = res.clone(); e.waitUntil(caches.open(CACHE).then(function (c) { return c.put(req, copy); })); }
-        return res;
-      }).catch(function () { return caches.match(req); }));
-    }
-    return;
-  }
-  if (req.mode === 'navigate') { // network-first with offline fallback
-    e.respondWith(fetch(req).then(function (res) {
-      if (res && res.ok) { var copy = res.clone(); caches.open(CACHE).then(function (c) { return c.put(req, copy); }).catch(function () {}); }
-      return res;
-    }).catch(function () {
-      return caches.match(req).then(function (hit) { return hit || caches.match('/'); });
-    }));
-  }
+  e.waitUntil(
+    caches.keys()
+      .then(function (keys) { return Promise.all(keys.filter(function (k) { return k.indexOf('mp-shell') === 0; }).map(function (k) { return caches.delete(k); })); })
+      .then(function () { return self.clients.claim(); })
+  );
 });
 
 self.addEventListener('push', function (e) {
