@@ -36,6 +36,7 @@ const SEED = opt('seed', '1');
    array by rp.apply, so they are replay-safe; whaleliq is a live feed and stays off), --out <tag> writes a separate
    report so the baseline is never overwritten, --nocapture skips the pictures (an A/B needs plans, not pixels). */
 const MODEL = opt('model', ''), EFFORT = opt('effort', ''), NOIMG = argv.includes('--noimage'), MPINDS = argv.includes('--mpinds'), NOCAP = argv.includes('--nocapture');
+const STRAT = opt('strategy', ''), MODE = opt('mode', ''); /* --strategy <id> / --mode analysis ride on the request exactly as the panel sends them (2026-10-15) */
 const OUTTAG = opt('out', '');
 const REPORT = path.join(__dirname, 'data', 'ai-backtest' + (OUTTAG ? '-' + OUTTAG.replace(/[^a-z0-9_-]/gi, '') : '') + '-report.json');
 const want = argv.filter((a, i) => /^[A-Z0-9]{2,10}$/i.test(a) && !/^--/.test(argv[i - 1] || '')).map(a => a.toUpperCase());
@@ -171,7 +172,7 @@ function settle(plan, bars, i0, lastClose) {
         });
         const t0 = Date.now();
         const r = await fetch(ORIGIN + '/api/ai/chart?uid=e2e-promo', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
-          body: JSON.stringify({ context: brief.b, question: shot.q, stream: false, lang: 'en', replay: true, image: NOIMG ? undefined : (brief.img || undefined), model: MODEL || undefined, effort: EFFORT || undefined }) });
+          body: JSON.stringify({ context: brief.b, question: shot.q, stream: false, lang: 'en', replay: true, image: NOIMG ? undefined : (brief.img || undefined), model: MODEL || undefined, effort: EFFORT || undefined, strategy: STRAT || undefined, mode: MODE || undefined }) });
         const j = await r.json();
         if (!j.answer) { console.log(shot.sym + ': model gave nothing - ' + JSON.stringify(j).slice(0, 140)); await ctxB.close(); continue; }
         answer = j.answer; const modelMs = Date.now() - t0;
@@ -202,7 +203,7 @@ function settle(plan, bars, i0, lastClose) {
         console.log('  SETTLED: ' + result.outcome + (result.fillAt ? '  filled ' + result.fillAt + ' (+' + result.barsToFill + ' bars)' : '') + (result.resolvedAt ? '  resolved ' + result.resolvedAt + ' (+' + result.barsToResolve + ' bars) move ' + result.movePct + '%' : '') + '  rr ' + (result.rr || '-'));
 
         const entry = { file: shot.file, sym: shot.sym, tf: shot.tf, q: shot.q, seed: SEED, back, replayAt: rp.at, askedAt: new Date().toISOString(), modelMs,
-          variant: { model: MODEL || 'default', effort: EFFORT || 'default', image: !NOIMG, mpinds: MPINDS, briefChars: JSON.stringify(brief.b).length, briefKeys: Object.keys(brief.b) },
+          variant: { model: MODEL || 'default', effort: EFFORT || 'default', image: !NOIMG, mpinds: MPINDS, strategy: STRAT || 'auto', mode: MODE || 'trade', briefChars: JSON.stringify(brief.b).length, briefKeys: Object.keys(brief.b) },
           shapes: info.shapes, plan: info.plan, receipts: info.receipts, lastClose: rp.lastClose, prose: proseTxt.slice(0, 1200), tradable: info.tradable, result };
         if (NOCAP) { report.push(entry); await ctxB.close().catch(() => {}); continue; }
 

@@ -3395,21 +3395,21 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   /* iOS SAFARI HAS NO navigator.vibrate. Since iOS 17.4 a <input type="checkbox" switch> plays the system haptic when it is
      toggled through its label inside a user gesture - the only web haptic Apple allows. One hidden switch, toggled on
      demand; a no-op anywhere it is not supported, which costs one DOM node. (2026-10-15, the symbol wheel asked for it.) */
-  var _sw = null;
-  function iosTick() {
-    try {
-      if (navigator.vibrate) return false;
-      if (!/iPhone|iPad|iPod/.test(navigator.userAgent)) return false;
-      if (!_sw) { var l = document.createElement('label'); l.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none'; var i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); l.appendChild(i); document.body.appendChild(l); _sw = { l: l, i: i }; }
-      _sw.l.click();
-      return true;
-    } catch (e) { return false; }
-  }
+  var _ios = false; try { _ios = /iPhone|iPad|iPod/.test(navigator.userAgent) && !navigator.vibrate; } catch (e) {}
+  /* iOS HAS NO navigator.vibrate, AND A JS-DRIVEN SWITCH CLICK NO LONGER FIRES THE TAPTIC ENGINE (2026-10-15).
+     The old iosTick() called label.click() from code; a May-2026 WebKit change forwards a scripted label click to its
+     switch as an UNTRUSTED click, and CheckboxInputType only plays the haptic for a TRUSTED click during a real user
+     gesture - so on current iOS the whole thing was silently dead (owner: "haptika ne radi uopste"). The only web
+     haptic Apple still allows is a FINGER landing on a <input type=checkbox switch>. So on iOS we do not try to "fire"
+     a buzz from code at all; instead we ARM the tap targets that matter with a transparent switch overlay, and the OS
+     plays the haptic itself when the finger lands. A drag (the symbol wheel moving through coins) and a timer (a
+     long-press firing) are NOT taps and cannot be armed - that is an Apple limitation, not ours. Android keeps
+     navigator.vibrate for everything, including the wheel. */
   function fire(pattern, minGap) {
     try {
       if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
       if (off) return false;
-      if (!navigator.vibrate) return iosTick();
+      if (!navigator.vibrate) return false;   // iOS: nothing to fire from code - the armed overlays do it on the tap
       var ua = navigator.userActivation;
       if (ua && !ua.hasBeenActive) return false;   // Chrome refuses (and warns) before the first interaction
       var now = Date.now();
@@ -3422,6 +3422,44 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   /* a dragged slider must tick per STEP of the ladder, never per frame of the drag */
   window.mpHaptic = function (kind) { return fire(P[kind] || P.tick, kind === 'step' ? 45 : 0); };
   if (!window.mpBuzz) window.mpBuzz = function (p) { return fire(p, 0); };
+
+  /* ARM A TAP TARGET for an iOS haptic. A transparent <label> holding an inert-looking <input switch> is laid over the
+     element; a real tap lands on the label (trusted), the native label toggles the nested switch (haptic), and the
+     click bubbles up so the element's own handler still runs. Idempotent, a no-op off iOS and when haptics are off.
+     The switch is aria-hidden and not focusable, so it never reaches assistive tech. We re-check the off flag live so
+     the localStorage kill switch still works after arming. */
+  function armOne(el) {
+    try {
+      if (!_ios || !el || el.__mph) return;
+      if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
+      el.__mph = true;
+      var cs = ''; try { cs = getComputedStyle(el).position; } catch (e) {}
+      if (cs === 'static' || !cs) el.style.position = 'relative';
+      var l = document.createElement('label');
+      l.className = 'mph-arm'; l.setAttribute('aria-hidden', 'true');
+      l.style.cssText = 'position:absolute;inset:0;margin:0;padding:0;border:0;background:transparent;z-index:1;cursor:inherit;-webkit-tap-highlight-color:transparent';
+      var i = document.createElement('input');
+      i.type = 'checkbox'; i.setAttribute('switch', ''); i.tabIndex = -1; i.setAttribute('aria-hidden', 'true');
+      i.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;margin:0';
+      l.appendChild(i);
+      /* the label must not swallow the tap from the element: it forwards a trusted click to the switch (haptic) and the
+         gesture continues to bubble. If haptics are switched off we still install nothing-costly markup but skip wiring. */
+      l.addEventListener('click', function (e) { if (off) return; /* native label toggle already fired the haptic */ }, false);
+      el.appendChild(l);
+    } catch (e) {}
+  }
+  /* The discrete tap targets worth a haptic - anything data-haptic marks, plus the mobile chart's own controls (the
+     dock actions, the top bar, the Ask AI send and mode buttons) and the AI plan's Trade/On-chart buttons. Deliberately
+     NOT the symbol wheel (a drag), NOT the chart canvas, NOT text inputs. Arm them now and as the UI rebuilds. */
+  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert';
+  function armMatches(r) { try { if (!r.querySelectorAll) return; var els = r.querySelectorAll(HSEL); for (var i = 0; i < els.length; i++) armOne(els[i]); if (r.nodeType === 1 && r.matches && r.matches(HSEL)) armOne(r); } catch (e) {} }
+  window.mpHapticArm = function (root) { try { if (!_ios) return; armMatches(root || document); } catch (e) {} };
+  if (_ios) try {
+    var arm = function () { armMatches(document); };
+    if (document.readyState !== 'loading') arm(); else document.addEventListener('DOMContentLoaded', arm);
+    var _rT = 0; var mo = new MutationObserver(function (muts) { for (var m = 0; m < muts.length; m++) { var a = muts[m].addedNodes; for (var n = 0; n < a.length; n++) { var nd = a[n]; if (nd.nodeType === 1) armMatches(nd); } } });
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
 })();
 
 /* ── SQUAD CREST (2026-09-29) ───────────────────────────────────────────────────────────────────
