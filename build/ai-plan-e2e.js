@@ -39,6 +39,19 @@ console.log('\nPURE - the one rule, run out of the shipped bundle');
      helper has to be lifted with it. The plans below carry no `_reach`, which is exactly the no-measurement case
      ai-reach-e2e pins: they must still be judged on the reward-to-risk rule alone. */
   eval(grab('aiRR')); eval(grab('aiReachMiss')); eval(grab('aiTradable')); eval(grab('aiWhyNotTradable'));
+  /* FOURTH rule 2026-10-15: a stop inside 1.5 x ATR is not a trade. The ATR rides on the plan as `_atr` (stamped by the
+     chart, non-enumerable); a plan without it is judged as before, which keeps every fixture below meaningful. */
+  const mAtr = src.match(/var AI_MIN_STOP_ATR *= *([0-9.]+)/);
+  ok(!!mAtr, 'the bundle declares a stop floor in ATR');
+  const AI_MIN_STOP_ATR = mAtr ? +mAtr[1] : 1.5;
+  eval(grab('aiStopTight'));
+  const withAtr = (p, a) => { Object.defineProperty(p, '_atr', { value: a, enumerable: false }); return p; };
+  ok(aiTradable(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2)) === false, 'a stop 0.5 ATR from the entry is NOT a trade, whatever the ratio', aiStopTight(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2)));
+  ok(aiTradable(withAtr({ bias: 'long', entry: 100, stop: 97, targets: [104.5] }, 2)) === true, 'a stop exactly 1.5 ATR away paying 1.5x is a trade');
+  ok(aiTradable(withAtr({ bias: 'short', entry: 100, stop: 101, targets: [96] }, 2)) === false, 'the floor applies to a short the same way');
+  ok(JSON.stringify(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2)).indexOf('_atr') < 0, 'the ATR never travels in the plan JSON');
+  const tight = aiStopTight(withAtr({ bias: 'long', entry: 100, stop: 99, targets: [104] }, 2));
+  ok(tight && tight.mult === 0.5 && tight.need === AI_MIN_STOP_ATR && tight.needPct === 3, 'the card is told how tight the stop is and what it needs', tight);
 
   const long = (e, st, t) => ({ bias: 'long', entry: e, stop: st, targets: [t] });
   ok(aiTradable(long(100, 98, 104)) === true, 'a long paying 2.0x the risk is a trade', aiRR(long(100, 98, 104)));
@@ -70,6 +83,10 @@ withBrowser(async (browser) => {
     /* v is in BANDS away from price: -0.4 means four tenths of the way to the edge of what this market reaches. */
     const scale = (v) => v == null ? v : +(px * (1 + v * band)).toFixed(6);
     const P = { bias: p.bias, confidence: 60, entry: scale(p.e), stop: scale(p.s), targets: (p.t || []).map(scale), levels: [{ price: scale(p.e), label: 'watch', kind: 'support' }] };
+    /* THE STOP FLOOR (2026-10-15): a stop inside 1.5 ATR is refused as a trade, and a reach band on a quiet chart can be
+       narrower than that. A fixture meant to be SOUND widens its stop to the floor and scales the targets with it, so the
+       ratio it was written with survives; a fixture meant to be a wait or out of reach is left exactly as written. */
+    try { if (p.bias !== 'wait' && A.stampReach && A.stopTight) { A.stampReach(w, P); const tt = A.stopTight(P); if (tt) { const dir = P.entry > P.stop ? 1 : -1, risk0 = Math.abs(P.entry - P.stop), risk = P.entry * tt.needPct / 100 * 1.02; P.stop = +(P.entry - dir * risk).toFixed(6); P.targets = P.targets.map(t => +(P.entry + dir * Math.abs(t - P.entry) * risk / risk0).toFixed(6)); } } } catch (e) {}
     try { A.clearAi && A.clearAi(w); } catch (e) {}
     try { if (w._aiPlan) { w._aiPlan.forEach(l => { try { w.candle.removePriceLine(l); } catch (e) {} }); w._aiPlan = []; } } catch (e) {}
     // the real drawing path

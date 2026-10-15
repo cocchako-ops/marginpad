@@ -27,11 +27,18 @@ const { withBrowser } = require('./e2e-browser');
 const ORIGIN = 'https://marginpad.io';
 const KEY = fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'utf8').split('\n')[1].replace('\r', '').trim();
 const OUT = path.join(__dirname, '..', 'dist', 'assets', 'plus', 'bt');
-const REPORT = path.join(__dirname, 'data', 'ai-backtest-report.json');
 const W = 1040, H = 680, Q = 0.84;
 const argv = process.argv.slice(2);
-const SEED = (() => { const i = argv.indexOf('--seed'); return i >= 0 ? String(argv[i + 1] || '1') : '1'; })();
-const want = argv.filter(a => /^[A-Z0-9]{2,10}$/i.test(a)).map(a => a.toUpperCase());
+const opt = (k, d) => { const i = argv.indexOf('--' + k); return i >= 0 ? String(argv[i + 1] || d) : d; };
+const SEED = opt('seed', '1');
+/* A/B on the SAME moments (2026-10-15): --model / --effort ride the E2E path (handleAiChart honours them there only),
+   --noimage drops the chart picture, --mpinds switches the four MarginPad readouts ON (they are recomputed over the cut
+   array by rp.apply, so they are replay-safe; whaleliq is a live feed and stays off), --out <tag> writes a separate
+   report so the baseline is never overwritten, --nocapture skips the pictures (an A/B needs plans, not pixels). */
+const MODEL = opt('model', ''), EFFORT = opt('effort', ''), NOIMG = argv.includes('--noimage'), MPINDS = argv.includes('--mpinds'), NOCAP = argv.includes('--nocapture');
+const OUTTAG = opt('out', '');
+const REPORT = path.join(__dirname, 'data', 'ai-backtest' + (OUTTAG ? '-' + OUTTAG.replace(/[^a-z0-9_-]/gi, '') : '') + '-report.json');
+const want = argv.filter((a, i) => /^[A-Z0-9]{2,10}$/i.test(a) && !/^--/.test(argv[i - 1] || '')).map(a => a.toUpperCase());
 
 const SYMS = ['BTC', 'ETH', 'SOL', 'XRP', 'LINK', 'DOGE', 'BNB', 'AVAX'];
 const TFS = ['15', '60', '240'];
@@ -122,17 +129,18 @@ function settle(plan, bars, i0, lastClose) {
           const st = document.createElement('style'); st.textContent = '.cwin-replay{display:none!important}'; document.head.appendChild(st); // the replay transport is hidden in every capture; the date is printed on the page instead
         });
         await new Promise(r2 => setTimeout(r2, 500));
-        await page.evaluate(async (sym, tf, w, h) => {
+        await page.evaluate(async (sym, tf, w, h, mp) => {
           const win = window.__mpWinsDbg[0], si = win.el.querySelector('.cwin-sym');
           // the five MarginPad readouts are computed over the FULL array once and would carry the future into a rewound
           // brief; off for the read (the model is told what is locked/off and reads the standard set)
           ['casc', 'brain', 'memory', 'magnet', 'whaleliq'].forEach(k => { if (win.inds) win.inds[k] = false; });
+          if (mp) ['casc', 'brain', 'memory', 'magnet'].forEach(k => { if (win.inds) win.inds[k] = true; });
           if (win.sym !== sym) { si.value = sym; si.dispatchEvent(new Event('change', { bubbles: true })); }
           const tb = win.el.querySelector('.cwin-tf button[data-tf="' + tf + '"]'); if (tb && win.tf !== tf) tb.click();
           win.el.id = win.el.id || 'promoWin';
           win.el.style.left = '0px'; win.el.style.top = '0px'; win.el.style.width = w + 'px'; win.el.style.height = h + 'px';
           await new Promise(r => setTimeout(r, 2600));
-        }, shot.sym, shot.tf, W, H);
+        }, shot.sym, shot.tf, W, H, MPINDS);
         await page.waitForFunction(`window.__mpWinsDbg[0].sym==='${shot.sym}' && window.__mpWinsDbg[0].tf==='${shot.tf}' && window.__mpWinsDbg[0].bars.length>400 && !window.__mpWinsDbg[0]._lm`, { timeout: 40000 });
         await new Promise(r2 => setTimeout(r2, 1200));
 
@@ -163,7 +171,7 @@ function settle(plan, bars, i0, lastClose) {
         });
         const t0 = Date.now();
         const r = await fetch(ORIGIN + '/api/ai/chart?uid=e2e-promo', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': KEY, 'x-mp-e2e': '1' },
-          body: JSON.stringify({ context: brief.b, question: shot.q, stream: false, lang: 'en', replay: true, image: brief.img || undefined }) });
+          body: JSON.stringify({ context: brief.b, question: shot.q, stream: false, lang: 'en', replay: true, image: NOIMG ? undefined : (brief.img || undefined), model: MODEL || undefined, effort: EFFORT || undefined }) });
         const j = await r.json();
         if (!j.answer) { console.log(shot.sym + ': model gave nothing - ' + JSON.stringify(j).slice(0, 140)); await ctxB.close(); continue; }
         answer = j.answer; const modelMs = Date.now() - t0;
@@ -194,7 +202,9 @@ function settle(plan, bars, i0, lastClose) {
         console.log('  SETTLED: ' + result.outcome + (result.fillAt ? '  filled ' + result.fillAt + ' (+' + result.barsToFill + ' bars)' : '') + (result.resolvedAt ? '  resolved ' + result.resolvedAt + ' (+' + result.barsToResolve + ' bars) move ' + result.movePct + '%' : '') + '  rr ' + (result.rr || '-'));
 
         const entry = { file: shot.file, sym: shot.sym, tf: shot.tf, q: shot.q, seed: SEED, back, replayAt: rp.at, askedAt: new Date().toISOString(), modelMs,
+          variant: { model: MODEL || 'default', effort: EFFORT || 'default', image: !NOIMG, mpinds: MPINDS, briefChars: JSON.stringify(brief.b).length, briefKeys: Object.keys(brief.b) },
           shapes: info.shapes, plan: info.plan, receipts: info.receipts, lastClose: rp.lastClose, prose: proseTxt.slice(0, 1200), tradable: info.tradable, result };
+        if (NOCAP) { report.push(entry); await ctxB.close().catch(() => {}); continue; }
 
         /* ---- capture A: the read, framed on the analysis (the promo generator's framing, over the CUT array) ---- */
         const frame = (fwd) => page.evaluate(async (fwd) => {

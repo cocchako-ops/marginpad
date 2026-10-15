@@ -56,8 +56,8 @@ const C = {};
   // eslint-disable-next-line no-new-func
   C[n] = n;
 });
-const clientFns = new Function('var AI_MIN_RR=1.5;' +
-  ['excursionOf', 'aiReachOf', 'aiStampReach', 'aiReachMiss', 'aiRR', 'aiTradable'].map((n) => grab(CSRC, n)).join('\n') +
+const clientFns = new Function('var AI_MIN_RR=1.5;var AI_MIN_STOP_ATR=1.5;' + // aiTradable gained the stop floor on 2026-10-15; lifted with it, and the fixtures carry no `_atr` so they are judged on reach alone
+  ['excursionOf', 'aiReachOf', 'aiStampReach', 'aiReachMiss', 'aiRR', 'aiStopTight', 'aiTradable'].map((n) => grab(CSRC, n)).join('\n') +
   '\nreturn {excursionOf:excursionOf,aiReachOf:aiReachOf,aiStampReach:aiStampReach,aiReachMiss:aiReachMiss,aiTradable:aiTradable,aiRR:aiRR};')();
 const workerFns = new Function(grab(WSRC, 'aiReachMissOf') + '\nreturn {aiReachMissOf:aiReachMissOf};')();
 

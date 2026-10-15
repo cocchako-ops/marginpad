@@ -1,0 +1,3196 @@
+[
+  {
+    "file": "bt-avax-15",
+    "sym": "AVAX",
+    "tf": "15",
+    "q": "Show me where the liquidation pools sit and what they mean for a trade.",
+    "seed": "1",
+    "back": 510,
+    "replayAt": "2026-10-10T07:45:00.000Z",
+    "askedAt": "2026-10-15T15:16:26.867Z",
+    "modelMs": 15058,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6509,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Uptrend",
+      "zone:Bull OB + VWAP",
+      "hray:Long liqs $0.9M",
+      "text:Toward pool"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Uptrend structure with all the liquidation fuel stacked above price.",
+      "entry": 10.506,
+      "stop": 10.404,
+      "targets": [
+        10.672,
+        10.942
+      ],
+      "invalidation": "A 15m close back under 10.404 kills the higher-low structure.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 10.942,
+          "label": "Short liqs $1.4M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 11.0055,
+          "label": "Short liqs $2.9M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 10.672,
+          "label": "Recent high",
+          "kind": "resistance"
+        },
+        {
+          "price": 10.107,
+          "label": "Support x2",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 10.404,
+        "to": 10.506,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 10.572,
+    "prose": "**15-minute AVAX: the liquidation fuel sits ABOVE — leans long on a dip.** - Above price: short-liquidation pools at **10.942 (~$1.45M)** and **11.0055 (~$2.95M)**. Those are forced buy orders — if price gets there it accelerates, so they act as magnets/targets. - Below: nothing meaningful until **10.0328 (~$0.94M)**, over 5% away. Thin downside fuel means a dip is less likely to cascade. - Don't chase at 10.572. The clean buy is the pullback into **10.506** (the volume-weighted average price everyone paid since the 10.287 low) with the bullish order block 10.404–10.429 just under it as backstop. Small lesson: never park your stop just in front of a pool — price is drawn to it. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 10.506,
+      "stop": 10.404,
+      "target": 10.672,
+      "rr": 1.63,
+      "fillIdx": 498,
+      "resIdx": 547,
+      "fillAt": "2026-10-10T10:00:00.000Z",
+      "resolvedAt": "2026-10-10T22:15:00.000Z",
+      "barsToFill": 8,
+      "barsToResolve": 49,
+      "movePct": -0.97,
+      "mfePct": 1,
+      "maePct": -1
+    }
+  },
+  {
+    "file": "bt-avax-240",
+    "sym": "AVAX",
+    "tf": "240",
+    "q": "Read this chart and draw the setup on it.",
+    "seed": "1",
+    "back": 596,
+    "replayAt": "2026-07-08T04:00:00.000Z",
+    "askedAt": "2026-10-15T15:17:12.382Z",
+    "modelMs": 12859,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6169,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "trend:Lower highs",
+      "zone:Bear FVG",
+      "text:Lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 68,
+      "reason": "Downtrend under all MAs; bounce into the 6.62 gap is the sell.",
+      "entry": 6.619,
+      "stop": 6.754,
+      "targets": [
+        6.258,
+        5.949
+      ],
+      "invalidation": "A 4h close back above 6.754 (ema21) kills the short.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 6.619,
+          "label": "Short liqs",
+          "kind": "liquidity"
+        },
+        {
+          "price": 6.258,
+          "label": "Long liqs $4.1M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 5.949,
+          "label": "Swing low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 6.455,
+        "to": 6.652,
+        "label": "Bear FVG"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 6.445,
+    "prose": "**4-hour AVAX leans DOWN — sell the bounce, don't chase the drop.** - Price broke hard to 6.445, under every moving average (ema21 6.75, ema200 6.95) and MACD momentum is widening lower — sellers in control. - Right above sits an unfilled gap 6.455–6.652 (prices skipped through on the way down) plus a short-liquidation pool at 6.619. That's the spot to short, not here. - Below, $4.1M of long liquidations rest at 6.258 — the magnet and first target. One idea: a gap like that often gets \"filled\" by a bounce before the trend continues — that bounce is your entry, not your enemy. Setup drawn on the chart. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 6.619,
+      "stop": 6.754,
+      "target": 6.258,
+      "rr": 2.67,
+      "fillIdx": 409,
+      "resIdx": 410,
+      "fillAt": "2026-07-09T04:00:00.000Z",
+      "resolvedAt": "2026-07-09T08:00:00.000Z",
+      "barsToFill": 5,
+      "barsToResolve": 1,
+      "movePct": -2.04,
+      "mfePct": 0,
+      "maePct": -2.21
+    }
+  },
+  {
+    "file": "bt-avax-60",
+    "sym": "AVAX",
+    "tf": "60",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 304,
+    "replayAt": "2026-10-02T23:00:00.000Z",
+    "askedAt": "2026-10-15T15:16:51.055Z",
+    "modelMs": 15604,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7573,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Bear FVG entry",
+      "hray:Range cap",
+      "hray:Support x2",
+      "poly",
+      "text:Bounce"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 58,
+      "reason": "Sweep of the lows held; buying the retest into 10.723.",
+      "entry": 10.723,
+      "stop": 10.54,
+      "targets": [
+        11.024,
+        11.178
+      ],
+      "invalidation": "An hourly close below 10.54 kills the sweep-reversal read.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 10.723,
+          "label": "Swept low",
+          "kind": "support"
+        },
+        {
+          "price": 10.498,
+          "label": "Support x2",
+          "kind": "support"
+        },
+        {
+          "price": 11.286,
+          "label": "Range cap",
+          "kind": "resistance"
+        },
+        {
+          "price": 9.961,
+          "label": "Long liqs $7M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 10.68,
+        "to": 10.931,
+        "label": "Bear FVG entry"
+      }
+    },
+    "receipts": [
+      "Drew 5 shapesUndo drawings"
+    ],
+    "lastClose": 10.792,
+    "prose": "**1-hour AVAX — buy the dip into 10.723, don't chase here.** - Price flushed to 10.404 and snapped back — a liquidity sweep (stops below got taken, then price closed back above). That's usually a low, but we're mid-range, so I want a cheaper fill. - Entry **10.723** (the swept low, also the lower edge of the gap left behind at 10.68–10.931). Stop **10.54**, just under the recovery base — below that the sweep failed and the next real magnet is the long-liquidation pool at 9.96. - Careful: the 4-hour frame is still a downtrend, so this is a bounce trade, not a trend trade. Targets 11.024, then 11.178. Small idea: a stop belongs *beyond* the level that proves you wrong, never right on it. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "nofill",
+      "side": "long",
+      "entry": 10.723,
+      "stop": 10.54,
+      "target": 11.024,
+      "rr": 1.64,
+      "fillIdx": null,
+      "resIdx": null,
+      "fillAt": null,
+      "resolvedAt": null,
+      "barsToFill": null,
+      "barsToResolve": null,
+      "movePct": null,
+      "mfePct": 0,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-bnb-15",
+    "sym": "BNB",
+    "tf": "15",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 330,
+    "replayAt": "2026-10-12T04:30:00.000Z",
+    "askedAt": "2026-10-15T15:15:17.276Z",
+    "modelMs": 12241,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7527,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Buy zone",
+      "text:Range rotation"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Range low at 751.4 has held 11 of 12 tests with higher timeframes in uptrend.",
+      "entry": 751.6,
+      "stop": 749.3,
+      "targets": [
+        755.7,
+        758.2
+      ],
+      "invalidation": "A 15m close below 749.5 kills the range-support idea.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 751.4,
+          "label": "Support x7",
+          "kind": "support"
+        },
+        {
+          "price": 758.2,
+          "label": "Range top",
+          "kind": "resistance"
+        },
+        {
+          "price": 749.5,
+          "label": "Pivot low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 750.2,
+        "to": 751.6,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 2 shapesUndo drawings"
+    ],
+    "lastClose": 754.6,
+    "prose": "**15-minute chart: buy the dip toward 751.4, don't chase here.** - Price just popped off 750.4 on heavier-than-usual volume, but it's mid-range between 750 and the 758.2 swing high. Buying at 754.6 means paying near the top of the box. - The level that matters is **751.4** — touched 7 times, held 11 of 12 approaches. That's the entry; it's also where the anchored VWAP (average price paid since the last swing, 752.8) sits just above. - Stop below **749.5** (the pivot low). Break that and the range has failed, so the idea's dead. - 1-hour and 4-hour both read uptrend, which backs the long side. Small lesson: a level that has rejected price 11 times out of 12 is worth *waiting* for — chasing mid-range is how a good idea becomes a bad fill. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "win",
+      "side": "long",
+      "entry": 751.6,
+      "stop": 749.3,
+      "target": 755.7,
+      "rr": 1.78,
+      "fillIdx": 673,
+      "resIdx": 678,
+      "fillAt": "2026-10-12T05:30:00.000Z",
+      "resolvedAt": "2026-10-12T06:45:00.000Z",
+      "barsToFill": 3,
+      "barsToResolve": 5,
+      "movePct": 0.55,
+      "mfePct": 0.6,
+      "maePct": -0.04
+    }
+  },
+  {
+    "file": "bt-bnb-240",
+    "sym": "BNB",
+    "tf": "240",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 644,
+    "replayAt": "2026-06-30T04:00:00.000Z",
+    "askedAt": "2026-10-15T15:16:03.289Z",
+    "modelMs": 14519,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6238,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Sell zone",
+      "text:Lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 66,
+      "reason": "Downtrend with price under falling averages; sell the bounce into VWAP.",
+      "entry": 557.3,
+      "stop": 566.75,
+      "targets": [
+        540.1,
+        533.88
+      ],
+      "invalidation": "A 4h close above 566.75 breaks the lower-high sequence.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 557.28,
+          "label": "VWAP from low",
+          "kind": "resistance"
+        },
+        {
+          "price": 566.75,
+          "label": "50 MA",
+          "kind": "resistance"
+        },
+        {
+          "price": 540.1,
+          "label": "Swing low",
+          "kind": "support"
+        },
+        {
+          "price": 533.88,
+          "label": "Long liqs $15.8M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 554.4,
+        "to": 559.1,
+        "label": "Sell zone"
+      }
+    },
+    "receipts": [
+      "Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 552.1,
+    "prose": "**Short the bounce — 4-hour chart is in a clean downtrend (lower highs, lower lows).** - Price sits under every major average (21/50/200 EMA all above and falling), so rallies are for selling, not buying. Don't chase down here at 552 — that's mid-air. - Wait for a push back into **557.3** (the 21-period average and the volume-weighted average price since the 540.1 low — where recent buyers break even). Stop above **566.75** (50-day average). Targets: **540.1** swing low, then the **533.88** long-liquidation pool ($15.8M of forced selling — a magnet). - One idea: in a downtrend, the best entries are where trapped buyers give up, not where price is already falling. Drawn on the chart. Not financial advice — learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 557.3,
+      "stop": 566.75,
+      "target": 540.1,
+      "rr": 1.82,
+      "fillIdx": 365,
+      "resIdx": 369,
+      "fillAt": "2026-07-01T20:00:00.000Z",
+      "resolvedAt": "2026-07-02T12:00:00.000Z",
+      "barsToFill": 9,
+      "barsToResolve": 4,
+      "movePct": -1.7,
+      "mfePct": 2.06,
+      "maePct": -1.72
+    }
+  },
+  {
+    "file": "bt-bnb-60",
+    "sym": "BNB",
+    "tf": "60",
+    "q": "Show me where the liquidation pools sit and what they mean for a trade.",
+    "seed": "1",
+    "back": 596,
+    "replayAt": "2026-09-20T19:00:00.000Z",
+    "askedAt": "2026-10-15T15:15:40.189Z",
+    "modelMs": 14300,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6900,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Rising lows",
+      "zone:Short liq pools",
+      "zone:Buy zone",
+      "text:Toward pool"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 64,
+      "reason": "Short-liquidation fuel stacked 1.5-3% above, none close below.",
+      "entry": 761,
+      "stop": 756.9,
+      "targets": [
+        773.8,
+        780.9
+      ],
+      "invalidation": "An hourly close back under 756.9 kills the pullback-buy.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 773.8,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 780.9,
+          "label": "Short liqs $7.3M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 761,
+          "label": "Anchored VWAP",
+          "kind": "support"
+        },
+        {
+          "price": 739.4,
+          "label": "Long liqs $4M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 758,
+        "to": 761,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 769.4,
+    "prose": "**BNB 1-hour — pools sit mostly ABOVE, which leans long.** - Above you: $7.3M of short liquidations at **780.9** (1.5% away), more at 790.2 and 793.3. Those are forced *buys* — a magnet pulling price up if 773.8 breaks. - Below you: nothing close. The nearest long-liquidation pool is **739.4**, almost 4% down. So a dip has no fuel nearby to cascade. - Chasing at 769.4 right after a 2.9x-volume candle is the blunder. Better: wait for a pullback to the anchored VWAP at **761** (average price buyers paid since the last swing high — they defend it). Idea: a liquidation pool is where leveraged traders get force-closed; never park your stop just in front of one. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "nofill",
+      "side": "long",
+      "entry": 761,
+      "stop": 756.9,
+      "target": 773.8,
+      "rr": 3.12,
+      "fillIdx": null,
+      "resIdx": null,
+      "fillAt": null,
+      "resolvedAt": null,
+      "barsToFill": null,
+      "barsToResolve": null,
+      "movePct": null,
+      "mfePct": 0,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-btc-15",
+    "sym": "BTC",
+    "tf": "15",
+    "q": "Find me an opportunity here and draw it on the chart.",
+    "seed": "1",
+    "back": 213,
+    "replayAt": "2026-10-13T09:45:00.000Z",
+    "askedAt": "2026-10-15T15:08:05.382Z",
+    "modelMs": 15981,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7530,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "trend:Rising lows",
+      "zone:Buy zone",
+      "text:Dip then up"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 61,
+      "reason": "Pullback buy at flipped resistance 83,427 with liquidity magnet above.",
+      "entry": 83426.9,
+      "stop": 83224.2,
+      "targets": [
+        84138.6,
+        84348.4
+      ],
+      "invalidation": "A 15m close below 83,224 breaks the higher-low sequence.",
+      "horizonBars": 18,
+      "leverage": 8,
+      "levels": [
+        {
+          "price": 83426.9,
+          "label": "Flip level x8",
+          "kind": "support"
+        },
+        {
+          "price": 84332.5,
+          "label": "HTF resistance",
+          "kind": "resistance"
+        },
+        {
+          "price": 84348.4,
+          "label": "Short liqs $382M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 82243.2,
+          "label": "Support x2",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 83224.2,
+        "to": 83426.9,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 83596,
+    "prose": "**15-minute BTC: lean long, but only on a dip to 83,427 — not here.** - Price bounced hard off 81,000 and is holding above the 50 and 200 EMAs (average price lines — above them leans up), with RSI rising at 54.5. But it just failed to hold 84,138 and volume on this candle is less than half normal, so chasing here is poor value. - The spot worth buying is **83,426.9** — a level touched 8 times that last held, right at the 21 EMA. Want a wick-and-reclaim there, not a clean slice through. - Above sits a $382M short-liquidation pool at 84,348 — forced buying, a natural magnet and my second target. Note the 1-hour frame is still a downtrend, so keep it tight. Small idea: a level that flipped from resistance to support is the cheapest entry in trading — you risk little because you're wrong fast. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 83426.9,
+      "stop": 83224.2,
+      "target": 84138.6,
+      "rr": 3.51,
+      "fillIdx": 788,
+      "resIdx": 789,
+      "fillAt": "2026-10-13T10:15:00.000Z",
+      "resolvedAt": "2026-10-13T10:30:00.000Z",
+      "barsToFill": 1,
+      "barsToResolve": 1,
+      "movePct": -0.24,
+      "mfePct": 0,
+      "maePct": -0.26
+    }
+  },
+  {
+    "file": "bt-btc-240",
+    "sym": "BTC",
+    "tf": "240",
+    "q": "Is there anything worth taking here right now? Draw your answer.",
+    "seed": "1",
+    "back": 773,
+    "replayAt": "2026-06-08T16:00:00.000Z",
+    "askedAt": "2026-10-15T15:08:58.429Z",
+    "modelMs": 17758,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6462,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Bear FVG",
+      "text:Fade the bounce"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 62,
+      "reason": "Bounce into a bearish gap and short-liquidation pool inside a clear downtrend.",
+      "entry": 64253.1,
+      "stop": 65400,
+      "targets": [
+        61700.5,
+        59081.4
+      ],
+      "invalidation": "A 4h close above 65,939 breaks the lower-high sequence.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 64672.3,
+          "label": "Short liqs $654M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 61700.5,
+          "label": "VWAP from low",
+          "kind": "support"
+        },
+        {
+          "price": 59081.4,
+          "label": "Range low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 64500,
+        "to": 65201.2,
+        "label": "Bear FVG"
+      },
+      "manage": null
+    },
+    "receipts": [
+      "Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 63342.1,
+    "prose": "**4-hour BTC: nothing to buy here — the opportunity is selling a bounce into 64,250–65,300.** - Structure is still lower highs and lower lows, price 12% below the 200-period average (long-term trend line). This is a bounce inside a downtrend, not a reversal. - Just above sits a bearish fair-value gap (64,500–65,201 — a price area skipped on the way down) stacked with ~$654M of short liquidations at 64,672. That's the magnet pulling price up, and where sellers reload. - Volatility is in the top 20% of its own history, so keep the stop beyond 65,305, not tucked under it. Idea: short a rejection at 64,253, stop 65,400, back toward the 61,700 anchored VWAP (average price paid since the low). Drawn it for you. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 64253.1,
+      "stop": 65400,
+      "target": 61700.5,
+      "rr": 2.23,
+      "fillIdx": 249,
+      "resIdx": 263,
+      "fillAt": "2026-06-12T12:00:00.000Z",
+      "resolvedAt": "2026-06-14T20:00:00.000Z",
+      "barsToFill": 22,
+      "barsToResolve": 14,
+      "movePct": -1.78,
+      "mfePct": 1.39,
+      "maePct": -2.36
+    }
+  },
+  {
+    "file": "bt-btc-60",
+    "sym": "BTC",
+    "tf": "60",
+    "q": "Is there anything worth taking here right now? Draw your answer.",
+    "seed": "1",
+    "back": 637,
+    "replayAt": "2026-09-19T02:00:00.000Z",
+    "askedAt": "2026-10-15T15:08:32.019Z",
+    "modelMs": 17962,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6507,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Uptrend",
+      "hray:POC",
+      "zone:Bull OB",
+      "text:To liq pool"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Strong uptrend pulling toward short-liquidation pools above.",
+      "entry": 81039,
+      "stop": 80116,
+      "targets": [
+        82822.8,
+        83798.1
+      ],
+      "invalidation": "An hourly close below the 21-EMA at 80,116 kills the trend leg.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 82172.6,
+          "label": "Short liqs $579M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 82822.8,
+          "label": "Short liqs $586M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 80116,
+          "label": "EMA21",
+          "kind": "support"
+        },
+        {
+          "price": 79122.4,
+          "label": "POC",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 80116,
+        "to": 81039,
+        "label": "Pullback buy zone"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 81278.5,
+    "prose": "**1-hour BTC leans UP — but don't chase this candle.** - Price is 93% of the way up the loaded range after a vertical run from 74,919. RSI 72.5 (speed gauge, above 70 = overbought) and MACD rolling over, so momentum is tiring while volume on this bar is a quarter of normal — a thin push, not conviction. - The pull is still upward: two big short-liquidation pools sit at 82,172 ($579M) and 82,822 ($586M) — forced buying that price tends to get dragged into. - Plan: let it breathe back to the 9-EMA near 81,039 (fast average) and buy there; invalid if it loses the 21-EMA at 80,116. - One idea: volatility is in the 93rd percentile — wild. Wide stops, smaller size. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 81039,
+      "stop": 80116,
+      "target": 82822.8,
+      "rr": 1.93,
+      "fillIdx": 364,
+      "resIdx": 387,
+      "fillAt": "2026-09-19T04:00:00.000Z",
+      "resolvedAt": "2026-09-20T03:00:00.000Z",
+      "barsToFill": 1,
+      "barsToResolve": 23,
+      "movePct": -1.14,
+      "mfePct": 1.13,
+      "maePct": -1.17
+    }
+  },
+  {
+    "file": "bt-doge-15",
+    "sym": "DOGE",
+    "tf": "15",
+    "q": "Mark the structure and the levels that actually matter here.",
+    "seed": "1",
+    "back": 347,
+    "replayAt": "2026-10-12T00:15:00.000Z",
+    "askedAt": "2026-10-15T15:14:11.745Z",
+    "modelMs": 13434,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 8027,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "trend:Rising lows",
+      "hray:Resistance x3",
+      "zone:Buy zone",
+      "text:Dip then up"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 60,
+      "reason": "Buy the retest of 0.08633 rather than chasing into failed resistance.",
+      "entry": 0.08633,
+      "stop": 0.08603,
+      "targets": [
+        0.08717,
+        0.08762
+      ],
+      "invalidation": "A 15m close below 0.08603 breaks the structure and voids the long.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 0.08667,
+          "label": "Resistance x3",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.08633,
+          "label": "Support x4",
+          "kind": "support"
+        },
+        {
+          "price": 0.08762,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.08603,
+          "label": "Swing low",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 0.08603,
+        "to": 0.08633,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 0.08675,
+    "prose": "**15-minute DOGE: range-bound right under 0.08667 — the honest play is a dip-buy, not a chase here.** - Price just failed a break of 0.08633/0.08667 resistance and is sitting right on it. Higher frames (1H, 4H) still lean up, so dips are buyable, but at 0.08675 you're buying into the ceiling. - The level that matters: **0.08633** (touched 4x) with the swing low 0.08603 under it. A tap there with a rejection wick is the entry; losing 0.08603 kills it. - Small idea: a \"failed breakout\" just means price poked above a level and couldn't close there — the level is still boss until it holds. Not financial advice - learn and decide for yourself.",
+    "tradable": false,
+    "result": {
+      "outcome": "win",
+      "side": "long",
+      "entry": 0.08633,
+      "stop": 0.08603,
+      "target": 0.08717,
+      "rr": 2.8,
+      "fillIdx": 658,
+      "resIdx": 660,
+      "fillAt": "2026-10-12T01:45:00.000Z",
+      "resolvedAt": "2026-10-12T02:15:00.000Z",
+      "barsToFill": 5,
+      "barsToResolve": 2,
+      "movePct": 0.97,
+      "mfePct": 1.19,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-doge-240",
+    "sym": "DOGE",
+    "tf": "240",
+    "q": "Mark the structure and the levels that actually matter here.",
+    "seed": "1",
+    "back": 367,
+    "replayAt": "2026-08-15T08:00:00.000Z",
+    "askedAt": "2026-10-15T15:14:56.495Z",
+    "modelMs": 13019,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7006,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Buy zone",
+      "zone:Bear OB"
+    ],
+    "plan": {
+      "bias": "wait",
+      "confidence": 58,
+      "reason": "Range-bound and squeezed; only the 0.06872 support edge is worth buying.",
+      "entry": 0.06872,
+      "stop": 0.0679,
+      "targets": [
+        0.07151,
+        0.07312
+      ],
+      "invalidation": "A 4h close below 0.06814 opens the long-liquidation pool at 0.06726.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 0.06872,
+          "label": "Support x3",
+          "kind": "support"
+        },
+        {
+          "price": 0.07151,
+          "label": "Range mid-top",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.07312,
+          "label": "Range high",
+          "kind": "resistance"
+        },
+        {
+          "price": 0.0672604,
+          "label": "Long liqs $34M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 0.06814,
+        "to": 0.06872,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 2 shapesUndo drawings"
+    ],
+    "lastClose": 0.06999,
+    "prose": "**4-hour DOGE: a flat range, not a trend — wait for the bottom edge.** - Price 0.06999 sits dead in the middle of a 0.06872–0.07312 range, right on the volume POC (0.07015, where most trade happened). Nothing to take mid-range. - Volatility is at its *lowest* reading ever measured on this chart (ATR squeeze) — that's where breakouts are born, but direction is not decided yet. - The level that matters: **0.06872**, touched 3 times, held 6 of 7, last touch held. Below that sits $34M of long liquidations near 0.06726 — so a stop must go beyond 0.06814, not just under 0.0687. Small idea: in a range, the edge is the trade, the middle is the trap. Not financial advice - learn and decide for yourself.",
+    "tradable": false,
+    "result": {
+      "outcome": "nofill",
+      "side": "long",
+      "entry": 0.06872,
+      "stop": 0.0679,
+      "target": 0.07151,
+      "rr": 3.4,
+      "fillIdx": null,
+      "resIdx": null,
+      "fillAt": null,
+      "resolvedAt": null,
+      "barsToFill": null,
+      "barsToResolve": null,
+      "movePct": null,
+      "mfePct": 0,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-doge-60",
+    "sym": "DOGE",
+    "tf": "60",
+    "q": "Find me an opportunity here and draw it on the chart.",
+    "seed": "1",
+    "back": 847,
+    "replayAt": "2026-09-10T08:00:00.000Z",
+    "askedAt": "2026-10-15T15:14:34.993Z",
+    "modelMs": 14758,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6793,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Bear FVG",
+      "zone:Long liqs",
+      "text:Lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 66,
+      "reason": "Downtrend into a bounce; sell the VWAP/gap retest toward long-liquidation pools.",
+      "entry": 0.08685,
+      "stop": 0.0879,
+      "targets": [
+        0.08456,
+        0.08209
+      ],
+      "invalidation": "An hourly close back above 0.08790 ends the lower-high sequence.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 0.08456,
+          "label": "Swing low",
+          "kind": "support"
+        },
+        {
+          "price": 0.08209,
+          "label": "Long liqs $12M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 0.0879,
+          "label": "Last pivot",
+          "kind": "resistance"
+        }
+      ],
+      "zone": {
+        "from": 0.08707,
+        "to": 0.08851,
+        "label": "Bear FVG"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 0.08524,
+    "prose": "**1-hour DOGE leans DOWN — sell a bounce, don't chase the lows.** - Price broke down hard and sits 3.3% under the 50-period average (trend line) with RSI 31 (speed meter, weak). Structure is lower highs. - Chasing here is the blunder: the drop already ran. The opportunity is a bounce into **0.08685** — the VWAP from the last swing high (average price sellers paid) and the gap left behind at 0.08707–0.08851. That's where sellers reload. - Below sits real fuel: ~$12M of long liquidations at **0.08209** and $15M at **0.08157** — a magnet if 0.08456 breaks. One idea: a gap price jumped through (FVG) often gets refilled before the trend continues — that refill is your entry, not the breakdown candle. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 0.08685,
+      "stop": 0.0879,
+      "target": 0.08456,
+      "rr": 2.18,
+      "fillIdx": 181,
+      "resIdx": 182,
+      "fillAt": "2026-09-11T13:00:00.000Z",
+      "resolvedAt": "2026-09-11T14:00:00.000Z",
+      "barsToFill": 28,
+      "barsToResolve": 1,
+      "movePct": -1.21,
+      "mfePct": 1.01,
+      "maePct": -1.55
+    }
+  },
+  {
+    "file": "bt-eth-15",
+    "sym": "ETH",
+    "tf": "15",
+    "q": "Mark the structure and the levels that actually matter here.",
+    "seed": "1",
+    "back": 293,
+    "replayAt": "2026-10-12T13:45:00.000Z",
+    "askedAt": "2026-10-15T15:09:21.964Z",
+    "modelMs": 14863,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7821,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Uptrend",
+      "zone:Sweep demand",
+      "poly",
+      "text:Reclaim path"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Uptrend structure plus a swept-and-reclaimed low at 2532.",
+      "entry": 2532.15,
+      "stop": 2518,
+      "targets": [
+        2563,
+        2578.45
+      ],
+      "invalidation": "A 15m close below 2518 kills the sweep and breaks the higher-low series.",
+      "horizonBars": 24,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 2527.45,
+          "label": "Swept support",
+          "kind": "support"
+        },
+        {
+          "price": 2545.43,
+          "label": "VWAP from high",
+          "kind": "resistance"
+        },
+        {
+          "price": 2563,
+          "label": "Heaviest volume",
+          "kind": "liquidity"
+        },
+        {
+          "price": 2578.45,
+          "label": "Swing high",
+          "kind": "resistance"
+        }
+      ],
+      "zone": {
+        "from": 2527.45,
+        "to": 2536,
+        "label": "Demand / sweep zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 2540.74,
+    "prose": "**15-minute ETH leans UP — but only on a dip back to ~2532.** - Structure is intact: higher highs and higher lows, and price just swept the lows at 2532/2527 (ran the stops below) and closed straight back above. That's usually a bottom, not a breakdown. - The hurdle: price is under the 50-bar average (2545.66) and the VWAP from the last swing high (2545.43) — the average price buyers since the top actually paid. Reclaim that and 2578 opens up. - Volatility is in the top 20% of its own range, so ranges fail and stops get run — keep the stop under 2518, not under 2527. Small idea: a **liquidity sweep** is when price pokes below an obvious low to trigger stops, then snaps back. The snap-back is the signal, not the poke. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 2532.15,
+      "stop": 2518,
+      "target": 2563,
+      "rr": 2.18,
+      "fillIdx": 708,
+      "resIdx": 709,
+      "fillAt": "2026-10-12T14:15:00.000Z",
+      "resolvedAt": "2026-10-12T14:30:00.000Z",
+      "barsToFill": 1,
+      "barsToResolve": 1,
+      "movePct": -0.56,
+      "mfePct": 0.15,
+      "maePct": -0.83
+    }
+  },
+  {
+    "file": "bt-eth-240",
+    "sym": "ETH",
+    "tf": "240",
+    "q": "Find me an opportunity here and draw it on the chart.",
+    "seed": "1",
+    "back": 327,
+    "replayAt": "2026-08-22T00:00:00.000Z",
+    "askedAt": "2026-10-15T15:10:06.147Z",
+    "modelMs": 13691,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7480,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Bull FVG",
+      "ray:Uptrend base",
+      "text:Toward liq pool"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Strong uptrend; buy the unfilled gap edge rather than chasing an RSI-95 candle.",
+      "entry": 2491.11,
+      "stop": 2455,
+      "targets": [
+        2549.15,
+        2597.24
+      ],
+      "invalidation": "A 4h close back below 2431.72 fills the gap and kills the thrust.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 2549.15,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 2597.24,
+          "label": "Short liqs $315M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 2431.72,
+          "label": "Gap base",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 2431.72,
+        "to": 2491.11,
+        "label": "Bull FVG"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 2514.27,
+    "prose": "**ETH 4-hour: trend is straight up, but buying right here is the blunder.** RSI 95.8 (speed meter, >70 = stretched) is about as hot as this chart ever gets, and volatility sits at its 100th percentile — wild moves, stops get run. - The opportunity is the **gap at 2431.72–2491.11** (prices the market jumped through without trading, usually revisited). Buy the top edge at **2491.11** on a bounce, not the current price. - Above sits a **$315M short-liquidation pool at 2597.24** — a magnet once 2549.15 goes. - Lesson: in a parabola, chase and you get the top wick; wait for the gap and you get the trend. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 2491.11,
+      "stop": 2455,
+      "target": 2549.15,
+      "rr": 1.61,
+      "fillIdx": 673,
+      "resIdx": 674,
+      "fillAt": "2026-08-22T04:00:00.000Z",
+      "resolvedAt": "2026-08-22T08:00:00.000Z",
+      "barsToFill": 0,
+      "barsToResolve": 1,
+      "movePct": -1.45,
+      "mfePct": 0,
+      "maePct": -4.15
+    }
+  },
+  {
+    "file": "bt-eth-60",
+    "sym": "ETH",
+    "tf": "60",
+    "q": "Is there anything worth taking here right now? Draw your answer.",
+    "seed": "1",
+    "back": 745,
+    "replayAt": "2026-09-14T14:00:00.000Z",
+    "askedAt": "2026-10-15T15:09:43.914Z",
+    "modelMs": 13427,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6961,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "hray:Range cap",
+      "hray:Range floor",
+      "zone:Buy zone",
+      "text:Dip then bounce"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 58,
+      "reason": "Range chart - buy the lower shelf, not the middle.",
+      "entry": 2475.64,
+      "stop": 2455,
+      "targets": [
+        2505.78,
+        2522.73
+      ],
+      "invalidation": "An hourly close below 2460.65 breaks the range floor and kills the long.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 2486.81,
+          "label": "Heaviest volume",
+          "kind": "support"
+        },
+        {
+          "price": 2460.65,
+          "label": "Range floor",
+          "kind": "support"
+        },
+        {
+          "price": 2546.48,
+          "label": "Range cap",
+          "kind": "resistance"
+        },
+        {
+          "price": 2402.89,
+          "label": "Long liqs $300M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 2466.61,
+        "to": 2486.81,
+        "label": "Buy zone"
+      },
+      "manage": null
+    },
+    "receipts": [
+      "Opened VolumeDrew 4 shapesUndo drawings"
+    ],
+    "lastClose": 2500.41,
+    "prose": "**ETH 1-hour: sideways. Nothing worth buying at 2500 — wait for the dip.** - Every moving average is stacked right where price is (2506 / 2506 / 2506) and the range is 2462–2546. That's a coin flip at the middle — the worst place to enter. - The heaviest traded price on screen is **2486.81**, with another thick shelf at **2475.64**. Those are the magnets below. I'd rather buy a dip into there than chase here. - Last candle traded ~2.9x normal volume on a down-candle, so near-term drift is lower. That's the dip I want. Small lesson: in a range, your edge comes entirely from *where* you buy, not *whether* you're right on direction. Not financial advice - learn and decide for yourself.",
+    "tradable": false,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 2475.64,
+      "stop": 2455,
+      "target": 2505.78,
+      "rr": 1.46,
+      "fillIdx": 269,
+      "resIdx": 277,
+      "fillAt": "2026-09-15T05:00:00.000Z",
+      "resolvedAt": "2026-09-15T13:00:00.000Z",
+      "barsToFill": 14,
+      "barsToResolve": 8,
+      "movePct": -0.83,
+      "mfePct": 1.05,
+      "maePct": -1.83
+    }
+  },
+  {
+    "file": "bt-link-15",
+    "sym": "LINK",
+    "tf": "15",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 800,
+    "replayAt": "2026-10-07T07:00:00.000Z",
+    "askedAt": "2026-10-15T15:13:03.077Z",
+    "modelMs": 15861,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6640,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Bull FVG entry",
+      "zone:Bear OB",
+      "trend:Bounce low",
+      "text:Dip then up"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Bounce from the flush; buy the unfilled gap retest, not the extension.",
+      "entry": 13.715,
+      "stop": 13.64,
+      "targets": [
+        13.851,
+        13.937
+      ],
+      "invalidation": "A 15m close below 13.64 kills the bounce structure.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 13.683,
+          "label": "VWAP from low",
+          "kind": "support"
+        },
+        {
+          "price": 13.851,
+          "label": "Support x5 flipped",
+          "kind": "resistance"
+        },
+        {
+          "price": 13.937,
+          "label": "Short liqs $1.17M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 13.715,
+        "to": 13.75,
+        "label": "Bull FVG entry"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 13.786,
+    "prose": "**15-minute LINK — buy the dip to 13.715, not here.** - Price has bounced hard off the 13.246 flush and is now stalling at 13.786, the heaviest-traded price on screen (a magnet, not a launchpad). Chasing here is paying the top of the bounce. - There's a small unfilled gap at **13.715–13.75** just under price (a price jump the market skipped and usually revisits). That's the buy area; it also sits on the anchored VWAP from the swing low at 13.683 — the average price recent buyers actually paid. - Stop at **13.64**, under that VWAP shelf. First target 13.851 (old support turned resistance, 5 touches), then 13.937 where ~$1.17M of short liquidations sit. - One idea: a stop just below the thinnest price on the chart (13.652) is dangerous — price crosses empty prices fast, so sit beyond it, not in it. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 13.715,
+      "stop": 13.64,
+      "target": 13.851,
+      "rr": 1.81,
+      "fillIdx": 201,
+      "resIdx": 208,
+      "fillAt": "2026-10-07T07:30:00.000Z",
+      "resolvedAt": "2026-10-07T09:15:00.000Z",
+      "barsToFill": 1,
+      "barsToResolve": 7,
+      "movePct": -0.55,
+      "mfePct": 0.28,
+      "maePct": -0.59
+    }
+  },
+  {
+    "file": "bt-link-240",
+    "sym": "LINK",
+    "tf": "240",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 596,
+    "replayAt": "2026-07-08T04:00:00.000Z",
+    "askedAt": "2026-10-15T15:13:49.640Z",
+    "modelMs": 14750,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6409,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "trend:Lower highs",
+      "zone:Bull OB",
+      "text:Fade lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 64,
+      "reason": "Broke below all MAs; bounce into 7.877 volume shelf is the sell spot.",
+      "entry": 7.877,
+      "stop": 7.985,
+      "targets": [
+        7.643,
+        7.538
+      ],
+      "invalidation": "A 4h close back above 7.958 (POC) flips this.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 7.877,
+          "label": "Volume shelf",
+          "kind": "resistance"
+        },
+        {
+          "price": 7.643,
+          "label": "Long liqs $3M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 7.538,
+          "label": "Bull OB top",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 7.425,
+        "to": 7.538,
+        "label": "Bull OB"
+      }
+    },
+    "receipts": [
+      "Opened RSI (14)Drew 3 shapesUndo drawings"
+    ],
+    "lastClose": 7.697,
+    "prose": "**4-hour LINK leans DOWN — sell the bounce, don't chase the drop.** - Price broke under every average (EMA21 7.877, EMA200 7.93) and RSI 39.6 is falling (momentum meter, under 50 = sellers). Shorting right here at 7.697 is late. - The level worth waiting for is **7.877** — the heaviest traded price on screen and where EMA21 sits. A rejection wick there is the trigger. - Stop 7.985, just above the volume POC 7.958 so a wick can't nick it. Targets: 7.643 (long-liquidation pool, $3.0M) then 7.538 (top of the bullish order block). Small idea: the price where most volume changed hands acts like a magnet — price often returns to it before continuing. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 7.877,
+      "stop": 7.985,
+      "target": 7.643,
+      "rr": 2.17,
+      "fillIdx": 414,
+      "resIdx": 416,
+      "fillAt": "2026-07-10T00:00:00.000Z",
+      "resolvedAt": "2026-07-10T08:00:00.000Z",
+      "barsToFill": 10,
+      "barsToResolve": 2,
+      "movePct": -1.37,
+      "mfePct": 0.06,
+      "maePct": -1.7
+    }
+  },
+  {
+    "file": "bt-link-60",
+    "sym": "LINK",
+    "tf": "60",
+    "q": "Show me where the liquidation pools sit and what they mean for a trade.",
+    "seed": "1",
+    "back": 416,
+    "replayAt": "2026-09-28T07:00:00.000Z",
+    "askedAt": "2026-10-15T15:13:26.221Z",
+    "modelMs": 14524,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6809,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "hray:Short liqs $7.1M",
+      "zone:Bull OB",
+      "trend:Range top",
+      "text:Bounce path"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 58,
+      "reason": "Flush into the 13.543 long-liquidation pool above a bullish order block.",
+      "entry": 13.543,
+      "stop": 13.3,
+      "targets": [
+        13.955,
+        14.214
+      ],
+      "invalidation": "An hourly close below 13.30 kills it - the order block failed.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 13.543,
+          "label": "Long liqs $4.0M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 14.527,
+          "label": "Short liqs $7.1M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 14.493,
+          "label": "Range top x2",
+          "kind": "resistance"
+        },
+        {
+          "price": 13.3,
+          "label": "Bull OB base",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 13.3,
+        "to": 13.45,
+        "label": "Bull OB"
+      }
+    },
+    "receipts": [
+      "Opened Liquidation MagnetDrew 4 shapesUndo drawings"
+    ],
+    "lastClose": 13.666,
+    "prose": "**Marked up: 1-hour LINK — the fuel sits just under you at 13.543.** - **Liquidation pool** = where leveraged traders get force-closed. Below: **$4.0M of long liquidations at 13.543**, less than 1% away — price is falling into it and tends to get pulled there. The bigger magnet is **$7.1M of short liquidations at 14.527**, but that's 6% up, too far to trade from here. - So don't chase this red candle down; let it tag 13.543 and look for a bounce wick. A **bullish order block at 13.30–13.45** (last buying before the thrust up) sits right under it — that's where the stop belongs, *beyond* the pool, never in front of it. - RSI 33 (speed meter, oversold-ish) and volatility is in the top 82% of its own range, so stops get run. Size small. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "win",
+      "side": "long",
+      "entry": 13.543,
+      "stop": 13.3,
+      "target": 13.955,
+      "rr": 1.7,
+      "fillIdx": 585,
+      "resIdx": 587,
+      "fillAt": "2026-09-28T09:00:00.000Z",
+      "resolvedAt": "2026-09-28T11:00:00.000Z",
+      "barsToFill": 1,
+      "barsToResolve": 2,
+      "movePct": 3.04,
+      "mfePct": 4.23,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-sol-15",
+    "sym": "SOL",
+    "tf": "15",
+    "q": "Read this chart and draw the setup on it.",
+    "seed": "1",
+    "back": 642,
+    "replayAt": "2026-10-08T22:30:00.000Z",
+    "askedAt": "2026-10-15T15:10:31.847Z",
+    "modelMs": 17146,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6719,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Downtrend",
+      "zone:Bear OB",
+      "zone:Long liqs $29M",
+      "text:Lean lower"
+    ],
+    "plan": {
+      "bias": "short",
+      "confidence": 62,
+      "reason": "Downtrend bounce stalling at anchored VWAP and sma50 with thin volume.",
+      "entry": 110.93,
+      "stop": 112.6,
+      "targets": [
+        108.2,
+        105.63
+      ],
+      "invalidation": "A 15m close above 112.60 flips this; the bounce then targets 113.8+.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 110.44,
+          "label": "VWAP ceiling",
+          "kind": "resistance"
+        },
+        {
+          "price": 112.39,
+          "label": "Bear OB",
+          "kind": "resistance"
+        },
+        {
+          "price": 105.63,
+          "label": "Swing low",
+          "kind": "support"
+        },
+        {
+          "price": 104.99,
+          "label": "Long liqs $29M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 112.19,
+        "to": 112.6,
+        "label": "Bear OB"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 110.4,
+    "prose": "**SOL 15-minute — the bounce is running into resistance; I lean short, but only on a push up to ~110.93.** - Structure is still lower highs and lower lows, and price has rallied straight into the volume-weighted average price since the 115.79 high (110.44) plus the 50-bar average (110.39). That cluster is the ceiling to beat. - Just above sits a bearish order block at 112.19–112.60 (last supply before the drop) — a good place to hide the stop behind. - Below, ~$29M of long liquidations sit near 104.99 — that's the magnet if sellers regain control. - Careful: last candle's volume is 42% of normal, so this bounce isn't backed by real money yet. Drawn: the downtrend line, the OB, and the liquidation shelf. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "short",
+      "entry": 110.93,
+      "stop": 112.6,
+      "target": 108.2,
+      "rr": 1.63,
+      "fillIdx": 410,
+      "resIdx": 625,
+      "fillAt": "2026-10-09T11:45:00.000Z",
+      "resolvedAt": "2026-10-11T17:30:00.000Z",
+      "barsToFill": 52,
+      "barsToResolve": 215,
+      "movePct": -1.51,
+      "mfePct": 2.31,
+      "maePct": -1.6
+    }
+  },
+  {
+    "file": "bt-sol-240",
+    "sym": "SOL",
+    "tf": "240",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 344,
+    "replayAt": "2026-08-19T04:00:00.000Z",
+    "askedAt": "2026-10-15T15:11:18.292Z",
+    "modelMs": 15435,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7584,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Rising lows",
+      "hray:Support x3",
+      "zone:Entry zone",
+      "text:Up bias"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Squeeze above rising MAs with higher-timeframe uptrend; buy the VWAP pullback.",
+      "entry": 76.03,
+      "stop": 75.2,
+      "targets": [
+        77.49,
+        78.98
+      ],
+      "invalidation": "A 4H close below 75.20 breaks the pullback shelf.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 77.49,
+          "label": "Resistance x2",
+          "kind": "resistance"
+        },
+        {
+          "price": 74.56,
+          "label": "Support x3",
+          "kind": "support"
+        },
+        {
+          "price": 78.98,
+          "label": "Short liqs $107M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 75.84,
+        "to": 76.43,
+        "label": "Entry zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 76.9,
+    "prose": "**4H SOL — lean long, but buy the dip, not this candle.** - Structure in view is choppy, yet the 16-hour frame is an uptrend and price sits above every moving average (EMA50 75.81). Volatility is at the 6th percentile — a squeeze, where breakouts are born. - Don't chase 76.90. The clean entry is **76.03**, the anchored VWAP from the last swing low (what buyers since that turn actually paid) — it's the natural pullback shelf. - Stop **75.20** (a heavy volume shelf below). Targets 77.49 then the short-liquidation pool at 78.98, where $107M of forced buying sits. - Fails if a 4H candle closes under 75.20 — then 74.56 support is next. Drawn it for you. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "nofill",
+      "side": "long",
+      "entry": 76.03,
+      "stop": 75.2,
+      "target": 77.49,
+      "rr": 1.76,
+      "fillIdx": null,
+      "resIdx": null,
+      "fillAt": null,
+      "resolvedAt": null,
+      "barsToFill": null,
+      "barsToResolve": null,
+      "movePct": null,
+      "mfePct": 0,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-sol-60",
+    "sym": "SOL",
+    "tf": "60",
+    "q": "Where would you enter, and where does the stop go? Draw it.",
+    "seed": "1",
+    "back": 258,
+    "replayAt": "2026-10-04T21:00:00.000Z",
+    "askedAt": "2026-10-15T15:10:54.380Z",
+    "modelMs": 13971,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 7340,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Uptrend",
+      "zone:Buy zone",
+      "hray:Support x3",
+      "text:Break higher"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 64,
+      "reason": "Uptrend in a volatility squeeze; buy the pullback into anchored VWAP/EMA50.",
+      "entry": 120.46,
+      "stop": 119.81,
+      "targets": [
+        122.82,
+        123.79
+      ],
+      "invalidation": "An hourly close below 119.81 breaks the higher-low sequence.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 120.46,
+          "label": "VWAP from high",
+          "kind": "support"
+        },
+        {
+          "price": 116.6,
+          "label": "Support x3",
+          "kind": "support"
+        },
+        {
+          "price": 123.79,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 125.16,
+          "label": "Short liqs $125M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 119.81,
+        "to": 120.73,
+        "label": "Buy zone"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 121.16,
+    "prose": "**1-hour SOL leans UP — but buy the dip, not this price.** - Structure is higher highs/higher lows, EMA50 above EMA200, and the last 20 candles are squeezed inside 1.8% (quiet range = breakouts start here). Price at 121.16 sits mid-range — a bad fill. - My entry: **120.46**, the anchored VWAP from the 123.79 swing high (the average price everyone paid since that top) which lines up with the EMA50. Buyers have defended that area. - Stop **119.81** — under the last pivot low. Below that the uptrend claim is gone, and the big long-liquidation pools sit way lower at 116.19, so the stop isn't parked in front of them. - Targets 122.82 then 123.79. That's roughly 3.6x reward for the risk. Drawn it for you. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 120.46,
+      "stop": 119.81,
+      "target": 122.82,
+      "rr": 3.63,
+      "fillIdx": 747,
+      "resIdx": 758,
+      "fillAt": "2026-10-05T03:00:00.000Z",
+      "resolvedAt": "2026-10-05T14:00:00.000Z",
+      "barsToFill": 5,
+      "barsToResolve": 11,
+      "movePct": -0.54,
+      "mfePct": 1.31,
+      "maePct": -1.13
+    }
+  },
+  {
+    "file": "bt-xrp-15",
+    "sym": "XRP",
+    "tf": "15",
+    "q": "Show me where the liquidation pools sit and what they mean for a trade.",
+    "seed": "1",
+    "back": 820,
+    "replayAt": "2026-10-07T02:00:00.000Z",
+    "askedAt": "2026-10-15T15:11:44.321Z",
+    "modelMs": 17501,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6706,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Bearish FVG",
+      "hray:VWAP from high",
+      "ray:Downtrend",
+      "hray:Flush low"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 56,
+      "reason": "Capitulation flush into oversold; bounce toward VWAP if 1.4525 shelf holds.",
+      "entry": 1.4525,
+      "stop": 1.4399,
+      "targets": [
+        1.4756,
+        1.4883
+      ],
+      "invalidation": "A 15m close below 1.4399 reopens the 1.3598 long-liquidation pool.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 1.4305,
+          "label": "Flush low",
+          "kind": "support"
+        },
+        {
+          "price": 1.4691,
+          "label": "VWAP",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.5259,
+          "label": "Short liqs $11M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 1.3598,
+          "label": "Long liqs $14M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 1.4756,
+        "to": 1.4883,
+        "label": "Bearish FVG"
+      }
+    },
+    "receipts": [
+      "Opened Liquidation MagnetOpened RSI (14)Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 1.4574,
+    "prose": "**15-minute XRP: a violent flush — the pools are far away, so this is a bounce scalp, not a trend trade.** - **Below:** the big long-liquidation pool sits at **1.3598 (~$13.8M)**, 6.7% under price. That's the magnet if 1.4305 breaks — forced selling feeds itself. - **Above:** short-liquidation fuel at **1.5259 (~$11.4M)**, 4.7% up. Too far to be a target today, but it's why bounces can be sharp. - Neither pool is close, so don't park a stop just in front of them. The nearer honest levels: anchored VWAP **1.4691** (average price traded since the 1.5053 high) and the volume shelf at **1.4525**. - RSI 12.9 (speed meter, deeply oversold) plus volume 65x normal = capitulation candle. I'd buy a retest of 1.4525, not here. Lesson: liquidation pools tell you where price *wants* to go, never where it is safe to stop. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "win",
+      "side": "long",
+      "entry": 1.4525,
+      "stop": 1.4399,
+      "target": 1.4756,
+      "rr": 1.83,
+      "fillIdx": 180,
+      "resIdx": 197,
+      "fillAt": "2026-10-07T02:15:00.000Z",
+      "resolvedAt": "2026-10-07T06:30:00.000Z",
+      "barsToFill": 0,
+      "barsToResolve": 17,
+      "movePct": 1.59,
+      "mfePct": 1.68,
+      "maePct": 0
+    }
+  },
+  {
+    "file": "bt-xrp-240",
+    "sym": "XRP",
+    "tf": "240",
+    "q": "Read this chart and draw the setup on it.",
+    "seed": "1",
+    "back": 726,
+    "replayAt": "2026-06-16T12:00:00.000Z",
+    "askedAt": "2026-10-15T15:12:38.593Z",
+    "modelMs": 16449,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6152,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "zone:Bull OB",
+      "zone:FVG bullish",
+      "trend:Rising lows",
+      "text:Dip then up"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 61,
+      "reason": "Impulsive high-volume rally left an unfilled gap and a bullish order block below as the buy zone.",
+      "entry": 1.1879,
+      "stop": 1.1604,
+      "targets": [
+        1.2748,
+        1.3045
+      ],
+      "invalidation": "A 4h close under 1.1604 kills the bullish structure.",
+      "horizonBars": 18,
+      "leverage": 4,
+      "levels": [
+        {
+          "price": 1.2748,
+          "label": "Recent high",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.1604,
+          "label": "Breakdown level",
+          "kind": "support"
+        },
+        {
+          "price": 1.14734,
+          "label": "Long liqs $20M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 1.28033,
+          "label": "Short liqs $24M",
+          "kind": "liquidity"
+        }
+      ],
+      "zone": {
+        "from": 1.1792,
+        "to": 1.1879,
+        "label": "Bull OB"
+      }
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 1.209,
+    "prose": "**4-hour XRP — buy the dip, don't chase here.** - Price exploded off 1.1258 up to ~1.2748 on volume 2.6x normal, then faded back to 1.209. That leap left an unfilled **bullish gap (price skipped 1.1879–1.2257)** — markets tend to come back and fill it. - The pullback zone I want is the **bullish order block 1.1792–1.1879** (last sellers before the thrust up). Buying there, not at 1.209, is the edge. - Caution: the 200-period average (1.2459) is still above price and volatility is in the top 83% of its own range — stops get run, so keep it below 1.1604. Lesson: a gap in price is unfinished business; it's an entry area, not a guarantee. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 1.1879,
+      "stop": 1.1604,
+      "target": 1.2748,
+      "rr": 3.16,
+      "fillIdx": 278,
+      "resIdx": 285,
+      "fillAt": "2026-06-17T08:00:00.000Z",
+      "resolvedAt": "2026-06-18T12:00:00.000Z",
+      "barsToFill": 4,
+      "barsToResolve": 7,
+      "movePct": -2.32,
+      "mfePct": 3.06,
+      "maePct": -4.69
+    }
+  },
+  {
+    "file": "bt-xrp-60",
+    "sym": "XRP",
+    "tf": "60",
+    "q": "Read this chart and draw the setup on it.",
+    "seed": "1",
+    "back": 622,
+    "replayAt": "2026-09-19T17:00:00.000Z",
+    "askedAt": "2026-10-15T15:12:13.535Z",
+    "modelMs": 20727,
+    "variant": {
+      "model": "claude-opus-5",
+      "effort": "default",
+      "image": true,
+      "mpinds": false,
+      "briefChars": 6294,
+      "briefKeys": [
+        "chartTools",
+        "aiDrawings",
+        "swingPivots",
+        "respectedLevels",
+        "structure",
+        "visibleWindow",
+        "symbol",
+        "timeframe",
+        "barsLoaded",
+        "price",
+        "lastBarChangePct",
+        "changePctOver150Bars",
+        "loadedHigh",
+        "loadedLow",
+        "positionWithinRangePct",
+        "recentSwingHigh",
+        "swingHighBarsAgo",
+        "distToSwingHighPct",
+        "recentSwingLow",
+        "swingLowBarsAgo",
+        "distToSwingLowPct",
+        "movingAverages",
+        "rsi14",
+        "rsiState",
+        "rsiSlope",
+        "macd",
+        "atrPct",
+        "bollingerPercentB",
+        "bollingerBandwidthPct",
+        "indicatorsUserHasOn",
+        "recentCloses",
+        "liquidationPools",
+        "premiumReadouts",
+        "userDrawings",
+        "volume",
+        "volatility",
+        "anchoredVwap",
+        "higherTimeframes",
+        "fairValueGaps",
+        "setups",
+        "session",
+        "orderBlocks",
+        "harmonicPattern",
+        "volumeProfile",
+        "reach"
+      ]
+    },
+    "shapes": [
+      "ray:Uptrend",
+      "zone:Buy zone",
+      "hray:Long liqs $13M",
+      "text:Base case"
+    ],
+    "plan": {
+      "bias": "long",
+      "confidence": 62,
+      "reason": "Uptrend intact; buy the pullback into the 21-EMA shelf rather than chasing.",
+      "entry": 1.4153,
+      "stop": 1.3983,
+      "targets": [
+        1.4541,
+        1.4593
+      ],
+      "invalidation": "An hourly close below 1.3983 breaks the higher-low sequence.",
+      "horizonBars": 18,
+      "leverage": 5,
+      "levels": [
+        {
+          "price": 1.4541,
+          "label": "Swing high",
+          "kind": "resistance"
+        },
+        {
+          "price": 1.4153,
+          "label": "21-EMA shelf",
+          "kind": "support"
+        },
+        {
+          "price": 1.3829,
+          "label": "Long liqs $13M",
+          "kind": "liquidity"
+        },
+        {
+          "price": 1.397,
+          "label": "POC magnet",
+          "kind": "support"
+        }
+      ],
+      "zone": {
+        "from": 1.4048,
+        "to": 1.4246,
+        "label": "Buy zone"
+      },
+      "manage": ""
+    },
+    "receipts": [
+      "Drew 4 shapesUndo drawings"
+    ],
+    "lastClose": 1.4271,
+    "prose": "**1-hour XRP leans UP — but buy the dip, not this candle.** - Structure is higher highs and higher lows, price 3.1% above the 50-candle average (trend line) and well above the 200. Momentum is cooling though: MACD just slipped under its signal (trend speed fading) and RSI (0–100 speed meter) is rolling over from 61.8. - So let price come back to the 21-EMA shelf around **1.4153** — also near the heavy-volume shelf at 1.4146–1.4246. Stop under 1.3983, target the fresh swing high 1.4541, then 1.4593. That's ~2.3x reward for risk. - What kills it: an hourly close under 1.3983 puts the long-liquidation pool at 1.3829 ($13M) in play. Small idea: in an uptrend, entries are made at averages, not at highs. Not financial advice - learn and decide for yourself.",
+    "tradable": true,
+    "result": {
+      "outcome": "loss",
+      "side": "long",
+      "entry": 1.4153,
+      "stop": 1.3983,
+      "target": 1.4541,
+      "rr": 2.28,
+      "fillIdx": 381,
+      "resIdx": 382,
+      "fillAt": "2026-09-19T21:00:00.000Z",
+      "resolvedAt": "2026-09-19T22:00:00.000Z",
+      "barsToFill": 3,
+      "barsToResolve": 1,
+      "movePct": -1.2,
+      "mfePct": 0.18,
+      "maePct": -1.28
+    }
+  }
+]
