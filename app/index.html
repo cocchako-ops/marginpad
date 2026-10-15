@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="dark" />
+<script>/* ONE-TIME FORCE-FRESH (2026-10-16): break any stuck iOS service worker still serving an old bundle. Delivered via
+   this no-store HTML - the one channel that is always fresh even when the SW is stale - it unregisters every SW and
+   clears every cache ONCE, then reloads clean; home.js re-registers the push-only SW afterwards. Owner could not see a
+   shipped charts update for days on iOS and a Safari reset did not clear the SW; this breaks it from the page side. */
+(function(){try{if(!('serviceWorker'in navigator))return;var done;try{done=localStorage.getItem('mp_swreset')==='3';}catch(e){}if(done)return;try{localStorage.setItem('mp_swreset','3');}catch(e){}var jobs=[];try{jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all((rs||[]).map(function(r){return r.unregister();}));}));}catch(e){}try{if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){return Promise.all((ks||[]).map(function(k){return caches.delete(k);}));}));}catch(e){}Promise.all(jobs).then(function(){try{location.reload();}catch(e){}}).catch(function(){});}catch(e){}})();</script>
 <style>html{background:#0a0b0d;color-scheme:dark}.fl-row{display:flex;align-items:center;gap:6px}.fl-row label{margin-bottom:0}.fl-row{margin-bottom:7px}
 .ptt-q{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border-radius:50%;border:1px solid #2f3742;background:transparent;color:#8b97a5;text-decoration:none;font:700 11px/1 "Space Mono",monospace;cursor:pointer;flex:0 0 auto}
 .ptt-q:hover,.ptt-q.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
