@@ -126,6 +126,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     fetch('/api/liq/events?symbol='+encodeURIComponent(w.sym)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._lqFetch=false;if(!w||w.dead)return;
       if(j&&j.supported&&j.supported.length)LQSUP=j.supported;
       w._lq=j||null;w._lqSym=w.sym;w._lqT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
+  /* CLUSTER the liquidations piled at ONE spot (2026-10-15, owner: "neki put je neki kruzic veci od drugog pa se nalaze
+     jedan iza drugog ... clusterujemo i damo window ... samo te sto su na gomili na istom mestu"). Two marks merge ONLY
+     when they are on the SAME candle (same bar index -> identical x) AND within 0.15% in price, i.e. the circles really
+     overlap; events on different candles or more than 0.15% apart are never touched. A cluster keeps the total, the
+     count and its member events (biggest first) for the card. mx is the day's biggest single event, for the radius. */
+  function clusterLiq(mk,mx){if(!mk||mk.length<2)return mk;var out=[],used=[];
+    for(var i=0;i<mk.length;i++){if(used[i])continue;var a=mk[i],grp=[a];used[i]=1;
+      for(var j=i+1;j<mk.length;j++){if(used[j])continue;var b=mk[j];if(b.i===a.i&&a.p>0&&Math.abs(b.p-a.p)/a.p<0.0015){grp.push(b);used[j]=1;}}
+      if(grp.length<2){out.push(a);continue;}
+      var tot=0,mxu=0,mxp=a.p,longU=0;grp.forEach(function(e){tot+=+e.usd;if(+e.usd>mxu){mxu=+e.usd;mxp=e.p;}if(e.long)longU+=+e.usd;});
+      grp.sort(function(x,y){return y.usd-x.usd;});
+      out.push({i:a.i,t:a.t,p:mxp,usd:tot,long:longU>=tot/2,ex:a.ex,cluster:true,n:grp.length,events:grp,r:4+6*Math.sqrt(Math.max(0,Math.min(1,mx>0?tot/mx:0)))});}
+    return out;}
   /* A LIQUIDATION MARK IS TAPPABLE WITH DRAWING SWITCHED OFF - `.cwin-draw` is `pointer-events:none` until the
      reader draws, so the click comes from the CHART, whose point is the same pixel space the painter records in.
      Wired LAZILY and PER CHART INSTANCE: a coin switch builds a new chart and a subscription made on the old one
@@ -139,17 +152,25 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var live=0;try{live=+w.bars[w.bars.length-1].close||0;}catch(e){}
     var d=(live>0&&m.p>0)?((m.p-live)/live*100):null;
     var when=new Date(m.t),hh=function(n){return (n<10?'0':'')+n;};
-    var el=document.createElement('div');el.className='cwin-liqc';
+    var el=document.createElement('div');el.className='cwin-liqc'+(m.cluster?' cwin-liqc-cl':'');
+    var _mid;
+    if(m.cluster){var _ev=m.events||[];
+      var _rows=_ev.slice(0,8).map(function(e){return '<div class="lqc-row"><b style="color:'+(e.long?'#ff6258':'#2ebd85')+'">'+money(+e.usd)+'</b><span>'+(e.long?__esT_mpcharts("longSold",'long sold'):__esT_mpcharts("shortBought",'short bought'))+'</span><i>'+(e.ex||'-')+'</i></div>';}).join('');
+      if(_ev.length>8)_rows+='<div class="lqc-more">+'+(_ev.length-8)+' '+__esT_mpcharts("moreWord",'more')+'</div>';
+      _mid='<div class="lqc-s">'+m.n+' '+__esT_mpcharts("liquidationsAtThisLevel",'liquidations at this level')+'</div><div class="lqc-list">'+_rows+'</div>';
+    } else {
+      _mid='<div class="lqc-s">'+(m.long?__esT_mpcharts("aLongWasForceSold",'A long was force-SOLD here'):__esT_mpcharts("aShortWasForceBought",'A short was force-BOUGHT here'))+'</div>';
+    }
     el.innerHTML='<button class="cwin-liqc-x" type="button" aria-label="Close">'+((typeof RP_IC!=='undefined'&&RP_IC&&RP_IC.x)?RP_IC.x:'&#10005;')+'</button>'
-      +'<div class="lqc-h" style="color:'+(m.long?'#ff6258':'#2ebd85')+'">'+money(m.usd)+'</div>'
-      +'<div class="lqc-s">'+(m.long?'A long was force-SOLD here':'A short was force-BOUGHT here')+'</div>'
+      +'<div class="lqc-h" style="color:'+(m.long?'#ff6258':'#2ebd85')+'">'+money(m.usd)+(m.cluster?' <small>'+__esT_mpcharts("totalWord",'total')+'</small>':'')+'</div>'
+      +_mid
       +'<dl class="lqc-d">'
-      +'<dt>Price</dt><dd>'+cwFmt(m.p)+'</dd>'
-      +'<dt>When</dt><dd>'+hh(when.getHours())+':'+hh(when.getMinutes())+' \u00b7 '+when.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
-      +(d==null?'':'<dt>From price now</dt><dd>'+(d>=0?'+':'')+d.toFixed(2)+'%</dd>')
-      +'<dt>Venue</dt><dd>'+(m.ex||'-')+'</dd>'
+      +'<dt>'+__esT_mpcharts("priceWord",'Price')+'</dt><dd>'+cwFmt(m.p)+'</dd>'
+      +'<dt>'+__esT_mpcharts("whenWord",'When')+'</dt><dd>'+hh(when.getHours())+':'+hh(when.getMinutes())+' \u00b7 '+when.toLocaleDateString(undefined,{day:'numeric',month:'short'})+'</dd>'
+      +(d==null?'':'<dt>'+__esT_mpcharts("fromPriceNow",'From price now')+'</dt><dd>'+(d>=0?'+':'')+d.toFixed(2)+'%</dd>')
+      +(m.cluster?'':'<dt>'+__esT_mpcharts("venueWord",'Venue')+'</dt><dd>'+(m.ex||'-')+'</dd>')
       +'</dl>'
-      +'<p class="lqc-n">A real liquidation recorded by our own feed, not a model.</p>';
+      +'<p class="lqc-n">'+(m.cluster?__esT_mpcharts("realLiquidationsFeed",'Real liquidations recorded by our own feed, not a model.'):__esT_mpcharts("aRealLiquidationFeed",'A real liquidation recorded by our own feed, not a model.'))+'</p>';
     body.appendChild(el);
     var bw=body.clientWidth||300,bh=body.clientHeight||200,cw=el.offsetWidth||190,ch=el.offsetHeight||150;
     el.style.left=Math.max(6,Math.min(px+14,bw-cw-6))+'px';
@@ -166,6 +187,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     w._liqClose=function(){liqCardClose(w);};}
   /* The layers that are nothing without our liquidation record. Both read the same ten-coin feed. */
   var LQ_NEEDFEED={whaleliq:1};
+  /* the message shown when a feed-backed indicator is enabled on a coin we have no feed for (2026-10-15, owner: "mora da
+     pise kad su na nekom drugom coinu ... da moze samo na tim coinima gde moze"). Names the live supported list. */
+  function liqNoDataMsg(sym){var list=(LQSUP&&LQSUP.length)?LQSUP.join(', '):'BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC';return String(sym||'').toUpperCase()+__esT_mpcharts("hasNoLiquidationFeedBigLiqs",' has no liquidation feed. Big Liquidations works only on: ')+list+'.';}
   function liqSupported(sym){return !LQSUP||LQSUP.indexOf(String(sym||'').toUpperCase())>=0;}
   /* The candle an event happened inside. Binary search, because a day of marks against a few thousand bars
      is the kind of loop that shows up on a phone. */
@@ -659,6 +683,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         (_lq.rows||[]).forEach(function(e){if(_lm>0&&+e.usd<_lm)return;var bi=barAtTs(bars,e.t);if(bi<0)return;
           _mk.push({i:bi,t:e.t,p:+e.p,usd:+e.usd,long:!!e.long,ex:e.ex,
             r:4+6*Math.sqrt(Math.max(0,Math.min(1,_mx>0?e.usd/_mx:0)))});});
+        _mk=clusterLiq(_mk,_mx);
         w._liqMarks=_mk.length?_mk:null;
         var _tot=money(+_lq.total24||0),_big=money(+_lq.biggest||0);
         /* THE DAY FIRST, THE MARKED SUBSET SECOND. The marks are every event over the per-coin floor and the
@@ -790,9 +815,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var per=e.target.closest&&e.target.closest('.cwin-ind-pers b[data-pp]');
       if(per&&indMenuW&&per.parentNode.getAttribute('data-p')==='liqmin'){/* Big Liquidations floor - single select, and turning it on is a Premium action */
         if(MP_INDS.whaleliq&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));else chartToast(__esT_mpcharts("premiumIndicatorSignIn",'Premium indicator - sign in and upgrade to use it.'));return;}
+        if(!liqSupported(indMenuW.sym)&&!indMenuW.inds.whaleliq){chartToast(liqNoDataMsg(indMenuW.sym));return;}
         var _row=per.parentNode,lm=+per.getAttribute('data-pp')||0;indMenuW.liqMin=lm;Array.prototype.forEach.call(_row.querySelectorAll('b'),function(x){x.classList.toggle('on',(+x.getAttribute('data-pp')||0)===lm);});if(!indMenuW.inds.whaleliq){indMenuW.inds.whaleliq=true;var _itw=indMenuEl.querySelector('.cwin-ind-item[data-ind="whaleliq"]');if(_itw)_itw.classList.add('on');}applyInds(indMenuW);updateIndN(indMenuW);savePersist();return;}
       if(per&&indMenuW){var row=per.parentNode,pk=row.getAttribute('data-p'),pp=+per.getAttribute('data-pp');var list=pk==='ema'?(indMenuW.emaList=indMenuW.emaList||(indMenuW.emaP?[indMenuW.emaP]:[21])):(indMenuW.smaList=indMenuW.smaList||(indMenuW.smaP?[indMenuW.smaP]:[50]));var ix=list.indexOf(pp);if(ix>=0){if(list.length>1)list.splice(ix,1);}else{if(list.length>=3)list.shift();list.push(pp);}list.sort(function(a,b){return a-b;});Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});if(!indMenuW.inds[pk]){indMenuW.inds[pk]=true;var itm=indMenuEl.querySelector('.cwin-ind-item[data-ind="'+pk+'"]');if(itm)itm.classList.add('on');}applyInds(indMenuW);updateIndN(indMenuW);savePersist();return;}
-      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));else chartToast(__esT_mpcharts("premiumIndicatorSignIn",'Premium indicator - sign in and upgrade to use it.'));return;}indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
+      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show(__esT_mpcharts("unlockThePremiumIndicators",'Unlock the premium indicators'));else chartToast(__esT_mpcharts("premiumIndicatorSignIn",'Premium indicator - sign in and upgrade to use it.'));return;}
+      if(LQ_NEEDFEED[k]&&!liqSupported(indMenuW.sym)&&!indMenuW.inds[k]){chartToast(liqNoDataMsg(indMenuW.sym));return;}/* a feed-backed layer refuses to switch on where we have no feed - with a message naming the coins it works on (2026-10-15) */
+      indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
     });
     var _cin=indMenuEl.querySelector('.cwin-cmp-in');if(_cin){_cin.addEventListener('keydown',function(e){if(e.key==='Enter'&&indMenuW){e.preventDefault();setCmp(indMenuW,_cin.value);reflectCmp(indMenuW);}e.stopPropagation();});_cin.addEventListener('change',function(){if(indMenuW){setCmp(indMenuW,_cin.value);reflectCmp(indMenuW);}});}
     document.addEventListener('pointerdown',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ind-menu')||e.target.closest('.cwin-ind-btn'))))indMenuEl.hidden=true;},true);
@@ -2471,13 +2499,20 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       w._liqHit=[];
       for(var i=0;i<mk.length;i++){var m=mk[i],x=xOf(m.i),y=yOf(m.p);
         if(x==null||y==null||x<-20||x>(w.dr.W||0)+20||y<-20||y>plotH+20)continue;
-        var col=m.long?'#ff6258':'#2ebd85';
+        /* THE CIRCLE MUST READ OVER A CANDLE OF ITS OWN COLOUR, AT ANY ZOOM (2026-10-15, owner: "kad se zumira sveca
+           postaje veca a kruzic manji ... da imaju neki glow"). The old mark was a red/green disc that vanished on a
+           red/green candle body. Now: a coloured glow finds it, a solid-ish fill names the side, a BRIGHT WHITE ring
+           reads on any candle, and a thin colour ring outside keeps the long/short identity. */
+        var col=m.long?'#ff6258':'#2ebd85',fill=m.long?'rgba(255,98,88,.82)':'rgba(46,189,133,.82)';
         ctx.save();
-        ctx.beginPath();ctx.arc(x,y,m.r,0,6.283);
-        ctx.fillStyle=m.long?'rgba(255,98,88,.45)':'rgba(46,189,133,.45)';ctx.fill();
-        ctx.lineWidth=1.6;ctx.strokeStyle=col;ctx.stroke();
-        /* the heaviest few earn a halo so the eye finds them without a legend telling it where to look */
-        if(m.r>8.2){ctx.beginPath();ctx.arc(x,y,m.r+3.5,0,6.283);ctx.lineWidth=1;ctx.strokeStyle=m.long?'rgba(255,98,88,.38)':'rgba(46,189,133,.38)';ctx.stroke();}
+        ctx.shadowColor=col;ctx.shadowBlur=7;
+        ctx.beginPath();ctx.arc(x,y,m.r,0,6.283);ctx.fillStyle=fill;ctx.fill();
+        ctx.shadowBlur=0;
+        ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.stroke();
+        ctx.beginPath();ctx.arc(x,y,m.r+1.6,0,6.283);ctx.lineWidth=1.2;ctx.strokeStyle=col;ctx.stroke();
+        if(m.cluster){/* a count badge so a pile of liquidations reads as many, not one */
+          var bx=x+m.r+1,by=y-m.r-1,br=7;ctx.beginPath();ctx.arc(bx,by,br,0,6.283);ctx.fillStyle='#0c0e12';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle=col;ctx.stroke();
+          ctx.fillStyle='#fff';ctx.font='800 9.5px "Space Mono",monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(m.n>9?'9+':String(m.n),bx,by+.5);ctx.textAlign='left';}
         ctx.restore();
         w._liqHit.push({x:x,y:y,r:m.r,m:m});
       }}
@@ -2775,7 +2810,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       var stale=!w.lastBar||((nowS-w.lastBar.time)>iv*1.5+90);
       el.textContent=stale?'--:--':cdFmt(iv-(nowS%iv),iv>=3600);el.classList.toggle('stale',!!stale);}}
   function cdStart(){if(!_cdT){cdSkew();_cdT=setInterval(cdTick,1000);}}
-  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,liqSupported:liqSupported,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
+  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,magnetHist:magnetHist,sessSpans:sessSpans,dailyLevels:dailyLevels,scoreMarkers:scoreMarkers,loadLiqEv:loadLiqEv,wireLiqClick:wireLiqClick,barAtTs:barAtTs,liqSupported:liqSupported,clusterLiq:clusterLiq,liqNoDataMsg:liqNoDataMsg,LQ_NEEDFEED:LQ_NEEDFEED,fmtPx:cwFmt,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
   try{window.__mpAiContext=aiContext;window.__mpAi={stampReach:aiStampReach,reachOf:aiReachOf,reachMiss:aiReachMiss,stopTight:aiStopTight,ghostClear:aiGhostClear,rhythm:function(w){return rhythmOf(w.bars,pivotsOf(w.bars,Math.max(2,Math.min(9,Math.round(w.bars.length/40))),16),+w.bars[w.bars.length-1].close);},pathPts:aiPathPts,split:aiSplit,splitPlan:aiSplitPlan,mdLite:mdLite,planCard:aiPlanCard,rr:aiRR,drawPlan:aiDrawPlan,tradable:aiTradable,draw:aiDrawActs,geom:aiGeom,shapeOf:aiShapeOf,clearAi:aiClearAi,undo:aiUndoBatch,histKey:aiHistKey,histLoad:aiHistLoad,histSave:aiHistSave,histPull:aiHistPull,actsNote:aiActsNote,setSym:setWinSym,setTf:setWinTf};}catch(e){} // setSym/setTf are debug hooks for the offline vision harness (2026-10-04), same surface as the rest // the mobile sheet shares the context builder, the answer splitter, the plan card, the SAME per-symbol thread store and the draw executor (it keeps only its own pane-side half: indicators/timeframe/symbol on a pane)
