@@ -927,8 +927,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(e.target.closest('#mfcCpos')){var pe=body.querySelector('#mfcCe'),ps=body.querySelector('#mfcCsl'),pt=body.querySelector('#mfcCtp');if(pe)pe.value=pos.p;if(ps)ps.value=pos.stop;if(pt&&pos.tgts&&pos.tgts.length)pt.value=pos.tgts[0];side=pos.stop<pos.p?'long':'short';body.querySelectorAll('#mfcCs button').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-side')===side);});calc();}});
     form();}
   function buildAi(body,p){
-    var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
-    if(!me){body.innerHTML='<p style="color:#cfd4da;font-size:14px;line-height:1.5">'+mcT('mcAiSignin',__esT_mpmcharts("signInFreeTo",'Sign in (free) to ask the AI about this chart.'))+'</p><button class="mfc-b on" data-auth-open style="margin-top:10px">'+mcT('mcSigninFree',__esT_mpmcharts("signInFree",'Sign in free'))+'</button>';return;}
+    /* THE MODE + STRATEGY SELECTOR MUST ALWAYS SHOW (2026-10-16, owner: "ne vidim da biram izmedju analize i pozicije
+       kao ni strategije i da to uopste ne vidi"). It used to early-return a sign-in prompt whenever mpAuth.me() was
+       null - which is not only a guest but ALSO a signed-in member whose deferred mp-auth had not resolved the session
+       yet at the instant the sheet opened, so the selector was simply never built for them. Now the whole sheet renders
+       for everyone; only SEND is gated, and it re-reads auth LIVE so a session that resolved after the sheet opened
+       still works. A guest who sends is prompted to sign in; the picker is visible to all. */
     /* THE SAME THREAD AS THE DESKTOP (2026-09-17, owner: "kad izadjes iz chat-a, istorija se gubi"): the sheet used to start empty on
        every open and sent history:[] - so a follow-up had no context and closing the sheet lost everything. It now reads and writes
        the per-symbol store mp-charts owns (localStorage + the server copy), sends the thread, executes the model's actions on the
@@ -980,7 +984,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     /* THE READ RUNS IN THE BACKGROUND ON THE PANE (2026-10-15): `p._aiRun` holds the text so far and the bubble it is filling;
        the sheet is rebuilt on every open, so a rebuilt sheet re-attaches a bubble to the run in flight instead of showing a
        question with no answer. A second question while one runs is refused on the pane, not on the sheet instance. */
-    function send(qIn,opts){var q=String(qIn!=null?qIn:(inp.value||'')).trim();if(busy||p._aiRun)return;var quick=!!(opts&&opts.quick);if(!q)q=aiMode==='analysis'?__esT_mpmcharts("mapThisChart",'Map this chart for me: structure, the levels that matter and where the money sits. Draw the zones.'):__esT_mpmcharts("giveMeASharp",'Give me a sharp, practical read on this chart right now.');busy=true;inp.value='';
+    function send(qIn,opts){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me){if(window.mpToast)window.mpToast({msg:mcT('mcAiSignin',__esT_mpmcharts("signInFreeTo",'Sign in (free) to ask the AI about this chart.')),kind:'warn'});try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return;}var q=String(qIn!=null?qIn:(inp.value||'')).trim();if(busy||p._aiRun)return;var quick=!!(opts&&opts.quick);if(!q)q=aiMode==='analysis'?__esT_mpmcharts("mapThisChart",'Map this chart for me: structure, the levels that matter and where the money sits. Draw the zones.'):__esT_mpmcharts("giveMeASharp",'Give me a sharp, practical read on this chart right now.');busy=true;inp.value='';
       var uEntry={role:'user',text:q,ts:Date.now(),mode:aiMode,strategy:aiStrat};var h=hist();h.push(uEntry);save(h,true);
       var payloadHist=h.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text+(AI?AI.actsNote(m):'')};});
       var c0=ctx();var run=p._aiRun={acc:'',bub:null,wk:WK,uEntry:uEntry,got:false,mode:aiMode,strategy:aiStrat};
