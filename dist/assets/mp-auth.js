@@ -3392,11 +3392,24 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
 (function () {
   var P = { step: 7, tick: 12, ok: [15, 40, 15], warn: [22, 55, 22] };
   var off = null, last = 0;
+  /* iOS SAFARI HAS NO navigator.vibrate. Since iOS 17.4 a <input type="checkbox" switch> plays the system haptic when it is
+     toggled through its label inside a user gesture - the only web haptic Apple allows. One hidden switch, toggled on
+     demand; a no-op anywhere it is not supported, which costs one DOM node. (2026-10-15, the symbol wheel asked for it.) */
+  var _sw = null;
+  function iosTick() {
+    try {
+      if (navigator.vibrate) return false;
+      if (!/iPhone|iPad|iPod/.test(navigator.userAgent)) return false;
+      if (!_sw) { var l = document.createElement('label'); l.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none'; var i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); l.appendChild(i); document.body.appendChild(l); _sw = { l: l, i: i }; }
+      _sw.l.click();
+      return true;
+    } catch (e) { return false; }
+  }
   function fire(pattern, minGap) {
     try {
-      if (!navigator.vibrate) return false;
       if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
       if (off) return false;
+      if (!navigator.vibrate) return iosTick();
       var ua = navigator.userActivation;
       if (ua && !ua.hasBeenActive) return false;   // Chrome refuses (and warns) before the first interaction
       var now = Date.now();

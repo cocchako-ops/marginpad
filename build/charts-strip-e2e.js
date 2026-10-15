@@ -203,7 +203,7 @@ async function deskInd(page, k, on) {
     await page.touchscreen.touchStart(wb.x, wb.y); await sleep(600);
     const w1 = await page.evaluate(() => { const el = document.querySelector('.mfc-wheel'); if (!el) return { open: false }; const st = window.__mpWheel.state(); const on = el.querySelector('.mfc-wrow.on'); const lens = el.querySelector('.mfc-wheel-lens').getBoundingClientRect(); const r = on.getBoundingClientRect(); return { open: true, n: st.list.length, i: st.i, onSym: on.querySelector('b').textContent, inLens: Math.abs((r.top + r.height / 2) - (lens.top + lens.height / 2)) <= 4, hasGold: st.list.indexOf('XAU') >= 0, stocks: st.list.filter(s => /^(AAPL|NVDA|TSLA)$/.test(s)).length, sheet: !!document.querySelector('.mfc-sheet') }; });
     ok('holding the coin button opens the wheel: nine rows (5 majors, gold, 3 stocks), the current symbol under the lens, no sheet', w1.open && w1.n === 9 && w1.onSym === wb.sym && w1.inLens && w1.hasGold && w1.stocks === 3 && !w1.sheet, JSON.stringify(w1));
-    for (let i = 1; i <= 6; i++) { await page.touchscreen.touchMove(wb.x, wb.y + 116 * i / 6); await sleep(30); }
+    for (let i = 1; i <= 6; i++) { await page.touchscreen.touchMove(wb.x, wb.y + 68 * i / 6); await sleep(30); } /* a row is 34px of travel since 2026-10-15 (was 58) - two rows = 68px */
     await sleep(250);
     const w2 = await page.evaluate(() => { const st = window.__mpWheel.state(); const on = document.querySelector('.mfc-wrow.on'); return { i: st.i, onSym: on && on.querySelector('b').textContent, px: (on && on.querySelector('.px').textContent) || '' }; });
     await shot(page, 'wheel-phone');

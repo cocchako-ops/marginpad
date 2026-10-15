@@ -1605,6 +1605,51 @@
   .cwin-ai-gate{padding:26px 18px;text-align:center;color:#9aa3ad;font-size:13px;line-height:1.65;}
   .cwin-ai-gate .g-btn{display:inline-block;margin-top:13px;background:#c2f64a;color:#0a0b0d;font-weight:800;border:none;border-radius:10px;padding:10px 18px;cursor:pointer;font-size:13px;}
   .cwin-ai-note{font-size:10px;color:#566;padding:0 12px 10px;text-align:center;flex-shrink:0;}
+  /* ASK AI v2 (2026-10-15): a status line in the header, a mode strip under it, the analysis card, the streaming bubble */
+  .cwin-ai-h b{white-space:nowrap;}
+  .cwin-ai-status{display:flex;align-items:center;gap:7px;font:600 10.5px 'Space Mono',monospace;letter-spacing:.02em;color:#7f8a99;padding:6px 13px 0;min-width:0;flex-shrink:0;}
+  .cwin-ai-status span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
+  .cwin-ai-status i{width:7px;height:7px;border-radius:50%;background:#5f6b7a;flex-shrink:0;}
+  .cwin-ai-status[data-st="reading"] i,.cwin-ai-status[data-st="thinking"] i,.cwin-ai-status[data-st="writing"] i,.cwin-ai-status[data-st="drawing"] i{background:#7fb6ff;box-shadow:0 0 8px rgba(127,182,255,.7);}
+  .cwin-ai-status[data-st="done"] i{background:#41e3a3;box-shadow:0 0 8px rgba(65,227,163,.6);}
+  .cwin-ai-status[data-st="done"]{color:#9fe8c6;}
+  .cwin-ai-status[data-st="fail"] i{background:#ff6258;}
+  .cwin-ai-mode{display:flex;align-items:center;gap:8px;padding:8px 12px 0;flex-shrink:0;position:relative;}
+  .aim-seg{display:inline-flex;background:#0b0f17;border:1px solid #27313f;border-radius:999px;padding:2px;}
+  .aim-seg button{font:700 11px 'Familjen Grotesk',system-ui,sans-serif;color:#8f9bab;background:none;border:none;border-radius:999px;padding:5px 11px;cursor:pointer;transition:background .15s,color .15s;}
+  .aim-seg button.on{background:linear-gradient(180deg,#26486f,#1f3a5a);color:#eaf3ff;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
+  .cwin-ai-panel.mode-analysis .aim-seg button.on{background:linear-gradient(180deg,#2d3f2a,#1f2e1e);color:#d9f7a8;}
+  .aim-strat{display:inline-flex;align-items:center;gap:6px;min-width:0;flex:1;background:#0b0f17;border:1px solid #27313f;border-radius:999px;padding:5px 10px 5px 11px;color:#dfe6f0;cursor:pointer;font-family:inherit;}
+  .aim-strat .k{font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;color:#6f7b8b;text-transform:uppercase;}
+  .aim-strat b{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .aim-strat .car{margin-left:auto;font-size:9px;color:#6f7b8b;}
+  .aim-strat:disabled{opacity:.45;cursor:default;}
+  .aim-pop{position:absolute;left:12px;right:12px;top:calc(100% + 4px);z-index:5;background:#111826;border:1px solid #2a3442;border-radius:12px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;box-shadow:0 14px 40px rgba(0,0,0,.5);}
+  .aim-pop[hidden]{display:none;}
+  .aim-it{text-align:left;background:#0b0f17;border:1px solid #27313f;border-radius:9px;padding:8px 10px;color:#c7d2e0;cursor:pointer;font-family:inherit;font-size:11.5px;}
+  .aim-it:hover{border-color:#4a6088;color:#fff;}
+  .aim-it.on{border-color:#7fb6ff;color:#dff0ff;background:#15233a;}
+  .aimsg-modeline{display:block;margin-top:8px;color:#9bd6ff;font-size:12px;}
+  .mfc-ai-mode{padding:0 0 8px;}
+  .mfc-ai-mode .aim-pop{left:0;right:0;}
+  .mfc-ai-st{display:flex;align-items:center;gap:7px;font:600 11px 'Space Mono',monospace;color:#7f8a99;padding:0 2px 6px;}
+  .mfc-ai-st i{width:7px;height:7px;border-radius:50%;background:#5f6b7a;flex-shrink:0;}
+  .mfc-ai-st[data-st="reading"] i,.mfc-ai-st[data-st="thinking"] i,.mfc-ai-st[data-st="writing"] i,.mfc-ai-st[data-st="drawing"] i{background:#7fb6ff;box-shadow:0 0 8px rgba(127,182,255,.7);}
+  .mfc-ai-st[data-st="done"] i{background:#41e3a3;}.mfc-ai-st[data-st="done"]{color:#9fe8c6;}.mfc-ai-st[data-st="fail"] i{background:#ff6258;}
+  .mfc-ai-msg.ai.streaming{border-color:#34507a;}
+  .mfc-sheet .mode-analysis .aim-seg button.on{background:linear-gradient(180deg,#2d3f2a,#1f2e1e);color:#d9f7a8;}
+  .aimsg.ai.streaming{border-color:#34507a;}
+  .aipartial{margin-top:6px;font-size:11px;color:#ffb020;border-top:1px dashed #3a3f48;padding-top:5px;}
+  .aiplan-an .aipc-b.an{color:#d9f7a8;}
+  .aipc-lean{font:700 11px 'Space Mono',monospace;color:#9aa3af;letter-spacing:.04em;}
+  .aipc-lean.up{color:#2ebd85;}.aipc-lean.dn{color:#ff5a4d;}
+  .cwin-ai.busy{border-color:#7fb6ff;color:#dff0ff;}
+  .cwin-ai.done{border-color:#41e3a3;color:#9fe8c6;}
+  .cwin-ai.done::after{content:'';width:7px;height:7px;border-radius:50%;background:#41e3a3;box-shadow:0 0 8px rgba(65,227,163,.8);margin-left:2px;}
+  body.ch-light .cwin-ai-mode .aim-seg,body.ch-light .aim-strat{background:#f4f6fa;border-color:#d3dae3;}
+  body.ch-light .aim-seg button{color:#5b6673;}body.ch-light .aim-seg button.on{color:#fff;}
+  body.ch-light .aim-strat{color:#1d242e;}body.ch-light .aim-pop{background:#fff;border-color:#d3dae3;}body.ch-light .aim-it{background:#f4f6fa;border-color:#d3dae3;color:#1d242e;}
+  body.ch-light .cwin-ai-status{color:#5b6673;}
   /* the receipt of what an answer DID on the chart (2026-09-17): opened RSI, switched to 4H, drew 4 shapes - and Undo for the drawings */
   .aiacts{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;padding-top:7px;border-top:1px dashed #233043;align-items:center;}
   .aiacts span{font:700 10px 'Space Mono',monospace;color:#9bd6ff;background:rgba(127,182,255,.09);border:1px solid #2a3a52;border-radius:6px;padding:2px 7px;}
@@ -1747,6 +1792,14 @@
   .cwin-tool{background:#11161c;border:1px solid #2b323b;border-radius:6px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;line-height:1;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0 6px;}
   .cwin-tool.on{background:#3fd8e6;color:#06222a;border-color:#3fd8e6;}
   .cwin-clear{color:#ff8a80;}
+  .cwin-undo.dim{opacity:.35;pointer-events:none;}
+  /* maximize + full screen in the window header (2026-10-15) */
+  .cwin .cwin-head .cwin-max,.cwin .cwin-head .cwin-fs{width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:none;border:none;color:#7f8893;cursor:pointer;border-radius:6px;height:26px;}
+  .cwin .cwin-head .cwin-max:hover,.cwin .cwin-head .cwin-fs:hover{color:#e9e7df;background:rgba(255,255,255,.06);}
+  .cwin.maxed .cwin-head .cwin-max,.cwin.fs .cwin-head .cwin-fs{color:#c2f64a;}
+  .cwin:fullscreen{border-radius:0;border:0;}
+  .cwin:fullscreen .cwin-head .cwin-max,.cwin:fullscreen .cwin-head .cwin-grip{display:none;}
+  @container (max-width:600px){.cwin .cwin-head .cwin-max{display:none;}}
   .cwin-color{width:16px;height:16px;border-radius:50%;border:2px solid #11161c;cursor:pointer;box-shadow:0 0 0 1px #2b323b;}
   .cwin-color.on{border-color:#fff;}
   /* sticky notes - dark grey paper, text colour picker (white / green / red) */
@@ -2954,6 +3007,7 @@
   @media(orientation:portrait){
     .mfc-pane.drawing .cwin-tools{position:fixed;left:0;right:0;bottom:0;top:auto;max-width:none;border-radius:14px 14px 0 0;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:6px;z-index:45;}
     .mfc-pane.drawing .cwin-tools .cwin-tool{min-width:40px;min-height:40px;font-size:16px;}
+    .mfc-pane.drawing .cwin-tools .cwin-redo{display:none;} /* ten thumb-sized tools do not fit a 390px row; Undo stays, Redo is a desktop luxury */
     .mfc-pane.drawing .cwin-tools .cwin-pop{bottom:calc(100% + 6px);top:auto;}
     .mfc-pane.drawing .cwin-tools .cwin-pop-tool{bottom:0;}
   }
