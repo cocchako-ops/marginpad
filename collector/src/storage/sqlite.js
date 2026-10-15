@@ -132,6 +132,22 @@ export function createSqliteStorage(path, opts = {}) {
     return [...map.values()].sort((a, b) => a.price - b.price);
   }
 
+  // TIME series for the liquidation-flow edge: [{t, long, short, longN, shortN}] per 5-min window over `minutes`.
+  // histogram() groups by price_bucket (where); this groups by win_start (when) - the shape the long-cascade /
+  // sweep-of-low detector needs, which no endpoint exposed before (2026-10-15).
+  function series(symbol, minutes) {
+    const since = Math.floor((Date.now() - minutes * 60000) / 300000) * 300000;
+    const rows = db.prepare(
+      `SELECT win_start AS t, side, SUM(notional) AS n, SUM(cnt) AS c FROM agg_5m WHERE symbol=? AND win_start>=? GROUP BY win_start, side`
+    ).all(symbol, since);
+    const map = new Map();
+    for (const r of rows) {
+      let e = map.get(r.t); if (!e) { e = { t: Number(r.t), long: 0, short: 0, longN: 0, shortN: 0 }; map.set(r.t, e); }
+      if (r.side === 'long_liquidated') { e.long += r.n; e.longN += Number(r.c); } else { e.short += r.n; e.shortN += Number(r.c); }
+    }
+    return [...map.values()].sort((a, b) => a.t - b.t);
+  }
+
   // Recent raw events for the live ticker + chart bubbles.
   function live(symbol, limit = 200, minNotional = 0) {
     return db.prepare(
@@ -266,7 +282,7 @@ export function createSqliteStorage(path, opts = {}) {
     return db.prepare('SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts').all(d0, d1);
   }
 
-  return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
+  return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay,
     saveState, loadState,

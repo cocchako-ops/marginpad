@@ -61,6 +61,21 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     } catch (e) { log.error('recent failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
+  // TIME series of liquidations per 5-min window (when, not where): [{t,long,short,longN,shortN}] over `minutes`.
+  // Feeds the Ask AI liquidation-flow edge detector (long-cascade / sweep-of-low). Grouped on an indexed column,
+  // so it is cheap even over the full agg_5m retention; its own clamp (up to 90d) rather than the chart windows.
+  app.get('/api/v1/liqseries', async (req, res) => {
+    const symbol = String(req.query.symbol || 'BTC').toUpperCase();
+    if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
+    const g = gate(req, {}); if (!g.ok) return res.status(g.status).json({ error: g.reason });
+    const minutes = Math.min(Math.max(5, parseInt(req.query.minutes, 10) || 1440), 129600); // up to 90d (agg retention)
+    try {
+      const buckets = await storage.async.series(symbol, minutes);
+      res.set('Cache-Control', `public, max-age=${config.api.aggCacheSeconds}`);
+      res.json({ symbol, minutes, bucketMs: 300000, updatedAt: Date.now(), buckets });
+    } catch (e) { log.error('liqseries failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
   // Recent raw events for the live ticker + chart bubbles.
   app.get('/api/v1/liquidations/live', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
