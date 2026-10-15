@@ -3441,53 +3441,19 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      click bubbles up so the element's own handler still runs. Idempotent, a no-op off iOS and when haptics are off.
      The switch is aria-hidden and not focusable, so it never reaches assistive tech. We re-check the off flag live so
      the localStorage kill switch still works after arming. */
-  function armOne(el) {
-    try {
-      if (!_ios || !el || el.__mph) return;
-      if (off === null) { try { off = localStorage.getItem('mp_haptics') === '0'; } catch (e) { off = false; } }
-      el.__mph = true;
-      var cs = ''; try { cs = getComputedStyle(el).position; } catch (e) {}
-      if (cs === 'static' || !cs) el.style.position = 'relative';
-      var l = document.createElement('label');
-      l.className = 'mph-arm'; l.setAttribute('aria-hidden', 'true');
-      l.style.cssText = 'position:absolute;inset:0;margin:0;padding:0;border:0;background:transparent;z-index:1;cursor:inherit;-webkit-tap-highlight-color:transparent';
-      var i = document.createElement('input');
-      i.type = 'checkbox'; i.setAttribute('switch', ''); i.tabIndex = -1; i.setAttribute('aria-hidden', 'true');
-      i.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;margin:0';
-      l.appendChild(i);
-      /* the label must not swallow the tap from the element: it forwards a trusted click to the switch (haptic) and the
-         gesture continues to bubble. If haptics are switched off we still install nothing-costly markup but skip wiring. */
-      l.addEventListener('click', function (e) { if (off) return; /* native label toggle already fired the haptic */ }, false);
-      el.appendChild(l);
-    } catch (e) {}
-  }
-  /* The discrete tap targets worth a haptic - anything data-haptic marks, plus the mobile chart's own controls (the
-     dock actions, the top bar, the Ask AI send and mode buttons) and the AI plan's Trade/On-chart buttons. Deliberately
-     NOT the symbol wheel (a drag), NOT the chart canvas, NOT text inputs. Arm them now and as the UI rebuilds. */
-  /* #planSave = the Paper Trade Open button (owner 2026-10-15: "haptics na paper trade"); the close and the leverage
-     slider fire through the code path (mpHaptic/mpBuzz -> iosTick) because a slider is a drag with no tap to arm. */
-  /* THE OVERLAY IS ONLY FOR NON-NAVIGATING CONTROLS (fixed 2026-10-15, owner: "klik na practice ne radi a ima haptic ...
-     klikovi iz Browse ne vode nikud"). A transparent <label> laid over an <a> makes the label's switch-toggle the click's
-     default action and SWALLOWS the link's navigation - so every armed <a> (the bottom nav bar, the Browse drawer rows)
-     went dead. Those are handled by the delegated listener below instead, which never touches the element's structure.
-     The overlay stays for buttons and the JS-driven rows (coin picker, timeframe items), where it cannot break anything. */
-  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it';
-  var NAVTAP = '.mpbn a,.mpbn button,.mpnav-row';   // navigation links: haptic from a delegated tap, NEVER an overlay (it would eat the nav)
-  var HTAP = '.mfc-dock>[data-act],.mfc-b,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.mfc-ai-mode [data-mode],.aim-it';  // the overlay set, re-fired on Android where the overlay does nothing
-  function armMatches(r) { try { if (!r.querySelectorAll) return; var els = r.querySelectorAll(HSEL); for (var i = 0; i < els.length; i++) armOne(els[i]); if (r.nodeType === 1 && r.matches && r.matches(HSEL)) armOne(r); } catch (e) {} }
-  window.mpHapticArm = function (root) { try { if (!_ios) return; armMatches(root || document); } catch (e) {} };
-  if (_ios) try {
-    var arm = function () { armMatches(document); };
-    if (document.readyState !== 'loading') arm(); else document.addEventListener('DOMContentLoaded', arm);
-    var mo = new MutationObserver(function (muts) { for (var m = 0; m < muts.length; m++) { var a = muts[m].addedNodes; for (var n = 0; n < a.length; n++) { var nd = a[n]; if (nd.nodeType === 1) armMatches(nd); } } });
-    mo.observe(document.documentElement, { childList: true, subtree: true });
-  } catch (e) {}
-  // Nav / Browse haptic, EVERY platform, with no overlay to break the link: fire() routes to navigator.vibrate on
-  // Android and the programmatic switch on older iOS (a no-op on iOS 26.5+, where a drag/tap haptic is simply not
-  // available to the web). These targets are NOT in HSEL, so there is no double on iOS.
-  try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(NAVTAP)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
-  // Android only: re-fire the overlay set from a tap (on Android the overlay does nothing; on iOS the overlay handles it).
-  if (navigator.vibrate) try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(HTAP)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
+  /* THE OVERLAY IS GONE (2026-10-15, owner: "ne radi click na draw i 2 charts, bukvalno se nista ne desava"). The
+     trusted-tap haptic was a transparent <label> with a nested <input switch> laid over each control. It worked on
+     Android (no-op there) and in every emulator (headless Chrome HAS navigator.vibrate, so the overlay path never ran),
+     which is exactly why it passed verification twice - but on real iOS Safari AND Chrome (both WKWebView, no
+     navigator.vibrate) the label's switch-toggle BECAME the tap's default action and SWALLOWED the control's own click.
+     It ate <a> navigation first (nav bar, Browse), then the chart dock (draw, 2 charts). Reproduced with the overlay
+     forced on: tapping split did nothing. A haptic is never worth a dead button, so the overlay is removed entirely.
+     Haptic now comes ONLY from a delegated tap listener that never touches an element's structure, so it CANNOT
+     intercept a click: fire() -> navigator.vibrate on Android, the programmatic switch (iosTick) on iOS 17.4-26.4, and
+     simply nothing on iOS 26.5+ where the web has no tap/drag haptic at all. One listener, every platform. */
+  window.mpHapticArm = function () {};  // kept as a safe no-op: other bundles call it after they rebuild UI
+  var TAPSEL = '[data-haptic],.mpbn a,.mpbn button,.mpnav-row,.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.aim-it';
+  try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(TAPSEL)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
 })();
 
 /* ── SQUAD CREST (2026-09-29) ───────────────────────────────────────────────────────────────────
