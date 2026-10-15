@@ -3466,7 +3466,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      NOT the symbol wheel (a drag), NOT the chart canvas, NOT text inputs. Arm them now and as the UI rebuilds. */
   /* #planSave = the Paper Trade Open button (owner 2026-10-15: "haptics na paper trade"); the close and the leverage
      slider fire through the code path (mpHaptic/mpBuzz -> iosTick) because a slider is a drag with no tap to arm. */
-  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go';
+  var HSEL = '[data-haptic],.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mpbn a,.mpbn button,.mpnav-row,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it';
+  /* THE SAME TARGETS, FIRED FROM A TAP ON ANDROID (2026-10-15, owner: haptics on the nav bar, Browse and coin select).
+     On iOS the armed overlays above do it on the trusted tap; on Android there is no overlay, so one delegated listener
+     buzzes these discrete taps (the bottom nav bar, the Browse drawer rows, the coin picker rows, the timeframe items).
+     Guarded on navigator.vibrate so it never runs on iOS (no double with the overlay). */
+  var HTAP = '.mpbn a,.mpbn button,.mpnav-row,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.mfc-dock>[data-act],.mfc-b';
   function armMatches(r) { try { if (!r.querySelectorAll) return; var els = r.querySelectorAll(HSEL); for (var i = 0; i < els.length; i++) armOne(els[i]); if (r.nodeType === 1 && r.matches && r.matches(HSEL)) armOne(r); } catch (e) {} }
   window.mpHapticArm = function (root) { try { if (!_ios) return; armMatches(root || document); } catch (e) {} };
   if (_ios) try {
@@ -3475,6 +3480,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     var _rT = 0; var mo = new MutationObserver(function (muts) { for (var m = 0; m < muts.length; m++) { var a = muts[m].addedNodes; for (var n = 0; n < a.length; n++) { var nd = a[n]; if (nd.nodeType === 1) armMatches(nd); } } });
     mo.observe(document.documentElement, { childList: true, subtree: true });
   } catch (e) {}
+  // Android: delegated buzz on a tap of the nav / Browse / coin-select / dock targets (iOS does it via the overlay).
+  if (navigator.vibrate) try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(HTAP)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
 })();
 
 /* ── SQUAD CREST (2026-09-29) ───────────────────────────────────────────────────────────────────

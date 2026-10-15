@@ -33,9 +33,10 @@ if (/const AI_STRAT_BT = \{[\s\S]*?\};.*\n/.test(w)) {
   w = w.replace('const AI_STRAT_LIST = Object.keys(AI_STRATS)', lit + '\nconst AI_STRAT_LIST = Object.keys(AI_STRATS)');
 }
 // AI_STRAT_LIST must attach bt for each id (and the panel reads s.bt)
+// idempotent: match the ORIGINAL line AND an already-baked one (its body differs), so a re-bake always re-writes it
 w = w.replace(
-  /const AI_STRAT_LIST = Object\.keys\(AI_STRATS\)\.map\(k => \(\{ id: k, name: AI_STRATS\[k\]\.name, short: AI_STRATS\[k\]\.short \}\)\);/,
-  "const AI_STRAT_LIST = Object.keys(AI_STRATS).map(k => ({ id: k, name: AI_STRATS[k].name, short: AI_STRATS[k].short, bt: (AI_STRAT_BT && AI_STRAT_BT[k] && AI_STRAT_BT[k].n >= 20) ? { w: AI_STRAT_BT[k].w, l: AI_STRAT_BT[k].l, u: AI_STRAT_BT[k].u, n: AI_STRAT_BT[k].n } : null }));"
+  /const AI_STRAT_LIST = Object\.keys\(AI_STRATS\)\.map\(k => \(\{[\s\S]*?\}\)\);/,
+  "const AI_STRAT_LIST = Object.keys(AI_STRATS).map(k => ({ id: k, name: AI_STRATS[k].name, short: AI_STRATS[k].short, bt: (AI_STRAT_BT && AI_STRAT_BT[k] && AI_STRAT_BT[k].n >= 15) ? { w: AI_STRAT_BT[k].w, l: AI_STRAT_BT[k].l, u: AI_STRAT_BT[k].u, n: AI_STRAT_BT[k].n } : null }));"
 );
 const tmp = wf + '.tmp';
 fs.writeFileSync(tmp, w);

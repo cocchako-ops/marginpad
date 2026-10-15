@@ -1,0 +1,74 @@
+{
+ "auto": {
+  "n": 20,
+  "w": 4,
+  "l": 16,
+  "u": 0,
+  "nofill": 4,
+  "noplan": 0
+ },
+ "trend_pullback": {
+  "n": 19,
+  "w": 4,
+  "l": 15,
+  "u": 0,
+  "nofill": 5,
+  "noplan": 0
+ },
+ "breakout": {
+  "n": 20,
+  "w": 7,
+  "l": 13,
+  "u": 0,
+  "nofill": 4,
+  "noplan": 0
+ },
+ "mean_reversion": {
+  "n": 19,
+  "w": 6,
+  "l": 13,
+  "u": 0,
+  "nofill": 5,
+  "noplan": 0
+ },
+ "sweep_reversal": {
+  "n": 18,
+  "w": 6,
+  "l": 12,
+  "u": 0,
+  "nofill": 5,
+  "noplan": 0
+ },
+ "supply_demand": {
+  "n": 18,
+  "w": 4,
+  "l": 14,
+  "u": 0,
+  "nofill": 6,
+  "noplan": 0
+ },
+ "vwap": {
+  "n": 17,
+  "w": 5,
+  "l": 12,
+  "u": 0,
+  "nofill": 6,
+  "noplan": 0
+ },
+ "scalp": {
+  "n": 19,
+  "w": 6,
+  "l": 13,
+  "u": 0,
+  "nofill": 4,
+  "noplan": 0
+ },
+ "swing": {
+  "n": 18,
+  "w": 2,
+  "l": 16,
+  "u": 0,
+  "nofill": 5,
+  "noplan": 0
+ }
+}
