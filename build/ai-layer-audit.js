@@ -8,8 +8,14 @@
 const fs = require('fs');
 const ORIGIN = 'https://marginpad.io';
 const read = (f) => fs.readFileSync(f, 'utf8');
-const L1 = read('dist/llms.txt'), L2 = read('dist/llms-full.txt');
-const BOTH = L1 + '\n' + L2;
+// Three files since 2026-10-16: llms.txt (SHORT, product-first, the one an assistant reads first), llms-full.txt (the
+// complete reference) and llms-changelog.txt (every dated line). The changelog used to live at the top of llms.txt and
+// had grown to 65% of a 100 KB file, so the first thing any reader met was two months of bug confessions - and no AI
+// crawler fetched it anyway (<20 hits in 30 days). Facts are checked across all three; "current" claims only in the
+// first two, because a dated line describes the day it was written.
+const L1 = read('dist/llms.txt'), L2 = read('dist/llms-full.txt'), L3 = read('dist/llms-changelog.txt');
+const CUR = L1 + '\n' + L2;            // what is true NOW
+const BOTH = CUR + '\n' + L3;          // everything the AI layer says, for URL and name checks
 let bad = 0, warn = 0;
 const fail = (m) => { bad++; console.log('  STALE  ' + m); };
 const note = (m) => { warn++; console.log('  check  ' + m); };
@@ -23,15 +29,15 @@ const ok = (m) => console.log('  ok     ' + m);
   if (prem) {
     for (const [label, v] of [['Premium', prem.price], [prem.plusName || 'Premium Plus', prem.plusPrice]]) {
       const s = '$' + v;
-      if (BOTH.indexOf(s) < 0) fail(label + ' is ' + s + ' live and that string appears in NEITHER llms file');
+      if (CUR.indexOf(s) < 0) fail(label + ' is ' + s + ' live and that string appears in NEITHER current llms file');
       else ok(label + ' ' + s + ' is quoted');
     }
-    if (prem.plusName && BOTH.indexOf(prem.plusName) < 0) fail('the AI plan is called "' + prem.plusName + '" live and that name appears in NEITHER llms file'); else if (prem.plusName) ok('the AI plan name "' + prem.plusName + '" is quoted');
+    if (prem.plusName && CUR.indexOf(prem.plusName) < 0) fail('the AI plan is called "' + prem.plusName + '" live and that name appears in NEITHER current llms file'); else if (prem.plusName) ok('the AI plan name "' + prem.plusName + '" is quoted');
     // the allowance in words, whatever the number is (it was "one" until 2026-10-15, "five" since)
     const daily = prem.aiDaily || {};
     const WORDS = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten' };
     const n = +daily.premium, re = new RegExp('(' + n + '|' + (WORDS[n] || n) + ') (Ask AI )?reads? a day', 'i');
-    if (n > 0 && re.test(BOTH)) ok('the ' + (WORDS[n] || n) + '-reads-a-day allowance is stated');
+    if (n > 0 && re.test(CUR)) ok('the ' + (WORDS[n] || n) + '-reads-a-day allowance is stated');
     else fail('aiDaily.premium=' + daily.premium + ' but the files do not say it in words');
   } else note('could not read /api/premium/status');
 
@@ -41,7 +47,7 @@ const ok = (m) => console.log('  ok     ' + m);
     list.forEach(p => {
       const usd = p.usd != null ? p.usd : (p.price_usd != null ? p.price_usd : null);
       if (usd == null || usd === 0) return;
-      if (BOTH.indexOf('$' + usd) < 0) fail('API plan ' + (p.name || p.id) + ' is $' + usd + ' live and is not quoted in the AI layer');
+      if (CUR.indexOf('$' + usd) < 0) fail('API plan ' + (p.name || p.id) + ' is $' + usd + ' live and is not quoted in the AI layer');
     });
     ok('API plan prices checked (' + list.length + ' plans)');
   } else note('could not read /api/apiplan');
@@ -54,11 +60,11 @@ const ok = (m) => console.log('  ok     ' + m);
     // compare the NAMES, not a phrase: the first cut matched only "N MCP tools" and reported 0 agreements
     // while the file said "carries 28 tools" - a check that cries wolf gets ignored, which is worse than none.
     const names = mcp.result.tools.map(t => t.name);
-    const missing = names.filter(n => BOTH.indexOf(n) < 0);
+    const missing = names.filter(n => CUR.indexOf(n) < 0);
     if (missing.length) fail('MCP: ' + missing.length + ' of ' + nTools + ' tools are never named in the AI layer (' + missing.slice(0, 6).join(', ') + ')');
     else ok('MCP: all ' + nTools + ' tools are named');
-    // and any CURRENT (undated) claim of a different number is a real drift
-    const cur = [...BOTH.matchAll(/carries\s+(\d+)\s+tools/gi)].map(m => +m[1]).filter(x => x !== nTools);
+    // and any CURRENT (undated) claim of a different number is a real drift - the changelog is history and may say 23 or 28
+    const cur = [...CUR.matchAll(/(?:carries|server:[^\n]*?)\s+(\d+)\s+tools/gi)].map(m => +m[1]).filter(x => x !== nTools);
     if (cur.length) fail('a current line claims ' + [...new Set(cur)].join('/') + ' MCP tools, live is ' + nTools);
   } else note('could not reach the MCP server for tools/list');
 
@@ -66,30 +72,42 @@ const ok = (m) => console.log('  ok     ' + m);
   const count = (dir, re) => { try { return fs.readdirSync('dist/' + dir, { withFileTypes: true }).filter(e => e.isDirectory() && (!re || re.test(e.name))).length; } catch (e) { return null; } };
   const blog = count('blog');
   if (blog) {
-    const claimed = [...BOTH.matchAll(/(\d+)\s+(?:blog )?(?:posts|articles)/gi)].map(m => +m[1]);
+    const claimed = [...CUR.matchAll(/(\d+)\s+(?:blog )?(?:posts|articles)/gi)].map(m => +m[1]);
     const near = claimed.filter(c => Math.abs(c - blog) > 3 && c > 20 && c < 500);
     if (near.length) fail('blog posts: ' + blog + ' directories in dist, the files claim ' + [...new Set(near)].join('/'));
     else ok('blog posts: ' + blog);
   }
   const maps = count('', /-liquidation-map$/);
   if (maps) {
-    const claimed = [...BOTH.matchAll(/(\d+)\s+(?:per-coin )?liquidation maps|maps\s*=\s*(\d+)/gi)].map(m => +(m[1] || m[2]));
+    const claimed = [...CUR.matchAll(/(\d+)\s+(?:per-coin )?liquidation maps|maps\s*=\s*(\d+)/gi)].map(m => +(m[1] || m[2]));
     const wrong = claimed.filter(c => c && c !== maps);
     if (wrong.length) fail('liquidation maps: ' + maps + ' in dist, the files claim ' + [...new Set(wrong)].join('/'));
     else ok('liquidation maps: ' + maps);
   }
 
-  console.log('\n== freshness ==');
+  console.log('\n== freshness and size ==');
   const today = new Date().toISOString().slice(0, 10);
-  for (const [name, s] of [['llms.txt', L1], ['llms-full.txt', L2]]) {
-    // only dates that OPEN a changelog line - a contest end date in the future is not a freshness signal
-    const dates = [...s.matchAll(/^- (20\d\d-\d\d-\d\d):/gm)].map(m => m[1]).filter(d => d <= today).sort();
+  { // the changelog is where dated lines live; only dates that OPEN a line count - a contest end date in the future is not freshness
+    const dates = [...L3.matchAll(/^- (20\d\d-\d\d-\d\d):/gm)].map(m => m[1]).filter(d => d <= today).sort();
     const newest = dates[dates.length - 1] || '(none)';
     const days = newest === '(none)' ? 999 : Math.round((Date.parse(today) - Date.parse(newest)) / 86400000);
-    if (days > 10) fail(name + ': newest dated line is ' + newest + ' (' + days + ' days old)');
-    else ok(name + ': newest dated line ' + newest);
-    const lu = (s.match(/Last updated:\s*([^\n\r]+)/) || [])[1];
-    if (lu && lu.indexOf(newest.slice(0, 7)) < 0 && newest !== '(none)') note(name + ': "Last updated: ' + lu.trim() + '" vs newest line ' + newest);
+    if (days > 10) fail('llms-changelog.txt: newest dated line is ' + newest + ' (' + days + ' days old)');
+    else ok('llms-changelog.txt: newest dated line ' + newest + ' (' + dates.length + ' entries)');
+  }
+  for (const [name, s] of [['llms.txt', L1], ['llms-full.txt', L2], ['llms-changelog.txt', L3]]) {
+    const lu = (s.match(/Last updated:\s*(20\d\d-\d\d-\d\d)/) || [])[1];
+    const days = lu ? Math.round((Date.parse(today) - Date.parse(lu)) / 86400000) : 999;
+    if (!lu) fail(name + ': no "Last updated: YYYY-MM-DD" line');
+    else if (days > 14) fail(name + ': Last updated ' + lu + ' is ' + days + ' days old');
+    else ok(name + ': Last updated ' + lu);
+    if (/^- 20\d\d-\d\d-\d\d:/m.test(s) && name !== 'llms-changelog.txt') fail(name + ' carries dated changelog lines - they belong in llms-changelog.txt');
+  }
+  { // llms.txt is the FIRST thing an assistant reads and most fetchers cap what they take; it was 100 KB on 2026-10-16 and
+    // the index an assistant needs sat behind 61 KB of history. The cap is a guard against that happening twice.
+    const kb = Buffer.byteLength(L1) / 1024;
+    if (kb > 12) fail('llms.txt is ' + kb.toFixed(1) + ' KB - keep it under 12 KB, product first; history goes to llms-changelog.txt');
+    else ok('llms.txt is ' + kb.toFixed(1) + ' KB');
+    for (const w of ['SERVER-side', 'trading competition', 'llms-full.txt', 'llms-changelog.txt']) if (L1.indexOf(w) < 0) fail('llms.txt no longer says "' + w + '"');
   }
 
   console.log('\n== every marginpad.io URL the AI layer names must answer 200 ==');
