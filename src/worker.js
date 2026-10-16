@@ -23175,6 +23175,22 @@ export default {
       }
       return J({ ...(out || {}), username: who.user.username, usd: cents / 100 });
     }
+    // REFERRAL MAKE-GOOD (2026-10-16): pay the shortfall for referrals that qualified but whose ledger credit failed
+    // (qualify-then-pay, the credit lost, and once qualified the referral left the pending queue so the cron never
+    // retried). Credits via the SAME ledger path as a normal referral payment (mid='referral'), so the ledger reads
+    // it as what it is and a future audit counts it - NOT a 'gift', which would leave it looking unpaid. One call per
+    // referrer with the exact shortfall; admin-gated and bounded. {uid|username, count, centsEach?}.
+    if (url.pathname === '/api/admin/refpay' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const who = await usersDO(env, '/xpdiag', { username: String(b.username || ''), uid: String(b.uid || '') });
+      if (!who || !who.user) return J({ error: 'not_found' }, 404);
+      const n = Math.max(1, Math.min(10, Math.round(+b.count || 0)));
+      const centsEach = Math.max(1, Math.min(200, Math.round(+b.centsEach || 50)));
+      const acct = 'u:' + who.user.id, led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+      let paid = 0; for (let i = 0; i < n; i++) { try { const r = await led.fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct, cents: centsEach, mid: 'referral' }) })); const j = await r.json(); if (j && !j.error) paid++; } catch (e) {} }
+      if (paid) { try { await tgAdmin(env, '<b>Referral make-good</b> @' + who.user.username + ' +$' + (paid * centsEach / 100).toFixed(2) + ' (' + paid + ' x $' + (centsEach / 100).toFixed(2) + ')'); } catch (e) {} }
+      return J({ ok: true, username: who.user.username, uid: who.user.id, paid, usd: paid * centsEach / 100 });
+    }
     // TELL A MEMBER SOMETHING, WITHOUT SENDING THEM MONEY (2026-09-19, owner: "nek imaju proslavu i da im se kaze
     // da je pomoc da se lakse snadju"). Until now the only way to reach a member with the bell row and the
     // full-screen celebration was to credit their balance (/api/admin/gift) or approve an exchange sign-up - so a
