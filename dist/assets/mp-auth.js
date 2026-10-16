@@ -1643,12 +1643,14 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       J('/api/reward/bybitlink'),
       J('/api/reward/moonsign/mine'),
       (ME && ME.username) ? J('/api/lb/user?name=' + encodeURIComponent(ME.username)) : Promise.resolve(null),
-      J('/api/predict') /* the Daily BTC Call board (2026-09-28): in = a call this season (settled or today's) */
-    ]).then(function (r) { paint(r[0], r[1], r[2], r[3], r[4], r[5]); })
+      J('/api/predict'), /* the Daily BTC Call board (2026-09-28): in = a call this season (settled or today's) */
+      J('/api/spot/portfolio') /* the Meme Spot board (2026-10-16): in = a Demo Spot account holding a coin or ranked this season */
+    ]).then(function (r) { paint(r[0], r[1], r[2], r[3], r[4], r[5], r[6]); })
       .catch(function () { if (box) box.innerHTML = '<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'; });
 
-    function paint(comp, xp, byb, moon, me2, pred) {
+    function paint(comp, xp, byb, moon, me2, pred, spot) {
       if (!box) return;
+      var spotHas = !!(spot && !spot.none && !spot.error), spotIn = spotHas && ((((spot.holds || []).length > 0)) || !!((spot.season || {}).rank));
       if (!comp || !comp.boards) { box.innerHTML = '<div class="mpa-xp-empty">Could not load the boards. Try again in a moment.</div>'; return; }
       var XP = +((xp && xp.xp) || 0);
       var payXp = +(((comp.boards[0] || {}).payout || {}).xp || 500);
@@ -1681,6 +1683,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           o.in = calls > 0;
           o.why = calls > 0 ? '' : 'Call where BTC closes today - one call a day, before 20:00 UTC, on the season page.';
           o.act = calls > 0 ? '' : 'call';
+        } else if (id === 'meme') {
+          o.in = spotIn;
+          o.why = spotIn ? '' : (spotHas ? 'Buy and hold a coin on Demo Spot - a position this season puts you on it; profit decides the order.' : 'Start a Demo Spot account ($10,000 of demo cash) and buy a coin - season profit decides the order.');
+          o.act = spotIn ? '' : 'spot';
         } else {
           o.in = trades > 0;
           o.why = trades > 0 ? '' : 'Close one trade this season and you are on it.';
@@ -1694,7 +1700,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         return act === 'bybit' ? bybForm()
           : act === 'moon' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/rewards/#moonCard">Claim the Moon bonus</a></span>'
           : act === 'trade' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/paper-trade">Open a trade</a></span>'
-          : act === 'call' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/season/#boards">Make today\'s call</a></span>' : '';
+          : act === 'call' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/season/#boards">Make today\'s call</a></span>'
+          : act === 'spot' ? '<span class="mpa-cpr-a"><a class="mpa-cpb" href="/spot/">Open Demo Spot</a></span>' : '';
       };
       var grp = function (ttl, note, list) {
         if (!list.length) return '';
@@ -1735,8 +1742,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           + (ranked ? '' : '<span class="mpa-cpbar"><i style="width:' + Math.max(2, Math.min(100, Math.round(XP / payXp * 100))) + '%"></i></span>'
             + '<a class="mpa-cpb" href="/season/#howto">How to get there</a>')
         + '</div>'
-        + grp('Free to enter', 'paper trading', rows.filter(function (r) { return !r.real && r.id !== 'gold' && r.id !== 'call'; }))
+        + grp('Free to enter', 'paper trading', rows.filter(function (r) { return !r.real && r.id !== 'gold' && r.id !== 'call' && r.id !== 'meme'; }))
         + grp('Free to enter', 'one BTC call a day', rows.filter(function (r) { return r.id === 'call'; }))
+        + grp('Free to enter', 'a Demo Spot portfolio', rows.filter(function (r) { return r.id === 'meme'; }))
         + grp('Free, but Gold only', '', rows.filter(function (r) { return r.id === 'gold'; }))
         + grp('Trade for real', 'your own exchange account', rows.filter(function (r) { return r.real; }))
         + '<p class="mpa-cpfoot">Every board pays out at the end of the season. <a href="/leaderboards/">See the full standings</a></p>';

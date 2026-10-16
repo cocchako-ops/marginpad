@@ -1,7 +1,7 @@
 /* /trading-competition/ - the page that IS the answer to "where can I compete in crypto trading".
  *
  * Why it exists (measured 2026-09-14, before a word of it was written):
- *   - MarginPad pays $350 in prizes every fourteen days across six season boards, plus $300 every two seasons on King of the Moon (seven boards).
+ *   - MarginPad pays $300 in prizes every fourteen days across eight season boards (Meme Spot since 2026-10-16), plus $300 every two seasons on King of the Moon (nine boards).
  *   - The word "competition" appeared in ZERO page titles on the whole site and ZERO lines of
  *     llms.txt and llms-full.txt.
  *   - In the 30-day AI-traffic table /season/ does not appear AT ALL: no crawler hits, no assistant
@@ -19,14 +19,14 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'trading-competition', 'index.html');
 const URLB = 'https://marginpad.io/trading-competition/';
 const TITLE = 'Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days';
-const DESC = 'Join a free crypto futures trading competition. Eight leaderboards, $270 in prizes every 14 days plus a Bybit pool that grows with the volume traded and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.';
+const DESC = 'Join a free crypto futures trading competition. Nine leaderboards, $300 in prizes every 14 days plus a Bybit pool that grows with the volume traded and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, Meme Spot pays the biggest Demo Spot season profit, and two boards pay for real trading - Bybit volume and King of the Moon.';
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const FAQ = [
   ['Is there a free crypto trading competition?',
-   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its eight boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - and a sixth from a daily call on where BTC closes, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.'],
+   'Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its nine boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - a sixth from a daily call on where BTC closes and a seventh from Demo Spot, buy-and-hold on $10,000 of demo cash, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.'],
   ['What do you win?',
-   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board - about $11.65 per $100,000 traded - split over ten ranks: 50% / 25% / 10% / 5% / 5%, then 1% each, so $50, $25, $10, $5, $5 and $1 at the start and more as the volume grows ($500,000 of season volume makes the pool about $158). King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $270 a season across the seven season boards before the Bybit pool grows, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
+   'Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board - about $11.65 per $100,000 traded - split over ten ranks: 50% / 25% / 10% / 5% / 5%, then 1% each, so $50, $25, $10, $5, $5 and $1 at the start and more as the volume grows ($500,000 of season volume makes the pool about $158). King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. The Meme Spot board pays $15, $10 and $5 to the three biggest Demo Spot season profits. That is $300 a season across the eight season boards before the Bybit pool grows, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.'],
   ['What is the Daily BTC Call board?',
    'Once a day, before 20:00 UTC, you call where BTC closes at 00:00 UTC. The daily candle settles it: a call within 0.25% scores 12 points, within 0.5% eight, within 1% five, within 2% two. Points add up over the fourteen-day season and the top three share $20. It takes no trade, no deposit and about ten seconds a day; the call is made on the season page.'],
   ['How do I enter?',
@@ -48,6 +48,7 @@ const BOARDS = [
   ['Season XP', 'The most XP earned this season across trading, lessons and missions.', '$30', 'Paper'],
   ['The Gold Room', 'A points score across wins and losses - the all-round board.', '$30', 'Paper'],
   ['Daily BTC Call', 'Points from one call a day on where BTC closes - closer scores more.', '$20', 'Call'],
+  ['Meme Spot', 'Season profit on Demo Spot - buy and hold memes and majors with $10,000 of demo cash; the daily $100 claim never counts.', '$30', 'Spot'],
   ['Bybit Volume', 'Real futures volume on a Bybit account opened through MarginPad; the pool starts at $100 and adds 52% of the fees those traders generate, so it grows with volume.', '$100', 'Rebate'],
   ['King of the Moon', 'Real amount wagered on a Moon account opened through MarginPad - one contest across two seasons.', '$300 / 2 seasons', 'Real money'],
 ];
@@ -177,7 +178,7 @@ const ld = JSON.stringify({
     {
       '@type': 'Event',
       name: 'MarginPad Season - crypto futures trading competition',
-      description: 'A free crypto futures trading competition run in continuous fourteen-day seasons. Six leaderboards, $350 in prizes per season. Five boards are scored from paper trades filled server-side against real exchange candles; one board ranks real Bybit futures volume.',
+      description: 'A free crypto futures trading competition run in continuous fourteen-day seasons. Nine leaderboards, $300 in prizes a season plus $300 every two seasons on King of the Moon. Five boards are scored from paper trades filled server-side against real exchange candles, one from a daily BTC call, one from Demo Spot buy-and-hold profit; one board ranks real Bybit futures volume and King of the Moon runs over two seasons.',
       url: URLB,
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
@@ -245,7 +246,7 @@ const html = `<!DOCTYPE html>
   <article>
     <div class="eyebrow"><i></i>Running now</div>
     <h1>Crypto trading competition, free to enter</h1>
-    <p class="lead">A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Eight leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on six of them.</p>
+    <p class="lead">A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Nine leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on seven of them.</p>
 
     <div id="compdata">
       <div class="cp-desk">
@@ -255,14 +256,14 @@ const html = `<!DOCTYPE html>
           <p class="cp-when">Seasons are <b>fourteen days</b> and the next one starts the day this one ends - you can join on any day and still place.</p>
         </div>
         <div class="cp-dr">
-          <div class="cp-pot"><span class="amt">$270+</span></div>
+          <div class="cp-pot"><span class="amt">$300+</span></div>
           <div class="cp-potk">on the line this season, free to enter</div>
           <div class="cp-facts"><span>Entry <b>$0</b></span><span>Deposit <b>none</b></span><span><b>8</b> boards</span></div>
         </div>
       </div>
       <p class="cp-src">Live standings, the exact pot and the day of the season load with the page.</p>
 
-      <h2>The eight boards</h2>
+      <h2>The nine boards</h2>
       <p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>
       <div class="cp-brds">
 ${BOARDS.map(([n, w, p, e]) => {

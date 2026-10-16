@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 229,
-  "missing": 0
+  "cover": 0.9868995633187773,
+  "hit": 226,
+  "missing": 3
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 1,
-  "hit": 88,
-  "missing": 0
+  "cover": 0.9886363636363636,
+  "hit": 87,
+  "missing": 1
  },
  {
   "rel": "levels/index.html",
@@ -1999,9 +1999,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
-  "hit": 209,
-  "missing": 0
+  "cover": 0.9952153110047847,
+  "hit": 208,
+  "missing": 1
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2035,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.9619047619047619,
-  "hit": 101,
-  "missing": 4
+  "cover": 0.9428571428571428,
+  "hit": 99,
+  "missing": 6
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2179,9 +2179,9 @@
  },
  {
   "rel": "trading-competition/index.html",
-  "cover": 1,
-  "hit": 126,
-  "missing": 0
+  "cover": 0.9047619047619048,
+  "hit": 114,
+  "missing": 12
  },
  {
   "rel": "trading-journal/index.html",

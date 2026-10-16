@@ -144,14 +144,18 @@ async function openPanel(page, rowId) {
           return { title: (p.querySelector('.mpa-h') || {}).textContent || '', text: t, rows,
             shared: p.querySelectorAll('.mpa-cpshared').length,
             openTradeBtns: [].filter.call(p.querySelectorAll('.mpa-cpb'), b => /Open a trade/.test(b.textContent)).length,
+            spotBtn: !!p.querySelector('a.mpa-cpb[href="/spot/"]'),
             bybitInput: !!p.querySelector('#mpaCpByb'), moonLink: !!p.querySelector('a[href="/rewards/#moonCard"]'),
             wide: wide, h: p.scrollHeight };
         });
         ok(c && c.title === 'Competitions', 'it opens', c && c.title);
-        ok(c.rows.length === 8, 'all eight boards are listed', c.rows.length);
+        ok(c.rows.length === 9, 'all nine boards are listed', c.rows.length);
         ok(c.rows.every(r => /^\$\d/.test(r.pool)), 'each names its prize pool', JSON.stringify(c.rows.map(r => r.pool)));
         ok(c.rows.every(r => r.verdict), 'and each carries a verdict', JSON.stringify(c.rows.map(r => r.verdict)));
-        ok(/\d+ of 8/.test(c.text), 'a one-glance summary says how many you are on');
+        ok(/\d+ of 9/.test(c.text), 'a one-glance summary says how many you are on');
+        /* the Meme Spot board (2026-10-16): a member with no Demo Spot position is told to open one, with a button to /spot/ */
+        ok(c.rows.some(r => /Meme Spot/.test(r.name)), 'the Meme Spot board is on the list', JSON.stringify(c.rows.map(r => r.name)));
+        ok(/Demo Spot/.test(c.text) && c.spotBtn, 'a member with no coin is pointed at Demo Spot with a button', c.spotBtn);
 
         /* THE CORRECTION THIS CARD EXISTS FOR - both directions. */
         ok(/To withdraw what you win you need Bronze/.test(c.text), 'Bronze is named as the gate on WITHDRAWING');

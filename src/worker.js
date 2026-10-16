@@ -2521,7 +2521,7 @@ async function handleSsrComp(request, url, env, ctx) {
         zapravo je vise jer ne racunas moon"). prize_pool_usd_per_season deliberately counts the season boards only,
         because King of the Moon runs a 25-day contest across two of them - correct arithmetic, wrong answer to the
         question a reader is asking, and it put a different total on this page than on the homepage. Both now print
-        prize_pool_usd_all_boards: what is on the table across all eight boards right now, which is a figure that
+        prize_pool_usd_all_boards: what is on the table across all nine boards right now, which is a figure that
         needs no shared clock to be true. The per-season split stays spelled out in the FAQ below. */
      + '<div class="cp-dr"><div class="cp-pot"><span class="amt">$' + Math.round(c.prize_pool_usd_all_boards || c.prize_pool_usd_per_season) + '</span></div>'
      + '<div class="cp-potk">in live prize pools across ' + ((c.boards || []).length || 8) + ' boards</div>'
@@ -2533,7 +2533,7 @@ async function handleSsrComp(request, url, env, ctx) {
   // ONE ROW PER BOARD, SAID ONCE. The page used to carry two tables of the same seven boards - one for the live
   // leader, one for the description - with Board and Pool in both. The pot is drawn at TRUE relative scale
   // against the biggest one, because $300 is ten times $30 and a table column hid that completely.
-  H += '<h2>The eight boards</h2>';
+  H += '<h2>The nine boards</h2>';
   H += '<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>';
   H += '<div class="cp-brds">';
   for (const b of c.boards) {
@@ -2561,7 +2561,7 @@ async function handleSsrComp(request, url, env, ctx) {
        + '</div>'
        + '<div class="cp-bp' + (real ? ' real' : '') + '"><span class="amt">$' + (rebate ? pot.toFixed(2) : pot) + '</span>'
        + '<div class="cp-bbar"><i style="width:' + Math.max(4, Math.round(pot / maxPot * 100)) + '%"></i></div>'
-       + '<span class="cp-bpe">' + (rebate ? 'Real money - $' + rebate.base_usd + ' start + ' + Math.round(rebate.share_of_commission * 100) + '% of fees' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : 'Free - paper') + '</span></div>'
+       + '<span class="cp-bpe">' + (rebate ? 'Real money - $' + rebate.base_usd + ' start + ' + Math.round(rebate.share_of_commission * 100) + '% of fees' : real ? 'Real money' : b.id === 'call' ? 'Free - daily call' : b.id === 'meme' ? 'Free - Demo Spot' : 'Free - paper') + '</span></div>'
        + '</div>';
   }
   H += '</div>';
@@ -3155,8 +3155,8 @@ const SSR_COMP_ES = [
   [' hours, and the next one starts the same day - you can join on any day and still place.', ' horas, y la siguiente empieza el mismo día - puedes entrar cualquier día y aun así clasificar.'],
   ['<span>Entry <b>', '<span>Entrada <b>'], ['<span>Deposit <b>none</b></span>', '<span>Depósito <b>ninguno</b></span>'],
   ['</b> person is competing</span>', '</b> persona está compitiendo</span>'], ['</b> people are competing</span>', '</b> personas están compitiendo</span>'], ['</b> placements</span>', '</b> plazas</span>'],
-  ['<h2>The eight boards</h2>', '<h2>Las ocho tablas</h2>'], ['Free - daily call', 'Gratis - predicción diaria'],
-  ['<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top five, and you can place on more than one.</p>', '<p>Cada tabla puntúa algo distinto, así que un solo estilo de trading no las barre todas. Cada una paga a sus cinco primeros, y puedes clasificar en más de una.</p>'],
+  ['<h2>The nine boards</h2>', '<h2>Las nueve tablas</h2>'], ['Free - daily call', 'Gratis - predicción diaria'], ['Free - Demo Spot', 'Gratis - Demo Spot'],
+  ['<p>Every board scores something different, so one style of trading does not sweep them all. Each pays its top places, and you can place on more than one.</p>', '<p>Cada tabla puntúa algo distinto, así que un solo estilo de trading no las barre todas. Cada una paga a sus primeros puestos, y puedes clasificar en más de una.</p>'],
   ['>Leading<', '>Lidera<'], ['>Open board<', '>Tabla abierta<'], ['>nobody has scored yet<', '>nadie ha puntuado todavía<'], ['>one qualifying trade puts you first<', '>una operación válida te pone primero<'],
   [' entered</div>', ' inscritos</div>'], ['% win rate', '% de acierto'], [' green days', ' días verdes'], [' green day', ' día verde'], [' wagered', ' apostados'],
   ['>Real money<', '>Dinero real<'], ['>Free - paper<', '>Gratis - paper<'],
@@ -3904,7 +3904,7 @@ async function handleCompetition(url, request, env, ctx) {
 
   const out = {
     name: 'MarginPad Season',
-    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one from daily calls on where BTC closes; one is scored from real Bybit futures volume; an eighth, King of the Moon, is a two-season contest scored from real wagering on Moon.',
+    what: 'A crypto futures trading competition that runs continuously in fourteen-day seasons. Five boards are scored from paper trades; one from daily calls on where BTC closes; one from Demo Spot buy-and-hold season profit; one is scored from real Bybit futures volume; a ninth, King of the Moon, is a two-season contest scored from real wagering on Moon.',
     url: 'https://marginpad.io/trading-competition/',
     live: true,
     season: { starts: new Date(from).toISOString(), ends: new Date(to).toISOString(), days: Math.round(LB_PERIOD / 86400000),
@@ -8065,7 +8065,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4d501062" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e9a4314b" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12157,10 +12157,10 @@ const CAMPAIGN_TPLS = [
     cta: ['See the board', 'https://marginpad.io/leaderboards/'] },
 
   { id: 'competition', name: 'Season competition - free to enter', group: 'Competitions', needs: [],
-    subject: 'There is $370 a season on the boards, and it is free',
-    lead: 'The eight season boards.',
+    subject: 'There is $300 a season on the boards, and it is free',
+    lead: 'The nine season boards.',
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">You are already eligible, {name}.</p>'
-      + '<p style="margin:0 0 12px">Every 14 days MarginPad pays out across eight leaderboards - green days, return, win rate, XP, a daily BTC call and more. No entry fee, no deposit, and paper trades count.</p>'
+      + '<p style="margin:0 0 12px">Every 14 days MarginPad pays out across nine leaderboards - green days, return, win rate, XP, a daily BTC call, Demo Spot profit and more. No entry fee, no deposit, and paper trades count.</p>'
       + '<p style="margin:0 0 12px">Most people who place were not trying to. They just traded that fortnight.</p>',
     cta: ['See what is on the table', 'https://marginpad.io/trading-competition/'] },
 
@@ -18390,7 +18390,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '8eb3215b';
+const ASSET_V = '382507b1';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -19702,7 +19702,7 @@ async function handleSpot(url, request, env) {
     return resp;
   }
   if (path === '/public') { // somebody's Demo Spot portfolio, for the profile card's Portfolio button (2026-10-16): worth, season P&L, rank and what they hold - never the cash figure to the cent, never a quantity
-    const pu = String(url.searchParams.get('uid') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64);
+    const pu = String(url.searchParams.get('uid') || '').replace(/^u:/, '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64); // the profile card sends the `u:`-prefixed id (/api/lb/user); without the strip every Portfolio answered none (owner, 2026-10-16)
     if (!pu) return jr({ error: 'bad' }, 400);
     const ck = new Request('https://marginpad.io/__spot_public_v1_' + pu);
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}

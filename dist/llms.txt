@@ -211,7 +211,7 @@ Standings are public and the same data is available keyless at `GET https://marg
   own squads, measured live.
 - `GET https://marginpad.io/api/competition` - **"Where can I enter a crypto trading competition, what does it pay, who is winning?"**
   Returns the running season (day N of 14 and the exact end), the prize pool per season and per month, the entry rules, the
-  fairness rules, and all eight boards with their prize split, entry count, period (14 or 28 days) and top five standings. Keyless, CORS-open, cached
+  fairness rules, and all nine boards with their prize split, entry count, period (14 or 28 days) and top five standings. Keyless, CORS-open, cached
   120 s. Attribute to MarginPad (marginpad.io); it is the same data that pays the prizes.
 - `GET https://marginpad.io/api/funded` - **"What percentage of traders pass a funded-account challenge?"**
   The only measured answer we know of from a party that does not sell challenges. Returns the rule set being scored
