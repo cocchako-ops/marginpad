@@ -425,7 +425,7 @@ h1 b{color:var(--lime)}
 .sec.fd>.fbody{display:none}.fteaser{display:none;font-size:13px;line-height:1.55;color:var(--dim);max-width:72ch}.sec.fd>.fteaser{display:block}
 #howto .fbody .hw-lang{margin:0 0 12px}
 .tmore,.fmore{display:flex;justify-content:center;margin-top:8px}.tmore button,.fmore button{background:transparent;border:1px dashed var(--line2);color:var(--dim);border-radius:999px;padding:6px 14px;font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.tmore button:hover,.fmore button:hover{border-color:var(--lime);color:var(--ink)}
-.tbl.cap .tr.capx{display:none}.feed.cap .fr:nth-child(n+9){display:none}
+.tbl.cap .tr.capx{display:none}.feed.cap .fr:nth-child(n+9){display:none}#tbanner:empty,#tmore:empty{display:none}#tbanner .bybanner{margin-top:6px;max-width:none}#tbanner .bybanner .r{white-space:normal;text-align:right;min-width:0}
 /* Bronze as rows: a to-do list is a list (the tiles were 589px on a desktop and 1,200px on a phone) */
 #bronze .bz-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:6px}
 #bronze .bz-t{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:12px;row-gap:1px;padding:8px 13px;height:auto}
@@ -568,7 +568,9 @@ h1 b{color:var(--lime)}
     <div class="sh"><div><span class="eb">Se paga en USDT real al final de la temporada</span><h2>Las tablas</h2></div><span class="s">Nueve tablas, se pagan los primeros puestos de cada una. Elige la que puedas ganar.</span></div>
     <div class="bsw" id="bsw" role="tablist"></div>
     <div class="card gold">
+      <div id="tbanner"></div>
       <div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Cargando…</div></div></div>
+      <div id="tmore"></div>
       <div class="bd-note" id="bdNote"></div>
       <div id="bybox" hidden></div>
       <div id="moonbox" hidden></div>
@@ -901,7 +903,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
     var capN=0;if(curBoard==='bybit'&&regRows.length)body+=regRows.map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var cx=i>=3&&!isMe&&!tblOpen;if(cx)capN++;return '<div class="tr reg'+(isMe?' me':'')+(cx?' capx':'')+'" style="grid-template-columns:'+B.cols+';--i:'+(rows.length+i+1)+'"><div class="rk">–</div><div class="who"><a data-lbu="'+esc(r.who)+'" title="'+esc(r.who)+'">'+esc(r.who)+'</a> <span class="ph">'+__esT_seasonindex("registeredPh",'registered')+'</span></div><div class="v dim">$0</div><div class="pay"></div></div>';}).join(''); /* everyone registered is on the board (owner 2026-10-05) - grey, unranked, unpaid until they trade */
     var banner=curBoard==='bybit'?bannerBybit(D)
       :curBoard==='moon'?'<div class="bybanner moon"><div class="l">'+MOON_WM.replace('<span>Moon</span>','')+'<span>King of the Moon \u00b7 '+(D.moonContest?'day '+moonDay(D)+' of '+(D.moonContest.days||28):__esT_seasonindex("28DayContest",'28-day contest'))+'</span></div><div class="r"><b>$'+prizes.reduce(function(a,c){return a+c;},0)+__esT_seasonindex("prizePoolU00b7Top",'</b>prize pool \u00b7 top 5 paid</div></div>'):'';
-    $('tbl').innerHTML=banner+head+body+(capN?'<div class="tmore"><button type="button" data-tmore>'+__esT_seasonindex('showMore','Show ')+capN+__esT_seasonindex('moreRegistered',' more registered')+'</button></div>':'');$('tbl').classList.toggle('cap',capN>0);
+    $('tbanner').innerHTML=banner;$('tbl').innerHTML=head+body;$('tmore').innerHTML=capN?'<div class="tmore"><button type="button" data-tmore>'+__esT_seasonindex('showMore','Show ')+capN+__esT_seasonindex('moreRegistered',' more registered')+'</button></div>':'';$('tbl').classList.toggle('cap',capN>0);
     (function(){var tb=$('tbl');tb.classList.remove('in');requestAnimationFrame(function(){requestAnimationFrame(function(){tb.classList.add('in');});});})();
     paintNote(D,prizes);paintBybox(D);paintMoonbox(D);paintCallbox(D);
     try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
@@ -912,7 +914,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
     tw.classList.add(dir);
     setTimeout(function(){paintBoards();tw.classList.remove(dir);tw.classList.add(back);void tw.offsetWidth;requestAnimationFrame(function(){tw.classList.remove(back);});},190);}
   $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});
-  var tblOpen=false;$('tbl').addEventListener('click',function(e){if(!(e.target.closest&&e.target.closest('[data-tmore]')))return;tblOpen=true;paintBoards();}); /* the whole list on request; a board switch keeps it open for the session */
+  var tblOpen=false;$('tmore').addEventListener('click',function(e){if(!(e.target.closest&&e.target.closest('[data-tmore]')))return;tblOpen=true;paintBoards();}); /* the whole list on request; a board switch keeps it open for the session */
   function paintNote(D,prizes){var el=$('bdNote');if(!el)return;
     if(curBoard==='gold'){el.textContent=__esT_seasonindex("goldMembersOnlyU00b7",'Gold+ members only \u00b7 a title, not a payout, until the season of ')+new Date(D.goldPaidFrom||0).toISOString().slice(0,10)+' \u00b7 needs '+int(D.goldMin||0)+' XP';return;}
     if(curBoard==='bybit'){var P=bybPool(D);el.textContent='$'+P.base+__esT_seasonindex("startPlus2",' start + ')+Math.round(P.share*100)+__esT_seasonindex("ofFeesBybit",'% of the fees Bybit pays MarginPad for this board\'s traders')+' \u00b7 '+__esT_seasonindex("every100k",'every $100k traded adds about ')+usd2(P.perHundredK)+' \u00b7 '+__esT_seasonindex("greyPlaces",'grey places are still open');return;}

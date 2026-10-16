@@ -42,7 +42,7 @@ rep('</style>' + N + '<meta property="og:image"',
   '.sec.fd>.fbody{display:none}.fteaser{display:none;font-size:13px;line-height:1.55;color:var(--dim);max-width:72ch}.sec.fd>.fteaser{display:block}' + N +
   '#howto .fbody .hw-lang{margin:0 0 12px}' + N +
   '.tmore,.fmore{display:flex;justify-content:center;margin-top:8px}.tmore button,.fmore button{background:transparent;border:1px dashed var(--line2);color:var(--dim);border-radius:999px;padding:6px 14px;font:700 11px \'Space Mono\',monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.tmore button:hover,.fmore button:hover{border-color:var(--lime);color:var(--ink)}' + N +
-  '.tbl.cap .tr.capx{display:none}.feed.cap .fr:nth-child(n+9){display:none}' + N +
+  '.tbl.cap .tr.capx{display:none}.feed.cap .fr:nth-child(n+9){display:none}#tbanner:empty,#tmore:empty{display:none}#tbanner .bybanner{margin-top:6px;max-width:none}#tbanner .bybanner .r{white-space:normal;text-align:right;min-width:0}' + N + /* outside the scroll box a nowrap figure row (461px on a 390px phone) would widen the PAGE */
   '/* Bronze as rows: a to-do list is a list (the tiles were 589px on a desktop and 1,200px on a phone) */' + N +
   '#bronze .bz-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:6px}' + N +
   '#bronze .bz-t{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:12px;row-gap:1px;padding:8px 13px;height:auto}' + N +
@@ -108,14 +108,23 @@ rep('  setInterval(tickClock,1000);' + N,
   "    var rq=$('rq'),rs=$('rsub');if(rq&&rs)rq.addEventListener('click',function(){rs.hidden=!rs.hidden;rq.setAttribute('aria-expanded',String(!rs.hidden));});" + N +
   '  })();' + N, 'fold engine');
 
-/* ---------- the board table: registered rows beyond three hide behind "Show N more" ---------- */
+/* ---------- the board table: the banner and the "more" button live OUTSIDE the scroll box ----------
+ * They were rendered inside #tbl, which is `width:max-content` inside the horizontally scrolling .tw: on a 390px phone the
+ * orange Bybit banner was 6px wider than the box (clipped on the right at rest, its left half gone once the table was
+ * scrolled - owner 2026-10-16: "jedan deo isecen kad se skrola u desno ... narandzasti okvir") and the "Show more" button sat
+ * at the centre of a 440px table, i.e. off to the right. Both sit in their own elements now and never scroll. */
+rep('<div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>',
+  '<div id="tbanner"></div>' + N + '      <div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>' + N + '      <div id="tmore"></div>', 'table shell');
+rep("    $('tbl').innerHTML=banner+head+body;" + N,
+  "    $('tbanner').innerHTML=banner;$('tbl').innerHTML=head+body;" + N, 'table render split');
+/* ---------- registered rows beyond three hide behind "Show N more" ---------- */
 rep("    if(curBoard==='bybit'&&regRows.length)body+=regRows.map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;return '<div class=\"tr reg'+(isMe?' me':'')+'\"",
   "    var capN=0;if(curBoard==='bybit'&&regRows.length)body+=regRows.map(function(r,i){var isMe=String(r.who||'').toLowerCase()===nm;var cx=i>=3&&!isMe&&!tblOpen;if(cx)capN++;return '<div class=\"tr reg'+(isMe?' me':'')+(cx?' capx':'')+'\"", 'table cap rows');
-rep("    $('tbl').innerHTML=banner+head+body;" + N,
-  "    $('tbl').innerHTML=banner+head+body+(capN?'<div class=\"tmore\"><button type=\"button\" data-tmore>'+__esT_seasonindex('showMore','Show ')+capN+__esT_seasonindex('moreRegistered',' more registered')+'</button></div>':'');$('tbl').classList.toggle('cap',capN>0);" + N, 'table cap render');
+rep("    $('tbanner').innerHTML=banner;$('tbl').innerHTML=head+body;" + N,
+  "    $('tbanner').innerHTML=banner;$('tbl').innerHTML=head+body;$('tmore').innerHTML=capN?'<div class=\"tmore\"><button type=\"button\" data-tmore>'+__esT_seasonindex('showMore','Show ')+capN+__esT_seasonindex('moreRegistered',' more registered')+'</button></div>':'';$('tbl').classList.toggle('cap',capN>0);" + N, 'table cap render');
 rep("  $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});",
   "  $('bsw').addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-board]');if(!t)return;switchBoard(t.getAttribute('data-board'));});" + N +
-  "  var tblOpen=false;$('tbl').addEventListener('click',function(e){if(!(e.target.closest&&e.target.closest('[data-tmore]')))return;tblOpen=true;paintBoards();}); /* the whole list on request; a board switch keeps it open for the session */", 'table cap toggle');
+  "  var tblOpen=false;$('tmore').addEventListener('click',function(e){if(!(e.target.closest&&e.target.closest('[data-tmore]')))return;tblOpen=true;paintBoards();}); /* the whole list on request; a board switch keeps it open for the session */", 'table cap toggle');
 
 /* ---------- the floor: eight rows a feed, the rest on request ---------- */
 rep("    if(closes){$('closeFeed').innerHTML=closes.length?closes.slice(0,20)",
