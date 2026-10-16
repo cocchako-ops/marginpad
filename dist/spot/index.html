@@ -17,7 +17,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<script>(function(){var S=['en','sr','es','de','fr','pt','nl','ru','tr','id','zh','ja','ko','ar'];function pick(){var u=null;try{u=new URLSearchParams(location.search).get('lang');}catch(e){}if(u&&S.indexOf(u)>=0){try{localStorage.setItem('mp_spot_lang',u);localStorage.setItem('mp_lang',u);}catch(e){}return u;}try{var pfx=String(location.pathname||'').split('/')[1];if(pfx&&S.indexOf(pfx)>=0)return pfx;}catch(e){}var s=null;try{s=localStorage.getItem('mp_spot_lang')||localStorage.getItem('mp_lang');}catch(e){}if(s&&S.indexOf(s)>=0)return s;var n=String(navigator.language||'en').slice(0,2).toLowerCase();return S.indexOf(n)>=0?n:'en';}var l=pick();window.__spotLang=l;window.__mpLangCur=l;window.SPOT_I18N_V='?v=0992cfcf';if(l!=='en'){document.documentElement.className+=' i18n-wait';window.__spotPack=fetch('/spot/i18n/'+l+'.json'+window.SPOT_I18N_V).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});setTimeout(function(){document.documentElement.classList.remove('i18n-wait');},2500);}})();</script>
+<script>(function(){var S=['en','sr','es','de','fr','pt','nl','ru','tr','id','zh','ja','ko','ar'];function pick(){var u=null;try{u=new URLSearchParams(location.search).get('lang');}catch(e){}if(u&&S.indexOf(u)>=0){try{localStorage.setItem('mp_spot_lang',u);localStorage.setItem('mp_lang',u);}catch(e){}return u;}try{var pfx=String(location.pathname||'').split('/')[1];if(pfx&&S.indexOf(pfx)>=0)return pfx;}catch(e){}var s=null;try{s=localStorage.getItem('mp_spot_lang')||localStorage.getItem('mp_lang');}catch(e){}if(s&&S.indexOf(s)>=0)return s;var n=String(navigator.language||'en').slice(0,2).toLowerCase();return S.indexOf(n)>=0?n:'en';}var l=pick();window.__spotLang=l;window.__mpLangCur=l;window.SPOT_I18N_V='?v=3643f7d5';if(l!=='en'){document.documentElement.className+=' i18n-wait';window.__spotPack=fetch('/spot/i18n/'+l+'.json'+window.SPOT_I18N_V).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});setTimeout(function(){document.documentElement.classList.remove('i18n-wait');},2500);}})();</script>
 <style>html.i18n-wait body{visibility:hidden}</style>
 <title>Free Demo Spot Trading - $10,000 of Practice Cash, Meme Coins and Majors | MarginPad</title>
 <meta name="description" content="Buy and hold meme coins on Solana, Base, Ethereum and BNB Chain plus the top 250 coins with $10,000 of free demo cash and $100 more every day you claim it. No fees, no leverage, live prices. One season board pays $30 to the top three in real USDT." />
@@ -154,6 +154,54 @@
   .hrow .t small{color:var(--faint);}
   .hrow .a{font-family:'Space Mono',monospace;white-space:nowrap;}
 
+  /* the mast is one column now (the claim is a row inside it), four tiles */
+  .mast{grid-template-columns:1fr;}
+  .tiles{grid-template-columns:repeat(4,minmax(0,1fr));}
+  @media(max-width:640px){.tiles{grid-template-columns:1fr 1fr;}}
+  .claimrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:8px 8px 8px 12px;border:1px dashed var(--line2);border-radius:11px;}
+  .claimrow .ck{color:var(--faint);font-size:12px;line-height:1.4;min-width:0;}
+  .claimrow .ck b{color:var(--ink);}
+  .cbtn{flex:0 0 auto;background:var(--lime);color:#0a0b0d;border:0;border-radius:9px;padding:8px 13px;font:800 12.5px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;}
+  .cbtn[disabled]{background:#1b212b;color:var(--dim);border:1px solid var(--line2);cursor:default;}
+  /* the floor */
+  .grid2>.card,.card.floor,.card.theses{min-width:0;} /* a grid item defaults to min-width:auto - the hot-chip row's full width (600px+) widened both cards past a 390px phone (the /trading-api/ trap, again) */
+  .hot,.frows,.throws{min-width:0;max-width:100%;}
+  .livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--up);box-shadow:0 0 8px var(--up);margin-right:5px;vertical-align:1px;}
+  .hot{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px 0 2px;padding-bottom:2px;align-items:center;}
+  .hot::-webkit-scrollbar{display:none;}
+  .hot .hk{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;white-space:nowrap;margin-right:2px;}
+  .hchip{display:inline-flex;align-items:center;gap:6px;background:#171c24;border:1px solid var(--line2);border-radius:999px;padding:4px 9px 4px 4px;color:var(--ink);font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;}
+  .hchip .logo{width:20px;height:20px;flex-basis:20px;}
+  .hchip small{font:700 10px 'Space Mono',monospace;color:var(--lime);}
+  .frows{margin-top:6px;max-height:420px;overflow:auto;}
+  .frow{display:flex;align-items:center;gap:10px;padding:7px 2px;border-top:1px solid var(--line);cursor:pointer;min-width:0;}
+  .frow:first-child{border-top:0;}
+  .frow .nm{flex:1;min-width:0;}
+  .frow .nm b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .frow .nm b a{color:var(--ink);font-weight:800;cursor:pointer;}
+  .frow .nm small{display:block;color:var(--faint);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .frow .num{font-family:'Space Mono',monospace;font-size:12px;white-space:nowrap;}
+  /* theses */
+  .card.theses{margin-top:12px;}
+  .thbtn{background:linear-gradient(120deg,var(--viol),#7c5cff);color:#fff;border:0;border-radius:9px;padding:7px 12px;font:800 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .th-lead{color:var(--dim);font-size:13px;line-height:1.55;margin:8px 0 6px;}
+  @media(max-width:560px){.card.theses h2 small,.card.floor h2 small{display:none;}} /* the button stays on the title row on a phone; the subtitle is the lead's job there */
+  .th-lead b{color:var(--ink);}
+  .throws{margin-top:4px;}
+  .throw{display:block;padding:10px 2px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;min-width:0;}
+  .throw:first-child{border-top:0;}
+  .throw b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;letter-spacing:-.01em;line-height:1.25;}
+  .throw small{display:block;color:var(--faint);font-size:11.5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .throw small .au{color:var(--lime);font-weight:700;}
+  .throw small em{font-style:normal;font-family:'Space Mono',monospace;color:var(--viol);}
+  .throw .ex{display:block;color:var(--dim);font-size:12.5px;line-height:1.5;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  a.more{text-align:center;color:var(--lime);text-decoration:none;}
+  .tin,.tta{display:block;width:100%;background:#0a0c10;border:1px solid var(--line2);color:var(--ink);border-radius:11px;padding:10px 12px;font:500 14px 'Familjen Grotesk',sans-serif;outline:none;}
+  .tta{resize:vertical;min-height:160px;line-height:1.5;}
+  .tin:focus,.tta:focus{border-color:var(--lime);}
+  .cnt{font:700 11px 'Space Mono',monospace;color:var(--faint);text-align:right;margin:6px 0 10px;}
+  .cnt.ok{color:var(--up);}
+
   /* trade sheet */
   .ov{position:fixed;inset:0;background:rgba(5,6,8,.72);z-index:2147483000;display:none;}
   .ov.on{display:block;}
@@ -227,10 +275,6 @@
       <div class="fact"><b data-t="g_f2_b">150+ memes</b><span data-t="g_f2">Trending on four chains, the top 250 majors, or any token by contract address.</span></div>
       <div class="fact"><b>$30</b><span data-t="g_f3">Every 14-day season the top three season profits are paid $15 / $10 / $5.</span></div>
     </div>
-    <div class="card board" id="gateBoard" hidden>
-      <h2><span data-t="b_h">Season board</span><small id="gbSub"></small></h2>
-      <div id="gbRows"></div>
-    </div>
   </section>
 
   <!-- ============ APP ============ -->
@@ -244,11 +288,9 @@
           <div class="tile"><div class="k" data-t="m_season">Season P&amp;L</div><div class="v mono" id="mSeason">-</div><div class="s" id="mRank"></div></div>
           <div class="tile"><div class="k" data-t="m_cash">Cash</div><div class="v mono" id="mCash">-</div><div class="s" data-t="m_cash_s">to buy with</div></div>
           <div class="tile"><div class="k" data-t="m_all">All time</div><div class="v mono" id="mAll">-</div><div class="s" id="mAllS"></div></div>
+          <div class="tile"><div class="k" data-t="m_rank_k">Board</div><div class="v mono" id="mRankV">-</div><div class="s" id="mRankS"><a href="/leaderboards/#meme" data-t="b_full">Full board</a></div></div>
         </div>
-      </div>
-      <div class="card claim">
-        <button class="big" type="button" id="claimBtn" data-t="c_btn">Claim $100</button>
-        <div class="note" id="claimNote" data-th="c_note">Once every UTC day, <b>$100</b> of demo cash. It has to be pressed - and it never counts as profit on the board.</div>
+        <div class="claimrow"><span class="ck" data-th="c_row">Daily top-up · <b>$100</b> of demo cash, once per UTC day. Never counts as profit.</span><button class="cbtn" type="button" id="claimBtn" data-t="c_btn">Claim $100</button></div>
       </div>
     </div>
 
@@ -257,11 +299,10 @@
         <h2><span data-t="h_hold">Your coins</span><small id="holdSub"></small></h2>
         <div class="rows" id="holdRows"><div class="empty" data-t="h_none">Nothing yet. Pick a coin below - your first buy puts you on the board.</div></div>
       </div>
-      <div class="card board">
-        <h2><span data-t="b_h">Season board</span><small id="bSub"></small><a class="r" href="/leaderboards/#meme" data-t="b_full">Full board</a></h2>
-        <div class="pz" id="bPz"></div>
-        <div id="bRows"><div class="empty" data-t="b_empty">Nobody has a season profit yet - the first green position fills this table.</div></div>
-        <div class="you" id="bYou"></div>
+      <div class="card floor" id="floorCard">
+        <h2><span data-t="f_h">The floor</span><small id="floorSub" data-t="f_s">who is buying what, live</small><span class="r"><i class="livedot"></i><span data-t="f_live">live</span></span></h2>
+        <div class="hot" id="hotRow"></div>
+        <div class="frows" id="floorRows"><div class="empty" data-t="f_empty">Quiet for now - the first buy on the floor shows up here.</div></div>
       </div>
     </div>
 
@@ -278,6 +319,13 @@
       <div id="list" class="rows"><div class="empty" data-t="y_loading">Loading…</div></div>
       <div class="tw" id="scrWrap" hidden><table class="scr"><thead id="scrHead"></thead><tbody id="scrBody"></tbody></table></div>
       <button class="more" type="button" id="moreBtn" hidden></button>
+    </div>
+
+    <div class="card theses" id="thesisCard">
+      <h2 id="thesis"><span data-t="th_h">Theses</span><small data-t="th_s">why members hold what they hold</small><button class="r thbtn" type="button" id="thWrite" data-t="th_write">Write a thesis</button></h2>
+      <p class="th-lead" data-th="th_lead">Say what you hold, why, and what would prove you wrong. A published thesis pays <b>20 XP</b> and <b>5 Ticks</b> and lands on <a href="/blog/theses/">the blog</a>.</p>
+      <div class="throws" id="thRows"><div class="empty" data-t="th_empty">No thesis yet - the first one lands here within a minute of being written.</div></div>
+      <a class="more" href="/blog/theses/" id="thMore" data-t="th_more">All theses</a>
     </div>
 
     <div class="card" style="margin-top:12px">
@@ -311,9 +359,22 @@
   <button class="go" type="button" id="go" data-t="s_buy">Buy</button>
   <div class="msg" id="msg"></div>
 </div>
+<div class="sheet" id="thSheet" role="dialog" aria-modal="true">
+  <div class="sh-h"><div class="nm"><b data-t="ths_h">Write a thesis</b><small data-t="ths_s">it lands on the blog and in the Community · 20 XP + 5 Ticks</small></div><button class="sh-x" type="button" id="thX" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="lbl" data-t="ths_title">Title</div>
+  <input class="tin" id="thTitle" type="text" maxlength="140" data-tp="ths_title_ph" placeholder="Why I hold PEPE into the listing">
+  <div class="lbl" data-t="ths_coins">Coins (comma separated)</div>
+  <input class="tin" id="thSyms" type="text" maxlength="60" placeholder="PEPE, SOL">
+  <div class="lbl" data-t="ths_body">Thesis</div>
+  <textarea class="tta" id="thBody" rows="9" data-tp="ths_body_ph" placeholder="The setup, the reasoning, the level that would prove you wrong. At least 500 characters - real sentences, not padding."></textarea>
+  <div class="cnt" id="thCnt">0 / 500</div>
+  <button class="go" type="button" id="thGo" data-t="ths_go">Publish</button>
+  <div class="msg" id="thMsg"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script type="application/json" id="spotI18n">{"g_kick":"DEMO SPOT <i>·</i> BUY AND HOLD, NOTHING AT STAKE","g_h1":"<em>$10,000</em> to start. <em>$100</em> every day.<br>One board, $30 a season.","g_sub":"Buy and hold <b>meme coins</b> on Solana, Base, Ethereum and BNB Chain and the <b>top 250 majors</b> at live prices. No fees, no leverage, no liquidations. Paste any contract address and it prices from its deepest pool. The three biggest season profits are paid <b>$15, $10 and $5</b> in real USDT.","g_cta_signin":"Sign in to start","g_cta_start":"Start with $10,000","g_starting":"Starting…","g_start_fail":"Could not start the account - try again.","g_disc":"Free. Email sign-in, no password, no deposit. The demo cash is not withdrawable; the prize is.","g_f1":"Everyone starts level. Press Claim once a day for $100 more - it never counts as profit.","g_f2_b":"150+ memes","g_f2":"Trending on four chains, the top 250 majors, or any token by contract address.","g_f3":"Every 14-day season the top three season profits are paid $15 / $10 / $5.","m_worth":"Portfolio worth","m_today":"today","m_today_none":"the first daily mark lands after midnight UTC","m_season":"Season P&L","m_rank":"#{r} of {n} on the board","m_norank":"not on the board yet","m_cash":"Cash","m_cash_s":"to buy with","m_all":"All time","m_all_s":"against {dep} put in · {n} claims","c_btn":"Claim $100","c_claiming":"Claiming…","c_claimed":"Claimed · next in {t}","c_ok":"$100 added to your cash.","c_already":"Already claimed today - come back after midnight UTC.","c_note":"Once every UTC day, <b>$100</b> of demo cash. It has to be pressed - and it never counts as profit on the board.","h_hold":"Your coins","h_sub":"{n} · {usd}","h_none":"Nothing yet. Pick a coin below - your first buy puts you on the board.","h_avg":"avg","stale":"STALE","rug_badge":"RUGGED","b_h":"Season board","b_sub":"{n} ranked · ends in {t}","b_full":"Full board","b_empty":"Nobody has a season profit yet - the first green position fills this table.","b_you":"You are <b>#{r}</b> with {p} this season.","b_you_pz":"<b>${usd}</b> if it holds.","b_you_none":"Not on the board yet - a coin you hold or a trade this season puts you on it; profit decides the order.","y_h":"Buy a coin","y_s":"live prices · no fees","y_ph":"Search a coin or paste a contract address","y_loading":"Loading…","y_nomatch":"Nothing matches.","y_more":"Show {n} more · {left} left","t_memes":"Trending memes","t_majors":"Majors","t_screener":"Screener","n_all":"All chains","l_liq":"liq","l_mcap":"mcap","l_fdv":"FDV","l_major":"major · exchange price","sc_coin":"Coin","sc_price":"Price","sc_24h":"24h","sc_vol":"Volume 24h","sc_liq":"Liquidity","sc_fdv":"FDV","sc_age":"Seen","age_m":"{n}m","age_h":"{n}h","age_d":"{n}d","tok_look":"Looking up that contract…","tok_thin":"THIN","tok_trade":"tap to trade","tok_unknown":"Not on our trending list - check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam; the address is the identity, not the name.","tok_e_not_found":"No token with that address on Solana, BNB Chain, Base or Ethereum.","tok_e_major":"That is a major coin or a stablecoin - find it under Majors.","tok_e_major_v":"That is {sym} - find it under Majors.","tok_e_thin_pool":"The deepest pool for that token holds under $1,000 - a price there is fiction. Not tradeable here.","tok_e_no_pool":"That token has no liquidity pool yet - nothing to buy it from.","tok_e_no_pool_yet":"That coin is still on its launch curve - no pool to price it against yet. It becomes tradeable once it graduates to a real pool.","tok_e_bad_address":"That is not a Solana or EVM contract address.","tok_e_busy":"The price source is rate-limiting us right now - try again in a few seconds.","tok_e_fail":"Lookup failed - try again in a moment.","hs_h":"History","hs_csv":"Export CSV","hs_none":"Nothing yet.","hs_buy":"BUY","hs_sell":"SELL","hs_claim":"CLAIM","hs_claim_t":"Daily $100 claimed","f_text":"Demo cash only - prices are live from exchanges and on-chain pools, but nothing here is real money and the cash cannot be withdrawn. The season prize is real USDT paid to your MarginPad rewards balance. Pools under $1,000 of liquidity are refused because their price is not real. Not financial advice. · <a href=\"/paper-trade\">Futures paper trading</a> · <a href=\"/academy/\">Academy</a>","ch_loading":"Loading chart…","ch_none":"No chart data for this pair yet.","ch_fail":"Chart failed to load.","s_buy":"Buy","s_sell":"Sell","s_buyS":"Buy {sym}","s_sellS":"Sell {sym}","s_amt":"Amount (USD)","s_how":"Sell how much?","s_max":"Max","s_thin":"<b>Thin pool.</b> Only {usd} of liquidity sits behind this coin - a real fill would move it, and a rug takes it to zero.","s_pos":"You hold <b>{qty}</b> · avg {avg} · worth <b>{usd}</b> · {pnl}","s_filling":"Filling…","s_bought":"Bought <b>{qty} {sym}</b> at {px} for {usd}.","s_sold":"Sold at {px} for <b>{usd}</b> · P&L {pnl}","e_get":"You get","e_price":"Price","e_cash":"Cash available","e_fee":"Fee","e_sell":"Selling","e_recv":"You receive","e_pnl":"P&L on this sale","t_started":"Your $10,000 is in. Pick a coin.","t_bought":"Bought {sym} for {usd}","t_sold":"Sold {sym} · {pnl}","t_dh":"{d}d {h}h","t_hm":"{h}h {m}m","t_m":"{m}m","ago_s":"{n}s ago","ago_m":"{n}m ago","ago_h":"{n}h ago","err_net":"Network error - try again.","err_pack":"Translation pack failed to load.","tm_e_insufficient":"Not enough cash.","tm_e_insufficient_v":"Not enough cash - you have {usd}.","tm_e_min_trade":"Minimum trade is $1.","tm_e_too_big":"Maximum per trade is $1,000,000.","tm_e_no_position":"Nothing to sell.","tm_e_too_much":"That is more than you hold.","tm_e_dust":"That position is dust - sell 100% of it to clear it.","tm_e_thin_pool":"The pool behind this coin holds under $1,000 - a fill here is not real. Refused.","tm_e_thin_pool_v":"The pool behind this coin holds only {usd} - a fill here is not real. Refused.","tm_e_bad_pool":"That pool prices a different token. Nothing was filled.","tm_e_no_price":"No live price right now - try again in a moment.","tm_e_bad_token":"That token cannot be traded - check the contract address.","tm_e_bad_sym":"That symbol cannot be traded here.","tm_e_no_account":"Start your account first.","tm_e_login_required":"Please sign in first.","tm_e_restricted":"Your account is restricted.","tm_e_transient":"Our store hiccuped - nothing was charged. Try again in a few seconds.","tm_e_price_jump":"The price moved too far from the last mark to fill safely - try again in a minute.","tm_e_fail":"Trade failed ({e}) - try again."}</script>
+<script type="application/json" id="spotI18n">{"g_kick":"DEMO SPOT <i>·</i> BUY AND HOLD, NOTHING AT STAKE","g_h1":"<em>$10,000</em> to start. <em>$100</em> every day.<br>One board, $30 a season.","g_sub":"Buy and hold <b>meme coins</b> on Solana, Base, Ethereum and BNB Chain and the <b>top 250 majors</b> at live prices. No fees, no leverage, no liquidations. Paste any contract address and it prices from its deepest pool. The three biggest season profits are paid <b>$15, $10 and $5</b> in real USDT.","g_cta_signin":"Sign in to start","g_cta_start":"Start with $10,000","g_starting":"Starting…","g_start_fail":"Could not start the account - try again.","g_disc":"Free. Email sign-in, no password, no deposit. The demo cash is not withdrawable; the prize is.","g_f1":"Everyone starts level. Press Claim once a day for $100 more - it never counts as profit.","g_f2_b":"150+ memes","g_f2":"Trending on four chains, the top 250 majors, or any token by contract address.","g_f3":"Every 14-day season the top three season profits are paid $15 / $10 / $5.","m_worth":"Portfolio worth","m_today":"today","m_today_none":"the first daily mark lands after midnight UTC","m_season":"Season P&L","m_cash":"Cash","m_cash_s":"to buy with","m_all":"All time","m_all_s":"against {dep} put in · {n} claims","c_btn":"Claim $100","c_claiming":"Claiming…","c_claimed":"Claimed · next in {t}","c_ok":"$100 added to your cash.","c_already":"Already claimed today - come back after midnight UTC.","h_hold":"Your coins","h_sub":"{n} · {usd}","h_none":"Nothing yet. Pick a coin below - your first buy puts you on the board.","h_avg":"avg","stale":"STALE","rug_badge":"RUGGED","b_full":"Full board","y_h":"Buy a coin","y_s":"live prices · no fees","y_ph":"Search a coin or paste a contract address","y_loading":"Loading…","y_nomatch":"Nothing matches.","y_more":"Show {n} more · {left} left","t_memes":"Trending memes","t_majors":"Majors","t_screener":"Screener","n_all":"All chains","l_liq":"liq","l_mcap":"mcap","l_fdv":"FDV","l_major":"major · exchange price","sc_coin":"Coin","sc_price":"Price","sc_24h":"24h","sc_vol":"Volume 24h","sc_liq":"Liquidity","sc_fdv":"FDV","sc_age":"Seen","age_m":"{n}m","age_h":"{n}h","age_d":"{n}d","tok_look":"Looking up that contract…","tok_thin":"THIN","tok_trade":"tap to trade","tok_unknown":"Not on our trending list - check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam; the address is the identity, not the name.","tok_e_not_found":"No token with that address on Solana, BNB Chain, Base or Ethereum.","tok_e_major":"That is a major coin or a stablecoin - find it under Majors.","tok_e_major_v":"That is {sym} - find it under Majors.","tok_e_thin_pool":"The deepest pool for that token holds under $1,000 - a price there is fiction. Not tradeable here.","tok_e_no_pool":"That token has no liquidity pool yet - nothing to buy it from.","tok_e_no_pool_yet":"That coin is still on its launch curve - no pool to price it against yet. It becomes tradeable once it graduates to a real pool.","tok_e_bad_address":"That is not a Solana or EVM contract address.","tok_e_busy":"The price source is rate-limiting us right now - try again in a few seconds.","tok_e_fail":"Lookup failed - try again in a moment.","hs_h":"History","hs_csv":"Export CSV","hs_none":"Nothing yet.","hs_buy":"BUY","hs_sell":"SELL","hs_claim":"CLAIM","hs_claim_t":"Daily $100 claimed","f_text":"Demo cash only - prices are live from exchanges and on-chain pools, but nothing here is real money and the cash cannot be withdrawn. The season prize is real USDT paid to your MarginPad rewards balance. Pools under $1,000 of liquidity are refused because their price is not real. Not financial advice. · <a href=\"/paper-trade\">Futures paper trading</a> · <a href=\"/academy/\">Academy</a>","ch_loading":"Loading chart…","ch_none":"No chart data for this pair yet.","ch_fail":"Chart failed to load.","s_buy":"Buy","s_sell":"Sell","s_buyS":"Buy {sym}","s_sellS":"Sell {sym}","s_amt":"Amount (USD)","s_how":"Sell how much?","s_max":"Max","s_thin":"<b>Thin pool.</b> Only {usd} of liquidity sits behind this coin - a real fill would move it, and a rug takes it to zero.","s_pos":"You hold <b>{qty}</b> · avg {avg} · worth <b>{usd}</b> · {pnl}","s_filling":"Filling…","s_bought":"Bought <b>{qty} {sym}</b> at {px} for {usd}.","s_sold":"Sold at {px} for <b>{usd}</b> · P&L {pnl}","e_get":"You get","e_price":"Price","e_cash":"Cash available","e_fee":"Fee","e_sell":"Selling","e_recv":"You receive","e_pnl":"P&L on this sale","t_started":"Your $10,000 is in. Pick a coin.","t_bought":"Bought {sym} for {usd}","t_sold":"Sold {sym} · {pnl}","t_dh":"{d}d {h}h","t_hm":"{h}h {m}m","t_m":"{m}m","ago_s":"{n}s ago","ago_m":"{n}m ago","ago_h":"{n}h ago","err_net":"Network error - try again.","err_pack":"Translation pack failed to load.","tm_e_insufficient":"Not enough cash.","tm_e_insufficient_v":"Not enough cash - you have {usd}.","tm_e_min_trade":"Minimum trade is $1.","tm_e_too_big":"Maximum per trade is $1,000,000.","tm_e_no_position":"Nothing to sell.","tm_e_too_much":"That is more than you hold.","tm_e_dust":"That position is dust - sell 100% of it to clear it.","tm_e_thin_pool":"The pool behind this coin holds under $1,000 - a fill here is not real. Refused.","tm_e_thin_pool_v":"The pool behind this coin holds only {usd} - a fill here is not real. Refused.","tm_e_bad_pool":"That pool prices a different token. Nothing was filled.","tm_e_no_price":"No live price right now - try again in a moment.","tm_e_bad_token":"That token cannot be traded - check the contract address.","tm_e_bad_sym":"That symbol cannot be traded here.","tm_e_no_account":"Start your account first.","tm_e_login_required":"Please sign in first.","tm_e_restricted":"Your account is restricted.","tm_e_transient":"Our store hiccuped - nothing was charged. Try again in a few seconds.","tm_e_price_jump":"The price moved too far from the last mark to fill safely - try again in a minute.","tm_e_fail":"Trade failed ({e}) - try again.","m_rank_k":"Board","m_rank_pz":"${usd} if it holds","c_row":"Daily top-up · <b>$100</b> of demo cash, once per UTC day. Never counts as profit.","f_h":"The floor","f_s":"who is buying what, live","f_s2":"last {n} moves","f_live":"live","f_hot":"Hot today","f_bought":"bought","f_sold":"sold","f_empty":"Quiet for now - the first buy on the floor shows up here.","th_h":"Theses","th_s":"why members hold what they hold","th_write":"Write a thesis","th_more":"All theses","th_likes":"likes","th_lead":"Say what you hold, why, and what would prove you wrong. A published thesis pays <b>20 XP</b> and <b>5 Ticks</b> and lands on <a href=\"/blog/theses/\">the blog</a>.","th_empty":"No thesis yet - the first one lands here within a minute of being written.","ths_h":"Write a thesis","ths_s":"it lands on the blog and in the Community · 20 XP + 5 Ticks","ths_title":"Title","ths_title_ph":"Why I hold PEPE into the listing","ths_coins":"Coins (comma separated)","ths_body":"Thesis","ths_body_ph":"The setup, the reasoning, the level that would prove you wrong. At least 500 characters - real sentences, not padding.","ths_go":"Publish","ths_publishing":"Publishing…","ths_ok":"Published. <b>+{xp} XP</b> and <b>+{ticks} Ticks</b> - it is on the blog and in the Community.","ths_toast":"Thesis published · +{xp} XP · +{ticks} Ticks","ths_e_title":"The title needs at least 15 characters - a real headline.","ths_e_short":"A thesis needs at least 500 characters ({n} so far) - the setup, the reasoning, the levels.","ths_e_title_short":"The title needs at least 15 characters.","ths_e_body_short":"A thesis needs at least 500 characters of real text.","ths_e_title_words":"The title has to be real words.","ths_e_body_words":"The thesis has to be readable text - real sentences, not padding.","ths_e_slow_down":"Easy - wait two minutes between posts.","ths_e_daily_cap":"Daily post limit reached.","ths_e_login_required":"Sign in to publish.","ths_e_need_username":"Pick a username first (account menu).","ths_e_fail":"Could not publish ({e}) - try again."}</script>
 <script>
 (function(){
   'use strict';
@@ -370,7 +431,7 @@
   if(window.__spotPack){window.__spotPack.then(function(p){if(p)LX=p;applyStatic();rerender();});setTimeout(applyStatic,2600);}else applyStatic();
   loadBoard();
 
-  function rerender(){try{renderMast();renderHolds();renderBoard();renderList();renderHist();}catch(e){}}
+  function rerender(){try{renderMast();renderHolds();renderFeed();renderTheses();renderList();renderHist();}catch(e){}}
 
   // ---- portfolio ----
   function loadPortfolio(first){
@@ -379,7 +440,7 @@
       if(d.none){PORT=null;$('gate').hidden=false;$('app').hidden=true;gateMode('start');return;} // signed in, no account yet: one button mints it
       if(d.error)return;
       PORT=d;$('gate').hidden=true;$('app').hidden=false;
-      renderMast();renderHolds();renderBoard();if(first)loadHist();
+      renderMast();renderHolds();if(first){loadHist();loadFeed();loadTheses();}
       if(d.fresh)toast(L('t_started'));
     }).catch(function(){});
   }
@@ -389,7 +450,7 @@
     $('mToday').innerHTML=PORT.todayPnlUsd==null?L('m_today_none'):(L('m_today')+' '+pnl(PORT.todayPnlUsd));
     $('mSeason').innerHTML=pnl(PORT.seasonPnlUsd);
     var sn=PORT.season||{};var pz=(BOARD&&BOARD.prizes)||[15,10,5];
-    $('mRank').textContent=sn.rank?L('m_rank',{r:sn.rank,n:sn.n})+(pz[sn.rank-1]>0?' · $'+pz[sn.rank-1]:''):L('m_norank');
+    $('mRankV').innerHTML=sn.rank?'#'+sn.rank+'<small style="font:600 11px Space Mono,monospace;color:var(--faint)"> / '+(sn.n||0)+'</small>':'<span style="color:var(--faint)">-</span>';$('mRankS').innerHTML=sn.rank&&pz[sn.rank-1]>0?L('m_rank_pz',{usd:pz[sn.rank-1]})+' · <a href="/leaderboards/#meme">'+L('b_full')+'</a>':'<a href="/leaderboards/#meme">'+L('b_full')+'</a>';
     $('mCash').textContent=fmtUsd(PORT.usdtUsd);
     $('mAll').innerHTML=pnl(PORT.allTimePnlUsd);
     $('mAllS').textContent=L('m_all_s',{dep:fmtUsd(PORT.depositedUsd,0),n:PORT.claims||0});
@@ -413,19 +474,42 @@
   $('holdRows').addEventListener('click',function(e){var sb=e.target.closest('[data-sell]');var row=e.target.closest('[data-hold]');var key=(sb||row)&&(sb||row).getAttribute(sb?'data-sell':'data-hold');if(!key)return;var h=(PORT.holds||[]).filter(function(x){return x.key===key;})[0];if(!h)return;openSheet(coinFromHold(h),sb?'sell':'buy');});
   function coinFromHold(h){var m=h.meta||{};return m.k==='meme'?{kind:'meme',mint:m.mint,pool:m.pool,net:m.net,sym:m.sym||'?',name:m.name||m.sym||'',logo:m.logo||'',price:h.price,key:h.key}:{kind:'cex',sym:m.sym||String(h.key).replace(/^cex:/,''),name:m.name||'',logo:m.logo||'',price:h.price,key:h.key};}
 
-  // ---- board ----
-  function loadBoard(){fetch('/api/spot/board',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){if(j&&j.rows){BOARD=j;renderBoard();renderMast();}}).catch(function(){});}
-  setInterval(loadBoard,120000);
-  function renderBoard(){
-    if(!BOARD)return;var pz=BOARD.prizes||[];var rows=BOARD.rows||[];var mine=ME&&ME.username?String(ME.username).toLowerCase():null;
-    var sub=L('b_sub',{n:BOARD.n||0,t:left((BOARD.we||0)-Date.now())});
-    var rowsHtml=rows.slice(0,10).map(function(r){var me=mine&&String(r.who).toLowerCase()===mine;return '<div class="brow'+(me?' me':'')+'"><span class="rk">'+r.rank+'</span><span class="who"><a data-lbu="'+esc(r.who)+'">'+esc(r.who)+'</a></span><span class="pnl">'+pnl(r.pnlUsd)+'</span><span class="prz">'+(pz[r.rank-1]>0?'$'+pz[r.rank-1]:'')+'</span></div>';}).join('');
-    var pzHtml=pz.filter(function(v){return v>0;}).map(function(v,i){return '<span>#'+(i+1)+' · $'+v+'</span>';}).join('');
-    ['','g'].forEach(function(p){var sb=$(p?'gbSub':'bSub'),rw=$(p?'gbRows':'bRows');if(!sb||!rw)return;sb.textContent=sub;rw.innerHTML=rowsHtml||'<div class="empty">'+L('b_empty')+'</div>';});
-    $('bPz').innerHTML=pzHtml;var gb=$('gateBoard');if(gb)gb.hidden=!rows.length;
-    var y=$('bYou');if(!PORT){y.innerHTML='';return;}
-    var sn=PORT.season||{};y.innerHTML=sn.rank?L('b_you',{r:sn.rank,p:pnl(PORT.seasonPnlUsd)})+(pz[sn.rank-1]>0?' '+L('b_you_pz',{usd:pz[sn.rank-1]}):''):L('b_you_none');
+  // ---- the board prizes (for the rank tile) ----
+  function loadBoard(){fetch('/api/spot/board',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){if(j&&j.rows){BOARD=j;renderMast();}}).catch(function(){});}
+  // ---- THE FLOOR: the newest buys and sells across every member, and what is hot today ----
+  var FEED=null,FEED_T=0;
+  function loadFeed(){fetch('/api/spot/feed',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){if(j&&j.rows){FEED=j;FEED_T=Date.now();renderFeed();}}).catch(function(){});}
+  setInterval(function(){if(!document.hidden)loadFeed();},30000);
+  function coinOfRow(r){return r.k==='meme'?{kind:'meme',mint:r.mint,pool:r.pool,net:r.net,sym:r.sym,name:r.name||'',logo:r.logo||'',price:+r.price||0,key:r.net+':'+r.mint}:{kind:'cex',sym:r.sym,name:r.name||'',logo:r.logo||'',price:+r.price||0,key:'cex:'+r.sym};}
+  function renderFeed(){
+    var el=$('floorRows'),hot=$('hotRow');if(!FEED)return;var rows=FEED.rows||[],hs=FEED.hot||[];
+    hot.innerHTML=hs.length?'<span class="hk">'+L('f_hot')+'</span>'+hs.slice(0,6).map(function(x,i){return '<button class="hchip" type="button" data-hot="'+i+'">'+logo(x.logo,x.sym)+'<b>'+esc(x.sym)+'</b><small>'+x.buyers+'</small></button>';}).join(''):'';
+    if(!rows.length){el.innerHTML='<div class="empty">'+L('f_empty')+'</div>';return;}
+    el.innerHTML=rows.slice(0,25).map(function(r,i){var sell=r.side==='sell';
+      return '<div class="frow" data-fi="'+i+'">'+logo(r.logo,r.sym)+'<div class="nm"><b><a data-lbu="'+esc(r.who)+'">'+esc(r.who)+'</a> <span class="'+(sell?'dn':'up')+'">'+L(sell?'f_sold':'f_bought')+'</span> '+esc(r.sym)+'</b><small>'+fmtUsd(r.usdUsd,0)+(r.net?' · '+netb(r.net):'')+' · '+ago(r.ts)+'</small></div><div class="num">'+(sell&&r.pnlUsd!=null?pnl(r.pnlUsd):'')+'</div></div>';}).join('');
+    $('floorSub').textContent=L('f_s2',{n:rows.length});
   }
+  $('floorRows').addEventListener('click',function(e){if(e.target.closest('[data-lbu]'))return;var r=e.target.closest('[data-fi]');if(!r||!FEED)return;var row=FEED.rows[+r.getAttribute('data-fi')];if(row)openSheet(coinOfRow(row),'buy');});
+  $('hotRow').addEventListener('click',function(e){var c=e.target.closest('[data-hot]');if(!c||!FEED)return;var x=FEED.hot[+c.getAttribute('data-hot')];if(x)openSheet(coinOfRow(x),'buy');track('hot:'+x.sym);});
+  // ---- THESES: the newest five, and the writing sheet (a thesis is a Community post in the thesis category) ----
+  var TH=null;
+  function loadTheses(){fetch('/api/spot/theses',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){if(j&&j.rows){TH=j.rows;renderTheses();}}).catch(function(){});}
+  function renderTheses(){var el=$('thRows');if(!TH)return;if(!TH.length){el.innerHTML='<div class="empty">'+L('th_empty')+'</div>';$('thMore').hidden=true;return;}$('thMore').hidden=false;
+    el.innerHTML=TH.map(function(p){return '<a class="throw" href="/community/p/'+esc(p.id)+'/'+esc(p.slug||'')+'"><b>'+esc(p.title)+'</b><small><span data-lbu="'+esc(p.author)+'" class="au">'+esc(p.author)+'</span> · '+ago(p.ts)+(p.syms&&p.syms.length?' · '+p.syms.map(function(s){return '<em>$'+esc(s)+'</em>';}).join(' '):'')+' · '+p.likes+' '+L('th_likes')+'</small><span class="ex">'+esc(p.excerpt||'')+'</span></a>';}).join('');}
+  $('thWrite').addEventListener('click',function(){if(!ME){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    var syms=(PORT&&PORT.holds||[]).map(function(h){return (h.meta&&h.meta.sym)||String(h.key).replace(/^cex:/,'');}).slice(0,4).join(', ');if(!$('thSyms').value)$('thSyms').value=syms;
+    $('thMsg').textContent='';$('thMsg').className='msg';$('ov').classList.add('on');$('thSheet').classList.add('on');setTimeout(function(){$('thTitle').focus();},50);track('thesis:open');});
+  function thClose(){$('thSheet').classList.remove('on');if(!$('sheet').classList.contains('on'))$('ov').classList.remove('on');}
+  $('thX').addEventListener('click',thClose);$('ov').addEventListener('click',thClose);
+  $('thBody').addEventListener('input',function(){var n=$('thBody').value.trim().length;$('thCnt').textContent=n+' / 500';$('thCnt').className='cnt'+(n>=500?' ok':'');});
+  $('thGo').addEventListener('click',function(){var t=$('thTitle').value.trim(),b=$('thBody').value.trim(),m=$('thMsg'),g=$('thGo');m.className='msg';
+    if(t.length<15){m.className='msg err';m.textContent=L('ths_e_title');return;}if(b.length<500){m.className='msg err';m.textContent=L('ths_e_short',{n:b.length});return;}
+    g.disabled=true;m.textContent=L('ths_publishing');
+    var syms=$('thSyms').value.toUpperCase().replace(/[^A-Z0-9,\s]/g,'').split(/[,\s]+/).filter(Boolean).slice(0,6).join(',');
+    fetch('/api/comm/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:t,body:b,cat:'thesis',syms:syms})}).then(function(r){return r.json();}).then(function(j){g.disabled=false;
+      if(j&&j.ok){var rw=j.reward||{};m.className='msg ok';m.innerHTML=L('ths_ok',{xp:rw.xp||0,ticks:rw.ticks||0});toast(L('ths_toast',{xp:rw.xp||0,ticks:rw.ticks||0}));$('thTitle').value='';$('thBody').value='';$('thCnt').textContent='0 / 500';track('thesis:post');setTimeout(loadTheses,1500);if(window.mpXpCheck)try{window.mpXpCheck();}catch(e){}return;}
+      m.className='msg err';var c=(j&&j.error)||'fail';var k='ths_e_'+c;var s=L(k);m.textContent=s===k?L('ths_e_fail',{e:esc(c)}):s;if(c==='login_required'||c==='need_username'){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
+    }).catch(function(){g.disabled=false;m.className='msg err';m.textContent=L('err_net');});});
 
   // ---- lists ----
   function loadMemes(){fetch('/api/spot/memes').then(function(r){return r.json();}).then(function(j){MEMES=(j&&j.memes)||[];renderList();}).catch(function(){});}
@@ -547,6 +631,6 @@
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=8eb3215b"></script>
-<script defer src="/assets/mp-nav.js?v=9994ce0c"></script>
+<script defer src="/assets/mp-nav.js?v=4d501062"></script>
 </body>
 </html>

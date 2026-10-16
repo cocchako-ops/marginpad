@@ -769,9 +769,9 @@
  },
  {
   "rel": "blog/index.html",
-  "cover": 1,
-  "hit": 424,
-  "missing": 0
+  "cover": 0.9976415094339622,
+  "hit": 423,
+  "missing": 1
  },
  {
   "rel": "blog/is-binance-banned-in-europe/index.html",
@@ -2077,9 +2077,9 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 1,
-  "hit": 58,
-  "missing": 0
+  "cover": 0.7777777777777778,
+  "hit": 56,
+  "missing": 16
  },
  {
   "rel": "squads/index.html",

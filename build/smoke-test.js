@@ -14,6 +14,7 @@ const CHECKS = [
   { path: '/charts', marker: 'chartspace', what: 'charts' },
   { path: '/rewards', marker: '/assets/mp-trade.js', what: 'rewards' },
   { path: '/api/prices', json: true, what: 'prices API' },
+  { path: '/api/spot/memes', json: true, what: 'Demo Spot API (the /api/spot/ dispatch was once glued onto a comment by a patcher and every Spot route 404ed for ten minutes, 2026-10-16)' },
 ];
 
 async function get(path) {

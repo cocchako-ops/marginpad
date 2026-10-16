@@ -8065,7 +8065,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9994ce0c" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4d501062" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13081,6 +13081,7 @@ const TICK_SOURCES = [
   { k: 'trade', label: 'Trades closed', cap: 8 },
   { k: 'chat', label: 'Talking in chat', cap: 16 },
   { k: 'duel', label: 'Duels won', cap: 30 },
+  { k: 'thesis', label: 'Theses published', cap: 10 }, // 2026-10-16: 5 T a thesis, two a day - a thesis is a Community post, the quality gate stands
   // 'predict' (Daily call, cap 13) left this table 2026-09-28: the call is a paid season board now and pays no Ticks
   { k: 'goal', label: 'Season goals', cap: 80 },
   { k: 'pass', label: 'Season pass', cap: 3000 }, // 2026-09-06: 40 tiers x (24 + 48) = 2,880 T - a season-end "Claim all" must fit in one day
@@ -19634,6 +19635,36 @@ const SPOT_NETS = {
 // Fire-and-forget; a store hiccup must never fail the trade that already settled.
 async function spotTrack(env, request, uid, type, label) { try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type, label: String(label || '').slice(0, 48), path: '/spot/', cc: (request && request.cf && request.cf.country) || '', dev: deviceOf((request && request.headers.get('user-agent')) || '') }) })); } catch (e) {} }
 function spotFail(env, jr, where) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['spoterr'], blobs: ['spoterr', String(where || '?')], doubles: [1] }); } catch (e) {} return jr({ error: 'transient' }, 503); } // every SpotStore failure becomes an AE row; checkOpsAlerts pages on the hourly count
+// TRADERS' THESES ON THE BLOG (2026-10-16, owner: "teza ... koja ce da se kaci na blogu"). A thesis is a Community post in the
+// `thesis` category, written from /spot/; this page is the blog's section for them - server-rendered from the Community DO so a
+// crawler reads every title, every author and the first lines, each linking to the post's own SSR page under /community/p/.
+async function blogThesesPage(url, request, env) {
+  if (url.pathname === '/blog/theses') return Response.redirect(url.origin + '/blog/theses/', 301);
+  const ck = new Request('https://marginpad.io/__blog_theses_v1');
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  let posts = []; try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new&cat=thesis')); posts = (((await r.json()) || {}).posts || []).filter(p => !/^e2e_/i.test(p.author || '')); } catch (e) {}
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const ex = b => esc(String(b || '').replace(/[#*_>\[\]()`]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220));
+  const day = ts => new Date(ts).toUTCString().slice(5, 16);
+  const cards = posts.map(p => '<article class="th"><a class="th-t" href="/community/p/' + esc(p.id) + '/' + esc(commSlug(p.title)) + '">' + esc(p.title) + '</a><div class="th-m"><a href="/community/u/' + esc(p.author) + '">' + esc(p.author) + '</a> · ' + day(p.ts) + (p.syms ? ' · ' + String(p.syms).split(',').filter(Boolean).map(s => '<span class="th-s">$' + esc(s) + '</span>').join(' ') : '') + ' · ' + (p.likes || 0) + ' likes · ' + (p.ncom || 0) + ' comments</div><p class="th-x">' + ex(p.body) + '</p></article>').join('');
+  const html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />'
+    + '<title>Traders\' Theses - Demo Spot Calls on Meme Coins and Majors | MarginPad Blog</title>'
+    + '<meta name="description" content="Theses written by MarginPad members from their Demo Spot portfolios: why they hold a coin, what would prove them wrong, and the levels they watch. ' + posts.length + ' published, newest first." />'
+    + '<link rel="canonical" href="https://marginpad.io/blog/theses/" /><meta name="robots" content="index, follow, max-image-preview:large" /><meta name="theme-color" content="#0a0b0d" />'
+    + '<meta property="og:title" content="Traders\' Theses | MarginPad Blog" /><meta property="og:description" content="Why MarginPad members hold what they hold on Demo Spot - a thesis a post, newest first." /><meta property="og:type" content="website" /><meta property="og:url" content="https://marginpad.io/blog/theses/" /><meta property="og:image" content="https://marginpad.io/assets/og/spot.jpg" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta name="twitter:card" content="summary_large_image" />'
+    + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link rel="stylesheet" href="/assets/fonts.css" /><link rel="stylesheet" href="/assets/blog.css" />'
+    + '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'CollectionPage', name: "Traders' Theses", url: 'https://marginpad.io/blog/theses/', description: 'Theses written by MarginPad members from their Demo Spot portfolios.', hasPart: posts.slice(0, 20).map(p => ({ '@type': 'SocialMediaPosting', headline: p.title, url: 'https://marginpad.io/community/p/' + p.id + '/' + commSlug(p.title), datePublished: new Date(p.ts).toISOString(), author: { '@type': 'Person', name: p.author } })) }) + '</script>'
+    + '<style>.th{padding:16px 0;border-top:1px solid #1e242e}.th:first-of-type{border-top:0}.th-t{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em;color:#ecebe4;text-decoration:none}.th-t:hover{color:#c2f64a}.th-m{color:#8b939c;font-size:12.5px;margin:6px 0 8px}.th-m a{color:#c2f64a;text-decoration:none}.th-s{font-family:"Space Mono",monospace;font-size:11px;color:#a06bff;background:rgba(160,107,255,.1);border-radius:4px;padding:1px 5px}.th-x{margin:0;color:#b9c0c8;font-size:14.5px;line-height:1.6}.th-cta{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(160,107,255,.12),rgba(194,246,74,.06));border:1px solid rgba(160,107,255,.3);border-radius:14px;padding:14px 16px;margin:18px 0;text-decoration:none;color:#ecebe4}.th-cta b{color:#c2f64a}.th-cta span{flex:1;min-width:0}.th-cta small{display:block;color:#9aa3ad;font-size:13px;margin-top:2px}.th-cta i{font:700 12px "Space Mono",monospace;color:#c2f64a;font-style:normal;white-space:nowrap}.th-empty{color:#8b939c;padding:24px 0}</style></head>'
+    + '<body><div class="wrap"><header><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="nav"><a href="/spot/">Demo Spot</a><a href="/blog/">Blog</a></nav></header>'
+    + '<div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Theses</div>'
+    + '<div class="blog-hero"><h1 class="blog-title">Traders\' theses</h1><p class="blog-intro">Why a MarginPad member holds what they hold on <a href="/spot/">Demo Spot</a>: the coin, the reasoning, the level that would prove them wrong. Written by members, published here newest first; each one pays its author ' + THESIS_XP + ' XP and ' + THESIS_TICKS + ' Ticks, and the market pays the rest.</p></div>'
+    + '<a class="th-cta" href="/spot/#thesis"><span><b>Write your own thesis</b><small>Hold a coin on Demo Spot, say why, and it lands here within a minute.</small></span><i>Open Demo Spot &rarr;</i></a>'
+    + (cards || '<p class="th-empty">No thesis published yet - the first one lands here the moment somebody writes it on Demo Spot.</p>')
+    + '<footer><span>&copy; 2026 MarginPad</span><span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/community/c/thesis">Theses in the Community</a> &middot; <a href="/terms/">Terms</a></span></footer></div></body></html>';
+  const resp = new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=120', 'x-mp-ssr': 'blog-theses' } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleSpot(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -19658,6 +19689,50 @@ async function handleSpot(url, request, env) {
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   }
   if (path === '/token') return spotTokenLookup(url, env, jr);
+  if (path === '/feed') { // THE FLOOR (2026-10-16, owner: "feed koji ce da lista sve akcije i ko trenutno sta trejduje"): newest buys and sells by name, plus what is hot today. Public, edge 20 s.
+    const ck = new Request('https://marginpad.io/__spot_feed_v1');
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    let rows = [], hot = [];
+    try { const d = await (await spotStub(env).fetch(new Request('https://do/s2/feed?n=80'))).json(); rows = (d && d.rows) || []; } catch (e) {}
+    try { const d = await (await spotStub(env).fetch(new Request('https://do/s2/hot'))).json(); hot = (d && d.rows) || []; } catch (e) {}
+    let names = {}; try { const nr = await usersDO(env, '/names', { ids: [...new Set(rows.map(r => r.uid))].slice(0, 200) }); names = (nr && nr.names) || {}; } catch (e) {}
+    const pub = rows.filter(r => names[r.uid] && !/^e2e_/i.test(names[r.uid])).slice(0, 50).map(r => ({ who: names[r.uid], ts: r.ts, side: r.side, sym: r.sym, net: r.net, mint: r.mint, pool: r.pool, logo: r.logo, name: r.name, k: r.k, usdUsd: Math.round(r.usdUsd * 100) / 100, price: r.price, pnlUsd: r.pnlUsd == null ? null : Math.round(r.pnlUsd * 100) / 100 }));
+    const resp = new Response(JSON.stringify({ rows: pub, hot: hot.slice(0, 8), ts: Date.now() }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
+  if (path === '/public') { // somebody's Demo Spot portfolio, for the profile card's Portfolio button (2026-10-16): worth, season P&L, rank and what they hold - never the cash figure to the cent, never a quantity
+    const pu = String(url.searchParams.get('uid') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64);
+    if (!pu) return jr({ error: 'bad' }, 400);
+    const ck = new Request('https://marginpad.io/__spot_public_v1_' + pu);
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    let d = null; try { d = await (await spotStub(env).fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(pu) + '&ro=1'))).json(); } catch (e) { return spotFail(env, jr, path); }
+    let out;
+    if (!d || d.none) out = { none: true };
+    else {
+      const holds = await spotPriceHolds(env, d.holds || []);
+      const equityUsd = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
+      const netUsd = Math.round((equityUsd - (+d.depositedUsd || 0)) * 100) / 100;
+      const ws = lbPeriodStart(Date.now()), sday = new Date(ws).toISOString().slice(0, 10);
+      let base = 0; if ((+d.created || 0) < ws) { const sn = (d.snaps || []).filter(s => s.day <= sday).slice(-1)[0]; if (sn) base = (+sn.valueUsd || 0) - (+sn.depUsd || 0); }
+      let rank = null, boardN = 0; try { const snap = await memeSnapshot(env, ws); boardN = snap.n || 0; const me = (snap.rows || []).find(r => String(r.uid) === pu); if (me) rank = me.rank; } catch (e) {}
+      const tot = holds.reduce((s, x) => s + x.valueUsd, 0);
+      out = { equityUsd, allTimePnlUsd: netUsd, seasonPnlUsd: Math.round((netUsd - base) * 100) / 100, rank, n: boardN, claims: +d.claims || 0, since: d.created, cashShare: equityUsd > 0 ? Math.round((+d.usdtUsd || 0) / equityUsd * 100) : 100,
+        holds: holds.sort((a, b) => b.valueUsd - a.valueUsd).map(x => { const m = x.meta || {}; return { sym: m.sym || String(x.key).replace(/^cex:/, ''), net: m.net || '', logo: m.logo || '', k: m.k || 'cex', valueUsd: x.valueUsd, pnlPct: x.pnlPct, share: tot > 0 ? Math.round(x.valueUsd / tot * 100) : 0, rugged: !!x.rugged, stale: !!x.stale }; }) };
+    }
+    const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
+  if (path === '/theses') { // the newest five theses (Community posts in the thesis category), for the Demo Spot card; public, edge 60 s
+    const ck = new Request('https://marginpad.io/__spot_theses_v1');
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    let posts = []; try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new&cat=thesis')); posts = ((await r.json()) || {}).posts || []; } catch (e) {}
+    const rows = posts.filter(p => !/^e2e_/i.test(p.author || '')).slice(0, 5).map(p => ({ id: p.id, title: p.title, author: p.author, ts: p.ts, syms: String(p.syms || '').split(',').filter(Boolean), likes: p.likes || 0, ncom: p.ncom || 0, excerpt: String(p.body || '').replace(/[#*_>\[\]()`]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150), slug: commSlug(p.title) }));
+    const resp = new Response(JSON.stringify({ rows, more: '/blog/theses/' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
   if (path === '/board') { // the Meme Spot season board, public: the KV snapshot the */10 cron writes (lb:meme:<ws>) - a request never prices every account
     const ck = new Request('https://marginpad.io/__meme_board_v1');
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -19682,16 +19757,7 @@ async function handleSpot(url, request, env) {
   if (path === '/portfolio' || path === '/') {
     let d = null; try { d = await sdo('/s2/portfolio?uid=' + encodeURIComponent(uid)); } catch (e) { return spotFail(env, jr, path); }
     if (d && d.none) return jr({ none: true }); // signed in, no account yet - the page shows the start card
-    const holds = d.holds || [];
-    for (const x of holds) {
-      let px = 0;
-      try {
-        if (x.meta && x.meta.k === 'meme') { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { x.liqUsd = Math.round(+mp.liqUsd || 0); x.rugged = x.liqUsd < SPOT_THIN_LIQ; } }
-        else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
-      } catch (e) {}
-      if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed (rugged meme) -> last known mark + a stale flag for the UI
-      x.price = px; x.valueUsd = Math.round(x.qty * px * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
-    }
+    const holds = await spotPriceHolds(env, d.holds || []);
     const equityUsd = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
     const netUsd = Math.round((equityUsd - (+d.depositedUsd || 0)) * 100) / 100;
     // season P&L exactly as the board computes it: net worth now minus net worth at the season start (the first daily mark on/after... the last one ON OR BEFORE the season's first day)
@@ -19779,6 +19845,20 @@ async function handleSpot(url, request, env) {
       return jr(d); } catch (e) { return jr({ tx: [] }); }
   }
   return jr({ error: 'not_found' }, 404);
+}
+// Price a member's holdings in place (the /portfolio read and the public /public card share it): a meme from its own pool
+// (rugged = the pool holds under SPOT_THIN_LIQ), a major from the exchange feed, a dead feed from the last mark + stale.
+async function spotPriceHolds(env, holds) {
+  for (const x of holds) {
+    let px = 0;
+    try {
+      if (x.meta && x.meta.k === 'meme') { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { x.liqUsd = Math.round(+mp.liqUsd || 0); x.rugged = x.liqUsd < SPOT_THIN_LIQ; } }
+      else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
+    } catch (e) {}
+    if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed (rugged meme) -> last known mark + a stale flag for the UI
+    x.price = px; x.valueUsd = Math.round(x.qty * px * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
+  }
+  return holds;
 }
 // Prices for a set of held keys, cheaply: majors from the price cache, memes from the trending list when it carries the
 // mint (one aggregate read instead of one pool call each - the list is rebuilt every two minutes and GeckoTerminal allows
@@ -21255,6 +21335,7 @@ export default {
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
     if (url.pathname.startsWith('/api/reward/')) return handleReward(url, request, env);
+    if (url.pathname === '/blog/theses/' || url.pathname === '/blog/theses') return blogThesesPage(url, request, env); // traders' theses (2026-10-16) - a Community category rendered as a blog section
     if (url.pathname.startsWith('/api/spot/')) return handleSpot(url, request, env);
     if ((url.pathname === '/api/nowpayments/ipn' || url.pathname === '/api/nowpay/ipn') && request.method === 'POST') return handleNowpayIpn(request, env);
     if (url.pathname === '/api/admin/user') return handleUserPage(url, env, request);
@@ -22434,6 +22515,7 @@ export default {
         try { const wt = await env.STATS.get('botwidget:u:' + eu); if (wt) { await env.STATS.delete('botwidget:t:' + wt); await env.STATS.delete('botwidget:u:' + eu); } } catch (e) {} // a "my bot, live" token (2026-09-26)
         try { await env.STATS.delete(squadFreeKey(eu)); } catch (e) {}                          // a free squad founding (2026-09-30)
         try { if (env.SPOT) await spotStub(env).fetch(new Request('https://do/s2/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: eu }) })); } catch (e) {} // the Demo Spot account lives in its own DO (2026-10-16)
+        try { if (env.COMM) await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/admin', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin': '1' }, body: JSON.stringify({ act: 'deluser', uid: eu }) })); } catch (e) {} // and its Community posts (a test thesis is a real post otherwise)
       }
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
@@ -25313,11 +25395,23 @@ export class SpotStore {
       if (!uid) return this.j({ error: 'bad' }, 400);
       const a = this._acct2(uid, now, url.searchParams.get('create') === '1');
       if (!a) return this.j({ none: true });
-      sql.exec('UPDATE sp2acct SET last_seen=? WHERE user_id=?', now, uid);
+      if (!url.searchParams.get('ro')) sql.exec('UPDATE sp2acct SET last_seen=? WHERE user_id=?', now, uid); // ro=1: a public read of somebody else's portfolio is not their visit
       const holds = this.rows('SELECT key,qty,cost,meta FROM sp2hold WHERE user_id=? AND qty>0', uid).map(x => { let m = {}; try { m = JSON.parse(x.meta || '{}'); } catch (e) {} return { key: x.key, qty: x.qty, costUsd: x.cost / 100, meta: m }; });
       const snaps = this.rows('SELECT day,value,dep FROM sp2snap WHERE user_id=? ORDER BY day DESC LIMIT 60', uid).reverse().map(r => ({ day: r.day, valueUsd: r.value / 100, depUsd: (r.dep || 0) / 100 }));
       const day = this._day(now);
       return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, created: a.created, claims: +a.claims || 0, claimedToday: String(a.claim_day || '') === day, nextClaimMs: this._nextMidnight(now), claimUsd: SP2_CLAIM_C / 100, depositedUsd: this._dep(a) / 100, realizedUsd: (a.realized || 0) / 100, holds, snaps, txN: (+a.buys || 0) + (+a.sells || 0), buys: +a.buys || 0, sells: +a.sells || 0 });
+    }
+    if (path === '/s2/feed') { // THE FLOOR: the newest buys and sells across every account (uid resolved to a name by the worker, which also drops e2e members)
+      const n = Math.max(1, Math.min(100, +url.searchParams.get('n') || 60));
+      const rows = this.rows("SELECT user_id uid, ts, side, key, qty, price, usd, pnl, meta FROM sp2tx WHERE side IN ('buy','sell') ORDER BY ts DESC LIMIT " + n)
+        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { uid: t.uid, ts: t.ts, side: t.side, key: t.key, qty: t.qty, price: t.price, usdUsd: t.usd / 100, pnlUsd: t.side === 'sell' ? (t.pnl || 0) / 100 : null, sym: m.sym || String(t.key || '').replace(/^cex:/, ''), net: m.net || '', mint: m.mint || '', pool: m.pool || '', logo: m.logo || '', name: m.name || '', k: m.k || 'cex' }; });
+      return this.j({ rows });
+    }
+    if (path === '/s2/hot') { // what the floor is buying today: distinct buyers and dollars per coin over 24 h
+      const since = now - 86400000;
+      const rows = this.rows("SELECT key, COUNT(DISTINCT user_id) buyers, SUM(usd) usd, COUNT(*) n, MAX(meta) meta FROM sp2tx WHERE side='buy' AND ts>? GROUP BY key ORDER BY buyers DESC, usd DESC LIMIT 10", since)
+        .map(r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} return { key: r.key, buyers: +r.buyers || 0, usdUsd: (+r.usd || 0) / 100, n: +r.n || 0, sym: m.sym || String(r.key || '').replace(/^cex:/, ''), net: m.net || '', mint: m.mint || '', pool: m.pool || '', logo: m.logo || '', k: m.k || 'cex' }; });
+      return this.j({ rows, since });
     }
     if (path === '/s2/claim') { // $100 of demo cash, once per UTC day, for anyone with an account - it has to be pressed (owner: "moraju da se claim")
       if (!uid) return this.j({ error: 'bad' }, 400);
@@ -31333,6 +31427,13 @@ export class UserStore {
       const buyers = {}; rows.forEach(r => { const k = r.name || r.uid; (buyers[k] = buyers[k] || { name: r.name || '', uid: r.uid, n: 0, ticks: 0, cents: 0 }); buyers[k].n++; buyers[k].ticks += +r.ticks || 0; buyers[k].cents += +r.cents || 0; });
       return this.j({ rows, totals: { n: rows.length, ...tot }, byBuyer: Object.values(buyers).sort((x, y) => y.cents - x.cents) });
     }
+    if (path === '/ticks/grant') { // internal (worker): a capped Ticks reward by source - {uid, src, amt, note}; TICK_CAP[src] is the day cap, same as every other source
+      const guid = String((b && b.uid) || '').replace(/^u:/, ''), src = String((b && b.src) || '').replace(/[^a-z_]/g, ''), amt = Math.round(+(b && b.amt) || 0);
+      if (!guid || !src || !(amt > 0) || amt > 100 || !TICK_CAP[src]) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', guid)[0]) return this.j({ error: 'not_found' }, 404);
+      let out = null; try { out = this._grantTicks(guid, src, amt, { dayCap: TICK_CAP[src], note: String((b && b.note) || src).slice(0, 60) }); } catch (e) { return this.j({ error: 'grant' }, 500); }
+      return this.j({ ok: true, granted: out, balance: this._tickBal(guid) });
+    }
  if (path === '/ticks/adjust') { // ops: manual Ticks credit/debit (a duel refund the owner promised, a support goodwill) - logged in ticklog like every other movement
  const q = String((b && b.username) || (b && b.uid) || '').trim().toLowerCase().replace(/^u:/, '');
  const amt = Math.round(+(b && b.amt) || 0); const note = String((b && b.note) || 'Manual adjustment').slice(0, 60);
@@ -32208,6 +32309,7 @@ export class Community {
       if (!isAdmin) return this.j({ error: 'forbidden' }, 403);
       const act = String(b.act || ''), id = String(b.id || '').replace(/[^a-z0-9]/gi, '');
       if (act === 'del') sql.exec('UPDATE posts SET del=1 WHERE id=?', id);
+      else if (act === 'deluser') { const du = String(b.uid || '').slice(0, 64); if (!du) return this.j({ error: 'bad' }, 400); sql.exec('UPDATE posts SET del=1 WHERE uid=?', du); sql.exec('UPDATE comments SET del=1 WHERE uid=?', du); return this.j({ ok: true }); } // e2e cleanup (2026-10-16): a throwaway member's posts must not outlive the member
       else if (act === 'delc') { const c = this.rows('SELECT pid FROM comments WHERE id=?', id)[0]; sql.exec('UPDATE comments SET del=1 WHERE id=?', id); if (c) sql.exec('UPDATE posts SET ncom=MAX(0,ncom-1) WHERE id=?', c.pid); }
       else if (act === 'pin') sql.exec('UPDATE posts SET pinned=1 WHERE id=?', id);
       else if (act === 'unpin') sql.exec('UPDATE posts SET pinned=0 WHERE id=?', id);
@@ -32241,9 +32343,10 @@ export class Community {
 
 // ---------- Community worker layer: /api/comm/* API + SSR'd /community/* pages ----------
 function escH(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates' };
+const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates', thesis: 'Theses' }; // thesis (2026-10-16): a Demo Spot thesis - written on /spot/, listed on /blog/theses/, pays XP + Ticks
 // Category names for the /es/community/ twin (audit 2026-09-25: the SSR crumb and the category page title were English there).
-const COMM_CATS_ES = { ideas: 'Ideas de trading', analysis: 'Análisis técnico', news: 'Noticias del mercado', education: 'Educación', crypto: 'Crypto', forex: 'Forex', stocks: 'Acciones', futures: 'Futuros', strategies: 'Estrategias', psychology: 'Psicología', risk: 'Gestión del riesgo', indicators: 'Indicadores', platform: 'Novedades de la plataforma' };
+const COMM_CATS_ES = { ideas: 'Ideas de trading', analysis: 'Análisis técnico', news: 'Noticias del mercado', education: 'Educación', crypto: 'Crypto', forex: 'Forex', stocks: 'Acciones', futures: 'Futuros', strategies: 'Estrategias', psychology: 'Psicología', risk: 'Gestión del riesgo', indicators: 'Indicadores', platform: 'Novedades de la plataforma', thesis: 'Tesis' };
+const THESIS_XP = 20, THESIS_TICKS = 5; // what publishing a thesis pays (owner 2026-10-16: "XP i ticks, ne nesto puno"); Ticks are day-capped by TICK_CAP.thesis
 function commCatName(k, request) { return ((request && esLang(request) === 'es') ? COMM_CATS_ES[k] : null) || COMM_CATS[k] || k; }
 function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
 // Anti-gibberish gate (2026-08-13, owner: reward-farm posts like "wweegrdddd…" + 500 dots beat the pure
@@ -32709,7 +32812,20 @@ async function handleComm(url, request, env, ctx) {
       }
     } catch (e) {}
   }
-  if (request.method === 'POST' && path === '/post' && r && r.status === 200) { try { const _pd = JSON.parse(txt); if (_pd && !_pd.error) { const pr2 = evPush(env, request, 'post', author, '/community/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr2); else await pr2; } } catch (e) {} }
+  if (request.method === 'POST' && path === '/post' && r && r.status === 200) { try { const _pd = JSON.parse(txt); if (_pd && !_pd.error) { const pr2 = evPush(env, request, 'post', author, '/community/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr2);
+    else await pr2;
+    // A THESIS PAYS (2026-10-16): XP through the one grant path (day-capped like every source), Ticks through the capped /ticks/grant.
+    // The reward rides back on the response so the Demo Spot sheet can say what it paid; the DO body itself is untouched.
+    let _cat = ''; try { _cat = String((JSON.parse(rawBody || '{}').cat) || ''); } catch (e) {}
+    if (_cat === 'thesis' && uid) {
+      const rw = { xp: 0, ticks: 0 };
+      try { const xr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, src: 'thesis', amt: THESIS_XP, dayCap: THESIS_XP * 2, note: 'published a thesis' }) })); const xj = await xr.json(); if (xj && !xj.error) rw.xp = +xj.granted || 0; } catch (e) {} // granted = what the day cap let through (0 on the third thesis of a day)
+      try { const tj = await usersDO(env, '/ticks/grant', { uid, src: 'thesis', amt: THESIS_TICKS, note: 'published a thesis' }); if (tj && tj.ok) rw.ticks = +tj.granted || 0; if (/^e2e_/i.test(author)) rw.debug = tj; } catch (e) { if (/^e2e_/i.test(author)) rw.debug = String(e && e.message || e); }
+      try { await evPush(env, request, 'thesis', author, '/spot/'); } catch (e) {}
+      try { await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v1')); } catch (e) {}
+      _pd.reward = rw; txt = JSON.stringify(_pd);
+    }
+  } } catch (e) {} }
   // surface community actions in the live activity feed (comment always; like/save/follow only when they TURN ON, not off)
   if (request.method === 'POST' && r && r.status === 200 && (path === '/comment' || path === '/follow' || path === '/like' || path === '/mark')) { try { const _cd = JSON.parse(txt); if (_cd && !_cd.error) {
     const push = (type, label) => { const pr = evPush(env, request, type, label, '/community/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr); else return pr; };
