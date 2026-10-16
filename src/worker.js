@@ -20721,7 +20721,9 @@ export default {
     // Read via /api/admin/aibots. Unsampled (volume is tiny vs pageviews); GET+HEAD only, non-API paths only.
     try { if ((request.method === 'GET' || request.method === 'HEAD') && env.AE && url.pathname.indexOf('/api/') !== 0 && url.pathname.indexOf('/assets/') !== 0) {
       const ua9 = request.headers.get('user-agent') || '';
-      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot/i);
+      // Bravebot joined 2026-10-16: Brave Search is the index Claude's web search runs on, and Brave held 19 of our ~870 pages
+      // that day - whether its crawler comes at all was unmeasurable because the token was not here.
+      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot|Bravebot/i);
       if (m9) env.AE.writeDataPoint({ blobs: ['aibot', m9[0].toLowerCase(), url.pathname.slice(0, 96)], doubles: [1], indexes: ['aibot'] });
       /* SEO tooling, and the distinction that makes it worth reporting. The web-wide crawlers are
          background noise - they visit everyone, always. The site-audit crawlers have no web-wide
