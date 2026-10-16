@@ -2881,15 +2881,21 @@
   .mfc.light .mfc-tf-prem{color:#4f7a00;}.mfc.light .mfc-sl button.lock,.mfc.light .mfc-sl button.lock .mfc-tf-prem{color:#8a94a2;}
   /* AI chat */
   .mfc-ai-body{display:flex;flex-direction:column;gap:9px;}
-  /* CHAT LAYOUT (2026-10-16): the AI sheet's mode/strategy selector used to scroll away under the messages (owner).
-     Fix without depending on the parent height chain (a flex version grew unbounded): the MESSAGE LOG gets a bounded
-     max-height and scrolls INSIDE itself, so the header above it and the footer below it never move. 42vh leaves room
-     for the header + input within the sheet's 78% cap on every phone, so the sheet body itself does not scroll.
-     .mfc-ai-sheet is set only on the AI sheet body, so other sheets keep their normal single-scroll body. */
-  .mfc-ai-head{position:relative;z-index:5;}
-  .mfc-ai-sheet .mfc-ai-body{max-height:42vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  /* CHAT LAYOUT (2026-10-16): the AI sheet's mode/strategy selector must stay put. The first fix capped only the log,
+     but the sheet BODY itself could still scroll and carry the header (owner). Now the body is a bounded flex column
+     with an EXPLICIT max-height in vh (not the parent % chain, which did not cap) and overflow:hidden, so the body
+     itself never scrolls: header (flex:0) and footer (flex:0) are fixed, only the message log (flex:1) scrolls inside
+     itself. The header is also trimmed to take minimal space (owner). Only the AI sheet gets .mfc-ai-sheet. */
+  .mfc-sheet-b.mfc-ai-sheet{display:flex;flex-direction:column;overflow:hidden;max-height:68vh;}
+  .mfc-ai-head{flex:0 0 auto;position:relative;z-index:5;}
+  .mfc-ai-sheet .mfc-ai-body{flex:1 1 auto;min-height:56px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .mfc-ai-foot{flex:0 0 auto;}
   .mfc-ai-sheet .mfc-ai-in{margin-top:8px;}
   .mfc-ai-mode .aim-pop{z-index:8;}
+  /* minimal-space header: tighten the three head rows */
+  .mfc-ai-sheet .mfc-ai-mode{padding-bottom:6px;}
+  .mfc-ai-sheet .mfc-ai-st{padding-bottom:4px;}
+  .mfc-ai-sheet .mfc-ai-q{padding-bottom:5px;}
   .mfc-ai-msg{max-width:88%;padding:9px 12px;border-radius:13px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;}
   .mfc-ai-msg.me{align-self:flex-end;background:#1d3450;color:#dff0ff;border-bottom-right-radius:4px;}
   .mfc-ai-msg.ai{align-self:flex-start;background:#161b24;border:1px solid #232c38;color:#e9e7df;border-bottom-left-radius:4px;}
