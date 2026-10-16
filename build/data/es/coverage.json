@@ -1099,39 +1099,39 @@
  },
  {
   "rel": "coin/bnb/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coin/btc/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coin/doge/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coin/eth/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coin/sol/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coin/xrp/index.html",
-  "cover": 0.921875,
-  "hit": 59,
-  "missing": 5
+  "cover": 1,
+  "hit": 64,
+  "missing": 0
  },
  {
   "rel": "coinglass-alternative/index.html",
@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.982532751091703,
-  "hit": 225,
-  "missing": 4
+  "cover": 1,
+  "hit": 229,
+  "missing": 0
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.9431818181818182,
-  "hit": 83,
-  "missing": 5
+  "cover": 1,
+  "hit": 88,
+  "missing": 0
  },
  {
   "rel": "levels/index.html",
@@ -1771,15 +1771,15 @@
  },
  {
   "rel": "liquidation-statistics/index.html",
-  "cover": 0.945054945054945,
-  "hit": 86,
-  "missing": 5
+  "cover": 1,
+  "hit": 91,
+  "missing": 0
  },
  {
   "rel": "liquidations/by-exchange/index.html",
-  "cover": 0.9397590361445783,
-  "hit": 78,
-  "missing": 5
+  "cover": 1,
+  "hit": 83,
+  "missing": 0
  },
  {
   "rel": "liquidations/index.html",
@@ -1981,9 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.9285714285714286,
-  "hit": 234,
-  "missing": 18
+  "cover": 1,
+  "hit": 252,
+  "missing": 0
  },
  {
   "rel": "privacy/index.html",
@@ -1999,9 +1999,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.9904306220095693,
-  "hit": 207,
-  "missing": 2
+  "cover": 1,
+  "hit": 209,
+  "missing": 0
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2035,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 1,
-  "hit": 105,
-  "missing": 0
+  "cover": 0.9619047619047619,
+  "hit": 101,
+  "missing": 4
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2077,10 +2077,9 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 0.3103448275862069,
-  "hit": 18,
-  "missing": 40,
-  "skipped": true
+  "cover": 1,
+  "hit": 58,
+  "missing": 0
  },
  {
   "rel": "squads/index.html",
@@ -2174,9 +2173,9 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 0.9923076923076923,
-  "hit": 516,
-  "missing": 4
+  "cover": 1,
+  "hit": 520,
+  "missing": 0
  },
  {
   "rel": "trading-competition/index.html",
