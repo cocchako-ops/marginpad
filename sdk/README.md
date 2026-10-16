@@ -8,6 +8,16 @@ Test a strategy or an AI agent against live prices with real fee schedules, fund
 - Status: https://marginpad.io/status/ - Changelog: https://marginpad.io/api/changelog.xml
 - MCP server for Claude, ChatGPT and Cursor: https://marginpad.io/trading-api/#mcp
 
+## What the data behind it is
+
+The market data these clients read is measured by MarginPad itself and published free, with no key, as pages and JSON:
+
+- Liquidations across nine exchanges, from our own collector: https://marginpad.io/liquidations/ · live feed https://marginpad.io/rekt/ · per-coin maps such as https://marginpad.io/btc-liquidation-map/ · live heatmap https://marginpad.io/heatmap
+- Hyperliquid whale positions read from the chain, with exact liquidation prices: https://marginpad.io/hyperliquid-whales/
+- Funding, open interest and long/short: https://marginpad.io/funding/ · https://marginpad.io/open-interest/ · https://marginpad.io/long-short/
+- One question, one measured answer: https://marginpad.io/how-many-traders-liquidated-today/ · https://marginpad.io/biggest-liquidation-today/ · https://marginpad.io/what-leverage-should-a-beginner-use/ · https://marginpad.io/where-can-i-test-a-trading-bot/
+- The practice terminal the engine behind this API also runs: https://marginpad.io/paper-trade (no sign-up) and the season competition https://marginpad.io/trading-competition/
+
 ## Install
 
 ```bash
