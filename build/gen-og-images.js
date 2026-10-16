@@ -133,7 +133,7 @@ function plan(rel, html) {
     '/rewards/': ['product', { title: 'Earn while you learn to trade', sub: 'A faucet, daily missions and season prizes - paid in real USDT.', accent: ACCENT.green, path: '/rewards/', tag: 'REAL PAYOUTS' }],
     '/premium/': ['product', { title: 'MarginPad Premium', sub: 'AI chart reads, position alerts, the full Bot API tier.', accent: ACCENT.gold, path: '/premium/', points: ['Ask the AI', 'Position alerts', '600 req/min API', 'Trading report'] }],
     '/academy/': ['product', { title: 'Learn futures properly', sub: '17 courses, 147 lessons, in 13 languages. Free.', accent: ACCENT.blue, path: '/academy/', points: ['16 courses', '140 lessons', '13 languages'], tag: 'FREE' }],
-    '/spot/': ['product', { title: 'Demo Spot', sub: 'A whole crypto life, simulated: card, exchange, self-custody wallet, memecoins.', accent: ACCENT.orange, path: '/spot/' }],
+    '/spot/': ['product', { title: 'Demo Spot', sub: 'Buy and hold memes and majors with $10,000 of demo cash. One board pays $30 a season.', accent: ACCENT.orange, path: '/spot/' }],
     '/trading-api/': ['product', { title: 'Trade MarginPad from your own bot', sub: 'REST, WebSocket and MCP. Python and JavaScript SDKs, zero dependencies.', accent: ACCENT.cyan, path: '/trading-api/', points: ['REST + WS', 'MCP, 23 tools', 'Webhooks', 'Free tier'] }],
     '/trading-report/': ['product', { title: 'How you actually trade', sub: 'Your real patterns, measured from every close - not a feeling.', accent: ACCENT.violet, path: '/trading-report/' }],
     '/leaderboards/': ['competition', { title: 'Leaderboards', sub: 'Six season boards, every ranked trader, the prize per rank and the rule each board is scored by.', accent: ACCENT.gold, path: '/leaderboards/' }],

@@ -277,9 +277,9 @@ try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.cla
   .cp-hero:hover .cp-go i{transform:translateX(4px);}
   .cp-rib{position:absolute;top:0;right:0;font:800 8px 'Space Mono',monospace;letter-spacing:.12em;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#ffb020);padding:3px 8px 2px;border-radius:0 11px 0 8px;font-style:normal;z-index:2;}
   /* the eight boards in ONE row, their three group headers above them (grid row 1 spans 5 / 1 / 2) */
-  .cp-boards{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px 8px;margin-top:14px;position:relative;z-index:2;min-width:0;}
+  .cp-boards{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px 8px;margin-top:14px;position:relative;z-index:2;min-width:0;} /* nine since 2026-10-16 (Meme Spot) */
   .cp-gh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.07);min-width:0;}
-  .cp-gh.g-free{grid-column:span 5;}.cp-gh.g-gold{grid-column:span 1;}.cp-gh.g-real{grid-column:span 2;}
+  .cp-gh.g-free{grid-column:span 6;}.cp-gh.g-gold{grid-column:span 1;}.cp-gh.g-real{grid-column:span 2;}
   .cp-gh span{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap;}
   .cp-gh em{font-style:normal;font-size:10.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
   .cp-gh.g-gold span{color:var(--amber);}
@@ -319,6 +319,7 @@ try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.cla
   .cp-b[data-b="winrate"]{--a:79,209,197;}
   .cp-b[data-b="xp"]{--a:139,124,246;}
   .cp-b[data-b="call"]{--a:247,147,26;}
+  .cp-b[data-b="meme"]{--a:160,107,255;}
   .cp-b[data-b="gold"]{--a:255,215,90;}
   .cp-b[data-b="bybit"]{--a:247,166,0;}
   .cp-b[data-b="moon"]{--a:179,157,255;}
@@ -331,7 +332,7 @@ try{if(/(^|;\s*)mp_li=1(;|$)/.test(document.cookie))document.documentElement.cla
   .cp-hero:hover .cp-b::after{opacity:1;}
   @media(max-width:1000px){
     /* one scrolling row of 150px tiles inside the card - stacking them was 1,132px on a phone (measured 2026-10-05) */
-    .cp-boards{grid-template-columns:repeat(8,150px);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:12px -16px 0;padding:0 16px 4px;}
+    .cp-boards{grid-template-columns:repeat(9,150px);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:12px -16px 0;padding:0 16px 4px;}
     .cp-boards::-webkit-scrollbar{display:none;}
     .cp-gh em{display:none;}
   }
@@ -1122,6 +1123,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
         <div class="cp-b" data-b="winrate" data-g="free"><span class="cp-bn">最佳胜率</span><span class="cp-bp">$30<small>pool · $10 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
         <div class="cp-b" data-b="xp" data-g="free"><span class="cp-bn">赛季XP</span><span class="cp-bp">$30<small>pool · $10 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
         <div class="cp-b" data-b="call" data-g="free"><span class="cp-bn">Daily BTC call</span><span class="cp-bp">$20<small>pool · $12 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
+        <div class="cp-b" data-b="meme" data-g="free"><span class="cp-bn">Meme Spot</span><span class="cp-bp">$30<small>pool · $15 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
         <div class="cp-b" data-b="gold" data-g="gold"><i class="cp-rib">GOLD+</i><span class="cp-bn">The Gold Room</span><span class="cp-bp">$30<small>pool · $10 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
         <div class="cp-b" data-b="bybit" data-g="real"><span class="cp-bn"><i class="cp-dot" style="--d:#f7a600"></i>Bybit volume</span><span class="cp-bp">$100<small>start · grows with volume</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
         <div class="cp-b" data-b="moon" data-g="real"><span class="cp-bn"><i class="cp-dot" style="--d:#b39dff"></i>King of the Moon</span><span class="cp-bp">$300<small>pool · $150 first</small></span><span class="cp-bl"><i>1</i><b>-</b><em></em></span></div>
@@ -1149,10 +1151,10 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     </a>
 
     <a class="tile s3" href="/spot/" style="--ac:#a06bff">
-      <div class="t-kick"><span class="dot"></span> Life-simulation · fake money</div>
+      <div class="t-kick"><span class="dot"></span> Buy and hold · demo cash</div>
       <div class="t-title">Demo Spot</div>
-      <div class="t-sub">A $10,000 card, an exchange, a self-custody wallet and memes on 4 chains. Real fees, real gas, nothing at stake.</div>
-      <div class="t-go">Start from zero <i>→</i></div>
+      <div class="t-sub">$10,000 to start and $100 a day to claim. Meme coins on 4 chains, the top 250 majors, any contract address. No fees, no leverage - one board pays $30 a season.</div>
+      <div class="t-go">Start with $10,000 <i>→</i></div>
     </a>
 
     <a class="tile s3" href="/charts" style="--ac:#3fd8e6">
@@ -2276,7 +2278,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </div>
 <script defer src="/assets/mp-trade.js?v=7d2cfa1f"></script>
 <script defer src="/assets/mp-auth.js?v=8eb3215b"></script>
-<script defer src="/assets/mp-nav.js?v=d2b8432b"></script>
+<script defer src="/assets/mp-nav.js?v=9994ce0c"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

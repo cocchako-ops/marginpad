@@ -3856,10 +3856,11 @@ const COMP_BOARDS = [
   { id: 'bybit', ent: 'bybit', key: 'topBybit', prize: null, name: 'Bybit Volume', asks: 'the most REAL futures volume on a Bybit account opened through MarginPad; the pool is a rebate - a share of the affiliate commission the traders on the board generated this season', unit: 'USD volume', f: 'vol' }, // prize null = read from lb.bybitPool (2026-09-28)
   { id: 'moon', ent: 'moon', key: 'topMoon', prize: 'lbMoon', name: 'King of the Moon', asks: 'the most REAL amount wagered on a Moon account opened through MarginPad, over a two-season contest', unit: 'USD wagered', f: 'vol', days: 28 },
   { id: 'call', ent: 'call', key: 'topCall', prize: 'lbCall', name: 'Daily BTC Call', asks: 'the most points from daily calls on where BTC closes - a closer call scores more, one call a day', unit: 'points', f: 'pts' }, // 2026-09-28 (owner): the daily call became a paid board; it used to pay Ticks on the season page
+  { id: 'meme', ent: 'meme', key: 'topMeme', prize: 'lbMeme', name: 'Meme Spot', asks: 'the most season profit in Demo Spot - buy and hold meme coins and majors with $10,000 of demo cash plus $100 a day; profit counts, the daily claim does not', unit: 'USD profit', f: 'pnlUsd' }, // 2026-10-16 (owner): Demo Spot rebuilt as buy & hold with one board, $30 to the top three
 ];
 async function handleCompetition(url, request, env, ctx) {
   const jr = (o, cc) => new Response(JSON.stringify(o, null, url.searchParams.get('pretty') ? 1 : 0), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
-  const ck = new Request('https://marginpad.io/__competition_v7'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
+  const ck = new Request('https://marginpad.io/__competition_v8'); // v7: the Bybit board is a rebate pool. v6: the Daily BTC Call board (2026-09-28). v4: each board states what it REQUIRES (the Gold Room is free but Gold-only). v3: entries are measured, not the row cap, and `people` counts distinct competitors
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
 
   const now = Date.now(), from = lbPeriodStart(now), to = from + LB_PERIOD;
@@ -3879,7 +3880,7 @@ async function handleCompetition(url, request, env, ctx) {
       entries: (lb && lb.entrants && lb.entrants[b.ent] != null) ? lb.entrants[b.ent] : rows.length,
       leader: rows[0] ? { name: rows[0].who || rows[0].name || null, value: rows[0][b.f] != null ? +rows[0][b.f] : null } : null,
       standings: rows.slice(0, 5).map((r, i) => ({ rank: i + 1, name: r.who || r.name || null, value: r[b.f] != null ? +r[b.f] : null })),
-      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : b.id === 'call' ? 'free_call' : 'free_paper',
+      entry: (b.id === 'bybit' || b.id === 'moon') ? 'real_money' : b.id === 'call' ? 'free_call' : b.id === 'meme' ? 'free_spot' : 'free_paper',
       /* FREE IS NOT THE SAME AS OPEN (2026-09-20), AND NEITHER IS "OPEN" THE SAME AS "PAID" (2026-09-21).
          `requires` was on the Gold Room alone; the other six read as asking nothing, which is how a
          member comes to believe a board is open to them when it is not. And the opposite error was live
@@ -3890,6 +3891,7 @@ async function handleCompetition(url, request, env, ctx) {
         : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
         : b.id === 'moon' ? { link: 'moon_signup', xp: REWARDS_MIN_XP, what: 'an approved Moon sign-up bonus claim (claiming one needs Bronze)' }
         : b.id === 'call' ? { what: 'a username and at least one settled daily BTC call this season (calls close at ' + PRED_CUTOFF_H + ':00 UTC, the 00:00 UTC close settles them)' }
+        : b.id === 'meme' ? { what: 'a username and a Demo Spot account holding a coin or with a trade this season (https://marginpad.io/spot/)' }
         : { what: 'a username and at least one closed trade this season' },
       // what it takes to KEEP what you win - the same on every board, and the thing Bronze actually gates
       payout: { level: 'bronze', xp: REWARDS_MIN_XP, what: 'Bronze - ' + REWARDS_MIN_XP + ' XP - to withdraw' },
@@ -8063,7 +8065,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=d2b8432b" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9994ce0c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13573,6 +13575,9 @@ async function lbSeasonArchive(env, ws) {
     }
     if (out.moonContest) { out.scores.moon = moonRows; out.kept.moon = true; }
   } catch (e) {}
+  try { // Meme Spot: the final snapshot the payer wrote (lb:meme:<ws>), season profit per member
+    if (ws >= MEME_LB_START) { const ms = await memeSnapshot(env, ws); if (ms && ms.ts) { out.scores.meme = (ms.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades })); out.kept.meme = true; } }
+  } catch (e) {}
   return out;
 }
 // Season goals: five things a member can aim at, pick two per season, no swaps. Every one is counted from a real
@@ -14407,11 +14412,11 @@ async function rewardCfg(env) {
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
-  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [12, 5, 3, 0, 0]);
+  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [30, 15, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]), lbRoe2 = arr5(m.lbRoe2, [10, 8, 6, 4, 2]), lbGold = arr5(m.lbGold, [0, 0, 0, 0, 0]), lbMoon = arr5(m.lbMoon, [150, 70, 40, 25, 15]), lbCall = arr5(m.lbCall, [12, 5, 3, 0, 0]), lbMeme = arr5(m.lbMeme, [15, 10, 5, 0, 0]); // lbMeme = the Meme Spot board (2026-10-16, owner: "$30, samo prva 3")
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -14612,7 +14617,7 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
- const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : board === 'call' ? 'Daily BTC Call' : 'Highest ROE'; // every paid board (the Demo-Spot bank board was retired 2026-08-17; Daily BTC Call added 2026-09-28)
+ const boardName = board === 'moon' ? 'King of the Moon' : board === 'bybit' ? 'Bybit Volume' : board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Season XP' : board === 'green' ? 'Green Days' : board === 'gold' ? 'The Gold Room' : board === 'call' ? 'Daily BTC Call' : board === 'meme' ? 'Meme Spot' : 'Highest ROE'; // every paid board (the Demo-Spot bank board was retired 2026-08-17; Daily BTC Call added 2026-09-28; Meme Spot 2026-10-16)
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
   const achieve = board === 'call' ? ('<b>' + Math.round(info.pts || 0) + ' points</b> from ' + (info.n || 0) + ' daily BTC call' + ((info.n === 1) ? '' : 's') + ' this season') : board === 'moon' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' wagered</b> on Moon during the contest') : board === 'bybit' ? ('<b>$' + Math.round(info.vol || 0).toLocaleString('en-US') + ' traded</b> this season (' + (info.n || 0) + ' trades)') : board === 'gold' ? ('<b>' + (info.pts > 0 ? '+' : '') + (info.pts || 0) + ' points</b> this season (' + (info.w || 0) + 'W-' + (info.l || 0) + 'L)') : board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this season') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this season') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
@@ -14895,7 +14900,7 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v7')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
 async function payMoonPrizes(env) { // */10 cron: the active contest, once its 28 days are over AND the END paste is marked FINAL; paid once (flag lbpaid:moon:<id>)
@@ -15490,7 +15495,7 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
-  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v7')); } catch (e) {} // the competition feed carries the pool too
+  try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
 async function bybitSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:bybit:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ts: 0, final: false, rows: [], n: 0, reportN: 0, unmatched: 0, registered: 0, listed: 0, pool: null }; }
@@ -15531,7 +15536,7 @@ async function promoteLbPending(env) {
     let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) { return null; }
     const p = cfg.lbPending;
     if (!p || !(+p.fromWs > 0) || Date.now() < +p.fromWs) return null;
-    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbMoon', 'lbCall'].filter(k => Array.isArray(p[k]));
+    const keys = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbMoon', 'lbCall', 'lbMeme'].filter(k => Array.isArray(p[k]));
     if (!keys.length) { delete cfg.lbPending; await env.STATS.put('rwd:cfg', JSON.stringify(cfg)); return null; }
     const lines = [];
     for (const k of keys) { lines.push(k + ': ' + JSON.stringify(cfg[k] || []) + ' -> ' + JSON.stringify(p[k])); cfg[k] = p[k]; }
@@ -15628,6 +15633,17 @@ async function payWeeklyPrizes(env) {
         const callTop = callRows.filter(x => !banned['u:' + String(x.uid || '').replace(/^u:/, '')] && (+x.pts || 0) > 0).slice(0, 5)
           .map(x => ({ uid: 'u:' + String(x.uid).replace(/^u:/, ''), name: x.name, pts: +x.pts || 0, n: +x.n || 0 }));
         push(callTop, cfg.lbCall, 'call', x => ({ name: x.name || '', pts: x.pts, n: x.n }));
+      }
+      // MEME SPOT (2026-10-16): rebuilt at pay time from the same builder the cron uses (live prices at the moment the
+      // season ended), only a POSITIVE season profit wins money, and the final board is written back to KV with
+      // final:true so the archive shows exactly what was paid.
+      if (ws >= MEME_LB_START) {
+        let mb = null; try { mb = await spotBoardBuild(env, ws); } catch (e) {}
+        if (mb) {
+          const memeTop = (mb.rows || []).filter(x => (+x.pnl || 0) > 0).slice(0, 5).map(x => ({ uid: 'u:' + String(x.uid).replace(/^u:/, ''), name: x.who, pnl: +x.pnl || 0 }));
+          push(memeTop, cfg.lbMeme, 'meme', x => ({ name: x.name || '', pnl: x.pnl }));
+          try { await env.STATS.put('lb:meme:' + ws, JSON.stringify({ ...mb, final: true }), { expirationTtl: 400 * 86400 }); } catch (e) {}
+        }
       }
       // BYBIT VOLUME BOARD: paid by payBybitPrizes() (own cron task) - only once the owner marked the season's report FINAL.
     }
@@ -18517,36 +18533,13 @@ async function digestContent(env) {
   } catch (e) {}
   return { top };
 }
-// Demo Spot summary for one user (weekly digest line + stuck nudge). Read-only portfolio; null when there is no account.
+// Demo Spot summary for one user (weekly digest line). Read-only; null when there is no account. v3 shape (2026-10-16).
 async function spotSummary(env, uid) {
-  try { if (!env.SPOT) return null; const r = await spotStub(env).fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); const d = await r.json(); if (!d || d.none || d.error) return null;
-    const gas = d.gas || {}; const hasGas = Object.keys(gas).some(k => +gas[k] > 0);
-    return { cardUsd: +d.cardUsd || 0, exUsd: +d.usdtUsd || 0, walUsd: +d.wusdtUsd || 0, hasGas, holds: (d.holds || []).length, txN: +d.txN || 0 }; } catch (e) { return null; }
+  try { if (!env.SPOT) return null; const r = await spotStub(env).fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(uid))); const d = await r.json(); if (!d || d.none || d.error) return null;
+    return { cashUsd: +d.usdtUsd || 0, holds: (d.holds || []).length, txN: +d.txN || 0, claimedToday: !!d.claimedToday }; } catch (e) { return null; }
 }
-function spotDigestHtml(sp) { if (!sp || !sp.txN) return ''; const back = (sp.walUsd >= 1 || sp.hasGas) ? ' Money is sitting in your wallet - bring it back: Wallet &rarr; Exchange &rarr; Send to the exchange, then Cash out in the Bank app.' : ''; return '<p style="margin:14px 0 0;color:#333"><b>Demo Spot:</b> $' + sp.cardUsd.toFixed(0) + ' on your card, $' + sp.exUsd.toFixed(0) + ' on the exchange, $' + sp.walUsd.toFixed(0) + ' USDT in the wallet' + (sp.holds ? ', ' + sp.holds + ' coin' + (sp.holds === 1 ? '' : 's') + ' held' : '') + '.' + back + ' <a href="https://marginpad.io/spot/" style="color:#111">Open Demo Spot</a></p>'; }
-function spotDigestText(sp) { if (!sp || !sp.txN) return ''; return '\n\nDemo Spot: $' + sp.cardUsd.toFixed(0) + ' on your card, $' + sp.exUsd.toFixed(0) + ' on the exchange, $' + sp.walUsd.toFixed(0) + ' USDT in the wallet.' + ((sp.walUsd >= 1 || sp.hasGas) ? ' Money is sitting in your wallet: Wallet -> Exchange -> Send to the exchange, then Cash out in the Bank app.' : '') + ' https://marginpad.io/spot/'; }
-// Stuck-wallet nudge (2026-09-03): 18 of 28 users who withdrew to the wallet never brought the money back. Once per account, ever
-// (KV stamp, 60d), for accounts with wallet money and no action for 7 days; max 25 emails per run.
-async function spotStuckNudge(env) {
-  if (!env.SPOT || !env.STATS || !env.RESEND_API_KEY) return;
-  const day = new Date().toISOString().slice(0, 10);
-  if (await env.STATS.get('spot:nudge:' + day)) return;
-  await env.STATS.put('spot:nudge:' + day, '1', { expirationTtl: 172800 });
-  let list = null; try { const r = await spotStub(env).fetch(new Request('https://do/adminspot')); list = await r.json(); } catch (e) { return; }
-  const now = Date.now();
-  const stuck = ((list && list.accounts) || []).filter(a => ((+a.wusdt || 0) >= 100 || Object.values((() => { try { return JSON.parse(a.gas || '{}'); } catch (e) { return {}; } })()).some(v => +v > 0.01)) && (now - (+a.txLast || 0)) > 7 * 86400000 && !/^(spot|e2e-)/.test(String(a.uid))).slice(0, 60);
-  if (!stuck.length) return;
-  const prof = await resolveProfiles(env, stuck.map(a => 'u:' + a.uid));
-  let sent = 0;
-  for (const a of stuck) {
-    if (sent >= 25) break;
-    const p = prof[a.uid]; if (!p || !p.email) continue;
-    const k = 'spot:nudged:' + a.uid; if (await env.STATS.get(k)) continue;
-    await env.STATS.put(k, '1', { expirationTtl: 60 * 86400 });
-    const msg = 'Hi' + (p.username ? ' ' + p.username : '') + ',\n\nYour Demo Spot wallet still holds practice money that never made it back to your card. It takes three taps now:\n\n1. Wallet app -> Swap -> Gas coin -> USDT (if the money sits in SOL, ETH or BNB). Meme bags: sell them; the Sell screen can convert straight to USDT.\n2. Wallet app -> Exchange -> Send to the exchange (the network is picked from the gas you hold, no address to copy).\n3. Bank app -> Cash out (1% fee, minimum $10).\n\nThe Bank app also shows the whole plan with a button for each step: https://marginpad.io/spot/\n\nDemo Spot is practice money only and never pays real USDT.\n\nMarginPad';
-    try { const r = await sendSupportEmail(env, p.email, 'Your Demo Spot money is waiting in the wallet', msg, 'hello'); if (r && r.ok) { sent++; try { await evPush(env, null, 'spottrade', 'stuck nudge sent', '/spot/'); } catch (e) {} } } catch (e) {}
-  }
-}
+function spotDigestHtml(sp) { if (!sp || !sp.txN) return ''; return '<p style="margin:14px 0 0;color:#8b97a5;font-size:13px">Demo Spot: $' + sp.cashUsd.toFixed(0) + ' in cash, ' + sp.holds + (sp.holds === 1 ? ' coin' : ' coins') + ' held' + (sp.claimedToday ? '' : ' - your $100 for today is unclaimed') + '. <a href="https://marginpad.io/spot/" style="color:#c2f64a">Open Demo Spot</a></p>'; }
+function spotDigestText(sp) { if (!sp || !sp.txN) return ''; return '\n\nDemo Spot: $' + sp.cashUsd.toFixed(0) + ' in cash, ' + sp.holds + ' coins held' + (sp.claimedToday ? '' : ' - your $100 for today is unclaimed') + '. https://marginpad.io/spot/'; }
 async function sendDigestEmail(env, to, uid, content) {
   if (!env.RESEND_API_KEY) return { ok: false };
   const unsub = 'https://marginpad.io/unsubscribe?u=' + encodeURIComponent(uid), medal = ['', '', ''];
@@ -19411,7 +19404,6 @@ async function grantXp(env, uid, xsrc, amt, opts) {
   } catch (e) {}
 }
 // ---------- Demo Spot: worker layer (auth + PRICING; the SpotStore DO is the atomic ledger) ----------
-const SPOT_FEE_BP = 10; // 0.1% taker fee per fill (Binance-spot realism - free churn can't farm the equity curve)
 function spotStub(env) { return env.SPOT.get(env.SPOT.idFromName('main')); }
 const SPOT_LOGO_OK = /^https:\/\/(assets\.coingecko\.com|coin-images\.coingecko\.com|s2\.coinmarketcap\.com|static\.geckoterminal\.com|dd\.dexscreener\.com)\//; // logo URLs render as <img src> - whitelist known CDNs, never arbitrary client URLs
 // GeckoTerminal (free, no key) - the Solana meme universe: trending pools, per-pool price+liquidity, OHLCV candles.
@@ -19540,6 +19532,10 @@ function _gtRows(j, net) { // one GeckoTerminal pool-list response → normalize
     const price = +a.base_token_price_usd || 0; if (!(price > 0)) continue;
     const sym = String(tok.symbol || '').slice(0, 12) || '?';
     if (SPOT_MEME_BLOCK.test(sym.replace(/[^A-Za-z]/g, ''))) continue;
+    // A TICKER SPELT IN CYRILLIC, GREEK, ARMENIAN OR CHEROKEE LETTERS IS A LOOKALIKE (2026-10-16: the trending list carried
+    // "USDT" written in Armenian and Cherokee glyphs with $69M of pool and a $9.5B FDV - the stablecoin filter above only sees
+    // ASCII, so it sailed through and the E2E picked it as the deepest pool on the list). No real meme spells itself that way.
+    if (/[Ͱ-ϿЀ-ӿ԰-֏Ꭰ-᏿ᴀ-ᶿ＀-￯]/.test(sym)) continue;
     const liq = +a.reserve_in_usd || 0; if (liq < 8000) continue; // sub-$8k pools are pure exit-scam noise even for a demo
     out.push({ mint, pool: String(a.address || ''), net, native: (SPOT_NETS[net] || {}).native || 'SOL', sym, name: String(tok.name || '').slice(0, 48),
       logo: SPOT_LOGO_OK.test(String(tok.image_url || '')) ? tok.image_url : '',
@@ -19623,7 +19619,6 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
   return null;
 }
 // Simulated DEX slippage: trade size vs pool liquidity - a $500 buy into a $50k pool hurts, majors don't. Clamp 0.2%–3%.
-function spotSlip(usd, liqUsd) { if (!(liqUsd > 0)) return 0.01; return Math.min(0.03, Math.max(0.002, 0.002 + (usd / liqUsd) * 0.5)); }
 // The chains the meme universe lives on. Every meme trade SETTLES in the chain's native coin (real life: a Solana
 // meme is bought with SOL) and pays a per-tx gas fee in that coin; exchange withdrawals cost a per-network fee
 // (the "pick a cheap network" lesson - Ethereum hurts, Solana doesn't). wdC = withdrawal fee in cents.
@@ -19633,21 +19628,8 @@ const SPOT_NETS = {
   eth: { native: 'ETH', label: 'Ethereum', wdC: 800, gas: 0.0015 },
   bsc: { native: 'BNB', label: 'BNB Chain', wdC: 80, gas: 0.0003 },
 };
-const SPOT_MEME_FEE_BP = 30; // DEX swap fee on meme fills (0.3% - Raydium/Uniswap-like), vs 10bp CEX taker
-const SPOT_ONRAMP_BP = 180; // 1.8% card-processing fee on the fiat on-ramp (the "cards are expensive" lesson)
-const SPOT_OFFRAMP_BP = 100; // 1% fiat-withdrawal fee cashing out to the card (min $1) - the "cashing out costs too" lesson
-const SPOT_SWAP_BP = 30; // 0.3% wallet DEX fee on USDT <-> native swaps
 // fake-but-realistic self-custody addresses + a 12-word seed phrase (educational moment; the seed is shown once
 // and NEVER stored - exactly like real wallets)
-function spotGenAddr() {
-  const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', HEX = '0123456789abcdef';
-  const rnd = new Uint8Array(64); crypto.getRandomValues(rnd);
-  let sol = ''; for (let i = 0; i < 44; i++) sol += B58[rnd[i] % 58];
-  let evm = '0x'; for (let i = 0; i < 40; i++) evm += HEX[rnd[(i + 20) % 64] % 16];
-  return { sol, evm };
-}
-const SPOT_WORDS = 'apple bridge candle dolphin ember forest garden harbor island jungle kernel lantern meadow nectar orbit planet quartz river sunset timber umbrella valley walnut yellow zebra anchor breeze canyon dune eagle falcon glacier horizon iceberg jasmine karma lagoon marble nova opal prism raven silver thunder velvet willow amber blossom cedar drift'.split(' ');
-function spotGenSeed() { const r = new Uint8Array(12); crypto.getRandomValues(r); const out = []; const used = {}; let i = 0, gi = 0; while (out.length < 12 && gi < 60) { const w = SPOT_WORDS[(r[i % 12] + gi * 7) % SPOT_WORDS.length]; gi++; if (used[w]) continue; used[w] = 1; out.push(w); i++; } return out; }
 // Demo Spot -> UserStore event trail (2026-09-03): the daily missions and XP verify against uevents/mev, which only the /track path writes.
 // Fire-and-forget; a store hiccup must never fail the trade that already settled.
 async function spotTrack(env, request, uid, type, label) { try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type, label: String(label || '').slice(0, 48), path: '/spot/', cc: (request && request.cf && request.cf.country) || '', dev: deviceOf((request && request.headers.get('user-agent')) || '') }) })); } catch (e) {} }
@@ -19675,7 +19657,199 @@ async function handleSpot(url, request, env) {
     const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   }
-  if (path === '/token') { // any token by CONTRACT ADDRESS (owner, 2026-09-03, "like Phantom"). Our trending list first (no upstream call), then GeckoTerminal token + deepest pool; a GT rate-limit is reported as busy, never as "no such token".
+  if (path === '/token') return spotTokenLookup(url, env, jr);
+  if (path === '/board') { // the Meme Spot season board, public: the KV snapshot the */10 cron writes (lb:meme:<ws>) - a request never prices every account
+    const ck = new Request('https://marginpad.io/__meme_board_v1');
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    const ws = lbPeriodStart(Date.now());
+    const snap = await memeSnapshot(env, ws);
+    let prizes = [15, 10, 5, 0, 0]; try { prizes = (await rewardCfg(env)).lbMeme; } catch (e) {}
+    const resp = new Response(JSON.stringify({ ws, we: ws + LB_PERIOD, ts: snap.ts || 0, n: snap.n || 0, paidFrom: MEME_LB_START, prizes, rows: (snap.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades })) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
+  // everything below acts on a user's account -> session required (admin ?uid= override for testing/support)
+  let uid = null;
+  const tok = getCookie(request, SESS_COOKIE);
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { if (su.status && su.status !== 'active') return jr({ error: 'restricted' }, 403); uid = String(su.id); } }
+  if (!uid) { const ov = url.searchParams.get('uid'); if (ov && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = String(ov); }
+  if (!uid) return jr({ error: 'login_required' }, 401);
+  const stub = spotStub(env);
+  const sdo = async (p, body) => { const r = await stub.fetch(new Request('https://do' + p, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : undefined)); return r.json(); };
+  if (path === '/start' && request.method === 'POST') { // the ONLY place an account is minted: the Start button
+    try { const d = await sdo('/s2/portfolio?uid=' + encodeURIComponent(uid) + '&create=1'); if (d && d.fresh) { try { await evPush(env, request, 'spottrade', 'started with $10,000', '/spot/'); } catch (e) {} } return jr({ ok: !d.error, fresh: !!d.fresh }); } catch (e) { return spotFail(env, jr, path); }
+  }
+  if (path === '/portfolio' || path === '/') {
+    let d = null; try { d = await sdo('/s2/portfolio?uid=' + encodeURIComponent(uid)); } catch (e) { return spotFail(env, jr, path); }
+    if (d && d.none) return jr({ none: true }); // signed in, no account yet - the page shows the start card
+    const holds = d.holds || [];
+    for (const x of holds) {
+      let px = 0;
+      try {
+        if (x.meta && x.meta.k === 'meme') { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { x.liqUsd = Math.round(+mp.liqUsd || 0); x.rugged = x.liqUsd < SPOT_THIN_LIQ; } }
+        else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
+      } catch (e) {}
+      if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed (rugged meme) -> last known mark + a stale flag for the UI
+      x.price = px; x.valueUsd = Math.round(x.qty * px * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
+    }
+    const equityUsd = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
+    const netUsd = Math.round((equityUsd - (+d.depositedUsd || 0)) * 100) / 100;
+    // season P&L exactly as the board computes it: net worth now minus net worth at the season start (the first daily mark on/after... the last one ON OR BEFORE the season's first day)
+    const ws = lbPeriodStart(Date.now()), sday = new Date(ws).toISOString().slice(0, 10);
+    let base = 0; if ((+d.created || 0) < ws) { const sn = (d.snaps || []).filter(s => s.day <= sday).slice(-1)[0]; if (sn) base = (+sn.valueUsd || 0) - (+sn.depUsd || 0); }
+    const seasonPnlUsd = Math.round((netUsd - base) * 100) / 100;
+    let rank = null, boardN = 0; try { const snap = await memeSnapshot(env, ws); boardN = snap.n || 0; const me = (snap.rows || []).find(r => String(r.uid) === uid); if (me) rank = me.rank; } catch (e) {}
+    const snaps = d.snaps || [];
+    const today = snaps.length ? snaps[snaps.length - 1] : null;
+    return jr({ ...d, holds, equityUsd, netUsd, allTimePnlUsd: netUsd, seasonPnlUsd, season: { ws, we: ws + LB_PERIOD, rank, n: boardN }, todayPnlUsd: today ? Math.round((equityUsd - (+today.valueUsd || 0) - ((+d.depositedUsd || 0) - (+today.depUsd || 0))) * 100) / 100 : null, nets: SPOT_NETS });
+  }
+  if (path === '/claim' && request.method === 'POST') {
+    let d = null; try { d = await sdo('/s2/claim', { uid }); } catch (e) { return spotFail(env, jr, path); }
+    if (d && d.error) return jr(d, d.error === 'claimed' ? 429 : d.none ? 404 : 400);
+    if (d && d.none) return jr({ error: 'no_account' }, 404);
+    try { await evPush(env, request, 'spottrade', 'claimed $' + (SP2_CLAIM_C / 100).toFixed(0), '/spot/'); } catch (e) {}
+    await spotTrack(env, request, uid, 'spotclaim', '$' + (SP2_CLAIM_C / 100).toFixed(0));
+    return jr(d);
+  }
+  if (path === '/trade' && request.method === 'POST') {
+    const side = b.side === 'sell' ? 'sell' : 'buy';
+    const kind = b.kind === 'meme' ? 'meme' : 'cex';
+    let key, price = 0, liq = 0, meta = { k: kind }, net = '', holdMeta = null, priceStale = false;
+    if (kind === 'meme') {
+      let pool = String(b.pool || ''); const mint = String(b.mint || '');
+      if (!/^[A-Za-z0-9]{20,60}$/.test(mint)) return jr({ error: 'bad_token' }, 400);
+      let info = null; try { info = (await spotMemeList(env)).find(m => m.mint === mint); } catch (e) {} // identity from OUR list when possible - client fields only as a sanitized fallback
+      net = (info && info.net) || (SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana');
+      key = net + ':' + mint; // the mint is the identity (tickers collide)
+      if (side === 'sell') { // the POSITION says which pool prices it (2026-09-06) - never the pool the client names
+        try { const hd = await sdo('/s2/hold?uid=' + encodeURIComponent(uid) + '&key=' + encodeURIComponent(key)); if (hd && hd.qty > 0) holdMeta = hd.meta || {}; } catch (e) {}
+        if (!holdMeta) return jr({ error: 'no_position' }, 400);
+        if (holdMeta.pool) pool = String(holdMeta.pool);
+        if (holdMeta.net && SPOT_NETS[holdMeta.net]) { net = holdMeta.net; key = net + ':' + mint; }
+      }
+      if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
+      const mp = await spotMemePrice(env, net, pool);
+      if (!mp) return jr({ error: 'no_price' }, 503);
+      if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token - no fill through a foreign pool, either direction
+      price = mp.price; liq = mp.liqUsd; priceStale = !!mp.stale;
+      if (side === 'buy' && liq > 0 && liq < SPOT_THIN_LIQ) return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400); // under $1k of liquidity the price is fiction, and the board pays real money
+      meta = { k: 'meme', mint, pool, net, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
+    } else {
+      const sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+      if (!sym || sym === 'USDT' || sym === 'USDC') return jr({ error: 'bad_sym' }, 400);
+      const pd = await fetchPriceCached(sym);
+      if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
+      price = +pd.price; key = 'cex:' + sym;
+      meta = { k: 'cex', sym, logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
+    }
+    if (side === 'buy') {
+      const usdC = Math.round((+b.usd || 0) * 100);
+      if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
+      if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
+      let d = null; try { d = await sdo('/s2/trade', { uid, side: 'buy', key, usdC, price, meta }); } catch (e) { return spotFail(env, jr, path); }
+      if (d && d.none) return jr({ error: 'no_account' }, 404);
+      if (d && d.ok) { d.sym = meta.sym || key.replace(/^cex:/, ''); d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + d.sym + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', d.sym); }
+      return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
+    }
+    // sell: the hold decides the exact qty (100% = the stored qty) and, for a meme, the pool
+    let hq = 0; try { const hd = await sdo('/s2/hold?uid=' + encodeURIComponent(uid) + '&key=' + encodeURIComponent(key)); hq = +hd.qty || 0; if (!holdMeta) holdMeta = hd.meta || {}; } catch (e) {}
+    if (!(hq > 0)) return jr({ error: 'no_position' }, 400);
+    const pct = Math.min(100, Math.max(0, +b.pct || 0));
+    const qty = pct >= 100 ? hq : (isFinite(+b.qty) && +b.qty > 0 ? Math.min(+b.qty, hq) : hq * pct / 100);
+    if (!(qty > 0)) return jr({ error: 'bad' }, 400);
+    const estUsd = qty * price;
+    if (estUsd < 0.5 && pct < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400); // dust positions may sell whole regardless of the $1 floor
+    if (kind === 'meme') { // integrity guard: a fill far above the position's own last mark needs a pool that could actually pay it
+      const gd = spotSellGuard({ price, lastPx: +(holdMeta && holdMeta.lastPx) || 0, liqUsd: liq, stale: priceStale });
+      if (gd.alert) { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['spotjump'], blobs: ['spotjump', key.slice(0, 64), String(gd.block || 'filled'), String(uid)], doubles: [1, gd.x, estUsd, liq] }); } catch (e) {} try { await tgAdmin(env, '<b>Demo Spot: sell fill ' + Math.round(gd.x) + 'x above the last mark' + (gd.block ? ' (refused: ' + gd.block + ')' : '') + '</b>\n' + (meta.sym || key.slice(0, 20)) + ' est $' + Math.round(estUsd) + ' at ' + price.toPrecision(4) + ' (last mark ' + (+(holdMeta && holdMeta.lastPx) || 0).toPrecision(4) + ', pool liq $' + Math.round(liq) + (priceStale ? ', list fallback' : '') + ')\nuid ' + String(uid).slice(0, 12), { kind: 'spotjump', sev: gd.block ? 'warn' : 'red' }); } catch (e) {} }
+      if (gd.block === 'thin_pool') return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400);
+      if (gd.block) return jr({ error: gd.block }, 503);
+    }
+    let d = null; try { d = await sdo('/s2/trade', { uid, side: 'sell', key, qty, pct: pct >= 100 ? 100 : 0, price }); } catch (e) { return spotFail(env, jr, path); }
+    if (d && d.ok) { d.sym = (holdMeta && holdMeta.sym) || key.replace(/^cex:/, '').replace(/^[a-z]+:/, '').slice(0, 14); d.net = net || null; await spotTrack(env, request, uid, 'spotsell', d.sym); try { await evPush(env, request, 'spottrade', 'SELL ' + d.sym + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
+    return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
+  }
+  if (path === '/history') {
+    try { const d = await sdo('/s2/tx?uid=' + encodeURIComponent(uid));
+      if (url.searchParams.get('csv') === '1') { // the ledger as a file - the same rows the page shows, oldest first
+        const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        const rows = ((d && d.tx) || []).slice().reverse().map(t => [new Date(t.ts).toISOString(), t.side, t.sym || '', t.name || '', t.qty, t.price, t.usdUsd, t.pnlUsd].map(q).join(','));
+        return new Response('time,side,symbol,name,qty,price,usd,pnl\n' + rows.join('\n') + '\n', { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="demo-spot-history.csv"', 'cache-control': 'no-store', ...CORS } });
+      }
+      return jr(d); } catch (e) { return jr({ tx: [] }); }
+  }
+  return jr({ error: 'not_found' }, 404);
+}
+// Prices for a set of held keys, cheaply: majors from the price cache, memes from the trending list when it carries the
+// mint (one aggregate read instead of one pool call each - the list is rebuilt every two minutes and GeckoTerminal allows
+// about 30 calls a minute from our egress), and only then the pool itself. Returns {key: px}.
+async function spotPricesFor(env, syms) {
+  const prices = {}; let list = []; try { list = await spotMemeList(env); } catch (e) {}
+  const byMint = {}; for (const m of list) if (m && m.mint && +m.price > 0) byMint[String(m.mint).toLowerCase()] = +m.price;
+  const majors = {};
+  for (const key of Object.keys(syms || {})) {
+    const info = syms[key] || {};
+    try {
+      if (info.k === 'meme') {
+        const lp = byMint[String(info.mint || key.split(':')[1] || '').toLowerCase()];
+        if (lp > 0) { prices[key] = lp; continue; }
+        const mp = await spotMemePrice(env, info.net || 'solana', info.pool); if (mp && +mp.price > 0) prices[key] = +mp.price;
+        await new Promise(r => setTimeout(r, 40));
+      } else {
+        const sym = info.sym || key.replace(/^cex:/, '');
+        if (!(majors[sym] > 0)) { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) majors[sym] = +pd.price; }
+        if (majors[sym] > 0) prices[key] = majors[sym];
+      }
+    } catch (e) {}
+  }
+  return prices;
+}
+// Daily mark (first */10 cron after 00:00 UTC, idempotent via KV stamp): every account's start-of-day worth + what the house
+// had put in by then. It is the season baseline the board subtracts, so a missed day costs a wrong baseline - that is why
+// the board falls back to the newest mark on or before the season's first day rather than to zero.
+async function spotDailySnapshot(env) {
+  try {
+    if (!env || !env.SPOT || !env.STATS) return;
+    const day = new Date().toISOString().slice(0, 10);
+    if (await env.STATS.get('spot:snap2:' + day)) return;
+    await env.STATS.put('spot:snap2:' + day, '1', { expirationTtl: 172800 });
+    const stub = spotStub(env);
+    const sd = await (await stub.fetch(new Request('https://do/s2/allsyms'))).json();
+    const prices = await spotPricesFor(env, sd.syms || {});
+    await stub.fetch(new Request('https://do/s2/snapshot-all', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day, prices }) }));
+  } catch (e) {}
+}
+// THE MEME SPOT BOARD (2026-10-16): built by the cron every ten minutes into KV lb:meme:<ws> (what the page, /api/reward/lb
+// and /api/competition read), and rebuilt once more by the payer the moment the season ends. Names are resolved here;
+// e2e members and banned accounts never reach the public rows.
+const MEME_LB_START = Date.UTC(2026, 9, 12); // the season running when it shipped - every account was reset to $10,000 on 2026-10-16, so the whole field starts level
+async function memeSnapshot(env, ws) { try { const x = JSON.parse((await env.STATS.get('lb:meme:' + ws)) || 'null'); if (x) return x; } catch (e) {} return { ws, ts: 0, rows: [], n: 0 }; }
+async function spotBoardBuild(env, ws) {
+  const stub = spotStub(env);
+  const sd = await (await stub.fetch(new Request('https://do/s2/allsyms'))).json();
+  const prices = await spotPricesFor(env, sd.syms || {});
+  const bd = await (await stub.fetch(new Request('https://do/s2/board', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ws, prices, limit: 400 }) }))).json();
+  const raw = (bd && bd.rows) || [];
+  let names = {}; try { const nr = await usersDO(env, '/names', { ids: raw.map(x => x.uid) }); names = (nr && nr.names) || {}; } catch (e) {}
+  const banned = await lbBanned(env);
+  const rows = [];
+  for (const x of raw) {
+    const who = names[x.uid]; if (!who || /^e2e_/i.test(who)) continue;
+    if (banned['u:' + x.uid] || banned[x.uid]) continue;
+    rows.push({ rank: rows.length + 1, uid: x.uid, who, pnl: Math.round(+x.pnlC || 0) / 100, equity: Math.round(+x.equityC || 0) / 100, trades: +x.trades || 0 });
+  }
+  return { ws, we: ws + LB_PERIOD, ts: Date.now(), n: rows.length, rows, priced: Object.keys(prices).length, keys: Object.keys(sd.syms || {}).length };
+}
+async function spotBoardCron(env) {
+  try {
+    if (!env || !env.SPOT || !env.STATS) return;
+    const ws = lbPeriodStart(Date.now());
+    const snap = await spotBoardBuild(env, ws);
+    await env.STATS.put('lb:meme:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 });
+    try { await caches.default.delete(new Request('https://marginpad.io/__meme_board_v1')); } catch (e) {}
+  } catch (e) {}
+}
+async function spotTokenLookup(url, env, jr) { // any token by CONTRACT ADDRESS (owner, 2026-09-03, "like Phantom"). Our trending list first (no upstream call), then GeckoTerminal token + deepest pool; a GT rate-limit is reported as busy, never as "no such token".
     const addr = String(url.searchParams.get('addr') || '').trim();
     const isSol = /^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(addr), isEvm = /^0x[0-9a-fA-F]{40}$/.test(addr);
     if (!isSol && !isEvm) return jr({ error: 'bad_address' }, 400);
@@ -19718,409 +19892,6 @@ async function handleSpot(url, request, env) {
     const logo = SPOT_LOGO_OK.test(String(a.image_url || '')) ? String(a.image_url).slice(0, 300) : '';
     return jr({ ok: true, mint: addr, pool: top.id, net, native: SPOT_NETS[net].native, sym, name: String(a.name || '').slice(0, 48), logo, price: +a.price_usd || 0, liqUsd: top.liq, vol24: top.vol24, fdv: +a.fdv_usd || 0, thin: top.liq < 8000, listed: false });
   }
-  if (path === '/share' && request.method === 'GET') { // public: a shared portfolio snapshot (server-made, 30 days)
-    const id = String(url.searchParams.get('id') || ''); if (!/^[a-z0-9]{8,24}$/.test(id)) return jr({ error: 'bad' }, 400);
-    let snap = null; try { snap = JSON.parse(await env.STATS.get('spotshare:' + id) || 'null'); } catch (e) {}
-    if (!snap) return jr({ error: 'not_found' }, 404);
-    return new Response(JSON.stringify(snap), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
-  }
-  if (path === '/board') { // season trading-profit board (2026-09-06; bank-balance until then): bragging rights only - the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
-    const ck = new Request('https://marginpad.io/__spot_board_v2');
-    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
-    const ss = predSeason(Date.now()), fromMs = ss.endMs - LB_PERIOD;
-    let excl = []; try { const oc = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); excl = Array.isArray(oc.spotBoardExcl) ? oc.spotBoardExcl.map(String) : []; } catch (e) {} // owner list (uid or username) kept off the board - a glitch beneficiary stays whole, just not ranked
-    let rows = []; try { const r = await spotStub(env).fetch(new Request('https://do/lbtrade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: fromMs, to: ss.endMs }) })); const d = await r.json(); rows = ((d && d.top) || []).filter(x => (+x.pnlC || 0) > 0 && excl.indexOf(String(x.uid)) < 0); } catch (e) {}
-    let names = {}; try { const nr = await usersDO(env, '/names', { ids: rows.map(x => x.uid) }); names = (nr && nr.names) || {}; } catch (e) {}
-    const top = rows.filter(x => names[x.uid] && excl.indexOf(String(names[x.uid])) < 0).slice(0, 10).map((x, i) => ({ rank: i + 1, who: names[x.uid], pnlUsd: Math.round(+x.pnlC || 0) / 100, sells: x.sells }));
-    const resp = new Response(JSON.stringify({ top, season: { from: ss.from, to: ss.to }, note: 'no prize' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
-    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
-    return resp;
-  }
-  if (path === '/chain') { // MarginPad Chain explorer - public (fake ledger, educational; addresses are demo-generated)
-    try { const r = await spotStub(env).fetch(new Request('https://do/chain')); const d = await r.json();
-      return new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=10', ...CORS } });
-    } catch (e) { return jr({ height: 0, txs: [] }); }
-  }
-  // everything below acts on a user's wallet → session required (admin ?uid= override for testing/support)
-  let uid = null;
-  const tok = getCookie(request, SESS_COOKIE);
-  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { if (su.status && su.status !== 'active') return jr({ error: 'restricted' }, 403); uid = String(su.id); } }
-  if (!uid) { const ov = url.searchParams.get('uid'); if (ov && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = String(ov); }
-  if (!uid) return jr({ error: 'login_required' }, 401);
-  const stub = spotStub(env);
-  if (path === '/start' && request.method === 'POST') { // the ONLY place an account is minted (2026-09-03): the gate's "Get the $10,000 card" button. Opening the page used to auto-create one - 32 of 82 accounts never did anything.
-    try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid) + '&create=1')); const d = await r.json(); if (d && d.fresh) { try { await evPush(env, request, 'spottrade', 'card issued', '/spot/'); } catch (e) {} } return jr({ ok: !d.error, fresh: !!d.fresh }); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/portfolio' || path === '/') {
-    let d = null; try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
-    if (d && d.none) return jr({ none: true }); // signed in, no Demo Spot account yet - the page shows the gate with the card button
-    const holds = d.holds || [];
-    for (const h of holds) {
-      let px = 0;
-      try {
-        if (h.meta && h.meta.k === 'meme') { const mp = await spotMemePrice(env, h.meta.net || 'solana', h.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { h.liqUsd = Math.round(+mp.liqUsd || 0); h.rugged = h.liqUsd < SPOT_THIN_LIQ; } } // rugged = the pool behind the bag holds under $1k: what a pulled liquidity looks like from outside (2026-09-06). The value still prints at the live price; only the badge and the lesson change.
-        else { const pd = await fetchPriceCached(h.sym); px = pd ? +pd.price : 0; }
-      } catch (e) {}
-      if (!(px > 0)) { px = +((h.meta && h.meta.lastPx)) || 0; h.stale = true; } // dead feed (rugged meme) → last known mark + a stale flag for the UI
-      h.price = px;
-      h.valueUsd = Math.round(h.qty * px * 100) / 100;
-      h.pnlUsd = Math.round((h.valueUsd - h.costUsd) * 100) / 100;
-      h.pnlPct = h.costUsd > 0 ? Math.round(h.pnlUsd / h.costUsd * 10000) / 100 : 0;
-    }
-    // wallet natives at live prices (for the wallet panel + total)
-    const natPx = {};
-    for (const n of ['SOL', 'ETH', 'BNB']) { try { const pd = await fetchPriceCached(n); if (pd && +pd.price > 0) natPx[n] = +pd.price; } catch (e) {} }
-    let gasUsd = 0; const gas = d.gas || {};
-    for (const k of Object.keys(gas)) gasUsd += (+gas[k] || 0) * (natPx[k] || 0);
-    gasUsd = Math.round(gasUsd * 100) / 100;
-    const walletUsd = Math.round(((d.wusdtUsd || 0) + gasUsd + holds.filter(h => h.meta && h.meta.k === 'meme').reduce((s, h) => s + h.valueUsd, 0)) * 100) / 100;
-    const exchangeUsd = Math.round(((d.usdtUsd || 0) + holds.filter(h => !(h.meta && h.meta.k === 'meme')).reduce((s, h) => s + h.valueUsd, 0)) * 100) / 100;
-    const totalUsd = Math.round(((d.cardUsd || 0) + exchangeUsd + walletUsd) * 100) / 100;
-    const snaps = d.snaps || [];
-    let base = null; for (let i = snaps.length - 1; i >= 0; i--) { if (snaps[i].valueUsd != null) { base = snaps[i].valueUsd; break; } } // latest snapshot = start-of-day value (cron writes just after midnight UTC)
-    return jr({ ...d, holds, natPx, gasUsd, walletUsd, exchangeUsd, totalUsd, todayPnlUsd: base != null ? Math.round((totalUsd - base) * 100) / 100 : null, allTimePnlUsd: Math.round((totalUsd - 10000) * 100) / 100, feeBp: SPOT_FEE_BP, nets: SPOT_NETS, onrampBp: SPOT_ONRAMP_BP, swapBp: SPOT_SWAP_BP, memeFeeBp: SPOT_MEME_FEE_BP });
-  }
-  if (path === '/daily') { // the day-2 hook (2026-09-06): opt in to one line a day - "your portfolio moved +2.1% yesterday" - by browser push and/or Telegram. Pref lives in UserStore uprefs k='spotdaily' (the cron walks only opted-in accounts).
-    let tgLinked = false; try { const pr = await resolveProfiles(env, ['u:' + uid]); tgLinked = !!(pr[uid] && pr[uid].tg); } catch (e) {}
-    if (request.method === 'POST') {
-      const cfg = { push: !!b.push, tg: !!b.tg && tgLinked, ts: Date.now() };
-      try { await usersDO(env, '/prefsput', { uid, k: 'spotdaily', v: JSON.stringify(cfg) }); } catch (e) { return jr({ error: 'transient' }, 503); }
-      return jr({ ok: true, cfg: { push: cfg.push, tg: cfg.tg }, tgLinked });
-    }
-    let cur = null; try { const d = await usersDO(env, '/prefsget', { uid, keys: ['spotdaily'] }); cur = d && d.prefs && d.prefs.spotdaily ? JSON.parse(d.prefs.spotdaily.v || '{}') : null; } catch (e) {}
-    return jr({ cfg: { push: !!(cur && cur.push), tg: !!(cur && cur.tg) }, tgLinked });
-  }
-  if (path === '/trade' && request.method === 'POST') {
-    const side = b.side === 'sell' ? 'sell' : 'buy';
-    const kind = b.kind === 'meme' ? 'meme' : 'cex';
-    let sym, price = 0, liq = 0, meta = { k: kind }, net = '', native = '', natPxT = 0, gasNat = 0, holdMeta = null, priceStale = false;
-    if (kind === 'meme') {
-      let pool = String(b.pool || ''); const mint = String(b.mint || '');
-      if (!/^[A-Za-z0-9]{20,60}$/.test(mint)) return jr({ error: 'bad_token' }, 400);
-      let info = null; try { info = (await spotMemeList(env)).find(m => m.mint === mint); } catch (e) {} // identity from OUR list when possible - client fields only as sanitized fallback
-      net = (info && info.net) || (SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana');
-      if (side === 'sell') { // the POSITION says which pool prices it (2026-09-06). Before this the sell price came from whatever pool the client named.
-        const hk = b.holdSym ? String(b.holdSym).slice(0, 64) : ((net === 'solana' ? 'sol:' : net + ':') + mint);
-        try { const hr = await stub.fetch(new Request('https://do/hold?uid=' + encodeURIComponent(uid) + '&sym=' + encodeURIComponent(hk))); const hd = await hr.json(); if (hd && hd.qty > 0) holdMeta = hd.meta || {}; } catch (e) {}
-        if (!holdMeta) return jr({ error: 'no_position' }, 400);
-        if (holdMeta.pool) pool = String(holdMeta.pool);
-        if (holdMeta.net && SPOT_NETS[holdMeta.net]) net = holdMeta.net;
-      }
-      if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
-      native = SPOT_NETS[net].native; gasNat = SPOT_NETS[net].gas;
-      sym = (net === 'solana' ? 'sol:' : net + ':') + mint; // hold key: mint is the identity (tickers collide); legacy Solana holds keep the sol: prefix
-      const mp = await spotMemePrice(env, net, pool);
-      if (!mp) return jr({ error: 'no_price' }, 503);
-      if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token - no fill through a foreign pool, either direction
-      price = mp.price; liq = mp.liqUsd; priceStale = !!mp.stale;
-      try { const npd = await fetchPriceCached(native); natPxT = npd ? +npd.price : 0; } catch (e) {}
-      if (!(natPxT > 0)) return jr({ error: 'no_price' }, 503);
-      meta = { k: 'meme', mint, pool, net, native, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
-    } else {
-      sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
-      if (!sym || sym === 'USDT' || sym === 'USDC') return jr({ error: 'bad_sym' }, 400);
-      const pd = await fetchPriceCached(sym);
-      if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
-      price = +pd.price;
-      meta = { k: 'cex', logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
-    }
-    const feeBp = kind === 'meme' ? SPOT_MEME_FEE_BP : SPOT_FEE_BP; // memes pay DEX-swap 0.3%, CEX pays taker 0.1%
-    if (side === 'buy') {
-      const usdC = Math.round((+b.usd || 0) * 100);
-      if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-      if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
-      const slip = kind === 'meme' ? spotSlip(usdC / 100, liq) : 0;
-      const eff = price * (1 + slip);
-      const feeC = Math.max(1, Math.round(usdC * feeBp / 10000));
-      const body9 = { uid, side: 'buy', sym, usdC, price: eff, feeC, meta };
-      if (kind === 'meme') { body9.native = native; body9.natQty = (usdC + feeC) / 100 / natPxT; body9.gasNat = gasNat; } // meme buys SETTLE in the chain's native coin + gas
-      let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
-      if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.dispSym = meta.sym || sym; d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + (meta.sym || sym) + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', (meta.sym || sym)); }
-      return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
-    }
-    // sell: look the hold up first (slippage needs the trade SIZE, and 100% must sell the exact stored qty)
-    if (kind === 'meme' && !b.sym9) { /* client may pass the exact hold key */ }
-    const holdKey = kind === 'meme' && b.holdSym ? String(b.holdSym).slice(0, 64) : sym;
-    let hq = 0; try { const hr = await stub.fetch(new Request('https://do/hold?uid=' + encodeURIComponent(uid) + '&sym=' + encodeURIComponent(holdKey))); const hd = await hr.json(); hq = +hd.qty || 0; } catch (e) {}
-    if (!(hq > 0)) return jr({ error: 'no_position' }, 400);
-    const pct = Math.min(100, Math.max(0, +b.pct || 0));
-    const qty = pct >= 100 ? hq : (isFinite(+b.qty) && +b.qty > 0 ? Math.min(+b.qty, hq) : hq * pct / 100);
-    if (!(qty > 0)) return jr({ error: 'bad' }, 400);
-    const estUsd = qty * price;
-    if (estUsd < 0.5) { /* dust positions may sell whole regardless of the $1 floor */ if (pct < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400); }
-    const slip = kind === 'meme' ? spotSlip(estUsd, liq) : 0;
-    const eff = price * (1 - slip);
-    if (kind === 'meme') { // integrity guard: a fill far above the position's own last mark needs a pool that could actually pay it
-      const gd = spotSellGuard({ price, lastPx: +(holdMeta && holdMeta.lastPx) || 0, liqUsd: liq, stale: priceStale });
-      if (gd.alert) { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['spotjump'], blobs: ['spotjump', holdKey.slice(0, 64), String(gd.block || 'filled'), String(uid)], doubles: [1, gd.x, estUsd, liq] }); } catch (e) {} try { await tgAdmin(env, '<b>Demo Spot: sell fill ' + Math.round(gd.x) + 'x above the last mark' + (gd.block ? ' (refused: ' + gd.block + ')' : '') + '</b>\n' + (meta.sym || holdKey.slice(0, 20)) + ' est $' + Math.round(estUsd) + ' at ' + price.toPrecision(4) + ' (last mark ' + (+(holdMeta && holdMeta.lastPx) || 0).toPrecision(4) + ', pool liq $' + Math.round(liq) + (priceStale ? ', list fallback' : '') + ')\nuid ' + String(uid).slice(0, 12), { kind: 'spotjump', sev: gd.block ? 'warn' : 'red' }); } catch (e) {} }
-      if (gd.block === 'thin_pool') return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400);
-      if (gd.block) return jr({ error: gd.block }, 503);
-    }
-    const feeC = Math.max(1, Math.round(qty * eff * 100 * feeBp / 10000));
-    const body9 = { uid, side: 'sell', sym: holdKey, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC };
-    if (kind === 'meme') { const netC9 = Math.max(0, Math.round(qty * eff * 100) - feeC); body9.native = native; body9.natOut = netC9 / 100 / natPxT; body9.gasNat = gasNat; } // proceeds come back as SOL/ETH/BNB minus gas
-    let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
-    if (d && d.ok && kind === 'meme' && b.toUsdt && body9.natOut > 0) { // convert the proceeds to wallet USDT right away (0.3% DEX swap) - one receipt instead of a hidden second step (2026-09-03)
-      try { const grossC = Math.round(body9.natOut * natPxT * 100); const feeS = Math.max(1, Math.round(grossC * SPOT_SWAP_BP / 10000)); const usdS = Math.max(0, grossC - feeS);
-        if (usdS >= 100) { const sr = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset: native, dir: 'sell', usdC: usdS, natQty: body9.natOut, feeC: feeS }) })); const sd = await sr.json(); if (sd && sd.ok) { d.swapped = { usdUsd: usdS / 100, feeUsd: feeS / 100, native, natQty: body9.natOut }; d.gas = sd.gas; d.wusdtUsd = sd.wusdtUsd; } } } catch (e) {}
-    }
-    if (d && d.ok) { await spotTrack(env, request, uid, 'spotsell', holdKey.replace(/^[a-z]+:/, '').slice(0, 14)); d.slipPct = Math.round(slip * 10000) / 100; d.net = net || null; try { await evPush(env, request, 'spottrade', 'SELL ' + holdKey.replace(/^[a-z]+:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
-    return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
-  }
-  if (path === '/link' && request.method === 'POST') { // sim step 1: link the virtual card to the exchange
-    try { const r = await stub.fetch(new Request('https://do/link', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/onramp' && request.method === 'POST') { // sim step 2: buy USDT with the card (1.8% processing fee - the real-life lesson)
-    const usdC = Math.round((+b.usd || 0) * 100);
-    if (!(usdC >= 1000)) return jr({ error: 'min_onramp', minUsd: 10 }, 400);
-    const feeC = Math.max(1, Math.round(usdC * SPOT_ONRAMP_BP / 10000));
-    try { const r = await stub.fetch(new Request('https://do/onramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'on-ramp $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/offramp' && request.method === 'POST') { // cash out to the card: 1% fiat-withdrawal fee, min $1 - deducted from the amount (withdraw $500 → card gets $495)
-    const usdC = Math.round((+b.usd || 0) * 100);
-    if (!(usdC >= 1000)) return jr({ error: 'min_offramp', minUsd: 10 }, 400);
-    const feeC = Math.max(100, Math.round(usdC * SPOT_OFFRAMP_BP / 10000));
-    try { const r = await stub.fetch(new Request('https://do/offramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'cash-out $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotcash', '$' + (usdC / 100).toFixed(0)); } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/transfer' && request.method === 'POST') { // P2P send: wallet USDT to another user's address; chain auto-detected from the address format, gas in that chain's native coin
-    const toAddr = String(b.to || '').trim();
-    const usdC = Math.round((+b.usd || 0) * 100);
-    if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-    if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
-    let net;
-    if (/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(toAddr)) net = 'solana';
-    else if (/^0x[0-9a-fA-F]{40}$/.test(toAddr)) net = (SPOT_NETS[String(b.net || '')] && String(b.net) !== 'solana') ? String(b.net) : 'bsc';
-    else return jr({ error: 'bad_address', hint: 'That is not a valid Solana or EVM address. Ask your friend to copy it from their Wallet app (Receive).' }, 400);
-    const memo = String(b.memo || '').replace(/[<>]/g, '').slice(0, 60);
-    try {
-      const r = await stub.fetch(new Request('https://do/transfer', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, toAddr, usdC, native: SPOT_NETS[net].native, gasNat: SPOT_NETS[net].gas, net, memo }) }));
-      const d = await r.json();
-      if (d && d.ok) { d.net = net; try { await evPush(env, request, 'spottrade', 'P2P send $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
-      return jr(d, d && d.ok ? 200 : 400);
-    } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/depaddr') { // exchange USDT deposit addresses (generated once; wallet -> exchange deposits go through /transfer to one of them). EVM (0x) + Solana (2026-09-03): with only a 0x address a wallet holding just SOL gas could never deposit back - 18 users were stuck with money in the wallet
-    const rnd = new Uint8Array(20); crypto.getRandomValues(rnd);
-    const cand = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
-    const candSol = spotGenAddr().sol;
-    try { const r = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: cand, depSol: candSol }) })); return jr(await r.json()); }
-    catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/toexchange' && request.method === 'POST') { // wallet USDT -> own exchange balance (2026-09-03). The old way was: open Exchange, copy the 0x deposit address, open Wallet, Send, paste, hold BNB gas. Picks the network the user has gas for and sends to the matching deposit address.
-    const usdC = Math.round((+b.usd || 0) * 100);
-    if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-    let pd = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); pd = await pr.json(); } catch (e) { return spotFail(env, jr, path); }
-    if (!pd || !pd.addr || !pd.addr.sol) return jr({ error: 'no_wallet' }, 400);
-    let dep = null; try { const dr = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: '0x' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(x => x.toString(16).padStart(2, '0')).join(''), depSol: spotGenAddr().sol }) })); dep = await dr.json(); } catch (e) {}
-    if (!dep || !dep.dep) return spotFail(env, jr, path);
-    const gas = pd.gas || {};
-    const want = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
-    const order = want ? [want] : ['solana', 'bsc', 'base', 'eth'];
-    let net = null; for (const n of order) { const nat = SPOT_NETS[n].native; if ((+gas[nat] || 0) >= SPOT_NETS[n].gas && (n !== 'solana' || dep.depSol)) { net = n; break; } }
-    if (!net) return jr({ error: 'no_gas', options: ['solana', 'bsc', 'base', 'eth'].map(n => ({ net: n, native: SPOT_NETS[n].native, need: SPOT_NETS[n].gas, have: +gas[SPOT_NETS[n].native] || 0 })) }, 400);
-    const toAddr = net === 'solana' ? dep.depSol : dep.dep;
-    try {
-      const r = await stub.fetch(new Request('https://do/transfer', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, toAddr, usdC, native: SPOT_NETS[net].native, gasNat: SPOT_NETS[net].gas, net, memo: 'to exchange' }) }));
-      const d = await r.json();
-      if (d && d.ok) { d.net = net; d.gasNat = SPOT_NETS[net].gas; try { await evPush(env, request, 'spottrade', 'to exchange $' + (usdC / 100).toFixed(2) + ' via ' + net, '/spot/'); } catch (e) {} }
-      return jr(d, d && d.ok ? 200 : 400);
-    } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet - addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
-    const addr = spotGenAddr();
-    try { const r = await stub.fetch(new Request('https://do/walletcreate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, addr }) })); const d = await r.json();
-      if (d && d.ok) { if (!d.existed) d.seed = spotGenSeed(); return jr(d); } return jr(d || { error: 'fail' }, 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/withdraw' && request.method === 'POST') { // sim step 4: exchange → wallet, network choice decides the fee (Solana $1 / BSC $0.80 / Ethereum $8)
-    const net = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
-    if (!net) return jr({ error: 'bad_network' }, 400);
-    const usdC = Math.round((+b.usd || 0) * 100);
-    if (!(usdC >= 500)) return jr({ error: 'min_wd', minUsd: 5 }, 400);
-    const toAddr = String(b.address || '').trim();
-    const expect = net === 'solana' ? 'sol' : 'evm';
-    if (net === 'solana' && !/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(toAddr)) return jr({ error: 'bad_address', hint: 'A Solana address is 32-44 base58 characters (no 0, O, I or l).' }, 400);
-    if (net !== 'solana' && !/^0x[0-9a-fA-F]{40}$/.test(toAddr)) return jr({ error: 'bad_address', hint: 'An EVM address starts with 0x followed by 40 hex characters.' }, 400);
-    // the address must be THEIR wallet's address for the chosen network - teaches "wrong chain/address = lost funds" without actually losing anything
-    let mine = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); const pd = await pr.json(); mine = pd && pd.addr; } catch (e) {}
-    if (!mine) return jr({ error: 'no_wallet' }, 400);
-    if (toAddr !== (expect === 'sol' ? mine.sol : mine.evm)) return jr({ error: 'address_mismatch', hint: 'That is not your wallet’s ' + SPOT_NETS[net].label + ' address. On a real exchange this money would be GONE forever - always copy-paste your own address for the right network.' }, 400);
-    const feeC = SPOT_NETS[net].wdC;
-    try { const r = await stub.fetch(new Request('https://do/wdraw', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC, net }) })); const d = await r.json(); if (d && d.ok) { d.net = net; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'withdraw $' + (usdC / 100).toFixed(0) + ' via ' + net, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/swap' && request.method === 'POST') { // wallet DEX swap: USDT ↔ SOL/ETH/BNB at live price, 0.3% fee
-    const asset = String(b.asset || '').toUpperCase();
-    if (['SOL', 'ETH', 'BNB'].indexOf(asset) < 0) return jr({ error: 'bad_asset' }, 400);
-    const dir = b.dir === 'sell' ? 'sell' : 'buy';
-    let pd = null; try { pd = await fetchPriceCached(asset); } catch (e) {}
-    if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
-    const px = +pd.price;
-    let usdC, natQty, feeC;
-    if (dir === 'buy') { // wallet USDT → native
-      usdC = Math.round((+b.usd || 0) * 100);
-      if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-      feeC = Math.max(1, Math.round(usdC * SPOT_SWAP_BP / 10000));
-      natQty = (usdC - feeC) / 100 / px;
-    } else { // native → wallet USDT
-      natQty = +b.natQty || 0;
-      if (!(natQty > 0)) return jr({ error: 'bad' }, 400);
-      const grossC = Math.round(natQty * px * 100);
-      feeC = Math.max(1, Math.round(grossC * SPOT_SWAP_BP / 10000));
-      usdC = Math.max(0, grossC - feeC);
-      if (usdC < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-    }
-    try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/share' && request.method === 'POST') { // make a share card: the SERVER reads the portfolio, so a shared number can never be typed in
-    let pd = null; try { const u = new URL('https://marginpad.io/api/spot/portfolio?uid=' + encodeURIComponent(uid)); const rq = new Request(u.toString(), { headers: { 'x-admin-key': env.ADMIN_KEY || '' } }); const r = await handleSpot(u, rq, env); pd = await r.json(); } catch (e) {}
-    if (!pd || pd.none || pd.error) return jr({ error: 'no_account' }, 400);
-    let who = ''; try { const nr = await usersDO(env, '/names', { ids: [uid] }); who = (nr && nr.names && nr.names[uid]) || ''; } catch (e) {}
-    const snaps = pd.snaps || []; let green = 0; for (let i = 1; i < snaps.length; i++) if (snaps[i].valueUsd - snaps[i - 1].valueUsd > 0.005) green++;
-    const best = (pd.holds || []).slice().sort((a, b) => (b.pnlUsd || 0) - (a.pnlUsd || 0))[0];
-    const id = Date.now().toString(36) + Math.floor(Math.random() * 1e8).toString(36);
-    const snap = { id, who: who || 'A trader', totalUsd: +pd.totalUsd || 0, sinceUsd: +pd.allTimePnlUsd || 0, sincePct: Math.round(((+pd.allTimePnlUsd || 0) / 10000) * 10000) / 100, realizedUsd: +pd.realizedUsd || 0, cardUsd: +pd.cardUsd || 0, greenDays: green, days: snaps.length, best: best ? { sym: (best.meta && best.meta.sym) || best.sym, pnlUsd: +best.pnlUsd || 0, pnlPct: +best.pnlPct || 0 } : null, txN: +pd.txN || 0, ts: Date.now() };
-    try { await env.STATS.put('spotshare:' + id, JSON.stringify(snap), { expirationTtl: 30 * 86400 }); } catch (e) { return spotFail(env, jr, path); }
-    try { await evPush(env, request, 'spottrade', 'shared portfolio', '/spot/'); } catch (e) {}
-    return jr({ ok: true, id, url: 'https://marginpad.io/spot/?share=' + id });
-  }
-  if (path === '/order' && request.method === 'POST') { // limit orders (2026-09-03): add / cancel / list. Fills happen in spotOrdersSweep through the normal /trade path.
-    const action = String(b.action || '');
-    if (action === 'list') { try { const r = await stub.fetch(new Request('https://do/order/list?uid=' + encodeURIComponent(uid))); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); } }
-    if (action === 'cancel') { try { const r = await stub.fetch(new Request('https://do/order/cancel', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, id: String(b.id || '') }) })); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); } }
-    if (action !== 'add') return jr({ error: 'bad' }, 400);
-    const side = b.side === 'sell' ? 'sell' : 'buy', kind = b.kind === 'meme' ? 'meme' : 'cex';
-    const price = +b.price; if (!(price > 0) || !isFinite(price)) return jr({ error: 'bad_price' }, 400);
-    let sym, meta = { k: kind };
-    if (kind === 'meme') {
-      const mint = String(b.mint || ''), pool = String(b.pool || ''); if (!/^[A-Za-z0-9]{20,60}$/.test(mint) || !/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
-      const net = SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana';
-      sym = (net === 'solana' ? 'sol:' : net + ':') + mint;
-      meta = { k: 'meme', mint, pool, net, symbol: String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12), name: String(b.name || '').slice(0, 48), logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
-    } else {
-      sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12); if (!sym || sym === 'USDT' || sym === 'USDC') return jr({ error: 'bad_sym' }, 400);
-      const pd = await fetchPriceCached(sym); if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
-      meta = { k: 'cex', logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
-    }
-    let usdC = 0, pct = 0;
-    if (side === 'buy') { usdC = Math.round((+b.usd || 0) * 100); if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400); if (usdC > 100000000) return jr({ error: 'too_big' }, 400); }
-    else { pct = Math.min(100, Math.max(1, +b.pct || 0)); }
-    try { const r = await stub.fetch(new Request('https://do/order/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, kind, sym, side, price, usd: usdC, pct, meta }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'limit ' + side + ' ' + (meta.symbol || sym) + ' @ ' + price, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
-  }
-  if (path === '/history') {
-    try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); const d = await r.json();
-      if (url.searchParams.get('csv') === '1') { // paper trail as a file (2026-09-03) - the same rows the page shows, oldest first
-        const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-        const rows = ((d && d.tx) || []).slice().reverse().map(t => [new Date(t.ts).toISOString(), t.side, String(t.sym || '').replace(/^[a-z]+:/, ''), t.name || '', t.qty, t.price, t.usdUsd, t.feeUsd, t.pnlUsd, t.hash || ''].map(q).join(','));
-        return new Response('time,side,symbol,name,qty,price,usd,fee,pnl,tx_hash\n' + rows.join('\n') + '\n', { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="demo-spot-history.csv"', 'cache-control': 'no-store', ...CORS } });
-      }
-      return jr(d); } catch (e) { return jr({ tx: [] }); }
-  }
-  // DAILY LIFELINE. GET tells the page whether the card belongs on screen; POST claims it. The account's worth is
-  // priced HERE, from our own /portfolio (the very read the page shows), never taken from the request - the DO only
-  // owns the once-a-day guard and the money. A blown account can practise again tomorrow instead of being over.
-  if (path === '/topup') {
-    if (!uid) return jr({ error: 'auth' }, 401);
-    let st = {}; try { const sr = await stub.fetch(new Request('https://do/topupstate?uid=' + encodeURIComponent(uid))); st = await sr.json(); } catch (e) {}
-    if (st && st.none) return jr({ none: true }); // no Demo Spot account yet - nothing to top up
-    let valueUsd = null;
-    try {
-      const pu = new URL(request.url); pu.pathname = '/api/spot/portfolio'; pu.search = '';
-      const pr = await handleSpot(pu, new Request(pu.toString(), { headers: request.headers }), env);
-      const pj = await pr.json(); if (pj && !pj.none && typeof pj.totalUsd === 'number') valueUsd = pj.totalUsd;
-    } catch (e) {}
-    if (valueUsd == null) return jr({ error: 'unavailable' }, 503);
-    const eligible = Math.round(valueUsd * 100) <= SPOT_TOPUP_MAX_C;
-    if (request.method !== 'POST') return jr({ ok: true, eligible, valueUsd, maxUsd: SPOT_TOPUP_MAX_C / 100, amountUsd: SPOT_TOPUP_C / 100, claimedToday: !!st.claimedToday, nextMs: st.nextMs || 0, topups: st.topups || 0 });
-    if (st.claimedToday) return jr({ error: 'claimed', nextMs: st.nextMs || 0 }, 429);
-    if (!eligible) return jr({ error: 'not_broke', valueUsd, maxUsd: SPOT_TOPUP_MAX_C / 100 }, 400);
-    const r = await stub.fetch(new Request('https://do/topup', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, valueC: Math.round(valueUsd * 100) }) }));
-    const d = await r.json();
-    if (d && d.error) return jr(d, r.status || 400);
-    try { await evPush(env, request, 'spottopup', 'daily top-up, was ' + valueUsd.toFixed(2) + ' USD', '/spot/'); } catch (e) {}
-    return jr(d);
-  }
-  if (path === '/reset' && request.method === 'POST') {
-    try { const r = await stub.fetch(new Request('https://do/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'wallet reset', '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : (d && d.error === 'cooldown' ? 429 : 400)); } catch (e) { return spotFail(env, jr, path); }
-  }
-  return jr({ error: 'not_found' }, 404);
-}
-// Daily portfolio snapshot (start-of-day value per wallet) → powers Today PnL + the equity curve. First */10 cron
-// after midnight UTC; idempotent via KV stamp. Missing meme prices fall back to each hold's lastPx inside the DO.
-// Limit-order sweep (2026-09-03): every */10, price every open order's market and fill the crossed ones THROUGH handleSpot's
-// /trade (same fee, slippage, gas and settlement as a tap). A fill at a crossed price lands at the CURRENT price, which is at
-// or better than the limit - the demo's honest version of a limit fill. Failures (no funds, no gas, no price) close the order with a note.
-async function spotOrdersSweep(env) {
-  if (!env || !env.SPOT || !env.ADMIN_KEY) return { checked: 0 };
-  let orders = []; try { const r = await spotStub(env).fetch(new Request('https://do/order/open')); orders = ((await r.json()) || {}).orders || []; } catch (e) { return { checked: 0 }; }
-  const px = {}; let filled = 0, failed = 0;
-  for (const o of orders) {
-    let meta = {}; try { meta = JSON.parse(o.meta || '{}'); } catch (e) {}
-    const key = o.sym;
-    if (px[key] === undefined) { try { if (meta.k === 'meme') { let pool = meta.pool, net = meta.net || 'solana'; if (o.side === 'sell') { try { const hr = await spotStub(env).fetch(new Request('https://do/hold?uid=' + encodeURIComponent(o.uid) + '&sym=' + encodeURIComponent(o.sym))); const hd = await hr.json(); if (hd && hd.meta && hd.meta.pool) { pool = hd.meta.pool; net = hd.meta.net || net; } } catch (e) {} } const mp = await spotMemePrice(env, net, pool); px[key] = mp ? +mp.price : 0; } else { const pd = await fetchPriceCached(o.sym); px[key] = pd ? +pd.price : 0; } } catch (e) { px[key] = 0; } } // a resting SELL crosses on the POSITION's pool, the same pool the fill prices (2026-09-06)
-    const p = px[key]; if (!(p > 0)) continue;
-    const crossed = o.side === 'buy' ? p <= o.price : p >= o.price;
-    if (!crossed) continue;
-    const body = meta.k === 'meme' ? { side: o.side, kind: 'meme', mint: meta.mint, pool: meta.pool, net: meta.net, symbol: meta.symbol, name: meta.name, logo: meta.logo, holdSym: o.sym } : { side: o.side, kind: 'cex', sym: o.sym, logo: meta.logo };
-    if (o.side === 'buy') body.usd = (o.usd || 0) / 100; else body.pct = o.pct || 100;
-    let res = null;
-    try { const u = new URL('https://marginpad.io/api/spot/trade?uid=' + encodeURIComponent(o.uid)); const req = new Request(u.toString(), { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': env.ADMIN_KEY }, body: JSON.stringify(body) }); const r = await handleSpot(u, req, env); res = await r.json(); } catch (e) { res = { error: 'sweep_error' }; }
-    const ok = !!(res && res.ok);
-    const note = ok ? ('filled at $' + (+res.price).toPrecision(6) + ' (limit $' + (+o.price).toPrecision(6) + ')') : ('not filled: ' + String((res && res.error) || 'error'));
-    try { await spotStub(env).fetch(new Request('https://do/order/done', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: o.id, status: ok ? 'filled' : 'failed', note }) })); } catch (e) {}
-    if (ok) { filled++; try { await evPush(env, null, 'spottrade', 'limit fill ' + o.side + ' ' + (meta.symbol || o.sym) + ' @ ' + (+res.price).toPrecision(5), '/spot/'); } catch (e) {} } else failed++;
-  }
-  return { checked: orders.length, filled, failed };
-}
-async function spotDailySnapshot(env) {
-  try {
-    if (!env || !env.SPOT || !env.STATS) return;
-    const day = new Date().toISOString().slice(0, 10);
-    if (await env.STATS.get('spot:snap:' + day)) return;
-    await env.STATS.put('spot:snap:' + day, '1', { expirationTtl: 172800 });
-    const stub = spotStub(env);
-    const sr = await stub.fetch(new Request('https://do/allsyms')); const sd = await sr.json();
-    const prices = {};
-    for (const n of ['SOL', 'ETH', 'BNB']) { try { const pd = await fetchPriceCached(n); if (pd && +pd.price > 0) prices[n] = +pd.price; } catch (e) {} } // wallet natives - every account's gas balances value at these
-    for (const sym of Object.keys(sd.syms || {})) {
-      const info = sd.syms[sym];
-      try {
-        if (info.k === 'meme') { const mp = await spotMemePrice(env, info.net || 'solana', info.pool); if (mp) prices[sym] = mp.price; }
-        else if (!prices[sym]) { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) prices[sym] = +pd.price; }
-      } catch (e) {}
-      await new Promise(r => setTimeout(r, 60));
-    }
-    await stub.fetch(new Request('https://do/snapshot-all', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day, prices }) }));
-    try { await spotDailyLine(env, day); } catch (e) {} // the day-2 hook rides on the fresh snapshot: yesterday's move is known the moment today's mark exists
-  } catch (e) {}
-}
-// One line a day for accounts that asked for it (Demo Spot, 2026-09-06): "your portfolio moved +$212.40 (+2.1%) yesterday",
-// by web push and/or Telegram. Yesterday's move = today's start-of-day mark minus yesterday's. Silent when nothing moved.
-// Pure text builder so the admin preview and the E2E see exactly what a user would.
-function spotDailyText(prev, cur) {
-  const d = cur - prev, pct = prev > 0 ? d / prev * 100 : 0;
-  if (!(Math.abs(d) >= 0.01)) return null;
-  const s = (d >= 0 ? '+' : '-') + '$' + Math.abs(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%)';
-  return { title: 'Demo Spot: ' + s + ' yesterday', body: 'Your practice portfolio is at $' + cur.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '. ' + (d >= 0 ? 'A green day.' : 'A red day.') + ' The calendar and equity curve are on /spot/.', delta: d, pct };
-}
-async function spotDailyLine(env, day, opts) {
-  if (!env || !env.SPOT || !env.USERS || !env.STATS) return { sent: 0 };
-  const only = opts && opts.uid ? String(opts.uid) : null, dry = !!(opts && opts.dry);
-  if (!only && !dry) { const k = 'spot:daily:' + day; if (await env.STATS.get(k)) return { sent: 0, done: true }; await env.STATS.put(k, '1', { expirationTtl: 172800 }); } // a dry preview never spends the day's guard
-  let watch = []; try { const r = await usersDO(env, '/spotdailywatch', {}); watch = (r && r.watch) || []; } catch (e) { return { sent: 0, err: 1 }; }
-  if (only) watch = watch.filter(w => w.uid === only);
-  if (!watch.length) return { sent: 0, watched: 0 };
-  let deltas = {}; try { const r = await spotStub(env).fetch(new Request('https://do/snapdelta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uids: watch.map(w => w.uid).slice(0, 300) }) })); deltas = ((await r.json()) || {}).rows || {}; } catch (e) { return { sent: 0, err: 2 }; }
-  let sent = 0; const out = [];
-  let subsBy = {}; if (!dry && env.VAPID_JWK) { try { const r = await usersDO(env, '/push/byuid', { uids: watch.filter(w => w.push).map(w => w.uid) }); ((r && r.subs) || []).forEach(s => { (subsBy[s.uid] = subsBy[s.uid] || []).push(s); }); } catch (e) {} }
-  for (const w of watch) {
-    const dd = deltas[w.uid]; if (!dd || !(dd.prev > 0)) continue;
-    const t = spotDailyText(dd.prev / 100, dd.cur / 100); if (!t) continue;
-    out.push({ uid: w.uid, title: t.title, body: t.body, push: !!w.push, tg: !!w.tg });
-    if (dry) continue;
-    if (w.tg && env.TELEGRAM_TOKEN) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: '<b>' + t.title + '</b>\n' + t.body.replace(' on /spot/', '') + '\n\n<a href="https://marginpad.io/spot/">Open Demo Spot</a>' }); sent++; } catch (e) {} }
-    for (const s of (subsBy[w.uid] || [])) { try { await sendWebPush(env, s, { title: t.title, body: t.body, url: 'https://marginpad.io/spot/?ref=push' }); sent++; } catch (e) {} }
-  }
-  return { sent, watched: watch.length, lines: out };
-}
 async function handleReward(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20240,7 +20011,7 @@ async function handleReward(url, request, env) {
       // happens AFTER a season ends - so editing them mid-season silently changes what the season that just finished
       // pays out. With `nextSeason:true` the new numbers are parked in `lbPending` and promoted by `promoteLbPending`
       // the moment the next season starts; without it they apply immediately, exactly as before.
-      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbMoon', 'lbCall'];
+      const BOARD_KEYS = ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2', 'lbGold', 'lbMoon', 'lbCall', 'lbMeme'];
       const clean5 = (a) => a.slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100));
       // the Bybit rebate knobs apply at once (they price a pool that is recomputed on every sync, never parked)
       if ('bybitShare' in b) next.bybitShare = Math.max(0, Math.min(1, +b.bybitShare || 0));
@@ -20272,9 +20043,9 @@ async function handleReward(url, request, env) {
           var NL9 = String.fromCharCode(10); await tgAdmin(env, '<b>Reward config changed</b> (' + diffs.length + ' key' + (diffs.length > 1 ? 's' : '') + ')' + NL9 + '<code>' + diffs.join(NL9).slice(0, 1500) + '</code>' + NL9 + 'If this was not you, restore it in ops Settings NOW.');
         }
       } catch (e) {}
-      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall) } });
+      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2), lbCall: (next.lbCall || full.lbCall), lbMeme: (next.lbMeme || full.lbMeme) } });
     }
-    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitBase: full.bybitBase, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
+    return jr({ config: { ...full.raw, lbBybit: undefined, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme, bybitShare: full.bybitShare, bybitCap: full.bybitCap, bybitBase: full.bybitBase, bybitSplit: full.bybitSplit, bybitTiers: BYBIT_POOL_TIERS }, season: { ws: lbPeriodStart(Date.now()), we: lbPeriodStart(Date.now()) + LB_PERIOD }, pending: (full.raw && full.raw.lbPending) || null });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -20313,7 +20084,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
- const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall }; // (unchanged) - reward config snapshot passed to the DO
+ const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme }; // (unchanged) - reward config snapshot passed to the DO
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -20442,7 +20213,7 @@ async function handleReward(url, request, env) {
     // from which season each board EXISTS - the picker offers a board only the seasons it could have paid (owner,
     // 2026-10-16: "neki nude sezone za taj liderboard kad nije ni postojao"). `early` = the pre-format bucket counts
     // too (only the ROE board was paid then); null = only seasons with a payout row (the Moon contest).
-    const boardSince = { roe: LB_ANCHOR, wr: LB_ANCHOR, xp: LB_ANCHOR, green: SEASON_STATS_EPOCH, gold: GOLD_LB_START, bybit: BYBIT_LB_START, call: CALL_LB_START, moon: null };
+    const boardSince = { roe: LB_ANCHOR, wr: LB_ANCHOR, xp: LB_ANCHOR, green: SEASON_STATS_EPOCH, gold: GOLD_LB_START, bybit: BYBIT_LB_START, call: CALL_LB_START, meme: MEME_LB_START, moon: null };
     let out = { seasons: [], periodDays: LB_PERIOD / 86400000, boardSince, earlyBoards: ['roe'] };
     try {
       const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/seasonwins'));
@@ -20509,7 +20280,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lb' && request.method === 'GET') {
     const lbFull = url.searchParams.get('full') === '1'; // /leaderboards/ is the ONE page that shows every entrant
-    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v11' : 'v11')); // v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_' + (lbFull ? 'full_v12' : 'v12')); // v12: topMeme (2026-10-16). v11: topCall (2026-09-28). v8: lbbest trim-proof merge. v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -20530,6 +20301,9 @@ async function handleReward(url, request, env) {
         // DAILY BTC CALL (2026-09-28): points from settled calls inside the season window, ranked in the DO by points
         // then fewer calls. The SAME query the payer runs (predBoardRows) - one source, one ranking, so what is shown is what pays.
         let callRows = []; try { callRows = await predBoardRows(env, weekStart, lbFull ? 1000 : 50); } catch (e) {}
+        // MEME SPOT (2026-10-16): the KV snapshot the */10 cron builds (lb:meme:<ws>) - already name-resolved, e2e- and ban-filtered
+        let meme = { rows: [], ts: 0 }; try { meme = await memeSnapshot(env, weekStart); } catch (e) {}
+        const memeRows = (meme.rows || []).slice(0, CUT).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades }));
         // ONE shaping for the live board and the season archive (2026-10-16): filters, the Wilson ranking and the row
         // shapes live in lbShapeBoards, so an archived season reads exactly the way the live one does.
         const { qTop, top, qWr, topWr, qXp, topXp, qGreen, topGreen, qGold, topGold, qCall, topCall } = lbShapeBoards({ board, xpBoard, greenBoard, goldBoard, callRows }, banned, CUT);
@@ -20541,10 +20315,12 @@ async function handleReward(url, request, env) {
         [qTop, qWr, qXp, qGreen, qGold, qCall].forEach(a => a.forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; }));
         (bybit.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         if (moon) (moon.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
+        (meme.rows || []).forEach(x => { const k = keyOf(x); if (k && k !== 'n:') who[k] = 1; });
         const entrants = { top: qTop.length, wr: qWr.length, xp: qXp.length, green: qGreen.length, gold: qGold.length,
-          bybit: (bybit.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
+          bybit: (bybit.rows || []).filter(r => !r.reg).length, moon: moon ? (moon.rows || []).length : 0, call: qCall.length, meme: (meme.rows || []).length }; // bybit: ranked rows only - a registered member with no volume is on the board but not an entrant (2026-10-05)
         const people = Object.keys(who).length;
         bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen, topGold, topCall, callPaidFrom: CALL_LB_START, callCutoffH: PRED_CUTOFF_H, entrants, people, greenDiag, goldMin: (XP_LEVELS.find(l => l.k === 'gold') || { min: 12000 }).min, goldPaidFrom: GOLD_LB_START,
+          topMeme: memeRows, memePaidFrom: MEME_LB_START, memeUpdated: meme.ts || 0,
           topMoon: moon ? moon.rows.map(r => ({ rank: r.rank, who: r.who, vol: r.vol })) : [], moonContest: moon ? { id: moon.id, start: moon.start, end: moon.end, days: moonContestDays(moon.start, moon.end), final: !!moon.final, updated: moon.ts, members: moon.members || 0, entries: moon.rows.length } : null,
           topBybit: bybit.rows || [], bybitUpdated: bybit.ts || 0, bybitPaidFrom: BYBIT_LB_START, bybitPool: bybit.pool || null, bybitTiers: BYBIT_POOL_TIERS, bybitReport: { n: bybit.reportN || 0, onBoard: bybit.n || 0, final: !!bybit.final, registered: bybit.registered || 0, listed: bybit.listed || (await bybitUidSet(env)).size } });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
@@ -20554,7 +20330,7 @@ async function handleReward(url, request, env) {
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true,"why":' + JSON.stringify(String((e && e.message) || e).slice(0, 180)) + '}'; }
     }
     let out = bodyText;
- try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: (o.bybitPool && o.bybitPool.prizes) || [], moon: cfg.lbMoon, call: cfg.lbCall }; out = JSON.stringify(o); } catch (e) {} // bybit = the rebate pool's split, computed with the board (never a config array) // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
+ try { const o = JSON.parse(bodyText); o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp, gold: cfg.lbGold, bybit: (o.bybitPool && o.bybitPool.prizes) || [], moon: cfg.lbMoon, call: cfg.lbCall, meme: cfg.lbMeme }; out = JSON.stringify(o); } catch (e) {} // bybit = the rebate pool's split, computed with the board (never a config array) // (the legacy top-3 `prizes` array is gone - no client reads it and it contradicted the four top-5 boards) // prizes from live config (cfg already built above) - admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board - DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel - same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -21582,43 +21358,27 @@ export default {
     if (url.pathname === '/api/admin/retention' && (await adminCookieOk(request, env))) { // Retention tab data
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/retention')); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ cohorts: [], power: [], churned: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
     }
-    if (url.pathname === '/api/admin/spot' && env.SPOT && (await adminCookieOk(request, env))) { // Demo Spot tab: who holds what, live equity, journey progress. Roster edge-cached 60s; ?uid= drill-in is live.
+    if (url.pathname === '/api/admin/spot' && env.SPOT && (await adminCookieOk(request, env))) { // Demo Spot (v3, 2026-10-16): every account with its live worth, season P&L, claims and holdings. Roster edge-cached 60s.
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const START = SPOT_START_C / 100;
-      const parseMeta = m => { try { return JSON.parse(m || '{}') || {}; } catch (e) { return {}; } };
-      const priceFor = async (sym, meta) => { try { if (meta && meta.k === 'meme') { const mp = await spotMemePrice(env, meta.net || 'solana', meta.pool); return mp ? +mp.price : 0; } const pd = await fetchPriceCached(sym); return (pd && +pd.price > 0) ? +pd.price : 0; } catch (e) { return 0; } };
-      const detailUid = url.searchParams.get('uid');
-      if (detailUid) { // account drill-in - live, no cache
-        let d = null; try { const r = await spotStub(env).fetch(new Request('https://do/adminspotacct?uid=' + encodeURIComponent(detailUid))); d = await r.json(); } catch (e) {}
-        if (!d || d.error) return new Response(JSON.stringify({ error: 'not_found' }), { status: 404, headers: jh2 });
-        const px = {}; for (const n of ['SOL', 'ETH', 'BNB']) px[n] = await priceFor(n, null);
-        const holds = [];
-        for (const h of (d.holds || [])) { const meta = parseMeta(h.meta); const p = await priceFor(h.sym, meta); const val = (+h.qty || 0) * p, cost = (+h.cost || 0) / 100; holds.push({ sym: h.sym, name: meta.name || h.sym, k: meta.k || 'cex', net: meta.net || '', qty: +h.qty || 0, cost, price: p, value: val, pnl: val - cost, pnlPct: cost > 0 ? (val - cost) / cost * 100 : 0, stale: !!meta.stale }); }
-        const gas = parseMeta(d.acct.gas); let gasUsd = 0; const gasRows = []; for (const n of ['SOL', 'ETH', 'BNB']) { const q = +gas[n] || 0; if (q > 0) { const v = q * (px[n] || 0); gasUsd += v; gasRows.push({ coin: n, qty: q, value: v }); } }
-        const holdUsd = holds.reduce((s, h) => s + h.value, 0);
-        const cardUsd = d.acct.card / 100, exUsd = d.acct.usdt / 100, walUsd = d.acct.wusdt / 100, equity = cardUsd + exUsd + walUsd + gasUsd + holdUsd;
-        const prof = await resolveProfiles(env, ['u:' + detailUid]); const p2 = prof[detailUid] || {};
-        return new Response(JSON.stringify({ acct: d.acct, name: p2.username || (p2.email ? p2.email.split('@')[0] : ''), email: p2.email || '', equity, cardUsd, exUsd, walUsd, gasUsd, holdUsd, sinceStart: equity - START, gas: gasRows, holds, txs: d.txs || [], xfers: d.xfers || [] }), { headers: jh2 });
-      }
-      const ck = new Request('https://marginpad.io/__adm_spot_v2');
+      const ck = new Request('https://marginpad.io/__adm_spot_v3');
       if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
-      let list = null; try { const r = await spotStub(env).fetch(new Request('https://do/adminspot')); list = await r.json(); } catch (e) {}
+      let list = null; try { const r = await spotStub(env).fetch(new Request('https://do/s2/admin')); list = await r.json(); } catch (e) {}
       if (!list || !list.accounts) return new Response(JSON.stringify({ accounts: [], totals: {}, transient: true }), { headers: jh2 });
-      const need = new Map([['SOL', null], ['ETH', null], ['BNB', null]]);
-      for (const a of list.accounts) for (const h of (a.holds || [])) if (!need.has(h.sym)) need.set(h.sym, parseMeta(h.meta));
-      const items = [...need.entries()].slice(0, 240), px = {};
-      for (let i = 0; i < items.length; i += 8) { const res = await Promise.all(items.slice(i, i + 8).map(kv => priceFor(kv[0], kv[1]).then(p => [kv[0], p]))); res.forEach(kv => { px[kv[0]] = kv[1]; }); } // small concurrency chunks - fast on cold-miss, gentle on GeckoTerminal
+      const syms = {}; for (const a of list.accounts) for (const x of (a.holds || [])) if (!syms[x.key]) syms[x.key] = { k: (x.meta || {}).k || 'cex', net: (x.meta || {}).net || '', pool: (x.meta || {}).pool || '', mint: (x.meta || {}).mint || '', sym: (x.meta || {}).sym || String(x.key).replace(/^cex:/, ''), lastPx: +((x.meta || {}).lastPx) || 0 };
+      const px = await spotPricesFor(env, syms);
       const prof = await resolveProfiles(env, list.accounts.map(a => 'u:' + a.uid));
+      const ws = lbPeriodStart(Date.now()); let board = { rows: [] }; try { board = await memeSnapshot(env, ws); } catch (e) {}
+      const rankOf = {}; (board.rows || []).forEach(r => { rankOf[r.uid] = r; });
       const out = list.accounts.map(a => {
-        const gas = parseMeta(a.gas); let gasUsd = 0; for (const n of ['SOL', 'ETH', 'BNB']) gasUsd += (+gas[n] || 0) * (px[n] || 0);
-        let holdUsd = 0, costUsd = 0, memeN = 0; for (const h of (a.holds || [])) { const meta = parseMeta(h.meta); holdUsd += (+h.qty || 0) * (px[h.sym] || 0); costUsd += (+h.cost || 0) / 100; if (meta.k === 'meme') memeN++; }
-        const cardUsd = a.card / 100, exUsd = a.usdt / 100, walUsd = a.wusdt / 100, equity = cardUsd + exUsd + walUsd + gasUsd + holdUsd;
+        let holdUsd = 0, costUsd = 0, memeN = 0; const holds = [];
+        for (const x of (a.holds || [])) { const m = x.meta || {}; const p = +px[x.key] || +m.lastPx || 0; const val = (+x.qty || 0) * p, cost = (+x.costC || 0) / 100; holdUsd += val; costUsd += cost; if (m.k === 'meme') memeN++; holds.push({ key: x.key, sym: m.sym || String(x.key).replace(/^cex:/, ''), name: m.name || '', k: m.k || 'cex', net: m.net || '', qty: +x.qty || 0, cost, price: p, value: val, pnl: val - cost, stale: !(px[x.key] > 0) }); }
+        const cashUsd = a.usdtC / 100, depUsd = a.depC / 100, equity = cashUsd + holdUsd, rk = rankOf[a.uid];
         const p2 = prof[a.uid] || {};
-        return { uid: a.uid, name: p2.username || (p2.email ? p2.email.split('@')[0] : ''), email: p2.email || '', onb: a.onb, equity, cardUsd, exUsd, walUsd, gasUsd, holdUsd, unreal: holdUsd - costUsd, realized: a.realized / 100, sinceStart: equity - START, sinceStartPct: START > 0 ? (equity - START) / START * 100 : 0, holdN: (a.holds || []).length, memeN, txN: a.txN, xferN: a.xferN, last: a.txLast || a.last_seen || 0, first: a.txFirst || a.created || 0, resets: a.resets, stuck: (walUsd + gasUsd) >= 1 && (Date.now() - (a.txLast || 0)) > 7 * 86400000 }; // stuck = money in the wallet and no action for a week (the cash-out dead end, 2026-09-03)
+        return { uid: a.uid, name: p2.username || (p2.email ? p2.email.split('@')[0] : ''), email: p2.email || '', equity, cashUsd, holdUsd, depUsd, unreal: holdUsd - costUsd, realized: a.realizedC / 100, sinceStart: equity - depUsd, sinceStartPct: depUsd > 0 ? (equity - depUsd) / depUsd * 100 : 0, seasonPnl: rk ? rk.pnl : null, rank: rk ? rk.rank : null, claims: a.claims, holdN: holds.length, memeN, buys: a.buys, sells: a.sells, txN: (a.buys || 0) + (a.sells || 0), last: a.last || a.created || 0, first: a.created || 0, holds: url.searchParams.get('holds') ? holds : undefined };
       });
-      const active = out.filter(a => a.txN > 0 || a.xferN > 0);
-      const totals = { stuck: out.filter(a => a.stuck).length, accounts: out.length, active: active.length, holders: out.filter(a => a.holdN > 0).length, onboarded: out.filter(a => a.onb >= 4).length, equity: out.reduce((s, a) => s + a.equity, 0), realized: out.reduce((s, a) => s + a.realized, 0), activeEquity: active.reduce((s, a) => s + a.equity, 0), inProfit: active.filter(a => a.sinceStart > 0.005).length, tx: out.reduce((s, a) => s + a.txN, 0), memesHeld: out.reduce((s, a) => s + a.memeN, 0) };
-      const body = JSON.stringify({ accounts: out, totals, ts: Date.now() });
+      const active = out.filter(a => a.txN > 0);
+      const totals = { accounts: out.length, active: active.length, holders: out.filter(a => a.holdN > 0).length, equity: out.reduce((s, a) => s + a.equity, 0), deposited: out.reduce((s, a) => s + a.depUsd, 0), realized: out.reduce((s, a) => s + a.realized, 0), inProfit: active.filter(a => a.sinceStart > 0.005).length, tx: out.reduce((s, a) => s + a.txN, 0), claims: out.reduce((s, a) => s + (a.claims || 0), 0), memesHeld: out.reduce((s, a) => s + a.memeN, 0), onBoard: (board.rows || []).length };
+      const body = JSON.stringify({ accounts: out, totals, board: { ws, ts: board.ts || 0, n: board.n || 0 }, ts: Date.now() });
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
@@ -22042,11 +21802,6 @@ export default {
         })(),
         (async () => { // collector venues that went quiet (the whole-collector state hid 4/10 dead venues for 10 days)
           try { const cs = await collectorStatusInfo(env); const sil = (cs && cs.silent) || []; if (sil.length && cs.state !== 'DOWN' && cs.state !== 'UNREACHABLE') add('venues', 'amber', 'stats', '<b>' + sil.length + '</b> liquidation ' + (sil.length === 1 ? 'venue' : 'venues') + ' silent: ' + esc9(sil.map(v => v.name || v).join(', ')), 'health'); } catch (e) {}
-        })(),
-        (async () => { // Demo Spot: money parked in a wallet with no action for a week (the cash-out dead end; the nudge email covers it once)
-          try { if (env.SPOT) { const r = await spotStub(env).fetch(new Request('https://do/adminspot')); const d = await r.json(); let n = 0;
-            for (const a of (d && d.accounts) || []) { let gas = {}; try { gas = JSON.parse(a.gas || '{}'); } catch (e) {} const hasGas = Object.keys(gas).some(k => +gas[k] > 0); if (((a.wusdt || 0) >= 100 || hasGas) && (a.txN > 0) && now - (a.txLast || 0) > 7 * 86400000) n++; }
-            if (n) add('spot', 'info', 'spot', '<b>' + n + '</b> Demo Spot ' + (n === 1 ? 'wallet' : 'wallets') + ' holding money with no action for 7+ days'); } } catch (e) {}
         })(),
         (async () => { // Premium grants expiring inside 7 days
           try { const r = await usersDO(env, '/premium/expiring', { from: now, to: now + 7 * 86400000 }); const rows = (r && r.rows) || []; if (rows.length) add('prem', 'info', 'premium', '<b>' + rows.length + '</b> Premium ' + (rows.length === 1 ? 'membership expires' : 'memberships expire') + ' within 7 days: ' + esc9(rows.slice(0, 4).map(u => u.username || ('#' + u.id)).join(', ')) + (rows.length > 4 ? '…' : '')); } catch (e) {}
@@ -22678,6 +22433,7 @@ export default {
         try { await apiPlanGrant(env, eu, 0, 0, 'owner'); } catch (e) {}                       // an API plan is KV, the DO cleanup cannot see it
         try { const wt = await env.STATS.get('botwidget:u:' + eu); if (wt) { await env.STATS.delete('botwidget:t:' + wt); await env.STATS.delete('botwidget:u:' + eu); } } catch (e) {} // a "my bot, live" token (2026-09-26)
         try { await env.STATS.delete(squadFreeKey(eu)); } catch (e) {}                          // a free squad founding (2026-09-30)
+        try { if (env.SPOT) await spotStub(env).fetch(new Request('https://do/s2/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: eu }) })); } catch (e) {} // the Demo Spot account lives in its own DO (2026-10-16)
       }
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
@@ -23519,17 +23275,6 @@ export default {
       if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
-    if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
-      return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
-    }
-    // What the AI really costs, MEASURED from the `usage` Anthropic returns - not derived from prompt lengths.
-    // Per day: spend, calls, tokens, split by model / surface / account, plus the worst-case exposure the current
-    // caps still allow. `?days=` walks the KV day-rollups (100 d); AE keeps the per-call history behind it.
-    // Does it work? The hit-rate the cost desk had no answer to. ?run=1 settles now instead of waiting for the cron.
-    /* VISION CHECK - an ADMIN-ONLY, OFFLINE quality gate for the chart AI's drawings (2026-10-04, owner: "broj 2 da se
-       odradi 5-10 testiranja samo, da mi proverimo pre nego sto pustimo korisnicima"). It is NOT in any reader's path:
-       readers keep the current draw flow untouched. The offline harness screenshots a real drawing and posts it here;
-       the worker sends it to a vision model with a rubric and returns a verdict we read before shipping a change. */
     if (url.pathname === '/api/admin/visioncheck' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       if (!env.ANTHROPIC_API_KEY) return J({ error: 'ai_unconfigured' }, 503);
       let b = {}; try { b = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
@@ -23728,26 +23473,6 @@ export default {
         aeQuery(env, `SELECT blob2 AS cc, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D} GROUP BY cc ORDER BY n DESC LIMIT 40`),
       ]);
       return J({ cc, days, pageviews: (total && total[0] && +total[0].n) || 0, paths: paths || [], sources: srcs || [], langs: langs || [], byDay: byDay || [], clicksByExchange: clicksEx || [], clicksByPage: clicksPage || [], countries: uv || [] });
-    }
-    if (url.pathname === '/api/admin/spotdaily' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // day-2 line preview: ?uid= computes the exact line for one account (dry unless &send=1); no uid = whole watch list, dry
-      const uid = url.searchParams.get('uid') || null, send = url.searchParams.get('send') === '1';
-      const r = await spotDailyLine(env, new Date().toISOString().slice(0, 10), { uid, dry: !send || !uid });
-      return new Response(JSON.stringify(Object.assign({ text: spotDailyText(+url.searchParams.get('prev') || 0, +url.searchParams.get('cur') || 0) }, r)), { headers: { 'content-type': 'application/json' } });
-    }
-    if (url.pathname === '/api/admin/spotdrain' && isAdminKey(env, adminKeyFrom(request, url))) { // TEST HOOK for build/spot-e2e-topup.js: empty a throwaway account (e2e uids only, enforced in the DO)
-      const uid = String(url.searchParams.get('uid') || '');
-      const r = await spotStub(env).fetch(new Request('https://do/e2edrain?uid=' + encodeURIComponent(uid)));
-      return new Response(await r.text(), { status: r.status, headers: { 'content-type': 'application/json' } });
-    }
-    if (url.pathname === '/api/admin/spotguard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // exposes the pure sell guard + row-freshness helpers so build/spot-e2e-price.js tests the exact code the money path runs
-      const q = url.searchParams; const now = Date.now();
-      const guard = spotSellGuard({ price: +q.get('price') || 0, lastPx: +q.get('lastPx') || 0, liqUsd: +q.get('liq') || 0, stale: q.get('stale') === '1' });
-      const age = q.has('age') ? +q.get('age') : null;
-      const fresh = age == null ? null : { list: spotRowFresh({ ts: now - age }, now, SPOT_ROW_MAX_AGE), fallback: spotRowFresh({ ts: now - age }, now, SPOT_FALLBACK_MAX_AGE), noTs: spotRowFresh({}, now, SPOT_ROW_MAX_AGE) };
-      return new Response(JSON.stringify({ guard, fresh, limits: { jumpX: SPOT_JUMP_X, thinLiq: SPOT_THIN_LIQ, rowMaxAge: SPOT_ROW_MAX_AGE, fallbackMaxAge: SPOT_FALLBACK_MAX_AGE } }), { headers: { 'content-type': 'application/json' } });
-    }
-    if (url.pathname === '/api/admin/spotpurge' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // drop never-used Demo Spot accounts (see SpotStore /purgeempty)
-      try { const r = await spotStub(env).fetch(new Request('https://do/purgeempty', { method: 'POST' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json' } }); } catch (e) { return new Response(JSON.stringify({ error: 'transient' }), { status: 503, headers: { 'content-type': 'application/json' } }); }
     }
     if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // where does the liquidation archive chain break?
       const n = Math.min(30, Math.max(3, +url.searchParams.get('days') || 12));
@@ -25158,7 +24883,7 @@ export default {
       subs: ['expires Premium and API subscriptions', 'lapsed plans keep working, so this leaks access rather than breaking it'],
       apiexp: ['warns API customers before their plan ends', 'a customer can be cut off with no notice'],
       levrep: ['archives the monthly leverage report', '/leverage-report/ and /api/leverage?month= go stale or empty'],
-      spotorders: ['fills Demo Spot limit orders', 'spot limit orders sit unfilled'],
+      memeboard: ['builds the Meme Spot season board', '/spot/ and /leaderboards/ show a stale Meme Spot board'],
       wrap: ['the daily market wrap to the channel', 'the channel is quiet today'],
       brief: ['the morning brief', 'you do not get your own daily read'],
       snapshot: ['the daily stats snapshot', 'day-over-day figures lose a day'],
@@ -25201,14 +24926,13 @@ export default {
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 - once per UTC day (stamped), retries on failure each */10
     bg(ledgerBackup6h, 'backup6');
-    bg(spotStuckNudge, 'spotnudge');
     // Bybit affiliate: keep the season's volume report fed from the API instead of a pasted CSV,
     // settle the weekly rebate once a closed week is trustworthy, and watch the key's own expiry -
     // it is not IP-bound, so it lapses after 90 days and would stop both of the above in silence.
     // bybitAffSync now runs on the one-minute trigger - see the note there. It lost this race every time.
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
-    bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
+    bg(spotBoardCron, 'memeboard'); // the Meme Spot season board into KV every ten minutes (2026-10-16) // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
@@ -25562,374 +25286,162 @@ export class SpotStore {
     // limit orders (2026-09-03): buy at-or-below / sell at-or-above a price; the */10 sweep fills them through the normal /trade path (fee, slippage, gas all apply)
     s.exec('CREATE TABLE IF NOT EXISTS spotorder(id TEXT PRIMARY KEY, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, price REAL, usd INTEGER, pct REAL, meta TEXT, status TEXT, done_ts INTEGER, note TEXT)');
     try { s.exec('CREATE INDEX IF NOT EXISTS spo_u ON spotorder(user_id, status)'); s.exec('CREATE INDEX IF NOT EXISTS spo_s ON spotorder(status)'); } catch (e) {}
+    // v3 (2026-10-16, owner: "nesto prostije i pristupacnije ... buy & hold ... svi po 10k ... $100 dnevno koji moraju da se
+    // claim"): ONE cash balance, holdings, a ledger and a daily mark. Every account starts again at $10,000. The v1/v2
+    // tables above (card, wallet, gas, chain, orders) stay in the database and in the nightly backup; nothing reads them.
+    s.exec("CREATE TABLE IF NOT EXISTS sp2acct(user_id TEXT PRIMARY KEY, usdt INTEGER, created INTEGER, claims INTEGER DEFAULT 0, claim_day TEXT DEFAULT '', realized INTEGER DEFAULT 0, last_seen INTEGER DEFAULT 0, buys INTEGER DEFAULT 0, sells INTEGER DEFAULT 0)");
+    s.exec('CREATE TABLE IF NOT EXISTS sp2hold(user_id TEXT, key TEXT, qty REAL, cost INTEGER, meta TEXT, updated INTEGER, PRIMARY KEY(user_id,key))');
+    s.exec('CREATE TABLE IF NOT EXISTS sp2tx(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, side TEXT, key TEXT, qty REAL, price REAL, usd INTEGER, pnl INTEGER, meta TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS sp2tx_u ON sp2tx(user_id, ts)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS sp2snap(user_id TEXT, day TEXT, value INTEGER, dep INTEGER, PRIMARY KEY(user_id,day))');
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
-  _acct(uid, now) { // get-or-create: v2 accounts are born with $10,000 ON THE CARD (the sim starts at "money in the bank")
-    let a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0];
-    if (!a) { this.state.storage.sql.exec('INSERT INTO spotacct(user_id,usdt,card,created,last_seen,onb) VALUES(?,0,?,?,?,0)', uid, SPOT_START_C, now, now); a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0]; a._fresh = true; }
-    else {
-      const sql0 = this.state.storage.sql;
-      // pre-v2 account (v1 dropped the $10k straight onto the exchange - even just OPENING the page auto-created one,
-      // which is exactly what happened on the owner's account). An UNTOUCHED v1 account - exactly $10k on the exchange,
-      // zero transactions, zero holds - restarts as a fresh v2 CARD account so the on-ramp steps can't be "already
-      // done" on an account the user never actually used. Applies even if an earlier deploy already grandfathered it
-      // to onb=2 (that grandfathering is what skipped the USDT step). Accounts with ANY activity keep their money.
-      const touched = (this.rows('SELECT 1 FROM spottx WHERE user_id=? LIMIT 1', uid)[0]) || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]);
-      if (!touched && (a.usdt || 0) === SPOT_START_C && !(a.card > 0) && !(a.wusdt > 0)) {
-        sql0.exec("UPDATE spotacct SET card=?, usdt=0, onb=0, gas='{}' WHERE user_id=?", SPOT_START_C, uid);
-        a.card = SPOT_START_C; a.usdt = 0; a.onb = 0; a._fresh = true;
-      } else if (!(a.onb > 0) && ((a.usdt || 0) > 0 || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]))) { sql0.exec('UPDATE spotacct SET onb=2 WHERE user_id=?', uid); a.onb = 2; } // active pre-v2 account → grandfather past the on-ramp
-    }
-    return a;
+  _acct2(uid, now, create) { // get, or create on the ONE path that mints an account (/s2/portfolio?create=1 from the Start button)
+    let a = this.rows('SELECT * FROM sp2acct WHERE user_id=?', uid)[0];
+    if (!a && create) { this.state.storage.sql.exec('INSERT INTO sp2acct(user_id,usdt,created,last_seen) VALUES(?,?,?,?)', uid, SP2_START_C, now, now); a = this.rows('SELECT * FROM sp2acct WHERE user_id=?', uid)[0]; a._fresh = true; }
+    return a || null;
   }
-  _gas(a) { try { const g = JSON.parse(a.gas || '{}'); return (g && typeof g === 'object') ? g : {}; } catch (e) { return {}; } }
+  _day(ms) { return new Date(ms).toISOString().slice(0, 10); }
+  _dep(a) { return SP2_START_C + SP2_CLAIM_C * (+a.claims || 0); } // everything the house ever put in: the start plus every claimed day - P&L is measured against THIS, so claiming cannot climb the board
+  _nextMidnight(now) { const d = new Date(now); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - now; }
   async fetch(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
     let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
     const uid = String(b.uid || url.searchParams.get('uid') || '').slice(0, 64);
-    if (path === '/portfolio') {
+    if (path === '/s2/portfolio') {
       if (!uid) return this.j({ error: 'bad' }, 400);
-      if (url.searchParams.get('create') !== '1' && !this.rows('SELECT 1 FROM spotacct WHERE user_id=?', uid)[0]) return this.j({ none: true }); // no auto-create on a read (2026-09-03)
-      const a = this._acct(uid, now);
-      sql.exec('UPDATE spotacct SET last_seen=? WHERE user_id=?', now, uid);
-      const holds = this.rows('SELECT sym,qty,cost,meta FROM spothold WHERE user_id=? AND qty>0', uid).map(h => { let m = {}; try { m = JSON.parse(h.meta || '{}'); } catch (e) {} return { sym: h.sym, qty: h.qty, costUsd: h.cost / 100, meta: m }; });
-      const snaps = this.rows('SELECT day,value FROM spotsnap WHERE user_id=? ORDER BY day DESC LIMIT 120', uid).reverse().map(r => ({ day: r.day, valueUsd: r.value / 100 }));
-      const txN = (this.rows('SELECT COUNT(*) n FROM spottx WHERE user_id=?', uid)[0] || { n: 0 }).n;
-      const buys = (this.rows("SELECT COUNT(*) n FROM spottx WHERE user_id=? AND side='buy'", uid)[0] || { n: 0 }).n;
-      let addr = null; try { addr = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
-      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, cardUsd: (a.card || 0) / 100, wusdtUsd: (a.wusdt || 0) / 100, gas: this._gas(a), addr, onb: +a.onb || 0, realizedUsd: (a.realized || 0) / 100, created: a.created, resetTs: a.reset_ts || 0, resets: a.resets || 0, holds, snaps, txN, buys });
+      const a = this._acct2(uid, now, url.searchParams.get('create') === '1');
+      if (!a) return this.j({ none: true });
+      sql.exec('UPDATE sp2acct SET last_seen=? WHERE user_id=?', now, uid);
+      const holds = this.rows('SELECT key,qty,cost,meta FROM sp2hold WHERE user_id=? AND qty>0', uid).map(x => { let m = {}; try { m = JSON.parse(x.meta || '{}'); } catch (e) {} return { key: x.key, qty: x.qty, costUsd: x.cost / 100, meta: m }; });
+      const snaps = this.rows('SELECT day,value,dep FROM sp2snap WHERE user_id=? ORDER BY day DESC LIMIT 60', uid).reverse().map(r => ({ day: r.day, valueUsd: r.value / 100, depUsd: (r.dep || 0) / 100 }));
+      const day = this._day(now);
+      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, created: a.created, claims: +a.claims || 0, claimedToday: String(a.claim_day || '') === day, nextClaimMs: this._nextMidnight(now), claimUsd: SP2_CLAIM_C / 100, depositedUsd: this._dep(a) / 100, realizedUsd: (a.realized || 0) / 100, holds, snaps, txN: (+a.buys || 0) + (+a.sells || 0), buys: +a.buys || 0, sells: +a.sells || 0 });
     }
-    if (path === '/link') { // step 1: "link" the virtual card to the exchange
+    if (path === '/s2/claim') { // $100 of demo cash, once per UTC day, for anyone with an account - it has to be pressed (owner: "moraju da se claim")
       if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      if ((+a.onb || 0) < 1) sql.exec('UPDATE spotacct SET onb=1 WHERE user_id=?', uid);
-      return this.j({ ok: true, onb: Math.max(1, +a.onb || 0) });
+      const a = this._acct2(uid, now, false); if (!a) return this.j({ none: true }, 404);
+      const day = this._day(now), nextMs = this._nextMidnight(now);
+      if (String(a.claim_day || '') === day) return this.j({ error: 'claimed', nextClaimMs: nextMs }, 429);
+      sql.exec('UPDATE sp2acct SET usdt=usdt+?, claims=COALESCE(claims,0)+1, claim_day=?, last_seen=? WHERE user_id=?', SP2_CLAIM_C, day, now, uid);
+      sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'claim','USD',0,0,?,0,'{}')", uid, now, SP2_CLAIM_C);
+      const a2 = this.rows('SELECT usdt,claims FROM sp2acct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, gotUsd: SP2_CLAIM_C / 100, usdtUsd: a2.usdt / 100, claims: +a2.claims || 0, claimedToday: true, nextClaimMs: nextMs, depositedUsd: this._dep(a2) / 100 });
     }
-    if (path === '/onramp') { // step 2: buy USDT with the card (worker computed the card-processing fee)
-      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
-      if (!uid || usdC < 1000) return this.j({ error: 'min_onramp', minUsd: 10 }, 400); // $10 minimum like real on-ramps
-      const a = this._acct(uid, now);
-      if ((+a.onb || 0) < 1) return this.j({ error: 'not_linked' }, 400); // step 1 first - the API used to let a client skip the card link (2026-09-03)
-      if (usdC + feeC > (a.card || 0)) return this.j({ error: 'card_insufficient', cardUsd: (a.card || 0) / 100 }, 400);
-      sql.exec('UPDATE spotacct SET card=card-?, usdt=usdt+?, onb=MAX(onb,2), last_seen=? WHERE user_id=?', usdC + feeC, usdC, now, uid);
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'onramp','USDT',?,1,?,?,0,'{}')", uid, now, usdC / 100, usdC, feeC);
-      const a2 = this.rows('SELECT card,usdt FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100 });
-    }
-    if (path === '/offramp') { // cash out: sell exchange USDT back to the CARD (fiat withdrawal; fee comes out of the amount - you withdraw $500, the card gets $495)
-      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
-      if (!uid || usdC < 1000) return this.j({ error: 'min_offramp', minUsd: 10 }, 400);
-      const a = this._acct(uid, now);
-      if (usdC > (a.usdt || 0)) return this.j({ error: 'insufficient', usdtUsd: (a.usdt || 0) / 100 }, 400);
-      sql.exec('UPDATE spotacct SET usdt=usdt-?, card=card+?, last_seen=? WHERE user_id=?', usdC, usdC - feeC, now, uid);
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'offramp','USD',?,1,?,?,0,'{}')", uid, now, (usdC - feeC) / 100, usdC - feeC, feeC);
-      const a2 = this.rows('SELECT usdt,card FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100, receivedUsd: (usdC - feeC) / 100 });
-    }
-    if (path === '/transfer') { // P2P: wallet USDT from one user to another user's ADDRESS, recorded on the internal MarginPad Chain (tx hash + block height); gas paid in the chain's native coin
-      const usdC = Math.round(+b.usdC || 0), toAddr = String(b.toAddr || '').trim(), native = String(b.native || '').toUpperCase(), gasNat = Math.max(0, +b.gasNat || 0), memo = String(b.memo || '').slice(0, 60);
-      if (!uid || usdC < 100 || !toAddr) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
-      let myAddr = {}; try { myAddr = JSON.parse(a.addr || '{}'); } catch (e) {}
-      if (toAddr === myAddr.sol || toAddr === myAddr.evm) return this.j({ error: 'self' }, 400);
-      const rec = this.rows('SELECT user_id, addr FROM spotacct WHERE addr LIKE ? LIMIT 1', '%' + toAddr + '%')[0];
-      if (!rec) return this.j({ error: 'unknown_address' }, 404); // real chains send this into the void forever; the demo refuses and teaches instead
-      let recAddr = {}; try { recAddr = JSON.parse(rec.addr || '{}'); } catch (e) {}
-      const isDep = (!!recAddr.dep && recAddr.dep === toAddr) || (!!recAddr.depSol && recAddr.depSol === toAddr); // exchange DEPOSIT address -> credit the recipient's EXCHANGE USDT, not their wallet (own dep allowed: that IS the wallet->exchange deposit flow)
-      if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
-      const g = this._gas(a);
-      if (native) { if ((+g[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: gasNat }, 400); g[native] = (+g[native] || 0) - gasNat; }
-      const rnd = new Uint8Array(32); crypto.getRandomValues(rnd); const hash = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
-      const height = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0) + 1;
-      const fromAddr = (native === 'SOL' ? myAddr.sol : myAddr.evm) || myAddr.sol || '';
-      sql.exec('UPDATE spotacct SET wusdt=wusdt-?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
-      sql.exec(isDep ? 'UPDATE spotacct SET usdt=COALESCE(usdt,0)+? WHERE user_id=?' : 'UPDATE spotacct SET wusdt=COALESCE(wusdt,0)+? WHERE user_id=?', usdC, rec.user_id);
-      sql.exec('INSERT INTO spotxfer(hash,height,from_uid,to_uid,from_addr,to_addr,amt,net,memo,ts) VALUES(?,?,?,?,?,?,?,?,?,?)', hash, height, uid, rec.user_id, fromAddr, toAddr, usdC, String(b.net || 'solana').slice(0, 12), memo, now);
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'send','USDT',?,1,?,0,0,?)", uid, now, usdC / 100, usdC, JSON.stringify({ to: toAddr, hash, net: String(b.net || 'solana').slice(0, 12) }));
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'recv','USDT',?,1,?,0,0,?)", rec.user_id, now, usdC / 100, usdC, JSON.stringify({ from: fromAddr, hash, net: String(b.net || 'solana').slice(0, 12), venue: isDep ? 'exchange' : 'wallet' }));
-      const a2 = this.rows('SELECT wusdt,gas FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, hash, height, deposited: isDep, usdUsd: usdC / 100, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
-    }
-    if (path === '/chain') { // public explorer feed: latest transfers on the internal ledger
-      const rows = this.rows('SELECT hash,height,from_addr,to_addr,amt,net,memo,ts FROM spotxfer ORDER BY height DESC LIMIT 50');
-      const h = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0);
-      return this.j({ height: h, txs: rows.map(r => ({ hash: r.hash, height: r.height, from: r.from_addr, to: r.to_addr, usd: r.amt / 100, net: r.net, memo: r.memo || '', ts: r.ts })) });
-    }
-    if (path === '/depaddr') { // exchange USDT deposit address - generated once (worker supplies the candidate), stored inside the addr JSON as .dep
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      let cur = {}; try { cur = a.addr ? JSON.parse(a.addr) : {}; } catch (e) {}
-      let dirty = false;
-      if (!cur.dep) { const cand = String(b.dep || '').slice(0, 64); if (!/^0x[0-9a-f]{40}$/.test(cand)) return this.j({ error: 'bad' }, 400); cur.dep = cand; dirty = true; }
-      if (!cur.depSol) { const candS = String(b.depSol || '').slice(0, 64); if (/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(candS)) { cur.depSol = candS; dirty = true; } } // Solana deposit address (2026-09-03): the wallet -> exchange path must not force BNB gas
-      if (dirty) sql.exec('UPDATE spotacct SET addr=?, last_seen=? WHERE user_id=?', JSON.stringify(cur), now, uid);
-      return this.j({ ok: true, dep: cur.dep, depSol: cur.depSol || null });
-    }
-    if (path === '/walletcreate') { // step 3: self-custody wallet - worker generated the addresses (stored once, never regenerated)
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      let cur = null; try { cur = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
-      if (cur && cur.sol) return this.j({ ok: true, addr: cur, existed: true });
-      const addr = Object.assign({}, cur || {}, { sol: String((b.addr && b.addr.sol) || '').slice(0, 64), evm: String((b.addr && b.addr.evm) || '').slice(0, 64) }); // merge - never drop an existing .dep (exchange deposit address)
-      if (!addr.sol || !addr.evm) return this.j({ error: 'bad' }, 400);
-      sql.exec('UPDATE spotacct SET addr=?, onb=MAX(onb,3), last_seen=? WHERE user_id=?', JSON.stringify(addr), now, uid);
-      return this.j({ ok: true, addr });
-    }
-    if (path === '/wdraw') { // step 4: withdraw USDT from the exchange to the wallet (network fee already computed by the worker)
-      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
-      if (!uid || usdC < 500) return this.j({ error: 'min_wd', minUsd: 5 }, 400);
-      const a = this._acct(uid, now);
-      if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
-      if (usdC + feeC > (a.usdt || 0)) return this.j({ error: 'insufficient', usdtUsd: (a.usdt || 0) / 100 }, 400);
-      sql.exec('UPDATE spotacct SET usdt=usdt-?, wusdt=wusdt+?, onb=MAX(onb,4), last_seen=? WHERE user_id=?', usdC + feeC, usdC, now, uid);
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'wdraw','USDT',?,1,?,?,0,?)", uid, now, usdC / 100, usdC, feeC, JSON.stringify({ net: String(b.net || '').slice(0, 12) }));
-      const a2 = this.rows('SELECT usdt,wusdt FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, usdtUsd: a2.usdt / 100, wusdtUsd: (a2.wusdt || 0) / 100, feeUsd: feeC / 100 });
-    }
-    if (path === '/swap') { // wallet DEX swap: USDT ↔ native gas coin (SOL/ETH/BNB) at the worker's effective price
-      const asset = String(b.asset || '').toUpperCase(); if (['SOL', 'ETH', 'BNB'].indexOf(asset) < 0) return this.j({ error: 'bad_asset' }, 400);
-      const usdC = Math.round(+b.usdC || 0), natQty = +b.natQty;
-      if (!uid || !(usdC >= 100) || !(natQty > 0) || !isFinite(natQty)) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      const g = this._gas(a);
-      if (b.dir === 'sell') { // native → wallet USDT
-        if ((+g[asset] || 0) < natQty * 0.9999999) return this.j({ error: 'insufficient_native', have: +g[asset] || 0 }, 400);
-        g[asset] = Math.max(0, (+g[asset] || 0) - natQty); if (g[asset] < 1e-12) delete g[asset];
-        sql.exec('UPDATE spotacct SET wusdt=wusdt+?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
-      } else { // wallet USDT → native
-        if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
-        g[asset] = (+g[asset] || 0) + natQty;
-        sql.exec('UPDATE spotacct SET wusdt=wusdt-?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
-      }
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'swap',?,?,?,?,?,0,?)", uid, now, asset, natQty, usdC / 100 / natQty, usdC, Math.max(0, Math.round(+b.feeC || 0)), JSON.stringify({ dir: b.dir === 'sell' ? 'sell' : 'buy' }));
-      const a2 = this.rows('SELECT wusdt,gas FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
-    }
-    if (path === '/trade') { // worker-computed effective price + fee; this is the atomic ledger step
-      const side = String(b.side || ''), sym = String(b.sym || '').slice(0, 64), price = +b.price, feeC = Math.max(0, Math.round(+b.feeC || 0));
-      if (!uid || !sym || !(price > 0) || !isFinite(price)) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      // native settlement (memes): the trade is ACCOUNTED in USD (cost basis/PnL unchanged) but SETTLES in the
-      // chain's native coin from the wallet - natQty in/out of gas[native], plus a flat gas fee per tx. Real life:
-      // a Solana meme is bought with SOL, not with exchange USDT.
-      const native = String(b.native || '').toUpperCase();
-      const natQty = +b.natQty || 0, gasNat = Math.max(0, +b.gasNat || 0);
+    if (path === '/s2/trade') { // the atomic ledger step: the worker decided the price (pool or exchange), this moves the money. No fee, no slippage (owner 2026-10-16).
+      const side = b.side === 'sell' ? 'sell' : 'buy', key = String(b.key || '').slice(0, 80), price = +b.price;
+      if (!uid || !key || !(price > 0) || !isFinite(price)) return this.j({ error: 'bad' }, 400);
+      const a = this._acct2(uid, now, false); if (!a) return this.j({ none: true }, 404);
       if (side === 'buy') {
         const usdC = Math.round(+b.usdC || 0);
-        if (usdC < 100) return this.j({ error: 'min_trade' }, 400); // $1 minimum
+        if (usdC < 100) return this.j({ error: 'min_trade', minUsd: 1 }, 400);
+        if (usdC > a.usdt) return this.j({ error: 'insufficient', usdtUsd: a.usdt / 100 }, 400);
         const qty = (usdC / 100) / price;
         if (!(qty > 0) || !isFinite(qty)) return this.j({ error: 'bad' }, 400);
-        let g = null;
-        if (native) {
-          if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
-          g = this._gas(a);
-          if (!(natQty > 0) || (+g[native] || 0) < natQty + gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: natQty + gasNat }, 400);
-          g[native] = (+g[native] || 0) - natQty - gasNat;
-        } else if (usdC + feeC > a.usdt) return this.j({ error: 'insufficient', usdtUsd: a.usdt / 100 }, 400);
-        const meta = JSON.stringify(Object.assign({}, (b.meta && typeof b.meta === 'object') ? b.meta : {}, { lastPx: price }));
-        if (native) sql.exec('UPDATE spotacct SET gas=?, last_seen=? WHERE user_id=?', JSON.stringify(g), now, uid);
-        else sql.exec('UPDATE spotacct SET usdt=usdt-?, last_seen=? WHERE user_id=?', usdC + feeC, now, uid);
-        const h = this.rows('SELECT qty,cost FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
-        if (h) sql.exec('UPDATE spothold SET qty=qty+?, cost=cost+?, meta=?, updated=? WHERE user_id=? AND sym=?', qty, usdC + feeC, meta, now, uid, sym);
-        else sql.exec('INSERT INTO spothold(user_id,sym,qty,cost,meta,updated) VALUES(?,?,?,?,?,?)', uid, sym, qty, usdC + feeC, meta, now);
-        sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,?,?,?,?,0,?)', uid, now, 'buy', sym, qty, price, usdC, feeC, meta);
-        const a2 = this.rows('SELECT usdt,gas FROM spotacct WHERE user_id=?', uid)[0];
-        return this.j({ ok: true, side: 'buy', sym, qty, price, usdUsd: usdC / 100, feeUsd: feeC / 100, usdtUsd: a2.usdt / 100, gas: this._gas(a2), native: native || null, natQty: native ? natQty : null });
+        const hld = this.rows('SELECT qty,cost,meta FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0];
+        let stored = {}; try { stored = JSON.parse((hld && hld.meta) || '{}') || {}; } catch (e) {}
+        // the POSITION keeps the pool it was first bought through (that pool prices every later sale - the 2026-09-06 rule); the newest mark always updates
+        const meta = JSON.stringify(Object.assign({}, (b.meta && typeof b.meta === 'object') ? b.meta : {}, stored, { lastPx: price }));
+        sql.exec('UPDATE sp2acct SET usdt=usdt-?, buys=COALESCE(buys,0)+1, last_seen=? WHERE user_id=?', usdC, now, uid);
+        if (hld) sql.exec('UPDATE sp2hold SET qty=qty+?, cost=cost+?, meta=?, updated=? WHERE user_id=? AND key=?', qty, usdC, meta, now, uid, key);
+        else sql.exec('INSERT INTO sp2hold(user_id,key,qty,cost,meta,updated) VALUES(?,?,?,?,?,?)', uid, key, qty, usdC, meta, now);
+        sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'buy',?,?,?,?,0,?)", uid, now, key, qty, price, usdC, meta);
+        const a2 = this.rows('SELECT usdt FROM sp2acct WHERE user_id=?', uid)[0];
+        const h2 = this.rows('SELECT qty,cost FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0] || { qty, cost: usdC };
+        return this.j({ ok: true, side: 'buy', key, qty, price, usdUsd: usdC / 100, usdtUsd: a2.usdt / 100, holdQty: h2.qty, holdCostUsd: h2.cost / 100 });
       }
-      if (side === 'sell') {
-        const h = this.rows('SELECT qty,cost,meta FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
-        if (!h || !(h.qty > 0)) return this.j({ error: 'no_position' }, 400);
-        let qty = +b.qty;
-        const pct = +b.pct;
-        if (isFinite(pct) && pct > 0) qty = pct >= 100 ? h.qty : h.qty * Math.min(100, pct) / 100; // 100% sells the EXACT stored qty - no float dust left behind
-        if (!(qty > 0) || !isFinite(qty)) return this.j({ error: 'bad' }, 400);
-        if (qty > h.qty * 1.0000001) return this.j({ error: 'too_much', have: h.qty }, 400);
-        qty = Math.min(qty, h.qty);
-        const grossC = Math.round(qty * price * 100);
-        if (grossC < 1) return this.j({ error: 'dust' }, 400);
-        const fee2 = Math.max(0, Math.round(+b.feeC || 0));
-        const netC = Math.max(0, grossC - fee2);
-        let g2 = null;
-        if (native) { // proceeds land in the native coin, minus the tx gas
-          g2 = this._gas(a);
-          if ((+g2[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g2[native] || 0, need: gasNat }, 400);
-          g2[native] = (+g2[native] || 0) - gasNat + (+b.natOut || 0);
-        }
-        const costPart = Math.round(h.cost * (qty / h.qty));
-        const pnlC = netC - costPart; // realized PnL of this slice (fees on both legs already inside)
-        const left = h.qty - qty;
-        if (left <= h.qty * 1e-9) sql.exec('DELETE FROM spothold WHERE user_id=? AND sym=?', uid, sym);
-        else sql.exec('UPDATE spothold SET qty=?, cost=?, updated=? WHERE user_id=? AND sym=?', left, Math.max(0, h.cost - costPart), now, uid, sym);
-        if (native) sql.exec('UPDATE spotacct SET gas=?, realized=COALESCE(realized,0)+?, last_seen=? WHERE user_id=?', JSON.stringify(g2), pnlC, now, uid);
-        else sql.exec('UPDATE spotacct SET usdt=usdt+?, realized=COALESCE(realized,0)+?, last_seen=? WHERE user_id=?', netC, pnlC, now, uid);
-        sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, now, 'sell', sym, qty, price, netC, fee2, pnlC, h.meta || '{}');
-        const a2 = this.rows('SELECT usdt,realized,gas FROM spotacct WHERE user_id=?', uid)[0];
-        return this.j({ ok: true, side: 'sell', sym, qty, price, usdUsd: netC / 100, feeUsd: fee2 / 100, pnlUsd: pnlC / 100, usdtUsd: a2.usdt / 100, gas: this._gas(a2), native: native || null, realizedUsd: (a2.realized || 0) / 100, closed: left <= h.qty * 1e-9 });
-      }
-      return this.j({ error: 'bad_side' }, 400);
+      const hld = this.rows('SELECT qty,cost,meta FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0];
+      if (!hld || !(hld.qty > 0)) return this.j({ error: 'no_position' }, 400);
+      let qty = +b.qty; const pct = +b.pct;
+      if (isFinite(pct) && pct > 0) qty = pct >= 100 ? hld.qty : hld.qty * Math.min(100, pct) / 100; // 100% sells the EXACT stored qty - no float dust left behind
+      if (!(qty > 0) || !isFinite(qty)) return this.j({ error: 'bad' }, 400);
+      if (qty > hld.qty * 1.0000001) return this.j({ error: 'too_much', have: hld.qty }, 400);
+      qty = Math.min(qty, hld.qty);
+      const grossC = Math.round(qty * price * 100);
+      if (grossC < 1) return this.j({ error: 'dust' }, 400);
+      const costPart = Math.round(hld.cost * (qty / hld.qty)), pnlC = grossC - costPart, left = hld.qty - qty, closed = left <= hld.qty * 1e-9;
+      if (closed) sql.exec('DELETE FROM sp2hold WHERE user_id=? AND key=?', uid, key);
+      else sql.exec('UPDATE sp2hold SET qty=?, cost=?, updated=? WHERE user_id=? AND key=?', left, Math.max(0, hld.cost - costPart), now, uid, key);
+      sql.exec('UPDATE sp2acct SET usdt=usdt+?, realized=COALESCE(realized,0)+?, sells=COALESCE(sells,0)+1, last_seen=? WHERE user_id=?', grossC, pnlC, now, uid);
+      sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'sell',?,?,?,?,?,?)", uid, now, key, qty, price, grossC, pnlC, hld.meta || '{}');
+      const a3 = this.rows('SELECT usdt,realized FROM sp2acct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, side: 'sell', key, qty, price, usdUsd: grossC / 100, pnlUsd: pnlC / 100, costUsd: costPart / 100, usdtUsd: a3.usdt / 100, realizedUsd: (a3.realized || 0) / 100, closed });
     }
-    if (path === '/hold') { // worker sell path: exact stored qty (dust-free 100% sells) + size for the slippage estimate + the position's own meta (pool/net/lastPx price the sale - 2026-09-06)
-      const sym = String(url.searchParams.get('sym') || '');
-      const h = this.rows('SELECT qty,cost,meta FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
-      let m = {}; try { m = JSON.parse((h && h.meta) || '{}') || {}; } catch (e) {}
-      return this.j(h ? { qty: h.qty, costUsd: h.cost / 100, meta: m } : { qty: 0 });
+    if (path === '/s2/hold') { // worker sell path: exact stored qty + the position's own meta (pool/net/lastPx price the sale)
+      const key = String(url.searchParams.get('key') || '');
+      const x = this.rows('SELECT qty,cost,meta FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0];
+      let m = {}; try { m = JSON.parse((x && x.meta) || '{}') || {}; } catch (e) {}
+      return this.j(x ? { qty: x.qty, costUsd: x.cost / 100, meta: m } : { qty: 0 });
     }
-    if (path === '/tx') {
+    if (path === '/s2/tx') {
       if (!uid) return this.j({ error: 'bad' }, 400);
-      const list = this.rows('SELECT ts,side,sym,qty,price,usd,fee,pnl,meta FROM spottx WHERE user_id=? ORDER BY ts DESC LIMIT 120', uid)
-        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, sym: t.sym, qty: t.qty, price: t.price, usdUsd: t.usd / 100, feeUsd: (t.fee || 0) / 100, pnlUsd: (t.pnl || 0) / 100, name: m.name || '', logo: m.logo || '', xto: m.to || '', xfrom: m.from || '', hash: m.hash || '' }; });
+      const list = this.rows('SELECT ts,side,key,qty,price,usd,pnl,meta FROM sp2tx WHERE user_id=? ORDER BY ts DESC LIMIT 150', uid)
+        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, key: t.key, qty: t.qty, price: t.price, usdUsd: t.usd / 100, pnlUsd: (t.pnl || 0) / 100, sym: m.sym || String(t.key || '').replace(/^cex:/, ''), name: m.name || '', logo: m.logo || '', net: m.net || '' }; });
       return this.j({ tx: list });
     }
-    if (path === '/topup') { // DAILY LIFELINE (2026-09-10) - see SPOT_TOPUP_C. Deliberately NOT a reset: holdings,
-      // history, wallet and onboarding all stay. It exists so a blown account can keep practicing tomorrow instead
-      // of being finished for good. The worker prices the whole portfolio and passes what it is worth; the DO owns
-      // the once-a-day guard and the money.
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      const dnow = new Date(now), day = dnow.toISOString().slice(0, 10);
-      const nextMs = Date.UTC(dnow.getUTCFullYear(), dnow.getUTCMonth(), dnow.getUTCDate() + 1) - now;
-      if (String(a.topup_day || '') === day) return this.j({ error: 'claimed', nextMs }, 429);
-      const valueC = Math.round(+b.valueC || 0); // priced by the worker, never by the client
-      if (valueC > SPOT_TOPUP_MAX_C) return this.j({ error: 'not_broke', valueUsd: valueC / 100, maxUsd: SPOT_TOPUP_MAX_C / 100 }, 400);
-      sql.exec('UPDATE spotacct SET card=COALESCE(card,0)+?, topup_day=?, topups=COALESCE(topups,0)+1 WHERE user_id=?', SPOT_TOPUP_C, day, uid);
-      sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'topup', 'USD', SPOT_TOPUP_C, '{}');
-      const a2 = this.rows('SELECT card,topups FROM spotacct WHERE user_id=?', uid)[0] || {};
-      return this.j({ ok: true, gotUsd: SPOT_TOPUP_C / 100, cardUsd: (a2.card || 0) / 100, topups: a2.topups || 0, day, nextMs });
-    }
-    if (path === '/e2edrain') { // TEST HOOK: empty a throwaway account so the daily-lifeline path can be proven.
-      // e2e-prefixed uids only, the same rule /e2euser follows - a real account can never be wiped through here.
-      if (!/^e2e/i.test(uid)) return this.j({ error: 'not_e2e' }, 400);
-      this._acct(uid, now);
-      sql.exec('DELETE FROM spothold WHERE user_id=?', uid);
-      sql.exec("UPDATE spotacct SET card=0, usdt=0, wusdt=0, gas='{}' WHERE user_id=?", uid);
-      return this.j({ ok: true });
-    }
-    if (path === '/topupstate') { // what the page needs to decide whether the card belongs on screen
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this.rows('SELECT topup_day,topups FROM spotacct WHERE user_id=?', uid)[0];
-      if (!a) return this.j({ none: true });
-      const dn = new Date(now), day = dn.toISOString().slice(0, 10);
-      return this.j({ claimedToday: String(a.topup_day || '') === day, topups: a.topups || 0, nextMs: Date.UTC(dn.getUTCFullYear(), dn.getUTCMonth(), dn.getUTCDate() + 1) - now });
-    }
-    if (path === '/reset') { // back to a fresh $10,000 CARD - at most once per 7 days; wallet addresses + tx history kept
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const a = this._acct(uid, now);
-      const since = Math.max(a.reset_ts || 0, 0);
-      if (since && now - since < 7 * 86400000) return this.j({ error: 'cooldown', nextMs: since + 7 * 86400000 - now }, 429);
-      sql.exec('DELETE FROM spothold WHERE user_id=?', uid);
-      sql.exec("UPDATE spotacct SET card=?, usdt=0, wusdt=0, gas='{}', reset_ts=?, resets=COALESCE(resets,0)+1, realized=0, onb=CASE WHEN COALESCE(onb,0)>=1 THEN 1 ELSE 0 END WHERE user_id=?", SPOT_START_C, now, uid); // onb back to 1: the card stays linked, everything after it is redone (2026-09-03)
-      sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'reset', 'USD', SPOT_START_C, '{}');
-      return this.j({ ok: true, cardUsd: SPOT_START_C / 100 });
-    }
-    if (path === '/allsyms') { // daily snapshot cron: every distinct held symbol + one meta sample (net/pool for meme price lookups)
-      const out = {}; this.rows('SELECT sym, meta FROM spothold WHERE qty>0 GROUP BY sym').forEach(r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} out[r.sym] = { k: m.k || 'cex', net: m.net || 'solana', pool: m.pool || '', lastPx: +m.lastPx || 0 }; });
+    if (path === '/s2/allsyms') { // the pricing crons: every distinct held key + one meta sample (net/pool for a meme, sym for a major)
+      const out = {}; this.rows('SELECT key, meta FROM sp2hold WHERE qty>0 GROUP BY key').forEach(r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} out[r.key] = { k: m.k || 'cex', net: m.net || '', pool: m.pool || '', mint: m.mint || '', sym: m.sym || String(r.key).replace(/^cex:/, ''), lastPx: +m.lastPx || 0 }; });
       return this.j({ syms: out });
     }
-    if (path === '/snapshot-all') { // cron passes {day, prices:{sym:px}} → write each account's start-of-day value; missing price falls back to the hold's lastPx (a rugged meme keeps its last known mark until it truly dies)
+    if (path === '/s2/snapshot-all') { // cron, once a day after 00:00 UTC: {day, prices:{key:px}} -> each account's start-of-day worth AND what the house had put in by then
       const day = String(b.day || '').slice(0, 10), prices = (b.prices && typeof b.prices === 'object') ? b.prices : {};
       if (!day) return this.j({ error: 'bad' }, 400);
-      const accts = this.rows('SELECT user_id, usdt, card, wusdt, gas FROM spotacct');
-      const holds = this.rows('SELECT user_id, sym, qty, cost, meta FROM spothold WHERE qty>0');
-      const byU = {}; for (const h of holds) { (byU[h.user_id] = byU[h.user_id] || []).push(h); }
+      const accts = this.rows('SELECT user_id, usdt, claims FROM sp2acct');
+      const holds = this.rows('SELECT user_id, key, qty, meta FROM sp2hold WHERE qty>0');
+      const byU = {}; for (const x of holds) { (byU[x.user_id] = byU[x.user_id] || []).push(x); }
       let n = 0;
       for (const a of accts) {
-        let v = (a.usdt || 0) + (a.card || 0) + (a.wusdt || 0);
-        const g9 = this._gas(a); for (const k of Object.keys(g9)) { const px9 = +prices[k] || 0; if (px9 > 0) v += Math.round((+g9[k] || 0) * px9 * 100); } // wallet natives (SOL/ETH/BNB) at live price
-        for (const h of (byU[a.user_id] || [])) {
-          let px = +prices[h.sym] || 0;
-          if (!(px > 0)) { try { px = +(JSON.parse(h.meta || '{}').lastPx) || 0; } catch (e) {} }
-          v += Math.round(h.qty * px * 100);
-        }
-        sql.exec('INSERT INTO spotsnap(user_id,day,value) VALUES(?,?,?) ON CONFLICT(user_id,day) DO UPDATE SET value=excluded.value', a.user_id, day, v);
+        let v = a.usdt || 0;
+        for (const x of (byU[a.user_id] || [])) { let px = +prices[x.key] || 0; if (!(px > 0)) { try { px = +(JSON.parse(x.meta || '{}').lastPx) || 0; } catch (e) {} } v += Math.round(x.qty * px * 100); }
+        sql.exec('INSERT INTO sp2snap(user_id,day,value,dep) VALUES(?,?,?,?) ON CONFLICT(user_id,day) DO UPDATE SET value=excluded.value, dep=excluded.dep', a.user_id, day, v, this._dep(a));
         n++;
       }
-      // refresh lastPx on every hold we have a fresh price for (keeps the rug-fallback mark current)
-      for (const h of holds) { const px = +prices[h.sym]; if (px > 0) { try { const m = JSON.parse(h.meta || '{}'); m.lastPx = px; sql.exec('UPDATE spothold SET meta=? WHERE user_id=? AND sym=?', JSON.stringify(m), h.user_id, h.sym); } catch (e) {} } }
+      for (const x of holds) { const px = +prices[x.key]; if (px > 0) { try { const m = JSON.parse(x.meta || '{}'); m.lastPx = px; sql.exec('UPDATE sp2hold SET meta=? WHERE user_id=? AND key=?', JSON.stringify(m), x.user_id, x.key); } catch (e) {} } }
       return this.j({ ok: true, accounts: n });
     }
-    if (path === '/lbbank') { // season board (2026-08-05, owner): everyone who ACTUALLY USED Demo Spot (made a trade OR a transfer) - ranked by bank-card balance DESC, INCLUDING accounts at or below the $10k start. Untouched default accounts (no tx, no xfer) are excluded. Payout still pays only profitable (>$10k) accounts - see payWeeklyPrizes.
-      // P2P can't inflate the card: received wallet-USDT has no path back to it (card<-offramp<-exchange only).
-      const rows = this.rows('SELECT a.user_id uid, a.card FROM spotacct a WHERE EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=a.user_id) OR EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=a.user_id OR x.to_uid=a.user_id) ORDER BY a.card DESC LIMIT 40');
-      return this.j({ top: rows.map(r => ({ uid: r.uid, cardC: +r.card || 0 })) });
+    if (path === '/s2/board') { // THE SEASON BOARD: season P&L = (worth now - put in now) - (worth at the season start - put in then). A claim raises both sides, so only trading moves it. {ws, prices:{key:px}, limit}
+      const ws = +b.ws || 0, we = ws + LB_PERIOD, prices = (b.prices && typeof b.prices === 'object') ? b.prices : {}, lim = Math.max(1, Math.min(1000, +b.limit || 300));
+      if (!ws) return this.j({ error: 'bad' }, 400);
+      const sday = this._day(ws);
+      const accts = this.rows('SELECT user_id, usdt, claims, created, buys FROM sp2acct WHERE COALESCE(buys,0)>0');
+      const holds = this.rows('SELECT user_id, key, qty, meta FROM sp2hold WHERE qty>0');
+      const byU = {}; for (const x of holds) { (byU[x.user_id] = byU[x.user_id] || []).push(x); }
+      const rows = [];
+      for (const a of accts) {
+        const hs = byU[a.user_id] || [];
+        let equity = a.usdt || 0;
+        for (const x of hs) { let px = +prices[x.key] || 0; if (!(px > 0)) { try { px = +(JSON.parse(x.meta || '{}').lastPx) || 0; } catch (e) {} } equity += Math.round(x.qty * px * 100); }
+        const net = equity - this._dep(a);
+        let base = 0;
+        if ((+a.created || 0) < ws) { const sn = this.rows('SELECT value, dep FROM sp2snap WHERE user_id=? AND day<=? ORDER BY day DESC LIMIT 1', a.user_id, sday)[0]; if (sn) base = (+sn.value || 0) - (+sn.dep || 0); }
+        const trades = (this.rows("SELECT COUNT(*) n FROM sp2tx WHERE user_id=? AND side IN ('buy','sell') AND ts>=? AND ts<?", a.user_id, ws, we)[0] || { n: 0 }).n;
+        if (!hs.length && !trades) continue; // nothing held and nothing done this season - not a standing
+        rows.push({ uid: a.user_id, pnlC: net - base, equityC: equity, netC: net, trades: +trades || 0, holdN: hs.length });
+      }
+      rows.sort((x, y) => (y.pnlC - x.pnlC) || (x.trades - y.trades));
+      return this.j({ ws, we, n: rows.length, rows: rows.slice(0, lim) });
     }
-    if (path === '/snapdelta') { // day-2 line: the last two start-of-day marks per account (cents)
-      const uids = Array.isArray(b.uids) ? b.uids.map(String).slice(0, 300) : []; const rows = {};
-      for (const u of uids) { try { const r = this.rows('SELECT value FROM spotsnap WHERE user_id=? ORDER BY day DESC LIMIT 2', u); if (r.length === 2) rows[u] = { cur: +r[0].value || 0, prev: +r[1].value || 0 }; } catch (e) {} }
-      return this.j({ rows });
+    if (path === '/s2/admin') { // mp-ops roster; the worker prices the holdings into live worth
+      const accts = this.rows('SELECT user_id uid, usdt, claims, created, last_seen, realized, buys, sells FROM sp2acct ORDER BY last_seen DESC LIMIT 3000');
+      const holds = this.rows('SELECT user_id, key, qty, cost, meta FROM sp2hold WHERE qty>0');
+      const byU = {}; for (const x of holds) { let m = {}; try { m = JSON.parse(x.meta || '{}'); } catch (e) {} (byU[x.user_id] = byU[x.user_id] || []).push({ key: x.key, qty: x.qty, costC: x.cost, meta: m }); }
+      return this.j({ accounts: accts.map(a => ({ uid: a.uid, usdtC: a.usdt, claims: +a.claims || 0, depC: this._dep(a), created: a.created, last: a.last_seen, realizedC: a.realized || 0, buys: +a.buys || 0, sells: +a.sells || 0, holds: byU[a.uid] || [] })) });
     }
-    if (path === '/lbtrade') { // public season board since 2026-09-06: realized PnL from the account's OWN sells inside the season window. The card balance the old board ranked can be fed by P2P transfers from other accounts (measured: #2 and #3 held $0 and $1 of realized profit) - a sell's pnl cannot.
-      const from = +b.from || 0, to = +b.to || Date.now();
-      const rows = this.rows("SELECT user_id uid, SUM(pnl) pnl, COUNT(*) n FROM spottx WHERE side='sell' AND ts>=? AND ts<? GROUP BY user_id ORDER BY pnl DESC LIMIT 60", from, to);
-      return this.j({ top: rows.map(r => ({ uid: r.uid, pnlC: +r.pnl || 0, sells: +r.n || 0 })) });
-    }
-    if (path === '/order/add') {
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const openN = (this.rows("SELECT COUNT(*) n FROM spotorder WHERE user_id=? AND status='open'", uid)[0] || {}).n || 0;
-      if (openN >= 20) return this.j({ error: 'too_many', max: 20 }, 400);
-      const id = 'o' + now.toString(36) + Math.floor(Math.random() * 1e6).toString(36);
-      sql.exec('INSERT INTO spotorder(id,user_id,ts,kind,sym,side,price,usd,pct,meta,status) VALUES(?,?,?,?,?,?,?,?,?,?,?)', id, uid, now, String(b.kind || 'cex'), String(b.sym || '').slice(0, 64), b.side === 'sell' ? 'sell' : 'buy', +b.price || 0, Math.round(+b.usd || 0), +b.pct || 0, JSON.stringify(b.meta || {}), 'open');
-      return this.j({ ok: true, id });
-    }
-    if (path === '/order/cancel') {
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const r = sql.exec("UPDATE spotorder SET status='cancelled', done_ts=? WHERE id=? AND user_id=? AND status='open'", now, String(b.id || ''), uid);
-      return this.j({ ok: (r.rowsWritten || 0) > 0 });
-    }
-    if (path === '/order/list') {
-      if (!uid) return this.j({ error: 'bad' }, 400);
-      const map = r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} return { id: r.id, ts: r.ts, kind: r.kind, sym: r.sym, side: r.side, price: r.price, usdUsd: (r.usd || 0) / 100, pct: r.pct || 0, meta: m, status: r.status, doneTs: r.done_ts || 0, note: r.note || '' }; };
-      const open = this.rows("SELECT * FROM spotorder WHERE user_id=? AND status='open' ORDER BY ts DESC", uid).map(map);
-      const done = this.rows("SELECT * FROM spotorder WHERE user_id=? AND status<>'open' ORDER BY done_ts DESC LIMIT 20", uid).map(map);
-      return this.j({ open, done });
-    }
-    if (path === '/order/open') { // sweep: every open order (bounded)
-      return this.j({ orders: this.rows("SELECT id,user_id uid,ts,kind,sym,side,price,usd,pct,meta FROM spotorder WHERE status='open' ORDER BY ts ASC LIMIT 500") });
-    }
-    if (path === '/order/done') {
-      sql.exec("UPDATE spotorder SET status=?, done_ts=?, note=? WHERE id=? AND status='open'", String(b.status || 'failed'), now, String(b.note || '').slice(0, 120), String(b.id || ''));
+    if (path === '/s2/e2erm') { // E2E cleanup: e2e-prefixed uids only, the /e2euser rule
+      if (!/^e2e/i.test(uid)) return this.j({ error: 'not_e2e' }, 400);
+      for (const t of ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap']) sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid);
       return this.j({ ok: true });
-    }
-    if (path === '/purgeempty') { // ops (2026-09-03): remove accounts minted by a page view that never did anything - no tx, no holds, no transfers, untouched card
-      const r = sql.exec("DELETE FROM spotacct WHERE card=? AND COALESCE(usdt,0)=0 AND COALESCE(wusdt,0)=0 AND (addr IS NULL OR addr='') AND NOT EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spothold h WHERE h.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=spotacct.user_id OR x.to_uid=spotacct.user_id)", SPOT_START_C);
-      sql.exec('DELETE FROM spotsnap WHERE user_id NOT IN (SELECT user_id FROM spotacct)');
-      return this.j({ ok: true, removed: r.rowsWritten || 0 });
-    }
-    if (path === '/stats') { // ops: headline numbers
-      const a = this.rows('SELECT COUNT(*) n, COALESCE(SUM(usdt),0) u FROM spotacct')[0];
-      const h = this.rows('SELECT COUNT(DISTINCT user_id) hu, COUNT(*) hn FROM spothold WHERE qty>0')[0];
-      const t = this.rows('SELECT COUNT(*) n FROM spottx')[0];
-      return this.j({ accounts: a.n, holders: h.hu, positions: h.hn, txCount: t.n });
-    }
-    if (path === '/adminspot') { // mp-ops Spot tab - full roster; the worker prices holdings+gas into live equity
-      const accts = this.rows('SELECT user_id uid, card, usdt, wusdt, gas, onb, realized, resets, last_seen, created FROM spotacct');
-      const holds = this.rows('SELECT user_id uid, sym, qty, cost, meta FROM spothold WHERE qty>0');
-      const tx = this.rows('SELECT user_id uid, COUNT(*) n, MAX(ts) mx, MIN(ts) mn FROM spottx GROUP BY user_id');
-      const xf = this.rows('SELECT uid, COUNT(*) n FROM (SELECT from_uid uid FROM spotxfer UNION ALL SELECT to_uid uid FROM spotxfer) GROUP BY uid');
-      const hMap = {}, txMap = {}, xfMap = {};
-      holds.forEach(h => { (hMap[h.uid] = hMap[h.uid] || []).push({ sym: h.sym, qty: h.qty, cost: h.cost || 0, meta: h.meta || '' }); });
-      tx.forEach(t => { txMap[t.uid] = { n: t.n, mx: t.mx, mn: t.mn }; });
-      xf.forEach(x => { xfMap[x.uid] = x.n; });
-      return this.j({ accounts: accts.map(a => ({ uid: a.uid, card: a.card || 0, usdt: a.usdt || 0, wusdt: a.wusdt || 0, gas: a.gas || '{}', onb: a.onb || 0, realized: a.realized || 0, resets: a.resets || 0, last_seen: a.last_seen || 0, created: a.created || 0, txN: (txMap[a.uid] || {}).n || 0, txLast: (txMap[a.uid] || {}).mx || 0, txFirst: (txMap[a.uid] || {}).mn || 0, xferN: xfMap[a.uid] || 0, holds: hMap[a.uid] || [] })) });
-    }
-    if (path === '/adminspotacct') { // one account, full detail for the ops drill-in modal
-      const a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0];
-      if (!a) return this.j({ error: 'not_found' }, 404);
-      const holds = this.rows('SELECT sym, qty, cost, meta, updated FROM spothold WHERE user_id=? AND qty>0', uid);
-      const txs = this.rows('SELECT ts, side, sym, qty, price, usd, fee, pnl, meta FROM spottx WHERE user_id=? ORDER BY ts DESC LIMIT 40', uid);
-      const xfers = this.rows('SELECT hash, height, from_uid, to_uid, from_addr, to_addr, amt, net, memo, ts FROM spotxfer WHERE from_uid=? OR to_uid=? ORDER BY ts DESC LIMIT 20', uid, uid);
-      return this.j({ acct: { uid: a.user_id, card: a.card || 0, usdt: a.usdt || 0, wusdt: a.wusdt || 0, gas: a.gas || '{}', addr: a.addr || '', onb: a.onb || 0, realized: a.realized || 0, resets: a.resets || 0, reset_ts: a.reset_ts || 0, last_seen: a.last_seen || 0, created: a.created || 0 }, holds: holds, txs: txs, xfers: xfers });
     }
     if (path === '/export') { // nightly backup dump
       const out = { at: Date.now(), tables: {} };
-      for (const t of ['spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']) { try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; } }
+      for (const t of ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap', 'spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']) { try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; } }
       return this.j(out);
     }
     if (path === '/import') { // restore-test sandbox only (same guard as the other DOs: refuses on an instance with real accounts)
       const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
       if (!marked) {
-        let realN = 0; try { realN = (this.rows('SELECT COUNT(*) n FROM spotacct')[0] || {}).n || 0; } catch (e) {}
+        let realN = 0; try { realN = ((this.rows('SELECT COUNT(*) n FROM spotacct')[0] || {}).n || 0) + ((this.rows('SELECT COUNT(*) n FROM sp2acct')[0] || {}).n || 0); } catch (e) {}
         if (realN > 0) return this.j({ error: 'refused_real_instance', accounts: realN });
         try { sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
       }
@@ -25951,13 +25463,9 @@ export class SpotStore {
     return this.j({ error: 'not_found' }, 404);
   }
 }
-const SPOT_START_C = 1000000; // $10,000.00 demo money (lands on the CARD; USDT is bought on the exchange)
-// DAILY LIFELINE (2026-09-10, owner: "let people who spent all their money claim 1k a day on Spot"). Once per UTC
-// day, and only for an account that is genuinely finished: the WHOLE portfolio - card, exchange, wallet, gas and
-// every bag at its live price - has to be worth under $100, i.e. 1% of what it started with. It is a top-up, not a
-// reset: holdings, history and onboarding all stay. Demo Spot pays nothing real, so there is no money to farm.
-const SPOT_TOPUP_C = 100000;      // $1,000.00 onto the card
-const SPOT_TOPUP_MAX_C = 10000;   // eligible under $100.00 total
+const SPOT_START_C = 1000000; // $10,000.00 demo money (lands on the CARD; USDT is bought on the exchange) - v1/v2, retired 2026-10-16
+const SP2_START_C = 1000000; // v3 (2026-10-16): every account starts with $10,000.00 of demo cash
+const SP2_CLAIM_C = 10000;   // and claims $100.00 more once every UTC day
 // ---------- live chat (Durable Object + WebSocket hibernation) ----------
 // Per-coin chat rooms: 'global' (All) stays on the original 'global2' instance (preserves history); a coin room
 // like BTC/ETH/SOL gets its own DO instance 'room_<COIN>'. Sanitized to a short A-Z0-9 token so a bad ?room can't
@@ -29526,7 +29034,7 @@ export class UserStore {
         sql.exec('INSERT INTO mev(user_id,day,type,n) VALUES(?,?,?,1) ON CONFLICT(user_id,day,type) DO UPDATE SET n=n+1', uid, dk9, mt9);
         if (Math.random() < 0.02) sql.exec('DELETE FROM mev WHERE day < ?', new Date(now - 3 * 86400000).toISOString().slice(0, 10));
         // Demo Spot XP (2026-09-03): first buy of the day +10, first cash-out of the day +25 - server-verified, once per day, no money
-        const SPOT_XP = { spotbuy: [10, 'Demo Spot: first buy of the day'], spotcash: [25, 'Demo Spot: cashed out to the card'] };
+        const SPOT_XP = { spotbuy: [10, 'Demo Spot: first buy of the day'], spotsell: [25, 'Demo Spot: cashed out to the card'] };
         if (SPOT_XP[type]) { const cnt = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, dk9, mt9)[0] || {}).n || 0; if (cnt === 1) { try { this._grantXp(uid, 'spot', SPOT_XP[type][0], { note: SPOT_XP[type][1] }); } catch (e) {} } }
       } catch (me9) {}
       sql.exec('UPDATE users SET last_seen=?, pv=pv+? WHERE id=?', now, type === 'pageview' ? 1 : 0, uid);
@@ -32851,7 +32359,7 @@ const MISSION_POOL = [
   { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time - and learn from it', cents: 1, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
   { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house - no leverage, no liquidations', cents: 2, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
   { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', cents: 2, vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
-  { mid: 'spotcash', title: 'Cash out in Demo Spot', desc: 'Bring money the whole way back to the card - exits are the skill', cents: 2, vt: 'ev', va: 'spotcash', n: 1, cat: 'market' },
+  { mid: 'spotsell', title: 'Sell a coin in Demo Spot', desc: 'Take a profit or cut a loss - exits are the skill', cents: 2, vt: 'ev', va: 'spotsell', n: 1, cat: 'market' }, // 2026-10-16: Demo Spot has no card to cash out to any more; selling is the exit
   { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding - know where the edge is', cents: 1, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
   { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 1, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
   { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats - review before you repeat', cents: 1, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },

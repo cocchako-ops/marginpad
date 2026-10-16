@@ -18,7 +18,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Trading Competition Season - Live Leaderboards and Prizes | MarginPad</title>
-<meta name="description" content="The live leaderboards of the MarginPad crypto trading competition. Eight boards, $370 in prizes every 14 days, free to enter. Plus the 40-tier season pass, the daily BTC call board, your two goals and the live floor of closes and duels." />
+<meta name="description" content="The live leaderboards of the MarginPad crypto trading competition. Nine boards, $400 in prizes every 14 days, free to enter. Plus the 40-tier season pass, the daily BTC call board, your two goals and the live floor of closes and duels." />
 <link rel="canonical" href="https://marginpad.io/season/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/season/" />
 <link rel="alternate" hreflang="en" href="https://marginpad.io/season/" />
@@ -26,7 +26,7 @@
 <meta name="theme-color" content="#0a0b0d" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Your Season - MarginPad" />
-<meta property="og:description" content="Eight boards paying real USDT, a 40-tier pass, a daily BTC call board, season goals and the live floor. Fourteen days, then it starts again." />
+<meta property="og:description" content="Nine boards paying real USDT, a 40-tier pass, a daily BTC call board, a Meme Spot board, season goals and the live floor. Fourteen days, then it starts again." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/season/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -206,7 +206,7 @@ h1 b{color:var(--lime)}
 .code{display:flex;gap:7px}.code input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2a323c;border-radius:10px;padding:10px 12px;color:#fff;font:700 14px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;outline:0}.code input:focus{border-color:var(--pro)}
 /* board switcher: five cards, one selected */
 /* board switcher v3 (owner 2026-09-13: "kartice mnogooo bolje", Bybit first) - six cards, one selected; glow lives INSIDE the card, never a drop shadow under it */
-.bsw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px} /* seven cards since 2026-09-17 (King of the Moon): four a row, seven in one row were 150px each */
+.bsw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px} /* nine cards since 2026-10-16 (Meme Spot): three a row, 3 x 3 */ /* seven cards since 2026-09-17 (King of the Moon): four a row, seven in one row were 150px each */
 .bs{position:relative;text-align:left;background:#0b0e13;border:1px solid var(--line2);border-radius:18px;padding:14px 14px 13px;cursor:pointer;color:inherit;min-width:0;min-height:156px;display:flex;flex-direction:column;overflow:visible;isolation:isolate;transition:border-color .22s,transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s;--c:#ffd75a} /* overflow visible: the glow ring and the pointer tail were clipped (owner 2026-09-13) */
 .bs::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%);opacity:.55;transition:opacity .26s;z-index:-1}
 .bs .wm{position:absolute;right:8px;bottom:6px;width:60px;height:60px;color:var(--c);opacity:.07;transform:rotate(-8deg);transition:opacity .26s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:-1}
@@ -336,7 +336,7 @@ h1 b{color:var(--lime)}
 /* toast */
 .tst{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:1400;background:#0e1116;border:1px solid rgba(194,246,74,.55);border-left:3px solid var(--lime);border-radius:12px;padding:10px 14px;font:700 13px 'Space Mono',monospace;color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
 .tst.on{opacity:1;transform:translate(-50%,0)}.tst b{color:var(--lime)}
-@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(8,minmax(176px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 0 14px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
+@media(max-width:1000px){.ban-grid{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.bsw{grid-template-columns:repeat(9,minmax(176px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 0 14px;margin-right:calc(var(--pad) * -1);padding-right:var(--pad);scrollbar-width:none}.bsw::-webkit-scrollbar{display:none}.bs{scroll-snap-align:start}.bs.on::after{display:none}}
 @media(max-width:640px){.g3,.g2{grid-template-columns:1fr}.days{gap:3px}.days i.now::after{display:none}.fr{grid-template-columns:minmax(0,1fr) 104px 80px} /* "REKT -$100.0k" 13 ch at 9.5 px = 76 */.fr .t{display:none}.fr .p small{display:none}.fr .p.liq small{display:inline}.fr .p.liq{font-size:9.5px;letter-spacing:0}.fr .p.liq .sep{display:none}.fr.duel{grid-template-columns:minmax(0,1fr) 84px auto 46px;gap:6px} /* FOUR children (pair, metric, stake, outcome) - the old three-column phone rule dropped the outcome into a second row (owner 2026-09-28). The stake column is `auto`, so a duel with no stake gives its width to the names */.fr.duel .pair .w{min-width:0}.road-lab{gap:4px 12px}.road-lab .ps{margin-left:0;flex-basis:100%}.me-r{grid-template-columns:1fr}.ph{grid-template-columns:1fr}.ph-r{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap}.stamp{margin:4px 8px 0 4px}.redeem{grid-template-columns:1fr}.road{grid-template-columns:40px repeat(40,112px)}.road::before,.road .fill{left:46px}}
 
 /* How MarginPad works - the card that finally says how to reach Bronze (2026-09-20) */
@@ -441,7 +441,7 @@ h1 b{color:var(--lime)}
       <div>
         <span class="eyebrow"><i></i><span id="eyeb">Season</span></span>
         <h1 id="h1">Your <b>season</b></h1>
-        <div class="lead" id="lead">Fourteen days. Eight boards that pay real USDT, a 40-tier pass unlocked by the XP you already earn, one BTC call a day that pays too, two goals you choose yourself, and the live floor. Then it starts again.</div>
+        <div class="lead" id="lead">Fourteen days. Nine boards that pay real USDT, a 40-tier pass unlocked by the XP you already earn, one BTC call a day that pays too, two goals you choose yourself, and the live floor. Then it starts again.</div>
         <div class="days" id="days" aria-label="Season days"></div>
         <div class="dl"><div>ends in<b id="ends">-</b></div><div>payouts<b>00:00 UTC, season end</b></div><div>calling today<b id="callers">-</b></div></div>
       </div>
@@ -541,7 +541,7 @@ h1 b{color:var(--lime)}
 
   <p style="font-family:'Space Mono',monospace;font-size:12px;color:#6b7480;margin:26px 0 0;line-height:1.7">New here? <a href="/trading-competition/" style="color:#c2f64a">How the trading competition works</a> - entry, prizes and the rules that keep the standings honest.</p>
   <section class="sec" id="boards">
-    <div class="sh"><div><span class="eb">Paid in real USDT at season end</span><h2>The boards</h2></div><span class="s">Eight boards, the top places on each get paid. Pick the one you can win.</span></div>
+    <div class="sh"><div><span class="eb">Paid in real USDT at season end</span><h2>The boards</h2></div><span class="s">Nine boards, the top places on each get paid. Pick the one you can win.</span></div>
     <div class="bsw" id="bsw" role="tablist"></div>
     <div class="card gold">
       <div class="tw" id="tw"><div class="tbl" id="tbl"><div class="empty">Loading…</div></div></div>
@@ -621,7 +621,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
     if(signed){var nm=m.username||(m.email||'you').split('@')[0];$('meName').textContent='@'+nm;$('meLvl').setAttribute('data-lvln',nm);$('meLvl').removeAttribute('data-lvldone');$('meAv').innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc((m.avatar&&m.avatar.length<3)?m.avatar:nm.charAt(0).toUpperCase());
       var L=m.level||null;$('meLvlT').textContent=L?(L.name+(L.next?' · '+int(L.toNext||0)+' XP to '+L.next:'')):'';
       if(PASS){$('meXp').textContent=int(PASS.xp);$('meTier').textContent=PASS.tier+'/'+(PASS.n||PASS.tiers.length);$('meClaim').textContent=PASS.claimable||0;}
-      if(LB){var ranks=[['topGreen',__esT_seasonindex("greenDays",'Green days'),'green'],['top','Highest ROE','roe'],['topWr',__esT_seasonindex("winRate",'Win rate'),'wr'],['topXp',__esT_seasonindex("seasonXp",'Season XP'),'xp'],['topGold','Gold Room','gold'],['topCall',__esT_seasonindex("btcCall",'BTC call'),'call']];
+      if(LB){var ranks=[['topMeme',__esT_seasonindex("memeSpot",'Meme Spot'),'meme'],['topGreen',__esT_seasonindex("greenDays",'Green days'),'green'],['top','Highest ROE','roe'],['topWr',__esT_seasonindex("winRate",'Win rate'),'wr'],['topXp',__esT_seasonindex("seasonXp",'Season XP'),'xp'],['topGold','Gold Room','gold'],['topCall',__esT_seasonindex("btcCall",'BTC call'),'call']];
         $('meRanks').innerHTML=ranks.map(function(b){var rows=LB[b[0]]||[];var r=rows.filter(function(x){return String(x.who||'').toLowerCase()===nm.toLowerCase();})[0];var pz=(LB.boardPrizes||{})[b[2]]||[];var pay=r&&r.rank<=5&&pz[r.rank-1]?'$'+pz[r.rank-1]:'';return '<span class="chip'+(r?(pay?' pay':' in'):'')+'"><em>'+b[1]+'</em><b>'+(r?'#'+r.rank+(pay?' · '+pay:''):'-')+'</b></span>';}).join('');}
       try{if(window.mpLvlDecorate)window.mpLvlDecorate();}catch(e){}}
   }
@@ -811,7 +811,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('gm').classList.contains('on'))closeGift();});
 
   /* ---- boards: five cards to choose, one fixed-column table ---- */
-  var IC={green:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',roe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',wr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',xp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>',gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z"/><path d="M6 20h12"/></svg>'};
+  var IC={meme:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14l3-3 2 2 3-4"/></svg>',green:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',roe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',wr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',xp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>',gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z"/><path d="M6 20h12"/></svg>'};
   var BOARDS=[
     /* the volume column holds an EXACT figure now ($1,234,567.89 is 14 characters), so it is sized for that
        rather than for "$1.2M" - a fixed template that is too narrow ellipsises the number it exists to show */
@@ -822,7 +822,8 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
     {k:'wr',key:'topWr',name:__esT_seasonindex("winRate",'Win rate'),c:'#57c7f7',cols:'36px minmax(140px,1fr) 78px 104px 76px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("winRate2",'win rate'),__esT_seasonindex("record","record"),__esT_seasonindex("score","score"),__esT_seasonindex("pays","pays")],cells:function(r){return [r.wr+'%',r.w+'W · '+r.l+'L',String(r.score)];},lead:function(r){return r.wr+'%';}},
     {k:'xp',key:'topXp',name:__esT_seasonindex("seasonXp",'Season XP'),c:'#c792ff',cols:'36px minmax(140px,1fr) 110px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("seasonXp2",'season XP'),__esT_seasonindex("pays","pays")],cells:function(r){return [int(r.xp)+' XP'];},lead:function(r){return int(r.xp)+' XP';}},
     {k:'gold',key:'topGold',name:'Gold Room',c:'#ffd75a',cols:'36px minmax(140px,1fr) 84px 104px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("points","points"),__esT_seasonindex("record","record"),__esT_seasonindex("pays","pays")],cells:function(r){return [(r.pts>=0?'+':'')+r.pts+' pts',r.w+'W · '+r.l+'L'];},lead:function(r){return (r.pts>=0?'+':'')+r.pts+' pts';}},
-    {k:'call',key:'topCall',name:__esT_seasonindex("dailyBtcCall",'Daily BTC call'),c:'#ffa657',cols:'36px minmax(140px,1fr) 84px 72px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("points","points"),__esT_seasonindex("callsH","calls"),__esT_seasonindex("pays","pays")],cells:function(r){return [r.pts+' pts',r.n+' '+__esT_seasonindex("callsH","calls")];},lead:function(r){return r.pts+' pts';}}];
+    {k:'call',key:'topCall',name:__esT_seasonindex("dailyBtcCall",'Daily BTC call'),c:'#ffa657',cols:'36px minmax(140px,1fr) 84px 72px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("points","points"),__esT_seasonindex("callsH","calls"),__esT_seasonindex("pays","pays")],cells:function(r){return [r.pts+' pts',r.n+' '+__esT_seasonindex("callsH","calls")];},lead:function(r){return r.pts+' pts';}},
+    {k:'meme',key:'topMeme',name:__esT_seasonindex("memeSpot",'Meme Spot'),c:'#a06bff',cols:'36px minmax(140px,1fr) 110px 96px 56px',head:['#',__esT_seasonindex("trader","Trader"),__esT_seasonindex("seasonPnl","season P&L"),__esT_seasonindex("worthH","worth"),__esT_seasonindex("pays","pays")],cells:function(r){var v=+r.pnlUsd||0;return ['<span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'-')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>','$'+int(r.equityUsd)];},lead:function(r){var v=+r.pnlUsd||0;return (v>=0?'+':'-')+'$'+Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});}}];
   /* EXACT, NOT COMPACT (owner 2026-09-15: "mozemo da prestavimo vrednosti cak i u decimale jer ih tako unosim na
      mp-ops, ne mora da pise 1k"). The figures come from the owner's own upload, to the cent - compacting them to
      "$9k" invented a precision nobody asked for and, at this season's real total of $9.23, printed "$9". */
@@ -850,7 +851,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
       return '<button type="button" role="tab" aria-selected="'+(b.k===curBoard)+'" class="bs'+(b.k===curBoard?' on':'')+(b.k==='bybit'?' bybit':b.k==='moon'?' moon':b.k==='call'?' call':'')+'" data-board="'+b.k+'"'+(b.k==='bybit'?' data-tier="'+poolTier(D)+'"':'')+' style="--c:'+b.c+'">'
         +'<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></span>'
         +'<div class="wm">'+(IC[b.k]||'')+'</div>'
-        +(b.k==='bybit'?__esT_seasonindex("poweredBy",'<div class="pb">Powered by</div><div class="logo">')+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':b.k==='moon'?'<div class="pb">King of the Moon</div><div class="logo moonlogo">'+MOON_WM+'</div><span class="tagv">Moon wager based</span>':'<div class="top"><div class="ic">'+IC[b.k]+'</div><div class="nm">'+b.name+'</div></div>')
+        +(b.k==='bybit'?__esT_seasonindex("poweredBy",'<div class="pb">Powered by</div><div class="logo">')+BYBIT_SVG+'</div><span class="tagv">Bybit volume based</span>':b.k==='moon'?'<div class="pb">King of the Moon</div><div class="logo moonlogo">'+MOON_WM+'</div><span class="tagv">Moon wager based</span>':'<div class="top"><div class="ic">'+(IC[b.k]||'')+'</div><div class="nm">'+b.name+'</div></div>')
         +'<div class="big">'+(b.k==='bybit'?bigBybit(D):(tot?'$'+tot+(p.filter(function(x){return x>0;}).length===5?__esT_seasonindex("toTheTop5",'<small>to the top 5'):p.filter(function(x){return x>0;}).length===1?__esT_seasonindex("toTheWinner",'<small>to the winner'):__esT_seasonindex("toTheTopN",'<small>to the top ')+p.filter(function(x){return x>0;}).length)+(b.k==='moon'?' \u00b7 2 seasons':'')+'</small>':__esT_seasonindex("titleGoldOnly",'title<small>Gold+ only</small>')))+'</div>'
         +'<div class="ld"><i>1</i>'+(ld?'<span title="'+esc(ld.who)+'">'+esc(ld.who)+'</span><b>'+b.lead(ld)+'</b>':__esT_seasonindex("nobodyYetU2014",'<span>nobody yet</span><b>\u2014</b>'))+'</div>'
         +'<div class="you'+(mine?' in':'')+'">'+(nm?(mine&&!(mine.rank>0)?__esT_seasonindex("youRegistered",'you: registered'):mine?'you: #'+mine.rank+(p[mine.rank-1]>0?' \u00b7 $'+(b.k==='bybit'?(+p[mine.rank-1]).toFixed(2):p[mine.rank-1]):''):'you: not ranked'):'&nbsp;')+'</div></button>';}).join('');
@@ -955,7 +956,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=8eb3215b"></script>
-<script defer src="/assets/mp-nav.js?v=d2b8432b"></script>
+<script defer src="/assets/mp-nav.js?v=9994ce0c"></script>
 <script defer src="/assets/mp-profile.js?v=29874540"></script>
 
 <script>

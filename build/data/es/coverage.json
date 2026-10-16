@@ -1651,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 228,
-  "missing": 0
+  "cover": 0.982532751091703,
+  "hit": 225,
+  "missing": 4
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 1,
-  "hit": 87,
-  "missing": 0
+  "cover": 0.9431818181818182,
+  "hit": 83,
+  "missing": 5
  },
  {
   "rel": "levels/index.html",
@@ -1981,9 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.9362549800796812,
-  "hit": 235,
-  "missing": 16
+  "cover": 0.9285714285714286,
+  "hit": 234,
+  "missing": 18
  },
  {
   "rel": "privacy/index.html",
@@ -1999,9 +1999,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
-  "hit": 209,
-  "missing": 0
+  "cover": 0.9904306220095693,
+  "hit": 207,
+  "missing": 2
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2077,9 +2077,10 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 1,
-  "hit": 102,
-  "missing": 0
+  "cover": 0.3103448275862069,
+  "hit": 18,
+  "missing": 40,
+  "skipped": true
  },
  {
   "rel": "squads/index.html",

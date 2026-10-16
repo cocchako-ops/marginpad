@@ -1,13 +1,12 @@
 {
  "meta": {
-  "generated": "2026-10-12T23:35:58.719Z",
+  "generated": "2026-10-16T03:13:38.661Z",
   "pages": 386,
-  "occurrences": 26682,
-  "unique": 14160,
-  "words": 269302,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-10-12T23:36:51.861Z"
+  "occurrences": 26674,
+  "unique": 14139,
+  "words": 269350,
+  "untranslated": 75,
+  "untranslatedWords": 1597
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +682,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1677,
+   "n": 1675,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -5954,7 +5953,7 @@
     "/hyperliquid-whales/",
     "/"
    ],
-   "n": 20,
+   "n": 21,
    "w": 1
   },
   "6jTRUxYsFL": {
@@ -11935,9 +11934,10 @@
    "ctx": [
     "/app.html",
     "/free-crypto-api/",
-    "/"
+    "/",
+    "/spot/"
    ],
-   "n": 3,
+   "n": 4,
    "w": 1
   },
   "HcjEOqAAWP": {
@@ -11996,10 +11996,9 @@
    ],
    "ctx": [
     "/app.html",
-    "/coins/",
-    "/spot/"
+    "/coins/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 1
   },
   "bOeZVr2zWi": {
@@ -12010,10 +12009,9 @@
    ],
    "ctx": [
     "/app.html",
-    "/coins/",
-    "/spot/"
+    "/coins/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 1
   },
   "Oxjo4zJQDz": {
@@ -12024,10 +12022,9 @@
    ],
    "ctx": [
     "/app.html",
-    "/coins/",
-    "/spot/"
+    "/coins/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 1
   },
   "b_Fxxmc486": {
@@ -12333,10 +12330,9 @@
    "ctx": [
     "/app.html",
     "/hyperliquid-whales/",
-    "/spot/",
     "/trading-api/"
    ],
-   "n": 7,
+   "n": 6,
    "w": 1
   },
   "JNlI5L2-W4": {
@@ -12346,10 +12342,9 @@
     "html"
    ],
    "ctx": [
-    "/app.html",
-    "/spot/"
+    "/app.html"
    ],
-   "n": 2,
+   "n": 1,
    "w": 1
   },
   "BJLQQ88bfb": {
@@ -12396,9 +12391,10 @@
    ],
    "ctx": [
     "/app.html",
-    "/apr-apy-calculator/"
+    "/apr-apy-calculator/",
+    "/spot/"
    ],
-   "n": 2,
+   "n": 3,
    "w": 2
   },
   "V2RGOJYENi": {
@@ -25239,9 +25235,10 @@
     "html"
    ],
    "ctx": [
-    "/best-liquidation-heatmap-tools/"
+    "/best-liquidation-heatmap-tools/",
+    "/spot/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1
   },
   "SoFOMW6QZ2": {
@@ -27919,7 +27916,7 @@
     "/journal/",
     "/markets/"
    ],
-   "n": 6,
+   "n": 5,
    "w": 1
   },
   "sw7lzSbTUW": {
@@ -78338,9 +78335,9 @@
    "n": 8,
    "w": 31
   },
-  "3sYezYMBh_": {
-   "en": "<a href=\"/trading-api/\">Paper-trading Bot API - REST, WebSocket, webhooks</a><a href=\"/free-crypto-api/\">Free keyless market-data API</a><a href=\"/api-docs/\">Live API reference (try the calls)</a><a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a><a href=\"/arena/\">Bot leaderboard - what other bots are doing</a>",
-   "es": "<a href=\"/trading-api/\">API de Bot para paper trading - REST, WebSocket, webhooks</a><a href=\"/free-crypto-api/\">API de datos de mercado gratis, sin clave</a><a href=\"/api-docs/\">Referencia de la API en vivo (prueba las llamadas)</a><a href=\"/where-can-i-test-a-trading-bot/\">¿Dónde puedo probar un bot de trading gratis?</a><a href=\"/arena/\">Clasificación de bots - qué están haciendo otros bots</a>",
+  "WooltuC-Cx": {
+   "en": "<a href=\"/trading-api/\">Paper-trading Bot API - REST, WebSocket, webhooks</a><a href=\"/free-crypto-api/\">Free keyless market-data API</a><a href=\"/api-docs/\">Live API reference (try the calls)</a><a href=\"/where-can-i-test-a-trading-bot/\">Where can I test a trading bot for free?</a><a href=\"/mcp-server-for-crypto-trading/\">MCP server for AI agents - 29 tools, no key for market data</a><a href=\"/arena/\">Bot leaderboard - what other bots are doing</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -78351,7 +78348,7 @@
     "/coin/eth/"
    ],
    "n": 8,
-   "w": 30
+   "w": 42
   },
   "QTT-RdoNlT": {
    "en": "Practice with it",
@@ -78398,6 +78395,52 @@
    ],
    "n": 8,
    "w": 54
+  },
+  "odf-cfk2V2": {
+   "en": "Read it on a chart",
+   "es": "",
+   "kind": [
+    "html",
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 16,
+   "w": 4
+  },
+  "UT9bMJkM5X": {
+   "en": "The same liquidations, read on a chart: each big one marked at the price and candle it printed at, and what a move of a given size has really cost - measured from our own feed, not modelled.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 8,
+   "w": 34
+  },
+  "d7DRwHB9B8": {
+   "en": "<a href=\"/ai-indicators/\">The five AI indicators, explained</a><a href=\"/heatmap\">Live liquidation heatmap</a><a href=\"/charts\">Chart workspace - every big liquidation marked where it happened</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/coin/bnb/",
+    "/coin/btc/",
+    "/coin/doge/",
+    "/coin/eth/"
+   ],
+   "n": 8,
+   "w": 17
   },
   "LvXy8f7lkk": {
    "en": "Where to trade it",
@@ -80878,10 +80921,9 @@
     "html"
    ],
    "ctx": [
-    "/coins/",
-    "/spot/"
+    "/coins/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 2
   },
   "G9FR15MqI2": {
@@ -115708,6 +115750,18 @@
    "n": 1,
    "w": 7
   },
+  "tenellnosf": {
+   "en": "<span class=\"cp-bn\">Meme Spot</span><span class=\"cp-bp\">$30<small>pool · $15 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/"
+   ],
+   "n": 1,
+   "w": 6
+  },
   "kUKhSVa_VQ": {
    "en": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>pool · $10 first</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
    "es": "<i class=\"cp-rib\">GOLD+</i><span class=\"cp-bn\">The Gold Room</span><span class=\"cp-bp\">$30<small>bolsa · $10 el primero</small></span><span class=\"cp-bl\"><i>1</i><b>-</b><em></em></span>",
@@ -115852,9 +115906,9 @@
    "n": 1,
    "w": 3
   },
-  "20uUcozcj5": {
-   "en": "<span class=\"dot\"></span> Life-simulation · fake money",
-   "es": "<span class=\"dot\"></span> Simulación de vida · dinero falso",
+  "fxD4_uACcB": {
+   "en": "<span class=\"dot\"></span> Buy and hold · demo cash",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -115862,7 +115916,7 @@
     "/"
    ],
    "n": 1,
-   "w": 3
+   "w": 5
   },
   "meXm54kyCo": {
    "en": "Demo Spot",
@@ -115878,9 +115932,9 @@
    "n": 2,
    "w": 2
   },
-  "X1IFkd5n6h": {
-   "en": "A $10,000 card, an exchange, a self-custody wallet and memes on 4 chains. Real fees, real gas, nothing at stake.",
-   "es": "Una tarjeta de $10,000 y un exchange, una wallet de autocustodia y memecoins en 4 redes. Comisiones reales, gas real, nada en juego.",
+  "gTDbZWBgoG": {
+   "en": "$10,000 to start and $100 a day to claim. Meme coins on 4 chains, the top 250 majors, any contract address. No fees, no leverage - one board pays $30 a season.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -115888,11 +115942,11 @@
     "/"
    ],
    "n": 1,
-   "w": 17
+   "w": 28
   },
-  "RGFBLuV6Sz": {
-   "en": "Start from zero <i>→</i>",
-   "es": "Empieza desde cero <i>→</i>",
+  "eoZExVUqAF": {
+   "en": "Start with $10,000 <i>→</i>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -121358,9 +121412,9 @@
    "n": 1,
    "w": 2
   },
-  "f5XQ8jcgXc": {
-   "en": "<b id=\"sPool\">$570+</b> across 8 boards",
-   "es": "<b id=\"sPool\">$570+</b> en 8 tablas",
+  "-f2LyRMRNN": {
+   "en": "<b id=\"sPool\">$570+</b> across 9 boards",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -121478,6 +121532,18 @@
    ],
    "n": 1,
    "w": 5
+  },
+  "QUsx9ypjZA": {
+   "en": "<span class=\"n\">Meme Spot</span><span class=\"p\">$30<small>POOL</small></span><span class=\"l\" id=\"tl-meme\">-</span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/leaderboards/"
+   ],
+   "n": 1,
+   "w": 4
   },
   "V9Z62aVlPz": {
    "en": "<span>Gold level</span><em>12,000 XP and up</em>",
@@ -121948,9 +122014,9 @@
    "n": 2,
    "w": 2
   },
-  "gHrUibYVrT": {
-   "en": "The eight MarginPad leaderboards in full: four free paper-trading boards, the daily BTC call, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over two seasons. Every ranked trader, the prize each rank pays, the exact rules.",
-   "es": "Las ocho tablas de MarginPad al completo: cuatro tablas gratuitas de paper trading, la predicción diaria de BTC, la Gold Room, y dos puntuadas con cuentas reales - volumen en Bybit cada temporada y King of the Moon durante dos temporadas. Cada trader clasificado, el premio que paga cada puesto, las reglas exactas.",
+  "zs6A213aai": {
+   "en": "The nine MarginPad leaderboards in full: four free paper-trading boards, the daily BTC call, the Meme Spot board, the Gold Room, and two scored on real accounts - Bybit volume every season and King of the Moon over two seasons. Every ranked trader, the prize each rank pays, the exact rules.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -121958,7 +122024,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 46
+   "w": 50
   },
   "IO0BAwV5bP": {
    "en": "MarginPad Leaderboards - live standings, prizes, rules",
@@ -121972,9 +122038,9 @@
    "n": 1,
    "w": 6
   },
-  "sgFo4sU62S": {
-   "en": "Eight boards - four free paper boards, the daily BTC call, the Gold Room, two on real accounts - every ranked trader, the prize per rank and the rules each board is scored by.",
-   "es": "Ocho tablas - cuatro de paper gratuitas, la predicción diaria de BTC, la Gold Room, dos con cuentas reales - cada trader clasificado, el premio por puesto y las reglas con las que se puntúa cada tabla.",
+  "CgYrDdLKsQ": {
+   "en": "Nine boards - four free paper boards, the daily BTC call, Meme Spot, the Gold Room, two on real accounts - every ranked trader, the prize per rank and the rules each board is scored by.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -121982,7 +122048,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 32
+   "w": 34
   },
   "xWIZZneYs2": {
    "en": "MarginPad Leaderboards",
@@ -122068,9 +122134,9 @@
    "n": 1,
    "w": 5
   },
-  "hZRQtB9Zdx": {
-   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Daily BTC Call board pays $12, $5 and $3 to the top three; the Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board (about $11.65 per $100,000 traded), split over ten ranks - 50% / 25% / 10% / 5% / 5%, then 1% each, so $50 / $25 / $10 / $5 / $5 / $1 at the start and more as the volume grows; King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The fixed season pool is $270 ($170 on the paper and call boards, $100 as the Bybit start), plus whatever the Bybit pool grows to and $300 for King of the Moon every two seasons.",
-   "es": "Cinco tablas de paper trading pagan $10, $8, $6, $4 y $2 a los puestos uno a cinco; la tabla Predicción diaria de BTC paga $12, $5 y $3 a los tres primeros; la tabla de volumen en Bybit paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla (unos $11.65 por cada $100,000 operados), repartida en diez puestos - 50% / 25% / 10% / 5% / 5%, luego 1% cada uno, es decir $50 / $25 / $10 / $5 / $5 / $1 al inicio y más a medida que crece el volumen; King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Los premios se abonan en USD al saldo de recompensas de MarginPad y se pueden retirar. La bolsa fija de la temporada es de $270 ($170 en las tablas de paper y predicción, $100 como inicio de Bybit), más lo que crezca la bolsa de Bybit y $300 para King of the Moon cada dos temporadas.",
+  "GlJB6UmbwQ": {
+   "en": "Five paper-trading boards pay $10, $8, $6, $4 and $2 to ranks one to five; the Daily BTC Call board pays $12, $5 and $3 to the top three; the Meme Spot board pays $15, $10 and $5 to the three biggest Demo Spot season profits; the Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board (about $11.65 per $100,000 traded), split over ten ranks - 50% / 25% / 10% / 5% / 5%, then 1% each, so $50 / $25 / $10 / $5 / $5 / $1 at the start and more as the volume grows; King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. Prizes are credited in USD to the MarginPad rewards balance and are withdrawable. The fixed season pool is $300 ($200 on the paper, call and Meme Spot boards, $100 as the Bybit start), plus whatever the Bybit pool grows to and $300 for King of the Moon every two seasons.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -122078,7 +122144,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 152
+   "w": 171
   },
   "aYKxwKNINC": {
    "en": "How is a win counted on the boards?",
@@ -139073,9 +139139,9 @@
    "n": 3,
    "w": 3
   },
-  "-Cq4W7KVPL": {
-   "en": "Premium Plus - $159/mo",
-   "es": "Premium Plus - $159/mes",
+  "AI6BEnGc9T": {
+   "en": "Premium AI+ - $119/mo <s class=\"was\">$159</s>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139083,7 +139149,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 3
+   "w": 4
   },
   "rCHgCv54rR": {
    "en": "Pay from my rewards balance - $11.99",
@@ -139097,9 +139163,9 @@
    "n": 1,
    "w": 6
   },
-  "vXul0AEcBh": {
-   "en": "<span class=\"dot\"></span>Premium now includes <b>one Ask AI read on your charts every day</b>. It is the one feature that costs us money every time it runs, so Premium Plus is what raises it to 50 a day.",
-   "es": "<span class=\"dot\"></span>Premium ahora incluye <b>una lectura de Ask AI en tus gráficos cada día</b>. Es la única función que nos cuesta dinero cada vez que se ejecuta, por eso Premium Plus la eleva a 50 al día.",
+  "_i_NhrApp2": {
+   "en": "<span class=\"dot\"></span>Premium includes <b>5 Ask AI reads on your charts every day</b>. It is the one feature that costs us money every time it runs, so Premium AI+ is what raises it to 50 a day - now $119 a month, $40 off.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139107,7 +139173,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 35
+   "w": 38
   },
   "uqWkhrGe-v": {
    "en": "YOUR MEMBERSHIP<span class=\"pmst-tag\" id=\"pmPlan\">PREMIUM</span>",
@@ -139374,9 +139440,9 @@
    "n": 1,
    "w": 5
   },
-  "lMLYzxbA8Q": {
-   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our five indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. One read a day on Premium, 50 a day on Premium Plus.",
-   "es": "Un analista integrado que lee cualquier gráfico en palabras sencillas y además opera el gráfico por ti: dile \"dibuja el setup\" y traza líneas de tendencia, zonas y el camino esperado con las herramientas de dibujo reales; pregúntale \"¿qué es el RSI?\" y te lo explica y lo activa. Puede cambiar el timeframe o la moneda, conoce nuestros cinco indicadores, mantiene la conversación por moneda y ofrece un toque para hacer paper trading del setup. Una lectura al día en Premium, 50 al día en Premium Plus.",
+  "qJ8dRxTWBv": {
+   "en": "A built-in analyst that reads any chart in plain words and works the chart for you: say \"draw the setup\" and it draws trendlines, zones and the expected path with the real drawing tools; ask \"what is RSI?\" and it explains it and switches it on. It can change the timeframe or coin, knows our five indicators, keeps the conversation per coin, and offers one tap to paper-trade the setup. Five reads a day on Premium, 50 a day on Premium AI+.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139674,9 +139740,9 @@
    "n": 1,
    "w": 13
   },
-  "icfRmLdp89": {
-   "en": "Free members get every standard indicator with the same cards. Premium adds the six MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
-   "es": "Los miembros gratuitos obtienen todos los indicadores estándar con las mismas tarjetas. Premium añade las seis lecturas de MarginPad de arriba, construidas sobre nuestros propios datos de liquidaciones. También nuevo en cada gráfico: repetición de velas, comparación con una segunda moneda, sesiones de trading, niveles diarios, seis estilos de gráfico.",
+  "4LTCKQFZXS": {
+   "en": "Free members get every standard indicator with the same cards. Premium adds the five MarginPad readouts above, built on our own liquidation data. Also new on every chart: bar replay, compare with a second coin, trading sessions, daily levels, six chart styles.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139794,9 +139860,9 @@
    "n": 1,
    "w": 4
   },
-  "oFeMgUVv4n": {
-   "en": "<b>One Ask AI read a day</b> on any chart",
-   "es": "<b>Una lectura de Ask AI al día</b> en cualquier gráfico",
+  "6o6RvZmNkw": {
+   "en": "<b>5 Ask AI reads a day</b> on any chart",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139804,11 +139870,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 8
+   "w": 7
   },
-  "OjNWd7GaG1": {
-   "en": "PREMIUM PLUS",
-   "es": "PREMIUM PLUS",
+  "HqQq1FctUf": {
+   "en": "PREMIUM AI+ <span class=\"off\">$40 OFF</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139816,11 +139882,11 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 2
+   "w": 4
   },
-  "8TdIOlXjwV": {
-   "en": "$159<small> /month</small>",
-   "es": "$159<small> /mes</small>",
+  "IS3auQFuVp": {
+   "en": "<s class=\"was\">$159</s>$119<small> /month</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139828,7 +139894,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 2
+   "w": 3
   },
   "W5qoeXnHXY": {
    "en": "Everything in Premium",
@@ -139842,9 +139908,9 @@
    "n": 1,
    "w": 3
   },
-  "4gH0uEcwAR": {
-   "en": "Ask AI on your charts - <b>50 reads a day</b>, against one on Premium",
-   "es": "Ask AI en tus gráficos - <b>50 lecturas al día</b>, frente a una en Premium",
+  "2LTWnRVo8V": {
+   "en": "Ask AI on your charts - <b>50 reads a day</b>, against five on Premium",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139878,9 +139944,9 @@
    "n": 1,
    "w": 7
   },
-  "2QzalT1r7-": {
-   "en": "Get Premium Plus - $159/mo",
-   "es": "Consigue Premium Plus - $159/mes",
+  "-fsEJn5Blk": {
+   "en": "Get Premium AI+ - $119/mo",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139902,9 +139968,9 @@
    "n": 1,
    "w": 14
   },
-  "ziKiurFBEn": {
-   "en": "<span class=\"tag\"><i></i>PREMIUM PLUS</span>",
-   "es": "<span class=\"tag\"><i></i>PREMIUM PLUS</span>",
+  "68vaUfMATe": {
+   "en": "<span class=\"tag\"><i></i>PREMIUM AI+</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -139937,6 +140003,18 @@
    ],
    "n": 1,
    "w": 64
+  },
+  "gvmkLu_9BS": {
+   "en": "It also carries the one directional edge we have actually <b>measured</b> in our own data - and no screenshot can see it. Across 84 days of our own liquidations, after a capitulation that force-sold longs (strongest when open interest is unwinding at the same time) price leaned higher over the next one to four hours - about 60% of the time against a 50% coin flip, and higher in a true capitulation. When that fires the assistant leads with it; when there is no measured edge it tells you so plainly and reads the chart honestly instead of inventing a direction. We do not claim it wins every call - we claim it knows the difference.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/premium/"
+   ],
+   "n": 1,
+   "w": 109
   },
   "IH4LUvAAD_": {
    "en": "WHY THE TWO PRICES ARE SO FAR APART",
@@ -139986,9 +140064,9 @@
    "n": 1,
    "w": 5
   },
-  "FVTMpQhCNN": {
-   "en": "Measured on our own bills, per question on average; a full-length read at the model ceiling costs $0.044. At the Premium Plus ceiling of <b>50 reads a day</b> that is <b>$27 to $66 a month of model spend for one member</b> - which is why it is the only thing here with a per-use price, and why Premium carries one read a day rather than fifty.",
-   "es": "Medido en nuestras propias facturas, por pregunta y en promedio; una lectura completa al tope del modelo cuesta $0.044. Con el tope de Premium Plus de <b>50 lecturas al día</b> eso son <b>de $27 a $66 al mes de gasto en el modelo por un solo miembro</b> - por eso es lo único aquí con un precio por uso, y por eso Premium trae una lectura al día en lugar de cincuenta.",
+  "lAdPBhWxGD": {
+   "en": "Measured on our own bills, per question on average; a full-length read at the model ceiling costs $0.044. At the Premium AI+ ceiling of <b>50 reads a day</b> that is <b>$27 to $66 a month of model spend for one member</b> - which is why it is the only thing here with a per-use price, and why Premium carries five reads a day rather than fifty.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -140730,9 +140808,9 @@
    "n": 1,
    "w": 4
   },
-  "d_eIpaX3Qw": {
-   "en": "Every Premium feature above - the 5 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (one read a day; 50 a day on Premium Plus), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
-   "es": "Todas las funciones Premium de arriba: los 5 indicadores de IA exclusivos, el mapa de calor de liquidaciones completo, Ask-AI en los gráficos (una lectura al día; 50 al día en Premium Plus), Balance Mode, los cinco formatos de duelo y el Premium lounge, el Daily Brief, +5% de XP, la insignia Premium, alertas de posición y el informe de trading completo en el sitio. Con el tiempo se añaden nuevas herramientas Premium sin coste adicional.",
+  "eA2n2qOoee": {
+   "en": "Every Premium feature above - the 5 exclusive AI indicators, the full liquidation heatmap, Ask-AI on charts (five reads a day; 50 a day on Premium AI+), Balance Mode, all five duel formats and the Premium lounge, the Daily Brief, +5% XP, the Premium badge, position alerts and the full trading report on the site. New Premium tools are added over time at no extra cost.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -141294,9 +141372,9 @@
    "n": 1,
    "w": 13
   },
-  "2Fcp0Rikpn": {
-   "en": "Unlock MarginPad Premium: 5 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, and it now includes one Ask AI read on your charts every day. Premium Plus raises that to 50 a day for $159/month - pay with crypto.",
-   "es": "Activa MarginPad Premium: 5 indicadores de IA exclusivos, el mapa de calor de liquidaciones en vivo, Balance Mode, leaderboards premium y más. $11.99 al mes, y ahora incluye una lectura de Ask AI en tus gráficos cada día. Premium Plus la sube a 50 al día por $159 al mes - paga con cripto.",
+  "c5KNeNQwfq": {
+   "en": "Unlock MarginPad Premium: 5 exclusive AI indicators, the live liquidation heatmap, Balance Mode, premium leaderboards and more. $11.99/month, with 5 Ask AI reads on your charts every day. Premium AI+ raises that to 50 a day for $119/month (was $159) - pay with crypto.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -141304,7 +141382,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 42
+   "w": 40
   },
   "ocPgMmXAr1": {
    "en": "MarginPad Premium - the pro trader toolkit",
@@ -141318,9 +141396,9 @@
    "n": 1,
    "w": 6
   },
-  "2K_S2vl5pJ": {
-   "en": "5 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with one Ask AI read a day. Premium Plus raises it to 50 a day for $159/mo - pay with crypto.",
-   "es": "5 indicadores de IA exclusivos, mapa de calor de liquidaciones en vivo, Balance Mode y más. $11.99/mes, con una lectura de Ask AI al día. Premium Plus lo sube a 50 al día por $159/mes - paga con cripto.",
+  "1tW1DnRTrQ": {
+   "en": "5 exclusive AI indicators, live liquidation heatmap, Balance Mode & more. $11.99/mo, with 5 Ask AI reads a day. Premium AI+ raises it to 50 a day for $119/mo (was $159) - pay with crypto.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -141328,7 +141406,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 28
+   "w": 29
   },
   "_Weh9Xebd2": {
    "en": "MarginPad Premium",
@@ -141354,9 +141432,9 @@
    "n": 1,
    "w": 25
   },
-  "kn4YxzgZ88": {
-   "en": "Premium Plus - monthly",
-   "es": "Premium Plus - mensual",
+  "D6fY4qGVZT": {
+   "en": "Premium AI+ - monthly",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -141366,9 +141444,9 @@
    "n": 1,
    "w": 3
   },
-  "zEWvXIUbj2": {
-   "en": "Everything in Premium, with Ask AI on the charts raised from one read a day to 50.",
-   "es": "Todo lo de Premium, con Ask AI en los gráficos elevado de una lectura al día a 50.",
+  "3bF-j-RcEG": {
+   "en": "Everything in Premium, with Ask AI on the charts raised from 5 reads a day to 50. $119 a month, down from $159.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -141376,7 +141454,7 @@
     "/premium/"
    ],
    "n": 1,
-   "w": 16
+   "w": 20
   },
   "mmLxs74nPi": {
    "en": "Privacy Policy | MarginPad",
@@ -143305,9 +143383,9 @@
    "n": 1,
    "w": 3
   },
-  "xrSYN_ZuA9": {
-   "en": "<b id=\"eaWel\">$0.50</b> welcome bonus, plus <b id=\"eaMoon\">$1.00</b> for opening a Moon account through us and <b id=\"eaFomo\">$1.00</b> for a Fomo one.",
-   "es": "<b id=\"eaWel\">$0.50</b> de bono de bienvenida, más <b id=\"eaMoon\">$1.00</b> por abrir una cuenta de Moon con nosotros y <b id=\"eaFomo\">$1.00</b> por una de Fomo.",
+  "qtY8UI6Yjp": {
+   "en": "<b id=\"eaWel\">$0.50</b> welcome bonus when a friend invites you, plus <b id=\"eaMoon\">$1.00</b> for opening a Moon account through us and <b id=\"eaFomo\">$1.00</b> for a Fomo one.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -143315,7 +143393,7 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 16
+   "w": 20
   },
   "Oy61ExBVrQ": {
    "en": "Every day",
@@ -143576,10 +143654,9 @@
     "html"
    ],
    "ctx": [
-    "/rewards/",
-    "/spot/"
+    "/rewards/"
    ],
-   "n": 2,
+   "n": 1,
    "w": 1
   },
   "5CZxo3tLwy": {
@@ -143991,9 +144068,9 @@
    "n": 1,
    "w": 6
   },
-  "6UbfZN8mR8": {
-   "en": "<span class=\"ref2-role\">You get</span><span class=\"ref2-amt\">+$<span class=\"refAmt\">0.50</span></span><span class=\"ref2-w\">straight to your balance</span>",
-   "es": "<span class=\"ref2-role\">Tú recibes</span><span class=\"ref2-amt\">+$<span class=\"refAmt\">0.50</span></span><span class=\"ref2-w\">directo a tu saldo</span>",
+  "P49wAo9-5Q": {
+   "en": "<span class=\"ref2-role\">You get</span><span class=\"ref2-amt\">+$<span class=\"refAmt\">1.00</span></span><span class=\"ref2-w\">straight to your balance</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150060,9 +150137,9 @@
    "n": 1,
    "w": 9
   },
-  "Oxu9RfV3Si": {
-   "en": "Free Demo Spot Trading - $10,000 Practice Card | MarginPad",
-   "es": "Demo Spot Gratis - Tarjeta de Práctica de $10,000 | MarginPad",
+  "zbW15WsSOZ": {
+   "en": "Free Demo Spot Trading - $10,000 of Practice Cash, Meme Coins and Majors | MarginPad",
+   "es": "",
    "kind": [
     "title",
     "attr:content"
@@ -150071,11 +150148,11 @@
     "/spot/"
    ],
    "n": 2,
-   "w": 8
+   "w": 13
   },
-  "_nwBtfBPv8": {
-   "en": "<a href=\"/paper-trade\">Futures</a> <a href=\"/coins/\">Markets</a>",
-   "es": "<a href=\"/paper-trade\">Futuros</a> <a href=\"/coins/\">Mercados</a>",
+  "GVHtu3G0h1": {
+   "en": "<a href=\"/paper-trade\">Futures</a> <a href=\"/leaderboards/#meme\">Leaderboards</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150085,9 +150162,9 @@
    "n": 1,
    "w": 2
   },
-  "y_yQddYw9P": {
-   "en": "DEMO SPOT <i>·</i> A CRYPTO LIFE-SIMULATION",
-   "es": "DEMO SPOT <i>·</i> UNA SIMULACIÓN DE VIDA CRIPTO",
+  "zcCVLcSazE": {
+   "en": "DEMO SPOT <i>·</i> BUY AND HOLD, NOTHING AT STAKE",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150095,11 +150172,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 4
+   "w": 8
   },
-  "ok_9QAGig1": {
-   "en": "Your first <em>$10,000</em> in crypto.<br>Every step. Nothing at stake.",
-   "es": "Tus primeros <em>$10,000</em> en cripto.<br>Cada paso. Nada en juego.",
+  "Qu2A6mTg7n": {
+   "en": "<em>$10,000</em> to start. <em>$100</em> every day.<br>One board, $30 a season.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150109,165 +150186,9 @@
    "n": 1,
    "w": 10
   },
-  "vZxW2cW4Cf": {
-   "en": "Real life has no practice mode - this is it. Three apps, exactly like the real ones: a <b>bank</b> where your card lives, an <b>exchange</b> where you trade the top 250, and a <b>self-custody wallet</b> where the memes and the gas live. Real fees. Fake money.",
-   "es": "La vida real no tiene modo práctica - esto es lo más parecido. Tres apps, exactamente iguales a las reales: un <b>banco</b> donde vive tu tarjeta, un <b>exchange</b> donde operas las 250 principales, y una <b>wallet de autocustodia</b> donde viven los memecoins y el gas. Comisiones reales. Dinero falso.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 43
-  },
-  "Grfj9YnMhi": {
-   "en": "Get the $10,000 card",
-   "es": "Consigue la tarjeta de $10,000",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "k40R_0sWWm": {
-   "en": "Free forever. Email sign-in, no password, no deposit - nothing to lose but bad habits.",
-   "es": "Gratis para siempre. Inicio de sesión por email, sin contraseña, sin depósito - nada que perder salvo malos hábitos.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 14
-  },
-  "QzwEmlL0-J": {
-   "en": "<i data-t=\"g_bank_k\">01 · BANK APP</i><b data-t=\"g_bank_t\">Your card &amp; your cash</b><span data-t=\"g_bank_s\">$10,000 lands on a virtual Visa. Move money to the exchange - and cash profits back out. Both directions cost a fee, like real life.</span>",
-   "es": "<i data-t=\"g_bank_k\">01 · APP BANCO</i><b data-t=\"g_bank_t\">Tu tarjeta y tu efectivo</b><span data-t=\"g_bank_s\">$10,000 llegan a una Visa virtual. Mueve dinero al exchange - y retira las ganancias de vuelta. Ambas direcciones tienen comisión, como en la vida real.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 29
-  },
-  "0xRTp_u_Wc": {
-   "en": "<i data-t=\"g_ex_k\">02 · EXCHANGE APP</i><b data-t=\"g_ex_t\">USDT &amp; the top 250</b><span data-t=\"g_ex_s\">A trading terminal: buy USDT, trade Bitcoin and 250 majors at live prices with a 0.1% fee. Custodial - they hold it for you.</span>",
-   "es": "<i data-t=\"g_ex_k\">02 · APP EXCHANGE</i><b data-t=\"g_ex_t\">USDT y las 250 principales</b><span data-t=\"g_ex_s\">Una terminal de trading: compra USDT, opera Bitcoin y 250 principales a precios en vivo con una comisión del 0.1%. Custodial - ellos lo guardan por ti.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 28
-  },
-  "EvlzkbmDg3": {
-   "en": "<i data-t=\"g_wal_k\">03 · WALLET APP</i><b data-t=\"g_wal_t\">Your keys &amp; the memes</b><span data-t=\"g_wal_s\">Addresses, a seed phrase, networks, gas in SOL - and 150+ live meme coins on 4 chains. Self-custody, the real thing.</span>",
-   "es": "<i data-t=\"g_wal_k\">03 · APP WALLET</i><b data-t=\"g_wal_t\">Tus claves y los memecoins</b><span data-t=\"g_wal_s\">Direcciones, una seed phrase, redes, gas en SOL - y más de 150 memecoins en vivo en 4 chains. Autocustodia, la cosa real.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "IFdsMK9wCW": {
-   "en": "<span data-th=\"g_l1\"><b>Fees are the curriculum.</b> Card 1.8% in, 1% out, exchange 0.1%, DEX 0.3%, network fees $0.80-$8, gas per tx.</span>",
-   "es": "<span data-th=\"g_l1\"><b>Las comisiones son el temario.</b> Tarjeta 1.8% al entrar, 1% al salir, exchange 0.1%, DEX 0.3%, comisiones de red $0.80-$8, gas por transacción.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 19
-  },
-  "cf1RDh8OQ5": {
-   "en": "<span data-th=\"g_l2\"><b>Seed phrase moment.</b> Shown once, never stored - exactly how self-custody works.</span>",
-   "es": "<span data-th=\"g_l2\"><b>El momento de la seed phrase.</b> Se muestra una vez, nunca se guarda - exactamente como funciona la autocustodia.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "BsWU6m336f": {
-   "en": "<span data-th=\"g_l3\"><b>Wrong network = lesson,</b> not lost money. Try it here, never out there.</span>",
-   "es": "<span data-th=\"g_l3\"><b>Red equivocada = lección,</b> no dinero perdido. Pruébalo aquí, nunca allá afuera.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 12
-  },
-  "0YlSZ66_KE": {
-   "en": "<span data-th=\"g_l4\"><b>Daily PnL, equity curve,</b> average entries, realized profit and a full paper trail.</span>",
-   "es": "<span data-th=\"g_l4\"><b>PnL diario, curva de capital,</b> entradas promedio, ganancia realizada y un rastro completo de cada operación.</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 12
-  },
-  "b58iK-iswk": {
-   "en": "DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY",
-   "es": "DEMO SPOT <i>·</i> TU DINERO, TODO EL CAMINO",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "abaemOt04a": {
-   "en": "YOUR THREE APPS - TAP TO OPEN",
-   "es": "TUS TRES APPS - TOCA PARA ABRIR",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "cI89AsEHWn": {
-   "en": "<b>NO PRIZES HERE</b> - Demo Spot pays nothing and never asks for money; it is practice. The real USDT prizes are on the futures season boards. <a href=\"/rewards/\">See the boards</a>",
-   "es": "<b>AQUÍ NO HAY PREMIOS</b> - Demo Spot no paga nada y nunca pide dinero; es práctica. Los premios reales en USDT están en las tablas de temporada de futuros. <a href=\"/rewards/\">Ver las tablas</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 28
-  },
-  "VrSfeWBdY_": {
-   "en": "<b>Your dashboard fills itself in.</b> The equity line draws after your first full day, the allocation ring once your money is in more than one place, and every card purchase, trade, transfer and swap prints a line in the paper trail. Finish the six steps and all of it is here waiting.",
-   "es": "<b>Tu panel se completa solo.</b> La línea de patrimonio se dibuja después de tu primer día completo, el anillo de distribución en cuanto tu dinero esté repartido en más de un lugar, y cada compra con tarjeta, operación, transferencia y swap deja una línea en el historial. Termina los seis pasos y todo esto te estará esperando aquí.",
+  "QuWvlne6Ai": {
+   "en": "Buy and hold <b>meme coins</b> on Solana, Base, Ethereum and BNB Chain and the <b>top 250 majors</b> at live prices. No fees, no leverage, no liquidations. Paste any contract address and it prices from its deepest pool. The three biggest season profits are paid <b>$15, $10 and $5</b> in real USDT.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150277,9 +150198,69 @@
    "n": 1,
    "w": 51
   },
-  "jLTkEVRCRk": {
-   "en": "<span data-t=\"h_equity\">Equity - daily</span>",
-   "es": "<span data-t=\"h_equity\">Capital - diario</span>",
+  "zu36PG4eCd": {
+   "en": "Sign in to start",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "20UYmGWXNa": {
+   "en": "Free. Email sign-in, no password, no deposit. The demo cash is not withdrawable; the prize is.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "LuvXV6yoco": {
+   "en": "<b>$10,000 + $100/day</b><span data-t=\"g_f1\">Everyone starts level. Press Claim once a day for $100 more - it never counts as profit.</span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 17
+  },
+  "BmVYo8ynd_": {
+   "en": "<b data-t=\"g_f2_b\">150+ memes</b><span data-t=\"g_f2\">Trending on four chains, the top 250 majors, or any token by contract address.</span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 16
+  },
+  "ivHZuszxtc": {
+   "en": "<b>$30</b><span data-t=\"g_f3\">Every 14-day season the top three season profits are paid $15 / $10 / $5.</span>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "3kw0BqZ9y9": {
+   "en": "<span data-t=\"b_h\">Season board</span><small id=\"gbSub\"></small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150289,9 +150270,9 @@
    "n": 1,
    "w": 2
   },
-  "cFtscZcb7g": {
-   "en": "<a id=\"dailyLink\" data-t=\"d2_link\">Daily line</a> ·",
-   "es": "<a id=\"dailyLink\" data-t=\"d2_link\">Línea diaria</a> ·",
+  "l_SuNT2MNk": {
+   "en": "Portfolio worth",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150301,33 +150282,9 @@
    "n": 1,
    "w": 2
   },
-  "3mML2drY3v": {
-   "en": "RESET · 1 LEFT",
-   "es": "REINICIO · QUEDA 1",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "UmYdln9Zj6": {
-   "en": "Draws after your first full day.",
-   "es": "Se activa después de tu primer día completo.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "q-5ahkpm_g": {
-   "en": "<span data-t=\"h_alloc\">Allocation</span><span id=\"nPort\"></span>",
-   "es": "<span data-t=\"h_alloc\">Distribución</span><span id=\"nPort\"></span>",
+  "9vwhpH5aGk": {
+   "en": "Season P&amp;L",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150337,9 +150294,9 @@
    "n": 1,
    "w": 1
   },
-  "t4zN-_8xOc": {
-   "en": "<span data-t=\"sb_h\">Trading profit this season</span><span class=\"p-s\" data-t=\"sb_s\">realized on your own sells · no prize</span>",
-   "es": "<span data-t=\"sb_h\">Ganancia de trading esta temporada</span><span class=\"p-s\" data-t=\"sb_s\">realizada en tus propias ventas · sin premio</span>",
+  "dY7FTkMOjq": {
+   "en": "Cash",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150347,35 +150304,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 11
+   "w": 1
   },
-  "d0gpXG2Boj": {
-   "en": "Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats - card fees, trading fees, network fees, gas, slippage - before the market even moves.",
-   "es": "Cada comisión que pagas aquí es real allá afuera. Observa cuánto de tus $10,000 se come el propio CAMINO - comisiones de tarjeta, comisiones de trading, comisiones de red, gas, slippage - antes de que el mercado siquiera se mueva.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 32
-  },
-  "V_vr-f88IS": {
-   "en": "<span data-t=\"h_trail\">Paper trail - everything you did</span><a id=\"txCsv\" href=\"/api/spot/history?csv=1\" download=\"demo-spot-history.csv\" style=\"margin-left:auto;font-size:11px;color:#c2f64a;text-decoration:none\" data-t=\"h_csv\">Export CSV</a>",
-   "es": "<span data-t=\"h_trail\">Rastro - todo lo que hiciste</span><a id=\"txCsv\" href=\"/api/spot/history?csv=1\" download=\"demo-spot-history.csv\" style=\"margin-left:auto;font-size:11px;color:#c2f64a;text-decoration:none\" data-t=\"h_csv\">Exportar CSV</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "i96jIVM5U6": {
-   "en": "No activity yet.",
-   "es": "Todavía no hay actividad.",
+  "90SpxYEv3J": {
+   "en": "to buy with",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150385,81 +150318,22 @@
    "n": 1,
    "w": 3
   },
-  "PJqBuXF0Kb": {
-   "en": "&#8592; Home",
-   "es": "&#8592; Inicio",
+  "261J2JEjXX": {
+   "en": "All time",
+   "es": "Todo el tiempo",
    "kind": [
     "html"
    ],
    "ctx": [
-    "/spot/"
+    "/spot/",
+    "/trading-journal/"
    ],
-   "n": 3,
-   "w": 1
+   "n": 2,
+   "w": 2
   },
-  "X6Af92rupB": {
-   "en": "<b data-t=\"b_name\">MarginPad Bank</b><span data-t=\"b_tag\">member since today · FDIC-insured (pretend)</span>",
-   "es": "<b data-t=\"b_name\">MarginPad Bank</b><span data-t=\"b_tag\">miembro desde hoy · asegurado por la FDIC (de mentira)</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "oUFBYphnj5": {
-   "en": "<span data-t=\"nav_map\">Map</span>",
-   "es": "<span data-t=\"nav_map\">Mapa</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "mJ_0fvHbyW": {
-   "en": "<span data-t=\"nav_bank\">Bank</span>",
-   "es": "<span data-t=\"nav_bank\">Banco</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "C9P8pJC0RU": {
-   "en": "<span data-t=\"nav_ex\">Exchange</span>",
-   "es": "<span data-t=\"nav_ex\">Exchange</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "QgpcPe6Iyc": {
-   "en": "<span data-t=\"nav_wal\">Wallet</span>",
-   "es": "<span data-t=\"nav_wal\">Wallet</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 3,
-   "w": 1
-  },
-  "7XYomvfz2T": {
-   "en": "Good day.",
-   "es": "Buen día.",
+  "N7_ZcRgcMH": {
+   "en": "Claim $100",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150469,9 +150343,9 @@
    "n": 1,
    "w": 2
   },
-  "QZkNBvxpQx": {
-   "en": "<b data-t=\"b_topup_t\">Send to exchange</b><span data-t=\"b_topup_s\">Buy USDT with this card · 1.8% card fee</span>",
-   "es": "<b data-t=\"b_topup_t\">Enviar al exchange</b><span data-t=\"b_topup_s\">Compra USDT con esta tarjeta · comisión de tarjeta 1.8%</span>",
+  "-MrCMZ5rzE": {
+   "en": "Once every UTC day, <b>$100</b> of demo cash. It has to be pressed - and it never counts as profit on the board.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150479,11 +150353,47 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 11
+   "w": 22
   },
-  "uUVOy4nCp0": {
-   "en": "<b data-t=\"b_cash_t\">Cash out from exchange</b><span data-t=\"b_cash_s\">Sell USDT back to this card · 1% fee</span>",
-   "es": "<b data-t=\"b_cash_t\">Retirar desde el exchange</b><span data-t=\"b_cash_s\">Vende USDT de vuelta a esta tarjeta · comisión 1%</span>",
+  "Xjy3MViu5L": {
+   "en": "<span data-t=\"h_hold\">Your coins</span><small id=\"holdSub\"></small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "UTdXbyQbGy": {
+   "en": "Nothing yet. Pick a coin below - your first buy puts you on the board.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "J7NN68tVzo": {
+   "en": "<span data-t=\"b_h\">Season board</span><small id=\"bSub\"></small><a class=\"r\" href=\"/leaderboards/#meme\" data-t=\"b_full\">Full board</a>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "R7_gbExCOG": {
+   "en": "Nobody has a season profit yet - the first green position fills this table.",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150493,117 +150403,9 @@
    "n": 1,
    "w": 12
   },
-  "KdpjJOvTxF": {
-   "en": "Recent transactions",
-   "es": "Transacciones recientes",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "95S2xtFTRf": {
-   "en": "No transactions yet.",
-   "es": "Todavía no hay transacciones.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "7GOXHq8EhW": {
-   "en": "Why a bank app?",
-   "es": "¿Por qué una app de banco?",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "dDrTVjVxUU": {
-   "en": "<b>Why a bank app?</b> In real life your money starts and ends at a bank. Crypto sits in the middle. Notice that BOTH directions cost a fee - getting in (1.8% card) and getting out (1% withdrawal). Banks and processors always take their cut.",
-   "es": "<b>¿Por qué una app de banco?</b> En la vida real tu dinero empieza y termina en un banco. Las criptomonedas están en el medio. Fíjate en que AMBAS direcciones tienen comisión - entrar (1.8% tarjeta) y salir (1% retiro). Los bancos y procesadores siempre se quedan con su parte.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 40
-  },
-  "kj9ipyS1YS": {
-   "en": "<b data-t=\"e_name\">MarginPad Exchange</b><span data-t=\"e_tag\">custodial · they hold it for you · taker fee 0.1%</span>",
-   "es": "<b data-t=\"e_name\">MarginPad Exchange</b><span data-t=\"e_tag\">custodial · ellos lo guardan por ti · comisión taker 0.1%</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 11
-  },
-  "KCIWCEGIuH": {
-   "en": "<small data-t=\"e_bal\">Exchange balance</small><b id=\"exTotal\">-</b><span id=\"exFree\">-</span>",
-   "es": "<small data-t=\"e_bal\">Saldo en el exchange</small><b id=\"exTotal\">-</b><span id=\"exFree\">-</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "57CzF6bo98": {
-   "en": "Deposit",
-   "es": "Depositar",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "IOM4YkzuKd": {
-   "en": "Assets",
-   "es": "Activos",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "pwwI9ckVMG": {
-   "en": "<span data-t=\"e_your\">Your assets</span><span class=\"exch-s\" data-t=\"e_live\">live P&amp;L per coin</span>",
-   "es": "<span data-t=\"e_your\">Tus activos</span><span class=\"exch-s\" data-t=\"e_live\">P&amp;L en vivo por moneda</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 5
-  },
-  "2-WiWv7iZQ": {
-   "en": "<span data-t=\"e_tab_mkts\">Markets</span><span class=\"exch-s\" data-t=\"e_mkts_s\">top 250 by market cap</span>",
-   "es": "<span data-t=\"e_tab_mkts\">Mercados</span><span class=\"exch-s\" data-t=\"e_mkts_s\">las 250 principales por capitalización</span>",
+  "VwWnqIKMcs": {
+   "en": "<span data-t=\"y_h\">Buy a coin</span><small data-t=\"y_s\">live prices · no fees</small>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150613,9 +150415,9 @@
    "n": 1,
    "w": 6
   },
-  "yuBDXEHoFs": {
-   "en": "Top",
-   "es": "Top",
+  "T37Feq-BCw": {
+   "en": "Trending memes",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150623,11 +150425,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 1
+   "w": 2
   },
-  "U_nVV1XE5f": {
-   "en": "<span class=\"mh-c\" data-t=\"e_h_coin\">Coin</span><span class=\"mh-p\" data-t=\"e_h_price\">Price</span><span class=\"mh-g\" data-t=\"e_h_24\">24h</span><span class=\"mh-v\" data-t=\"e_h_vol\">Volume</span><span class=\"mh-s\" data-t=\"e_h_7\">7 days</span>",
-   "es": "<span class=\"mh-c\" data-t=\"e_h_coin\">Moneda</span><span class=\"mh-p\" data-t=\"e_h_price\">Precio</span><span class=\"mh-g\" data-t=\"e_h_24\">24h</span><span class=\"mh-v\" data-t=\"e_h_vol\">Volumen</span><span class=\"mh-s\" data-t=\"e_h_7\">7 días</span>",
+  "e-7pnkK5X6": {
+   "en": "<span data-t=\"hs_h\">History</span><a id=\"txCsv\" href=\"/api/spot/history?csv=1\" download=\"demo-spot-history.csv\" style=\"margin-left:auto;font-size:11.5px\" data-t=\"hs_csv\">Export CSV</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150635,11 +150437,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 5
+   "w": 3
   },
-  "hqdn8qSBrX": {
-   "en": "<b data-t=\"w_name\">MarginPad Wallet</b><span data-t=\"w_tag\">self-custody · your keys, your coins</span>",
-   "es": "<b data-t=\"w_name\">MarginPad Wallet</b><span data-t=\"w_tag\">autocustodia · tus claves, tus monedas</span>",
+  "Oh5yiSQc8b": {
+   "en": "Demo cash only - prices are live from exchanges and on-chain pools, but nothing here is real money and the cash cannot be withdrawn. The season prize is real USDT paid to your MarginPad rewards balance. Pools under $1,000 of liquidity are refused because their price is not real. Not financial advice. · <a href=\"/paper-trade\">Futures paper trading</a> · <a href=\"/academy/\">Academy</a>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -150647,19 +150449,7 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 7
-  },
-  "5p6bkHQTiP": {
-   "en": "Demo life-simulation with practice funds - prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The bank, card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href=\"/paper-trade\">Try futures paper trading</a> · <a href=\"/academy/\">Learn in the Academy</a>",
-   "es": "Simulación de vida demo con fondos de práctica - precios, comisiones, gas, redes y slippage reflejan los mercados reales, pero no interviene dinero real y no se puede retirar nada. El banco, la tarjeta, el exchange, la wallet, las direcciones y la seed phrase son simulados con fines educativos. No es asesoría financiera. · <a href=\"/paper-trade\">Prueba el paper trading de futuros</a> · <a href=\"/academy/\">Aprende en la Academy</a>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 49
+   "w": 55
   },
   "ueq1O_lZmm": {
    "en": "Loading chart…",
@@ -150697,42 +150487,6 @@
    "n": 1,
    "w": 1
   },
-  "V8omE4H_o0": {
-   "en": "Limit price (USD) - buys fill at or below, sells at or above · checked every 10 minutes",
-   "es": "Precio límite (USD) - las compras se ejecutan en ese precio o por debajo, las ventas en ese precio o por encima · se verifica cada 10 minutos",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 16
-  },
-  "LzoPgPuogu": {
-   "en": "Amount (USDT)",
-   "es": "Cantidad (USDT)",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "qV6FrtVjGA": {
-   "en": "Max",
-   "es": "Máx",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 1
-  },
   "XLg1Q5bXTw": {
    "en": "Sell how much?",
    "es": "¿Cuánto vender?",
@@ -150745,21 +150499,9 @@
    "n": 1,
    "w": 3
   },
-  "8DXW_byJGa": {
-   "en": "<input type=\"checkbox\" id=\"tmToUsdt\" checked onchange=\"try{updateEst()}catch(e){}\" /> <span data-t=\"tm_tousdt\">Convert the proceeds to USDT right away (0.3% swap) so they can go to the exchange and your card</span>",
-   "es": "<input type=\"checkbox\" id=\"tmToUsdt\" checked onchange=\"try{updateEst()}catch(e){}\" /> <span data-t=\"tm_tousdt\">Convierte lo obtenido a USDT de inmediato (swap 0.3%) para que pueda ir al exchange y a tu tarjeta</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 19
-  },
-  "eTEcPJwOkw": {
-   "en": "Search 250 coins…",
-   "es": "Buscar entre 250 monedas…",
+  "aFJ11sN3Hm": {
+   "en": "Search a coin or paste a contract address",
+   "es": "",
    "kind": [
     "attr:placeholder"
    ],
@@ -150767,23 +150509,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 3
+   "w": 6
   },
-  "IJfDNyO2HH": {
-   "en": "price",
-   "es": "precio",
-   "kind": [
-    "attr:placeholder"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "YfALOabIG4": {
-   "en": "A full crypto life-simulation with $10,000 in practice money: a bank app, an exchange app and a self-custody wallet app - link a card, buy USDT, pick networks, pay gas and trade BTC plus 150+ meme coins across Solana, Base, Ethereum and BSC. Zero risk.",
-   "es": "Una simulación de vida cripto completa con $10,000 en dinero de práctica: una app de banco, una app de exchange y una app de wallet de autocustodia - vincula una tarjeta, compra USDT, elige redes, paga el gas y opera BTC más de 150 meme coins en Solana, Base, Ethereum y BSC. Riesgo cero.",
+  "GQCn6OrXqr": {
+   "en": "Buy and hold meme coins on Solana, Base, Ethereum and BNB Chain plus the top 250 coins with $10,000 of free demo cash and $100 more every day you claim it. No fees, no leverage, live prices. One season board pays $30 to the top three in real USDT.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -150791,11 +150521,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 40
+   "w": 49
   },
-  "MEHZf2OsIp": {
-   "en": "Learn crypto from zero inside three real-feeling apps: bank, exchange and wallet. Real fees, real gas, fake money.",
-   "es": "Aprende cripto desde cero dentro de tres apps que se sienten reales: banco, exchange y wallet. Comisiones reales, gas real, dinero falso.",
+  "gmA9_iGLvR": {
+   "en": "Buy and hold meme coins and majors with $10,000 of demo cash and $100 a day. No fees, live prices, one season board that pays $30 to the top three.",
+   "es": "",
    "kind": [
     "attr:content"
    ],
@@ -150803,7 +150533,7 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 18
+   "w": 29
   },
   "slwcNsXigY": {
    "en": "MarginPad Demo Spot",
@@ -150817,9 +150547,9 @@
    "n": 1,
    "w": 3
   },
-  "OpwGGXIbVo": {
-   "en": "Free demo spot trading life-simulation: a bank app, an exchange app and a self-custody wallet app with seed phrase, network fees and gas, plus 150+ meme coins across Solana, Base, Ethereum and BSC.",
-   "es": "Simulación de vida gratuita de trading spot demo: una app de banco, una app de exchange y una app de wallet de autocustodia con seed phrase, comisiones de red y gas, además de más de 150 memecoins en Solana, Base, Ethereum y BSC.",
+  "DQ3qdHNQ_X": {
+   "en": "Free demo spot trading: buy and hold meme coins across Solana, Base, Ethereum and BNB Chain plus the top 250 coins with $10,000 of demo cash and $100 more a day. Live prices, no fees, no leverage; one season leaderboard pays $30 in real USDT to the top three.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -150827,83 +150557,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 31
+   "w": 48
   },
-  "hbrQmYP1Vv": {
-   "en": "Is the $10,000 demo card real money?",
-   "es": "¿La tarjeta demo de $10,000 es dinero real?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "gqvLrI1l0L": {
-   "en": "No - it is practice money on a virtual card. Prices, fees, network costs and slippage are real-market accurate, but nothing is at risk and nothing can be withdrawn.",
-   "es": "No - es dinero de práctica en una tarjeta virtual. Los precios, las comisiones, los costos de red y el slippage son fieles al mercado real, pero no hay nada en riesgo y no se puede retirar nada.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 27
-  },
-  "OiR4jugIfj": {
-   "en": "What do I learn step by step?",
-   "es": "¿Qué aprendo paso a paso?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 6
-  },
-  "V3xVdm9Ho9": {
-   "en": "The full real-life flow across three apps: buying USDT with a card on an exchange (and its fee), cashing back out to the card, creating a self-custody wallet and saving a seed phrase, withdrawing over the right network, swapping for gas coins like SOL, and buying coins and meme coins.",
-   "es": "El flujo completo de la vida real a través de tres apps: comprar USDT con una tarjeta en un exchange (y su comisión), retirar de vuelta a la tarjeta, crear una wallet de autocustodia y guardar una seed phrase, retirar por la red correcta, hacer swap por monedas de gas como SOL, y comprar monedas y memecoins.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 47
-  },
-  "1nLFfooLta": {
-   "en": "Which coins can I trade?",
-   "es": "¿Qué monedas puedo operar?",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "xjWQjL7X_d": {
-   "en": "The top 250 coins by market cap plus 150+ trending meme coins across Solana, Base, Ethereum and BNB Chain, priced live from on-chain DEX data.",
-   "es": "Las 250 principales monedas por capitalización más 150+ memecoins en tendencia en Solana, Base, Ethereum y BNB Chain, con precios en vivo a partir de datos on-chain de DEX.",
-   "kind": [
-    "ld"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 25
-  },
-  "cOduCqwOQA": {
-   "en": "Can I reset my demo account?",
-   "es": "¿Puedo reiniciar mi cuenta demo?",
+  "wVbsXT0EnL": {
+   "en": "Is the $10,000 real money?",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -150913,9 +150571,9 @@
    "n": 1,
    "w": 5
   },
-  "D8JOZmRGV3": {
-   "en": "Yes - one reset available, back to a fresh $10,000 card, at most once every 7 days. Your history is kept.",
-   "es": "Sí - tienes un reinicio disponible, que te devuelve a una tarjeta nueva de $10,000, como máximo una vez cada 7 días. Tu historial se conserva.",
+  "KIgbiDGjz0": {
+   "en": "No - it is demo cash. Prices are live from exchanges and on-chain pools, but nothing is at risk and the cash cannot be withdrawn. The $30 season prize is real USDT, paid to the MarginPad rewards balance.",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -150923,11 +150581,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 18
+   "w": 37
   },
-  "fFN2gbrwkA": {
-   "en": "Free Demo Spot Trading - $10,000 Practice Card",
-   "es": "Demo Spot Gratis - Tarjeta de Práctica de $10,000",
+  "sG0bVDJn5g": {
+   "en": "What is the $100 a day?",
+   "es": "",
    "kind": [
     "ld"
    ],
@@ -150935,7 +150593,91 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 7
+   "w": 5
+  },
+  "ClQs2wxjle": {
+   "en": "Every UTC day you can press Claim once and $100 of demo cash is added to your account. It is never automatic and it does not count as profit on the leaderboard.",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 32
+  },
+  "aYYDkkTJg7": {
+   "en": "How is the leaderboard ranked?",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "G-M-ByeIGq": {
+   "en": "By season profit in dollars: what your portfolio is worth now minus what it was worth when the 14-day season started, with every claim taken out, so only trading moves it. The top three are paid $15, $10 and $5 when the season ends.",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 44
+  },
+  "SmDwUeZdSK": {
+   "en": "Which coins can I buy?",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "cX-TbaKUiW": {
+   "en": "The top 250 coins by market cap, about 150 trending meme coins across Solana, Base, Ethereum and BNB Chain, and any token by pasting its contract address - priced live from its deepest pool.",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 33
+  },
+  "ZJUz-dFGtX": {
+   "en": "Are there fees or leverage?",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "V1QAaX35TK": {
+   "en": "No fees, no slippage and no leverage: buy and hold at the live price. Pools under $1,000 of liquidity are refused because their price is not real.",
+   "es": "",
+   "kind": [
+    "ld"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 27
   },
   "Ecw0U1n9fs": {
    "en": "Squads - Five Traders, One Logo, Squad Duels | MarginPad",
@@ -157229,21 +156971,9 @@
    "n": 1,
    "w": 66
   },
-  "dWp5k_KJhK": {
-   "en": "<span class=\"apn\">Free</span>",
-   "es": "<span class=\"apn\">Free</span>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-api/"
-   ],
-   "n": 2,
-   "w": 1
-  },
-  "hwuDpCjXHC": {
-   "en": "Build and run a real bot without paying anything.",
-   "es": "Construye y haz correr un bot de verdad sin pagar nada.",
+  "5NA1FSYa5z": {
+   "en": "<span class=\"apn\">Free trial</span>",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157251,7 +156981,31 @@
     "/trading-api/"
    ],
    "n": 1,
-   "w": 8
+   "w": 2
+  },
+  "pM4J1yutsa": {
+   "en": "$0 <small style=\"font-size:15px;color:var(--dim);font-weight:400\">for 7 days</small>",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "6mQOjArBlS": {
+   "en": "The full engine, free for <b>7 days</b> from the day you mint your first key. After that the engine needs a plan - <b>market data stays free and keyless for ever</b>, with no account at all.",
+   "es": "",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 33
   },
   "Mq24PqejcQ": {
    "en": "<b>One strategy</b><span>one book, one journal, one balance</span>",
@@ -157325,9 +157079,9 @@
    "n": 1,
    "w": 5
   },
-  "5A7S7pr1KD": {
-   "en": "Your starting plan",
-   "es": "Tu plan de partida",
+  "8OlQq7lMVM": {
+   "en": "Your 7-day trial",
+   "es": "",
    "kind": [
     "html"
    ],
@@ -157684,6 +157438,18 @@
    ],
    "n": 1,
    "w": 5
+  },
+  "dWp5k_KJhK": {
+   "en": "<span class=\"apn\">Free</span>",
+   "es": "<span class=\"apn\">Free</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-api/"
+   ],
+   "n": 1,
+   "w": 1
   },
   "5jSVUNE7P2": {
    "en": "Pro &middot; $39",
@@ -163731,18 +163497,6 @@
   "CUwJfzsHAM": {
    "en": "This year",
    "es": "Este año",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/trading-journal/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "261J2JEjXX": {
-   "en": "All time",
-   "es": "Todo el tiempo",
    "kind": [
     "html"
    ],

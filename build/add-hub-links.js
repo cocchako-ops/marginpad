@@ -124,7 +124,7 @@ const API_INTRO = 'Every number on this page is available as free JSON, and the 
 // "learn the words"), which is why they travel together rather than as one link.
 const PRACTICE_LINKS = [
   ['/paper-trade', 'Paper trade these moves - futures, live prices, fake money'],
-  ['/spot/', 'Demo Spot - a $10,000 card, an exchange and your own wallet'],
+  ['/spot/', 'Demo Spot - buy and hold memes and majors with $10,000 of demo cash'],
   ['/academy/', 'Academy - 17 courses, from the words up'],
   ['/where-to-start/', 'Not sure where to start?'],
   ['/trading-competition/', 'Live leaderboards - $150 across five free paper boards, $200 more on a funded Bybit account'],
@@ -169,7 +169,7 @@ const VS_LINKS = VS_DEMAND
   .map(([a, b]) => { const f = a + '-vs-' + b, r = b + '-vs-' + a; const d = has(f) ? f : (has(r) ? r : null); return d ? ['/' + d + '/', exName(a) + ' vs ' + exName(b) + ' for futures - fees, leverage, liquidation'] : null; })
   .filter(Boolean);
 const VS_INTRO = 'Fees, maximum leverage, maintenance margin and how each venue actually liquidates you, side by side - measured from what the exchanges publish, with the date they were checked.';
-const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or the whole spot journey - card, exchange, self-custody wallet - with $10,000 of practice money.';
+const PRACTICE_INTRO = 'Reading it is one thing. Practising it costs nothing here: leveraged futures on live prices, or buy-and-hold spot - meme coins on four chains and the majors - with $10,000 of demo cash and one board that pays.';
 for (const c of COINS) {
   const others = COINS.filter(x => x !== c).map(x => ['/coin/' + x + '/', x.toUpperCase()]);
   const b = [block('Build on this data', API_INTRO, API_LINKS), block('Practice with it', PRACTICE_INTRO, PRACTICE_LINKS)];

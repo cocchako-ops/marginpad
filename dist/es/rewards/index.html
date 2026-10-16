@@ -391,7 +391,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="et-r">
       <div class="et-k">Una vez, al empezar</div>
       <div class="et-v"><span class="eamt" id="eaOnce">$2.50</span><i>en total</i></div>
-      <div class="et-d"><b id="eaWel">$0.50</b> de bono de bienvenida, más <b id="eaMoon">$1.00</b> por abrir una cuenta de Moon con nosotros y <b id="eaFomo">$1.00</b> por una de Fomo.</div>
+      <div class="et-d"><b id="eaWel">$0.50</b> welcome bonus when a friend invites you, plus <b id="eaMoon">$1.00</b> for opening a Moon account through us and <b id="eaFomo">$1.00</b> for a Fomo one.</div>
     </div>
     <div class="et-r">
       <div class="et-k">Cada día</div>
@@ -637,7 +637,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="lbl">Invita amigos</div>
     <h2 class="ref2-h">Trae a un amigo - <b>los dos cobran</b></h2>
     <div class="ref2-split">
-      <div class="ref2-cell you"><span class="ref2-role">Tú recibes</span><span class="ref2-amt">+$<span class="refAmt">0.50</span></span><span class="ref2-w">directo a tu saldo</span></div>
+      <div class="ref2-cell you"><span class="ref2-role">You get</span><span class="ref2-amt">+$<span class="refAmt">1.00</span></span><span class="ref2-w">straight to your balance</span></div>
       <span class="ref2-plus">+</span>
       <div class="ref2-cell them"><span class="ref2-role">Ellos reciben</span><span class="ref2-amt">+$0.50</span><span class="ref2-w">bono de bienvenida instantáneo</span></div>
     </div>
@@ -1308,7 +1308,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
 <script src="/assets/mp-trade.js?v=7d2cfa1f" defer></script>
 <script defer src="/assets/mp-auth.js?v=8eb3215b"></script>
 <script defer src="/assets/mp-profile.js?v=29874540"></script>
-<script defer src="/assets/mp-nav.js?v=d2b8432b"></script>
+<script defer src="/assets/mp-nav.js?v=9994ce0c"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;
@@ -1367,7 +1367,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   });
   load();
   window.addEventListener('mp-auth-change',load);
-  function loadRef(){var c=document.getElementById('refCard');if(!c)return;fetch('/api/auth/referral').then(function(r){return r.json();}).then(function(d){if(!d)return;var amt=(+(d.rewardUsd||0.5)).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.refAmt'),function(e){e.textContent=amt;});var li=document.getElementById('refLink'),st=document.getElementById('refStats');var rcb=document.getElementById('refCopy');if(rcb)rcb.disabled=!d.signedIn;if(!d.signedIn){if(li)li.value=__esT_rewardsindex("signInToGet",'Sign in to get your referral link');if(st)st.innerHTML='';var _cw=document.getElementById('refCampWrap');if(_cw)_cw.style.display='none';return;}if(li)li.value=d.link;if(st)st.innerHTML='<span>Invited <b style="color:#e9e7df">'+(d.invited||0)+'</b></span><span>Qualified <b style="color:#c2f64a">'+(d.qualified||0)+'</b></span><span>Pending <b style="color:#e9e7df">'+(d.pending||0)+'</b></span><span>Earned <b style="color:#c2f64a">$'+(+(d.earnedUsd||0)).toFixed(2)+'</b></span>';var cw=document.getElementById('refCampWrap'),cc=document.getElementById('refCamps');if(cw&&cc&&d.link){cw.style.display='block';var plats=['Reddit','X','Facebook','YouTube','TikTok','Telegram','Discord','WhatsApp'];cc.innerHTML=plats.map(function(pl){return '<button type="button" class="ref-camp" data-camp="'+pl.toLowerCase()+'">'+pl+'</button>';}).join('');Array.prototype.forEach.call(cc.querySelectorAll('[data-camp]'),function(b){b.addEventListener('click',function(){var tag=b.getAttribute('data-camp'),url=d.link+'&c='+tag;try{navigator.clipboard.writeText(url);}catch(e){}var m=document.getElementById('refMsg');if(m){m.textContent=__esT_rewardsindex("copiedYour",'Copied your ')+b.textContent+' link ✓';m.className='pr-msg show ok';setTimeout(function(){m.textContent='';m.className='pr-msg';},2200);}});});}}).catch(function(){});}
+  function loadRef(){var c=document.getElementById('refCard');if(!c)return;fetch('/api/auth/referral').then(function(r){return r.json();}).then(function(d){if(!d)return;var amt=(+(d.rewardUsd||1)).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.refAmt'),function(e){e.textContent=amt;});var li=document.getElementById('refLink'),st=document.getElementById('refStats');var rcb=document.getElementById('refCopy');if(rcb)rcb.disabled=!d.signedIn;if(!d.signedIn){if(li)li.value=__esT_rewardsindex("signInToGet",'Sign in to get your referral link');if(st)st.innerHTML='';var _cw=document.getElementById('refCampWrap');if(_cw)_cw.style.display='none';return;}if(li)li.value=d.link;if(st)st.innerHTML='<span>Invited <b style="color:#e9e7df">'+(d.invited||0)+'</b></span><span>Qualified <b style="color:#c2f64a">'+(d.qualified||0)+'</b></span><span>Pending <b style="color:#e9e7df">'+(d.pending||0)+'</b></span><span>Earned <b style="color:#c2f64a">$'+(+(d.earnedUsd||0)).toFixed(2)+'</b></span>';var cw=document.getElementById('refCampWrap'),cc=document.getElementById('refCamps');if(cw&&cc&&d.link){cw.style.display='block';var plats=['Reddit','X','Facebook','YouTube','TikTok','Telegram','Discord','WhatsApp'];cc.innerHTML=plats.map(function(pl){return '<button type="button" class="ref-camp" data-camp="'+pl.toLowerCase()+'">'+pl+'</button>';}).join('');Array.prototype.forEach.call(cc.querySelectorAll('[data-camp]'),function(b){b.addEventListener('click',function(){var tag=b.getAttribute('data-camp'),url=d.link+'&c='+tag;try{navigator.clipboard.writeText(url);}catch(e){}var m=document.getElementById('refMsg');if(m){m.textContent=__esT_rewardsindex("copiedYour",'Copied your ')+b.textContent+' link ✓';m.className='pr-msg show ok';setTimeout(function(){m.textContent='';m.className='pr-msg';},2200);}});});}}).catch(function(){});}
   (function(){var b=document.getElementById('refCopy');if(b&&String((document.getElementById('refLink')||{}).value||'').indexOf('http')!==0)b.disabled=true;if(b)b.addEventListener('click',function(){var li=document.getElementById('refLink');if(!li||String(li.value).indexOf('http')!==0)return;try{navigator.clipboard.writeText(li.value);}catch(e){try{li.select();document.execCommand('copy');}catch(e2){}}var m=document.getElementById('refMsg');if(m){m.textContent=__esT_rewardsindex("linkCopied",'Link copied ✓');m.className='pr-msg show ok';setTimeout(function(){m.textContent='';m.className='pr-msg';},2000);}});loadRef();window.addEventListener('mp-auth-change',loadRef);})();
   setInterval(load,90000);
 })();
