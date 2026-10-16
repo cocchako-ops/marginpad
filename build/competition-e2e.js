@@ -36,7 +36,7 @@ const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { 
   const text = html.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   ok(html.indexOf('data-ssr="comp"') > 0, 'the live block is server-rendered into the HTML');
   ok(/day \d+ of 14/.test(text), 'the static text says which day of the season it is');
-  ok(text.indexOf('$' + c.prize_pool_usd_per_season) > 0, 'and the prize pool as a number');
+  ok(text.indexOf('$' + c.prize_pool_usd_per_season) > 0 || text.indexOf('$' + Math.round(c.prize_pool_usd_all_boards)) > 0, 'and the prize pool as a number'); // the hero prints every board (2026-10-09), rounded; the per-season figure is the older shape
   ok(/free to enter/i.test(text), 'and that it is free to enter');
   ok(text.indexOf(new Date(c.season.ends).toISOString().slice(0, 10)) > 0, 'and the exact end date');
   { const leaders = (c.boards || []).filter(b => b.leader && b.leader.name);

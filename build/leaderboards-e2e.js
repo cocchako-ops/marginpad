@@ -93,6 +93,53 @@ const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n 
       await ctx.close();
     }
     {
+      // THE SEASON ARCHIVE (2026-10-16): a board offers only the seasons it existed in, a picked season shows the
+      // stored scores in the board's own columns with the prize joined from the payout record, and where no store
+      // kept the scores the table is the payout record with a line saying so.
+      const ssn = await (await fetch(ORIGIN + '/api/reward/seasons?nc=1&cb=' + Date.now(), { cache: 'no-store' })).json();
+      const seasons = (ssn && ssn.seasons) || [], since = (ssn && ssn.boardSince) || {};
+      const moonS = seasons.filter(s => s.boards && s.boards.moon), callS = seasons.filter(s => s.boards && s.boards.call);
+      chk('seasons API: boardSince names every board, King of the Moon is filed under the season its contest ENDED in (6, not 5), no call row before the call board existed', Object.keys(since).length === 8 && moonS.length >= 1 && moonS.every(s => s.n >= 6) && callS.every(s => s.ws >= since.call), { since: Object.keys(since).length, moonN: moonS.map(s => s.n), callN: callS.map(s => s.n) });
+      const newest = seasons.filter(s => !s.early)[0];
+      const det = newest ? await (await fetch(ORIGIN + '/api/reward/seasons?ws=' + newest.ws + '&nc=1', { cache: 'no-store' })).json() : null;
+      const sc = (det && det.scores) || {}, kept = (det && det.kept) || {};
+      chk('season detail: the newest finished season carries ROE scores, XP scores, call points and Bybit volumes, each in its board\'s own figure', !!det && (sc.roe || []).length >= 5 && sc.roe.every(r => +r.roe > 0 && r.who) && (sc.xp || []).length >= 5 && sc.xp.every(r => +r.xp > 0) && (sc.call || []).length >= 1 && sc.call.every(r => +r.pts > 0) && (sc.bybit || []).length >= 1 && sc.bybit.every(r => +r.vol > 0), { roe: (sc.roe || []).length, xp: (sc.xp || []).length, call: (sc.call || []).length, bybit: (sc.bybit || []).length, kept });
+      chk('season detail: the paid ROE winner is on the stored board and the stored scores are ranked by ROE', !!det && (newest.boards.roe || []).every(p => (sc.roe || []).some(r => String(r.who).toLowerCase() === String(p.who).toLowerCase())) && (sc.roe || []).every((r, i, a) => i === 0 || +a[i - 1].roe >= +r.roe), { paid: (newest.boards.roe || []).map(p => p.who), top: (sc.roe || []).slice(0, 5).map(r => r.who + ' ' + Math.round(r.roe)) });
+      const oldS = seasons.filter(s => !s.early && (Date.now() - s.we) > 31 * 86400000 && s.boards && s.boards.wr)[0];
+      const detOld = oldS ? await (await fetch(ORIGIN + '/api/reward/seasons?ws=' + oldS.ws + '&nc=1', { cache: 'no-store' })).json() : null;
+      chk('season detail: a season older than the tradeev window keeps ROE and XP but NOT win rate / green days / gold (they would come back with the free accounts missing)', !!detOld && (detOld.scores.roe || []).length >= 1 && (detOld.scores.xp || []).length >= 1 && !detOld.kept.wr && !detOld.kept.green && !detOld.scores.wr, detOld && { n: detOld.n, kept: detOld.kept });
+      const bad = await fetch(ORIGIN + '/api/reward/seasons?ws=' + (newest ? newest.ws + 1 : 1) + '&nc=1', { cache: 'no-store' });
+      chk('season detail: a start that is not a finished season boundary is refused, never computed', bad.status === 400);
+      for (const vp of [{ w: 1366, h: 900, t: 'desktop' }, { w: 390, h: 800, t: 'phone' }]) {
+        const { ctx, page } = await fresh(vp.w, vp.h, null);
+        const errs = []; page.on('pageerror', e => errs.push(String(e.message).slice(0, 120)));
+        await page.goto(ORIGIN + '/leaderboards/?cb=' + Date.now() + '#call/s' + newest.ws, { waitUntil: 'networkidle2', timeout: 90000 });
+        await page.waitForFunction("!document.getElementById('sBar').hidden && /ranked on this board|paid nothing|not kept/.test((document.getElementById('sNote')||{}).textContent + (document.getElementById('bCount')||{}).textContent)", { timeout: 25000 }).catch(() => {});
+        const opts = async () => page.$$eval('#sDdP .sdd-o', os => os.map(o => +o.getAttribute('data-s')));
+        const a0 = await page.evaluate(() => ({ cur: window.__lbPage.cur(), head: [...document.querySelectorAll('#bHead th')].map(x => x.textContent.trim()).join('|'), rows: document.querySelectorAll('#bBody tr td.who a').length, pz: [...document.querySelectorAll('#bBody tr td.prz')].map(x => x.textContent.trim()).filter(Boolean), note: (document.getElementById('sNote') || {}).textContent || '', cls: document.getElementById('board').className }));
+        chk(vp.t + ': #call/s<ws> on load opens the Call board on that season - points column, ranked rows, prizes on the paid rows, the note names the standings', a0.cur === 'call' && /Points/.test(a0.head) && a0.rows >= 1 && a0.pz.length === (newest.boards.call || []).length && /Standings as the board stood/.test(a0.note) && /arch-sc/.test(a0.cls), { cur: a0.cur, head: a0.head, rows: a0.rows, pz: a0.pz });
+        const oCall = await opts();
+        chk(vp.t + ': the Call board offers no season before the call board existed, and no pre-format bucket', oCall.filter(s => s > 0).every(s => s >= since.call) && oCall.indexOf(seasons.filter(s => s.early).map(s => s.ws)[0]) < 0, oCall);
+        await page.evaluate(() => { window.__lbPage.set('moon'); });
+        const oMoon = await opts();
+        chk(vp.t + ': the Moon board offers only the seasons a contest was decided in', oMoon.filter(s => s > 0).length === moonS.length && moonS.every(s => oMoon.indexOf(s.ws) >= 0), { offered: oMoon, moon: moonS.map(s => s.ws) });
+        await page.evaluate(() => { window.__lbPage.set('roe'); });
+        await page.waitForFunction("/Best trade ROE/.test((document.getElementById('bHead')||{}).textContent||'') && document.querySelectorAll('#bBody tr td.who a').length>=5", { timeout: 20000 }).catch(() => {});
+        const a1 = await page.evaluate((paidTop) => { const rows = [...document.querySelectorAll('#bBody tr')]; const first = rows[0]; const r = first.querySelector('td.who').getBoundingClientRect(); const el = document.elementFromPoint(r.left + Math.min(40, r.width / 2), r.top + r.height / 2); const paidRow = rows.find(tr => tr.querySelector('td.who a') && tr.querySelector('td.who a').textContent.toLowerCase() === String(paidTop).toLowerCase()); return { hash: location.hash, head: [...document.querySelectorAll('#bHead th')].map(x => x.textContent.trim()).join('|'), rows: rows.length, reach: !!(el && first.contains(el)), firstRoe: (first.querySelector('td.v') || {}).textContent, paidPz: paidRow ? paidRow.querySelector('td.prz').textContent.trim() : null, tw: document.getElementById('bTw').clientHeight, find: !!document.getElementById('bFind') && document.getElementById('bFind').offsetParent !== null }; }, (newest.boards.roe || [{}])[0].who);
+        chk(vp.t + ': the season follows a board switch (hash #roe/s<ws>), the ROE archive carries the board\'s own columns, the paid winner carries the prize the record says, the first row is reachable, the box scrolls, the find box stays', a1.hash === '#roe/s' + newest.ws && /Best trade ROE/.test(a1.head) && a1.rows >= 5 && a1.reach && /%$/.test(a1.firstRoe || '') && a1.paidPz === '$' + (newest.boards.roe || [{ usd: 0 }])[0].usd && a1.tw > 200 && a1.tw < 900 && a1.find, a1);
+        if (oldS) {
+          await page.evaluate((ws) => { window.__lbPage.set('winrate'); }, oldS.ws);
+          await page.evaluate(() => { document.getElementById('sDdB').click(); });
+          await page.evaluate((ws) => { const o = document.querySelector('#sDdP .sdd-o[data-s="' + ws + '"]'); if (o) o.click(); }, oldS.ws);
+          await page.waitForFunction("/not kept/.test((document.getElementById('sNote')||{}).textContent||'')", { timeout: 20000 }).catch(() => {});
+          const a2 = await page.evaluate(() => ({ head: [...document.querySelectorAll('#bHead th')].map(x => x.textContent.trim()).join('|'), rows: document.querySelectorAll('#bBody tr.paid').length, note: (document.getElementById('sNote') || {}).textContent || '', cls: document.getElementById('board').className }));
+          chk(vp.t + ': an old season on the win-rate board is the payout record alone, and the note says the scores were not kept', a2.head === '#|Trader|Prize' && a2.rows === (oldS.boards.wr || []).length && /not kept/.test(a2.note) && /arch-pz/.test(a2.cls), { head: a2.head, rows: a2.rows, note: a2.note.slice(0, 120) });
+        }
+        chk(vp.t + ': archive walk - no page errors', errs.length === 0, errs);
+        await ctx.close();
+      }
+    }
+    {
       const { ctx, page } = await fresh(1280, 860, null);
       await page.goto(ORIGIN + '/vault/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
       await page.waitForFunction("!!document.querySelector('[data-mpbn=\"browse\"], .mpnav-burger, #mpnavBtn')", { timeout: 15000 }).catch(() => {});

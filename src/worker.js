@@ -13483,6 +13483,98 @@ async function predBoardRows(env, atMs, limit, inclE2e) {
   const j = await r.json();
   return (j && j.board) || [];
 }
+// The leaderboard ban list as a lookup (ledger `lbban`), the shape every board filter reads.
+async function lbBanned(env) {
+  const banned = {};
+  try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
+  return banned;
+}
+// ONE shaping of the UserStore board answer into the public rows (2026-10-16, lifted out of /lb so the season
+// archive reads a finished season exactly the way the live page reads the running one). `src` = what the DO
+// `/leaderboard` returned (board = best-trade rows carrying w/l, xpBoard, greenBoard, goldBoard) plus the Daily
+// BTC Call rows from predBoardRows; `banned` = lbBanned(); `CUT` = how many rows to publish per board.
+function lbShapeBoards(src, banned, CUT) {
+  const board = src.board || [], xpBoard = src.xpBoard || [], greenBoard = src.greenBoard || [], goldBoard = src.goldBoard || [], callRows = src.callRows || [];
+  const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
+  const qTop = board.filter(x => !banned[x.uid] && (+x.roe > 0));
+  const top = qTop.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side })); // Highest-ROE board shows only real gains (a losing/liquidated best trade isn't a contender)
+  // Best-win-rate board: min 20 closed trades this week, sorted by WR% then by games played (wins already ≥5%-ROE gated in the DO from v2)
+  const _wilson = (w, n) => { if (!n) return 0; const z = 1.96, p = w / n, z2 = z * z; return (p + z2 / (2 * n) - z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
+  // ranked by the WILSON LOWER BOUND (95%) of the win rate, not the raw % - 45-3 (score 89.1) beats 20-0
+  // (score 83.9): a perfect small sample can no longer lock the board (owner, 2026-08-03). Raw WR still shown.
+  const qWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
+    .map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1) }; })
+    .sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l)));
+  const topWr = qWr.slice(0, CUT).map((x, i) => { const y = { rank: i + 1, ...x }; delete y.uid; return y; });
+  // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL - can't be gamed by size.
+  const qXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0);
+  const topXp = qXp.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
+  // GREEN DAYS board (replaced the Demo-Spot bank board, owner 2026-08-17): days of the season finished
+  // in profit. The Spot board ranked a STANDING BALANCE, so it could list someone who had not opened the
+  // site in weeks; this one only moves when you come back and close the day green.
+  const qGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0);
+  const topGreen = qGreen.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
+  // GOLD ROOM: Gold-level members only, ranked by winning trades. `goldPaidFrom` is the first season that pays -
+  // the client shows the "no prizes this season" line from it instead of hard-coding a date.
+  const qGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && ((+x.w || 0) + (+x.l || 0)) > 0);
+  const topGold = qGold.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
+  const qCall = callRows.filter(x => !banned['u:' + String(x.uid || '').replace(/^u:/, '')] && (+x.pts || 0) > 0);
+  const topCall = qCall.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, n: +x.n || 0 }));
+  return { qTop, top, qWr, topWr, qXp, topXp, qGreen, topGreen, qGold, topGold, qCall, topCall };
+}
+// THE SCORES OF A FINISHED SEASON, from whatever still holds them (2026-10-16, owner: "neki ne prikazuju potpuno ...
+// mozemo i wager/volumen i ostale rezultate da prikazemo ako ih imamo i ako ih cuvamo"). The payout record stays the
+// authority on who was PAID; this answers how the board STOOD, and only where a durable store says so:
+//   roe   - `lbbest` keeps every member's season-best trade for ever (trim-proof since 2026-08-10), merged with the journal;
+//   xp    - `xpseason` bases freeze a season the moment the next one starts (base of the next row - base of this one);
+//   call  - `upred` rows carry their points for ever;
+//   bybit - the KV snapshot the season was paid from (`lb:bybit:<ws>`), volume per member;
+//   moon  - the contest snapshot (`lb:moon:<id>`), wagered per member, filed under the season the contest ENDED in;
+//   wr / green / gold - built from `tradeev`, which keeps 30 days on a free account and 90 on a paid one, so a season
+//           older than 30 days would come back with the free accounts' rows missing and LOOK complete. Those three are
+//           published only while the whole season sits inside the shortest window; afterwards the record is the payout.
+// A row's prize is NOT attached here - the page joins it from the payout record by name, so an account that was
+// excluded at payout (banned, under the minimum, ineligible) shows its score and no prize, which is the truth.
+const LB_ARCHIVE_TRADEEV_DAYS = 30;
+async function lbSeasonArchive(env, ws) {
+  const we = ws + LB_PERIOD, now = Date.now();
+  const out = { ws, we, n: Math.round((ws - LB_ANCHOR) / LB_PERIOD) + 1, scores: {}, kept: {} };
+  if (!(ws >= LB_ANCHOR) || we > lbPeriodStart(now)) return out; // the pre-format bucket and the running season have no archive
+  const banned = await lbBanned(env);
+  const tradeevOk = (now - we) <= LB_ARCHIVE_TRADEEV_DAYS * 86400000;
+  try {
+    const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=' + LB_CANDIDATES));
+    const ud = await ur.json();
+    let callRows = []; try { callRows = await predBoardRows(env, ws + 1, 1000); } catch (e) {}
+    const sh = lbShapeBoards({ board: (ud && ud.top) || [], xpBoard: (ud && ud.xp) || [], greenBoard: (ud && ud.green) || [], goldBoard: (ud && ud.gold) || [], callRows }, banned, 200);
+    out.scores.roe = sh.top; out.kept.roe = true;
+    out.scores.xp = sh.topXp; out.kept.xp = true;
+    out.scores.call = sh.topCall; out.kept.call = ws >= CALL_LB_START;
+    if (tradeevOk) { out.scores.wr = sh.topWr; out.scores.green = sh.topGreen; out.scores.gold = sh.topGold; out.kept.wr = out.kept.green = out.kept.gold = true; }
+  } catch (e) { out.error = 'board'; }
+  try {
+    const raw = await env.STATS.get('lb:bybit:' + ws); const bs = raw ? JSON.parse(raw) : null;
+    if (bs && Array.isArray(bs.rows)) {
+      out.scores.bybit = bs.rows.filter(r => !r.reg && (+r.vol || 0) > 0).map((r, i) => ({ rank: i + 1, who: r.who, vol: +r.vol || 0 })); out.kept.bybit = true;
+      // the snapshot was written with a 60-day life while the season ran; once it is history it must not expire under the archive
+      if (!bs.keep) { bs.keep = 1; try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(bs), { expirationTtl: 400 * 86400 }); } catch (e) {} }
+    }
+  } catch (e) {}
+  try {
+    const moonRows = [];
+    const lst = await env.STATS.list({ prefix: 'lb:moon:' });
+    for (const k of (lst && lst.keys) || []) {
+      const id = String(k.name).slice('lb:moon:'.length); if (/^e2e/i.test(id)) continue;
+      let snap = null; try { snap = JSON.parse((await env.STATS.get(k.name)) || 'null'); } catch (e) {}
+      if (!snap || !snap.end || !Array.isArray(snap.rows)) continue;
+      if (lbPeriodStart(snap.end - 1) !== ws) continue; // filed under the season the contest ended in
+      snap.rows.filter(r => (+r.vol || 0) > 0).forEach((r, i) => moonRows.push({ rank: i + 1, who: r.who, vol: +r.vol || 0 }));
+      out.moonContest = { id, start: snap.start, end: snap.end, final: !!snap.final };
+    }
+    if (out.moonContest) { out.scores.moon = moonRows; out.kept.moon = true; }
+  } catch (e) {}
+  return out;
+}
 // Season goals: five things a member can aim at, pick two per season, no swaps. Every one is counted from a real
 // table inside the season window, never from the client. One reward for all five so the choice is about taste.
 const GOAL_DEFS = [
@@ -15395,7 +15487,7 @@ async function bybitVolBoard(env, ws) { // {rows: public-ready (allowlisted, no 
 async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volume + the pool, never per-user commission) → KV, and the /lb edge copy is dropped
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
-  try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 60 * 86400 }); } catch (e) {}
+  try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
   try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v7')); } catch (e) {} // the competition feed carries the pool too
@@ -15465,6 +15557,17 @@ async function payWeeklyPrizes(env) {
     let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {}
     if (done) continue;
     const we = ws + LB_PERIOD;
+    // THE LAST DAY'S CALLS SETTLE AT 00:05 UTC AND THIS RAN AT 00:00 (found 2026-10-16 in the season archive: season 6's
+    // call board was paid Papis 132 / Light 130-something while the final standing is Light 138 / Papis 132 - the
+    // calls made on the season's last day were scored five minutes after the money left). settleDailyCalls refuses
+    // to settle before 00:05 so the 1D candle is surely closed; the payer now waits for that stamp, and gives up
+    // waiting after six hours (a dead kline feed must not hold every other board's prizes for ever - it pages instead).
+    if (ws >= CALL_LB_START) {
+      const lastDay = predDay(we - 1);
+      let settled = false; try { settled = !!(await env.STATS.get('pred:done:' + lastDay)); } catch (e) {}
+      if (!settled && (now - we) < 6 * 3600000) continue; // the next */10 pass pays, with the last day scored
+      if (!settled) { try { await tgAdmin(env, '<b>Season payout</b>: the last day\'s BTC calls (' + lastDay + ') are still unsettled six hours after the season ended - paying the season now from the board as it stands. Check /api/admin/predict and the kline feed.', { kind: 'season payout', sev: 'warn' }); } catch (e) {} }
+    }
     let ud = {};
     try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=' + LB_CANDIDATES)); ud = await ur.json(); } catch (e) {}
     if (ud && Array.isArray(ud.top) && ud.top.length >= LB_CANDIDATES) { // a full list means the candidate set may be cut - never pay from a cut list
@@ -20323,9 +20426,24 @@ async function handleReward(url, request, env) {
   // today. Recomputing would quietly rewrite history the moment a rule changed, which is the one thing a
   // results archive must never do. Only ENDED seasons appear, newest first; the live one is /api/reward/lb.
   if (path === '/seasons' && request.method === 'GET') {
-    const ck = new Request('https://marginpad.io/__reward_seasons_v1');
+    // ?ws=<season start> = ONE finished season's scores (lbSeasonArchive), loaded by the page when that season is picked
+    const wsQ = +url.searchParams.get('ws') || 0;
+    if (wsQ) {
+      if (wsQ !== lbPeriodStart(wsQ) || wsQ < LB_ANCHOR || wsQ + LB_PERIOD > lbPeriodStart(Date.now())) return new Response(JSON.stringify({ error: 'not_a_finished_season' }), { status: 400, headers: { 'content-type': 'application/json; charset=utf-8', ...CORS } });
+      const ckW = new Request('https://marginpad.io/__reward_season_v1_' + wsQ);
+      if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ckW); if (hit) return hit; } catch (e) {} }
+      let det = { ws: wsQ, scores: {}, kept: {} }; try { det = await lbSeasonArchive(env, wsQ); } catch (e) { det.error = 'unavailable'; }
+      const rw = new Response(JSON.stringify(det), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + (det.error ? 30 : 600), ...CORS } });
+      if (!det.error) { try { await caches.default.put(ckW, rw.clone()); } catch (e) {} }
+      return rw;
+    }
+    const ck = new Request('https://marginpad.io/__reward_seasons_v2'); // v2: moon filed under the season it ended in + boardSince (2026-10-16)
     if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
-    let out = { seasons: [], periodDays: LB_PERIOD / 86400000 };
+    // from which season each board EXISTS - the picker offers a board only the seasons it could have paid (owner,
+    // 2026-10-16: "neki nude sezone za taj liderboard kad nije ni postojao"). `early` = the pre-format bucket counts
+    // too (only the ROE board was paid then); null = only seasons with a payout row (the Moon contest).
+    const boardSince = { roe: LB_ANCHOR, wr: LB_ANCHOR, xp: LB_ANCHOR, green: SEASON_STATS_EPOCH, gold: GOLD_LB_START, bybit: BYBIT_LB_START, call: CALL_LB_START, moon: null };
+    let out = { seasons: [], periodDays: LB_PERIOD / 86400000, boardSince, earlyBoards: ['roe'] };
     try {
       const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/seasonwins'));
       const d = await r.json();
@@ -20354,7 +20472,10 @@ async function handleReward(url, request, env) {
         const raw = Math.floor(+x.week || 0); if (!raw) continue;
         // the pre-format bucket gets its OWN key, never 0: the picker identifies a season by ws and 0 is also what
         // "the live board" means there, so a zero lit the oldest row up as selected whenever the live board was
-        const ws = raw >= LB_ANCHOR ? lbPeriodStart(raw) : (LB_ANCHOR - LB_PERIOD);
+        // King of the Moon spans TWO seasons and its payment week is the contest START, so snapping that to a season
+        // filed kotm1 (17 Sep - 12 Oct) under Season 5 while it was decided in Season 6: a contest lives under the
+        // season it ENDED in (the season after the one it opened in - moonContestEnd).
+        const ws = raw >= LB_ANCHOR ? (String(x.board || '') === 'moon' ? lbPeriodStart(moonContestEnd(raw) - 1) : lbPeriodStart(raw)) : (LB_ANCHOR - LB_PERIOD);
         if (ws >= nowWs) continue;                             // the running season is not a result yet
         const who = nameOf(x.acct); if (!who) continue;              // an account with no username left is not shown
         const s = byWs.get(ws) || (ws >= LB_ANCHOR
@@ -20400,32 +20521,8 @@ async function handleReward(url, request, env) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=' + LB_CANDIDATES)); // the same set the payer reads (LB_CANDIDATES)
           const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null;
         }
-        const banned = {};
-        try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
-        const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
+        const banned = await lbBanned(env);
         const CUT = lbFull ? 1e6 : 15;
-        const qTop = board.filter(x => !banned[x.uid] && (+x.roe > 0));
-        const top = qTop.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side })); // Highest-ROE board shows only real gains (a losing/liquidated best trade isn't a contender)
-        // Best-win-rate board: min 20 closed trades this week, sorted by WR% then by games played (wins already ≥5%-ROE gated in the DO from v2)
-        const _wilson = (w, n) => { if (!n) return 0; const z = 1.96, p = w / n, z2 = z * z; return (p + z2 / (2 * n) - z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
-        // ranked by the WILSON LOWER BOUND (95%) of the win rate, not the raw % - 45-3 (score 89.1) beats 20-0
-        // (score 83.9): a perfect small sample can no longer lock the board (owner, 2026-08-03). Raw WR still shown.
-        const qWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
-          .map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1) }; })
-          .sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l)));
-        const topWr = qWr.slice(0, CUT).map((x, i) => { const y = { rank: i + 1, ...x }; delete y.uid; return y; });
-        // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL - can't be gamed by size.
-        const qXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0);
-        const topXp = qXp.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
-        // GREEN DAYS board (replaced the Demo-Spot bank board, owner 2026-08-17): days of the season finished
-        // in profit. The Spot board ranked a STANDING BALANCE, so it could list someone who had not opened the
-        // site in weeks; this one only moves when you come back and close the day green.
-        const qGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0);
-        const topGreen = qGreen.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
-        // GOLD ROOM: Gold-level members only, ranked by winning trades. `goldPaidFrom` is the first season that pays -
-        // the client shows the "no prizes this season" line from it instead of hard-coding a date.
-        const qGold = goldBoard.filter(x => !banned[x.uid] && !banned['u:' + String(x.uid).replace(/^u:/, '')] && ((+x.w || 0) + (+x.l || 0)) > 0);
-        const topGold = qGold.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, w: +x.w || 0, l: +x.l || 0 }));
         // BYBIT VOLUME BOARD (2026-09-13): read from the KV snapshot the cron rebuilds every 6 h - a request never recomputes it
         let bybit = { rows: [], ts: 0, final: false, n: 0, reportN: 0, unmatched: 0, registered: 0 }; try { bybit = await bybitSnapshot(env, weekStart) || bybit; } catch (e) {}
         // KING OF THE MOON (2026-09-17): the active 28-day contest's public snapshot, rebuilt by the ops desk on every paste
@@ -20433,8 +20530,9 @@ async function handleReward(url, request, env) {
         // DAILY BTC CALL (2026-09-28): points from settled calls inside the season window, ranked in the DO by points
         // then fewer calls. The SAME query the payer runs (predBoardRows) - one source, one ranking, so what is shown is what pays.
         let callRows = []; try { callRows = await predBoardRows(env, weekStart, lbFull ? 1000 : 50); } catch (e) {}
-        const qCall = callRows.filter(x => !banned['u:' + String(x.uid || '').replace(/^u:/, '')] && (+x.pts || 0) > 0);
-        const topCall = qCall.slice(0, CUT).map((x, i) => ({ rank: i + 1, who: x.name, pts: +x.pts || 0, n: +x.n || 0 }));
+        // ONE shaping for the live board and the season archive (2026-10-16): filters, the Wilson ranking and the row
+        // shapes live in lbShapeBoards, so an archived season reads exactly the way the live one does.
+        const { qTop, top, qWr, topWr, qXp, topXp, qGreen, topGreen, qGold, topGold, qCall, topCall } = lbShapeBoards({ board, xpBoard, greenBoard, goldBoard, callRows }, banned, CUT);
         // ONE TRADER ON THREE BOARDS IS ONE PERSON. The competition page reported "79 entries ranked", which was
         // the sum of seven board lengths - capped at 15 each AND double-counting anybody ranked on more than one.
         // `entrants` is per board, measured before the slice; `people` is the distinct union across all of them.
