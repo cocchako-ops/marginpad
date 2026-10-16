@@ -22411,6 +22411,26 @@ export default {
       ]);
       return J({ days: dA, byBot: byBot || [], byPath: byPath || [], byDay: byDay || [] });
     }
+    if (url.pathname === '/api/admin/aibotraw' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      // ONE AI crawler, in detail (2026-10-16, owner: "ne svidja mi se da nemamo ni 5 korisnika sa Claude"). /aibots ranks every
+      // bot's paths together, so a bot with 200 hits a month never shows a path of its own. This answers three things /aibots
+      // cannot: what did THIS bot fetch (every row with its timestamp), which referrers matching ?ref= ever sent a human and on
+      // which day, and whether a human arrived DIRECT on the same page right after a fetch - the only way to see an assistant
+      // whose links carry no referrer (chatgpt.com appends utm_source=chatgpt.com; claude.ai is suspected of sending nothing).
+      const bot = String(url.searchParams.get('bot') || 'claude-user').toLowerCase().replace(/[^a-z0-9._-]/g, '');
+      const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
+      const refLike = String(url.searchParams.get('ref') || 'claude').replace(/[^a-z0-9.-]/gi, '');
+      const [rows, byPath, refDay, refSrc] = await Promise.all([
+        aeQuery(env, `SELECT toDateTime(timestamp) AS ts, blob3 AS path FROM marginpad_events WHERE blob1='aibot' AND blob2='${bot}' AND ${D} ORDER BY ts DESC LIMIT 3000`), // a bare `timestamp` column in a raw SELECT is refused by the AE SQL API ("unable to find type of column") - wrap it
+        aeQuery(env, `SELECT blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND blob2='${bot}' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 200`),
+        aeQuery(env, `SELECT toDate(timestamp) AS day, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE '%${refLike}%' AND ${D} GROUP BY day ORDER BY day DESC LIMIT 90`),
+        aeQuery(env, `SELECT blob4 AS src, blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE '%${refLike}%' AND ${D} GROUP BY src, path ORDER BY n DESC LIMIT 100`),
+      ]);
+      // humans landing DIRECT on the pages this bot fetched, with timestamps, so the caller can look for arrivals right after a fetch
+      const top = (byPath || []).slice(0, 25).map(r => String(r.path || '')).filter(p => /^\/[a-z0-9\/_.-]*$/i.test(p));
+      const direct = top.length ? await aeQuery(env, `SELECT toDateTime(timestamp) AS ts, blob3 AS path, blob2 AS cc, blob5 AS dev FROM marginpad_events WHERE blob1='pageview' AND blob4='direct' AND blob3 IN (${top.map(p => "'" + p + "'").join(',')}) AND ${D} ORDER BY ts DESC LIMIT 6000`) : [];
+      return J({ bot, days: dA, rows: rows || [], byPath: byPath || [], refDay: refDay || [], refSrc: refSrc || [], direct: direct || [], aeErr: aeQuery.lastErr || '' });
+    }
     if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
       const AI = AI_REF_SQL; // AI-assistant referrers (their crawlers run NO JavaScript → they only ever see the static HTML)
