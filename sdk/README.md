@@ -103,7 +103,7 @@ Every field with its range: https://marginpad.io/trading-api/#sim
 | Max $99 | 2000 | 30 | 500 | 20 | 15 |
 | Business $199 | 5000 | 100 | 1000 | 50 | 50 |
 
-An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. The whole engine, the simulation, several books per key, the replay, the WebSocket stream and every market-data endpoint are free - only webhooks and the AI read are gated. Trade history is 30 days on Free and 90 on a paid plan.
+An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless, with no account and no trial. The paper-trading engine, the simulation, books, replay and the WebSocket stream are free for 7 days from the day the first key is minted (since 2026-10-13); after that they need a paid plan, and only webhooks and the AI read are gated by tier within it. Trade history is 30 days on the trial and 90 on a paid plan.
 
 Measured in production: the busiest bot peaks at 66 requests a minute against the Free ceiling of 120, and no key has ever been rate-limited on any plan. Choose on keys and history, not on throughput.
 
