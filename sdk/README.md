@@ -8,6 +8,8 @@ Test a strategy or an AI agent against live prices with real fee schedules, fund
 - Status: https://marginpad.io/status/ - Changelog: https://marginpad.io/api/changelog.xml
 - MCP server for Claude, ChatGPT and Cursor: https://marginpad.io/trading-api/#mcp
 
+[![Glama MCP server](https://glama.ai/mcp/servers/io.github.Marginpad/sdk/badge)](https://glama.ai/mcp/connectors/io.github.Marginpad/sdk)
+
 ## What the data behind it is
 
 The market data these clients read is measured by MarginPad itself and published free, with no key, as pages and JSON:

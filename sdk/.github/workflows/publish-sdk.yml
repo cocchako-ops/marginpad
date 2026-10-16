@@ -108,9 +108,18 @@ jobs:
         run: |
           set -euo pipefail
           v="${{ needs.check.outputs.version }}"
-          for i in 1 2 3 4 5 6; do sleep 10; if npm view "marginpad@$v" version >/dev/null 2>&1; then break; fi; done
           mkdir -p /tmp/verify && cd /tmp/verify && npm init -y >/dev/null
-          npm install --no-save "marginpad@$v"
+          # THE REGISTRY INDEX LAGS THE UPLOAD BY MORE THAN A MINUTE. 3.0.0 published cleanly, with its
+          # provenance signed, and this step still went red: six ten-second tries ran out at 62 s and the
+          # bare install then failed with ETARGET, which reads like a broken release instead of a slow
+          # index. A release workflow that goes red on a successful release teaches everyone to ignore it.
+          # Three minutes, the install itself inside the loop, and a message that says which one happened.
+          ok=0
+          for i in $(seq 1 18); do
+            if npm install --no-save --prefer-online "marginpad@$v" >/dev/null 2>&1; then ok=1; break; fi
+            sleep 10
+          done
+          [ "$ok" = "1" ] || { echo "::error::marginpad@$v was published but the npm registry index did not serve it within 3 minutes"; exit 1; }
           got=$(node -p "require('marginpad').VERSION")
           echo "installed VERSION = $got"
           [ "$got" = "$v" ] || { echo "::error::installed package reports $got, expected $v"; exit 1; }
@@ -139,6 +148,12 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: python/dist
+          # PyPI NEVER allows a version to be re-uploaded, so without this a re-run of a release whose
+          # OTHER half failed can never go green: 3.0.0 published here and npm refused it in the same
+          # run (the provenance carries the canonical Marginpad/sdk and package.json said marginpad/sdk).
+          # Skipping an upload that is already there is what makes one tag re-runnable; the version check
+          # above and the install-and-print verification below are what stop it hiding a real mistake.
+          skip-existing: true
       - name: Install from PyPI in a clean venv and print its version
         if: github.event_name == 'push' || inputs.dry_run == false
         run: |
