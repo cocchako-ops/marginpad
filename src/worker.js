@@ -13720,14 +13720,14 @@ async function checkReferrals(env) {
   if (!env.USERS || !env.REWARDS) return;
   let pend = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/refpending')); const j = await r.json(); pend = j.pending || []; } catch (e) { return; }
   if (!pend.length) return;
-  const cfg = await rewardCfg(env), refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5;
-  const cents = Math.max(1, Math.min(200, Math.round(refUsd * 100))), MIN_XP = (XP_LEVELS.find(l => l.k === 'bronze') || {}).min || 500; // 2026-08-15 (owner): pay MORE ($0.5 default, cap $2) for REAL users, gate HARDER below
+  const cfg = await rewardCfg(env), refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 1;
+  const cents = Math.max(1, Math.min(200, Math.round(refUsd * 100))), MIN_XP = (XP_LEVELS.find(l => l.k === 'bronze') || {}).min || 500; // 2026-08-15 (owner): pay MORE for REAL users, gate HARDER below. Default $1 since 2026-10-16 (owner), cap $2.
   const ledger = env.REWARDS.get(env.REWARDS.idFromName('ledger')), users = env.USERS.get(env.USERS.idFromName('main'));
   for (const p of pend) {
     if ((p.xp || 0) < MIN_XP) continue; // gate 1: Bronze (500 XP)
     if ((p.trades || 0) < 5) continue; // gate 2 (2026-08-15): 5 closed trades - XP alone was farmable through the Academy without ever touching the product
     if (!(+p.created > 0) || (Date.now() - (+p.created)) < 3 * 86400000) continue; // gate 3 (2026-08-15): account at least 3 days old - same-day referral farms never qualify
-    if ((+p.dwell || 0) <= 86400) continue; // gate 4 (2026-08-15, owner): UNPUBLISHED - referred account must have spent MORE than 24 cumulative HOURS on the site (measured udwell). Deliberately not written anywhere user-facing; a farm can fake XP faster than it can fake a day of real presence.
+    if ((+p.dwell || 0) <= 18000) continue; // gate 4 (2026-08-15; owner 2026-10-16 lowered 24h -> 5h): UNPUBLISHED - referred account must have spent MORE than 5 cumulative HOURS on the site (measured udwell, 18000s). Deliberately not written anywhere user-facing; a farm can fake XP faster than it can fake real presence.
     try {
       // Qualify FIRST (idempotent gate): once marked 'qualified' the referral leaves /refpending, so a failure
       // AFTER this point can never re-pay. (Old order paid then marked → a failed mark re-paid every 10min = double-pay.)
@@ -18863,7 +18863,12 @@ async function handleAuth(url, request, env, ctx) {
       const pn = tgOwner(env, 'new-account', 'New account: @' + un3, ['From ' + ccName(cc3) + (src3 ? ' - arrived via ' + src3 : ''), 'Signed up just now'], 'https://marginpad.io/api/stats#people/activity');
       if (ctx && ctx.waitUntil) ctx.waitUntil(pn);
     } catch (e) {}
-    try { const ref = String(b.ref || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); if (ref && ref !== d.user.id) { const did = getCookie(request, 'mp_did') || ''; const rp = stub.fetch(new Request('https://do/refrecord', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, referred: d.user.id, did }) })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); else await rp; } } catch (e) {} } // invite-a-friend: log who referred this new signup
+    try { const ref = String(b.ref || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); if (ref && ref !== d.user.id) { const did = getCookie(request, 'mp_did') || ''; const rp = stub.fetch(new Request('https://do/refrecord', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, referred: d.user.id, did }) })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); else await rp;
+      // THE SIGN-UP BONUS IS NOW AFFILIATE-ONLY (owner 2026-10-16): a non-referred signup gets nothing; a NEW account
+      // made via a referral link gets the one-time welcome bonus, granted here (the one place that knows a ref code
+      // was carried) by calling the ledger with x-referred:1 and the welcome cfg. grantWelcome stays idempotent.
+      if (d.isNew && env.REWARDS) { try { const rc = await rewardCfg(env); const wp = env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + d.user.id, 'x-referred': '1', 'x-cfg': JSON.stringify({ welcomeC: rc.welcomeC, capC: rc.capC }) } })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(wp); else await wp; } catch (e) {} }
+    } } catch (e) {} } // invite-a-friend: log who referred this new signup + grant the affiliate-only welcome bonus
     return new Response(JSON.stringify({ ok: true, user: d.user, isNew: d.isNew }), { status: 200, headers: h });
   }
   if (path === '/referral') { // self: referral link + stats for the /rewards "invite a friend" card
@@ -18872,7 +18877,7 @@ async function handleAuth(url, request, env, ctx) {
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
     let st = { invited: 0, qualified: 0, pending: 0 }; try { const r = await stub.fetch(new Request('https://do/refstats?uid=' + encodeURIComponent(sd.user.id))); st = await r.json(); } catch (e) {}
-    const cfg = await rewardCfg(env); const refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5;
+    const cfg = await rewardCfg(env); const refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 1;
     return jr({ signedIn: true, code: sd.user.id, link: 'https://marginpad.io/?ref=' + sd.user.id, rewardUsd: refUsd, invited: st.invited || 0, qualified: st.qualified || 0, pending: st.pending || 0, earnedUsd: Math.round((st.qualified || 0) * refUsd * 100) / 100 });
   }
   if (path === '/xp') { // self: own xp/level/streak + recent log, for the XP toasts + level-up celebration
@@ -22086,7 +22091,7 @@ export default {
     if (url.pathname === '/api/admin/affiliate' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops Affiliate tab: referral-link performance per user
       let sj = { affiliates: [], totals: {} };
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
-      try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
+      try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 1; } catch (e) { sj.referralUsd = 1; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/perfhist' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
@@ -26214,8 +26219,11 @@ export class RewardLedger {
     // durable per-account copy of every movement (the third argument is the detail on money rows: mission id, item, gift sender, week/board)
     try { if (amount && address && type !== 'dispadj') s.exec('INSERT INTO acctlog(ts,acct,type,detail,amount) VALUES(?,?,?,?,?)', Date.now(), address, type, String(cc || '').slice(0, 40), Math.round(+amount || 0)); } catch (e) {} }
   // One-time sign-up bonus: credit the configured welcome amount to a new account the first time it's seen. Idempotent (welcome flag) + respects the global daily budget. Returns the granted USD amount (0 if not granted).
-  grantWelcome(acct, cfg) {
-    if (!acct || !(cfg.welcomeC > 0)) return 0;
+  grantWelcome(acct, cfg, referred) {
+    // 2026-10-16 (owner): the sign-up bonus is for AFFILIATE signups ONLY - an account made via a referral link.
+    // A non-referred signup gets nothing. `referred` is passed (x-referred header) only on the signup path that
+    // knows the new account carried a ref code; every other /account or /me read passes it false, so it never grants.
+    if (!acct || !(cfg.welcomeC > 0) || !referred) return 0;
     const sql = this.state.storage.sql, now = Date.now(), day = new Date().toISOString().slice(0, 10);
     const r = this.rows('SELECT welcome, banned FROM accounts WHERE address=?', acct)[0];
     if (r && (r.welcome || r.banned)) return 0; // already granted, or banned
@@ -26240,6 +26248,7 @@ export class RewardLedger {
     const validMoon = /^moon:[a-z0-9_.-]{3,32}$/.test(addr); // Moon payout - 'moon:<username>' (addr is lowercased above); shows as-is in the ops Withdrawals queue
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
+    const referred = request.headers.get('x-referred') === '1'; // set only on the signup path for an account made via a referral link - gates the one-time welcome bonus (2026-10-16)
  const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.round(cfg.perDayC * xDayX) / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), /* exsignUsd/exsignEnabled dropped from the public payload 2026-08-20 - retired 2026-08-03, /exsign/* is 410, and the page never read them */ moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, fomoUsd: (cfg.fomoC == null ? 1 : cfg.fomoC / 100), fomoEnabled: cfg.fomoEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
 
     if (path === '/balance') { // READ-ONLY. /account cannot stand in for this: its first read grants the welcome
@@ -26248,7 +26257,7 @@ export class RewardLedger {
       return this.j({ acct: acct || '', balance: r0 ? +r0.balance || 0 : 0, exists: !!r0 });
     }
     if (path === '/account') {
-      const welcomeBonus = acct ? this.grantWelcome(acct, cfg) : 0; // one-time sign-up bonus on first account read
+      const welcomeBonus = acct ? this.grantWelcome(acct, cfg, referred) : 0; // one-time sign-up bonus - AFFILIATE signups only (referred)
       const r = acct ? this.rows('SELECT * FROM accounts WHERE address=?', acct)[0] : null;
       const mrow = acct ? this.rows('SELECT message,ts FROM msgs WHERE address=?', acct)[0] : null;
       const inbox = { adminMsg: mrow ? mrow.message : '', adminMsgTs: mrow ? mrow.ts : 0, banned: !!(r && r.banned) };
@@ -26522,7 +26531,7 @@ export class RewardLedger {
     }
     if (path === '/me') { // page calls this on load: returns the signed-in account's progress (balance survives a cleared browser because it's tied to the account, not the device)
       if (!acct) return this.j({ account: null, ...meta }); // not signed in
-      const welcomeBonus = this.grantWelcome(acct, cfg); // grant the one-time sign-up bonus the first time a signed-in account is seen
+      const welcomeBonus = this.grantWelcome(acct, cfg, referred); // one-time sign-up bonus - AFFILIATE signups only (referred)
       const r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
       const dayAmt = (r && r.day === day) ? r.day_amt : 0;
       const mrow = this.rows('SELECT message,ts FROM msgs WHERE address=?', acct)[0];
