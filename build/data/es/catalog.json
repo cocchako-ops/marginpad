@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-16T03:13:38.661Z",
+  "generated": "2026-10-16T13:19:26.800Z",
   "pages": 386,
-  "occurrences": 26674,
-  "unique": 14139,
-  "words": 269350,
+  "occurrences": 26688,
+  "unique": 14153,
+  "words": 269608,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-16T03:20:00.369Z"
+  "merged": "2026-10-16T13:24:38.256Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1675,
+   "n": 1671,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -5954,7 +5954,7 @@
     "/hyperliquid-whales/",
     "/"
    ],
-   "n": 21,
+   "n": 22,
    "w": 1
   },
   "6jTRUxYsFL": {
@@ -57099,9 +57099,9 @@
    "n": 1,
    "w": 23
   },
-  "V4IpjY-iYp": {
-   "en": "<a href=\"/community/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(194,246,74,.09),rgba(56,189,248,.06));border:1px solid rgba(194,246,74,.35);border-radius:14px;padding:14px 18px;margin:0 0 18px;text-decoration:none\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">The MarginPad Community is live</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Publish your own trading ideas, embed live charts, discuss markets with other traders - free with an email sign-in.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Join →</span> </a>",
-   "es": "<a href=\"/community/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(194,246,74,.09),rgba(56,189,248,.06));border:1px solid rgba(194,246,74,.35);border-radius:14px;padding:14px 18px;margin:0 0 18px;text-decoration:none\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">La Comunidad de MarginPad ya está activa</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Publica tus propias ideas de trading, incrusta gráficos en vivo, debate sobre los mercados con otros traders - gratis con solo iniciar sesión con tu correo.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Unirse →</span> </a>",
+  "yW3xF4Xr5p": {
+   "en": "<a href=\"/community/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(194,246,74,.09),rgba(56,189,248,.06));border:1px solid rgba(194,246,74,.35);border-radius:14px;padding:14px 18px;margin:0 0 18px;text-decoration:none\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">The MarginPad Community is live</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Publish your own trading ideas, embed live charts, discuss markets with other traders - free with an email sign-in.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Join →</span> </a> <a href=\"/blog/theses/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(160,107,255,.12),rgba(194,246,74,.05));border:1px solid rgba(160,107,255,.32);border-radius:14px;padding:14px 16px;margin:0 0 18px;text-decoration:none;color:#ecebe4\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">Traders' theses</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Why members hold what they hold on Demo Spot - a thesis a post, newest first. Write yours and it lands here.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Read them &rarr;</span> </a>",
+   "es": "<a href=\"/community/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(194,246,74,.09),rgba(56,189,248,.06));border:1px solid rgba(194,246,74,.35);border-radius:14px;padding:14px 18px;margin:0 0 18px;text-decoration:none\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">La Comunidad de MarginPad ya está activa</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Publica tus propias ideas de trading, incrusta gráficos en vivo y comenta los mercados con otros traders - gratis, solo con iniciar sesión por correo.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Unirme →</span> </a> <a href=\"/blog/theses/\" style=\"display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(160,107,255,.12),rgba(194,246,74,.05));border:1px solid rgba(160,107,255,.32);border-radius:14px;padding:14px 16px;margin:0 0 18px;text-decoration:none;color:#ecebe4\"> <span style=\"flex:1;min-width:0\"><b style=\"color:#c2f64a\">Tesis de los traders</b><span style=\"display:block;color:#9aa3ad;font-size:13px;margin-top:2px\">Por qué los miembros tienen lo que tienen en Demo Spot - una tesis por publicación, las más recientes primero. Escribe la tuya y aparecerá aquí.</span></span> <span style=\"font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap\">Léelas &rarr;</span> </a>",
    "kind": [
     "html"
    ],
@@ -57109,7 +57109,7 @@
     "/blog/"
    ],
    "n": 1,
-   "w": 24
+   "w": 47
   },
   "V2NH7IJvOE": {
    "en": "Europe",
@@ -81286,9 +81286,10 @@
     "html"
    ],
    "ctx": [
-    "/community/"
+    "/community/",
+    "/spot/"
    ],
-   "n": 1,
+   "n": 2,
    "w": 1
   },
   "d9_SE19Nty": {
@@ -115619,9 +115620,9 @@
    "n": 1,
    "w": 5
   },
-  "7L2ebtsusv": {
-   "en": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">in live prize pools across 8 boards · paid in USD to your rewards balance</span>",
-   "es": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">en bolsas de premios activas en 8 tablas · pagado en USD a tu saldo de recompensas</span>",
+  "vO1xjd_ZXB": {
+   "en": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">in live prize pools across 9 boards · paid in USD to your rewards balance</span>",
+   "es": "<b id=\"cpPool\">$570+</b><span id=\"cpPoolS\">en bolsas de premios en vivo repartidas en 9 tablas · pagado en USD a tu saldo de recompensas</span>",
    "kind": [
     "html"
    ],
@@ -115643,9 +115644,9 @@
    "n": 1,
    "w": 2
   },
-  "Bmte1Wv2fo": {
-   "en": "<span class=\"cp-go\">All eight boards<i>&rarr;</i></span>",
-   "es": "<span class=\"cp-go\">Las ocho tablas<i>&rarr;</i></span>",
+  "-XS9okMzCA": {
+   "en": "<span class=\"cp-go\">All nine boards<i>&rarr;</i></span>",
+   "es": "<span class=\"cp-go\">Las nueve tablas<i>&rarr;</i></span>",
    "kind": [
     "html"
    ],
@@ -115655,9 +115656,9 @@
    "n": 1,
    "w": 3
   },
-  "TWGeUw15Ee": {
-   "en": "<span>Free to enter</span><em>paper trades or one BTC call a day · no deposit</em>",
-   "es": "<span>Gratis para participar</span><em>paper trades o una predicción de BTC al día · sin depósito</em>",
+  "x9nCXg86rt": {
+   "en": "<span>Free to enter</span><em>paper trades, one BTC call a day or a Demo Spot portfolio · no deposit</em>",
+   "es": "<span>Gratis para participar</span><em>operaciones en paper trading, una predicción de BTC al día o una cartera de Demo Spot · sin depósito</em>",
    "kind": [
     "html"
    ],
@@ -115665,7 +115666,7 @@
     "/"
    ],
    "n": 1,
-   "w": 12
+   "w": 15
   },
   "R9IXHAfwO-": {
    "en": "<span>Gold level</span>",
@@ -121350,9 +121351,9 @@
    "n": 1,
    "w": 2
   },
-  "ScbFSwSsDV": {
-   "en": "Eight boards, real prize money paid in USD to your rewards balance: five free, the Gold Room, and two scored on real Bybit and Moon accounts. Every ranked trader, every prize, the exact rule.",
-   "es": "Ocho tablas, premios reales pagados en USD a tu saldo de recompensas: cinco gratis, The Gold Room, y dos puntuadas sobre cuentas reales de Bybit y Moon. Cada trader clasificado, cada premio, la regla exacta.",
+  "BgZw7SVIut": {
+   "en": "Nine boards, real prize money paid in USD to your rewards balance: six free (four paper, the daily BTC call, Demo Spot), the Gold Room, and two scored on real Bybit and Moon accounts. Every ranked trader, every prize, the exact rule.",
+   "es": "Nueve tablas, dinero real en premios pagado en USD a tu saldo de recompensas: seis gratuitas (cuatro de paper trading, la predicción diaria de BTC, Demo Spot), The Gold Room, y dos puntuadas con cuentas reales de Bybit y Moon. Cada trader clasificado, cada premio, la regla exacta.",
    "kind": [
     "html"
    ],
@@ -121360,7 +121361,7 @@
     "/leaderboards/"
    ],
    "n": 1,
-   "w": 34
+   "w": 42
   },
   "YiVfVnHoo4": {
    "en": "Season",
@@ -144225,9 +144226,9 @@
    "n": 1,
    "w": 2
   },
-  "eieLFcQv5Q": {
-   "en": "Seven boards pay the top 5 in real USDT at the end of every 14-day season: four paper boards - Green days, Highest ROE, Best win rate and Season XP - open with your first closed trade on <a href=\"/paper-trade\">Paper Trade</a>, the Gold Room opens at Gold (12,000 XP), and two are scored on real accounts opened through MarginPad - Bybit volume and King of the Moon. No deposit and no account fee.",
-   "es": "Siete tablas pagan al top 5 en USDT real al final de cada temporada de 14 días: cuatro tablas de simulado - Green days, Highest ROE, Best win rate y Season XP - se abren con tu primera operación cerrada en <a href=\"/paper-trade\">Paper Trade</a>, The Gold Room se abre al llegar a Gold (12,000 XP) y dos se puntúan sobre cuentas reales abiertas a través de MarginPad - Bybit volume y King of the Moon. Sin depósito y sin cuota de cuenta.",
+  "5vmUaARGMc": {
+   "en": "Nine boards pay their top places in real USDT at the end of every 14-day season: four paper boards - Green days, Highest ROE, Best win rate and Season XP - open with your first closed trade on <a href=\"/paper-trade\">Paper Trade</a>, the Daily BTC call needs one call a day, <a href=\"/spot/\">Meme Spot</a> pays the three biggest Demo Spot season profits $15 / $10 / $5, the Gold Room opens at Gold (12,000 XP), and two are scored on real accounts opened through MarginPad - Bybit volume and King of the Moon. No deposit and no account fee.",
+   "es": "Nueve tablas pagan sus primeros puestos en USDT real al final de cada temporada de 14 días: cuatro tablas de paper trading - Días verdes, ROE más alto, Mejor tasa de acierto y XP de temporada - se abren con tu primera operación cerrada en <a href=\"/paper-trade\">Paper Trade</a>, la predicción diaria de BTC necesita una predicción al día, <a href=\"/spot/\">Meme Spot</a> paga a los tres mayores beneficios de temporada en Demo Spot $15 / $10 / $5, The Gold Room se abre en Gold (12,000 XP), y dos se puntúan con cuentas reales abiertas a través de MarginPad - volumen en Bybit y King of the Moon. Sin depósito y sin cuota de cuenta.",
    "kind": [
     "html"
    ],
@@ -144235,7 +144236,7 @@
     "/rewards/"
    ],
    "n": 1,
-   "w": 68
+   "w": 90
   },
   "thxhhbbFei": {
    "en": "<span class=\"pboard-tag\">Top 5 · USDT</span>",
@@ -146896,9 +146897,9 @@
    "n": 1,
    "w": 2
   },
-  "Rd20nPpiMU": {
-   "en": "Fourteen days. Eight boards that pay real USDT, a 40-tier pass unlocked by the XP you already earn, one BTC call a day that pays too, two goals you choose yourself, and the live floor. Then it starts again.",
-   "es": "Catorce días. Ocho tablas que pagan USDT real, un pase de 40 niveles que se desbloquea con el XP que ya ganas, una predicción de BTC al día que también paga, dos metas que eliges tú, y el piso en vivo. Después empieza otra vez.",
+  "VNPQ3h0ltm": {
+   "en": "Fourteen days. Nine boards that pay real USDT, a 40-tier pass unlocked by the XP you already earn, one BTC call a day that pays too, two goals you choose yourself, and the live floor. Then it starts again.",
+   "es": "Catorce días. Nueve tablas que pagan en USDT real, un pase de 40 niveles que desbloqueas con el XP que ya ganas, una predicción de BTC al día que también paga, dos objetivos que eliges tú mismo y la actividad en vivo. Luego vuelve a empezar.",
    "kind": [
     "html"
    ],
@@ -147556,9 +147557,9 @@
    "n": 1,
    "w": 2
   },
-  "nUnF3rV794": {
-   "en": "<span class=\"s\">Eight boards, the top places on each get paid. Pick the one you can win.</span>",
-   "es": "<span class=\"s\">Ocho tablas, los primeros puestos de cada una cobran. Elige la que puedas ganar.</span>",
+  "XjbEp3RiPP": {
+   "en": "<span class=\"s\">Nine boards, the top places on each get paid. Pick the one you can win.</span>",
+   "es": "<span class=\"s\">Nueve tablas, se pagan los primeros puestos de cada una. Elige la que puedas ganar.</span>",
    "kind": [
     "html"
    ],
@@ -147676,9 +147677,9 @@
    "n": 1,
    "w": 64
   },
-  "cCZahrlso0": {
-   "en": "Seven boards run per 14-day season and pay their top places in real USDT to the rewards balance; King of the Moon runs one contest over two seasons. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.",
-   "es": "Siete tablas corren por temporada de 14 días y pagan sus primeros puestos en USDT real al saldo de recompensas; King of the Moon corre un concurso durante dos temporadas. Trampas, cuentas suspendidas y símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.",
+  "x12Fcfmfbn": {
+   "en": "Nine boards run per 14-day season and pay their top places in real USDT to the rewards balance - four paper boards, the Daily BTC call, Meme Spot (Demo Spot season profit), the Gold Room and Bybit volume; King of the Moon runs one contest over two seasons. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.",
+   "es": "Nueve tablas corren por cada temporada de 14 días y pagan sus primeros puestos en USDT real al saldo de recompensas - cuatro tablas de paper trading, la predicción diaria de BTC, Meme Spot (beneficio de temporada en Demo Spot), The Gold Room y volumen en Bybit; King of the Moon corre un solo concurso a lo largo de dos temporadas. Las trampas, las cuentas bloqueadas y los símbolos excluidos (forex, metales, índices, stablecoins) nunca cuentan.",
    "kind": [
     "html"
    ],
@@ -147686,7 +147687,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 40
+   "w": 59
   },
   "7RVj6n90Sc": {
    "en": "<span class=\"eb\">Live · every member, every close</span>",
@@ -147868,9 +147869,9 @@
    "n": 1,
    "w": 1
   },
-  "OQeWsk7Uzh": {
-   "en": "The live leaderboards of the MarginPad crypto trading competition. Eight boards, $370 in prizes every 14 days, free to enter. Plus the 40-tier season pass, the daily BTC call board, your two goals and the live floor of closes and duels.",
-   "es": "Las tablas en vivo de la competición de trading de cripto de MarginPad. Ocho tablas, $370 en premios cada 14 días, entrada gratis. Además el pase de temporada de 40 niveles, la tabla de predicción diaria de BTC, tus dos metas y el piso en vivo de cierres y duelos.",
+  "IF62aezM2v": {
+   "en": "The live leaderboards of the MarginPad crypto trading competition. Nine boards, $300 in prizes every 14 days plus $300 every two seasons on King of the Moon, free to enter. Plus the 40-tier season pass, the daily BTC call board, your two goals and the live floor of closes and duels.",
+   "es": "Las clasificaciones en vivo de la competencia de trading de futuros cripto de MarginPad. Nueve tablas, $300 en premios cada 14 días más $300 cada dos temporadas en King of the Moon, gratis para participar. Además el pase de temporada de 40 niveles, la tabla de predicción diaria de BTC, tus dos objetivos y la actividad en vivo de cierres y duelos.",
    "kind": [
     "attr:content"
    ],
@@ -147878,7 +147879,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 41
+   "w": 51
   },
   "HJjan9MKwP": {
    "en": "Your Season - MarginPad",
@@ -147892,9 +147893,9 @@
    "n": 1,
    "w": 3
   },
-  "2c1W3qrZ1C": {
-   "en": "Eight boards paying real USDT, a 40-tier pass, a daily BTC call board, season goals and the live floor. Fourteen days, then it starts again.",
-   "es": "Ocho tablas que pagan USDT real, un pase de 40 niveles, una tabla de predicción diaria de BTC, metas de temporada y el piso en vivo. Catorce días, y empieza otra vez.",
+  "IJJIWmZ0dM": {
+   "en": "Nine boards paying real USDT, a 40-tier pass, a daily BTC call board, a Meme Spot board, season goals and the live floor. Fourteen days, then it starts again.",
+   "es": "Nueve tablas que pagan en USDT real, un pase de 40 niveles, una tabla de predicción diaria de BTC, una tabla de Meme Spot, objetivos de temporada y la actividad en vivo. Catorce días, luego vuelve a empezar.",
    "kind": [
     "attr:content"
    ],
@@ -147902,7 +147903,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 23
+   "w": 26
   },
   "v3pxnV4ZkU": {
    "en": "MarginPad Season - crypto futures trading competition",
@@ -147917,9 +147918,9 @@
    "n": 2,
    "w": 6
   },
-  "6ysAm1Ttf9": {
-   "en": "The live leaderboards of the MarginPad trading competition: seven boards on a fourteen-day season, $350 in prizes, free to enter. Five boards are scored from paper trades filled server-side against real exchange candles (four open to everyone, the Gold Room at Gold level); one ranks real Bybit futures volume every season and King of the Moon ranks real Moon wagering over two seasons.",
-   "es": "Las clasificaciones en vivo de la competición de trading de MarginPad: siete tablas en una temporada de catorce días, $350 en premios y entrada gratis. Cinco tablas se puntúan con operaciones en simulado ejecutadas en el servidor contra velas reales de exchange (cuatro abiertas a todo el mundo, The Gold Room a nivel Gold); una clasifica el volumen real de futuros en Bybit cada temporada y King of the Moon clasifica las apuestas reales en Moon a lo largo de dos temporadas.",
+  "vbVyP2X7LA": {
+   "en": "The live leaderboards of the MarginPad trading competition: nine boards on a fourteen-day season, $300 in prizes plus $300 every two seasons on King of the Moon, free to enter. Five boards are scored from paper trades filled server-side against real exchange candles (four open to everyone, the Gold Room at Gold level); one ranks real Bybit futures volume every season and King of the Moon ranks real Moon wagering over two seasons.",
+   "es": "Las clasificaciones en vivo de la competencia de trading de MarginPad: nueve tablas en una temporada de catorce días, $300 en premios más $300 cada dos temporadas en King of the Moon, gratis para participar. Cinco tablas se puntúan con operaciones de paper trading ejecutadas en el servidor contra velas reales del exchange (cuatro abiertas a todos, The Gold Room en el nivel Gold); una clasifica el volumen real de futuros en Bybit cada temporada y King of the Moon clasifica las apuestas reales en Moon a lo largo de dos temporadas.",
    "kind": [
     "ld"
    ],
@@ -147927,7 +147928,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 62
+   "w": 72
   },
   "lRP_eM-9Az": {
    "en": "Trading competition",
@@ -150259,18 +150260,6 @@
    "n": 1,
    "w": 14
   },
-  "3kw0BqZ9y9": {
-   "en": "<span data-t=\"b_h\">Season board</span><small id=\"gbSub\"></small>",
-   "es": "<span data-t=\"b_h\">Tabla de temporada</span><small id=\"gbSub\"></small>",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 2
-  },
   "l_SuNT2MNk": {
    "en": "Portfolio worth",
    "es": "Valor del portafolio",
@@ -150332,6 +150321,42 @@
    "n": 2,
    "w": 2
   },
+  "6HmwvgGQdm": {
+   "en": "Board",
+   "es": "Tabla",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "dCWCbg6Ms5": {
+   "en": "<a href=\"/leaderboards/#meme\" data-t=\"b_full\">Full board</a>",
+   "es": "<a href=\"/leaderboards/#meme\" data-t=\"b_full\">Tabla completa</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "f4L_3qpQgE": {
+   "en": "<span class=\"ck\" data-th=\"c_row\">Daily top-up · <b>$100</b> of demo cash, once per UTC day. Never counts as profit.</span>",
+   "es": "<span class=\"ck\" data-th=\"c_row\">Recarga diaria · <b>$100</b> de efectivo demo, una vez por día UTC. Nunca cuenta como beneficio.</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 14
+  },
   "N7_ZcRgcMH": {
    "en": "Claim $100",
    "es": "Reclamar $100",
@@ -150343,18 +150368,6 @@
    ],
    "n": 1,
    "w": 2
-  },
-  "-MrCMZ5rzE": {
-   "en": "Once every UTC day, <b>$100</b> of demo cash. It has to be pressed - and it never counts as profit on the board.",
-   "es": "Una vez cada día UTC, <b>$100</b> de efectivo demo. Hay que pulsarlo - y nunca cuenta como beneficio en la tabla.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/spot/"
-   ],
-   "n": 1,
-   "w": 22
   },
   "Xjy3MViu5L": {
    "en": "<span data-t=\"h_hold\">Your coins</span><small id=\"holdSub\"></small>",
@@ -150380,9 +150393,9 @@
    "n": 1,
    "w": 13
   },
-  "J7NN68tVzo": {
-   "en": "<span data-t=\"b_h\">Season board</span><small id=\"bSub\"></small><a class=\"r\" href=\"/leaderboards/#meme\" data-t=\"b_full\">Full board</a>",
-   "es": "<span data-t=\"b_h\">Tabla de temporada</span><small id=\"bSub\"></small><a class=\"r\" href=\"/leaderboards/#meme\" data-t=\"b_full\">Tabla completa</a>",
+  "1ZMV8_Ouqx": {
+   "en": "<span data-t=\"f_h\">The floor</span><small id=\"floorSub\" data-t=\"f_s\">who is buying what, live</small><span class=\"r\"><i class=\"livedot\"></i><span data-t=\"f_live\">live</span></span>",
+   "es": "<span data-t=\"f_h\">La actividad</span><small id=\"floorSub\" data-t=\"f_s\">quién compra qué, en vivo</small><span class=\"r\"><i class=\"livedot\"></i><span data-t=\"f_live\">en vivo</span></span>",
    "kind": [
     "html"
    ],
@@ -150390,11 +150403,11 @@
     "/spot/"
    ],
    "n": 1,
-   "w": 4
+   "w": 8
   },
-  "R7_gbExCOG": {
-   "en": "Nobody has a season profit yet - the first green position fills this table.",
-   "es": "Nadie tiene beneficio de temporada todavía - la primera posición en verde llena esta tabla.",
+  "yPAnHhk-ez": {
+   "en": "Quiet for now - the first buy on the floor shows up here.",
+   "es": "Todo tranquilo por ahora - la primera compra en la actividad aparecerá aquí.",
    "kind": [
     "html"
    ],
@@ -150419,6 +150432,66 @@
   "T37Feq-BCw": {
    "en": "Trending memes",
    "es": "Memes en tendencia",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "Rz96s3kDL5": {
+   "en": "<span data-t=\"th_h\">Theses</span><small data-t=\"th_s\">why members hold what they hold</small>",
+   "es": "<span data-t=\"th_h\">Tesis</span><small data-t=\"th_s\">por qué los miembros tienen lo que tienen</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "of08Exf6NT": {
+   "en": "Write a thesis",
+   "es": "Escribe una tesis",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "chmVgv5RLx": {
+   "en": "Say what you hold, why, and what would prove you wrong. A published thesis pays <b>20 XP</b> and <b>5 Ticks</b> and lands on <a href=\"/blog/theses/\">the blog</a>.",
+   "es": "Di qué tienes, por qué, y qué demostraría que estás equivocado. Una tesis publicada paga <b>20 XP</b> y <b>5 Ticks</b> y aparece en <a href=\"/blog/theses/\">el blog</a>.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 23
+  },
+  "ggYfGVj1Ac": {
+   "en": "No thesis yet - the first one lands here within a minute of being written.",
+   "es": "Todavía no hay tesis - la primera aparecerá aquí al minuto de escribirse.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 13
+  },
+  "jxi8rbK0x8": {
+   "en": "<a class=\"more\" href=\"/blog/theses/\" id=\"thMore\" data-t=\"th_more\">All theses</a>",
+   "es": "<a class=\"more\" href=\"/blog/theses/\" id=\"thMore\" data-t=\"th_more\">Todas las tesis</a>",
    "kind": [
     "html"
    ],
@@ -150500,6 +150573,54 @@
    "n": 1,
    "w": 3
   },
+  "mJInNuVz8a": {
+   "en": "<b data-t=\"ths_h\">Write a thesis</b><small data-t=\"ths_s\">it lands on the blog and in the Community · 20 XP + 5 Ticks</small>",
+   "es": "<b data-t=\"ths_h\">Escribe una tesis</b><small data-t=\"ths_s\">aparece en el blog y en la Comunidad · 20 XP + 5 Ticks</small>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 14
+  },
+  "do4MHGlXP7": {
+   "en": "Title",
+   "es": "Título",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 1
+  },
+  "JNrhcgpnCD": {
+   "en": "Coins (comma separated)",
+   "es": "Monedas (separadas por comas)",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 3
+  },
+  "-uSKj2f9gf": {
+   "en": "Thesis",
+   "es": "Tesis",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 1
+  },
   "aFJ11sN3Hm": {
    "en": "Search a coin or paste a contract address",
    "es": "Busca una moneda o pega una dirección de contrato",
@@ -150511,6 +150632,30 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "q85Nd1u6m7": {
+   "en": "Why I hold PEPE into the listing",
+   "es": "Por qué mantengo PEPE hasta el listing",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "HoB61S0riu": {
+   "en": "PEPE, SOL",
+   "es": "PEPE, SOL",
+   "kind": [
+    "attr:placeholder"
+   ],
+   "ctx": [
+    "/spot/"
+   ],
+   "n": 1,
+   "w": 2
   },
   "GQCn6OrXqr": {
    "en": "Buy and hold meme coins on Solana, Base, Ethereum and BNB Chain plus the top 250 coins with $10,000 of free demo cash and $100 more every day you claim it. No fees, no leverage, live prices. One season board pays $30 to the top three in real USDT.",
@@ -162481,9 +162626,9 @@
    "n": 1,
    "w": 6
   },
-  "L3PX_zK80n": {
-   "en": "A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Eight leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on six of them.",
-   "es": "Una <b>competición continua de trading de futuros de cripto</b> en temporadas de catorce días. Ocho tablas, dinero real en premios en cada una, y <b>sin depósito ni cuenta en un exchange</b> para competir en seis de ellas.",
+  "1rWRMiodoa": {
+   "en": "A <b>continuous crypto futures trading competition</b> in fourteen-day seasons. Nine leaderboards, real prize money on every one, and <b>no deposit and no exchange account needed</b> to compete on seven of them.",
+   "es": "Una <b>competencia continua de trading de futuros cripto</b> en temporadas de catorce días. Nueve clasificaciones, dinero real en premios en todas, y <b>sin depósito ni cuenta de exchange</b> para competir en siete de ellas.",
    "kind": [
     "html"
    ],
@@ -162565,9 +162710,9 @@
    "n": 1,
    "w": 15
   },
-  "SxLZPnNBse": {
-   "en": "The eight boards",
-   "es": "Las ocho tablas",
+  "S-z8wXGR48": {
+   "en": "The nine boards",
+   "es": "Las nueve tablas",
    "kind": [
     "html"
    ],
@@ -162610,7 +162755,7 @@
    "ctx": [
     "/trading-competition/"
    ],
-   "n": 8,
+   "n": 9,
    "w": 1
   },
   "jtRnZfi1DD": {
@@ -162622,7 +162767,7 @@
    "ctx": [
     "/trading-competition/"
    ],
-   "n": 8,
+   "n": 9,
    "w": 5
   },
   "0vSmjL8cVZ": {
@@ -162634,7 +162779,7 @@
    "ctx": [
     "/trading-competition/"
    ],
-   "n": 5,
+   "n": 6,
    "w": 2
   },
   "ZHF8Mzj9QM": {
@@ -162756,6 +162901,30 @@
    ],
    "n": 1,
    "w": 3
+  },
+  "2CriES4O3B": {
+   "en": "Meme Spot",
+   "es": "Meme Spot",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-competition/"
+   ],
+   "n": 1,
+   "w": 2
+  },
+  "3y0zJMHPCT": {
+   "en": "Season profit on Demo Spot - buy and hold memes and majors with $10,000 of demo cash; the daily $100 claim never counts.",
+   "es": "Beneficio de temporada en Demo Spot - compra y mantén memecoins y las principales criptomonedas con $10,000 de efectivo demo; el reclamo diario de $100 nunca cuenta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/trading-competition/"
+   ],
+   "n": 1,
+   "w": 22
   },
   "lBli4ESEsd": {
    "en": "Bybit Volume",
@@ -163046,9 +163215,9 @@
    "n": 2,
    "w": 6
   },
-  "pptAKgmif1": {
-   "en": "Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its eight boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - and a sixth from a daily call on where BTC closes, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.",
-   "es": "Sí. MarginPad organiza una de forma continua en temporadas de catorce días. Cinco de sus ocho tablas se puntúan con operaciones en paper - cuatro abren con tu primera operación cerrada, la Gold Room en el nivel Gold - y una sexta con una predicción diaria sobre dónde cierra BTC, así que entrar no cuesta nada, no necesita depósito ni cuenta en un exchange. El dinero de los premios es real y se paga a los primeros puestos de cada tabla.",
+  "heg4wXA4f7": {
+   "en": "Yes. MarginPad runs one continuously in fourteen-day seasons. Five of its nine boards are scored from paper trades - four open with your first closed trade, the Gold Room at Gold level - a sixth from a daily call on where BTC closes and a seventh from Demo Spot, buy-and-hold on $10,000 of demo cash, so entry costs nothing, needs no deposit and needs no exchange account. The prize money is real and is paid to the top places on every board.",
+   "es": "Sí. MarginPad organiza una de forma continua en temporadas de catorce días. Cinco de sus nueve tablas se puntúan con operaciones de paper trading - cuatro se abren con tu primera operación cerrada, The Gold Room en el nivel Gold - una sexta con una predicción diaria sobre dónde cierra BTC y una séptima con Demo Spot, comprar y mantener con $10,000 de efectivo demo, así que participar no cuesta nada, no necesita depósito ni cuenta de exchange. El dinero de los premios es real y se paga a los primeros puestos de cada tabla.",
    "kind": [
     "html",
     "ld"
@@ -163057,7 +163226,7 @@
     "/trading-competition/"
    ],
    "n": 2,
-   "w": 67
+   "w": 77
   },
   "QnLQpGvk52": {
    "en": "What do you win?",
@@ -163072,9 +163241,9 @@
    "n": 2,
    "w": 4
   },
-  "zLSPZOlknR": {
-   "en": "Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board - about $11.65 per $100,000 traded - split over ten ranks: 50% / 25% / 10% / 5% / 5%, then 1% each, so $50, $25, $10, $5, $5 and $1 at the start and more as the volume grows ($500,000 of season volume makes the pool about $158). King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. That is $270 a season across the seven season boards before the Bybit pool grows, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
-   "es": "Cada tabla de paper paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla Predicción diaria de BTC paga $12, $5 y $3 a sus tres primeros. La tabla de volumen en Bybit paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla - unos $11.65 por cada $100,000 operados - repartida en diez puestos: 50% / 25% / 10% / 5% / 5%, luego 1% cada uno, es decir $50, $25, $10, $5, $5 y $1 al inicio y más a medida que crece el volumen ($500,000 de volumen en la temporada dejan la bolsa en unos $158). King of the Moon paga $150, $70, $40, $25 y $15 en un concurso de dos temporadas. Son $270 por temporada en las siete tablas de temporada antes de que crezca la bolsa de Bybit, más $300 cada dos temporadas en Moon. Los premios se abonan a tu saldo de recompensas de MarginPad y se pueden retirar.",
+  "iSCCpSCOci": {
+   "en": "Every paper board pays its top five: $10, $8, $6, $4 and $2. The Daily BTC Call board pays $12, $5 and $3 to its top three. The Bybit volume board pays a pool that starts at $100 every season and adds 52% of the affiliate commission Bybit pays MarginPad for the traders on that board - about $11.65 per $100,000 traded - split over ten ranks: 50% / 25% / 10% / 5% / 5%, then 1% each, so $50, $25, $10, $5, $5 and $1 at the start and more as the volume grows ($500,000 of season volume makes the pool about $158). King of the Moon pays $150, $70, $40, $25 and $15 over a two-season contest. The Meme Spot board pays $15, $10 and $5 to the three biggest Demo Spot season profits. That is $300 a season across the eight season boards before the Bybit pool grows, plus $300 every two seasons on Moon. Prizes are credited to your MarginPad rewards balance and can be withdrawn.",
+   "es": "Cada tabla de paper trading paga a sus cinco primeros: $10, $8, $6, $4 y $2. La tabla de predicción diaria de BTC paga $12, $5 y $3 a sus tres primeros. La tabla de volumen en Bybit paga una bolsa que empieza en $100 cada temporada y suma el 52% de la comisión de afiliado que Bybit paga a MarginPad por los traders de esa tabla - unos $11.65 por cada $100,000 operados - repartida en diez puestos: 50% / 25% / 10% / 5% / 5%, luego 1% cada uno, así que $50, $25, $10, $5, $5 y $1 al inicio, y más a medida que crece el volumen ($500,000 de volumen de temporada hacen que la bolsa llegue a unos $158). King of the Moon paga $150, $70, $40, $25 y $15 a lo largo de un concurso de dos temporadas. La tabla de Meme Spot paga $15, $10 y $5 a los tres mayores beneficios de temporada en Demo Spot. Eso son $300 por temporada entre las ocho tablas de temporada antes de que crezca la bolsa de Bybit, más $300 cada dos temporadas en Moon. Los premios se acreditan a tu saldo de recompensas de MarginPad y se pueden retirar.",
    "kind": [
     "html",
     "ld"
@@ -163083,7 +163252,7 @@
     "/trading-competition/"
    ],
    "n": 2,
-   "w": 145
+   "w": 162
   },
   "UCfXKukNdt": {
    "en": "What is the Daily BTC Call board?",
@@ -163277,9 +163446,9 @@
    "n": 1,
    "w": 5
   },
-  "mEJnGwN5Tp": {
-   "en": "Join a free crypto futures trading competition. Eight leaderboards, $270 in prizes every 14 days plus a Bybit pool that grows with the volume traded and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, and two boards pay for real trading - Bybit volume and King of the Moon.",
-   "es": "Únete a una competición gratuita de trading de futuros de cripto. Ocho tablas, $270 en premios cada 14 días más una bolsa de Bybit que crece con el volumen operado y $300 cada dos temporadas, sin depósito para entrar. Las tablas de paper se llenan en el servidor contra velas reales de exchanges, una tabla de predicción diaria de BTC paga por la precisión, y dos tablas pagan por trading real - volumen en Bybit y King of the Moon.",
+  "qD6hAPIeLU": {
+   "en": "Join a free crypto futures trading competition. Nine leaderboards, $300 in prizes every 14 days plus a Bybit pool that grows with the volume traded and $300 every two seasons, no deposit to enter. Paper boards are filled server-side against real exchange candles, a daily BTC call board pays for accuracy, Meme Spot pays the biggest Demo Spot season profit, and two boards pay for real trading - Bybit volume and King of the Moon.",
+   "es": "Únete a una competencia gratuita de trading de futuros cripto. Nueve clasificaciones, $300 en premios cada 14 días más una bolsa de Bybit que crece con el volumen operado y $300 cada dos temporadas, sin depósito para participar. Las tablas de paper trading se llenan en el servidor contra velas reales del exchange, una tabla de predicción diaria de BTC paga por precisión, Meme Spot paga el mayor beneficio de temporada en Demo Spot, y dos tablas pagan por trading real - volumen en Bybit y King of the Moon.",
    "kind": [
     "attr:content"
    ],
@@ -163287,24 +163456,23 @@
     "/trading-competition/"
    ],
    "n": 3,
-   "w": 62
+   "w": 71
   },
   "ZlIu__5krr": {
    "en": "Crypto Trading Competition - Free Entry, Real Prizes Every 14 Days",
    "es": "Competencia de Trading de Criptomonedas - Entrada Gratis, Premios Reales Cada 14 Días",
    "kind": [
-    "attr:content",
-    "ld"
+    "attr:content"
    ],
    "ctx": [
     "/trading-competition/"
    ],
-   "n": 3,
+   "n": 2,
    "w": 10
   },
-  "I3Qf0uLGWN": {
-   "en": "A free crypto futures trading competition run in continuous fourteen-day seasons. Six leaderboards, $350 in prizes per season. Five boards are scored from paper trades filled server-side against real exchange candles; one board ranks real Bybit futures volume.",
-   "es": "Una competencia gratuita de trading de futuros cripto que se organiza en temporadas continuas de catorce días. Seis clasificaciones, $350 en premios por temporada. Cinco tablas se puntúan con operaciones de paper trading ejecutadas en el servidor contra velas reales del exchange; una tabla clasifica el volumen real de futuros en Bybit.",
+  "Y4oJAdw283": {
+   "en": "A free crypto futures trading competition run in continuous fourteen-day seasons. Nine leaderboards, $300 in prizes a season plus $300 every two seasons on King of the Moon. Five boards are scored from paper trades filled server-side against real exchange candles, one from a daily BTC call, one from Demo Spot buy-and-hold profit; one board ranks real Bybit futures volume and King of the Moon runs over two seasons.",
+   "es": "Una competencia gratuita de trading de futuros cripto que se celebra de forma continua en temporadas de catorce días. Nueve clasificaciones, $300 en premios por temporada más $300 cada dos temporadas en King of the Moon. Cinco tablas se puntúan con operaciones de paper trading ejecutadas en el servidor contra velas reales del exchange, una con una predicción diaria de BTC, una con el beneficio de comprar y mantener en Demo Spot; una tabla clasifica el volumen real de futuros en Bybit y King of the Moon se celebra a lo largo de dos temporadas.",
    "kind": [
     "ld"
    ],
@@ -163312,7 +163480,7 @@
     "/trading-competition/"
    ],
    "n": 1,
-   "w": 37
+   "w": 66
   },
   "P_nbPtRZcH": {
    "en": "Crypto Trading Journal &amp; Analytics - Track Your Performance | MarginPad",
