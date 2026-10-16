@@ -17261,6 +17261,21 @@ const MCP_TOOLS = [
     body: (a) => ({ order_id: a.order_id }),
     inputSchema: { type: 'object', properties: { order_id: { type: 'string' } }, required: ['order_id'] } },
 ];
+// Human-readable titles for the directory listings (Claude connector directory, Glama, Smithery). Derived from the name, with
+// the few that a plain split would misread spelled out.
+const MCP_TITLES = { get_price: 'Live price', get_klines: 'OHLC candles', get_markets: 'Tradable markets', get_screener: 'Setup screener', get_funding: 'Funding rates', get_open_interest: 'Open interest', get_liquidations: 'Liquidations (24h)', get_fear_greed: 'Fear and Greed index', get_economic_calendar: 'Economic calendar', calc_liquidation: 'Liquidation price calculator', calc_position_size: 'Position size calculator', paper_balance: 'Paper account balance', paper_positions: 'Paper positions', paper_trades: 'Closed paper trades', paper_open: 'Open a paper position', paper_close: 'Close a paper position', paper_sltp: 'Set stop / take-profit', paper_modify_order: 'Modify a resting order', paper_fees: 'Fee venue', paper_sim: 'Simulation profile', paper_realism: 'Fill realism', paper_report: 'Trading report', paper_accounts: 'Paper books', paper_reset: 'Reset the paper book', paper_equity: 'Equity curve', paper_replay: 'Replay a past day', paper_limit_order: 'Place a limit or stop order', paper_orders: 'Resting orders', paper_cancel_order: 'Cancel a resting order' };
+const mcpTitle = (name) => MCP_TITLES[name] || name.split('_').map((w, i) => i ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+const MCP_DESTRUCTIVE = { paper_close: 1, paper_cancel_order: 1, paper_reset: 1 };
+function mcpAnnotations(t) {
+  const writes = t.method === 'POST';
+  return {
+    title: mcpTitle(t.name),
+    readOnlyHint: !writes,
+    destructiveHint: !!MCP_DESTRUCTIVE[t.name],
+    idempotentHint: !writes || !!t.getWhenEmpty || t.name === 'paper_sltp' || t.name === 'paper_modify_order' || t.name === 'paper_cancel_order',
+    openWorldHint: !t.auth && !writes, // keyless market data reaches exchanges and public feeds; a paper-account tool touches only this account
+  };
+}
 async function handleMcp(url, request, env, ctx) {
   const H = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key, Mcp-Session-Id, MCP-Protocol-Version, Authorization', 'access-control-allow-methods': 'GET, POST, OPTIONS' };
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: H });
@@ -17287,7 +17302,11 @@ async function handleMcp(url, request, env, ctx) {
       } else if (method === 'ping') {
         out.push(rep({}));
       } else if (method === 'tools/list') {
-        out.push(rep({ tools: MCP_TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })) }));
+        // Tool annotations (MCP 2025-03-26) since 2026-10-16: the Claude connector directory refuses a listing without a
+        // title and a readOnlyHint/destructiveHint on EVERY tool, and a client uses them to decide what needs a confirmation.
+        // Read-only = anything that answers over GET with no body. Destructive = closes a position, cancels an order or
+        // resets the book, because none of those can be undone. Everything else writes but can be corrected.
+        out.push(rep({ tools: MCP_TOOLS.map((t) => ({ name: t.name, title: mcpTitle(t.name), description: t.description, inputSchema: t.inputSchema, annotations: mcpAnnotations(t) })) }));
       } else if (method === 'tools/call') {
         const nm = m.params && m.params.name;
         const args = (m.params && m.params.arguments) || {};
