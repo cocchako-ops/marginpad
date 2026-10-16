@@ -78,7 +78,7 @@
      one warm tile, the real-account pair in a metallic hairline, everything else ink and hairlines */
   .tabs{display:flex;gap:10px;margin:0 0 12px;align-items:stretch;}
   .tg{min-width:0;display:flex;flex-direction:column;gap:6px;}
-  .tg.free{flex:5 1 0;}.tg.gold{flex:1.2 1 0;}.tg.real{flex:2.5 1 0;}
+  .tg.free{flex:6 1 0;}.tg.gold{flex:1.1 1 0;}.tg.real{flex:2.3 1 0;} /* six free tabs since 2026-10-16 (Meme Spot) */
   .tg.gold .tab .n{padding-right:44px;} /* room for the GOLD+ ribbon */
   .tgh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:4px;border-bottom:1px solid var(--line);min-width:0;}
   .tgh span{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap;}
@@ -86,9 +86,9 @@
   .tg.gold .tgh span{color:var(--amber);}
   .tg.real .tgh{border-bottom-color:var(--line2);}
   .tgt{display:grid;gap:6px;min-width:0;flex:1;}
-  .tg.free .tgt{grid-template-columns:repeat(5,minmax(0,1fr));}
+  .tg.free .tgt{grid-template-columns:repeat(6,minmax(0,1fr));}
   .tg.real .tgt{grid-template-columns:repeat(2,minmax(0,1fr));}
-  .tab{position:relative;text-align:left;font:inherit;color:inherit;background:#0d1014;border:1px solid var(--line);border-radius:12px;padding:9px 10px 8px;cursor:pointer;min-width:0;transition:border-color .15s,transform .12s,background .15s;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+  .tab{position:relative;text-align:left;font:inherit;color:inherit;background:#0d1014;border:1px solid var(--line);border-radius:12px;padding:8px 9px 7px;cursor:pointer;min-width:0;transition:border-color .15s,transform .12s,background .15s;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
   .tab:hover{border-color:var(--line2);}
   .tab:focus-visible{outline:2px solid var(--lime);outline-offset:1px;}
   .tab.on{border-color:rgba(255,255,255,.42);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.015));}
@@ -96,9 +96,9 @@
   .tab .n,.tab .p,.tab .l{display:block;}
   .tab .n{font:700 9.5px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tab .n i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--d,#fff);box-shadow:0 0 7px var(--d,#fff);margin-right:6px;vertical-align:1px;}
-  .tab .p{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em;color:#fff;margin-top:4px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tab .p{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em;color:#fff;margin-top:3px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tab .p small{display:block;font:600 8px 'Space Mono',monospace;color:var(--faint);margin:3px 0 0;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} /* its own line: "$106.72 POOL · WARMING UP" did not fit beside the number */
-  .tab .l{font:600 10.5px 'Space Mono',monospace;color:var(--dim);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tab .l{font:600 10.5px 'Space Mono',monospace;color:var(--dim);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tab .l b{color:var(--ink);}
   .tab .rib{position:absolute;top:0;right:0;font:800 7.5px 'Space Mono',monospace;letter-spacing:.12em;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#ffb020);padding:3px 7px 2px;border-radius:0 10px 0 8px;font-style:normal;}
   .tg.gold .tab{border-color:rgba(255,215,90,.32);background:linear-gradient(180deg,rgba(255,215,90,.10),rgba(255,215,90,.02));}
@@ -116,7 +116,8 @@
     .tabs::-webkit-scrollbar{display:none;}
     .tg,.tg.free,.tg.gold,.tg.real{flex:0 0 auto;}
     .tgh em{display:none;}
-    .tab{width:128px;padding:8px 9px 7px;}
+    .tab{width:124px;padding:7px 9px 6px;}
+    .tgt{display:flex;gap:6px;} /* one row of six, never a second line on a phone */
     .tab .p{font-size:15px;}
   }
   /* board panel */

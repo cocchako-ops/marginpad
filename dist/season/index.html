@@ -207,16 +207,16 @@ h1 b{color:var(--lime)}
 /* board switcher: five cards, one selected */
 /* board switcher v3 (owner 2026-09-13: "kartice mnogooo bolje", Bybit first) - six cards, one selected; glow lives INSIDE the card, never a drop shadow under it */
 .bsw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px} /* nine cards since 2026-10-16 (Meme Spot): three a row, 3 x 3 */ /* seven cards since 2026-09-17 (King of the Moon): four a row, seven in one row were 150px each */
-.bs{position:relative;text-align:left;background:#0b0e13;border:1px solid var(--line2);border-radius:18px;padding:14px 14px 13px;cursor:pointer;color:inherit;min-width:0;min-height:156px;display:flex;flex-direction:column;overflow:visible;isolation:isolate;transition:border-color .22s,transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s;--c:#ffd75a} /* overflow visible: the glow ring and the pointer tail were clipped (owner 2026-09-13) */
+.bs{position:relative;text-align:left;background:#0b0e13;border:1px solid var(--line2);border-radius:18px;padding:12px 13px 11px;cursor:pointer;color:inherit;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:visible;isolation:isolate;transition:border-color .22s,transform .26s cubic-bezier(.2,.8,.2,1),box-shadow .26s;--c:#ffd75a} /* overflow visible: the glow ring and the pointer tail were clipped (owner 2026-09-13) */
 .bs::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 55%),linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%);opacity:.55;transition:opacity .26s;z-index:-1}
 .bs .wm{position:absolute;right:8px;bottom:6px;width:60px;height:60px;color:var(--c);opacity:.07;transform:rotate(-8deg);transition:opacity .26s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none;z-index:-1}
 .bs .wm svg{width:100%;height:100%}
 .bs .top{display:flex;align-items:center;gap:8px;min-width:0}
 .bs .ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);flex:0 0 auto;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 35%,transparent)}
 .bs .ic svg{width:16px;height:16px}
-.bs .big{margin-top:auto;padding-top:10px;font:800 24px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;color:#fff}
+.bs .big{margin-top:auto;padding-top:7px;font:800 24px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.03em;color:#fff}
 .bs .big small{display:block;margin-top:4px;font:700 9.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
-.bs .ld{margin-top:9px;display:flex;align-items:center;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap;min-width:0}
+.bs .ld{margin-top:7px;display:flex;align-items:center;gap:6px;font:600 11px 'Space Mono',monospace;color:var(--dim);white-space:nowrap;min-width:0}
 .bs .ld i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:5px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);font-weight:800;font-size:9.5px;flex:0 0 auto}
 .bs .ld span{overflow:hidden;text-overflow:ellipsis;min-width:0}.bs .ld b{color:#e9e7df;margin-left:auto;flex:0 0 auto}
 .bs .you{margin-top:6px;font:700 10px 'Space Mono',monospace;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bs .you.in{color:var(--c)}
@@ -229,7 +229,7 @@ h1 b{color:var(--lime)}
 /* the Bybit card: the partner's full wordmark, navy ground, orange glow, and the plain words */
 .bs.bybit{--c:#f7a600;background:linear-gradient(160deg,#141a33,#0b0e13 70%)}
 /* the rebate pool (2026-09-28): a meter to the cap with the tier marks, and the card glows harder as the pool climbs the tiers */
-.bs.bybit .big{font-size:22px}.bs.bybit .pmeter{position:relative;margin-top:8px;height:4px;border-radius:2px;background:rgba(255,255,255,.09)}.bs.bybit .pmeter i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#f7a600,#ffd27a);transition:width .7s cubic-bezier(.2,.8,.2,1);min-width:2px}.bs.bybit .pmeter b{position:absolute;top:-3px;width:1px;height:10px;background:rgba(255,255,255,.3);transform:translateX(-.5px)}
+.bs.bybit .big{font-size:22px}.bs.bybit .pmeter{position:relative;margin-top:6px;height:4px;border-radius:2px;background:rgba(255,255,255,.09)}.bs.bybit .pmeter i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#f7a600,#ffd27a);transition:width .7s cubic-bezier(.2,.8,.2,1);min-width:2px}.bs.bybit .pmeter b{position:absolute;top:-3px;width:1px;height:10px;background:rgba(255,255,255,.3);transform:translateX(-.5px)}
 .bs.bybit[data-tier="2"]{box-shadow:0 0 24px -10px rgba(247,166,0,.6)}.bs.bybit[data-tier="3"]{border-color:rgba(247,166,0,.6);box-shadow:0 0 32px -8px rgba(247,166,0,.8)}.bs.bybit[data-tier="4"],.bs.bybit[data-tier="5"]{border-color:#f7a600;box-shadow:0 0 44px -6px rgba(247,166,0,.95),inset 0 1px 0 rgba(247,166,0,.5)}.bs.bybit[data-tier="3"] .wm,.bs.bybit[data-tier="4"] .wm,.bs.bybit[data-tier="5"] .wm{opacity:.15}.bs.bybit[data-tier="4"] .big,.bs.bybit[data-tier="5"] .big{color:#ffd27a;text-shadow:0 0 18px rgba(247,166,0,.5)}.bs.bybit[data-tier="5"]{background:linear-gradient(160deg,#2a1c0a,#0b0e13 70%)}
 .bybanner[data-tier="3"]{background:linear-gradient(90deg,rgba(247,166,0,.24),rgba(247,166,0,.05));border-color:rgba(247,166,0,.55)}.bybanner[data-tier="4"],.bybanner[data-tier="5"]{background:linear-gradient(90deg,rgba(247,166,0,.34),rgba(247,166,0,.08));border-color:#f7a600;box-shadow:0 0 26px -10px rgba(247,166,0,.8)}.bybanner .r{white-space:normal;text-align:right}
 .bs.moon{--c:#b39dff;background:linear-gradient(160deg,#1a1430,#0b0e13 70%)}
@@ -242,9 +242,9 @@ h1 b{color:var(--lime)}
 .bybox2.moon{border-color:rgba(179,157,255,.38);background:linear-gradient(140deg,rgba(179,157,255,.13),rgba(179,157,255,.02) 60%)}.bybox2.moon .pill{color:#b39dff}.bybox2.moon .btn{background:#b39dff}.bybox2.moon .byfull{border-top-color:rgba(179,157,255,.3);background:linear-gradient(90deg,#b39dff,#cdbfff)}
 .bybanner.moon{background:linear-gradient(90deg,rgba(179,157,255,.16),rgba(179,157,255,.03));border-color:rgba(179,157,255,.38)}.bybanner.moon .r{color:#b39dff}
 .bs .pb{font:800 8.5px 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--c)}
-.bs .logo{height:24px;display:block;color:#fff;margin:6px 0 0}.bs .logo svg{height:24px;width:auto;display:block}
+.bs .logo{height:22px;display:block;color:#fff;margin:3px 0 0}.bs .logo svg{height:24px;width:auto;display:block}
 .bybit-logo{color:#fff}
-.bs .tagv{display:inline-block;align-self:flex-start;margin-top:8px;font:700 8.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#0a0b0d;background:var(--c);border-radius:6px;padding:3px 7px;white-space:nowrap}
+.bs .tagv{display:inline-block;align-self:flex-start;margin-top:5px;font:700 8.5px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#0a0b0d;background:var(--c);border-radius:6px;padding:3px 7px;white-space:nowrap}
 @media(min-width:721px) and (max-width:1100px){.bsw{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* switching: the table slides in from the side of the card you picked, rows settle one after another */
 .tw{transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1)}
