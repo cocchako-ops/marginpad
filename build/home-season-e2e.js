@@ -134,7 +134,8 @@ const LV = { idx: 2, k: 'silver', name: 'Silver', col: '#b7c2d0', min: 3000, xp:
       const d = await page.evaluate(() => {
         const f = document.querySelector("#duelFeed");
         if (!f) return null;
-        const wins = [].map.call(f.querySelectorAll(".w.win"), n => {
+        /* the floor shows eight rows and keeps the rest behind "Show more" (2026-10-16) - judge the rows a reader can see */
+        const wins = [].filter.call(f.querySelectorAll(".w.win"), n => n.offsetParent !== null).map(n => {
           const mark = n.nextElementSibling;
           const ok = !!(mark && mark.classList.contains("wmark"));
           const r = ok ? mark.getBoundingClientRect() : null;

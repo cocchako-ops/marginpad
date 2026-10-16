@@ -113,7 +113,8 @@ const api = async (op, uid, extra) => (await fetch(B + '/api/admin/e2euser', { m
       try {
         { const { ctx, page } = await open({ token: s2.token }); const v = await read(page);
           chk('an unranked member sees all nine tiles', v.hidden === false && v.tiles === 9 && v.shown === 9, v);
-          chk('the grid is three across and every tile is the same height', v.cols === 3 && v.heights === 1, { cols: v.cols, heights: v.heights });
+          /* rows since 2026-10-16 (the tiles were 589px on a desktop, 1,200 on a phone): one column, every row the same height */
+          chk('the list is one row per task and every row is the same height', v.cols === 1 && v.heights === 1, { cols: v.cols, heights: v.heights });
           chk('eight tiles carry a link to where the task is done', v.clickable === 8, { clickable: v.clickable });
           // clicking an unfinished task navigates rather than claiming
           await page.evaluate(() => document.querySelector('.bz-t[data-tid="charts"]').click());

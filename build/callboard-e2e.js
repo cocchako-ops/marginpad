@@ -52,15 +52,15 @@ const UID = 'e2e-callboard1';
   const comp = await J('/api/competition?cb=' + Date.now());
   const cbd = comp && (comp.boards || []).find(b => b.id === 'call');
   ok(cbd && cbd.prize_pool_usd === 20 && cbd.entry === 'free_call' && cbd.period_days === 14, '/api/competition lists the Daily BTC Call board ($20, free, 14 days)', cbd && { pool: cbd.prize_pool_usd, entry: cbd.entry });
-  ok(comp && comp.boards.length === 8 && comp.prize_pool_usd_per_season >= 270, 'eight boards, at least $270 a season', comp && { boards: comp.boards.length, pool: comp.prize_pool_usd_per_season });
+  ok(comp && comp.boards.length === 9 && comp.prize_pool_usd_per_season >= 300, 'nine boards, at least $300 a season', comp && { boards: comp.boards.length, pool: comp.prize_pool_usd_per_season }); /* Meme Spot is the ninth (2026-10-16) */
   const season = await fetch(B + '/season/?cb=' + Date.now()).then(r => r.text());
   const todaySec = season.slice(season.indexOf('<section class="sec" id="today">'), season.indexOf('<section class="sec" id="pass">'));
   ok(todaySec.length > 200 && !/id="dc"/.test(todaySec) && !/dcForm/.test(todaySec) && !/Daily call/.test(todaySec), '/season/ no longer carries the free daily-call card in the Today section (the form is built by script under the board)');
   ok(/id="callbox"/.test(season) && /k:'call',key:'topCall'/.test(season) && /Daily BTC call\.<\/b>/.test(season), '/season/ carries the call box under the boards, the board definition and its rule');
   const lbp = await fetch(B + '/leaderboards/?cb=' + Date.now()).then(r => r.text());
-  ok(/data-b="call"/.test(lbp) && /id="tl-call"/.test(lbp) && (lbp.match(/class="tab[ "]/g) || []).length === 8, '/leaderboards/ has the Daily BTC call tab (eight tabs)');
+  ok(/data-b="call"/.test(lbp) && /id="tl-call"/.test(lbp) && (lbp.match(/class="tab[ "]/g) || []).length === 9, '/leaderboards/ has the Daily BTC call tab (nine tabs)');
   const home = await fetch(B + '/?cb=' + Date.now()).then(r => r.text());
-  ok(/data-b="call"/.test(home) && /\$270\+/.test(home), 'the homepage competition card lists the board and the $270+ pool');
+  ok(/data-b="call"/.test(home) && /\$\d{3}\+/.test(home), 'the homepage competition card lists the board and a three-figure pool'); /* the static figure is today's all-boards pool; JS is the authority */
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });
   const gone = await J('/api/admin/callboard?e2e=1', { headers: H });
   ok(gone && !(gone.rows || []).some(r => r.uid === UID), 'the throwaway member and its call are removed (upred is in BY_USER)');

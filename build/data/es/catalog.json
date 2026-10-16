@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-16T13:19:26.800Z",
+  "generated": "2026-10-16T13:43:38.181Z",
   "pages": 386,
-  "occurrences": 26688,
-  "unique": 14153,
-  "words": 269608,
+  "occurrences": 26690,
+  "unique": 14155,
+  "words": 269639,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-16T13:24:38.256Z"
+  "merged": "2026-10-16T13:44:11.838Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -147041,6 +147041,30 @@
    "n": 1,
    "w": 3
   },
+  "MMMQNPbBs7": {
+   "en": "Bronze (500 XP) opens the money, the Academy is the fastest way there, and your first closed trade already puts you on the boards.",
+   "es": "Bronze (500 XP) abre el dinero, la Academy es el camino más rápido hasta ahí, y tu primera operación cerrada ya te pone en las tablas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 24
+  },
+  "AKtaRqzvxr": {
+   "en": "Sign in, free, with an email code and this card will show how far you are.",
+   "es": "Inicia sesión, gratis, con un código por email y esta tarjeta mostrará cuánto te falta.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 16
+  },
   "zNbo7zyNJH": {
    "en": "<span data-hw=\"langLabel\">Read this in</span>",
    "es": "<span data-hw=\"langLabel\">Leer en</span>",
@@ -147064,18 +147088,6 @@
    ],
    "n": 1,
    "w": 9
-  },
-  "AKtaRqzvxr": {
-   "en": "Sign in, free, with an email code and this card will show how far you are.",
-   "es": "Inicia sesión, gratis, con un código por email y esta tarjeta mostrará cuánto te falta.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/season/"
-   ],
-   "n": 1,
-   "w": 16
   },
   "A-JZJVR3Fg": {
    "en": "Bronze opens the money",
@@ -147293,18 +147305,6 @@
    "n": 1,
    "w": 2
   },
-  "AzkH0MAfBT": {
-   "en": "These nine are worth 400 XP together. Tap one to go and do it; when it is finished, tap it again to bank the XP.",
-   "es": "Estas nueve valen 400 XP en total. Toca una para ir a hacerla; cuando esté terminada, tócala otra vez para cobrar el XP.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/season/"
-   ],
-   "n": 1,
-   "w": 25
-  },
   "7-Ktr1xL8f": {
    "en": "They pay XP only, never money. At 500 XP the faucet, the daily missions, withdrawals and referrals all open, anything you win becomes yours to withdraw, and this card is done with you.",
    "es": "Solo pagan XP, nunca dinero. Al llegar a 500 XP se abren el faucet, las misiones diarias, los retiros y los referidos, todo lo que ganes pasa a ser tuyo para retirarlo, y esta tarjeta ya no te molesta más.",
@@ -147317,9 +147317,9 @@
    "n": 1,
    "w": 33
   },
-  "yxLb3IFeYJ": {
-   "en": "<a href=\"#howto\" data-s=\"howto\">How it works</a><a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a>",
-   "es": "<a href=\"#howto\" data-s=\"howto\">Cómo funciona</a><a href=\"#today\" data-s=\"today\">Hoy</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Tablas</a><a href=\"#floor\" data-s=\"floor\">Piso en vivo</a>",
+  "YzKx5glHiO": {
+   "en": "<a href=\"#howto\" data-s=\"howto\">How it works</a><a href=\"#today\" data-s=\"today\">Today</a><a href=\"#pass\" data-s=\"pass\">Pass<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Boards</a><a href=\"#floor\" data-s=\"floor\">Live floor</a><a href=\"#rules\" data-s=\"rules\">Rules</a>",
+   "es": "<a href=\"#howto\" data-s=\"howto\">Cómo funciona</a><a href=\"#today\" data-s=\"today\">Hoy</a><a href=\"#pass\" data-s=\"pass\">Pase<b id=\"snClaim\" hidden></b></a><a href=\"#boards\" data-s=\"boards\">Tablas</a><a href=\"#floor\" data-s=\"floor\">Piso en vivo</a><a href=\"#rules\" data-s=\"rules\">Reglas</a>",
    "kind": [
     "html"
    ],
@@ -147327,7 +147327,7 @@
     "/season/"
    ],
    "n": 1,
-   "w": 8
+   "w": 9
   },
   "q63N6wn6mw": {
    "en": "<span class=\"eb\">Resets at 00:00 UTC</span>",
@@ -147773,6 +147773,18 @@
    "n": 1,
    "w": 3
   },
+  "bCmkzqQOj1": {
+   "en": "Fourteen days on one clock, nothing costs money to enter, everything is counted server-side, and prize money only moves one way - from the boards to your rewards balance.",
+   "es": "Catorce días con un solo reloj, participar no cuesta dinero, todo se cuenta en el servidor, y el dinero de los premios solo se mueve en una dirección: de las tablas a tu saldo de recompensas.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 28
+  },
   "E7EuOW_nfp": {
    "en": "<b>Fourteen days, 00:00 UTC to 00:00 UTC</b>Every board, the pass, the goals and the calls share one clock. When it ends, the top five on each board are paid, unclaimed pass tiers are granted, and a new season opens.",
    "es": "<b>Catorce días, de 00:00 UTC a 00:00 UTC</b>Cada tabla, el pase, los objetivos y los pronósticos comparten un mismo reloj. Cuando termina, se paga a los cinco primeros de cada tabla, se otorgan los niveles del pase sin reclamar, y se abre una nueva temporada.",
@@ -147856,6 +147868,18 @@
    ],
    "n": 1,
    "w": 2
+  },
+  "aIS2eA4Wqj": {
+   "en": "What codes are",
+   "es": "Qué son los códigos",
+   "kind": [
+    "attr:aria-label"
+   ],
+   "ctx": [
+    "/season/"
+   ],
+   "n": 1,
+   "w": 3
   },
   "E7CguGYdlm": {
    "en": "MP-XXXXX-XXXXX",

@@ -87,7 +87,9 @@ const api = async (op, uid, extra) => (await fetch(B + '/api/admin/e2euser', { m
           dir: document.getElementById('howto').getAttribute('dir'),
         }));
         chk('picking Spanish changes the card', before.card !== after.card && /[áéíóúñ¿]/.test(after.card), { on: after.on });
-        chk('and leaves the rest of the page exactly as it was', before.page === after.page);
+        /* the Happy Hour countdown in #today ticks every second - compare the words, not the clock */
+        const noClock = s => String(s).replace(/\d+[hms]\b/g, '').replace(/\d{2}:\d{2}/g, '');
+        chk('and leaves the rest of the page exactly as it was', noClock(before.page) === noClock(after.page));
         // right-to-left really flips
         await page.evaluate(() => document.querySelector('.hw-lang button[data-l="ar"]').click());
         await new Promise(r => setTimeout(r, 700));
@@ -145,6 +147,12 @@ const api = async (op, uid, extra) => (await fetch(B + '/api/admin/e2euser', { m
         chk('and the endpoint the card reads agrees before the page is opened', seen >= 500, { xp: seen });
         await waitXpCache();
         const { ctx, page } = await open('/season/', { member: true });
+        /* COMPACT (2026-10-16): for a member the whole card starts folded behind its toggle, with the progress line
+           still out; the toggle opens it. A guest still gets it open - they are the ones it explains things to. */
+        const fold0 = await page.evaluate(() => { const s = document.getElementById('howto'); return { fd: s.classList.contains('fd'), steps: [...s.querySelectorAll('.hw-steps li')].filter(li => li.offsetParent !== null).length, you: !!(document.getElementById('hwYou') && document.getElementById('hwYou').offsetParent) }; });
+        chk('a member meets the card folded, the progress line still showing', fold0.fd && fold0.steps === 0 && fold0.you, fold0);
+        await page.evaluate(() => document.querySelector('.ftg[data-fold="howto"]').click());
+        await new Promise(r => setTimeout(r, 300));
         const m = await page.evaluate(() => {
           const s = document.getElementById('howto');
           const vis = [...s.querySelectorAll('.hw-steps li')].filter(li => li.offsetParent !== null).length;
