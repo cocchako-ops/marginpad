@@ -123,14 +123,18 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     chk('the board self-check ran over the prize zone (checked >= min(12, n)) and corrected nothing on a normal day', pub && pub.checked >= Math.min(12, pub.n || 0) && pub.corrected === 0, pub && { checked: pub.checked, corrected: pub.corrected, n: pub.n });
     chk('the board is sorted by season P&L, every name once', pub && pub.rows.every((r, i) => i === 0 || r.pnlUsd <= pub.rows[i - 1].pnlUsd) && new Set(pub.rows.map(r => r.who)).size === pub.rows.length, pub && pub.rows.slice(0, 4).map(r => r.who + ':' + r.pnlUsd));
     { const byName = {}; for (const a of (adm && adm.accounts) || []) byName[String(a.name).toLowerCase()] = a.uid;
-      const diffs = [];
+      const diffs = []; let compared = 0, skipped = 0;
       for (const r of (pub ? pub.rows : []).slice(0, 10)) {
         const ru = byName[String(r.who).toLowerCase()]; if (!ru) { diffs.push(r.who + ':no-uid'); continue; }
         const pp = (await J('/api/spot/public?uid=' + ru + '&cb=' + Date.now())).j;
         if (!pp || pp.none) { diffs.push(r.who + ':no-public'); continue; }
+        // a card holding a STALE bag (pool unreadable at that moment, GeckoTerminal 429s our egress) is priced from the last mark and
+        // cannot be compared to a board built minutes earlier from a live read - the self-check inside the build is the strict one
+        if ((pp.holds || []).some(h => h.stale)) { skipped++; continue; }
+        compared++;
         if (Math.abs(pp.equityUsd - r.equityUsd) > Math.max(15, Math.abs(r.equityUsd) * 0.02)) diffs.push(r.who + ': board $' + r.equityUsd + ' vs card $' + pp.equityUsd);
       }
-      chk('every top-10 board row is worth what its own public portfolio says (within 2% / $15 - both are live prices)', diffs.length === 0, diffs); }
+      chk('every comparable top-10 board row is worth what its own public portfolio says (within 2% / $15; rows with a stale bag skipped: ' + skipped + ')', diffs.length === 0 && compared >= Math.min(3, (pub ? pub.rows : []).length), { diffs, compared, skipped }); }
 
     // ---- the social layer (2026-10-16): the floor, the public portfolio, theses ----
     const feed = (await J('/api/spot/feed?cb=' + Date.now())).j;
