@@ -88,6 +88,19 @@ const WINS = {
     ok('the level meter rule survives into the stylesheet string (NaN would mean a + ate it)', src.indexOf("'.lbm-bar{position:relative") > 0);
   }
 
+  /* THE HOMEPAGE MUST NOT CARRY ITS OWN CARD AGAIN (2026-10-17): the bento had a 136-line lbOpenProfile and its
+     own .lbm-* stylesheet, and because mpEnsureProfile returns early when window.mpOpenProfile already exists,
+     mp-profile.js was never pulled there - so the homepage card was two generations behind and the owner saw
+     nothing change on either of his devices. A second copy is what makes that happen, so a second copy is what
+     this bans. */
+  {
+    const DIST = path.join(__dirname, '..', 'dist');
+    for (const f of ['index.html', 'demo-home/index.html', 'de/index.html', 'es/index.html']) {
+      const h = fs.readFileSync(path.join(DIST, f), 'utf8');
+      ok(f + ' has no second copy of the profile card', h.indexOf('lbOpenProfile') < 0 && h.indexOf('lbm-medal') < 0 && h.indexOf('window.mpOpenProfile') < 0);
+    }
+  }
+
   await withBrowser(async (browser) => {
     for (const mobile of [false, true]) {
       const tag = mobile ? 'phone' : 'desktop';
