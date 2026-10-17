@@ -130,7 +130,8 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
         if (!pp || pp.none) { diffs.push(r.who + ':no-public'); continue; }
         // a card holding a STALE bag (pool unreadable at that moment, GeckoTerminal 429s our egress) is priced from the last mark and
         // cannot be compared to a board built minutes earlier from a live read - the self-check inside the build is the strict one
-        if ((pp.holds || []).some(h => h.stale)) { skipped++; continue; }
+        // ... and a RUGGED bag (pool under $1k) is worth half a vanishing pool - a figure that moves faster than a ten-minute board
+        if ((pp.holds || []).some(h => h.stale || h.rugged)) { skipped++; continue; }
         compared++;
         if (Math.abs(pp.equityUsd - r.equityUsd) > Math.max(15, Math.abs(r.equityUsd) * 0.02)) diffs.push(r.who + ': board $' + r.equityUsd + ' vs card $' + pp.equityUsd);
       }
