@@ -28,8 +28,17 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-badge{width:46px;height:46px;flex:none;padding:2px}'
     + '.lbm-name{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.1}'
     + '.lbm-lvl{font:700 11px "Space Mono",monospace;letter-spacing:.04em;text-transform:uppercase;margin-top:3px}'
-    + '.lbm-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:15px}'
-    + '.lbm-bar i{display:block;height:100%;border-radius:3px}'
+    /* THE LEVEL METER (owner 2026-10-17: "prost i zalepljen uz ovo kao da je dete pravilo ... ozbiljniji izgled
+       ali da ne gubimo na prostoru"). It was a flat 5px strip of one colour sitting FLUSH against the squad card -
+       the squad row ends and the bar begins with no gap at all, which is what read as glued on. Now: a carved
+       track (inset shadow + a hairline top edge, so it reads cut INTO the card rather than painted on), a fill
+       that goes dark-to-colour with a gloss along its top, and a bright cap with a glow at the leading edge so
+       the eye lands on where the member actually is. The vertical budget is UNCHANGED: 9 + 6 + 5 = 20px, exactly
+       what 0 + 5 + 15 was. */
+    + '.lbm-bar{position:relative;height:6px;border-radius:4px;background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(255,255,255,.035));box-shadow:inset 0 1px 2px rgba(0,0,0,.6),inset 0 -1px 0 rgba(255,255,255,.05);overflow:hidden;margin:9px 0 5px}'
+    + '.lbm-bar:after{content:"";position:absolute;inset:0;border-radius:4px;border-top:1px solid rgba(255,255,255,.07);pointer-events:none}'
+    + '.lbm-bar i{position:relative;display:block;height:100%;min-width:6px;border-radius:4px;background-image:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 55%,rgba(0,0,0,.22));background-blend-mode:overlay;box-shadow:0 0 7px -1px currentColor,inset 0 0 0 1px rgba(255,255,255,.14)}'
+    + '.lbm-bar i:after{content:"";position:absolute;top:0;right:0;width:2px;height:100%;background:rgba(255,255,255,.75);border-radius:2px}'
     + '.lbm-rech{display:flex;align-items:baseline;gap:7px;margin:12px 0 7px;font:800 11px "Space Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#ffd75a}'
     + '.lbm-rech span{font-weight:700;letter-spacing:.04em;text-transform:none;color:#6c7681}'
     + '.lbm-rec{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:7px;margin-bottom:12px}'
@@ -48,7 +57,12 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-follow.on{background:transparent;color:#8a93a0;border:1px solid #2b333d}.lbm-follow.on:hover{filter:none;background:rgba(255,255,255,.05)}'
     + '.lbm-acts{display:flex;align-items:center;gap:8px}'
     /* FOLLOW IS AN ICON BESIDE THE CLOSE (owner 2026-10-16: "follow button ce da ide na vrh kartice do x ... mali coveculjak i plus"); its old place in the foot row is the Portfolio button */
-    + '.lbm-folb{position:absolute;top:12px;right:46px;width:28px;height:28px;border-radius:8px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.45);color:#38bdf8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s,border-color .15s}'
+    /* ALL FOUR ACTIONS ARE ONE ROW OF EQUAL SQUARES (owner 2026-10-17: "portfolio i follow treba da se nalaze
+       pored chat i duel ikonice, znaci sve 4 zajedno, i da budu istih dimenzija"). Follow spent one day in the
+       top-right corner beside the close; it is a 34px tile in the foot row with the others now, and Portfolio
+       lost its word so it is the same tile rather than a wide pill. */
+    + '.lbm-acts>button{width:34px;height:34px;padding:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none}'
+    + '.lbm-folb{width:34px;height:34px;border-radius:10px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.45);color:#38bdf8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s,border-color .15s}'
     + '.lbm-folb:hover{background:rgba(56,189,248,.22)}.lbm-folb svg{display:block}'
     /* THREE STATES, drawn as three different glyphs (owner 2026-10-17: the icon read the same followed or not, and a tick may only mean FRIENDS):
        not following = person + plus (blue) · following, one-way = the person alone (lime outline) · friends, i.e. mutual = person + check on a filled lime tile.
@@ -56,7 +70,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-folb .fchk{display:none}.lbm-folb.on .fplus{display:none}.lbm-folb.friend .fchk{display:block}'
     + '.lbm-folb.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.5);color:#c2f64a}'
     + '.lbm-folb.friend{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d}.lbm-folb.friend:hover{background:#d4ff6a}'
-    + '.lbm-port{position:relative;display:inline-flex;align-items:center;gap:8px;padding:9px 14px 9px 12px;border-radius:11px;border:1px solid transparent;background:linear-gradient(180deg,#141a22,#0d1117) padding-box,linear-gradient(120deg,#a06bff,#c2f64a 55%,#38bdf8) border-box;color:#ecebe4;font:800 12px "Space Mono",monospace;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 26px -14px rgba(160,107,255,.8),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .14s,box-shadow .14s}'
+    + '.lbm-port{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid transparent;background:linear-gradient(180deg,#141a22,#0d1117) padding-box,linear-gradient(120deg,#a06bff,#c2f64a 55%,#38bdf8) border-box;color:#ecebe4;font:800 12px "Space Mono",monospace;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 26px -14px rgba(160,107,255,.8),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .14s,box-shadow .14s}'
     + '.lbm-port:hover{transform:translateY(-1px);box-shadow:0 14px 30px -14px rgba(160,107,255,.95),inset 0 1px 0 rgba(255,255,255,.08)}'
     + '.lbm-port.open{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}'
     + '.lbm-port svg{display:block;color:#c2f64a}.lbm-port b{background:linear-gradient(90deg,#c2f64a,#a06bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}'
@@ -68,7 +82,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-ppr .sy{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;color:#ecebe4}.lbm-ppr .sy small{font:700 8.5px "Space Mono",monospace;color:#a06bff;margin-left:5px;letter-spacing:.06em}.lbm-ppr .sy i{display:block;height:3px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:4px;overflow:hidden}.lbm-ppr .sy i b{display:block;height:100%;background:linear-gradient(90deg,#a06bff,#c2f64a)}'
     + '.lbm-ppr .v{font-family:"Space Mono",monospace;font-size:12px;color:#fff;white-space:nowrap}.lbm-ppr .p{font-family:"Space Mono",monospace;font-size:11px;white-space:nowrap;min-width:52px;text-align:right}.lbm-ppr .p.up{color:#34d99a}.lbm-ppr .p.dn{color:#ff6c5c}'
     + '.lbm-ppf{margin-top:8px;font-size:12px;color:#8b97a5}.lbm-ppf a{color:#c2f64a;text-decoration:none;font-weight:700}'
-    + '.lbm-dm{background:transparent;color:#38bdf8;border:1px solid rgba(56,189,248,.5);border-radius:10px;padding:9px 12px;font:800 13px "Space Mono",monospace;letter-spacing:.02em;cursor:pointer;transition:background .15s}'
+    + '.lbm-dm{background:transparent;color:#38bdf8;border:1px solid rgba(56,189,248,.5);border-radius:10px;font:800 13px "Space Mono",monospace;letter-spacing:.02em;cursor:pointer;transition:background .15s}'
     + '.lbm-dm:hover{background:rgba(56,189,248,.12)}'
     + '.lbm-duel{color:#ff9640;border-color:rgba(255,150,64,.5)}.lbm-duel:hover{background:rgba(255,150,64,.12)}'
     + '.lbm-friend{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 9px}'
@@ -80,13 +94,105 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-card.lbm-premium{border-color:#c2f64a;box-shadow:0 0 0 1px rgba(194,246,74,.5),0 24px 70px -20px rgba(0,0,0,.7),0 0 40px -10px rgba(194,246,74,.32);animation:lbmPremGlow 3.2s ease-in-out infinite}'
     + '@keyframes lbmPremGlow{0%,100%{box-shadow:0 0 0 1px rgba(194,246,74,.42),0 24px 70px -20px rgba(0,0,0,.7),0 0 30px -12px rgba(194,246,74,.24)}50%{box-shadow:0 0 0 1px rgba(194,246,74,.72),0 24px 70px -20px rgba(0,0,0,.7),0 0 54px -6px rgba(194,246,74,.52)}}'
     + '.lbm-card.lbm-premium:before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0,rgba(194,246,74,.10),transparent 70%);pointer-events:none}'
-    + '.lbm-medal{display:flex;align-items:center;gap:9px;margin:0 0 10px;padding:6px 12px 6px 8px;border-radius:14px;border:1px solid rgba(255,215,90,.42);background:linear-gradient(100deg,rgba(255,215,90,.10),rgba(255,215,90,.03));box-shadow:0 0 22px -10px rgba(255,200,60,.8),inset 0 1px 0 rgba(255,255,255,.08)}.lbm-medal svg{flex:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}.lbm-medal span{font:800 9.5px "Space Mono",monospace;letter-spacing:.16em;color:#ffd75a;white-space:nowrap}.lbm-premtag{display:inline-block;font:800 9px "Space Mono",monospace;letter-spacing:.18em;color:#0a0b0d;background:linear-gradient(90deg,#c2f64a,#e5ff8a);border-radius:20px;padding:3px 11px;margin-bottom:10px}'
+    /* SEASON MEDALS, 2026-10-17 (owner: "medalja treba da bude dosta manja ... da ne pise season winner ...
+       medalje razlicite po boji u zavisnosti od leaderboard-a ... kad se klikne, text prozor koje je takmicenje i
+       kog datuma"). One medal PER BOARD, 24px, in the same row as the Premium tag so it costs no row of its own -
+       the old one was a 34x43 medal plus a SEASON WINNER caption in a padded pill, about 150x55 on its own line. */
+    + '.lbm-toprow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 10px;padding-right:34px}.lbm-toprow .lbm-premtag{margin-bottom:0}'
+    + '.lbm-meds{display:inline-flex;align-items:center;gap:5px}'
+    + '.lbm-med1{width:24px;height:30px;padding:0;border:0;background:none;cursor:pointer;line-height:0;border-radius:6px;transition:transform .14s,filter .14s}'
+    + '.lbm-med1.real{width:26px;height:32px}'
+    + '.lbm-med1:hover,.lbm-med1.on{transform:translateY(-1px) scale(1.06)}.lbm-med1:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}'
+    + '.lbm-med1 svg{display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}'
+    + '.lbm-med1.real svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.55)) drop-shadow(0 0 5px var(--mc,#fff))}'
+    /* A POPOVER, NOT A PANEL (owner 2026-10-17: "otvara prozor koji je na kartici, pa se kartica produzi kad se
+       prozor otvori - nije bas idealno da se profil kartica pomera zbog nekog prozora"). It is absolute inside
+       .lbm-card, which is position:relative and does not clip, so opening it moves NOTHING on the card; it is
+       anchored under the medal that was tapped and clamped to the card's edges. */
+    + '.lbm-medp{position:absolute;z-index:6;min-width:146px;max-width:232px;padding:9px 11px;border-radius:11px;background:#10151c;border:1px solid #2f3843;border-left-width:3px;box-shadow:0 20px 44px -18px rgba(0,0,0,.95)}'
+    + '.lbm-medp:after{content:"";position:absolute;top:-5px;left:var(--ax,16px);width:9px;height:9px;background:#10151c;border-left:1px solid #2f3843;border-top:1px solid #2f3843;transform:rotate(45deg)}'
+    + '.lbm-medp[hidden]{display:none}'
+    + '.lbm-medp h4{margin:0 0 5px;font:800 12.5px "Bricolage Grotesque",sans-serif;letter-spacing:-.01em}'
+    + '.lbm-medreal{font:700 9.5px "Space Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#8b97a5;margin:-2px 0 6px}'
+    + '.lbm-medp ul{margin:0;padding:0;list-style:none}.lbm-medp li{font:600 11.5px "Space Mono",monospace;color:#c7cdd4;padding:1.5px 0}.lbm-medp li b{color:#fff;font-weight:700}'
+    + '.lbm-premtag{display:inline-block;font:800 9px "Space Mono",monospace;letter-spacing:.18em;color:#0a0b0d;background:linear-gradient(90deg,#c2f64a,#e5ff8a);border-radius:20px;padding:3px 11px;margin-bottom:10px}'
     + '.lbm-pro{display:inline-block;font:800 8.5px "Space Mono",monospace;letter-spacing:.05em;color:#0a0b0d;background:#c2f64a;border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:middle}'
     + '.lbm-dm svg{display:block}'
     + '.mp-progold{background:linear-gradient(100deg,#e0a52a 0%,#ffe07a 18%,#fff6c8 30%,#ffd75a 46%,#e0a52a 68%,#ffe98a 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;color:transparent !important;font-weight:800 !important;text-shadow:none !important;animation:mpGold 3.2s linear infinite}'
     + '.lbm-ownertag{background:linear-gradient(90deg,#7a4d0a,#ffd75a 22%,#fff6d0 50%,#ffd75a 78%,#7a4d0a);background-size:200% 100%;color:#1a1002;letter-spacing:.26em;padding:4px 14px;box-shadow:0 0 22px -4px rgba(255,200,60,.75),0 0 0 1px rgba(255,215,90,.55),inset 0 1px 0 rgba(255,255,255,.35);animation:mpGold 2.4s linear infinite}'
     + '@keyframes mpGold{to{background-position:200% center}}';
   var st = document.createElement('style'); st.textContent = CSS; (document.head || document.documentElement).appendChild(st);
+  /* SEASON MEDALS (2026-10-17). ONE PER BOARD, coloured by the board, and a tap names the competition and the
+     day. The board ids are the ones payWeeklyPrizes / payMoonPrizes / payBybitPrizes actually write into the
+     ledger's lbpay rows ('wr', not COMP_BOARDS' 'winrate'), plus the retired 'spot' bank board and the legacy
+     lbpayouts rows, which carry 'roe'. An id we do not know still draws - in grey, named by its own id - because
+     a new board must never make a member's medal disappear. */
+  var MED_BOARDS = {
+    roe:   { n: 'Highest ROE',    a: '#ffd75a', b: '#b8860b', t: '#4a3608' },
+    green: { n: 'Green Days',     a: '#34d99a', b: '#116b4e', t: '#05291d' },
+    wr:    { n: 'Best Win Rate',  a: '#38bdf8', b: '#15618a', t: '#042536' },
+    xp:    { n: 'Season XP',      a: '#a06bff', b: '#4a2a8a', t: '#1b0e38' },
+    gold:  { n: 'The Gold Room',  a: '#ffb33a', b: '#8a5a0b', t: '#3a2403' },
+    bybit: { n: 'Bybit Volume',   a: '#ff9640', b: '#8a4a12', t: '#2a1203', real: 1 },
+    moon:  { n: 'King of the Moon', a: '#cdd8ff', b: '#5b6a9a', t: '#141a30', real: 1 },
+    call:  { n: 'Daily BTC Call', a: '#ff5a9e', b: '#8a1f4d', t: '#380a1d' },
+    meme:  { n: 'Meme Spot',      a: '#c2f64a', b: '#6a8a16', t: '#243405' },
+    spot:  { n: 'Demo Spot',      a: '#9fb0c2', b: '#45525f', t: '#161d24' }
+  };
+  function medBoard(id) { id = String(id || 'roe').toLowerCase(); if (id === 'winrate') id = 'wr'; return MED_BOARDS[id] || { n: id.charAt(0).toUpperCase() + id.slice(1), a: '#9aa3ad', b: '#424b56', t: '#14181d' }; }
+  function medDate(ms) { var d = new Date(+ms || 0); if (!(+ms > 0) || isNaN(d.getTime())) return ''; try { return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d.toISOString().slice(0, 10); } }
+  /* The gradient ids MUST be unique per medal: two medals on one card with the same <defs> id both render with
+     whichever was parsed first, so every disc would wear the first board's colour. */
+  /* THE TWO REAL-MONEY BOARDS WEAR A DIFFERENT MEDAL (owner 2026-10-17: "King of the moon i Bybit leaderboard
+     medalje treba da izgledaju bas cool ... moraju da se izdvajaju jer je pravi trade u pitanju"). Everything
+     else on the card is paper; these two are won with a real exchange account, so they get a milled metal bezel
+     (a dashed rim stroke - real milling on a disc, unlike the conic teeth that read as hatching on a rectangle),
+     a second inner ring, a gem at the ribbon knot and a glow in the board's own colour. Two pixels bigger, which
+     is enough to catch the eye in a row and not enough to cost a line.
+     The gradient ids MUST be unique per medal: two medals sharing a <defs> id both render with whichever was
+     parsed first, so every disc would wear the first board's colour - almost right and completely wrong. */
+  function medSvg(key, c, count) {
+    var g = 'mdg_' + key, r = 'mdr_' + key, real = !!c.real;
+    var W = real ? 26 : 24, H = real ? 32 : 30;
+    var defs = '<defs><linearGradient id="' + g + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="' + (real ? '.95' : '.85') + '"/><stop offset="' + (real ? '.34' : '.4') + '" stop-color="' + c.a + '"/><stop offset="' + (real ? '.66' : '.62') + '" stop-color="' + c.b + '"/><stop offset="1" stop-color="' + c.a + '"/></linearGradient>'
+      + '<linearGradient id="' + r + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c.a + '"/><stop offset="1" stop-color="' + c.b + '"/></linearGradient></defs>';
+    var ribbon = '<path d="M13 1h7l-2.5 13h-8z" fill="url(#' + r + ')"/><path d="M31 1h-7l2.5 13h8z" fill="url(#' + r + ')" opacity=".8"/>';
+    var num = count > 1 ? '<text x="22" y="40" text-anchor="middle" font-family="Space Mono, monospace" font-size="17" font-weight="700" fill="' + c.t + '">' + (count > 9 ? '9+' : count) + '</text>' : '';
+    if (!real) {
+      return '<svg viewBox="0 0 44 54" width="' + W + '" height="' + H + '" aria-hidden="true">' + defs + ribbon
+        + '<circle cx="22" cy="34" r="18" fill="url(#' + g + ')" stroke="' + c.b + '" stroke-width="1.4"/>'
+        + '<circle cx="22" cy="34" r="13" fill="none" stroke="' + c.b + '" stroke-width="1" opacity=".55"/>'
+        + num + '</svg>';
+    }
+    return '<svg viewBox="0 0 44 54" width="' + W + '" height="' + H + '" aria-hidden="true">' + defs + ribbon
+      + '<circle cx="22" cy="34" r="19" fill="' + c.b + '"/>'
+      + '<circle cx="22" cy="34" r="17.6" fill="none" stroke="' + c.a + '" stroke-width="2.6" stroke-dasharray="1.9 2.6" opacity=".95"/>'
+      + '<circle cx="22" cy="34" r="15" fill="url(#' + g + ')" stroke="' + c.b + '" stroke-width="1.1"/>'
+      + '<circle cx="22" cy="34" r="11.4" fill="none" stroke="' + c.b + '" stroke-width=".9" opacity=".5"/>'
+      + '<path d="M22 9.5l3.4 3.6-3.4 3.6-3.4-3.6z" fill="' + c.a + '" stroke="' + c.b + '" stroke-width=".8" stroke-linejoin="round"/>'
+      + num + '</svg>';
+  }
+  /* The list is additive and may be absent (an older worker, or a cached body): fall back to `boards`, which has
+     been there all along, so the medals still render - only the dates are missing, and the panel says so. */
+  function medalsHtml(w) {
+    if (!w || !(+w.n > 0)) return '';
+    var list = Array.isArray(w.list) ? w.list : [], by = {}, order = [];
+    for (var i = 0; i < list.length; i++) { var id = String(list[i].b || 'roe').toLowerCase(); if (id === 'winrate') id = 'wr'; if (!by[id]) { by[id] = []; order.push(id); } by[id].push(list[i]); }
+    /* UNION, not a fallback: `list` is capped at 40 rows while `boards` is computed over every win there has ever
+       been, so a board can be named in `boards` and have no row here - and the first cut simply dropped its medal.
+       A board with no dated row still gets its medal; the panel then says it was won without naming a day. */
+    (w.boards || []).forEach(function (b) { var id = String(b || 'roe').toLowerCase(); if (id === 'winrate') id = 'wr'; if (!by[id]) { by[id] = []; order.push(id); } });
+    if (!order.length && +w.n > 0) { by.roe = []; order.push('roe'); }
+    if (!order.length) return '';
+    order.sort(function (a, b) { return (by[b].length || 1) - (by[a].length || 1); });
+    var out = order.slice(0, 10).map(function (id) { // ten is every board that has ever paid, including the retired bank board - a winner must never silently lose a medal
+      var c = medBoard(id), rows = by[id] || [], n = rows.length || 1;
+      var dates = rows.map(function (r) { return medDate(r.w || r.t); }).filter(Boolean);
+      var ttl = c.n + ' - won ' + n + ' time' + (n === 1 ? '' : 's') + (dates.length ? ' (' + dates.join(', ') + ')' : '');
+      return '<button type="button" class="lbm-med1' + (c.real ? ' real' : '') + '" style="--mc:' + c.a + '66" data-lbmed="' + id + '" data-mn="' + esc(c.n) + '" data-md="' + esc(dates.join('|')) + '" title="' + esc(ttl) + '" aria-label="' + esc(ttl) + '">' + medSvg(id, c, n) + '</button>';
+    }).join('');
+    return '<span class="lbm-meds">' + out + '</span>';
+  }
   var modal = null;
   function closeModal() { if (modal) { modal.classList.remove('on'); setTimeout(function () { if (modal && !modal.classList.contains('on')) modal.style.display = 'none'; }, 200); } }
   var TAGC = { bronze: ['#c97f4a', '#f0c39a'], silver: ['#c3cdda', '#eef3fa'], gold: ['#ffcf3f', '#ffe98a'], platinum: ['#8fe6ff', '#d8f6ff'], diamond: ['#b795ff', '#e6d8ff'], master: ['#ff4d6d', '#ffb0bf'], legendary: ['#ff8a2a', '#ffcf8a'], unranked: ['#8b95a1', '#c9d2dc'], neon: ['#c2f64a', '#e5ff8a'], aurora: ['#8b5cff', '#5ad0ff'], founder: ['#ffd75a', '#fff3c0'], owner: ['#7a4d0a', '#ffd75a'], default: ['#c2f64a', '#e5ff8a'], carbon: ['#9aa3ad', '#cdd3da'], jade: ['#4ade80', '#a7f3c8'], royal: ['#a06bff', '#d0b5ff'], blood: ['#ff5a4d', '#ff9a8a'], matrix: ['#2ebd85', '#7de8bc'], ice: ['#35c0e8', '#a8f0ff'], ember: ['#8a5a3a', '#ff7a4a'], sakura: ['#ff9ad0', '#ffd0e8'], void: ['#8a6cff', '#c0aaff'], sovereign: ['#f0e6c8', '#fffaf0'], eclipse: ['#ff9a2a', '#ffcf8a'], inferno: ['#ff6a1a', '#ffb056'], streak7: ['#ffb84a', '#ffdf8a'], streak30: ['#ff6a2a', '#ffae4a'], streak100: ['#ffffff', '#dff6f6'], dwell10: ['#d29a6a', '#eccaa8'], dwell100: ['#34d99a', '#9fe9c8'], dwell500: ['#b8895a', '#e0c8a8'], closer: ['#ff5a4d', '#ffb3ad'], closer2k: ['#ff3b30', '#ffd0cc'], operative: ['#a9b96a', '#d5e0a8'], mission500: ['#ffd75a', '#14120a'], og180: ['#b87333', '#5ec8ae'], xp100k: ['#e05a4a', '#ffd75a'], dragonfire: ['#ff5a28', '#ffc060'], singularity: ['#7a5cff', '#9adfff'], midas: ['#ffd75a', '#fff3c0'], realtrader: ['#2ee6a8', '#ffe98a'], champion: ['#ffd75a', '#fff3c0'], deadeye: ['#c3cdda', '#ff6a5e'], overdrive: ['#ff2ad0', '#ff9af0'], tycoon: ['#2ebd85', '#ffd75a'] }; /* member-tag tint follows the equipped frame */
@@ -124,7 +230,13 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       var folBtn = isSelf ? '' : (signedIn()
         ? '<button type="button" class="lbm-folb' + (following ? ' on' : '') + (isFriend ? ' friend' : '') + '" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '" data-fm="' + (followsMe ? '1' : '0') + '" title="' + folTitle(following, isFriend) + '" aria-pressed="' + (following ? 'true' : 'false') + '">' + FOL_SVG + '</button>'
         : '<button type="button" class="lbm-folb" data-auth-open title="' + __esT_mpprofile("signInToFollow2",'Sign in to follow') + '">' + FOL_SVG + '</button>');
-      var mBtn = '<div class="lbm-acts">' + (isSelf ? __esT_mpprofile("thisIsYou",'<div class="lbm-self">This is you</div>') : '') + '<button type="button" class="lbm-port" data-lbport="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '">' + PORT_SVG + '<b>' + __esT_mpprofile("portfolio",'Portfolio') + '</b></button>' + dmBtn + '</div>';
+      /* FOUR ACTIONS, ONE ROW, ONE SIZE (owner 2026-10-17). Portfolio keeps its own gradient border but loses the
+         word - it is a tile like the other three, and the word is in its title and aria-label so it is still named
+         for a screen reader and on hover. Follow comes down from the top-right corner it held for one day. */
+      var portTtl = __esT_mpprofile("portfolioTitle", 'Portfolio - what they hold on Demo Spot');
+      var mBtn = '<div class="lbm-acts">' + (isSelf ? __esT_mpprofile("thisIsYou",'<div class="lbm-self">This is you</div>') : '')
+        + '<button type="button" class="lbm-port" data-lbport="' + esc(d.uid) + '" data-lbname="' + esc(d.name) + '" title="' + esc(portTtl) + '" aria-label="' + esc(portTtl) + '">' + PORT_SVG + '</button>'
+        + folBtn + dmBtn + '</div>';
       var av = d.avatar ? (/^data:image\//.test(d.avatar) ? '<img class="lbm-av lbm-av-img" src="' + esc(d.avatar) + '" alt="">' : '<span class="lbm-av">' + esc(d.avatar) + '</span>') : '';
       var bioHtml = d.bio ? '<div class="lbm-bio"' + '' + '>' + esc(d.bio) + '</div>' : '';
       var coinsHtml = (d.coins && d.coins.length) ? '<div class="lbm-coins">' + d.coins.map(function (c) { return '<span class="lbm-coin"' + '' + '>' + esc(c) + '</span>'; }).join('') + '</div>' : '';
@@ -134,8 +246,13 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       var SQB_NAMES = { sqember: 'Ember Sigil', sqwraith: 'Wraith' };
       var sqbId = d.sqbadge ? String(d.sqbadge).replace(/[^a-z0-9]/g, '') : '';
       var sqbHtml = sqbId ? '<span class="lbm-sqb" title="' + __esT_mpprofile("squadBadge", 'Squad badge') + ': ' + (SQB_NAMES[sqbId] || sqbId) + '"><span class="mp-sqbadge sqbadge-' + sqbId + '"></span></span>' : '';
-      body.innerHTML = folBtn
-        + (d.otag ? '<div class="lbm-premtag lbm-ownertag">' + d.otag + '</div>' : d.owner ? '<div class="lbm-premtag lbm-ownertag">OWNER</div>' : d.premium ? (function(){var tc=TAGC[String(d.frame||'').replace(/[^a-z0-9_]/g,'')]||TAGC['default'];return '<div class="lbm-premtag" data-sheen style="background:linear-gradient(100deg,'+tc[0]+' 0%,'+tc[1]+' 42%,#ffffff 50%,'+tc[1]+' 58%,'+tc[0]+' 100%);background-size:280% 100%;background-position:120% 0;box-shadow:0 0 16px -6px '+tc[0]+'">' + (d.plus ? 'PREMIUM PLUS' : __esT_mpprofile("premiumMember",'PREMIUM MEMBER')) + '</div>';})() : '') + (function(){var w=d.wins;if(!w||!(+w.n>0))return '';var n=+w.n||0,ttl=n+__esT_mpprofile("seasonBoardWin",' season board win')+(n===1?'':'s')+(w.boards&&w.boards.length?' ('+w.boards.join(', ')+')':'');return '<div class="lbm-medal" title="'+esc(ttl)+'" aria-label="'+esc(ttl)+'">'+'<svg viewBox="0 0 44 56" width="34" height="43" aria-hidden="true">'+'<defs><linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c0"/><stop offset=".45" stop-color="#ffd75a"/><stop offset=".6" stop-color="#b8860b"/><stop offset="1" stop-color="#ffe98a"/></linearGradient>'+'<linearGradient id="mdr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a4d"/><stop offset="1" stop-color="#8f1f18"/></linearGradient></defs>'+'<path d="M13 2h7l-3 17h-8z" fill="url(#mdr)"/><path d="M31 2h-7l3 17h8z" fill="url(#mdr)" opacity=".85"/>'+'<circle cx="22" cy="37" r="16" fill="url(#mdg)" stroke="#7a5a10" stroke-width="1.2"/>'+'<circle cx="22" cy="37" r="11.5" fill="none" stroke="#7a5a10" stroke-width=".9" opacity=".55"/>'+'<text x="22" y="42" text-anchor="middle" font-family="Space Mono, monospace" font-size="13" font-weight="700" fill="#4a3608">'+(n>9?'9+':n)+'</text>'+__esT_mpprofile("seasonWinner",'</svg><span>SEASON WINNER</span></div>');})()
+      /* The Premium tag and the medals share ONE row (2026-10-17): the medal used to be a 34x43 disc plus a
+         SEASON WINNER caption in a padded pill on a line of its own, which is the space the owner asked back.
+         A member with neither gets no row at all. */
+      var tagHtml = (d.otag ? '<div class="lbm-premtag lbm-ownertag">' + d.otag + '</div>' : d.owner ? '<div class="lbm-premtag lbm-ownertag">OWNER</div>' : d.premium ? (function(){var tc=TAGC[String(d.frame||'').replace(/[^a-z0-9_]/g,'')]||TAGC['default'];return '<div class="lbm-premtag" data-sheen style="background:linear-gradient(100deg,'+tc[0]+' 0%,'+tc[1]+' 42%,#ffffff 50%,'+tc[1]+' 58%,'+tc[0]+' 100%);background-size:280% 100%;background-position:120% 0;box-shadow:0 0 16px -6px '+tc[0]+'">' + (d.plus ? 'PREMIUM PLUS' : __esT_mpprofile("premiumMember",'PREMIUM MEMBER')) + '</div>';})() : '');
+      var medHtml = medalsHtml(d.wins);
+      var topRow = (tagHtml || medHtml) ? ('<div class="lbm-toprow">' + tagHtml + medHtml + '</div><div class="lbm-medp" id="lbmMedP" hidden></div>') : '';
+      body.innerHTML = topRow
         + '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + av + (d.premium ? '<span class="mp-progold">' + esc(d.name) + '</span>' : esc(d.name)) + (d.mutual ? '<span class="lbm-friend" title="You follow each other">★ Friends</span>' : (d.followsMe ? __esT_mpprofile("followsYou",'<span class="lbm-fw" title="Follows you">Follows you</span>') : '')) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.stars && window.mpPrestigeSvg ? window.mpPrestigeSvg(L.stars, lc) : '') + (L.next ? ' · ' + (L.pct || 0) + __esT_mpprofile("pctTo", '% to ') + esc(L.next) : __esT_mpprofile("maxTier", ' · max tier')) + '</div></div></div>'
         + bioHtml + coinsHtml
         // The squad logo on every member's card is the whole point of the feature (owner 2026-09-29). The
@@ -145,7 +262,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
             // a hidden squad (MP-One) shows on the card but is NOT a link - it opens for no one
             ? ('<div class="lbm-sq"><span>' + window.mpSquadCrest(d.squad.crest, 30, d.squad.tag) + '</span><div style="min-width:0"><div class="lbm-sqn">' + esc(d.squad.name || '') + '</div><div class="lbm-sqr">' + (d.squad.leader ? __esT_mpprofile("squadLeader", 'Squad leader') : __esT_mpprofile("squadIn", 'Squad')) + ' &middot; ' + esc(String(d.squad.tag || '').toUpperCase()) + '</div></div>' + sqbHtml + '</div>')
             : ('<div class="lbm-sq"><a href="/squads/?sid=' + encodeURIComponent(d.squad.sid) + '">' + window.mpSquadCrest(d.squad.crest, 30, d.squad.tag) + '</a><div style="min-width:0"><div class="lbm-sqn"><a href="/squads/?sid=' + encodeURIComponent(d.squad.sid) + '">' + esc(d.squad.name || '') + '</a></div><div class="lbm-sqr">' + (d.squad.leader ? __esT_mpprofile("squadLeader", 'Squad leader') : __esT_mpprofile("squadIn", 'Squad')) + ' &middot; ' + esc(String(d.squad.tag || '').toUpperCase()) + '</div></div>' + sqbHtml + '</div>')) : '')
-        + '<div class="lbm-bar"><i style="width:' + (L.pct || 0) + '%;background:' + lc + '"></i></div>'
+        + '<div class="lbm-bar"><i style="width:' + (L.pct || 0) + '%;background-color:' + lc + ';color:' + lc + '"></i></div>'
         + '<div class="lbm-grid">'
           + stat((s2.trades || 0), s2.season ? __esT_mpprofile("tradesSeason",'Trades · season') : 'Trades')
           + stat((s2.winRate || 0) + '%', __esT_mpprofile("winRate",'Win rate'), s2.winRate >= 50 ? '#34d99a' : '')
@@ -172,6 +289,53 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       + (hs.length ? hs.slice(0, 6).map(function (h) { return '<div class="lbm-ppr">' + (h.logo ? '<img src="' + esc(h.logo) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<span class=&quot;lg&quot;>' + esc(String(h.sym || '?').slice(0, 3)) + '</span>\'">' : '<span class="lg">' + esc(String(h.sym || '?').slice(0, 3)) + '</span>') + '<span class="sy">' + esc(h.sym) + (h.net ? '<small>' + esc(String(h.net).toUpperCase()) + '</small>' : '') + (h.rugged ? '<small style="color:#ff6c5c">RUGGED</small>' : '') + '<i><b style="width:' + Math.max(2, Math.min(100, +h.share || 0)) + '%"></b></i></span><span class="v">' + fmtM(h.valueUsd) + '</span><span class="p ' + ((+h.pnlPct || 0) >= 0 ? 'up' : 'dn') + '">' + ((+h.pnlPct || 0) >= 0 ? '+' : '') + (+h.pnlPct || 0).toFixed(1) + '%</span></div>'; }).join('') : '<div class="lbm-ppf">' + __esT_mpprofile("allInCash",'All in cash right now - nothing held.') + '</div>')
       + '<div class="lbm-ppf">' + (hs.length > 6 ? '+' + (hs.length - 6) + __esT_mpprofile("moreCoins",' more coins · ') : '') + '<a href="/spot/">' + __esT_mpprofile("openDemoSpot",'Open Demo Spot') + ' &rarr;</a></div>';
   }
+  /* A MEDAL IS A QUESTION (owner 2026-10-17: "kad se klikne medalja, treba da izadje text prozor da kaze koje je
+     takmicenje i kog datuma je osvojio"). A title attribute answers it on a desktop hover and NEVER on a phone,
+     which is most of this audience - so the answer is a panel in the card, the same shape the Portfolio panel uses.
+     Tapping the open medal closes it; tapping another switches to it. */
+  function medClose() { var el = document.getElementById('lbmMedP'); if (el) { el.hidden = true; el.innerHTML = ''; } var a = document.querySelectorAll('[data-lbmed].on'); for (var i = 0; i < a.length; i++) a[i].classList.remove('on'); }
+  /* a popover that closes only by tapping the same medal again is one people leave open: any other click and
+     Escape close it too. It runs on the same click as the opener, so it must ignore a medal and itself or it
+     would close what was just opened. */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('[data-lbmed]') || e.target.closest('#lbmMedP')) return;
+    medClose();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') medClose(); });
+  document.addEventListener('click', function (e) {
+    var mb = e.target.closest && e.target.closest('[data-lbmed]'); if (!mb) return;
+    var el = document.getElementById('lbmMedP'); if (!el) return;
+    var was = mb.classList.contains('on');
+    var all = document.querySelectorAll('[data-lbmed]'); for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+    if (was) { el.hidden = true; el.innerHTML = ''; return; }
+    mb.classList.add('on');
+    var name = mb.getAttribute('data-mn') || '', dates = (mb.getAttribute('data-md') || '').split('|').filter(Boolean);
+    var c = medBoard(mb.getAttribute('data-lbmed'));
+    var n = dates.length;
+    var head = '<h4 style="color:' + c.a + '">' + esc(name) + '</h4>'
+      + (c.real ? '<div class="lbm-medreal">' + __esT_mpprofile("realTradingBoard", 'Real trading board - scored on a live exchange account') + '</div>' : '');
+    var line = n ? ('<ul>' + dates.map(function (dt) { return '<li>' + __esT_mpprofile("wonFirstPlaceOn", 'First place &middot; ') + '<b>' + esc(dt) + '</b></li>'; }).join('') + '</ul>')
+      : ('<ul><li>' + __esT_mpprofile("wonThisBoard", 'First place on this board') + '</li></ul>');
+    el.innerHTML = head + line;
+    el.style.borderLeftColor = c.a;
+    el.hidden = false;
+    /* measure AFTER it is visible, and clamp to the card so a medal at either end cannot push it off an edge.
+       Offsets come from the card's own rect: .lbm-body is static, so .lbm-card is the offset parent. */
+    try {
+      var card = mb.closest('.lbm-card');
+      if (card) {
+        el.style.left = '0px'; el.style.top = '0px';
+        var cr = card.getBoundingClientRect(), br = mb.getBoundingClientRect(), pw = el.offsetWidth;
+        var mid = br.left - cr.left + br.width / 2;
+        var left = Math.max(10, Math.min(cr.width - pw - 10, mid - pw / 2));
+        el.style.left = Math.round(left) + 'px';
+        el.style.top = Math.round(br.bottom - cr.top + 8) + 'px';
+        el.style.setProperty('--ax', Math.round(Math.max(10, Math.min(pw - 19, mid - left - 4.5))) + 'px');
+      }
+    } catch (x2) {}
+    try { window.__mpTrack && window.__mpTrack('profile', 'medal:' + mb.getAttribute('data-lbmed')); } catch (x) {}
+  });
   document.addEventListener('click', function (e) {
     var pb = e.target.closest && e.target.closest('[data-lbport]'); if (!pb) return;
     var el = document.getElementById('lbmPortP'); if (!el) return;
