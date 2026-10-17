@@ -109,7 +109,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=f69784a5">
+<link rel="stylesheet" href="/assets/home.css?v=0211c96c">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -343,7 +343,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
             <select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select>
             <div class="ptt-tfwrap">
               <button type="button" class="ptt-tf-btn" id="ptTfBtn" aria-haspopup="menu" aria-expanded="false"><span id="ptTfCur">5m</span><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1" type="button">1m</button><button data-tf="5" class="on" type="button">5m</button><button data-tf="15" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
+              <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1s" data-lbl="1s" data-prem="1" type="button">1s</button><button data-tf="5s" data-lbl="5s" data-prem="1" type="button">5s</button><button data-tf="15s" data-lbl="15s" data-prem="1" type="button">15s</button><button data-tf="30s" data-lbl="30s" data-prem="1" type="button">30s</button><button data-tf="1" data-lbl="1m" type="button">1m</button><button data-tf="3" data-lbl="3m" data-prem="1" type="button">3m</button><button data-tf="5" data-lbl="5m" class="on" type="button">5m</button><button data-tf="15" data-lbl="15m" type="button">15m</button><button data-tf="30" data-lbl="30m" data-prem="1" type="button">30m</button><button data-tf="60" data-lbl="1h" type="button">1h</button><button data-tf="120" data-lbl="2h" data-prem="1" type="button">2h</button><button data-tf="240" data-lbl="4h" type="button">4h</button><button data-tf="360" data-lbl="6h" data-prem="1" type="button">6h</button><button data-tf="720" data-lbl="12h" data-prem="1" type="button">12h</button><button data-tf="1440" data-lbl="1D" type="button">1D</button><button data-tf="10080" data-lbl="1W" type="button">1W</button></div>
             </div>
             <div class="ptt-es" role="group" aria-label="Entry style">
               <button type="button" data-es="line" class="on" title="Entries as price lines" aria-pressed="true"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1 8h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
@@ -853,7 +853,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=f69784a5"></script>
+<script src="/assets/home.js?v=0211c96c"></script>
 <script defer src="/assets/mp-nav.js?v=7928162e"></script>
 </body>
 </html>

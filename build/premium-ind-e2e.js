@@ -1,7 +1,7 @@
 /* Premium page + the six AI indicators (2026-09-17, six since 2026-10-11).
 
    Owner asks, all proven here on production:
-     - /premium/: the "Premium duels & lounge" card is gone (11 cards), nothing on the page says "PRO" (the term is
+     - /premium/: the "Premium duels & lounge" card is gone (12 cards), nothing on the page says "PRO" (the term is
        Premium), the indicators card says 6 and OPENS a preview sheet (like the fee window on a closed ticket) with
        one block per indicator, reachable on a phone and closable; the Spanish twin does the same in Spanish
      - /premium/ as a member (simulated /api/premium/status): the buy buttons make way for "Premium is active until
@@ -24,9 +24,9 @@ const text = async (u) => { const r = await fetch(u, { cache: 'no-store' }); ret
 (async () => {
   // ---- raw HTML / bundles (what a crawler and a cache see) ----
   const prem = await text(ORIGIN + '/premium/?cb=' + Date.now());
-  chk('/premium/ 200, 11 feature cards, no "PRO" badge wording, indicators card says 5 and is a button', prem.status === 200 && (prem.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(prem.body) && /<h3>5 AI indicators<\/h3>/.test(prem.body) && !/Liquidation Wall/.test(prem.body) && /data-ind-sheet/.test(prem.body) && !/8 (AI|exclusive)/.test(prem.body), { cards: (prem.body.match(/class="fcard/g) || []).length, pro: (prem.body.match(/\bPRO\b/g) || []).length });
+  chk('/premium/ 200, 12 feature cards, no "PRO" badge wording, indicators card says 5 and is a button', prem.status === 200 && (prem.body.match(/class="fcard/g) || []).length === 12 && !/\bPRO\b/.test(prem.body) && /<h3>5 AI indicators<\/h3>/.test(prem.body) && !/Liquidation Wall/.test(prem.body) && /data-ind-sheet/.test(prem.body) && !/8 (AI|exclusive)/.test(prem.body), { cards: (prem.body.match(/class="fcard/g) || []).length, pro: (prem.body.match(/\bPRO\b/g) || []).length });
   const es = await text(ORIGIN + '/es/premium/?cb=' + Date.now());
-  chk('/es/premium/ mirrors it (11 cards, 5 indicadores, no PRO, sheet present)', es.status === 200 && (es.body.match(/class="fcard/g) || []).length === 11 && !/\bPRO\b/.test(es.body) && /<h3>5 indicadores de IA<\/h3>/.test(es.body) && !/Liquidation Wall/.test(es.body) && /id="indSheet"/.test(es.body) && /Insignia Premium/.test(es.body));
+  chk('/es/premium/ mirrors it (12 cards, 5 indicadores, no PRO, sheet present)', es.status === 200 && (es.body.match(/class="fcard/g) || []).length === 12 && !/\bPRO\b/.test(es.body) && /<h3>5 indicadores de IA<\/h3>/.test(es.body) && !/Liquidation Wall/.test(es.body) && /id="indSheet"/.test(es.body) && /Insignia Premium/.test(es.body));
   const ai = await text(ORIGIN + '/ai-indicators/?cb=' + Date.now());
   chk('/ai-indicators/ 200, indexable, five sections and no sixth, FAQPage + Article JSON-LD, canonical, own card', ai.status === 200 && /index, follow/.test(ai.body) && ['cascade', 'magnet', 'brain', 'memory', 'whaleliq'].every(id => ai.body.indexOf('id="' + id + '"') >= 0) && ai.body.indexOf('id="liqwall"') < 0 && !/Liquidation Wall/.test(ai.body) && /"@type":"FAQPage"/.test(ai.body) && /"@type":"Article"/.test(ai.body) && /rel="canonical" href="https:\/\/marginpad.io\/ai-indicators\/"/.test(ai.body) && /og:image" content="https:\/\/marginpad.io\/assets\/og\/ai-indicators\.jpg"/.test(ai.body));
   const sm = await text(ORIGIN + '/sitemap.xml');

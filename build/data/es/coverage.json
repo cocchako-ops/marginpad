@@ -1729,9 +1729,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 1,
-  "hit": 88,
-  "missing": 0
+  "cover": 0.9886363636363636,
+  "hit": 87,
+  "missing": 1
  },
  {
   "rel": "levels/index.html",
@@ -1981,9 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 1,
+  "cover": 0.9921259842519685,
   "hit": 252,
-  "missing": 0
+  "missing": 2
  },
  {
   "rel": "privacy/index.html",
@@ -1993,9 +1993,9 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 1,
-  "hit": 133,
-  "missing": 0
+  "cover": 0.9924812030075187,
+  "hit": 132,
+  "missing": 1
  },
  {
   "rel": "rewards/index.html",
@@ -2089,9 +2089,9 @@
  },
  {
   "rel": "status/index.html",
-  "cover": 1,
-  "hit": 26,
-  "missing": 0
+  "cover": 0.9615384615384616,
+  "hit": 25,
+  "missing": 1
  },
  {
   "rel": "stock-trading-simulator/index.html",

@@ -528,6 +528,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
   var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={},_linesSig=null;
+  /* TIMEFRAME TOKENS (2026-10-17): '1s'/'5s'/'15s'/'30s' are SECONDS, every other token is MINUTES as a string.
+     ONE reading for the whole terminal - `parseInt('1s',10)*60` is 60, so a tf site that does its own arithmetic
+     silently charts one MINUTE and calls it one second. Mirrored in mp-charts.js, mp-mcharts.js and the worker
+     (SEC_TFS / _tfSecs there); the four tokens are the same four in all four places. */
+  var SEC_TFS=['1s','5s','15s','30s'];
+  function tfSecs(tf){tf=String(tf||'');if(/^\d+s$/.test(tf))return SEC_TFS.indexOf(tf)>=0?parseInt(tf,10):0;var m=parseInt(tf,10);return m>0?m*60:0;}
+  function tfIsSec(tf){return SEC_TFS.indexOf(String(tf||''))>=0;}
   var _lgp=0,_rej=0; // spike filter: last accepted price + consecutive-reject count, so one bad print can't ratchet a fake high/low wick
   var _srvLiqAt={}; // last time we asked the server to sweep a server-owned position sitting past its liq (throttle)
   var _clArm={}; // per-trade LIQUIDATION arming: liq needs 2 consecutive ticks (a sub-2.5% phantom can still cross the ~0.1% liq at 1000×). TP/SL fire on first touch of the spike-validated price below.
@@ -830,10 +837,10 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
     try{candle.applyOptions({priceFormat:mpPriceFmt(bars,bars[bars.length-1]&&bars[bars.length-1].close)});}catch(e){}/* decimals MEASURED from this market's own candles (mpPricePrec) - a magnitude guess drew HYPE 85.64 as 85.640 */
-    _userPS=false;try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
+    _userPS=false;try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:tfSecs(chartTf)<=300});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately - the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
-    try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
+    try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=tfSecs(chartTf)||300,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
   function preloadTfs(sym,curTf){ var all=['1','5','15','60','240','1440','10080'],list=all;
     if(window.innerWidth<721){ /* mobile: prewarm only the two NEIGHBOURING timeframes (~50KB), not all six (~150KB) - measured 2026-09-05: TF switch p95 5.7s on phones because every switch fetched on demand */ var i=all.indexOf(curTf);list=[all[i-1],all[i+1]].filter(Boolean); }
@@ -975,21 +982,32 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(pdFresh)p=pd.price;
     else{var _pr=prices[chartSym],_prT=(_pr&&_pr.p>0)?(_pr.t||0):-1,_pdT=(pd&&pd.sym===chartSym&&pd.price>0)?(pd.t||0):-1;
       if(_prT>=0||_pdT>=0)p=(_prT>=_pdT)?_pr.p:pd.price;}/* both sources stale → use the FRESHER one (the old code preferred the poll map even when it was minutes older than the WS value) */
-    if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing - a skewed device clock must not roll bars at wrong boundaries
-    if(nowBar-lastBar.time>ivSec*1.5){_holeK=1;reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) - the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
+    if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=tfSecs(chartTf)||300,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing - a skewed device clock must not roll bars at wrong boundaries
+    /* the "klines is behind" test has an ABSOLUTE floor as well as a per-bar one (2026-10-17): on a seconds
+       timeframe 1.5 bars is 1.5 SECONDS, and a quiet market reaches that constantly - which would call
+       reloadKlinesThrottled (a FULL reload that resets the view) every 8s on a perfectly healthy chart. */
+    if(nowBar-lastBar.time>Math.max(ivSec*1.5,12)){_holeK=1;reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>Math.max(ivSec*30,60))return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) - the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
     /* ROLL GRACE (2026-08-12, "candle body ends incomplete" screenshot): a tickers/poll event can cross the
        boundary 100-300ms BEFORE the closing minute's final publicTrade batch lands - finalizing then snapshots
        an INCOMPLETE bucket (clipped close/body, healed later by the re-sync = the visible glitch). publicTrade
        is time-ordered per symbol, so the first NEW-minute trade guarantees the old minute is complete → hold the
        roll until that trade arrives (or 2s pass - a quiet boundary means no late trades, bucket already final). */
-    var _grace=false;
-    if(nowBar>lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nowBar&&(_snow/1000-nowBar)<2)_grace=true;}catch(_){}}
+    var _grace=false,_secB=ivSec<60; /* a 2s grace is LONGER THAN THE WHOLE BAR on a seconds timeframe, so there is none there - the per-second trade buckets are already exchange-stamped and complete */
+    if(nowBar>lastBar.time&&!_secB){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nowBar&&(_snow/1000-nowBar)<2)_grace=true;}catch(_){}}
     if(nowBar>lastBar.time&&!_grace){
       /* FINALIZE the closing bar from exchange-stamped trade buckets (mpTicks1m) BEFORE rolling: the candle that
          just closed becomes EXACTLY the authoritative kline (1m: full OHLC; >1m: final-minute close + extremes)
          and must never change again - the re-sync then has nothing to repaint (owner directive 2026-08-12). */
-      try{var _TKf=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
+      /* SECONDS: mpTicks1m is bucketed per MINUTE, so it is COARSER than the bar - applying it would paint a whole
+         minute's high and low onto one second (and only at the exact minute boundary, which is the kind of bug that
+         hides for weeks). The per-second buckets are the authority here; no trades in that second = the flat bar we
+         rolled is correct, which is exactly what Bybit's own 1s series publishes for a quiet second. */
+      if(_secB){try{var _sg=window.mpSecAgg&&window.mpSecAgg(chartSym,lastBar.time,ivSec);
+        if(_sg){var _sch=false;if(_sg.h>lastBar.high){lastBar.high=_sg.h;_sch=true;}if(_sg.l<lastBar.low){lastBar.low=_sg.l;_sch=true;}if(lastBar.close!==_sg.c){lastBar.close=_sg.c;_sch=true;}
+          if(_sch){if(lastBar.high<Math.max(lastBar.open,lastBar.close))lastBar.high=Math.max(lastBar.open,lastBar.close);if(lastBar.low>Math.min(lastBar.open,lastBar.close))lastBar.low=Math.min(lastBar.open,lastBar.close);try{candle.update(lastBar);}catch(_){}}}
+      }catch(_){}}
+      else try{var _TKf=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
         for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<lastBar.time||_fb.t>=lastBar.time+ivSec)continue;
           if(ivSec===60){if(lastBar.high!==_fb.h||lastBar.low!==_fb.l||lastBar.close!==_fb.c){lastBar.high=_fb.h;lastBar.low=_fb.l;lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_fb.h>lastBar.high){lastBar.high=_fb.h;_fch=true;}if(_fb.l<lastBar.low){lastBar.low=_fb.l;_fch=true;}if(_fb.t===lastBar.time+ivSec-60&&lastBar.close!==_fb.c){lastBar.close=_fb.c;_fch=true;}}}
@@ -998,13 +1016,23 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
       /* keep the bars array in lockstep with the roll (workspace parity) - without this every post-roll re-sync
          saw a length/window mismatch and downgraded to a FULL setData repaint of the last candles, every minute */
       try{if(bars&&bars.length){if(bars[bars.length-1].time===lastBar.time)bars[bars.length-1]=lastBar;else if(lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}}catch(_){}
-      var _nbk=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}catch(_){}
+      /* A SKIPPED TICK LEFT A HOLE IN THE SERIES, and Bybit's own 1s series has none - measured the day this
+         shipped: 999 one-second steps across 1000 bars, 571 of them flat. The roll happens on a one-second loop,
+         so a busy main thread skips a second and the old code jumped straight to `now`, leaving a ragged axis
+         (the browser leg read one 2-second gap in 600 bars). A second with no trade is a FLAT candle at the last
+         close - exactly what the exchange publishes for it. Capped, because past twelve seconds the gap check
+         above has already asked for the real candles. */
+      if(_secB&&nowBar-lastBar.time>ivSec){var _fc=lastBar.close,_ft=lastBar.time+ivSec,_fn=0;
+        while(_ft<nowBar&&_fn<60){var _fbar={time:_ft,open:_fc,high:_fc,low:_fc,close:_fc};try{if(bars&&bars.length&&_ft>bars[bars.length-1].time)bars.push(_fbar);}catch(_){}try{candle.update(_fbar);}catch(_){}_ft+=ivSec;_fn++;}}
+      var _nbk=null;try{if(_secB){var _sn=window.mpSecAgg&&window.mpSecAgg(chartSym,nowBar,ivSec);if(_sn)_nbk={t:nowBar,h:_sn.h,l:_sn.l,c:_sn.c};} /* seeding a 1s bar from the MINUTE bucket would hand it a whole minute's range, and only on the exact minute boundary */
+        else{var _TKo=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}}catch(_){}
       var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;
       if(_nbk){lastBar={time:nowBar,open:_op,high:Math.max(_nbk.h,_op),low:Math.min(_nbk.l,_op),close:_nbk.c};_lgp=_nbk.c;_rej=0;} /* open = prevClose ALWAYS (Bybit kline convention - measured 0/998 open!=prevClose gaps on HYPE/BTC 1m+5m, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
       else{lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;}/* no trade bucket yet (quiet first ms / non-WS symbol) → same prev-close open */
       try{if(bars&&bars.length&&lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}catch(_){}
       try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there - don't yank them back while they pan history */}else{if(!_grace){if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price - never bake it into the closing bar; only the time-scoped bucket merge below may touch it */
-      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar - wicks match the authoritative kline instead of growing on the 30s re-sync */
+      if(_secB){try{var _sm=window.mpSecAgg&&window.mpSecAgg(chartSym,lastBar.time,ivSec);if(_sm&&_lgp>0){if(_sm.h>lastBar.high&&_sm.h<_lgp*1.025)lastBar.high=_sm.h;if(_sm.l<lastBar.low&&_sm.l>_lgp*0.975)lastBar.low=_sm.l;}}catch(_){}}
+      else try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar - wicks match the authoritative kline instead of growing on the 30s re-sync */
       startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
@@ -1102,8 +1130,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function tickCd(){var host=document.getElementById('ptChart');if(!host||!chart||!bars||!bars.length){if(_cdEl)_cdEl.textContent='';return;}
     if(!_cdEl){_cdEl=document.createElement('div');_cdEl.className='pt-cd';_cdEl.style.cssText='position:absolute;top:8px;right:72px;z-index:5;pointer-events:none;font-family:\'Space Mono\',monospace;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#9aa3ad;background:rgba(10,12,15,.72);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:3px 8px;text-shadow:0 1px 3px rgba(0,0,0,.7)';host.appendChild(_cdEl);} // top-right, clear of the right price axis - bottom corners are covered by the page's floating buttons (E2E elementFromPoint proof)
     if(_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node - re-attach
-    var ivMin=+chartTf||15;if(!(ivMin>0)||ivMin>=10080){_cdEl.textContent='';return;}
-    var ivMs=ivMin*60000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock - the countdown must be right even on a skewed device
+    var _ivSc=tfSecs(chartTf);if(!(_ivSc>=5)||_ivSc>=604800){_cdEl.textContent='';return;} /* weekly is epoch-anchored (hidden), and a countdown that ticks once a second cannot count down a 1s candle - 5s/15s/30s still can */
+    var ivMs=_ivSc*1000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock - the countdown must be right even on a skewed device
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
     _cdEl.textContent=__esT_home("closeIn",'close in ')+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
   setInterval(tickCd,1000);
@@ -1134,9 +1162,44 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var m=b.getAttribute('data-es')==='mark'?'mark':'line';if(m===entryMode)return;
     entryMode=m;try{localStorage.setItem('mp_entry_mode',entryMode);}catch(e){}emPaint();try{drawLines();}catch(e){}});
   emPaint();
-  function tfMenu(open){if(!tfEl||!tfBtn)return;tfEl.hidden=!open;tfBtn.setAttribute('aria-expanded',open?'true':'false');}
+  function tfMenu(open){if(!tfEl||!tfBtn)return;if(open)tfDeco();tfEl.hidden=!open;tfBtn.setAttribute('aria-expanded',open?'true':'false');}
+  /* PREMIUM TIMEFRAMES in the terminal (2026-10-17, owner): the seconds (1s/5s/15s/30s) and 3m/30m/2h/6h/12h, the
+     same set and the same gate as /charts. The gate is on PICKING, never inside loadKlines - so a deep link, a
+     restored choice and a lapsed member all still get a working chart rather than a broken one.
+     The PRO / padlock mark is drawn when the menu OPENS (the menu is hidden until then, so there is no FOUC) and
+     it reflects the standing we actually know. */
+  var _tfLock='<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  function tfPrem(){return window._mpPrem===true;}
+  /* A PADLOCK IS A CLAIM ABOUT THE READER, AND WE OFTEN DO NOT KNOW IT YET (caught by the browser leg, not by
+     reading): mp-auth is deferred and fills window._mpPrem from its own poll, so when the menu first opens the
+     standing is usually UNKNOWN - and the first cut drew a padlock, i.e. told a paying member they could not have
+     it. While it is unknown the mark is the neutral PRO (which is true of the timeframe either way) and the answer
+     is fetched once, then the menu is repainted. Only a known-free member sees the padlock. */
+  function tfDeco(){if(!tfEl)return;var known=(typeof window._mpPrem==='boolean'),allow=tfPrem();
+    if(!known&&!tfDeco._q){tfDeco._q=1;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);tfDeco();}).catch(function(){tfDeco._q=0;});}
+    Array.prototype.forEach.call(tfEl.querySelectorAll('button[data-tf]'),function(b){
+      var lbl=b.getAttribute('data-lbl')||b.textContent,prem=b.getAttribute('data-prem')==='1';
+      b.setAttribute('data-lbl',lbl);
+      b.classList.toggle('lock',prem&&known&&!allow);
+      b.innerHTML=lbl+(prem?'<span class="ptt-tf-prem">'+((allow||!known)?'PRO':_tfLock)+'</span>':'');});}
+  function tfPickGate(tf,lbl){
+    if(tfIsSec(tf)){var cls=(window.mpAssetClass?window.mpAssetClass(formSym()):'crypto');
+      if(cls!=='crypto'){mpToastSafe(__esT_home("secondsTimeframesAreCrypto",'Seconds timeframes are crypto-only - no exchange publishes sub-minute candles for stocks, forex or indices.'),'warn');return false;}}
+    if(!(tfEl&&tfEl.querySelector('[data-tf="'+tf+'"]')&&tfEl.querySelector('[data-tf="'+tf+'"]').getAttribute('data-prem')==='1'))return true;
+    if(tfPrem())return true;
+    if(window._mpPrem===false){mpToastSafe(lbl+__esT_home("isAPremiumTimeframePt",' is a Premium timeframe. Premium unlocks 1s, 5s, 15s, 30s and 3m, 30m, 2h, 6h, 12h.'),'warn',{label:__esT_home("getPremium",'Get Premium'),href:'/premium/'});return false;}
+    return null; // standing not known yet (mp-auth is deferred) - never refuse a member because the poll was late
+  }
+  function mpToastSafe(msg,kind,action){try{if(window.mpToast){window.mpToast({msg:msg,kind:kind||'info',ms:4200,action:action});return;}}catch(e){}try{console.log('[mp]',msg);}catch(e){}}
+  function tfPick(b){if(!b)return;var tf=b.getAttribute('data-tf'),lbl=b.getAttribute('data-lbl')||b.textContent;
+    var g=tfPickGate(tf,lbl);
+    if(g===false){tfMenu(false);return;}
+    if(g===null){tfMenu(false);fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);tfPick(b);}).catch(function(){window._mpPrem=false;tfPick(b);});return;}
+    if(tfIsSec(tf))window.__mpSecNeed=1; // start the per-second trade buckets (the WS block reads this flag)
+    tfEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');
+    chartTf=tf;if(tfCur)tfCur.textContent=lbl;tfMenu(false);loadKlines();}
   if(tfBtn)tfBtn.addEventListener('click',function(e){e.stopPropagation();tfMenu(tfEl.hidden);});
-  if(tfEl)tfEl.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;tfEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');chartTf=b.getAttribute('data-tf');if(tfCur)tfCur.textContent=b.textContent;tfMenu(false);loadKlines();});
+  if(tfEl)tfEl.addEventListener('click',function(ev){var b=ev.target.closest('button[data-tf]');if(b)tfPick(b);});
   document.addEventListener('click',function(e){if(tfEl&&!tfEl.hidden&&!e.target.closest('.ptt-tfwrap'))tfMenu(false);});
   var pSym=document.getElementById('planSym');
   if(pSym)pSym.addEventListener('change',function(){setTimeout(loadKlines,30);});
@@ -1239,7 +1302,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)(window.mpWS.resub||window.mpWS.sub)(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{var _vr9=chart.timeScale().getVisibleLogicalRange();if(!_vr9||!bars.length||_vr9.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}}
     // ALSO: catch a stalled CHART even when the price source LOOKS fresh - if the newest bar is more than ~1.5
     // intervals behind now, new bars stopped forming (the real "chart froze" symptom). Force a fresh klines sync.
-    try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5||_holeK)refreshKlinesQuiet();}}catch(e){}
+    try{if(lastBar){var _ivS=tfSecs(chartTf)||300,_nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivS)*_ivS;if(_nb-lastBar.time>Math.max(_ivS*1.5,12)||_holeK)refreshKlinesQuiet();}}catch(e){}
   },5000);
   /* Overnight realism: while the tab is closed the live tick can't watch price, so a position left for hours
      never gets liquidated even if it blew through its liq level. On load (and when the tab regains focus) we
@@ -1916,6 +1979,15 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var pend={},pendSched=false;
   function stage(sym,price,chg){if(!(price>0))return;lastTick=Date.now();lastWsTick=Date.now();pend[sym]={p:price,c:chg};if(!pendSched){pendSched=true;requestAnimationFrame(flushPend);}}
   function flushPend(){pendSched=false;var p=pend;pend={};for(var s in p)emit(s,p[s].p,p[s].c);}
+  /* window.mpSecAgg(sym, t0, secs) = the exact OHLC of [t0, t0+secs) from the per-second trade buckets above, or
+     null when no trade printed in that window - which means a FLAT candle at the last price, not missing data
+     (Bybit's own 1s series publishes exactly that for a quiet second). Exported because all three chart engines
+     need it and none of them should carry a second copy of the bucketing. __mpSecNeed is set by whichever engine
+     opens a seconds timeframe and deliberately never cleared: two windows can want it, and a 240-entry ring per
+     subscribed symbol is cheaper than getting the refcount wrong and silently losing the buckets. */
+  window.mpSecAgg=function(sym,t0,secs){try{var ta=window.mpTicksS&&window.mpTicksS[sym];if(!ta||!ta.length)return null;t0=+t0;secs=+secs||1;var o=null,h=0,l=0,c=0,n=0;
+    for(var i=0;i<ta.length;i++){var b=ta[i];if(b.t<t0)continue;if(b.t>=t0+secs)break;if(!n){o=b.o;h=b.h;l=b.l;}else{if(b.h>h)h=b.h;if(b.l<l)l=b.l;}c=b.c;n++;}
+    return n?{o:o,h:h,l:l,c:c,n:n}:null;}catch(e){return null;}};
   function connect(){
     if(connT){clearTimeout(connT);connT=null;}
     try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();}/* USDT-perp stream: covers TRX & virtually every pair (spot was missing many) + matches futures pricing */
@@ -1933,6 +2005,17 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
           else if(tk.prev&&_tt===tk.prev.t){var _pb=tk.prev;_pb.c=_tp;if(_tp>_pb.h)_pb.h=_tp;if(_tp<_pb.l)_pb.l=_tp;}
           /* older than prev → drop; the old `cur.t!==_tt → reset` path let a straggler REWIND cur to a past
              minute and shove the live minute into prev - bucket order is now monotonic no matter what arrives */}
+        /* PER-SECOND buckets (2026-10-17) for the seconds timeframes, off the SAME trades and the same exchange
+           timestamp. Built only while a seconds chart is actually open (window.__mpSecNeed), so every other page
+           pays one boolean. 240 seconds per symbol is four minutes - far more than the forming bar needs, and the
+           re-sync owns anything older. One bucketer for all three engines: mp-charts and mp-mcharts read mpSecAgg. */
+        if(window.__mpSecNeed){var TS=window.mpTicksS=window.mpTicksS||{},ta=TS[sym]||(TS[sym]=[]);
+          for(var _si=0;_si<m.data.length;_si++){var _sr=m.data[_si],_sp=parseFloat(_sr.p),_st=Math.floor((+_sr.T||Date.now())/1000);
+            if(!isFinite(_sp))continue;
+            var _lb2=ta.length?ta[ta.length-1]:null;
+            if(_lb2&&_lb2.t===_st){_lb2.c=_sp;if(_sp>_lb2.h)_lb2.h=_sp;if(_sp<_lb2.l)_lb2.l=_sp;}
+            else if(!_lb2||_st>_lb2.t){ta.push({t:_st,o:_sp,h:_sp,l:_sp,c:_sp});if(ta.length>240)ta.splice(0,ta.length-240);}
+            else{for(var _sj=ta.length-2;_sj>=0&&_sj>=ta.length-12;_sj--){if(ta[_sj].t===_st){var _ob=ta[_sj];_ob.c=_sp;if(_sp>_ob.h)_ob.h=_sp;if(_sp<_ob.l)_ob.l=_sp;break;}}} /* a straggler lands in its OWN second, never rewinding the newest one */}}
         var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
@@ -3307,7 +3390,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=f71b9616'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=ab7e02c9'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -3808,7 +3891,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=55e02a2e'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=5f67ac4e'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);

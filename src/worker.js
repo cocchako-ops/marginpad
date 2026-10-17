@@ -6015,13 +6015,74 @@ async function fetchPrice(sym) {
 // UX-perf AE dual-write (index 'uxperf', blob2=metric, double2=ms) is PERMANENT since 2026-09-02: it is the only day-over-day history the 8h perf ring cannot give (was gated by PERF_AE_UNTIL = 2026-09-01).
 // (2026-09-02) the temporary /api/price call-site sampler (PXTAG_UNTIL / pxTag) was removed after it answered its question: 0.1% untagged, pos 40% / wsrc 31% / frm 14% / ptr 12%, 79.5% cache miss. Clients still send &px=<ctx>, which is harmless and keeps the lever measurable again if ever needed.
 async function fetchTO(url, opts, ms, env, lbl) { const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 1500); try { return await fetch(url, Object.assign({}, opts || {}, { signal: ac.signal })); } finally { clearTimeout(t); } } // per-source abort: the 8.5s tail is a source hanging serially → cut it at ~1.5s and fall through to the next (env/lbl retained for call-site compatibility)
+// ONE reading of a timeframe token for the whole worker (2026-10-17): '1s'/'5s'/'15s'/'30s' are SECONDS, every other
+// token is MINUTES as a string ('1','30','1440'). Returns seconds per candle, 0 for a token we do not serve.
+// Every place that used `parseInt(tf,10)*60` must go through this or '1s' silently means one MINUTE.
+const SEC_TFS = ['1s', '5s', '15s', '30s']; // the Premium seconds timeframes - the ONE list (declared ABOVE its reader: a const read from above its own definition is a TDZ crash at worker startup, which fails the upload with the smoke test never running)
+function _tfSecs(tf) {
+  const s = String(tf || '');
+  if (/^\d+s$/.test(s)) { const n = parseInt(s, 10); return SEC_TFS.indexOf(s) >= 0 ? n : 0; }
+  const m = parseInt(s, 10); return m > 0 ? m * 60 : 0;
+}
+// Seconds candles, 2026-10-17 (Premium). BYBIT LINEAR ONLY, and deliberately so: Bybit is the live WS venue every
+// chart prices from, and at this resolution a venue seam IS a data bug - measured the day this shipped, OKX (which
+// also serves 1s) stood 0.04% away from Bybit, which is many whole 1s candle ranges. Gate has no seconds at all and
+// Bybit SPOT answers "Invalid period!", so there is no cascade here: no data is a 404, never a coarser interval
+// mislabelled as this one (the 2026-10-15 rule). 5s/15s/30s are EXACT sums of Bybit's native 1s candles - proven by
+// rebuilding closed MINUTES from 1s and matching Bybit's own 1m OHLC and volume to the digit (scratchpad/agg-falsify).
+// History is about 24 hours (measured: 24h OK, 26h empty), so loadMore stops by itself.
+const SEC_WANT = { 1: 600, 5: 600, 15: 400, 30: 200 }; // output bars per interval - 1s stays ~10 min of payload (~54KB) because the chart opens on 120 bars and loadMore extends
+async function bybitSecKlines(pair, secs, endMs, env) {
+  const PG = 1000; // Bybit's own ceiling: 1000 one-second candles per call
+  const want = SEC_WANT[secs] || 200;
+  const pages = Math.min(6, Math.ceil(want * secs / PG)); // 1s:1 5s:3 15s:6 30s:6
+  const live = !(endMs > 0);
+  const t0 = live ? Date.now() : endMs;
+  const base = Math.floor(t0 / 1000 / PG) * PG; // pages below the newest one sit on a 1000-second grid, so their cursor is STABLE and the edge can hold them for 10 minutes; only the newest page is uncacheable
+  const reqs = [];
+  for (let k = 0; k < pages; k++) {
+    const e = k === 0 ? (live ? 0 : endMs) : (base - (k - 1) * PG) * 1000 - 1;
+    reqs.push([pair, e, (k === 0 && live) ? 2 : 600]);
+  }
+  const got = new Map();
+  await Promise.all(reqs.map(async ([p, e, ttl]) => {
+    try {
+      const r = await fetchTO('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + p + '&interval=1s&limit=' + PG + (e > 0 ? '&end=' + e : ''), { cf: { cacheTtl: ttl } }, 2000, env, 'bybit-1s');
+      if (!r.ok) return;
+      const d = await r.json(); const list = d && d.result && d.result.list; if (!list || !list.length) return;
+      for (const k2 of list) { const t = Math.floor(+k2[0] / 1000); if (t > 0 && !got.has(t)) got.set(t, k2); }
+    } catch (e2) {}
+  }));
+  if (!got.size) return null;
+  return secAgg(got, secs, want);
+}
+// PURE, so the E2E drives the function that ships (the applyRealism rule). `got` = Map of unix-second -> a Bybit
+// kline row; returns candles of `secs` seconds. Open is the bucket's FIRST open, close its LAST close, extremes the
+// extremes, volume the sum - which is exactly how Bybit builds its own candles: proven by rebuilding closed minutes
+// from 1s rows and matching Bybit's native 1m OHLC and volume to the digit on BTC and SOL (2026-10-17).
+function secAgg(got, secs, want) {
+  const ts = [...got.keys()].sort((a, b) => a - b), outB = [];
+  for (const t of ts) {
+    const k2 = got.get(t), b0 = Math.floor(t / secs) * secs;
+    const o = +k2[1], h = +k2[2], l = +k2[3], c = +k2[4], v = +k2[5];
+    if (!(o > 0 && h > 0 && l > 0 && c > 0)) continue;
+    const cur = outB.length ? outB[outB.length - 1] : null;
+    if (cur && cur.time === b0) { if (h > cur.high) cur.high = h; if (l < cur.low) cur.low = l; cur.close = c; cur.vol += (v > 0 ? v : 0); }
+    else outB.push({ time: b0, open: o, high: h, low: l, close: c, vol: v > 0 ? v : 0, _first: t });
+  }
+  if (outB.length && outB[0]._first !== outB[0].time) outB.shift(); // a bucket we only saw the TAIL of would carry a wrong open
+  return outB.slice(-(want > 0 ? want : outB.length)).map(b => ({ time: b.time, open: b.open, high: b.high, low: b.low, close: b.close, vol: b.vol }));
+}
 async function handleKlines(url, env, klSrc, ctx) {
   const _klT0 = Date.now();
   let _hadStale = false;
   const SRC_TO = 1500, bybitTO = SRC_TO; // 1500ms > upstream p95 (1040) + jitter margin → abort a hung source and fall through to the next
   const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const iv = String(url.searchParams.get('interval') || '60');
-  const staleMax = Math.min(90000, (parseInt(iv, 10) || 60) * 60000); // per-TF SWR bound: never serve a stale cache entry older than ONE candle interval → a stale-serve can't drop a CLOSED bar (the WS covers only the forming one). Flat 90s dropped a closed bar on 1m (age 60-90s), and 1m grew to 20.7% of stale-serves (was 3.5%) by 2026-07-31. 5m+ interval > 90s so unchanged. >staleMax → blocking refetch (the "chart freezes" guard).
+  const _sec = _tfSecs(iv) || 3600;                            // seconds per candle - minute tokens give exactly the old number, so every existing timeframe behaves byte-for-byte as before
+  const _secTf = _sec < 60;                                    // 1s/5s/15s/30s (Premium): own source, own freshness, no cascade
+  const _freshMs = Math.min(10000, Math.max(1000, _sec * 1000)); // the "serve the cache outright" window. 10s on every minute timeframe as before; one candle on the seconds ones, where 10s is ten whole bars
+  const staleMax = Math.min(90000, _sec * 1000); // per-TF SWR bound: never serve a stale cache entry older than ONE candle interval → a stale-serve can't drop a CLOSED bar (the WS covers only the forming one). Flat 90s dropped a closed bar on 1m (age 60-90s), and 1m grew to 20.7% of stale-serves (was 3.5%) by 2026-07-31. 5m+ interval > 90s so unchanged. >staleMax → blocking refetch (the "chart freezes" guard).
   if (!sym) return J({ error: 'no symbol' }, 400);
   const pair = sym + 'USDT';
   const end = parseInt(url.searchParams.get('end') || '', 10); // optional endTime (ms) for back-paginating history
@@ -6033,7 +6094,7 @@ async function handleKlines(url, env, klSrc, ctx) {
     if (hasEnd) { return hit; }                                        // historical candles are immutable → the edge cache (even 4h) is fine
     const ca = +hit.headers.get('x-mp-cached') || 0;              // LIVE tail: enforce freshness IN THE WORKER so a zone-level Cache-TTL override (Cloudflare was pinning these at 4h) can't serve stale candles - the "chart freezes per-timeframe" bug. Still offloads Bybit within the 10s window.
     const age = Date.now() - ca;
-    if (age < 10000) { return hit; }
+    if (age < _freshMs) { return hit; }
     if (age <= staleMax && ctx) { // SWR: serve this cached response NOW + revalidate the EDGE cache in the background (dedup per key per isolate). IMPORTANT: the reval refreshes the cache for the NEXT caller - it does NOT reach THIS client, who already holds the stale response and keeps showing it until ITS OWN next poll (reloadKlines is ~45s). So this user can display up-to-`age`-old candles for up to ~45s. The forming bar always comes from the WS, so the only real harm is a MISSING CLOSED bar - which happens once age > the candle interval. The bound IS per-TF since 2026-07-31: staleMax = min(90s, ONE candle interval) - see its declaration above - so a stale-serve can never span a closed bar on any TF. (The klinestat measurement instrument was retired after the fix; this comment previously claimed the flat 90s was still live - it was not.) >staleMax → blocking refetch (the "chart freezes" hard bound).
       try { const rk = cacheKey.url, fl = globalThis.__klReval = globalThis.__klReval || new Set(); if (!fl.has(rk)) { fl.add(rk); ctx.waitUntil(fetchFresh(true).catch(function () {}).finally(function () { fl.delete(rk); })); } } catch (e) {}
       return hit;
@@ -6055,6 +6116,14 @@ async function handleKlines(url, env, klSrc, ctx) {
   // fetch older bars - return an EMPTY set (out=[]) so the client's loadMore stops cleanly, and CRUCIALLY do NOT
   // fall through to the Bybit cascade (which lists tokenized AAPLUSDT/… → would poison the chart with 24/7 data).
   const _ysym = yahooSymFor(sym);
+  // SECONDS ARE CRYPTO-PERP ONLY, and both halves of this guard were caught by the live probe rather than by reading:
+  // (1) a seconds-SHAPED token we do not serve ('2s', '7s') had `_tfSecs` answer 0, fell through to the minute
+  //     cascade and `byMap[iv] || '60'` answered it with 1000 HOURLY candles labelled 2s - the exact mislabelling
+  //     the 2026-10-15 rule exists to prevent, arriving from the one direction I had not covered;
+  // (2) a stock/forex/index symbol asked at 1s was answered by YAHOO (its own interval fallback), and if Yahoo had
+  //     missed it the next source would have been Bybit's tokenized equity perp - which really does serve 1s -
+  //     charted against a Yahoo price feed. No exchange publishes sub-minute candles for these, so neither do we.
+  if ((/^\d+s$/.test(iv) && !_secTf) || (_secTf && _ysym)) { if (isReval) return null; return J({ error: 'no data' }, 404); }
   if (_ysym) {
     if (hasEnd) { // back-pagination: Yahoo has no cursor, so deeper history is unavailable → return a 200 EMPTY set
       // (not 404 - a 404 shows as a red "Failed to load resource" in the user's console on every scroll-back). The
@@ -6065,6 +6134,17 @@ async function handleKlines(url, env, klSrc, ctx) {
     }
     try { const y = await _yahooChart(_ysym, iv, 15); if (y && y.bars && y.bars.length) { out = y.bars; srcWon = 'yahoo'; } } catch (e) {}
     if (!out) out = []; // Yahoo failed → empty (still skips the crypto cascade below: out=[] is truthy so !out is false)
+  }
+  // SECONDS timeframes (Premium, 2026-10-17) - their own source, and they must NEVER reach the cascade below:
+  // byMap has no seconds entry, so `byMap[iv] || '60'` would answer a 1s request with HOURLY candles labelled 1s.
+  // out=[] blocks it the same way the Yahoo branch does, and the empty-out check further down answers 404.
+  // A stock/forex/index symbol resolved above already holds out=[], so seconds on those 404 instead of charting
+  // Bybit's tokenized equity perp (which DOES serve 1s) against a Yahoo price feed - the venue-seam bug.
+  if (_secTf && !out) {
+    _curSrc = 'bybit-1s';
+    try { out = await bybitSecKlines(pair, _sec, hasEnd ? end : 0, env); } catch (e) {}
+    srcWon = (out && out.length) ? 'bybit-1s' : '';
+    if (!out) out = [];
   }
   // zero-range (h==l) candles = an illiquid feed padding no-trade periods with flat bars - they render as
   // invisible 1px dashes ("candles missing" on low-cap alts, e.g. HBAR when Bybit's CF egress is rate-limited
@@ -6117,7 +6197,7 @@ async function handleKlines(url, env, klSrc, ctx) {
   // poisons lightweight-charts' render loop client-side ("Value is null" crash on every frame until reload)
   if (out) out = out.filter(b => b && b.time > 0 && b.open > 0 && b.high > 0 && b.low > 0 && b.close > 0 && isFinite(b.time) && isFinite(b.open) && isFinite(b.high) && isFinite(b.low) && isFinite(b.close));
   if (!out || !out.length) { if (isReval) return null; return J({ error: 'no data' }, 404); }
-  const maxAge = hasEnd ? 600 : 8; // BROWSER: historical immutable; live tail polls ~8s (client seeds the forming candle from the WS, so the visible price is always live)
+  const maxAge = hasEnd ? 600 : (_secTf ? Math.max(1, Math.min(5, _sec)) : 8); // BROWSER: historical immutable; live tail polls ~8s (client seeds the forming candle from the WS, so the visible price is always live). A seconds chart may not hold an 8s-old tail: that is eight closed bars on 1s.
   const edgeAge = hasEnd ? 600 : 120; // EDGE (header split): keep the LIVE entry 120s so the worker can FIND a >10s-stale entry to SERVE (SWR) + revalidate. The 10s/90s worker gates decide fresh / stale-serve / blocking-refetch, so the "chart freezes per-timeframe" zone-TTL bug cannot reoccur.
   const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'cdn-cache-control': 'max-age=' + edgeAge, 'cloudflare-cdn-cache-control': 'max-age=' + edgeAge, 'x-mp-cached': String(Date.now()), 'x-mp-src': srcWon || '', ...CORS } });
   try { await caches.default.put(cacheKey, resp.clone()); } catch (e) {}
@@ -21168,7 +21248,7 @@ export default {
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) - without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
     }
-    if (url.pathname === '/api/klines') return perfWrap(env, ctx, 'klines', 10, () => handleKlines(url, env, 'pub', ctx));
+    if (url.pathname === '/api/klines') return perfWrap(env, ctx, (SEC_TFS.indexOf(String(url.searchParams.get('interval') || '')) >= 0 ? 'klines-s' : 'klines'), 10, () => handleKlines(url, env, 'pub', ctx)); // seconds timeframes are their OWN perf group: they fan out to up to 6 upstream pages, so folding them into `klines` would raise that p95 and retire a working regression detector. klines-s is deliberately budget-free until n>=30 says where its p95 is (the price-age rule).
     if (url.pathname === '/api/openapi.json') return handleOpenApi();
     // AGENT DISCOVERY (2026-09-16). Measured over 30 days: /trading-api/ took ZERO crawler hits while bingbot made
     // 28,308, and an agent that wants to USE the API had nothing to probe - /openapi.json, /.well-known/ai-plugin.json

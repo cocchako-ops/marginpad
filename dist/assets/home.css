@@ -339,7 +339,14 @@
   .ptt-tf-btn[aria-expanded="true"]{color:#8fe9f4;background:rgba(63,216,230,.10);}
   .ptt-tf-btn svg{opacity:.7;transition:transform .15s;}
   .ptt-tf-btn[aria-expanded="true"] svg{transform:rotate(180deg);}
-  .ptt-tf{position:absolute;top:calc(100% + 5px);left:0;z-index:20;display:flex;flex-direction:column;gap:2px;background:rgba(13,16,20,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line-bright);border-radius:10px;padding:5px;box-shadow:0 14px 38px -16px rgba(0,0,0,.85);min-width:74px;}
+  /* two columns since 2026-10-17: sixteen timeframes (four seconds + twelve minutes/days) in one column was a 540px
+     drop that ran off a phone and over the chart it belongs to. */
+  .ptt-tf{position:absolute;top:calc(100% + 5px);left:0;z-index:20;display:grid;grid-template-columns:1fr 1fr;gap:3px;background:rgba(13,16,20,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line-bright);border-radius:10px;padding:5px;box-shadow:0 14px 38px -16px rgba(0,0,0,.85);min-width:152px;max-height:min(62vh,340px);overflow-y:auto;overscroll-behavior:contain;}
+  .ptt-tf button{display:flex;align-items:center;justify-content:space-between;gap:5px;}
+  .ptt-tf .ptt-tf-prem{font:800 8px 'Space Mono',monospace;letter-spacing:.06em;color:#c2f64a;display:inline-flex;align-items:center;}
+  .ptt-tf button.lock{color:#7f8a99;}
+  .ptt-tf button.lock .ptt-tf-prem{color:#8b95a3;}
+  @media(max-width:560px){.ptt-tf{left:auto;right:0;}}
   .ptt-tf[hidden]{display:none;}
   .ptt-tf button{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-align:left;color:var(--ink-dim);background:none;border:none;border-radius:7px;padding:8px 11px;cursor:pointer;transition:.12s;}
   .ptt-tf button:hover{color:var(--ink);background:rgba(255,255,255,.07);}
