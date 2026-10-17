@@ -61,10 +61,13 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-acts>button{width:34px;height:34px;padding:0;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none}'
     + '.lbm-folb{width:34px;height:34px;border-radius:10px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.45);color:#38bdf8;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s,border-color .15s}'
     + '.lbm-folb:hover{background:rgba(56,189,248,.22)}.lbm-folb svg{display:block}'
-    /* THREE STATES, drawn as three different glyphs (owner 2026-10-17: the icon read the same followed or not, and a tick may only mean FRIENDS):
-       not following = person + plus (blue) · following, one-way = the person alone (lime outline) · friends, i.e. mutual = person + check on a filled lime tile.
-       Both glyph paths used to be drawn at once, so the only difference between the states was the border colour. */
-    + '.lbm-folb .fchk{display:none}.lbm-folb.on .fplus{display:none}.lbm-folb.friend .fchk{display:block}'
+    /* TWO GLYPHS, never a word (owner 2026-10-17, second pass: "samo treba da budu 2 razlicita coveculjka ... tekst nikako ne sme"):
+       not following = person + plus (blue) · following = person + CHECK (lime), whether or not it is mutual; friends keep the same
+       check on a FILLED lime tile. An earlier cut this day made the one-way state the person ALONE, which at 34px reads as the same
+       icon as the plus - which is why he was still being offered to follow people he already followed. Both paths used to be drawn
+       at once, so the states differed only by border colour; exactly one is visible now. The button carries NO title: a title is a
+       tooltip, i.e. text, and this button may never print a word. */
+    + '.lbm-folb .fchk{display:none}.lbm-folb.on .fplus{display:none}.lbm-folb.on .fchk{display:block}'
     + '.lbm-folb.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.5);color:#c2f64a}'
     + '.lbm-folb.friend{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d}.lbm-folb.friend:hover{background:#d4ff6a}'
     + '.lbm-port{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid transparent;background:linear-gradient(180deg,#141a22,#0d1117) padding-box,linear-gradient(120deg,#a06bff,#c2f64a 55%,#38bdf8) border-box;color:#ecebe4;font:800 12px "Space Mono",monospace;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 26px -14px rgba(160,107,255,.8),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .14s,box-shadow .14s}'
@@ -224,7 +227,8 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     btn.classList.toggle('on', st === 'follow' || st === 'friends');
     btn.classList.toggle('friend', st === 'friends');
     btn.setAttribute('aria-pressed', (st === 'follow' || st === 'friends') ? 'true' : 'false');
-    btn.setAttribute('title', folTitle(st, followsMe));
+    btn.removeAttribute('title'); // a title is a tooltip, i.e. TEXT, and this button may never show a word
+    btn.setAttribute('aria-label', folTitle(st, followsMe));
     btn.setAttribute('data-st', st);
     var body = btn.closest('.lbm-body'), nameEl = body && body.querySelector('.lbm-name');
     if (nameEl) {

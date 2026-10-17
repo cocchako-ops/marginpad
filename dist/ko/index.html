@@ -1538,14 +1538,11 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   }
   function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
   function lbSignedIn(){return !!((window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()));}
-  function lbFollowSet(){try{return JSON.parse(localStorage.getItem('mp_lb_following')||'[]');}catch(e){return [];}}
-  function lbSetFollowSet(a){try{localStorage.setItem('mp_lb_following',JSON.stringify(a));}catch(e){}}
   function lbRenderFollowing(el){
     if(!lbSignedIn()){el.innerHTML=__esT_demohomeindex("signInFreeTo",'<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>로그인</button></div>');return;}
     el.innerHTML='<div class="lb-empty">Loading…</div>';
     fetch('/api/lb/following').then(function(r){return r.json();}).then(function(d){
       var f=(d&&d.following)||[];
-      lbSetFollowSet(f.map(function(x){return __esV_srv(x.name);}));
       if(!f.length){el.innerHTML=__esT_demohomeindex("youAreNotFollowing",'<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>');return;}
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
@@ -1573,15 +1570,6 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   })();
   
   document.addEventListener('click',function(e){
-    var fb=e.target.closest&&e.target.closest('[data-lbfollow]');
-    if(fb){var name=fb.getAttribute('data-lbfollow'),tuid=fb.getAttribute('data-tuid');fb.disabled=true;
-      fetch('/api/lb/follow',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tuid:tuid,tname:name})}).then(function(r){return r.json();}).then(function(j){
-        fb.disabled=false;
-        if(j&&j.error==='login_required'){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
-        var on=!!(j&&j.following);fb.classList.toggle('on',on);fb.textContent=on?'Following':'Follow';
-        var set=lbFollowSet().filter(function(x){return String(x).toLowerCase()!==String(name).toLowerCase();});if(on)set.push(name);lbSetFollowSet(set);
-      }).catch(function(){fb.disabled=false;});
-      return;}
     var du=e.target.closest&&e.target.closest('[data-lbduel]');
     if(du){var un=du.getAttribute('data-lbduel');lbCloseModal();if(window.mpAuth&&window.mpAuth.duel)window.mpAuth.duel(un);else if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
     var db=e.target.closest&&e.target.closest('[data-lbdm]');
@@ -2192,7 +2180,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </div>
 <script defer src="/assets/mp-trade.js?v=7d2cfa1f"></script>
 <script defer src="/assets/mp-auth.js?v=b9015c6e"></script>
-<script defer src="/assets/mp-nav.js?v=85e6db67"></script>
+<script defer src="/assets/mp-nav.js?v=b5b2ceaf"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */

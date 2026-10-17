@@ -72,10 +72,15 @@ const adm = (p, b) => fetch(BASE + p, { method: 'POST', headers: { 'content-type
       let v = await look();
       ok('not following: the plus shows, the check does not', v.btn && v.st === 'none' && v.plus && !v.chk && !v.on, v);
       ok('the button is a glyph, never a label', v.text === '' && v.w <= 40 && v.h <= 40, v);
+      // a title attribute is a TOOLTIP, i.e. text that appears when you reach for the button - the owner saw
+      // exactly that and said text must never appear. aria-label names it without drawing anything.
+      ok('and it carries NO title, so no word can appear on hover', !v.title, { title: v.title });
 
       await tap();
       v = await look();
-      ok('one tap: following one way - the person alone, no plus, no check', v.st === 'follow' && !v.plus && !v.chk && v.on && !v.friend, v);
+      // TWO GLYPHS, not three (owner 2026-10-17: "samo treba da budu 2 razlicita coveculjka"). Not following =
+      // person + plus. Following = person + CHECK, whether or not it is mutual; friends keep the filled tile.
+      ok('one tap: following - the plus is gone and the CHECK is showing', v.st === 'follow' && !v.plus && v.chk && v.on && !v.friend, v);
       ok('and still no text in it', v.text === '', v);
 
       // B follows back from the server side, then A reopens the card
