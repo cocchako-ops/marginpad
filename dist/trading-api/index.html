@@ -1150,7 +1150,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
 <section id="liq-api">
   <h2>Free liquidation data API <span class="tag data">LIVE DATA</span></h2>
-  <p>Real-time liquidations aggregated from <b>nine exchanges</b> by our own collector - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
+  <p>Real-time liquidations aggregated from <b>eight exchanges</b> by our own collector - the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
   <div class="epg">
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/feed</span><span class="d">The newest liquidations across ALL tracked symbols - <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Events land here seconds after they happen (3s edge cache). Poll every 3-5s.</span></div>
     <div class="ep"><span class="m get">GET</span><span class="u">/api/v1/liquidations/live<em>?symbol=BTC&amp;limit=400</em></span><span class="d">Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</span></div>
@@ -1196,7 +1196,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 
 <section id="faq">
   <h2>FAQ</h2>
-  <details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes - MarginPad exposes real-time liquidations aggregated from 9 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See <a href="#liq-api">the liquidation data section</a>.</p></details>
+  <details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes - MarginPad exposes real-time liquidations aggregated from 8 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See <a href="#liq-api">the liquidation data section</a>.</p></details>
   <div class="faq"><b>Is the trading bot API really free?</b><p>Yes. It is a paper-trading simulator - positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately. Paid plans only raise the ceilings.</p></div>
   <div class="faq"><b>Which programming languages can I use?</b><p>Any language that can make an HTTPS request - Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code>X-API-Key</code> header.</p></div>
   <div class="faq"><b>Which coins can my bot trade?</b><p>Any USDT pair with a live price on major exchanges - BTC, ETH, SOL and hundreds of altcoins, plus US stocks, forex majors, metals and indices as perps. Check a symbol with <code>GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
@@ -1556,7 +1556,7 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 })();
 </script>
 
-<script defer src="/assets/mp-auth.js?v=382507b1"></script>
-<script defer src="/assets/mp-nav.js?v=e9a4314b"></script>
+<script defer src="/assets/mp-auth.js?v=e1bd9dfa"></script>
+<script defer src="/assets/mp-nav.js?v=2a02c47b"></script>
 </body>
 </html>

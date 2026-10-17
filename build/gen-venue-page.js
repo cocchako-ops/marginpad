@@ -15,7 +15,7 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'liquidations', 'by-exchange');
 const url = 'https://marginpad.io/liquidations/by-exchange/';
 const title = 'Crypto Liquidations by Exchange - Live 24h Totals per Venue | MarginPad';
-const desc = 'Which exchange is liquidating the most traders right now. Live 24-hour liquidation totals per venue with the long/short split, measured from the public websockets of nine exchanges. Free, no signup, free JSON API.';
+const desc = 'Which exchange is liquidating the most traders right now. Live 24-hour liquidation totals per venue with the long/short split, measured from the public websockets of eight exchanges. Free, no signup, free JSON API.';
 
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
@@ -23,7 +23,7 @@ const FAQ = [
   ['Which exchange has the most crypto liquidations?',
    'It changes daily, which is why the table above is measured rather than written down. Binance is usually the largest by absolute size because it carries the most open leverage, but share moves with the day: Hyperliquid regularly takes a bigger slice during sharp moves because its book is thinner, and a venue can jump from five percent to a quarter of the day’s total in one cascade. Read the share column, not the raw dollars, when comparing venues of different sizes.'],
   ['Where does this liquidation data come from?',
-   'MarginPad runs its own collector subscribed to the public liquidation websocket of each venue: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex. Every forced close is normalised (symbol, side, price, notional, timestamp) and aggregated into a rolling 24-hour window. These are observed events, not estimates or a model, and nothing is filled in when a feed is quiet.'],
+   'MarginPad runs its own collector subscribed to the public liquidation websocket of each venue: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX and Bitfinex. Every forced close is normalised (symbol, side, price, notional, timestamp) and aggregated into a rolling 24-hour window. These are observed events, not estimates or a model, and nothing is filled in when a feed is quiet.'],
   ['What does the long/short split tell me?',
    'It shows which side the crowd was caught on. A venue whose 24-hour flow is mostly long liquidations was carrying crowded longs into a drop; mostly short liquidations means the squeeze went the other way. The split is often more informative than the total, because it describes positioning rather than size.'],
   ['Does a bigger liquidation total mean an exchange is riskier?',
@@ -91,7 +91,7 @@ ${GTAG}
     <p>Per-venue liquidation flow is one of the few derivatives datasets that is genuinely gated. The aggregators that publish it charge for the breakdown, because collecting it means holding a live websocket connection to every exchange, normalising nine different message formats, and staying connected through their outages rather than sampling a REST endpoint every few minutes. MarginPad runs that collector for its own <a href="/heatmap">liquidation heatmap</a> and <a href="/rekt/">live feed</a>, so publishing the per-venue split costs nothing extra and there is no reason to charge for it.</p>
 
     <h2>Method, in full</h2>
-    <p>The collector subscribes to the public liquidation stream of <strong>nine exchanges</strong>: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex. Binance is read on two feeds (USD-margined and coin-margined) which are counted as one venue. Each event carries a symbol, a side, a fill price and a size; notional is price times size in US dollars. Events are aggregated into a rolling 24-hour window and the table above is that window at the moment the page was served.</p>
+    <p>The collector subscribes to the public liquidation stream of <strong>eight exchanges</strong>: Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX and Bitfinex. Binance is read on two feeds (USD-margined and coin-margined) which are counted as one venue. Each event carries a symbol, a side, a fill price and a size; notional is price times size in US dollars. Events are aggregated into a rolling 24-hour window and the table above is that window at the moment the page was served.</p>
     <p>Nothing is inferred. If a venue&#39;s socket is quiet it shows zero rather than an interpolated figure, and if the collector itself is down the table says so instead of showing stale numbers as if they were current. Totals will differ from other trackers, and they should: exchanges publish liquidation events at different granularity, some batch them, and any aggregator that models the gaps will report more than one that does not.</p>
 
     <h2>Take the data</h2>

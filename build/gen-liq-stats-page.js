@@ -1,5 +1,5 @@
 /* Generates /liquidation-statistics/ - a citable statistics hub built on OUR measured liquidation data
-   (VPS collector across 9 exchanges + Coinglass 24h aggregates). The static HTML carries methodology and
+   (VPS collector across 8 exchanges + Coinglass 24h aggregates). The static HTML carries methodology and
    structure; live numbers arrive two ways: the worker's SSR live-data box (crawler-visible, dated) and
    client-side tables from /api/cg/liquidations + /api/v1/liquidations/live.
    Run: node build/gen-liq-stats-page.js */
@@ -8,13 +8,13 @@ const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
 
 const URL0 = 'https://marginpad.io/liquidation-statistics/';
-const DESC = 'Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations - measured in real time from 9 exchanges. Free, updated continuously.';
+const DESC = 'Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations - measured in real time from 8 exchanges. Free, updated continuously.';
 
 const FAQ = [
   { q: 'How much crypto is liquidated every day?', a: 'It varies enormously with volatility: calm days wipe out tens of millions of dollars across all futures markets, while crash or squeeze days can exceed a billion. The live 24-hour total measured right now is shown at the top of this page and updates continuously.' },
   { q: 'What does a liquidation mean in crypto futures?', a: 'A liquidation is the forced closure of a leveraged position after its margin can no longer cover the loss. The exchange closes the position at market, which adds sell pressure (for longs) or buy pressure (for shorts) and can cascade into further liquidations.' },
   { q: 'Why are most liquidations longs?', a: 'On most days the majority of open leverage is long, so down-moves liquidate more volume than up-moves. When shorts dominate the daily total instead, it usually means a short squeeze is running.' },
-  { q: 'Where does this liquidation data come from?', a: 'Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are summed from that same archive. Every figure on this page is a measurement with a timestamp, not an estimate.' },
+  { q: 'Where does this liquidation data come from?', a: 'Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 8 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex), and per-coin 24-hour totals are summed from that same archive. Every figure on this page is a measurement with a timestamp, not an estimate.' },
   { q: 'Is there a free API for liquidation data?', a: 'Yes. MarginPad’s free keyless API serves the same data as JSON: /api/v1/liquidations/recent (price-level buckets), /api/v1/liquidations/live (latest individual events) and /api/v1/clusters. CORS-enabled, 60 requests/minute, no signup.' },
 ];
 
@@ -70,8 +70,8 @@ ${dataLd}
   <div class="crumb"><a href="/">Home</a> / Liquidation Statistics</div>
   <article>
     <h1>Crypto Liquidation Statistics</h1>
-    <div class="meta">Measured live · 9 exchanges · Free JSON API</div>
-    <p>This page tracks how much leveraged crypto is actually being wiped out, right now. The 24-hour totals, the long/short split and the biggest individual hits below are <strong>measurements, not estimates</strong> - streamed from the public liquidation feeds of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) and aggregated per coin. Every figure carries its own timestamp.</p>
+    <div class="meta">Measured live · 8 exchanges · Free JSON API</div>
+    <p>This page tracks how much leveraged crypto is actually being wiped out, right now. The 24-hour totals, the long/short split and the biggest individual hits below are <strong>measurements, not estimates</strong> - streamed from the public liquidation feeds of 8 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex) and aggregated per coin. Every figure carries its own timestamp.</p>
     <h2>24-hour liquidations by coin</h2>
     <table class="lqs-table" id="lqsCoins"><thead><tr><th>Coin</th><th>Total 24h</th><th>Longs</th><th>Shorts</th><th>Dominant side</th></tr></thead><tbody><tr><td colspan="5" style="text-align:left;color:#9aa3ad">Loading live totals…</td></tr></tbody></table>
     <p class="lqs-note" id="lqsCoinsNote"></p>
@@ -81,7 +81,7 @@ ${dataLd}
     <h2>How to read these numbers</h2>
     <p>Long liquidations dominate on down-moves - leveraged buyers are forced to sell, which accelerates the drop. Short liquidations dominate on squeezes - forced buying fuels the rally. A lopsided daily split therefore tells you which side of the market just paid for the move. Calm days across all futures markets wipe out tens of millions of dollars; crash or squeeze days can exceed a billion. The <a href="/btc-liquidation-map/">liquidation map</a> shows <em>where</em> the remaining leverage sits, and the <a href="/rekt/">Rekt feed</a> streams every hit as it lands.</p>
     <h2>Methodology</h2>
-    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 9 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are summed from that archive for the most-liquidated coins of the day. No modelled or extrapolated values appear on this page - where data is missing, nothing is shown.</p>
+    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 8 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are summed from that archive for the most-liquidated coins of the day. No modelled or extrapolated values appear on this page - where data is missing, nothing is shown.</p>
     <h2>Get the raw data (free API, no key)</h2>
     <p>The same data is served as JSON by the <a href="/free-crypto-api/">MarginPad free crypto API</a>: <code>/api/v1/liquidations/recent</code> (price-level buckets per coin), <code>/api/v1/liquidations/live</code> (latest individual events) and <code>/api/v1/clusters</code> (estimated forward clusters, labelled as estimates). CORS-enabled, 60 requests/minute, no signup.</p>
     <h2>FAQ</h2>

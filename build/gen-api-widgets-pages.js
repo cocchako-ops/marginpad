@@ -109,7 +109,7 @@ ${hreflang('api')}
   <div class="crumb"><a href="${home}">${t.crumbHome}</a> / API</div>
   <article>
     <h1>MarginPad API</h1>
-    <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from nine exchanges, an economic calendar - keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
+    <p class="lead">Everything the site knows, as JSON: live prices and candles, a scored screener, funding, open interest, long/short, liquidations measured from eight exchanges, an economic calendar - keyless. Plus a full <b>paper-trading Bot API</b> to forward-test a trading bot on real prices with no real money, a remote <b>MCP server</b> so an AI assistant can use all of it natively, an OpenAPI 3.1 spec and one-file Python and JavaScript clients.</p>
     <div class="chips"><span>Keyless market data · 60 req/min</span><span>Free key · 120 req/min</span><span>Premium · 600 req/min</span><span>CORS on everything</span><span>OpenAPI 3.1</span><span>MCP · 23 tools</span><span>Bot API 2.4.0</span></div>
 
     <div class="ways">
@@ -131,7 +131,7 @@ ${hreflang('api')}
       ${row('GET', '/api/v1/funding', 'Funding rates across ~160 pairs, measured from exchange public endpoints.')}
       ${row('GET', '/api/v1/open-interest', 'Open interest (USD) across ~160 pairs.')}
       ${row('GET', '/api/v1/long-short', 'Long/short account ratio for majors (Binance + OKX + Bybit).')}
-      ${row('GET', '/api/v1/liquidations', '24h liquidation totals per coin, longs vs shorts, from our own nine-exchange collector.')}
+      ${row('GET', '/api/v1/liquidations', '24h liquidation totals per coin, longs vs shorts, from our own eight-exchange collector.')}
       ${row('GET', '/api/v1/venues', 'Liquidations by exchange: 24h total, share, long/short split.')}
       ${row('GET', '/api/v1/feed', 'The newest liquidation events across all symbols (seconds behind the exchanges).')}
       ${row('GET', '/api/v1/liquidations/live?symbol=BTC', 'Raw recent liquidation events for one symbol.')}

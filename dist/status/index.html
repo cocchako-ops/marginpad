@@ -103,7 +103,7 @@
 <h2>Liquidation sources <small>live from the collector</small></h2>
 <table><thead><tr><th>Venue</th><th>Socket</th><th>Last liquidation</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Loading…</td></tr></tbody></table>
 
-<p class="note">Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed sample means that copy was more than three minutes old, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (BitMEX, dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
+<p class="note">Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed sample means that copy was more than three minutes old, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
 </div>
 <script>
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
@@ -146,7 +146,7 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script defer src="/assets/mp-auth.js?v=382507b1"></script>
-<script defer src="/assets/mp-nav.js?v=e9a4314b"></script>
+<script defer src="/assets/mp-auth.js?v=e1bd9dfa"></script>
+<script defer src="/assets/mp-nav.js?v=2a02c47b"></script>
 </body>
 </html>

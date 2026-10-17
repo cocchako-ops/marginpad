@@ -103,7 +103,7 @@
 <h2>Fuentes de liquidación <small>en vivo desde el recolector</small></h2>
 <table><thead><tr><th>Plataforma</th><th>Socket</th><th>Última liquidación</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Cargando…</td></tr></tbody></table>
 
-<p class="note">Cada día muestra la proporción de muestras que pasaron. Un día con menos muestras de las esperadas significa que el propio planificador no estaba funcionando, y eso cuenta en nuestra contra en lugar de ocultarse. <b>El price floor no son los endpoints de precios.</b> Es una copia en caché de cada precio, reescrita una vez por minuto, que una ubicación fría de Cloudflare sirve al instante en lugar de esperar a los exchanges; una muestra fallida significa que esa copia tenía más de tres minutos de antigüedad, así que esas peticiones pagaron el viaje de ida y vuelta en vivo - más lento, no indisponible. <code>GET /api/v1/price</code> responde en ambos casos, y su propia latencia está en la página de la API. Los exchanges con poco volumen (BitMEX, dYdX, Bitfinex) legítimamente pasan horas sin una liquidación; un socket conectado con un último evento antiguo está en silencio, no roto. Legible por máquina: <code>GET /api/status</code>, los monitores externos pueden usar <code>GET /api/health</code> (200 mientras el planificador esté activo). Cambios en la API: <a href="/api/changelog.xml">RSS</a>.</p>
+<p class="note">Cada día muestra la proporción de muestras que pasaron. Un día con menos muestras de las esperadas significa que el propio planificador no estaba funcionando, y eso cuenta en nuestra contra en lugar de ocultarse. <b>El price floor no son los endpoints de precios.</b> Es una copia en caché de cada precio, reescrita una vez por minuto, que una ubicación fría de Cloudflare sirve al instante en lugar de esperar a los exchanges; una muestra fallida significa que esa copia tenía más de tres minutos de antigüedad, así que esas peticiones pagaron el viaje de ida y vuelta en vivo - más lento, no indisponible. <code>GET /api/v1/price</code> responde en ambos casos, y su propia latencia está en la página de la API. Los exchanges con poco volumen (dYdX, Bitfinex) legítimamente pasan horas sin una liquidación; un socket conectado con un último evento antiguo está en silencio, no roto. Legible por máquina: <code>GET /api/status</code>, los monitores externos pueden usar <code>GET /api/health</code> (200 mientras el planificador esté activo). Cambios en la API: <a href="/api/changelog.xml">RSS</a>.</p>
 </div>
 <script>
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
@@ -146,7 +146,7 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script defer src="/assets/mp-auth.js?v=382507b1"></script>
-<script defer src="/assets/mp-nav.js?v=e9a4314b"></script>
+<script defer src="/assets/mp-auth.js?v=e1bd9dfa"></script>
+<script defer src="/assets/mp-nav.js?v=2a02c47b"></script>
 </body>
 </html>

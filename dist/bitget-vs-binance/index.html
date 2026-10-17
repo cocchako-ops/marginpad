@@ -144,7 +144,7 @@
     <p>Both cap out at <strong>125x</strong>, so neither can save you from the other's worst-case position sizing. At that ceiling a move of roughly 0.80% against you wipes the margin - which is why the cap is a marketing number and the size you actually choose is the risk decision.</p>
 
     <h2>Which venue is actually blowing traders up right now</h2>
-    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what Binance liquidated in the last 24 hours, not an estimate or a vendor figure. Bitget does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.</p>
+    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of eight venues, so the block below is a measurement of what Binance liquidated in the last 24 hours, not an estimate or a vendor figure. Bitget does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.</p>
     <div id="vstat" data-a="bitget" data-b="binance" data-an="Bitget" data-bn="Binance">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
     </div>
@@ -178,7 +178,7 @@
       if(!v)return '<div class="vs-col"><b>'+n+'</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+'% of all nine venues</span>'
+        +'<span class="vs-sub">'+v.share+'% of all eight venues</span>'
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -199,6 +199,6 @@
     <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e9a4314b"></script>
+<script defer src="/assets/mp-nav.js?v=2a02c47b"></script>
 </body>
 </html>

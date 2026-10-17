@@ -209,7 +209,7 @@ function coinPage(c) {
     </ul>
 
     <h2>See ${c.sym} liquidations happen live</h2>
-    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) in real time - a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
+    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across eight exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, Bitfinex) in real time - a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
 
     <div class="mprl"><div class="mprl-t">TRADE ${c.sym} FOR REAL</div><div class="mprl-row">
       <a class="mprl-c mprl-by" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer"><span class="mprl-k">Bybit</span><span class="mprl-d">${c.sym} futures · up to ${c.lev}× · deep liquidity</span><span class="mprl-a">&rarr;</span></a>

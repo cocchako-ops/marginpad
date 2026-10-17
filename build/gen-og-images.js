@@ -70,7 +70,7 @@ function plan(rel, html) {
   if (/-liquidation-map\/$/.test(rel)) {
     const name = s.head.replace(/\s*\([^)]*\)/, '').replace(/\s*Liquidation Map.*$/i, '').trim();
     return { t: 'map', d: { sym, title: name + ' liquidation map',
-      sub: 'Real liquidations from nine exchanges, plus the price levels where the next ones sit.',
+      sub: 'Real liquidations from eight exchanges, plus the price levels where the next ones sit.',
       accent: acc || ACCENT.red, eyebrow: 'Where the stops are stacked' } };
   }
 
@@ -112,7 +112,7 @@ function plan(rel, html) {
     '/paper-trade/': ['tool', { title: 'Paper trade crypto futures', sub: 'A real terminal, filled from real candles. No signup, no deposit.', tag: 'NO SIGNUP', accent: ACCENT.lime, path: '/paper-trade' }],
     '/liquidations/': ['live', { title: 'Crypto liquidations, live', eyebrow: 'Updating every minute', accent: ACCENT.red, path: '/liquidations/',
       stats: [{ k: '24h total', v: 'live', c: '#fff' }, { k: 'Longs', v: 'live', c: ACCENT.green }, { k: 'Shorts', v: 'live', c: ACCENT.red }] }],
-    '/rekt/': ['live', { title: 'Every liquidation, the moment it happens', eyebrow: 'Live feed · nine exchanges', accent: ACCENT.red, path: '/rekt/',
+    '/rekt/': ['live', { title: 'Every liquidation, the moment it happens', eyebrow: 'Live feed · eight exchanges', accent: ACCENT.red, path: '/rekt/',
       sub: 'A ticket for every forced close, streamed from our own collector.' }],
     '/funding/': ['live', { title: 'Crypto funding rates', eyebrow: 'Live · every major perp', accent: ACCENT.violet, path: '/funding/',
       sub: 'Who is paying whom, right now, and where the crowd is leaning.' }],

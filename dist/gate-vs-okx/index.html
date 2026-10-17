@@ -144,7 +144,7 @@
     <p>OKX advertises <strong>125x</strong> against Gate's <strong>100x</strong>. Read that as a ceiling, not a recommendation: at 125x a move of about 0.80% against the position is enough to end it, against 1.00% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.</p>
 
     <h2>Which venue is actually blowing traders up right now</h2>
-    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what Gate and OKX liquidated in the last 24 hours, not an estimate or a vendor figure. It reloads on every visit - treat a single day as weather, not climate.</p>
+    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of eight venues, so the block below is a measurement of what Gate and OKX liquidated in the last 24 hours, not an estimate or a vendor figure. It reloads on every visit - treat a single day as weather, not climate.</p>
     <div id="vstat" data-a="gate" data-b="okx" data-an="Gate" data-bn="OKX">
       <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
     </div>
@@ -178,7 +178,7 @@
       if(!v)return '<div class="vs-col"><b>'+n+'</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+'% of all nine venues</span>'
+        +'<span class="vs-sub">'+v.share+'% of all eight venues</span>'
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -199,6 +199,6 @@
     <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=e9a4314b"></script>
+<script defer src="/assets/mp-nav.js?v=2a02c47b"></script>
 </body>
 </html>

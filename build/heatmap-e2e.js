@@ -242,7 +242,7 @@ const LAYOUT = () => {
 
     ok('the whole map is visible without scrolling', L.stage.bottom <= L.vh, 'stage bottom=' + L.stage.bottom + ' vh=' + L.vh);
     ok('the control bar is two named groups', L.barGroups === 2, 'groups=' + L.barGroups);
-    ok('the masthead states the measured venue count', /9 exchanges/.test(L.mastTxt), L.mastTxt.slice(0, 80));
+    ok('the masthead states the measured venue count', /8 exchanges/.test(L.mastTxt), L.mastTxt.slice(0, 80));
     ok('the foot cards are open on a desktop', L.footTotal >= 4 && L.footOpen === L.footTotal, L.footOpen + '/' + L.footTotal);
     ok('nothing in the section overflows the viewport', L.wide === 0, 'wide=' + L.wide);
     ok('the exchange table is a grid on a desktop', L.extGrid > 0 && L.extStacked === 0, 'grid=' + L.extGrid + ' stacked=' + L.extStacked);
@@ -986,7 +986,7 @@ const LAYOUT = () => {
   // ---- copy that has to agree with itself ---------------------------------------------------------------
   console.log('\ncopy');
   const src = SRC || await (await fetch('https://marginpad.io/assets/mp-heatmap.js?cb=' + Date.now())).text();
-  ok('the venue count is stated once and correctly', !/11 venues/.test(src) && /9 exchanges/.test(src));
+  ok('the venue count is stated once and correctly', !/11 venues/.test(src) && /8 exchanges/.test(src));
   ok('the share card is not misspelled', !/exchangess/.test(src));
   ok('the paywall sells the five indicators that exist', !/[468] exclusive AI indicators/.test(src) && /5 exclusive AI indicators/.test(src));
   const html = await (await fetch(URL_ + '&cb=' + Date.now())).text();
