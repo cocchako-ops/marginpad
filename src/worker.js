@@ -26874,14 +26874,23 @@ export class RewardLedger {
       // GROUP BY THE SENDER, WHICH IS `email`. `address` is the ACCOUNT the ticket belongs to - 'affiliate',
       // 'email', a Bybit UID, a Moon handle - and grouping by it judged 'affiliate' as a domain with no dot.
       // The dry run caught it before anything was deleted: it would have taken 58 real affiliate tickets.
-      const rows = this.rows("SELECT email, COUNT(*) n FROM support WHERE email IS NOT NULL AND email<>'' GROUP BY email");
+      // AND ONLY INBOUND MAIL IS JUDGED (2026-10-18). `supportSenderJunk` is a rule about an email ENVELOPE;
+      // on a ticket filed through the site's own form the `email` column is FREE TEXT the member typed into a
+      // box, and the form accepts whatever they type. A Nigerian member (Olamide, ticket 509) typed his phone
+      // number - 9070579908 - and the dry run offered to delete his ticket as "no domain". Measured the day
+      // this shipped: 102 rows on the desk, only 14 of them inbound mail, and the rule was 0 for 1 on the rest.
+      // Inbound mail is exactly `address` 'email' | 'affiliate' (see the email() handler, which is the only
+      // writer of those two), so that is the whole universe an envelope rule may be applied to.
+      const rows = this.rows("SELECT email, COUNT(*) n FROM support WHERE email IS NOT NULL AND email<>'' AND address IN ('email','affiliate') GROUP BY email");
       return this.j({ senders: rows.map(r => ({ who: String(r.email || ''), n: +r.n || 0 })) });
     }
     if (path === '/support/purge') { // DELETE every row from the senders named. No undo - the worker only calls this after a dry run.
       const who = (Array.isArray(body.senders) ? body.senders : []).map(x => String(x || '')).filter(Boolean).slice(0, 200);
       if (!who.length) return this.j({ error: 'no_senders' }, 400);
       let deleted = 0;
-      for (const w of who) { try { deleted += sql.exec('DELETE FROM support WHERE email=?', w).rowsWritten || 0; } catch (e) {} }
+      // The same inbound-mail scope as the listing, stated again HERE on purpose: this is the destructive half,
+      // and a sender string that happens to appear on both a mailed and a form ticket must never take the form one.
+      for (const w of who) { try { deleted += sql.exec("DELETE FROM support WHERE email=? AND address IN ('email','affiliate')", w).rowsWritten || 0; } catch (e) {} }
       return this.j({ ok: true, deleted, senders: who.length });
     }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) - closes/reopens the WHOLE conversation

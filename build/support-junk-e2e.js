@@ -52,5 +52,22 @@ ok('the rule names WHY it refused, so a drop can always be explained',
   /ip literal|no domain|no dot|private ip|bare ip|no sender/.test(supportSenderJunk('postmaster@[10.88.0.4]')),
   supportSenderJunk('postmaster@[10.88.0.4]'));
 
+// AN ENVELOPE RULE MAY ONLY BE APPLIED TO AN ENVELOPE (2026-10-18). `supportSenderJunk` judges a From
+// header. A ticket filed through the SITE'S OWN FORM carries whatever the member typed into the email box -
+// Olamide (ticket 509) typed his phone number, 9070579908, and the purge dry run offered to delete him.
+// Inbound mail is exactly address 'email' | 'affiliate'; both the sender LISTING and the DELETE are scoped
+// to those, and the destructive half is checked separately because that is the one that cannot be undone.
+{
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+  const SCOPE = /address IN \('email','affiliate'\)/;
+  const sel = (src.match(/SELECT email, COUNT\(\*\) n FROM support[^"]*/) || [''])[0];
+  ok('the sender listing reads INBOUND MAIL only', SCOPE.test(sel), sel.slice(0, 200));
+  const del = (src.match(/DELETE FROM support WHERE email=\?[^"]*/) || [''])[0];
+  ok('and the purge DELETE carries the same scope', SCOPE.test(del), del.slice(0, 200));
+  // The rule itself was never wrong - a bare number IS junk as an envelope. The SCOPE was wrong, which is
+  // why this check sits beside the two above rather than loosening the predicate.
+  ok('a bare phone number is still refused as an envelope', supportSenderJunk('9070579908') === 'no domain', supportSenderJunk('9070579908'));
+}
+
 console.log('\n' + (pass + fail) + ' checks, ' + fail + ' failed');
 process.exitCode = fail ? 1 : 0;
