@@ -19884,15 +19884,26 @@ async function spotPriceHolds(env, holds) {
 // about 30 calls a minute from our egress), and only then the pool itself. Returns {key: px}.
 async function spotPricesFor(env, syms) {
   const prices = {}; let list = []; try { list = await spotMemeList(env); } catch (e) {}
-  const byMint = {}; for (const m of list) if (m && m.mint && +m.price > 0) byMint[String(m.mint).toLowerCase()] = +m.price;
+  const byMint = {}; for (const m of list) if (m && m.mint && +m.price > 0) byMint[String(m.mint).toLowerCase()] = m;
   const majors = {};
   for (const key of Object.keys(syms || {})) {
     const info = syms[key] || {};
     try {
       if (info.k === 'meme') {
-        const lp = byMint[String(info.mint || key.split(':')[1] || '').toLowerCase()];
-        if (lp > 0) { prices[key] = lp; continue; }
-        const mp = await spotMemePrice(env, info.net || 'solana', info.pool); if (mp && +mp.price > 0) prices[key] = +mp.price;
+        // THE LIST PRICE IS ONLY THE SAME MARKET WHEN IT IS THE POOL THE POSITION WAS BOUGHT FROM (2026-10-17). One mint can
+        // trade in several pools and the list carries whichever is deepest NOW; on 2026-10-17 the same ETH token read 0.0000025
+        // in the pool two members bought from and 0.0088 in the pool the list had moved to, and the board valued a $10 bag at
+        // $35,290 and a $100 one at $355,081 - a gain the sell path (priced by the position's own pool, which was unreadable)
+        // could never have paid. A board that pays real money has to value a bag at what a sale would fetch: the position's
+        // own pool, and when that pool is unreadable or under SPOT_THIN_LIQ the last mark, exactly as the portfolio does.
+        // ... and only while the row is FRESH: the list keeps a row up to SPOT_ROW_MAX_AGE (12 h) for display when GeckoTerminal
+        // 429s, and the row behind the two inflated bags was 19 hours old - its pool had since become unreadable, which is what
+        // the sell path would have met. Fifteen minutes is the board's own rebuild cadence with room for one missed list refresh.
+        const row = byMint[String(info.mint || key.split(':')[1] || '').toLowerCase()];
+        const fresh = row && (+row.ts > 0) && (Date.now() - (+row.ts) < 15 * 60000);
+        if (row && fresh && (!info.pool || String(row.pool || '').toLowerCase() === String(info.pool).toLowerCase())) { prices[key] = +row.price; continue; }
+        const mp = await spotMemePrice(env, info.net || 'solana', info.pool);
+        if (mp && +mp.price > 0 && !mp.stale && !(+mp.liqUsd > 0 && +mp.liqUsd < SPOT_THIN_LIQ)) prices[key] = +mp.price;
         await new Promise(r => setTimeout(r, 40));
       } else {
         const sym = info.sym || key.replace(/^cex:/, '');
@@ -23120,6 +23131,13 @@ export default {
       out.now = Date.now();
       return J(out);
     }
+ if (url.pathname === '/api/admin/ufollows' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: every follow row an account is on, either side, raw keys included (2026-10-17 support: "my friends carry the add icon")
+   let fu = String(url.searchParams.get('uid') || '').replace(/^u:/, '');
+   const stubF = env.USERS.get(env.USERS.idFromName('main')); // the /lb* store routes answer GET (usersDO posts, and a POST there is not_found)
+   if (!fu && url.searchParams.get('u')) { try { const pr = await (await stubF.fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('u'))))).json(); fu = String((pr && pr.uid) || '').replace(/^u:/, ''); } catch (e) {} }
+   if (!fu) return J({ error: 'uid_or_u_required' }, 400);
+   try { const d = await (await stubF.fetch(new Request('https://do/lbfollowdump?uid=' + encodeURIComponent(fu)))).json(); return J(d || { error: 'unavailable' }); } catch (e) { return J({ error: 'unavailable' }, 503); }
+ }
  if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
  const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '' });
  out.now = Date.now();
@@ -23916,7 +23934,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily, memeboard: spotBoardCron };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -30591,6 +30609,12 @@ export class UserStore {
         greenDiag: this._greenDiag || null, // what the Green board read and what it refused - a counter nobody can read is not a measurement
         people: Object.keys(seen).length
       });
+    }
+    if (path === '/lbfollowdump') { // support: every ufollows row an account is on, either side, raw (2026-10-17 - "my friends carry the add icon")
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ error: 'uid' }, 400);
+      const nm = (id) => { const r = this.rows('SELECT username FROM users WHERE id=?', String(id).replace(/^u:/, ''))[0]; return r ? r.username : ''; };
+      const out = this.rows('SELECT k, uid, tuid, tname, ts FROM ufollows WHERE uid=? OR tuid=? OR uid=? OR tuid=? ORDER BY ts DESC LIMIT 500', uid, uid, 'u:' + uid, 'u:' + uid);
+      return this.j({ uid, rows: out.map(r => ({ k: r.k, uid: r.uid, tuid: r.tuid, tname: r.tname, ts: r.ts, from: nm(r.uid), to: nm(r.tuid) })) });
     }
     if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
