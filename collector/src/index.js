@@ -56,11 +56,15 @@ function onEvent(e) {
   if (storage.insert(e)) { inserted++; bus.emit('liq', e); } else deduped++;
 }
 
+// BitMEX IS OFF (2026-10-17). It answered 403 to every request from the droplet AND from the owner's own connection
+// (REST and the websocket handshake alike - a geo-block, not a bug), had delivered 0 events in its entire life
+// behind 3,268 reconnects, and was paging "liq izvor bitmex ćuti" every six hours. A venue we cannot reach is not
+// a source; the site's copy says eight exchanges now. Re-enable here if BitMEX ever answers from the box.
 const collectors = [
   new BinanceCollector({ symbols: config.symbols, onEvent }),
   new BybitCollector({ symbols: config.symbols, onEvent }),
   new OkxCollector({ symbols: config.symbols, onEvent }),
-  new BitmexCollector({ symbols: config.symbols, onEvent }),
+  ...(config.bitmexEnabled ? [new BitmexCollector({ symbols: config.symbols, onEvent })] : []),
   new BitfinexCollector({ symbols: config.symbols, onEvent }),
   new BinanceCoinCollector({ symbols: config.symbols, onEvent }),
   new GateLiqCollector({ symbols: config.symbols, onEvent }),

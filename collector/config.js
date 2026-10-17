@@ -5,7 +5,8 @@ export const config = {
   // every other liquidation market-wide (OKX all-swaps, Binance all-market, Bybit top-N) so the live feed
   // is rich and the staleness watchdog is reliable.
   symbols: ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'],
-  bybitTopN: 150,            // subscribe to the 150 most-active Bybit linear perps (Bybit has no all-market topic)
+  bitmexEnabled: false,      // 2026-10-17: BitMEX 403s the droplet and Serbia alike (geo-block); 0 events ever. See src/index.js
+  bybitTopN: 400,            // subscribe to the 400 most-active Bybit linear perps (Bybit has no all-market topic). Was 150: measured 2026-10-17 against Coinglass for the same 24 h, Bybit read $24.4M here vs $34.3M there (71%) while Binance/OKX/Gate sat at 89-93% - the long tail below the top 150 was the gap
 
   // Binance futures WebSocket is geo-blocked in some regions (socket opens, 0 data). Set BINANCE_PROXY to an
   // HTTP(S) CONNECT proxy in an allowed region (e.g. http://user:pass@host:port) to route ONLY Binance through

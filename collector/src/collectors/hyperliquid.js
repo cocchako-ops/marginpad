@@ -142,12 +142,21 @@ export class HyperliquidLiqCollector {
       if (!f || !f.liquidation) continue;
       const coin = String(f.coin || '');
       if (!coin || coin.charAt(0) === '@' || coin.indexOf('/') >= 0) continue; // spot fills, not perps
-      const tid = String(f.tid || f.hash + f.time); if (this.seenTid.has(tid)) continue;
-      this.seenTid.add(tid); if (this.seenTid.size > 5000) this.seenTid.clear();
       const px = +f.px, sz = +f.sz; if (!(px > 0) || !(sz > 0)) continue;
-      // this user's own fill: liquidated LONG is force-SOLD (side 'A'), liquidated SHORT force-BOUGHT ('B').
-      // dir strings ("Close Long"/"Long > Short"…) agree, but side is the stable field.
-      const side = f.side === 'A' ? 'long_liquidated' : 'short_liquidated';
+      // WHOSE fill is this? Both participants of a liquidation trade carry the `liquidation` metadata, and the
+      // counterparty's copy has the OPPOSITE side: the liquidated long is force-SOLD (its own fill side 'A'), so the
+      // maker who absorbed it shows side 'B'. Until 2026-10-17 this read `f.side === 'A'` whatever the fill's owner,
+      // and because the harvest polls BOTH users, roughly half of every day's Hyperliquid liquidations were booked on
+      // the wrong side: measured 47% long here against 86% long on Coinglass for the same 24 hours.
+      const liqUser = String((f.liquidation && f.liquidation.liquidatedUser) || '').toLowerCase();
+      const own = !liqUser || liqUser === String(c.user).toLowerCase();
+      const liqSold = own ? f.side === 'A' : f.side !== 'A';
+      // One liquidation, two fills, two tids - the dedupe has to be the EVENT, not the fill id.
+      const tid = String(f.tid || f.hash + f.time); if (this.seenTid.has(tid)) continue;
+      const evKey = liqUser ? liqUser + '|' + coin + '|' + f.time + '|' + f.px + '|' + f.sz : tid;
+      if (this.seenTid.has(evKey)) continue;
+      this.seenTid.add(tid); this.seenTid.add(evKey); if (this.seenTid.size > 10000) this.seenTid.clear();
+      const side = liqSold ? 'long_liquidated' : 'short_liquidated';
       this.lastEventAt = Date.now(); this.eventsTotal++;
       // builder-dex coins arrive as "xyz:CL" → emit "XYZ:CL" (matches Coinglass display); core stay as-is
       this.onEvent({ ts: +f.time || Date.now(), exchange: 'hyperliquid', symbol: coin.toUpperCase(), side, price: px, qty: sz, notional: px * sz });
