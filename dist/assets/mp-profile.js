@@ -16,7 +16,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
   function followSet() { try { return JSON.parse(localStorage.getItem('mp_lb_following') || '[]'); } catch (e) { return []; } }
   function setFollowSet(a) { try { localStorage.setItem('mp_lb_following', JSON.stringify(a)); } catch (e) {} }
   var CSS = ''
-    + '.lbm{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.72);opacity:0;transition:opacity .18s}'
+    + '.lbm{position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.72);opacity:0;transition:opacity .18s}'
     + '.lbm.on{opacity:1}'
     + '.lbm-card{--lc:#c97f4a;position:relative;width:100%;max-width:380px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),#0c1017;border:1px solid var(--lc);border-radius:18px;padding:20px 20px 18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03),0 0 46px -22px var(--lc);transform:translateY(10px) scale(.98);transition:transform .2s}'
     + '.lbm.on .lbm-card{transform:translateY(0) scale(1)}'

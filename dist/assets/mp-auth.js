@@ -42,6 +42,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   };
   function ic(name, cls) { return '<svg class="mpa-svg' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>'; }
   function tileBtn(id, icon, label, badgeId) { return '<button class="mpa-tile" id="' + id + '" type="button">' + ic(icon) + '<span class="mpa-tile-l">' + label + '</span>' + (badgeId ? '<span class="mpa-tile-dot" id="' + badgeId + '" hidden></span>' : '') + '</button>'; }
+  /* ONE way to draw the circle beside a name (2026-10-17, owner: "gde god ima taj kruzic sa pocetnim slovom
+     username-a, omoguci da tu bude PFP ako ga je korisnik postavio"). The initial stays the fallback - it is what
+     a member with no picture gets, and it is what an <img> falls back to if the data URI is ever broken. Exported
+     because the squads page needs the same thing and must not grow a fourth copy of it. */
+  window.mpAvatarOr = function (av, name, cls) {
+    av = av || '';
+    var ini = esc((String(name || '?').replace(/[^a-zA-Z0-9]/g, '').slice(0, 1) || '?').toUpperCase());
+    if (/^data:image\//.test(av)) return '<img class="mpa-av-fill' + (cls ? ' ' + cls : '') + '" src="' + esc(av) + '" alt="">';
+    if (av) return '<span class="mpa-av-gl' + (cls ? ' ' + cls : '') + '">' + esc(av.slice(0, 2)) + '</span>';
+    return ini;
+  };
   function avatarHtml(av, cls) { av = av || ''; if (/^data:image\//.test(av)) return '<img class="mpa-av-img' + (cls ? ' ' + cls : '') + '" src="' + esc(av) + '" alt="">'; if (av) return '<span class="mpa-av-emoji' + (cls ? ' ' + cls : '') + '">' + esc(av) + '</span>'; return ''; }
   window.mpAvatarHtml = avatarHtml;
   /* shared tier insignia (SVG, no emoji): faceted gem for Diamond, hexagon+star medal otherwise */
@@ -294,8 +305,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-ib::-webkit-scrollbar{width:9px}.mpa-ib::-webkit-scrollbar-track{background:#0a0d11}.mpa-ib::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
     + '.mpa-ib-r{display:flex;align-items:flex-start;gap:10px;padding:11px 4px;border-bottom:1px solid #1a2027;cursor:pointer;text-align:left;background:none;border-left:none;border-right:none;border-top:none;width:100%}'
     + '.mpa-ib-r:hover{background:rgba(255,255,255,.02)}'
-    + '.mpa-ib-av{width:34px;height:34px;border-radius:50%;flex:none;align-self:center;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0b0d;font-size:14px}'
-    + '.mpa-ib-b{flex:1;min-width:0}.mpa-ib-nm{font-size:13.5px;font-weight:700;color:#f2f0e9;display:flex;align-items:center;gap:4px}'
+    + '.mpa-av-fill{width:100%;height:100%;border-radius:inherit;object-fit:cover;display:block}.mpa-av-gl{font-size:1.05em;line-height:1}.mpa-ib-av{overflow:hidden;width:34px;height:34px;border-radius:50%;flex:none;align-self:center;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0b0d;font-size:14px}'
+    + '.mpa-ib-b{flex:1;min-width:0}.mpa-dmwho{background:none;border:0;padding:0;margin:0;font:inherit;cursor:pointer;text-align:left}.mpa-dmwho:hover{text-decoration:underline}.mpa-ib-nm{font-size:13.5px;font-weight:700;color:#f2f0e9;display:flex;align-items:center;gap:4px}'
     + '.mpa-ib-last{font-size:12px;color:#7f8893;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}'
     + '.mpa-ib-meta{flex:none;align-self:flex-start;margin-top:1px;padding-left:8px;text-align:right;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}'
     + '.mpa-ib-un{display:inline-block;min-width:18px;height:18px;line-height:18px;padding:0 5px;background:#38bdf8;color:#04121c;border-radius:9px;font-size:10.5px;font-weight:800;text-align:center;margin-top:3px}'
@@ -1030,7 +1041,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var ib = bodyEl.querySelector('#mpaIb'); if (!ib) return;
       var th = (d && d.threads) || [];
       if (!th.length) { ib.innerHTML = __esT_mpauth("noMessagesYetOpen",'<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat - you can message people you follow (or who follow you).</div>'); return; }
-      ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + dmCol(t.name) + '">' + esc((t.name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
+      ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + (t.avatar ? 'transparent' : dmCol(t.name)) + '">' + window.mpAvatarOr(t.avatar, t.name) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
     }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = __esT_mpauth("couldNotLoadYour2",'<div class="mpa-xp-empty">Could not load your messages.</div>'); });
   }
@@ -1060,7 +1071,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function renderDmThread(name) {
     name = String(name || '').replace(/[^a-zA-Z0-9_]/g, '');
     if (!name) { renderDmInbox(); return; }
-    bodyEl.innerHTML = '<div class="mpa-dmh"><button class="mpa-link" id="mpaDmBack" type="button" style="margin:0;padding:0;font-size:20px">←</button><span class="mpa-ib-av" id="mpaDmAv" style="background:' + dmCol(name) + '">' + esc((name || '?').charAt(0).toUpperCase()) + '</span><span class="mpa-ib-nm" id="mpaDmNm">' + esc(name) + '</span></div>'
+    bodyEl.innerHTML = '<div class="mpa-dmh"><button class="mpa-link" id="mpaDmBack" type="button" style="margin:0;padding:0;font-size:20px">←</button><span class="mpa-ib-av" id="mpaDmAv" style="background:' + dmCol(name) + '">' + esc((name || '?').charAt(0).toUpperCase()) + '</span><button type="button" class="mpa-ib-nm mpa-dmwho" id="mpaDmNm" data-lbu="' + esc(name) + '" title="Open profile">' + esc(name) + '</button></div>'
       + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaDmScroll"><div class="mpa-dm-empty">Loading…</div></div><div id="mpaDmWarn"></div>'
       + __esT_mpauth("inputClassMpaIn",'<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @') + esc(name) + __esT_mpauth("maxlength1000AutocompleteO",'…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>');
     var bk = bodyEl.querySelector('#mpaDmBack'); if (bk) bk.addEventListener('click', renderDmInbox);
@@ -1101,7 +1112,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? __esT_mpauth("userNotFound",'User not found.') : __esT_mpauth("couldNotLoadThis",'Could not load this chat.')) + '</div>'; return; }
       if (d.me) dmWho = d.me;
-      if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); var av = bodyEl.querySelector('#mpaDmAv'); if (av) av.style.background = dmCol(d.other.name); }
+      if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) { nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); nm.setAttribute('data-lbu', d.other.name); }
+        var av = bodyEl.querySelector('#mpaDmAv');
+        if (av) { av.innerHTML = window.mpAvatarOr(d.other.avatar, d.other.name); av.style.background = d.other.avatar && /^data:image\//.test(d.other.avatar) ? 'transparent' : dmCol(d.other.name); } }
       var canDm = d.canDm !== false;
       if (!canDm && !(d.messages && d.messages.length)) { if (warn) warn.innerHTML = __esT_mpauth("youCanMessageThis",'<div class="mpa-dm-warn">You can message this trader once you follow them (or they follow you). Open their profile and tap Follow first.</div>'); if (inp) inp.disabled = true; if (send) send.disabled = true; }
       draw(d.messages || []);
