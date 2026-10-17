@@ -19758,7 +19758,7 @@ async function handleSpot(url, request, env) {
     const ws = lbPeriodStart(Date.now());
     const snap = await memeSnapshot(env, ws);
     let prizes = [15, 10, 5, 0, 0]; try { prizes = (await rewardCfg(env)).lbMeme; } catch (e) {}
-    const resp = new Response(JSON.stringify({ ws, we: ws + LB_PERIOD, ts: snap.ts || 0, n: snap.n || 0, paidFrom: MEME_LB_START, prizes, rows: (snap.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades })) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    const resp = new Response(JSON.stringify({ ws, we: ws + LB_PERIOD, ts: snap.ts || 0, n: snap.n || 0, paidFrom: MEME_LB_START, prizes, checked: +snap.checked || 0, corrected: +snap.corrected || 0, rows: (snap.rows || []).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades, corrected: r.corrected ? true : undefined })) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
     try { await caches.default.put(ck, resp.clone()); } catch (e) {}
     return resp;
   }
@@ -19867,15 +19867,31 @@ async function handleSpot(url, request, env) {
 }
 // Price a member's holdings in place (the /portfolio read and the public /public card share it): a meme from its own pool
 // (rugged = the pool holds under SPOT_THIN_LIQ), a major from the exchange feed, a dead feed from the last mark + stale.
-async function spotPriceHolds(env, holds) {
+// THE ONE VALUATION OF A HELD POSITION (portfolio, the public card, the board's self-check): the position's OWN pool, a fresh
+// trending-list row only when it is that same pool (one aggregate read instead of a pool call), the last mark when the pool is
+// unreadable, and a meme bag can never be worth more than half the liquidity of the pool it would have to be sold into -
+// a $10 bag that read $35,290 on 2026-10-17 was priced off another pool of the same mint, and nothing could have paid that.
+// `opt.byPool` = the trending list keyed by pool (built once per batch by spotListByPool); `opt.now` for tests.
+const SPOT_LIST_FRESH_MS = 15 * 60000; // a list row older than this is a display artefact (SPOT_ROW_MAX_AGE keeps it 12 h for the page), never a price
+const SPOT_LIQ_CAP = 0.5;              // a bag is worth at most this share of its pool - what a sale could realistically fetch
+async function spotListByPool(env) { const m = {}; try { for (const r of await spotMemeList(env)) if (r && r.pool && +r.price > 0) m[String(r.pool).toLowerCase()] = r; } catch (e) {} return m; }
+async function spotPriceHolds(env, holds, opt) {
+  const byPool = (opt && opt.byPool) || null, now = (opt && opt.now) || Date.now();
   for (const x of holds) {
-    let px = 0;
+    let px = 0, liq = null;
     try {
-      if (x.meta && x.meta.k === 'meme') { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); px = mp ? mp.price : 0; if (mp && !mp.stale) { x.liqUsd = Math.round(+mp.liqUsd || 0); x.rugged = x.liqUsd < SPOT_THIN_LIQ; } }
+      if (x.meta && x.meta.k === 'meme') {
+        const row = byPool && x.meta.pool ? byPool[String(x.meta.pool).toLowerCase()] : null;
+        if (row && (+row.ts > 0) && (now - (+row.ts) < SPOT_LIST_FRESH_MS) && (!x.meta.mint || !row.mint || String(row.mint).toLowerCase() === String(x.meta.mint).toLowerCase())) { px = +row.price; liq = +row.liqUsd || 0; }
+        else { const mp = await spotMemePrice(env, x.meta.net || 'solana', x.meta.pool); if (mp && !mp.stale) { px = +mp.price || 0; liq = +mp.liqUsd || 0; } }
+        if (liq != null) { x.liqUsd = Math.round(liq); x.rugged = x.liqUsd < SPOT_THIN_LIQ; }
+      }
       else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
     } catch (e) {}
     if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed (rugged meme) -> last known mark + a stale flag for the UI
-    x.price = px; x.valueUsd = Math.round(x.qty * px * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
+    x.price = px; let val = x.qty * px;
+    if (x.meta && x.meta.k === 'meme' && liq > 0 && val > liq * SPOT_LIQ_CAP) { val = liq * SPOT_LIQ_CAP; x.capped = true; } // the pool could not pay more than this
+    x.valueUsd = Math.round(val * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
   }
   return holds;
 }
@@ -19942,14 +19958,45 @@ async function spotBoardBuild(env, ws) {
   const raw = (bd && bd.rows) || [];
   let names = {}; try { const nr = await usersDO(env, '/names', { ids: raw.map(x => x.uid) }); names = (nr && nr.names) || {}; } catch (e) {}
   const banned = await lbBanned(env);
-  const rows = [];
+  let rows = [];
   for (const x of raw) {
     const who = names[x.uid]; if (!who || /^e2e_/i.test(who)) continue;
     if (banned['u:' + x.uid] || banned[x.uid]) continue;
     rows.push({ rank: rows.length + 1, uid: x.uid, who, pnl: Math.round(+x.pnlC || 0) / 100, equity: Math.round(+x.equityC || 0) / 100, trades: +x.trades || 0 });
   }
-  return { ws, we: ws + LB_PERIOD, ts: Date.now(), n: rows.length, rows, priced: Object.keys(prices).length, keys: Object.keys(sd.syms || {}).length };
+  // THE SELF-CHECK (2026-10-17, owner: "da budemo sigurni da se ove gluposti vise nece desavati"). The DO valued every account from
+  // ONE price per key; the prize zone is re-valued here position by position through spotPriceHolds - the same function the
+  // portfolio and the public card use - and where the two disagree by more than 1% or $10 the POSITION figure wins, the row is
+  // marked, and the owner is told once per six hours. The key-level pass stays, because it is what makes 200 accounts every ten
+  // minutes affordable; this is the guard that makes it safe to trust at the top, where the money is.
+  const corrected = []; let checked = 0;
+  try {
+    const byPool = await spotListByPool(env);
+    const top = rows.slice(0, SPOT_BOARD_CHECK_N);
+    for (const r of top) {
+      let d = null; try { d = await (await stub.fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(r.uid) + '&ro=1'))).json(); } catch (e) {}
+      if (!d || d.none) continue;
+      const holds = await spotPriceHolds(env, d.holds || [], { byPool });
+      const eq = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
+      checked++;
+      const delta = Math.round((eq - r.equity) * 100) / 100;
+      if (Math.abs(delta) > Math.max(10, Math.abs(r.equity) * 0.01)) {
+        corrected.push({ who: r.who, boardEquity: r.equity, positionEquity: eq, capped: holds.filter(x => x.capped).map(x => (x.meta || {}).sym || x.key) });
+        r.equity = eq; r.pnl = Math.round((r.pnl + delta) * 100) / 100; r.corrected = true; // base is unchanged, so the season P&L moves by exactly the equity difference
+      }
+    }
+    if (corrected.length) {
+      rows.sort((a, b) => (b.pnl - a.pnl) || (a.trades - b.trades)); rows.forEach((r, i) => { r.rank = i + 1; });
+      const last = +(await env.STATS.get('alrt:memeboard') || 0);
+      if (Date.now() - last > 6 * 3600000) {
+        await env.STATS.put('alrt:memeboard', String(Date.now()), { expirationTtl: 172800 });
+        await tgAdmin(env, '<b>Meme Spot board: ' + corrected.length + ' row(s) priced two ways</b>\n' + corrected.map(c => '@' + c.who + ': board $' + c.boardEquity + ' vs positions $' + c.positionEquity + (c.capped.length ? ' (capped by pool: ' + c.capped.join(', ') + ')' : '')).join('\n') + '\nThe position figure was used. Something priced a key off a market its holder is not in - read the row before the season pays.', { kind: 'memeboard', sev: 'amber' });
+      }
+    }
+  } catch (e) {}
+  return { ws, we: ws + LB_PERIOD, ts: Date.now(), n: rows.length, rows, priced: Object.keys(prices).length, keys: Object.keys(sd.syms || {}).length, checked, corrected: corrected.length };
 }
+const SPOT_BOARD_CHECK_N = 12; // the prize zone (3 paid) plus the rows that could reach it inside one ten-minute cycle
 async function spotBoardCron(env) {
   try {
     if (!env || !env.SPOT || !env.STATS) return;
@@ -25550,7 +25597,10 @@ export class SpotStore {
         sql.exec('INSERT INTO sp2snap(user_id,day,value,dep) VALUES(?,?,?,?) ON CONFLICT(user_id,day) DO UPDATE SET value=excluded.value, dep=excluded.dep', a.user_id, day, v, this._dep(a));
         n++;
       }
-      for (const x of holds) { const px = +prices[x.key]; if (px > 0) { try { const m = JSON.parse(x.meta || '{}'); m.lastPx = px; sql.exec('UPDATE sp2hold SET meta=? WHERE user_id=? AND key=?', JSON.stringify(m), x.user_id, x.key); } catch (e) {} } }
+      // lastPx is the fallback every valuation falls to when a pool is unreadable, so it must never absorb a freak quote: a mark
+      // more than 20x away from the previous one is skipped (the sell guard's own ratio) - a real 20x day leaves lastPx a day stale,
+      // a bad quote would have poisoned the floor under a position for good (2026-10-17).
+      for (const x of holds) { const px = +prices[x.key]; if (px > 0) { try { const m = JSON.parse(x.meta || '{}'); const old = +m.lastPx || 0; if (old > 0 && (px > old * 20 || px < old / 20)) continue; m.lastPx = px; sql.exec('UPDATE sp2hold SET meta=? WHERE user_id=? AND key=?', JSON.stringify(m), x.user_id, x.key); } catch (e) {} } }
       return this.j({ ok: true, accounts: n });
     }
     if (path === '/s2/board') { // THE SEASON BOARD: season P&L = (worth now - put in now) - (worth at the season start - put in then). A claim raises both sides, so only trading moves it. {ws, prices:{key:px}, limit}

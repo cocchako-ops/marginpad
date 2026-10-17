@@ -26,6 +26,29 @@ const J = async (p, init) => { const r = await fetch(ORIGIN + p, init); let j = 
 const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') + 'uid=' + uid, body ? { method: 'POST', headers: H, body: JSON.stringify(body) } : { headers: H });
 
 (async () => {
+  // ---- PURE: the one valuation function, lifted out of the shipped worker and driven through the 2026-10-17 bug ----
+  // A fresh same-pool list row prices; a stale row (19 h) does not; a fresh row for ANOTHER pool of the same mint does not; an
+  // unreadable pool falls back to the last mark and says so; a bag can never be worth more than half its pool.
+  try {
+    const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const grab = (name) => { const i = src.indexOf('async function ' + name + '('); if (i < 0) throw new Error('no ' + name); let d = 0, j = src.indexOf('{', i); for (let k = j; k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}') { d--; if (!d) return src.slice(i, k + 1); } } throw new Error('unbalanced ' + name); };
+    const consts = (src.match(/^const SPOT_LIST_FRESH_MS = [^\n]+/m) || [''])[0] + '\n' + (src.match(/^const SPOT_LIQ_CAP = [^\n]+/m) || [''])[0] + '\nconst SPOT_THIN_LIQ = 1000;';
+    const calls = [];
+    const F = new Function('spotMemePrice', 'fetchPriceCached', consts + '\n' + grab('spotPriceHolds') + '\nreturn spotPriceHolds;')(
+      async (env, net, pool) => { calls.push(pool); return pool === 'POOL-OK' ? { price: 2, liqUsd: 50000 } : pool === 'POOL-THIN' ? { price: 100, liqUsd: 400 } : null; },
+      async () => ({ price: 100 }));
+    const now = 1000000000000, mk = (pool, extra) => Object.assign({ key: 'eth:0xmint', qty: 1000, costUsd: 10, meta: { k: 'meme', net: 'eth', pool, mint: '0xmint', lastPx: 0.01 } }, extra || {});
+    const fresh = { pool: 'POOL-OK', mint: '0xmint', price: 3, liqUsd: 50000, ts: now - 60000 }, stale = { pool: 'POOL-OK', mint: '0xmint', price: 3, liqUsd: 50000, ts: now - 19 * 3600000 }, other = { pool: 'POOL-OTHER', mint: '0xmint', price: 3000, liqUsd: 50000, ts: now - 60000 };
+    let h = await F(null, [mk('POOL-OK')], { byPool: { 'pool-ok': fresh }, now });
+    chk('pure: a FRESH row for the position\'s own pool prices it, no pool call', h[0].price === 3 && h[0].valueUsd === 3000 && !calls.length, { price: h[0].price, calls: calls.length });
+    calls.length = 0; h = await F(null, [mk('POOL-OK')], { byPool: { 'pool-ok': stale }, now });
+    chk('pure: a 19-hour-old list row is NOT a price - the pool is read instead', h[0].price === 2 && calls.length === 1, { price: h[0].price, calls: calls.length });
+    calls.length = 0; h = await F(null, [mk('POOL-DEAD')], { byPool: { 'pool-other': other }, now });
+    chk('pure: a fresh row for ANOTHER pool of the same mint is never used, and an unreadable pool falls back to the last mark, marked stale (the $10 bag stays $10)', h[0].price === 0.01 && h[0].valueUsd === 10 && h[0].stale === true, { price: h[0].price, value: h[0].valueUsd, stale: h[0].stale });
+    h = await F(null, [mk('POOL-THIN', { qty: 1000000 })], { byPool: {}, now });
+    chk('pure: a bag is worth at most half its pool (1,000,000 x $100 in a $400 pool = $200), and a thin pool is flagged rugged', h[0].valueUsd === 200 && h[0].capped === true && h[0].rugged === true, { value: h[0].valueUsd, capped: h[0].capped, rugged: h[0].rugged });
+  } catch (e) { chk('pure: the valuation function could be lifted from the worker and run', false, String(e.message || e)); }
+
   let sess = null;
   try {
     const mk = await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid, op: 'mk' }) });
@@ -92,6 +115,22 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     const adm = (await J('/api/admin/spot?nc=1', { headers: { cookie } })).j;
     const me = adm && (adm.accounts || []).find(a => a.uid === uid);
     chk('mp-ops roster lists the member with cash, worth, deposits and claims', !!me && Math.abs(me.cashUsd - p3.usdtUsd) < 0.011 && me.claims === 1 && me.depUsd === 10100 && me.holdN === (p3.holds || []).length, me && { cash: me.cashUsd, eq: me.equity, dep: me.depUsd, claims: me.claims, holdN: me.holdN });
+
+    // ---- THE BOARD IS THE PORTFOLIO (2026-10-17): on 2026-10-17 the board's key-level pricing valued a $10 bag at $35,290 off a
+    // stale trending-list row for another pool of the same mint, while the portfolio held it at cost. The board now re-values its
+    // prize zone position by position through the portfolio's own function and says so; these checks go red the day the two
+    // paths disagree again, or the day the self-check stops running.
+    chk('the board self-check ran over the prize zone (checked >= min(12, n)) and corrected nothing on a normal day', pub && pub.checked >= Math.min(12, pub.n || 0) && pub.corrected === 0, pub && { checked: pub.checked, corrected: pub.corrected, n: pub.n });
+    chk('the board is sorted by season P&L, every name once', pub && pub.rows.every((r, i) => i === 0 || r.pnlUsd <= pub.rows[i - 1].pnlUsd) && new Set(pub.rows.map(r => r.who)).size === pub.rows.length, pub && pub.rows.slice(0, 4).map(r => r.who + ':' + r.pnlUsd));
+    { const byName = {}; for (const a of (adm && adm.accounts) || []) byName[String(a.name).toLowerCase()] = a.uid;
+      const diffs = [];
+      for (const r of (pub ? pub.rows : []).slice(0, 10)) {
+        const ru = byName[String(r.who).toLowerCase()]; if (!ru) { diffs.push(r.who + ':no-uid'); continue; }
+        const pp = (await J('/api/spot/public?uid=' + ru + '&cb=' + Date.now())).j;
+        if (!pp || pp.none) { diffs.push(r.who + ':no-public'); continue; }
+        if (Math.abs(pp.equityUsd - r.equityUsd) > Math.max(15, Math.abs(r.equityUsd) * 0.02)) diffs.push(r.who + ': board $' + r.equityUsd + ' vs card $' + pp.equityUsd);
+      }
+      chk('every top-10 board row is worth what its own public portfolio says (within 2% / $15 - both are live prices)', diffs.length === 0, diffs); }
 
     // ---- the social layer (2026-10-16): the floor, the public portfolio, theses ----
     const feed = (await J('/api/spot/feed?cb=' + Date.now())).j;
