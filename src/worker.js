@@ -8145,7 +8145,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e3b0dbd4" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=2f5b0b2d" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -31177,12 +31177,13 @@ export class UserStore {
       // viewer-relative relationship (mutual follow = "friends") - only when a signed-in viewer is passed
       const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
       let iFollow = false, followsMe = false, mutual = false;
+      const isSelf = !!viewer && viewer === String(u.id); // the card used to ask the DEFERRED mp-auth bundle who the reader was, so a card opened before it parsed offered a Follow button for your own profile
       if (viewer && viewer !== String(u.id)) {
         iFollow = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', viewer + '|' + u.id)[0];
         followsMe = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', u.id + '|' + viewer)[0];
         mutual = iFollow && followsMe;
       }
-      return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
+      return this.j({ exists: true, isSelf, viewerSignedIn: !!viewer, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
         iFollow, followsMe, mutual,
         bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
@@ -31429,14 +31430,15 @@ export class UserStore {
       if (!uid || !tuid) return this.j({ error: 'bad' }, 400);
       if (uid === tuid) return this.j({ error: 'self' }, 400);
       const k = uid + '|' + tuid;
-      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); return this.j({ ok: true, following: false }); }
+      const theyFollowMe = () => !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
+      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); const fm0 = theyFollowMe(); return this.j({ ok: true, following: false, followsMe: fm0, mutual: false }); }
       if ((this.rows('SELECT COUNT(*) c FROM ufollows WHERE uid = ?', uid)[0] || { c: 0 }).c >= 200) return this.j({ error: 'too_many' }, 429);
       sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now);
       const fu = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
       const fn = (fu && fu.username) || 'A trader';
-      const nowMutual = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
+      const nowMutual = theyFollowMe();
       this._pushNotif(tuid, 'follow', nowMutual ? '@' + fn + ' followed you back - you’re now friends!' : '@' + fn + ' started following you', fu && fu.username ? 'profile:' + fu.username : '');
-      return this.j({ ok: true, following: true });
+      return this.j({ ok: true, following: true, followsMe: nowMutual, mutual: nowMutual });
     }
     if (path === '/lbfollowing') { // list accounts the signed-in user follows, with each target's trade stats + level
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');

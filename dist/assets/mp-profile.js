@@ -12,10 +12,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
   function esc(x) { return String(x).replace(/</g, '&lt;'); }
   function moneyC(x) { x = +x || 0; var s = x < 0 ? '-' : '+', a = Math.abs(x), u = '', d = a; if (a >= 1e9) { d = a / 1e9; u = 'B'; } else if (a >= 1e6) { d = a / 1e6; u = 'M'; } else if (a >= 1e3) { d = a / 1e3; u = 'K'; } var str = u ? (d >= 100 ? Math.round(d) : d.toFixed(1)) + u : (a >= 1 ? Math.round(a).toString() : a.toFixed(2)); return s + '$' + str; }
   function pctC(x) { x = +x || 0; var s = x < 0 ? '-' : '+', a = Math.abs(x), u = '', d = a; if (a >= 1e6) { d = a / 1e6; u = 'M'; } else if (a >= 1e3) { d = a / 1e3; u = 'K'; } var str = u ? (d >= 100 ? Math.round(d) : d.toFixed(1)) + u : Math.round(a).toString(); return s + str + '%'; }
-  function signedIn() { return !!(window.mpAuth && window.mpAuth.me && window.mpAuth.me()); }
-  function followSet() { try { return JSON.parse(localStorage.getItem('mp_lb_following') || '[]'); } catch (e) { return []; } }
-  function setFollowSet(a) { try { localStorage.setItem('mp_lb_following', JSON.stringify(a)); } catch (e) {} }
-  var CSS = ''
+        var CSS = ''
     + '.lbm{position:fixed;inset:0;z-index:2147483646;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.72);opacity:0;transition:opacity .18s}'
     + '.lbm.on{opacity:1}'
     + '.lbm-card{--lc:#c97f4a;position:relative;width:100%;max-width:380px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),#0c1017;border:1px solid var(--lc);border-radius:18px;padding:20px 20px 18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03),0 0 46px -22px var(--lc);transform:translateY(10px) scale(.98);transition:transform .2s}'
@@ -193,6 +190,48 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     }).join('');
     return '<span class="lbm-meds">' + out + '</span>';
   }
+  /* THE FOLLOW BUTTON, REWRITTEN 2026-10-17. One state, read from the server, and one painter used by the first
+     render and by every click. The three glyphs are in the SVG and the class picks which one shows:
+       guest    - not signed in          -> plus, and a click opens the sign-in sheet
+       none     - signed in, not following -> plus
+       follow   - I follow them, one way   -> the person alone, lime outline
+       friends  - we follow each other     -> the check on a filled lime tile
+     `self` draws no button at all. Nothing here reads localStorage or window.mpAuth: the card payload carries
+     isSelf / viewerSignedIn / iFollow / followsMe / mutual, and the toggle answers with the same four, so a
+     card opened before the deferred auth bundle parsed is still correct. */
+  function folState(d) {
+    if (!d) return 'guest';
+    if (d.isSelf) return 'self';
+    if (!d.viewerSignedIn) return 'guest';
+    if (d.mutual || (d.iFollow && d.followsMe)) return 'friends';
+    return d.iFollow ? 'follow' : 'none';
+  }
+  function folTitle(st, followsMe) {
+    if (st === 'friends') return __esT_mpprofile('friendsT', 'Friends - you follow each other');
+    if (st === 'follow') return __esT_mpprofile('followingT', 'Following - tap to unfollow');
+    if (st === 'guest') return __esT_mpprofile('signInToFollow2', 'Sign in to follow');
+    return followsMe ? __esT_mpprofile('followBackT', 'Follows you - follow back') : __esT_mpprofile('followT', 'Follow');
+  }
+  /* The pill beside the name says the same thing in words and is painted from the same state - it used to be
+     inserted and removed by hand inside the click handler, with its own copy of the wording. */
+  function folPill(st, followsMe) {
+    if (st === 'friends') return '<span class="lbm-friend" title="' + esc(folTitle('friends')) + '">\u2605 ' + __esT_mpprofile('friendsPill', 'Friends') + '</span>';
+    if (followsMe) return __esT_mpprofile('followsYou', '<span class="lbm-fw" title="Follows you">Follows you</span>');
+    return '';
+  }
+  function folPaint(btn, st, followsMe) {
+    if (!btn) return;
+    btn.classList.toggle('on', st === 'follow' || st === 'friends');
+    btn.classList.toggle('friend', st === 'friends');
+    btn.setAttribute('aria-pressed', (st === 'follow' || st === 'friends') ? 'true' : 'false');
+    btn.setAttribute('title', folTitle(st, followsMe));
+    btn.setAttribute('data-st', st);
+    var body = btn.closest('.lbm-body'), nameEl = body && body.querySelector('.lbm-name');
+    if (nameEl) {
+      var old = nameEl.querySelector('.lbm-friend, .lbm-fw'); if (old) old.remove();
+      var pill = folPill(st, followsMe); if (pill) nameEl.insertAdjacentHTML('beforeend', pill);
+    }
+  }
   var modal = null;
   function closeModal() { if (modal) { modal.classList.remove('on'); setTimeout(function () { if (modal && !modal.classList.contains('on')) modal.style.display = 'none'; }, 200); } }
   var TAGC = { bronze: ['#c97f4a', '#f0c39a'], silver: ['#c3cdda', '#eef3fa'], gold: ['#ffcf3f', '#ffe98a'], platinum: ['#8fe6ff', '#d8f6ff'], diamond: ['#b795ff', '#e6d8ff'], master: ['#ff4d6d', '#ffb0bf'], legendary: ['#ff8a2a', '#ffcf8a'], unranked: ['#8b95a1', '#c9d2dc'], neon: ['#c2f64a', '#e5ff8a'], aurora: ['#8b5cff', '#5ad0ff'], founder: ['#ffd75a', '#fff3c0'], owner: ['#7a4d0a', '#ffd75a'], default: ['#c2f64a', '#e5ff8a'], carbon: ['#9aa3ad', '#cdd3da'], jade: ['#4ade80', '#a7f3c8'], royal: ['#a06bff', '#d0b5ff'], blood: ['#ff5a4d', '#ff9a8a'], matrix: ['#2ebd85', '#7de8bc'], ice: ['#35c0e8', '#a8f0ff'], ember: ['#8a5a3a', '#ff7a4a'], sakura: ['#ff9ad0', '#ffd0e8'], void: ['#8a6cff', '#c0aaff'], sovereign: ['#f0e6c8', '#fffaf0'], eclipse: ['#ff9a2a', '#ffcf8a'], inferno: ['#ff6a1a', '#ffb056'], streak7: ['#ffb84a', '#ffdf8a'], streak30: ['#ff6a2a', '#ffae4a'], streak100: ['#ffffff', '#dff6f6'], dwell10: ['#d29a6a', '#eccaa8'], dwell100: ['#34d99a', '#9fe9c8'], dwell500: ['#b8895a', '#e0c8a8'], closer: ['#ff5a4d', '#ffb3ad'], closer2k: ['#ff3b30', '#ffd0cc'], operative: ['#a9b96a', '#d5e0a8'], mission500: ['#ffd75a', '#14120a'], og180: ['#b87333', '#5ec8ae'], xp100k: ['#e05a4a', '#ffd75a'], dragonfire: ['#ff5a28', '#ffc060'], singularity: ['#7a5cff', '#9adfff'], midas: ['#ffd75a', '#fff3c0'], realtrader: ['#2ee6a8', '#ffe98a'], champion: ['#ffd75a', '#fff3c0'], deadeye: ['#c3cdda', '#ff6a5e'], overdrive: ['#ff2ad0', '#ff9af0'], tycoon: ['#2ebd85', '#ffd75a'] }; /* member-tag tint follows the equipped frame */
@@ -211,25 +250,19 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       // Squad cosmetics (borders + badges) take the member's OWN squad colours (2026-10-01). A hidden squad (MP-One) sets neither, so it keeps its designed look. removeProperty matters: the modal is reused, so a previous card's tint must not linger.
       try { if (d.squad && !d.squad.hidden && d.squad.crest) { var _cr = d.squad.crest, _bg = _cr.bg || '#0a0b0d', _fg = _cr.fg || '#c2f64a'; var _lum = function (h) { h = String(h).replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return 0.299 * (parseInt(h.slice(0, 2), 16) || 0) + 0.587 * (parseInt(h.slice(2, 4), 16) || 0) + 0.114 * (parseInt(h.slice(4, 6), 16) || 0); }; var _a = _lum(_fg) >= _lum(_bg) ? _fg : _bg, _a2 = _a === _fg ? _bg : _fg; card.style.setProperty('--sqc', _a); card.style.setProperty('--sqc2', _a2); } else { card.style.removeProperty('--sqc'); card.style.removeProperty('--sqc2'); } } catch (e) {} // the brighter of the two crest colours is the highlight, so a squad with a dark field still gets a visible flame
       var svg = (window.mpLvlSvg ? window.mpLvlSvg(L.k, lc) : '');
-      var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null;
-      var isSelf = me && (me.username && me.username.toLowerCase() === String(d.name).toLowerCase());
+      var isSelf = !!d.isSelf; // the SERVER's word - asking the deferred mp-auth bundle made a freshly-opened card offer you a Follow button for yourself
       // The viewer-relative truth comes from the server (iFollow / followsMe / mutual, computed for the signed-in viewer, uncached);
       // the localStorage set is only the fallback for a payload that carries no flags. Before 2026-10-17 the button read localStorage
       // alone, which is per device and knows nothing about the other direction.
-      var hasFlags = typeof d.iFollow === 'boolean';
-      var following = hasFlags ? !!d.iFollow : followSet().map(function (x) { return String(x).toLowerCase(); }).indexOf(String(d.name).toLowerCase()) >= 0;
-      var followsMe = !!d.followsMe, isFriend = !!(d.mutual || (following && followsMe));
-      function folTitle(on, fr) { return fr ? __esT_mpprofile("friendsT", 'Friends - you follow each other') : on ? __esT_mpprofile("followingT", 'Following') : followsMe ? __esT_mpprofile("followBackT", 'Follows you - follow back') : __esT_mpprofile("followT", 'Follow'); }
+      var folSt = folState(d), folFm = !!d.followsMe;
       function stat(v, l, c) { return '<div class="lbm-s"><div class="lbm-sv"' + (c ? ' style="color:' + c + '"' : '') + '>' + v + '</div><div class="lbm-sl">' + l + '</div></div>'; }
       var CHAT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
       var DUEL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/></svg>';
-      var dmBtn = (!isSelf && signedIn()) ? '<button type="button" class="lbm-dm" data-lbdm="' + esc(d.name) + __esT_mpprofile("titleMessage",'" title="Message">') + CHAT_SVG + '</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="' + esc(d.name) + __esT_mpprofile("titleChallengeToA",'" title="Challenge to a duel">') + DUEL_SVG + '</button>' : '';
+      var dmBtn = (folSt !== 'self' && folSt !== 'guest') ? '<button type="button" class="lbm-dm" data-lbdm="' + esc(d.name) + __esT_mpprofile("titleMessage",'" title="Message">') + CHAT_SVG + '</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="' + esc(d.name) + __esT_mpprofile("titleChallengeToA",'" title="Challenge to a duel">') + DUEL_SVG + '</button>' : '';
       // Follow lives beside the close as an icon (person + plus; a check when following); the foot row holds Portfolio instead (2026-10-16)
       var FOL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path class="fplus" d="M19 8v6M22 11h-6"/><path class="fchk" d="M16 11l2 2 4-4"/></svg>';
       var PORT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>';
-      var folBtn = isSelf ? '' : (signedIn()
-        ? '<button type="button" class="lbm-folb' + (following ? ' on' : '') + (isFriend ? ' friend' : '') + '" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '" data-fm="' + (followsMe ? '1' : '0') + '" title="' + folTitle(following, isFriend) + '" aria-pressed="' + (following ? 'true' : 'false') + '">' + FOL_SVG + '</button>'
-        : '<button type="button" class="lbm-folb" data-auth-open title="' + __esT_mpprofile("signInToFollow2",'Sign in to follow') + '">' + FOL_SVG + '</button>');
+      var folBtn = (folSt === 'self') ? '' : ('<button type="button" class="lbm-folb" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '"' + (folSt === 'guest' ? ' data-auth-open' : '') + '>' + FOL_SVG + '</button>');
       /* FOUR ACTIONS, ONE ROW, ONE SIZE (owner 2026-10-17). Portfolio keeps its own gradient border but loses the
          word - it is a tile like the other three, and the word is in its title and aria-label so it is still named
          for a screen reader and on hover. Follow comes down from the top-right corner it held for one day. */
@@ -275,6 +308,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
         + ''
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + '</span>' + mBtn + '</div>'
         + '<div class="lbm-portp" id="lbmPortP" hidden></div>';
+      try { folPaint(body.querySelector('.lbm-folb'), folSt, folFm); } catch (e) {}
     }).catch(function () { body.innerHTML = __esT_mpprofile("couldNotLoadThis",'<div class="lbm-load">Could not load this trader.</div>'); });
   };
   // PORTFOLIO (owner 2026-10-16): what this member holds on Demo Spot - worth, season P&L, rank and the coins with their share.
@@ -347,23 +381,22 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
   document.addEventListener('click', function (e) {
     var fb = e.target.closest && e.target.closest('[data-lbfollow]');
     if (fb) {
-      var name = fb.getAttribute('data-lbfollow'), tuid = fb.getAttribute('data-tuid'); fb.disabled = true;
-      fetch('/api/lb/follow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tuid: tuid, tname: name }) }).then(function (r) { return r.json(); }).then(function (j) {
-        fb.disabled = false;
-        if (j && j.error === 'login_required') { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); return; }
-        // an icon button since 2026-10-16: the state is the glyph, never a label. Friends = they follow me (data-fm, from the card payload) AND I follow them.
-        var on = !!(j && j.following), fr = on && fb.getAttribute('data-fm') === '1';
-        fb.classList.toggle('on', on); fb.classList.toggle('friend', fr); fb.setAttribute('aria-pressed', on ? 'true' : 'false');
-        fb.setAttribute('title', fr ? __esT_mpprofile("friendsT", 'Friends - you follow each other') : on ? __esT_mpprofile("followingT", 'Following') : (fb.getAttribute('data-fm') === '1' ? __esT_mpprofile("followBackT", 'Follows you - follow back') : __esT_mpprofile("followT", 'Follow')));
-        // the pill beside the name follows the same truth at once: "Follows you" becomes "Friends" on the click that makes it mutual, and back
-        try {
-          var nameEl = fb.closest('.lbm-body') && fb.closest('.lbm-body').querySelector('.lbm-name');
-          var frTag = nameEl && nameEl.querySelector('.lbm-friend'), fwTag = nameEl && nameEl.querySelector('.lbm-fw');
-          if (fr) { if (fwTag) fwTag.remove(); if (!frTag && nameEl) nameEl.insertAdjacentHTML('beforeend', '<span class="lbm-friend" title="' + __esT_mpprofile("friendsT", 'Friends - you follow each other') + '">★ ' + __esT_mpprofile("friendsPill", 'Friends') + '</span>'); }
-          else { if (frTag) frTag.remove(); if (!fwTag && nameEl && fb.getAttribute('data-fm') === '1') nameEl.insertAdjacentHTML('beforeend', __esT_mpprofile("followsYou", '<span class="lbm-fw" title="Follows you">Follows you</span>')); }
-        } catch (x) {}
-        var set = followSet().filter(function (x) { return String(x).toLowerCase() !== String(name).toLowerCase(); }); if (on) set.push(name); setFollowSet(set);
-      }).catch(function () { fb.disabled = false; });
+      if (fb.hasAttribute('data-auth-open')) return; // a guest: mp-auth's own handler opens the sign-in sheet
+      if (fb.getAttribute('data-busy') === '1') return; // a second tap while the first is in flight would paint the answer to a question nobody asked
+      var name = fb.getAttribute('data-lbfollow'), tuid = fb.getAttribute('data-tuid');
+      fb.setAttribute('data-busy', '1');
+      fetch('/api/lb/follow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tuid: tuid, tname: name }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          fb.removeAttribute('data-busy');
+          if (j && j.error === 'login_required') { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); return; }
+          if (!j || !j.ok) return;
+          /* the SERVER's new truth, both directions - the old handler guessed the other direction from a
+             data- attribute rendered when the card opened, so following someone who already followed you
+             left the button on the one-way glyph until the card was closed and opened again. */
+          folPaint(fb, folState({ viewerSignedIn: true, iFollow: !!j.following, followsMe: !!j.followsMe, mutual: !!j.mutual }), !!j.followsMe);
+        })
+        .catch(function () { fb.removeAttribute('data-busy'); });
       return;
     }
     var du = e.target.closest && e.target.closest('[data-lbduel]');

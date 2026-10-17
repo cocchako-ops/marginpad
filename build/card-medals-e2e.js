@@ -46,6 +46,10 @@ const WINS = {
 
   const payload = JSON.parse(JSON.stringify(real || {}));
   payload.wins = WINS;
+  /* `real` was fetched without a session, so it describes a GUEST. Since 2026-10-17 the card takes who the reader
+     is from the payload rather than from the deferred mp-auth bundle, so the fixture has to say it: a guest is
+     correctly offered no Message and no Duel. */
+  payload.viewerSignedIn = true; payload.isSelf = false; payload.iFollow = false; payload.followsMe = false; payload.mutual = false;
 
   async function prep(browser, mobile) {
     const page = await newPage(browser, { mobile, ua: mobile ? UA_MOBILE : UA_DESKTOP });
