@@ -72,7 +72,12 @@ function alarmTests() {
     body = 'const collDown = !!(cs && (cs.state === "UNREACHABLE" || cs.state === "DOWN" || cs.state === "STALLED" || cs.state === "UNCONFIG"));\n'
       + 'if (collDown) { const dk = "alrt:coll:" + new Date(Date.now()).toISOString().slice(0,10); if (!(await env.STATS.get(dk))) { const s2 = await tgAdmin(env, "Collector je PAO", {}); if (s2) await env.STATS.put(dk, "1"); } }';
   }
-  const run = new Function('cs', 'env', 'tgAdmin', 'return (async () => {\n' + body + '\n})();');
+  // doDropletInfo and DO_DROPLET_IP are module-level in the worker, so the lifted block needs them injected.
+  // droplet is settable per case: the whole point of the DigitalOcean read is that a powered-off machine and
+  // a dead process must not produce the same instruction.
+  let droplet = { id: 1, name: 'x', status: 'active', ip: '167.172.98.147' };
+  const run = new Function('cs', 'env', 'tgAdmin', 'doDropletInfo', 'DO_DROPLET_IP', 'return (async () => {\n' + body + '\n})();');
+  const go = (c, e, t) => run(c, e, t, async () => droplet, '167.172.98.147');
 
   const kv = new Map();
   const env = { STATS: { get: async (k) => (kv.has(k) ? kv.get(k) : null), put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); } } };
@@ -86,7 +91,7 @@ function alarmTests() {
   Date.now = () => T;
   return (async () => {
     try {
-      for (let p = 0; p < 54; p++) { await run(DOWN, env, tgAdmin); T += 10 * 60000; } // nine hours of */10 passes
+      for (let p = 0; p < 54; p++) { await go(DOWN, env, tgAdmin); T += 10 * 60000; } // nine hours of */10 passes
       let worst = 0;
       for (let n = 1; n < sent.length; n++) worst = Math.max(worst, (sent[n].at - sent[n - 1].at) / 60000);
       chk('no silent stretch longer than three hours' + (FALSIFY ? '  [must go red]' : ''), sent.length > 1 && worst <= 180, 'worst gap ' + Math.round(worst) + ' min over ' + sent.length + ' pages');
@@ -97,13 +102,33 @@ function alarmTests() {
       chk('the FIRST line claims no duration', !/vec /.test(sent[0].text), JSON.stringify(sent[0].text.slice(0, 50)));
 
       sent = [];
-      await run(UP, env, tgAdmin);
+      await go(UP, env, tgAdmin);
       chk('recovery is announced with the outage length' + (FALSIFY ? '  [must go red]' : ''), sent.length === 1 && /NAZAD/.test(sent[0].text) && /\d h /.test(sent[0].text), sent.length ? JSON.stringify(sent[0].text.slice(0, 60)) : 'nothing sent');
       chk('the down state is cleared on recovery', !kv.has('alrt:colldown'), [...kv.keys()].join(',') || '(empty)');
 
       sent = []; kv.clear();
-      await run(UP, env, tgAdmin);
+      await go(UP, env, tgAdmin);
       chk('a healthy pass says nothing at all', sent.length === 0, sent.length + ' sent');
+
+      /* THE WHOLE POINT OF THE DIGITALOCEAN READ: a powered-off machine and a dead process must not
+         produce the same instruction. 2026-10-06 was the first case and we gave the second answer. */
+      sent = []; kv.clear();
+      droplet = { id: 1, name: 'x', status: 'off', ip: '167.172.98.147' };
+      await go(DOWN, env, tgAdmin);
+      const offLine = sent.length ? sent[0].text : '';
+      chk('a POWERED-OFF droplet is named as such', /DROPLET JE OFF/.test(offLine), JSON.stringify(offLine.slice(-110)));
+      chk('and it does NOT tell him to ssh into a machine that is not running', !/ssh root@/.test(offLine), JSON.stringify(offLine.slice(-110)));
+
+      sent = []; kv.clear();
+      droplet = { id: 1, name: 'x', status: 'active', ip: '167.172.98.147' };
+      await go(DOWN, env, tgAdmin);
+      const onLine = sent.length ? sent[0].text : '';
+      chk('a RUNNING droplet with a dead collector gets the ssh command', /ssh root@/.test(onLine) && /pm2 restart/.test(onLine), JSON.stringify(onLine.slice(-110)));
+
+      sent = []; kv.clear();
+      droplet = { error: 'HTTP 401' };
+      await go(DOWN, env, tgAdmin);
+      chk('with DigitalOcean unreachable it still pages, and falls back to ssh', sent.length === 1 && /ssh root@/.test(sent[0].text), sent.length ? JSON.stringify(sent[0].text.slice(-90)) : 'nothing sent');
     } finally { Date.now = realNow; }
   })();
 }
