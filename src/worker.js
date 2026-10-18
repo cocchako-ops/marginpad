@@ -1496,6 +1496,91 @@ async function handleFng(env) {
   if (out.data.length) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+/* ── THE GLOSSARY'S LIVE FIGURES (2026-10-19) ──────────────────────────────────────────────────────────────────
+   Ten of the sixty terms are things we MEASURE, so the card for each carries today's number. One composer, used
+   by the SSR injector and by GET /api/glossary/live, built ONLY from sources that are already edge-cached -
+   cgCoinAgg (funding, open interest, positioning, 24h liquidations, price) and the Fear & Greed ring. Nothing
+   here may reach the collector directly: an optional layer on a page must never be able to trip the breaker
+   that the money paths share.
+
+   Every slot is a finished sentence rather than a bare number, because a number without its unit and its
+   direction is what makes a glossary wrong. A figure we could not measure returns NO slot at all - the card
+   then renders without its live row, which is the house rule about silence below the threshold.             */
+async function glossLive(env) {
+  // READ THE BOARD, DO NOT RECOMPOSE IT. handleCgBoard is edge-cached (__cg_board3) and already holds every coin,
+  // so this is ONE cached hit for BTC and ETH together instead of two cgCoinAgg calls fanning out to four
+  // upstreams each - on a PAGE RENDER, which is exactly where an optional layer must never be able to trip the
+  // collector breaker the money paths share. Measured the day it shipped: a fresh cgCoinAgg hit a breaker-open
+  // moment and returned zeros while the cached board held the real figures.
+  let board = null, fng = null;
+  try {
+    [board, fng] = await Promise.all([
+      (async () => { try { return await (await handleCgBoard(new URL('https://marginpad.io/api/cg/board'), env)).json(); } catch (e) { return null; } })(),
+      (async () => { try { return await (await handleFng(env)).json(); } catch (e) { return null; } })()
+    ]);
+  } catch (e) {}
+  const coin = (s) => (((board && board.coins) || []).find(c => String(c.symbol || '').toUpperCase() === s)) || null;
+  const btc = coin('BTC'), eth = coin('ETH');
+  const n = (v) => (v != null && isFinite(+v)) ? +v : null;
+  const usd = (v) => { v = Math.abs(+v || 0); if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B'; if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M'; if (v >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K'; return '$' + v.toFixed(0); };
+  const px = (v) => '$' + (+v).toLocaleString('en-US', { maximumFractionDigits: (+v >= 1000 ? 0 : 2) });
+  const slots = {}, strip = [];
+  const tag = (t, body) => '<i>' + t + '</i><span>' + body + '</span>';
+
+  const f = btc ? n(btc.funding) : null;                       // a fraction per interval, e.g. 0.000434
+  if (f != null) {
+    const pc = f * 100;
+    slots.funding = tag('right now', 'BTC funding is <b>' + (pc >= 0 ? '+' : '') + pc.toFixed(4) + '%</b> per 8 hours, so <b>' + (pc >= 0 ? 'longs are paying shorts' : 'shorts are paying longs') + '</b>. Holding $10,000 of that side costs about <b>' + usd(Math.abs(10000 * f * 3)) + ' a day</b>.');
+    strip.push({ v: (pc >= 0 ? '+' : '') + pc.toFixed(3) + '%', l: 'BTC funding / 8h', c: pc >= 0 ? 'up' : 'dn', h: '#funding-rate' });
+  }
+  const oi = btc ? n(btc.oiUsd) : null, oic = btc ? n(btc.oiChg24h) : null;
+  if (oi != null) {
+    slots.oi = tag('right now', '<b>' + usd(oi) + '</b> of open BTC positions'
+      + (oic != null ? ', ' + (oic >= 0 ? '<b>up ' : '<b>down ') + Math.abs(oic).toFixed(2) + '%</b> in 24 hours - ' + (oic >= 0 ? 'leverage is being added' : 'leverage is coming off') : '') + '.');
+    strip.push({ v: usd(oi), l: 'BTC open interest', c: '', h: '#open-interest' });
+  }
+  const lp = btc ? n(btc.longPct) : null, sp = btc ? n(btc.shortPct) : null;
+  if (lp != null && sp != null) {
+    slots.ls = tag('right now', '<b>' + lp.toFixed(1) + '% of BTC accounts are long</b> against ' + sp.toFixed(1) + '% short'
+      + (Math.abs(lp - sp) >= 20 ? ' - a crowded side, and the crowded side is the one with something to liquidate.' : '.'));
+    strip.push({ v: lp.toFixed(0) + '/' + sp.toFixed(0), l: 'BTC long / short', c: '', h: '#long-short-ratio' });
+  }
+  const ll = btc ? n(btc.longLiq24h) : null, sl = btc ? n(btc.shortLiq24h) : null;
+  // A 24-HOUR BTC LIQUIDATION TOTAL OF EXACTLY ZERO IS NOT A MEASUREMENT, IT IS A MISSING FEED - cgCoinAgg
+  // defaults these two to 0 when the collector could not be read, so `!= null` is not enough. Printed once on the
+  // first deploy as "$0 of BTC positions were closed by the exchange", which is the confident blank this file has
+  // a rule against. Below the threshold, the four cards simply carry no live row.
+  if (ll != null && sl != null && (ll + sl) > 0) {
+    const tot = ll + sl;
+    slots.liq = tag('last 24 hours', '<b>' + usd(tot) + '</b> of BTC positions were closed by the exchange, not by their owner - ' + usd(ll) + ' long and ' + usd(sl) + ' short.');
+    slots.casc = tag('last 24 hours', usd(tot) + ' went on BTC alone. A cascade is what it looks like when most of that lands in the same few minutes.');
+    const heavy = ll >= sl ? 'longs' : 'shorts';
+    slots.sqz = tag('last 24 hours', 'Shorts were force-bought out of <b>' + usd(sl) + '</b> on BTC' + (sl > ll ? ' - more than the longs lost, which is the shape of a squeeze up.' : ', against ' + usd(ll) + ' on the long side.'));
+    slots.sqzl = tag('last 24 hours', 'Longs were force-sold out of <b>' + usd(ll) + '</b> on BTC' + (ll > sl ? ' - more than the shorts lost, which is the shape of a squeeze down.' : ', against ' + usd(sl) + ' on the short side.'));
+    void heavy;
+    strip.push({ v: usd(tot), l: 'BTC liquidated / 24h', c: '', h: '#liquidation' });
+  }
+  const mp = btc ? n(btc.price) : null, ch = btc ? n(btc.chg24h) : null;
+  if (mp != null) {
+    slots.mark = tag('right now', 'BTC marks at <b>' + px(mp) + '</b>' + (eth && n(eth.price) != null ? ', ETH at <b>' + px(eth.price) + '</b>' : '') + '. This is the price your liquidation is measured against - not the last trade on one venue.');
+    strip.push({ v: px(mp), l: 'BTC mark price', c: ch != null ? (ch >= 0 ? 'up' : 'dn') : '', h: '#mark-price' });
+  }
+  if (ch != null) {
+    slots.vol = tag('last 24 hours', 'BTC has moved <b>' + (ch >= 0 ? '+' : '') + ch.toFixed(2) + '%</b>. At 20x, a move that size against you is ' + Math.abs(ch * 20).toFixed(0) + '% of your margin'
+      + (Math.abs(ch) * 20 >= 90 ? ' - the whole of it.' : '.'));
+  }
+  const fv = fng && fng.data && fng.data[0] ? n(fng.data[0].v) : null;
+  if (fv != null) {
+    const lab = String((fng.data[0] || {}).c || '').trim();
+    slots.fng = tag('today', '<b>' + fv + ' / 100</b>' + (lab ? ' - ' + lab : '') + '. ' + (fv <= 25 ? 'Extreme fear has historically been closer to a bottom than a top.' : fv >= 75 ? 'Extreme greed is where leverage piles up on one side.' : 'The middle, where it says least.'));
+    strip.push({ v: String(fv), l: 'Fear & Greed', c: fv >= 55 ? 'up' : fv <= 45 ? 'dn' : '', h: '#fear-and-greed-index' });
+  }
+  const stripHtml = strip.length >= 3
+    ? strip.slice(0, 6).map(s => '<a class="gl-st" href="' + s.h + '"><b' + (s.c ? ' class="' + s.c + '"' : '') + '>' + s.v + '</b><span>' + s.l + '</span></a>').join('')
+    : '';
+  return { slots, strip: stripHtml, n: Object.keys(slots).length, ts: Date.now() };
+}
+
 async function handleCgBoard(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
  const ck = new Request('https://marginpad.io/__cg_board3'); // v3: composed from our own feeds via cgCoinAgg (no Coinglass key)
@@ -2487,6 +2572,39 @@ async function handleSsrAsk(request, url, env, kind, ctx) {
   if (!res) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   const out = ssrStampDate(html.slice(0, open) + '<div id="askdata" data-ssr="ask">' + res.html + html.slice(close), res.ts);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'ask-' + kind + (_esAsk ? '-es' : '') } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+
+/* THE GLOSSARY'S LIVE FIGURES, RENDERED INTO THE HTML (2026-10-19).
+   The page ships every live row as `<p class="gl-live" data-gl="KEY" hidden></p>` and the strip as an empty
+   `#glStrip`; this fills the ones it has a sentence for and unhides exactly those. A crawler and an assistant
+   both run no JavaScript, so a figure that only arrives from fetch() is a figure nobody will ever quote - that
+   is the whole reason this exists rather than leaving it to the page's own refresh.
+
+   A slot with no measurement is LEFT HIDDEN rather than emptied, and a render that produced nothing at all is
+   served `no-store` so the next request tries again instead of pinning a blank page in the edge cache for five
+   minutes (the cyFetch rule). Replacement is done by SPLIT/JOIN on an exact marker, never String.replace with a
+   `$` anywhere near it. */
+async function handleSsrGlossary(request, url, env) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + new URL(request.url).pathname);
+  if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} }
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  let live = null; try { live = await glossLive(env); } catch (e) {}
+  if (!live || !live.n) return new Response(ssrStampDate(html, Date.now()), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-mp-ssr': 'glossary-empty' } });
+  let filled = 0;
+  for (const k of Object.keys(live.slots)) {
+    const from = '<p class="gl-live" data-gl="' + k + '" hidden></p>';
+    if (html.indexOf(from) < 0) continue;
+    html = html.split(from).join('<p class="gl-live" data-gl="' + k + '">' + live.slots[k] + '</p>');
+    filled++;
+  }
+  if (live.strip) html = html.split('<div class="gl-strip" id="glStrip" hidden></div>').join('<div class="gl-strip" id="glStrip">' + live.strip + '</div>');
+  const out = ssrStampDate(html, live.ts);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-mp-ssr': 'glossary-' + filled } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -8157,7 +8275,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=67e3f3f3" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=22df766e" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -21499,6 +21617,16 @@ export default {
     if (url.pathname === '/api/cg/etf') return handleCgEtf(url, env);
     if (url.pathname === '/api/competition') return handleCompetition(url, request, env, ctx);
     if (url.pathname === '/trading-competition/' || url.pathname === '/trading-competition') return handleSsrComp(request, url, env, ctx);
+    if (url.pathname === '/glossary/' || url.pathname === '/glossary') return handleSsrGlossary(request, url, env);
+    if (url.pathname === '/api/glossary/live') { // the same ten sentences as JSON: what the open page refreshes from, and free to cite
+      const ckg = new Request('https://marginpad.io/__gloss_live_v1');
+      if (!url.searchParams.get('nc')) { try { const h = await caches.default.match(ckg); if (h) return h; } catch (e) {} }
+      let d = null; try { d = await glossLive(env); } catch (e) {}
+      const ok = !!(d && d.n);
+      const r = new Response(JSON.stringify(ok ? d : { slots: {}, strip: '', n: 0, ts: Date.now() }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? 'public, max-age=120' : 'no-store', ...CORS } });
+      if (ok) { try { await caches.default.put(ckg, r.clone()); } catch (e) {} }
+      return r;
+    }
     if (url.pathname === '/api/cg/hyper') return handleCgHyper(url, env);
     if (url.pathname === '/api/whale/profile') return handleWhaleProfile(url, env);
     if (url.pathname === '/api/price') {

@@ -175,6 +175,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     cap: '<path d="M2.5 9.2 12 4.6l9.5 4.6L12 13.8 2.5 9.2z"/><path d="M6.6 11.3v4.4c0 1.6 2.4 2.9 5.4 2.9s5.4-1.3 5.4-2.9v-4.4"/><path d="M21.5 9.4v5.2"/>',
     book: '<path d="M4 5.6A2.1 2.1 0 0 1 6.1 3.5H11v17H6.1A2.1 2.1 0 0 0 4 22.6V5.6z"/><path d="M20 5.6a2.1 2.1 0 0 0-2.1-2.1H13v17h4.9a2.1 2.1 0 0 1 2.1 2.1V5.6z"/>',
     pencil: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+    // the glossary: a closed reference book with an index tab - deliberately NOT the open 'book' icon the
+    // guides row uses, because browse-e2e fails the drawer when two destinations share a mark
+    abc: '<rect x="4.5" y="3.5" width="15" height="17" rx="2"/><path d="M8.2 3.5v17"/><line x1="11" y1="8.6" x2="16.3" y2="8.6"/><line x1="11" y1="12.1" x2="16.3" y2="12.1"/><path d="M19.5 9.6h2.2v3.6l-1.1-.9-1.1.9z"/>',
     news: '<path d="M4 4h13a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1H5a1 1 0 0 1-1-1z"/><path d="M18 8h2a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2"/><line x1="7" y1="8" x2="14" y2="8"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="16" x2="11" y2="16"/>',
     users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     /* developers */
@@ -298,6 +301,10 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + '<div class="mpnav-sec">' + TR('secLearn') + '</div>'
     + row('brAcadT', 'brAcadS', '/academy/', '#c2f64a', 'cap', 'academy learn course courses lesson lessons school class study tutorial teach certificate quiz', 'HOT')
     + row('brGuidesT', 'brGuidesS', '/guides/', '#7fd957', 'book', __esT_mpnav("guidesGuideHowTo",'guides guide how to explained liquidation explained leverage explained funding explained reference'))
+    // The glossary was linked from 112 footers and reachable from Browse by nothing at all - 27 pageviews in 30
+    // days. The keywords are what a reader TYPES, not what the page is called: somebody who does not know the
+    // word "glossary" types the thing they do not understand (2026-10-19).
+    + row('Glossary', 'Every term, with today\'s number in it', '/glossary/', '#8ab4ff', 'abc', 'glossary dictionary terms term meaning define definition jargon vocabulary what is explained acronym abbreviation liquidation funding margin mmr roe adl basis slippage wick notional perpetual mark price squeeze cascade')
     + row('navBlog', 'brBlogS', '/blog/', '#ff8c5a', 'pencil', __esT_mpnav("blogArticlesPostsRead",'blog articles posts read writing stories'))
     + row('brNewsT', 'brNewsS', '/news/', '#ff8c5a', 'news', __esT_mpnav("newsHeadlinesLatestToday",'news headlines latest today breaking'))
     + row('brCommT', 'brCommS', '/community/', '#c2f64a', 'users', 'community forum posts discussion ideas talk people social feed')

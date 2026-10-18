@@ -53,7 +53,8 @@ run('Markets hub', 'node build/gen-markets-hub.js');
 run('How-to guides', 'node build/gen-guides-pages.js');
 run('Where-to-start beginner academy', 'node build/gen-where-to-start.js');
 run('About / Contact pages', 'node build/gen-about-pages.js');
-run('Leverage / funding-fee / glossary pages', 'node build/gen-bigupdate.js');
+run('Leverage / funding-fee pages', 'node build/gen-bigupdate.js');
+run('Glossary', 'node build/gen-glossary.js');   // its own generator since 2026-10-19 - data in build/data/glossary.json
 run('API + Widgets pages', 'node build/gen-api-widgets-pages.js');
 run('Trading tools suite pages', 'node build/gen-tools-pages.js');
 

@@ -95,6 +95,10 @@ const MIRRORS = [
   // plLiq hardcodes the flat 0.5% both pool models have always assumed, so that is the only rate to compare at.
   { label: 'plLiq', file: 'dist/assets/mp-charts.js', needle: 'function plLiq(', name: 'plLiq',
     call: (f, e, L, m, long) => f(e, L, long), mmrs: [0.005] },
+  // The glossary puts the calculator INSIDE the term (2026-10-19), so the glossary carries a fourth copy of the
+  // formula - extracted from the RENDERED page, not from its generator, because the page is what a reader runs.
+  { label: 'glLiq', file: 'dist/glossary/index.html', needle: 'function glLiq(', name: 'glLiq',
+    call: (f, e, L, m, long) => f(e, L, m, long, 0) },
 ];
 const ENTRIES = [0.00012, 1.3806, 109.46, 2478.17, 82305.1, 123456.789];
 const LEVS = [1, 2, 3, 5, 10, 20, 25, 50, 75, 100, 125, 150, 200, 333, 500, 1000];
@@ -134,7 +138,7 @@ const BANNED = [
 const SCAN = ['src/worker.js', 'app/index.html']
   .concat(fs.readdirSync(path.join(__dirname, '..', 'dist', 'assets')).filter((f) => /\.js$/.test(f)).map((f) => 'dist/assets/' + f));
 // Hand-made dist pages that carry a calculator of their own.
-for (const d of ['leverage-calculator', 'liquidation-calculator']) {
+for (const d of ['leverage-calculator', 'liquidation-calculator', 'glossary']) {
   const p = 'dist/' + d + '/index.html';
   try { fs.accessSync(path.join(__dirname, '..', p)); SCAN.push(p); } catch (e) {}
 }

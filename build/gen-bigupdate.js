@@ -270,6 +270,10 @@ for (const L of LEVS) {
 }
 const fd = path.join(OUT, 'funding-fee-calculator'); fs.mkdirSync(fd, { recursive: true }); fs.writeFileSync(path.join(fd, 'index.html'), fundingPage()); n++;
 console.log('wrote funding-fee-calculator');
-const gd = path.join(OUT, 'glossary'); fs.mkdirSync(gd, { recursive: true }); fs.writeFileSync(path.join(gd, 'index.html'), glossaryPage()); n++;
-console.log('wrote glossary');
+// THE GLOSSARY MOVED OUT ON 2026-10-19 and is written by build/gen-glossary.js from build/data/glossary.json -
+// the 60 definitions below were LIFTED into that file byte-for-byte and are kept here only as their origin.
+// TWO WRITERS FOR ONE PAGE IS HOW A PAGE SILENTLY REVERTS (the dist/ lesson this repo has four entries about),
+// so this one does not write it any more. `glossaryPage` and `TERMS` stay referenced by nothing on purpose:
+// deleting them would lose the provenance of the text, and build/glossary-e2e.js asserts only one writer exists.
+void glossaryPage;
 console.log('done:', n, 'pages');

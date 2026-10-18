@@ -1,0 +1,832 @@
+[
+ {
+  "id": "liquidation",
+  "t": "Liquidation",
+  "g": "risk",
+  "s": "The exchange closes your position for you because the margin ran out.",
+  "b": "The forced closure of a leveraged position when losses consume the margin backing it. See the <a href=\"/calculators?c=liq\">liquidation calculator</a>.",
+  "see": [
+   "liquidation-price",
+   "maintenance-margin-mmr",
+   "margin-call"
+  ],
+  "live": "liq",
+  "tool": null
+ },
+ {
+  "id": "liquidation-price",
+  "t": "Liquidation price",
+  "g": "risk",
+  "s": "The exact price at which that happens - and you can work it out before you open.",
+  "b": "The price at which your position is liquidated. Long ≈ Entry × (1 − 1/Leverage + MMR).",
+  "see": [
+   "liquidation",
+   "leverage",
+   "maintenance-margin-mmr"
+  ],
+  "live": null,
+  "tool": "liq"
+ },
+ {
+  "id": "leverage",
+  "t": "Leverage",
+  "g": "money",
+  "s": "Borrowed size. It multiplies the move, the fee and the speed you get liquidated at.",
+  "b": "Borrowed exposure that multiplies both gains and losses. 10× means $1 controls $10. See <a href=\"/blog/crypto-leverage-explained/\">leverage explained</a>.",
+  "see": [
+   "margin",
+   "notional-value",
+   "liquidation-price"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "margin",
+  "t": "Margin",
+  "g": "money",
+  "s": "Your own money, locked behind the position while it is open.",
+  "b": "The collateral you post to open and hold a leveraged position.",
+  "see": [
+   "initial-margin",
+   "maintenance-margin-mmr",
+   "isolated-margin"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "initial-margin",
+  "t": "Initial margin",
+  "g": "money",
+  "s": "What it costs to open: roughly notional divided by leverage.",
+  "b": "The collateral required to open a position - roughly notional ÷ leverage.",
+  "see": [
+   "margin",
+   "notional-value",
+   "leverage"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "maintenance-margin-mmr",
+  "t": "Maintenance margin (MMR)",
+  "g": "money",
+  "s": "The floor. Fall under it and the position is closed for you.",
+  "b": "The minimum margin to keep a position open. Drop below it and you are liquidated.",
+  "see": [
+   "liquidation-price",
+   "margin",
+   "insurance-fund"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "isolated-margin",
+  "t": "Isolated margin",
+  "g": "money",
+  "s": "Only the money you put on this trade can be lost.",
+  "b": "Margin mode where only the margin assigned to a position is at risk. See <a href=\"/blog/cross-vs-isolated-margin/\">cross vs isolated</a>.",
+  "see": [
+   "cross-margin",
+   "margin",
+   "liquidation"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "cross-margin",
+  "t": "Cross margin",
+  "g": "money",
+  "s": "Your whole balance backs the trade - further from liquidation, more at stake.",
+  "b": "Margin mode where your whole balance backs the position, lowering liquidation risk but exposing more capital.",
+  "see": [
+   "isolated-margin",
+   "margin",
+   "liquidation"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "perpetual-futures",
+  "t": "Perpetual futures",
+  "g": "contract",
+  "s": "A futures contract that never expires, held near spot by funding.",
+  "b": "A futures contract with no expiry, kept near spot by the funding mechanism.",
+  "see": [
+   "funding-rate",
+   "spot",
+   "basis"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "funding-rate",
+  "t": "Funding rate",
+  "g": "market",
+  "s": "A small payment every few hours between longs and shorts. Positive means longs pay.",
+  "b": "A periodic payment between longs and shorts on perpetuals. See the <a href=\"/funding-fee-calculator/\">funding fee calculator</a>.",
+  "see": [
+   "funding-interval",
+   "perpetual-futures",
+   "basis"
+  ],
+  "live": "funding",
+  "tool": "funding"
+ },
+ {
+  "id": "pnl",
+  "t": "PnL",
+  "g": "money",
+  "s": "What the trade made or lost.",
+  "b": "Profit and loss - the gain or loss on a position. See the <a href=\"/calculators?c=pnl\">PnL calculator</a>.",
+  "see": [
+   "unrealized-pnl",
+   "realized-pnl",
+   "roe"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "roi",
+  "t": "ROI",
+  "g": "money",
+  "s": "How far the price moved, in percent. Nothing to do with your leverage.",
+  "b": "Return on investment - the raw percentage the asset moved.",
+  "see": [
+   "roe",
+   "pnl",
+   "leverage"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "roe",
+  "t": "ROE",
+  "g": "money",
+  "s": "What that move did to YOUR money. A 2% move at 20x is 40%.",
+  "b": "Return on equity - your return on posted margin, amplified by leverage. A 10% move at 10× ≈ 100% ROE.",
+  "see": [
+   "roi",
+   "leverage",
+   "margin"
+  ],
+  "live": null,
+  "tool": "roe"
+ },
+ {
+  "id": "long",
+  "t": "Long",
+  "g": "contract",
+  "s": "You win if it goes up.",
+  "b": "A position that profits when price rises.",
+  "see": [
+   "short",
+   "liquidation-price",
+   "funding-rate"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "short",
+  "t": "Short",
+  "g": "contract",
+  "s": "You win if it goes down.",
+  "b": "A position that profits when price falls.",
+  "see": [
+   "long",
+   "short-squeeze",
+   "funding-rate"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "position-size",
+  "t": "Position size",
+  "g": "money",
+  "s": "How much you hold. Decide it from the stop, never from the balance.",
+  "b": "How much of an asset you hold. Size it by risk with the <a href=\"/calculators?c=size\">position size calculator</a>.",
+  "see": [
+   "notional-value",
+   "stop-loss",
+   "risk-reward-ratio"
+  ],
+  "live": null,
+  "tool": "size"
+ },
+ {
+  "id": "notional-value",
+  "t": "Notional value",
+  "g": "money",
+  "s": "The full value you control - size times price, not what you posted.",
+  "b": "The full market value of a position - size × price - not just the margin posted.",
+  "see": [
+   "leverage",
+   "initial-margin",
+   "position-size"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "mark-price",
+  "t": "Mark price",
+  "g": "contract",
+  "s": "The smoothed price the exchange liquidates you against - not the last trade.",
+  "b": "A smoothed reference price used to calculate unrealised PnL and trigger liquidations, less manipulable than last price.",
+  "see": [
+   "index-price",
+   "liquidation-price",
+   "wick"
+  ],
+  "live": "mark",
+  "tool": null
+ },
+ {
+  "id": "index-price",
+  "t": "Index price",
+  "g": "contract",
+  "s": "The spot average across exchanges that the mark price is anchored to.",
+  "b": "An average of spot prices across exchanges that anchors the mark price.",
+  "see": [
+   "mark-price",
+   "spot",
+   "basis"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "stop-loss",
+  "t": "Stop-loss",
+  "g": "order",
+  "s": "The order that decides, in advance, how much this trade may cost you.",
+  "b": "An order that closes a position at a set price to cap losses. See <a href=\"/blog/how-to-set-a-stop-loss/\">how to set a stop-loss</a>.",
+  "see": [
+   "take-profit",
+   "trailing-stop",
+   "position-size"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "take-profit",
+  "t": "Take-profit",
+  "g": "order",
+  "s": "The order that closes you in profit without you watching.",
+  "b": "An order that closes a position at a target price to lock in gains. See the <a href=\"/#tp\">take-profit calculator</a>.",
+  "see": [
+   "stop-loss",
+   "risk-reward-ratio",
+   "partial-close"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "risk-reward-ratio",
+  "t": "Risk/reward ratio",
+  "g": "risk",
+  "s": "How much you stand to make for every unit you are risking.",
+  "b": "Reward divided by risk on a trade. See <a href=\"/blog/risk-reward-ratio-explained/\">risk/reward explained</a>.",
+  "see": [
+   "break-even-win-rate",
+   "stop-loss",
+   "take-profit"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "break-even-win-rate",
+  "t": "Break-even win rate",
+  "g": "risk",
+  "s": "How often you must be right at that ratio just to stay level.",
+  "b": "The win rate needed to break even at a given risk/reward - e.g. 33% at 2:1.",
+  "see": [
+   "risk-reward-ratio",
+   "drawdown"
+  ],
+  "live": null,
+  "tool": "bewr"
+ },
+ {
+  "id": "dca",
+  "t": "DCA",
+  "g": "money",
+  "s": "Building the position in pieces instead of all at once.",
+  "b": "Dollar-cost averaging - building a position in tranches to smooth your entry. See the <a href=\"/#dca\">DCA calculator</a>.",
+  "see": [
+   "entry-price",
+   "position-size"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "maker",
+  "t": "Maker",
+  "g": "order",
+  "s": "You left an order waiting, so you pay the lower fee.",
+  "b": "An order that adds liquidity to the book (a resting limit order), usually with a lower fee. See <a href=\"/blog/maker-vs-taker-fees/\">maker vs taker</a>.",
+  "see": [
+   "taker",
+   "limit-order",
+   "post-only"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "taker",
+  "t": "Taker",
+  "g": "order",
+  "s": "You took what was there, so you pay the higher fee - and the spread.",
+  "b": "An order that removes liquidity (a market order), usually with a higher fee.",
+  "see": [
+   "maker",
+   "market-order",
+   "spread"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "open-interest",
+  "t": "Open interest",
+  "g": "market",
+  "s": "How much leveraged money is currently in the market.",
+  "b": "The total value of outstanding futures contracts - a gauge of market participation.",
+  "see": [
+   "funding-rate",
+   "long-short-ratio",
+   "liquidation-cascade"
+  ],
+  "live": "oi",
+  "tool": null
+ },
+ {
+  "id": "slippage",
+  "t": "Slippage",
+  "g": "risk",
+  "s": "The gap between the price you expected and the one you got.",
+  "b": "The difference between expected and executed price, worst in thin or fast markets.",
+  "see": [
+   "order-book-depth",
+   "liquidity",
+   "market-order"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "adl",
+  "t": "ADL",
+  "g": "risk",
+  "s": "When the insurance fund cannot pay, the exchange closes part of a WINNING trade instead.",
+  "b": "Auto-deleveraging - when the insurance fund can't cover a liquidation, profitable opposing traders are partially closed.",
+  "see": [
+   "insurance-fund",
+   "liquidation",
+   "liquidation-cascade"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "insurance-fund",
+  "t": "Insurance fund",
+  "g": "risk",
+  "s": "The reserve that pays the winners when a liquidation goes bankrupt.",
+  "b": "A reserve that absorbs bankrupt liquidations so winners get paid in full.",
+  "see": [
+   "adl",
+   "liquidation"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "basis",
+  "t": "Basis",
+  "g": "market",
+  "s": "The gap between the futures price and spot.",
+  "b": "The gap between futures and spot price.",
+  "see": [
+   "funding-rate",
+   "spot",
+   "perpetual-futures"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "margin-call",
+  "t": "Margin call",
+  "g": "risk",
+  "s": "The warning before the liquidation. On most crypto venues it is very short.",
+  "b": "A warning that your margin is running low before liquidation. See <a href=\"/blog/what-is-a-margin-call/\">what is a margin call</a>.",
+  "see": [
+   "liquidation",
+   "maintenance-margin-mmr"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "drawdown",
+  "t": "Drawdown",
+  "g": "money",
+  "s": "How far the account fell from its own high.",
+  "b": "The peak-to-trough drop in account equity.",
+  "see": [
+   "break-even-win-rate",
+   "risk-reward-ratio"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "hedge",
+  "t": "Hedge",
+  "g": "order",
+  "s": "A second position taken to cancel the risk of the first.",
+  "b": "A position taken to offset risk in another.",
+  "see": [
+   "one-way-vs-hedge-mode",
+   "short",
+   "long"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "spot",
+  "t": "Spot",
+  "g": "contract",
+  "s": "Buying the actual coin. No leverage, no funding, no liquidation.",
+  "b": "Buying the actual asset for immediate delivery - no leverage, no liquidation. See <a href=\"/blog/spot-vs-futures-trading/\">spot vs futures</a>.",
+  "see": [
+   "perpetual-futures",
+   "index-price",
+   "derivative"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "derivative",
+  "t": "Derivative",
+  "g": "contract",
+  "s": "A contract whose price comes from something else.",
+  "b": "A contract whose value derives from an underlying asset, like futures or options.",
+  "see": [
+   "perpetual-futures",
+   "spot"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "long-short-ratio",
+  "t": "Long/short ratio",
+  "g": "market",
+  "s": "Which way the crowd is leaning. Extremes tend to be the wrong way.",
+  "b": "The share of accounts (or positions) that are long versus short a contract. Extremes are contrarian signals - a heavily long crowd is fuel for a squeeze down. Live per-coin readings: <a href=\"/long-short/\">long/short dashboard</a>.",
+  "see": [
+   "short-squeeze",
+   "long-squeeze",
+   "open-interest"
+  ],
+  "live": "ls",
+  "tool": null
+ },
+ {
+  "id": "liquidation-cascade",
+  "t": "Liquidation cascade",
+  "g": "risk",
+  "s": "One wave of liquidations knocking price into the next wave.",
+  "b": "A chain reaction where one wave of liquidations pushes price into the next cluster of liquidation levels, firing more forced orders in the same direction. Cascades explain why leveraged markets overshoot. See them mapped on the <a href=\"/btc-liquidation-map/\">liquidation map</a> and measured daily in the <a href=\"/liquidations/\">recap archive</a>.",
+  "see": [
+   "liquidation-heatmap",
+   "liquidation",
+   "open-interest"
+  ],
+  "live": "casc",
+  "tool": null
+ },
+ {
+  "id": "short-squeeze",
+  "t": "Short squeeze",
+  "g": "risk",
+  "s": "A move up driven by shorts being forced to buy back.",
+  "b": "A sharp move UP fueled by shorts being forced to buy back - either stopped out or liquidated. Crowded shorts (negative funding, short-heavy positioning) are the fuel; the squeeze consumes it.",
+  "see": [
+   "long-squeeze",
+   "long-short-ratio",
+   "funding-rate"
+  ],
+  "live": "sqz",
+  "tool": null
+ },
+ {
+  "id": "long-squeeze",
+  "t": "Long squeeze",
+  "g": "risk",
+  "s": "A move down driven by longs being forced to sell.",
+  "b": "The mirror of a short squeeze: a sharp move DOWN accelerated by longs being forced to sell. Most common after crowded, over-leveraged rallies with heavy positive funding.",
+  "see": [
+   "short-squeeze",
+   "long-short-ratio",
+   "liquidation-cascade"
+  ],
+  "live": "sqzl",
+  "tool": null
+ },
+ {
+  "id": "stop-hunt",
+  "t": "Stop hunt",
+  "g": "risk",
+  "s": "A push through the price where everyone keeps their stops.",
+  "b": "A quick push through an obvious price level where many stop-losses and liquidations sit, which fills larger players at better prices before the market reverses. Obvious round numbers and recent lows/highs are the usual targets.",
+  "see": [
+   "stop-loss",
+   "liquidation-heatmap",
+   "wick"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "limit-order",
+  "t": "Limit order",
+  "g": "order",
+  "s": "Your price or nothing.",
+  "b": "An order that rests in the book at your chosen price and only fills at that price or better. Pays the lower maker fee on most venues, but is not guaranteed to fill.",
+  "see": [
+   "market-order",
+   "post-only",
+   "maker"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "market-order",
+  "t": "Market order",
+  "g": "order",
+  "s": "Right now, at whatever it costs.",
+  "b": "An order that executes immediately against the best available prices in the book. Guaranteed to fill, but pays the taker fee and suffers <a href=\"/glossary/#slippage\">slippage</a> in thin markets.",
+  "see": [
+   "limit-order",
+   "slippage",
+   "taker"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "post-only",
+  "t": "Post-only",
+  "g": "order",
+  "s": "Only if it can wait in the book - never as a taker.",
+  "b": "An order flag that cancels your order instead of letting it execute as a taker - it guarantees you either make the market (lower fee) or do not trade at all.",
+  "see": [
+   "maker",
+   "limit-order"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "reduce-only",
+  "t": "Reduce-only",
+  "g": "order",
+  "s": "Can only make the position smaller. Never opens a new one by accident.",
+  "b": "An order flag that can only shrink or close an existing position, never open or grow one. Standard protection on take-profit and stop orders so they cannot accidentally flip you.",
+  "see": [
+   "stop-loss",
+   "take-profit",
+   "partial-close"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "trailing-stop",
+  "t": "Trailing stop",
+  "g": "order",
+  "s": "A stop that follows the price up and never back down.",
+  "b": "A stop-loss that follows the price at a set distance while the trade moves in your favour, then triggers when price retraces by that distance - locking in profit without a fixed exit.",
+  "see": [
+   "stop-loss",
+   "take-profit"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "unrealized-pnl",
+  "t": "Unrealized PnL",
+  "g": "money",
+  "s": "The profit on screen. Not yours yet.",
+  "b": "The paper profit or loss of an OPEN position, marked against the current price. It changes every tick and is not yours until the position is closed or partially closed.",
+  "see": [
+   "realized-pnl",
+   "mark-price",
+   "pnl"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "realized-pnl",
+  "t": "Realized PnL",
+  "g": "money",
+  "s": "The profit after you closed, fees and funding taken out. The real one.",
+  "b": "Profit or loss that has been locked in by closing (or partially closing) a position, after fees and funding. The number that actually changes your balance.",
+  "see": [
+   "unrealized-pnl",
+   "pnl",
+   "funding-rate"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "partial-close",
+  "t": "Partial close",
+  "g": "order",
+  "s": "Taking some off the table and letting the rest run.",
+  "b": "Closing only part of a position - taking some profit or cutting some risk while keeping the rest of the trade on. The remaining position keeps the original entry price.",
+  "see": [
+   "take-profit",
+   "reduce-only",
+   "position-size"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "order-book-depth",
+  "t": "Order book depth",
+  "g": "market",
+  "s": "How much size is waiting at each price.",
+  "b": "How much resting buy and sell size sits at each price level. Deep books absorb large market orders with little <a href=\"/glossary/#slippage\">slippage</a>; thin books gap. Depth is why the same trade costs more on a small exchange.",
+  "see": [
+   "liquidity",
+   "slippage",
+   "spread"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "liquidity",
+  "t": "Liquidity",
+  "g": "market",
+  "s": "How much you can trade without moving the price yourself.",
+  "b": "How easily size can be traded without moving the price. In futures it comes from order-book depth and active market makers. Majors like BTC are deeply liquid; small-cap perps are not - leverage there is far more dangerous.",
+  "see": [
+   "order-book-depth",
+   "spread",
+   "slippage"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "spread",
+  "t": "Spread",
+  "g": "market",
+  "s": "The gap between the best buy and the best sell. You pay it every market order.",
+  "b": "The gap between the best bid and best ask. A cost you pay on every market order, on top of fees - tight on liquid majors, wide on illiquid pairs.",
+  "see": [
+   "order-book-depth",
+   "taker",
+   "liquidity"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "funding-interval",
+  "t": "Funding interval",
+  "g": "market",
+  "s": "How often funding is actually charged - usually every 8 hours.",
+  "b": "How often perpetual funding is exchanged between longs and shorts - every 8 hours on most venues (some use 1h or 4h). The quoted rate applies per interval, so holding costs compound across a day. Live rates: <a href=\"/funding/\">funding dashboard</a>.",
+  "see": [
+   "funding-rate",
+   "perpetual-futures"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "liquidation-heatmap",
+  "t": "Liquidation heatmap",
+  "g": "market",
+  "s": "A map of the prices where other people get liquidated.",
+  "b": "A chart overlay estimating where liquidation levels cluster at each leverage tier, so you can see which price zones would fire the most forced orders. MarginPad&#39;s is at <a href=\"/heatmap\">/heatmap</a>; per-coin maps at e.g. <a href=\"/btc-liquidation-map/\">/btc-liquidation-map/</a>.",
+  "see": [
+   "liquidation-cascade",
+   "stop-hunt",
+   "liquidation-price"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "fear-and-greed-index",
+  "t": "Fear &amp; Greed Index",
+  "g": "market",
+  "s": "One number, 0 to 100, for how the market feels today.",
+  "b": "A 0-100 composite of volatility, momentum, social and dominance data summarising crypto sentiment - extreme fear has historically marked better entries than extreme greed. Live reading: <a href=\"/fear-greed/\">Fear &amp; Greed page</a>.",
+  "see": [
+   "long-short-ratio",
+   "volatility"
+  ],
+  "live": "fng",
+  "tool": null
+ },
+ {
+  "id": "one-way-vs-hedge-mode",
+  "t": "One-way vs hedge mode",
+  "g": "order",
+  "s": "Whether a long and a short on the same coin cancel out or sit side by side.",
+  "b": "One-way mode nets longs and shorts into a single position per contract; hedge mode lets you hold a long AND a short on the same contract simultaneously. Beginners should stay in one-way - hedge mode doubles fees and hides risk.",
+  "see": [
+   "hedge",
+   "long",
+   "short"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "entry-price",
+  "t": "Entry price",
+  "g": "money",
+  "s": "The average price you got in at. Everything else is measured from it.",
+  "b": "The average price at which your position was opened, including any adds. Everything else - PnL, ROE, liquidation distance - is measured from it.",
+  "see": [
+   "dca",
+   "liquidation-price",
+   "roe"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "wick",
+  "t": "Wick",
+  "g": "contract",
+  "s": "The thin spike where price touched and did not stay.",
+  "b": "The thin line above or below a candle body showing the extreme prices touched inside the period. Wicks through liquidation clusters are how over-leveraged positions die in seconds - and why MarginPad&#39;s paper trading settles a liquidation on the server against one-minute candles, never on a single price the browser happened to fetch.",
+  "see": [
+   "mark-price",
+   "stop-hunt",
+   "liquidation"
+  ],
+  "live": null,
+  "tool": null
+ },
+ {
+  "id": "volatility",
+  "t": "Volatility",
+  "g": "market",
+  "s": "How hard the price is moving. It decides how much room your stop needs.",
+  "b": "How much and how fast price moves. Higher volatility means a wider liquidation buffer is needed for the same safety - a 1% daily-range coin and a 10% one cannot carry the same leverage.",
+  "see": [
+   "liquidation-price",
+   "stop-loss",
+   "position-size"
+  ],
+  "live": "vol",
+  "tool": null
+ },
+ {
+  "id": "whale",
+  "t": "Whale",
+  "g": "market",
+  "s": "An account big enough that its own exit moves the price.",
+  "b": "A trader or wallet large enough to move the market. Large positions and their liquidations are visible in aggregate on <a href=\"/hyperliquid-whales/\">whale tracking</a> and the <a href=\"/rekt/\">live liquidation feed</a>.",
+  "see": [
+   "open-interest",
+   "liquidation-cascade",
+   "liquidity"
+  ],
+  "live": null,
+  "tool": null
+ }
+]

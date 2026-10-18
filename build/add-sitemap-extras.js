@@ -45,6 +45,10 @@ const EXTRAS = [
   ['/liquidations/by-exchange/', '0.9', D],
   ['/hyperliquid-liquidations/', '0.9', D],
   ['/heatmap', '0.9', D],
+  // the glossary stopped being a dictionary on 2026-10-19: ten of its sixty cards carry a figure measured when
+  // the page is served (funding, open interest, positioning, 24h liquidations, sentiment), so `daily` is what
+  // the page now does rather than an over-declaration
+  ['/glossary/', '0.8', D],
   ['/arena/', '0.8', D],
   ['/leaderboards/', '0.9', D],
   ['/season/', '0.9', D],
