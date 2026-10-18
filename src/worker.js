@@ -20184,10 +20184,16 @@ async function handleReward(url, request, env) {
     return jr({ found, checked, action: act, note: act === 'comment' ? 'search covers replies from the last ~7 days only' : null, error: err });
   }
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0;
-  if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/moonsign/submit' || path === '/moonsign/mine' || path === '/fomosign/submit' || path === '/fomosign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
+  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0, suEmail = '', suName = '';
+  // `/support` IS ON THIS LIST SINCE 2026-10-18, and its absence was the whole bug. A ticket filed through the
+  // site's own form was the ONE member-facing write where the server never asked who was writing: the desk
+  // showed whatever had been typed into the contact box. A Nigerian member typed his PHONE NUMBER and the
+  // owner got a ticket from "9070579908" that resolved to nobody - and worse, since both the reply path
+  // (`sreply WHERE email=?`) and the member's own history (`/support/mine`) are keyed on that column, we
+  // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
+  if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/moonsign/submit' || path === '/moonsign/mine' || path === '/fomosign/submit' || path === '/fomosign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; } }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
     if (!acct && path === '/xengage/submit' && adminOk) { const ov = url.searchParams.get('uid'); if (ov) acct = 'u:' + ov; }
     /* ... and for the two sign-up surfaces, so support can file a claim for a member who never did
@@ -20292,6 +20298,7 @@ async function handleReward(url, request, env) {
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
     try { for (const k of ['open', 'closed']) for (const t of sj[k] || []) if (t && t.address !== 'admin' && t.message && /=\?[^?]+\?[bBqQ]\?|^--[0-9A-Za-z_-]{8,}|Content-Type:|<div dir=/im.test(t.message)) t.message = mailBodyClean(mimeDecodeWords(t.message)); for (const r of sj.replies || []) if (r && /=\?/.test(r.subject || '')) r.subject = mimeDecodeWords(r.subject); } catch (e) {} // tickets filed before the ingest rewrite (2026-09-03)
+    await supportStampWho(env, [].concat(sj.open || [], sj.closed || []));
     return jr(sj);
   }
   if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
@@ -20301,6 +20308,7 @@ async function handleReward(url, request, env) {
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
     try { for (const c of sj.conversations || []) { if (/=\?[^?]+\?[bBqQ]\?/.test(c.title || '')) c.title = mimeDecodeWords(c.title); for (const m of c.messages || []) if (m && m.dir === 'in' && m.body && /=\?[^?]+\?[bBqQ]\?|^--[0-9A-Za-z_-]{8,}|Content-Type:|<div dir=/im.test(m.body)) m.body = mailBodyClean(mimeDecodeWords(m.body)); } } catch (e) {} // tickets filed before the ingest rewrite (2026-09-03): decode words, drop MIME lines and tag debris
+    await supportStampWho(env, sj.conversations || []); // this is the view the owner actually reads - it must name the sender
     return jr(sj);
   }
   // admin: reply to a support message by email - sent FROM support@marginpad.io via Resend
@@ -20610,6 +20618,21 @@ async function handleReward(url, request, env) {
   // /exsign/* paths stay 410 (removed 2026-08-03); moonsign is the ONLY live entry into that table. Submit
   // forces exchange:'moon' server-side so a client can never submit another exchange through this path.
   let doPath = path, fwdBody = raw;
+  /* WHO SENT IT IS DECIDED BY THE SESSION, NEVER BY THE FORM (2026-10-18). The contact box on /rewards/ accepts
+     any text, and the ticket's `email` column is what the desk shows as the sender, what a reply is addressed
+     to, and what the member's own history is looked up by - so a typed phone number made one real member
+     invisible on all three. For a signed-in member the sender is now their ACCOUNT: `email` is the address we
+     hold for them and `address` is 'u:<uid>', which `/support/mine` already matches on. What they typed is
+     kept, in the ticket body, when it is not simply their own address again - it may be a second contact they
+     want used, and it was his phone number here. Trimmed so the DO's 1000-char cap cannot eat the note.
+     A GUEST is unchanged: what they type is the only contact there is, and the desk labels it as such. */
+  if (path === '/support' && request.method === 'POST' && acct && suEmail) {
+    const typed = String((b && b.email) || '').trim();
+    const same = typed.toLowerCase() === suEmail.toLowerCase();
+    let msg = String((b && b.message) || '');
+    if (typed && !same) msg = msg.slice(0, 880) + '\n\n[contact typed in the form: ' + typed.slice(0, 80) + ']';
+    fwdBody = JSON.stringify({ ...b, email: suEmail, address: acct, message: msg });
+  }
   if (path === '/moonsign/submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: 'moon' }); }
   else if (path === '/moonsign/mine') doPath = '/exsign/mine';
   else if (path === '/moonsign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
@@ -20708,6 +20731,48 @@ async function handleReward(url, request, env) {
 // tab from the Bybit Affiliate Portal ("9 Results" list). Used to gate withdrawals: we only pay to Bybit accounts
 // created through OUR affiliate link. An EMPTY list disables the gate (fail-open so a lost KV key can't block payouts).
 async function bybitUidSet(env) { try { return new Set(((await env.STATS.get('bybit:uids')) || '').split(/\s+/).filter(Boolean)); } catch (e) { return new Set(); } }
+/* EVERY SUPPORT ROW MUST SAY WHO IT IS FROM (2026-10-18, owner: "ne moze da mi pise da mi je mejl stigao sa
+   UID-a, to je bas katastrofa"). The `email` column is only a CONTACT STRING - on a ticket filed through the
+   site's form it is whatever was typed into the box - while `address` carries the ACCOUNT whenever we knew it.
+   So the name is resolved from the address, the way every other admin view already resolves 'u:<uid>'.
+   `whoKind` says how far the answer can be trusted, which is the part that stops this coming back:
+     member = the session told us, and `whoEmail` is the address we actually hold for them
+     mail   = a real inbound envelope (address 'email' | 'affiliate')
+     guest  = nobody was signed in, so the typed contact is genuinely all we have - labelled, never presented
+              as if it were an identity
+   ONE definition for both the ticket list and the conversation view: they are two renderings of one desk.
+   Accepts rows carrying `address` (tickets) or `addr` (conversations). */
+async function supportStampWho(env, rows) {
+  try {
+    const list = (rows || []).filter(Boolean);
+    if (!list.length) return;
+    const addrOf = (t) => String(t.address || t.addr || '');
+    const keys = [...new Set(list.map(addrOf).filter(a => /^u:/.test(a)))];
+    const prof = keys.length ? await resolveProfiles(env, keys) : {};
+    // A ticket filed from the Moon bonus card is addressed 'moon:<name>', and that IS resolvable - the approved
+    // sign-ups map a Moon username to an account. Only asked for when such a row exists, because this view is
+    // polled every 30 s. It is also what names ticket 509, filed before the write-side fix above.
+    let moonMap = null;
+    if (list.some(t => /^moon:/.test(addrOf(t)))) {
+      try {
+        const mm = await moonMembers(env); moonMap = {};
+        for (const m of mm) if (m && m.moon) moonMap[String(m.moon).toLowerCase()] = m;
+        const mprof = await resolveProfiles(env, [...new Set(mm.map(m => m && m.acct).filter(Boolean))]);
+        for (const k of Object.keys(moonMap)) { const p = mprof[String(moonMap[k].acct || '').replace(/^u:/, '')]; if (p) moonMap[k].email = p.email || ''; }
+      } catch (e) { moonMap = null; }
+    }
+    for (const t of list) {
+      const a = addrOf(t);
+      const p = /^u:/.test(a) ? prof[a.replace(/^u:/, '')] : null;
+      const mo = moonMap && /^moon:/.test(a) ? moonMap[a.slice(5).toLowerCase()] : null;
+      if (p && (p.username || p.email)) { t.who = p.username || p.email; t.whoEmail = p.email || ''; t.whoKind = 'member'; }
+      else if (mo && (mo.name || mo.email)) { t.who = mo.name || mo.email; t.whoEmail = mo.email || ''; t.whoKind = 'member'; t.whoVia = 'moon'; }
+      else if (a === 'email' || a === 'affiliate') { t.who = String(t.email || ''); t.whoKind = 'mail'; }
+      else if (a === 'admin') { t.whoKind = 'admin'; }
+      else { t.who = String(t.email || ''); t.whoKind = 'guest'; }
+    }
+  } catch (e) {}
+}
 async function resolveProfiles(env, acctKeys) {
   const ids = [...new Set((acctKeys || []).map(a => String(a || '')).filter(a => a.startsWith('u:')).map(a => a.slice(2)))];
   if (!ids.length || !env.USERS) return {};
@@ -22695,6 +22760,15 @@ export default {
         try { await env.STATS.delete(squadFreeKey(eu)); } catch (e) {}                          // a free squad founding (2026-09-30)
         try { if (env.SPOT) await spotStub(env).fetch(new Request('https://do/s2/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: eu }) })); } catch (e) {} // the Demo Spot account lives in its own DO (2026-10-16)
         try { if (env.COMM) await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/admin', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin': '1' }, body: JSON.stringify({ act: 'deluser', uid: eu }) })); } catch (e) {} // and its Community posts (a test thesis is a real post otherwise)
+        // AND ITS SUPPORT TICKETS (2026-10-18). They live in the LEDGER DO, which neither the UserStore sweep
+        // nor `op:'orphans'` can reach, and support-who-e2e files real ones - a test ticket on the owner's desk
+        // is the same pollution as a test post. The purge route cannot do this: it is scoped to inbound mail.
+        try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + eu }) })); } catch (e) {}
+      }
+      // the same sweep for a ticket filed with NO account - support-who-e2e's guest leg; the DO refuses
+      // anything that is not an e2e sender, so this is not a general delete-by-email
+      if (String((eb && eb.op) || '') === 'supportrm' && eb.email) {
+        try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: String(eb.email) }) })); return new Response(await rr.text(), { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
       }
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/e2euser', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(eb) })); const rtxt = await rr.text(); if (rr.status === 200 && eb.op === 'mk' && +eb.xp > 0 && /^e2e/i.test(String(eb.uid || ''))) { try { await grantXp(env, 'u:' + String(eb.uid), 'e2e', Math.min(5000, Math.round(+eb.xp)), { note: 'e2e' }); } catch (e) {} } return new Response(rtxt, { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
     }
@@ -26893,6 +26967,18 @@ export class RewardLedger {
       for (const w of who) { try { deleted += sql.exec("DELETE FROM support WHERE email=? AND address IN ('email','affiliate')", w).rowsWritten || 0; } catch (e) {} }
       return this.j({ ok: true, deleted, senders: who.length });
     }
+    if (path === '/support/e2erm') { // E2E cleanup: a test ticket is a real row on the owner's desk (2026-10-18)
+      // SELF-GUARDED IN THE DO, so this never becomes a general delete-by-email: an e2e ACCOUNT, or a sender
+      // that is unmistakably one of our own test rows. Anything else deletes nothing and says so.
+      const ac = String(body.acct || ''), em = String(body.email || '');
+      const acOk = /^u:e2e/i.test(ac);
+      const emOk = /^e2e[+_-]/i.test(em) || /^guest\+\d+@example\.com$/i.test(em);
+      if (!acOk && !emOk) return this.j({ error: 'not_an_e2e_row', acct: ac, email: em }, 400);
+      let deleted = 0;
+      if (acOk) { try { deleted += sql.exec('DELETE FROM support WHERE address=?', ac).rowsWritten || 0; } catch (e) {} }
+      if (emOk) { try { deleted += sql.exec('DELETE FROM support WHERE email=?', em).rowsWritten || 0; } catch (e) {} try { sql.exec('DELETE FROM sreply WHERE email=?', em); } catch (e) {} }
+      return this.j({ ok: true, deleted });
+    }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) - closes/reopens the WHOLE conversation
       const val = body.reopen ? 0 : 1; let changed = 0;
       // '_legacy' is the conversation the list builds from rows that have NO conv id (pre-conversation era + admin-started rows) - the sanitiser used to
@@ -26926,8 +27012,11 @@ export class RewardLedger {
       const rows = this.rows('SELECT rowid AS id,ts,email,address,message,conv,img,COALESCE(closed,0) closed FROM support ORDER BY ts DESC LIMIT 400').reverse();
       const reps = this.rows('SELECT ts,subject,body,email,conv FROM sreply ORDER BY ts DESC LIMIT 400').reverse();
       const LEG = '_legacy', convs = {}, order = [];
-      const ensure = (cid, email) => { if (!convs[cid]) { convs[cid] = { conv: cid, email: email || '', messages: [], lastTs: 0, lastInTs: 0, closed: true, title: '' }; order.push(cid); } const c = convs[cid]; if (!c.email && email) c.email = email; return c; };
-      rows.forEach(r => { const c = ensure(r.conv || LEG, r.email); if (r.address === 'affiliate') c.aff = true; const isAdmin = r.address === 'admin'; c.messages.push({ ts: r.ts, dir: isAdmin ? 'out' : 'in', body: r.message, img: r.img || '' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!isAdmin && r.ts > c.lastInTs) c.lastInTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 70); });
+      // `addr` rides along so the WORKER can say who the thread is from: the email column is only a contact
+      // string, and for anything filed while signed in the account is the fact (2026-10-18). Taken from the
+      // first non-admin row, because an admin-started row carries 'admin' and names nobody.
+      const ensure = (cid, email) => { if (!convs[cid]) { convs[cid] = { conv: cid, email: email || '', addr: '', messages: [], lastTs: 0, lastInTs: 0, closed: true, title: '' }; order.push(cid); } const c = convs[cid]; if (!c.email && email) c.email = email; return c; };
+      rows.forEach(r => { const c = ensure(r.conv || LEG, r.email); if (r.address === 'affiliate') c.aff = true; const isAdmin = r.address === 'admin'; if (!c.addr && !isAdmin && r.address) c.addr = String(r.address); c.messages.push({ ts: r.ts, dir: isAdmin ? 'out' : 'in', body: r.message, img: r.img || '' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!isAdmin && r.ts > c.lastInTs) c.lastInTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 70); });
       reps.forEach(rp => { let cid = rp.conv && convs[rp.conv] ? rp.conv : '';
         if (!cid) { let best = '', bestTs = -1; order.forEach(id => { if (rp.email && convs[id].email && convs[id].email !== rp.email) return; let lt = -1; convs[id].messages.forEach(m => { if (m.dir === 'in' && m.ts <= rp.ts && m.ts > lt) lt = m.ts; }); if (lt > bestTs) { bestTs = lt; best = id; } }); cid = best; }
         if (!cid) return; const c = convs[cid]; c.messages.push({ ts: rp.ts, dir: 'out', body: rp.body || rp.subject }); if (rp.ts > c.lastTs) c.lastTs = rp.ts; });
