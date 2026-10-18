@@ -8329,6 +8329,67 @@ async function settleDuels(env) {
   } catch (e) {}
 }
 // Phase 5: anomaly pings - only things that need ACTION, each at most once per day (withdrawals: once per new request)
+/* REDUCED REWARDS: the hourly pass that turns the measurement into one stored number per member.
+   SELF-GATED to once an hour - the rule is about HOURS of accumulated time and cannot flip in ten minutes, and the
+   aggregate is two GROUP BY queries over udwell. It writes back only the rows that CHANGED, so a quiet hour costs
+   one DO read and nothing else; `rr:last` records what it did so "it ran" is a fact rather than a theory. */
+async function rrScan(env, force) {
+  if (!env || !env.USERS || !env.STATS) return;
+  try {
+    if (!force) { const last = +(await env.STATS.get('rr:ts')) || 0; if (Date.now() - last < 55 * 60000) return; }
+    await env.STATS.put('rr:ts', String(Date.now()));
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/rwagg'));
+    const d = await r.json(); const list = (d && d.users) || [];
+    const set = [], tiers = { 50: 0, 75: 0, 100: 0 };
+    for (const u of list) {
+      const f = rrFactorOf({ rwRank: u.rank, dwellTotal: u.tot, rrtag: u.tag });
+      tiers[f.pct] = (tiers[f.pct] || 0) + 1;
+      if (f.pct !== (+u.fac || 100) || (+u.rank || 0) !== (+u.rankStored || 0)) set.push({ uid: u.uid, fac: f.pct, rank: u.rank });
+    }
+    let written = 0;
+    for (let i = 0; i < set.length; i += 500) { // chunked: a large IN/UPDATE batch is the DO-SQLite trap this file already names
+      const r2 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/rwset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: set.slice(i, i + 500) }) }));
+      try { const j2 = await r2.json(); written += (j2 && j2.written) || 0; } catch (e) {}
+    }
+    await env.STATS.put('rr:last', JSON.stringify({ ts: Date.now(), users: list.length, changed: set.length, written, reduced50: tiers[50] || 0, reduced75: tiers[75] || 0, full: tiers[100] || 0, minDwellH: RR_MIN_DWELL_S / 3600 }), { expirationTtl: 2592000 });
+  } catch (e) {}
+}
+/* A BAN THAT ACTUALLY BANS (2026-10-18, owner: "mislim da nam ban ne radi bas najbolje jer sam par puta banovao i
+   video sam da su se vratili, mozda i sesija treba da se skine ujedno").
+
+   The sessions were never the problem - /control already deleted them and the worker already dropped their KV
+   read-through copies. There were TWO real holes, and they are the kind only a reader of both sides would see:
+
+   1. THE TWO BANS WERE DISJOINT. `users.status='banned'` blocks login. `accounts.banned=1` blocks the faucet. And
+      EVERY leaderboard, prize payer and shop gate reads the LEDGER one (`/lbbans`) - so an account banned from the
+      site still counted on every paid board and could still be paid a prize, while an account banned from the
+      faucet could still sign in, trade and earn XP. Neither one was "banned" in the sense the owner meant.
+   2. THE BAN WAS KEYED TO AN EMAIL. /verify refused a banned address and looked at nothing else, so the same
+      browser signed up again under a new gmail in a minute. That is literally what "they came back" was.
+
+   So: one call, three places. Ledger ban removes them from the boards and the money; the site ban kills login and
+   sessions; the device goes on the banned-device list unless the caller is keeping a main account alive on it. */
+async function banEverywhere(env, uid, opts) {
+  const o = opts || {}; const id = String(uid || '').replace(/^u:/, '');
+  const out = { uid: id, site: false, ledger: false, device: false, errors: [] };
+  if (!id) { out.errors.push('no_uid'); return out; }
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, action: 'ban', keepdev: !!o.keepdev, by: String(o.by || 'ops').slice(0, 24) }) }));
+    const d = await r.json(); out.site = !!(d && d.ok); out.device = !!(d && d.ok) && !o.keepdev;
+    if (d && Array.isArray(d.revokedTokens)) await Promise.all(d.revokedTokens.slice(0, 200).map(t => sessRevoke(env, t)));
+    if (d && d.error) out.errors.push('site:' + d.error);
+  } catch (e) { out.errors.push('site:throw'); }
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/ban', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: 'u:' + id }) }));
+    const d = await r.json(); out.ledger = !!(d && d.ok); if (d && d.error) out.errors.push('ledger:' + d.error);
+  } catch (e) { out.errors.push('ledger:throw'); }
+  return out;
+}
+async function unbanEverywhere(env, uid) {
+  const id = String(uid || '').replace(/^u:/, ''); const out = { uid: id, site: false, ledger: false };
+  if (!id) return out;
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, action: 'unban' }) })); out.site = !!((await r.json()) || {}).ok; } catch (e) {}
+  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/unban', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: 'u:' + id }) })); out.ledger = !!((await r.json()) || {}).ok; } catch (e) {}
+  return out;
+}
 async function checkOpsAlerts(env) {
   try {
     if (!env.STATS || !env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return;
@@ -18895,10 +18956,12 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 
 <section class="view" data-view="controls">
 <div class="panel" id="ctrlPanel"><h2 style="margin-top:0">Controls</h2>
-<div class="csec">Account status <i>ban blocks login entirely · suspend is temporary</i></div>
+<div class="csec">Account status <i>ban = sessions killed, login blocked, the device they last used barred, faucet banned and off every paid board · suspend is temporary and leaves the money alone</i></div>
 <div class="ctrls" id="statusCtrls"></div>
 <div class="csec">Restrictions <i>enforced server-side - a restricted user who tries gets a "contact support" notice</i></div>
 <div class="field"><label class="chk"><input type="checkbox" data-r="chat"> No chat</label><label class="chk"><input type="checkbox" id="muteChk"> Muted <span class="muted" style="font-size:11px">(instant)</span></label><label class="chk"><input type="checkbox" data-r="rewards"> No rewards <span class="muted" style="font-size:11px">(claim · promo · exchange bonus · withdraw)</span></label><label class="chk"><input type="checkbox" data-r="withdraw"> No withdraw only</label><button class="btn" id="saveRestr">Apply restrictions</button></div>
+<div class="csec">Reduced rewards <i>cuts the faucet DAILY CAP when the rewards page is where this member spends most of their time - automatic, and overridable in both directions</i></div>
+<div class="field" id="rrField"><span class="muted">loading&hellip;</span></div>
 <div class="csec">Role <i>background mark - unlocks chat admin commands; invisible to the user</i></div>
 <div class="field"><select class="in" id="roleSel" style="width:220px"><option value="">none</option><option value="owner">owner - full chat commands</option><option value="mod">mod - moderation only (mute/delete)</option></select><button class="btn" id="saveRole">Set role</button><span class="muted" id="roleHint"></span></div>
 <div class="csec">Faucet &amp; balance <i>same actions as the Rewards tab - everything for this user lives here</i></div>
@@ -19025,13 +19088,29 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
   if(st==='suspended')h+='<button class="btn good" id="actBtn">Lift suspension</button>';
   h+='<button class="btn" id="muteBtn">'+(u.muted?'Unmute':'Mute')+'</button>';
   sc.innerHTML=h;
-  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+' from the site? Kills their sessions and blocks re-login.'))ctrl('ban');};
+  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+'?\n\nKills every session, blocks re-login, bars the device they last signed in from, bans the faucet account and takes them off every paid leaderboard.'))ctrl('ban');};
   var unban=document.getElementById('unbanBtn');if(unban)unban.onclick=function(){ctrl('unban');};
   var susp=document.getElementById('suspBtn');if(susp)susp.onclick=function(){var d=prompt('Suspend for how many days? (0 = indefinite)','7');if(d===null)return;ctrl('suspend',{days:+d||0});};
   var act=document.getElementById('actBtn');if(act)act.onclick=function(){ctrl('activate');};
   var mb=document.getElementById('muteBtn');if(mb)mb.onclick=function(){ctrl(u.muted?'unmute':'mute');};
   document.getElementById('muteChk').checked=!!u.muted;document.getElementById('muteChk').onchange=function(){ctrl(this.checked?'mute':'unmute');};
   var rset=(u.restrictions||'').split(',');document.querySelectorAll('[data-r]').forEach(function(c){c.checked=rset.indexOf(c.getAttribute('data-r'))>=0;});
+  /* REDUCED REWARDS - CHIPS, never a native select (the one control the owner cannot use). Three states, because
+     the automatic rule needs to be overrulable BOTH ways: a farmer the rule has not caught yet, and a real member
+     who happens to read /rewards a lot. The panel states what the automatic answer currently is and why, so the
+     owner can see the rule and his own hand as two separate things. */
+  (function(){var f=document.getElementById('rrField');if(!f)return;
+    function paint(){var tag=u.rrtag||'',rr=DATA.rr||{},tot=+DATA.dwellTotal||0,rw=+DATA.dwellRewards||0;
+      var rank=+rr.rank||0,pct=+rr.pct||100,why=rr.why||'',floorH=+rr.minDwellHours||4.5;
+      var chip=function(v,lab,hint){return '<button type="button" class="btn'+(tag===v?' good':'')+'" data-rr="'+v+'" title="'+hint+'">'+lab+'</button>';};
+      f.innerHTML=chip('','Automatic','follow the rank rule')+chip('on','Reduced','force the cut whatever the rank says')+chip('off','Exempt','never reduce this member')
+        +'<span class="muted" style="margin-left:8px">faucet at <b style="color:'+(pct<100?'#ffb347':'#2ebd85')+'">'+pct+'%</b> of the normal daily cap &middot; '+why+'</span>'
+        +'<div class="muted" style="font-size:11px;width:100%;margin-top:4px">'+(tot?((tot/3600).toFixed(1)+' h on the site, '+(rw/3600).toFixed(1)+' h of it on the rewards page'):'no time recorded yet')+' &middot; 4.5 h floor &middot; #1 = 50%, #2 = 75%, #3 or lower = no reduction</div>';
+      f.querySelectorAll('[data-rr]').forEach(function(bq){bq.onclick=function(){var v=bq.getAttribute('data-rr');cmsg('Working…','');
+        fetch('/api/admin/rrtag',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:u.id,tag:v})}).then(function(r){return r.json();}).then(function(j){
+          if(j&&j.ok){u.rrtag=v;if(j.state){DATA.rr=Object.assign({},DATA.rr||{},{pct:j.state.factorPct,why:j.state.why,source:j.state.source});}paint();cmsg('Reduced rewards: '+(v===''?'automatic':v==='on'?'forced on':'exempt')+(j.state?(' - faucet now at '+j.state.factorPct+'% of the daily cap'):''),'ok');}
+          else cmsg('Failed: '+((j&&j.error)||'error'),'err');}).catch(function(){cmsg('Network error','err');});};});}
+    paint();})();
   var rs9=document.getElementById('roleSel');
   if(rs9){rs9.value=u.role||'';var rh9=document.getElementById('roleHint');if(rh9)rh9.textContent=u.role?('current: '+u.role):(u.username?'':'(user needs a username first)');
     document.getElementById('saveRole').onclick=function(){
@@ -19534,6 +19613,18 @@ async function handleAuth(url, request, env, ctx) {
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }));
     const d = await r.json();
+    /* ONE BAN, BOTH BOOKS (2026-10-18). This is the button the owner actually presses, and until today it did half
+       the job: status='banned' blocks login, but EVERY paid leaderboard and the prize payer read the LEDGER's ban
+       list, so a member banned here still counted on the boards and could still be paid out. Unban lifts both. The
+       ledger call is best-effort and the answer SAYS which half landed - a ban that silently half-applied is how
+       "ban nam ne radi" happens in the first place. */
+    if (d && d.ok && (b.action === 'ban' || b.action === 'unban' || b.action === 'activate')) {
+      const uid9 = String((d.uid || b.id || '')).replace(/^u:/, '');
+      if (uid9) { try { const lr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/' + (b.action === 'ban' ? 'ban' : 'unban'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: 'u:' + uid9 }) }));
+        const lj = await lr.json(); d.ledger = !!(lj && lj.ok); if (lj && lj.error) d.ledgerError = lj.error;
+      } catch (e) { d.ledger = false; d.ledgerError = 'throw'; } }
+      else { d.ledger = false; d.ledgerError = 'no_uid'; }
+    }
     if (d && d.ok) { try { const ap = evPush(env, request, 'admin', String(b.action || '') + ' ' + (b.email ? maskEmail(b.email) : '#' + String(b.id || '').slice(0, 8)) + (b.days ? ' ' + b.days + 'd' : '') + (b.username ? ' -> ' + String(b.username).slice(0, 20) : ''), '/', { by: 'owner', action: String(b.action || '') }); if (ctx && ctx.waitUntil) ctx.waitUntil(ap); } catch (e) {} } // ops feed: bans, suspensions, renames, deletions
     if (d && Array.isArray(d.revokedTokens)) await Promise.all(d.revokedTokens.slice(0, 200).map(t => sessRevoke(env, t))); // parallel - a ban on a user with many sessions would time out on sequential awaits. Drops the read-through cache for every touched session.
     return jr(d);
@@ -19569,7 +19660,13 @@ async function handleAuth(url, request, env, ctx) {
       if (path === '/user') { // dashboard: one user's record + activity + login history
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/user' + url.search));
-    return jr(await r.json());
+    const d = await r.json();
+    // The reduced-rewards verdict is computed HERE, by the one function that decides it everywhere else. The
+    // Controls panel must not carry its own copy of the thresholds - a second copy of a money rule is how two
+    // surfaces end up disagreeing, which this file has a dozen entries about.
+    if (d && d.exists) { try { const f = rrFactorOf({ rwRank: d.rwRank, dwellTotal: d.dwellTotal, rrtag: (d.user && d.user.rrtag) || '' });
+      d.rr = { pct: f.pct, why: f.why, source: f.source, rank: d.rwRank || 0, minDwellHours: RR_MIN_DWELL_S / 3600, tiers: RR_TIERS }; } catch (e) {} }
+    return jr(d);
   }
   if (path === '/opentrades') { // dashboard Ops tab: all signed-in users' OPEN paper positions
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
@@ -20271,7 +20368,7 @@ async function handleReward(url, request, env) {
     return jr({ found, checked, action: act, note: act === 'comment' ? 'search covers replies from the last ~7 days only' : null, error: err });
   }
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0, suEmail = '', suName = '';
+  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0, suEmail = '', suName = '', suRwFac = 100, suRrTag = '';
   // `/support` IS ON THIS LIST SINCE 2026-10-18, and its absence was the whole bug. A ticket filed through the
   // site's own form was the ONE member-facing write where the server never asked who was writing: the desk
   // showed whatever had been typed into the contact box. A Nigerian member typed his PHONE NUMBER and the
@@ -20280,7 +20377,7 @@ async function handleReward(url, request, env) {
   // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
   if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/moonsign/submit' || path === '/moonsign/mine' || path === '/fomosign/submit' || path === '/fomosign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); } }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
     if (!acct && path === '/xengage/submit' && adminOk) { const ov = url.searchParams.get('uid'); if (ov) acct = 'u:' + ov; }
     /* ... and for the two sign-up surfaces, so support can file a claim for a member who never did
@@ -20731,7 +20828,7 @@ async function handleReward(url, request, env) {
   else if (path === '/fomosign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
   else if (path === '/fomosign/review') doPath = '/exsign/review';
   const fwd = new Request('https://do' + doPath + (request.method === 'GET' ? url.search : ''), {
-    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1), 'x-dayx': String(cfg.levelsEnabled !== false ? (LEVEL_DAY_MULT[suLevelK] || 1) : 1) },
+    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1), 'x-dayx': String(cfg.levelsEnabled !== false ? (LEVEL_DAY_MULT[suLevelK] || 1) : 1), 'x-rrx': String(suRwFac / 100) }, // x-rrx = the reduced-rewards factor, read off the users row the session already loaded (the rrScan cron decides it) - no extra hop on the claim path
     body: request.method === 'POST' ? fwdBody : undefined,
   });
   let r, txt;
@@ -22460,11 +22557,18 @@ export default {
     if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) - finds people who are here ONLY for the faucet
       const [ur, ar, cfg] = await Promise.all([
         env.USERS ? env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/security')).then(r => r.json()).catch(() => ({ users: [] })) : { users: [] },
-        env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/accounts')).then(r => r.json()).catch(() => ({ accounts: [] })) : { accounts: [] },
+        // /secmoney, NOT /accounts (2026-10-18). /accounts is `ORDER BY created DESC LIMIT 500`, and joining the
+        // farming radar against it meant 453 of 953 faucet accounts - the OLDEST, so the ones with the most
+        // accumulated claims - came back as claims:0 earned:0 balance:0. The heaviest faucet user on the whole
+        // site (1,161 claims, $58.99 earned, $60.31 withdrawn) read as an empty row, which is precisely why this
+        // panel could be looked at every day and show nothing.
+        env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/secmoney')).then(r => r.json()).catch(() => ({ rows: [] })) : { rows: [] },
         rewardCfg(env),
       ]);
-      const byUid = {}; (ar.accounts || []).forEach(a => { const ad = String(a.address || ''); if (ad.indexOf('u:') === 0) byUid[ad.slice(2)] = a; });
-      const rows = (ur.users || []).map(u => { const a = byUid[u.uid]; const vi = vpnInfo(u.org || '', u.asn || 0); return Object.assign({}, u, { vpn: vi.vpn, vpnConf: vi.conf, address: a ? a.address : '', claims: a ? (a.claims || 0) : 0, balanceUsd: a ? (+a.balanceUsd || 0) : 0, earnedUsd: a ? (+a.earnedUsd || 0) : 0, banned: a ? !!a.banned : false, sameDid: a ? (a.sameDid || 1) : 1, sameIp: a ? (a.sameIp || 1) : 1 }); });
+      const byUid = {}; (ar.rows || []).forEach(a => { const ad = String(a.a || ''); if (ad.indexOf('u:') === 0) byUid[ad.slice(2)] = a; });
+      const ledgerTotal = (ar.rows || []).length;
+      const rows = (ur.users || []).map(u => { const a = byUid[u.uid]; const vi = vpnInfo(u.org || '', u.asn || 0); const rr = rrFactorOf({ rwRank: u.rwRank, dwellTotal: u.dwellTotal, rrtag: u.rrtag });
+        return Object.assign({}, u, { vpn: vi.vpn, vpnConf: vi.conf, address: a ? a.a : '', claims: a ? (a.c || 0) : 0, balanceUsd: a ? (+a.b || 0) / 100 : 0, earnedUsd: a ? (+a.e || 0) / 100 : 0, payoutAddr: a ? (a.pa || '') : '', lastClaim: a ? (+a.lc || 0) : 0, banned: a ? !!a.bn : false, rrPct: rr.pct, rrWhy: rr.why, rrSource: rr.source }); });
       // ---- look-alike / duplicate emails: normalised-email dupes (Gmail dots/+tags) + base-similar (john / john1 / j.o.h.n) ----
       const byNorm = {}, byBase = {};
       rows.forEach(r => { const n = normEmail(r.email); const b = emailBase(r.email); const bl = String(b).split('@')[0]; r._norm = n; r._base = (bl.length >= 3 ? b : ''); (byNorm[n] = byNorm[n] || []).push(r); if (r._base) (byBase[b] = byBase[b] || []).push(r); });
@@ -22479,8 +22583,40 @@ export default {
       rows.forEach(r => { if (r.ip) (byIp[r.ip] = byIp[r.ip] || []).push(r); if (r.did) (byDid[r.did] = byDid[r.did] || []).push(r); });
       rows.forEach(r => { r.sameIpUsers = r.ip ? (byIp[r.ip] || []).length : 1; r.sameDidUsers = r.did ? (byDid[r.did] || []).length : 1; });
       const mkCluster = (map, kind) => Object.keys(map).map(k => map[k]).filter(g => g.length >= 2).map(g => { const gs = g.slice().sort((x, y) => (y.created || 0) - (x.created || 0)); return { kind, key: kind === 'ip' ? (gs[0].ip || '') : 'device', count: gs.length, lastTs: gs[0].created || 0, recent: gs.filter(x => Date.now() - (x.created || 0) < 3600000).length, cc: gs[0].cc || '', vpn: !!gs[0].vpn, members: gs.map(x => ({ uid: x.uid, email: x.email, username: x.username, created: x.created, cc: x.cc, dev: x.dev, vpn: x.vpn, trades: x.trades, claims: x.claims, balanceUsd: x.balanceUsd, banned: x.banned })) }; });
-      const ipClusters = mkCluster(byIp, 'ip').sort((a, b) => (b.recent - a.recent) || (b.count - a.count)).slice(0, 40);
-      const didClusters = mkCluster(byDid, 'device').sort((a, b) => (b.recent - a.recent) || (b.count - a.count)).slice(0, 40);
+      // RANKED BY MONEY, not by recency. `recent` counts accounts CREATED in the last hour, which is almost never
+      // anybody, so sorting on it put the clusters that matter at the bottom of a list of forty. A cluster is
+      // interesting in proportion to the faucet money inside it.
+      const clMoney = (c) => (c.members || []).reduce((s, m) => s + (+m.claims || 0), 0);
+      const byMoneyThenSize = (a, b) => (clMoney(b) - clMoney(a)) || (b.recent - a.recent) || (b.count - a.count);
+      const ipClusters = mkCluster(byIp, 'ip').sort(byMoneyThenSize).slice(0, 40);
+      const didClusters = mkCluster(byDid, 'device').sort(byMoneyThenSize).slice(0, 40);
+      /* ONE WALLET, SEVERAL ACCOUNTS - the hardest evidence on this page and nothing was publishing it (the ledger's
+         own /accounts route does not even return payout_addr). An IP is circumstantial and a device is strong; a
+         payout address receiving money from two different accounts is not a heuristic at all. Measured the day this
+         shipped: 5 wallets had been paid from 2-3 accounts each, one of them from three. */
+      // Both the CURRENT payout address and every address a withdrawal has ever been SENT to: a member who changed
+      // their wallet after cashing out twice is invisible to the first key and obvious in the second. Measured the
+      // day this shipped: the current-address key found 4 clusters and the history found 5, overlapping in 2.
+      const byPay = {}; rows.forEach(r => { const p = String(r.payoutAddr || '').trim().toLowerCase(); if (p) (byPay[p] = byPay[p] || []).push(r); });
+      try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/wdlist')); const wd = await wr.json();
+        const byUidRow = {}; rows.forEach(r => { byUidRow[r.uid] = r; });
+        ((wd && wd.wds) || []).forEach(w => { const p = String(w.wallet || w.address || '').trim().toLowerCase(); const ac = String(w.acct || '').replace(/^u:/, ''); const row = byUidRow[ac];
+          if (!p || !row) return; const g = (byPay[p] = byPay[p] || []); if (g.indexOf(row) < 0) g.push(row); });
+      } catch (e) {}
+      const payClusters = Object.keys(byPay).filter(k => byPay[k].length >= 2).map(k => { const g = byPay[k].slice().sort((a, b) => (b.claims || 0) - (a.claims || 0));
+        return { kind: 'payout', key: k, count: g.length, claims: g.reduce((s, m) => s + (m.claims || 0), 0), earnedUsd: Math.round(g.reduce((s, m) => s + (m.earnedUsd || 0), 0) * 100) / 100, members: g.map(m => ({ uid: m.uid, email: m.email, username: m.username, created: m.created, cc: m.cc, dev: m.dev, vpn: m.vpn, trades: m.trades, claims: m.claims, balanceUsd: m.balanceUsd, earnedUsd: m.earnedUsd, banned: m.banned, status: m.status })) }; })
+        .sort((a, b) => (b.claims - a.claims) || (b.count - a.count)).slice(0, 40);
+      /* HERE ONLY FOR THE MONEY: the owner's own rule, as a list. Rank 1 past the dwell floor, ordered by what they
+         have actually taken out. This is the cohort `reduced rewards` applies to, so the panel and the faucet can
+         never disagree about who is in it. */
+      const farmers = rows.filter(r => r.rwRank === 1 && r.dwellTotal >= RR_MIN_DWELL_S)
+        .sort((a, b) => (b.earnedUsd - a.earnedUsd) || (b.claims - a.claims))
+        .map(r => ({ uid: r.uid, username: r.username, email: r.email, cc: r.cc, org: r.org, vpn: r.vpn, status: r.status, dwellTotal: r.dwellTotal, dwellRewards: r.dwellRewards, rwRank: r.rwRank, topPath: r.topPath, claims: r.claims, earnedUsd: r.earnedUsd, balanceUsd: r.balanceUsd, payoutAddr: r.payoutAddr, rrPct: r.rrPct, rrSource: r.rrSource, rrtag: r.rrtag, ccN: r.ccN, ccList: r.ccList, trades: r.trades }));
+      /* THE FLAG THAT KEEPS CHANGING - what the owner actually noticed, and the panel had no way to show it. Four
+         or more countries in a member's own event log is a VPN being switched, not travel. Information, never a
+         verdict: a carrier can also route a phone through two countries, which is why it is a list and not a ban. */
+      const hoppers = rows.filter(r => r.ccN >= 3).sort((a, b) => (b.ccN - a.ccN) || (b.earnedUsd - a.earnedUsd))
+        .map(r => ({ uid: r.uid, username: r.username, email: r.email, cc: r.cc, org: r.org, asn: r.asn, vpn: r.vpn, ccN: r.ccN, ccList: r.ccList, claims: r.claims, earnedUsd: r.earnedUsd, dwellTotal: r.dwellTotal, rwRank: r.rwRank, status: r.status })).slice(0, 60);
       const vpnCount = rows.filter(r => r.vpn).length;
       // auth timeline (login/signup/logout with ip + device id) + which devices/IPs carry MULTIPLE accounts -
       // the "forced logout then different account" multi-accounting pattern reads directly off this list
@@ -22491,7 +22627,117 @@ export default {
         if (e.ip && e.id) (ipAccts[e.ip] = ipAccts[e.ip] || new Set()).add(String(e.id));
       }
       const authRows = authlog.slice(0, 200).map(e => ({ ...e, devN: e.did ? (devAccts[e.did] ? devAccts[e.did].size : 1) : 0, ipN: e.ip ? (ipAccts[e.ip] ? ipAccts[e.ip].size : 1) : 0 }));
-      return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), ipClusters, didClusters, vpnCount, authlog: authRows, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      let rrLast = null; try { rrLast = await env.STATS.get('rr:last', 'json'); } catch (e) {}
+      let devBanned = []; try { const r9 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/bandev')); devBanned = ((await r9.json()) || {}).devices || []; } catch (e) {}
+      return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), ipClusters, didClusters, payClusters, farmers, hoppers, devBanned, vpnCount, authlog: authRows, minWdUsd: (cfg.minWdC || 500) / 100, ledgerAccounts: ledgerTotal, rr: { minDwellHours: RR_MIN_DWELL_S / 3600, tiers: RR_TIERS, forcedPct: RR_FORCED, lastScan: rrLast } }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    /* THE MULTI-ACCOUNT SWEEP (2026-10-18, owner: "svim korisnicima koji pored main naloga imaju neki drugi - main
+       gledaj po levelu - treba ga banovati i ukinuti sve vrste nagrada").
+
+       A DRY RUN BY DEFAULT, like every other destructive desk in this worker (apitrial, supportjunk, moonwager): it
+       answers with the clusters, who the main is, and exactly how much money each member holds, and writes nothing.
+       `{apply:true}` bans. `confirm` must equal the number of accounts the dry run offered, so a stale list from an
+       hour ago cannot be applied to a set that has since changed.
+
+       WHAT IS AND IS NOT A KEY: the device cookie and the exact login IP. NOT the ASN or the organisation - a
+       Nigerian or Pakistani mobile carrier NATs thousands of people behind one address and this file has said since
+       2026-09-07 that a shared network is information, never a verdict. Device under-catches (a cleared cookie is a
+       new did) and never over-catches, which is the right direction for something that takes money away.
+
+       THE MAIN KEEPS ITS DEVICE. If the main shares the device with the accounts being banned - which is the
+       commonest shape, one browser, several accounts - banning the device would lock the main out too, so those
+       bans pass `keepdev`. A banned account on a device the main does NOT use still burns that device. */
+    if (url.pathname === '/api/admin/multiacct' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      const apply = !!bq.apply;
+      // Which evidence counts. DEFAULT = device + a shared datacentre/VPN address; a shared consumer ISP address is
+      // listed and never swept unless the owner asks for it explicitly (?ev=device,ip_dc,ip_isp).
+      const evRaw = String(bq.ev || url.searchParams.get('ev') || 'device,ip_dc').split(',').map(s => s.trim()).filter(Boolean);
+      const ev = evRaw.filter(x => ['device', 'ip_dc', 'ip_isp', 'transitive'].indexOf(x) >= 0);
+      if (!ev.length) return J({ error: 'bad_ev', allowed: ['device', 'ip_dc', 'ip_isp', 'transitive'] }, 400);
+      let prot = []; try { prot = String(await env.STATS.get('sec:protect') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean); } catch (e) {}
+      for (const p of ['chako', 'whyme', 'gladijator']) if (prot.indexOf(p) < 0) prot.push(p); // the owner's own accounts are never sweepable
+      let cl = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/multiacct')); const d = await r.json(); cl = (d && d.clusters) || []; } catch (e) { return J({ error: 'store_unavailable' }, 503); }
+      // money per account, from the WHOLE ledger (not the newest 500 - see /secmoney)
+      const money = {}; try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/secmoney')); const d = await r.json(); ((d && d.rows) || []).forEach(a => { if (String(a.a || '').indexOf('u:') === 0) money[a.a.slice(2)] = a; }); } catch (e) {}
+      const skipped = [];
+      const out = cl.map(c => {
+        const members = c.members.map(m => { const a = money[m.uid] || {}; return Object.assign({}, m, { claims: +a.c || 0, balanceUsd: (+a.b || 0) / 100, earnedUsd: (+a.e || 0) / 100, payoutAddr: a.pa || '', ledgerBanned: !!a.bn }); });
+        const mainDid = (members.find(m => m.main) || {}).did || '';
+        /* HOW STRONG IS THE LINK - and this distinction is the whole difference between a correct sweep and a wrong
+           one. Measured on the first dry run: 92 accounts, of which 44 share a BROWSER with another member and 48
+           only share a NETWORK. The biggest money was on the weak side, and one of those pairs was azmat786 /
+           salma786 - which the owner personally adjudicated on 2026-10-01 as TWO DIFFERENT REAL PEOPLE, from their
+           Moon registration dates. A Pakistani mobile IP carrying two accounts is a family or a carrier NAT.
+             device - one browser cookie. One person. Hard.
+             ip_dc  - the same exact IP on a hosting/VPN network. Nobody is behind a datacentre address by
+                      accident, so this is strong - it is what joins the four Turkish accounts to alefzed.
+             ip_isp - the same exact IP on a consumer ISP. A shared network. INFORMATION, NEVER A VERDICT, and
+                      therefore never swept by default. */
+        const byDidIn = {}, byIpIn = {};
+        members.forEach(m => { if (m.did) (byDidIn[m.did] = byDidIn[m.did] || []).push(m); if (m.ip) (byIpIn[m.ip] = byIpIn[m.ip] || []).push(m); });
+        const evOf = (m) => {
+          if (m.did && (byDidIn[m.did] || []).length > 1) return 'device';
+          if (m.ip && (byIpIn[m.ip] || []).length > 1) { const peer = (byIpIn[m.ip] || []).find(x => x.uid !== m.uid) || {}; return (vpnInfo(m.org || '', m.asn || 0).vpn || vpnInfo(peer.org || '', peer.asn || 0).vpn) ? 'ip_dc' : 'ip_isp'; }
+          return 'transitive'; // in the cluster only through a third account - never swept by default
+        };
+        const all = members.filter(m => !m.main).map(m => Object.assign({}, m, { evidence: evOf(m), keepdev: !!(m.did && m.did === mainDid) }));
+        const eligible = all.filter(m => {
+          if (/^e2e/i.test(m.uid) || /^e2e/i.test(m.username || '')) { skipped.push({ uid: m.uid, un: m.username, why: 'e2e account' }); return false; }
+          if (prot.indexOf(String(m.username || '').toLowerCase()) >= 0) { skipped.push({ uid: m.uid, un: m.username, why: 'protected' }); return false; }
+          if (m.status === 'banned') { skipped.push({ uid: m.uid, un: m.username, why: 'already banned' }); return false; }
+          if (ev.indexOf(m.evidence) < 0) { skipped.push({ uid: m.uid, un: m.username, why: 'evidence is ' + m.evidence + ', not in ' + ev.join('+') }); return false; }
+          return true;
+        });
+        return { size: c.size, keys: c.keys, members, toBan: eligible.length, byEvidence: all.reduce((o, m) => { o[m.evidence] = (o[m.evidence] || 0) + 1; return o; }, {}), targets: eligible.map(t => ({ uid: t.uid, username: t.username, email: t.email, claims: t.claims, earnedUsd: t.earnedUsd, balanceUsd: t.balanceUsd, payoutAddr: t.payoutAddr, evidence: t.evidence, keepdev: t.keepdev })), others: all.filter(m => eligible.indexOf(m) < 0).map(t => ({ uid: t.uid, username: t.username, claims: t.claims, earnedUsd: t.earnedUsd, evidence: t.evidence, status: t.status })) };
+      }).filter(c => c.toBan > 0);
+      const willBan = out.reduce((s, c) => s + c.toBan, 0);
+      const totals = { clusters: out.length, accounts: willBan, claims: out.reduce((s, c) => s + c.targets.reduce((x, t) => x + t.claims, 0), 0), earnedUsd: Math.round(out.reduce((s, c) => s + c.targets.reduce((x, t) => x + t.earnedUsd, 0), 0) * 100) / 100, balanceUsd: Math.round(out.reduce((s, c) => s + c.targets.reduce((x, t) => x + t.balanceUsd, 0), 0) * 100) / 100 };
+      if (!apply) return J({ dryRun: true, evidence: ev, totals, clusters: out, skipped, note: 'nothing was changed. POST {apply:true, confirm:' + willBan + ', ev:"' + ev.join(',') + '"} to ban these ' + willBan + ' accounts everywhere (site + faucet + every paid board + device). Evidence in play: ' + ev.join(' + ') + '. A shared consumer ISP address (ip_isp) is a family or a carrier NAT and is excluded unless you name it.' });
+      /* `only` IS THE PRECISE INSTRUMENT, and it exists because an evidence LEVEL is not always the right unit.
+         The four Turkish accounts around alefzed are linked to him by a shared address on a small Turkish hosting
+         network, which the VPN heuristic does not recognise, so they fall into ip_isp with the families and the
+         carrier NATs. What makes them certain is corroboration no rule can see: created inside 38 minutes, three
+         throwaway outlook addresses, three withdrawals paid 17 minutes apart to three different Moon accounts.
+         So the sweep PROPOSES and the owner SELECTS: {only:[uid,...]} bans exactly those, and `confirm` must match
+         the length of that list instead. Nothing outside the dry run's own target set can be named. */
+      const only = Array.isArray(bq.only) ? bq.only.map(x => String(x).replace(/^u:/, '')) : null;
+      let picked = [];
+      for (const c of out) for (const t of c.targets) if (!only || only.indexOf(t.uid) >= 0) picked.push(t);
+      if (only) { const found = picked.map(p => p.uid); const miss = only.filter(u => found.indexOf(u) < 0);
+        if (miss.length) return J({ error: 'not_in_dry_run', missing: miss, note: 'only accounts the dry run offered can be named - re-read it (a uid can be missing because its evidence level is excluded by ev=)' }, 400); }
+      if (+bq.confirm !== picked.length) return J({ error: 'confirm_mismatch', expected: picked.length, got: +bq.confirm || 0, note: only ? 'confirm must equal the length of `only`' : 'the set changed since the dry run - re-read it' }, 409);
+      const done = [];
+      for (const t of picked) done.push(Object.assign({ username: t.username, evidence: t.evidence }, await banEverywhere(env, t.uid, { keepdev: t.keepdev, by: 'multiacct' })));
+      try { await env.STATS.put('sec:multisweep', JSON.stringify({ ts: Date.now(), banned: done.length, evidence: ev, picked: picked.length, who: done.map(d => d.username || d.uid) }), { expirationTtl: 7776000 }); } catch (e) {}
+      try { await tgAdmin(env, '<b>Multi-account sweep</b>\nBanned ' + done.length + ' account' + (done.length === 1 ? '' : 's') + ' across ' + out.length + ' cluster' + (out.length === 1 ? '' : 's') + '\n' + done.map(d => (d.username || d.uid.slice(0, 8)) + (d.errors.length ? ' (' + d.errors.join(',') + ')' : '')).join(', ').slice(0, 900), { kind: 'multiacct sweep', sev: 'info' }); } catch (e) {}
+      return J({ ok: true, banned: done.length, evidence: ev, results: done });
+    }
+    // The owner's manual hand on the reduced-rewards rule (ops full profile > Controls). Recomputes that one row at
+    // once, so a tick is true on the member's next claim and not on the next hourly pass.
+    if (url.pathname === '/api/admin/rrtag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      if (request.method !== 'POST') { let last = null; try { last = await env.STATS.get('rr:last', 'json'); } catch (e) {} return J({ ok: true, lastScan: last, minDwellHours: RR_MIN_DWELL_S / 3600, tiers: RR_TIERS, forcedPct: RR_FORCED }); }
+      const bq = await request.json().catch(() => ({}));
+      const tag = String(bq.tag == null ? '' : bq.tag);
+      if (tag !== '' && tag !== 'on' && tag !== 'off') return J({ error: 'bad_tag', note: "'' = automatic, 'on' = forced reduced, 'off' = exempt" }, 400);
+      const who = bq.uid ? { id: String(bq.uid).replace(/^u:/, '') } : (bq.email ? { email: String(bq.email).toLowerCase() } : null);
+      if (!who) return J({ error: 'need uid or email' }, 400);
+      let d = null; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'rrtag', tag }, who)) })); d = await r.json(); } catch (e) { return J({ error: 'store_unavailable' }, 503); }
+      if (!d || !d.ok) return J({ error: (d && d.error) || 'failed' }, 400);
+      // read the member back and write the decided factor now, then drop their sessions so the next claim sees it
+      let st = null;
+      try { const r2 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/user?' + (who.id ? 'id=' + encodeURIComponent(who.id) : 'email=' + encodeURIComponent(who.email)))); const u2 = await r2.json();
+        if (u2 && u2.exists) { const f = rrFactorOf({ rwRank: u2.rwRank, dwellTotal: u2.dwellTotal, rrtag: tag });
+          await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/rwset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: [{ uid: u2.user.id, fac: f.pct, rank: u2.rwRank }] }) }));
+          await revokeUserSessions(env, u2.user.id);
+          st = { uid: u2.user.id, username: u2.user.username || '', tag, rwRank: u2.rwRank, dwellHours: Math.round((u2.dwellTotal || 0) / 360) / 10, factorPct: f.pct, why: f.why, source: f.source }; }
+      } catch (e) {}
+      return J({ ok: true, state: st });
+    }
+    if (url.pathname === '/api/admin/bandev' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // the banned-device list; POST {did, lift:true} opens a door that was shut by mistake
+      const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : null;
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/bandev', bq ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bq) } : undefined));
+      return J(await r.json());
     }
     if (url.pathname === '/api/admin/indexnow' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // force IndexNow submit (Bing/Yandex/Seznam/Naver): ?urls=a,b,c pings those, else re-diffs the sitemaps now
       if (url.searchParams.get('peek')) { let last = null; try { last = await env.STATS.get('inow:last', 'json'); } catch (e) {} return J({ ok: true, peek: true, last: last }); }
@@ -24247,7 +24493,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily, memeboard: spotBoardCron };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily, memeboard: spotBoardCron, rrscan: (e9) => rrScan(e9, true) }; // rrscan is passed force:true here - by hand means now, not "if the hour has turned"
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -25443,6 +25689,7 @@ export default {
     bg(liqEdgeCron, 'liqedge'); // the ONE measured edge: fire long_cascade / sweep_low per coin into KV for the Ask AI brief
     bg(edgeSampleCron, 'edgesample'); // phase 3: forward-log book/tape signals to AE, to study for a NEW edge in a few weeks
     bg(syncBotTiers, 'bottiers'); // reconcile each API key's tier with premium standing (grants expire silently otherwise)
+    bg(rrScan, 'rrscan'); // reduced rewards: recompute every member's faucet factor from where /rewards sits in their own time (self-gated, hourly)
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
   // Inbound email (Cloudflare Email Routing → "Send to Worker"): store messages sent to support@marginpad.io in the admin Support tab.
@@ -26373,6 +26620,11 @@ export class RewardLedger {
     const cfg = JSON.parse(request.headers.get('x-cfg') || '{}');
     const ip = request.headers.get('x-ip') || '';
     const cc = request.headers.get('x-cc') || '', dev = request.headers.get('x-dev') || '', vid = request.headers.get('x-vid') || '', did = request.headers.get('x-did') || ''; const xLvl = request.headers.get('x-lvl') || ''; const xClaimX = Math.max(1, Math.min(2, +request.headers.get('x-claimx') || 1)); const xDayX = Math.max(1, Math.min(2, +request.headers.get('x-dayx') || 1));
+    // REDUCED REWARDS (2026-10-18, owner): the faucet factor the worker computed from where /rewards sits in this
+    // member's own time. It is applied to the DAILY CAP and not to the per-claim amount, and that is forced by
+    // arithmetic, not taste: amountC is ONE CENT, the smallest unit there is, so `Math.round(1 * 0.5)` is 1 and
+    // halving the per-claim amount would change nothing at all. Halving the daily cap halves the money.
+    const xRr = Math.max(0.25, Math.min(1, +request.headers.get('x-rrx') || 1));
     const day = new Date().toISOString().slice(0, 10), now = Date.now();
     let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
     const addr = String(body.address || url.searchParams.get('address') || '').toLowerCase();
@@ -26382,7 +26634,7 @@ export class RewardLedger {
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
     const referred = request.headers.get('x-referred') === '1'; // set only on the signup path for an account made via a referral link - gates the one-time welcome bonus (2026-10-16)
- const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.round(cfg.perDayC * xDayX) / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), /* exsignUsd/exsignEnabled dropped from the public payload 2026-08-20 - retired 2026-08-03, /exsign/* is 410, and the page never read them */ moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, fomoUsd: (cfg.fomoC == null ? 1 : cfg.fomoC / 100), fomoEnabled: cfg.fomoEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
+ const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap; perDay also carries the reduced-rewards factor, so the number on the page IS the number that will be enforced - no second copy of the rule, and nothing silently cut */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.max(cfg.amountC, Math.round(cfg.perDayC * xDayX * xRr)) / 100, perDayFull: Math.round(cfg.perDayC * xDayX) / 100, rrFactor: xRr, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), /* exsignUsd/exsignEnabled dropped from the public payload 2026-08-20 - retired 2026-08-03, /exsign/* is 410, and the page never read them */ moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, fomoUsd: (cfg.fomoC == null ? 1 : cfg.fomoC / 100), fomoEnabled: cfg.fomoEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
 
     if (path === '/balance') { // READ-ONLY. /account cannot stand in for this: its first read grants the welcome
       // bonus, and a page that merely wants to show a price must never move money as a side effect.
@@ -26419,7 +26671,7 @@ export class RewardLedger {
       }
       if (now - r.last_claim < cfg.cooldown) return this.j({ error: 'cooldown', left: cfg.cooldown - (now - r.last_claim) }, 429);
       const dayAmt = r.day === day ? r.day_amt : 0;
-      const credC = Math.round(cfg.amountC * xClaimX); const dayCapC = Math.round(cfg.perDayC * xDayX); if (dayAmt + credC > dayCapC) return this.j({ error: 'daily_cap' }, 429); // personal daily cap scales with level (LEVEL_DAY_MULT)
+      const credC = Math.round(cfg.amountC * xClaimX); const dayCapC = Math.max(cfg.amountC, Math.round(cfg.perDayC * xDayX * xRr)); if (dayAmt + credC > dayCapC) return this.j({ error: 'daily_cap', reduced: xRr < 1 ? xRr : undefined }, 429); // personal daily cap scales with level (LEVEL_DAY_MULT) and down with the reduced-rewards factor. Floored at one claim: a reduced member still gets SOMETHING, this is a brake and not a silent shutdown.
       sql.exec('UPDATE accounts SET balance=balance+?,earned=earned+?,day=?,day_amt=?,last_claim=?,claims=COALESCE(claims,0)+1 WHERE address=?', credC, credC, day, dayAmt + credC, now, acct);
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, credC, credC);
       sql.exec('INSERT INTO claimday(day,n) VALUES(?,1) ON CONFLICT(day) DO UPDATE SET n=n+1', day); // persisted claim count for the Funnel tab
@@ -26648,6 +26900,17 @@ export class RewardLedger {
       if (!acct) return this.j({ withdrawals: [] });
       const list = this.rows('SELECT amount,status,ts,paid_ts,txid,note,address FROM withdrawals WHERE acct=? ORDER BY ts DESC LIMIT 50', acct).map(w => ({ amountUsd: w.amount / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', note: w.note || '', address: w.address || '' }));
       return this.j({ withdrawals: list });
+    }
+    // EVERY FAUCET ACCOUNT, LEAN (2026-10-18). /accounts is capped at the newest 500 and the ops farming radar
+    // joined against it - so on the day this was written 453 of 953 accounts (48%), the OLDEST and therefore the
+    // heaviest claimers, came back as claims:0 earned:0 balance:0. The single biggest faucet user on the site
+    // (1,161 claims, $58.99 earned, $60.31 withdrawn) read as a blank row. That is why the panel was useless.
+    // `payout_addr` is here and NOT on /accounts: several accounts paying out to one wallet is the hardest
+    // multi-account evidence there is, and nothing was publishing it.
+    if (path === '/secmoney') {
+      const rows = this.rows('SELECT address,balance,earned,claims,banned,payout_addr,did,ip,created,last_claim FROM accounts')
+        .map(a => ({ a: a.address, b: a.balance || 0, e: a.earned || 0, c: a.claims || 0, bn: a.banned ? 1 : 0, pa: a.payout_addr || '', did: a.did || '', ip: a.ip || '', cr: a.created || 0, lc: a.last_claim || 0 }));
+      return this.j({ rows, n: rows.length });
     }
     if (path === '/accounts') { // mini-dashboard: who signed up (address + where-from + multi-account flag) - newest first
       // IP-sharing only counts REAL shared IPs - accounts with an unknown/empty IP must NOT be grouped together (that would falsely flag everyone whose IP we never captured)
@@ -27256,6 +27519,38 @@ function rewardsUnlocked(xp) { return (+xp || 0) >= REWARDS_MIN_XP; }
 const LEVEL_CLAIM_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, master: 1.75, legendary: 1.90 }; // faucet claim size by level
 const LEVEL_DAY_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.25, platinum: 1.40, diamond: 1.60, master: 2.0, legendary: 2.2 }; // personal DAILY cap by level (owner 2026-08-14: each tier must be able to EARN more per day, not just claim in fewer clicks - gold $0.20 -> $0.25)
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
+/* REDUCED REWARDS (2026-10-18, owner: "svim korisnicima kojima je najvece vreme na sajtu provedeno upravo na
+   rewards stranici ... smanjicemo im faucet za 50%, kad im aktivnost na rewards opadne na 2. mesto onda moze da im
+   se smanji automatski na 25% a kad predje na 3. mesto ukida se reduced rewards", then: "treba da se racuna samo
+   ako je korisnik proveo na sajtu vise od 4-5 sati").
+
+   THE RULE IS A RANK, NOT A SHARE, and that is what makes it fair. Measured over 1,131 members with any recorded
+   time: 230 spend more than half their visible time on /rewards. But the heaviest ABSOLUTE readers of that page are
+   real traders - Papis has 32 h there against 329 h on the site (10%), Bala 18 h of 121 h (15%) - and a share
+   threshold would punish them while a rank threshold does not touch them, because for them /paper-trade is always
+   ahead. The nine accounts of the farming cluster found the same day are all rank 1.
+
+   THE FLOOR IS THE OWNER'S: 4.5 h of VISIBLE time on the site before the rule may apply at all. Without it a
+   newcomer whose only 85 seconds were the homepage and /rewards is rank 1, which is not a farmer - it is somebody
+   who has just arrived. Measured: 229 members are rank 1 with any time at all, 92 with 10 minutes, 51 with an hour.
+
+   IT CUTS THE DAILY CAP, NEVER THE PER-CLAIM AMOUNT: amountC is ONE CENT, so halving it rounds straight back to a
+   cent and nothing happens. Halving the cap halves the money, which is what "faucet za 50%" means.
+
+   This is the ONE definition; rrFactorOf is PURE so the E2E drives the shipped function. */
+const RR_MIN_DWELL_S = 16200;                       // 4.5 h of visible time before the rank means anything
+const RR_TIERS = { 1: 50, 2: 75 };                  // rank -> percent of the normal daily cap; rank 3+ = 100 (tag gone)
+const RR_FORCED = 50;                               // what an owner-forced tag costs, whatever the rank says
+function rrFactorOf(u) {                            // u = { rwRank, dwellTotal, rrtag }
+  const tag = String((u && u.rrtag) || '');
+  if (tag === 'off') return { pct: 100, why: 'exempt', source: 'owner' };
+  if (tag === 'on') return { pct: RR_FORCED, why: 'reduced by the owner', source: 'owner' };
+  const tot = Math.max(0, +(u && u.dwellTotal) || 0), rank = Math.max(0, +(u && u.rwRank) || 0);
+  if (!rank) return { pct: 100, why: 'no time recorded on the rewards page', source: 'auto' };
+  if (tot < RR_MIN_DWELL_S) return { pct: 100, why: 'under ' + (RR_MIN_DWELL_S / 3600).toFixed(1) + ' h on the site', source: 'auto' };
+  const pct = RR_TIERS[rank] || 100;
+  return { pct, why: pct === 100 ? 'the rewards page is #' + rank + ' of their time' : 'the rewards page is #' + rank + ' of their time', source: 'auto' };
+}
 let _lvlSeqS = 0;
 // SAME THREE ICONS AS THE CLIENT (2026-10-17). They used to disagree: master had no branch here at all and fell
 // through to the default hexagon, so the server-rendered badge and the browser drew different things.
@@ -27704,6 +27999,22 @@ export class UserStore {
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING - so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT', 'sqbadge TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv); sqbadge = equipped squad badge (2026-10-01)
+    // REDUCED REWARDS (2026-10-18, owner): the owner's manual override on the automatic rank rule. '' = automatic
+    // (follow where /rewards sits in the member's own time), 'on' = forced reduced whatever the rank says,
+    // 'off' = exempt. Three states, not a boolean, because the automatic rule needs a way to be overruled in BOTH
+    // directions - a genuine member who happens to read /rewards a lot must be protectable.
+    try { s.exec("ALTER TABLE users ADD COLUMN rrtag TEXT DEFAULT ''"); } catch (e) {}
+    // The DECIDED factor as whole percent (100 = full faucet, 50 = half). A COLUMN and not a computation, because
+    // the rank is an aggregate over udwell and /session is the hottest route on the site - two GROUP BY queries per
+    // session validation would be absurd. The policy lives in ONE place in the worker (RR_TIERS/rrFactorOf) and the
+    // rrScan cron writes the answer here; a manual override recomputes this row at once, never on the next pass.
+    try { s.exec('ALTER TABLE users ADD COLUMN rwfac INTEGER DEFAULT 100'); } catch (e) {}
+    try { s.exec('ALTER TABLE users ADD COLUMN rwrank INTEGER DEFAULT 0'); } catch (e) {} // what the scan saw, so ops can show WHY without recomputing
+    // A BAN MUST OUTLIVE THE EMAIL IT WAS APPLIED TO (2026-10-18, owner: "mislim da nam ban ne radi bas najbolje
+    // jer sam par puta banovao i video sam da su se vratili"). /verify refused a banned EMAIL and nothing else, so
+    // the same browser signed up again in a minute - which is exactly what was observed. The device that carried a
+    // banned account is remembered here and refused at the door. `by` records who banned it so a mistake is liftable.
+    s.exec('CREATE TABLE IF NOT EXISTS bandev(did TEXT PRIMARY KEY, ts INTEGER, uid TEXT, un TEXT, by TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS cosmetics(user_id TEXT, item_id TEXT, ts INTEGER, src TEXT, PRIMARY KEY(user_id,item_id))');
     try { s.exec('ALTER TABLE cosmetics ADD COLUMN via TEXT'); } catch (e) {} // who gifted it (username) - the Shop log could not say who gave what before 2026-09-04 // The Vault: purchased/granted cosmetic items (frames F1) // XP earn/adjust history (ring-buffered ~150/user)
@@ -28732,6 +29043,12 @@ export class UserStore {
       if (o.code !== code) { sql.exec('UPDATE otp SET attempts=attempts+1 WHERE email=?', email); return this.j({ error: 'bad_code', left: 5 - ((o.attempts || 0) + 1) }); }
       let u = this.rows('SELECT * FROM users WHERE email=?', email)[0]; let isNew = false;
       if (u && u.status === 'banned') { sql.exec('DELETE FROM otp WHERE email=?', email); return this.j({ error: 'banned' }); }
+      // THE DEVICE IS PART OF THE BAN (2026-10-18). Checked BEFORE the row is created, so a banned person cannot
+      // mint a fresh account from the same browser - the hole behind "I banned them and they came back". It applies
+      // to signing in to ANY account from that device, because otherwise the second account is the way back in.
+      // A cleared cookie gives a new did, so this under-catches and never over-catches; lift it at ops Controls.
+      if (b.did) { try { const bd = this.rows('SELECT did FROM bandev WHERE did=?', String(b.did).slice(0, 64))[0];
+        if (bd) { sql.exec('DELETE FROM otp WHERE email=?', email); return this.j({ error: 'device_banned' }); } } catch (e) {} }
       if (u && u.status === 'suspended') {
         if (u.susp_until && now > u.susp_until) sql.exec("UPDATE users SET status='active',susp_until=0 WHERE id=?", u.id); // suspension expired → reactivate
         else { sql.exec('DELETE FROM otp WHERE email=?', email); return this.j({ error: 'suspended', until: u.susp_until || 0 }); }
@@ -29667,13 +29984,13 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,coins,premium,prem_seen,tktskin FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows("SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,coins,premium,prem_seen,tktskin,COALESCE(rwfac,100) rwfac,COALESCE(rrtag,'') rrtag FROM users WHERE id=?", s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
       // SLIDING expiry (2026-09-09): a session read more than 7 days after its last extension is pushed back to the full lifetime - one write a
       // week per session at most; the worker's /me re-issues the cookie on `renew` so the browser's own expiry slides with it.
       let renew = false; if (+s.expires - now < SESS_MAXAGE * 1000 - 7 * 86400000) { try { this.state.storage.sql.exec('UPDATE sessions SET expires=? WHERE token=?', now + SESS_MAXAGE * 1000, token); renew = true; } catch (e) {} }
-      return this.j({ renew, user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
+      return this.j({ renew, user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '', rwfac: +u.rwfac || 100, rrtag: u.rrtag || '' } });
     }
     if (path === '/premseen') { // premium-celebration-seen flag. {uid|username, seen} sets it (ack=1, mp-ops-cohort reset=0); {uid|username, read:1} reads it (persistence proof). COLLATE NOCASE so 'Chako'==='chako'.
       let u; try { if (b.uid) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE id=?', String(b.uid))[0]; else if (b.username) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE username COLLATE NOCASE=?', String(b.username).slice(0, 24))[0]; } catch (e) {}
@@ -29769,9 +30086,72 @@ export class UserStore {
     }
     if (path === '/security') { // internal: behavioral profile per user for the ops Security tab - how much of their time is spent on /rewards, do they trade at all, VPN org. Joined with RewardLedger accounts in the worker.
       const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw, COUNT(DISTINCT path) np FROM udwell GROUP BY user_id").forEach(r => { dw[r.uid] = r; }); } catch (e) {}
+      // WHERE /rewards SITS IN THEIR OWN TIME, not what share it is (2026-10-18, owner's rule). The share alone
+      // cannot answer it: a member can have /rewards at 35% and still have nothing above it. `ahead` counts the
+      // non-rewards paths that beat it, so rank = 1 + ahead. A member with no /rewards dwell has no rank at all.
+      const ahead = {}; try { this.rows("SELECT a.user_id uid, COUNT(*) n FROM udwell a JOIN (SELECT user_id, SUM(secs) rw FROM udwell WHERE path LIKE '/rewards%' GROUP BY user_id) r ON r.user_id=a.user_id WHERE a.path NOT LIKE '/rewards%' AND a.secs > r.rw GROUP BY a.user_id").forEach(r => { ahead[r.uid] = +r.n || 0; }); } catch (e) {}
+      // The top NON-rewards path, because for everyone this panel is about the top path IS /rewards/ and saying so
+      // tells the reader nothing. What they would otherwise be doing is the informative half.
+      const top = {}; try { this.rows("SELECT user_id uid, path, MAX(secs) s FROM udwell WHERE path NOT LIKE '/rewards%' GROUP BY user_id").forEach(r => { top[r.uid] = r; }); } catch (e) {} // SQLite: a bare column beside MAX() comes from the max row
+      // THE FLAG THAT KEEPS CHANGING (owner noticed it on alefzed). Sessions are DELETED on logout, so they
+      // under-report badly; a member's own event ring carries the country of every action and is the honest source.
+      const geo = {}; try { this.rows("SELECT user_id uid, COUNT(DISTINCT cc) n, GROUP_CONCAT(DISTINCT cc) list FROM uevents WHERE cc IS NOT NULL AND cc!='' GROUP BY user_id").forEach(r => { geo[r.uid] = r; }); } catch (e) {}
+      const sess = {}; try { this.rows('SELECT user_id uid, COUNT(*) n FROM sessions GROUP BY user_id').forEach(r => { sess[r.uid] = +r.n || 0; }); } catch (e) {}
       const tr = {}; try { this.rows('SELECT user_id uid, MAX(COALESCE(n,0), COALESCE(life_closes,0)+COALESCE(opens,0)) n, COALESCE(opens,0) opens FROM utrades').forEach(r => { tr[r.uid] = r; }); } catch (e) {} // n = journal length, capped at 100 by the trim: lifetime counters are the honest count
-      const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,did,status FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active', dwellTotal: +d.tot || 0, dwellRewards: +d.rw || 0, paths: +d.np || 0, trades: +t.n || 0, opens: +t.opens || 0 }; });
-      return this.j({ users });
+      const bdev = {}; try { this.rows('SELECT did FROM bandev').forEach(r => { bdev[r.did] = 1; }); } catch (e) {}
+      const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,did,status,COALESCE(xp_life,xp,0) xpl,COALESCE(rrtag,'') rrtag FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}, g = geo[u.id] || {}, tp = top[u.id] || {}; const rw = +d.rw || 0; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active', xpLife: +u.xpl || 0, rrtag: u.rrtag || '', dwellTotal: +d.tot || 0, dwellRewards: rw, paths: +d.np || 0, rwRank: rw > 0 ? 1 + (ahead[u.id] || 0) : 0, topPath: tp.path || '', topSecs: +tp.s || 0, ccN: +g.n || 0, ccList: String(g.list || '').split(',').filter(Boolean).slice(0, 8), sessN: sess[u.id] || 0, devBanned: !!(u.did && bdev[u.did]), trades: +t.n || 0, opens: +t.opens || 0 }; });
+      return this.j({ users, bannedDevices: Object.keys(bdev).length });
+    }
+    // THE MULTI-ACCOUNT SWEEP (2026-10-18, owner: "svim korisnicima koji pored main naloga imaju neki drugi - main
+    // gledaj po levelu - treba ga banovati"). Clusters on the two keys that are EVIDENCE: the device cookie (one
+    // browser) and the exact login IP. ASN/organisation is deliberately NOT a key - a Nigerian or Pakistani mobile
+    // carrier NATs thousands of people behind one network, and this file has said since 2026-09-07 that a shared
+    // network is information, never a verdict. Transitive: a device shared with an account that shares an IP with a
+    // third pulls all three into one cluster, which is what joined alefzed to the three Turkish accounts.
+    if (path === '/multiacct') {
+      const minXp = Math.max(0, +url.searchParams.get('minxp') || 0);
+      const rowsU = this.rows("SELECT id,email,username,created,cc,dev,org,asn,ip,did,status,COALESCE(xp_life,xp,0) xpl FROM users WHERE email IS NOT NULL AND email!=''");
+      const parent = {}; const find = (x) => { while (parent[x] && parent[x] !== x) x = parent[x]; return x; };
+      const join = (a, b2) => { const ra = find(a), rb = find(b2); if (ra !== rb) parent[ra] = rb; };
+      rowsU.forEach(u => { parent[u.id] = parent[u.id] || u.id; });
+      const byKey = {};
+      rowsU.forEach(u => { if (u.did) (byKey['d:' + u.did] = byKey['d:' + u.did] || []).push(u.id); if (u.ip) (byKey['i:' + u.ip] = byKey['i:' + u.ip] || []).push(u.id); });
+      Object.keys(byKey).forEach(k => { const g = byKey[k]; for (let i = 1; i < g.length; i++) join(g[0], g[i]); });
+      const groups = {}; rowsU.forEach(u => { const r = find(u.id); (groups[r] = groups[r] || []).push(u); });
+      const out = [];
+      Object.keys(groups).forEach(k => {
+        const g = groups[k]; if (g.length < 2) return;
+        g.sort((a, b2) => (b2.xpl - a.xpl) || (a.created - b2.created)); // MAIN = the highest level, ties to the oldest
+        const keys = { dids: [...new Set(g.map(x => x.did).filter(Boolean))], ips: [...new Set(g.map(x => x.ip).filter(Boolean))] };
+        out.push({ size: g.length, keys, main: g[0].id, members: g.map((x, i) => ({ uid: x.id, email: x.email, username: x.username || '', created: x.created || 0, cc: x.cc || '', dev: x.dev || '', org: x.org || '', asn: x.asn || 0, ip: x.ip || '', did: x.did || '', status: x.status || 'active', xpLife: +x.xpl || 0, main: i === 0 })) });
+      });
+      out.sort((a, b2) => b2.size - a.size);
+      return this.j({ clusters: minXp ? out.filter(c => c.members.some(m => m.xpLife >= minXp)) : out, users: rowsU.length });
+    }
+    // The aggregate the reduced-rewards scan needs, and nothing else: where /rewards sits in each member's own time
+    // and how long they have been on the site at all. NO POLICY HERE - the worker owns the thresholds.
+    if (path === '/rwagg') {
+      const tot = {}; try { this.rows('SELECT user_id uid, SUM(secs) s FROM udwell GROUP BY user_id').forEach(r => { tot[r.uid] = +r.s || 0; }); } catch (e) {}
+      const rw = {}; try { this.rows("SELECT user_id uid, SUM(secs) s FROM udwell WHERE path LIKE '/rewards%' GROUP BY user_id").forEach(r => { rw[r.uid] = +r.s || 0; }); } catch (e) {}
+      const ah = {}; try { this.rows("SELECT a.user_id uid, COUNT(*) n FROM udwell a JOIN (SELECT user_id, SUM(secs) rw FROM udwell WHERE path LIKE '/rewards%' GROUP BY user_id) r ON r.user_id=a.user_id WHERE a.path NOT LIKE '/rewards%' AND a.secs > r.rw GROUP BY a.user_id").forEach(r => { ah[r.uid] = +r.n || 0; }); } catch (e) {}
+      const out = this.rows("SELECT id, COALESCE(rrtag,'') rrtag, COALESCE(rwfac,100) fac FROM users").map(u => ({ uid: u.id, tag: u.rrtag, fac: +u.fac || 100, tot: tot[u.id] || 0, rw: rw[u.id] || 0, rank: (rw[u.id] || 0) > 0 ? 1 + (ah[u.id] || 0) : 0 }));
+      return this.j({ users: out });
+    }
+    if (path === '/rwset') { // write the DECIDED factors back (the worker computed them from RR_TIERS)
+      const list = Array.isArray(b.set) ? b.set.slice(0, 4000) : [];
+      let n = 0;
+      for (const it of list) { const uid = String(it.uid || ''); if (!uid) continue; const f = Math.max(10, Math.min(100, Math.round(+it.fac || 100))); const rk = Math.max(0, Math.min(999, Math.round(+it.rank || 0)));
+        try { sql.exec('UPDATE users SET rwfac=?, rwrank=? WHERE id=?', f, rk, uid); n++; } catch (e) {} }
+      return this.j({ ok: true, written: n });
+    }
+    if (path === '/bandev') { // the banned-device list, and lifting one by hand
+      if (request.method === 'POST') {
+        const d9 = String(b.did || '').slice(0, 64); if (!d9) return this.j({ error: 'no_did' });
+        if (b.lift) sql.exec('DELETE FROM bandev WHERE did=?', d9);
+        else sql.exec('INSERT OR REPLACE INTO bandev(did,ts,uid,un,by) VALUES(?,?,?,?,?)', d9, now, String(b.uid || ''), String(b.un || ''), String(b.by || 'ops').slice(0, 24));
+        return this.j({ ok: true });
+      }
+      return this.j({ devices: this.rows('SELECT did,ts,uid,un,by FROM bandev ORDER BY ts DESC LIMIT 500') });
     }
     if (path === '/missions/state') { // Daily Missions: verify completion against the user's own event log + return what's already claimed
       const uid = String(b.uid || ''), dayStart = +b.dayStart || 0, day = String(b.day || '');
@@ -30481,8 +30861,13 @@ export class UserStore {
       // collect this user's session tokens BEFORE any delete - the worker deletes their KV read-through entries so a
       // ban/suspend/logout_all/revoke/delete (or a status/username change) can't be served stale from the cache.
       let _revoked = []; try { _revoked = this.rows('SELECT token FROM sessions WHERE user_id=?', u.id).map(r => r.token); } catch (e) {}
-      if (act === 'ban') { sql.exec("UPDATE users SET status='banned' WHERE id=?", u.id); sql.exec('DELETE FROM sessions WHERE user_id=?', u.id); }
-      else if (act === 'unban' || act === 'activate') sql.exec("UPDATE users SET status='active',susp_until=0 WHERE id=?", u.id);
+      if (act === 'ban') { sql.exec("UPDATE users SET status='banned' WHERE id=?", u.id); sql.exec('DELETE FROM sessions WHERE user_id=?', u.id);
+        // the device goes with the ban unless the caller says otherwise (the multi-account sweep passes keepdev for a
+        // cluster whose MAIN stays live on that same device - banning it would lock the main out too)
+        if (u.did && !b.keepdev) { try { sql.exec('INSERT OR REPLACE INTO bandev(did,ts,uid,un,by) VALUES(?,?,?,?,?)', u.did, now, u.id, u.username || '', String(b.by || 'ops').slice(0, 24)); } catch (e) {} } }
+      else if (act === 'unban' || act === 'activate') { sql.exec("UPDATE users SET status='active',susp_until=0 WHERE id=?", u.id); if (u.did) { try { sql.exec('DELETE FROM bandev WHERE did=?', u.did); } catch (e) {} } }
+      else if (act === 'devunban') { if (!u.did) return this.j({ error: 'no_device' }); sql.exec('DELETE FROM bandev WHERE did=?', u.did); }
+      else if (act === 'rrtag') { const t = String(b.tag || ''); if (t !== '' && t !== 'on' && t !== 'off') return this.j({ error: 'bad_tag' }); sql.exec('UPDATE users SET rrtag=? WHERE id=?', t, u.id); }
       else if (act === 'suspend') { const days = +b.days || 0; const until = days > 0 ? now + days * 86400000 : 0; sql.exec("UPDATE users SET status='suspended',susp_until=? WHERE id=?", until, u.id); sql.exec('DELETE FROM sessions WHERE user_id=?', u.id); }
       else if (act === 'mute') sql.exec('UPDATE users SET muted=1 WHERE id=?', u.id);
       else if (act === 'unmute') sql.exec('UPDATE users SET muted=0 WHERE id=?', u.id);
@@ -30493,7 +30878,7 @@ export class UserStore {
       else if (act === 'revoke') sql.exec('DELETE FROM sessions WHERE user_id=? AND created=?', u.id, +b.created || 0);
       else if (act === 'delete') { for (const tb of ['users WHERE id', 'sessions WHERE user_id', 'uevents WHERE user_id', 'uclicks WHERE user_id', 'utrades WHERE user_id', 'udwell WHERE user_id']) sql.exec('DELETE FROM ' + tb + '=?', u.id); }
       else return this.j({ error: 'bad_action' });
-      return this.j({ ok: true, revokedTokens: _revoked });
+      return this.j({ ok: true, uid: u.id, revokedTokens: _revoked }); // uid so the worker can ban the same person in the ledger without a second lookup
     }
     if (path === '/click') { // record a normalized click for the per-user heatmap (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
@@ -30747,7 +31132,12 @@ export class UserStore {
       const tradeSummary = tr ? { n: _life, journal: tr.n || 0, wins: Math.max(+tr.wins || 0, +tr.life_wins || 0), losses: Math.max(+tr.losses || 0, +tr.life_losses || 0), opens: tr.opens || 0, pnl: +tr.life_seed ? (+tr.life_pnl || 0) : (tr.pnl || 0), season: { start: _ws, trades: (_sOk ? (+tr.s_closes || 0) : 0) + _sOpen, closes: _sOk ? (+tr.s_closes || 0) : 0, wins: _sOk ? (+tr.s_wins || 0) : 0, losses: _sOk ? (+tr.s_losses || 0) : 0, pnl: _sOk ? (+tr.s_pnl || 0) : 0, opens: _sOpen } } : { n: 0, journal: 0, wins: 0, losses: 0, opens: 0, pnl: 0, season: { start: _ws, trades: 0, closes: 0, wins: 0, losses: 0, pnl: 0, opens: 0 } };
       const dwell = this.rows('SELECT path,secs,hits,last FROM udwell WHERE user_id=? ORDER BY secs DESC LIMIT 40', u.id);
       const dwellTotal = (this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', u.id)[0] || { s: 0 }).s;
-      return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', bio: u.bio || '' }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card
+      // ONE definition of the rank, same SQL shape as /security - the Controls panel must never compute its own
+      const _rw = (this.rows("SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=? AND path LIKE '/rewards%'", u.id)[0] || { s: 0 }).s;
+      const _ah = (this.rows("SELECT COUNT(*) n FROM udwell WHERE user_id=? AND path NOT LIKE '/rewards%' AND secs > ?", u.id, _rw)[0] || { n: 0 }).n;
+      const rwRank = _rw > 0 ? 1 + (+_ah || 0) : 0;
+      let devBanned = false; try { devBanned = !!(u.did && this.rows('SELECT did FROM bandev WHERE did=?', u.did)[0]); } catch (e) {}
+      return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', bio: u.bio || '', rrtag: u.rrtag || '', devBanned }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal, dwellRewards: +_rw || 0, rwRank }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card; rrtag/rwRank 2026-10-18 for the reduced-rewards control
     }
     if (path === '/counters') { // public site counters, MEASURED - see the /api/stats/counters worker route for why
       const since30 = Date.now() - 30 * 86400000;
@@ -31193,6 +31583,10 @@ export class UserStore {
         return this.j({ ok: true, dry: !!dry, ...out });
       } // 2.5: the account's BOOKS (<uid>:<book>) and its keys go with it
       if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { try { sql.exec("INSERT INTO users(id,email,created,last_login,username,status,logins) VALUES(?,?,?,?,?,'active',1)", uid, 'e2e+' + uid + '@marginpad.test', Date.now(), Date.now(), 'e2e_' + uid); } catch (e) { return this.j({ error: 'insert', msg: String(e && e.message || e).slice(0, 120) }, 500); } }
+      // optional device + per-path dwell, so the ban and reduced-rewards paths are testable: a device ban reads
+      // users.did, and the rank rule reads udwell. Nothing but an e2e uid can reach this (gated above).
+      if (b.did) { try { sql.exec('UPDATE users SET did=? WHERE id=?', String(b.did).replace(/[^a-zA-Z0-9]/g, '').slice(0, 64), uid); } catch (e) {} }
+      if (b.dwell && typeof b.dwell === 'object') { for (const p of Object.keys(b.dwell).slice(0, 20)) { const sc = Math.max(0, Math.min(2000000, Math.round(+b.dwell[p] || 0))); try { sql.exec('INSERT INTO udwell(user_id,path,secs,hits,last) VALUES(?,?,?,1,?) ON CONFLICT(user_id,path) DO UPDATE SET secs=excluded.secs,last=excluded.last', uid, String(p).slice(0, 60), sc, Date.now()); } catch (e) {} } }
       if (b.op === 'sess') { // a real 2-hour member session for browser E2E (the site walked as a signed-in member, 2026-09-07) - e2e uids only, admin-gated upstream
         const tok = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x => x.toString(16).padStart(2, '0')).join('');
         try { sql.exec('INSERT INTO sessions(token,user_id,created,expires,ua) VALUES(?,?,?,?,?)', tok, uid, Date.now(), Date.now() + 2 * 3600000, 'e2e'); } catch (e) { return this.j({ error: 'sess', msg: String(e && e.message || e).slice(0, 120) }, 500); }

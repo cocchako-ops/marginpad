@@ -1043,26 +1043,109 @@
   // ---------- PEOPLE / MULTI-ACCOUNT ----------
   // Compact by design (owner 2026-09-04: this was a wall of scroll): what needs a look first, then every cluster as ONE line
   // that opens on click, the sign-in log folded away with its own search.
+  /* MULTI-ACCOUNT / FARMING (rewritten 2026-10-18, owner: "panel za abuse na mp-ops mi je beskoristan i ne koristim
+     ga jer mi ne daje dobre informacije").
+
+     It was not the layout. The DATA was wrong in one specific way: the money came from the ledger's /accounts route,
+     which is `ORDER BY created DESC LIMIT 500`, so 453 of 953 faucet accounts - the OLDEST, therefore the ones with
+     the most accumulated claims - joined as claims:0 earned:0 balance:0. The heaviest faucet user on the whole site
+     (1,163 claims, $59 earned, $60 withdrawn) was a blank row. Clusters were also sorted by `recent`, which counts
+     accounts CREATED in the last hour and is almost always nobody, so whatever mattered sat at the bottom of forty.
+
+     What it answers now, in the order the owner asked the questions:
+       1. one wallet paid from several accounts - the only HARD evidence on this page (an IP is a shared network, a
+          device is strong, a payout address receiving money from two accounts is not a heuristic at all);
+       2. the sweep itself: who would be banned, what they hold, and the button, as a dry run first;
+       3. who is here only for the faucet - the same cohort `reduced rewards` cuts, so the panel and the faucet can
+          never disagree about who is in it;
+       4. whose flag keeps changing - what the owner actually noticed on alefzed, and the panel could not show. */
   VIEWS['people/security'] = { render: function (el) {
-    var S = { q: '' };
+    var S = { q: '', sweep: null, busy: false };
     function paint() {
       J('/api/admin/security').then(function (d) {
         var did = d.didClusters || [], ip = d.ipClusters || [], em = d.emailClusters || [], log = d.authlog || [];
-        var hot = did.concat(ip).filter(function (c) { return c.recent > 0; });
-        var mixed = did.concat(ip).filter(function (c) { return (c.members || []).some(function (m) { return m.banned; }) && (c.members || []).some(function (m) { return !m.banned; }); });
-        var claimers = did.filter(function (c) { return (c.members || []).reduce(function (s, m) { return s + (+m.claims || 0); }, 0) >= 5; });
-        var member = function (m) { return '<span style="display:inline-block;margin:0 10px 4px 0">' + userLink(m.username, m.email) + (m.banned ? ' <span class="badge red">BANNED</span>' : '') + ' <span class="meta">' + flag(m.cc) + ' ' + N(m.trades) + 't · ' + N(m.claims) + 'c · ' + USD(m.balanceUsd) + (m.vpn ? ' · VPN' : '') + ' · ' + ago(m.created) + '</span></span>'; };
-        var cluster = function (c, kind) { var ms = c.members || []; var cl = ms.reduce(function (s, m) { return s + (+m.claims || 0); }, 0), bal = ms.reduce(function (s, m) { return s + (+m.balanceUsd || 0); }, 0), bn = ms.filter(function (m) { return m.banned; }).length;
-          return '<details class="cl' + (c.recent ? ' hot' : '') + '"><summary><b>' + c.count + '</b> on the same ' + kind + (c.key && kind !== 'device' ? ' <span class="mono">' + esc(String(c.key).slice(0, 18)) + '</span>' : '') + ' ' + flag(c.cc) + (c.vpn ? ' <span class="badge">VPN</span>' : '') + (c.recent ? ' <span class="badge amber">' + c.recent + ' in the last hour</span>' : '') + (bn ? ' <span class="badge red">' + bn + ' banned</span>' : '') + '<span class="meta" style="margin-left:auto">' + N(cl) + ' claims · ' + USD(bal) + ' · last ' + ago(c.lastTs) + ' ago</span></summary><div class="cl-b">' + ms.map(member).join('') + '</div></details>'; };
-        var K = { signup: 'NEW', login: 'IN', logout: 'OUT' };
-        var lg = log.filter(function (a) { return !S.q || ((a.u || '') + ' ' + (a.ip || '') + ' ' + (a.cc || '')).toLowerCase().indexOf(S.q) >= 0; });
-        el.innerHTML = '<div class="grid g4">' + tile(N(did.length), 'same-device clusters', did.length ? 'amber' : 'dim', 'one person, several accounts') + tile(N(ip.length), 'same-IP clusters', 'dim', 'family, office or one person') + tile(N(hot.length), 'active in the last hour', hot.length ? 'red' : 'dim', 'clusters that just moved') + tile(N(d.vpnCount), 'VPN / datacenter users', 'dim', N(em.length) + ' look-alike emails') + '</div>'
-          + card('Needs a look', (hot.length || mixed.length || claimers.length) ? '<div class="line" style="margin-bottom:6px;font-size:12px">' + (hot.length ? '<b>' + hot.length + '</b> cluster' + (hot.length === 1 ? '' : 's') + ' active in the last hour · ' : '') + (mixed.length ? '<b>' + mixed.length + '</b> with a banned member next to a live one · ' : '') + (claimers.length ? '<b>' + claimers.length + '</b> same-device cluster' + (claimers.length === 1 ? '' : 's') + ' with 5+ faucet claims' : '') + '</div>' + hot.concat(mixed, claimers).filter(function (c, i, a) { return a.indexOf(c) === i; }).slice(0, 8).map(function (c) { return cluster(c, c.kind === 'ip' ? 'IP' : 'device'); }).join('') : '<div class="line up">nothing moved in the last hour and no cluster mixes banned with live accounts</div>', 'the clusters worth opening first · click a row to see the accounts')
-          + fold('Same device', did.map(function (c) { return cluster(c, 'device'); }).join('') || '<div class="empty">none</div>', did.length + ' clusters · one person, multiple accounts', false)
-          + fold('Same IP', ip.map(function (c) { return cluster(c, 'IP'); }).join('') || '<div class="empty">none</div>', ip.length + ' clusters · can be a shared network', false)
+        var pay = d.payClusters || [], farm = d.farmers || [], hop = d.hoppers || [], bdev = d.devBanned || [];
+        var rr = d.rr || {}, scan = rr.lastScan || {};
+        var r50 = farm.filter(function (f) { return f.rrPct === 50; }).length, r75 = (d.rows || []).filter(function (r) { return r.rrPct === 75; }).length;
+        var farmMoney = farm.reduce(function (s, f) { return s + (+f.earnedUsd || 0); }, 0);
+        var payMoney = pay.reduce(function (s, c) { return s + (+c.earnedUsd || 0); }, 0);
+        var member = function (m) { return '<span style="display:inline-block;margin:0 10px 4px 0">' + userLink(m.username, m.email) + (m.banned || m.status === 'banned' ? ' <span class="badge red">BANNED</span>' : '') + ' <span class="meta">' + flag(m.cc) + ' ' + N(m.trades) + 't · ' + N(m.claims) + 'c · ' + USD(m.earnedUsd != null ? m.earnedUsd : m.balanceUsd) + (m.vpn ? ' · VPN' : '') + ' · ' + ago(m.created) + '</span></span>'; };
+        var cluster = function (c, kind) { var ms = c.members || []; var cl = ms.reduce(function (s, m) { return s + (+m.claims || 0); }, 0), ern = ms.reduce(function (s, m) { return s + (+m.earnedUsd || +m.balanceUsd || 0); }, 0), bn = ms.filter(function (m) { return m.banned || m.status === 'banned'; }).length;
+          return '<details class="cl' + (c.recent ? ' hot' : '') + '"><summary><b>' + c.count + '</b> on the same ' + kind + (c.key && kind !== 'device' ? ' <span class="mono">' + esc(String(c.key).slice(0, 26)) + '</span>' : '') + ' ' + flag(c.cc) + (c.vpn ? ' <span class="badge">VPN</span>' : '') + (bn ? ' <span class="badge red">' + bn + ' banned</span>' : '') + '<span class="meta" style="margin-left:auto">' + N(cl) + ' claims · ' + USD(ern) + ' earned' + (c.lastTs ? ' · last ' + ago(c.lastTs) + ' ago' : '') + '</span></summary><div class="cl-b">' + ms.map(member).join('') + '</div></details>'; };
+
+        // ---- the sweep card: a dry run, then two clicks ----
+        var sw = S.sweep;
+        var sweepBody;
+        if (S.busy) sweepBody = '<div class="line">working…</div>';
+        else if (!sw) sweepBody = '<div class="line" style="margin-bottom:8px">Clusters on the two keys that are evidence: the device cookie and the exact login IP. The MAIN is the highest level in the cluster; everyone else is banned on the site, in the faucet, off every paid board, and their device is barred - unless the main is on that same device.</div><button class="btn" id="swRun">Check who would be banned</button>';
+        else if (sw.error) sweepBody = '<div class="line dn">' + esc(sw.error) + '</div><button class="btn" id="swRun">Try again</button>';
+        else if (!sw.totals || !sw.totals.accounts) sweepBody = '<div class="line up">no cluster has an account to ban - every non-main account is already banned, protected or an e2e row</div><button class="btn" id="swRun">Re-check</button>';
+        else sweepBody = '<div class="grid g4">' + tile(N(sw.totals.accounts), 'accounts would be banned', 'red', 'across ' + N(sw.totals.clusters) + ' cluster' + (sw.totals.clusters === 1 ? '' : 's'))
+            + tile(N(sw.totals.claims), 'faucet claims behind them', 'amber')
+            + tile(USD(sw.totals.earnedUsd), 'already earned', 'amber', USD(sw.totals.balanceUsd) + ' still unspent')
+            + tile(N((sw.skipped || []).length), 'left alone', 'dim', 'already banned, protected or e2e')
+            + '</div>'
+          + (sw.clusters || []).map(function (c) {
+              var main = (c.members || []).filter(function (m) { return m.main; })[0] || {};
+              return '<details class="cl"><summary><b>' + c.size + '</b> accounts, ' + c.toBan + ' to ban <span class="meta">main: ' + userLink(main.username, main.email) + ' (' + N(main.xpLife) + ' XP)</span><span class="meta" style="margin-left:auto">' + (c.keys.dids || []).length + ' device' + ((c.keys.dids || []).length === 1 ? '' : 's') + ' · ' + (c.keys.ips || []).length + ' IP' + ((c.keys.ips || []).length === 1 ? '' : 's') + '</span></summary><div class="cl-b">'
+                + (c.members || []).map(function (m) { return '<div class="row"><span class="grow">' + (m.main ? '<span class="badge lime">MAIN</span> ' : '') + userLink(m.username, m.email) + ' <span class="meta">' + flag(m.cc) + ' ' + N(m.xpLife) + ' XP · ' + N(m.claims) + ' claims · ' + USD(m.earnedUsd) + ' earned' + (m.payoutAddr ? ' · ' + esc(m.payoutAddr) : '') + '</span></span><span class="mono meta">' + esc(String(m.did || '').slice(0, 8)) + ' ' + esc(String(m.ip || '').slice(0, 24)) + '</span>' + (m.status === 'banned' ? '<span class="badge red">BANNED</span>' : m.main ? '' : '<span class="badge amber">ban</span>') + '</div>'; }).join('')
+                + '</div></details>';
+            }).join('')
+          + '<div class="bar" style="margin-top:10px"><button class="btn danger" id="swApply">Ban these ' + sw.totals.accounts + ' accounts</button><button class="btn" id="swRun">Re-check</button><span class="meta">site ban + faucet ban + off every paid board + device barred · reversible per account from their profile</span></div>';
+
+        // ---- here only for the money ----
+        var rrChips = function (f) { var b = function (v, lab, t) { return '<button class="btn' + ((f.rrtag || '') === v ? ' on' : '') + '" style="padding:1px 6px;font-size:10px" data-rrtag="' + v + '" data-rruid="' + f.uid + '" title="' + t + '">' + lab + '</button>'; };
+          return b('', 'A', 'automatic - follow the rank rule') + b('on', 'R', 'force the reduction') + b('off', 'E', 'exempt this member'); };
+        var farmTbl = tbl([
+          { h: 'who', grow: true, f: function (f) { return userLink(f.username, f.email) + ' <span class="meta">' + flag(f.cc) + (f.vpn ? ' VPN' : '') + (f.ccN >= 3 ? ' · ' + f.ccN + ' countries' : '') + (f.status === 'banned' ? ' <span class="badge red">BANNED</span>' : '') + '</span>'; } },
+          { h: 'on the site', r: true, mono: true, f: function (f) { return (f.dwellTotal / 3600).toFixed(1) + ' h'; } },
+          { h: 'of it on /rewards', r: true, mono: true, f: function (f) { return '<b>' + (f.dwellRewards / 3600).toFixed(1) + ' h</b> <span class="meta">' + Math.round(f.dwellRewards / Math.max(1, f.dwellTotal) * 100) + '%</span>'; } },
+          { h: 'otherwise on', mono: true, f: function (f) { return '<span class="meta">' + esc(f.topPath || '-') + '</span>'; } },
+          { h: 'trades', r: true, mono: true, f: function (f) { return N(f.trades); } },
+          { h: 'claims', r: true, mono: true, f: function (f) { return N(f.claims); } },
+          { h: 'earned', r: true, mono: true, f: function (f) { return USD(f.earnedUsd); } },
+          { h: 'paid to', mono: true, f: function (f) { return '<span class="meta">' + esc(f.payoutAddr || '-') + '</span>'; } },
+          { h: 'faucet', r: true, f: function (f) { return '<span class="' + (f.rrPct < 100 ? 'dn' : 'up') + ' mono">' + f.rrPct + '%</span>' + (f.rrSource === 'owner' ? ' <span class="badge">by you</span>' : ''); } },
+          { h: '', f: rrChips },
+        ], farm);
+
+        el.innerHTML = '<div class="grid g4">'
+            + tile(N(pay.length), 'wallets paid from 2+ accounts', pay.length ? 'red' : 'dim', pay.length ? USD(payMoney) + ' earned behind them' : 'the hardest evidence there is')
+            + tile(N(did.length), 'same-device clusters', did.length ? 'amber' : 'dim', N(ip.length) + ' same-IP · ' + N(em.length) + ' look-alike emails')
+            + tile(N(farm.length), 'here only for the faucet', farm.length ? 'amber' : 'dim', USD(farmMoney) + ' earned · ' + r50 + ' cut to 50%, ' + r75 + ' to 75%')
+            + tile(N(bdev.length), 'devices barred', 'dim', N(d.ledgerAccounts) + ' faucet accounts read, not 500')
+            + '</div>'
+          + card('One wallet, several accounts', pay.length ? pay.map(function (c) { return cluster(c, 'wallet'); }).join('') : '<div class="line up">every payout address belongs to exactly one account</div>', 'a payout address that has been paid from two accounts is not a heuristic - it is the same wallet taking money twice')
+          + card('The multi-account sweep', sweepBody, 'main = highest level in the cluster, everyone else goes · a dry run until you press the red button')
+          + card('Here only for the faucet', farm.length ? farmTbl + '<div class="line" style="font-size:12px;margin-top:6px">the rewards page is the single biggest page of their own time AND they have been on the site more than ' + (rr.minDwellHours || 4.5) + ' h · #1 = faucet cut to 50%, #2 = 75%, #3 or lower = no cut · A/R/E = automatic / force the cut / exempt</div>' : '<div class="line up">nobody past the ' + (rr.minDwellHours || 4.5) + ' h floor has the rewards page as their biggest page</div>', 'the cohort the reduced-rewards tag applies to - one list, one rule', scan.ts ? '<span class="meta">scanned ' + ago(scan.ts) + ' ago</span>' : '')
+          + fold('The flag keeps changing', hop.length ? tbl([{ h: 'who', grow: true, f: function (h) { return userLink(h.username, h.email) + ' <span class="meta">' + (h.status === 'banned' ? '<span class="badge red">BANNED</span>' : '') + '</span>'; } }, { h: 'countries', f: function (h) { return '<b>' + h.ccN + '</b> <span class="meta">' + (h.ccList || []).map(function (c) { return flag(c) + ' ' + c; }).join(' ') + '</span>'; } }, { h: 'network', mono: true, f: function (h) { return '<span class="meta">' + esc(String(h.org || '').slice(0, 28)) + (h.vpn ? ' <span class="badge">VPN</span>' : '') + '</span>'; } }, { h: 'on /rewards', r: true, mono: true, f: function (h) { return h.rwRank === 1 ? '<span class="dn">#1</span>' : (h.rwRank ? '#' + h.rwRank : '-'); } }, { h: 'claims', r: true, mono: true, f: function (h) { return N(h.claims); } }, { h: 'earned', r: true, mono: true, f: function (h) { return USD(h.earnedUsd); } }], hop) : '<div class="empty">nobody acted from three or more countries</div>', hop.length + ' members acted from 3+ countries in their own event log · a carrier can route a phone through two, a VPN being switched looks like this', false)
+          + fold('Same device', did.map(function (c) { return cluster(c, 'device'); }).join('') || '<div class="empty">none</div>', did.length + ' clusters · one browser, several accounts', false)
+          + fold('Same IP', ip.map(function (c) { return cluster(c, 'IP'); }).join('') || '<div class="empty">none</div>', ip.length + ' clusters · a mobile carrier NATs thousands of people, so this is information and not a verdict', false)
           + fold('Look-alike emails', em.map(function (c) { return '<details class="cl"><summary><b>' + esc(c.key) + '</b>' + (c.exact ? ' <span class="badge red">SAME NORMALIZED ADDRESS</span>' : '') + '<span class="meta" style="margin-left:auto">' + (c.members || []).length + ' accounts</span></summary><div class="cl-b">' + (c.members || []).map(member).join('') + '</div></details>'; }).join('') || '<div class="empty">none</div>', em.length + ' groups', false)
-          + fold('Sign-in / sign-out log', '<div class="bar"><input class="in" id="seq" placeholder="filter by user, IP or country" value="' + esc(S.q) + '"></div><div id="seLog">' + tbl([{ h: '', f: function (a) { return '<span class="badge ' + (a.k === 'signup' ? 'lime' : a.k === 'logout' ? 'red' : 'ok') + '">' + (K[a.k] || esc(a.k)) + '</span>'; } }, { h: 'who', f: function (a) { return userLink(a.u); } }, { h: 'where', f: function (a) { return flag(a.cc) + ' <span class="mono meta">' + esc(a.ip || '') + '</span>'; } }, { h: 'device', mono: true, f: function (a) { return esc(String(a.did || '').slice(0, 8)) + (a.devN > 1 ? ' <span class="badge red">' + a.devN + ' accounts @ device</span>' : '') + (a.ipN > 1 ? ' <span class="badge amber">' + a.ipN + ' @ IP</span>' : ''); } }, { h: 'when', mono: true, f: function (a) { return ago(a.ts) + ' ago'; } }], lg.slice(0, 80)) + '</div>', log.length + ' events · logout then login of another account on the same device = the multi-account pattern', !!S.q);
+          + fold('Devices barred at the door', bdev.length ? tbl([{ h: 'device', mono: true, f: function (x) { return esc(String(x.did || '').slice(0, 16)); } }, { h: 'banned with', f: function (x) { return x.un ? userLink(x.un) : '<span class="meta mono">' + esc(String(x.uid || '').slice(0, 10)) + '</span>'; } }, { h: 'by', f: function (x) { return '<span class="meta">' + esc(x.by || '') + '</span>'; } }, { h: 'when', mono: true, f: function (x) { return ago(x.ts) + ' ago'; } }, { h: '', r: true, f: function (x) { return '<button class="btn" style="padding:1px 6px;font-size:10px" data-devlift="' + esc(x.did) + '">lift</button>'; } }], bdev) : '<div class="empty">no device is barred</div>', bdev.length + ' devices cannot sign in or sign up · a cleared cookie gives a new device id, so this under-catches by design', false)
+          + fold('Sign-in / sign-out log', '<div class="bar"><input class="in" id="seq" placeholder="filter by user, IP or country" value="' + esc(S.q) + '"></div><div id="seLog">' + tbl([{ h: '', f: function (a) { return '<span class="badge ' + (a.k === 'signup' ? 'lime' : a.k === 'logout' ? 'red' : 'ok') + '">' + ({ signup: 'NEW', login: 'IN', logout: 'OUT' }[a.k] || esc(a.k)) + '</span>'; } }, { h: 'who', f: function (a) { return userLink(a.u); } }, { h: 'where', f: function (a) { return flag(a.cc) + ' <span class="mono meta">' + esc(a.ip || '') + '</span>'; } }, { h: 'device', mono: true, f: function (a) { return esc(String(a.did || '').slice(0, 8)) + (a.devN > 1 ? ' <span class="badge red">' + a.devN + ' accounts @ device</span>' : '') + (a.ipN > 1 ? ' <span class="badge amber">' + a.ipN + ' @ IP</span>' : ''); } }, { h: 'when', mono: true, f: function (a) { return ago(a.ts) + ' ago'; } }], (log || []).filter(function (a) { return !S.q || ((a.u || '') + ' ' + (a.ip || '') + ' ' + (a.cc || '')).toLowerCase().indexOf(S.q) >= 0; }).slice(0, 80)) + '</div>', log.length + ' events · logout then login of another account on the same device = the multi-account pattern', !!S.q);
+
         var q = $('seq'); if (q) { var tm; q.oninput = function () { clearTimeout(tm); tm = setTimeout(function () { S.q = q.value.trim().toLowerCase(); paint(); var q2 = $('seq'); if (q2) { q2.focus(); q2.value = S.q; } }, 300); }; }
+        var run = $('swRun'); if (run) run.onclick = function () { S.busy = true; paint(); J('/api/admin/multiacct').then(function (j) { S.sweep = j; S.busy = false; paint(); }).catch(function () { S.sweep = { error: 'could not read the clusters' }; S.busy = false; paint(); }); };
+        // ARM THEN FIRE, never a native confirm() - it freezes the dashboard and any automated pass over it.
+        var ap = $('swApply'); if (ap) ap.onclick = function () {
+          if (ap.getAttribute('data-arm') !== '1') { ap.setAttribute('data-arm', '1'); ap.textContent = 'Confirm: ban ' + sw.totals.accounts + ' accounts'; setTimeout(function () { var a2 = $('swApply'); if (a2 && a2.getAttribute('data-arm') === '1') { a2.removeAttribute('data-arm'); a2.textContent = 'Ban these ' + sw.totals.accounts + ' accounts'; } }, 8000); return; }
+          S.busy = true; paint();
+          post('/api/admin/multiacct', { apply: true, confirm: sw.totals.accounts }).then(function (j) {
+            S.busy = false; S.sweep = null;
+            if (j && j.ok) toast('Banned ' + j.banned + ' accounts'); else toast('Failed: ' + ((j && j.error) || 'error') + (j && j.expected != null ? ' (the set changed - re-check)' : ''));
+            paint();
+          }).catch(function () { S.busy = false; toast('Network error'); paint(); });
+        };
+        el.querySelectorAll('[data-rrtag]').forEach(function (b) { b.onclick = function () {
+          post('/api/admin/rrtag', { uid: b.getAttribute('data-rruid'), tag: b.getAttribute('data-rrtag') }).then(function (j) {
+            if (j && j.ok) { toast('Faucet now at ' + ((j.state && j.state.factorPct) || '?') + '% for ' + ((j.state && j.state.username) || 'that member')); paint(); }
+            else toast('Failed: ' + ((j && j.error) || 'error'));
+          }).catch(function () { toast('Network error'); });
+        }; });
+        el.querySelectorAll('[data-devlift]').forEach(function (b) { b.onclick = function () {
+          post('/api/admin/bandev', { did: b.getAttribute('data-devlift'), lift: true }).then(function (j) { if (j && j.ok) { toast('Device unbarred'); paint(); } else toast('Failed'); }).catch(function () { toast('Network error'); });
+        }; });
         stamp();
       }).catch(function () { el.innerHTML = failHtml('could not load'); });
     }
