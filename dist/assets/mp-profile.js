@@ -133,8 +133,17 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     wr:    { n: 'Best Win Rate',  a: '#38bdf8', b: '#15618a', t: '#042536' },
     xp:    { n: 'Season XP',      a: '#a06bff', b: '#4a2a8a', t: '#1b0e38' },
     gold:  { n: 'The Gold Room',  a: '#ffb33a', b: '#8a5a0b', t: '#3a2403' },
-    bybit: { n: 'Bybit Volume',   a: '#ff9640', b: '#8a4a12', t: '#2a1203', real: 1 },
-    moon:  { n: 'King of the Moon', a: '#cdd8ff', b: '#5b6a9a', t: '#141a30', real: 1 },
+    /* THE TWO REAL-MONEY BOARDS WEAR THEIR PARTNER'S OWN COLOURS (2026-10-18, owner: "treba da ima bybit ili
+       moon logo ili bar njihove logo boje, tacne i precizne"). They were a generic orange and a pale blue -
+       approximations of brands we already hold exactly: `window.mpEx` in mp-auth.js carries Bybit as
+       #f7a600 on #0a0b0d and Moon as #14161c with its mark at /assets/moon.png. Those are the values, not
+       something picked by eye, and `card-medals-e2e` reads them back out of mpEx so the two cannot drift.
+       `mark` makes the medal draw the partner's sign instead of the house gem. */
+    bybit: { n: 'Bybit Volume',   a: '#f7a600', b: '#8a5a00', t: '#2a1a00', real: 1, mark: 'bybit' },
+    // Moon is TWO facts and the medal carries both: the accent `window.mpEx` records (#8a5cff) on the ribbon
+    // and the bezel, and the mark itself - a white crescent on their near-black, which is what
+    // /assets/moon.png is. Using the violet for the DISC would have thrown their own logo away.
+    moon:  { n: 'King of the Moon', a: '#8a5cff', b: '#14161c', t: '#0a0b0d', real: 1, mark: 'moon' },
     call:  { n: 'Daily BTC Call', a: '#ff5a9e', b: '#8a1f4d', t: '#380a1d' },
     meme:  { n: 'Meme Spot',      a: '#c2f64a', b: '#6a8a16', t: '#243405' },
     spot:  { n: 'Demo Spot',      a: '#9fb0c2', b: '#45525f', t: '#161d24' }
@@ -163,6 +172,26 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
         + '<circle cx="22" cy="34" r="18" fill="url(#' + g + ')" stroke="' + c.b + '" stroke-width="1.4"/>'
         + '<circle cx="22" cy="34" r="13" fill="none" stroke="' + c.b + '" stroke-width="1" opacity=".55"/>'
         + num + '</svg>';
+    }
+    /* A BRANDED FACE REPLACES THE HOUSE GEM AND THE COUNT MOVES OFF IT. The partner's sign has to sit in the
+       middle of the disc to read at 24px, and the old count was drawn right there - two things in one place.
+       On a branded medal the count becomes a small badge on the rim instead. */
+    if (c.mark) {
+      var badge = count > 1 ? '<circle cx="34.5" cy="45" r="7" fill="' + c.b + '" stroke="' + c.a + '" stroke-width="1.2"/>'
+        + '<text x="34.5" y="48.4" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" font-weight="700" fill="' + c.a + '">' + (count > 9 ? '9+' : count) + '</text>' : '';
+      // Moon: their mark is a white crescent on near-black - built the way the file is, one disc minus another
+      var face = c.mark === 'moon'
+        ? '<circle cx="22" cy="34" r="15" fill="#14161c" stroke="#39404e" stroke-width="1.1"/>'
+          + '<circle cx="21.2" cy="34.2" r="8.6" fill="#ffffff"/>'
+          + '<circle cx="25.1" cy="32.3" r="7.4" fill="#14161c"/>'
+        // Bybit: their amber with their own dark on top, and the B the site already uses as their mark
+        : '<circle cx="22" cy="34" r="15" fill="#f7a600" stroke="#8a5a00" stroke-width="1.1"/>'
+          + '<circle cx="22" cy="34" r="11.6" fill="none" stroke="#0a0b0d" stroke-width=".9" opacity=".25"/>'
+          + '<text x="22" y="40.6" text-anchor="middle" font-family="Bricolage Grotesque, Inter, Helvetica, Arial, sans-serif" font-size="17.5" font-weight="800" fill="#0a0b0d">B</text>';
+      return '<svg viewBox="0 0 44 54" width="' + W + '" height="' + H + '" aria-hidden="true">' + defs + ribbon
+        + '<circle cx="22" cy="34" r="19" fill="' + c.b + '"/>'
+        + '<circle cx="22" cy="34" r="17.6" fill="none" stroke="' + c.a + '" stroke-width="2.6" stroke-dasharray="1.9 2.6" opacity=".95"/>'
+        + face + badge + '</svg>';
     }
     return '<svg viewBox="0 0 44 54" width="' + W + '" height="' + H + '" aria-hidden="true">' + defs + ribbon
       + '<circle cx="22" cy="34" r="19" fill="' + c.b + '"/>'

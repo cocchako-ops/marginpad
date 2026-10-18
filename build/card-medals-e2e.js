@@ -182,6 +182,23 @@ const WINS = {
     }
   });
 
-  console.log('\n' + pass + ' ok, ' + fail + ' failed');
+  
+// THE REAL-MONEY MEDALS WEAR THEIR PARTNER'S OWN COLOURS, AND NOT BY EYE (2026-10-18, owner: "tacne i
+// precizne"). window.mpEx in mp-auth.js is the ONE place a partner's brand colour lives; the medal table
+// must agree with it, or the two drift the first time either is touched.
+{
+  const auth = fs.readFileSync(path.join(__dirname, '..', 'dist', 'assets', 'mp-auth.js'), 'utf8');
+  const prof = fs.readFileSync(path.join(__dirname, '..', 'dist', 'assets', 'mp-profile.js'), 'utf8');
+  // mpEx keys the partners by their display name - Bybit: { c: '#f7a600' ... }
+  const exColour = (name) => { const m = auth.match(new RegExp("\\b" + name + ":\\s*\\{\\s*c:\\s*'(#[0-9a-fA-F]{6})'")); return m ? m[1].toLowerCase() : null; };
+  const medField = (id, f) => { const m = prof.match(new RegExp(id + ":\\s*\\{[^}]*\\b" + f + ":\\s*'(#[0-9a-fA-F]{6})'")); return m ? m[1].toLowerCase() : null; };
+  const byEx = exColour('Bybit'), byMed = medField('bybit', 'a');
+  ok('the Bybit medal is Bybit\'s own amber, the one mpEx holds', !!byEx && byEx === byMed, { mpEx: byEx, medal: byMed });
+  const moEx = exColour('Moon'), moMed = medField('moon', 'a');
+  ok('the Moon medal carries the accent mpEx holds for Moon', !!moEx && moEx === moMed, { mpEx: moEx, medal: moMed });
+  ok('and both of them draw a partner mark instead of the house gem', /mark: 'bybit'/.test(prof) && /mark: 'moon'/.test(prof));
+  // partner colours come from mpEx - this block is the guard the medal table's comment points at
+}
+console.log('\n' + pass + ' ok, ' + fail + ' failed');
   process.exitCode = fail ? 1 : 0;
 })().catch(e => { console.error('ERR', e && e.stack || e); process.exitCode = 1; });
