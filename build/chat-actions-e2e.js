@@ -116,7 +116,7 @@ async function press(page, mid) {
       return { on: s.classList.contains('on'), rx: s.querySelectorAll('[data-sx]').length, acts: [...s.querySelectorAll('[data-sa]')].map(x => x.getAttribute('data-sa')), inView: b.top >= 0 && b.bottom <= window.innerHeight && b.left >= 0 && b.right <= window.innerWidth, reach: !!(hit && s.contains(hit)) };
     });
     ok(!!sheet, 'the action sheet is in the page', sheet);
-    ok(sheet && sheet.rx === 6, 'it offers the six reactions', sheet && { rx: sheet.rx });
+    ok(sheet && sheet.rx === 12, 'it offers the twelve reactions - six trade, then the classics', sheet && { rx: sheet.rx });
     ok(sheet && sheet.acts.indexOf('edit') >= 0 && sheet.acts.indexOf('del') >= 0 && sheet.acts.indexOf('copy') >= 0, 'and Copy, Edit and Delete on your own message', sheet && sheet.acts);
     ok(sheet && sheet.inView, 'it is fully inside the viewport on a phone', sheet && { inView: sheet.inView });
     ok(sheet && sheet.reach, 'and it is clickable where it sits');

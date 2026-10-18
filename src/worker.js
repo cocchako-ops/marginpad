@@ -8145,7 +8145,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b5b2ceaf" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=6ee20893" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -18489,7 +18489,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'b9015c6e';
+const ASSET_V = 'dfab0c38';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -25954,9 +25954,17 @@ export class BotStream {
 // Chat message actions (2026-09-14, owner: "na dugacak klik da ponudi da je obrisem ili ispravim ... i emoji reakcija").
 // REACTIONS ARE A DELIBERATE EXCEPTION to the no-emoji rule: that rule governs MarginPad's own voice (UI copy, toasts,
 // Telegram, commits). A reaction is the reader's expression, like the message text itself, and the owner asked for it.
-// The set is fixed and short on purpose - six, the ones people actually use - so the picker stays one row on a phone
-// and nothing arbitrary can be stored.
-const CHAT_RX = ['\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDE22'];
+// TRADE VOCABULARY FIRST, THE CLASSICS BEHIND IT (2026-10-18, owner: "bolje reakcije, nesto vise trade
+// orijentisano", then "dodaj i neke klasicne, slobodno moze malo vise, ali nek budu na skrol u stranu u istim
+// box dimenzijama"). It was the generic social six, which says nothing a trader means.
+//   rocket bullish \u00B7 bear bearish, I am on the other side \u00B7 target called it
+//   brain  good read \u00B7 fire hot take \u00B7 skull rekt
+// The skull is the room's own self-deprecation, not an insult - it is what people type after a bad fill.
+// ORDER IS THE DESIGN: the six trade ones fill the picker's visible width, the classics are one swipe away.
+// The row scrolls sideways in the SAME box, so a longer set never makes the sheet taller or wider.
+// OLD REACTIONS KEEP RENDERING: nothing stored is rewritten, and the two react paths below accept an emoji that
+// is already on the message even when it has left the set, so anything from the old set can still be taken back.
+const CHAT_RX = ['\uD83D\uDE80', '\uD83D\uDC3B', '\uD83C\uDFAF', '\uD83E\uDDE0', '\uD83D\uDD25', '\uD83D\uDC80', '\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDE2E', '\uD83D\uDE22', '\uD83D\uDC40'];
 const CHAT_RX_SET = new Set(CHAT_RX);
 const CHAT_EDIT_MS = 15 * 60000;   // a typo fix, not a rewrite of history
 const CHAT_RX_MAX = 24;            // reactors stored per message: 150 messages x 24 x ~13 B stays far under the 128 KB key
@@ -26060,8 +26068,10 @@ export class ChatRoom {
 
         if (m.type === 'react') {
           const e2 = String(m.e || '');
-          if (!CHAT_RX_SET.has(e2)) return;                   // only the fixed set is storable
           const rx = tgt.rx || {};
+          // Only the fixed set is STORABLE - but an emoji already on this message is always removable, or a
+          // reaction left by the previous set would be stuck on it for ever with its own chip doing nothing.
+          if (!CHAT_RX_SET.has(e2) && !(rx[e2] || []).length) return;
           const list = Array.isArray(rx[e2]) ? rx[e2] : [];
           const at = list.indexOf(sess.who);
           if (at >= 0) list.splice(at, 1);                    // a second tap takes it back
@@ -32358,7 +32368,9 @@ export class UserStore {
       if (act === 'react') {
         let rx = {}; try { rx = JSON.parse(row.rx || '{}') || {}; } catch (e) {}
         const e2 = String((b && b.e) || '');
-        if (!CHAT_RX_SET.has(e2)) return this.j({ error: 'bad_emoji' }, 400);
+        // storable = the fixed set; removable = that, or anything already on this message (a reaction left by
+        // the previous set must not be stuck there with a chip that refuses to clear)
+        if (!CHAT_RX_SET.has(e2) && !(rx[e2] || []).length) return this.j({ error: 'bad_emoji' }, 400);
         const who = chatWho(uid), list = Array.isArray(rx[e2]) ? rx[e2] : [];
         const at = list.indexOf(who);
         if (at >= 0) list.splice(at, 1);

@@ -907,14 +907,28 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
        unstyled sheet (2026-09-14). The room chat keeps its own copy of the .ct-* rules for the same reason. */
     + '.ct-sheet{position:fixed;z-index:2147483646;display:flex;flex-direction:column;gap:6px;padding:7px;border-radius:13px;background:#141922;border:1px solid #2a323d;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(4px) scale(.97);transition:opacity .12s,transform .12s}'
     + '.ct-sheet.on{opacity:1;transform:none}'
-    + '.ct-sh-rx{display:flex;gap:2px}'
-    + '.ct-sh-rx button{width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}'
+    // THE ROW SCROLLS, THE BOX DOES NOT GROW (owner 2026-10-18: "nek budu na skrol u stranu u istim box
+    // dimenzijama"). The six trade reactions fill the visible width and the classics are one swipe away, so
+    // the set can be extended again without the sheet ever getting taller or wider. `flex:0 0 auto` is what
+    // stops twelve buttons squeezing themselves to fit instead of scrolling.
+    // 214px is SIX SLOTS (6 x 34 + 5 x 2) and it is not a guess: the sheet is shrink-to-fit, so this row was
+    // already what set its width - measured at 230px overall before the set grew. Capping it here keeps the
+    // box exactly the size it has always been and makes the rest scroll; without the cap twelve buttons blew
+    // the sheet out to 446px, which is the opposite of what was asked for.
+    + '.ct-sh-rx{display:flex;gap:2px;max-width:214px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;scroll-snap-type:x proximity;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}'
+    + '.ct-sh-rx::-webkit-scrollbar{display:none}'
+    + '.ct-sh-rx button{flex:0 0 auto;scroll-snap-align:start;width:34px;height:34px;padding:0;border:0;border-radius:9px;background:none;font-size:19px;line-height:1;cursor:pointer;transition:background .12s,transform .12s}'
     + '.ct-sh-rx button:hover,.ct-sh-rx button:focus-visible{background:#1e2531;transform:scale(1.14);outline:none}'
     + '.ct-sh-a{display:flex;flex-direction:column;border-top:1px solid #232a34;padding-top:5px}'
     + '.ct-sh-a button{display:block;width:100%;text-align:left;padding:8px 12px;border:0;border-radius:8px;background:none;color:#e9e7df;font:600 13px system-ui,sans-serif;cursor:pointer}'
     + '.ct-sh-a button:hover,.ct-sh-a button:focus-visible{background:#1e2531;outline:none}'
     + '.ct-sh-a button.dz{color:#ff7a6b}'
     + '.mpa-rx{display:inline-flex;flex-wrap:wrap;gap:3px;margin:-2px 0 -2px 6px;vertical-align:-3px}'
+    // the chip row sits UNDER its bubble and on the same side; the inline margins only make sense when the
+    // chips ride inside a line of text, which is exactly what they stopped doing (2026-10-18)
+    + '.mpa-rxrow{display:flex;max-width:82%;margin:-3px 0 1px}'
+    + '.mpa-rxrow.me{align-self:flex-end}.mpa-rxrow.them{align-self:flex-start}'
+    + '.mpa-rxrow .mpa-rx{margin:0;vertical-align:baseline}'
     + '.mpa-rxb{display:inline-flex;align-items:center;gap:2px;height:17px;padding:0 5px 0 3px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22);font-size:11px;line-height:1;cursor:pointer;color:inherit}'
     + '.mpa-rxb i{font-style:normal;font-size:10px;font-weight:700;opacity:.75}'
     + '.mpa-rxb.on{border-color:rgba(194,246,74,.65);background:rgba(194,246,74,.16)}'
@@ -1055,7 +1069,13 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      for the same fifteen minutes and delete at any time, either side may react, and everything goes through
      POST /api/dm/act, which resolves the caller from the session and decides there. A thread is polled rather than
      pushed, so after an action the thread is simply re-pulled - the server's copy is the one that is drawn. */
-  var DM_RX = ['\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDD25', '\uD83D\uDE2E', '\uD83D\uDE22'], dmWho = '';
+  /* THE SAME SET AS THE ROOM, AND THAT IS THE WHOLE CONTRACT HERE (2026-10-18): six trade reactions first -
+     rocket bullish, bear bearish, target called it, brain good read, fire hot take, skull rekt - then the
+     classics, reached by scrolling the row sideways inside the same box.
+     The ROOM is served its set by the server (the history frame carries `rx`), so there it cannot drift; a DM
+     thread is a REST poll with no such frame, which is why this list exists at all - and why `dm-actions-e2e`
+     reads CHAT_RX out of the worker and demands this array match it. */
+  var DM_RX = ['\uD83D\uDE80', '\uD83D\uDC3B', '\uD83C\uDFAF', '\uD83E\uDDE0', '\uD83D\uDD25', '\uD83D\uDC80', '\uD83D\uDC4D', '\u2764\uFE0F', '\uD83D\uDE02', '\uD83D\uDE2E', '\uD83D\uDE22', '\uD83D\uDC40'], dmWho = '';
   function dmRxHtml(rx, id) {
     if (!rx) return ''; if (typeof rx === 'string') { try { rx = JSON.parse(rx); } catch (e) { return ''; } }
     var k = Object.keys(rx || {}); if (!k.length) return '';
@@ -1064,6 +1084,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       h += '<button type="button" class="mpa-rxb' + (mine ? ' on' : '') + '" data-rx="' + esc(k[i]) + '" data-rxm="' + esc(String(id)) + '">' + esc(k[i]) + '<i>' + who.length + '</i></button>'; }
     return h + '</span>';
   }
+  // the chips as a row of their own, outside the bubble, on the bubble's side of the thread
+  function dmRxRow(rx, id, me) { var h = dmRxHtml(rx, id); return h ? '<div class="mpa-rxrow ' + (me ? 'me' : 'them') + '">' + h + '</div>' : ''; }
   function dmAct(body, after) {
     fetch('/api/dm/act', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
@@ -1108,9 +1130,16 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         + ':' + msgs.map(function (m) { return (m.ed || '') + (m.rx ? (typeof m.rx === 'string' ? m.rx : JSON.stringify(m.rx)).length : ''); }).join(''); if (key === lastKey) return; lastKey = key;
       var atBottom = (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight) < 40 || !scroll.children.length || !!scroll.querySelector('.mpa-dm-empty');
       scroll.innerHTML = msgs.map(function (m) {
+        /* THE REACTION IS ITS OWN CHIP UNDER THE MESSAGE, NEVER INSIDE THE BUBBLE (owner 2026-10-18: "u DMs
+           reakcija ce da udje u box od poruke, dok na chat-u pravi box za sebe i tako treba da bude").
+           Measured before changing it: `.ct-rx` and `.mpa-rx` carry byte-identical CSS, so the difference was
+           purely STRUCTURAL - in the room the chip's parent `.ct-body` is transparent, here it was nested in
+           `.mpa-dbub`, which is a painted bubble (rgb(18,50,64)), and the chip landed 36px down INSIDE it and
+           stretched it to 77px tall. It is a sibling now, aligned to the same side as its bubble. */
         return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '" data-dmid="' + (m.id || '') + '"' + (m.me ? ' data-own="1"' : '') + ' data-ts="' + (+m.ts || 0) + '">'
-          + '<span class="mpa-dtx">' + esc(m.txt) + '</span>' + (m.ed ? '<span class="mpa-ded">edited</span>' : '') + dmRxHtml(m.rx, m.id)
-          + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
+          + '<span class="mpa-dtx">' + esc(m.txt) + '</span>' + (m.ed ? '<span class="mpa-ded">edited</span>' : '')
+          + '<span class="t">' + xpAgo(m.ts) + '</span></div>'
+          + dmRxRow(m.rx, m.id, m.me); }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
     function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () {}); }
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once

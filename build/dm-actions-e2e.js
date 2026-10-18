@@ -8,7 +8,8 @@ const O = process.env.MP_ORIGIN || 'https://marginpad.io';
 const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').replace(/^\uFEFF/, '').match(/mpadm_[a-f0-9]+/)[0];
 const H = { 'x-admin-key': K, 'content-type': 'application/json' };
 const admin = async (p, b) => (await fetch(O + p, { method: 'POST', headers: H, body: JSON.stringify(b) })).json();
-const THUMB = '\u{1F44D}', HEART = '\u2764\uFE0F';
+// the trade set since 2026-10-18 (worker CHAT_RX): rocket bear target brain fire skull
+const THUMB = '\uD83D\uDD25', HEART = '\uD83D\uDE80';
 let pass = 0, fail = 0;
 const ok = (c, m, x) => { if (c) { pass++; console.log('  ok   ' + m); } else { fail++; console.log('  FAIL ' + m + (x !== undefined ? '  ' + JSON.stringify(x).slice(0, 200) : '')); } };
 const as = (tok) => ({
@@ -106,6 +107,27 @@ const as = (tok) => ({
   }
 
   for (const u of [A, B, C]) await admin('/api/admin/e2euser', { uid: u, op: 'rm' });
+  
+  // ONE SET, TWO FILES. The room is served its reactions by the server (the history frame carries `rx`),
+  // but a DM thread is a REST poll with no such frame, so mp-auth.js keeps its own DM_RX - and a list that
+  // exists twice drifts. Read both and demand they match.
+  {
+    const wsrc = fs.readFileSync('D:/part1/money-mission/src/worker.js', 'utf8');
+    const asrc = fs.readFileSync('D:/part1/money-mission/dist/assets/mp-auth.js', 'utf8');
+    const pick = (t, re) => { const m2 = t.match(re); return m2 ? m2[1].split(',').map(x => x.trim().replace(/^'|'$/g, '')).filter(Boolean).join(' ') : null; };
+    const w = pick(wsrc, /const CHAT_RX = \[([^\]]*)\]/);
+    const a = pick(asrc, /var DM_RX = \[([^\]]*)\]/);
+    ok(!!w && w === a, 'DM_RX must equal the worker CHAT_RX - one set, two files', { worker: w, dm: a });
+    ok(!!w && w.split(' ').length === 12, 'twelve: six trade reactions, then the classics behind the scroll', w);
+  }
+
+  // A REACTION LEFT BY A RETIRED EMOJI MUST STILL COME OFF. The set changed on 2026-10-18; anything stored
+  // under the old one would otherwise sit there for ever with a chip that refuses to clear.
+  {
+    const wsrc = fs.readFileSync('D:/part1/money-mission/src/worker.js', 'utf8');
+    const n = (wsrc.match(/!CHAT_RX_SET\.has\(e2\) && !\(rx\[e2\] \|\| \[\]\)\.length/g) || []).length;
+    ok(n === 2, 'both react paths (room and DM) allow removing an emoji that is already on the message', n);
+  }
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(1); });
