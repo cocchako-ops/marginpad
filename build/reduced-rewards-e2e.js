@@ -168,7 +168,23 @@ function liftDeviceGate() {
        kills EVERY button on the page, not just the new one. That shipped for one deploy on 2026-10-18 and both
        the lint and the smoke test passed happily - only the browser's page error found it. dist pages have
        check-inline-js; this page had nothing watching it at all. */
-    console.log('\n--- the profile page the controls live on ---');
+      /* THE REGIME HAS TO BE READABLE WITHOUT CLICKING (owner 2026-10-18: "treba da se promeni boja kako bi znao
+       ko je na tom rezimu a ko ne"). Two separate faults: there is no generic `.btn.on` in ops.css - only
+       `.sw .btn.on` - so NOTHING was highlighted at all; and marking "automatic" would carry no information,
+       because that is what every member is. Only a decision the OWNER made is coloured, and the row carries it
+       too so the column reads at a glance. Asserted on the CSS, since a class with no rule behind it is exactly
+       the bug that was there. */
+    console.log('\n--- the regime reads at a glance ---');
+    const opsCss = fs.readFileSync(path.join(__dirname, '..', 'src', 'ops', 'ops.css.txt'), 'utf8');
+    ok('the forced regime has a colour of its own', /\.rrb\.on-r\{[^}]*179/.test(opsCss), 'the .rrb.on-r rule is missing or not amber');
+    ok('the exempt regime has a different one', /\.rrb\.on-e\{[^}]*189/.test(opsCss), 'the .rrb.on-e rule is missing or not green');
+    ok('automatic is current but unremarkable', /\.rrb\.on\{/.test(opsCss) && opsCss.indexOf('.rrb.on{') < opsCss.indexOf('.rrb.on-r{'));
+    ok('the ROW carries the mark too, so the column can be read down', /tr\.rr-forced td:first-child\{/.test(opsCss) && /tr\.rr-exempt td:first-child\{/.test(opsCss));
+    const opsJs = fs.readFileSync(path.join(__dirname, '..', 'src', 'ops', 'client', 'ops.js.txt'), 'utf8');
+    ok('the panel stamps the row class from the tag', opsJs.indexOf('rr-forced') > 0 && opsJs.indexOf('rr-exempt') > 0 && opsJs.indexOf('rrRowCls') > 0);
+    ok('and never uses the .btn.on that ops.css does not define outside .sw', opsJs.indexOf("'btn' + ((f.rrtag") < 0);
+
+  console.log('\n--- the profile page the controls live on ---');
     const sTok = (await post('/api/stats/session', {})).j.token;
     const html = await fetch(BASE + '/api/admin/user?username=alefzed', { headers: { cookie: 'mp_sadm=' + sTok } }).then(r => r.text());
     const scripts = [...html.matchAll(RX_INLINE)].map(m => m[1]);

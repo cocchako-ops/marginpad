@@ -18885,7 +18885,7 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 .btn{background:#0c0f13;border:1px solid #2f3742;color:#cdd3da;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}.btn:hover{border-color:#5c656f;color:#fff}
 .btn.warn{color:#ffce8a;border-color:rgba(255,179,71,.4)}.btn.warn:hover{background:rgba(255,179,71,.12)}
 .btn.danger{color:#ff8a80;border-color:rgba(255,98,88,.4)}.btn.danger:hover{background:rgba(255,98,88,.12)}
-.btn.good{color:#41e3a3;border-color:rgba(46,189,133,.4)}.btn.good:hover{background:rgba(46,189,133,.12)}
+.btn.good{color:#41e3a3;border-color:rgba(46,189,133,.4)}.btn.on{background:#1b2230;color:#e9e7df}.btn.warn.on{background:rgba(255,179,71,.16);border-color:rgba(255,179,71,.55)}.btn.good.on{background:rgba(46,189,133,.14);border-color:rgba(46,189,133,.5)}.btn.good:hover{background:rgba(46,189,133,.12)}
 .row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #232932;font-size:13px}.row:last-child{border-bottom:none}
 .mono{font-family:monospace}.muted{color:#5c656f;font-size:11px;font-family:monospace}
 .in{background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 12px;color:#e9e7df;font-size:13px;font-family:inherit}.in:focus{outline:none;border-color:#c2f64a}
@@ -19107,7 +19107,9 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
   (function(){var f=document.getElementById('rrField');if(!f)return;
     function paint(){var tag=u.rrtag||'',rr=DATA.rr||{},tot=+DATA.dwellTotal||0,rw=+DATA.dwellRewards||0;
       var rank=+rr.rank||0,pct=+rr.pct||100,why=rr.why||'',floorH=+rr.minDwellHours||4.5;
-      var chip=function(v,lab,hint){return '<button type="button" class="btn'+(tag===v?' good':'')+'" data-rr="'+v+'" title="'+hint+'">'+lab+'</button>';};
+      /* Automatic is the default state of every member, so marking it green would say nothing. Only a decision
+         the owner MADE is coloured: amber when he forced the cut, green when he exempted them. */
+      var chip=function(v,lab,hint){var cl=tag===v?(v==='on'?' warn on':v==='off'?' good on':' on'):'';return '<button type="button" class="btn'+cl+'" data-rr="'+v+'" title="'+hint+'">'+lab+'</button>';};
       f.innerHTML=chip('','Automatic','follow the rank rule')+chip('on','Reduced','force the cut whatever the rank says')+chip('off','Exempt','never reduce this member')
         +'<span class="muted" style="margin-left:8px">faucet at <b style="color:'+(pct<100?'#ffb347':'#2ebd85')+'">'+pct+'%</b> of the normal daily cap &middot; '+why+'</span>'
         +'<div class="muted" style="font-size:11px;width:100%;margin-top:4px">'+(tot?((tot/3600).toFixed(1)+' h on the site, '+(rw/3600).toFixed(1)+' h of it on the rewards page'):'no time recorded yet')+' &middot; 4.5 h floor &middot; #1 = 50%, #2 = 75%, #3 or lower = no reduction</div>';
