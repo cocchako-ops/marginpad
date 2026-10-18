@@ -199,15 +199,22 @@ function diskInfo() {
   const now = Date.now();
   if (_diskC.v && now - _diskC.ts < 60000) return _diskC.v;
   let v = null;
+  const mb = (b) => Math.round(b / 1048576);
+  // Free space FIRST and on its own: the first cut read the database path from the wrong config key
+  // (config.storage instead of config.db), the TypeError was caught by the shared try, and the whole
+  // disk figure came back null - an unrelated failure silently eating the number that matters most.
   try {
-    const mb = (b) => Math.round(b / 1048576);
     const s = statfsSync('/');
     const total = s.blocks * s.bsize, free = s.bavail * s.bsize;
     v = { totalMb: mb(total), freeMb: mb(free), usedPct: total > 0 ? Math.round((1 - free / total) * 100) : null };
-    const db = config.storage.sqlitePath;
-    try { v.dbMb = mb(statSync(db).size); } catch (e) {}
-    try { v.walMb = mb(statSync(db + '-wal').size); } catch (e) { v.walMb = 0; } // absent = checkpointed, which is the healthy state
   } catch (e) { v = null; }
+  if (v) {
+    try {
+      const db = config.db.sqlitePath;
+      try { v.dbMb = mb(statSync(db).size); } catch (e) {}
+      try { v.walMb = mb(statSync(db + '-wal').size); } catch (e) { v.walMb = 0; } // absent = checkpointed, which is the healthy state
+    } catch (e) {}
+  }
   _diskC = { ts: now, v };
   return v;
 }
