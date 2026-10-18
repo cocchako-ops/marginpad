@@ -567,15 +567,18 @@ async function handlePrices(env, ctx, prof) {
   // Global floor before touching upstream: the cron writes a fresh copy to KV every minute, so a cold
   // colo serves that (~10-50ms) instead of paying live upstream RTTs. Profiled 2026-07-24: the old cold
   // path cost up to ~1.5s - ~970ms of it on the two Binance sources that ALWAYS 403 from CF worker IPs.
+  let floorStale = false; // see the cache_put below: only the minute cron ever wrote this floor, so a missed write could only be healed by the cron that missed it
   if (prof !== 2) {
     const tK = Date.now();
     try { const kvp = await env.STATS.get('prices:last'); mk('kv_floor', tK);
-      if (kvp) { const o = JSON.parse(kvp); if (o && Date.now() - (+o.ts || 0) < 90000) {
+      let o = null; try { o = kvp ? JSON.parse(kvp) : null; } catch (e) { o = null; } // a corrupt floor is a stale floor: it must be rewritten, not parsed twice
+      floorStale = !(o && Date.now() - (+o.ts || 0) < 90000);
+      if (!floorStale) {
         try { globalThis.__pricesLast = { t: Date.now(), body: kvp }; } catch (e) {}
         if (ctx) ctx.waitUntil((async () => { try { await handlePrices(env, null, 2); } catch (e) {} })()); // repopulate the edge cache in the background
         return withProf(new Response(kvp, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'max-age=5', 'x-mp-kv': '1', ...CORS } }), 'kv');
-      } }
-    } catch (e) { mk('kv_floor_err', tK); }
+      }
+    } catch (e) { mk('kv_floor_err', tK); floorStale = true; }
   }
   const qs = '?symbols=' + encodeURIComponent(JSON.stringify(PRICE_SYMBOLS));
   // Bybit FIRST - it is the only source that actually answers from Cloudflare egress (Binance has 403-blocked
@@ -604,12 +607,21 @@ async function handlePrices(env, ctx, prof) {
     } catch (e) { mk(srcName + '_err', tU); }
   }
   if (!pairs || !pairs.length) return J({ error: 'upstream temporarily unavailable' }, 503);
-  const resp = new Response(JSON.stringify({ pairs, ts: Date.now() }), {
+  const fresh = JSON.stringify({ pairs, ts: Date.now() });
+  const resp = new Response(fresh, {
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=15', ...CORS },
   });
   const tP = Date.now();
   try { await cache.put(cacheKey, resp.clone()); } catch (e) {}
   mk('cache_put', tP);
+  // A FLOOR ONLY THE CRON CAN WRITE IS A FLOOR ONLY THE CRON CAN REPAIR (2026-10-18). prices:last was
+  // written by the every-minute cron and by nothing else, while this cold path - the one a reader reaches
+  // precisely BECAUSE the floor was stale or gone - built the very payload the floor wants and put it in
+  // the edge cache alone. So one missed cron fire left every cold colo paying upstream until the next
+  // fire, and that gap is what the public status page recorded as the price feed being down. We only get
+  // here with floorStale, i.e. the floor is already past the 90 s the branch above accepts, so this adds
+  // no writes on a healthy minute and self-limits: once written, the kv_floor branch takes over again.
+  if (floorStale && prof !== 2 && env.STATS) { try { await env.STATS.put('prices:last', fresh, { expirationTtl: 300 }); } catch (e) {} }
   return withProf(resp, 'cold');
 }
 async function screenerKvWarm(env) { // */10 cron: keep the scr:cache7 floor fresh so NO visitor ever pays the ~11s 33-subrequest compute (profiled 2026-07-24 - the floor was only written when a user paid it)
@@ -27357,8 +27369,47 @@ async function sampleUptime(env) {
   const t0 = Date.now(), day = new Date(t0).toISOString().slice(0, 10);
   const c = { n: 1, store: 0, storeMs: 0, coll: 0, collMs: 0, px: 0, pxAge: 0 };
   try { const a = Date.now(); const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=uptime-probe')); const j = await r.json(); c.storeMs = Date.now() - a; if (j && ('user' in j)) c.store = 1; } catch (e) {}
-  try { const base = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (base) { const a = Date.now(); const r = await fetch(base + '/api/v1/status', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 0 } }); const j = await r.json(); c.collMs = Date.now() - a; const ex = (j && j.exchanges) || []; if (r.ok && ex.length && ex.filter(x => x.connected).length >= Math.ceil(ex.length / 2)) c.coll = 1; } } catch (e) {}
-  try { const px = JSON.parse(await env.STATS.get('prices:last') || 'null'); const ts = px && (+px.ts || +px.t || 0); const pairs = px && px.pairs; if (pairs && pairs.length && ts) { c.pxAge = Math.round((t0 - ts) / 1000); if (c.pxAge <= 180) c.px = 1; } else if (pairs && pairs.length) c.px = 1; } catch (e) {}
+  // THE COLLECTOR PROBE RETRIES, FOR THE REASON collectorStatusInfo ALREADY DOES (2026-10-18): the droplet's
+  // ring persist blocks its main thread for seconds at a time (measured 3.7 s typically, 12.2 s at midnight),
+  // which is longer than this probe's ceiling - so a single attempt recorded a STALL as ten minutes of
+  // downtime and painted the public page amber on days the collector never stopped serving. That is the same
+  // mistake that paged "Collector je PAO" twice; the Telegram probe was given three attempts over ~15 s on
+  // 2026-10-09 and this one, a second probe of the same endpoint, was left on one.
+  try {
+    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (base) {
+      let r = null, j = null;
+      for (let att = 0; att < 2; att++) {
+        if (att) await new Promise(res => setTimeout(res, 3000));
+        const a = Date.now();
+        try { r = await fetch(base + '/api/v1/status', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 0 } }); j = await r.json(); c.collMs = Date.now() - a; } catch (e) { r = null; j = null; c.collMs = Date.now() - a; }
+        if (r && r.ok) break;
+      }
+      const ex = (j && j.exchanges) || [];
+      if (r && r.ok && ex.length && ex.filter(x => x.connected).length >= Math.ceil(ex.length / 2)) { c.coll = 1; }
+    }
+  } catch (e) {}
+  // THE PRICE FLOOR IS JUDGED ON THE WRITER'S OWN ACCOUNT, NOT ON A LAGGED READ OF WHAT IT WROTE
+  // (2026-10-18). prices:last is refreshed every minute and read back here through Workers KV, whose
+  // per-colo read cache is 60 s at its shortest - and that key is read by every visitor, so a colo
+  // always holds a cached copy. MEASURED on production: one request read px:warm.agoSec 41 while the
+  // floor it had just written came back 100 s old. So the age this check used carried up to a minute of
+  // READ staleness on top of the real one, and against a 180 s threshold whose healthy sawtooth already
+  // peaks near 120 s, that minute alone decided the verdict. px:warm is the writer's note about its own
+  // last run (ts = when it ran, ok = whether the put succeeded) and has no such lag, so it answers the
+  // question - is the floor being refreshed and did the refresh work - directly. The floor's own age is
+  // still recorded, and still decides when the writer's note is too old to speak for it.
+  try {
+    let w = null; try { w = JSON.parse(await env.STATS.get('px:warm') || 'null'); } catch (e) {}
+    const px = JSON.parse(await env.STATS.get('prices:last') || 'null');
+    const ts = px && (+px.ts || +px.t || 0); const pairs = px && px.pairs;
+    if (pairs && pairs.length && ts) c.pxAge = Math.round((t0 - ts) / 1000);
+    const wAge = w && +w.ts ? t0 - (+w.ts) : null;
+    if (wAge != null && wAge <= 180000) { c.px = w.ok ? 1 : 0; c.pxBy = 'writer'; }
+    else if (pairs && pairs.length && ts) { c.px = c.pxAge <= 180 ? 1 : 0; c.pxBy = 'floor'; }
+    else if (pairs && pairs.length) { c.px = 1; c.pxBy = 'floor-nots'; }
+    else c.pxBy = 'none';
+  } catch (e) {}
   try {
     const k = 'up:day:' + day; let d = null; try { d = JSON.parse(await env.STATS.get(k) || 'null'); } catch (e) {}
     d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [], first: t0 }; // first = when sampling of this day began: the day sampling STARTED is pro-rated from there, not from midnight (2026-09-12 showed red at 2 of 93 samples on its first hour)

@@ -61,6 +61,9 @@
   .bars{display:grid;grid-template-columns:repeat(90,minmax(0,1fr));gap:2px;height:34px}
   .bars i{display:block;border-radius:2px;background:#1a2027;position:relative}
   .bars i.ok{background:var(--up)}.bars i.part{background:var(--amber)}.bars i.bad{background:var(--red)}.bars i.none{background:#1a2027}
+  /* A day we under-sampled keeps the colour of what the checks DID say and is drawn pale, because fewer
+     checks is less evidence about the service - not evidence against it (2026-10-18). */
+  .bars i.thin{opacity:.42}
   .bars i:hover::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1b212a;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font:11px 'Space Mono',monospace;color:var(--ink);white-space:nowrap;z-index:5}
   .legend{display:flex;justify-content:space-between;font:11px 'Space Mono',monospace;color:var(--faint);margin-top:6px}
   .pct{font:700 13px 'Space Mono',monospace;color:var(--ink)}
@@ -103,13 +106,13 @@
 <h2>Fuentes de liquidación <small>en vivo desde el recolector</small></h2>
 <table><thead><tr><th>Plataforma</th><th>Socket</th><th>Última liquidación</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Cargando…</td></tr></tbody></table>
 
-<p class="note">Each day shows the share of samples that passed. A day with fewer samples than expected means the scheduler itself was not running, and that counts against us rather than being hidden. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed sample means that copy was more than three minutes old, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
+<p class="note">Each day shows the share of checks that passed. A day drawn pale is one where fewer checks ran than the every-10-minute schedule expects - the scheduler itself missed passes - so there is less evidence about that day; hover it for how many ran. We show it rather than hiding it, but a day whose every check passed is not counted against the service because we looked less often. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed check means that rewrite stopped happening, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
 </div>
 <script>
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_statusindex = {"justNow":"justo ahora","noSamples":": sin muestras","ofSamplesPassed":"% de muestras superadas","noSamplesYet":"todavía sin muestras","tradingStore":"almacén de trading","priceFeed":"precio base","allSystemsOperational":"Todos los sistemas operativos","lastPass":"última comprobación ","tradingStore2":"Almacén de trading","noAnswer":"sin respuesta","socketsConnectedUp":"sockets conectados · activo hace ","priceFeed2":"Precio base","pairsAgeOfThe":" pares · antigüedad de la copia en caché"};
+var __esD_statusindex = {"justNow":"justo ahora","noSamples":": sin muestras","pctChecksPassed":"% de comprobaciones superadas","checksRan":" comprobaciones realizadas","ofSamplesPassed":"% de muestras superadas","noSamplesYet":"todavía sin muestras","tradingStore":"almacén de trading","priceFeed":"precio base","allSystemsOperational":"Todos los sistemas operativos","lastPass":"última comprobación ","tradingStore2":"Almacén de trading","noAnswer":"sin respuesta","socketsConnectedUp":"sockets conectados · activo hace ","priceFeed2":"Precio base","pairsAgeOfThe":" pares · antigüedad de la copia en caché"};
 function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_statusindex[k] != null) return __esD_statusindex[k]; } catch (e) {} return en; }
 
 (function(){
@@ -118,10 +121,10 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
   function bars(el,days,field,pctEl,upEl){
     var html='',okDays=0,seen=0,sumOk=0,sumN=0,today=new Date().toISOString().slice(0,10);
     days.forEach(function(d){var cls='none',t=d.d+__esT_statusindex("noSamples",': no samples');
-      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var start=Date.parse(d.d+'T00:00:00Z'),end=Math.min(Date.now(),start+86400000),from=Math.max(start,d.first||start);var exp=Math.max(1,Math.floor((end-from)/600000)+1);var cov=Math.min(1,d.n/exp);var eff=r*cov;cls=eff>=0.995?'ok':eff>=0.9?'part':'bad';if(cls==='ok')okDays++;t=d.d+': '+Math.round(eff*100)+'% ('+d[field]+'/'+d.n+' ok'+(d.n<exp*0.9?', '+d.n+' of '+exp+' samples':'')+')';}
+      if(d.n>0){var r=d[field]/d.n;sumOk+=d[field];sumN+=d.n;seen++;var start=Date.parse(d.d+'T00:00:00Z'),end=Math.min(Date.now(),start+86400000),from=Math.max(start,d.first||start);var exp=Math.max(1,Math.floor((end-from)/600000)+1);var cov=Math.min(1,d.n/exp);cls=r>=0.995?'ok':r>=0.9?'part':'bad';if(cls==='ok')okDays++;var thin=cov<0.9;t=d.d+': '+Math.round(r*100)+__esT_statusindex("pctChecksPassed",'% of checks passed')+' ('+d[field]+'/'+d.n+(thin?' - '+d.n+'/'+exp+__esT_statusindex("checksRan",' checks ran'):'')+')';if(thin)cls+=' thin';}
       html+='<i class="'+cls+'" data-t="'+t+'"></i>';});
     el.innerHTML=html;
-    if(sumN){pctEl.textContent=(sumOk/sumN*100).toFixed(2)+__esT_statusindex("ofSamplesPassed",'% of samples passed');upEl.textContent=seen+' day'+(seen===1?'':'s')+' measured';}else{pctEl.textContent=__esT_statusindex("noSamplesYet",'no samples yet');upEl.textContent='';}
+    if(sumN){pctEl.textContent=(sumOk/sumN*100).toFixed(2)+__esT_statusindex("pctChecksPassed",'% of checks passed');upEl.textContent=seen+' day'+(seen===1?'':'s')+' measured';}else{pctEl.textContent=__esT_statusindex("noSamplesYet",'no samples yet');upEl.textContent='';}
   }
   function card(cls,k,v,s){return '<div class="c '+cls+'"><div class="k"><span>'+k+'</span><i></i></div><b>'+v+'</b><small>'+s+'</small></div>';}
   fetch('/api/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
