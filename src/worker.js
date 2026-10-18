@@ -8627,7 +8627,15 @@ async function checkOpsAlerts(env) {
      const since = (cd && +cd.since) || nowMs, downMs = nowMs - since;
      const gapMin = downMs < 3600000 ? 20 : downMs < 21600000 ? 60 : 180; // insistent for the first hour, hourly to six, then every three
      if (!cd || nowMs - ((+cd.last) || 0) >= gapMin * 60000) {
-       const sent = await tgAdmin(env, '<b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ')' + (cd ? ' - vec <b>' + durTxt(downMs) + '</b>' : '') + ' - Rekt / likvidacije feed je stao.\nRestart na VPS-u: <code>ssh root@167.172.98.147 "pm2 restart marginpad-collector"</code>\nAko ni SSH ne odgovara, droplet je ugasen - DigitalOcean konzola.', { kind: 'collector-down', sev: 'red' });
+       // Ask DigitalOcean what the MACHINE is doing before telling him to ssh into it.
+       const dp = await doDropletInfo(env);
+       const where = dp && dp.status
+         ? (dp.status === 'active'
+           ? '\nDroplet <b>radi</b> - pao je proces, ne masina: <code>ssh root@' + DO_DROPLET_IP + ' "pm2 restart marginpad-collector"</code>'
+           : '\n<b>DROPLET JE ' + String(dp.status).toUpperCase() + '</b> - masina ne radi, SSH ne moze da pomogne. Upali ga iz mp-ops (Health) ili DigitalOcean konzole.')
+         : '\nRestart na VPS-u: <code>ssh root@' + DO_DROPLET_IP + ' "pm2 restart marginpad-collector"</code>'
+           + (dp && dp.error && dp.error !== 'no_token' ? '\n(DigitalOcean nije odgovorio: ' + dp.error + ')' : '');
+       const sent = await tgAdmin(env, '<b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ')' + (cd ? ' - vec <b>' + durTxt(downMs) + '</b>' : '') + ' - Rekt / likvidacije feed je stao.' + where, { kind: 'collector-down', sev: 'red' });
        await env.STATS.put('alrt:colldown', JSON.stringify({ since, last: sent ? nowMs : ((cd && +cd.last) || 0), pages: ((cd && +cd.pages) || 0) + (sent ? 1 : 0) }), { expirationTtl: 7 * 86400 });
      }
    } else if (cd) {
@@ -8690,6 +8698,30 @@ async function checkOpsAlerts(env) {
  }
  } catch (e) {}
   } catch (e) {}
+}
+/* "THE PROCESS DIED" AND "THE MACHINE IS OFF" NEED DIFFERENT ANSWERS, AND WE COULD NOT TELL THEM APART
+   (2026-10-18). On 2026-10-06 the droplet was POWERED OFF for nine hours and every alarm we had could only
+   say the collector was not answering - which reads as "ssh in and restart pm2", advice that cannot work
+   on a machine that is not running. `last -x` and the previous boot's journal later showed a clean
+   poweroff.target with no SSH login that morning, i.e. something on DigitalOcean's side. One read of their
+   API separates the two cases, and it is made ONLY while the collector is already down, so a healthy pass
+   costs nothing and the rate limit is never a concern. The token is `DO_TOKEN`, scoped to droplet:read +
+   droplet:update and nothing else (local copy in DO_TOKEN.local.txt, gitignored, like ADMIN_KEY).
+   A POWER ACTION IS NEVER AUTOMATIC - see /api/admin/droplet for why. */
+const DO_DROPLET_IP = '167.172.98.147'; // the collector host. The droplet's NAME still says 1vcpu-512mb-10gb from the old plan and is not a size - match on the IP.
+async function doDropletInfo(env) {
+  const tok = env && env.DO_TOKEN;
+  if (!tok) return { error: 'no_token' };
+  try {
+    const r = await __realFetch('https://api.digitalocean.com/v2/droplets?per_page=50', { headers: { authorization: 'Bearer ' + tok }, signal: AbortSignal.timeout(6000) });
+    if (!r.ok) return { error: 'HTTP ' + r.status };
+    const j = await r.json();
+    const list = (j && j.droplets) || [];
+    const ipOf = (d) => ((((d || {}).networks || {}).v4 || []).find((n) => n && n.type === 'public') || {}).ip_address || '';
+    const d = list.find((x) => ipOf(x) === DO_DROPLET_IP) || (list.length === 1 ? list[0] : null);
+    if (!d) return { error: 'droplet_not_found' };
+    return { id: d.id, name: d.name, status: d.status, ip: ipOf(d), memoryMb: d.memory, diskGb: d.disk };
+  } catch (e) { return { error: String((e && e.message) || e).slice(0, 80) }; }
 }
 // Lightweight collector status probe (object, not HTML) for the down-alert + the ops attention chip.
 // collectorHealth() returns HTML for the dashboard; the old alert checked .exchanges on that STRING so it
@@ -23481,6 +23513,31 @@ export default {
       let last = null, today = null; const day = new Date().toISOString().slice(0, 10);
       try { last = JSON.parse(await env.STATS.get('up:last') || 'null'); } catch (e) {} try { today = JSON.parse(await env.STATS.get('up:day:' + day) || 'null'); } catch (e) {}
       return J({ ok: !err, err, last, today: today ? { n: today.n, store: today.store, coll: today.coll, px: today.px } : null });
+    }
+    /* THE DROPLET, AND THE ONE BUTTON THAT CAN BRING IT BACK (2026-10-18). `?op=status` is a read and is
+       the thing the collector-down alarm already uses. A POWER ACTION IS ALWAYS OWNER-INITIATED AND NEVER
+       AUTOMATIC: a false positive that power-cycles a healthy box would cut the collector mid-write, and
+       the probe that would trigger it has been wrong before (it paged RED twice in October for stalls that
+       were not deaths). What this removes is the part that actually hurt on 2026-10-06 - the owner needing
+       the DigitalOcean console on his phone to turn a machine on. power_on is the safe one and is what the
+       alarm points at; power_cycle is here for a wedged box and says so. */
+    if (url.pathname === '/api/admin/droplet' && (isAdminKey(env, adminKeyFrom(request, url)) || await adminCookieOk(request, env))) {
+      let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+      const op = String(b.op || url.searchParams.get('op') || 'status').toLowerCase();
+      const info = await doDropletInfo(env);
+      if (!info || info.error) return J({ error: info ? info.error : 'unavailable', hint: info && info.error === 'no_token' ? 'DO_TOKEN secret is not set' : undefined }, 503);
+      if (op === 'status') return J({ ok: true, droplet: info });
+      if (op !== 'poweron' && op !== 'powercycle') return J({ error: 'bad_op', allowed: ['status', 'poweron', 'powercycle'] }, 400);
+      if (op === 'poweron' && info.status === 'active') return J({ error: 'already_on', droplet: info }, 409);
+      const type = op === 'poweron' ? 'power_on' : 'power_cycle';
+      let r = null, j = {};
+      try {
+        r = await __realFetch('https://api.digitalocean.com/v2/droplets/' + info.id + '/actions', { method: 'POST', headers: { authorization: 'Bearer ' + env.DO_TOKEN, 'content-type': 'application/json' }, body: JSON.stringify({ type }), signal: AbortSignal.timeout(12000) });
+        j = await r.json().catch(() => ({}));
+      } catch (e) { return J({ error: String((e && e.message) || e).slice(0, 120) }, 503); }
+      if (r.ok) { try { await env.STATS.delete('alrt:colldown'); } catch (e) {} } // so the next pass reports the recovery rather than counting this outage on
+      try { await tgAdmin(env, '<b>Droplet ' + type + '</b> poslat rucno' + (r.ok ? ' - prihvaceno. Kolektor se vraca sam (pm2 pod systemd), proveri za minut.' : ' - DigitalOcean odbio (HTTP ' + r.status + ').'), { kind: 'droplet-power', sev: r.ok ? 'warn' : 'red' }); } catch (e) {}
+      return J({ ok: !!r.ok, status: r.status, type, action: (j && j.action) || null, droplet: info });
     }
     if (url.pathname === '/api/admin/delist' && isAdminKey(env, adminKeyFrom(request, url))) { // key only: ?sym=X (dry run: who holds it) · &run=1 settles at entry NOW (the sweep does it by itself after 7 dead days)
       const symA = String(url.searchParams.get('sym') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16); if (!symA) return J({ error: 'no_sym' }, 400);
