@@ -229,7 +229,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + '<div class="mpnav-sec">' + TR('secTradeP') + '</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan', 'practice demo futures perpetual perps long short leverage position margin liquidation entry terminal trade paper testnet risk free')
     + row('brSpotT', 'brSpotS', '/spot/', '#c2f64a', 'spot', __esT_mpnav("spotWalletMemecoinMeme",'spot memecoin meme coin buy hold sell solana base bsc contract address screener demo account demo cash claim board portfolio'))
-    + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts', 'chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis')
+    + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts', 'chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis bollinger vwap stochastic ichimoku supertrend market brain memory cascade magnet big liquidations volume profile bar replay compare')
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr', __esT_mpnav("screenerScannerMoversGaine",'screener scanner movers gainers losers volume funding open interest scan filter markets stocks shares forex fx indices sp500 nasdaq gold silver metals'))
     // "Simulators" (the five SEO landing pages: stock / forex / index / leverage / no-sign-up) was REMOVED on
     // 2026-09-17 - owner: readers asked what the difference from Paper Trade is, and there is none; every one of
@@ -237,11 +237,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
 
     + '<div class="mpnav-sec">' + TR('secCompete') + '</div>'
     + row('brSeasonT', 'brSeasonS', '/season/', '#c2f64a', 'trophy', __esT_mpnav("seasonPassTiersDaily",'season pass tiers daily call goals streak boards standings rank prizes'))
-    + row('Leaderboards', __esT_mpnav("everySeasonBoardIn",'Every season board in full, prizes and rules'), '/leaderboards/', '#ffd75a', 'ranks', __esT_mpnav("leaderboardLeaderboardsSta",'leaderboard leaderboards standings ranking rank table tables rules prizes top traders who is winning'))
+    + row('Leaderboards', __esT_mpnav("everySeasonBoardIn",'Every season board in full, prizes and rules'), '/leaderboards/', '#ffd75a', 'ranks', __esT_mpnav("leaderboardLeaderboardsSta",'leaderboard leaderboards standings ranking rank table tables rules prizes top traders who is winning gold room rebate commission affiliate volume board prize pool'))
     + row(__esT_mpnav("squads",'Squads'), __esT_mpnav("fiveTradersOneCrest",'Five traders, one logo - duels, a private room'), '/squads/', '#9d7bff', 'squad', __esT_mpnav("squadSquadsClanTeam",'squad squads clan clans team teams crew guild group friends logo crest icon badge emblem squad duel duels team duel private room squad chat five members join create invite leader'))
     + row('brCompT', 'brCompS', '/trading-competition/', '#ffd75a', 'podium', __esT_mpnav("competitionCompetitionsCon",'competition competitions contest tournament prize prizes pool win money free entry leaderboard compete'))
     + row('brArenaT', 'brArenaS', '/arena/', '#7cc4ff', 'arena', __esT_mpnav("arenaBotArenaBots",'arena bot arena bots bot ranking api bots robot leaderboard win rate'))
-    + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', __esT_mpnav("rewardsFaucetClaimFree",'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite'))
+    + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift', __esT_mpnav("rewardsFaucetClaimFree",'rewards faucet claim free usdt money withdraw withdrawal payout cash out missions tasks earn bonus referral refer invite affiliate referral commission payout withdrawal invite friend earn'))
     + row('brVaultT', 'brVaultS', '/vault/', '#c792ff', 'vault', 'vault cosmetics frames skins ticks shop store backgrounds ticket themes buy legendary')
     + row('brLevelsT', 'brLevelsS', '/levels/', '#8b5cff', 'starr', __esT_mpnav("levelsLevelXpExperience",'levels level xp experience bronze silver gold platinum diamond prestige rank ranks progress'))
     + row('brPremT', 'brPremS', '/premium/', '#ffd75a', 'crown', __esT_mpnav("premiumSubscriptionSubscri",'premium subscription subscribe upgrade plan plans paid founder pro member membership price'))
@@ -254,7 +254,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // from here orphans nothing: measured, each carries 34-42 static inbound links (every map page links to
     // every other, plus the /liquidations/ hub), unlike the comparison pages which had 1-3 and had to be kept.
     // The heatmap takes no symbol from the URL, so no row pretends to open a particular coin.
-    + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes'))
+    + row('brHeatT', 'brHeatS', '/heatmap', '#ffb347', 'heat', __esT_mpnav("heatmapHeatMapLiquidation",'heatmap heat map liquidation map maps levels clusters pools zones magnet btc bitcoin eth ethereum sol solana xrp per coin where price goes order book orderbook tape prints live order flow depth bid ask'))
     + row('brLiqT', 'brLiqS', '/liquidations/', '#ff8c5a', 'map', __esT_mpnav("liquidationsTotals24hBy",'liquidations totals 24h by coin by exchange how much was liquidated today records'))
     + row('brWhaleT', 'brWhaleS', '/hyperliquid-whales/', '#5ec6ff', 'whale', __esT_mpnav("whaleWhalesBigPositions",'whale whales big positions large trades hyperliquid smart money tracker wallets millions'))
     // Funding, open interest and long/short are three readings of ONE question - what the crowd is holding and
@@ -276,7 +276,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + sub('/calculators?c=liq', 'subLiq', __esT_mpnav("liquidationPriceLiqPrice",'liquidation price liq price where will i be liquidated isolated'))
     + sub('/calculators?c=cross', 'Cross margin liquidation', 'cross margin liquidation whole balance')
     + sub('/calculators?c=size', 'subSize', __esT_mpnav("positionSizeHowMuch",'position size how much to buy risk per trade lot size stake'))
-    + sub('/calculators?c=pnl', 'subPnl', 'pnl profit loss roi roe return how much did i make')
+    + sub('/calculators?c=pnl', 'subPnl', 'pnl profit loss roi roe return how much did i make breakeven break even')
     + sub('/calculators?c=dca', 'subDca', __esT_mpnav("dcaAverageDownAverage",'dca average down average entry add to position martingale'))
     + sub('/calculators?c=tp', 'subTp', __esT_mpnav("takeProfitTargetTp",'take profit target tp exit price where to sell'))
     + sub('/calculators?c=rr', 'subRr', __esT_mpnav("riskRewardRatioRr",'risk reward ratio rr stop loss target expectancy'))
@@ -306,7 +306,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // and an uptime page: the label IS the description, so they take the compact two-column chip instead of
     // 63px each. Same for the More list. That is where the scroll budget above comes from.
     + '<div class="mpnav-sec">' + TR('secDev') + '</div>'
-    + row('brApiT', 'brApiS', '/trading-api/', '#3fd8e6', 'bot', __esT_mpnav("apiBotRestTrading",'api bot rest trading api key api key webhook webhooks mcp sdk python javascript node plans rate limit developer automate algo'))
+    + row('brApiT', 'brApiS', '/trading-api/', '#3fd8e6', 'bot', __esT_mpnav("apiBotRestTrading",'api bot rest trading api key api key webhook webhooks mcp sdk python javascript node plans rate limit developer automate algo keys api key secret token rate limit plan'))
     + '<div class="mpnav-more">'
     + mrow('/api-docs/', 'docs', 'brDocsT', 'docs documentation openapi swagger endpoints reference schema spec')
     + mrow('/free-crypto-api/', 'braces', 'brFapiT', __esT_mpnav("freeApiJsonNo",'free api json no key public api price api market data endpoint'))
@@ -315,7 +315,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + '</div>'
 
     + '<div class="mpnav-sec">' + TR('secMore') + '</div>'
-    + row('brExT', 'brExS', '/exchanges/', '#c2f64a', 'swap', __esT_mpnav("exchangesExchangeCompareCo",'exchanges exchange compare comparison fees fee bybit binance okx mexc bitget hyperliquid moon leverage bonus referral sign up best exchange'))
+    + row('brExT', 'brExS', '/exchanges/', '#c2f64a', 'swap', __esT_mpnav("exchangesExchangeCompareCo",'exchanges exchange compare comparison fees fee bybit binance okx mexc bitget hyperliquid moon leverage bonus referral sign up best exchange fomo coinbase mexc gate bitget kucoin kraken hyperliquid bybit binance okx moon partner referral code commission rebate discount'))
     + '<div class="mpnav-more">'
     + mrow('/', 'home', 'mnHome', 'home homepage main')
     + mrow('https://t.me/MarginPadBot', 'tg', 'Telegram', 'telegram tg bot channel group signals wrap', 1)
@@ -511,6 +511,16 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       .replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
   }
   function toks(q) { var n = nrm(q); return n ? n.split(' ') : []; }
+  /* A STRICT AND OVER EVERY TOKEN IS RIGHT UNTIL IT RETURNS NOTHING (2026-10-18). "test my bot" found nothing
+     although the page is literally called "Where can I test a trading bot" - because "my" is in no title on the
+     site. Same for "how to withdraw". So the strict pass runs first and keeps its precision, and ONLY when it
+     comes back empty do we drop the function words and ask again. The list is short and deliberately does not
+     hold "free", "best" or "live": on this site those are real search terms. */
+  var MPSTOP = { a: 1, an: 1, and: 1, are: 1, at: 1, be: 1, by: 1, can: 1, do: 1, does: 1, for: 1, from: 1,
+    how: 1, i: 1, if: 1, in: 1, is: 1, it: 1, me: 1, my: 1, of: 1, on: 1, or: 1, our: 1, that: 1, the: 1,
+    their: 1, them: 1, there: 1, these: 1, they: 1, this: 1, to: 1, was: 1, we: 1, what: 1, when: 1, where: 1,
+    which: 1, who: 1, why: 1, will: 1, with: 1, you: 1, your: 1 };
+  function core(tk) { var o = []; for (var i = 0; i < tk.length; i++) if (!MPSTOP[tk[i]]) o.push(tk[i]); return o.length ? o : tk; }
   function hay(it) {
     if (it.__mpHay) return it.__mpHay;
     var h = nrm((it.textContent || '') + ' ' + (it.getAttribute('data-kw') || '') + ' ' + (it.getAttribute('href') || ''));
@@ -520,6 +530,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   function filter(q) {
     q = (q || '').trim(); if (!scrollEl) return;
     var tk = toks(q);
+    // strict first; if the whole drawer comes back empty, ask again without the function words (see `core`)
+    if (tk.length > 1) {
+      var anyStrict = Array.prototype.some.call(scrollEl.querySelectorAll('.mpnav-row,.mpnav-mrow,.mpnav-subrow'), function (it) { return hits(it, tk); });
+      if (!anyStrict) { var tc = core(tk); if (tc.length !== tk.length) tk = tc; }
+    }
     // searching reveals EVERY collapsed group (simulators, liquidation maps, calculators, comparisons) so a
     // sub-item can match - it used to reveal only the first .mpnav-sub, i.e. the calculators
     Array.prototype.forEach.call(scrollEl.querySelectorAll('.mpnav-sub'), function (s) { s.hidden = !tk.length; });
@@ -550,14 +565,17 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   // shortest URLs, never the best page. Score: every token must appear; the title outranks the URL, a whole-word
   // hit outranks a fragment, a title that STARTS with the query wins, an exact title wins outright.
   var _SKIP_U = { '/api/': 1 };  // retired 2026-09-15 (301 -> /trading-api/) - never suggest a redirect
-  function _prep(x) { if (x.__n == null) { x.__n = nrm(x.t); x.__nu = nrm(x.u); } return x; }
+  function _prep(x) { if (x.__n == null) { x.__n = nrm(x.t); x.__nu = nrm(x.u); x.__nk = x.k ? nrm(x.k) : ''; } return x; }
   function score(x, tk, qn) {
-    _prep(x); var t = x.__n, u = x.__nu, s = 0;
+    _prep(x); var t = x.__n, u = x.__nu, kw = x.__nk, s = 0;
     for (var i = 0; i < tk.length; i++) {
-      var k = tk[i], inT = t.indexOf(k), inU = u.indexOf(k);
-      if (inT < 0 && inU < 0) return -1;                                  // every token must be somewhere
+      var k = tk[i], inT = t.indexOf(k), inU = u.indexOf(k), inK = kw ? kw.indexOf(k) : -1;
+      if (inT < 0 && inU < 0 && inK < 0) return -1;                       // every token must be somewhere
       if (inT >= 0) { s += 20; if (t.indexOf(' ' + k) >= 0 || inT === 0) s += 10; }  // word boundary in the title
-      else { s += 8; }
+      else if (inU >= 0) { s += 8; }
+      // the page's own description (2026-10-18): what it is ABOUT rather than what it is called. Worth less
+      // than the title on purpose - a page named for the word still outranks one that merely mentions it.
+      else { s += 6; }
     }
     if (t === qn) s += 90;
     else if (t.indexOf(qn) === 0) s += 45;
@@ -571,6 +589,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     if (!SIDX) { loadSidx(function () { renderSugg(q); }); return; }
     var scored = [];
     for (var i = 0; i < SIDX.length; i++) { var x = SIDX[i]; if (_SKIP_U[x.u]) continue; var s = score(x, tk, qn); if (s >= 0) scored.push([s, x]); }
+    // same fallback as the rows: precision first, and only an empty answer earns the looser question
+    if (!scored.length && tk.length > 1) {
+      var tc2 = core(tk);
+      if (tc2.length !== tk.length) for (var j = 0; j < SIDX.length; j++) { var y = SIDX[j]; if (_SKIP_U[y.u]) continue; var s2 = score(y, tc2, qn); if (s2 >= 0) scored.push([s2, y]); }
+    }
     scored.sort(function (a, b) { return b[0] - a[0]; });
     var hits = scored.slice(0, 8).map(function (p) { return p[1]; });
     if (!hits.length) { box.hidden = true; box.innerHTML = ''; return; }

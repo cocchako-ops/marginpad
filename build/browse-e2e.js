@@ -27,6 +27,16 @@ const WAS_DEAD = ['liq price', 'stop loss', 'take profit', 'risk reward', 'leade
   'contest', 'arena', 'bot arena', 'skins', 'ticks', 'subscription', 'withdraw', 'payout', 'referral', 'api key',
   'webhook', 'mcp', 'sdk', 'fear greed', 'course', 'long short ratio', 'halving', 'gold', 'demo account'];
 
+// THE SECOND SWEEP (2026-10-18, owner: "sta god korisnik da kuca, ako imamo negde tu rec, treba da mu
+// preporuci"). 133 realistic queries across eight kinds; 17 found nothing. Every one of them was a thing
+// the site really has, and the three causes were: the index carried only page TITLES, a strict AND over
+// every token killed any phrase with a function word in it ("test my bot" - the page is literally called
+// "Where can I test a trading bot"), and features inside tools had no data-kw. 87% -> 100%.
+const DEAD_1018 = [
+  'order book', 'tape', 'gold room', 'affiliate', 'rebate', 'commission', 'breakeven', 'bollinger',
+  'supertrend', 'vwap', 'market brain', 'how to withdraw', 'seed phrase', 'test my bot', 'fomo',
+  'coinbase', 'keys',
+];
 // query -> a href that MUST be among the matches (precision, not just "something came back")
 const PRECISE = [
   ['fear greed', '/fear-greed/'], ['risk reward', '/calculators?c=rr'], ['liq price', '/calculators?c=liq'],
@@ -166,6 +176,7 @@ async function openDrawer(page, url) {
 
     let deadNow = [];
     for (const q of WAS_DEAD) { const r = await searchOne(q); if (!r.rows && !r.sug.length) deadNow.push(q); }
+    for (const q of DEAD_1018) { const r = await searchOne(q); if (!r.rows && !r.sug.length) deadNow.push(q); }
     eq(deadNow.length, 0, 'all 26 now return something' + (deadNow.length ? ' - still dead: ' + deadNow.join(', ') : ''));
 
     console.log('\n-- search precision: the right row, not just any row --');
