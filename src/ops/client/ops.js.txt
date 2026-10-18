@@ -1061,7 +1061,7 @@
           never disagree about who is in it;
        4. whose flag keeps changing - what the owner actually noticed on alefzed, and the panel could not show. */
   VIEWS['people/security'] = { render: function (el) {
-    var S = { q: '', sweep: null, busy: false };
+    var S = { q: '', sweep: null, busy: false, who: '', handMsg: '' }; // who/handMsg outlive the repaint a chip triggers - a confirmation must survive the paint it causes
     function paint() {
       J('/api/admin/security').then(function (d) {
         var did = d.didClusters || [], ip = d.ipClusters || [], em = d.emailClusters || [], log = d.authlog || [];
@@ -1108,17 +1108,37 @@
         var rrRowCls = function (f) { return f.rrtag === 'on' ? 'rr-forced' : f.rrtag === 'off' ? 'rr-exempt' : ''; };
         var farmTbl = tbl([
           { h: 'who', grow: true, f: function (f) { return userLink(f.username, f.email) + ' <span class="meta">' + flag(f.cc) + (f.vpn ? ' VPN' : '') + (f.ccN >= 3 ? ' · ' + f.ccN + ' countries' : '') + (f.status === 'banned' ? ' <span class="badge red">BANNED</span>' : '') + '</span>'; } },
+          /* MODE AND FAUCET SIT BESIDE THE NAME, not at the far right (2026-10-18). At 1366px - and every
+             narrower screen - the table scrolls inside its own box, and with eight evidence columns ahead
+             of them the A/R/E chips were cut off by the right edge: the owner could see the list and not
+             reach the switch. You decide about a PERSON, so the control belongs next to the person, where
+             no column added later can push it off the screen. */
+          { h: 'mode', f: rrChips },
+          // WHERE the number came from. In this list the rule already holds nearly everyone at 50%, so
+          // pressing R on them moves no figure at all - without this the switch reads as inert.
+          { h: 'faucet', r: true, f: function (f) { return '<span class="' + (f.rrPct < 100 ? 'dn' : 'up') + ' mono">' + f.rrPct + '%</span> <span class="badge' + (f.rrSource === 'owner' ? ' amber' : '') + '">' + (f.rrSource === 'owner' ? 'BY YOU' : 'rule') + '</span>'; } },
+
           { h: 'on the site', r: true, mono: true, f: function (f) { return (f.dwellTotal / 3600).toFixed(1) + ' h'; } },
           { h: 'of it on /rewards', r: true, mono: true, f: function (f) { return '<b>' + (f.dwellRewards / 3600).toFixed(1) + ' h</b> <span class="meta">' + Math.round(f.dwellRewards / Math.max(1, f.dwellTotal) * 100) + '%</span>'; } },
+          // the rank is WHY a row is here - without it an owner-tagged member outside the rule's own
+          // cohort reads as an unexplained row
+          { h: 'rank', r: true, mono: true, f: function (f) { return f.rwRank === 1 ? '<span class="dn">#1</span>' : (f.rwRank ? '#' + f.rwRank : '-'); } },
           { h: 'otherwise on', mono: true, f: function (f) { return '<span class="meta">' + esc(f.topPath || '-') + '</span>'; } },
           { h: 'trades', r: true, mono: true, f: function (f) { return N(f.trades); } },
           { h: 'claims', r: true, mono: true, f: function (f) { return N(f.claims); } },
           { h: 'earned', r: true, mono: true, f: function (f) { return USD(f.earnedUsd); } },
           { h: 'paid to', mono: true, f: function (f) { return '<span class="meta">' + esc(f.payoutAddr || '-') + '</span>'; } },
-          { h: 'faucet', r: true, f: function (f) { return '<span class="' + (f.rrPct < 100 ? 'dn' : 'up') + ' mono">' + f.rrPct + '%</span>' + (f.rrSource === 'owner' ? ' <span class="badge">by you</span>' : ''); } },
-          { h: 'mode', f: rrChips },
         ], farm, undefined, rrRowCls);
 
+        /* SET IT FOR ANYBODY, FROM HERE (2026-10-18, owner: "moras da mi dozvolis ovde da palim i gasim ovo").
+           The list is the rule's own cohort, so a member the rule does NOT catch could only be reached through
+           their profile - and worse, forcing the tag on one made their row vanish from the only list that
+           carries the control. The row filter keeps anyone he has touched; this bar is how he reaches the rest. */
+        var byHand = '<div class="bar" style="margin-bottom:10px;gap:6px;flex-wrap:wrap">'
+          + '<span class="meta">set it for anybody:</span>'
+          + '<input class="in" id="rrWho" placeholder="username" style="width:160px" value="' + esc(S.who || '') + '">'
+          + '<span class="rrb-g"><button class="rrb" data-rrhand="" title="back to the automatic rule">A</button><button class="rrb" data-rrhand="on" title="force the cut">R</button><button class="rrb" data-rrhand="off" title="exempt them">E</button></span>'
+          + '<span class="meta">' + esc(S.handMsg || 'anyone, whether or not the rule catches them') + '</span></div>';
         el.innerHTML = '<div class="grid g4">'
             + tile(N(pay.length), 'wallets paid from 2+ accounts', pay.length ? 'red' : 'dim', pay.length ? USD(payMoney) + ' earned behind them' : 'the hardest evidence there is')
             + tile(N(did.length), 'same-device clusters', did.length ? 'amber' : 'dim', N(ip.length) + ' same-IP · ' + N(em.length) + ' look-alike emails')
@@ -1127,7 +1147,7 @@
             + '</div>'
           + card('One wallet, several accounts', pay.length ? pay.map(function (c) { return cluster(c, 'wallet'); }).join('') : '<div class="line up">every payout address belongs to exactly one account</div>', 'a payout address that has been paid from two accounts is not a heuristic - it is the same wallet taking money twice')
           + card('The multi-account sweep', sweepBody, 'main = highest level in the cluster, everyone else goes · a dry run until you press the red button')
-          + card('Here only for the faucet', farm.length ? farmTbl + '<div class="line" style="font-size:12px;margin-top:6px">the rewards page is the single biggest page of their own time AND they have been on the site more than ' + (rr.minDwellHours || 4.5) + ' h · #1 = faucet cut to 50%, #2 = 75%, #3 or lower = no cut · <b>A</b> automatic · <span class="rrb on on-r">R</span> you forced the cut · <span class="rrb on on-e">E</span> you exempted them · a coloured row is a decision you made, not the rule</div>' : '<div class="line up">nobody past the ' + (rr.minDwellHours || 4.5) + ' h floor has the rewards page as their biggest page</div>', 'the cohort the reduced-rewards tag applies to - one list, one rule', scan.ts ? '<span class="meta">scanned ' + ago(scan.ts) + ' ago</span>' : '')
+          + card('Here only for the faucet', byHand + (farm.length ? farmTbl + '<div class="line" style="font-size:12px;margin-top:6px">the rewards page is the single biggest page of their own time AND they have been on the site more than ' + (rr.minDwellHours || 4.5) + ' h · #1 = faucet cut to 50%, #2 = 75%, #3 or lower = no cut · <b>A</b> automatic · <span class="rrb on on-r">R</span> you forced the cut · <span class="rrb on on-e">E</span> you exempted them · a coloured row is a decision YOU made and it stays on this list until you set it back to A</div>' : '<div class="line">nobody is on this list: nobody past the ' + (rr.minDwellHours || 4.5) + ' h floor has the rewards page as their biggest page, and you have not set anybody by hand</div>'), 'the cohort the rule catches, plus everybody you have decided about yourself', scan.ts ? '<span class="meta">scanned ' + ago(scan.ts) + ' ago</span>' : '')
           + fold('The flag keeps changing', hop.length ? tbl([{ h: 'who', grow: true, f: function (h) { return userLink(h.username, h.email) + ' <span class="meta">' + (h.status === 'banned' ? '<span class="badge red">BANNED</span>' : '') + '</span>'; } }, { h: 'countries', f: function (h) { return '<b>' + h.ccN + '</b> <span class="meta">' + (h.ccList || []).map(function (c) { return flag(c) + ' ' + c; }).join(' ') + '</span>'; } }, { h: 'network', mono: true, f: function (h) { return '<span class="meta">' + esc(String(h.org || '').slice(0, 28)) + (h.vpn ? ' <span class="badge">VPN</span>' : '') + '</span>'; } }, { h: 'on /rewards', r: true, mono: true, f: function (h) { return h.rwRank === 1 ? '<span class="dn">#1</span>' : (h.rwRank ? '#' + h.rwRank : '-'); } }, { h: 'claims', r: true, mono: true, f: function (h) { return N(h.claims); } }, { h: 'earned', r: true, mono: true, f: function (h) { return USD(h.earnedUsd); } }], hop) : '<div class="empty">nobody acted from three or more countries</div>', hop.length + ' members acted from 3+ countries in their own event log · a carrier can route a phone through two, a VPN being switched looks like this', false)
           + fold('Same device', did.map(function (c) { return cluster(c, 'device'); }).join('') || '<div class="empty">none</div>', did.length + ' clusters · one browser, several accounts', false)
           + fold('Same IP', ip.map(function (c) { return cluster(c, 'IP'); }).join('') || '<div class="empty">none</div>', ip.length + ' clusters · a mobile carrier NATs thousands of people, so this is information and not a verdict', false)
@@ -1147,6 +1167,15 @@
             paint();
           }).catch(function () { S.busy = false; toast('Network error'); paint(); });
         };
+        var whoIn = $('rrWho'); if (whoIn) whoIn.oninput = function () { S.who = whoIn.value; }; // kept across the repaint a chip triggers
+        el.querySelectorAll('[data-rrhand]').forEach(function (b) { b.onclick = function () {
+          var u = (($('rrWho') || {}).value || '').trim(); if (!u) { S.handMsg = 'type a username first'; paint(); return; }
+          post('/api/admin/rrtag', { username: u, tag: b.getAttribute('data-rrhand') }).then(function (j) {
+            if (j && j.ok && j.state) { S.handMsg = '@' + (j.state.username || u) + ' is at ' + j.state.factorPct + '% - ' + j.state.why; S.who = ''; }
+            else S.handMsg = 'failed: ' + ((j && j.error) || 'no such member');
+            paint();
+          }).catch(function () { S.handMsg = 'network error'; paint(); });
+        }; });
         el.querySelectorAll('[data-rrtag]').forEach(function (b) { b.onclick = function () {
           post('/api/admin/rrtag', { uid: b.getAttribute('data-rruid'), tag: b.getAttribute('data-rrtag') }).then(function (j) {
             if (j && j.ok) { toast('Faucet now at ' + ((j.state && j.state.factorPct) || '?') + '% for ' + ((j.state && j.state.username) || 'that member')); paint(); }

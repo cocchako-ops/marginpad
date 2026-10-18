@@ -22616,8 +22616,13 @@ export default {
       /* HERE ONLY FOR THE MONEY: the owner's own rule, as a list. Rank 1 past the dwell floor, ordered by what they
          have actually taken out. This is the cohort `reduced rewards` applies to, so the panel and the faucet can
          never disagree about who is in it. */
-      const farmers = rows.filter(r => r.rwRank === 1 && r.dwellTotal >= RR_MIN_DWELL_S)
-        .sort((a, b) => (b.earnedUsd - a.earnedUsd) || (b.claims - a.claims))
+      /* ANYONE THE OWNER HAS TOUCHED STAYS ON THIS LIST, whatever the rule says about them (2026-10-18, owner:
+         "moras da mi dozvolis ovde da palim i gasim ovo A R i E"). The first cut listed exactly the rule's own
+         cohort - rank 1 past the floor - so forcing the tag on a member the rule does NOT catch made their row
+         VANISH from the only list that carries the control, and there was no way to turn it off again short of
+         opening their profile. A switch you can set and then cannot find is worse than no switch. */
+      const farmers = rows.filter(r => (r.rwRank === 1 && r.dwellTotal >= RR_MIN_DWELL_S) || !!r.rrtag)
+        .sort((a, b) => ((b.rrtag ? 1 : 0) - (a.rrtag ? 1 : 0)) || (b.earnedUsd - a.earnedUsd) || (b.claims - a.claims))
         .map(r => ({ uid: r.uid, username: r.username, email: r.email, cc: r.cc, org: r.org, vpn: r.vpn, status: r.status, dwellTotal: r.dwellTotal, dwellRewards: r.dwellRewards, rwRank: r.rwRank, topPath: r.topPath, claims: r.claims, earnedUsd: r.earnedUsd, balanceUsd: r.balanceUsd, payoutAddr: r.payoutAddr, rrPct: r.rrPct, rrSource: r.rrSource, rrtag: r.rrtag, ccN: r.ccN, ccList: r.ccList, trades: r.trades }));
       /* THE FLAG THAT KEEPS CHANGING - what the owner actually noticed, and the panel had no way to show it. Four
          or more countries in a member's own event log is a VPN being switched, not travel. Information, never a
@@ -22727,8 +22732,11 @@ export default {
       const bq = await request.json().catch(() => ({}));
       const tag = String(bq.tag == null ? '' : bq.tag);
       if (tag !== '' && tag !== 'on' && tag !== 'off') return J({ error: 'bad_tag', note: "'' = automatic, 'on' = forced reduced, 'off' = exempt" }, 400);
-      const who = bq.uid ? { id: String(bq.uid).replace(/^u:/, '') } : (bq.email ? { email: String(bq.email).toLowerCase() } : null);
-      if (!who) return J({ error: 'need uid or email' }, 400);
+      let who = bq.uid ? { id: String(bq.uid).replace(/^u:/, '') } : (bq.email ? { email: String(bq.email).toLowerCase() } : null);
+      // by USERNAME too, because that is what the owner has in front of him on the panel - the DO's /control only
+      // knows an id or an email, so resolve it the same way /api/admin/credit does
+      if (!who && bq.username) { try { const w = await usersDO(env, '/xpdiag', { username: String(bq.username).trim().slice(0, 24) }); if (w && w.user && w.user.id) who = { id: String(w.user.id) }; } catch (e) {} if (!who) return J({ error: 'no_such_member' }, 404); }
+      if (!who) return J({ error: 'need uid, username or email' }, 400);
       let d = null; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'rrtag', tag }, who)) })); d = await r.json(); } catch (e) { return J({ error: 'store_unavailable' }, 503); }
       if (!d || !d.ok) return J({ error: (d && d.error) || 'failed' }, 400);
       // read the member back and write the decided factor now, then drop their sessions so the next claim sees it

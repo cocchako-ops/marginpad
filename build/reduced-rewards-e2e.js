@@ -184,6 +184,40 @@ function liftDeviceGate() {
     ok('the panel stamps the row class from the tag', opsJs.indexOf('rr-forced') > 0 && opsJs.indexOf('rr-exempt') > 0 && opsJs.indexOf('rrRowCls') > 0);
     ok('and never uses the .btn.on that ops.css does not define outside .sw', opsJs.indexOf("'btn' + ((f.rrtag") < 0);
 
+    /* AND THE SWITCH HAS TO BE REACHABLE AND FINDABLE (owner 2026-10-18: "moras da mi dozvolis ovde da palim i
+       gasim ovo A R i E"). It worked mechanically all along - the POST fired, the tag stuck. What was wrong:
+         - the list WAS the rule's own cohort, so forcing the tag on a member the rule does not catch made their
+           row vanish from the only list that carries the control, and it could never be turned off again;
+         - the mode column sat last, behind eight evidence columns, so at 1366px and under it was cut off by the
+           right edge of the table's own scroll box - visible list, unreachable switch;
+         - and in this list the rule already holds nearly everyone at 50%, so pressing R moved no figure at all.
+       Each of those is asserted here. */
+    console.log('\n--- the switch is reachable and findable ---');
+    const secBefore = (await get('/api/admin/security')).j;
+    const outsider = (secBefore.rows || []).filter(r => r.username && !r.rrtag && r.rwRank >= 3 && r.dwellTotal > 3600 && !/^e2e/i.test(r.username))
+      .sort((a, b) => b.dwellTotal - a.dwellTotal)[0];
+    ok('there is a member the rule does NOT catch to test with', !!outsider, outsider && outsider.username);
+    if (outsider) {
+      const onR = (await post('/api/admin/rrtag', { username: outsider.username, tag: 'on' })).j;
+      ok('a member can be reduced BY USERNAME, which is what the panel has in front of it', onR.ok && onR.state && onR.state.factorPct === 50, onR);
+      await sleep(1200);
+      const mid = (await get('/api/admin/security')).j;
+      const row = (mid.farmers || []).find(f => f.username === outsider.username);
+      ok('and they STAY on the list the control lives on, though the rule would not list them', !!row && row.rwRank >= 3, { rank: outsider.rwRank, onList: !!row });
+      ok('the row says the decision was the owner\'s, not the rule\'s', !!row && row.rrSource === 'owner' && row.rrtag === 'on', row && { src: row.rrSource, tag: row.rrtag });
+      const off = (await post('/api/admin/rrtag', { username: outsider.username, tag: '' })).j;
+      ok('and it can be turned off again, which is the whole point', off.ok && off.state && off.state.factorPct === 100, off);
+      await sleep(1000);
+      const after = (await get('/api/admin/security')).j;
+      ok('back to automatic, and off the list again', !(after.farmers || []).some(f => f.username === outsider.username && f.rrtag));
+    }
+    ok('a username nobody has is refused, not silently applied', (await post('/api/admin/rrtag', { username: 'nobody-' + Date.now(), tag: 'on' })).status === 404);
+    const opsSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'ops', 'client', 'ops.js.txt'), 'utf8');
+    const farmCols = opsSrc.slice(opsSrc.indexOf('var farmTbl = tbl(['), opsSrc.indexOf('], farm, undefined, rrRowCls);'));
+    const heads = (farmCols.match(/\{ h: '[^']*'/g) || []).map(x => x.slice(6, -1));
+    ok('the mode column sits beside the NAME, where no later column can push it off the screen', heads[0] === 'who' && heads[1] === 'mode', heads.slice(0, 4));
+    ok('the panel can set the tag for anybody, not only the rows it lists', opsSrc.indexOf('data-rrhand') > 0 && opsSrc.indexOf('rrWho') > 0);
+
   console.log('\n--- the profile page the controls live on ---');
     const sTok = (await post('/api/stats/session', {})).j.token;
     const html = await fetch(BASE + '/api/admin/user?username=alefzed', { headers: { cookie: 'mp_sadm=' + sTok } }).then(r => r.text());
