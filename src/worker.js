@@ -8609,7 +8609,33 @@ async function checkOpsAlerts(env) {
     if (srv >= 5) await once('alrt:srv:' + today, () => tgAdmin(env, '<b>' + srv + ' server errora danas</b> - pogledaj Health tab.\n<a href="https://marginpad.io/api/stats">Otvori ops →</a>'));
     const errj = +(await env.STATS.get('err:day:' + today) || 0);
     if (errj >= 12) await once('alrt:err:' + today, () => tgAdmin(env, '<b>' + errj + ' broken pages danas</b> - pogledaj Health tab.'));
- try { const cs = await collectorStatusInfo(env); if (cs && (cs.state === 'UNREACHABLE' || cs.state === 'DOWN' || cs.state === 'STALLED' || cs.state === 'UNCONFIG')) await once('alrt:coll:' + today, () => tgAdmin(env, '<b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ') - Rekt / likvidacije feed je stao.\nRestart na VPS-u: <code>ssh root@167.172.98.147 "pm2 restart marginpad-collector"</code>'));
+ /* A TOTAL OUTAGE MUST KEEP SHOUTING, AND THIS ONE SAID ITS PIECE ONCE A DAY (2026-10-18). The key was
+    `alrt:coll:<today>`, so the single most serious failure we have - the whole liquidation feed dead - paged
+    ONCE and then went silent for up to 24 hours. That is exactly what 2026-10-06 looked like from the
+    outside: the droplet stopped answering at 10:18 UTC, this line fired at about 10:20, and nothing said
+    another word until the owner happened to power-cycle it at 19:24. Nine hours of silence from a system
+    that knew. It now re-pages on an escalating cadence and every line carries how long it has been down,
+    because "still down, 3 h 40 min" is a different message from the first one; and recovery is announced,
+    since the only way to learn the feed was back was to go and look. A flap that never paged stays quiet. */
+ try {
+   const cs = await collectorStatusInfo(env);
+   const collDown = !!(cs && (cs.state === 'UNREACHABLE' || cs.state === 'DOWN' || cs.state === 'STALLED' || cs.state === 'UNCONFIG'));
+   let cd = null; try { cd = JSON.parse(await env.STATS.get('alrt:colldown') || 'null'); } catch (e) {}
+   const nowMs = Date.now();
+   const durTxt = (ms) => { const m = Math.max(0, Math.round(ms / 60000)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; };
+   if (collDown) {
+     const since = (cd && +cd.since) || nowMs, downMs = nowMs - since;
+     const gapMin = downMs < 3600000 ? 20 : downMs < 21600000 ? 60 : 180; // insistent for the first hour, hourly to six, then every three
+     if (!cd || nowMs - ((+cd.last) || 0) >= gapMin * 60000) {
+       const sent = await tgAdmin(env, '<b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ')' + (cd ? ' - vec <b>' + durTxt(downMs) + '</b>' : '') + ' - Rekt / likvidacije feed je stao.\nRestart na VPS-u: <code>ssh root@167.172.98.147 "pm2 restart marginpad-collector"</code>\nAko ni SSH ne odgovara, droplet je ugasen - DigitalOcean konzola.', { kind: 'collector-down', sev: 'red' });
+       await env.STATS.put('alrt:colldown', JSON.stringify({ since, last: sent ? nowMs : ((cd && +cd.last) || 0), pages: ((cd && +cd.pages) || 0) + (sent ? 1 : 0) }), { expirationTtl: 7 * 86400 });
+     }
+   } else if (cd) {
+     await env.STATS.delete('alrt:colldown');
+     if (+cd.pages > 0) await tgAdmin(env, '<b>Collector je NAZAD</b> - bio dole ' + durTxt(nowMs - ((+cd.since) || nowMs)) + '. Feed ponovo radi.', { kind: 'collector-back', sev: 'info' });
+   }
+ // NOTE: this try is NOT closed here - `cs` is declared in it and the restart-loop and per-venue-silence
+ // blocks below both read it. Its catch is the one after the venue loop.
  /* A RESTART LOOP IS THE ONE COLLECTOR FAILURE EVERY OTHER CHECK IS BLIND TO (2026-10-11). The probe above
     suppresses DOWN and STALLED while uptime is under 15 minutes, deliberately, so that a `pm2 restart` cannot
     page RED - which means a process that never REACHES 15 minutes is permanently "booting" and permanently
@@ -8637,6 +8663,23 @@ async function checkOpsAlerts(env) {
      }
    }
  } catch (e) {}
+ /* THE DROPLET'S DISK HAS NEVER BEEN WATCHED BY ANYTHING (2026-10-18, and CLAUDE.md has said so since
+    2026-09-30, the day it filled). Every threshold here is a MEASURED one, not a round number:
+      - 85% full: on 2026-09-30 it read 8.7G of 8.7G and the collector died with "database or disk is
+        full". The disk is 58G now, so 85% still leaves about 8G - room to act rather than a post-mortem.
+      - 400 MB of write-ahead log: a healthy WAL is checkpointed and sits near zero; the one that filled
+        the disk had reached 2.9 GB beside a 621 MB database. 400 means checkpointing has stopped.
+        NEVER DELETE THE WAL - it holds committed transactions. The fix is a checkpoint (see CLAUDE.md).
+      - 620 MB RSS: pm2's ceiling is 700 MB and the measured steady state is 455 MB. Crossing 620 means a
+        restart loop is coming, and 2026-10-11 showed what that costs - 119 kills, every alarm blind to it.
+    One line per 6 h each, the cadence the venue alarms already use. */
+ if (cs && cs.state !== 'UNREACHABLE' && cs.state !== 'UNCONFIG') {
+   const slot6 = Math.floor(Date.now() / 21600000);
+   const d = cs.disk || {};
+   if (+d.usedPct >= 85) await once('alrt:colldisk:' + slot6, () => tgAdmin(env, '<b>Droplet disk ' + d.usedPct + '% pun</b> (' + Math.round((+d.freeMb || 0) / 1024) + ' GB slobodno). Kad se napuni, kolektor umire sa "database or disk is full".\n<code>ssh root@167.172.98.147 "df -h /; journalctl --vacuum-size=80M"</code>', { kind: 'collector-disk', sev: 'warn' }));
+   if (+d.walMb >= 400) await once('alrt:collwal:' + slot6, () => tgAdmin(env, '<b>WAL je narastao na ' + d.walMb + ' MB</b> (baza ' + (+d.dbMb || 0) + ' MB) - checkpoint je stao. <b>NIKAD ne brisi WAL</b>, u njemu su potvrdjene transakcije.\nCheckpoint: <code>node -e "new (require(\'node:sqlite\').DatabaseSync)(DB).prepare(\'PRAGMA wal_checkpoint(TRUNCATE)\').get()"</code>', { kind: 'collector-wal', sev: 'warn' }));
+   if (+cs.rssMb >= 620) await once('alrt:collrss:' + slot6, () => tgAdmin(env, '<b>Kolektor na ' + cs.rssMb + ' MB RSS</b> - pm2 plafon je 700 MB, izmereno mirno stanje 455 MB. Pred restart petljom.\n<code>ssh root@167.172.98.147 "pm2 describe marginpad-collector | grep -i memory"</code>', { kind: 'collector-rss', sev: 'warn' }));
+ }
  // PER-VENUE SILENCE (2026-09-02). Bybit, OKX, BitMEX and Bitfinex died one by one between 08-23 and
  // 08-29 and nobody was told: the whole-collector state above only degrades below half the venues, so
  // 6/10 alive read as LIVE for ten days. A venue that stopped delivering is its own alarm now - once
@@ -8708,7 +8751,7 @@ async function collectorStatusInfo(env) {
  if (THIN[e.name]) return !e.connected && noMsg;
  return (!e.connected && noMsg) || (e.connected && noEvent);
  }).map((e) => ({ name: e.name, connected: !!e.connected, sinceH: Math.round((now - (e.connected ? (e.lastEventAt || since0) : (e.lastMsgAt || since0))) / 360000) / 10 }));
- return { state, reason: '', anyRecent, conn, total, uptimeSec: st.uptimeSec || 0, silent };
+ return { state, reason: '', anyRecent, conn, total, uptimeSec: st.uptimeSec || 0, silent, disk: st.disk || null, rssMb: (st.mem && +st.mem.rssMb) || 0 };
   } catch (e) { return { state: 'UNREACHABLE', reason: 'status parse', anyRecent: false }; }
 }
 async function collectorHealth(env) {
@@ -25473,6 +25516,12 @@ export class OpsLog {
     for (const col of ['k TEXT', 'p TEXT', 'uid TEXT', 'u TEXT', 'cc TEXT', 'd TEXT', 'di TEXT', 'b TEXT', 'net TEXT', 's TEXT', 'first INTEGER', 'la TEXT', 'lats INTEGER', 'e2 INTEGER DEFAULT 0', 'n INTEGER', 'nv INTEGER DEFAULT 0', 'ip TEXT', 'kn TEXT', 'via TEXT']) { try { s.exec('ALTER TABLE onmap ADD COLUMN ' + col); } catch (e) {} }
     s.exec('CREATE TABLE IF NOT EXISTS onhist(ts INTEGER PRIMARY KEY, n INTEGER, m INTEGER, a INTEGER, api INTEGER)'); // one sample per minute: people on the site, members among them, arrivals in that minute, API keys live. 7 days -> "usual at this hour" is measured, never guessed
     s.exec('CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT)');
+    // THE PUBLIC STATUS PAGE'S DAY COUNTER LIVES HERE BECAUSE KV CANNOT COUNT (2026-10-18). It was a KV
+    // read-modify-write in sampleUptime, which has no atomicity whatsoever - PROVEN on production by firing
+    // five samples at once and watching the day's n rise by ONE. A Durable Object handles one request at a
+    // time and these statements are synchronous with no await between the read and the write, so the
+    // increment cannot be lost. KV stays the 90-day read copy the page fetches; this table is the truth.
+    s.exec('CREATE TABLE IF NOT EXISTS upday(day TEXT PRIMARY KEY, n INTEGER DEFAULT 0, store INTEGER DEFAULT 0, coll INTEGER DEFAULT 0, px INTEGER DEFAULT 0, first INTEGER, storeMs TEXT, collMs TEXT)');
   }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
   j(o, s2 = 200) { return new Response(JSON.stringify(o), { status: s2, headers: { 'content-type': 'application/json' } }); }
@@ -25536,6 +25585,32 @@ export class OpsLog {
   async fetch(request) {
     const url = new URL(request.url); const path = url.pathname;
     await this.seed();
+    if (path === '/upsample' && request.method === 'POST') { // one /status/ uptime sample, counted where counting works (see the upday table)
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const day = String(b.day || '').slice(0, 10);
+      if (!/^\d{4}-\d\d-\d\d$/.test(day)) return this.j({ error: 'day_required' }, 400);
+      const now = Date.now(), s = this.state.storage.sql;
+      // No await from here to the UPDATE: a DO serves one request at a time, so this whole block is atomic.
+      // A day that does not exist here yet is SEEDED from the KV copy the caller already holds, so the
+      // changeover day does not restart its own count at one and read as a day we barely sampled.
+      if (!this.rows('SELECT day FROM upday WHERE day=?', day).length) {
+        const sd = (b && b.seed) || {};
+        const nn = Math.max(0, Math.min(10000, Math.round(+sd.n || 0)));
+        const cl = (v) => Math.max(0, Math.min(nn, Math.round(+v || 0)));
+        const arr = (v) => JSON.stringify((Array.isArray(v) ? v : []).filter(x => +x > 0).map(x => Math.round(+x)).slice(-200));
+        try { s.exec('INSERT INTO upday(day,n,store,coll,px,first,storeMs,collMs) VALUES(?,?,?,?,?,?,?,?)', day, nn, cl(sd.store), cl(sd.coll), cl(sd.px), +sd.first || now, arr(sd.storeMs), arr(sd.collMs)); } catch (e) {}
+      }
+      const cur = this.rows('SELECT * FROM upday WHERE day=?', day)[0] || {};
+      let sm = [], cm = [];
+      try { sm = JSON.parse(cur.storeMs || '[]'); } catch (e) { sm = []; }
+      try { cm = JSON.parse(cur.collMs || '[]'); } catch (e) { cm = []; }
+      if (+b.storeMs > 0) { sm.push(Math.round(+b.storeMs)); if (sm.length > 200) sm = sm.slice(-200); }
+      if (+b.collMs > 0) { cm.push(Math.round(+b.collMs)); if (cm.length > 200) cm = cm.slice(-200); }
+      try { s.exec('UPDATE upday SET n=n+1, store=store+?, coll=coll+?, px=px+?, storeMs=?, collMs=? WHERE day=?', b.store ? 1 : 0, b.coll ? 1 : 0, b.px ? 1 : 0, JSON.stringify(sm), JSON.stringify(cm), day); } catch (e) {}
+      const r = this.rows('SELECT * FROM upday WHERE day=?', day)[0] || {};
+      try { s.exec('DELETE FROM upday WHERE day < ?', new Date(now - 120 * 86400000).toISOString().slice(0, 10)); } catch (e) {} // the page keeps 90 days; this keeps a month of slack and nothing more
+      return this.j({ ok: true, row: { n: +r.n || 0, store: +r.store || 0, coll: +r.coll || 0, px: +r.px || 0, first: +r.first || now, storeMs: sm, collMs: cm } });
+    }
     if (path === '/push' && request.method === 'POST') {
       let b = {}; try { b = await request.json(); } catch (e) {}
       const k = String(b.k || '').replace(/[^a-z]/g, '').slice(0, 24);
@@ -27410,14 +27485,32 @@ async function sampleUptime(env) {
     else if (pairs && pairs.length) { c.px = 1; c.pxBy = 'floor-nots'; }
     else c.pxBy = 'none';
   } catch (e) {}
+  // THE DAY IS COUNTED IN THE DURABLE OBJECT, NOT IN KV (2026-10-18). What stood here was a KV
+  // read-modify-write, which has no atomicity at all: MEASURED on production by firing five samples at
+  // once, the day's n rose by ONE and four were lost. That is not a theoretical race - it is what made a
+  // day read "117 of 144 samples" with no scheduler outage behind it, and under the old arithmetic that
+  // undercount was published as the SERVICE being 81% available while every check of it had passed.
+  // OpsLog serves one request at a time, so the increment there cannot be lost; KV stays the read copy
+  // the page fetches 90 of in parallel. The old path is kept as the fallback - if the DO is unreachable,
+  // a lossy count is still better than losing the sample outright.
   try {
-    const k = 'up:day:' + day; let d = null; try { d = JSON.parse(await env.STATS.get(k) || 'null'); } catch (e) {}
-    d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [], first: t0 }; // first = when sampling of this day began: the day sampling STARTED is pro-rated from there, not from midnight (2026-09-12 showed red at 2 of 93 samples on its first hour)
-    if (!d.first) d.first = t0;
-    d.n += 1; d.store += c.store; d.coll += c.coll; d.px += c.px;
-    if (c.storeMs) { d.storeMs.push(c.storeMs); if (d.storeMs.length > 200) d.storeMs = d.storeMs.slice(-200); }
-    if (c.collMs) { d.collMs.push(c.collMs); if (d.collMs.length > 200) d.collMs = d.collMs.slice(-200); }
-    await env.STATS.put(k, JSON.stringify(d), { expirationTtl: UP_KEEP_D * 86400 });
+    const k = 'up:day:' + day; let row = null;
+    let kv = null; try { kv = JSON.parse(await env.STATS.get(k) || 'null'); } catch (e) {} // also the seed for this day's first DO write
+    try {
+      const r = await opslogDo(env).fetch(new Request('https://do/upsample', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ day, store: c.store, coll: c.coll, px: c.px, storeMs: c.storeMs, collMs: c.collMs, seed: kv || undefined }) }));
+      const j = await r.json(); if (j && j.ok && j.row && +j.row.n > 0) row = j.row;
+    } catch (e) {}
+    if (!row) {
+      let d = kv; // first = when sampling of this day began: the day sampling STARTED is pro-rated from there, not from midnight (2026-09-12 showed red at 2 of 93 samples on its first hour)
+      d = d || { n: 0, store: 0, coll: 0, px: 0, storeMs: [], collMs: [], first: t0 };
+      if (!Array.isArray(d.storeMs)) d.storeMs = []; if (!Array.isArray(d.collMs)) d.collMs = [];
+      if (!d.first) d.first = t0;
+      d.n += 1; d.store += c.store; d.coll += c.coll; d.px += c.px;
+      if (c.storeMs) { d.storeMs.push(c.storeMs); if (d.storeMs.length > 200) d.storeMs = d.storeMs.slice(-200); }
+      if (c.collMs) { d.collMs.push(c.collMs); if (d.collMs.length > 200) d.collMs = d.collMs.slice(-200); }
+      row = d; c.upBy = 'kv';
+    } else c.upBy = 'do';
+    await env.STATS.put(k, JSON.stringify(row), { expirationTtl: UP_KEEP_D * 86400 });
     await env.STATS.put('up:last', JSON.stringify(Object.assign({ ts: t0 }, c)), { expirationTtl: 86400 });
   } catch (e) {}
   // HOW MUCH THIS API HAS SERVED, for the proof strip on /trading-api/. It was a hardcoded "1.1M" with a

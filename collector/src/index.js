@@ -4,6 +4,7 @@ import './env.js'; // MUST be first - populates process.env from collector/.env 
 import { EventEmitter } from 'node:events';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { statfsSync, statSync } from 'node:fs';
 import { config } from '../config.js';
 import { log } from './logger.js';
 import { createStorage, slowStorageCalls } from './storage/index.js';
@@ -187,6 +188,29 @@ setInterval(() => {
   if (lag > 2000) { loopLag.stalls++; loopLag.lastStallAt = now; log.warn('event loop stalled', { lagMs: lag }); }
 }, 1000);
 
+/* NOTHING HAS EVER WATCHED THIS BOX'S DISK, AND IT FILLED UP ONCE (2026-09-30): 8.7G of 8.7G, pm2 list
+   empty, the collector dead since 20:35 with "database or disk is full" - and the filler was a 2.9 GB
+   write-ahead log beside a 621 MB database, a file that only ever grows when nothing checkpoints it. The
+   site's own /api/health covers the cron and the ledger backup, never the VPS. So the two numbers that
+   would have predicted that morning are published here, where the worker's alarm pass already looks.
+   Cached for a minute: statfs is one syscall but /status is a hot read. */
+let _diskC = { ts: 0, v: null };
+function diskInfo() {
+  const now = Date.now();
+  if (_diskC.v && now - _diskC.ts < 60000) return _diskC.v;
+  let v = null;
+  try {
+    const mb = (b) => Math.round(b / 1048576);
+    const s = statfsSync('/');
+    const total = s.blocks * s.bsize, free = s.bavail * s.bsize;
+    v = { totalMb: mb(total), freeMb: mb(free), usedPct: total > 0 ? Math.round((1 - free / total) * 100) : null };
+    const db = config.storage.sqlitePath;
+    try { v.dbMb = mb(statSync(db).size); } catch (e) {}
+    try { v.walMb = mb(statSync(db + '-wal').size); } catch (e) { v.walMb = 0; } // absent = checkpointed, which is the healthy state
+  } catch (e) { v = null; }
+  _diskC = { ts: now, v };
+  return v;
+}
 function getStatus() {
   const now = Date.now();
   const exchanges = collectors.map((c) => {
@@ -200,6 +224,7 @@ function getStatus() {
     // beside it is what tells a leak (objects held) from the allocator keeping freed pages (which settles).
     mem: (() => { const m = process.memoryUsage(); const mb = (v) => Math.round(v / 1048576);
       return { rssMb: mb(m.rss), heapUsedMb: mb(m.heapUsed), heapTotalMb: mb(m.heapTotal), externalMb: mb(m.external) }; })(),
+    disk: diskInfo(), // see diskInfo: free space, the database and its write-ahead log - the two figures that would have predicted 2026-09-30
     symbols: config.symbols, inserted, deduped,
     // What the plausibility ceiling refused, and what it was. `rejected` staying at 0 is the normal state;
     // anything in `rejectLog` is either an adapter double-counting a position field (which is what this
