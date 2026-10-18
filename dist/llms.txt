@@ -1,6 +1,6 @@
 # MarginPad
 
-Last updated: 2026-10-17
+Last updated: 2026-10-18
 
 > MarginPad (https://marginpad.io) is a free crypto-futures practice ground and data site. Paper trading on live prices with no signup (crypto perps, US stocks, forex, stock indices, gold; 1x-1000x; fills, stops and liquidations decided SERVER-side from real exchange candles), a liquidation feed measured by our own collector on eight exchanges with 32 per-coin liquidation maps, a Hyperliquid whale tracker read from the chain, funding / open-interest / long-short dashboards, 76 calculators, a scored screener, a trading academy, a free keyless JSON API and a remote MCP server. 13 languages. Educational only, never financial advice.
 

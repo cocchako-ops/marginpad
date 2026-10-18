@@ -8157,7 +8157,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=d4c6279e" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9e19e876" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -18637,7 +18637,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'dfab0c38';
+const ASSET_V = 'cf3bee08';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -18979,7 +18979,13 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 </main>
 </div>
 <script>(function(){
-var qs=new URLSearchParams(location.search),key=qs.get('key')||'',email=qs.get('email')||'',id=qs.get('id')||'',uname0=qs.get('username')||'';
+/* EVERY @user LINK IN mp-ops SENT ?u= AND THIS PAGE READ ONLY ?username= (fixed 2026-10-18, owner: "neke usere
+   otvarao na mp-ops, nije mi ih izbacilo"). userLink(), the People > Users table and the command palette all build
+   /api/admin/user?u=<name>, so uarg() came back EMPTY, the DO got no parameter at all and answered {exists:false} -
+   rendered as "No such user." Nothing to do with the banning he was doing at the time: a row whose username was
+   known was ALWAYS dead, and only the ones that fell back to ?email= (Support's quick card) ever worked.
+   Both spellings are read here on purpose - ops.js.txt is served versioned, so a cached old client still works. */
+var qs=new URLSearchParams(location.search),key=qs.get('key')||'',email=qs.get('email')||'',id=qs.get('id')||'',uname0=qs.get('username')||qs.get('u')||'';
 var DATA=null,CLICKS=null,PRICES={},RWD=null;
 function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
 function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'';}
@@ -25327,6 +25333,42 @@ export default {
       try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return resp;
     }
+    // ── @MENTION SUGGESTIONS (2026-10-18, owner: "kad kucam @, hocu da mi se ponudi taj korisnik ... svaki mora
+    //    da postoji") ───────────────────────────────────────────────────────────────────────────────────────────
+    // KEYLESS, AND THAT IS A MEASUREMENT, NOT A SHORTCUT: usernames are already public by the hundred on
+    // /api/reward/lb and on /leaderboards/?full=1, so a session read per keystroke would buy no secrecy at all and
+    // would spend a KV hop on the hottest key the site has. What it must not do is spend a hit on the
+    // single-instance UserStore per character - so the PREFIX answer is identical for everybody and edge-cached per
+    // prefix, while the room-verification answer (?c=) is asked once per chat session by the client and never cached.
+    // A one-letter prefix is refused: that is a member directory, not a suggestion.
+    if (url.pathname === '/chat/who') {
+      const cwq = String(url.searchParams.get('q') || '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
+      const cwc = String(url.searchParams.get('c') || '');
+      const cwNames = cwc ? cwc.split(',').slice(0, 14) : [];
+      const cwJson = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
+      if (!cwNames.length && cwq.length < 2) return cwJson({ room: [], more: [] }, 'public, max-age=300');
+      const cwKey = cwNames.length ? null : new Request('https://marginpad.io/__chat_who_v1_' + cwq);
+      if (cwKey) { try { const hit = await caches.default.match(cwKey); if (hit) return hit; } catch (e) {} }
+      // one cheap guard on the DO behind this: an enumerator varying the prefix misses the cache every time
+      {
+        const ipw = request.headers.get('cf-connecting-ip') || '', winw = Math.floor(Date.now() / 60000), kw = 'cw|' + ipw + '|' + winw;
+        const nw = (_v1rl.get(kw) || 0) + 1; _v1rl.set(kw, nw);
+        if (nw > 90) return cwJson({ room: [], more: [], busy: true });
+      }
+      let cwOut = { room: [], more: [] }, cwOk = false, cwRaw = null;
+      // A FAILED ANSWER IS NEVER CACHED (the cyFetch rule): the store serves the previous deploy for minutes after
+      // one, so the first prefix asked for in that window would otherwise sit in the edge cache as "nobody" for
+      // two minutes - and an autocomplete that answers "nobody" is indistinguishable from one that is broken.
+      try { const r = await usersDO(env, '/chatwho', { q: cwq, names: cwNames }); cwRaw = r; if (r && !r.error && (r.room || r.more)) { cwOut = { room: r.room || [], more: r.more || [] }; cwOk = true; } } catch (e) { cwRaw = { threw: String(e && e.message || e).slice(0, 140) }; }
+      // the level colour rides along so a suggestion row can show who it is without a second request
+      const cwDec = (x) => { const L = xpLevelOf(+x.xp || 0) || {}; return { u: x.u, lvl: L.k || '', col: L.col || '' }; };
+      const cwBody = { room: cwOut.room.map(cwDec), more: cwOut.more.map(cwDec) };
+      // ?dbg=1 with the admin key says what the store answered - never to a reader, and never cached
+      if (url.searchParams.get('dbg') === '1' && isAdminKey(env, adminKeyFrom(request, url))) { cwBody.dbg = { ok: cwOk, raw: cwRaw }; return cwJson(cwBody); }
+      const resp2 = cwJson(cwBody, (cwKey && cwOk) ? 'public, max-age=120' : 'no-store');
+      if (cwKey && cwOk) { try { await caches.default.put(cwKey, resp2.clone()); } catch (e) {} }
+      return resp2;
+    }
     if (url.pathname === '/chat/ws') {
       if (!env.CHAT) return new Response('chat unavailable', { status: 503 });
       // Only a real WebSocket upgrade may reach the DO. A plain GET (bot, link-prefetch, uptime check) gets a clean 426
@@ -25357,6 +25399,11 @@ export default {
       // clean 503 so the client's ws.onclose just reconnects (3s) instead of the error hitting srverrlog/Sentry.
       try {
         const fwd = new Request(request, { headers: new Headers(request.headers) });
+        // STRIP BEFORE SETTING (2026-10-18). `new Request(request, {headers})` COPIES the caller's headers, so a
+        // client that sent its own x-mp-cuid reached the DO with it whenever this session read found nobody - and
+        // that header is what authorises edit/delete/react. A browser cannot set a header on a WebSocket upgrade;
+        // any ws library can. These two names are ours to write and nobody else's.
+        fwd.headers.delete('x-mp-cuid'); fwd.headers.delete('x-mp-cun');
         if (chatUid) { fwd.headers.set('x-mp-cuid', chatUid); fwd.headers.set('x-mp-cun', chatUn); }
         return await env.CHAT.get(env.CHAT.idFromName(chatInstOf(url))).fetch(fwd);
       }
@@ -26515,8 +26562,18 @@ export class ChatRoom {
       }
       if (!m || m.type !== 'msg') return;
       const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
-      const user = String(m.u || 'anon').replace(/[<>&]/g, '').trim().slice(0, 20) || 'anon';
       if (!text) return;
+      // THE AUTHOR'S NAME COMES FROM THE SESSION, NEVER FROM THE SOCKET (2026-10-18, while building @mentions).
+      // `sess.un` - the username the WORKER read off the cookie - was written on 2026-09-14 and then READ BY
+      // NOTHING, while the author line stayed `String(m.u)`, i.e. whatever the page typed into the payload. So any
+      // ws client could post under any member's name, with that member's level badge and profile card beside it,
+      // and the @mention notification would name them as the sender. Same class of bug as window.__mpSrvLiq: a
+      // field computed, forwarded, and never used. An @mention is only worth building on top of names that are
+      // real, so this is the floor the rest of it stands on.
+      // A member with no username yet is told to pick one (the account panel's first row already asks for it) -
+      // never silently renamed, and never posting a slice of their own email into a public room.
+      const user = String(sess.un || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+      if (!user) { try { server.send(JSON.stringify({ type: 'actfail', why: sess.uid ? 'noname' : 'signin' })); } catch (e) {} return; }
       const now = Date.now();
       if (now - sess.last < 1200) return; // 1 msg / 1.2s per connection
       if (sess.ip) { const pl = self.ipLast.get(sess.ip) || 0; if (now - pl < 1200) return; self.ipLast.set(sess.ip, now); if (self.ipLast.size > 500) self.ipLast.clear(); }
@@ -30702,6 +30759,32 @@ export class UserStore {
       for (let i = 0; i < ids.length; i += 50) { const part = ids.slice(i, i + 50); try { this.rows("SELECT id, username FROM users WHERE id IN (" + part.map(() => '?').join(',') + ") AND (status IS NULL OR status='active') AND username IS NOT NULL AND username!=''", ...part).forEach(u => { names[String(u.id)] = u.username; }); } catch (e) {} }
       return this.j({ names });
     }
+    if (path === '/chatwho') { // @mention suggestions - see the /chat/who worker route for why this shape
+      // TWO QUESTIONS IN ONE HOP, because the client asks on a keystroke:
+      //   names[] = who the page can see speaking in this room -> which of those actually EXIST
+      //   q       = the typed prefix                            -> who else matches, last seen first
+      // The room half is what puts the person the member meant at the top; the prefix half is what makes the list
+      // complete. Both read the SAME predicate, so no suggestion can ever be a name that reaches nobody - which is
+      // the whole requirement ("svaki mora da postoji"). A suspended or banned account is not suggestible either:
+      // an @ that notifies nothing is the bug, not the feature.
+      const LIVE = "username IS NOT NULL AND username!='' AND (status IS NULL OR status='active') AND LOWER(username) NOT LIKE 'e2e\\_%' ESCAPE '\\'";
+      const cwClean = (x) => String(x || '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
+      const q = cwClean(b && b.q);
+      const cand = (Array.isArray(b && b.names) ? b.names : []).map(cwClean).filter(Boolean).slice(0, 14);
+      const cwSeen = new Set(), room = [], more = [];
+      const cwTake = (into) => (u) => { const k = String(u.username).toLowerCase(); if (cwSeen.has(k)) return; cwSeen.add(k); into.push({ u: u.username, xp: +u.xp || 0 }); };
+      // A SWALLOWED SQL ERROR HERE COSTS AN AFTERNOON: this route can only ever answer "nobody", which is
+      // indistinguishable from a broken one, so the reason comes back on `err` (read by the worker's ?dbg=1).
+      let cwErr = '';
+      const part = cand.filter(n => !q || n.indexOf(q) === 0);
+      if (part.length) { try { this.rows('SELECT username,xp FROM users WHERE LOWER(username) IN (' + part.map(() => '?').join(',') + ') AND ' + LIVE, ...part).forEach(cwTake(room)); } catch (e) { cwErr = 'room: ' + String(e && e.message || e).slice(0, 140); } }
+      // A one-letter prefix is a member directory, not a suggestion. Two is where it starts to mean something.
+      if (q.length >= 2) {
+        const like = q.replace(/[_%]/g, (c) => '\\' + c) + '%';   // function replacement: a `$` in a replacement STRING is a loaded gun
+        try { this.rows('SELECT username,xp FROM users WHERE ' + LIVE + " AND LOWER(username) LIKE ? ESCAPE '\\' ORDER BY last_seen DESC LIMIT 14", like).forEach(cwTake(more)); } catch (e) { cwErr = (cwErr ? cwErr + ' | ' : '') + 'more: ' + String(e && e.message || e).slice(0, 140); }
+      }
+      return this.j(cwErr ? { room, more, err: cwErr } : { room, more });
+    }
     if (path === '/xpdiag') { // read-only XP-credit audit (support/ops): the user row, every recent XP grant with its note, and every recent trade close with ts/sym/lev/margin/pnl/roe - the full set of promo predicate inputs, so a "boost didn't credit" report is verifiable line by line
       let u = null;
       const uq = (w, v) => (this.rows('SELECT id,email,username,xp,xp_life,created,last_seen FROM users WHERE ' + w + ' LIMIT 1', v)[0] || null);
@@ -32924,7 +33007,10 @@ export class UserStore {
         if (from && String(u.id) === from) continue;
         // dedupe: skip if we already notified this user of a mention in the last 60s
         if (this.rows("SELECT 1 FROM unotifs WHERE uid=? AND kind='mention' AND ts>? LIMIT 1", String(u.id), now - 60000)[0]) continue;
-        this._pushNotif(u.id, 'mention', '@' + (from || 'Someone') + ' mentioned you in chat: “' + preview + '”', 'chat'); n++;
+        // THE LINK WAS THE BARE WORD 'chat' AND THEREFORE A DEAD CLICK: mp-auth's notification handler understands
+        // a path, dm:, duel and profile: - nothing else - so the one notification whose whole point is "come back
+        // and answer" went nowhere (2026-10-18). ?chat=1 is the query the chat already opens itself on.
+        this._pushNotif(u.id, 'mention', '@' + (from || 'Someone') + ' mentioned you in chat: “' + preview + '”', '/paper-trade?chat=1'); n++;
       }
       return this.j({ ok: true, notified: n });
     }

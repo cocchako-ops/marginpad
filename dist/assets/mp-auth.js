@@ -933,6 +933,36 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-rxb i{font-style:normal;font-size:10px;font-weight:700;opacity:.75}'
     + '.mpa-rxb.on{border-color:rgba(194,246,74,.65);background:rgba(194,246,74,.16)}'
     + '.mpa-ded{font-size:10px;opacity:.55;margin-left:5px}'
+    /* ── the composer autocomplete, the mention chip, the "you were named" row and the new-message pill ──
+       All four are chat furniture, and they live HERE rather than in home.css + mp-trade.css for the reason the
+       2026-09-05 note gives for frames and backgrounds: this is the one bundle on every page the chat is injected
+       on, it appends its own <style> after those sheets, and a second copy of a rule is a second thing to forget. */
+    + '.mpac{position:absolute;left:6px;right:6px;bottom:100%;margin-bottom:7px;z-index:2147483000;background:#101318;border:1px solid #2a323d;border-radius:13px;box-shadow:0 -10px 34px rgba(0,0,0,.6);overflow:hidden;display:none}'
+    + '.mpac.on{display:block}'
+    + '.mpac-l{max-height:214px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:5px}'
+    + '.mpac-l::-webkit-scrollbar{width:0;height:0}'
+    + '.mpac-r{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;color:#e9e7df}'
+    + '.mpac-r.on{background:#1b2230}'
+    + '.mpac-d{width:7px;height:7px;border-radius:50%;flex:0 0 7px}'
+    + '.mpac-n{font:700 13px system-ui,-apple-system,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+    + '.mpac-r.cmd .mpac-n{color:#c2f64a;font:700 12.5px Consolas,ui-monospace,monospace}'
+    + '.mpac-h{margin-left:auto;padding-left:8px;font-size:11px;color:#8a93a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}'
+    + '.mpac-f{display:flex;align-items:center;gap:6px;padding:6px 11px 7px;border-top:1px solid #1c232e;font-size:10.5px;color:#6e7782}'
+    + '.mpac-k{border:1px solid #2a323d;border-radius:4px;padding:0 4px;font:700 9.5px ui-monospace,monospace;color:#8a93a0}'
+    + '@media (pointer:coarse){.mpac-r{padding:11px 10px}.mpac-f{display:none}}'   // no keyboard to describe on a phone, and a thumb needs the height
+    /* A MENTION THAT NOBODY CAN SEE IS NOT A MENTION. `@name` in a member's message used to render as plain text -
+       mentionify ran on MarginPad's own lines only - so the room never showed that somebody had been named. The
+       chip is clickable only once the server has confirmed the account exists (.ok): a typo stays readable text. */
+    + '.ct-mn{color:#9ab4ff;font-weight:700}'
+    + '.ct-mn.ok{cursor:pointer}.ct-mn.ok:hover{text-decoration:underline}'
+    + '.ct-msg.ct-hit{border-left:2px solid #c2f64a;margin-left:-8px;padding-left:6px;background:linear-gradient(90deg,rgba(194,246,74,.09),rgba(194,246,74,0) 62%);border-radius:0 7px 7px 0}'
+    /* THE READER WHO SCROLLED UP KEEPS THEIR PLACE (2026-10-18): addMsg used to slam the list to the bottom on
+       every arriving message, so reading anything older than the newest line was impossible in a live room -
+       the same fault /leaderboards/ had with its 120 s repaint. Now the jump happens only when they are already
+       at the bottom, and this says how much they have not seen. */
+    + '.ct-newp{position:absolute;left:50%;transform:translateX(-50%);bottom:64px;z-index:40;display:none;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(194,246,74,.5);border-radius:999px;background:#141a12;color:#c2f64a;font:700 11.5px system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.5)}'
+    + '.ct-newp.on{display:flex}'
+    + '.ct-newp svg{width:12px;height:12px}'
     + '.mpa-dbub{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -3437,6 +3467,123 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     box.addEventListener('touchcancel', function () { clearTimeout(t); }, { passive: true });
     box.addEventListener('contextmenu', function (e) { var row = rowOf(e.target); if (!row || skip(e.target)) return; e.preventDefault(); onPick(row); });
     box.addEventListener('click', function (e) { if (fired) { fired = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  };
+})();
+
+/* ── COMPOSER AUTOCOMPLETE (2026-10-18, owner: "kad kucam @, hocu da kako kucam username da mi se ponudi taj
+   korisnik kog zelim da tagujem. Svaki mora da postoji.") ──────────────────────────────────────────────────────
+   window.mpMention(input, {host, triggers:{'@':find, '/':find}, onPick}) -> {refresh, close, open, destroy}
+
+   The engine owns the token under the CARET, the panel, the keyboard, the scroll-into-view and the haptics.
+   `find(q, cb)` is the caller's business and MAY ANSWER TWICE - a local list first and the server's after - which
+   is what makes a suggestion appear with no latency at all; the panel just repaints, and the row the reader had
+   already moved to stays selected by NAME, never by index (an index survives nothing).
+
+   It lives HERE, in the only bundle on every page, for the same reason mpMsgSheet, mpLongPress, mpToast and
+   mpOrders do: the room chat exists TWICE (home.js and mp-trade.js) and a keyboard-driven panel is not something
+   to keep in step by hand in two files. The chat's own `/` command palette runs through it too, which is how that
+   one finally got arrow keys - it had been mouse-only since the day it shipped.                                */
+(function () {
+  if (window.mpMention) return;
+  var WORD = /[a-zA-Z0-9_]/;
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
+  window.mpMention = function (input, opts) {
+    if (!input || !opts || !opts.triggers) return null;
+    var host = opts.host || input.parentNode; if (!host) return null;
+    var pal = null, listEl = null, items = [], sel = 0, tok = null, reqId = 0, dead = false;
+    function hap(k) { try { if (window.mpHaptic) window.mpHaptic(k); } catch (e) {} }
+    function shown() { return !!(pal && pal.classList.contains('on')); }
+    function build() {
+      if (pal) return;
+      try { if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; } catch (e) {}
+      pal = document.createElement('div'); pal.className = 'mpac'; pal.setAttribute('role', 'listbox');
+      pal.innerHTML = '<div class="mpac-l"></div><div class="mpac-f"><span class="mpac-k">&#8597;</span><span>move</span><span class="mpac-k">tab</span><span>pick</span><span class="mpac-k">esc</span><span>close</span></div>';
+      listEl = pal.firstChild;
+      // mousedown, not click: it lands BEFORE the input's blur, and preventDefault keeps the caret where it was.
+      // (A tap on a phone fires mousedown too - this is the same path the chat's command palette has always used.)
+      pal.addEventListener('mousedown', function (e) {
+        var r = e.target.closest && e.target.closest('[data-i]'); if (!r) return;
+        e.preventDefault(); sel = +r.getAttribute('data-i') || 0; accept();
+      });
+      host.appendChild(pal);
+    }
+    function close() { if (pal) pal.classList.remove('on'); items = []; tok = null; }
+    /* THE TOKEN IS WHATEVER THE CARET IS STANDING IN, not whatever the line starts with. `/` is a command only in
+       the first word, which is the rule the chat has always enforced; `@` is a mention only at the start of a word,
+       so an email address typed into the room never raises the panel. */
+    function token() {
+      var v = input.value || '', c = input.selectionStart; if (c == null || c < 0) c = v.length;
+      if (v.charAt(0) === '/' && opts.triggers['/']) {
+        var sp = v.indexOf(' '); if (c <= (sp < 0 ? v.length : sp)) return { t: '/', q: v.slice(1, c).toLowerCase(), from: 0, to: c };
+      }
+      if (!opts.triggers['@']) return null;
+      var i = c - 1;
+      while (i >= 0) {
+        var ch = v.charAt(i);
+        if (ch === '@') break;
+        if (!WORD.test(ch) || c - i > 21) return null;
+        i--;
+      }
+      if (i < 0) return null;
+      if (i > 0 && /\S/.test(v.charAt(i - 1))) return null;
+      return { t: '@', q: v.slice(i + 1, c), from: i, to: c };
+    }
+    function render() {
+      build();
+      if (!items.length) { pal.classList.remove('on'); return; }
+      if (sel >= items.length) sel = items.length - 1;
+      if (sel < 0) sel = 0;
+      listEl.innerHTML = items.map(function (it, i) {
+        return '<div class="mpac-r' + (i === sel ? ' on' : '') + (it.cmd ? ' cmd' : '') + '" data-i="' + i + '" role="option" aria-selected="' + (i === sel ? 'true' : 'false') + '">'
+          + (it.cmd ? '' : '<i class="mpac-d" style="background:' + esc(it.col || '#5c656f') + '"></i>')
+          + '<b class="mpac-n">' + esc(it.label) + '</b>'
+          + (it.hint ? '<span class="mpac-h">' + esc(it.hint) + '</span>' : '')
+          + '</div>';
+      }).join('');
+      var was = shown();
+      pal.classList.add('on');
+      if (!was) hap('tick');
+      var r = listEl.children[sel]; if (r && r.scrollIntoView) { try { r.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+    }
+    function accept() {
+      var it = items[sel];
+      if (!it || !tok) { close(); return; }
+      var v = input.value || '', ins = tok.t + it.ins + ' ';
+      input.value = v.slice(0, tok.from) + ins + v.slice(tok.to);
+      var p = tok.from + ins.length;
+      try { input.setSelectionRange(p, p); } catch (e) {}
+      try { input.focus(); } catch (e) {}
+      close(); hap('ok');
+      if (opts.onPick) { try { opts.onPick(it, input); } catch (e) {} }
+    }
+    function refresh() {
+      if (dead) return;
+      var t = token();
+      if (!t) { close(); return; }
+      var same = !!(tok && tok.t === t.t && tok.q === t.q && tok.from === t.from);
+      tok = t;
+      if (same && items.length) { render(); return; }
+      var keep = (items[sel] || {}).ins, my = ++reqId;
+      items = []; sel = 0;
+      opts.triggers[t.t](t.q, function (res) {
+        if (dead || my !== reqId) return;      // a stale answer must never repaint over a newer token
+        items = (res || []).slice(0, 8);
+        if (keep) { for (var i = 0; i < items.length; i++) { if (items[i].ins === keep) { sel = i; break; } } }
+        render();
+      });
+    }
+    function onKey(e) {
+      if (!shown() || !items.length) return;
+      var k = e.key;
+      if (k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); sel += (k === 'ArrowDown' ? 1 : -1); if (sel < 0) sel = items.length - 1; if (sel >= items.length) sel = 0; render(); hap('step'); return; }
+      if (k === 'Enter' || k === 'Tab') { e.preventDefault(); e.stopPropagation(); accept(); return; }   // Enter must NOT reach the form while a suggestion is up
+      if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); return; }                   // ...and Escape must not close the chat
+    }
+    input.addEventListener('keydown', onKey);
+    input.addEventListener('input', refresh);
+    input.addEventListener('click', refresh);   // put the caret back inside a half-typed name and it offers again
+    input.addEventListener('blur', function () { setTimeout(function () { if (!dead) close(); }, 170); });
+    return { refresh: refresh, close: close, open: shown, destroy: function () { dead = true; close(); if (pal && pal.parentNode) pal.parentNode.removeChild(pal); pal = null; } };
   };
 })();
 
