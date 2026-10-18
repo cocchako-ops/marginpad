@@ -19088,7 +19088,12 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
   if(st==='suspended')h+='<button class="btn good" id="actBtn">Lift suspension</button>';
   h+='<button class="btn" id="muteBtn">'+(u.muted?'Unmute':'Mute')+'</button>';
   sc.innerHTML=h;
-  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+'?\n\nKills every session, blocks re-login, bars the device they last signed in from, bans the faucet account and takes them off every paid leaderboard.'))ctrl('ban');};
+  /* NO ESCAPE SEQUENCES IN THIS STRING, and that includes this comment. The whole page is a worker TEMPLATE
+     LITERAL, so a backslash-n written anywhere in here is emitted as a REAL newline inside the browser's string
+     literal and kills the ENTIRE inline script - every button on the profile, not just this one. It shipped
+     that way for one deploy on 2026-10-18; lint and the smoke test both passed happily and the browser's page
+     error is what found it. One line, separators only. */
+  var ban=document.getElementById('banBtn');if(ban)ban.onclick=function(){if(confirm('Ban '+u.email+'? Kills every session, blocks re-login, bars the device they last signed in from, bans the faucet account and takes them off every paid leaderboard.'))ctrl('ban');};
   var unban=document.getElementById('unbanBtn');if(unban)unban.onclick=function(){ctrl('unban');};
   var susp=document.getElementById('suspBtn');if(susp)susp.onclick=function(){var d=prompt('Suspend for how many days? (0 = indefinite)','7');if(d===null)return;ctrl('suspend',{days:+d||0});};
   var act=document.getElementById('actBtn');if(act)act.onclick=function(){ctrl('activate');};

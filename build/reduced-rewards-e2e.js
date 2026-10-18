@@ -34,6 +34,7 @@ const ok = (n, c, note) => { if (c) { pass++; console.log('  ok   ' + n); } else
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const H = { 'x-admin-key': KEY, 'content-type': 'application/json' };
 const get = (u) => fetch(BASE + u, { headers: H }).then(r => r.json().then(j => ({ status: r.status, j })));
+const RX_INLINE = new RegExp('<script(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>', 'g');
 const post = (u, b) => fetch(BASE + u, { method: 'POST', headers: H, body: JSON.stringify(b || {}) }).then(r => r.json().then(j => ({ status: r.status, j })));
 
 // ---- lift the shipped rule out of the shipped source, so the test drives what runs ----
@@ -162,7 +163,21 @@ function liftDeviceGate() {
     const back = (await get('/api/admin/acctlog?acct=u:' + UID + '&n=3')).j;
     ok('unban lifts BOTH halves, or a mistake is unfixable', un.ok && un.ledger === true && back.account && !back.account.banned, { un: un, banned: back.account && back.account.banned });
 
-    console.log('\n--- the sweep ---');
+      /* THE SERVER-RENDERED PROFILE PAGE MUST PARSE. Its whole HTML is a worker template literal, so one escape
+       sequence written into the inline script is emitted as a REAL newline inside a browser string literal and
+       kills EVERY button on the page, not just the new one. That shipped for one deploy on 2026-10-18 and both
+       the lint and the smoke test passed happily - only the browser's page error found it. dist pages have
+       check-inline-js; this page had nothing watching it at all. */
+    console.log('\n--- the profile page the controls live on ---');
+    const sTok = (await post('/api/stats/session', {})).j.token;
+    const html = await fetch(BASE + '/api/admin/user?username=alefzed', { headers: { cookie: 'mp_sadm=' + sTok } }).then(r => r.text());
+    const scripts = [...html.matchAll(RX_INLINE)].map(m => m[1]);
+    ok('the profile page serves its inline script and the control', scripts.length > 0 && html.indexOf('rrField') > 0, { scripts: scripts.length });
+    let badJs = null;
+    for (const sc of scripts) { try { new Function(sc); } catch (e) { badJs = String(e.message).slice(0, 90); break; } }
+    ok('every inline script on it PARSES', badJs === null, badJs);
+
+  console.log('\n--- the sweep ---');
     const dry = (await get('/api/admin/multiacct')).j;
     ok('it is a dry run and says so', dry.dryRun === true && dry.totals && typeof dry.totals.accounts === 'number', dry.totals);
     ok('the default evidence excludes a shared consumer ISP address', (dry.evidence || []).indexOf('ip_isp') < 0 && (dry.evidence || []).indexOf('device') >= 0, dry.evidence);
