@@ -953,8 +953,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     /* A MENTION THAT NOBODY CAN SEE IS NOT A MENTION. `@name` in a member's message used to render as plain text -
        mentionify ran on MarginPad's own lines only - so the room never showed that somebody had been named. The
        chip is clickable only once the server has confirmed the account exists (.ok): a typo stays readable text. */
-    + '.ct-mn{color:#9ab4ff;font-weight:700}'
-    + '.ct-mn.ok{cursor:pointer}.ct-mn.ok:hover{text-decoration:underline}'
+    // EVERY chip is a click (2026-10-18): the `.ok` mark says the account is already confirmed and the card opens
+    // at once; an unconfirmed one resolves on the tap. A coloured word that does nothing when touched is worse
+    // than plain text, which is what 16 of 56 chips were in the first seconds of a busy room.
+    + '.ct-mn{color:#9ab4ff;font-weight:700;cursor:pointer}'
+    + '.ct-mn:hover{text-decoration:underline}'
     + '.ct-msg.ct-hit{border-left:2px solid #c2f64a;margin-left:-8px;padding-left:6px;background:linear-gradient(90deg,rgba(194,246,74,.09),rgba(194,246,74,0) 62%);border-radius:0 7px 7px 0}'
     /* THE READER WHO SCROLLED UP KEEPS THEIR PLACE (2026-10-18): addMsg used to slam the list to the bottom on
        every arriving message, so reading anything older than the newest line was impossible in a live room -

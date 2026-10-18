@@ -668,27 +668,46 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   /* newest speaker first - that order IS the ranking, because the person you mean is almost always the person
      who just spoke. Read off the rendered stream, so it costs nothing and needs no second store. */
   function mnSeen(){var out=[],at={};if(!msgs)return out;var n=msgs.querySelectorAll('.ct-user[data-lbu]');for(var i=n.length-1;i>=0;i--){var u=n[i].getAttribute('data-lbu')||'';var k=u.toLowerCase();if(!u||at[k])continue;at[k]=1;out.push(u);if(out.length>=14)break;}return out;}
-  function mnQueue(){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},1200);}
+  function mnQueue(ms){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},ms||900);}
   function mnVerify(){
     var need=[],at={},all=mnSeen(),k,i;
     for(i=0;i<all.length;i++){k=all[i].toLowerCase();if(!mnVer[k]&&!mnBad[k]&&!at[k]){at[k]=1;need.push(all[i]);}}
     for(k in mnPend){if(!mnVer[k]&&!mnBad[k]&&!at[k]){at[k]=1;need.push(mnPend[k]);}}
     if(!need.length)return;
-    need=need.slice(0,14);
+    /* 40 A ROUND, NOT 14: a busy room carries ~14 speakers and five times that many names INSIDE messages, so a
+       small round spent its whole budget on speakers and the chips stayed plain for the best part of ten
+       seconds. The store chunks the lookup, so one round is one query. */
+    need=need.slice(0,40);
     /* unknown until the server says otherwise - without this the same names are asked for on every message */
     need.forEach(function(nm){mnBad[nm.toLowerCase()]=1;});
     fetch('/chat/who?c='+encodeURIComponent(need.join(',')),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+      /* ONLY WHAT THE SERVER ACTUALLY LOOKED AT STAYS MARKED. A name it never examined - the two caps
+         disagreeing across a deploy, which really happened - would otherwise be unknown for ever. */
+      var seen={};((j&&j.seen&&j.seen.length)?j.seen:need).forEach(function(nm){seen[String(nm).toLowerCase()]=1;});
+      need.forEach(function(nm){var k2=nm.toLowerCase();if(!seen[k2])delete mnBad[k2];});
       ((j&&j.room)||[]).forEach(function(x){var kk=String(x.u).toLowerCase();delete mnBad[kk];mnVer[kk]=x;});
       try{mnPaint();}catch(e){}if(mnCtl)mnCtl.refresh();
       /* A ROUND CARRIES 14 NAMES, and in a busy room the speakers alone fill it - so a name met only INSIDE a
          message would never be confirmed and its chip would stay plain for ever (seen on the first render).
          Ask again while anything is still unknown: a name the table does not have stays in mnBad, so a round
          can only ever shrink the queue and this always converges. */
-      mnQueue();
+      mnQueue(300);
     }).catch(function(){need.forEach(function(nm){delete mnBad[nm.toLowerCase()];});});
   }
   /* a chip drawn before its name was confirmed becomes clickable the moment it is - no repaint of the stream */
   function mnPaint(){if(!msgs)return;var n=msgs.querySelectorAll('[data-mn]');for(var i=0;i<n.length;i++){var el=n[i],nm=el.getAttribute('data-mn')||'';if(!nm||el.className.indexOf('ok')>=0)continue;if(!mnKnown(nm))continue;el.className='ct-mn ok';el.setAttribute('data-lbu',nm);el.setAttribute('role','button');el.setAttribute('tabindex','0');el.style.color=colorFor(nm);}}
+  /* A MENTION IS NEVER A DEAD TAP. A chip is marked clickable only once the account is confirmed, and there is
+     always a window before that - measured on the live room the day this shipped, 16 of 56 chips were still
+     unconfirmed six seconds in, every one of them a real account. Tapping an unconfirmed one resolves it THEN,
+     in one request, and either opens the card or says plainly that no account carries that name. */
+  function mnOpen(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;
+    if(mnKnown(n)){openTraderCard(n);return;}
+    fetch('/chat/who?c='+encodeURIComponent(n),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+      var x=((j&&j.room)||[])[0];
+      if(x){var kk=String(x.u).toLowerCase();mnVer[kk]=x;delete mnBad[kk];try{mnPaint();}catch(e){}openTraderCard(x.u);return;}
+      chatNote('No account is named @'+n);
+    }).catch(function(){chatNote('Could not look up that name');});
+  }
   function mnFind(q,cb){
     q=String(q||'').toLowerCase();
     var me=(user||'').toLowerCase(),out=[],at={};
@@ -802,7 +821,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     if(window.mpOpenProfile||window.lbOpenProfile){go();return;}
     if(window.mpEnsureProfile){window.mpEnsureProfile(go);return;}
     go();}
-  if(msgs)msgs.addEventListener('click',function(e){var tr=e.target.closest&&e.target.closest('.ct-trade[data-trade]');if(tr){e.stopPropagation();e.preventDefault();if(window.mpOpenTrade)window.mpOpenTrade(tr.getAttribute('data-trade'));return;}var el=e.target.closest&&e.target.closest('[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
+  if(msgs)msgs.addEventListener('click',function(e){var tr=e.target.closest&&e.target.closest('.ct-trade[data-trade]');if(tr){e.stopPropagation();e.preventDefault();if(window.mpOpenTrade)window.mpOpenTrade(tr.getAttribute('data-trade'));return;}var el=e.target.closest&&e.target.closest('[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));return;}var mn=e.target.closest&&e.target.closest('[data-mn]');if(mn){e.stopPropagation();mnOpen(mn.getAttribute('data-mn'));}});
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
     if(fab){fab.classList.toggle('ct-alert',on);var fd=fab.querySelector('.ctfab-dot');if(on&&!fd){fd=document.createElement('span');fd.className='ctfab-dot';fab.appendChild(fd);}else if(!on&&fd){fd.remove();}}

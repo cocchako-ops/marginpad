@@ -46,6 +46,27 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-' + v.key.replace('/', '-') + '.png') }); } catch (e) {}
     }
     // deep checks for the views ported last (2026-09-03 evening): real interactions on desktop, no legacy frame anywhere
+    /* CLICKING A NAME MUST OPEN THE RECORD (owner, 2026-10-18: "ne radi klik na username, nista ne otvara").
+       It had TWO ways to be dead and both were live at once: the profile page read only ?username= while every link
+       built ?u=, and the quick-card listener - which preventDefaults BEFORE it reads the href - knew only ?u= and
+       ?email=, so a spelling it did not know was not a fallback to navigation, it was a click that did nothing at
+       all. The check asserts the card is FILLED, not that a modal appeared, and it runs on the two views where the
+       owner meets these links. It is its own gated block on purpose: the long unkeyed block further down only runs
+       in a full pass, and a full pass hits the browser helper's 240 s ceiling - a check in there is a check that
+       never runs. */
+    if (!only.length || only.includes('people/users')) {
+      for (const uv of ['people/users', 'money/withdrawals']) {
+        await page.evaluate((h) => { location.hash = h; }, uv); await sleep(4000);
+        const lk = await page.evaluate(() => { const a = [...document.querySelectorAll('#view a[href^="/api/admin/user?"]')].filter(x => !x.classList.contains('btn'))[0]; if (!a) return null; a.scrollIntoView({ block: 'center' }); return a.getAttribute('href'); });
+        if (!lk) { chk(uv + ': a @user link to click', false, 'none found'); continue; }
+        chk(uv + ': the @user link carries a parameter the profile page reads', /[?&](username|email|id)=/.test(lk), lk);
+        await page.evaluate(() => { const a = [...document.querySelectorAll('#view a[href^="/api/admin/user?"]')].filter(x => !x.classList.contains('btn'))[0]; if (a) a.click(); });
+        await sleep(4500);
+        const ucard = await page.evaluate(() => { const b = document.getElementById('ucBody'); return b ? { modal: true, empty: !!b.querySelector('.empty'), name: !!b.querySelector('.sup-un'), kvs: b.querySelectorAll('.sup-kv').length } : { modal: false }; });
+        chk(uv + ': clicking a username opens the quick card WITH the record', ucard.modal && !ucard.empty && ucard.name && ucard.kvs >= 4, ucard);
+        await page.evaluate(() => { const x = document.getElementById('ucX'); if (x) x.click(); }); await sleep(500);
+      }
+    }
     if (!only.length || only.includes('money/faucet')) {
       await page.evaluate(() => { location.hash = 'money/faucet'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#rwAccts .row').length > 0)) break; }
       const fa = await page.evaluate(() => ({ accts: document.querySelectorAll('#rwAccts .row').length, count: (document.getElementById('rwCount') || {}).textContent, lb: !!document.querySelector('[data-lbej]'), hist: !!document.getElementById('rwHist') }));

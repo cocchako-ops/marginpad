@@ -282,6 +282,38 @@ const roomHist = async () => (await get('/chat/admin/history')).messages || [];
         await sleep(1600);
         ok(await pa.page.evaluate(() => !!document.querySelector('.lbm-card') || !!window.mpOpenProfile), 'tapping a mention opens that trader\'s card');
 
+        /* NO MENTION IS EVER A DEAD TAP (owner, 2026-10-18: "za chat ne znam da li uvek radi, mislim da ne").
+           Measured on the live room before the fix: 16 of 56 chips were unclickable six seconds in, every one of
+           them a real account - the verification queue carried 14 names a round and the speakers ate the budget,
+           and the client marked every name it ASKED about as unknown even when the store had answered about
+           fewer. Both halves are fixed; these two checks are what keeps them fixed. */
+        // CLOSE the card, never rip it out of the DOM: mp-profile keeps one instance, and removing its node leaves
+        // it thinking the card is still up, so every later open is a silent no-op. Two earlier probes read
+        // "card=false" for that reason alone and sent me looking for a bug that was in the probe.
+        await pa.page.evaluate(() => { const x = document.querySelector('.lbm-x'); if (x) x.click(); });
+        await sleep(700);
+        await sleep(9000);
+        const chips = await pa.page.evaluate(() => {
+          const all = [...document.querySelectorAll('#ctMsgs [data-mn]')];
+          const bad = all.filter(x => x.className.indexOf('ok') < 0);
+          return { n: all.length, bad: bad.length, names: bad.slice(0, 6).map(x => x.getAttribute('data-mn')) };
+        });
+        ok(chips.n > 8, 'setup: the room carries enough mentions to judge (' + chips.n + ')', chips);
+        // a name that is genuinely not an account is allowed to stay plain - so this asks the server about them
+        let reallyGone = 0;
+        for (const nm of chips.names) { const r = await pub('/chat/who?c=' + encodeURIComponent(nm)); if (!(r.room || []).length) reallyGone++; }
+        ok(chips.bad === 0 || reallyGone === chips.names.length,
+          'every mention of a REAL account becomes clickable (' + chips.bad + ' of ' + chips.n + ' still plain)', chips);
+        // and even an unconfirmed one resolves on the tap rather than doing nothing
+        const dead = await pa.page.evaluate(() => {
+          const el = document.createElement('span'); el.className = 'ct-mn'; el.setAttribute('data-mn', 'Chako');
+          el.textContent = '@Chako';
+          const row = document.querySelector('#ctMsgs [data-mid] .ct-body'); if (!row) return false;
+          row.appendChild(el); el.scrollIntoView({ block: 'center' }); el.click(); return true;
+        });
+        await sleep(2600);
+        ok(dead && await pa.page.evaluate(() => !!document.querySelector('.lbm-card, .lbm')), 'an UNCONFIRMED chip resolves on the tap instead of doing nothing');
+
         console.log('\nA NEW MESSAGE DOES NOT MOVE A READER WHO SCROLLED UP');
         // fill the stream so there is somewhere to scroll to, then park the reader at the top
         for (let i = 0; i < 3; i++) await forge({ token: sb.token }, [{ type: 'msg', u: NB, t: 'filler ' + i + ' ' + Math.random().toString(36).slice(2, 6) }]);

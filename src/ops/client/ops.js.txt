@@ -107,11 +107,25 @@
   setInterval(tickClock, 15000); setTz(TZ === 'local' ? 'local' : 'utc', true);
   $('help').addEventListener('click', function (e) { if (e.target === $('help')) $('help').hidden = true; });
   // Quick user card: any @user link (they all point at /api/admin/user) opens the card in place; Ctrl/Cmd-click or middle-click keeps the full profile in a new tab
-  document.addEventListener('click', function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return; var a = e.target.closest && e.target.closest('a[href^="/api/admin/user?"]'); if (!a || a.classList.contains('btn')) return; e.preventDefault(); var m = a.getAttribute('href').match(/[?&](u|email)=([^&]+)/); if (!m) return; userCard(decodeURIComponent(m[2]), m[1] === 'email'); });
-  function userCard(who, isEmail) {
-    var m = modal('<div class="mhead"><b>' + esc(who) + '</b><button class="btn sm x" id="ucX">close</button></div><div id="ucBody"><div class="empty">loading…</div></div>'); $('ucX').onclick = closeModal;
-    var p = isEmail ? Promise.resolve(who) : J('/api/admin/search?q=' + encodeURIComponent(who)).then(function (d) { var u = ((d && d.users) || []).filter(function (x) { return String(x.username || '').toLowerCase() === who.toLowerCase(); })[0] || ((d && d.users) || [])[0]; return u && u.email; });
-    p.then(function (email) { if (!email) { $('ucBody').innerHTML = '<div class="empty">no account matches</div>'; return; } userCardInto($('ucBody'), email, true); }).catch(function () { $('ucBody').innerHTML = failHtml('could not load the user'); });
+  // THE HANDLER MUST KNOW EVERY SPELLING THE LINKS USE, and it preventDefaults BEFORE it reads the href - so a
+  // spelling it does not know is not a fallback to navigation, it is a dead click with nothing on screen at all.
+  // That is exactly what happened on 2026-10-18 when the links moved from ?u= to ?username= and this regex did
+  // not: the owner clicked a name and nothing opened. The order is fixed too - bail first, swallow the click only
+  // once we are certain we can answer it.
+  document.addEventListener('click', function (e) { if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return; var a = e.target.closest && e.target.closest('a[href^="/api/admin/user?"]'); if (!a || a.classList.contains('btn')) return; var m = a.getAttribute('href').match(/[?&](username|email|id|u)=([^&]+)/); if (!m) return; e.preventDefault(); userCard(decodeURIComponent(m[2]), m[1]); });
+  // `kind` is the parameter the link carried: username | email | id. A username goes STRAIGHT to the card now -
+  // the old path resolved it to an email through /api/admin/search first, which is a second request and a second
+  // way to answer "no account matches" about somebody the users table knows.
+  function userCard(who, kind) {
+    modal('<div class="mhead"><b>' + esc(who) + '</b><button class="btn sm x" id="ucX">close</button></div><div id="ucBody"><div class="empty">loading…</div></div>'); $('ucX').onclick = closeModal;
+    if (kind === 'id') { // the few links that carry an internal id: resolve it, then the card is the same card
+      J('/api/auth/user?id=' + encodeURIComponent(who)).then(function (d) {
+        var u2 = d && d.user; if (!u2) { $('ucBody').innerHTML = '<div class="empty">no account matches</div>'; return; }
+        userCardInto($('ucBody'), u2.username || u2.email, !!u2.username);
+      }).catch(function () { $('ucBody').innerHTML = failHtml('could not load the user'); });
+      return;
+    }
+    userCardInto($('ucBody'), who, kind !== 'email');
   }
   $('sideClose').addEventListener('click', function () { $('side').classList.remove('open'); });
   $('refreshBtn').addEventListener('click', function () { show(); loadTop(); });
@@ -271,11 +285,16 @@
 
   // ---------- shared user card (Support right pane + the quick card behind every @user link) ----------
   var ucCache = {};
-  function userCardInto(u, email) {
-    var k = email.toLowerCase(); if (ucCache[k] && Date.now() - ucCache[k].ts < 60000) { u.innerHTML = ucCache[k].html; return; }
+  // THE CARD IS OPENED BY WHATEVER THE LINK KNOWS (2026-10-18): a username OR an email. It used to take an email
+  // only, so a username had to be resolved through /api/admin/search first - two requests and a second way to fail
+  // ("no account matches") for a member the users table knows perfectly well. /api/auth/user answers both.
+  function userCardInto(u, who, byName) {
+    var email = byName ? '' : who;
+    var k = (byName ? 'u:' : 'e:') + String(who).toLowerCase(); if (ucCache[k] && Date.now() - ucCache[k].ts < 60000) { u.innerHTML = ucCache[k].html; return; }
     u.innerHTML = '<div class="empty">loading user…</div>';
-    J('/api/auth/user?email=' + encodeURIComponent(email)).then(function (d) {
-      if (!d || d.error || !d.user) { u.innerHTML = '<div class="empty">No MarginPad account with this email - a visitor, or a different address.</div>'; return; }
+    J('/api/auth/user?' + (byName ? 'username=' : 'email=') + encodeURIComponent(who)).then(function (d) {
+      if (!d || d.error || !d.user) { u.innerHTML = '<div class="empty">' + (byName ? 'No account with this username.' : 'No MarginPad account with this email - a visitor, or a different address.') + '</div>'; return; }
+      email = d.user.email || email;
       var usr = d.user; return J('/api/reward/detail?address=' + encodeURIComponent('u:' + usr.id)).catch(function () { return null; }).then(function (rw) {
         var lvl = usr.level || {}, acct = (rw && rw.account) || {}, fraud = (rw && rw.fraud) || {}, ts = d.tradeSummary || {}, prem = (+usr.premium || 0) > Date.now();
         var wr = (ts.wins + ts.losses) > 0 ? Math.round(ts.wins / (ts.wins + ts.losses) * 100) : null;
@@ -308,7 +327,7 @@
           + (function () { var tr = (d.trades || []).filter(function (t) { return t && (t.status === 'win' || t.status === 'loss' || t.status === 'open'); }).sort(function (a, b) { return (b.closeTs || b.ts || 0) - (a.closeTs || a.ts || 0); }).slice(0, 5); return tr.length ? '<div class="sup-sec">Last trades</div>' + tr.map(function (t) { var p = +t.pnl || 0, m2 = +t.margin || 0, roe = m2 ? p / m2 * 100 : 0; return '<div class="row" style="padding:4px 0;font-size:12px"><span class="mono" style="width:92px">' + esc(String(t.sym || '').toUpperCase()) + ' <span class="' + (t.side === 'short' ? 'dn' : 'up') + '">' + (t.side === 'short' ? 'S' : 'L') + '</span> ' + (+t.lev || 1) + 'x</span><span class="mono grow ' + (t.status === 'open' ? 'meta' : p >= 0 ? 'up' : 'dn') + '">' + (t.status === 'open' ? 'open · $' + N(Math.round(m2)) : (p >= 0 ? '+' : '-') + USD(Math.abs(p)) + ' <small>' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '%</small>') + (t.src === 'srv' && t.sc ? '' : t.status === 'open' ? '' : ' <span class="badge" title="not settled by the server: never counts on the boards">local</span>') + '</span><span class="meta">' + agoT(t.closeTs || t.ts) + '</span></div>'; }).join('') : ''; })()
           + '<div class="sup-sec">Rewards <button type="button" class="btn sm" data-money="u:' + esc(usr.id) + '" data-money-t="@' + esc(usr.username || email) + '" style="margin-left:8px;text-transform:none;letter-spacing:0">Money history</button></div>' + kv('balance', USD(acct.balanceUsd)) + kv('earned total', USD(acct.earnedUsd)) + kv('claims', N(acct.claims)) + kv('withdrawals', N((rw && rw.withdrawals && rw.withdrawals.length) || 0)) + flags + '<div id="ucMoney"></div>'
           + '<div class="sup-sec">Recent activity</div>' + (evs || '<div class="meta">no tracked activity</div>')
-          + '<div class="bar" style="margin-top:10px"><a class="btn sm lime" href="/api/admin/user?email=' + encodeURIComponent(email) + '" target="_blank">Full profile</a><a class="btn sm" href="#people/journeys/' + encodeURIComponent(usr.username || email) + '">Journey</a><a class="btn sm" href="#inbox/mail/' + encodeURIComponent(email) + '">Email</a><a class="btn sm" href="#inbox/support/' + encodeURIComponent(email) + '">Tickets</a></div>';
+          + '<div class="bar" style="margin-top:10px"><a class="btn sm lime" href="' + userHref(usr.username, email) + '" target="_blank">Full profile</a><a class="btn sm" href="#people/journeys/' + encodeURIComponent(usr.username || email) + '">Journey</a><a class="btn sm" href="#inbox/mail/' + encodeURIComponent(email) + '">Email</a><a class="btn sm" href="#inbox/support/' + encodeURIComponent(email) + '">Tickets</a></div>';
         ucCache[k] = { ts: Date.now(), html: html }; u.innerHTML = html;
         boardsFor(usr.username).then(function (bh) { var b = u.querySelector('#ucBoards b'); if (b) { b.innerHTML = bh; b.className = ''; } ucCache[k].html = u.innerHTML; });
         J('/api/admin/acctlog?acct=' + encodeURIComponent('u:' + usr.id) + '&n=8').then(function (ml) { var box = u.querySelector('#ucMoney'); if (!box || !ml || ml.error) return; var rows = moneyRows(ml).slice(0, 5); box.innerHTML = rows.length ? rows.map(function (r) { var cls = r.dir === 'in' ? 'up' : r.dir === 'out' ? 'dn' : r.dir === 'paid' ? 'gold' : 'meta'; return '<div class="row" style="padding:3px 0;font-size:12px"><span class="meta" style="min-width:36px">' + ago(r.ts) + '</span><span class="grow">' + esc(r.what) + (r.det ? ' <span class="meta">' + esc(String(r.det).slice(0, 36)) + '</span>' : '') + '</span><span class="mono ' + cls + '">' + (r.dir === 'in' ? '+' : r.dir === 'out' ? '-' : '') + USD(r.usd) + '</span></div>'; }).join('') : '<div class="meta" style="font-size:12px">no money movements on record</div>'; ucCache[k].html = u.innerHTML; }).catch(function () {});

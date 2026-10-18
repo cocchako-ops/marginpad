@@ -8157,7 +8157,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9e19e876" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=67e3f3f3" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -18637,7 +18637,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'cf3bee08';
+const ASSET_V = '7aa2374f';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -25344,7 +25344,10 @@ export default {
     if (url.pathname === '/chat/who') {
       const cwq = String(url.searchParams.get('q') || '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
       const cwc = String(url.searchParams.get('c') || '');
-      const cwNames = cwc ? cwc.split(',').slice(0, 14) : [];
+      // 40, not 14 (2026-10-18): a busy room carries ~14 speakers and several times that many names INSIDE the
+      // messages, so a small round spent its budget on speakers alone and the mention chips stayed unconfirmed for
+      // the best part of ten seconds. Measured on the live room: 16 of 56 chips still plain six seconds in.
+      const cwNames = cwc ? cwc.split(',').slice(0, 40) : [];
       const cwJson = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc || 'no-store', ...CORS } });
       if (!cwNames.length && cwq.length < 2) return cwJson({ room: [], more: [] }, 'public, max-age=300');
       const cwKey = cwNames.length ? null : new Request('https://marginpad.io/__chat_who_v1_' + cwq);
@@ -25355,14 +25358,14 @@ export default {
         const nw = (_v1rl.get(kw) || 0) + 1; _v1rl.set(kw, nw);
         if (nw > 90) return cwJson({ room: [], more: [], busy: true });
       }
-      let cwOut = { room: [], more: [] }, cwOk = false, cwRaw = null;
+      let cwOut = { room: [], more: [], seen: [] }, cwOk = false, cwRaw = null;
       // A FAILED ANSWER IS NEVER CACHED (the cyFetch rule): the store serves the previous deploy for minutes after
       // one, so the first prefix asked for in that window would otherwise sit in the edge cache as "nobody" for
       // two minutes - and an autocomplete that answers "nobody" is indistinguishable from one that is broken.
-      try { const r = await usersDO(env, '/chatwho', { q: cwq, names: cwNames }); cwRaw = r; if (r && !r.error && (r.room || r.more)) { cwOut = { room: r.room || [], more: r.more || [] }; cwOk = true; } } catch (e) { cwRaw = { threw: String(e && e.message || e).slice(0, 140) }; }
+      try { const r = await usersDO(env, '/chatwho', { q: cwq, names: cwNames }); cwRaw = r; if (r && !r.error && (r.room || r.more)) { cwOut = { room: r.room || [], more: r.more || [], seen: r.seen || [] }; cwOk = true; } } catch (e) { cwRaw = { threw: String(e && e.message || e).slice(0, 140) }; }
       // the level colour rides along so a suggestion row can show who it is without a second request
       const cwDec = (x) => { const L = xpLevelOf(+x.xp || 0) || {}; return { u: x.u, lvl: L.k || '', col: L.col || '' }; };
-      const cwBody = { room: cwOut.room.map(cwDec), more: cwOut.more.map(cwDec) };
+      const cwBody = { room: cwOut.room.map(cwDec), more: cwOut.more.map(cwDec), seen: cwOut.seen };
       // ?dbg=1 with the admin key says what the store answered - never to a reader, and never cached
       if (url.searchParams.get('dbg') === '1' && isAdminKey(env, adminKeyFrom(request, url))) { cwBody.dbg = { ok: cwOk, raw: cwRaw }; return cwJson(cwBody); }
       const resp2 = cwJson(cwBody, (cwKey && cwOk) ? 'public, max-age=120' : 'no-store');
@@ -30770,20 +30773,30 @@ export class UserStore {
       const LIVE = "username IS NOT NULL AND username!='' AND (status IS NULL OR status='active') AND LOWER(username) NOT LIKE 'e2e\\_%' ESCAPE '\\'";
       const cwClean = (x) => String(x || '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 20);
       const q = cwClean(b && b.q);
-      const cand = (Array.isArray(b && b.names) ? b.names : []).map(cwClean).filter(Boolean).slice(0, 14);
+      const cand = (Array.isArray(b && b.names) ? b.names : []).map(cwClean).filter(Boolean).slice(0, 40);
       const cwSeen = new Set(), room = [], more = [];
       const cwTake = (into) => (u) => { const k = String(u.username).toLowerCase(); if (cwSeen.has(k)) return; cwSeen.add(k); into.push({ u: u.username, xp: +u.xp || 0 }); };
       // A SWALLOWED SQL ERROR HERE COSTS AN AFTERNOON: this route can only ever answer "nobody", which is
       // indistinguishable from a broken one, so the reason comes back on `err` (read by the worker's ?dbg=1).
       let cwErr = '';
       const part = cand.filter(n => !q || n.indexOf(q) === 0);
-      if (part.length) { try { this.rows('SELECT username,xp FROM users WHERE LOWER(username) IN (' + part.map(() => '?').join(',') + ') AND ' + LIVE, ...part).forEach(cwTake(room)); } catch (e) { cwErr = 'room: ' + String(e && e.message || e).slice(0, 140); } }
+      // CHUNKED, like /names: a large IN(...) silently returns 0 rows at scale, and "nobody" from this route is
+      // indistinguishable from a broken one.
+      for (let ci = 0; ci < part.length; ci += 25) {
+        const slice = part.slice(ci, ci + 25);
+        try { this.rows('SELECT username,xp FROM users WHERE LOWER(username) IN (' + slice.map(() => '?').join(',') + ') AND ' + LIVE, ...slice).forEach(cwTake(room)); } catch (e) { cwErr = 'room: ' + String(e && e.message || e).slice(0, 140); }
+      }
       // A one-letter prefix is a member directory, not a suggestion. Two is where it starts to mean something.
       if (q.length >= 2) {
         const like = q.replace(/[_%]/g, (c) => '\\' + c) + '%';   // function replacement: a `$` in a replacement STRING is a loaded gun
         try { this.rows('SELECT username,xp FROM users WHERE ' + LIVE + " AND LOWER(username) LIKE ? ESCAPE '\\' ORDER BY last_seen DESC LIMIT 14", like).forEach(cwTake(more)); } catch (e) { cwErr = (cwErr ? cwErr + ' | ' : '') + 'more: ' + String(e && e.message || e).slice(0, 140); }
       }
-      return this.j(cwErr ? { room, more, err: cwErr } : { room, more });
+      // `seen` IS LOAD-BEARING, not diagnostics: the client marks a name it asked about as unknown so it does not
+      // ask twice, and a name the store never LOOKED at would be marked unknown for ever - which is exactly what
+      // happened the first time the two caps disagreed across a deploy (the client sent 40, the store still on the
+      // previous version answered about 14, and 26 real accounts went permanently plain). Saying what was examined
+      // makes any cap mismatch, in either direction, self-correcting.
+      return this.j(cwErr ? { room, more, seen: part, err: cwErr } : { room, more, seen: part });
     }
     if (path === '/xpdiag') { // read-only XP-credit audit (support/ops): the user row, every recent XP grant with its note, and every recent trade close with ts/sym/lev/margin/pnl/roe - the full set of promo predicate inputs, so a "boost didn't credit" report is verifiable line by line
       let u = null;

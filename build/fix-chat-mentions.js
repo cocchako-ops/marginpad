@@ -34,23 +34,42 @@ const BLOCK = [
   "  /* newest speaker first - that order IS the ranking, because the person you mean is almost always the person",
   "     who just spoke. Read off the rendered stream, so it costs nothing and needs no second store. */",
   "  function mnSeen(){var out=[],at={};if(!msgs)return out;var n=msgs.querySelectorAll('.ct-user[data-lbu]');for(var i=n.length-1;i>=0;i--){var u=n[i].getAttribute('data-lbu')||'';var k=u.toLowerCase();if(!u||at[k])continue;at[k]=1;out.push(u);if(out.length>=14)break;}return out;}",
-  "  function mnQueue(){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},1200);}",
+  "  function mnQueue(ms){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},ms||900);}",
+  "  /* A MENTION IS NEVER A DEAD TAP. A chip is marked clickable only once the account is confirmed, and there is",
+  "     always a window before that - measured on the live room the day this shipped, 16 of 56 chips were still",
+  "     unconfirmed six seconds in, every one of them a real account. Tapping an unconfirmed one resolves it THEN,",
+  "     in one request, and either opens the card or says plainly that no account carries that name. */",
+  "  function mnOpen(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;",
+  "    if(mnKnown(n)){openTraderCard(n);return;}",
+  "    fetch('/chat/who?c='+encodeURIComponent(n),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){",
+  "      var x=((j&&j.room)||[])[0];",
+  "      if(x){var kk=String(x.u).toLowerCase();mnVer[kk]=x;delete mnBad[kk];try{mnPaint();}catch(e){}openTraderCard(x.u);return;}",
+  "      chatNote('No account is named @'+n);",
+  "    }).catch(function(){chatNote('Could not look up that name');});",
+  "  }",
   "  function mnVerify(){",
   "    var need=[],at={},all=mnSeen(),k,i;",
   "    for(i=0;i<all.length;i++){k=all[i].toLowerCase();if(!mnVer[k]&&!mnBad[k]&&!at[k]){at[k]=1;need.push(all[i]);}}",
   "    for(k in mnPend){if(!mnVer[k]&&!mnBad[k]&&!at[k]){at[k]=1;need.push(mnPend[k]);}}",
   "    if(!need.length)return;",
-  "    need=need.slice(0,14);",
-  "    /* unknown until the server says otherwise - without this the same names are asked for on every message */",
+  "    /* 40 A ROUND, NOT 14: a busy room carries ~14 speakers and five times that many names INSIDE messages, so a",
+  "       small round spent its whole budget on speakers and the chips stayed plain for the best part of ten",
+  "       seconds. The store chunks the lookup, so one round is one query. */",
+  "    need=need.slice(0,40);",
+  "    /* in flight: marked unknown so the next round does not ask for the same names again */",
   "    need.forEach(function(nm){mnBad[nm.toLowerCase()]=1;});",
   "    fetch('/chat/who?c='+encodeURIComponent(need.join(',')),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){",
+  "      /* ONLY WHAT THE SERVER ACTUALLY LOOKED AT STAYS MARKED. A name it never examined - the two caps",
+  "         disagreeing across a deploy, which really happened - would otherwise be unknown for ever. */",
+  "      var seen={};((j&&j.seen&&j.seen.length)?j.seen:need).forEach(function(nm){seen[String(nm).toLowerCase()]=1;});",
+  "      need.forEach(function(nm){var k2=nm.toLowerCase();if(!seen[k2])delete mnBad[k2];});",
   "      ((j&&j.room)||[]).forEach(function(x){var kk=String(x.u).toLowerCase();delete mnBad[kk];mnVer[kk]=x;});",
   "      try{mnPaint();}catch(e){}if(mnCtl)mnCtl.refresh();",
   "      /* A ROUND CARRIES 14 NAMES, and in a busy room the speakers alone fill it - so a name met only INSIDE a",
   "         message would never be confirmed and its chip would stay plain for ever (seen on the first render).",
   "         Ask again while anything is still unknown: a name the table does not have stays in mnBad, so a round",
   "         can only ever shrink the queue and this always converges. */",
-  "      mnQueue();",
+  "      mnQueue(300);",
   "    }).catch(function(){need.forEach(function(nm){delete mnBad[nm.toLowerCase()];});});",
   "  }",
   "  /* a chip drawn before its name was confirmed becomes clickable the moment it is - no repaint of the stream */",
@@ -118,8 +137,27 @@ const BLOCK = [
   ""
 ].join('\n');
 
+/* the on-demand opener, as one text so the undo below can match it exactly */
+const MNOPEN = [
+  "  /* A MENTION IS NEVER A DEAD TAP. A chip is marked clickable only once the account is confirmed, and there is",
+  "     always a window before that - measured on the live room the day this shipped, 16 of 56 chips were still",
+  "     unconfirmed six seconds in, every one of them a real account. Tapping an unconfirmed one resolves it THEN,",
+  "     in one request, and either opens the card or says plainly that no account carries that name. */",
+  "  function mnOpen(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;",
+  "    if(mnKnown(n)){openTraderCard(n);return;}",
+  "    fetch('/chat/who?c='+encodeURIComponent(n),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){",
+  "      var x=((j&&j.room)||[])[0];",
+  "      if(x){var kk=String(x.u).toLowerCase();mnVer[kk]=x;delete mnBad[kk];try{mnPaint();}catch(e){}openTraderCard(x.u);return;}",
+  "      chatNote('No account is named @'+n);",
+  "    }).catch(function(){chatNote('Could not look up that name');});",
+  "  }",
+  ""
+].join('\n');
+
 /* ── the replacement table: every `from` is byte-identical in both bundles ─────────────────────────────────────── */
 const EDITS = [
+  // undo first: a tree the previous cut double-inserted into (the anchor was the tail of its own replacement)
+  { what: 'on-demand opener double undo', from: MNOPEN + MNOPEN, to: MNOPEN },
   // 1. the machinery block, inserted immediately before mentionify (which it feeds)
   {
     what: 'mention machinery block',
@@ -132,6 +170,40 @@ const EDITS = [
     what: 'second verification round',
     from: "      try{mnPaint();}catch(e){}if(mnCtl)mnCtl.refresh();\n    }).catch(",
     to: "      try{mnPaint();}catch(e){}if(mnCtl)mnCtl.refresh();\n      /* A ROUND CARRIES 14 NAMES, and in a busy room the speakers alone fill it - so a name met only INSIDE a\n         message would never be confirmed and its chip would stay plain for ever (seen on the first render).\n         Ask again while anything is still unknown: a name the table does not have stays in mnBad, so a round\n         can only ever shrink the queue and this always converges. */\n      mnQueue();\n    }).catch("
+  },
+  // 1c. bigger, faster verification rounds + the on-demand opener (measured 2026-10-18: 16 of 56 chips were still
+  //     unconfirmed six seconds in, all of them real accounts). Written into BLOCK too, so a fresh run is a no-op.
+  {
+    what: 'rounds of 40',
+    from: "    if(!need.length)return;\n    need=need.slice(0,14);",
+    to: "    if(!need.length)return;\n    /* 40 A ROUND, NOT 14: a busy room carries ~14 speakers and five times that many names INSIDE messages, so a\n       small round spent its whole budget on speakers and the chips stayed plain for the best part of ten\n       seconds. The store chunks the lookup, so one round is one query. */\n    need=need.slice(0,40);"
+  },
+  {
+    what: 'faster follow-up round',
+    from: "  function mnQueue(){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},1200);}",
+    to: "  function mnQueue(ms){if(mnTm)return;mnTm=setTimeout(function(){mnTm=null;try{mnVerify();}catch(e){}},ms||900);}"
+  },
+  { what: 'follow-up delay', from: "      mnQueue();\n    }).catch(", to: "      mnQueue(300);\n    }).catch(" },
+  {
+    what: 'on-demand mention opener',
+    // AN ANCHOR THAT IS ALSO THE TAIL OF ITS OWN REPLACEMENT MATCHES FOR EVER (the switchRoom trap, the other way
+    // round): this one inserts a function ABOVE mnFind and ends with mnFind's own opening line, so a second run
+    // inserted it twice. skipIf is the guard - the function's name can only be there if this already ran.
+    skipIf: 'function mnOpen(n)',
+    from: "  function mnFind(q,cb){",
+    to: MNOPEN + "  function mnFind(q,cb){"
+  },
+  {
+    what: 'an unconfirmed chip is still a click',
+    from: "var el=e.target.closest&&e.target.closest('[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});",
+    to: "var el=e.target.closest&&e.target.closest('[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));return;}var mn=e.target.closest&&e.target.closest('[data-mn]');if(mn){e.stopPropagation();mnOpen(mn.getAttribute('data-mn'));}});"
+  },
+  // 1d. only what the server examined stays marked unknown (see BLOCK for why)
+  {
+    what: 'mark only what was examined',
+    skipIf: 'ONLY WHAT THE SERVER ACTUALLY LOOKED AT',
+    from: "      ((j&&j.room)||[]).forEach(function(x){var kk=String(x.u).toLowerCase();delete mnBad[kk];mnVer[kk]=x;});",
+    to: "      /* ONLY WHAT THE SERVER ACTUALLY LOOKED AT STAYS MARKED. A name it never examined - the two caps\n         disagreeing across a deploy, which really happened - would otherwise be unknown for ever. */\n      var seen={};((j&&j.seen&&j.seen.length)?j.seen:need).forEach(function(nm){seen[String(nm).toLowerCase()]=1;});\n      need.forEach(function(nm){var k2=nm.toLowerCase();if(!seen[k2])delete mnBad[k2];});\n      ((j&&j.room)||[]).forEach(function(x){var kk=String(x.u).toLowerCase();delete mnBad[kk];mnVer[kk]=x;});"
   },
   // 2. mentionify: every message, and clickable only once the account is confirmed
   {
@@ -246,6 +318,7 @@ for (const f of FILES) {
       done.push(e.what + ': cut ' + (j - i + 1) + ' lines');
       continue;
     }
+    if (e.skipIf && src.indexOf(e.skipIf) >= 0) { done.push(e.what + ': already done'); continue; }
     const n = src.split(e.from).length - 1;
     if (n === 0) {
       // idempotency: the replacement must already be there, or something has moved and we refuse
