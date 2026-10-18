@@ -2713,6 +2713,13 @@
   .grad-panel h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:#fff;margin:0 0 8px;}
   .grad-panel p{font-size:13.5px;line-height:1.55;color:#9aa3ad;margin:0 0 18px;}
   .grad-ex{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  /* The partner cards are DEAD until the panel arms (2026-10-18). This panel is centred and the trade form's Open
+     button sits at the centre of a phone, so the Bybit card lands on that button at 100% overlap at 390x844 - and it
+     used to appear 600 ms after the trader's own tap. Measured: 7 of 26 money clicks in a 9-hour window were the next
+     tap of an open-burst, 0.86-1.60 s after it appeared. pointer-events is the GUARANTEE (an <a> navigates on touch
+     whether or not our JS cooperates); the JS arming timer only adds the class. The sign-up nudge shares .grad-modal
+     and has no .grad-ex, so it is untouched. */
+  .grad-modal:not(.armed) .grad-ex{pointer-events:none;}
   .grad-card{display:flex;align-items:center;gap:12px;background:#0a0d11;border:1px solid #2f3742;border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--ink);transition:transform .13s,border-color .13s;}
   .grad-card:hover{border-color:#3a434f;transform:translateY(-1px);}
   .grad-mark{flex-shrink:0;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;}

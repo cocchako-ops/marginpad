@@ -3518,26 +3518,46 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
   /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here - the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
   var EX=[{n:'Bybit',h:'https://partner.bybit.com/b/162071',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
           {n:'Moon',h:'https://moon.com/?offer=marginpad',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:__esT_home("cryptoStocksForexUp",'crypto, stocks & forex · up or down · 24/7')}];
-  var elm=null;
+  var elm=null,_armT=0,_waitT=0,_boot=0,lastOpen=0;
+  /* MEASURED 2026-10-18 (Papis + Malikush, 5 of 5 of his money clicks): this panel is CENTRED and the trade form's
+     "Open demo trade" button sits at the centre of a phone, so the Bybit card lands on the button at 100% overlap
+     (390x844) / 49% (landscape). It used to appear 600 ms after the trader's own tap with no guard, and the next tap
+     of a burst - open->open gap p50 701 ms, p90 1678 ms - hit the partner card. 7 of 26 money clicks in a 9-hour
+     window (27%) landed 0.86-1.60 s after it appeared, and in 5 of those the trader carried on tapping Open a second
+     later, i.e. never left the page. Two guards, and the CSS one is the guarantee: GRAD_IDLE = never raise it under a
+     thumb that is still opening trades, GRAD_ARM = the money links are dead until nobody could have mistaken them. */
+  var GRAD_IDLE=2500, GRAD_ARM=1800; /* ARM > the measured p90 tap gap, so it always outlasts one more tap */
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
     elm.innerHTML=__esT_home("100055TradesPracticed",'<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">')+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
     document.body.appendChild(elm);
-    elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}}); }
+    elm.addEventListener('click',function(e){var t=e.target;
+      if(!elm.classList.contains('armed')){ /* a tap that arrives before anyone could read two cards was aimed at what this panel covered - dismiss it, never bill it as a money click */
+        var c0=t.closest&&t.closest('[data-ex]');
+        e.preventDefault();e.stopPropagation();elm.hidden=true;
+        try{if(window.__mpTrack)window.__mpTrack('grad','miss'+(c0?':'+c0.getAttribute('data-ex'):''));}catch(_){} /* counted, never silent: this is how we see the guard working */
+        return;}
+      if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}},true); }
   function show(){if(!elm)build();var n=window.__gradN||count();
     try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=window.__gradFW?__esT_home("firstWinningTrade",'First winning trade'):(n+__esT_home("tradesPracticed",' trades practiced'));
         var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?__esT_home("youJustClosedYour",'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).'):__esT_home("youHaveOpened",'You have opened ')+n+__esT_home("paperTradesTheMechanics",' paper trades - the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).');}catch(e){}
-    elm.hidden=false;}
+    elm.hidden=false;
+    elm.classList.remove('armed');clearTimeout(_armT);_armT=setTimeout(function(){if(elm)elm.classList.add('armed');},GRAD_ARM);}
+  /* never interrupt a burst: the trader has to have stopped opening trades before a panel appears over the Open button */
+  function tryShow(){var since=Date.now()-lastOpen;
+    if(lastOpen&&since<GRAD_IDLE){clearTimeout(_waitT);_waitT=setTimeout(tryShow,GRAD_IDLE-since+140);return;}
+    show();}
   function wins(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(t){return t&&(t.status==='win'||(+t.pnl>0));}).length;}catch(e){return 0;}}
   /* funnel tuning (owner 2026-08-14): first offer at 8 opened trades (20 was measured too late - /paper-trade converts ~2%),
      then every 30 as before; PLUS a one-time "first winning trade" moment for early users (the hottest second to offer a
      real account). Existing users keep their stored schedule. Impressions tracked so CTR per trigger is measurable. */
   window.mpCheckGrad=function(){try{
+    if(!_boot)lastOpen=Date.now(); /* every opener calls this on a real open, so the function records its own calls - window._mpLastOpenTs is CONSUMED by the ticket pop and cannot be read here */
     var n=count();
-    if(n<8){var wn=wins();if(wn>=1&&!localStorage.getItem('mp_grad_fw')){if(document.querySelector('.grad-modal:not([hidden])'))return;/* the signup nudge (shares the class) is up - do not stack, do not consume the flag; we retry on the next check */localStorage.setItem('mp_grad_fw','1');window.__gradN=n;window.__gradFW=1;setTimeout(show,600);try{window.__mpTrack&&window.__mpTrack('grad','firstwin');}catch(e2){}return;}}
+    if(n<8){var wn=wins();if(wn>=1&&!localStorage.getItem('mp_grad_fw')){if(document.querySelector('.grad-modal:not([hidden])'))return;/* the signup nudge (shares the class) is up - do not stack, do not consume the flag; we retry on the next check */localStorage.setItem('mp_grad_fw','1');window.__gradN=n;window.__gradFW=1;setTimeout(tryShow,600);try{window.__mpTrack&&window.__mpTrack('grad','firstwin');}catch(e2){}return;}}
     var nx=parseInt(localStorage.getItem(NXKEY)||'8',10);if(!(nx>0))nx=8;
-    if(n>=nx){var k=Math.floor(Math.max(0,n-8)/30)+1;localStorage.setItem(NXKEY,String(8+30*k));window.__gradN=n;window.__gradFW=0;setTimeout(show,600);try{window.__mpTrack&&window.__mpTrack('grad','n'+n);}catch(e3){}}
+    if(n>=nx){var k=Math.floor(Math.max(0,n-8)/30)+1;localStorage.setItem(NXKEY,String(8+30*k));window.__gradN=n;window.__gradFW=0;setTimeout(tryShow,600);try{window.__mpTrack&&window.__mpTrack('grad','n'+n);}catch(e3){}}
   }catch(e){}};
-  setTimeout(function(){try{window.mpCheckGrad();}catch(e){}},1500);
+  setTimeout(function(){try{_boot=1;window.mpCheckGrad();_boot=0;}catch(e){_boot=0;}},1500);
 })();
 
 ;/* ══════════ inline block from app/index.html line 4733 ══════════ */
