@@ -21,10 +21,31 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-x{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8b97a5;font-size:13px;cursor:pointer;line-height:1}'
     + '.lbm-x:hover{color:#fff;background:rgba(255,255,255,.1)}'
     + '.lbm-load{padding:34px 10px;text-align:center;color:#8b97a5;font-size:13px}'
-    + '.lbm-head{display:flex;align-items:center;gap:13px;margin-bottom:12px}'
+    + '.lbm-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:12px;min-width:0}'
+    /* THE CLOSE BUTTON IS ABSOLUTE, SO THE ROW UNDER IT HAS TO RESERVE ITS CORNER (2026-10-18, owner:
+       "Squidward10timeX ima malo duzi name pa neke stvari na profil kartici su pomerene"). `.lbm-toprow` has
+       carried padding-right:34px for exactly this since the medals shipped; the head row never got it, so a
+       16-character name stopped 13px short of the X on a 390 phone and sat UNDER it at 360. Only when the head
+       is the FIRST row - with a premium tag or a medal above it the X is beside THAT row and the head is clear.
+       And `align-items` is flex-start, not center: when the relationship pill wraps, centring slid the 46px
+       level badge down beside the PILL instead of the name, which is what read as "everything has moved". */
+    + '.lbm-body>.lbm-head:first-child{padding-right:34px}'
+    /* A FLEX ITEM DEFAULTS TO min-width:auto, so without this the identity column cannot shrink and a long
+       name pushes it past the card padding - the same trap /trading-api/ and the Rekt hero hit. */
+    + '.lbm-id{flex:1 1 auto;min-width:0}'
     + '.lbm-badge{width:46px;height:46px;flex:none;padding:2px}'
-    + '.lbm-name{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.1}'
-    + '.lbm-lvl{font:700 11px "Space Mono",monospace;letter-spacing:.04em;text-transform:uppercase;margin-top:3px}'
+    + '.lbm-name{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;row-gap:5px;min-width:0;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.1}'
+    /* A NAME IS IDENTITY: SHRINK IT RATHER THAN CUT IT. `.lbm-nm` holds the avatar AND the name, so `fitName`
+       measures exactly what has to sit on that line and steps the type down 20px -> 15px until it does. The
+       longest username the DO will issue is 20 characters (/^[a-zA-Z0-9_]{3,20}$/) and the longest one any
+       member actually has - HopeyouarealldoingOk - lands whole at 16px on a 390 phone.
+       IT STAYS ON ONE LINE. Two wrapping attempts were measured and both were worse: `overflow-wrap:anywhere`
+       collapses a flex item's automatic minimum size to ONE CHARACTER (a name stacked over eight lines), and
+       `-webkit-line-clamp` needs `display:-webkit-box`, which turns the span into a legacy vertical BOX and
+       puts the avatar on a row of its own. Below 15px the ellipsis takes over and the full name is the title -
+       only reachable with a 16+ character name on a 320px screen, where nothing else would fit either. */
+    + '.lbm-nm{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.lbm-lvl{font:700 11px "Space Mono",monospace;letter-spacing:.04em;text-transform:uppercase;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     /* THE LEVEL METER (owner 2026-10-17: "prost i zalepljen uz ovo kao da je dete pravilo ... ozbiljniji izgled
        ali da ne gubimo na prostoru"). It was a flat 5px strip of one colour sitting FLUSH against the squad card -
        the squad row ends and the bar begins with no gap at all, which is what read as glued on. Now: a carved
@@ -46,13 +67,19 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-s{min-width:0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 6px;text-align:center;overflow:hidden}'
     + '.lbm-sv{font-family:"Space Mono",monospace;font-weight:700;font-size:14px;color:#fff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.lbm-sl{font-size:9px;color:#7a8592;text-transform:uppercase;letter-spacing:.03em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
-    + '.lbm-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}'
-    + '.lbm-fol{font-size:13.5px;color:#c7cdd4;display:flex;align-items:center;gap:7px}.lbm-fol b{color:#fff;font-weight:800;font-size:16px;font-family:"Space Mono",monospace}.lbm-fol svg{color:#8b97a5}'
+    /* MEASURED 2026-10-18 at 320px: the four tiles plus "28 followers" ran 28px PAST the card's own padding,
+       for every member, long name or not - 4x34 + 3x8 + the followers line does not fit 244px. What pays for
+       it is the 30px tiles under 375 and min-width:0 on the followers block; `flex-wrap` is the graceful
+       fallback for a bigger follower count (the suite shows it is not reached at 320 today). Nothing changes
+       at 390 and above. */
+    + '.lbm-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}'
+    + '@media(max-width:374px){.lbm-acts{gap:6px}.lbm-acts>button,.lbm-acts>.lbm-folb{width:30px;height:30px}}'
+    + '.lbm-fol{min-width:0;font-size:13.5px;color:#c7cdd4;display:flex;align-items:center;gap:7px}.lbm-fol b{color:#fff;font-weight:800;font-size:16px;font-family:"Space Mono",monospace}.lbm-fol svg{color:#8b97a5}'
     + '.lbm-self{font-size:12px;color:#c2f64a;font-weight:700}'
     + '.lbm-follow{background:#38bdf8;color:#0a0b0d;border:1px solid #38bdf8;border-radius:10px;padding:9px 13px;font:800 12px "Space Mono",monospace;line-height:14px;letter-spacing:.03em;cursor:pointer;transition:filter .15s,background .15s}'
     + '.lbm-follow:hover{filter:brightness(1.08)}'
     + '.lbm-follow.on{background:transparent;color:#8a93a0;border:1px solid #2b333d}.lbm-follow.on:hover{filter:none;background:rgba(255,255,255,.05)}'
-    + '.lbm-acts{display:flex;align-items:center;gap:8px}'
+    + '.lbm-acts{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}'
     /* FOLLOW IS AN ICON BESIDE THE CLOSE (owner 2026-10-16: "follow button ce da ide na vrh kartice do x ... mali coveculjak i plus"); its old place in the foot row is the Portfolio button */
     /* ALL FOUR ACTIONS ARE ONE ROW OF EQUAL SQUARES (owner 2026-10-17: "portfolio i follow treba da se nalaze
        pored chat i duel ikonice, znaci sve 4 zajedno, i da budu istih dimenzija"). Follow spent one day in the
@@ -85,8 +112,10 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     + '.lbm-dm{background:transparent;color:#38bdf8;border:1px solid rgba(56,189,248,.5);border-radius:10px;font:800 13px "Space Mono",monospace;letter-spacing:.02em;cursor:pointer;transition:background .15s}'
     + '.lbm-dm:hover{background:rgba(56,189,248,.12)}'
     + '.lbm-duel{color:#ff9640;border-color:rgba(255,150,64,.5)}.lbm-duel:hover{background:rgba(255,150,64,.12)}'
-    + '.lbm-friend{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 9px}'
-    + '.lbm-fw{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10px;font-weight:700;letter-spacing:.03em;color:#8b97a5;border:1px solid #2f3742;border-radius:20px;padding:2px 8px}'
+    /* flex:none and no margin of their own - the row's column-gap spaces them, so a pill that wraps to a second
+       line lands flush with the avatar instead of hanging 8px in from it. */
+    + '.lbm-friend{flex:none;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 9px}'
+    + '.lbm-fw{flex:none;font-size:10px;font-weight:700;letter-spacing:.03em;color:#8b97a5;border:1px solid #2f3742;border-radius:20px;padding:2px 8px}'
     + '.lbm-av{margin-right:7px;font-size:19px;vertical-align:-2px}'
     + '.lbm-av-img{width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:-8px}'
     + '.lbm-bio{margin:12px 0 0;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid #2a323c;border-left-width:3px;border-radius:10px;font-size:13px;line-height:1.5;color:#d3d8de}'
@@ -263,7 +292,26 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     if (nameEl) {
       var old = nameEl.querySelector('.lbm-friend, .lbm-fw'); if (old) old.remove();
       var pill = folPill(st, followsMe); if (pill) nameEl.insertAdjacentHTML('beforeend', pill);
+      fitName(body); // the pill takes room off the name, so the fit has to be redone whenever it changes
     }
+  }
+  /* FIT THE NAME TO THE ROOM IT HAS (2026-10-18). A username is identity - the card is where a reader confirms
+     WHO they are looking at - so it is shrunk, not cut: 20px down to 16px, and only if it still will not fit at
+     16px does it wrap onto a second line whole. Measured against the longest legal username (20 chars, the DO's
+     own /^[a-zA-Z0-9_]{3,20}$/), with the avatar and the relationship pill beside it, down to a 320px phone.
+     It MUST run again on document.fonts.ready: Bricolage Grotesque loads async and a measurement taken against
+     the fallback face sizes the name for a font nobody is reading. */
+  function fitName(body) {
+    try {
+      var row = body && body.querySelector('.lbm-name'), el = row && row.querySelector('.lbm-nm');
+      if (!el) return;
+      row.style.fontSize = ''; el.removeAttribute('title');
+      for (var s = 19; s >= 15; s--) {
+        if (el.scrollWidth <= el.clientWidth + 0.5) return;
+        row.style.fontSize = s + 'px';
+      }
+      if (el.scrollWidth > el.clientWidth + 0.5) el.title = el.textContent || ''; // clipped: the whole name is still readable
+    } catch (e) {}
   }
   var modal = null;
   function closeModal() { if (modal) { modal.classList.remove('on'); setTimeout(function () { if (modal && !modal.classList.contains('on')) modal.style.display = 'none'; }, 200); } }
@@ -319,7 +367,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       var medHtml = medalsHtml(d.wins);
       var topRow = (tagHtml || medHtml) ? ('<div class="lbm-toprow">' + tagHtml + medHtml + '</div><div class="lbm-medp" id="lbmMedP" hidden></div>') : '';
       body.innerHTML = topRow
-        + '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + av + (d.premium ? '<span class="mp-progold">' + esc(d.name) + '</span>' : esc(d.name)) + (d.mutual ? '<span class="lbm-friend" title="You follow each other">★ Friends</span>' : (d.followsMe ? __esT_mpprofile("followsYou",'<span class="lbm-fw" title="Follows you">Follows you</span>') : '')) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.stars && window.mpPrestigeSvg ? window.mpPrestigeSvg(L.stars, lc) : '') + (L.next ? ' · ' + (L.pct || 0) + __esT_mpprofile("pctTo", '% to ') + esc(L.next) : __esT_mpprofile("maxTier", ' · max tier')) + '</div></div></div>'
+        + '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + '<span class="lbm-nm">' + av + (d.premium ? '<span class="mp-progold">' + esc(d.name) + '</span>' : esc(d.name)) + '</span>' + (d.mutual ? '<span class="lbm-friend" title="You follow each other">★ Friends</span>' : (d.followsMe ? __esT_mpprofile("followsYou",'<span class="lbm-fw" title="Follows you">Follows you</span>') : '')) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.stars && window.mpPrestigeSvg ? window.mpPrestigeSvg(L.stars, lc) : '') + (L.next ? ' · ' + (L.pct || 0) + __esT_mpprofile("pctTo", '% to ') + esc(L.next) : __esT_mpprofile("maxTier", ' · max tier')) + '</div></div></div>'
         + bioHtml + coinsHtml
         // The squad logo on every member's card is the whole point of the feature (owner 2026-09-29). The
         // renderer lives in mp-auth.js; if that has somehow not parsed the row is skipped rather than drawn
@@ -342,6 +390,8 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
         + '<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>' + (d.followers || 0) + '</b> follower' + ((d.followers === 1) ? '' : 's') + '</span>' + mBtn + '</div>'
         + '<div class="lbm-portp" id="lbmPortP" hidden></div>';
       try { folPaint(body.querySelector('.lbm-folb'), folSt, folFm); } catch (e) {}
+      fitName(body); // own card has no follow button, so folPaint returns early and never fits it
+      try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitName(body); }); } catch (e) {}
     }).catch(function () { body.innerHTML = __esT_mpprofile("couldNotLoadThis",'<div class="lbm-load">Could not load this trader.</div>'); });
   };
   // PORTFOLIO (owner 2026-10-16): what this member holds on Demo Spot - worth, season P&L, rank and the coins with their share.

@@ -50,6 +50,10 @@ const WINS = {
      is from the payload rather than from the deferred mp-auth bundle, so the fixture has to say it: a guest is
      correctly offered no Message and no Duel. */
   payload.viewerSignedIn = true; payload.isSelf = false; payload.iFollow = false; payload.followsMe = false; payload.mutual = false;
+  /* `view` is what /api/lb/user answers with, so a leg can re-open the card as somebody else - the long-name
+     round below needs the head row to be the FIRST row (no medals above it), which is where the close button
+     overlapped. */
+  let view = payload;
 
   async function prep(browser, mobile) {
     const page = await newPage(browser, { mobile, ua: mobile ? UA_MOBILE : UA_DESKTOP });
@@ -65,7 +69,7 @@ const WINS = {
       // a signed-in VIEWER who is not this member, so follow + chat + duel all render
       if (u.includes('/api/auth/me')) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ user: { id: 'e2eviewer', username: 'e2eviewer', xp: 4100, level: LV } }) });
       if (u.includes('/api/auth/xp') && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ signedIn: true, xp: 4100, level: LV, log: [], notifUnread: 0, dmUnread: 0, duelPending: 0 }) });
-      if (u.includes('/api/lb/user')) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+      if (u.includes('/api/lb/user')) return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(view) });
       if (LOCAL && /\/assets\/mp-profile\.js/.test(u)) return req.respond({ status: 200, contentType: 'application/javascript; charset=utf-8', body: fs.readFileSync(path.join(A, 'mp-profile.js'), 'utf8') });
       req.continue();
     });
@@ -177,6 +181,76 @@ const WINS = {
       });
       ok(tag + ': the level meter is drawn - a real track, carved, with a fill in it', !!bar && bar.h >= 5 && bar.h <= 8 && bar.track && bar.inset && bar.fillH === bar.h, bar);
       ok(tag + ': and it is not glued to the squad card above it', !bar || bar.gap === null || (bar.gap >= 6 && bar.gap <= 14), bar && bar.gap);
+
+      /* A LONG NAME MUST NOT MOVE ANYTHING (2026-10-18, owner: "Squidward10timeX ima malo duzi name pa neke
+         stvari na profil kartici su pomerene"). Measured before the fix: a 16-character name stopped 13px short
+         of the close button on a 390 phone and sat UNDER it at 360; with the relationship pill beside it the
+         name wrapped, the 46px level badge slid down level with the PILL instead of the name, and at 320 the
+         identity column and the whole action row hung past the card's own padding.
+         The head row is the FIRST row here (wins:null) - that is the case the close button overlapped. */
+      const geo = async (nm, extra) => {
+        // no medals, no premium tag, no owner tag: the head row has to be the FIRST row, which is the only
+        // case the absolute close button overlaps (with a tag above it the X is beside THAT row)
+        view = Object.assign({}, payload, { name: nm, wins: null, premium: false, plus: false, owner: false, otag: '' }, extra || {});
+        await page.evaluate(() => { const b = document.querySelector('.lbm .lbm-x'); if (b) b.click(); });
+        await sleep(260);
+        await page.evaluate((n) => window.mpOpenProfile(n), nm);
+        await page.waitForSelector('.lbm.on .lbm-nm', { timeout: 20000 });
+        await sleep(700);
+        return page.evaluate(() => {
+          const card = document.querySelector('.lbm.on .lbm-card'), cr = card.getBoundingClientRect();
+          const cs = getComputedStyle(card), inner = { l: cr.left + parseFloat(cs.paddingLeft), r: cr.right - parseFloat(cs.paddingRight) };
+          const nm = card.querySelector('.lbm-nm'), nr = nm.getBoundingClientRect(), x = card.querySelector('.lbm-x').getBoundingClientRect();
+          const over = [];
+          card.querySelectorAll('*').forEach(e => {
+            if (e.classList.contains('lbm-x')) return;             // absolute, it lives in the padding by design
+            const r = e.getBoundingClientRect(); if (!r.width) return;
+            let p = e.parentElement, clipped = false;
+            while (p && p !== document.documentElement) { const o = getComputedStyle(p).overflowX; if (o === 'hidden' || o === 'auto' || o === 'scroll') { clipped = true; break; } p = p.parentElement; }
+            if (!clipped && (r.right > inner.r + 1.5 || r.left < inner.l - 1.5)) over.push((String(e.className || e.tagName).split(' ')[0]) + '+' + Math.round(r.right - inner.r));
+          });
+          const badge = card.querySelector('.lbm-badge').getBoundingClientRect();
+          // the identity column is the last child of the head row and fills its CONTENT box, so its right edge
+          // is where the reserved corner begins - the head's own border box still spans the full inner width
+          const idr = card.querySelector('.lbm-id').getBoundingClientRect();
+          return { h: Math.round(cr.height), overX: nr.right > x.left - 2 && nr.top < x.bottom, over,
+            headClear: Math.round(inner.r - idr.right),   // the corner the absolute close button needs
+            badgeOffName: Math.round(Math.abs(badge.top - nr.top)), fs: Math.round(parseFloat(getComputedStyle(nm).fontSize)) };
+        });
+      };
+      const gShort = await geo('Elli');
+      const gLong = await geo('Squidward10timeX');
+      const gMax = await geo('Wwwwwwwwwwwwwwwwwwww');           // the longest the DO will ever issue, widest glyph
+      const gPill = await geo('Squidward10timeX', { mutual: true, iFollow: true, followsMe: true });
+      /* THE RESERVATION IS THE INVARIANT, NOT THE CLEARANCE AT ONE WIDTH. The first wording of this check asked
+         "does the name overlap the X" and could not fail at 390 or 1366 - at 390 the broken card still stopped
+         13px short of it, and the real overlap happened at 360. So: the head row must leave the close button's
+         corner free, and the overlap itself is re-measured at 360, where it actually went wrong. */
+      ok(tag + ': the head row reserves the close button corner when it is the first row', gLong.headClear >= 28 && gShort.headClear >= 28, { long: gLong.headClear, short: gShort.headClear });
+      ok(tag + ': a long name never reaches under the close button', !gLong.overX && !gMax.overX && !gPill.overX, { gLong: gLong.overX, gMax: gMax.overX, gPill: gPill.overX });
+      ok(tag + ': and nothing on the card hangs past its own padding', !gShort.over.length && !gLong.over.length && !gMax.over.length && !gPill.over.length, [].concat(gShort.over, gLong.over, gMax.over, gPill.over));
+      ok(tag + ': the card is the same height whatever the name is - the head row does not grow', gShort.h === gLong.h && gShort.h === gMax.h, { short: gShort.h, long: gLong.h, max: gMax.h });
+      ok(tag + ': the name is shrunk to fit rather than cut (20px for a short one, smaller for a long one)', gShort.fs === 20 && gMax.fs < 20 && gMax.fs >= 15, { short: gShort.fs, max: gMax.fs });
+      ok(tag + ': the level badge stays level with the NAME even when the pill wraps under it', gPill.badgeOffName <= 6, gPill.badgeOffName);
+      if (mobile) {
+        // 360px is the width the overlap really happened at - and 320 is where the action row used to hang out
+        for (const w of [360, 320]) {
+          await page.setViewport({ width: w, height: 800, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+          const g = await geo('Squidward10timeX');
+          ok(w + 'px: the name clears the close button', !g.overX, g.overX);
+          ok(w + 'px: nothing on the card hangs past its own padding', !g.over.length, g.over);
+          /* 4x34 + gaps + "28 followers" does not fit 244px at 320, so the foot row wraps and the tiles take
+             their own line. Without the wrap the followers block shrinks and "followers" folds under "28" -
+             no overflow, so the padding check above cannot see it; this is what the wrap actually buys. */
+          ok(w + 'px: the followers line stays on one line', await page.evaluate(() => {
+            const f = document.querySelector('.lbm.on .lbm-fol'); if (!f) return true;
+            return Math.round(f.getBoundingClientRect().height) <= 26;
+          }), await page.evaluate(() => Math.round(document.querySelector('.lbm.on .lbm-fol').getBoundingClientRect().height)));
+        }
+        await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+      }
+      view = payload;
+
       ok(tag + ': no page errors', !page._errors.length, page._errors.slice(0, 3));
       await page.close();
     }
