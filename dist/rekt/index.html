@@ -576,7 +576,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   .rkt-hours .hc i{display:block;width:100%}
   .rkt-hours .hc i.l{background:linear-gradient(180deg,#ff8a80,#ff5a4d)}.rkt-hours .hc i.s{background:linear-gradient(180deg,#41e3a3,#2ebd85)}
   .rkt-hours .hc.now{outline:1px solid rgba(255,255,255,.35);outline-offset:-1px}
-  .rkt-hours .hc.nd{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px)} /* hours before the oldest print we hold: no data, not zero */
+  .rkt-hours .hc.nd{background:repeating-linear-gradient(135deg,rgba(255,255,255,.17) 0 1px,rgba(255,255,255,.035) 1px 4px)}/* 2026-10-19: was .05 over a .03 ground - a hatch nobody could see, so 'we did not watch this hour' read as 'nothing happened' */ /* hours before the oldest print we hold: no data, not zero */
   .rkt-hlbl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#5c656f;margin-top:4px}
   .rkt-hsum{font-family:'Space Mono',monospace;font-size:10px;color:#7f8994;margin-top:6px}
   .rkt-hsum b{color:#eceef2}
@@ -659,7 +659,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
         <p>The live liquidations feed is temporarily offline while we upgrade the data pipeline. It'll be back shortly - thanks for your patience.</p>
       </div>
     </div>
-    <div class="rkmob" id="rkmob"><h3>By hour <small>today · UTC · ≥ $1K</small></h3><div class="rkt-hours" id="rkmHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><h3 style="margin-top:10px">Top hits today <small>tap to open</small></h3><div class="rkmob-top" id="rkmTop"></div></div>
+    <div class="rkmob" id="rkmob"><h3>By hour <small>UTC · ≥ $1K · hatched = not watched</small></h3><div class="rkt-hours" id="rkmHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><h3 style="margin-top:10px">Top hits today <small>tap to open</small></h3><div class="rkmob-top" id="rkmTop"></div></div>
     <div class="rk-feed" id="rkFeed"><div class="rk-empty">Loading live liquidations…</div></div>
     <div class="rkt" id="rkTerm">
       <div class="rkt-main">
@@ -677,7 +677,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
           <div class="rkt-press-verdict" id="rktPV">Waiting for data…</div></div>
         <div class="rkt-card"><h3>Biggest hit <small>today · UTC</small></h3><div class="rkt-rec" id="rktRec"><span class="sub">No liquidations yet…</span></div></div>
         <div class="rkt-card"><h3>Top hits <small>today · UTC · click to open</small></h3><div id="rktTop"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
-        <div class="rkt-card"><h3>By hour <small>today · UTC · prints ≥ $1K</small></h3><div class="rkt-hours" id="rktHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><div class="rkt-hsum" id="rktHsum"></div></div>
+        <div class="rkt-card"><h3>By hour <small>UTC · prints ≥ $1K · hatched = hour not watched</small></h3><div class="rkt-hours" id="rktHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><div class="rkt-hsum" id="rktHsum"></div></div>
         <div class="rkt-win" id="rktWin"><span>Window</span><button type="button" data-w="h1">1H</button><button type="button" data-w="h4">4H</button><button type="button" data-w="h12">12H</button><button type="button" data-w="h24" class="on">24H</button></div>
         <div class="rkt-card"><h3>Most rekt coins <small id="rktCoinsL">24h · click to filter</small></h3><div id="rktCoins"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
         <div class="rkt-card"><h3>Venue split <small id="rktExL">24h · longs vs shorts</small></h3><div class="rkt-mini" id="rktEx">-</div></div>
@@ -825,7 +825,15 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     all.forEach(function(e){if(e.notional<1000)return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;e._fresh=(!firstRender&&!animated[k]);animated[k]=1;});
     if(all.length)firstRender=false; // nothing animates on initial load; afterwards each new liquidation slams once
     if(deskOn())return; // ≥861px shows the liquidation terminal (#rkTerm) - skip the hidden mobile feed's innerHTML churn
-    var list=all.filter(matchF).slice(0,60);
+    /* A NARROW FILTER MUST SEARCH THE DAY, NOT THE LIVE BUFFER (2026-10-19). `all` is capped at 200 rows
+       across every coin, so BTC over $1K found two; the desktop tape has always filtered `dayAll`, the full-day
+       store the backfill fills on every viewport. The cheap pass runs first and the day is only scanned when it
+       did not fill the screen - which is exactly when a filter is narrow, and never on the hot live path. */
+    var list=all.filter(matchF);
+    if(list.length<60&&typeof dayAll!=='undefined'&&dayAll&&dayAll.length>all.length){
+      list=dayAll.filter(matchF).sort(function(a,b){return b.ts-a.ts;});
+    }
+    list=list.slice(0,60);
     feed.innerHTML=list.length?list.map(row).join(''):__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');
     // 24h headline stats now come from Coinglass (aggregated across ALL exchanges) via loadLiqStats() - not the partial session feed.
   }
