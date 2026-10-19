@@ -25047,8 +25047,12 @@ export default {
       return new Response(JSON.stringify({ ok, channel: channelName, note: ok ? desc : undefined, error: ok ? undefined : (desc || 'send_failed') }), { headers: jh });
     }
     if (url.pathname === '/api/levels/top' && request.method === 'GET') { // public XP leaderboard (Top clanovi)
-      const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));
-      const ck = new Request('https://marginpad.io/__lvl_top_v2_' + lim);
+      // 200, NOT 50 (2026-10-19, owner: 'na levels stranici se vidi samo njih 15 a mozemo bar top 200').
+      // The row is a username, an XP figure and a level - about 60 bytes - so two hundred of them is ~12 KB behind
+      // a 30-second edge cache, one query on an indexed column. The page scrolls them in a fixed box, so a long
+      // board and a short one take the same room.
+      const lim = Math.min(200, Math.max(1, +url.searchParams.get('limit') || 20));
+      const ck = new Request('https://marginpad.io/__lvl_top_v3_' + lim);
       let body = null;
       try { const hit = await caches.default.match(ck); if (hit) body = await hit.text(); } catch (e) {}
       if (body == null) { // miss → recompute from the DO + repopulate the ≤30s edge cache
@@ -30532,7 +30536,7 @@ export class UserStore {
       return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, freezes: u ? (u.freezes || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc, spent });
     }
     if (path === '/xp/top') { // public: top members by XP (Top clanovi leaderboard) - named, non-banned, xp>0
-      const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));
+      const lim = Math.min(200, Math.max(1, +url.searchParams.get('limit') || 20));
       const rows = this.rows("SELECT username, xp FROM users WHERE username IS NOT NULL AND username != '' AND xp > 0 AND (status IS NULL OR status != 'banned') ORDER BY xp DESC LIMIT ?", lim);
       const top = rows.map((r, i) => { const L = xpLevelOf(r.xp || 0); return { rank: i + 1, username: r.username, xp: r.xp || 0, k: L.k, name: L.name, col: L.col }; });
       return this.j({ top });
@@ -31836,7 +31840,24 @@ export class UserStore {
     if (path === '/pass/me') { // season, season XP, tier, both tracks with claim state, pro or not
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); const sk = predSeason(Date.now());
       const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
-      const xp = uid ? +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", uid, from, to)[0] || {}).x || 0 : 0;
+      /* SEASON XP IS xp_life MINUS THE SEASON BASE - NEVER A SUM OVER xplog (2026-10-19, Sami_Sings1 in the
+         owner's DMs: "on the season board, instead of the 8k xp it's showing 7k"). xplog is TRIMMED to 150 rows
+         per account, so summing it under-reports exactly the members who earn the most, and the harder somebody
+         plays the more it steals. Measured across the top twelve of the XP board the day it was found: EVERY ONE
+         was short - Emapolako14 by 3,992, Sami by 1,879, ibrar0805 by 1,869 - and because the tier is
+         floor(xp / PASS_STEP) this was not cosmetic: ibrar0805 sat at tier 32 of 40, Light and Alibhai001 at 39,
+         Yogatrader at 38, each being denied pass rewards they had earned.
+         `xpseason.base` is the xp_life snapshot taken at the member's FIRST grant of the season, which is what
+         _grantXp has maintained since 2026-07-30 for exactly this reason and what the leaderboard already reads -
+         so the pass and the board now answer with ONE number instead of two. No xpseason row means no grant this
+         season, which is zero. lbprize is already compensated inside _grantXp by raising the base, nothing grants
+         XP with src 'pass', and spending XP never touches xp_life - so the old filters have nothing left to do.
+         This is the same class as the 2026-10-08 "check in 10 days" bug: never count anything over xplog. */
+      const _pSeason = lbPeriodStart(Date.now());
+      const _pBase = uid ? this.rows('SELECT base FROM xpseason WHERE user_id=? AND season=?', uid, _pSeason)[0] : null;
+      const _pLife = uid ? +((this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || {}).v || 0) : 0;
+      const xp = _pBase ? Math.max(0, _pLife - (+_pBase.base || 0)) : 0;
+      void from; void to;
       const row = uid ? this.rows('SELECT pro, claimed, bought_ts, src FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0] : null;
       let claimed = []; try { claimed = JSON.parse((row && row.claimed) || '[]'); } catch (e) { claimed = []; }
       const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP));
