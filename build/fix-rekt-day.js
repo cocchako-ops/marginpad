@@ -46,10 +46,15 @@ function find(anchor) {
   }
   return null;
 }
+/* `skipIf` may be an ARRAY: a later round can REPLACE what an earlier round wrote, and then the earlier edit's
+   single guard matches nothing and its anchor is gone too - so a re-run throws on work that is already done.
+   Any one of the listed markers means "this edit, in some revision, is in the file". */
 function one(name, anchor, replacement, opts) {
   const o = opts || {};
-  if (o.skipIf && find(o.skipIf) ) { skipped.push(name + ' (already applied)'); return; }
-  if (o.skipIf && h.indexOf(o.skipIf.split('\r\n').join('\n')) >= 0) { skipped.push(name + ' (already applied)'); return; }
+  const guards = o.skipIf == null ? [] : (Array.isArray(o.skipIf) ? o.skipIf : [o.skipIf]);
+  for (const g of guards) {
+    if (find(g) || h.indexOf(g.split('\r\n').join('\n')) >= 0) { skipped.push(name + ' (already applied)'); return; }
+  }
   const a = find(anchor);
   if (!a) throw new Error(name + ': anchor not found (tried both line endings)');
   h = h.split(a).join(replacement);
@@ -124,7 +129,8 @@ const A_MOB = [
 one('phone feed reads the day', A_MOB, [
   "    var list=all.filter(matchF);",
   "    if(list.length<60){var _d=dayRows();if(_d.length>all.length)list=_d.filter(matchF).sort(function(a,b){return b.ts-a.ts;});}",
-].join(N), { skipIf: 'if(list.length<60){var _d=dayRows();' });
+  // round 2 REPLACED this block, so either marker means it is done
+].join(N), { skipIf: ['if(list.length<60){var _d=dayRows();', 'var _sv=(filtRows&&filtKey===fKey())?filtRows:null;'] });
 
 /* ---------------------------------------------------------------- 3. the desktop tape reads dayRows() ----- */
 one('desktop tape reads the day',
@@ -277,6 +283,84 @@ one('biggest hit covers the whole day',
     "      try{paintHits(true);}catch(_e){}try{deskSide();}catch(_e){}",
   ].join(N),
   { skipIf: 'if(!sessBig||+e.notional>+sessBig.notional)sessBig=e;' });
+
+/* ================================================================ ROUND 2 (2026-10-19, owner: "zasto na rekt
+   ne vidim likvidacije od danas koje su preko 1m na btc-u a vide se na charts na indikatoru")
+
+   MEASURED on the live page, both viewports, before changing anything - and it was TWO separate faults:
+
+   1. **THE PHONE RENDERED ZERO ROWS UNDER ANY NARROW FILTER, which is my own bug from round 1.** The deep pass
+      was guarded by `_d.length > all.length`, written when `_d` could only be `dayAll` (an unfiltered superset of
+      the 200-row buffer). `filtRows` is the SERVER's answer for the filter in force, so it is almost always
+      SHORTER than 200: BTC over $100K today is 53 rows, `53 > 200` is false, the answer was thrown away and the
+      empty cheap pass was rendered. Desktop never had the comparison (`deskRenderAll` just filters `dayRows()`),
+      which is exactly why he saw it on one device and not the other. Measured: desktop 53 rows including all four
+      BTC prints over $1M, phone 0.
+   2. **THE WINDOWS DISAGREED, AND THE CHART'S IS THE ONE HE ASKED FOR.** `/api/liq/events` (the Big Liquidations
+      indicator) is a ROLLING 24h: its `since` read 10-18T19:21 and its biggest BTC print is **$11.67M at 10-18
+      20:16 UTC** - yesterday. /rekt/'s hit lists asked for `since=<midnight>`, so that print could not appear,
+      and his own words were "dnevnim podacima (zadnja 24h)". The hero has always been rolling 24h too (it comes
+      from the cg aggregate), so "today" was also disagreeing with the tile above it.
+      **The hour histogram stays TODAY on purpose**: its axis is labelled 00..23 UTC and a rolling window puts the
+      current hour at both ends of it. Everything that is a "biggest" question has no axis, so those go 24h. */
+one('the phone must not discard a server-filtered answer', [
+  "    var list=all.filter(matchF);",
+  "    if(list.length<60){var _d=dayRows();if(_d.length>all.length)list=_d.filter(matchF).sort(function(a,b){return b.ts-a.ts;});}",
+].join(N), [
+  "    /* The SERVER's answer for the filter in force is authoritative and is used whatever its length - it is",
+  "       already narrowed, so comparing it with the 200-row unfiltered buffer (as round 1 did) threw away every",
+  "       narrow filter on this viewport. The length comparison belongs only to the dayAll fallback, where `_d`",
+  "       really is a superset of `all`. */",
+  "    var _sv=(filtRows&&filtKey===fKey())?filtRows:null;",
+  "    var list=(_sv||all).filter(matchF);",
+  "    if(!_sv&&list.length<60&&typeof dayAll!=='undefined'&&dayAll&&dayAll.length>all.length)list=dayAll.filter(matchF);",
+  "    list.sort(function(a,b){return b.ts-a.ts;});",
+].join(N), { skipIf: 'var _sv=(filtRows&&filtKey===fKey())?filtRows:null;' });
+
+/* the rolling window, used by everything that answers a "biggest" question */
+one('a 24h window beside the day', "  function dayMins(){", [
+  "  function winFrom(){return Date.now()-86400000;} // the chart's own window: a ROLLING 24h, which is what he asked for",
+  "  function dayMins(){",
+].join(N), { skipIf: 'function winFrom(){' });
+
+one('top hits over the rolling 24h',
+  "    fetch('/api/v1/feed?min=250000&since='+dayMid+'&limit=3000')",
+  "    fetch('/api/v1/feed?min=250000&since='+winFrom()+'&limit=3000')",
+  { skipIf: "feed?min=250000&since='+winFrom()" });
+
+one('the filtered tape over the rolling 24h', [
+  "    var u=fSym?('/api/v1/liquidations/live?symbol='+encodeURIComponent(fSym)+'&min='+mn+'&limit=1000&since='+dayMid)",
+  "              :('/api/v1/feed?min='+mn+'&since='+dayMid+'&limit=3000');",
+].join(N), [
+  "    var _wf=winFrom();",
+  "    var u=fSym?('/api/v1/liquidations/live?symbol='+encodeURIComponent(fSym)+'&min='+mn+'&limit=1000&since='+_wf)",
+  "              :('/api/v1/feed?min='+mn+'&since='+_wf+'&limit=3000');",
+].join(N), { skipIf: 'var _wf=winFrom();' });
+
+/* and every heading that said "today" about those lists now says what it measures */
+one('phone top-hits heading',
+  'Top hits today <small>tap to open</small>',
+  'Top hits <small>last 24h · tap to open</small>',
+  { skipIf: 'Top hits <small>last 24h · tap to open</small>' });
+one('desktop top-hits heading',
+  'Top hits <small>today · UTC · click to open</small>',
+  'Top hits <small>last 24h · UTC · click to open</small>',
+  { skipIf: 'Top hits <small>last 24h · UTC · click to open</small>' });
+/* the skipIf anchors on the ID, not on the text: the page ALSO contains the string this writes, inside the
+   `biggestHit24h` relabel the JS applies when the aggregate beats the session - so a text-only guard matched
+   that and skipped the static label for ever (the same class as the mobCap guard in round 1). */
+one('biggest-hit heading (phone tile)',
+  'id="rkhRecL">Biggest hit · today<',
+  'id="rkhRecL">Biggest hit · 24h<',
+  { skipIf: 'id="rkhRecL">Biggest hit · 24h<' });
+one('biggest-hit heading (desktop card)',
+  'Biggest hit <small>today · UTC</small>',
+  'Biggest hit <small>last 24h · UTC</small>',
+  { skipIf: 'Biggest hit <small>last 24h · UTC</small>' });
+one('tape foot says which end it reached',
+  "__esT_rektindex(\"startOfTheDay\",'- start of the day (UTC) -')",
+  "__esT_rektindex(\"endOf24h\",'- 24 hours back -')",
+  { skipIf: 'endOf24h' });
 
 /* ---------------------------------------------------------------- 6. the headings must stop claiming a floor */
 one('phone heading',
