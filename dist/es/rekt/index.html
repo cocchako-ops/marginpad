@@ -244,6 +244,9 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   .rk-off[hidden]{display:none}
   @keyframes rkoff{0%,100%{opacity:.65}50%{opacity:1}}
   .rk-empty{color:var(--lqink3);text-align:center;padding:48px 0;font-family:'Space Mono',monospace;letter-spacing:.04em}
+  .rk-more{display:block;width:100%;margin:10px 0 2px;padding:13px 0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--lqink2);font-family:'Space Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .15s,border-color .15s}
+  .rk-more:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)}
+  .rk-more small{font-size:10.5px;letter-spacing:.04em;text-transform:none;color:var(--lqink3)}
 
   .tk{position:relative;filter:drop-shadow(0 14px 24px rgba(0,0,0,.5));transition:transform .4s cubic-bezier(.2,.85,.25,1),filter .4s;will-change:transform}
   .tk:nth-child(2n){transform:rotate(.34deg)}
@@ -576,7 +579,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   .rkt-hours .hc i{display:block;width:100%}
   .rkt-hours .hc i.l{background:linear-gradient(180deg,#ff8a80,#ff5a4d)}.rkt-hours .hc i.s{background:linear-gradient(180deg,#41e3a3,#2ebd85)}
   .rkt-hours .hc.now{outline:1px solid rgba(255,255,255,.35);outline-offset:-1px}
-  .rkt-hours .hc.nd{background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px)} /* hours before the oldest print we hold: no data, not zero */
+  .rkt-hours .hc.nd{background:repeating-linear-gradient(135deg,rgba(255,255,255,.17) 0 1px,rgba(255,255,255,.035) 1px 4px)}/* 2026-10-19: was .05 over a .03 ground - a hatch nobody could see, so 'we did not watch this hour' read as 'nothing happened' */ /* hours before the oldest print we hold: no data, not zero */
   .rkt-hlbl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#5c656f;margin-top:4px}
   .rkt-hsum{font-family:'Space Mono',monospace;font-size:10px;color:#7f8994;margin-top:6px}
   .rkt-hsum b{color:#eceef2}
@@ -659,7 +662,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
         <p>El feed de liquidaciones en vivo está temporalmente fuera de línea mientras mejoramos la canalización de datos. Volverá pronto - gracias por tu paciencia.</p>
       </div>
     </div>
-    <div class="rkmob" id="rkmob"><h3>Por hora <small>hoy · UTC · ≥ $1K</small></h3><div class="rkt-hours" id="rkmHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><h3 style="margin-top:10px">Mayores golpes hoy <small>toca para abrir</small></h3><div class="rkmob-top" id="rkmTop"></div></div>
+    <div class="rkmob" id="rkmob"><h3>By hour <small>UTC · every venue · since 00:00</small></h3><div class="rkt-hours" id="rkmHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><h3 style="margin-top:10px">Mayores golpes hoy <small>toca para abrir</small></h3><div class="rkmob-top" id="rkmTop"></div></div>
     <div class="rk-feed" id="rkFeed"><div class="rk-empty">Cargando liquidaciones en vivo…</div></div>
     <div class="rkt" id="rkTerm">
       <div class="rkt-main">
@@ -677,7 +680,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
           <div class="rkt-press-verdict" id="rktPV">Esperando datos…</div></div>
         <div class="rkt-card"><h3>Mayor golpe <small>hoy · UTC</small></h3><div class="rkt-rec" id="rktRec"><span class="sub">Aún no hay liquidaciones…</span></div></div>
         <div class="rkt-card"><h3>Mayores golpes <small>hoy · UTC · haz clic para abrir</small></h3><div id="rktTop"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Cargando…</span></div></div>
-        <div class="rkt-card"><h3>Por hora <small>hoy · UTC · registros ≥ $1K</small></h3><div class="rkt-hours" id="rktHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><div class="rkt-hsum" id="rktHsum"></div></div>
+        <div class="rkt-card"><h3>By hour <small>UTC · every venue · since 00:00 · all exchanges</small></h3><div class="rkt-hours" id="rktHours"></div><div class="rkt-hlbl"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div><div class="rkt-hsum" id="rktHsum"></div></div>
         <div class="rkt-win" id="rktWin"><span>Ventana</span><button type="button" data-w="h1">1H</button><button type="button" data-w="h4">4H</button><button type="button" data-w="h12">12H</button><button type="button" data-w="h24" class="on">24H</button></div>
         <div class="rkt-card"><h3>Monedas más liquidadas <small id="rktCoinsL">24h · haz clic para filtrar</small></h3><div id="rktCoins"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Cargando…</span></div></div>
         <div class="rkt-card"><h3>Reparto por exchange <small id="rktExL">24h · longs vs shorts</small></h3><div class="rkt-mini" id="rktEx">-</div></div>
@@ -730,6 +733,62 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
 <script>
 (function(){
   var feed=document.getElementById('rkFeed'), seen={}, all=[], fSide='all', fMin=0, fSym='', paused=false, animated={}, firstRender=true;
+  /* ===== THE DAY COMES FROM THE SERVER (2026-10-19) =====
+     `all` (200 rows) and `dayAll` (the newest ~3,000 prints the backfill reached) are a LIVE SAMPLE, not the day.
+     Every day-wide figure now reads one of three server answers instead, each a few kilobytes: the market-wide
+     5-minute series for the hour histogram, the day's big prints for Top hits, and - only when the reader has
+     narrowed the tape - that filter applied on the server over today. Nothing holds a day of prints on the device. */
+  var dayMid=(function(){var d=new Date();d.setUTCHours(0,0,0,0);return d.getTime();})();
+  function dayMins(){return Math.max(5,Math.ceil((Date.now()-dayMid)/60000));} // TODAY, never a rolling 24h: the axis is labelled 00..23 UTC, and a rolling window would fold yesterday evening into tonight's bars
+  var dayH=null,dayTot=0,dayN=0,dayAt=0;          // the true per-hour histogram for today, market-wide
+  var topDay=null,topAt=0;                        // every print over $250K today - complete, 1 KB
+  var filtRows=null,filtKey='',filtAt=0,filtBusy=false,filtAll=true; // the reader's filter, answered over today by the server
+  var mobCap=60,mobKey=''; // the phone feed shows this many tickets; 'Load older' raises it, any filter change resets it
+  function fNarrow(){return !!fSym||fMin>1000;}
+  function fKey(){return (fSym||'')+'|'+Math.max(fMin,1000);}
+  /* the ONE reading of 'the deepest set of matching rows we hold': the server's day while a filter is narrow,
+     otherwise the local store. Both the phone feed and the desktop tape go through it, so they cannot disagree. */
+  function dayRows(){
+    if(filtRows&&filtKey===fKey())return filtRows;
+    return (typeof dayAll!=='undefined'&&dayAll)?dayAll:[];
+  }
+  function loadDaySeries(force){if(REKT_MAINT)return;
+    if(!force&&Date.now()-dayAt<60000)return;dayAt=Date.now();
+    fetch('/api/v1/liqseries?symbol=ALL&minutes='+dayMins()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      if(!j||!Array.isArray(j.buckets)||!j.buckets.length)return; // keep whatever we had; paintHits falls back to the local store
+      var H=[],i;for(i=0;i<24;i++)H.push({l:0,s:0,n:0});var tot=0,n=0;
+      j.buckets.forEach(function(b){if(+b.t<dayMid)return;var hh=new Date(+b.t).getUTCHours();if(hh<0||hh>23)return;
+        var l=+b.long||0,s=+b.short||0,c=(+b.longN||0)+(+b.shortN||0);
+        H[hh].l+=l;H[hh].s+=s;H[hh].n+=c;tot+=l+s;n+=c;});
+      dayH=H;dayTot=tot;dayN=n;try{paintHits(true);}catch(_e){}
+    });}
+  function loadTopDay(force){if(REKT_MAINT)return;
+    if(!force&&Date.now()-topAt<120000)return;topAt=Date.now();
+    fetch('/api/v1/feed?min=250000&since='+dayMid+'&limit=3000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      if(!j||!Array.isArray(j.events))return;
+      topDay=j.events.filter(function(e){return validSym(e.symbol);});
+      topDay.forEach(function(e){if(!sessBig||+e.notional>+sessBig.notional)sessBig=e;});
+      try{paintHits(true);}catch(_e){}try{deskSide();}catch(_e){}
+    });}
+  function loadFiltered(force){if(REKT_MAINT)return;
+    if(!fNarrow()){if(filtRows){filtRows=null;filtKey='';}return;}
+    var k=fKey();if(filtBusy)return;if(!force&&k===filtKey&&Date.now()-filtAt<45000)return;
+    filtBusy=true;filtAt=Date.now();var mn=Math.max(fMin,1000);
+    /* one coin -> the collector filters by symbol (indexed); a size floor with no coin -> the market-wide feed,
+       which has always honoured `min` server-side. Either way what comes back is ALL matching rows of today,
+       newest first, capped so the payload stays a phone-sized download. */
+    var u=fSym?('/api/v1/liquidations/live?symbol='+encodeURIComponent(fSym)+'&min='+mn+'&limit=1000&since='+dayMid)
+              :('/api/v1/feed?min='+mn+'&since='+dayMid+'&limit=3000');
+    fetch(u).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      filtBusy=false;
+      if(k!==fKey())return; // the reader moved on while this was in flight - a late answer must never paint another filter
+      if(!j||!Array.isArray(j.events)){filtRows=null;filtKey='';return;}
+      filtRows=j.events.filter(function(e){return validSym(e.symbol);}).sort(function(a,b){return b.ts-a.ts;});
+      filtKey=k;filtAll=fSym?(j.complete!==false):(j.events.length<3000); // did the answer cover the whole day, or hit its cap
+      render();try{deskRenderAll();}catch(_e){}
+    });}
+  var _fqT=0;
+  function filtSoon(){clearTimeout(_fqT);_fqT=setTimeout(function(){loadFiltered();},380);} // the coin box fires per keystroke
   var offFails=0;
   /* clean, narrow format; the stat value is left-anchored + tabular below, so width changes never move the number */
   function money(n){n=+n;if(n>=1e9)return (n/1e9).toFixed(1)+'B';if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(0)+'K';return n.toFixed(0);}
@@ -805,8 +864,17 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     all.forEach(function(e){if(e.notional<1000)return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;e._fresh=(!firstRender&&!animated[k]);animated[k]=1;});
     if(all.length)firstRender=false; // nothing animates on initial load; afterwards each new liquidation slams once
     if(deskOn())return; // ≥861px shows the liquidation terminal (#rkTerm) - skip the hidden mobile feed's innerHTML churn
-    var list=all.filter(matchF).slice(0,60);
-    feed.innerHTML=list.length?list.map(row).join(''):__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');
+    /* A NARROW FILTER MUST SEARCH THE DAY, NOT THE LIVE BUFFER (2026-10-19). `all` is capped at 200 rows
+       across every coin, so BTC over $1K found two; the desktop tape has always filtered `dayAll`, the full-day
+       store the backfill fills on every viewport. The cheap pass runs first and the day is only scanned when it
+       did not fill the screen - which is exactly when a filter is narrow, and never on the hot live path. */
+    var list=all.filter(matchF);
+    if(list.length<60){var _d=dayRows();if(_d.length>all.length)list=_d.filter(matchF).sort(function(a,b){return b.ts-a.ts;});}
+    /* the cap resets whenever the FILTER changes, here rather than in each handler - a deep link, a coin chip,
+       the search box and the size chips all land in render(), and one of them is always the one you forget. */
+    var _ck=fKey()+'|'+fSide;if(_ck!==mobKey){mobKey=_ck;mobCap=60;}
+    var _full=list.length;list=list.slice(0,mobCap);
+    feed.innerHTML=list.length?(list.map(row).join('')+(_full>mobCap?'<button class="rk-more" type="button" data-more>'+__esT_rektindex("loadOlder",'Load older')+' <small>'+(_full-mobCap).toLocaleString('en-US')+'</small></button>':'')):__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');
     // 24h headline stats now come from Coinglass (aggregated across ALL exchanges) via loadLiqStats() - not the partial session feed.
   }
   function matchF(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;if(fSym&&String(e.symbol).toUpperCase().indexOf(fSym)<0)return false;return true;}
@@ -852,12 +920,13 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   document.getElementById('rkFilters').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
     if(b.hasAttribute('data-f')){fSide=b.getAttribute('data-f');this.querySelectorAll('[data-f]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
     if(b.hasAttribute('data-m')){fMin=+b.getAttribute('data-m');this.querySelectorAll('[data-m]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
-    render();try{deskRenderAll();}catch(_e){}
+    render();try{deskRenderAll();}catch(_e){}try{loadFiltered();}catch(_e){}
   });
   var rkQ=document.getElementById('rkQ');
   // deep-link: /rekt/?coin=SOL pre-filters the tape (the screener's "watch live liquidations" action lands here)
   try{var _qc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_qc&&rkQ){rkQ.value=_qc.toUpperCase();fSym=rkQ.value;}}catch(_e){}
-  if(rkQ)rkQ.addEventListener('input',function(){fSym=(rkQ.value||'').trim().toUpperCase();render();try{deskRenderAll();}catch(_e){}});
+  if(rkQ)rkQ.addEventListener('input',function(){fSym=(rkQ.value||'').trim().toUpperCase();render();try{deskRenderAll();}catch(_e){}try{filtSoon();}catch(_e){}});
+  feed.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-more]');if(!b)return;mobCap+=60;render();});
   var rkP=document.getElementById('rkPause');
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});
   try{matchMedia('(min-width:861px)').addEventListener('change',function(){render();try{deskRenderAll();}catch(_e){}});}catch(_e){} // breakpoint cross → hand the stream to the other renderer
@@ -882,7 +951,9 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
       firstRender=true; // a thousand backfilled rows must not slam-animate
       render();try{deskRenderAll();}catch(_e){}
     });})();
-  document.addEventListener('visibilitychange',function(){if(!document.hidden){if(!REKT_MAINT)poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
+  (function(){if(REKT_MAINT)return;loadDaySeries(true);loadTopDay(true);if(fNarrow())loadFiltered(true);
+    setInterval(function(){if(document.hidden)return;loadDaySeries();loadTopDay();if(fNarrow())loadFiltered();},60000);})();
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){if(!REKT_MAINT)poll();loadLiqStats();loadDaySeries();loadTopDay();if(fNarrow())loadFiltered();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
   setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=__esR?'hace '+ago(t):ago(t)+' ago';});},1000);
   /* ===== DESKTOP LIQUIDATION TERMINAL (≥861px) =====
      Live tape (dense table rows, escalating weight ≥$100K amber / ≥$1M red) + an analytics rail computed from the
@@ -920,9 +991,12 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
     var end=Math.min(tapeIdx+TCH,tapeList.length),frag=document.createDocumentFragment();
     for(var i=tapeIdx;i<end;i++)frag.appendChild(tRow(tapeList[i],false));
     tapeIdx=end;tapeEl.appendChild(frag);
-    if(tapeIdx>=tapeList.length){var fin=document.createElement('div');fin.className='rk-empty';fin.style.padding='18px 0';fin.textContent=__esT_rektindex("startOfTheDay",'- start of the day (UTC) -');tapeEl.appendChild(fin);}}
+    if(tapeIdx>=tapeList.length){var fin=document.createElement('div');fin.className='rk-empty';fin.style.padding='18px 0';
+      // say which end this is: the day's first print, or as far back as one request reaches. Never imply the former.
+      fin.textContent=(fNarrow()&&!filtAll)?__esT_rektindex("asFarBackAsWeLoaded",'- as far back as this filter loaded -'):__esT_rektindex("startOfTheDay",'- start of the day (UTC) -');
+      tapeEl.appendChild(fin);}}
   function deskRenderAll(){if(!deskOn()||!tapeEl)return;
-    tapeList=dayAll.filter(matchF).sort(function(a,b){return b.ts-a.ts;});tapeIdx=0;
+    tapeList=dayRows().filter(matchF).sort(function(a,b){return b.ts-a.ts;});tapeIdx=0;
     tapeEl.innerHTML='';
     if(!tapeList.length){tapeEl.innerHTML=__esT_rektindex("noLiquidationsMatchThis",'<div class="rk-empty">No liquidations match this filter yet…</div>');}
     else tapeMore();
@@ -971,19 +1045,36 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
   /* ---- top hits of the day + the hourly histogram, from the same full-day store the tape scrolls over ---- */
   function hitRow(e,i){var lng=e.side==='long_liquidated';return '<div class="rkt-hit" data-sym="'+esc(e.symbol)+'" data-side="'+(lng?'long':'short')+'" data-n="'+(+e.notional)+'" data-px="'+e.price+'" data-exch="'+esc(String(e.exchange).toUpperCase())+'" data-ts="'+e.ts+'" data-qty="'+(+e.qty||0)+'" title="'+__esT_rektindex("openThisTicket",'Open this ticket')+'"><span class="i">'+(i+1)+'</span><span class="c">'+esc(e.symbol)+'<i class="'+(lng?'l':'s')+'">'+(lng?'LONG':'SHORT')+'</i><small>'+esc(e.exchange)+'</small></span><span class="n">$'+money(e.notional)+'</span></div>';}
   var _hitsT=0;
-  function paintHits(){var now=Date.now();if(now-_hitsT<4000)return;_hitsT=now;
-    var top=dayAll.slice().sort(function(a,b){return b.notional-a.notional;}).slice(0,8);
+  function paintHits(force){var now=Date.now();if(!force&&now-_hitsT<4000)return;_hitsT=now;
+    /* the day's biggest, from the complete over-$250K pull plus whatever the live stream has added since.
+       `dayAll` alone could only ever see as far back as the backfill reached - a few hours on a busy day. */
+    var _seenT={},_src=(topDay||[]).concat(dayAll),top=[];
+    _src.forEach(function(e){var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(_seenT[k])return;_seenT[k]=1;top.push(e);});
+    top=top.sort(function(a,b){return b.notional-a.notional;}).slice(0,8);
     var tb=document.getElementById('rktTop');if(tb)tb.innerHTML=top.length?top.map(hitRow).join(''):'<span style="font-family:\'Space Mono\',monospace;font-size:11px;color:var(--lqink3)">'+__esT_rektindex("nothingYetToday",'Nothing yet today')+'</span>';
     var mt=document.getElementById('rkmTop');if(mt)mt.innerHTML=top.slice(0,5).map(hitRow).join('');
-    var H=[],i;for(i=0;i<24;i++)H.push({l:0,s:0,n:0});
-    dayAll.forEach(function(e){var hh=new Date(e.ts).getUTCHours();if(e.side==='long_liquidated')H[hh].l+=+e.notional;else H[hh].s+=+e.notional;H[hh].n++;});
+    /* THE HISTOGRAM IS THE SERVER'S OWN 5-MINUTE AGGREGATE, so all twenty-four hours are real and it counts
+       EVERY liquidation rather than the ones a $1K-floored feed happened to carry. The local derivation is
+       still computed, for two reasons: it is the fallback when the collector cannot be reached (hatching and
+       all), and it is the FLOOR - a thin or half-built series answer must never replace hours this browser has
+       genuinely watched, so the server's version is used only when it covers at least as many of them. */
+    var H=[],i,Hloc=[];
+    for(i=0;i<24;i++)Hloc.push({l:0,s:0,n:0});
+    dayAll.forEach(function(e){var hh=new Date(e.ts).getUTCHours();if(e.side==='long_liquidated')Hloc[hh].l+=+e.notional;else Hloc[hh].s+=+e.notional;Hloc[hh].n++;});
+    var _fl=function(A){var c=0;A.forEach(function(x){if(x.l+x.s>0)c++;});return c;};
+    var srv=!!dayH&&_fl(dayH)>=_fl(Hloc);
+    if(srv){for(i=0;i<24;i++)H.push({l:dayH[i].l,s:dayH[i].s,n:dayH[i].n});}
+    else H=Hloc;
     /* the backfill is the newest 3,000 prints of the day, not the whole day - on a busy day that is a few hours. Hours before
        the oldest print we hold are drawn as "no data", never as zero, and the summary says since WHEN the window starts. */
-    var oldest=Infinity;dayAll.forEach(function(e){if(e.ts<oldest)oldest=e.ts;});var fromH=isFinite(oldest)?new Date(oldest).getUTCHours():0,fromMin=isFinite(oldest)?new Date(oldest).getUTCMinutes():0;
+    var fromH=0,fromMin=0;
+    if(!srv){var oldest=Infinity;dayAll.forEach(function(e){if(e.ts<oldest)oldest=e.ts;});
+      fromH=isFinite(oldest)?new Date(oldest).getUTCHours():0;fromMin=isFinite(oldest)?new Date(oldest).getUTCMinutes():0;}
     var mx=1;H.forEach(function(x){if(x.l+x.s>mx)mx=x.l+x.s;});var cur=new Date().getUTCHours();
-    var html=H.map(function(x,k){var lh=Math.round(x.l/mx*100),sh=Math.round(x.s/mx*100),nd=k<fromH;return '<div class="hc'+(k===cur?' now':'')+(nd?' nd':'')+'" title="'+('0'+k).slice(-2)+':00 UTC · '+(nd?__esT_rektindex("noDataBefore",'before our window'):(x.n+' liq · '+__esT_rektindex("longsL",'longs')+' $'+money(x.l)+' · '+__esT_rektindex("shortsL",'shorts')+' $'+money(x.s)))+'"><i class="l" style="height:'+lh+'%"></i><i class="s" style="height:'+sh+'%"></i></div>';}).join('');
+    var html=H.map(function(x,k){var lh=Math.round(x.l/mx*100),sh=Math.round(x.s/mx*100),nd=!srv&&k<fromH;return '<div class="hc'+(k===cur?' now':'')+(nd?' nd':'')+'" title="'+('0'+k).slice(-2)+':00 UTC · '+(nd?__esT_rektindex("noDataBefore",'before our window'):(x.n+' liq · '+__esT_rektindex("longsL",'longs')+' $'+money(x.l)+' · '+__esT_rektindex("shortsL",'shorts')+' $'+money(x.s)))+'"><i class="l" style="height:'+lh+'%"></i><i class="s" style="height:'+sh+'%"></i></div>';}).join('');
     var hb=document.getElementById('rktHours');if(hb)hb.innerHTML=html;var mh=document.getElementById('rkmHours');if(mh)mh.innerHTML=html;
     var tot=0,cnt=0,bh=0;H.forEach(function(x,k){tot+=x.l+x.s;cnt+=x.n;if(x.l+x.s>H[bh].l+H[bh].s)bh=k;});
+    if(srv){tot=dayTot;cnt=dayN;}
     var hs=document.getElementById('rktHsum');if(hs)hs.innerHTML=cnt?('<b>$'+money(tot)+'</b> · '+cnt.toLocaleString('en-US')+' '+__esT_rektindex("printsSince",'prints since')+' <b>'+('0'+fromH).slice(-2)+':'+('0'+fromMin).slice(-2)+' UTC</b> · '+__esT_rektindex("busiestHour",'busiest hour')+' <b>'+('0'+bh).slice(-2)+':00</b>'):'';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('a'))return;var r=ev.target.closest&&ev.target.closest('.rkt-hit');if(r)openModal(tkData(r));});
   var _ds0=deskSide;deskSide=function(){_ds0();try{paintHits();}catch(_e){}};
@@ -994,7 +1085,7 @@ function __esT_rektindex(k, en) { try { if ((document.documentElement.lang || ""
       return '<div class="rkt-coin'+(fSym===String(c.s).toUpperCase()?' on':'')+'" data-c="'+esc(c.s)+__esT_rektindex("titleFilterTheTape",'" title="Filter the tape to ')+esc(c.s)+'"><span class="cs">'+esc(c.s)+'</span><span class="cb"><i class="bl" style="width:'+lp2+'%"></i><i class="bs" style="width:'+(100-lp2)+'%"></i></span><span class="cv">$'+money(c.liq)+fh+'</span></div>';}).join('');}
   document.addEventListener('click',function(ev){var r=ev.target.closest&&ev.target.closest('.rkt-coin');if(!r||!rkQ)return;
     var c=String(r.getAttribute('data-c')||'').toUpperCase();
-    rkQ.value=(fSym===c?'':c);fSym=rkQ.value;render();deskRenderAll();if(window.__cgLast)deskCoins(window.__cgLast);});
+    rkQ.value=(fSym===c?'':c);fSym=rkQ.value;render();deskRenderAll();try{loadFiltered();}catch(_e){}if(window.__cgLast)deskCoins(window.__cgLast);});
   function loadFunding(){if(Date.now()-fundT<300000)return;fundT=Date.now();
     fetch('/api/v1/perp-tickers').then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j)return;
       [].concat(j.binance||[],j.bitget||[]).forEach(function(t){if(t&&t.s&&t.f!=null&&fund[t.s]==null)fund[t.s]=+t.f;});

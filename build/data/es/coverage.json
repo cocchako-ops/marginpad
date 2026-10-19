@@ -2,37 +2,37 @@
  {
   "rel": "100x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "10x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "20x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "25x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "50x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "5x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 69,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -1418,7 +1418,7 @@
  {
   "rel": "funding-fee-calculator/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 38,
   "missing": 0
  },
  {
@@ -1465,9 +1465,10 @@
  },
  {
   "rel": "glossary/index.html",
-  "cover": 1,
-  "hit": 256,
-  "missing": 0
+  "cover": 0.26441631504922647,
+  "hit": 188,
+  "missing": 523,
+  "skipped": true
  },
  {
   "rel": "grt-liquidation-calculator/index.html",
@@ -1736,7 +1737,7 @@
  {
   "rel": "levels/index.html",
   "cover": 1,
-  "hit": 120,
+  "hit": 121,
   "missing": 0
  },
  {
@@ -1993,9 +1994,9 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.9924812030075187,
-  "hit": 132,
-  "missing": 1
+  "cover": 0.9774436090225563,
+  "hit": 130,
+  "missing": 3
  },
  {
   "rel": "rewards/index.html",
