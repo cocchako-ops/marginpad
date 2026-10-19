@@ -15689,18 +15689,58 @@ async function tgBroadcastBonus(env, caption) {
 /* The key is not IP-bound, so Bybit expires it 90 days after it was made (2026-12-20 for the current
    one). An expiry would stop the board and the rebate SILENTLY, which is the only really dangerous
    failure here - so it is watched, and the warning starts far enough out to be ignorable twice. */
-async function checkBybitKey(env) {
-  if (!env.STATS || !env.BYBIT_AFF_KEY) return;
+/* ONE HICCUP MUST NOT READ AS A DEAD KEY (2026-10-19, owner got a RED "Bybit affiliate key is not working" on
+   Telegram while the board was reading perfectly). MEASURED minutes after it fired: the key is alive - read-only,
+   Affiliate permission, expires 2026-12-20, 62 days left - and three probes in a row came back clean, while
+   /api/admin/bybitaff returned real per-UID volume for the same window. The alarm had THREE faults and every one
+   of them is a rule this file already carries:
+     - ONE attempt, while the affiliate list fetch beside it has retried three times since 2026-09-21 for exactly
+       the reason written there ("a shedding edge is what a second attempt fixes");
+     - it threw the response body away, so the line could not say what Bybit had actually answered - the same
+       class as ASK AI reporting 'ai_error' while Anthropic was saying something specific;
+     - `(j.retCode || '?')` prints "?" for retCode 0, and retCode 0 is the case that really happened (Bybit
+       answered SUCCESS with no `result` object), so the one clue in the message pointed away from the truth.
+   The strongest guard costs nothing: `bybitAffSync` reads the affiliate data in the SAME pass a moment earlier,
+   so if that worked the key demonstrably works and a failing probe is a fact about the probe. */
+async function bybitKeyProbe(env) {
   const h = await bybitAffSign(env, '');
-  if (!h) return;
-  let j = null;
-  try { const r = await fetch('https://api.bybit.com/v5/user/query-api', { headers: h, signal: AbortSignal.timeout(8000) }); j = await r.json(); } catch (e) { return; }
-  if (!j || j.retCode !== 0 || !j.result) {
+  if (!h) return { ok: false, why: 'no_signature' };
+  let status = 0, body = '';
+  try {
+    const r = await fetch('https://api.bybit.com/v5/user/query-api', { headers: h, signal: AbortSignal.timeout(8000) });
+    status = r.status; body = String((await r.text()) || '').slice(0, 300);
+  } catch (e) { return { ok: false, why: 'fetch_failed', detail: String((e && e.message) || e).slice(0, 120) }; }
+  let j = null; try { j = JSON.parse(body); } catch (e) {}
+  if (!j) return { ok: false, why: 'bad_json', status: status, body: body };
+  if (j.retCode !== 0) return { ok: false, why: 'retcode', status: status, retCode: j.retCode, retMsg: String(j.retMsg || ''), body: body };
+  if (!j.result) return { ok: false, why: 'no_result', status: status, retCode: 0, retMsg: String(j.retMsg || ''), body: body };
+  return { ok: true, status: status, result: j.result };
+}
+
+async function checkBybitKey(env, affOk) {
+  if (!env.STATS || !env.BYBIT_AFF_KEY) return;
+  let p = await bybitKeyProbe(env);
+  if (!p.ok && p.why !== 'no_signature') { await new Promise(r => setTimeout(r, 2500)); p = await bybitKeyProbe(env); }
+  if (!p.ok) {
+    if (p.why === 'no_signature') return;
+    // whatever happens next, what Bybit said is kept and readable at /api/admin/bybitaff?key=1
+    try { await env.STATS.put('bybitkey:lasterr', JSON.stringify({ ts: Date.now(), affOk: affOk === true, why: p.why, status: p.status || 0, retCode: p.retCode, retMsg: p.retMsg || '', detail: p.detail || '', body: String(p.body || '').slice(0, 200) }), { expirationTtl: 7 * 86400 }); } catch (e) {}
+    if (affOk === true) return;   // the affiliate data read a moment ago: the key is not what is broken
+    const said = p.why === 'retcode' ? ('retCode ' + p.retCode + ' ' + (p.retMsg || ''))
+      : p.why === 'no_result' ? 'it answered retCode 0 with no result object'
+      : p.why === 'bad_json' ? ('HTTP ' + p.status + ' and the body did not parse')
+      : ('the request failed - ' + (p.detail || ''));
     const k = 'bybitkey:dead'; let seen = false; try { seen = !!(await env.STATS.get(k)); } catch (e) {}
-    if (!seen) { try { await tgAdmin(env, '<b>Bybit affiliate key is not working</b> - retCode ' + ((j && j.retCode) || '?') + ' ' + ((j && j.retMsg) || '') + '. The volume board and the weekly rebate both read through it.', { kind: 'bybit key', sev: 'red' }); await env.STATS.put(k, '1', { expirationTtl: 6 * 3600 }); } catch (e) {} }
+    if (!seen) {
+      try {
+        await tgAdmin(env, '<b>Bybit affiliate key is not working</b> - ' + said + '.\nTwice in a row, and the affiliate read in the same pass failed too. The volume board and the weekly rebate both go through it.\n' + String(p.body || '').replace(/[<>]/g, '').slice(0, 160), { kind: 'bybit key', sev: 'red' });
+        await env.STATS.put(k, '1', { expirationTtl: 6 * 3600 });
+      } catch (e) {}
+    }
     return;
   }
   try { await env.STATS.delete('bybitkey:dead'); } catch (e) {}
+  const j = { result: p.result };
   const exp = +Date.parse(j.result.expiredAt || '') || 0;
   if (!exp) return;                                   // IP-bound keys do not expire; nothing to watch
   const days = Math.floor((exp - Date.now()) / 86400000);
@@ -23702,6 +23742,8 @@ export default {
             daysLeft: kj.result.expiredAt ? Math.floor((Date.parse(kj.result.expiredAt) - Date.now()) / 86400000) : null,
             permissions: Object.keys(kj.result.permissions || {}).filter(k => (kj.result.permissions[k] || []).length) } : { error: (kj && kj.retMsg) || 'unreadable' };
         } catch (e) { extra.key = { error: String(e).slice(0, 80) }; }
+        // what the watchdog last saw when it refused the key - without this a red TG line has no evidence behind it
+        try { const le = await env.STATS.get('bybitkey:lasterr'); if (le) extra.keyLastError = JSON.parse(le); } catch (e) {}
       }
       return J({ ...(await bybitAffStats(env, +url.searchParams.get('days') || 7)), ...extra });
     }
@@ -25730,10 +25772,15 @@ export default {
        green. Awaited in sequence, not fired at once: sharing a budget and hoping is what broke it. */
     if (event.cron === '4,14,24,34,44,54 * * * *') {
       ctx.waitUntil((async () => {
+        /* `_affOk` is the second opinion the key watchdog needs: bybitAffSync reads the affiliate data with the
+           SAME credential a moment earlier, so a key probe that fails on its own is about the probe, not the key
+           (2026-10-19 - it paged RED while the board was reading real per-UID volume). */
+        let _affOk = null;
         for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey']]) {
           const t0 = Date.now();
           try {
-            const r = await fn(env);
+            const r = await fn(env, label === 'bybitkey' ? _affOk : undefined);
+            if (label === 'bybitaff') _affOk = !(r && r.error);
             // the DETAIL is the whole point: 'unreachable' says the fetch threw, not why it threw
             const _res = (r && r.error) ? ('err:' + String(r.error) + ' | ' + String((r && r.detail) || '').slice(0, 60)).slice(0, 90) : 'ok';
             if (env.AE) env.AE.writeDataPoint({ indexes: ['cronrun'], blobs: ['cronrun', label, _res], doubles: [Date.now() - t0] });
