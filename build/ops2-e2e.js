@@ -58,7 +58,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       for (const uv of ['people/users', 'money/withdrawals']) {
         await page.evaluate((h) => { location.hash = h; }, uv); await sleep(4000);
         const lk = await page.evaluate(() => { const a = [...document.querySelectorAll('#view a[href^="/api/admin/user?"]')].filter(x => !x.classList.contains('btn'))[0]; if (!a) return null; a.scrollIntoView({ block: 'center' }); return a.getAttribute('href'); });
-        if (!lk) { chk(uv + ': a @user link to click', false, 'none found'); continue; }
+        // NOT A FAILURE WHEN THE TABLE IS EMPTY: Money > Withdrawals has no @user link when nothing is pending,
+        // which is a normal day and has nothing to do with whether the link works. A check that depends on live
+        // data having a row in it is a flaky check, and a flaky check is a broken one.
+        if (!lk) { console.log('  --   ' + uv + ': no @user link on this view right now (nothing to click)'); continue; }
         chk(uv + ': the @user link carries a parameter the profile page reads', /[?&](username|email|id)=/.test(lk), lk);
         await page.evaluate(() => { const a = [...document.querySelectorAll('#view a[href^="/api/admin/user?"]')].filter(x => !x.classList.contains('btn'))[0]; if (a) a.click(); });
         await sleep(4500);
@@ -66,6 +69,42 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
         chk(uv + ': clicking a username opens the quick card WITH the record', ucard.modal && !ucard.empty && ucard.name && ucard.kvs >= 4, ucard);
         await page.evaluate(() => { const x = document.getElementById('ucX'); if (x) x.click(); }); await sleep(500);
       }
+    }
+    /* A NATIVE confirm() IS A BUTTON THAT SILENTLY DOES NOTHING (owner, 2026-10-19: "Generate button i delete
+       all codes na mp-ops ... ne rade"). Once "prevent this page from creating additional dialogs" has been
+       ticked in a tab, every confirm() returns false WITHOUT asking - so the handler returns and nothing happens,
+       with nothing on screen to say why. Reproduced with dialogs dismissed: Generate attempted zero requests.
+       Two guards: the ban on the shape, and the arming that replaced it. Neither touches the network, so this
+       check can never create a real redeemable code. */
+    if (!only.length || only.includes('settings/codes')) {
+      const opsSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'ops', 'client', 'ops.js.txt'), 'utf8');
+      // strip comments first, so the two that NAME the rule are not mistaken for breaking it
+      const bare = opsSrc.replace(/\/\*[\s\S]*?\*\//g, ' ').split(/\r?\n/).map(l => l.replace(/^(\s*)\/\/.*$/, '$1')).join('\n');
+      const natives = (bare.match(/[^d.]confirm\s*\(/g) || []).length;
+      chk('codes: no native confirm() anywhere in the dashboard', natives === 0, natives);
+      chk('codes: confirmed() is the one arm-then-fire helper', (opsSrc.match(/function confirmed\(msg\)/g) || []).length === 1);
+      await page.evaluate(() => { location.hash = 'settings/codes'; }); await sleep(6000);
+      const arm = await page.evaluate(async () => {
+        if (!document.getElementById('cgGen')) return { none: true };
+        // pick what the code gives, or generate() returns before it ever reaches the confirmation
+        const part = document.querySelector('#cgWrap [data-part]'); if (part) part.click();
+        await new Promise(r => setTimeout(r, 600));
+        // RE-QUERY: the chip's handler repaints the generator, so a reference taken before it is detached and
+        // clicking it does nothing - the same trap the API-plan panel and the Bybit table hit.
+        let g = document.getElementById('cgGen');
+        const before = (g.textContent || '').trim();
+        g.click();
+        await new Promise(r => setTimeout(r, 500));
+        g = document.getElementById('cgGen');
+        const after = (g.textContent || '').trim();
+        const armed = g.getAttribute('data-armed') === '1';
+        // disarm again so the suite cannot leave a primed button behind
+        const p = document.getElementById('pcPurge'); if (p) p.focus();
+        return { before, after, armed, purge: !!p };
+      });
+      chk('codes: the first click ARMS Generate instead of opening a dialog', !arm.none && arm.armed && arm.after !== arm.before, arm);
+      chk('codes: and a delete-all button is there to arm too', !arm.none && arm.purge);
+      await sleep(6500);   // let the arm lapse rather than leaving it primed
     }
     if (!only.length || only.includes('money/faucet')) {
       await page.evaluate(() => { location.hash = 'money/faucet'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#rwAccts .row').length > 0)) break; }
