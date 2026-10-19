@@ -135,11 +135,19 @@ export function createSqliteStorage(path, opts = {}) {
   // TIME series for the liquidation-flow edge: [{t, long, short, longN, shortN}] per 5-min window over `minutes`.
   // histogram() groups by price_bucket (where); this groups by win_start (when) - the shape the long-cascade /
   // sweep-of-low detector needs, which no endpoint exposed before (2026-10-15).
+  // symbol 'ALL' (or empty) is the WHOLE MARKET, added 2026-10-19 so /rekt/ can draw a true 24h hour histogram
+  // instead of one built from whatever sample the browser happened to hold. There is no index on win_start alone,
+  // but SQLite skip-scans idx_agg_symbol_win (ANY(symbol) AND win_start>?) - MEASURED on the droplet over
+  // 3,613,743 agg_5m rows: 140-201 ms market-wide against 2 ms for one symbol. That runs on the READER thread
+  // and behind the worker's edge cache, so it never touches the main loop; a covering index on win_start would
+  // make it index-only and is the next step IF it ever shows up in loopLag, not before.
   function series(symbol, minutes) {
     const since = Math.floor((Date.now() - minutes * 60000) / 300000) * 300000;
-    const rows = db.prepare(
-      `SELECT win_start AS t, side, SUM(notional) AS n, SUM(cnt) AS c FROM agg_5m WHERE symbol=? AND win_start>=? GROUP BY win_start, side`
-    ).all(symbol, since);
+    const all = !symbol || symbol === 'ALL';
+    const cols = 'win_start AS t, side, SUM(notional) AS n, SUM(cnt) AS c';
+    const rows = all
+      ? db.prepare(`SELECT ${cols} FROM agg_5m WHERE win_start>=? GROUP BY win_start, side`).all(since)
+      : db.prepare(`SELECT ${cols} FROM agg_5m WHERE symbol=? AND win_start>=? GROUP BY win_start, side`).all(symbol, since);
     const map = new Map();
     for (const r of rows) {
       let e = map.get(r.t); if (!e) { e = { t: Number(r.t), long: 0, short: 0, longN: 0, shortN: 0 }; map.set(r.t, e); }
@@ -149,10 +157,17 @@ export function createSqliteStorage(path, opts = {}) {
   }
 
   // Recent raw events for the live ticker + chart bubbles.
-  function live(symbol, limit = 200, minNotional = 0) {
+  // `since` (ms) bounds it to one day, so /rekt/'s filtered tape can ask for TODAY and know whether it got the
+  // whole of it: fewer rows than the limit means the day is complete. idx_liq_symbol_ts covers (symbol, ts).
+  function live(symbol, limit = 200, minNotional = 0, since = 0) {
+    const cap = Math.min(Number(limit) || 200, 1000);
+    const cols = 'ts,exchange,symbol,side,price,qty,notional';
+    if (since > 0) return db.prepare(
+      `SELECT ${cols} FROM liquidations WHERE symbol=? AND notional>=? AND ts>=? ORDER BY ts DESC LIMIT ?`
+    ).all(symbol, minNotional, since, cap);
     return db.prepare(
-      `SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE symbol=? AND notional>=? ORDER BY ts DESC LIMIT ?`
-    ).all(symbol, minNotional, Math.min(Number(limit) || 200, 1000));
+      `SELECT ${cols} FROM liquidations WHERE symbol=? AND notional>=? ORDER BY ts DESC LIMIT ?`
+    ).all(symbol, minNotional, cap);
   }
 
   // Market-wide recent liquidations (all symbols) for the global floating feed.

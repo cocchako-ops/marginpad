@@ -64,6 +64,7 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // TIME series of liquidations per 5-min window (when, not where): [{t,long,short,longN,shortN}] over `minutes`.
   // Feeds the Ask AI liquidation-flow edge detector (long-cascade / sweep-of-low). Grouped on an indexed column,
   // so it is cheap even over the full agg_5m retention; its own clamp (up to 90d) rather than the chart windows.
+  // symbol=ALL is the whole market (2026-10-19) - the only complete source for a 24h hour histogram.
   app.get('/api/v1/liqseries', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
@@ -82,10 +83,13 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
     const limit = Math.min(parseInt(req.query.limit, 10) || 200, 1000);
     const min = parseFloat(req.query.min) || 0;
+    const since = Math.max(0, parseInt(req.query.since, 10) || 0);
     try {
-      const events = await storage.async.live(symbol, limit, min);
+      const events = await storage.async.live(symbol, limit, min, since);
       res.set('Cache-Control', 'public, max-age=3');
-      res.json({ symbol, events });
+      // `complete` = the window asked for is fully contained in this answer (it did not hit the cap), so a caller
+      // can state "every one today" instead of implying it.
+      res.json({ symbol, events, since: since || undefined, complete: since > 0 ? events.length < limit : undefined });
     } catch (e) { log.error('live failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
