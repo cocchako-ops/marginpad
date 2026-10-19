@@ -34,6 +34,23 @@ const claim = (uid, t, track) => post('/api/pass?uid=' + uid, { op: 'claim', t, 
 const tagE2 = (req) => { try { if (req.url().indexOf(ORIGIN) === 0 && !req.isInterceptResolutionHandled()) { req.continue({ headers: Object.assign({}, req.headers(), { 'x-admin-key': K }) }); return true; } } catch (e) {} return false; };
 
 (async () => {
+  /* THE PAGE AND THE CLAIM MUST READ ONE NUMBER (2026-10-19, Ladyp03 in the global chat: "is saying not reached
+     but am done with all"). Season XP had THREE readings - /pass/me, /pass/claim and the season-end rollover -
+     and all three summed the TRIMMED xplog, which under-reports whoever earns the most and goes DOWN over time.
+     Fixing only /pass/me made it worse: the page offered nine tiers and the claim refused them. Measured on her
+     account that day: page 4,133 XP / tier 40, claim 3,036 / "not reached" at tier 31 - eleven tiers earned and
+     unclaimable.
+     A behavioural check cannot catch this, because a fresh e2e member has far fewer than 150 xplog rows and the
+     broken sum equals the right answer for them. So the guard is structural: no season sum over xplog anywhere
+     in the worker, and exactly one definition. */
+  {
+    const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+    const sums = (src.match(/SUM\(amt\),0\)\s*x\s*FROM xplog/g) || []).length;
+    chk('season XP is never summed over the trimmed xplog', sums === 0, sums);
+    chk('and there is exactly one definition of it (_seasonXp)', (src.match(/_seasonXp\(uid, season\)\s*\{/g) || []).length === 1);
+    const uses = (src.match(/this\._seasonXp\(/g) || []).length;
+    chk('read by the page, the claim and the season-end rollover', uses >= 3, uses);
+  }
   const pub = await fetch(ORIGIN + '/api/pass').then(r => r.json());
   chk('guest: 40 tiers (n echoed), prices, step 100, not signed in', pub && (pub.tiers || []).length === 40 && pub.n === 40 && pub.price && pub.price.ticks === 2500 && pub.price.cents === 299 && pub.step === 100 && !pub.signedIn, pub && { n: (pub.tiers || []).length, price: pub.price });
   chk('guest: free = 24 T a tier, Blue Hour at 20, Season Ticket at 40; pro = 48 T a tier, Static at 6, Corona at 40, nine skins in all', pub.tiers[19].free.item === 'bg_bluehour' && pub.tiers[39].free.item === 'tkt_season' && pub.tiers[5].pro.item === 'bg_static' && pub.tiers[39].pro.item === 'corona' && pub.tiers[0].free.ticks === 24 && pub.tiers[0].pro.ticks === 48 && pub.tiers.filter(t => t.pro.item).length === 9, pub.tiers.filter(t => t.pro.item).map(t => t.t + ':' + t.pro.item));

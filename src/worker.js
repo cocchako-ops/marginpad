@@ -28448,6 +28448,28 @@ export class UserStore {
   }
   rid() { const a = new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a).map(x => x.toString(16).padStart(2, '0')).join(''); }
   // ── Duels 2.0: premium check, XP wager (escrow), rich per-window stats ──
+  /* THE ONE READING OF SEASON XP (2026-10-19, Ladyp03 in the global chat: "why can I claim tier ticks? I have
+     been trying to claim since yesterday, is saying not reached but am done with all").
+     There were TWO copies of this number and both summed the TRIMMED xplog. Earlier the same day /pass/me was
+     changed to the trim-proof reading and `/pass/claim` was left behind - which is worse than the original bug,
+     because the page then OFFERS a tier and the claim refuses it. Measured on her account: the page said 4,133
+     XP and tier 40 with nine tiers waiting; the claim computed 3,036 and refused tier 31. 1,097 XP, eleven
+     tiers she had earned and could not take.
+     xplog is trimmed to 150 rows per account, so a sum over it also goes DOWN as a member keeps playing - which
+     is why a tier she had already claimed now reads as not reached. `xpseason.base` is the xp_life snapshot
+     taken at her first grant of the season, kept by _grantXp since 2026-07-30 for exactly this; the leaderboard
+     has always read it. One method now, so a third copy cannot be written by accident. */
+  _seasonXp(uid, season) {
+    uid = String(uid || '').replace(/^u:/, ''); if (!uid) return 0;
+    const s = (season != null) ? +season : lbPeriodStart(Date.now());
+    const base = this.rows('SELECT base FROM xpseason WHERE user_id=? AND season=?', uid, s)[0];
+    if (!base) return 0;                     // no grant that season is genuinely zero
+    // A PAST season ENDS where the next one's base was snapshotted; the live season ends at xp_life. Without
+    // this the season-end rollover would credit a past season with everything earned since.
+    const nxt = this.rows('SELECT base FROM xpseason WHERE user_id=? AND season>? ORDER BY season ASC LIMIT 1', uid, s)[0];
+    const end = nxt ? (+nxt.base || 0) : +((this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || {}).v || 0);
+    return Math.max(0, end - (+base.base || 0));
+  }
   _isPrem(u) { if (!u) return false; if (PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0) return true; return (+u.premium || 0) > Date.now(); }
   _xpBal(uid) { uid = String(uid).replace(/^u:/, ''); return (this.rows('SELECT xp FROM users WHERE id=?', uid)[0] || { xp: 0 }).xp || 0; }
   _takeXp(uid, amt, note) { uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0)); if (!amt) return true; if (this._xpBal(uid) < amt) return false; const sql = this.state.storage.sql; sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)-?) WHERE id=?', amt, uid); sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel_stake', -amt, String(note || '').slice(0, 120)); return true; } // negative log; lifeCap sums filter amt>0 so unaffected
@@ -31853,10 +31875,7 @@ export class UserStore {
          season, which is zero. lbprize is already compensated inside _grantXp by raising the base, nothing grants
          XP with src 'pass', and spending XP never touches xp_life - so the old filters have nothing left to do.
          This is the same class as the 2026-10-08 "check in 10 days" bug: never count anything over xplog. */
-      const _pSeason = lbPeriodStart(Date.now());
-      const _pBase = uid ? this.rows('SELECT base FROM xpseason WHERE user_id=? AND season=?', uid, _pSeason)[0] : null;
-      const _pLife = uid ? +((this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || {}).v || 0) : 0;
-      const xp = _pBase ? Math.max(0, _pLife - (+_pBase.base || 0)) : 0;
+      const xp = this._seasonXp(uid);
       void from; void to;
       const row = uid ? this.rows('SELECT pro, claimed, bought_ts, src FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0] : null;
       let claimed = []; try { claimed = JSON.parse((row && row.claimed) || '[]'); } catch (e) { claimed = []; }
@@ -31914,8 +31933,7 @@ export class UserStore {
     if (path === '/pass/claim' && request.method === 'POST') { // {uid, t, track:'free'|'pro'} -> Ticks and/or a Vault item, once per tier per track
       const uid = String(b.uid || '').replace(/^u:/, ''), t = Math.round(+b.t || 0), track = b.track === 'pro' ? 'pro' : 'free'; const sk = predSeason(Date.now());
       const def = passTiers().filter(x => x.t === t)[0]; if (!uid || !def) return this.j({ error: 'bad' }, 400);
-      const from = Date.parse(sk.from + 'T00:00:00Z'), to = Date.parse(sk.to + 'T00:00:00Z');
-      const xp = +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", uid, from, to)[0] || {}).x || 0;
+      const xp = this._seasonXp(uid);   // the ONE reading - see _seasonXp for why this is not a sum over xplog
       if (xp < def.xp) return this.j({ error: 'not_reached', xp, need: def.xp }, 409);
       let row = this.rows('SELECT pro, claimed FROM upass WHERE user_id=? AND season=?', uid, sk.idx)[0];
       if (!row) { sql.exec('INSERT INTO upass(user_id,season,pro,claimed) VALUES(?,?,0,?)', uid, sk.idx, '[]'); row = { pro: 0, claimed: '[]' }; }
@@ -32006,7 +32024,10 @@ export class UserStore {
       const rows = this.rows('SELECT user_id, pro, claimed FROM upass WHERE season=?', idx);
       const credits = {}, skipped = []; // cents per member for the worker to put on the ledger; supplies that could not apply
       for (const r of rows) {
-        const xp = +(this.rows("SELECT COALESCE(SUM(amt),0) x FROM xplog WHERE user_id=? AND ts>=? AND ts<? AND amt>0 AND src<>'pass'", r.user_id, from, to)[0] || {}).x || 0;
+        // THE SEASON-END SWEEP READS THE SAME NUMBER AS THE PAGE AND THE CLAIM (2026-10-19). It summed the
+        // trimmed xplog too, so the one pass whose whole job is 'a missed click never costs a reward' would have
+        // under-granted exactly the members who earned the most, silently, at the moment it mattered.
+        const xp = this._seasonXp(r.user_id, a);
         const tier = Math.min(PASS_TIERS_N, Math.floor(xp / PASS_STEP)); let claimed = []; try { claimed = JSON.parse(r.claimed || '[]'); } catch (e) {}
         let touched = false;
         for (const def of passTiers(a)) { if (def.t > tier) break; // the ENDED season's drop, so a rolled-over grant gives that season's cosmetic, not the next drop's
