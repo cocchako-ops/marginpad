@@ -23681,6 +23681,47 @@ export default {
         tiers: { fast: await g('csig:chat:fast'), balanced: await g('csig:chat:balanced'), premium: await g('csig:chat:premium'), free: await g('csig:chat:free') },
         seen
       };
+      /* EVERY CHANNEL, NOT JUST THE REBATE ONE (2026-10-20, owner: a member complained about a UID
+         verification on a channel and the only way to answer was to read all of them). `joinByRequest` is
+         the Telegram-side switch, and a `creates_join_request` INVITE LINK gates just as hard while that
+         switch reads false - which is exactly how this was mis-diagnosed on 2026-09-20. So both are
+         reported per channel, beside what the bot is allowed to do there. */
+      if (env.TELEGRAM_TOKEN) {
+        const known = [
+          { key: 'bonus', id: chan, gateWanted: true },
+          { key: 'news', id: out.signalsChannel, gateWanted: false },
+          { key: 'dailywrap', id: out.tiers.free, gateWanted: false },
+          { key: 'group', id: (await g('tg:chat:group')) || '@Marginpadgroup', gateWanted: false },
+          { key: 'sig_fast', id: out.tiers.fast, gateWanted: null },
+          { key: 'sig_balanced', id: out.tiers.balanced, gateWanted: null },
+          { key: 'sig_premium', id: out.tiers.premium, gateWanted: null },
+        ];
+        out.channels = [];
+        for (const c of known) {
+          if (!c.id) { out.channels.push({ ...c, missing: true }); continue; }
+          const row = { key: c.key, id: String(c.id), gateWanted: c.gateWanted };
+          try {
+            const r = await tgApi(env.TELEGRAM_TOKEN, 'getChat', { chat_id: c.id });
+            if (r && r.ok) {
+              row.title = r.result.title || ''; row.type = r.result.type || '';
+              row.username = r.result.username || '';
+              row.joinByRequest = !!r.result.join_by_request;
+              row.primaryInvite = r.result.invite_link || '';
+              /* the COPY gates as effectively as a switch: a pinned post or a description telling people to
+                 send a UID is what a reader calls "verification", and no setting reports it */
+              row.description = String(r.result.description || '').slice(0, 400);
+              const pm = r.result.pinned_message;
+              if (pm) row.pinned = String(pm.text || pm.caption || '').slice(0, 400);
+            } else row.error = (r && r.description) || 'unreadable';
+          } catch (e) { row.error = String(e).slice(0, 70); }
+          // a link the BOT made can carry creates_join_request even when the channel switch is off
+          try {
+            const li = await tgApi(env.TELEGRAM_TOKEN, 'getChatMemberCount', { chat_id: c.id });
+            if (li && li.ok) row.members = li.result;
+          } catch (e) {}
+          out.channels.push(row);
+        }
+      }
       // what Telegram itself says about the rebate channel, including whether we can act in it
       if (chan && env.TELEGRAM_TOKEN) {
         try { const r = await tgApi(env.TELEGRAM_TOKEN, 'getChat', { chat_id: chan }); if (r && r.ok) out.chat = { id: r.result.id, title: r.result.title, type: r.result.type, hasPhoto: !!r.result.photo, joinByRequest: !!r.result.join_by_request, inviteLink: r.result.invite_link || '' }; else out.chatError = (r && r.description) || 'unreadable'; } catch (e) { out.chatError = String(e).slice(0, 80); }
