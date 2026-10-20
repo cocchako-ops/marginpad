@@ -23712,12 +23712,33 @@ export default {
               row.description = String(r.result.description || '').slice(0, 400);
               const pm = r.result.pinned_message;
               if (pm) row.pinned = String(pm.text || pm.caption || '').slice(0, 400);
+              /* "everything unlocked" includes what a member may DO once inside: a group that silences new
+                 arrivals reads as a gate to the person it silences, and no join setting reports it. */
+              if (r.result.permissions) {
+                const p = r.result.permissions;
+                row.canSend = !!p.can_send_messages;
+                row.locked = Object.keys(p).filter(k => /^can_/.test(k) && !p[k]);
+              }
+              if (r.result.slow_mode_delay) row.slowModeSec = r.result.slow_mode_delay;
+              if (r.result.linked_chat_id) row.linkedChat = String(r.result.linked_chat_id);
             } else row.error = (r && r.description) || 'unreadable';
           } catch (e) { row.error = String(e).slice(0, 70); }
           // a link the BOT made can carry creates_join_request even when the channel switch is off
           try {
             const li = await tgApi(env.TELEGRAM_TOKEN, 'getChatMemberCount', { chat_id: c.id });
             if (li && li.ok) row.members = li.result;
+          } catch (e) {}
+          /* ANOTHER BOT'S GATE IS INVISIBLE TO OUR CODE (2026-10-21, owner: "sigurno ima neki ostatak tog
+             gate-a ... u grupi Marginpad"). A captcha/verification bot added as an admin years ago will
+             challenge every joiner and nothing in this worker would ever mention it - so list the admins and
+             flag the bots among them. */
+          try {
+            const ad = await tgApi(env.TELEGRAM_TOKEN, 'getChatAdministrators', { chat_id: c.id });
+            if (ad && ad.ok) row.admins = (ad.result || []).map(a => ({
+              name: (a.user && (a.user.username ? '@' + a.user.username : a.user.first_name)) || '?',
+              bot: !!(a.user && a.user.is_bot), status: a.status,
+              canInvite: !!a.can_invite_users, canRestrict: !!a.can_restrict_members,
+            }));
           } catch (e) {}
           out.channels.push(row);
         }
