@@ -2,37 +2,37 @@
  {
   "rel": "100x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "10x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "20x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "25x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "50x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "5x-liquidation-calculator/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 56,
   "missing": 0
  },
  {
@@ -1418,7 +1418,7 @@
  {
   "rel": "funding-fee-calculator/index.html",
   "cover": 1,
-  "hit": 38,
+  "hit": 40,
   "missing": 0
  },
  {
@@ -1465,8 +1465,8 @@
  },
  {
   "rel": "glossary/index.html",
-  "cover": 0.26441631504922647,
-  "hit": 188,
+  "cover": 0.2664796633941094,
+  "hit": 190,
   "missing": 523,
   "skipped": true
  },
@@ -1652,9 +1652,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 1,
-  "hit": 229,
-  "missing": 0
+  "cover": 0.991304347826087,
+  "hit": 228,
+  "missing": 2
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -2000,9 +2000,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 1,
-  "hit": 209,
-  "missing": 0
+  "cover": 0.9579439252336449,
+  "hit": 205,
+  "missing": 9
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2181,7 +2181,7 @@
  {
   "rel": "trading-competition/index.html",
   "cover": 1,
-  "hit": 126,
+  "hit": 128,
   "missing": 0
  },
  {

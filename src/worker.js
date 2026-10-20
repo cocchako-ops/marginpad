@@ -8275,7 +8275,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=22df766e" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=007c269a" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14763,7 +14763,7 @@ async function rewardCfg(env) {
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -15231,6 +15231,15 @@ function moonStandings(start, end) { // wagered during the contest = end - start
 async function moonSnap(env, contest, phase) { try { return JSON.parse((await env.STATS.get('moon:snap:' + contest + ':' + phase)) || 'null'); } catch (e) { return null; } }
 const MOON_CONTEST_DAYS = 28; // the nominal length: King of the Moon runs TWO SEASONS - it ends when the season after the one it opened in ends (owner 2026-09-17:
 // "traje 2 sezone, a ova je vec pocela pa nek traje malo krace"), so a contest opened mid-season is shorter than 28 days. Never start.ts + 28 d.
+/* THE SIGN-UP BONUS VENUES (2026-10-21, owner: "ne zelim da placamo vise fomo $1 vec da placamo bingx i mexc
+   (ali ta ponuda samo da bude na rewards)"). One table, read by the /<venue>sign/* alias, the config writer,
+   the /rewards/ cards and the review desk.
+     open:false keeps the REVIEW and READ paths alive while refusing new claims - which is the whole reason
+     Fomo is still listed. The day it was retired SEVEN people had a claim pending, five of them submitted in
+     the previous 48 hours; deleting the surface would have stranded work they had already done. */
+const SIGN_VENUES = { moon: { label: 'Moon', open: true }, mexc: { label: 'MEXC', open: true }, bingx: { label: 'BingX', open: true }, fomo: { label: 'Fomo', open: false } };
+const SIGN_RE = /^\/(moon|mexc|bingx|fomo)sign\/(submit|mine|list|review)$/;
+function signVenueOpen(v) { const x = SIGN_VENUES[String(v || '').toLowerCase()]; return !!(x && x.open); }
 function moonContestEnd(startTs) { return lbPeriodStart(startTs) + 2 * LB_PERIOD; }
 function moonContestDays(start, end) { return Math.max(1, Math.round((end - start) / 86400000)); }
 async function moonPubSnapshot(env, id) { // the public board of the ACTIVE contest (or a named one) - rows keep uid for the payout, /lb strips it
@@ -18795,7 +18804,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '7aa2374f';
+const ASSET_V = '6f2e5459';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20546,7 +20555,7 @@ async function handleReward(url, request, env) {
   // owner got a ticket from "9070579908" that resolved to nobody - and worse, since both the reply path
   // (`sreply WHERE email=?`) and the member's own history (`/support/mine`) are keyed on that column, we
   // could not have answered him and he could not see his own thread. Identity comes from the SESSION now.
-  if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/moonsign/submit' || path === '/moonsign/mine' || path === '/fomosign/submit' || path === '/fomosign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
+  if (path === '/bybitlink' || path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/support' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || SIGN_RE.test(path) || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
     if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; suEmail = String(su.email || ''); suName = String(su.username || ''); suRwFac = Math.max(10, Math.min(100, +su.rwfac || 100)); suRrTag = String(su.rrtag || ''); } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
@@ -20555,14 +20564,14 @@ async function handleReward(url, request, env) {
        (2026-10-11). The board cannot rank anybody without an approved claim, and a member who has been
        withdrawing to their Moon account for a month is exactly the person who never files one. Same shape
        as POST /api/admin/bybitlinks. `?acct=` takes the full u:<uid>, `?uid=` the bare id. */
-    if (!acct && (path === '/moonsign/submit' || path === '/fomosign/submit') && adminOk) {
+    if (!acct && /sign\/submit$/.test(path) && SIGN_RE.test(path) && adminOk) {
       const ov2 = url.searchParams.get('acct') || url.searchParams.get('uid');
       if (ov2) acct = /^u:/.test(ov2) ? ov2 : 'u:' + ov2;
     }
   }
   // enforce the admin per-user restrictions (profile page Controls): they were only STORED before - the toggles did nothing
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
-  if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || path === '/moonsign/submit' || path === '/fomosign/submit' || path === '/xengage/submit')) return jr({ error: 'restricted' }, 403);
+  if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || /^\/(moon|mexc|bingx|fomo)sign\/submit$/.test(path) || path === '/xengage/submit')) return jr({ error: 'restricted' }, 403);
   if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
   if (path === '/support/mine') { // signed-in user's own support conversation (their tickets + our email replies), identity resolved server-side
     const tok = getCookie(request, SESS_COOKIE);
@@ -20577,7 +20586,7 @@ async function handleReward(url, request, env) {
   // Users already ≥500 XP are unaffected. The /me + /account paths are NOT gated so the page can render the
   // locked state; the DO also has an independent x-lvl check so this can't be bypassed by calling the DO directly.
   if (full.raw.levelsEnabled !== false && acct && !rewardsUnlocked(suXp) &&
-      (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || path === '/moonsign/submit' || path === '/fomosign/submit' || path === '/xengage/submit'))
+      (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || /^\/(moon|mexc|bingx|fomo)sign\/submit$/.test(path) || path === '/xengage/submit'))
     return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: suXp, level: 'unranked', earn: '/academy/' }, 403);
   // admin: Moon sign-up approval tally (key-gated read - the ops Moon panel is cookie-only; this lets the owner get the count with the ADMIN_KEY bearer)
   if (path === '/moonstat') {
@@ -20602,8 +20611,8 @@ async function handleReward(url, request, env) {
  // /exsign/* is 410, but the config key survived and still read as enabled. Dropping it from this list means the
  // dashboard cannot switch a dead $3 payout back on by accident. Moon ($1) is unaffected - it rides the same DO
  // table but gates on 'moonEnabled', which stays.
- for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'fomoEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
- for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'redditUsd', 'redditMaxUsd', 'referralUsd', 'moonUsd', 'fomoUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k]; /* 'exsignUsd' dropped 2026-08-20 - retired system, see the boolean list above */
+ for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'fomoEnabled', 'mexcEnabled', 'bingxEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
+ for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'redditUsd', 'redditMaxUsd', 'referralUsd', 'moonUsd', 'fomoUsd', 'mexcUsd', 'bingxUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k]; /* 'exsignUsd' dropped 2026-08-20 - retired system, see the boolean list above */
       // BOARD PRIZES, NOW OR NEXT SEASON (2026-09-13, owner: "kad promenim nagrade treba nešto što kaže da promene
       // nastupe po novoj sezoni a ne po trenutnoj ... hoću smooth transition"). Prizes are read at PAYOUT time, which
       // happens AFTER a season ends - so editing them mid-season silently changes what the season that just finished
@@ -20684,7 +20693,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
- const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme }; // (unchanged) - reward config snapshot passed to the DO
+ const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, moonC: full.moonC, moonEnabled: full.moonEnabled, fomoC: full.fomoC, fomoEnabled: full.fomoEnabled, mexcC: full.mexcC, mexcEnabled: full.mexcEnabled, bingxC: full.bingxC, bingxEnabled: full.bingxEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2, lbGold: full.lbGold, lbMoon: full.lbMoon, lbCall: full.lbCall, lbMeme: full.lbMeme }; // (unchanged) - reward config snapshot passed to the DO
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -20988,16 +20997,23 @@ async function handleReward(url, request, env) {
     if (typed && !same) msg = msg.slice(0, 880) + '\n\n[contact typed in the form: ' + typed.slice(0, 80) + ']';
     fwdBody = JSON.stringify({ ...b, email: suEmail, address: acct, message: msg });
   }
-  if (path === '/moonsign/submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: 'moon' }); }
-  else if (path === '/moonsign/mine') doPath = '/exsign/mine';
-  else if (path === '/moonsign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
-  else if (path === '/moonsign/review') doPath = '/exsign/review';
-  // /fomosign/* is the Fomo ($1 sign-up bonus, 2026-09-15) surface over the same exsign table, exactly as moonsign is.
-  // Submit forces exchange:'fomo' server-side, so this path can never be used to claim a bonus for another venue.
-  else if (path === '/fomosign/submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: 'fomo' }); }
-  else if (path === '/fomosign/mine') doPath = '/exsign/mine';
-  else if (path === '/fomosign/list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
-  else if (path === '/fomosign/review') doPath = '/exsign/review';
+  /* EVERY SIGN-UP BONUS VENUE GOES THROUGH ONE TABLE (2026-10-21). moonsign/* and fomosign/* were two
+     hand-copied alias sets over the same exsign table, and the owner asking for MEXC and BingX would have
+     made FOUR - with the submit/mine/list/review names and the exchange-forcing repeated in each. The
+     exchange is still forced SERVER-SIDE from the path, which is what stops this surface ever being used to
+     claim one venue's bonus with another's username. */
+  {
+    const sv = SIGN_RE.exec(path);
+    if (sv) {
+      const venue = sv[1], op = sv[2];
+      // a retired venue keeps its review and read paths and takes NO new claims
+      if (op === 'submit' && !signVenueOpen(venue)) return jr({ error: 'closed', hint: 'The ' + (SIGN_VENUES[venue] ? SIGN_VENUES[venue].label : venue) + ' sign-up bonus has ended.' }, 410);
+      if (op === 'submit') { doPath = '/exsign/submit'; fwdBody = JSON.stringify({ ...b, exchange: venue }); }
+      else if (op === 'mine') doPath = '/exsign/mine';
+      else if (op === 'list') doPath = '/exsign/list'; // ?all=1 rides on url.search, which the GET forward below already appends
+      else doPath = '/exsign/review';
+    }
+  }
   const fwd = new Request('https://do' + doPath + (request.method === 'GET' ? url.search : ''), {
     method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1), 'x-dayx': String(cfg.levelsEnabled !== false ? (LEVEL_DAY_MULT[suLevelK] || 1) : 1), 'x-rrx': String(suRwFac / 100) }, // x-rrx = the reduced-rewards factor, read off the users row the session already loaded (the rrScan cron decides it) - no extra hop on the claim path
     body: request.method === 'POST' ? fwdBody : undefined,
@@ -21011,7 +21027,7 @@ async function handleReward(url, request, env) {
       else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
       else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' }); try { await evPush(env, null, 'exsignpaid', String((JSON.parse(raw || '{}').exchange) || ''), '/rewards/'); } catch (e) {} }
       else if (path === '/moonsign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 100, { note: 'Moon sign-up approved' }); try { await evPush(env, null, 'exsignpaid', 'moon', '/rewards/'); } catch (e) {} }
-      else if (path === '/fomosign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 100, { note: 'Fomo sign-up approved' }); try { await evPush(env, null, 'exsignpaid', 'fomo', '/rewards/'); } catch (e) {} }
+      else if (/^\/(mexc|bingx|fomo)sign\/review$/.test(path) && _rd.status === 'approved' && _rd.acct) { const _v = path.slice(1).split('sign')[0]; await grantXp(env, _rd.acct, 'exsign', 100, { note: (SIGN_VENUES[_v] ? SIGN_VENUES[_v].label : _v) + ' sign-up approved' }); try { await evPush(env, null, 'exsignpaid', _v, '/rewards/'); } catch (e) {} }
       else if (path === '/xengage/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 30, { note: 'X engagement approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
       if (path === '/claim' && _rd.ok) await evPush(env, request, 'claim', '+$' + (+_rd.credited || 0).toFixed(2), '/rewards/');
       if (path === '/withdraw' && _rd.ok) { await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
@@ -21024,12 +21040,12 @@ async function handleReward(url, request, env) {
       if (path === '/promo/submit' && _rd.ok) { let _pl = ''; try { _pl = String((JSON.parse(raw || '{}').platform) || '').toUpperCase(); } catch (e) {} await evPush(env, request, 'promo', _pl === 'X' ? 'on X' : _pl === 'REDDIT' ? 'on Reddit' : _pl === 'TIKTOK' ? 'on TikTok' : '', '/rewards/'); }
       if (path === '/exsign/submit' && _rd.ok) { let _ex = ''; try { _ex = String((JSON.parse(raw || '{}').exchange) || ''); } catch (e) {} await evPush(env, request, 'exsign', _ex, '/rewards/'); }
       if (path === '/moonsign/submit' && _rd.ok) await evPush(env, request, 'exsign', 'moon', '/rewards/');
-      if (path === '/fomosign/submit' && _rd.ok) await evPush(env, request, 'exsign', 'fomo', '/rewards/');
+      if (/^\/(mexc|bingx|fomo)sign\/submit$/.test(path) && _rd.ok) await evPush(env, request, 'exsign', path.slice(1).split('sign')[0], '/rewards/');
       if (path === '/xengage/submit' && _rd.ok) { let _a = ''; try { _a = String((JSON.parse(raw || '{}').action) || ''); } catch (e) {} await evPush(env, request, 'exsign', 'X ' + _a, '/rewards/'); }
       if (path === '/support' && _rd.ok) await evPush(env, request, 'support', '', '/rewards/');
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
-  if (r.status === 200 && (path === '/moonsign/review' || path === '/fomosign/review') && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17)
+  if (r.status === 200 && /sign\/review$/.test(path) && SIGN_RE.test(path) && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17)
     try { const data = JSON.parse(txt); if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + (path.indexOf('fomo') >= 0 ? 'Fomo' : 'Moon') + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
   }
   if (r.status === 200 && path === '/moonsign/list') { // only moon rows belong to this surface
@@ -21038,11 +21054,18 @@ async function handleReward(url, request, env) {
   if (r.status === 200 && path === '/moonsign/mine') { // user's own view: only their moon submission(s)
     try { const data = JSON.parse(txt); data.signups = (data.signups || []).filter(x => x.exchange === 'moon'); txt = JSON.stringify(data); } catch (e) {}
   }
-  if (r.status === 200 && path === '/fomosign/list') { // only fomo rows belong to this surface
-    try { const data = JSON.parse(txt); data.pending = (data.pending || []).filter(x => x.exchange === 'fomo'); data.decided = (data.decided || []).filter(x => x.exchange === 'fomo'); data.fomoUsd = full.fomoC / 100; txt = JSON.stringify(data); } catch (e) {}
-  }
-  if (r.status === 200 && path === '/fomosign/mine') { // user's own view: only their fomo submission(s)
-    try { const data = JSON.parse(txt); data.signups = (data.signups || []).filter(x => x.exchange === 'fomo'); txt = JSON.stringify(data); } catch (e) {}
+  // only the rows of THIS venue belong to its surface - one filter for every venue in SIGN_VENUES
+  if (r.status === 200 && /^\/(mexc|bingx|fomo)sign\/(list|mine)$/.test(path)) {
+    const _v = path.slice(1).split('sign')[0], _op = path.split('/').pop();
+    try {
+      const data = JSON.parse(txt);
+      if (_op === 'list') {
+        data.pending = (data.pending || []).filter(x => x.exchange === _v);
+        data.decided = (data.decided || []).filter(x => x.exchange === _v);
+        data[_v + 'Usd'] = (full[_v + 'C'] || 0) / 100;
+      } else data.signups = (data.signups || []).filter(x => x.exchange === _v);
+      txt = JSON.stringify(data);
+    } catch (e) {}
   }
   if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list' || path === '/moonsign/list' || path === '/fomosign/list' || path === '/xengage/list')) {
     try {
@@ -26950,7 +26973,7 @@ export class RewardLedger {
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
     const referred = request.headers.get('x-referred') === '1'; // set only on the signup path for an account made via a referral link - gates the one-time welcome bonus (2026-10-16)
- const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap; perDay also carries the reduced-rewards factor, so the number on the page IS the number that will be enforced - no second copy of the rule, and nothing silently cut */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.max(cfg.amountC, Math.round(cfg.perDayC * xDayX * xRr)) / 100, perDayFull: Math.round(cfg.perDayC * xDayX) / 100, rrFactor: xRr, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), /* exsignUsd/exsignEnabled dropped from the public payload 2026-08-20 - retired 2026-08-03, /exsign/* is 410, and the page never read them */ moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, fomoUsd: (cfg.fomoC == null ? 1 : cfg.fomoC / 100), fomoEnabled: cfg.fomoEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
+ const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap; perDay also carries the reduced-rewards factor, so the number on the page IS the number that will be enforced - no second copy of the rule, and nothing silently cut */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.max(cfg.amountC, Math.round(cfg.perDayC * xDayX * xRr)) / 100, perDayFull: Math.round(cfg.perDayC * xDayX) / 100, rrFactor: xRr, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), /* exsignUsd/exsignEnabled dropped from the public payload 2026-08-20 - retired 2026-08-03, /exsign/* is 410, and the page never read them */ moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, fomoUsd: (cfg.fomoC == null ? 1 : cfg.fomoC / 100), fomoEnabled: cfg.fomoEnabled === true, mexcUsd: (cfg.mexcC == null ? 1 : cfg.mexcC / 100), mexcEnabled: cfg.mexcEnabled !== false, bingxUsd: (cfg.bingxC == null ? 1 : cfg.bingxC / 100), bingxEnabled: cfg.bingxEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
 
     if (path === '/balance') { // READ-ONLY. /account cannot stand in for this: its first read grants the welcome
       // bonus, and a page that merely wants to show a price must never move money as a side effect.
@@ -27528,10 +27551,13 @@ export class RewardLedger {
       if (!acct) return this.j({ error: 'login_required' }, 401);
       const arow = this.rows('SELECT banned FROM accounts WHERE address=?', acct)[0];
       if (arow && arow.banned) return this.j({ error: 'banned' }, 403);
-      const EXCH = ['bybit', 'binance', 'okx', 'bitget', 'kucoin', 'gate', 'mexc', 'kraken', 'cryptocom', 'coinbase', 'moon', 'fomo'];
+      const EXCH = ['bybit', 'binance', 'okx', 'bitget', 'kucoin', 'gate', 'mexc', 'bingx', 'kraken', 'cryptocom', 'coinbase', 'moon', 'fomo'];
       const exchange = String(body.exchange || '').toLowerCase().trim();
       if (EXCH.indexOf(exchange) < 0) return this.j({ error: 'bad_exchange' }, 400);
-      if (exchange === 'moon' ? cfg.moonEnabled === false : exchange === 'fomo' ? cfg.fomoEnabled === false : cfg.exsignEnabled === false) return this.j({ error: 'paused' }, 503);
+      // EVERY VENUE WITH ITS OWN SWITCH IS PAUSED BY ITS OWN SWITCH (2026-10-21): this was a moon/fomo ladder, so
+      // `mexcEnabled:false` paused nothing at all and the owner's kill switch for the two live venues was dead.
+      const _vEn = cfg[exchange + 'Enabled'];
+      if (_vEn === undefined ? cfg.exsignEnabled === false : _vEn === false) return this.j({ error: 'paused' }, 503);
       const uid = String(body.uid || '').trim();
       // Coinbase has no numeric UID in the affiliate list - the owner sees an account name / wallet / .base handle, so allow dots + longer values there
       const uidRe = exchange === 'coinbase' ? /^[A-Za-z0-9_.-]{3,64}$/ : (exchange === 'moon' || exchange === 'fomo') ? /^[A-Za-z0-9_.-]{3,32}$/ : /^[A-Za-z0-9_-]{4,32}$/; // moon/fomo = a username on that app, not a numeric UID
@@ -27581,7 +27607,9 @@ export class RewardLedger {
       if (p.status !== 'pending' && !(action === 'approve' && body.force === true && p.status === 'rejected')) return this.j({ error: 'already_decided' }, 409); // force = the owner re-approves a row rejected by mistake (2026-09-17, Ladyp03); an approved row is never paid twice
       if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
-      const amt = p.exchange === 'moon' ? (cfg.moonC == null ? 100 : cfg.moonC) : p.exchange === 'fomo' ? (cfg.fomoC == null ? 100 : cfg.fomoC) : (cfg.exsignC == null ? 300 : cfg.exsignC);
+      // one lookup per venue (2026-10-21): a ternary chain had to be edited for every new sign-up bonus
+      const _vc = cfg[String(p.exchange || '') + 'C'];
+      const amt = (_vc != null) ? _vc : (cfg.exsignC == null ? 300 : cfg.exsignC);
       const acctRow = this.rows('SELECT address,banned FROM accounts WHERE address=?', p.acct)[0];
       if (acctRow && acctRow.banned) return this.j({ error: 'banned' }, 403);
       if (!acctRow) sql.exec('INSERT INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,?,?)', p.acct, day, now, amt, amt);
@@ -27933,6 +27961,7 @@ function handleExchangeGo(url) {
   if (ex === 'moon') return new Response('', { status: 302, headers: { location: 'https://moon.com/?offer=marginpad', 'cache-control': 'no-store' } }); // no public app scheme - straight to the ref link
   if (ex === 'hyperliquid') return new Response('', { status: 302, headers: { location: 'https://app.hyperliquid.xyz/join/MARGINPAD', 'cache-control': 'no-store' } }); // the referral rides on /join only - a /trade deep link would lose it
   if (ex === 'fomo') return new Response('', { status: 302, headers: { location: 'https://fomo.family/r/Marginpad', 'cache-control': 'no-store' } }); // the referral is the /r/ link itself; there is no public pair deep link that keeps it
+  if (ex === 'bingx') return new Response('', { status: 302, headers: { location: 'https://bingxdao.com/referral-program/K5WJQO?activityId=g_1567322053827448881', 'cache-control': 'no-store' } }); // the campaign id is part of the referral; a pair deep link would drop it (and this one pays a sign-up bonus)
   const c = CFG[ex];
   if (!c) return new Response('', { status: 302, headers: { location: 'https://marginpad.io/charts?coin=' + sym } });
   const web = c.web;

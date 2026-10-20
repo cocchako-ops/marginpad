@@ -3033,7 +3033,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     // MEXC (2026-09-18): the old `promote.mexc.com/r/GND4jI97o0` resolved to inviteCode 41aeB - a DIFFERENT MEXC
     // account ("65****35 invites you") - so every MEXC sign-up we sent was credited elsewhere. The owner's link
     // resolves to inviteCode 47LrK ("64****89"), which is what the pair links carry now.
-    MEXC: { c: '#0ac2d6', no: 'US', ref: 'https://s.mexc.com/referral/YkL887dVgt', deep: function (s) { return 'https://www.mexc.com/futures/' + s + '_USDT?inviteCode=47LrK'; }, perk: 'low fees' },
+    /* MEXC (link refreshed 2026-10-21 to the owner's own promote link). The deep link keeps inviteCode=47LrK
+       because that is the SAME account: promote.mexc.com/a/ZBQaEXe8 redirects to
+       .../custom-sign-up?shareCode=mexc-47LrK, checked by following it rather than assumed, so a pair click and
+       a sign-up click credit one place. Colour read off the official 64px logo (#0057ff at 962 of its ~1,000
+       coloured pixels) - the old #0ac2d6 teal predates their rebrand and matched nothing they publish. */
+    MEXC: { c: '#0057ff', no: 'US', ref: 'https://promote.mexc.com/a/ZBQaEXe8', deep: function (s) { return 'https://www.mexc.com/futures/' + s + '_USDT?inviteCode=47LrK'; }, perk: __esT_mpauth("lowFees",'low fees') },
+    /* BingX (2026-10-21, owner). Referral code K5WJQO, confirmed by following the link he gave:
+       bingxdao.com/referral-program/K5WJQO -> bingx.com/en/referral-program/K5WJQO. `deep: null` on purpose -
+       the same rule OKX has: a pair page we cannot PROVE carries the code would turn a money click into a free
+       one, so every click goes through the referral page. Colour #2b54fc, read off the official logo. */
+    BingX: { c: '#2b54fc', no: 'US', ref: 'https://bingxdao.com/referral-program/K5WJQO?activityId=g_1567322053827448881', deep: null, perk: __esT_mpauth("bonusForNewTraders",'bonus for new traders'), code: 'K5WJQO' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing - the join page attributes (2026-09-13) */, perk: 'pro tools' },
     // Gate (2026-09-18): `gate.com/VFIWB10KUG?ref=…` answered a real HTTP 404 ("Sorry, page not found"). The rebate
     // campaign link below returns 200 and writes ref_uid / ref_type / ref_click_time.
@@ -3050,10 +3060,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   var ORD = {
     // Fomo has NO measured click order here yet - it went live 2026-09-15. It is placed mid-list on reasoning
     // (a mobile social app suits the NG/PK audience that carries `def`) and moves once there is data, like the rest.
-    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Fomo', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin'],
-    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
-    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
-    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Fomo', 'Bitget', 'MEXC', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
+    us: ['Coinbase', 'Kraken', 'Crypto.com', 'Moon', 'Fomo', 'Hyperliquid', 'Bybit', 'Binance', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin'],
+    ca: ['Kraken', 'Coinbase', 'Hyperliquid', 'Bybit', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Binance', 'Crypto.com'],
+    west: ['Binance', 'Bybit', 'Hyperliquid', 'Kraken', 'OKX', 'Bitget', 'Moon', 'Fomo', 'MEXC', 'BingX', 'Gate', 'KuCoin', 'Coinbase', 'Crypto.com'],
+    def: ['Bybit', 'Binance', 'Hyperliquid', 'Moon', 'Fomo', 'Bitget', 'MEXC', 'BingX', 'OKX', 'Gate', 'KuCoin', 'Kraken', 'Coinbase', 'Crypto.com']
   };
   function group(cc2) { cc2 = String(cc2 || '').toUpperCase(); if (cc2 === 'US') return 'us'; if (cc2 === 'CA') return 'ca'; return WEST.indexOf(cc2) >= 0 ? 'west' : 'def'; }
 

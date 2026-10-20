@@ -391,7 +391,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="et-r">
       <div class="et-k">Una vez, al empezar</div>
       <div class="et-v"><span class="eamt" id="eaOnce">$2.50</span><i>en total</i></div>
-      <div class="et-d"><b id="eaWel">$0.50</b> de bono de bienvenida cuando un amigo te invita, además de <b id="eaMoon">$1.00</b> por abrir una cuenta en Moon a través de nosotros y <b id="eaFomo">$1.00</b> por una en Fomo.</div>
+      <div class="et-d"><b id="eaWel">$0.50</b> welcome bonus when a friend invites you, plus <b id="eaMoon">$1.00</b> for opening a Moon account through us, and <b id="eaMexc">$1.00</b> each for a MEXC or <b id="eaBingx">$1.00</b> a BingX one.</div>
     </div>
     <div class="et-r">
       <div class="et-k">Cada día</div>
@@ -512,18 +512,21 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div id="moonStatus" style="margin-top:8px"></div>
   </div>
 
-  <div class="card" id="fomoCard" hidden>
-    <div class="lbl" style="display:flex;align-items:center;gap:9px"><span aria-hidden="true" style="width:22px;height:22px;border-radius:6px;background:#ff4d8d;color:#0a0b0d;font:800 12px/22px 'Space Mono',monospace;text-align:center;display:inline-block">f</span>Bono de registro en Fomo <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="fomoAmt">1</span></span></div>
-    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Crea una cuenta de <b>Fomo</b> a través de nuestro enlace y luego ingresa tu nombre de usuario de Fomo abajo. Después de una rápida verificación manual, añadimos <b style="color:#c2f64a">$<span id="fomoAmt2">1</span></b> a tu saldo de MarginPad. Un bono por cuenta.</p>
-    <a class="btn btn-lime" id="fomoRefBtn" data-mpex="Fomo" href="https://fomo.family/r/Marginpad" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Crea tu cuenta de Fomo</a>
-    <div id="fomoForm">
-      <div class="addr-row">
-        <input id="fomoUser" type="text" placeholder="2) Tu nombre de usuario de Fomo" autocomplete="off" spellcheck="false" />
-        <button class="btn btn-ghost" id="fomoSubmit" type="button">Enviar</button>
-      </div>
-    </div>
-    <div class="msg" id="fomoMsg"></div>
-    <div id="fomoStatus" style="margin-top:8px"></div>
+  <div class="card" id="mexcCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/ex/mexc.png" alt="" aria-hidden="true" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block;flex:0 0 auto;background:#0057ff">MEXC sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="mexcAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>MEXC</b> account through our link, then enter your MEXC UID below. After a quick manual check we add <b style="color:#c2f64a">$<span id="mexcAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="mexcRefBtn" data-mpex="MEXC" href="#" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your MEXC account</a>
+    <div id="mexcForm"><div class="addr-row"><input id="mexcUser" type="text" placeholder="2) Your MEXC UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="mexcSubmit" type="button">Enviar</button></div></div>
+    <div class="msg" id="mexcMsg"></div>
+    <div id="mexcStatus" style="margin-top:8px"></div>
+  </div>
+  <div class="card" id="bingxCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/ex/bingx.png" alt="" aria-hidden="true" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block;flex:0 0 auto;background:#2b54fc">BingX sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="bingxAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>BingX</b> account through our link, then enter your BingX UID below. After a quick manual check we add <b style="color:#c2f64a">$<span id="bingxAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="bingxRefBtn" data-mpex="BingX" href="#" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your BingX account</a>
+    <div id="bingxForm"><div class="addr-row"><input id="bingxUser" type="text" placeholder="2) Your BingX UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="bingxSubmit" type="button">Enviar</button></div></div>
+    <div class="msg" id="bingxMsg"></div>
+    <div id="bingxStatus" style="margin-top:8px"></div>
   </div>
 
   <div class="card" id="promoCard" hidden>
@@ -840,9 +843,10 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     var set=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
     var wel=j.welcomeAmt!=null?+j.welcomeAmt:0.5;
     var moon=(j.moonEnabled===false)?0:(j.moonUsd!=null?+j.moonUsd:1);
-    var fomo=(j.fomoEnabled===false)?0:(j.fomoUsd!=null?+j.fomoUsd:1);
-    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+fomo));
-    if(moon)set('eaMoon',usd(moon)); if(fomo)set('eaFomo',usd(fomo));
+    var mexc=(j.mexcEnabled===false)?0:(j.mexcUsd!=null?+j.mexcUsd:1);
+    var bingx=(j.bingxEnabled===false)?0:(j.bingxUsd!=null?+j.bingxUsd:1);
+    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+mexc+bingx));
+    if(moon)set('eaMoon',usd(moon)); if(mexc)set('eaMexc',usd(mexc)); if(bingx)set('eaBingx',usd(bingx));
     if(j.perDay!=null)set('eaDay',usd(j.perDay));
     if(j.amount!=null)set('eaAmt',usd(j.amount));
     if(j.minWd!=null)set('eaMin',usd(j.minWd));
@@ -853,10 +857,15 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     var mc=document.getElementById('moonCard');
     if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
     if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}
-    window.__fomoOff=(j.fomoEnabled===false);
-    var fc=document.getElementById('fomoCard');
-    if(fc)fc.hidden=window.__fomoOff||!signedIn; // members-only, same gating as the Moon card
-    if(j.fomoUsd!=null){var f1=document.getElementById('fomoAmt'),f2=document.getElementById('fomoAmt2');var fv=fmtShort(j.fomoUsd);if(f1)f1.textContent=fv;if(f2)f2.textContent=fv;}
+    /* MEXC + BingX (2026-10-21): members-only and hidden when paused in ops, exactly as the Moon card is.
+       Fomo's $1 was retired the same day - its card is gone, and the server refuses a new claim with 410. */
+    ['mexc','bingx'].forEach(function(vk){
+      var off=(j[vk+'Enabled']===false); window['__'+vk+'Off']=off;
+      var el=document.getElementById(vk+'Card'); if(el)el.hidden=off||!signedIn;
+      var u=j[vk+'Usd'];
+      if(u!=null){var s1=document.getElementById(vk+'Amt'),s2=document.getElementById(vk+'Amt2'),sv=fmtShort(u);
+        if(s1)s1.textContent=sv; if(s2)s2.textContent=sv;}
+    });
     window.__promoOff=(j.promoEnabled===false);
     var pc=document.getElementById('promoCard');
     if(pc)pc.hidden=window.__promoOff||!signedIn; // Post & earn card is members-only, mirrors the Moon card gating
@@ -897,41 +906,65 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     });
     inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
   })();
-  /* Fomo $1 sign-up bonus (2026-09-15) - the same manual-review flow as Moon, over the same server table. */
-  function fomoMsg(t,kind){var el=document.getElementById('fomoMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
-  function loadFomo(){var st=document.getElementById('fomoStatus'),form=document.getElementById('fomoForm');if(!st)return;
-    if(!signedIn){st.innerHTML='';return;}
-    fetch('/api/reward/fomosign/mine').then(function(r){return r.json();}).then(function(d){
-      var rows=(d&&d.signups)||[];if(!rows.length){st.innerHTML='';if(form)form.style.display='';return;}
-      var x=rows[0];var chip;
-      if(x.status==='approved')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(194,246,74,.5);color:#c2f64a;font-size:12px;font-weight:700">+$'+(+x.amount||1).toFixed(2)+' PAID ✓</span>';
-      else if(x.status==='rejected')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:12px;font-weight:700">REJECTED</span>'+(x.note?' <span class="note" style="font-size:12px">'+String(x.note).replace(/</g,'&lt;')+'</span>':'');
-      else chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,215,90,.5);color:#ffd75a;font-size:12px;font-weight:700">IN REVIEW</span>';
-      st.innerHTML='<span class="note" style="font-size:12px">Fomo username <b>'+String(x.uid).replace(/</g,'&lt;')+'</b> &middot; </span>'+chip;
-      var again=(x.status==='rejected')&&rows.length<2; /* one retry per account, same rule as Moon */
-      if(form)form.style.display=again?'':'none';
-      if(x.status==='rejected'&&!again)st.innerHTML+=' <span class="note" style="font-size:12px">This account has used both submissions for this bonus. If you think that was a mistake, write to support.</span>';
-    }).catch(function(){});}
-  (function(){var sb=document.getElementById('fomoSubmit'),inp=document.getElementById('fomoUser');
-    if(!sb)return;
-    sb.addEventListener('click',function(){
-      if(!signedIn){fomoMsg(__esT_rewardsindex("signInFirstTop",'Sign in first (top of the page) - the bonus lands on your MarginPad balance.'),'err');return;}
-      var v=(inp.value||'').trim().replace(/^@/,'');
-      if(!/^[A-Za-z0-9_.-]{3,32}$/.test(v)){inp.classList.add('invalid');fomoMsg(__esT_rewardsindex("enterYourFomoUsername",'Enter your Fomo username (3-32 letters/numbers).'),'err');return;}
-      inp.classList.remove('invalid');sb.disabled=true;fomoMsg('Submitting…','');
-      fetch('/api/reward/fomosign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(j){
-        sb.disabled=false;
-        if(j.ok){fomoMsg(__esT_rewardsindex("submittedWeCheckEvery",'Submitted ✓ - we check every sign-up manually; the bonus lands on your balance once approved.'),'ok');loadFomo();}
-        else if(j.error==='already_submitted')fomoMsg(__esT_rewardsindex("youAlreadySubmittedA2",'You already submitted a Fomo sign-up on this account.'),'err');
-        else if(j.error==='limit_reached')fomoMsg(__esT_rewardsindex("thisAccountHasUsed",'This account has used both of its submissions for this bonus. If you think a rejection was a mistake, write to support.'),'err');
-        else if(j.error==='uid_taken')fomoMsg(__esT_rewardsindex("thatFomoUsernameWas",'That Fomo username was already claimed by another account.'),'err');
-        else if(j.error==='bad_uid')fomoMsg(__esT_rewardsindex("invalidFomoUsername",'Invalid Fomo username.'),'err');
-        else if(j.error==='login_required')fomoMsg(__esT_rewardsindex("signInFirstTop2",'Sign in first (top of the page).'),'err');
-        else fomoMsg(__esT_rewardsindex("couldNotSubmitRight",'Could not submit right now - try again in a minute.'),'err');
-      }).catch(function(){sb.disabled=false;fomoMsg(__esT_rewardsindex("networkErrorTryAgain2",'Network error - try again.'),'err');});
-    });
-    inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
-  })();
+  /* THE SIGN-UP BONUS CARDS ARE ONE DRIVER (2026-10-21). Moon and Fomo were two hand-copied blocks of the
+     same msg/load/submit flow; MEXC and BingX would have made four. The venue is a parameter, the ref link
+     comes from window.mpEx so the page never holds a second copy of a partner URL, and the endpoint is
+     /api/reward/<venue>sign/* which forces the exchange SERVER-side. Moon keeps its own block above - it
+     carries the contest box and the board rules, which these do not. */
+  var SIGNV = [{ k: 'mexc', label: 'MEXC' }, { k: 'bingx', label: 'BingX' }];
+  function signCard(v) {
+    var card = document.getElementById(v.k + 'Card'); if (!card) return;
+    function msg(t, kind) { var el = document.getElementById(v.k + 'Msg'); if (!el) return; el.innerHTML = t; el.className = 'msg show ' + (kind || ''); }
+    /* the referral URL is mpEx's, resolved at CALL time - mp-auth is DEFERRED, so reading it at parse time
+       would leave the button pointing at '#' for the first tick (the rule this file already follows). */
+    (function wireRef() {
+      var a = document.getElementById(v.k + 'RefBtn'); if (!a) return;
+      if (!window.mpEx) { setTimeout(wireRef, 150); return; }
+      var u = window.mpEx.url(v.label); if (u) a.href = u;
+    })();
+    function load() {
+      var st = document.getElementById(v.k + 'Status'), form = document.getElementById(v.k + 'Form');
+      if (!st) return;
+      if (!signedIn) { st.innerHTML = ''; return; }
+      fetch('/api/reward/' + v.k + 'sign/mine').then(function (r) { return r.json(); }).then(function (d) {
+        var rows = (d && d.signups) || [];
+        if (!rows.length) { st.innerHTML = ''; if (form) form.style.display = ''; return; }
+        var x = rows[0], chip;
+        if (x.status === 'approved') chip = '<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(194,246,74,.5);color:#c2f64a;font-size:12px;font-weight:700">+$' + (+x.amount || 1).toFixed(2) + ' PAID</span>';
+        else if (x.status === 'rejected') chip = '<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:12px;font-weight:700">REJECTED</span>' + (x.note ? ' <span class="note" style="font-size:12px">' + String(x.note).replace(/</g, '&lt;') + '</span>' : '');
+        else chip = '<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.22);color:#c9d2dc;font-size:12px;font-weight:700">WAITING FOR REVIEW</span>';
+        st.innerHTML = chip;
+        /* a decided row still hides the form: one bonus per account, and an input that cannot succeed is worse
+           than no input. A REJECTED row keeps it open - the retry is the member's one way back. */
+        if (form) form.style.display = (x.status === 'rejected') ? '' : 'none';
+      }).catch(function () {});
+    }
+    var inp = document.getElementById(v.k + 'User'), sb = document.getElementById(v.k + 'Submit');
+    if (sb && inp) {
+      sb.addEventListener('click', function () {
+        var u = (inp.value || '').trim();
+        if (!u) { msg('Enter your ' + v.label + ' UID.', 'err'); return; }
+        sb.disabled = true; msg('Sending...', '');
+        fetch('/api/reward/' + v.k + 'sign/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            sb.disabled = false;
+            if (d && d.ok) { msg('Sent - we check it by hand and the $' + ((d.amount != null ? +d.amount : 1)).toFixed(2) + ' lands on your balance once approved.', 'ok'); inp.value = ''; load(); return; }
+            var e = (d && d.error) || '';
+            if (e === 'closed') msg((d && d.hint) || 'This bonus has ended.', 'err');
+            else if (e === 'uid_taken') msg('That ' + v.label + ' UID has already been claimed by another account.', 'err');
+            else if (e === 'already_submitted' || e === 'limit_reached') msg('You already submitted a ' + v.label + ' sign-up with this account.', 'err');
+            else if (e === 'bad_uid') msg('That does not look like a ' + v.label + ' UID.', 'err');
+            else if (e === 'need_xp') msg('Reach Bronze (500 XP) first - the whole rewards area opens there.', 'err');
+            else if (e === 'signin_required') msg('Sign in first (top of the page).', 'err');
+            else msg('Could not submit right now - try again in a minute.', 'err');
+          }).catch(function () { sb.disabled = false; msg('Network error - try again.', 'err'); });
+      });
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') sb.click(); });
+    }
+    card.__signLoad = load;
+    load();
+  }
+  SIGNV.forEach(signCard);
   function prMsgF(t,kind){var el=document.getElementById('prMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
   function loadPromo(){var st=document.getElementById('prStatus');if(!st)return;
     if(!signedIn){st.innerHTML='';return;}
@@ -1306,9 +1339,9 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
 })();
 </script>
 <script src="/assets/mp-trade.js?v=10b41b56" defer></script>
-<script defer src="/assets/mp-auth.js?v=7aa2374f"></script>
+<script defer src="/assets/mp-auth.js?v=6f2e5459"></script>
 <script defer src="/assets/mp-profile.js?v=1e39fca2"></script>
-<script defer src="/assets/mp-nav.js?v=22df766e"></script>
+<script defer src="/assets/mp-nav.js?v=007c269a"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;

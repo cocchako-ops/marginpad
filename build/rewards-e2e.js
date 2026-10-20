@@ -35,14 +35,16 @@ const LOOK = () => {
     gate: txt('.et-gate'),
     foot: txt('.et-f'),
     once: txt('#eaOnce'), day: txt('#eaDay'), amt: txt('#eaAmt'), min: txt('#eaMin'),
-    wel: txt('#eaWel'), moon: txt('#eaMoon'), fomo: txt('#eaFomo'), post: txt('#eaPost'),
+    wel: txt('#eaWel'), moon: txt('#eaMoon'), fomo: txt('#eaFomo'), mexc: txt('#eaMexc'), bingx: txt('#eaBingx'), post: txt('#eaPost'),
     lvlCard: shown('#lvlCard'),
     authCard: shown('#authCard'),
     dash: shown('#dash'),
     msnCard: shown('#msnCard'),
     refCard: shown('#refCard'),
     moonCard: shown('#moonCard'),
-    fomoCard: shown('#fomoCard'),
+    mexcCard: shown('#mexcCard'),
+    bingxCard: shown('#bingxCard'),
+    fomoCardExists: !!document.getElementById('fomoCard'),
     promoCard: shown('#promoCard'),
     lbCard: shown('#lbCompCard'),
     lockedCard: shown('#lockedCard'),
@@ -104,16 +106,24 @@ async function visit(vp, ua, cookie) {
   ok(g.day === usd(cfg.perDay), 'the daily ceiling matches the server (' + g.day + ')', { page: g.day, server: usd(cfg.perDay) });
   ok(g.min === usd(cfg.minWd), 'the withdrawal minimum matches the server (' + g.min + ')', { page: g.min, server: usd(cfg.minWd) });
   ok(g.wel === usd(cfg.welcomeAmt), 'the welcome bonus matches the server (' + g.wel + ')', { page: g.wel, server: usd(cfg.welcomeAmt) });
-  if (cfg.moonEnabled !== false) ok(g.moon === usd(cfg.moonUsd), 'the Moon bonus matches the server (' + g.moon + ')', { page: g.moon, server: usd(cfg.moonUsd) });
-  if (cfg.fomoEnabled !== false) ok(g.fomo === usd(cfg.fomoUsd), 'the Fomo bonus matches the server (' + g.fomo + ')', { page: g.fomo, server: usd(cfg.fomoUsd) });
+  // VENUE-DRIVEN, so a venue retired or added does not make this suite wrong (2026-10-21: Fomo out, MEXC and
+  // BingX in - the old literal sum said $1.50 against a correct $3.50 on the page)
+  const SIGN = [['moon', 'Moon'], ['mexc', 'MEXC'], ['bingx', 'BingX'], ['fomo', 'Fomo']];
+  for (const [v, label] of SIGN) {
+    if (cfg[v + 'Enabled'] === false) { ok(!g[v], 'a switched-off venue (' + label + ') states no amount on the board', { page: g[v] }); continue; }
+    ok(g[v] === usd(cfg[v + 'Usd']), 'the ' + label + ' bonus matches the server (' + g[v] + ')', { page: g[v], server: usd(cfg[v + 'Usd']) });
+  }
   {
-    const expect = (+cfg.welcomeAmt || 0) + (cfg.moonEnabled === false ? 0 : (+cfg.moonUsd || 0)) + (cfg.fomoEnabled === false ? 0 : (+cfg.fomoUsd || 0));
+    const expect = SIGN.reduce((s, [v]) => s + (cfg[v + 'Enabled'] === false ? 0 : (+cfg[v + 'Usd'] || 0)), +cfg.welcomeAmt || 0);
     ok(g.once === usd(expect), 'the one-off total is the sum of its parts (' + g.once + ')', { page: g.once, sum: usd(expect) });
   }
 
   // THE BIGGEST REWARDS ON THE SITE WERE INVISIBLE TO A GUEST: the Moon and Fomo cards are members-only, so
   // before this block a signed-out reader could not learn that $1.00 was on offer at all.
-  ok(!g.moonCard && !g.fomoCard, 'the Moon and Fomo cards are still members-only');
+  ok(!g.moonCard && !g.mexcCard && !g.bingxCard, 'every sign-up card is still members-only');
+  // and a RETIRED venue has no card at all - `!g.fomoCard` was trivially true once the card was deleted,
+  // i.e. a check that could no longer fail (2026-10-21)
+  ok(g.fomoCardExists === (cfg.fomoEnabled !== false), 'the Fomo card exists only while the Fomo bonus is open (open=' + (cfg.fomoEnabled !== false) + ', card=' + g.fomoCardExists + ')');
   ok(/\$1\.00/.test(g.foot + ' ' + (g.amts.join(' ')) + ' ' + (g.once || '')) || g.moon === usd(cfg.moonUsd),
     'but a guest can read the $1.00 sign-up bonuses anyway', { moon: g.moon, fomo: g.fomo });
 
