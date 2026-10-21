@@ -2018,6 +2018,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           else if (d.error === 'too_many') setMsg(__esT_mpauth("tooManyCodesToday",'Too many codes today - try again tomorrow.'), 'err');
           else if (d.error === 'email_not_configured') setMsg(__esT_mpauth("signInIsNot",'Sign-in is not available right now.'), 'err');
           else if (d.error === 'bad_email') setMsg(__esT_mpauth("enterAValidEmail",'Enter a valid email.'), 'err');
+          else if (d.error === 'no_account') setMsg(__esT_mpauth("noAccountForThisEmail",'There is no account for this email address.'), 'err');
           else setMsg(__esT_mpauth("couldNotSendThe2",'Could not send the code. Try again.'), 'err');
         }).catch(function () { sb.disabled = false; setMsg(__esT_mpauth("networkErrorTryAgain3",'Network error - try again.'), 'err'); });
     }
@@ -2061,6 +2062,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           else if (d.error === 'bad_code') setMsg(__esT_mpauth("wrongCode",'Wrong code') + (d.left != null ? ' - ' + d.left + __esT_mpauth("triesLeft",' tries left') : '') + '.', 'err');
           else if (d.error === 'expired' || d.error === 'no_code') setMsg(__esT_mpauth("codeExpiredRequestA",'Code expired - request a new one.'), 'err');
           else if (d.error === 'too_many_attempts') setMsg(__esT_mpauth("tooManyTriesRequest",'Too many tries - request a new code.'), 'err');
+          // a banned account is answered exactly as a missing one, and /otp already refuses to send it a code at all -
+          // this branch only catches a code that was issued BEFORE the ban landed, so the two steps cannot disagree
+          else if (d.error === 'banned') setMsg(__esT_mpauth("noAccountForThisEmail",'There is no account for this email address.'), 'err');
           else setMsg(__esT_mpauth("couldNotVerifyTry",'Could not verify. Try again.'), 'err');
         }).catch(function () { vb.disabled = false; setMsg(__esT_mpauth("networkErrorTryAgain3",'Network error - try again.'), 'err'); });
     }
