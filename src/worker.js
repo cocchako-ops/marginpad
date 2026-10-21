@@ -19242,7 +19242,7 @@ function renderOpen(){var el=document.getElementById('openTrades');if(!el)return
     +'</div>';
   }).join('')+'</div>';}
 function cmsg(t,k){var m=document.getElementById('cmsg');m.textContent=t;m.className='msg '+(k||'');}
-function ctrl(action,extra,done){var body=Object.assign({email:email,id:id,action:action},extra||{});cmsg('Working…','');fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(d.ok){cmsg('Done.','ok');if(done)done();else load();}else{cmsg('Error: '+(d.error||'failed'),'err');}}).catch(function(){cmsg('Network error','err');});}
+function ctrl(action,extra,done){var _u=(DATA&&DATA.user)||{};var body=Object.assign({email:_u.email||email,id:_u.id||id,username:_u.username||uname0,action:action},extra||{});cmsg('Working…','');fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(d.ok){cmsg('Done.','ok');if(done)done();else load();}else{cmsg('Error: '+(d.error||'failed'),'err');}}).catch(function(){cmsg('Network error','err');});}
 function badge(cls,txt){return '<span class="badge '+cls+'">'+txt+'</span>';}
 function render(){if(!DATA||!DATA.exists){document.getElementById('title').textContent='No such user.';document.getElementById('uun').textContent='Not found';return;}var u=DATA.user;
   var st=u.status||'active';var name=u.username||u.email.split('@')[0];
@@ -31267,8 +31267,20 @@ export class UserStore {
       return this.j({ ok: true, bio, avatar, coins });
     }
     if (path === '/control') { // admin moderation actions
-      const email = String(b.email || '').toLowerCase(), id0 = String(b.id || '');
-      const u = email ? this.rows('SELECT * FROM users WHERE email=?', email)[0] : (id0 ? this.rows('SELECT * FROM users WHERE id=?', id0)[0] : null);
+      /* EVERY MODERATION BUTTON ON THE FULL PROFILE WAS DEAD FOR FOUR DAYS (2026-10-22, owner: "kad pokusavam da
+         banujem preko mp-ops, izadje mi error no_user"). On 2026-10-18 every @user link in mp-ops moved to
+         `?username=`; the page reads that to LOAD the profile, but `ctrl()` only ever posted the URL's `email` and
+         `id`, which are both empty on a username link - so ban / suspend / mute / role / faucet all answered
+         `no_user` while the page itself rendered perfectly. The client now sends the loaded record's own id, and
+         this lookup TRIES EVERY KEY IT WAS GIVEN instead of committing to the first one: the old form picked the
+         email branch and never fell back, so a stale or renamed address refused an action whose `id` was right
+         there in the same body. Username is accepted for the same reason - a caller should be able to name the
+         person however it knows them. */
+      const email = String(b.email || '').toLowerCase(), id0 = String(b.id || ''), un0 = String(b.username || '');
+      let u = null;
+      if (!u && id0) u = this.rows('SELECT * FROM users WHERE id=?', id0)[0] || null;
+      if (!u && email) u = this.rows('SELECT * FROM users WHERE email=?', email)[0] || null;
+      if (!u && un0) u = this.rows('SELECT * FROM users WHERE lower(username)=lower(?)', un0)[0] || null;
       if (!u) return this.j({ error: 'no_user' });
       const act = String(b.action || '');
       // collect this user's session tokens BEFORE any delete - the worker deletes their KV read-through entries so a
