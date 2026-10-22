@@ -179,6 +179,14 @@ const roomHist = async () => (await get('/chat/admin/history')).messages || [];
       await sleep(2600);
       await page.evaluate(() => { const f = document.getElementById('chatFab'); if (f) f.click(); });
       await sleep(3000);
+      /* THIS SUITE IS ABOUT THE ALL ROOM - forge() posts into room=global - and a member minted seconds ago is
+         by definition under a week old, so since the Welcome room shipped (2026-10-22) they open THERE. It kept
+         passing only because the room pick was silently failing: defaultRoom lives in the deferred mp-auth and
+         the decision marked itself done whether or not that had parsed. Fixing that made this suite's unstated
+         assumption visible. Switch to All on purpose rather than relying on where a new member lands. */
+      await page.evaluate(() => { const b = [...document.querySelectorAll('.ct-roomitem')].find(x => x.getAttribute('data-room') === 'global'); if (b) b.click(); });
+      await page.waitForFunction("(document.querySelector('.ct-roomcur')||{}).textContent==='All'", { timeout: 20000 }).catch(() => {});
+      await sleep(1500);
       return { ctx, page, errs };
     }
     const panel = (page) => page.evaluate(() => {
