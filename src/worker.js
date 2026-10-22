@@ -15340,17 +15340,41 @@ async function mexcAffLookup(env, uid) {
    typed their MarginPad username into the box - stays pending for a human. It pays through the ordinary review
    route, so the XP, the ledger row and the member's notification are identical to a hand-approval: there is no
    second way to pay a sign-up bonus, which is what keeps the books honest. */
-function signGateReady(env, venue) {   // the ONE reading of "can this venue be verified without a human"
-  if (venue === 'mexc') return !!(env.MEXC_API_KEY && env.MEXC_API_SECRET);
-  if (venue === 'bitget') return !!(env.BITGET_API_KEY && env.BITGET_API_SECRET && env.BITGET_API_PASSPHRASE);
-  return false;                        // BingX and Moon are checked by hand - there is no API to ask yet
+/* BITGET'S AFFILIATE API IS REAL AND THIS ACCOUNT CANNOT USE IT - MEASURED 2026-10-22, not assumed, and both
+   obstacles are independent:
+     1. api.bitget.com answers Cloudflare's egress with HTTP 403 {"cloudflare":"block"} - the same ban this
+        codebase already routes around for Bitget TICKERS via the VPS collector.
+     2. From an unblocked IP the SAME signed request answers 400 code 70102 "Broker identity authentication
+        failed" on every /api/v2/broker/* endpoint - customer-list, agent-commission, customer-trade-volume.
+   The second one is what settles it: the credentials are provably good (a spot endpoint answers a BUSINESS
+   error about Unified Account mode, not an auth error), so a collector proxy would carry a perfectly signed
+   request to an endpoint that refuses the ACCOUNT. Those endpoints need Bitget's Agent/Broker programme, which
+   is applied for through their BD team - not something a key can grant itself.
+   So Bitget sign-ups are checked by hand, exactly like BingX, and the key sits stored and ready. The day Bitget
+   grants agent access, flip this to true AND route bitgetSigned through the collector (obstacle 1 is still
+   there). It is one constant rather than a KV switch deliberately: turning it on also needs that routing, so it
+   is a deploy either way, and a flag that lies about what is automatic is how a cron ends up paging for ever. */
+const BITGET_AFFILIATE_OK = false;
+/* The ONE reading of "can this venue be verified without a human", AND WHY NOT. The reason matters because the
+   three answers are different problems: a key nobody has set, a key the account is not allowed to use, and a
+   venue with no API at all. Answering "no_key" for all three is how an owner opens a desk with three secrets
+   stored and concludes the thing is broken. */
+function signGateWhy(env, venue) {
+  if (venue === 'mexc') return (env.MEXC_API_KEY && env.MEXC_API_SECRET) ? '' : 'no_key';
+  if (venue === 'bitget') {
+    if (!BITGET_AFFILIATE_OK) return 'no_broker_access';
+    return (env.BITGET_API_KEY && env.BITGET_API_SECRET && env.BITGET_API_PASSPHRASE) ? '' : 'no_key';
+  }
+  return 'no_api';                     // BingX and Moon are checked by hand - there is nothing to ask yet
 }
+function signGateReady(env, venue) { return !signGateWhy(env, venue); }
 async function signVerifySweep(env, venue, opts) {
   const v = String(venue || '').toLowerCase(), label = (SIGN_VENUES[v] && SIGN_VENUES[v].label) || v.toUpperCase();
   const apply = !!(opts && opts.apply), cap = Math.min(40, Math.max(1, (opts && +opts.limit) || 25));
   const payCap = Math.max(1, (opts && +opts.max) || AUTO_APPROVE_MAX);
   const out = { venue: v, checked: 0, approved: 0, held: 0, apply, rows: [] };
-  if (!signGateReady(env, v)) { out.error = 'no_key'; return out; }
+  const whyG = signGateWhy(env, v);
+  if (whyG) { out.error = whyG; return out; }   // the REASON, not a blanket "no_key" (see signGateWhy)
   let pending = [];
   try {
     const lr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/list'), new Request('https://marginpad.io/api/reward/' + v + 'sign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
@@ -15475,7 +15499,9 @@ async function bitgetSigned(env, method, pathname, payload) {
     /* Bitget's success code is the string '00000'. Anything else is a real answer about a real problem, so the
        code and the message are CARRIED - the 2026-10-07 ai_error lesson and the 2026-10-19 Bybit one, both of
        which were a thrown-away body costing a day. */
-    if (!r.ok || String(j.code) !== '00000') return { ok: false, why: r.status === 429 ? 'rate_limited' : 'refused', code: String(j.code || ''), msg: String(j.msg || ''), status: r.status, body: txt.slice(0, 300) };
+    /* 70102 "Broker identity authentication failed" is NOT a key fault - it is the ACCOUNT lacking Bitget's
+       agent/broker programme, and it reads as a parameter error unless it is named. Measured 2026-10-22. */
+    if (!r.ok || String(j.code) !== '00000') return { ok: false, why: String(j.code) === '70102' ? 'no_broker_access' : (r.status === 429 ? 'rate_limited' : 'refused'), code: String(j.code || ''), msg: String(j.msg || ''), status: r.status, body: txt.slice(0, 300) };
     return { ok: true, data: j.data };
   } catch (e) { return { ok: false, why: 'fetch_failed', body: String((e && e.message) || e).slice(0, 160) }; }
 }
@@ -15514,6 +15540,7 @@ async function bitgetAffAll(env, cap) {
    an account through our link and Bitget's own book now holds them. The set is kept in KV so 'new' means new,
    and the FIRST run is silent - it would otherwise announce the entire back catalogue as if it had just happened. */
 async function bitgetRefSync(env) {
+  if (!BITGET_AFFILIATE_OK) return { skipped: 'no_broker_access' };   // the customer list is what refuses - see the note above
   if (!env.STATS || !env.BITGET_API_KEY) return { skipped: 'no_key' };
   const r = await bitgetAffAll(env, 6);
   if (r.error) return { error: r.error, detail: (r.msg || r.body || '').slice(0, 90) };
@@ -15537,6 +15564,10 @@ async function bitgetRefSync(env) {
 /* A CREDENTIAL THAT DIES IN SILENCE HAS COST THIS CODEBASE THREE OUTAGES (Coinglass, Bybit, MEXC), so the watch
    ships with the feature rather than after the first one. A rate limit or a network blip is NOT a dead key. */
 async function checkBitgetKey(env) {
+  /* A WATCHDOG THAT CAN NEVER BE SATISFIED IS NOISE, NOT A GUARD. While the account has no agent access the
+     probe would fail on every pass and page every six hours about a key that is demonstrably fine - which is
+     how an owner learns to ignore Telegram. It watches once there is something to watch. */
+  if (!BITGET_AFFILIATE_OK) return { skipped: 'no_broker_access' };
   if (!env.BITGET_API_KEY || !env.BITGET_API_SECRET || !env.BITGET_API_PASSPHRASE) return { skipped: 'no_key' };
   const r = await bitgetSigned(env, 'POST', '/api/v2/broker/customer-list', { pageSize: '1' });
   if (r.ok) { try { await env.STATS.delete('bitgetkey:lasterr'); } catch (e) {} return { ok: true }; }
@@ -21950,7 +21981,11 @@ export default {
       const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max, by: 'owner' });
       let lastB = null; try { lastB = JSON.parse((await env.STATS.get('bitgetverify:last')) || 'null'); } catch (e) {}
       let keyErrB = null; try { keyErrB = JSON.parse((await env.STATS.get('bitgetkey:lasterr')) || 'null'); } catch (e) {}
-      return J({ ...resB, lastRun: lastB, keyLastError: keyErrB, note: resB.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
+      /* Say the state out loud. Opening a desk that answers "no_key" when three secrets are set is how an owner
+         concludes the thing is broken; this one is not broken, it is not permitted. */
+      const stateB = BITGET_AFFILIATE_OK ? null
+        : 'Bitget sign-ups are checked BY HAND. Measured 2026-10-22: api.bitget.com answers Cloudflare 403 {"cloudflare":"block"}, and from an unblocked IP every /api/v2/broker/* endpoint answers 70102 "Broker identity authentication failed" - this account is not in Bitget’s agent/broker programme, which is applied for through their BD team. The key, secret and passphrase are stored and are provably valid. When agent access is granted: set BITGET_AFFILIATE_OK and route bitgetSigned through the collector (the Cloudflare block is a separate obstacle).';
+      return J({ ...resB, automatic: BITGET_AFFILIATE_OK, state: stateB, lastRun: lastB, keyLastError: keyErrB, note: resB.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
     }
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)

@@ -58,10 +58,28 @@ function sourceGuards() {
   ok(/const AUTO_APPROVE_MAX = \d+;/.test(src), 'the ceiling is a named constant, not a literal in the loop');
   ok(src.indexOf("[autoApproveSweep, 'autoapprove']") >= 0, 'it is wired into the affiliate cron pass');
   // a venue with no API must not be claimed as automatic - BingX is waiting for theirs
-  const gateAt = src.indexOf('function signGateReady');
-  const gateSrc = src.slice(gateAt, gateAt + 600);
-  ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("venue === 'bitget'") >= 0 && gateSrc.indexOf("'bingx'") < 0,
-    'MEXC and Bitget are verifiable automatically, BingX is not (it has no API yet)');
+  // the venue logic lives in signGateWhy; signGateReady is its one-line negation (it answers WHY not, because
+  // "no key set", "key the account may not use" and "no API at all" are three different problems)
+  const gateAt = src.indexOf('function signGateWhy');
+  const gateSrc = src.slice(gateAt, gateAt + 900);
+  ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("'bingx'") < 0,
+    'MEXC is verifiable automatically, BingX is not (it has no API yet)');
+  ok(/function signGateReady\(env, venue\) \{ return !signGateWhy\(env, venue\); \}/.test(src),
+    'and there is one reading of it, not two');
+  /* BITGET IS OFF ON PURPOSE AND THE REASON IS MEASURED (2026-10-22): api.bitget.com answers Cloudflare's egress
+     with 403, and from an unblocked IP every /api/v2/broker/* endpoint answers 70102 "Broker identity
+     authentication failed" - the account is not in their agent programme. The credentials are valid and stored.
+     This check exists so nobody turns the flag on without also routing through the collector; a venue whose
+     automation is claimed but refused pages the owner every six hours for ever. */
+  ok(/const BITGET_AFFILIATE_OK = (true|false);/.test(src), 'Bitget automation is one named constant, not a scattered condition');
+  const bOn = /const BITGET_AFFILIATE_OK = true;/.test(src);
+  ok(gateSrc.indexOf('BITGET_AFFILIATE_OK') >= 0, 'and the gate reads it rather than assuming a key is enough');
+  ok(!bOn || src.indexOf('colBase(env)') >= 0, 'if Bitget automation is ON, the Cloudflare block must be routed around');
+  for (const fn of ['checkBitgetKey', 'bitgetRefSync']) {
+    const at = src.indexOf('async function ' + fn);
+    ok(at > 0 && src.slice(at, at + 400).indexOf('BITGET_AFFILIATE_OK') >= 0,
+      fn + ' does not run while the account has no agent access (a watchdog that can never pass is noise)');
+  }
 
   /* THE WITHDRAWAL QUEUE MUST KNOW EVERY PAYOUT VENUE (2026-10-22, owner: "da znam na koju menjacnicu
      isplacujem"). It derived the venue from a hand-written prefix ladder that knew moon: and mexc:, so the
