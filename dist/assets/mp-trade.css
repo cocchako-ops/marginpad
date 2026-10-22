@@ -401,3 +401,6 @@ undefined
 
 /* STALE PRICE (2026-10-22), mirror of home.css */
 .pp-live.stale{color:#f0b35a !important}
+
+/* KEYBOARD ON iOS (2026-10-22): the documented WebKit remedy for a field that focuses and raises no keyboard - see build/add-keyboard-diag2.js */
+#chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}

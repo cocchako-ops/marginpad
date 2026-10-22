@@ -3752,3 +3752,6 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 /* STALE PRICE (2026-10-22): a price older than 30 s is still shown and said to be old - amber, never hidden */
 .ptl-live.stale b,.pp-live.stale{color:#f0b35a !important}
 .ptl-old{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#f0b35a;margin-left:4px}
+
+/* KEYBOARD ON iOS (2026-10-22): the documented WebKit remedy for a field that focuses and raises no keyboard - see build/add-keyboard-diag2.js */
+#chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}

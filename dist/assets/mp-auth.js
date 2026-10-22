@@ -1013,6 +1013,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.ct-newp.on{display:flex}'
     + '.ct-newp svg{width:12px;height:12px}'
     + '.mpa-dbub{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}';
+  css += '#chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}'; // KEYBOARD ON iOS (2026-10-22) - see build/add-keyboard-diag2.js
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var modal = document.createElement('div'); modal.className = 'mpa-modal'; modal.hidden = true;
@@ -4201,40 +4202,52 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   } catch (e) {}
 })();
 
-/* KEYBOARD DIAGNOSTIC (2026-10-22) - see build/add-keyboard-diag.js. When a tap on the chat or DM composer does not end with the
-   field focused and the keyboard open, ONE line with everything that decides it goes out on the crash beacon,
-   so the next fix is a measurement from the owner's own phone rather than a third guess. Silent wherever
-   things work, silent off iOS when the field focused (headless Chrome never has a keyboard, and the E2E taps
-   this field), at most two rows a page. */
+/* KEYBOARD DIAGNOSTIC v2 (2026-10-22) - see build/add-keyboard-diag2.js. The first reading proved the field is under the
+   finger, focused, unblocked, and keyboard-less. v2 answers the question that leaves open: WHO focused it. A focus() from
+   script gives iOS the caret and no keyboard, so every programmatic focus on a composer is recorded with its frame. */
 (function () {
-  if (window.__mpKbDiag) return; window.__mpKbDiag = 1;
+  if (window.__mpKbDiag) return; window.__mpKbDiag = 2;
   var SEL = '#chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea';
   function isComposer(t) { try { return !!(t && t.closest && t.closest(SEL)); } catch (e) { return false; } }
   function nm(el) { if (!el) return "none"; var c = (el.className && typeof el.className === "string") ? el.className.split(/\s+/)[0] : ""; return (el.tagName || "?").toLowerCase() + (el.id ? "#" + el.id : "") + (c ? "." + c : ""); }
-  var EV = ['touchstart', 'touchmove', 'touchend', 'pointerdown', 'pointerup', 'mousedown', 'click'], pd = {}, sent = 0, focusAt = 0, blurAt = 0;
-  // bubble phase on document runs LAST, so defaultPrevented here reflects every other handler on the page
-  EV.forEach(function (n) { document.addEventListener(n, function (e) { if (!isComposer(e.target)) return; if (n === 'touchstart') pd = {}; pd[n] = ((pd[n] || '') + (e.defaultPrevented ? '1' : '0')).slice(0, 3); }, false); });
+  // every programmatic focus() on a composer, with the frame that called it
+  var pfAt = 0, pfFrame = "";
+  try {
+    [HTMLInputElement, HTMLTextAreaElement].forEach(function (C) {
+      var orig = C.prototype.focus;
+      C.prototype.focus = function () {
+        if (isComposer(this)) { pfAt = Date.now(); try { var st = String(new Error().stack || "").split("\n").filter(function (l) { return /\/assets\/|\.html/.test(l); })[1] || ""; pfFrame = (st.match(/([a-z0-9-]+\.(?:js|html))[^:]*:(\d+)/i) || []).slice(1, 3).join(":"); } catch (e) { pfFrame = "?"; } }
+        return orig.apply(this, arguments);
+      };
+    });
+  } catch (e) {}
+  var EV = ['pointerdown', 'touchstart', 'touchmove', 'touchend', 'pointerup', 'mousedown', 'click'], pd = {}, sent = 0, focusAt = 0, blurAt = 0, tsAt = 0, trusted = '';
+  // bubble phase on document runs LAST, so defaultPrevented here reflects every other handler; pointerdown is the FIRST
+  // event of a tap on iOS, so it is where the record resets (v1 reset on touchstart and wiped it)
+  EV.forEach(function (n) { document.addEventListener(n, function (e) { if (!isComposer(e.target)) return; if (n === 'pointerdown') { pd = {}; tsAt = Date.now(); pfAt = 0; pfFrame = ''; } if (n === 'touchstart' && !tsAt) { pd = {}; tsAt = Date.now(); } pd[n] = ((pd[n] || '') + (e.defaultPrevented ? '1' : '0')).slice(0, 3); if (n === 'touchend') trusted = e.isTrusted ? '1' : '0'; }, false); });
   document.addEventListener('focusin', function (e) { if (isComposer(e.target)) focusAt = Date.now(); }, true);
   document.addEventListener('focusout', function (e) { if (isComposer(e.target)) blurAt = Date.now(); }, true);
   var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
   document.addEventListener('touchend', function (e) {
-    var t = e.target; if (!isComposer(t) || sent >= 2) return;
+    var t = e.target; if (!isComposer(t) || sent >= 3) return;
     var x = 0, y = 0; try { var c = e.changedTouches[0]; x = c.clientX; y = c.clientY; } catch (err) {}
-    var vv0 = (window.visualViewport && window.visualViewport.height) || window.innerHeight, t0 = Date.now();
+    var vv0 = (window.visualViewport && window.visualViewport.height) || window.innerHeight, t0 = Date.now(), wasFocused = (document.activeElement === t);
     setTimeout(function () {
       var ae = document.activeElement, okf = (ae === t);
       var vv1 = (window.visualViewport && window.visualViewport.height) || window.innerHeight, kb = vv1 < vv0 - 80;
-      if (okf && (kb || !IOS)) return;                       // it worked - say nothing
+      if (okf && (kb || !IOS)) return;
       var efp = null; try { efp = document.elementFromPoint(x, y); } catch (err) {}
       var sa = !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
       var ios = (navigator.userAgent.match(/OS (\d+_\d+)/) || [])[1] || '';
-      var lbl = 'kbfail sa:' + (sa ? 1 : 0) + ' f:' + (okf ? 1 : 0) + ' kb:' + (kb ? 1 : 0) + ' efp:' + nm(efp) + ' ae:' + nm(ae)
-        + ' p:' + EV.map(function (n) { return pd[n] || '-'; }).join('/') + ' fb:' + (focusAt >= t0 ? 1 : 0) + ((blurAt > focusAt && blurAt >= t0) ? 'b' : '')
-        + ' vv:' + Math.round(vv0) + '/' + Math.round(vv1) + ' ro:' + (t.readOnly ? 1 : 0) + (t.disabled ? 1 : 0) + ' ios:' + ios;
-      lbl = lbl.replace(/[^a-zA-Z0-9 #:._/-]/g, ' ').replace(/\s+/g, ' ').slice(0, 110);
+      var lbl = 'kbfail2 sa:' + (sa ? 1 : 0) + ' f:' + (okf ? 1 : 0) + ' kb:' + (kb ? 1 : 0) + ' pre:' + (wasFocused ? 1 : 0)
+        + ' pf:' + (pfAt && pfAt >= tsAt ? (pfAt - t0) + (pfFrame ? '@' + pfFrame : '') : 0)
+        + ' fb:' + (focusAt >= t0 ? 1 : 0) + ((blurAt > focusAt && blurAt >= t0) ? 'b' : '')
+        + ' p:' + EV.map(function (n) { return pd[n] || '-'; }).join('/') + ' tr:' + trusted + ' dur:' + (tsAt ? (t0 - tsAt) : '-')
+        + ' ios:' + ios + ' vv:' + Math.round(vv0) + '/' + Math.round(vv1) + ' hf:' + (document.hasFocus() ? 1 : 0) + (efp === t ? '' : ' efp:' + nm(efp)) + (okf ? '' : ' ae:' + nm(ae)); // the common case names only what is NOT the field - the line is capped at 110 and ios fell off the end
+      lbl = lbl.replace(/[^a-zA-Z0-9 #:._/@-]/g, ' ').replace(/\s+/g, ' ').slice(0, 110);
       sent++;
       try { var u = '/api/track?t=jserr&e=' + encodeURIComponent(lbl) + '&p=' + encodeURIComponent(location.pathname); if (navigator.sendBeacon) navigator.sendBeacon(u); else (new Image()).src = u; } catch (err) {}
-      try { if (window.mpToast) window.mpToast({ msg: 'Keyboard check recorded: ' + (okf ? 'focused' : 'no focus') + (kb ? ', keyboard up' : ', no keyboard'), kind: 'info', ms: 5000, key: 'kbdiag' }); } catch (err) {}
+      try { if (window.mpToast) window.mpToast({ msg: 'Keyboard check 2 recorded: ' + (okf ? 'focused' : 'no focus') + (kb ? ', keyboard up' : ', no keyboard'), kind: 'info', ms: 5000, key: 'kbdiag' }); } catch (err) {}
     }, 600);
   }, false);
 })();
