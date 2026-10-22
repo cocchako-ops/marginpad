@@ -1135,13 +1135,13 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function renderDmInbox() {
     bodyEl.innerHTML = __esT_mpauth("messagesLoadingBackTo",'<h3 class="mpa-h">Messages</h3><div class="mpa-ib" id="mpaIb"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaIbBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaIbBack'); if (bk) bk.addEventListener('click', render);
-    fetch('/api/dm/inbox').then(function (r) { return r.json(); }).then(function (d) {
+    window.mpSWR('dm:inbox', '/api/dm/inbox', function (d) {
       var ib = bodyEl.querySelector('#mpaIb'); if (!ib) return;
       var th = (d && d.threads) || [];
       if (!th.length) { ib.innerHTML = __esT_mpauth("noMessagesYetOpen",'<div class="mpa-xp-empty">No messages yet. Open a trader’s profile and tap <b>Message</b> to start a chat - you can message people you follow (or who follow you).</div>'); return; }
       ib.innerHTML = th.map(function (t) { return '<button class="mpa-ib-r" type="button" data-dm="' + esc(t.name) + '"><span class="mpa-ib-av" style="background:' + (t.avatar ? 'transparent' : dmCol(t.name)) + '">' + window.mpAvatarOr(t.avatar, t.name) + '</span><span class="mpa-ib-b"><span class="mpa-ib-nm">' + dmLvl(t.level) + esc(t.name) + '</span><span class="mpa-ib-last">' + (t.fromMe ? 'You: ' : '') + esc(dmPreview(t.last)) + '</span></span><span class="mpa-ib-meta">' + xpAgo(t.ts) + (t.unread ? '<br><span class="mpa-ib-un">' + t.unread + '</span>' : '') + '</span></button>'; }).join('');
       Array.prototype.forEach.call(ib.querySelectorAll('[data-dm]'), function (b) { b.addEventListener('click', function () { renderDmThread(b.getAttribute('data-dm')); }); });
-    }).catch(function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = __esT_mpauth("couldNotLoadYour2",'<div class="mpa-xp-empty">Could not load your messages.</div>'); });
+    }, function () { var ib = bodyEl.querySelector('#mpaIb'); if (ib) ib.innerHTML = __esT_mpauth("couldNotLoadYour2",'<div class="mpa-xp-empty">Could not load your messages.</div>'); });
   }
   /* ── direct-message actions (2026-09-14) ───────────────────────────────────────────────────────────────────────
      The gesture and the sheet are the shared ones above; this is only what is specific to a DM: the sender may edit
@@ -1222,7 +1222,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () {}); }
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
-    fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
+    window.mpSWR('dm:t:' + name, '/api/dm/thread?with=' + encodeURIComponent(name), function (d) {
       if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? __esT_mpauth("userNotFound",'User not found.') : __esT_mpauth("couldNotLoadThis",'Could not load this chat.')) + '</div>'; return; }
       if (d.me) dmWho = d.me;
       if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) { nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); nm.setAttribute('data-lbu', d.other.name); }
@@ -1232,7 +1232,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!canDm && !(d.messages && d.messages.length)) { if (warn) warn.innerHTML = __esT_mpauth("youCanMessageThis",'<div class="mpa-dm-warn">You can message this trader once you follow them (or they follow you). Open their profile and tap Follow first.</div>'); if (inp) inp.disabled = true; if (send) send.disabled = true; }
       draw(d.messages || []);
       try { if (window.mpXpCheck) window.mpXpCheck(); } catch (e) {} // seen was marked → refresh the unread badge
-    }).catch(function () { scroll.innerHTML = __esT_mpauth("couldNotLoadThis2",'<div class="mpa-dm-empty">Could not load this chat.</div>'); });
+    }, function () { scroll.innerHTML = __esT_mpauth("couldNotLoadThis2",'<div class="mpa-dm-empty">Could not load this chat.</div>'); });
     function doSend() {
       var v = (inp.value || '').trim(); if (!v) return;
       send.disabled = true; var old = inp.value; inp.value = '';
@@ -1910,16 +1910,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function renderNotifs() {
     bodyEl.innerHTML = __esT_mpauth("notificationsLoadingBackTo",'<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>');
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
-    fetch('/api/auth/notifs').then(function (r) { return r.json(); }).then(function (d) {
+    window.mpSWR('notifs', '/api/auth/notifs', function (d, fresh) {
       var nf = bodyEl.querySelector('#mpaNf'); if (!nf) return;
       var list = (d && d.notifs) || [];
       if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">No notifications yet. Follows, messages, @mentions and duel results will show up here.</div>'); }
       else { nf.innerHTML = list.map(function (n) { var link = n.link || ''; return '<div class="mpa-nf-r' + (n.seen ? '' : ' unseen') + '"' + (link ? ' data-nflink="' + esc(link) + '" role="button"' : '') + '><span class="mpa-nf-ic">' + notifIcon(n.kind) + '</span><div class="mpa-nf-b">' + esc(n.body) + '<span class="mpa-nf-ago">' + xpAgo(n.ts) + '</span></div></div>'; }).join('');
         Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.charAt(0) === '/') { location.href = l; return; } /* any path just navigates - a link the handler does not recognise used to be a dead click */ if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
       }
-      // mark all read (clears the bell) once viewed
-      fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
-    }).catch(function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = __esT_mpauth("couldNotLoadNotifications",'<div class="mpa-xp-empty">Could not load notifications.</div>'); });
+      // mark all read (clears the bell) once viewed - on the FRESH pass only: clearing the bell on the
+      // strength of a cached list would hide a notification that arrived since it was written
+      if (fresh) fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
+    }, function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = __esT_mpauth("couldNotLoadNotifications",'<div class="mpa-xp-empty">Could not load notifications.</div>'); });
   }
   // Daily Brief teaser for the profile card: public market-only line, cached 5 min per browser so opening the card costs no request most of the time
   function briefTeaserLine(t) {
@@ -2030,7 +2031,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       }
       var dn = bodyEl.querySelector('#mpaDone'); if (dn) dn.addEventListener('click', close);
       bodyEl.querySelector('#mpaLogout').addEventListener('click', function () {
-        fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; mpMeSnap(null); reflect(); render(); });
+        fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; mpMeSnap(null); mpcClear(); reflect(); render(); });
       });
       var sp = bodyEl.querySelector('#mpaSup'); if (sp) sp.addEventListener('click', function () { renderSup(); });
       var xpB = bodyEl.querySelector('#mpaXp'); if (xpB) xpB.addEventListener('click', function () { renderXpHistory(); });
@@ -2119,6 +2120,30 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     bodyEl.querySelector('#mpaBack').addEventListener('click', render);
   }
 
+  /* STALE-WHILE-REVALIDATE FOR A PANEL (2026-10-22). Draw the last answer at once, then the fresh one.
+     KEYED PER ACCOUNT AND CLEARED ON SIGN-OUT: a shared device must never open somebody else's messages out
+     of a cache, which is the one way a cache like this could do harm - so it is closed by construction, the
+     same rule the frame-0 identity follows. Nothing is cached for a guest, and nothing that came back as an
+     error. `draw(d, fresh)` says which pass it is, for a side effect that must happen only once. */
+  function mpcKey(k) {
+    var me = (window.mpMe && window.mpMe.in && window.mpMe.user) || null;
+    var id = me && (me.id || me.uid || me.username);
+    return id ? ('mpc:' + id + ':' + k) : '';
+  }
+  function mpcClear() {
+    try { var rm = []; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('mpc:') === 0) rm.push(k); } rm.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+  }
+  window.mpSWR = function (key, url, draw, fail) {
+    var ck = mpcKey(key), had = false;
+    if (ck) { try { var c = JSON.parse(localStorage.getItem(ck) || 'null'); if (c && c.d) { had = true; draw(c.d, false); } } catch (e) {} }
+    return fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      var bad = !d || d.error;
+      if (ck && !bad) { try { var s = JSON.stringify({ t: Date.now(), d: d }); if (s.length < 200000) localStorage.setItem(ck, s); } catch (e) {} }
+      draw(d, true);
+      return d;
+    }).catch(function (e) { if (!had && fail) fail(e); });   // a cached panel never flashes an error over good content
+  };
+  window.mpCacheClear = mpcClear;
   function reflect() {
     var on = !!ME;
     Array.prototype.forEach.call(document.querySelectorAll('[data-auth-status]'), function (e) { e.textContent = BANNED ? authT('susp', 'Suspended') : (on ? (ME.username || ME.email.split('@')[0]) : authT('signin', __esT_mpauth("signIn",'Sign in'))); });
