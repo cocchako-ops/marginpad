@@ -3748,3 +3748,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
    the Send button. The palette steps aside while a sheet is up and comes back untouched when it closes - the
    reader keeps their tool and their shapes. */
 .mfc.mfc-sheeted .cwin-tools{display:none!important;}
+
+/* STALE PRICE (2026-10-22): a price older than 30 s is still shown and said to be old - amber, never hidden */
+.ptl-live.stale b,.pp-live.stale{color:#f0b35a !important}
+.ptl-old{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#f0b35a;margin-left:4px}

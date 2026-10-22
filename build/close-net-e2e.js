@@ -89,7 +89,10 @@ const journal = async () => {
         const o = document.querySelector('.mpcs.on'); if (!o) return { err: 'no sheet' };
         const txt = o.querySelector('.mpcs-pnl').innerText.replace(/\s+/g, ' ');
         const t = (JSON.parse(localStorage.getItem('mp_journal') || '[]') || []).filter(x => x.status !== 'win' && x.status !== 'loss')[0];
-        const live = (window.mpLivePrices[t.sym] || {}).p;
+        // the price the SHEET rendered with (its title prints it), not the map's price 900 ms later: at 100x a
+        // one-second BTC tick is a dollar, and the two were read a repaint apart (red twice on 2026-10-22, a race)
+        const tm = String(o.querySelector('.mpcs-t').textContent).match(/\$([\d,]+\.?\d*)/);
+        const live = tm ? parseFloat(tm[1].replace(/,/g, '')) : (window.mpLivePrices[t.sym] || {}).p;
         return { txt, live, qty: t.qty, entry: t.entry, feeRate: t.feeRate, fund: t.fund || 0, margin: t.margin, side: t.side };
       });
       {

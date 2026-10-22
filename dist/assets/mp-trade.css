@@ -398,3 +398,6 @@ undefined
 /* WHAT A CLOSE BOOKS, on the My Trades row (2026-09-24). The only coloured cell in the meta grid, because
    it is the number the trader is deciding on - everything else there is a fact about the position. */
 .pp-meta b.jg{color:#2ebd85;} .pp-meta b.jr{color:#ff5a4d;}
+
+/* STALE PRICE (2026-10-22), mirror of home.css */
+.pp-live.stale{color:#f0b35a !important}

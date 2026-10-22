@@ -6075,9 +6075,10 @@ async function fetchPriceFill(sym) {
   try {
     const ck = new Request('https://marginpad.io/__pxfill_' + s2);
     const hit = await caches.default.match(ck);
-    if (hit) { const j = await hit.json(); if (j && +j.price > 0) return j; }
-    const pd = await fetchPrice(s2);
-    if (pd && +pd.price > 0) { try { await caches.default.put(ck, new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=1' } })); } catch (e) {} }
+    if (hit) { const j = await hit.json(); if (j && +j.price > 0 && +j.ts > 0 && Date.now() - +j.ts < 2500) return j; } // a fill price older than its own horizon is refetched, whatever the cache says (2026-10-22)
+    const pd0 = await fetchPrice(s2);
+    const pd = pd0 && +pd0.price > 0 ? Object.assign({}, pd0, { ts: Date.now() }) : pd0;
+    if (pd && +pd.price > 0) { try { await caches.default.put(ck, new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=1', 'x-mp-cached': String(pd.ts) } })); } catch (e) {} }
     return pd;
   } catch (e) { return fetchPrice(sym); }
 }
@@ -6087,10 +6088,11 @@ async function fetchPriceCached(sym) {
   try {
     const ck = new Request('https://marginpad.io/__price_' + s2);
     const hit = await caches.default.match(ck);
-    if (hit) { const j2 = await hit.json(); if (j2 && +j2.price > 0) return j2; }
+    if (hit) { const j2 = await hit.json(); if (j2 && +j2.price > 0 && +j2.ts > 0 && Date.now() - +j2.ts < 8000) return j2; } // ts is checked, never the cache's own TTL - the edge once held this key for hours (2026-10-22)
   } catch (e) {}
-  const pd = await fetchPrice(s2);
-  if (pd && +pd.price > 0) { try { await caches.default.put(new Request('https://marginpad.io/__price_' + s2), new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=5' } })); } catch (e) {} }
+  const pd0 = await fetchPrice(s2);
+  const pd = pd0 && +pd0.price > 0 ? Object.assign({}, pd0, { ts: Date.now() }) : pd0;
+  if (pd && +pd.price > 0) { try { await caches.default.put(new Request('https://marginpad.io/__price_' + s2), new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=8', 'x-mp-cached': String(pd.ts) } })); } catch (e) {} }
   return pd;
 }
 async function fetchPrice(sym) {
@@ -8275,7 +8277,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3cec6edc" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=090d09a2" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -17291,7 +17293,7 @@ async function handleTrade(url, request, env, ctx) {
     if (!_spx) { const ms9 = marketSession(symC, pd); if (!ms9.open) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null, message: ms9.msg || 'Market closed' }, 409); }
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
     // e2 marks TEST traffic (hidden from the daily read) - an owner acting on a real member's account is not a test
-    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm, e2: !!adminUid && /^e2e/i.test(String(uid)) });
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, coid: (b.coid ? String(b.coid).slice(0, 64) : undefined), prices, via: 'site', promos: _prm, e2: !!adminUid && /^e2e/i.test(String(uid)) });
     if (_spx && r && !r.error) { try { await tgAdmin(env, '<b>Support close</b> ' + uid.slice(0, 8) + ' ' + symC + ' at ' + _spx + (b.note ? ' - ' + String(b.note).slice(0, 120) : ''), { kind: 'support-close', sev: 'info' }); } catch (e) {} }
     try { const xc = globalThis.__xpC; if (xc && tok) xc.delete(tok); } catch (e) {} // the 45s /xp cache would otherwise hide this close's XP and records from the very next poll
     if (r && r.error) return jt(r, 400);
@@ -21865,12 +21867,22 @@ export default {
     if (url.pathname === '/api/whale/profile') return handleWhaleProfile(url, env);
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      /* A PRICE SAYS HOW OLD IT IS (2026-10-22). The body carries `ts` (when the worker measured it) and `age`
+         (ms since, on the SERVER clock - a device clock that is minutes off must not make a fresh price look
+         stale), and the response is private/no-store: a zone Cache-TTL override was rewriting max-age=5 to
+         max-age=14400 on edge hits, i.e. telling a browser to keep a live price for four hours (measured), and
+         the 8 s guard below protects only requests that REACH the worker. The worker's own synthetic key is the
+         only cache this is allowed to live in, and it is keyed on ts, never on what the edge decided. */
       const ck = new Request('https://marginpad.io/__price_' + sym);
- try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) return hit; } } catch (e) {} // enforce freshness in the worker - a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
-      const p = await fetchPrice(sym);
-      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'cloudflare-cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
-      try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) - without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
-      return resp;
+      let pj = null, pts = 0, pst = 200;
+      try { const hit = await caches.default.match(ck); if (hit) { const hj = await hit.json(); const ca = +(hj && hj.ts) || +hit.headers.get('x-mp-cached') || 0; const okHit = hj && +hj.price > 0; if (ca && Date.now() - ca < (okHit ? 8000 : 30000)) { pj = hj; pts = ca; pst = okHit ? 200 : 404; } } } catch (e) {}
+      if (!pj) {
+        const p = await fetchPrice(sym); pts = Date.now(); pst = p ? 200 : 404;
+        pj = p ? Object.assign({}, p, { ts: pts }) : { error: 'not found', ts: pts };
+        try { await caches.default.put(ck, new Response(JSON.stringify(pj), { status: pst, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'max-age=8' : 'max-age=30', 'x-mp-cached': String(pts) } })); } catch (e) {} // the worker's own 8 s coalescer (30 s for a miss, so a delisted symbol does not re-run the five upstream legs on every poll)
+      }
+      const page = Math.max(0, Date.now() - pts);
+      return new Response(JSON.stringify(Object.assign({}, pj, { ts: pts, age: page })), { status: pst, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-cached': String(pts), 'x-mp-age': String(page), ...CORS } });
     }
     if (url.pathname === '/api/klines') return perfWrap(env, ctx, (SEC_TFS.indexOf(String(url.searchParams.get('interval') || '')) >= 0 ? 'klines-s' : 'klines'), 10, () => handleKlines(url, env, 'pub', ctx)); // seconds timeframes are their OWN perf group: they fan out to up to 6 upstream pages, so folding them into `klines` would raise that p95 and retire a working regression detector. klines-s is deliberately budget-free until n>=30 says where its p95 is (the price-age rule).
     if (url.pathname === '/api/openapi.json') return handleOpenApi();
@@ -30474,6 +30486,7 @@ export class UserStore {
         const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100, notional: Math.round(((+t.notional || 0) * (1 - pct)) * 100) / 100, fund: Math.round(((+t.fund || 0) * (1 - pct)) * 1e6) / 1e6 });
         part.sc = 1;
         this._syncJournal(uid, [rem, part], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
+        if (_ccoid) { try { sql.exec('INSERT OR IGNORE INTO botidem(uid,coid,tid,ts) VALUES(?,?,?,?)', uid, 'c:' + _ccoid, String(part.id), Date.now()); } catch (e) {} } // the full branch has recorded its coid since 2.3; without this a retried PARTIAL closed a second slice (2026-10-22)
         return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live), _auth: _ia || undefined });
       }
       cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
