@@ -8281,7 +8281,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=7a5f1f21" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=59410ebd" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -17217,9 +17217,32 @@ async function handleTshare(url, request, env, ctx) {
     ts: numOrNull(t.ts), closeTs: numOrNull(t.closeTs),
     by: uname || 'trader', at: Date.now()
   };
+  /* THE SPARKLINE IS BAKED IN AT SHARE TIME (2026-10-22, owner: a shared trade is a CARD in chat now, not a link).
+     A chat card wants ~40 closes around the trade; /api/klines answers 1,000 bars (~100 KB) and has no limit, so
+     every reader of a busy room fetching that per card would be absurd on a phone. One fetch here, once per share,
+     stored beside the snapshot: a candle that already closed never changes, and a share is immutable anyway. The
+     interval is the smallest one that fits the trade's own span into ~36 bars, with a little lead-in before the
+     entry so the line has somewhere to come from. Absent (an open trade, a failed fetch, an old share) the card
+     draws the entry-to-exit rail instead - never a blank. */
+  try {
+    if (snap.ts > 0 && env) {
+      const endTs = snap.closeTs > snap.ts ? snap.closeTs : Date.now();
+      const span = Math.max(60000, endTs - snap.ts);
+      const IVS = [1, 5, 15, 60, 240, 1440];
+      let ivMin = IVS[IVS.length - 1]; for (const m of IVS) { if (span / (m * 60000) <= 36) { ivMin = m; break; } }
+      const kr = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=' + encodeURIComponent(sym) + '&interval=' + ivMin + (snap.closeTs > snap.ts ? '&end=' + Math.round(endTs) : '')), env, undefined, ctx);
+      const bars = await kr.json();
+      if (Array.isArray(bars) && bars.length) {
+        const from = (snap.ts - span * 0.2) / 1000, to = endTs / 1000 + ivMin * 60;
+        let pts = bars.filter(b9 => +b9.time >= from && +b9.time <= to).map(b9 => +b9.close).filter(v => isFinite(v) && v > 0);
+        if (pts.length > 48) { const step = pts.length / 48; const o = []; for (let i = 0; i < 48; i++) o.push(pts[Math.floor(i * step)]); o.push(pts[pts.length - 1]); pts = o; }
+        if (pts.length >= 3) { snap.spark = pts.map(v => +v.toPrecision(6)); snap.sparkIv = ivMin; }
+      }
+    }
+  } catch (e) {}
   const id = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Date.now().toString(36) + Math.random().toString(36).slice(2))).slice(0, 10);
   try { await env.STATS.put('tshr:' + id, JSON.stringify(snap), { expirationTtl: 10368000 }); } catch (e) { return jt({ error: 'store_failed' }, 500); }
-  return jt({ ok: true, id });
+  return jt({ ok: true, id, spark: snap.spark ? snap.spark.length : 0 });
 }
 
 // ---------- Bot trading API - free paper-trading endpoints so people can TEST THEIR TRADING BOT for free ----------
@@ -18955,7 +18978,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd71bf2ec';
+const ASSET_V = '3b994699';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -19640,11 +19663,13 @@ async function handleAuth(url, request, env, ctx) {
     const r = await stub.fetch(new Request('https://do/username', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, username: String(b.username || '') }) }));
     const d = await r.json();
     if (!d.error) { await sessRevoke(env, tok); try { const up = evPush(env, request, 'username', String(d.username || b.username || '').slice(0, 24), '/', {}); if (ctx && ctx.waitUntil) ctx.waitUntil(up); } catch (e) {} } // the cached user object carries the OLD username → drop it so the next read reflects the change; ops feed sees the name chosen
- if (!d.error && d.username && env.CHAT) { try { // public welcome in the global chat, branded as MarginPad.
+ if (!d.error && d.username && env.CHAT) { try { // public welcome in the WELCOME room (room_WELCOME since 2026-10-22; it was the global room), branded as MarginPad.
  // Fired HERE and not at signup: before this moment the account has no username, and greeting the
  // email prefix would leak part of the user's email into a public room. Usernames are permanent
  // (DO enforces already_set), so this runs exactly once per account, with the name they chose.
- const wp9 = env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'Welcome @' + d.username + ' - say hi.' }) })).catch(() => {});
+ // The Welcome room is the newcomer's default room, so the line lands where they are, not in the
+ // trading-room stream where it was one more thing scrolling past.
+ const wp9 = env.CHAT.get(env.CHAT.idFromName('room_WELCOME')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: 'Welcome @' + d.username + ' - say hi.' }) })).catch(() => {});
  if (ctx && ctx.waitUntil) ctx.waitUntil(wp9); else await wp9;
  } catch (e) {} }
     return jr(d, d.error ? (d.error === 'taken' ? 409 : 400) : 200);
@@ -25972,7 +25997,9 @@ export default {
       // instances (BTC/ETH/...) are untouched by this test.
       {
         const rmI = chatInstOf(url), sidI = rmI.slice(5);
-        if (rmI !== 'global2' && rmI !== 'room_PREMIUM' && sidI.length >= 5) {
+        // room_WELCOME (2026-10-22) is the newcomers' room, open to everyone like the global one - it is seven
+        // characters, so without this line the squad test would refuse it as a squad nobody is in.
+        if (rmI !== 'global2' && rmI !== 'room_PREMIUM' && rmI !== 'room_WELCOME' && sidI.length >= 5) {
           if (!chatUid) return new Response('squad only', { status: 403 });
           let inSq = false; try { const rq = await usersDO(env, '/squad/ismember', { uid: chatUid, sid: sidI }); inSq = !!(rq && rq.ok); } catch (e) { inSq = false; }
           if (!inSq) return new Response('squad only', { status: 403 });

@@ -933,6 +933,39 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-rxb i{font-style:normal;font-size:10px;font-weight:700;opacity:.75}'
     + '.mpa-rxb.on{border-color:rgba(194,246,74,.65);background:rgba(194,246,74,.16)}'
     + '.mpa-ded{font-size:10px;opacity:.55;margin-left:5px}'
+    /* ── the shared-trade card and the newcomer's welcome (2026-10-22) - chat furniture, one copy, see the block ── */
+    + '.ct-tk{--tkc:#2ebd85;display:block;position:relative;margin:6px 0 3px;max-width:340px;border:1px solid #243041;border-left:3px solid var(--tkc);border-radius:12px;background:#0d1118;background:linear-gradient(135deg,color-mix(in srgb,var(--tkc) 13%,#0d1118) 0,#0d1118 46%);color:#e9e7df;font-family:inherit;font-weight:400;cursor:pointer;overflow:hidden;text-decoration:none;border-bottom-style:solid}'
+    + '.ct-tk.win{--tkc:#2ebd85}.ct-tk.loss{--tkc:#ff5a4d}.ct-tk.rekt{--tkc:#ff5a4d}.ct-tk.open{--tkc:#38bdf8}'
+    + '.ct-tk:hover{border-color:color-mix(in srgb,var(--tkc) 55%,#243041);border-left-color:var(--tkc)}'
+    + '.ct-tk-h{display:flex;align-items:center;gap:7px;padding:8px 10px 0 10px;font-size:11.5px;color:#9aa3ad;line-height:1.3}'
+    + '.ct-tk-h b{color:#e9e7df;font-weight:700}'
+    + '.ct-tk-who{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.ct-tk-tag{flex:none;font:800 9px/1 "Space Mono",monospace;letter-spacing:.09em;color:#0a0b0d;background:var(--tkc);border-radius:5px;padding:4px 6px 3px;text-transform:uppercase}'
+    + '.ct-tk.rekt .ct-tk-tag{background:#0a0b0d;color:#ff5a4d;border:1px solid #ff5a4d;padding:3px 6px 2px}'
+    + '.ct-tk-dur{flex:none;font-size:10.5px;color:#6b7686;font-family:"Space Mono",monospace}'
+    + '.ct-tk-b{display:flex;align-items:center;gap:10px;padding:8px 10px 9px}'
+    + '.ct-tk-coin{flex:none;width:34px;height:34px;border-radius:50%;background:#161c26;border:1px solid #2a3547;display:flex;align-items:center;justify-content:center;overflow:hidden;font:800 13px/1 "Space Mono",monospace;color:#9fb0c0}'
+    + '.ct-tk-coin img{width:22px;height:22px;border-radius:50%;display:block}'
+    + '.ct-tk-n{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}'
+    + '.ct-tk-roe{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:23px;line-height:1;letter-spacing:-.02em;color:var(--tkc);font-variant-numeric:tabular-nums}'
+    + '.ct-tk-pnl{font-size:12.5px;font-weight:700;color:#e9e7df;font-variant-numeric:tabular-nums;white-space:nowrap}'
+    + '.ct-tk-pnl i{font-style:normal;font-weight:500;color:#7f8893;font-size:11px}'
+    + '.ct-tk-sp{flex:none;width:112px;height:40px;display:block;overflow:visible}'
+    + '.ct-tk-f{position:relative;display:flex;align-items:center;gap:10px;padding:6px 10px;border-top:1px dashed #2c3849;font-size:10.5px;color:#7f8893;background:rgba(0,0,0,.18)}'
+    + '.ct-tk-f::before,.ct-tk-f::after{content:"";position:absolute;top:-6px;width:11px;height:11px;border-radius:50%;background:#0a0b0d;border:1px solid #243041}'
+    + '.ct-tk-f::before{left:-7px}.ct-tk-f::after{right:-7px}'
+    + '.ct-tk-f code{font-family:"Space Mono",monospace;color:#c8d0da;background:none;padding:0;font-size:10.5px}'
+    + '.ct-tk-f em{margin-left:auto;font-style:normal;color:var(--tkc);font-weight:700;letter-spacing:.02em;white-space:nowrap}'
+    + '@media(max-width:420px){.ct-tk{max-width:100%}.ct-tk-sp{width:88px}.ct-tk-roe{font-size:20px}}'
+    + '.ct-welc{display:block;margin:6px 0 3px;max-width:360px;border:1px solid #2a3b2a;border-radius:12px;padding:11px 13px 12px;background:linear-gradient(160deg,rgba(194,246,74,.11) 0,#0d1118 55%);color:#dbe4f5;font-size:12.5px;line-height:1.5}'
+    + '.ct-welc-h{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}'
+    + '.ct-welc-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:#f3f4f0;letter-spacing:-.01em}'
+    + '.ct-welc-eye{font:800 9px/1 "Space Mono",monospace;letter-spacing:.1em;color:#c2f64a}'
+    + '.ct-welc p{margin:5px 0}.ct-welc ol{margin:4px 0 6px;padding-left:18px}.ct-welc li{margin:4px 0}.ct-welc li b{color:#f3f4f0}'
+    + '.ct-welc a{color:#c2f64a;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(194,246,74,.45)}.ct-welc a:hover{border-bottom-color:#c2f64a}'
+    + '.ct-welc-x{display:inline-block;margin-top:6px;padding:7px 14px;border-radius:8px;border:1px solid #c2f64a;background:#c2f64a;color:#0a0b0d;font-family:inherit;font-weight:700;font-size:12px;line-height:1;cursor:pointer}'
+    + '.ct-welc-x:hover{background:#d4ff6a}'
+    + '.ct-ricwel{color:#c2f64a}'
     /* ── the composer autocomplete, the mention chip, the "you were named" row and the new-message pill ──
        All four are chat furniture, and they live HERE rather than in home.css + mp-trade.css for the reason the
        2026-09-05 note gives for frames and backgrounds: this is the one bundle on every page the chat is injected
@@ -3404,6 +3437,139 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
    window.mpLongPress(container, rowSelector, onPick)  - 480 ms hold, or right-click; cancels on a 10 px drag, and
      never fires on a link, a username or a button, because those already do something.
    window.mpMsgSheet({row, reactions, canEdit, canDelete, onReact, onEdit, onDelete, onCopy, text})               */
+/* ── A SHARED TRADE IS A CARD, AND A NEWCOMER GETS A WORD (2026-10-22, owner) ───────────────────────────────────
+   window.mpTradeCard.hydrate(root)  - every `trade:<id>` link inside root becomes a ticket card: the result, the
+     coin, ROE as the hero figure, the dollar P&L on the margin it was made on, how long it ran, a sparkline of the
+     price over the trade (baked into the share at share time - see handleTshare) or the entry-to-exit rail when
+     there is none, and the entry/exit prices on a tear-off foot. The card KEEPS `.ct-trade[data-trade]`, so the chat's
+     one delegated click still opens the full ticket and the long-press still reaches it. The wire format is
+     untouched: the message is still the text `trade:<id>`, so history, edits and old bundles all keep working.
+   window.mpWelcomeCard  - the personal welcome a NEW member sees once, in the Welcome room, as a local row that is
+     never a message (nobody else can see it, it cannot be reacted to, it is not in any history). `defaultRoom(me)`
+     is where the chat opens: the Welcome room for an account under a week old with no remembered choice.
+   Both live HERE, the every-page bundle, because the chat exists twice (home.js + mp-trade.js) and a third copy of
+   either would be the same drift this file has already paid for three times. */
+(function () {
+  if (window.mpTradeCard) return;
+  var memo = {}, seq = 0;
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
+  function fpx(v) { v = +v; if (!isFinite(v)) return '-'; return v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 2 : v >= 1 ? 4 : 6 }); }
+  function fusd(v) { v = +v || 0; var a = Math.abs(v); return (v < 0 ? '-' : '+') + '$' + a.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function froe(v) { v = +v || 0; var a = Math.abs(v); return (v < 0 ? '-' : '+') + a.toLocaleString('en-US', { maximumFractionDigits: a >= 100 ? 0 : a >= 10 ? 1 : 2 }) + '%'; }
+  function fdur(ms) { ms = +ms || 0; if (ms < 60000) return '<1m'; var m = Math.floor(ms / 60000), h = Math.floor(m / 60), d = Math.floor(h / 24); if (d) return d + 'd ' + (h % 24) + 'h'; if (h) return h + 'h ' + (m % 60) + 'm'; return m + 'm'; }
+  function resOf(t) {
+    if (t.status === 'open') return { k: 'open', tag: 'OPEN' };
+    if (t.liquidated) return { k: 'rekt', tag: 'REKT' };
+    if (t.status === 'win') return { k: 'win', tag: (+t.roe >= 100) ? 'BIG WIN' : 'WIN' };
+    return { k: 'loss', tag: 'LOSS' };
+  }
+  /* the price over the trade: a line with a soft fill under it, the entry marked a sixth of the way in (the share
+     keeps a 20% lead-in before the entry) and the exit at the end. Gradient ids are unique per card - two cards
+     sharing one id both paint whichever was parsed first (the medal lesson). */
+  function spark(t, k) {
+    var W = 128, H = 46, P = 3, n = seq++;
+    var pts = Array.isArray(t.spark) ? t.spark.map(Number).filter(function (v) { return isFinite(v) && v > 0; }) : [];
+    var col = k === 'win' ? '#2ebd85' : k === 'open' ? '#38bdf8' : '#ff5a4d';
+    if (pts.length < 3) { // the rail: entry to exit, the slope the trade's own
+      var e = +t.entry, x = +t.exit; if (!(e > 0) || !(x > 0)) return '';
+      var up = (t.side === 'short') ? x < e : x > e, y1 = up ? H - P - 6 : P + 6, y2 = up ? P + 6 : H - P - 6;
+      return '<svg class="ct-tk-sp" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><path d="M' + (P + 4) + ' ' + y1 + ' C ' + (W * .45) + ' ' + y1 + ', ' + (W * .55) + ' ' + y2 + ', ' + (W - P - 4) + ' ' + y2 + '" fill="none" stroke="' + col + '" stroke-width="1.8" stroke-dasharray="3 3" stroke-linecap="round"/><circle cx="' + (P + 4) + '" cy="' + y1 + '" r="2.6" fill="#0d1118" stroke="' + col + '" stroke-width="1.6"/><circle cx="' + (W - P - 4) + '" cy="' + y2 + '" r="2.8" fill="' + col + '"/></svg>';
+    }
+    var lo = Math.min.apply(null, pts), hi = Math.max.apply(null, pts), rng = (hi - lo) || (hi * 0.001) || 1;
+    var xs = function (i) { return P + (W - 2 * P) * i / (pts.length - 1); }, ys = function (v) { return P + (H - 2 * P) * (1 - (v - lo) / rng); };
+    var d = pts.map(function (v, i) { return (i ? 'L' : 'M') + xs(i).toFixed(1) + ' ' + ys(v).toFixed(1); }).join(' ');
+    var ei = Math.max(0, Math.round((pts.length - 1) / 6)), xi = pts.length - 1;
+    return '<svg class="ct-tk-sp" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><defs><linearGradient id="ctkg' + n + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".38"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>'
+      + '<path d="' + d + ' L' + xs(xi).toFixed(1) + ' ' + H + ' L' + xs(0).toFixed(1) + ' ' + H + ' Z" fill="url(#ctkg' + n + ')"/>'
+      + '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
+      + '<circle cx="' + xs(ei).toFixed(1) + '" cy="' + ys(pts[ei]).toFixed(1) + '" r="2.6" fill="#0d1118" stroke="' + col + '" stroke-width="1.6"/>'
+      + '<circle cx="' + xs(xi).toFixed(1) + '" cy="' + ys(pts[xi]).toFixed(1) + '" r="2.8" fill="' + col + '"/></svg>';
+  }
+  function html(t, id) {
+    var r = resOf(t), sym = esc(String(t.sym || '').toUpperCase()), side = t.side === 'short' ? 'short' : 'long';
+    var open = r.k === 'open', dur = (t.closeTs > t.ts) ? fdur(t.closeTs - t.ts) : (t.ts ? fdur(Date.now() - t.ts) : '');
+    var who = esc(t.by || 'trader');
+    // the chat row already names the poster above the card, so the line is the TRADE, not the person (a 340px box
+    // was cutting "closed BTC long · 1000x" at "BTC…"); the sharer rides on the title for the rare re-post of an id
+    var line = (open ? 'in ' : 'closed ') + '<b>' + sym + '</b> ' + side + (t.lev ? ' · ' + (+t.lev) + 'x' : '');
+    var pnlHtml = (t.pnl != null ? fusd(t.pnl) : '') + (t.margin > 0 ? ' <i>on $' + (+t.margin).toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</i>' : '');
+    return '<div class="ct-trade ct-tk ' + r.k + '" data-trade="' + esc(id) + '" role="button" tabindex="0" title="Shared by @' + who + ' - open the ticket">'
+      + '<div class="ct-tk-h"><span class="ct-tk-tag">' + r.tag + '</span><span class="ct-tk-who">' + line + '</span>' + (dur ? '<span class="ct-tk-dur">' + dur + (open ? ' in' : '') + '</span>' : '') + '</div>'
+      + '<div class="ct-tk-b"><span class="ct-tk-coin"><img src="/api/coinicon?sym=' + encodeURIComponent(sym) + '" alt="" loading="lazy" onerror="this.parentNode.textContent=\'' + sym.charAt(0) + '\'"></span>'
+      + '<div class="ct-tk-n"><b class="ct-tk-roe">' + froe(t.roe) + '</b><span class="ct-tk-pnl">' + pnlHtml + '</span></div>'
+      + spark(t, r.k) + '</div>'
+      + '<div class="ct-tk-f"><span>entry <code>' + fpx(t.entry) + '</code></span>' + (t.exit != null ? '<span>' + (open ? 'now' : 'exit') + ' <code>' + fpx(t.exit) + '</code></span>' : '') + '<em>' + (open ? 'live ticket' : 'open the ticket') + '</em></div>'
+      + '</div>';
+  }
+  function load(id) {
+    if (memo[id]) return memo[id];
+    memo[id] = fetch('/api/tshare?id=' + encodeURIComponent(id)).then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok && d.ticket) return d.ticket; throw new Error('gone'); });
+    memo[id].catch(function () { delete memo[id]; });
+    return memo[id];
+  }
+  function hydrate(root) {
+    root = root || document; if (!root.querySelectorAll) return;
+    var links = root.querySelectorAll('a.ct-trade[data-trade]:not([data-tk])');
+    Array.prototype.forEach.call(links, function (a) {
+      var id = String(a.getAttribute('data-trade') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16); if (!id) return;
+      a.setAttribute('data-tk', '1');
+      load(id).then(function (t) {
+        if (!a.parentNode) return;
+        var wrap = document.createElement('span'); wrap.innerHTML = html(t, id);
+        var card = wrap.firstChild; if (!card) return;
+        a.parentNode.replaceChild(card, a);
+        try { card.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }); } catch (e) {}
+        try { var ms = card.closest('.ct-msgs, #ctMsgs'); if (ms && ms.scrollHeight - ms.scrollTop - ms.clientHeight < 160) ms.scrollTop = ms.scrollHeight; } catch (e) {}
+      }).catch(function () { a.removeAttribute('data-tk'); a.setAttribute('data-tkdead', '1'); });
+    });
+  }
+  window.mpTradeCard = { hydrate: hydrate, html: html, res: resOf };
+  try { hydrate(document); } catch (e) {} // a chat that rendered before this bundle parsed
+})();
+(function () {
+  if (window.mpWelcomeCard) return;
+  var NEW_MS = 7 * 86400000, CARD_MS = 14 * 86400000;
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); }
+  function ageOf(me) { var c = me && +me.created; return c > 0 ? Date.now() - c : -1; }
+  function key(me) { return 'mp_welc_x:' + String((me && me.id) || ''); }
+  function want(me) {
+    if (!me || !me.id) return false;
+    var age = ageOf(me); if (age < 0 || age > CARD_MS) return false;
+    try { if (localStorage.getItem(key(me))) return false; } catch (e) {}
+    return true;
+  }
+  function dismiss(me) { try { localStorage.setItem(key(me), String(Date.now())); } catch (e) {} }
+  function defaultRoom(me) {
+    var pick = ''; try { pick = localStorage.getItem('mp_ctroom') || ''; } catch (e) {}
+    if (pick) return pick;
+    var age = ageOf(me); return (age >= 0 && age < NEW_MS) ? 'WELCOME' : 'global';
+  }
+  function html(me) {
+    var name = esc(String((me && me.username) || 'trader').slice(0, 24)), xp = Math.max(0, +(me && me.xp) || 0);
+    var toB = Math.max(0, 500 - xp), lessons = Math.ceil(toB / 25);
+    var step2 = xp >= 500 ? '<b>You are already Bronze</b> - the faucet, the daily missions and the season boards are open to you.'
+      : '<b>Earn ' + toB.toLocaleString('en-US') + ' more XP to reach Bronze</b>' + (xp ? ' (you have ' + xp.toLocaleString('en-US') + ')' : '') + ' - every Academy lesson pays 25 XP, so about ' + lessons + ' lesson' + (lessons === 1 ? '' : 's') + ' does it, and every trade and daily check-in adds to it.';
+    return '<div class="ct-welc" data-welcrow>'
+      + '<div class="ct-welc-h"><span class="ct-welc-eye">ONLY YOU SEE THIS</span><b>Hey @' + name + ', welcome in.</b></div>'
+      + '<p>Three things that get you going here:</p>'
+      + '<ol>'
+      + '<li><b>Open your first paper trade.</b> $10,000 of practice money on real live prices - nothing to lose, and every close counts for XP. <a href="/paper-trade">Paper Trade</a></li>'
+      + '<li>' + step2 + ' <a href="/academy/">Academy</a></li>'
+      + '<li><b>At Bronze the money opens:</b> the free USDT faucet, daily missions, withdrawals and a seat on the season boards. <a href="/rewards/">Rewards</a> · <a href="/season/">Season</a></li>'
+      + '</ol>'
+      + '<p>This room is for newcomers - say hi, ask anything. Trade talk lives in <b>All</b>, and a trade you share from any ticket lands there as a card.</p>'
+      + '<button type="button" class="ct-welc-x" data-welcx>Got it</button>'
+      + '</div>';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest && e.target.closest('[data-welcx]'); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null; dismiss(me);
+    var row = b.closest('.ct-msg') || b.closest('[data-welcrow]');
+    if (row && row.parentNode) { try { row.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = function () { if (row.parentNode) row.parentNode.removeChild(row); }; } catch (err) { row.parentNode.removeChild(row); } }
+  }, true);
+  window.mpWelcomeCard = { want: want, dismiss: dismiss, defaultRoom: defaultRoom, html: html, remember: function (r) { try { localStorage.setItem('mp_ctroom', String(r || '')); } catch (e) {} } };
+})();
 (function () {
   if (window.mpMsgSheet) return;
   var sheet = null, sheetAt = 0, sheetRow = null, sheetTop = 0;

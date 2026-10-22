@@ -26,17 +26,19 @@ const PROBE = /\bprobe\b/i;
   const CK = { cookie: 'mp_sadm=' + sess.token };
   let removedMsgs = 0, removedAccts = 0;
 
-  // ── the global room ───────────────────────────────────────────────────────────────────────────────────────────
-  const h = await (await fetch(O + '/chat/admin/history?key=' + K + '&room=global')).json().catch(() => ({}));
-  const msgs = h.messages || [];
-  const junk = msgs.filter(m => ACCT.test(String(m.u || '')) || PROBE.test(String(m.t || '')));
-  console.log('chat: ' + msgs.length + ' messages, ' + junk.length + ' written by test runs');
-  for (const m of junk) {
-    console.log('   ' + (DRY ? 'would remove' : 'removing') + '  ' + String(m.u).padEnd(20) + String(m.t).slice(0, 46));
-    if (DRY) continue;
-    const r = await fetch(O + '/chat/admin/delete?key=' + K + '&room=global', { method: 'POST', headers: H, body: JSON.stringify({ ts: m.ts }) });
-    if (r.ok) removedMsgs++;
-    await sleep(120);
+  // ── the public rooms: global, and the Welcome room since 2026-10-22 (chat-welcome-e2e posts there) ───────────
+  for (const room of ['global', 'WELCOME']) {
+    const h = await (await fetch(O + '/chat/admin/history?key=' + K + '&room=' + room)).json().catch(() => ({}));
+    const msgs = h.messages || [];
+    const junk = msgs.filter(m => ACCT.test(String(m.u || '')) || PROBE.test(String(m.t || '')) || /Welcome @e2e_/i.test(String(m.t || '')));
+    console.log('chat ' + room + ': ' + msgs.length + ' messages, ' + junk.length + ' written by test runs');
+    for (const m of junk) {
+      console.log('   ' + (DRY ? 'would remove' : 'removing') + '  ' + String(m.u).padEnd(20) + String(m.t).slice(0, 46));
+      if (DRY) continue;
+      const r = await fetch(O + '/chat/admin/delete?key=' + K + '&room=' + room, { method: 'POST', headers: H, body: JSON.stringify({ ts: m.ts }) });
+      if (r.ok) removedMsgs++;
+      await sleep(120);
+    }
   }
 
   // ── the accounts, and every table row keyed to them ───────────────────────────────────────────────────────────
