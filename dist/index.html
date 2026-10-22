@@ -157,6 +157,13 @@ function __esV_srv(s){try{if((document.documentElement.lang||"").slice(0,2).toLo
   .tape b{color:var(--dim);font-weight:700;}
   .tape .up{color:var(--grn);}.tape .dn{color:var(--red);}
   @keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  /* MP TAPE EVENT MODE (2026-10-23) - see build/add-tape-event.js: a static line while an event is close */
+  .tape.ev{-webkit-mask-image:none;mask-image:none;background:rgba(255,215,90,.06);border-bottom-color:rgba(255,215,90,.35)}
+  .tape.ev .tape-in{animation:none!important;padding:8px 16px;transform:none!important}
+  .tape-ev{display:inline-flex;align-items:center;gap:9px;font:700 12.5px/1.4 'Space Mono',monospace;letter-spacing:.06em;color:#ffd75a;white-space:nowrap}
+  .tape-ev i{width:7px;height:7px;border-radius:50%;background:#ffd75a;box-shadow:0 0 10px rgba(255,215,90,.9);flex:none}
+  .tape-ev b{color:#e9e7df;font-weight:700}
+  .tape-ev a{color:#8fa3c4;text-decoration:none;font-weight:400;margin-left:4px}.tape-ev a:hover{color:#e9e7df}
 
   /* ================= hero ================= */
   .hero{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4vw,70px);align-items:center;padding:clamp(44px,6vw,96px) var(--pad) clamp(30px,4vw,60px);}
@@ -1356,7 +1363,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
        element's own width, so new text moves the loop point. The content waits for the wrap. This tape
        measured clean before the change only because its symbols and digit counts happen to be stable -
        one longer pair would have started it jumping too. */
-    tapeNext = html + html;
+    tapeNext = html + html; window.__tapeLast = tapeNext; // the event mode restores the marquee from this (build/add-tape-event.js)
     var dur=Math.max(28,rows.length*2.4)+'s';   // reassigning this restarts the animation, so only when it changes
     if(el.style.animationDuration!==dur)el.style.animationDuration=dur;
     if(!el.children.length){ el.innerHTML=tapeNext; tapeNext=null; }
@@ -1424,7 +1431,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     var g=document.getElementById('mcalGrid'),nx=document.getElementById('mcalNext');if(!g)return;
     var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d',macro:'#e9e7df',unlock:'#ff8ad8'};
     var now=new Date(),Y=now.getFullYear(),M=now.getMonth();
-    fetch('/api/calendar?year='+Y).then(function(r){return r.json();}).then(function(d){
+    (window.__mpCalP||(window.__mpCalP=fetch('/api/calendar?year='+Y).then(function(r){return r.json();}))).then(function(d){ /* one calendar request per page - the tape's event mode reads the same promise */
       var ev=((d&&d.events)||[]).filter(function(e){var x=new Date(e.ts);return x.getFullYear()===Y&&x.getMonth()===M;});
       var byDay={};ev.forEach(function(e){var dd=new Date(e.ts).getDate();(byDay[dd]=byDay[dd]||[]).push(e);});
       var first=new Date(Y,M,1),off=(first.getDay()+6)%7,dim=new Date(Y,M+1,0).getDate();
@@ -2188,8 +2195,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   </form>
 </div>
 <script defer src="/assets/mp-trade.js?v=8e3f9145"></script>
-<script defer src="/assets/mp-auth.js?v=99e15365"></script>
-<script defer src="/assets/mp-nav.js?v=d4dfa9d3"></script>
+<script defer src="/assets/mp-auth.js?v=59b2d349"></script>
+<script defer src="/assets/mp-nav.js?v=8a045a93"></script>
 
 <style>
 /* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
@@ -2212,6 +2219,10 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
   .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
   .mpqm-trk{display:inline-flex;gap:22px;white-space:nowrap;font:10.5px 'Space Mono',monospace;animation:mpqS 30s linear infinite;padding-left:14px}
   .mpqm-trk b{color:#e9e7df;font-weight:700}.mpqm-trk .up{color:#2ebd85}.mpqm-trk .dn{color:#ff6258}.mpqm-trk .sym{color:#8fa3c4}
+  .mpqm.ev{cursor:pointer;background:#0d0b05;border-bottom-color:rgba(255,215,90,.35)}
+  .mpqm.ev .mpqm-cap{color:#ffd75a}.mpqm.ev .mpqm-cap s{background:#ffd75a}
+  .mpqm.ev .mpqm-trk{animation:none!important;transform:none!important;display:block;padding-left:10px;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .mpqm.ev .tape-ev{font-size:10.5px;gap:6px;letter-spacing:.04em}.mpqm.ev .tape-ev i{width:6px;height:6px}.mpqm.ev .tape-ev a{display:none}
 }
 </style>
 <script>
@@ -2268,6 +2279,45 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     }
     seed(); setInterval(draw,1500); setInterval(seed,90000);
   }
+}catch(e){}})();
+</script>
+<script>
+/* MP TAPE EVENT MODE (2026-10-23, owner: "za pola sata pocinje to i to ... samo pred event, inace obican mp tape") - see
+   build/add-tape-event.js. Sixty minutes before to fifteen after a timed event of impact 2+, both strips read one static
+   line; outside that window nothing here touches them. */
+(function(){try{
+  var WIN_BEFORE=60*60000, WIN_AFTER=15*60000, MIN_IMPACT=2;
+  var T=function(k,en){try{return __esT_demohomeindex(k,en);}catch(e){return en;}};
+  var list=null, ev=null, mode=false, saved={};
+  function pick(ls,now){ var best=null;
+    (ls||[]).forEach(function(e){ if(!e||e.allday||!(e.impact>=MIN_IMPACT)||!(e.ts>0))return; var d=e.ts-now; if(d>WIN_BEFORE||d<-WIN_AFTER)return;
+      if(!best){best=e;return;} var bd=best.ts-now;
+      if(d>=0&&(bd<0||d<bd))best=e;            // the nearest upcoming one wins
+      else if(d<0&&bd<0&&d>bd)best=e;          // only among already-started ones: the most recent
+    });
+    return best; }
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+  function when(e){try{return new Date(e.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch(x){return '';}}
+  function lead(e,now){ var m=Math.round((e.ts-now)/60000); if(m>1)return T('tapeEvIn','IN {n} MIN').replace('{n}',m); if(m>=0)return T('tapeEvStarting','STARTING'); return T('tapeEvNow','NOW'); }
+  function line(e,now){ return '<span class="tape-ev"><i></i><span class="tape-ev-l">'+esc(lead(e,now))+'</span><span class="tape-ev-s">&middot;</span><b>'+esc(e.title)+'</b><span class="tape-ev-s">&middot;</span>'+esc(when(e))+'<a href="/calendar/">'+esc(T('tapeEvCal','calendar'))+'</a></span>'; }
+  function go(){location.href='/calendar/';}
+  function paint(now){
+    var tp=document.getElementById('tape'), tw=tp&&tp.closest('.tape');
+    var mt=document.getElementById('mpqMT'), ms=mt&&mt.closest('.mpqm'), mc=ms&&ms.querySelector('.mpqm-cap');
+    if(ev){ var h=line(ev,now);
+      if(tp&&tw){ if(!mode)saved.tp=tp.innerHTML; tw.classList.add('ev'); if(tp.getAttribute('data-ev')!==h){tp.innerHTML=h;tp.setAttribute('data-ev',h);} }
+      if(mt&&ms){ if(!mode){saved.mt=mt.innerHTML;saved.mc=mc?mc.innerHTML:'';ms.addEventListener('click',go);} ms.classList.add('ev'); if(mc)mc.innerHTML=esc(T('tapeEvCap','EVENT'))+'<s></s>'; if(mt.getAttribute('data-ev')!==h){mt.innerHTML=h;mt.setAttribute('data-ev',h);} }
+      mode=true;
+    } else if(mode){
+      if(tp&&tw){ tw.classList.remove('ev'); tp.removeAttribute('data-ev'); tp.innerHTML=window.__tapeLast||saved.tp||''; }
+      if(mt&&ms){ ms.classList.remove('ev'); mt.removeAttribute('data-ev'); mt.innerHTML=saved.mt||''; if(mc&&saved.mc)mc.innerHTML=saved.mc; ms.removeEventListener('click',go); }
+      mode=false;
+    }
+  }
+  function tick(now){ now=now||Date.now(); ev=pick(list,now); paint(now); return {mode:mode,ev:ev}; }
+  var Y=new Date().getFullYear();
+  (window.__mpCalP||(window.__mpCalP=fetch('/api/calendar?year='+Y).then(function(r){return r.json();}))).then(function(d){ list=(d&&d.events)||[]; tick(); setInterval(function(){tick();},30000); }).catch(function(){});
+  window.__mpTapeEv={tick:tick,pick:pick,state:function(){return {mode:mode,ev:ev,n:(list||[]).length};}};
 }catch(e){}})();
 </script>
 
