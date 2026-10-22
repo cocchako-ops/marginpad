@@ -131,8 +131,8 @@ async function visit(vp, ua, cookie) {
   ok(/\$1\.00/.test(g.foot + ' ' + (g.amts.join(' ')) + ' ' + (g.once || '')) || g.moon === usd(cfg.moonUsd),
     'but a guest can read the $1.00 sign-up bonuses anyway', { moon: g.moon, fomo: g.fomo });
 
-  // a block that promises earnings has to carry the precondition
-  ok(/Bronze/.test(g.gate || '') && /500 XP/.test(g.gate || ''), 'the Bronze gate is stated with the amounts, not below them', g.gate);
+  // THE BRONZE GATE IS OFF (2026-10-23, owner): a block that promises earnings must carry NO precondition any more
+  ok(!g.gate, 'no gate line sits under the scoreboard any more', g.gate);
   ok(/cash out|Cash out/.test(g.foot || '') && /Fair use/.test(g.foot || ''), 'and the payout minimum and fair-use rule sit with them', g.foot);
   ok(g.fairUse === 1, 'fair use is said once on the page, not twice', g.fairUse);
 
@@ -167,12 +167,13 @@ async function visit(vp, ua, cookie) {
       ok(!m.authCard, 'the sign-in card is gone');
       ok(m.lvlCard, 'the level card appears for a member');
       ok(m.board && m.rows === 4, 'the earnings table is there for a member too', { board: m.board, rows: m.rows });
-      ok(m.locked, 'a brand-new member is below Bronze, as expected');
-      ok(m.lockedCard, 'and is told why, instead of just being shown empty cards');
-      ok(!m.refCard && !m.msnCard, 'the cards that pay stay shut until Bronze', { ref: m.refCard, msn: m.msnCard });
+      // THE BRONZE GATE IS OFF (2026-10-23, owner: "svako moze odma da ucestvuje u bilo cemu"): a brand-new member
+      // (0 XP) is NOT locked, is never shown the locked card, and sees every card that pays
+      ok(!m.locked, 'a brand-new member is not locked (the Bronze gate is off)');
+      ok(!m.lockedCard, 'and is never shown the "rewards are locked" card');
+      ok(m.refCard && m.msnCard && m.dash, 'the cards that pay are open to them from day one', { ref: m.refCard, msn: m.msnCard, dash: m.dash });
       ok(m.lbCard, 'the season board card renders');
-      // the gate line has to name everything the gate actually shuts
-      ok(/referral/i.test(m.gate || ''), 'and the gate line names referrals, which the gate also hides', m.gate);
+      ok(!m.gate, 'no gate line anywhere on the member page either', m.gate);
       ok(m.scrollW <= m.vw, 'the page never scrolls sideways', m.scrollW);
     }
     await po('/api/admin/e2euser', { uid, op: 'rm' });

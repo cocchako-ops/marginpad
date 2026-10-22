@@ -64,7 +64,9 @@ const api = async (op, uid, extra) => (await fetch(B + '/api/admin/e2euser', { m
           };
         });
         chk('the card is on /season/, above Today, with four steps and a nav stop', !!g && g.before && g.steps === 4 && g.nav, g && { steps: g.steps, nav: g.nav, top: g.top });
-        chk('it names the gate, the number and the fast route', !!g && /Bronze/.test(g.text) && /500/.test(g.text) && /Academy/i.test(g.text), g && { hasBronze: /Bronze/.test(g.text), has500: /500/.test(g.text) });
+        // 2026-10-23: the Bronze gate is OFF (owner) - the card now says the money is open from day one, that no level
+        // is a gate, and still names the Academy as the fastest way to level up
+        chk('it says the money is open from day one, no gate, and names the fast route', !!g && /open from day one/i.test(g.text) && /none of them is a gate|no level/i.test(g.text) && /Academy/i.test(g.text) && !/Bronze opens the money|unlock at Bronze/i.test(g.text), g && { dayOne: /open from day one/i.test(g.text), noGate: /none of them is a gate|no level/i.test(g.text) });
         chk('it explains the two real-money boards', !!g && /Bybit/.test(g.text) && /Moon/.test(g.text), g && { bybit: /Bybit/.test(g.text), moon: /Moon/.test(g.text) });
         chk('a guest is told to sign in, and sees no progress bar', !!g && /[Ss]ign in/.test(g.text) && !/XP to go/.test(g.text));
         chk('the language chips are there', !!g && g.chips >= 10, g && { chips: g.chips });

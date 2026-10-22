@@ -4019,12 +4019,12 @@ async function handleCompetition(url, request, env, ctx) {
          are two fields - `requires` to rank, `payout` to take the money off the site. */
       requires: b.id === 'gold' ? { level: 'gold', xp: 12000, what: 'Gold - 12,000 XP' }
         : b.id === 'bybit' ? { link: 'bybit_uid', what: 'a Bybit account opened through MarginPad, its UID registered here' }
-        : b.id === 'moon' ? { link: 'moon_signup', xp: REWARDS_MIN_XP, what: 'an approved Moon sign-up bonus claim (claiming one needs Bronze)' }
+        : b.id === 'moon' ? { link: 'moon_signup', what: 'an approved Moon sign-up bonus claim - that is how we know which Moon account is yours' }
         : b.id === 'call' ? { what: 'a username and at least one settled daily BTC call this season (calls close at ' + PRED_CUTOFF_H + ':00 UTC, the 00:00 UTC close settles them)' }
         : b.id === 'meme' ? { what: 'a username and a Demo Spot account holding a coin or with a trade this season (https://marginpad.io/spot/)' }
         : { what: 'a username and at least one closed trade this season' },
-      // what it takes to KEEP what you win - the same on every board, and the thing Bronze actually gates
-      payout: { level: 'bronze', xp: REWARDS_MIN_XP, what: 'Bronze - ' + REWARDS_MIN_XP + ' XP - to withdraw' },
+      // what it takes to KEEP what you win - nothing since 2026-10-23 (the Bronze gate is off); the field stays so a parser written against it keeps working
+      payout: { level: null, xp: 0, what: 'no level needed - anyone can withdraw what they win' },
       period_days: b.id === 'moon' && lb && lb.moonContest && lb.moonContest.days ? lb.moonContest.days : (b.days || Math.round(LB_PERIOD / 86400000)),
       ...(b.id === 'moon' && lb && lb.moonContest ? { contest: { starts: lb.moonContest.start ? new Date(lb.moonContest.start).toISOString() : null, ends: lb.moonContest.end ? new Date(lb.moonContest.end).toISOString() : null, updated: lb.moonContest.updated ? new Date(lb.moonContest.updated).toISOString() : null } } : {}),
     };
@@ -8281,7 +8281,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3173ec62" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0e40a4d4" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12573,10 +12573,10 @@ const CAMPAIGN_TPLS = [
 
   { id: 'rewards', name: 'Free rewards and the faucet', group: 'Activation', needs: [],
     subject: 'There is money on the table you have not taken',
-    lead: 'Rewards, missions, the faucet. Opens at Bronze (500 XP).',
+    lead: 'Rewards, missions, the faucet. Open to every account from day one.',
     body: () => '<p style="font-size:20px;font-weight:800;margin:0 0 10px">Free, and you have not claimed it.</p>'
       + '<p style="margin:0 0 12px">MarginPad pays real USDT for things you can do without depositing anything: daily missions, the faucet, exchange sign-up bonuses and the season boards.</p>'
-      + '<p style="margin:0 0 12px">The rewards area opens at Bronze - 500 XP - which is a few days of ordinary use.</p>',
+      + '<p style="margin:0 0 12px">There is no level to reach first - every account can claim, run the missions and withdraw from its first day.</p>',
     cta: ['See what pays', 'https://marginpad.io/rewards/'] },
 
   { id: 'bot_api', name: 'For developers - the Bot API', group: 'Product', needs: [],
@@ -14197,13 +14197,15 @@ async function checkWhaleAlerts(env) {
     }
   } catch (e) {}
 }
-// Invite-a-friend: pay the referrer once their referred friend reaches Bronze (500 XP). Anti-abuse in /refpending + /refqualify.
+// Invite-a-friend: pay the referrer once their referred friend has really traded (5 closes, 3 days, 5 h on the site). The Bronze
+// (500 XP) gate that stood in front of those three was switched off on 2026-10-23 with the rest of the Bronze gates (owner).
+// Anti-abuse in /refpending + /refqualify.
 async function checkReferrals(env) {
   if (!env.USERS || !env.REWARDS) return;
   let pend = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/refpending')); const j = await r.json(); pend = j.pending || []; } catch (e) { return; }
   if (!pend.length) return;
   const cfg = await rewardCfg(env), refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 1;
-  const cents = Math.max(1, Math.min(200, Math.round(refUsd * 100))), MIN_XP = (XP_LEVELS.find(l => l.k === 'bronze') || {}).min || 500; // 2026-08-15 (owner): pay MORE for REAL users, gate HARDER below. Default $1 since 2026-10-16 (owner), cap $2.
+  const cents = Math.max(1, Math.min(200, Math.round(refUsd * 100))), MIN_XP = REWARDS_MIN_XP; // was Bronze (500) from 2026-08-15 to 2026-10-23; the trades / days / hours gates below are what keep it honest now. 2026-08-15 (owner): pay MORE for REAL users, gate HARDER below. Default $1 since 2026-10-16 (owner), cap $2.
   const ledger = env.REWARDS.get(env.REWARDS.idFromName('ledger')), users = env.USERS.get(env.USERS.idFromName('main'));
   for (const p of pend) {
     if ((p.xp || 0) < MIN_XP) continue; // gate 1: Bronze (500 XP)
@@ -19174,7 +19176,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'f49397ab';
+const ASSET_V = '33a72836';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26308,7 +26310,7 @@ export default {
         ] }) + '</scr' + 'ipt>';
         const PT_SEO = '<section style="max-width:900px;margin:14px auto 20px;padding:11px 13px;background:#101318;border:1px solid #232a34;border-radius:14px;color:#7e8894;font-size:11.5px;line-height:1.5">'
           + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px">'
- + '<div style="padding:2px 4px"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Practice that pays</b>The only simulator where practice earns real USDT - <a href="/levels/" style="color:#c2f64a">paid 14-day season leaderboards</a> and <a href="/rewards/" style="color:#c2f64a">daily missions</a> (they open at Bronze, 500 XP), plus XP, duels and floor chat.</div>'
+ + '<div style="padding:2px 4px"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Practice that pays</b>The only simulator where practice earns real USDT - <a href="/levels/" style="color:#c2f64a">paid 14-day season leaderboards</a> and <a href="/rewards/" style="color:#c2f64a">daily missions</a> (open to every account from day one), plus XP, duels and floor chat.</div>'
           + '<div style="padding:2px 4px;border-left:1px solid #1d232c"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Real mechanics, zero risk</b>Live prices, leverage to 1000x, real isolated-margin liquidation, SL/TP and partial closes - P&L exactly as a real account would show.</div>'
           + '<div style="padding:2px 4px;border-left:1px solid #1d232c"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Every market, one account</b>60+ crypto perps plus <a href="/stock-trading-simulator/" style="color:#c2f64a">US stocks</a>, <a href="/forex-trading-simulator/" style="color:#c2f64a">forex</a>, <a href="/index-trading-simulator/" style="color:#c2f64a">indices</a> and gold - up to $100,000 margin.</div>'
           + '</div>'
@@ -27585,7 +27587,7 @@ export class RewardLedger {
     }
     if (path === '/claim') {
       if (!acct) return this.j({ error: 'login_required' }, 401); // the faucet is account-based now - must be signed in (no wallet needed to claim)
-      if (xLvl === 'unranked') return this.j({ error: 'need_xp', need: 500, level: 'unranked' }, 403); // defense-in-depth: faucet unlocks at Bronze (500 XP); worker already gates this, DO re-checks
+      // the 2026-08-04 defense-in-depth gate (`xLvl === 'unranked'` -> need_xp) is OFF since 2026-10-23 with the rest of the Bronze gates (owner) - an account below 500 XP is still 'unranked' as a LEVEL and claims like anyone else
       const dispensed = (this.rows('SELECT dispensed FROM daily WHERE day=?', day)[0] || { dispensed: 0 }).dispensed;
       if (dispensed + cfg.amountC > cfg.capC) return this.j({ error: 'pool_empty' }, 429); // global daily budget reached → faucet closed until tomorrow
       let r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
@@ -27864,7 +27866,7 @@ export class RewardLedger {
       const r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
       const dayAmt = (r && r.day === day) ? r.day_amt : 0;
       const mrow = this.rows('SELECT message,ts FROM msgs WHERE address=?', acct)[0];
-      return this.j({ account: acct, locked: true, welcomeBonus, payoutAddr: r ? (r.payout_addr || '') : '', balance: r ? r.balance / 100 : 0, earned: r ? r.earned / 100 : 0, dayAmt: dayAmt / 100, cooldownLeft: r ? Math.max(0, cfg.cooldown - (now - r.last_claim)) : 0, canWithdraw: !!(r && r.balance >= cfg.minWdC), adminMsg: mrow ? mrow.message : '', adminMsgTs: mrow ? mrow.ts : 0, banned: !!(r && r.banned), ...meta });
+      return this.j({ account: acct, locked: false, welcomeBonus, payoutAddr: r ? (r.payout_addr || '') : '', balance: r ? r.balance / 100 : 0, earned: r ? r.earned / 100 : 0, dayAmt: dayAmt / 100, cooldownLeft: r ? Math.max(0, cfg.cooldown - (now - r.last_claim)) : 0, canWithdraw: !!(r && r.balance >= cfg.minWdC), adminMsg: mrow ? mrow.message : '', adminMsgTs: mrow ? mrow.ts : 0, banned: !!(r && r.banned), ...meta });
     }
     if (path === '/unlock') { // admin: free the device(s) bound to an address so the user can switch
       if (!validAcct) return this.j({ error: 'bad_address' }, 400);
@@ -28452,8 +28454,13 @@ const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP) + Le
   { k: 'master', name: 'Master', min: 120000, col: '#ff4d6d' },
   { k: 'legendary', name: 'Legendary', min: 250000, col: '#ff7a1a' },
 ];
-const REWARDS_MIN_XP = 500;                 // faucet + the whole rewards system unlock at Bronze (500 XP); below that = 'unranked'
-function rewardsUnlocked(xp) { return (+xp || 0) >= REWARDS_MIN_XP; }
+/* THE BRONZE GATE IS OFF (2026-10-23, owner: "bronza vise nije neophodna za nagrade ... svako moze odma da ucestvuje
+   ako zeli u bilo cemu"). From 2026-08-04 to this day the faucet, the missions, withdrawals, referrals and the sign-up
+   bonuses opened at Bronze (500 XP) and a signed-in member below it was 'unranked'. Every consumer still asks
+   rewardsUnlocked() - the ONE predicate - so the gate can come back as one line; REWARDS_MIN_XP stays as the figure the
+   `need:` fields publish (0 = nothing needed). Bronze is still the first LEVEL (XP_LEVELS) - badge, frame, bigger claims. */
+const REWARDS_MIN_XP = 0;
+function rewardsUnlocked(xp) { return true; }
 const LEVEL_CLAIM_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, master: 1.75, legendary: 1.90 }; // faucet claim size by level
 const LEVEL_DAY_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.25, platinum: 1.40, diamond: 1.60, master: 2.0, legendary: 2.2 }; // personal DAILY cap by level (owner 2026-08-14: each tier must be able to EARN more per day, not just claim in fewer clicks - gold $0.20 -> $0.25)
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
@@ -34518,6 +34525,10 @@ const BRONZE_TASKS = [
   { tid: 'back',    xp: 75, vt: 'days',    va: '',         n: 2, title: 'Come back tomorrow',               desc: 'The one that matters most. Two days is where a habit starts', url: '' },
 ];
 const BRONZE_XP_TOTAL = BRONZE_TASKS.reduce((a, t) => a + t.xp, 0); // 400 of the 500
+// The Road to Bronze is about the LEVEL, not the rewards gate (which is off since 2026-10-23): the card stays for a member
+// under the Bronze line and `ranked` here means "reached Bronze", read from XP_LEVELS, never from rewardsUnlocked().
+const BRONZE_MIN = (XP_LEVELS.find(l => l.k === 'bronze') || {}).min || 500;
+const bronzeReached = xp => (+xp || 0) >= BRONZE_MIN;
 async function handleBronze(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
   const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
@@ -34526,11 +34537,11 @@ async function handleBronze(url, request, env) {
   const tok = getCookie(request, SESS_COOKIE);
   const su = tok ? await sessionUser(env, tok) : null;
   const uid = su && su.id ? String(su.id) : '';
-  if (!uid) return jr({ signedIn: false, need: REWARDS_MIN_XP, totalXp: BRONZE_XP_TOTAL, tasks: pubTasks });
+  if (!uid) return jr({ signedIn: false, need: BRONZE_MIN, totalXp: BRONZE_XP_TOTAL, tasks: pubTasks });
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let st = { done: {}, prog: {}, claimed: {}, xp: 0 };
   try { const r = await stub.fetch(new Request('https://do/bronze/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, defs: BRONZE_TASKS.map(t => ({ tid: t.tid, vt: t.vt, va: t.va, n: t.n })) }) })); st = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
-  const ranked = rewardsUnlocked(st.xp);
+  const ranked = bronzeReached(st.xp);
   if (request.method === 'POST') {
     if (ranked) return jr({ error: 'already_bronze', ranked: true }, 400); // the card is over; nothing left to claim
     let b = {}; try { b = await request.json(); } catch (e) {}
@@ -34543,9 +34554,9 @@ async function handleBronze(url, request, env) {
     if (d.error) return jr({ error: d.error }, 400);
     if (!d.fresh) return jr({ error: 'already_claimed' }, 400);
     try { await evPush(env, request, 'bronze', t.tid + ' +' + (d.xp || t.xp) + ' XP', '/season/#bronze'); } catch (e) {}
-    return jr({ ok: true, gained: +d.xp || 0, xp: +d.total || 0, level: d.level, ranked: rewardsUnlocked(+d.total || 0) });
+    return jr({ ok: true, gained: +d.xp || 0, xp: +d.total || 0, level: d.level, ranked: bronzeReached(+d.total || 0) });
   }
-  return jr({ signedIn: true, ranked, xp: +st.xp || 0, need: REWARDS_MIN_XP, totalXp: BRONZE_XP_TOTAL,
+  return jr({ signedIn: true, ranked, xp: +st.xp || 0, need: BRONZE_MIN, totalXp: BRONZE_XP_TOTAL,
     tasks: pubTasks.map(t => ({ ...t, done: !!st.done[t.tid], claimed: !!st.claimed[t.tid], prog: +st.prog[t.tid] || 0 })) });
 }
 async function handleMissions(url, request, env) {
