@@ -960,7 +960,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.ct-tk-rx{display:flex;align-items:center;gap:3px;padding:5px 7px 6px;border-top:1px solid #1f2936;background:rgba(0,0,0,.28);overflow-x:auto;scrollbar-width:none}'
     + '.ct-tk-rx::-webkit-scrollbar{display:none}'
     + '.ct-tk-rxb{display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px 0 5px;border-radius:999px;border:1px solid transparent;background:transparent;font-size:13px;line-height:1;cursor:pointer;color:#e9e7df;opacity:.42;box-shadow:none;transition:opacity .15s,border-color .15s,background .15s;flex:none}'
-    + '.ct-tk-rxb .g{font-size:13px;line-height:1}'
+    + '.ct-tk-rxb .g{display:flex;align-items:center;justify-content:center;width:16px;height:16px;color:#aab6c4}'
+    + '.ct-rxg{width:15px;height:15px;display:block}.ct-rxg-t{font-size:12px;line-height:1}'
+    + '.ct-tk-rxb.has .g{color:#dbe4f5}.ct-tk-rxb.on .g{color:var(--tkc)}.ct-tk-rxb:hover .g{color:#e9e7df}'
     + '.ct-tk-rxb:hover{opacity:1;border-color:#2c3849;background:rgba(255,255,255,.05)}'
     + '.ct-tk-rxb.has{opacity:1;border-color:#2c3849;background:rgba(255,255,255,.06)}'
     + '.ct-tk-rxb.on{opacity:1;border-color:var(--tkc);background:rgba(255,255,255,.08);background:color-mix(in srgb,var(--tkc) 20%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--tkc) 35%,transparent)}'
@@ -3527,6 +3529,27 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      paintRx keep writing them, hidden by CSS on a card row); the rail is a VIEW of them, re-read on every mutation
      of the row, so a reaction arriving over the socket paints here without the chat knowing the rail exists. */
   var TRADE_RX = ['\uD83D\uDE80', '\uD83D\uDC3B', '\uD83C\uDFAF', '\uD83E\uDDE0', '\uD83D\uDD25', '\uD83D\uDC80']; // the six trade reactions, the first half of CHAT_RX (escapes like DM_RX - no raw emoji in a bundle)
+  /* THE GLYPHS ARE OURS, THE KEYS ARE THE EMOJI (2026-10-22, owner: "ne ovako sareni i decji ... otmeno i cool; ne ide
+     ni medved ni vatra a tek kosturska glava"). The reaction KEY on the wire stays the emoji CHAT_RX validates and the
+     history already holds, so nothing stored breaks and the long-press sheet is untouched - the CARD draws each key as
+     a thin stroke glyph in one colour: the trend arrows up and down, a crosshair, a diamond, a bolt, and a flatline for
+     rekt. The classic six get line icons too, so a reaction left through the sheet never lands on the card as a
+     cartoon. Labels carry the meaning the glyph stands for. */
+  var RX_GLYPH = {};
+  RX_GLYPH['\uD83D\uDE80'] = { t: 'Moon', p: '<path d="M6 18 18 6M9 6h9v9"/>' };
+  RX_GLYPH['\uD83D\uDC3B'] = { t: 'Bear', p: '<path d="M6 6l12 12M9 18h9V9"/>' };
+  RX_GLYPH['\uD83C\uDFAF'] = { t: 'Nailed it', p: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>' };
+  RX_GLYPH['\uD83E\uDDE0'] = { t: 'Sharp', p: '<path d="M12 3.5 19.5 10 12 20.5 4.5 10z"/><path d="M4.5 10h15M12 3.5 9 10l3 10.5L15 10z"/>' };
+  RX_GLYPH['\uD83D\uDD25'] = { t: 'Heat', p: '<path d="M13 2.5 5 14h6l-1 7.5L19 10h-6z"/>' };
+  RX_GLYPH['\uD83D\uDC80'] = { t: 'Rekt', p: '<path d="M2.5 12h4l2-5 3 10 2-5h8.5"/>' };
+  RX_GLYPH['\uD83D\uDC4D'] = { t: 'Respect', p: '<path d="M7 11v9H3.5v-9zM7 11l4-8a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/>' };
+  RX_GLYPH['\u2764\uFE0F'] = { t: 'Love it', p: '<path d="M12 20.5s-8-5.2-8-11A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 8 2.5c0 5.8-8 11-8 11z"/>' };
+  RX_GLYPH['\uD83D\uDE02'] = { t: 'Funny', p: '<circle cx="12" cy="12" r="9"/><path d="M8 14.5s1.3 2.5 4 2.5 4-2.5 4-2.5M9 9.5h.01M15 9.5h.01"/>' };
+  RX_GLYPH['\uD83D\uDE2E'] = { t: 'Wow', p: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="15" r="1.8"/><path d="M9 9h.01M15 9h.01"/>' };
+  RX_GLYPH['\uD83D\uDE22'] = { t: 'Pain', p: '<circle cx="12" cy="12" r="9"/><path d="M8 16.5s1.3-2 4-2 4 2 4 2M9 9.5h.01M15 9.5h.01"/>' };
+  RX_GLYPH['\uD83D\uDC40'] = { t: 'Watching', p: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.8"/>' };
+  function rxGlyph(k) { var g = RX_GLYPH[k]; if (!g) return '<span class="ct-rxg-t">' + esc(k) + '</span>'; return '<svg class="ct-rxg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + g.p + '</svg>'; }
+  function rxLabel(k) { var g = RX_GLYPH[k]; return g ? g.t : k; }
   function railSync(card, row, mid) {
     var rail = card.querySelector('.ct-tk-rx'); if (!rail) return;
     var have = {}; Array.prototype.forEach.call(row.querySelectorAll(':scope > .ct-body > .ct-rx .ct-rxb, :scope > .ct-body .ct-rx .ct-rxb'), function (b) { var k = b.getAttribute('data-rx'); if (!k || b.closest('.ct-tk')) return; have[k] = { n: parseInt((b.querySelector('i') || {}).textContent || '0', 10) || 0, on: b.classList.contains('on') }; });
@@ -3534,7 +3557,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     var sig = keys.map(function (k) { var h = have[k]; return k + (h ? h.n + (h.on ? '*' : '') : ''); }).join('|');
     if (rail.getAttribute('data-sig') === sig) return;
     var prev = rail.getAttribute('data-sig') || ''; rail.setAttribute('data-sig', sig);
-    rail.innerHTML = keys.map(function (k) { var h = have[k]; return '<button type="button" class="ct-rxb ct-tk-rxb' + (h ? ' has' : '') + (h && h.on ? ' on' : '') + '" data-rx="' + esc(k) + '" data-rxm="' + esc(mid) + '" aria-label="React ' + esc(k) + '"><span class="g">' + esc(k) + '</span><i>' + (h && h.n ? h.n : '') + '</i></button>'; }).join('') + '<span class="ct-tk-rxlbl">react</span>';
+    rail.innerHTML = keys.map(function (k) { var h = have[k], lb = rxLabel(k); return '<button type="button" class="ct-rxb ct-tk-rxb' + (h ? ' has' : '') + (h && h.on ? ' on' : '') + '" data-rx="' + esc(k) + '" data-rxm="' + esc(mid) + '" title="' + esc(lb) + '" aria-label="' + esc(lb) + '"><span class="g">' + rxGlyph(k) + '</span><i>' + (h && h.n ? h.n : '') + '</i></button>'; }).join('') + '<span class="ct-tk-rxlbl">react</span>';
     if (prev) { try { var changed = rail.querySelector('.ct-tk-rxb.on') || rail.querySelector('.ct-tk-rxb.has'); if (changed) changed.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.28)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' }); } catch (e) {} }
   }
   function hydrate(root) {
