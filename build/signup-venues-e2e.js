@@ -119,6 +119,15 @@ const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 
     const x = await mk('e2esvx');
     const stillOn = await j('/api/reward/' + other.v + 'sign/submit', { method: 'POST', headers: x.H, body: JSON.stringify({ uid: 'e2ecross' + Date.now().toString(36) }) });
     ok(stillOn.s === 200, 'and ' + other.label + ' keeps taking submissions while it is off (' + stillOn.s + ')');
+    /* AND IT TAKES ITS OWN ROW BACK OUT (2026-10-22). This submission is a REAL pending claim on the owner's review
+       desk, and `e2euser rm` cannot reach it: exsign lives in RewardLedger and the UserStore sweep has never been able
+       to see that store - the orphan class this file has named since 2026-09-16. Six rows from earlier runs of this
+       very suite were sitting in the live queue beside nineteen real ones when the owner went to read it. Rejecting
+       credits nothing and is what keeps the desk honest. */
+    if (stillOn.s === 200 && stillOn.b && stillOn.b.id) {
+      const rv = await j('/api/reward/' + other.v + 'sign/review', { method: 'POST', headers: A, body: JSON.stringify({ id: stillOn.b.id, action: 'reject', note: 'automated test row - not a real claim' }) });
+      ok(rv.s === 200, '    and the test row is taken back off the review desk');
+    }
     await j('/api/reward/config', { method: 'POST', headers: AK, body: JSON.stringify({ [v + 'Enabled']: true }) });
     const back = await j('/api/reward/account', { headers: b2.H });
     ok(back.b && back.b[v + 'Enabled'] !== false, 'and it switches back on');
