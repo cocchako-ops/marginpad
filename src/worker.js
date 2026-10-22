@@ -15240,6 +15240,92 @@ const MOON_CONTEST_DAYS = 28; // the nominal length: King of the Moon runs TWO S
 const SIGN_VENUES = { moon: { label: 'Moon', open: true }, mexc: { label: 'MEXC', open: true }, bingx: { label: 'BingX', open: true }, fomo: { label: 'Fomo', open: false } };
 const SIGN_RE = /^\/(moon|mexc|bingx|fomo)sign\/(submit|mine|list|review)$/;
 function signVenueOpen(v) { const x = SIGN_VENUES[String(v || '').toLowerCase()]; return !!(x && x.open); }
+/* MEXC affiliate verification - see build/add-mexc-verify.js for why each guard is where it is. */
+const MEXC_API = 'https://api.mexc.com';
+const MEXC_INVITE = 'mexc-47LrK'; // our own referral code, read off the owner's affiliate portal 2026-10-22
+async function mexcSigned(env, pathname, params) {
+  const key = env.MEXC_API_KEY, secret = env.MEXC_API_SECRET;
+  if (!key || !secret) return { ok: false, why: 'no_key' };
+  const qs = Object.keys(params).map(k => k + '=' + encodeURIComponent(params[k])).join('&') + '&timestamp=' + Date.now() + '&recvWindow=5000';
+  let sig = '';
+  try {
+    const ck = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const mac = await crypto.subtle.sign('HMAC', ck, new TextEncoder().encode(qs));
+    sig = Array.from(new Uint8Array(mac)).map(b => b.toString(16).padStart(2, '0')).join(''); // MEXC accepts lowercase hex only
+  } catch (e) { return { ok: false, why: 'sign_failed' }; }
+  try {
+    const r = await fetch(MEXC_API + pathname + '?' + qs + '&signature=' + sig, { headers: { 'X-MEXC-APIKEY': key }, signal: AbortSignal.timeout(8000) });
+    const txt = await r.text();
+    let j = null; try { j = JSON.parse(txt); } catch (e) { return { ok: false, why: 'bad_json', status: r.status, body: txt.slice(0, 300) }; }
+    if (!r.ok || j.success === false) return { ok: false, why: r.status === 429 ? 'rate_limited' : 'refused', status: r.status, body: txt.slice(0, 300) };
+    return { ok: true, data: j.data || j };
+  } catch (e) { return { ok: false, why: 'fetch_failed', body: String(e && e.message || e).slice(0, 160) }; }
+}
+/* Is this UID a real referral of ours? Returns a VERDICT, never a decision: `found` only when MEXC returned a
+   row for exactly this uid under our invite code. Anything else carries `why` and leaves the claim alone. */
+async function mexcAffLookup(env, uid) {
+  const u = String(uid || '').trim();
+  if (!/^[0-9]{4,20}$/.test(u)) return { ok: true, found: false, why: 'not_a_uid' }; // a MEXC uid is digits; nothing to ask about
+  const r = await mexcSigned(env, '/api/v3/rebate/affiliate/referral', { uid: u, pageSize: 10 });
+  if (!r.ok) return { ok: false, found: false, why: r.why, status: r.status, body: r.body };
+  const rows = (r.data && (r.data.resultList || r.data.list)) || [];
+  const row = rows.filter(x => String(x.uid) === u)[0] || null;
+  if (!row) return { ok: true, found: false, why: 'not_our_referral' };
+  const code = String(row.inviteCode || '');
+  if (MEXC_INVITE && code && code.toLowerCase() !== MEXC_INVITE.toLowerCase()) return { ok: true, found: false, why: 'other_invite_code', code };
+  return { ok: true, found: true, code, uid: u, registerTime: row.registerTime || null,
+    tradingAmount: +row.tradingAmount || 0, commission: +row.commission || 0, depositAmount: +row.depositAmount || 0 };
+}
+/* The sweep. DRY BY DEFAULT - `apply` is what pays. It approves through the ordinary review route so the member
+   gets the same XP, the same ledger row and the same notification a hand-approval gives them; there is no second
+   way to pay a sign-up bonus, which is what keeps the books honest. */
+async function mexcVerifySweep(env, opts) {
+  const apply = !!(opts && opts.apply), cap = Math.min(40, Math.max(1, (opts && +opts.limit) || 25));
+  const out = { checked: 0, approved: 0, held: 0, apply, rows: [] };
+  if (!env.MEXC_API_KEY || !env.MEXC_API_SECRET) { out.error = 'no_key'; return out; }
+  let pending = [];
+  try {
+    const lr = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/list'), new Request('https://marginpad.io/api/reward/mexcsign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
+    const lj = await lr.json();
+    pending = (lj.pending || []).filter(x => x.exchange === 'mexc' && !String(x.uid || '').startsWith('e2e'));
+  } catch (e) { out.error = 'list_failed'; return out; }
+  for (const row of pending.slice(0, cap)) {
+    out.checked++;
+    const v = await mexcAffLookup(env, row.uid);
+    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: v.found ? 'ours' : (v.ok ? v.why : ('error:' + v.why)) };
+    if (v.found) { rec.traded = v.tradingAmount; rec.commission = v.commission; }
+    if (v.found && apply) {
+      const note = 'auto-verified against the MEXC affiliate API: uid ' + v.uid + ' under ' + v.code
+        + ', traded $' + v.tradingAmount.toFixed(2) + ', commission $' + v.commission.toFixed(4);
+      try {
+        const rr = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/review'),
+          new Request('https://marginpad.io/api/reward/mexcsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'approve', note }) }), env);
+        const rj = await rr.json();
+        rec.paid = !!(rj && rj.status === 'approved'); if (!rec.paid) rec.payError = (rj && rj.error) || 'failed';
+      } catch (e) { rec.paid = false; rec.payError = 'threw'; }
+      if (rec.paid) out.approved++; else out.held++;
+    } else out.held++;
+    out.rows.push(rec);
+  }
+  try { await env.STATS.put('mexcverify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, apply }), { expirationTtl: 2592000 }); } catch (e) {}
+  return out;
+}
+/* THE KEY DIES EVERY 90 DAYS BY MEXC'S OWN RULE and a Worker cannot whitelist an egress IP, so this is not an
+   optional nicety: without it the first anybody would know is sign-ups quietly going back to manual. One probe,
+   the reason kept in KV, and a page at most once per 6 h. Same shape as the Bybit key watchdog. */
+async function checkMexcKey(env) {
+  if (!env.MEXC_API_KEY || !env.MEXC_API_SECRET) return { skipped: 'no_key' };
+  const r = await mexcSigned(env, '/api/v3/rebate/affiliate/referral', { pageSize: 1 });
+  if (r.ok) { try { await env.STATS.delete('mexckey:lasterr'); } catch (e) {} return { ok: true }; }
+  try { await env.STATS.put('mexckey:lasterr', JSON.stringify({ ts: Date.now(), why: r.why, status: r.status || 0, body: r.body || '' }), { expirationTtl: 604800 }); } catch (e) {}
+  if (r.why === 'rate_limited' || r.why === 'fetch_failed') return { ok: false, soft: r.why }; // not a dead key
+  let muted = false; try { muted = !!(await env.STATS.get('alrt:mexckey')); } catch (e) {}
+  if (!muted) {
+    try { await env.STATS.put('alrt:mexckey', '1', { expirationTtl: 21600 }); } catch (e) {}
+    try { await tgAdmin(env, 'MEXC API kljuc ne radi (' + r.why + (r.status ? ' ' + r.status : '') + '). Auto-odobravanje MEXC prijava stoji - sve ide rucno dok se ne zameni. ' + String(r.body || '').slice(0, 160), { kind: 'mexckey', sev: 'warn' }); } catch (e) {}
+  }
+  return { ok: false, why: r.why };
+}
 function moonContestEnd(startTs) { return lbPeriodStart(startTs) + 2 * LB_PERIOD; }
 function moonContestDays(start, end) { return Math.max(1, Math.round((end - start) / 86400000)); }
 async function moonPubSnapshot(env, id) { // the public board of the ACTIVE contest (or a named one) - rows keep uid for the payout, /lb strips it
@@ -21067,10 +21153,16 @@ async function handleReward(url, request, env) {
       txt = JSON.stringify(data);
     } catch (e) {}
   }
-  if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list' || path === '/moonsign/list' || path === '/fomosign/list' || path === '/xengage/list')) {
+  /* ONE TEST FOR EVERY VENUE (2026-10-22, owner: "na mp ops ne izlazi ovako ime naloga - 349caf0aba vec da mi
+     pise username"). This path list was hand-written and stopped at moon/fomo, so every MEXC and BingX row
+     reached the review desk with a truncated account id where the member's name belongs - the owner could not
+     tell who he was about to pay a dollar to. Same copy-instead-of-a-table fault as the review folds themselves,
+     found the same afternoon. SIGN_RE is the one definition, so the next venue is named without touching this. */
+  const _signList = SIGN_RE.test(path) && path.slice(-5) === '/list';
+  if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list' || _signList || path === '/xengage/list')) {
     try {
       const data = JSON.parse(txt);
-      const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list' || path === '/moonsign/list' || path === '/fomosign/list' || path === '/xengage/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
+      const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list' || _signList || path === '/xengage/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
       if (Array.isArray(arr) && arr.length) {
         const prof = await resolveProfiles(env, arr.map(e => e.address));
         arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } }); // faucet rows minted from an account carry no device/country of their own - borrow the user's
@@ -21414,6 +21506,20 @@ export default {
     if (url.pathname === '/api/coinicon') return handleCoinIcon(url, env, request);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
+    /* MEXC sign-up verification desk. A DRY RUN unless {run:true} - the house pattern for anything that moves
+       money, and here the dry run is the useful half: it is how the owner sees which pending claims are real
+       before a cent leaves the ledger. ?uid= checks one UID without touching any claim. */
+    if (url.pathname === '/api/admin/mexcverify') {
+      const ak = adminKeyFrom(request, url);
+      if (!isAdminKey(env, ak) && !(await adminCookieOk(request, env))) return J({ error: 'forbidden' }, 403);
+      const one9 = url.searchParams.get('uid');
+      if (one9) return J({ uid: one9, result: await mexcAffLookup(env, one9) });
+      let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
+      const res = await mexcVerifySweep(env, { apply: body.run === true, limit: body.limit });
+      let last = null; try { last = JSON.parse((await env.STATS.get('mexcverify:last')) || 'null'); } catch (e) {}
+      let keyErr = null; try { keyErr = JSON.parse((await env.STATS.get('mexckey:lasterr')) || 'null'); } catch (e) {}
+      return J({ ...res, lastRun: last, keyLastError: keyErr, note: res.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
+    }
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)
       const st = await premiumFor(env, request);
@@ -25861,7 +25967,9 @@ export default {
            SAME credential a moment earlier, so a key probe that fails on its own is about the probe, not the key
            (2026-10-19 - it paged RED while the board was reading real per-UID volume). */
         let _affOk = null;
-        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey']]) {
+        // checkMexcKey rides this same pass: the MEXC key expires every 90 days by their own rule (a Worker has no
+        // fixed egress IP, so no whitelist is possible) and it returns {skipped:'no_key'} until one is set.
+        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey']]) {
           const t0 = Date.now();
           try {
             const r = await fn(env, label === 'bybitkey' ? _affOk : undefined);
