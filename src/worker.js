@@ -14801,7 +14801,7 @@ async function rewardCfg(env) {
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
+  return { autoApprove: m.autoApprove !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -15275,6 +15275,9 @@ const MOON_CONTEST_DAYS = 28; // the nominal length: King of the Moon runs TWO S
      open:false keeps the REVIEW and READ paths alive while refusing new claims - which is the whole reason
      Fomo is still listed. The day it was retired SEVEN people had a claim pending, five of them submitted in
      the previous 48 hours; deleting the surface would have stranded work they had already done. */
+/* A CRON THAT PAYS NEEDS A CEILING. Sign-up claims arrive a handful a day, so ten in one ten-minute pass is far
+   above anything real and far below anything that could drain the ledger before the Telegram line is read. */
+const AUTO_APPROVE_MAX = 10;
 const SIGN_VENUES = { moon: { label: 'Moon', open: true }, mexc: { label: 'MEXC', open: true }, bingx: { label: 'BingX', open: true }, bitget: { label: 'Bitget', open: true }, fomo: { label: 'Fomo', open: false } };
 const SIGN_RE = /^\/(moon|mexc|bingx|bitget|fomo)sign\/(submit|mine|list|review)$/;
 /* EVERY VENUE BUT MOON SHARES ONE SET OF ALIAS ROUTES, and five separate regexes used to spell that list out
@@ -15327,36 +15330,47 @@ async function mexcAffLookup(env, uid) {
   return { ok: true, found: true, code, uid: u, registerTime: row.registerTime || null,
     tradingAmount: +row.tradingAmount || 0, commission: +row.commission || 0, depositAmount: +row.depositAmount || 0 };
 }
-/* The sweep. DRY BY DEFAULT - `apply` is what pays. It approves through the ordinary review route so the member
-   gets the same XP, the same ledger row and the same notification a hand-approval gives them; there is no second
-   way to pay a sign-up bonus, which is what keeps the books honest. */
-async function mexcVerifySweep(env, opts) {
+/* ONE SWEEP FOR EVERY VENUE WHOSE ANSWER COMES FROM AN AFFILIATE API (2026-10-22). This was written twice -
+   once for MEXC, once for Bitget - and BingX would have made a third copy of the same forty lines. The venue
+   is a parameter; a new one needs a lookup in affVenueLookup and a key test in signGateReady, nothing else.
+
+   IT ONLY EVER APPROVES. `apply` is what pays; rejecting stays opt-in (`reject`) and is never what the cron
+   does, because a wrong auto-reject insults a member who did everything right while a wrong auto-approve is
+   money gone. Anything the API cannot CONFIRM - an outage, a rate limit, a UID that is not ours, a member who
+   typed their MarginPad username into the box - stays pending for a human. It pays through the ordinary review
+   route, so the XP, the ledger row and the member's notification are identical to a hand-approval: there is no
+   second way to pay a sign-up bonus, which is what keeps the books honest. */
+function signGateReady(env, venue) {   // the ONE reading of "can this venue be verified without a human"
+  if (venue === 'mexc') return !!(env.MEXC_API_KEY && env.MEXC_API_SECRET);
+  if (venue === 'bitget') return !!(env.BITGET_API_KEY && env.BITGET_API_SECRET && env.BITGET_API_PASSPHRASE);
+  return false;                        // BingX and Moon are checked by hand - there is no API to ask yet
+}
+async function signVerifySweep(env, venue, opts) {
+  const v = String(venue || '').toLowerCase(), label = (SIGN_VENUES[v] && SIGN_VENUES[v].label) || v.toUpperCase();
   const apply = !!(opts && opts.apply), cap = Math.min(40, Math.max(1, (opts && +opts.limit) || 25));
-  const out = { checked: 0, approved: 0, held: 0, apply, rows: [] };
-  if (!env.MEXC_API_KEY || !env.MEXC_API_SECRET) { out.error = 'no_key'; return out; }
+  const payCap = Math.max(1, (opts && +opts.max) || AUTO_APPROVE_MAX);
+  const out = { venue: v, checked: 0, approved: 0, held: 0, apply, rows: [] };
+  if (!signGateReady(env, v)) { out.error = 'no_key'; return out; }
   let pending = [];
   try {
-    const lr = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/list'), new Request('https://marginpad.io/api/reward/mexcsign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
+    const lr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/list'), new Request('https://marginpad.io/api/reward/' + v + 'sign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
     const lj = await lr.json();
-    pending = (lj.pending || []).filter(x => x.exchange === 'mexc' && !String(x.uid || '').startsWith('e2e'));
+    pending = (lj.pending || []).filter(x => x.exchange === v && !String(x.uid || '').startsWith('e2e') && !/^e2e/i.test(String(x.address || '').replace(/^u:/, '')));
   } catch (e) { out.error = 'list_failed'; return out; }
   for (const row of pending.slice(0, cap)) {
     out.checked++;
-    const v = await mexcAffLookup(env, row.uid);
-    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: v.found ? 'ours' : (v.ok ? v.why : ('error:' + v.why)) };
-    if (v.found) { rec.traded = v.tradingAmount; rec.commission = v.commission; }
-    /* A DEFINITIVE NEGATIVE IS SOMETHING MEXC SAID, NEVER SOMETHING WE FAILED TO ASK. `ok` true means we got a
-       real answer; an error leaves the claim pending for a human whatever the owner switched on. Rejecting is
-       opt-in (`reject:true`) because it is the half that is visible to a member - and it is not final for them:
-       the exsign rule gives one more submission after a rejection, so a mistyped UID is still recoverable. */
-    const _no = v.ok && !v.found && (v.why === 'not_our_referral' || v.why === 'other_invite_code' || v.why === 'not_a_uid');
-    if (_no && apply && opts && opts.reject) {
-      const rnote = v.why === 'not_a_uid'
-        ? 'That does not look like a MEXC UID. Your UID is the number under your email in the MEXC account menu. You can submit once more.'
-        : 'We could not find this UID among the accounts that opened through our MEXC link, so the sign-up bonus does not apply to it. If you created your MEXC account another way, the bonus cannot be paid for it. If you think this is a mistake, write to support and we will look again.';
+    const r = await affVenueLookup(env, v, row.uid);
+    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: r.found ? 'ours' : (r.ok ? r.why : ('error:' + r.why)) };
+    if (r.found && r.tradingAmount != null) { rec.traded = r.tradingAmount; rec.commission = r.commission; }
+    /* A DEFINITIVE NEGATIVE IS SOMETHING THE VENUE SAID, NEVER SOMETHING WE FAILED TO ASK. */
+    const no = r.ok && !r.found && (r.why === 'not_our_referral' || r.why === 'other_invite_code' || r.why === 'not_a_uid');
+    if (no && apply && opts && opts.reject) {
+      const rnote = r.why === 'not_a_uid'
+        ? 'That does not look like a ' + label + ' UID. Your UID is the number in your ' + label + ' account menu, not your MarginPad username. You can submit once more.'
+        : 'We could not find this UID among the accounts that opened through our ' + label + ' link, so the sign-up bonus does not apply to it. If you created your ' + label + ' account another way, the bonus cannot be paid for it. If you think this is a mistake, write to support and we will look again.';
       try {
-        const rr2 = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/review'),
-          new Request('https://marginpad.io/api/reward/mexcsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'reject', note: rnote }) }), env);
+        const rr2 = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/review'),
+          new Request('https://marginpad.io/api/reward/' + v + 'sign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'reject', note: rnote, notify: true }) }), env);
         const rj2 = await rr2.json();
         rec.rejected = !!(rj2 && rj2.status === 'rejected'); if (!rec.rejected) rec.payError = (rj2 && rj2.error) || 'failed';
       } catch (e) { rec.rejected = false; rec.payError = 'threw'; }
@@ -15364,20 +15378,51 @@ async function mexcVerifySweep(env, opts) {
       out.rows.push(rec);
       continue;
     }
-    if (v.found && apply) {
-      const note = 'auto-verified against the MEXC affiliate API: uid ' + v.uid + ' under ' + v.code
-        + ', traded $' + v.tradingAmount.toFixed(2) + ', commission $' + v.commission.toFixed(4);
+    if (r.found && apply && out.approved < payCap) {
+      const note = 'auto-verified against the ' + label + ' affiliate API: uid ' + r.uid + ' is one of our referrals'
+        + (r.code ? ' under ' + r.code : '')
+        + (r.tradingAmount != null ? ', traded $' + (+r.tradingAmount).toFixed(2) + ', commission $' + (+r.commission).toFixed(4) : '')
+        + (r.registerTime ? ', registered ' + new Date(+r.registerTime).toISOString().slice(0, 10) : '');
       try {
-        const rr = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/review'),
-          new Request('https://marginpad.io/api/reward/mexcsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'approve', note }) }), env);
+        const rr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/review'),
+          new Request('https://marginpad.io/api/reward/' + v + 'sign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'approve', note, notify: true }) }), env);
         const rj = await rr.json();
-        rec.paid = !!(rj && rj.status === 'approved'); if (!rec.paid) rec.payError = (rj && rj.error) || 'failed';
+        rec.paid = !!(rj && rj.status === 'approved'); rec.amount = (rj && +rj.amount) || 0; rec.acctUid = (rj && rj.acct) || '';
+        if (!rec.paid) rec.payError = (rj && rj.error) || 'failed';
       } catch (e) { rec.paid = false; rec.payError = 'threw'; }
       if (rec.paid) out.approved++; else out.held++;
     } else out.held++;
     out.rows.push(rec);
   }
-  try { await env.STATS.put('mexcverify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, apply }), { expirationTtl: 2592000 }); } catch (e) {}
+  try { await env.STATS.put(v + 'verify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, apply }), { expirationTtl: 2592000 }); } catch (e) {}
+  return out;
+}
+/* THE CRON HALF (owner: "nek odobri ako moze"). Runs on the affiliate pass, walks every OPEN venue that has a
+   working key, and pays what the venue's own API confirms. Silent when it did nothing - and loud, once, when it
+   did: an automatic payer nobody can see is how a silent bug runs for a week. */
+async function autoApproveSweep(env) {
+  if (!env.STATS || !env.REWARDS) return { skipped: 'no_env' };
+  let cfg = null; try { cfg = await rewardCfg(env); } catch (e) {}
+  if (cfg && cfg.autoApprove === false) return { skipped: 'off' };   // the owner's switch, ops > Reward config
+  const out = { venues: {}, approved: 0 }, paid = [];
+  for (const v of Object.keys(SIGN_VENUES)) {
+    if (!SIGN_VENUES[v].open || !signGateReady(env, v)) continue;
+    let r = null;
+    try { r = await signVerifySweep(env, v, { apply: true, limit: 25, max: AUTO_APPROVE_MAX }); }
+    catch (e) { out.venues[v] = { error: String((e && e.message) || e).slice(0, 80) }; continue; }
+    out.venues[v] = { checked: r.checked, approved: r.approved, held: r.held, error: r.error || null };
+    out.approved += r.approved;
+    for (const row of (r.rows || [])) if (row.paid) paid.push({ v: v, label: (SIGN_VENUES[v] && SIGN_VENUES[v].label) || v, uid: row.uid, amount: row.amount, acct: row.acctUid });
+  }
+  if (!paid.length) return out;
+  let names = {}; try { names = await resolveProfiles(env, paid.map(p => 'u:' + String(p.acct || '').replace(/^u:/, ''))); } catch (e) {}
+  const who = p => { const k = String(p.acct || '').replace(/^u:/, ''); const n = names && (names[k] || names['u:' + k]); return (n && (n.username || n.name)) ? '@' + (n.username || n.name) : ('account ' + k.slice(0, 8)); };
+  try {
+    await tgOwner(env, 'signup auto-approved', 'Paid ' + paid.length + ' sign-up bonus' + (paid.length === 1 ? '' : 'es') + ' automatically',
+      [paid.map(p => p.label + ' UID ' + p.uid + ' - ' + who(p) + ' - $' + (+p.amount || 0).toFixed(2)).join(String.fromCharCode(10)),
+        'Verified against the venue\u2019s own affiliate API. Anything it could not confirm is still waiting for you.'],
+      'https://marginpad.io/api/stats#money/faucet');
+  } catch (e) {}
   return out;
 }
 /* THE KEY DIES EVERY 90 DAYS BY MEXC'S OWN RULE and a Worker cannot whitelist an egress IP, so this is not an
@@ -15485,53 +15530,6 @@ async function bitgetRefSync(env) {
       'https://marginpad.io/api/stats#money/faucet');
   } catch (e) {}
   return { ok: true, n: all.length, fresh: fresh.length };
-}
-/* The sweep. DRY BY DEFAULT - `apply` is what pays, and it pays through the ordinary review route so the member
-   gets the same XP, the same ledger row and the same notification a hand-approval gives them. */
-async function bitgetVerifySweep(env, opts) {
-  const apply = !!(opts && opts.apply), cap = Math.min(40, Math.max(1, (opts && +opts.limit) || 25));
-  const out = { checked: 0, approved: 0, held: 0, apply, rows: [] };
-  if (!env.BITGET_API_KEY || !env.BITGET_API_SECRET || !env.BITGET_API_PASSPHRASE) { out.error = 'no_key'; return out; }
-  let pending = [];
-  try {
-    const lr = await handleReward(new URL('https://marginpad.io/api/reward/bitgetsign/list'), new Request('https://marginpad.io/api/reward/bitgetsign/list', { headers: { 'x-admin-key': adminKeyOf(env) } }), env);
-    const lj = await lr.json();
-    pending = (lj.pending || []).filter(x => x.exchange === 'bitget' && !String(x.uid || '').startsWith('e2e'));
-  } catch (e) { out.error = 'list_failed'; return out; }
-  for (const row of pending.slice(0, cap)) {
-    out.checked++;
-    const v = await bitgetAffLookup(env, row.uid);
-    const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: v.found ? 'ours' : (v.ok ? v.why : ('error:' + v.why)) };
-    const _no = v.ok && !v.found && (v.why === 'not_our_referral' || v.why === 'not_a_uid');
-    if (_no && apply && opts && opts.reject) {
-      const rnote = v.why === 'not_a_uid'
-        ? 'That does not look like a Bitget UID. Your UID is the number in your Bitget account menu. You can submit once more.'
-        : 'We could not find this UID among the accounts that opened through our Bitget link, so the sign-up bonus does not apply to it. If you created your Bitget account another way, the bonus cannot be paid for it. If you think this is a mistake, write to support and we will look again.';
-      try {
-        const rr2 = await handleReward(new URL('https://marginpad.io/api/reward/bitgetsign/review'),
-          new Request('https://marginpad.io/api/reward/bitgetsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'reject', note: rnote }) }), env);
-        const rj2 = await rr2.json();
-        rec.rejected = !!(rj2 && rj2.status === 'rejected'); if (!rec.rejected) rec.payError = (rj2 && rj2.error) || 'failed';
-      } catch (e) { rec.rejected = false; rec.payError = 'threw'; }
-      if (rec.rejected) out.rejected = (out.rejected || 0) + 1; else out.held++;
-      out.rows.push(rec);
-      continue;
-    }
-    if (v.found && apply) {
-      const note = 'auto-verified against the Bitget affiliate API: uid ' + v.uid + ' is in our customer list'
-        + (v.registerTime ? ', registered ' + new Date(+v.registerTime).toISOString().slice(0, 10) : '');
-      try {
-        const rr = await handleReward(new URL('https://marginpad.io/api/reward/bitgetsign/review'),
-          new Request('https://marginpad.io/api/reward/bitgetsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'approve', note }) }), env);
-        const rj = await rr.json();
-        rec.paid = !!(rj && rj.status === 'approved'); if (!rec.paid) rec.payError = (rj && rj.error) || 'failed';
-      } catch (e) { rec.paid = false; rec.payError = 'threw'; }
-      if (rec.paid) out.approved++; else out.held++;
-    } else out.held++;
-    out.rows.push(rec);
-  }
-  try { await env.STATS.put('bitgetverify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, apply }), { expirationTtl: 2592000 }); } catch (e) {}
-  return out;
 }
 /* A CREDENTIAL THAT DIES IN SILENCE HAS COST THIS CODEBASE THREE OUTAGES (Coinglass, Bybit, MEXC), so the watch
    ships with the feature rather than after the first one. A rate limit or a network blip is NOT a dead key. */
@@ -21063,7 +21061,7 @@ async function handleReward(url, request, env) {
  // /exsign/* is 410, but the config key survived and still read as enabled. Dropping it from this list means the
  // dashboard cannot switch a dead $3 payout back on by accident. Moon ($1) is unaffected - it rides the same DO
  // table but gates on 'moonEnabled', which stays.
- for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'fomoEnabled', 'mexcEnabled', 'bingxEnabled', 'bitgetEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
+ for (const k of ['autoApprove', 'enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'moonEnabled', 'fomoEnabled', 'mexcEnabled', 'bingxEnabled', 'bitgetEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
  for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'redditUsd', 'redditMaxUsd', 'referralUsd', 'moonUsd', 'fomoUsd', 'mexcUsd', 'bingxUsd', 'bitgetUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k]; /* 'exsignUsd' dropped 2026-08-20 - retired system, see the boolean list above */
       // BOARD PRIZES, NOW OR NEXT SEASON (2026-09-13, owner: "kad promenim nagrade treba nešto što kaže da promene
       // nastupe po novoj sezoni a ne po trenutnoj ... hoću smooth transition"). Prizes are read at PAYOUT time, which
@@ -21521,7 +21519,9 @@ async function handleReward(url, request, env) {
           const _unT = getCookie(request, 'mp_un'), _uidT = String(JSON.parse(raw || '{}').uid || '').slice(0, 32);
           await tgOwner(env, 'signup claim', _lbT + ' sign-up claim waiting',
             [(_unT ? '@' + decodeURIComponent(_unT) : 'a member') + ' from ' + ccName((request.cf && request.cf.country) || '') + ' submitted ' + _lbT + ' UID ' + (_uidT || '(none)'),
-              'Check it in the ' + _lbT + ' affiliate dashboard before you approve - that check is the only thing between a typed UID and a real dollar.'],
+              signGateReady(env, _vT)
+                ? 'The ' + _lbT + ' affiliate API checks this one by itself within ten minutes. You only hear from it again if it could not confirm the UID.'
+                : 'Check it in the ' + _lbT + ' affiliate dashboard before you approve - that check is the only thing between a typed UID and a real dollar.'],
             'https://marginpad.io/api/stats#money/faucet');
         } catch (e) {}
       }
@@ -21530,7 +21530,7 @@ async function handleReward(url, request, env) {
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
   if (r.status === 200 && /sign\/review$/.test(path) && SIGN_RE.test(path) && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17)
-    try { const data = JSON.parse(txt); if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + (path.indexOf('fomo') >= 0 ? 'Fomo' : 'Moon') + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
+    try { const data = JSON.parse(txt); if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + ((SIGN_VENUES[(SIGN_RE.exec(path) || [])[1]] || {}).label || 'exchange') + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
   }
   if (r.status === 200 && path === '/moonsign/list') { // only moon rows belong to this surface
     try { const data = JSON.parse(txt); data.pending = (data.pending || []).filter(x => x.exchange === 'moon'); data.decided = (data.decided || []).filter(x => x.exchange === 'moon'); data.moonUsd = full.moonC / 100; txt = JSON.stringify(data); } catch (e) {}
@@ -21928,7 +21928,7 @@ export default {
         return J({ roster: seen, n: seen.length, pages });
       }
       let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
-      const res = await mexcVerifySweep(env, { apply: body.run === true, reject: body.reject === true, limit: body.limit });
+      const res = await signVerifySweep(env, 'mexc', { apply: body.run === true, reject: body.reject === true, limit: body.limit, max: body.max });
       let last = null; try { last = JSON.parse((await env.STATS.get('mexcverify:last')) || 'null'); } catch (e) {}
       let keyErr = null; try { keyErr = JSON.parse((await env.STATS.get('mexckey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...res, lastRun: last, keyLastError: keyErr, note: res.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
@@ -21944,7 +21944,7 @@ export default {
       if (url.searchParams.get('list') === '1') { const rB = await bitgetAffAll(env, 6); return J({ roster: rB.list, n: rB.list.length, error: rB.error || null, msg: rB.msg || '', body: rB.body || '' }); }
       if (url.searchParams.get('sync') === '1') return J({ sync: await bitgetRefSync(env) });
       let bodyB = {}; if (request.method === 'POST') { try { bodyB = await request.json(); } catch (e) {} }
-      const resB = await bitgetVerifySweep(env, { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit });
+      const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max });
       let lastB = null; try { lastB = JSON.parse((await env.STATS.get('bitgetverify:last')) || 'null'); } catch (e) {}
       let keyErrB = null; try { keyErrB = JSON.parse((await env.STATS.get('bitgetkey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...resB, lastRun: lastB, keyLastError: keyErrB, note: resB.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
@@ -26412,7 +26412,7 @@ export default {
         let _affOk = null;
         // checkMexcKey rides this same pass: the MEXC key expires every 90 days by their own rule (a Worker has no
         // fixed egress IP, so no whitelist is possible) and it returns {skipped:'no_key'} until one is set.
-        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs']]) {
+        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs'], [autoApproveSweep, 'autoapprove']]) {
           const t0 = Date.now();
           try {
             const r = await fn(env, label === 'bybitkey' ? _affOk : undefined);

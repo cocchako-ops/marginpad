@@ -42,6 +42,27 @@ function sourceGuards() {
   if (!m) return;
   const venues = [...m[0].matchAll(/(\w+):\s*\{\s*label:/g)].map(x => x[1]);
   ok(venues.length >= 5, 'the venue table names every venue (' + venues.join(', ') + ')');
+  /* THE AUTOMATIC PAYER'S GUARD RAILS (2026-10-22, owner: "nek odobri ako moze"). A cron that credits real
+     money is only safe while all four of these hold, and all four are invisible to a behavioural test - the
+     cron pays at most ten a pass, only ever APPROVES, can be switched off, and there is exactly ONE sweep so
+     a venue cannot drift into a copy with different rules. */
+  ok((src.match(/function signVerifySweep\b/g) || []).length === 1, 'there is exactly one sign-up sweep');
+  ok(src.indexOf('async function mexcVerifySweep') < 0 && src.indexOf('async function bitgetVerifySweep') < 0,
+    'and no per-venue copy of it survives');
+  const cronAt = src.indexOf('async function autoApproveSweep');
+  ok(cronAt > 0, 'the cron sweep exists');
+  const cronSrc = src.slice(cronAt, cronAt + 2600);
+  ok(!/reject/.test(cronSrc), 'the cron sweep NEVER rejects - a wrong auto-reject insults a member who did everything right');
+  ok(cronSrc.indexOf('max: AUTO_APPROVE_MAX') >= 0, 'it pays at most AUTO_APPROVE_MAX in one pass');
+  ok(cronSrc.indexOf('cfg.autoApprove === false') >= 0, 'and the owner can switch it off');
+  ok(/const AUTO_APPROVE_MAX = \d+;/.test(src), 'the ceiling is a named constant, not a literal in the loop');
+  ok(src.indexOf("[autoApproveSweep, 'autoapprove']") >= 0, 'it is wired into the affiliate cron pass');
+  // a venue with no API must not be claimed as automatic - BingX is waiting for theirs
+  const gateAt = src.indexOf('function signGateReady');
+  const gateSrc = src.slice(gateAt, gateAt + 600);
+  ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("venue === 'bitget'") >= 0 && gateSrc.indexOf("'bingx'") < 0,
+    'MEXC and Bitget are verifiable automatically, BingX is not (it has no API yet)');
+
   const snap = src.indexOf('reward config snapshot passed to the DO');
   ok(snap > 0, 'the DO config snapshot is readable');
   const snapLine = src.slice(src.lastIndexOf('const cfg = {', snap), snap);
