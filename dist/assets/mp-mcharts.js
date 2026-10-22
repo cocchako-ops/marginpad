@@ -1,3 +1,4 @@
+window.mpBarOk=window.mpBarOk||function(b,site){try{var bad=[];if(!b||typeof b!=='object'){bad.push('bar');}else{if(!(+b.time>0&&isFinite(+b.time)))bad.push('time');['open','high','low','close'].forEach(function(k){var v=b[k];if(!(typeof v==='number'&&isFinite(v)&&v>0))bad.push(k+'='+(v===null?'null':typeof v==='number'?'NaN':typeof v));});}if(!bad.length)return true;var S=window.__mpBadBar=window.__mpBadBar||{};if(!S[site]){S[site]=1;try{console.warn('[mpBarOk] skipped a bad bar at '+site,b);}catch(_){}try{window.__mpTrack&&window.__mpTrack('jserr','bad bar '+site+' '+bad.join(' '));}catch(_){}}return false;}catch(_){return true;}}; /* a null/NaN OHLC value handed to series.update() poisons lightweight-charts' render loop from the next frame on (measured 2026-10-22) - the update is skipped and the site is named ONCE through the crash beacon */
 
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
@@ -300,7 +301,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         else if(_app.length){_rm=1;p.bars=p.bars.concat(_app);}
       }
       if(_rm===2){try{p.candle.setData(p.bars);}catch(e){}}
-      else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{p.candle.update(_app[_a3]);}catch(e){}}}
+      else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{(function(_b){if(window.mpBarOk(_b,'m304'))p.candle.update(_b);})(_app[_a3]);}catch(e){}}}
       if(_rm!==0){p.lastBar=p.bars[p.bars.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{applyInds(p);}catch(e){}if(p.trades)try{drawTrades(p);}catch(e){}try{if(p.w)p.w.bars=p.bars;}catch(e){}}
       p._hole=0;/* cleared ONLY on a successful snapshot apply/compare - a rolled live bar makes lastBar look current, blinding the interval gap check (same _holeK lesson as desktop) */
       label(p);
@@ -353,13 +354,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if(_secB){try{var _sg=window.mpSecAgg&&window.mpSecAgg(p.sym,p.lastBar.time,iv);
         if(_sg){if(_sg.h>p.lastBar.high)p.lastBar.high=_sg.h;if(_sg.l<p.lastBar.low)p.lastBar.low=_sg.l;p.lastBar.close=_sg.c;
           if(p.lastBar.high<Math.max(p.lastBar.open,p.lastBar.close))p.lastBar.high=Math.max(p.lastBar.open,p.lastBar.close);if(p.lastBar.low>Math.min(p.lastBar.open,p.lastBar.close))p.lastBar.low=Math.min(p.lastBar.open,p.lastBar.close);
-          try{p.candle.update(p.lastBar);}catch(_){}}
+          try{(function(_b){if(window.mpBarOk(_b,'m357'))p.candle.update(_b);})(p.lastBar);}catch(_){}}
       }catch(_){}}
       else try{var _TKz=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKz){var _zbs=[_TKz.cur,_TKz.prev],_zch=false;
         for(var _zi=0;_zi<2;_zi++){var _zb=_zbs[_zi];if(!_zb)continue;if(_zb.t<p.lastBar.time||_zb.t>=p.lastBar.time+iv)continue;
           if(iv===60){if(p.lastBar.high!==_zb.h||p.lastBar.low!==_zb.l||p.lastBar.close!==_zb.c){p.lastBar.high=_zb.h;p.lastBar.low=_zb.l;p.lastBar.close=_zb.c;_zch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_zb.h>p.lastBar.high){p.lastBar.high=_zb.h;_zch=true;}if(_zb.l<p.lastBar.low){p.lastBar.low=_zb.l;_zch=true;}if(_zb.t===p.lastBar.time+iv-60&&p.lastBar.close!==_zb.c){p.lastBar.close=_zb.c;_zch=true;}}}
-        if(_zch){if(p.lastBar.high<Math.max(p.lastBar.open,p.lastBar.close))p.lastBar.high=Math.max(p.lastBar.open,p.lastBar.close);if(p.lastBar.low>Math.min(p.lastBar.open,p.lastBar.close))p.lastBar.low=Math.min(p.lastBar.open,p.lastBar.close);try{p.candle.update(p.lastBar);}catch(_){}}
+        if(_zch){if(p.lastBar.high<Math.max(p.lastBar.open,p.lastBar.close))p.lastBar.high=Math.max(p.lastBar.open,p.lastBar.close);if(p.lastBar.low>Math.min(p.lastBar.open,p.lastBar.close))p.lastBar.low=Math.min(p.lastBar.open,p.lastBar.close);try{(function(_b){if(window.mpBarOk(_b,'m363'))p.candle.update(_b);})(p.lastBar);}catch(_){}}
       }}catch(_){}
       try{if(p.bars&&p.bars.length){if(p.bars[p.bars.length-1].time===p.lastBar.time)p.bars[p.bars.length-1]=p.lastBar;else if(p.lastBar.time>p.bars[p.bars.length-1].time)p.bars.push(p.lastBar);}}catch(_){}
       /* A SKIPPED TICK LEFT A HOLE IN THE SERIES, and Bybit's own 1s series has none - measured the day this
@@ -369,7 +370,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
          close - exactly what the exchange publishes for it. Capped, because past twelve seconds the gap check
          above has already asked for the real candles. */
       if(_secB&&nb-p.lastBar.time>iv){var _fc=p.lastBar.close,_ft=p.lastBar.time+iv,_fn=0;
-        while(_ft<nb&&_fn<60){var _fbar={time:_ft,open:_fc,high:_fc,low:_fc,close:_fc};try{if(p.bars&&p.bars.length&&_ft>p.bars[p.bars.length-1].time)p.bars.push(_fbar);}catch(_){}try{p.candle.update(_fbar);}catch(_){}_ft+=iv;_fn++;}}
+        while(_ft<nb&&_fn<60){var _fbar={time:_ft,open:_fc,high:_fc,low:_fc,close:_fc};try{if(p.bars&&p.bars.length&&_ft>p.bars[p.bars.length-1].time)p.bars.push(_fbar);}catch(_){}try{(function(_b){if(window.mpBarOk(_b,'m373'))p.candle.update(_b);})(_fbar);}catch(_){}_ft+=iv;_fn++;}}
       var _znb=null;try{if(_secB){var _sn=window.mpSecAgg&&window.mpSecAgg(p.sym,nb,iv);if(_sn)_znb={t:nb,h:_sn.h,l:_sn.l,c:_sn.c};}
         else{var _TKo=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nb)_znb=_TKo.cur;}}catch(_){}
       if(_znb){var _zop=p.lastBar.close;p.lastBar={time:nb,open:_zop,high:Math.max(_znb.h,_zop),low:Math.min(_znb.l,_zop),close:_znb.c};p._lgp=_znb.c;}/* open = prevClose ALWAYS (Bybit kline convention - measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
@@ -379,7 +380,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else{if(!_grace){p.lastBar.close=pr;if(pr>p.lastBar.high)p.lastBar.high=pr;if(pr<p.lastBar.low)p.lastBar.low=pr;}/* during the roll grace pr may already be a NEW-minute price - never bake it into the closing bar */
       if(_secB){try{var _sm=window.mpSecAgg&&window.mpSecAgg(p.sym,p.lastBar.time,iv);if(_sm&&p._lgp>0){if(_sm.h>p.lastBar.high&&_sm.h<p._lgp*1.025)p.lastBar.high=_sm.h;if(_sm.l<p.lastBar.low&&_sm.l>p._lgp*0.975)p.lastBar.low=_sm.l;}}catch(_){}}
       else try{var _TKm=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKm&&p._lgp>0){var _mm=[_TKm.cur,_TKm.prev];for(var _mi9=0;_mi9<2;_mi9++){var _mk=_mm[_mi9];if(!_mk)continue;if(_mk.t<p.lastBar.time||_mk.t>=p.lastBar.time+iv)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_mk.h>p.lastBar.high&&_mk.h<p._lgp*1.025)p.lastBar.high=_mk.h;if(_mk.l<p.lastBar.low&&_mk.l>p._lgp*0.975)p.lastBar.low=_mk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
-    try{p.candle.update(p.lastBar);}catch(e){}label(p);
+    try{(function(_b){if(window.mpBarOk(_b,'m383'))p.candle.update(_b);})(p.lastBar);}catch(e){}label(p);
   }
   function label(p){if(p._scrub)return;/* a finger on a candle owns the label until it lifts */var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym],chg=lp&&isFinite(lp.chg)?+lp.chg:null;

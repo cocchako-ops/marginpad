@@ -1,3 +1,4 @@
+window.mpBarOk=window.mpBarOk||function(b,site){try{var bad=[];if(!b||typeof b!=='object'){bad.push('bar');}else{if(!(+b.time>0&&isFinite(+b.time)))bad.push('time');['open','high','low','close'].forEach(function(k){var v=b[k];if(!(typeof v==='number'&&isFinite(v)&&v>0))bad.push(k+'='+(v===null?'null':typeof v==='number'?'NaN':typeof v));});}if(!bad.length)return true;var S=window.__mpBadBar=window.__mpBadBar||{};if(!S[site]){S[site]=1;try{console.warn('[mpBarOk] skipped a bad bar at '+site,b);}catch(_){}try{window.__mpTrack&&window.__mpTrack('jserr','bad bar '+site+' '+bad.join(' '));}catch(_){}}return false;}catch(_){return true;}}; /* a null/NaN OHLC value handed to series.update() poisons lightweight-charts' render loop from the next frame on (measured 2026-10-22) - the update is skipped and the site is named ONCE through the crash beacon */
 
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
@@ -2965,7 +2966,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         else if(_app.length){_rm=1;w.bars=w.bars.concat(_app);}
       }
       if(_rm===2){try{w.candle.setData(w.bars);}catch(e){}}
-      else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{w.candle.update(_app[_a3]);}catch(e){}}}
+      else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{(function(_b){if(window.mpBarOk(_b,'c2969'))w.candle.update(_b);})(_app[_a3]);}catch(e){}}}
       if(_rm!==0){w.lastBar=w.bars[w.bars.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}} /* mode 0 = matched → touch nothing (no lastBar swap, no indicator churn) */
     }); }
   // load older history when the user scrolls back toward the start (full history to the coin's inception, like Paper Trade)
@@ -3008,13 +3009,13 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          No trade in that second = the flat bar we rolled, which is what Bybit's own 1s series publishes. */
       if(_secB){try{var _sg=window.mpSecAgg&&window.mpSecAgg(w.sym,w.lastBar.time,ivSec);
         if(_sg){var _sch=false;if(_sg.h>w.lastBar.high){w.lastBar.high=_sg.h;_sch=true;}if(_sg.l<w.lastBar.low){w.lastBar.low=_sg.l;_sch=true;}if(w.lastBar.close!==_sg.c){w.lastBar.close=_sg.c;_sch=true;}
-          if(_sch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{w.candle.update(w.lastBar);}catch(_){}}}
+          if(_sch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{(function(_b){if(window.mpBarOk(_b,'c3012'))w.candle.update(_b);})(w.lastBar);}catch(_){}}}
       }catch(_){}}
       else try{var _TKf=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
         for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<w.lastBar.time||_fb.t>=w.lastBar.time+ivSec)continue;
           if(ivSec===60){if(w.lastBar.high!==_fb.h||w.lastBar.low!==_fb.l||w.lastBar.close!==_fb.c){w.lastBar.high=_fb.h;w.lastBar.low=_fb.l;w.lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade - Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_fb.h>w.lastBar.high){w.lastBar.high=_fb.h;_fch=true;}if(_fb.l<w.lastBar.low){w.lastBar.low=_fb.l;_fch=true;}if(_fb.t===w.lastBar.time+ivSec-60&&w.lastBar.close!==_fb.c){w.lastBar.close=_fb.c;_fch=true;}}}
-        if(_fch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{w.candle.update(w.lastBar);}catch(_){}}
+        if(_fch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{(function(_b){if(window.mpBarOk(_b,'c3018'))w.candle.update(_b);})(w.lastBar);}catch(_){}}
       }}catch(_){}
       /* A SKIPPED TICK LEFT A HOLE IN THE SERIES, and Bybit's own 1s series has none - measured the day this
          shipped: 999 one-second steps across 1000 bars, 571 of them flat. The roll happens on a one-second loop,
@@ -3023,7 +3024,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          close - exactly what the exchange publishes for it. Capped, because past twelve seconds the gap check
          above has already asked for the real candles. */
       if(_secB&&nowBar-w.lastBar.time>ivSec){var _fc=w.lastBar.close,_ft=w.lastBar.time+ivSec,_fn=0;
-        while(_ft<nowBar&&_fn<60){var _fbar={time:_ft,open:_fc,high:_fc,low:_fc,close:_fc};try{if(w.bars&&w.bars.length&&_ft>w.bars[w.bars.length-1].time)w.bars.push(_fbar);}catch(_){}try{w.candle.update(_fbar);}catch(_){}_ft+=ivSec;_fn++;}}
+        while(_ft<nowBar&&_fn<60){var _fbar={time:_ft,open:_fc,high:_fc,low:_fc,close:_fc};try{if(w.bars&&w.bars.length&&_ft>w.bars[w.bars.length-1].time)w.bars.push(_fbar);}catch(_){}try{(function(_b){if(window.mpBarOk(_b,'c3027'))w.candle.update(_b);})(_fbar);}catch(_){}_ft+=ivSec;_fn++;}}
       var _nbk=null;try{if(_secB){var _sn=window.mpSecAgg&&window.mpSecAgg(w.sym,nowBar,ivSec);if(_sn)_nbk={t:nowBar,h:_sn.h,l:_sn.l,c:_sn.c};} /* seeding from the MINUTE bucket would hand a 1s bar a whole minute's range */
         else{var _TKo=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}}catch(_){}
       var _wop=w.lastBar.close,_wspk=(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025),_wcl=_wspk?_wop:p;
@@ -3033,7 +3034,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     else{if(!_grace){if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price - never bake it into the closing bar */
       if(_secB){try{var _sm=window.mpSecAgg&&window.mpSecAgg(w.sym,w.lastBar.time,ivSec);if(_sm&&w._lgp>0){if(_sm.h>w.lastBar.high&&_sm.h<w._lgp*1.025)w.lastBar.high=_sm.h;if(_sm.l<w.lastBar.low&&_sm.l>w._lgp*0.975)w.lastBar.low=_sm.l;}}catch(_){}}
       else try{var _TKw=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKw&&w._lgp>0){var _mw=[_TKw.cur,_TKw.prev];for(var _wi9=0;_wi9<2;_wi9++){var _wk=_mw[_wi9];if(!_wk)continue;if(_wk.t<w.lastBar.time||_wk.t>=w.lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open - adopting it drew a phantom gap between candles */if(_wk.h>w.lastBar.high&&_wk.h<w._lgp*1.025)w.lastBar.high=_wk.h;if(_wk.l<w.lastBar.low&&_wk.l>w._lgp*0.975)w.lastBar.low=_wk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
-    if(nb){w._disp=w.lastBar.close;try{w.candle.update(w.lastBar);}catch(e){}applyInds(w);try{if(!w._userPS)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
+    if(nb){w._disp=w.lastBar.close;try{(function(_b){if(window.mpBarOk(_b,'c3037'))w.candle.update(_b);})(w.lastBar);}catch(e){}applyInds(w);try{if(!w._userPS)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
     else startSmooth(); // forming-bar close is eased toward the true price by the rAF loop → it glides at 60fps instead of snapping
     if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw)w.dr.redraw();
     // once price crosses an alert level it has triggered (cron emails) - clear its line so it doesn't linger
@@ -3051,7 +3052,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       else if(w._disp!==tgt){ var d=tgt-w._disp; if(Math.abs(d)<=Math.max(Math.abs(tgt)*1e-5,1e-9))w._disp=tgt; else { w._disp+=d*0.34; active=true; } }
       else continue; // settled - nothing to redraw
       var c=w._disp; if(c>w.lastBar.high)c=w.lastBar.high; else if(c<w.lastBar.low)c=w.lastBar.low;
-      try{w.candle.update({time:w.lastBar.time,open:w.lastBar.open,high:w.lastBar.high,low:w.lastBar.low,close:c});}catch(e){}
+      try{(function(_b){if(window.mpBarOk(_b,'c3055'))w.candle.update(_b);})({time:w.lastBar.time,open:w.lastBar.open,high:w.lastBar.high,low:w.lastBar.low,close:c});}catch(e){}
     }
     if(active){_smRun=true;requestAnimationFrame(smoothLoop);}
   }

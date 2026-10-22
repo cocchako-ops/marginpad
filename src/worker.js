@@ -6397,7 +6397,8 @@ async function apiErrLog(env, ctx, ep, err, status, keyHash, everOk, uid) {
   const e = String(err).slice(0, 40).replace(/[^a-z0-9_]/gi, '');
   const p = String(ep || '?').slice(0, 24).replace(/[^a-z0-9_\/]/gi, '');
   const bump = async (k) => { try { const n = +(await env.STATS.get(k)) || 0; await env.STATS.put(k, String(n + 1), { expirationTtl: 40 * 86400 }); } catch (x) {} };
-  const work = Promise.all([bump(NS + 'day:' + day + ':' + e), bump(NS + 'ep:' + day + ':' + p + ':' + e)]);
+  const kh = String(keyHash || '').replace(/[^a-z0-9]/gi, '').slice(0, 10); // WHO: 3,860 of one week's 3,910 refusals were one shape from one caller and the reader could not name it (2026-10-22)
+  const work = Promise.all([bump(NS + 'day:' + day + ':' + e), bump(NS + 'ep:' + day + ':' + p + ':' + e), kh ? bump(NS + 'key:' + day + ':' + kh + ':' + e) : Promise.resolve()]);
   if (ctx && ctx.waitUntil) ctx.waitUntil(work); else await work;
   try { if (env.AE) env.AE.writeDataPoint({ indexes: ['apierr'], blobs: [e2 ? 'apierr_e2e' : 'apierr', p, everOk ? 'again' : 'first', e, String(status), String(keyHash || '')], doubles: [1] }); } catch (x) {}
 }
@@ -20552,8 +20553,12 @@ async function spotBoardBuild(env, ws) {
     }
     if (corrected.length) {
       rows.sort((a, b) => (b.pnl - a.pnl) || (a.trades - b.trades)); rows.forEach((r, i) => { r.rank = i + 1; });
+      // The CORRECTION keeps its 1% / $10 threshold - every row is priced right. The PAGE needs a bigger one: a
+      // 1.3% drift on a $11k row paged the owner twice a day (10-21/22) for a figure the guard had already fixed
+      // (2026-10-22). Only a disagreement over 5% / $50 is worth a line - that is the shape that found the $35k bag.
+      const loud = corrected.filter(c => Math.abs(c.positionEquity - c.boardEquity) > Math.max(50, Math.abs(c.boardEquity) * 0.05));
       const last = +(await env.STATS.get('alrt:memeboard') || 0);
-      if (Date.now() - last > 6 * 3600000) {
+      if (loud.length && Date.now() - last > 6 * 3600000) {
         await env.STATS.put('alrt:memeboard', String(Date.now()), { expirationTtl: 172800 });
         await tgAdmin(env, '<b>Meme Spot board: ' + corrected.length + ' row(s) priced two ways</b>\n' + corrected.map(c => '@' + c.who + ': board $' + c.boardEquity + ' vs positions $' + c.positionEquity + (c.capped.length ? ' (capped by pool: ' + c.capped.join(', ') + ')' : '')).join('\n') + '\nThe position figure was used. Something priced a key off a market its holder is not in - read the row before the season pays.', { kind: 'memeboard', sev: 'amber' });
       }
@@ -22861,7 +22866,7 @@ export default {
       // question - 117 of 174 keys never made a second call, why? - had no evidence behind it at all.
       const days = Math.max(1, Math.min(40, +url.searchParams.get('days') || 7));
       const dayKeys = []; for (let i = 0; i < days; i++) dayKeys.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
-      const byErr = {}, byEp = {}, byDay = {};
+      const byErr = {}, byEp = {}, byDay = {}, byKey = {};
       // DEFAULT IS REAL TRAFFIC. ?e2e=1 shows the test accounts instead - never mixed, because a count that
       // silently includes the suites is worse than no count (the wrong-number-on-the-desk rule).
       const wantE2 = url.searchParams.get('e2e') === '1';
@@ -22875,9 +22880,10 @@ export default {
         const p = n.replace('apierr:e2e:', 'apierr:').split(':');
         if (p[1] === 'day') { byErr[p[3]] = (byErr[p[3]] || 0) + v; byDay[p[2]] = (byDay[p[2]] || 0) + v; }
         else if (p[1] === 'ep') { const k = p[3] + ' :: ' + p.slice(4).join(':'); byEp[k] = (byEp[k] || 0) + v; }
+        else if (p[1] === 'key') { const k = p[3] + ' :: ' + p.slice(4).join(':'); byKey[k] = (byKey[k] || 0) + v; } // since 2026-10-22: which caller (key hash prefix) is being refused, and for what
       }
       const sortObj = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ what: k, n }));
-      return J({ ok: true, days, scope: wantE2 ? 'e2e test accounts only' : 'real traffic (e2e accounts excluded)', total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date. Refusals from e2e-prefixed test accounts are kept under their own prefix; add ?e2e=1 to read those instead.' });
+      return J({ ok: true, days, scope: wantE2 ? 'e2e test accounts only' : 'real traffic (e2e accounts excluded)', total: Object.values(byErr).reduce((t, n) => t + n, 0), byError: sortObj(byErr), byEndpoint: sortObj(byEp), byKey: sortObj(byKey).slice(0, 30), byDay: Object.entries(byDay).sort().map(([d, n]) => ({ day: d, n })), note: 'Counters start 2026-10-10 - the Bot API recorded no error before that date. Refusals from e2e-prefixed test accounts are kept under their own prefix; add ?e2e=1 to read those instead.' });
     }
     if (url.pathname === '/api/admin/supportjunk' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // What the door has turned away, and the purge for whatever got in before the door existed.
