@@ -7909,11 +7909,7 @@ async function checkZoneAlerts(env) {
     try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach((x) => allow.add(x)); } catch (e) {}
     const now = Date.now();
     const live = [];
-    for (const w of watch) {
-      let prem = allow.has(String(w.username || '').toLowerCase());
-      if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) {} }
-      if (prem) live.push(w);
-    }
+    for (const w of watch) { if (await premLiveRow(env, allow, w, now)) live.push(w); }
     if (!live.length) { await stamp({ watched: watch.length, premium: 0, fired: 0 }); return; }
     const want = new Set();
     live.forEach((w) => zoneAlertCfg(w.cfg).coins.forEach((c) => want.add(c)));
@@ -7956,6 +7952,17 @@ async function checkZoneAlerts(env) {
   } catch (e) {}
 }
 
+/* IS THIS WATCH-LIST ROW PREMIUM RIGHT NOW (2026-10-22)? The same stores premiumFor reads, minus the session: the
+   legacy permanent allow-list, the users.premium column the store hands back beside the row (`prem`), and the paid KV
+   row. The alert crons used to read the first and the last only - so an mp-ops 30-day grant, which lives ONLY in the
+   column, never fired a position or zone alert; and the Daily Brief delivery read none of them, so a member whose
+   Premium had ENDED kept receiving the brief every morning. Pure apart from the one KV read, so the E2E can drive it. */
+async function premLiveRow(env, allow, w, now) {
+  if (!w) return false;
+  if (allow && allow.has(String(w.username || '').toLowerCase())) return true;
+  if ((+w.prem || 0) > now) return true;
+  try { return (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) { return false; }
+}
 async function checkPositionAlerts(env) {
   try {
     if (!env.USERS || !env.STATS) return;
@@ -7968,11 +7975,7 @@ async function checkPositionAlerts(env) {
     try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
     const now = Date.now();
     const live = [];
-    for (const w of watch) {
-      let prem = allow.has(String(w.username || '').toLowerCase());
-      if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + w.uid)) || 0) > now; } catch (e) {} }
-      if (prem) live.push(w);
-    }
+    for (const w of watch) { if (await premLiveRow(env, allow, w, now)) live.push(w); }
     if (!live.length) { await stamp({ watched: watch.length, premium: 0, fired: 0 }); return; }
     const syms = new Set();
     live.forEach(w => { w.pos.forEach(p => syms.add(p.sym)); w.ord.forEach(o => syms.add(o.sym)); });
@@ -14079,21 +14082,47 @@ async function setPremiumDO(env, who, until) { if (!env.USERS) return; try { awa
 // The usernames on Premium PLUS (2026-09-18) - the profile plate names the plan, so it needs its own set rather
 // than inferring "plus" from the Premium one. Founders and the `premium:plusallow` grant list only; an ordinary
 // Premium grant must never light up as Plus. Cached per isolate for 60 s like premiumSet.
+/* THE BADGE ROSTER IS THE TRUTH, NOT A LIST THAT ONLY EVER GROWS (2026-10-22, owner: "da li kad istekne korisnik izgubi
+   premium"). `premium:names` was appended by every payment (premMarkName) and every mp-ops grant (setName) and taken
+   back ONLY by an explicit mp-ops "remove" - so a 30-day grant left a gold name in chat, on every board and a
+   `premium:true` on the profile card for ever. Measured the day it was found: 25 of the 34 roster names had no live
+   Premium, 20 of those still carried the badge on their card, two still wore the `aurora` frame. The set is now built
+   from what the STORE says is live right now - every paid member carries the users.premium column too (setPremiumDO at
+   the IPN) - plus the founders and the legacy permanent allow-list. `premium:names` is still written (the mp-ops roster
+   folds it in so a granted member never vanishes from the PANEL), it is just no longer what decides a badge. */
+let _premLive = { t: 0, rows: null };
+async function premiumLiveRows(env) { // [{id, username, until}] with until > now, cached per isolate 60 s like the two sets below
+  const now = Date.now(); if (_premLive.rows && now - _premLive.t < 60000) return _premLive.rows;
+  let rows = [];
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/premlist')); const d = await r.json(); rows = ((d && d.members) || []).filter(m => +m.until > now); }
+  catch (e) { return _premLive.rows || []; } // a store hiccup serves the last good roster, never an empty one
+  _premLive = { t: now, rows }; return rows;
+}
 let _plusSet = { t: 0, s: null };
 async function premiumPlusSet(env) {
   const now = Date.now(); if (_plusSet.s && now - _plusSet.t < 60000) return _plusSet.s;
   const set = new Set(PREM_FOUNDERS);
   try { ((await env.STATS.get('premium:plusallow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
-  try { ((await env.STATS.get('premium:plusnames')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  // the same three tests premiumFor makes: a lifetime row (more than five years out), the Founder marker, a paid Plus month
+  try {
+    for (const m of await premiumLiveRows(env)) {
+      const un = String(m.username || '').toLowerCase(); if (!un || set.has(un)) continue;
+      if (+m.until > now + 5 * 365 * 86400000) { set.add(un); continue; }
+      if (!m.id) continue;
+      if (await env.STATS.get('prem:founder:' + m.id)) { set.add(un); continue; }
+      if ((+(await env.STATS.get('prem:plus:' + m.id)) || 0) > now) set.add(un);
+    }
+  } catch (e) {}
   _plusSet = { t: now, s: set }; return set;
 }
-// the set of usernames that get the premium PRO badge (founders + owner-granted + paid) - cached per isolate 60s
+// the set of usernames that get the premium PRO badge (founders + legacy allow-list + whoever is live in the store) - cached per isolate 60s
 let _premSet = { t: 0, s: null };
 async function premiumSet(env) {
   const now = Date.now(); if (_premSet.s && now - _premSet.t < 60000) return _premSet.s;
   const set = new Set(PREM_FOUNDERS);
   try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
-  try { ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  try { (await premiumLiveRows(env)).forEach(m => { const un = String(m.username || '').toLowerCase(); if (un) set.add(un); }); } catch (e) {}
+  try { (await premiumPlusSet(env)).forEach(x => set.add(x)); } catch (e) {} // Plus is a superset of Premium
   _premSet = { t: now, s: set }; return set;
 }
 // ---- Bot ↔ site account connection + unified alerts ----
@@ -17979,9 +18008,9 @@ async function checkPremiumExpiry(env, dry) {
         : 'Your MarginPad Premium runs out on ' + when + '.' + String.fromCharCode(10, 10)
           + 'Nothing renews on its own here. We do not store a card and we will not charge you again unless you ask us to - so if you do nothing, it simply ends on that day.' + String.fromCharCode(10, 10))
       + 'What stops working:' + String.fromCharCode(10)
-      + '- the sie AI indicators on your charts (Cascade Radar, Market Brain, Market Memory, Liquidation Magnet, Big Liquidations (24h))' + String.fromCharCode(10)
+      + '- the five AI indicators on your charts (Cascade Radar, Market Brain, Market Memory, Liquidation Magnet, Big Liquidations (24h))' + String.fromCharCode(10)
       + '- the liquidation heatmap goes back to a five-minute preview every twelve hours' + String.fromCharCode(10)
-      + '- your daily Ask AI read on any chart' + String.fromCharCode(10)
+      + '- your ' + AI_DAILY.premium + ' Ask AI reads a day on any chart' + String.fromCharCode(10)
       + '- the Daily Brief, position alerts and the breakdowns in your trading report' + String.fromCharCode(10, 10)
       + 'Your account, your trades, your XP and everything you have earned stay exactly where they are.' + String.fromCharCode(10, 10)
       + 'Another month is $' + PREM_USD('premium') + ': https://marginpad.io/premium/' + String.fromCharCode(10)
@@ -21909,7 +21938,8 @@ export default {
       const q = url.searchParams;
       const add = (q.get('add') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
       const rem = (q.get('remove') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
-      const days = Math.max(1, Math.min(3650, +q.get('days') || 30)); // mp-ops grants last exactly 30 days by default
+      const dRaw = +q.get('days') || 30;
+      const days = (/^e2e/.test(add) && dRaw > 0 && dRaw < 1) ? dRaw : Math.max(1, Math.min(3650, dRaw)); // mp-ops grants last exactly 30 days by default; an e2e account may take a FRACTION of a day so a test can watch a grant expire by the clock, not by a removal (2026-10-22)
       const setName = async (name, on) => { try { let set = ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean).filter(x => x !== name); if (on) set.push(name); await env.STATS.put('premium:names', set.join(' ')); } catch (e) {} };
       // Persistent roster of granted usernames - survives expiry so a granted member NEVER just vanishes from the panel
       let allow = ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean);
@@ -28575,6 +28605,11 @@ async function checkBriefDelivery(env) { // once per opted-in account per UTC da
   const now = new Date(), day = now.toISOString().slice(0, 10), hour = now.getUTCHours();
   let watch = []; try { const r = await usersDO(env, '/briefwatch', {}); watch = ((r && r.watch) || []).filter(w => hour >= w.h); } catch (e) { return; }
   if (!watch.length) return;
+  // The brief is Premium (GET /api/brief answers 402 without it) and the delivery never asked - an opt-in outlived the
+  // membership. Resolved here, per row, from the same stores the position and zone alert crons use (2026-10-22).
+  { const allow = new Set(PREM_FOUNDERS); try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
+    const nowB = Date.now(), liveB = []; for (const w of watch) { if (await premLiveRow(env, allow, w, nowB)) liveB.push(w); } watch = liveB; }
+  if (!watch.length) return;
   let M = null, sent = 0, due = 0, subsBy = null;
   for (const w of watch) {
     const stamp = 'brief:sent:' + w.uid + ':' + day;
@@ -30068,8 +30103,8 @@ export class UserStore {
       for (const r of rows) {
         let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
         if (!cfg || (!cfg.push && !cfg.tg)) continue;
-        const u = this.rows("SELECT tg_chat, username FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
-        out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, h: (+cfg.h === 16 ? 16 : 8), username: u.username || '' });
+        const u = this.rows("SELECT tg_chat, username, premium FROM users WHERE id=? AND (status IS NULL OR status='active')", r.user_id)[0]; if (!u) continue;
+        out.push({ uid: r.user_id, push: !!cfg.push, tg: (cfg.tg && u.tg_chat) ? u.tg_chat : null, h: (+cfg.h === 16 ? 16 : 8), username: u.username || '', prem: +u.premium || 0 }); // prem = the users.premium expiry; the worker decides who is still Premium (2026-10-22)
       }
       return this.j({ watch: out });
     }
@@ -30084,10 +30119,10 @@ export class UserStore {
       for (const r of rows) {
         let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
         if (!cfg || !cfg.on) continue;
-        const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', r.user_id)[0] || {};
+        const u = this.rows('SELECT tg_chat, username, premium FROM users WHERE id=?', r.user_id)[0] || {};
         let push = 0; try { push = (this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', r.user_id)[0] || {}).n || 0; } catch (e) { push = 0; }
         if (!u.tg_chat && !push) continue;
-        out.push({ uid: r.user_id, cfg, tg: u.tg_chat || '', push: +push || 0, username: u.username || '' });
+        out.push({ uid: r.user_id, cfg, tg: u.tg_chat || '', push: +push || 0, username: u.username || '', prem: +u.premium || 0 });
       }
       return this.j({ watch: out });
     }
@@ -30115,9 +30150,9 @@ export class UserStore {
         const jn = this._loadJournal(uid).filter(t => t && (t.src === 'srv' || t.src === 'bot') && t.status !== 'win' && t.status !== 'loss');
         let ords = []; try { ords = this.rows("SELECT id, sym, side, px FROM porders WHERE uid=? AND status='open' LIMIT 30", uid); } catch (e) {}
         if (!jn.length && !ords.length) continue;
-        const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', uid)[0] || {};
+        const u = this.rows('SELECT tg_chat, username, premium FROM users WHERE id=?', uid)[0] || {};
         out.push({
-          uid, cfg, tg: u.tg_chat || null, username: u.username || '',
+          uid, cfg, tg: u.tg_chat || null, username: u.username || '', prem: +u.premium || 0,
           pos: jn.slice(0, 30).map(t => ({ id: String(t.id), sym: String(t.sym || '').toUpperCase(), side: t.side === 'short' ? 'short' : 'long', entry: +t.entry || 0, liq: +t.liq || 0, stop: (t.stop == null ? null : +t.stop), tp: (t.tp == null ? null : +t.tp), lev: +t.lev || 1 })),
           ord: ords.map(o => ({ id: o.id, sym: String(o.sym || '').toUpperCase(), side: o.side === 'short' ? 'short' : 'long', px: +o.px || 0 }))
         });
@@ -32585,7 +32620,7 @@ export class UserStore {
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
-      const u = this.rows('SELECT id, username, xp, created, bio, avatar, coins, frame, cardbg, sqbadge FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      const u = this.rows('SELECT id, username, xp, created, bio, avatar, coins, frame, cardbg, sqbadge, premium FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const records = this._pbSeason(u.id) || this._pbGet(u.id); // the public card shows SEASON records (close ledger), upb stays the toast/all-time source
@@ -32638,15 +32673,15 @@ export class UserStore {
       }
       return this.j({ exists: true, isSelf, viewerSignedIn: !!viewer, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
         iFollow, followsMe, mutual,
-        bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
+        bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if ((fr9 === 'neon' || fr9 === 'aurora') && !this._isPrem(u)) return 'default'; /* a Premium frame comes off with the Premium (2026-10-22): /setframe checks at EQUIP time only, so two expired members were still wearing aurora */ if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2), season: ssnOn },
         sqbadge: u.sqbadge || '', followers, squad: (function () { try { const m = this.rows('SELECT sid FROM squadm WHERE uid=?', u.id)[0]; if (!m) return null; const q = this.rows('SELECT id,name,tag,crest,leader,mvp,mvp_until,hidden FROM squads WHERE id=?', m.sid)[0]; return q ? { sid: q.id, name: q.name || '', tag: q.tag || '', crest: crestNorm(q.crest), leader: String(q.leader) === String(u.id), hidden: !!q.hidden, mvp: !!(q.mvp && +q.mvp_until > Date.now() && String(q.mvp) === String(u.id)) } : null; } catch (e) { return null; } }).call(this) });
     }
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) - for the mp-ops panel
-      const rows = this.rows('SELECT username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
-      return this.j({ members: rows.map(r => ({ username: r.username || '', until: +r.premium || 0 })) });
+      const rows = this.rows('SELECT id, username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
+      return this.j({ members: rows.map(r => ({ id: String(r.id), username: r.username || '', until: +r.premium || 0 })) }); // id since 2026-10-22: premiumPlusSet reads prem:plus:/prem:founder: per live member
     }
     if (path === '/premium/expiring') { // read-only: column-timed Premium (grants) expiring inside [from,to] - feeds the weekly ops digest
       const fromE = +b.from || Date.now(), toE = +b.to || (fromE + 7 * 86400000);
@@ -32697,7 +32732,7 @@ export class UserStore {
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
       const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin, cardbg FROM users WHERE id=?', uid)[0] || {};
       const _tk = this.rows('SELECT ticks FROM users WHERE id=?', uid)[0];
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, ticks: _tk ? +_tk.ticks || 0 : 0, earn: _earn, tlog: _tlog, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
+      return this.j({ owned: owned, equipped: ((u.frame === 'neon' || u.frame === 'aurora') && !premium) ? 'default' : (u.frame || 'default'), premium: premium, founder: founder, ticks: _tk ? +_tk.ticks || 0 : 0, earn: _earn, tlog: _tlog, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
     }
     if (path === '/achstate') { // THE VAULT F2: achievements - computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
       const uid = String(url.searchParams.get('uid') || '');
