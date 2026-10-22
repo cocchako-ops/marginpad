@@ -57,6 +57,26 @@ const AT_BOTTOM = () => { const m = document.getElementById('ctMsgs'); return m 
       if (vp.mobile) ok(!focused, vp.t + ': the composer is NOT auto-focused, so the reader\'s own tap raises the keyboard', { focused });
       else ok(focused, vp.t + ': the composer IS auto-focused, where it costs nothing', { focused });
 
+      /* THE KEYBOARD, AND THE REASON IT WAS NOT COMING UP (2026-10-22). Not the autofocus - the scroll
+         containment. It found the fixed #chatBox above the composer, looked for a scrollable ancestor between
+         them, found none and cancelled the touchmove a real thumb makes while tapping; on iOS a cancelled
+         touch loses the default action that focuses the field. Measured through the layer's own hook, which is
+         why both halves are asserted: the FIELD must be free and the message LIST must still be contained. */
+      const contain = await page.evaluate(() => ({
+        input: window.mpTouchBlocks ? window.mpTouchBlocks(document.getElementById('ctInput'), 2) : null,
+        list: window.mpTouchBlocks ? window.mpTouchBlocks(document.getElementById('ctMsgs'), 2) : null,
+      }));
+      ok(contain.input === false, vp.t + ': a touch on the composer is NOT cancelled, so it can raise a keyboard', contain);
+      ok(contain.list === true, vp.t + ': and the message list is still contained, which is what that layer is for', contain);
+      if (vp.mobile) {
+        const box = await page.evaluate(() => { const r = document.getElementById('ctInput').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+        await page.touchscreen.tap(box.x, box.y);
+        await sleep(400);
+        const f = await page.evaluate(() => document.activeElement && document.activeElement.id);
+        ok(f === 'ctInput', vp.t + ': a real tap focuses the composer (' + f + ')');
+        await page.evaluate(() => { const i = document.getElementById('ctInput'); if (i) i.blur(); });
+      }
+
       const start = await page.evaluate(AT_BOTTOM);
       ok(start >= 0 && start < 8, vp.t + ': the chat opens at the bottom (' + start + 'px from it)', { start });
 

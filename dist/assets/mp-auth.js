@@ -3035,6 +3035,20 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     }
     return null;
   }
+  /* A TEXT FIELD IS NEVER PAGE SCROLL (2026-10-22). Containing a touch that lands on a form control cancels
+     the touchmove a real thumb makes while tapping, and on iOS a cancelled touch loses the default action
+     that focuses the field and raises the keyboard - so the chat and the DM composer took taps and showed no
+     keyboard, while every input outside a fixed overlay was fine. Measured through this file's own hook:
+     mpScrollBlocks(#ctInput, 2) was true and mpScrollBlocks(the trade amount, 2) was false. */
+  function formish(el) {
+    var n = (el && el.nodeType === 1) ? el : (el && el.parentElement);
+    for (var i = 0; n && i < 8; n = n.parentElement, i++) {
+      var t = (n.tagName || '').toUpperCase();
+      if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || t === 'BUTTON' || t === 'LABEL' || t === 'A') return true;
+      try { if (n.isContentEditable) return true; } catch (e) {}
+    }
+    return false;
+  }
   function block(el, dy) {
     var top = overlayOf(el); if (!top) return false;
     var sc = scroller(el, top); if (!sc) return true;
@@ -3043,7 +3057,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (dy > 0 && sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 1) return true;
     return false;
   }
-  window.mpScrollBlocks = block; // E2E hook: mpScrollBlocks(element, deltaY) -> would this wheel be cancelled
+  /* A WHEEL AND A TOUCH ARE NOT THE SAME QUESTION (2026-10-22). A wheel has no focus semantics, so a text
+     field inside a modal must still contain the page behind it - scroll-contain-e2e asserts exactly that, and it
+     caught me exempting form controls from BOTH. A touch is different: cancelling it costs the default action
+     that focuses the field and raises the keyboard. So the exemption belongs to touch alone. */
+  window.mpScrollBlocks = block;                                      // E2E hook: would this WHEEL be cancelled
+  window.mpTouchBlocks = function (el, dy) { return !formish(el) && block(el, dy); };  // ...and this TOUCH
   document.addEventListener('wheel', function (e) {
     if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     if (block(e.target, e.deltaY)) e.preventDefault();
@@ -3054,7 +3073,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (!e.touches || e.touches.length !== 1) return;
     var x = e.touches[0].clientX, y = e.touches[0].clientY, dx = tx - x, dy = ty - y; tx = x; ty = y;
     if (horiz || Math.abs(dx) > Math.abs(dy) + 2) { horiz = true; return; }
-    if (block(e.target, dy)) e.preventDefault();
+    if (!formish(e.target) && block(e.target, dy)) e.preventDefault();   // a form control owns its own gesture
   }, { passive: false });
 })();
 

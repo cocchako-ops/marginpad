@@ -332,6 +332,12 @@
 <link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
 
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 </head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
@@ -957,7 +963,7 @@
   (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=9e6a69f7"></script>
-<script defer src="/assets/mp-nav.js?v=9e0b010f"></script>
+<script defer src="/assets/mp-auth.js?v=512d770b"></script>
+<script defer src="/assets/mp-nav.js?v=b834f2b7"></script>
 </body>
 </html>

@@ -100,6 +100,13 @@
   .lnks a:hover{border-color:var(--lime);color:var(--lime)}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
+<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 </head>
 <body>
 <div class="wrap">
@@ -155,6 +162,6 @@
 
 <p class="note">Security problems go to the same address with <b>SECURITY</b> in the subject; please do not post them publicly before we have answered. Business and partnership mail goes to <a href="mailto:hello@marginpad.io">hello@marginpad.io</a>. What we promise and do not promise about the API - availability, plans, breaking changes - is written out in <a href="/terms/#api">section 9 of the terms</a>, including the fact that there is no SLA.</p>
 </div>
-<script defer src="/assets/mp-nav.js?v=9e0b010f"></script>
+<script defer src="/assets/mp-nav.js?v=b834f2b7"></script>
 </body>
 </html>
