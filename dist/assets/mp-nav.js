@@ -653,8 +653,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=14bf76d6', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=14bf76d6"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=b2e0b070', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=b2e0b070"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -814,7 +814,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   function mount(){
     if(document.getElementById('mpCkBar'))return;
     var b=document.createElement('div');b.id='mpCkBar';
-    b.style.cssText='position:relative;z-index:94;margin:0;display:flex;align-items:center;gap:9px;background:rgba(13,16,21,.97);border-bottom:1px solid #2b323b;padding:7px 12px;font-family:Familjen Grotesk,system-ui,sans-serif;font-size:12px;line-height:1.35;color:#aab2bd'; // one slim line (2026-09-07 UX pass): the four-line card sat above the brand on every first visit and covered drawer headers
+    b.style.cssText='position:relative;z-index:94;margin:0;display:flex;align-items:center;gap:9px;background:rgba(13,16,21,.97);border-bottom:1px solid #2b323b;padding:calc(7px + env(safe-area-inset-top)) 12px 7px;font-family:Familjen Grotesk,system-ui,sans-serif;font-size:12px;line-height:1.35;color:#aab2bd'; // one slim line (2026-09-07 UX pass); padded by the safe-area inset since 2026-10-22 - the installed app draws under the iOS status bar and this is body's FIRST child, so it was the one thing under the clock: the four-line card sat above the brand on every first visit and covered drawer headers
     b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">' + ((window.__mpTR && window.__mpTR('ckBar')) || __esT_mpnav("cookiesSignInSecurity",'Cookies: sign-in, security and anonymous analytics. No ad tracking.')) + '</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:5px 11px;cursor:pointer">OK</button>';
     document.body.insertBefore(b,document.body.firstChild); // in the document flow at the top (2026-09-02): the fixed bottom card covered the primary buttons on phones
     document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
