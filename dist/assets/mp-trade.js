@@ -555,13 +555,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var syms=openSyms();if(!syms.length)return;var now=Date.now();
     syms.forEach(function(sym){
       var lp=window.mpLivePrices[sym];
-      if(lp&&lp.t&&(now-lp.t)<6000)return;               // WS or a recent poll already fresh → skip
+      if(lp&&(lp.r||lp.t)&&(now-(lp.r||lp.t))<6000)return;               // WS or a recent poll already fresh → skip (by ARRIVAL since 2026-10-22; t is the measured time)
       if(_busy[sym])return;_busy[sym]=1;
       fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('ptr',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         _busy[sym]=0;var p=j&&(+j.price);if(!(p>0))return;
         var prev=window.mpLivePrices[sym]||{};
         var _t9=(function(pd){var a=pd&&+pd.age;return (isFinite(a)&&a>=0&&a<864e5)?Date.now()-a:Date.now();})(j); if(+prev.t>0&&_t9<=+prev.t)return; /* the measured time, from the server-clock age; an older measurement never overwrites a newer one (2026-10-22) */
-        window.mpLivePrices[sym]={p:p,t:_t9,chg:(j&&j.chg!=null&&isFinite(j.chg))?+j.chg:prev.chg};
+        window.mpLivePrices[sym]={p:p,t:_t9,r:Date.now(),chg:(j&&j.chg!=null&&isFinite(j.chg))?+j.chg:prev.chg};
         try{document.dispatchEvent(new CustomEvent('mp:price',{detail:{sym:sym,price:p,chg:window.mpLivePrices[sym].chg}}));}catch(_){}
         if(window.mpJournalRender)window.mpJournalRender();
       });

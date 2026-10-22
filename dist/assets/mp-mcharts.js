@@ -261,12 +261,14 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq||p._rp)return false;
       var ok=false;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
+      if(kd&&kd.length){klStallNote(p,sym,tf,kd);kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.candle.applyOptions({priceFormat:(window.mpPriceFmt?window.mpPriceFmt(kd,p.lastBar.close):{type:'price',precision:2,minMove:0.01})});/* decimals measured from this market's own candles, not guessed from magnitude */if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs - mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
       return ok;
     });
   }
   function loadKlines(p){ if(!p.candle)return;if(tfIsSec(p.tf))window.__mpSecNeed=1;/* a restored pane and the AI's timeframe action reach here too, not only a tap */try{p.chart.timeScale().applyOptions({secondsVisible:tfSecs(p.tf)<=300});}catch(e){}if(p._rp)try{window.__mpReplay.exit(p);}catch(e){}p._userPS=false;_applyKlines(p).then(function(ok){if(ok&&!p.dead&&p.candle)try{var _vn=(p.bars&&p.bars.length)||0;if(_vn>0)p.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});else p.chart.timeScale().scrollToRealTime();}catch(e){}}); } // user/initial: pin the last ~120 bars (was scrollToRealTime, which kept barSpacing → deep-history dataset squished/sparse)
+  function klStallNote(o,sym,tf,kd){try{var k=sym+'|'+tf,s=o._st||(o._st={});if(s.key!==k){s.key=k;s.bk=0;s.next=0;s.seen=0;}var nw=+kd[kd.length-1].time,ivS=tfSecs(tf)||300,nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/ivS)*ivS,behind=nb-nw>Math.max(ivS*1.5,12);if(!behind){s.bk=0;s.next=0;}else if(s.seen&&nw<=s.seen){s.bk=Math.min(300000,(s.bk||5000)*2);s.next=Date.now()+s.bk;}s.seen=nw;}catch(e){}} /* STALL BACK-OFF (2026-10-22): a klines fetch counts as a stall only while the newest bar is BEHIND the clock and did not move since the last fetch - 5 s -> 5 min doubling, reset by any newer bar. An open market inside one bucket is never a stall. */
+  function klQuiet(o){try{if(window.mpIsMktClosed&&window.mpIsMktClosed(o.sym))return true;}catch(e){}return !!(o._st&&Date.now()<o._st.next);} /* the ONE answer to "should a liveness defense fetch candles now": a closed market never prints a newer bar, and asking every 8 s is load, not liveness (measured: 15 fetches in 45 s on one closed AAPL chart before this) */
   function resyncKlines(p){ if(!p.candle)return; // background re-sync - mirror of desktop refreshData: bail if the user scrolled into history so we never yank them back to the edge (guard is INSIDE, un-bypassable); never scrolls
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(vr&&p.bars&&p.bars.length&&vr.to<p.bars.length-3)return;}catch(e){}
     /* WINDOW-ALIGNED diff (2026-08-12, owner: a closed candle must never visibly change): the old path called
@@ -278,7 +280,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return;
       if(!kd||!kd.length){label(p);return;}
-      kd=sanitizeBars(kd);
+      klStallNote(p,sym,tf,kd);kd=sanitizeBars(kd);
       var _rm=0,_app=[],_mism=false;
       if(!p.bars||p.bars.length<3||kd.length<2){_rm=2;p.bars=kd;}
       else{
@@ -333,7 +335,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        candle onto 2h-old history - wait for the real bars. Modest gap still falls through so the chart keeps moving.
        Runs BEFORE the pr>0 bail (a stalled feed must still refetch). */
     try{var _ivH=tfSecs(p.tf)||3600,_nbH=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivH)*_ivH;
-      if(_nbH-p.lastBar.time>_ivH*1.5){p._hole=1;if(!p._gapT||Date.now()-p._gapT>8000){p._gapT=Date.now();resyncKlines(p);}if(_nbH-p.lastBar.time>_ivH*30)return;}}catch(e){}
+      if(_nbH-p.lastBar.time>_ivH*1.5){p._hole=1;if(!klQuiet(p)&&(!p._gapT||Date.now()-p._gapT>8000)){p._gapT=Date.now();resyncKlines(p);}if(_nbH-p.lastBar.time>_ivH*30)return;}}catch(e){}
     var pr=price(p.sym);if(!(pr>0))return;
     // spike filter (same as the desktop/paper-trade/heatmap engines): reject a lone tick that jumps >2.5% from the last
     // accepted price - one bad print would otherwise blow out the forming candle's high/low and compress every other candle
@@ -1141,12 +1143,12 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     //     price axis) makes the chart LOOK frozen even though live() keeps updating; heal it in ~2s like desktop.
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(!p._userPS&&(!vr||!p.bars||!p.bars.length||vr.to>=p.bars.length-2))p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     // (2) newest bar >1.5 intervals behind now → new bars stopped forming; force a klines re-sync (independent of price freshness)
-    try{if(p.lastBar){var _iv=tfSecs(p.tf)||3600,_nb=Math.floor(Date.now()/1000/_iv)*_iv;if((_nb-p.lastBar.time>Math.max(_iv*1.5,12)||p._hole)&&(!p._gapT||Date.now()-p._gapT>10000)){p._gapT=Date.now();resyncKlines(p);return;}}}catch(e){} // p._hole: keeps retrying even after a live roll made lastBar look current (cleared only on a successful snapshot fetch)
+    try{if(p.lastBar){var _iv=tfSecs(p.tf)||3600,_nb=Math.floor(Date.now()/1000/_iv)*_iv;if((_nb-p.lastBar.time>Math.max(_iv*1.5,12)||p._hole)&&!klQuiet(p)&&(!p._gapT||Date.now()-p._gapT>10000)){p._gapT=Date.now();resyncKlines(p);return;}}}catch(e){} // p._hole: keeps retrying even after a live roll made lastBar look current (cleared only on a successful snapshot fetch)
     // liveness: if the WS hasn't ticked this symbol for >8s, pull a REST price so the pane can NEVER freeze on a stale value
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
     if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}
       if(!p._rf||Date.now()-p._rf>8000){ p._rf=Date.now();
-        fetch('/api/price?symbol='+encodeURIComponent(p.sym)+window.__mpPQ('mcht',p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
+        fetch('/api/price?symbol='+encodeURIComponent(p.sym)+window.__mpPQ('mcht',p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){try{if(j&&j.state!=null&&window.mpMktState)window.mpMktState[String(p.sym).toUpperCase()]=String(j.state);}catch(e){} /* the market state the stall gate reads - the PT pollers that usually write it do not run here (2026-10-22) */var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
       } return; }
     live(p);});},2000);
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
