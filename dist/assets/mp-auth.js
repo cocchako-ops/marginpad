@@ -957,6 +957,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.ct-tk-f code{font-family:"Space Mono",monospace;color:#c8d0da;background:none;padding:0;font-size:10.5px}'
     + '.ct-tk-f em{margin-left:auto;font-style:normal;color:var(--tkc);font-weight:700;letter-spacing:.02em;white-space:nowrap}'
     + '@media(max-width:420px){.ct-tk{max-width:100%}.ct-tk-sp{width:88px}.ct-tk-roe{font-size:20px}}'
+    + '.ct-tk-rx{display:flex;align-items:center;gap:3px;padding:5px 7px 6px;border-top:1px solid #1f2936;background:rgba(0,0,0,.28);overflow-x:auto;scrollbar-width:none}'
+    + '.ct-tk-rx::-webkit-scrollbar{display:none}'
+    + '.ct-tk-rxb{display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 6px 0 5px;border-radius:999px;border:1px solid transparent;background:transparent;font-size:13px;line-height:1;cursor:pointer;color:#e9e7df;opacity:.42;box-shadow:none;transition:opacity .15s,border-color .15s,background .15s;flex:none}'
+    + '.ct-tk-rxb .g{font-size:13px;line-height:1}'
+    + '.ct-tk-rxb:hover{opacity:1;border-color:#2c3849;background:rgba(255,255,255,.05)}'
+    + '.ct-tk-rxb.has{opacity:1;border-color:#2c3849;background:rgba(255,255,255,.06)}'
+    + '.ct-tk-rxb.on{opacity:1;border-color:var(--tkc);background:rgba(255,255,255,.08);background:color-mix(in srgb,var(--tkc) 20%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--tkc) 35%,transparent)}'
+    + '.ct-tk-rxb i{font-style:normal;font-family:"Space Mono",monospace;font-weight:700;font-size:10.5px;line-height:1;color:#98a2ae}'
+    + '.ct-tk-rxb i:empty{display:none}.ct-tk-rxb.on i{color:var(--tkc)}'
+    + '.ct-tk-rxlbl{margin-left:auto;padding-left:6px;font-family:"Space Mono",monospace;font-weight:700;font-size:8.5px;line-height:1;letter-spacing:.1em;color:#4f5c70;text-transform:uppercase;flex:none}'
+    + '.ct-msg.ct-hastk>.ct-body>.ct-rx,.ct-msg.ct-hastk .ct-body>.ct-rx{display:none}'
     + '.ct-welc{display:block;margin:6px 0 3px;max-width:360px;border:1px solid #2a3b2a;border-radius:12px;padding:11px 13px 12px;background:linear-gradient(160deg,rgba(194,246,74,.11) 0,#0d1118 55%);color:#dbe4f5;font-size:12.5px;line-height:1.5}'
     + '.ct-welc-h{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}'
     + '.ct-welc-h b{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:#f3f4f0;letter-spacing:-.01em}'
@@ -3507,6 +3518,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     memo[id].catch(function () { delete memo[id]; });
     return memo[id];
   }
+  /* REACTIONS LIVE ON THE TICKET (2026-10-22, owner: the standard chips fell under the card over the next row's
+     time stamp - "jako lose uklopljeno"). The card carries its own rail: the six TRADE reactions always on show as
+     ghost buttons (one tap reacts, no long-press needed), counts as badges, the reader's own lit in the result
+     colour, and any classic reaction already on the message appended after them. The buttons wear `.ct-rxb` with
+     `data-rx` / `data-rxm`, so the chat's existing capture-phase click handler sends the react and - because it
+     stops propagation - the tap never opens the ticket. The TRUTH stays the chat's own `.ct-rx` chips (rxHtml /
+     paintRx keep writing them, hidden by CSS on a card row); the rail is a VIEW of them, re-read on every mutation
+     of the row, so a reaction arriving over the socket paints here without the chat knowing the rail exists. */
+  var TRADE_RX = ['\uD83D\uDE80', '\uD83D\uDC3B', '\uD83C\uDFAF', '\uD83E\uDDE0', '\uD83D\uDD25', '\uD83D\uDC80']; // the six trade reactions, the first half of CHAT_RX (escapes like DM_RX - no raw emoji in a bundle)
+  function railSync(card, row, mid) {
+    var rail = card.querySelector('.ct-tk-rx'); if (!rail) return;
+    var have = {}; Array.prototype.forEach.call(row.querySelectorAll(':scope > .ct-body > .ct-rx .ct-rxb, :scope > .ct-body .ct-rx .ct-rxb'), function (b) { var k = b.getAttribute('data-rx'); if (!k || b.closest('.ct-tk')) return; have[k] = { n: parseInt((b.querySelector('i') || {}).textContent || '0', 10) || 0, on: b.classList.contains('on') }; });
+    var keys = TRADE_RX.slice(); Object.keys(have).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
+    var sig = keys.map(function (k) { var h = have[k]; return k + (h ? h.n + (h.on ? '*' : '') : ''); }).join('|');
+    if (rail.getAttribute('data-sig') === sig) return;
+    var prev = rail.getAttribute('data-sig') || ''; rail.setAttribute('data-sig', sig);
+    rail.innerHTML = keys.map(function (k) { var h = have[k]; return '<button type="button" class="ct-rxb ct-tk-rxb' + (h ? ' has' : '') + (h && h.on ? ' on' : '') + '" data-rx="' + esc(k) + '" data-rxm="' + esc(mid) + '" aria-label="React ' + esc(k) + '"><span class="g">' + esc(k) + '</span><i>' + (h && h.n ? h.n : '') + '</i></button>'; }).join('') + '<span class="ct-tk-rxlbl">react</span>';
+    if (prev) { try { var changed = rail.querySelector('.ct-tk-rxb.on') || rail.querySelector('.ct-tk-rxb.has'); if (changed) changed.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.28)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'ease-out' }); } catch (e) {} }
+  }
   function hydrate(root) {
     root = root || document; if (!root.querySelectorAll) return;
     var links = root.querySelectorAll('a.ct-trade[data-trade]:not([data-tk])');
@@ -3517,7 +3547,16 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         if (!a.parentNode) return;
         var wrap = document.createElement('span'); wrap.innerHTML = html(t, id);
         var card = wrap.firstChild; if (!card) return;
+        var row = a.closest('.ct-msg'), mid = row ? String(row.getAttribute('data-mid') || '') : '';
+        if (row && mid) { // the rail goes on only inside a room row with a message id (a DM or a static page has nothing to react to)
+          var rail = document.createElement('div'); rail.className = 'ct-tk-rx'; card.appendChild(rail);
+          row.classList.add('ct-hastk');
+        }
         a.parentNode.replaceChild(card, a);
+        if (row && mid) {
+          railSync(card, row, mid);
+          try { new MutationObserver(function () { railSync(card, row, mid); }).observe(row, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+        }
         try { card.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }); } catch (e) {}
         try { var ms = card.closest('.ct-msgs, #ctMsgs'); if (ms && ms.scrollHeight - ms.scrollTop - ms.clientHeight < 160) ms.scrollTop = ms.scrollHeight; } catch (e) {}
       }).catch(function () { a.removeAttribute('data-tk'); a.setAttribute('data-tkdead', '1'); });
