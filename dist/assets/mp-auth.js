@@ -2030,7 +2030,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       }
       var dn = bodyEl.querySelector('#mpaDone'); if (dn) dn.addEventListener('click', close);
       bodyEl.querySelector('#mpaLogout').addEventListener('click', function () {
-        fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; reflect(); render(); });
+        fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; mpMeSnap(null); reflect(); render(); });
       });
       var sp = bodyEl.querySelector('#mpaSup'); if (sp) sp.addEventListener('click', function () { renderSup(); });
       var xpB = bodyEl.querySelector('#mpaXp'); if (xpB) xpB.addEventListener('click', function () { renderXpHistory(); });
@@ -2104,7 +2104,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode(), src: landingSrc() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
-          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? __esT_mpauth("accountCreated",'Account created ✓') : __esT_mpauth("signedIn2",'Signed in ✓'), 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
+          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} mpMeSnap(ME); reflect(); setMsg(d.isNew ? __esT_mpauth("accountCreated",'Account created ✓') : __esT_mpauth("signedIn2",'Signed in ✓'), 'ok'); try { setTimeout(function () { window.mpCarryOver(ME && ME.id, !!d.isNew); }, 1200); } catch (e) {} if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
           else if (d.error === 'bad_code') setMsg(__esT_mpauth("wrongCode",'Wrong code') + (d.left != null ? ' - ' + d.left + __esT_mpauth("triesLeft",' tries left') : '') + '.', 'err');
           else if (d.error === 'expired' || d.error === 'no_code') setMsg(__esT_mpauth("codeExpiredRequestA",'Code expired - request a new one.'), 'err');
           else if (d.error === 'too_many_attempts') setMsg(__esT_mpauth("tooManyTriesRequest",'Too many tries - request a new code.'), 'err');
@@ -2775,9 +2775,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     setTimeout(function () { clearInterval(_iv); }, 20000);
   })();
 
+  /* THE ACCOUNT WAS NEVER CACHED. ME was set only after /api/auth/me resolved, so the identity cost a 152 KB
+     download AND a round trip - on slow 4G, 4.4s after navigation and 2.2s after the page had already painted.
+     The snapshot is written below on every confirmed answer and read here before the fetch is even made; the
+     fetch still runs and still wins. mpMe.in gates it, so a signed-out device cannot be seeded. */
+  try { if (window.mpMe && window.mpMe.in && window.mpMe.user && !ME) { ME = window.mpMe.user; window.mpTktSkin = ME.tktskin || ''; reflect(); } } catch (e) {}
+  /* ONE WRITER for the snapshot: every path that learns the truth comes through here, including the one that
+     learns there is no account - which must CLEAR it, or a shared device keeps showing the last member. */
+  function mpMeSnap(u) {
+    try {
+      if (!u) { localStorage.removeItem('mp_me'); if (window.mpMe) { window.mpMe.user = null; window.mpMe.in = false; window.mpMe.fresh = true; } return; }
+      var s = JSON.stringify({ t: Date.now(), u: u });
+      if (s.length < 60000) localStorage.setItem('mp_me', s);   // an avatar is a data URI; refuse to blow the quota
+      if (window.mpMe) { window.mpMe.user = u; window.mpMe.in = true; window.mpMe.at = Date.now(); window.mpMe.fresh = true; }
+    } catch (e) {}
+  }
+  window.mpMeSnap = mpMeSnap;
   var _liChk; try { _liChk = localStorage.getItem('mp_li_chk') === '1'; } catch (e) { _liChk = false; }
   if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely - that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
-    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); try { if (/[?&]brief=1(&|$)/.test(location.search)) setTimeout(function () { if (window.mpBrief) window.mpBrief.show(); }, 700); } catch (e) {} /* ?brief=1 = the morning push / Telegram deep link straight into the brief */
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; mpMeSnap(ME); reflect(); if (ME) { dwSince = Date.now(); syncTrades(); try { if (/[?&]brief=1(&|$)/.test(location.search)) setTimeout(function () { if (window.mpBrief) window.mpBrief.show(); }, 700); } catch (e) {} /* ?brief=1 = the morning push / Telegram deep link straight into the brief */
       if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout - celebrate now (the 60s poll would otherwise lag)
         setTimeout(function () { if (window.mpPremiumCelebrate) window.mpPremiumCelebrate(); }, 1000);
         try { var u = new URL(location.href); u.searchParams.delete('premium'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
