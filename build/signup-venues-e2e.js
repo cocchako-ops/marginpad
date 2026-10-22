@@ -24,7 +24,34 @@ const AK = { 'x-admin-key': K, 'content-type': 'application/json' };
 // for a venue with no pair deep link (BingX, Moon, Fomo) and a 200 interstitial that fires the app for one that
 // has (MEXC), so the code is looked for in the Location header OR the body. Checking the HOST instead would
 // have been wrong anyway: promote.mexc.com and www.mexc.com?inviteCode=47LrK credit the same account.
-const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'K5WJQO' }];
+const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'K5WJQO' }, { v: 'bitget', label: 'Bitget', code: 'DSSSQKGK' }];
+
+/* A VENUE MISSING FROM EITHER CENTS TABLE IS PAID THE RETIRED $3 DEFAULT (2026-10-22). The DO decides what an
+   approval credits with `cfg[exchange + 'C']`, falling back to the long-retired generic `exsignC` - which is 300
+   cents. It reads that out of the snapshot the worker builds for it, and the snapshot is a hand-written field
+   list: Bitget shipped missing from it and would have paid $3 on every claim, with its ops kill switch dead too
+   (the identical hole that left `mexcEnabled` doing nothing on 2026-10-21). Caught by the review desk printing
+   "+$0.00", not by any test - so it is a test now. Reads the SHIPPED worker source, so it covers the next venue
+   without anybody remembering this. */
+function sourceGuards() {
+  const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
+  // the table is one line and every entry carries its own braces, so `[^}]*` stops at the first nested one -
+  // take the whole LINE instead (my first cut of this guard failed for exactly that reason)
+  const m = src.match(/^.*const SIGN_VENUES = \{.*$/m);
+  ok(!!m, 'SIGN_VENUES is readable from the worker source');
+  if (!m) return;
+  const venues = [...m[0].matchAll(/(\w+):\s*\{\s*label:/g)].map(x => x[1]);
+  ok(venues.length >= 5, 'the venue table names every venue (' + venues.join(', ') + ')');
+  const snap = src.indexOf('reward config snapshot passed to the DO');
+  ok(snap > 0, 'the DO config snapshot is readable');
+  const snapLine = src.slice(src.lastIndexOf('const cfg = {', snap), snap);
+  for (const v of venues) {
+    if (v === 'fomo') continue;                       // retired: it takes no new claims, so it can never be approved
+    ok(src.indexOf(v + 'C: c(num(m.' + v + 'Usd') >= 0, v + ' has its own cents default in rewardCfg (else approval pays the retired $3)');
+    ok(snapLine.indexOf(v + 'C: full.' + v + 'C') >= 0, v + ' cents reach the DO in the config snapshot');
+    ok(snapLine.indexOf(v + 'Enabled: full.' + v + 'Enabled') >= 0, v + ' kill switch reaches the DO in the config snapshot');
+  }
+}
 
 (async () => {
   const mkUser = async (tag) => {
@@ -41,6 +68,9 @@ const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 
   const adm = await j('/api/stats/session', { method: 'POST', headers: { 'x-admin-key': K } });
   ok(adm.b && adm.b.token, 'admin session minted');
   const A = { cookie: 'mp_sadm=' + adm.b.token, 'content-type': 'application/json' };
+
+  // ---------- the structural guards, before a cent moves ----------
+  sourceGuards();
 
   // ---------- what the page is told ----------
   const acct0 = await j('/api/reward/account', { headers: a.H });
@@ -143,14 +173,22 @@ const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 
 
   // ---------- the card copy on /rewards/ names both and no longer names Fomo ----------
   const page = await fetch(O + '/rewards/?nc=1&cb=' + Date.now()).then(r => r.text());
-  ok(page.indexOf('id="mexcCard"') >= 0, 'the MEXC card is in the served /rewards/ markup');
-  ok(page.indexOf('id="bingxCard"') >= 0, 'the BingX card is in the served /rewards/ markup');
-  ok(page.indexOf('id="fomoCard"') < 0, 'and the Fomo card is gone from it');
-  ok(page.indexOf('/assets/ex/mexc.png') >= 0 && page.indexOf('/assets/ex/bingx.png') >= 0, 'both logos are referenced from our own assets');
-  for (const f of ['mexc', 'bingx']) {
-    const r = await fetch(O + '/assets/ex/' + f + '.png');
-    ok(r.status === 200 && (r.headers.get('content-type') || '').indexOf('image') >= 0, '/assets/ex/' + f + '.png serves an image (' + r.status + ')');
+  for (const { v, label } of LIVE) {
+    ok(page.indexOf('id="' + v + 'Card"') >= 0, 'the ' + label + ' card is in the served /rewards/ markup');
+    ok(page.indexOf('/assets/ex/' + v + '.png') >= 0, 'and its logo is referenced from our own assets, never a hotlink');
+    const r = await fetch(O + '/assets/ex/' + v + '.png');
+    ok(r.status === 200 && (r.headers.get('content-type') || '').indexOf('image') >= 0, '/assets/ex/' + v + '.png serves an image (' + r.status + ')');
   }
+  ok(page.indexOf('id="fomoCard"') < 0, 'and the Fomo card is gone from it');
+  // the payout method, which is the second half of what a venue is here (2026-10-22)
+  ok(page.indexOf('id="wdmBitget"') >= 0 && page.indexOf('id="wdNoteBitget"') >= 0, 'Bitget is offered as a payout method with its own note');
+  ok(page.indexOf('id="wdmBybit"') >= 0 && page.indexOf('id="wdmMoon"') >= 0 && page.indexOf('id="wdmMexc"') >= 0, 'and the three methods that were already there are untouched');
+  // the public pre-check must FAIL OPEN - a member may never be blocked by our own outage or a missing key
+  const pc = await j('/api/reward/bitgetcheck?uid=1234567890');
+  ok(pc.s === 200 && pc.b && pc.b.ok === true && (pc.b.gate === false ? pc.b.listed === true : true),
+    'the Bitget pre-check answers, and when it could not ASK it says so rather than blocking (gate=' + (pc.b && pc.b.gate) + ' listed=' + (pc.b && pc.b.listed) + ')');
+  const bad = await j('/api/reward/bitgetcheck?uid=x');
+  ok(bad.s === 200 && bad.b && bad.b.ok === false, 'and a value that is not a UID is simply not a question');
   // the offer is on /rewards/ ONLY - the owner was explicit that the bonus must not travel to the homepage
   const home = await fetch(O + '/?nc=1&cb=' + Date.now()).then(r => r.text());
   ok(home.indexOf('data-ex="BingX"') >= 0, 'BingX has a tile on the homepage, like the other venues');

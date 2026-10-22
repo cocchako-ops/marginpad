@@ -391,7 +391,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div class="et-r">
       <div class="et-k">Once, when you start</div>
       <div class="et-v"><span class="eamt" id="eaOnce">$2.50</span><i>in total</i></div>
-      <div class="et-d"><b id="eaWel">$0.50</b> welcome bonus when a friend invites you, plus <b id="eaMoon">$1.00</b> for opening a Moon account through us, and <b id="eaMexc">$1.00</b> each for a MEXC or <b id="eaBingx">$1.00</b> a BingX one.</div>
+      <div class="et-d"><b id="eaWel">$0.50</b> welcome bonus when a friend invites you, plus <b id="eaMoon">$1.00</b> for opening a Moon account through us, and <b id="eaMexc">$1.00</b> each for a MEXC, <b id="eaBingx">$1.00</b> a BingX or <b id="eaBitget">$1.00</b> a Bitget one.</div>
     </div>
     <div class="et-r">
       <div class="et-k">Every day</div>
@@ -456,6 +456,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
         <button type="button" id="wdmBybit" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer">Bybit UID</button>
         <button type="button" id="wdmMoon" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/moon.png" alt="" width="16" height="16" style="border-radius:4px;background:#fff;padding:1px">Moon</button>
         <button type="button" id="wdmMexc" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/mexc.png" alt="" width="16" height="16" style="border-radius:4px">MEXC</button>
+        <button type="button" id="wdmBitget" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/bitget.png" alt="" width="16" height="16" style="border-radius:4px">Bitget</button>
       </div>
       <!-- Payout notes (2026-09-09): a payout NEEDS an account at the venue, so the link to open one belongs right here.
            It was already in this text, but as bare prose with no tracking at all - measured 4,178 pageviews and 1 click a
@@ -466,6 +467,8 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
         <div class="wd-row"><a class="wd-go" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Create your Moon account &rarr;</a></div></div>
       <div class="note wd-note" id="wdNoteMexc" hidden style="--wdc:#5b8cff;--wdb:rgba(91,140,255,.42);--wdg:rgba(91,140,255,.08)">USDT is sent to your <b>MEXC</b> account by UID - the account must have been opened through our MEXC link. Your UID is the number under your email in the MEXC account menu.
         <div class="wd-row"><a class="wd-go" data-mpex="MEXC" href="https://promote.mexc.com/a/ZBQaEXe8" target="_blank" rel="sponsored noopener noreferrer">Create your MEXC account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
+      <div class="note wd-note" id="wdNoteBitget" hidden style="--wdc:#00e7d8;--wdb:rgba(0,231,216,.42);--wdg:rgba(0,231,216,.08)">USDT is sent to your <b>Bitget</b> account by UID - the account must have been opened through our Bitget link. Your UID is the number in your Bitget account menu.
+        <div class="wd-row"><a class="wd-go" data-mpex="Bitget" href="https://www.bitget.com/referral/register?clacCode=DSSSQKGK&amp;from=%2Fevents%2Freferral-all-program&amp;source=events&amp;utmSource=PremierInviter" target="_blank" rel="sponsored noopener noreferrer">Create your Bitget account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="lbl" style="margin:12px 0 6px">How much?</div>
       <div class="addr-row wd-amt"><input id="wdAmt" type="text" inputmode="decimal" placeholder="Amount in USDT" autocomplete="off" spellcheck="false" /><button type="button" class="btn btn-ghost" id="wdAll">All</button></div>
       <div class="note" id="wdAmtNote" style="text-align:left;margin:6px 0 10px;color:#c7ced6"></div>
@@ -533,6 +536,14 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     <div id="bingxForm"><div class="addr-row"><input id="bingxUser" type="text" placeholder="2) Your BingX UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="bingxSubmit" type="button">Submit</button></div></div>
     <div class="msg" id="bingxMsg"></div>
     <div id="bingxStatus" style="margin-top:8px"></div>
+  </div>
+  <div class="card" id="bitgetCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/ex/bitget.png" alt="" aria-hidden="true" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block;flex:0 0 auto;background:#00e7d8">Bitget sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="bitgetAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Bitget</b> account through our link, then enter your Bitget UID below. We check it against Bitget’s own referral list and add <b style="color:#c2f64a">$<span id="bitgetAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="bitgetRefBtn" data-mpex="Bitget" href="#" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Bitget account</a>
+    <div id="bitgetForm"><div class="addr-row"><input id="bitgetUser" type="text" placeholder="2) Your Bitget UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="bitgetSubmit" type="button">Submit</button></div></div>
+    <div class="msg" id="bitgetMsg"></div>
+    <div id="bitgetStatus" style="margin-top:8px"></div>
   </div>
 
   <div class="card" id="promoCard" hidden>
@@ -856,8 +867,9 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     var moon=(j.moonEnabled===false)?0:(j.moonUsd!=null?+j.moonUsd:1);
     var mexc=(j.mexcEnabled===false)?0:(j.mexcUsd!=null?+j.mexcUsd:1);
     var bingx=(j.bingxEnabled===false)?0:(j.bingxUsd!=null?+j.bingxUsd:1);
-    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+mexc+bingx));
-    if(moon)set('eaMoon',usd(moon)); if(mexc)set('eaMexc',usd(mexc)); if(bingx)set('eaBingx',usd(bingx));
+    var bitget=(j.bitgetEnabled===false)?0:(j.bitgetUsd!=null?+j.bitgetUsd:1);
+    set('eaWel',usd(wel)); set('eaOnce',usd(wel+moon+mexc+bingx+bitget));
+    if(moon)set('eaMoon',usd(moon)); if(mexc)set('eaMexc',usd(mexc)); if(bingx)set('eaBingx',usd(bingx)); if(bitget)set('eaBitget',usd(bitget));
     if(j.perDay!=null)set('eaDay',usd(j.perDay));
     if(j.amount!=null)set('eaAmt',usd(j.amount));
     if(j.minWd!=null)set('eaMin',usd(j.minWd));
@@ -870,7 +882,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}
     /* MEXC + BingX (2026-10-21): members-only and hidden when paused in ops, exactly as the Moon card is.
        Fomo's $1 was retired the same day - its card is gone, and the server refuses a new claim with 410. */
-    ['mexc','bingx'].forEach(function(vk){
+    ['mexc','bingx','bitget'].forEach(function(vk){
       var off=(j[vk+'Enabled']===false); window['__'+vk+'Off']=off;
       var el=document.getElementById(vk+'Card'); if(el)el.hidden=off||!signedIn;
       var u=j[vk+'Usd'];
@@ -922,7 +934,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
      comes from window.mpEx so the page never holds a second copy of a partner URL, and the endpoint is
      /api/reward/<venue>sign/* which forces the exchange SERVER-side. Moon keeps its own block above - it
      carries the contest box and the board rules, which these do not. */
-  var SIGNV = [{ k: 'mexc', label: 'MEXC' }, { k: 'bingx', label: 'BingX' }];
+  var SIGNV = [{ k: 'mexc', label: 'MEXC' }, { k: 'bingx', label: 'BingX' }, { k: 'bitget', label: 'Bitget' }];
   function signCard(v) {
     var card = document.getElementById(v.k + 'Card'); if (!card) return;
     function msg(t, kind) { var el = document.getElementById(v.k + 'Msg'); if (!el) return; el.innerHTML = t; el.className = 'msg show ' + (kind || ''); }
@@ -1069,7 +1081,10 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   var WD_METHODS = [
     { k: 'bybit', btn: 'wdmBybit', note: 'wdNoteBybit', mode: 'numeric', re: /^[0-9]{5,15}$/, ph: __esT_rewardsindex("yourBybitUidNumbers", 'Your Bybit UID (numbers only)'), bad: __esT_rewardsindex("enterYourBybitUid", 'Enter your Bybit UID (numbers only).') },
     { k: 'moon', btn: 'wdmMoon', note: 'wdNoteMoon', mode: 'text', re: /^[A-Za-z0-9_.-]{3,32}$/, prefix: 'moon:', lower: true, ph: __esT_rewardsindex("yourMoonUsername", 'Your Moon username'), bad: __esT_rewardsindex("enterYourMoonUsername", 'Enter your Moon username (3-32 letters/numbers).') },
-    { k: 'mexc', btn: 'wdmMexc', note: 'wdNoteMexc', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'mexc:', ph: 'Your MEXC UID (numbers only)', bad: 'Enter your MEXC UID (numbers only).' }
+    { k: 'mexc', btn: 'wdmMexc', note: 'wdNoteMexc', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'mexc:', check: 'mexccheck', ph: 'Your MEXC UID (numbers only)', bad: 'Enter your MEXC UID (numbers only).' },
+    /* `check` names the venue's own pre-check endpoint; a method without one simply submits, which is what
+       keeps Bybit and Moon on exactly the path they were on. */
+    { k: 'bitget', btn: 'wdmBitget', note: 'wdNoteBitget', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'bitget:', check: 'bitgetcheck', ph: 'Your Bitget UID (numbers only)', bad: 'Enter your Bitget UID (numbers only).' }
   ];
   function wdM(k){ for (var i = 0; i < WD_METHODS.length; i++) if (WD_METHODS[i].k === (k || wdMethod)) return WD_METHODS[i]; return WD_METHODS[0]; }
   function setWdMethod(m){wdMethod=m;
@@ -1223,14 +1238,20 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     /* MEXC pre-check, the same reason Bybit has one (2026-08-16): a doomed withdrawal used to sit pending for days
        and end as a support ticket. Ours is answered by MEXC's own affiliate API, so it is a fact rather than a list.
        An unreachable API answers gate:false and the request goes through - never trap money a member has earned. */
-    if(wdMethod==='mexc'){
+    /* ONE PRE-CHECK BRANCH FOR EVERY VENUE THAT HAS ONE (2026-10-22). This was written out for MEXC; Bitget
+       would have been a fourth copy of the same six lines in a file that has already broken from exactly that.
+       It FAILS OPEN in both directions - a network error still submits, because the server re-checks anyway and
+       a member must never be stopped by our own outage. */
+    var wdC=wdM();
+    if(wdC.check){
+      var wdLbl=wdC.k==='bitget'?'Bitget':'MEXC';
       wdConfirm.disabled=true; clearMsg();
-      fetch('/api/reward/mexccheck?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(j){
+      fetch('/api/reward/'+wdC.check+'?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(j){
         wdConfirm.disabled=false;
         if(j&&j.gate&&j.listed===false){ wdAddr.classList.add('invalid');
-          msg('We could not find this UID among the accounts opened through our MEXC link, so we cannot send a payout to it. Open a MEXC account through our link and use that UID, or switch the payout method to Moon. If you did sign up through our link, ask support and we will check - your balance is untouched.','err'); return; }
-        wdSend('mexc:'+a);
-      }).catch(function(){ wdConfirm.disabled=false; wdSend('mexc:'+a); });
+          msg('We could not find this UID among the accounts opened through our '+wdLbl+' link, so we cannot send a payout to it. Open a '+wdLbl+' account through our link and use that UID, or switch the payout method to Moon. If you did sign up through our link, ask support and we will check - your balance is untouched.','err'); return; }
+        wdSend(wdC.prefix+a);
+      }).catch(function(){ wdConfirm.disabled=false; wdSend(wdC.prefix+a); });
       return;
     }
     /* Bybit UID pre-check (2026-08-16, support-driven): warn BEFORE submitting - a doomed withdrawal used to sit pending for days and end as a support ticket */

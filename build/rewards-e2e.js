@@ -35,7 +35,7 @@ const LOOK = () => {
     gate: txt('.et-gate'),
     foot: txt('.et-f'),
     once: txt('#eaOnce'), day: txt('#eaDay'), amt: txt('#eaAmt'), min: txt('#eaMin'),
-    wel: txt('#eaWel'), moon: txt('#eaMoon'), fomo: txt('#eaFomo'), mexc: txt('#eaMexc'), bingx: txt('#eaBingx'), post: txt('#eaPost'),
+    wel: txt('#eaWel'), moon: txt('#eaMoon'), fomo: txt('#eaFomo'), mexc: txt('#eaMexc'), bingx: txt('#eaBingx'), bitget: txt('#eaBitget'), post: txt('#eaPost'),
     lvlCard: shown('#lvlCard'),
     authCard: shown('#authCard'),
     dash: shown('#dash'),
@@ -108,7 +108,11 @@ async function visit(vp, ua, cookie) {
   ok(g.wel === usd(cfg.welcomeAmt), 'the welcome bonus matches the server (' + g.wel + ')', { page: g.wel, server: usd(cfg.welcomeAmt) });
   // VENUE-DRIVEN, so a venue retired or added does not make this suite wrong (2026-10-21: Fomo out, MEXC and
   // BingX in - the old literal sum said $1.50 against a correct $3.50 on the page)
-  const SIGN = [['moon', 'Moon'], ['mexc', 'MEXC'], ['bingx', 'BingX'], ['fomo', 'Fomo']];
+  // ...and the LIST itself is read off the server payload rather than typed here, which is what makes it truly
+  // venue-driven: adding Bitget on 2026-10-22 still turned this red, because a hand-kept list is a second copy
+  // of the venue table however the arithmetic is done.
+  const LABEL = { moon: 'Moon', mexc: 'MEXC', bingx: 'BingX', bitget: 'Bitget', fomo: 'Fomo' };
+  const SIGN = Object.keys(cfg).filter(k => /Usd$/.test(k) && (k.slice(0, -3) in LABEL)).map(k => [k.slice(0, -3), LABEL[k.slice(0, -3)]]);
   for (const [v, label] of SIGN) {
     if (cfg[v + 'Enabled'] === false) { ok(!g[v], 'a switched-off venue (' + label + ') states no amount on the board', { page: g[v] }); continue; }
     ok(g[v] === usd(cfg[v + 'Usd']), 'the ' + label + ' bonus matches the server (' + g[v] + ')', { page: g[v], server: usd(cfg[v + 'Usd']) });
