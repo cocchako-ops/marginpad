@@ -20217,7 +20217,7 @@ async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for
 // /api/v1/cg proxy with the key forwarded; the proxy allowlists only this OHLCV path. Soft daily cap (KV cannot count exactly - this is a
 // ceiling against a runaway afternoon, not a ledger) so charts can never eat the screener's icon budget on the same key. Own fetch + own
 // ceiling: an optional chart layer must never trip the collector breaker the money paths share (the 2026-10-12 rule), and it honours an open one.
-const CG_ONCHAIN_DAY_CAP = 250;
+const CG_ONCHAIN_DAY_CAP = 180; // the screener's icon refresh spends ~150/day on the same 10k/month key; 180 + 150 stays under 333/day. Measured the day this shipped: 39 of 50 probe charts came through here while GT was limiting both egresses
 async function cgOnchain(env, gpath, ttl) {
   if (!env.COINGECKO_API_KEY || !env.COLLECTOR_URL) return null;
   if (Date.now() < COL_DOWN_UNTIL) return null;
