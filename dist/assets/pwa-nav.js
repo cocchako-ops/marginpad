@@ -8,6 +8,10 @@
   document.addEventListener('click', function (e) {
     var a = e.target && e.target.closest && e.target.closest('a');
     if (!a) return;
+    // an anchor that is a BUTTON is not a navigation (2026-10-23: the phone tab bar's Chat tab is <a data-mpbn> and this
+    // interceptor sent the installed app to the homepage on every open - see build/fix-pwa-chat-tab.js); and a click
+    // another handler has already cancelled is theirs, not ours
+    if (e.defaultPrevented || a.hasAttribute('data-mpbn') || a.getAttribute('role') === 'button') return;
     if (a.target === '_blank' || a.hasAttribute('download')) return; // new tab / downloads: leave alone
     var href = a.getAttribute('href');
     if (!href || href.charAt(0) === '#') return;                     // in-page anchors

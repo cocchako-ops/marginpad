@@ -356,11 +356,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     var keys = { Browse: 'browse', Practice: 'practice', Trades: 'trades', Chat: 'chat' };
     var bn = document.createElement('nav'); bn.className = 'mpbn'; bn.setAttribute('aria-label', 'Quick navigation');
     bn.innerHTML = items.map(function (it) {
-      var browse = it[0] === 'browse';
+      var browse = it[0] === 'browse', act = browse || it[1] === 'Chat'; // Chat is an ACTION, not a destination (2026-10-23): a real href here is what pwa-nav.js navigates to in the installed app - see build/fix-pwa-chat-tab.js
       // match the FULL href (path + query) - else "/paper-trade" and "/paper-trade?trades=1" both lit up on /paper-trade (Trades glowed wrongly)
       var iq = it[0].indexOf('?') >= 0 ? it[0].slice(it[0].indexOf('?')) : '';
-      var cur = (!browse && (it[0].split('?')[0].replace(/\/$/, '') || '/') === path && iq === (location.search || '')) ? ' cur' : '';
-      return '<a href="' + (browse ? '#' : it[0]) + '" data-mpbn="' + keys[it[1]] + '"' + (browse ? ' role="button"' : '') + ' class="mpbn-i' + cur + '" aria-label="' + TR(it[2]) + '"><svg viewBox="0 0 24 24" width="22" height="22" ' + S + '>' + it[3] + '</svg><span class="mpbn-l">' + TR(it[2]) + '</span></a>';
+      var cur = (!act && (it[0].split('?')[0].replace(/\/$/, '') || '/') === path && iq === (location.search || '')) ? ' cur' : '';
+      return '<a href="' + (act ? '#' : it[0]) + '" data-mpbn="' + keys[it[1]] + '"' + (act ? ' role="button"' : '') + ' class="mpbn-i' + cur + '" aria-label="' + TR(it[2]) + '"><svg viewBox="0 0 24 24" width="22" height="22" ' + S + '>' + it[3] + '</svg><span class="mpbn-l">' + TR(it[2]) + '</span></a>';
     }).join('');
     return bn;
   }
@@ -653,8 +653,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=59b2d349', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=59b2d349"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=f49397ab', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=f49397ab"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }

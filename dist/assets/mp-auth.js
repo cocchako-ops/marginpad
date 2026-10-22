@@ -4249,7 +4249,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      cancelled it, the field got DOM focus from the tap itself (pf:0) - and document.hasFocus() was FALSE. Without
      window focus iOS never raises the keyboard, a known home-screen-app bug after a resume. Re-acquire it INSIDE
      the gesture, before the tap's own default action focuses the field. Free when focus is already held. */
-  document.addEventListener('touchstart', function (e) { if (!isComposer(e.target)) return; try { if (!document.hasFocus()) window.focus(); } catch (err) {} }, true);
+  var wf = '-', okSent = 0, VER = (function () { try { var s = document.querySelector('script[src*="mp-auth.js?v="]'); return s ? String(s.getAttribute('src').split('v=')[1] || '').slice(0, 4) : '-'; } catch (e) { return '-'; } })();
+  document.addEventListener('touchstart', function (e) { if (!isComposer(e.target)) return; try { if (document.hasFocus()) wf = 'h'; else { window.focus(); wf = document.hasFocus() ? '1' : '0'; } } catch (err) { wf = '?'; } }, true);
   document.addEventListener('focusin', function (e) { if (isComposer(e.target)) focusAt = Date.now(); }, true);
   document.addEventListener('focusout', function (e) { if (isComposer(e.target)) blurAt = Date.now(); }, true);
   var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -4260,14 +4261,17 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     setTimeout(function () {
       var ae = document.activeElement, okf = (ae === t);
       var vv1 = (window.visualViewport && window.visualViewport.height) || window.innerHeight, kb = vv1 < vv0 - 80;
-      if (okf && (kb || !IOS)) return;
-      var efp = null; try { efp = document.elementFromPoint(x, y); } catch (err) {}
       var sa = !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
       var ios = (navigator.userAgent.match(/OS (\d+_\d+)/) || [])[1] || '';
+      if (okf && (kb || !IOS)) { // the keyboard came - on an installed iOS app say so ONCE, so a phone where it works tells us what hf reads there
+        if (IOS && sa && !okSent) { okSent = 1; try { var ul = 'kbok2 sa:1 hf:' + (document.hasFocus() ? 1 : 0) + ' wf:' + wf + ' ios:' + ios + ' v:' + VER; var uu = '/api/track?t=jserr&e=' + encodeURIComponent(ul) + '&p=' + encodeURIComponent(location.pathname); if (navigator.sendBeacon) navigator.sendBeacon(uu); else (new Image()).src = uu; } catch (err) {} }
+        return;
+      }
+      var efp = null; try { efp = document.elementFromPoint(x, y); } catch (err) {}
       var lbl = 'kbfail2 sa:' + (sa ? 1 : 0) + ' f:' + (okf ? 1 : 0) + ' kb:' + (kb ? 1 : 0) + ' pre:' + (wasFocused ? 1 : 0)
         + ' pf:' + (pfAt && pfAt >= tsAt ? (pfAt - t0) + (pfFrame ? '@' + pfFrame : '') : 0)
         + ' fb:' + (focusAt >= t0 ? 1 : 0) + ((blurAt > focusAt && blurAt >= t0) ? 'b' : '')
-        + ' p:' + EV.map(function (n) { return pd[n] || '-'; }).join('/') + ' tr:' + trusted + ' dur:' + (tsAt ? (t0 - tsAt) : '-')
+        + ' p:' + EV.map(function (n) { return pd[n] || '-'; }).join('/') + ' wf:' + wf + ' v:' + VER + ' dur:' + (tsAt ? (t0 - tsAt) : '-')
         + ' ios:' + ios + ' vv:' + Math.round(vv0) + '/' + Math.round(vv1) + ' hf:' + (document.hasFocus() ? 1 : 0) + (efp === t ? '' : ' efp:' + nm(efp)) + (okf ? '' : ' ae:' + nm(ae)); // the common case names only what is NOT the field - the line is capped at 110 and ios fell off the end
       lbl = lbl.replace(/[^a-zA-Z0-9 #:._/@-]/g, ' ').replace(/\s+/g, ' ').slice(0, 110);
       sent++;
