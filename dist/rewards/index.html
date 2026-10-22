@@ -455,6 +455,7 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
       <div style="display:flex;gap:8px;margin:0 0 10px">
         <button type="button" id="wdmBybit" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer">Bybit UID</button>
         <button type="button" id="wdmMoon" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/moon.png" alt="" width="16" height="16" style="border-radius:4px;background:#fff;padding:1px">Moon</button>
+        <button type="button" id="wdmMexc" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/mexc.png" alt="" width="16" height="16" style="border-radius:4px">MEXC</button>
       </div>
       <!-- Payout notes (2026-09-09): a payout NEEDS an account at the venue, so the link to open one belongs right here.
            It was already in this text, but as bare prose with no tracking at all - measured 4,178 pageviews and 1 click a
@@ -463,6 +464,8 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
         <div class="wd-row"><a class="wd-go" data-mpex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer">Create your Bybit account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="note wd-note" id="wdNoteMoon" hidden style="--wdc:#7fd6ff;--wdb:rgba(127,214,255,.4);--wdg:rgba(127,214,255,.07)">USDT is sent to your <b>Moon</b> account by username. It takes a minute to open one, and it pays a $1 bonus.
         <div class="wd-row"><a class="wd-go" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Create your Moon account &rarr;</a></div></div>
+      <div class="note wd-note" id="wdNoteMexc" hidden style="--wdc:#5b8cff;--wdb:rgba(91,140,255,.42);--wdg:rgba(91,140,255,.08)">USDT is sent to your <b>MEXC</b> account by UID - the account must have been opened through our MEXC link. Your UID is the number under your email in the MEXC account menu.
+        <div class="wd-row"><a class="wd-go" data-mpex="MEXC" href="https://promote.mexc.com/a/ZBQaEXe8" target="_blank" rel="sponsored noopener noreferrer">Create your MEXC account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="lbl" style="margin:12px 0 6px">How much?</div>
       <div class="addr-row wd-amt"><input id="wdAmt" type="text" inputmode="decimal" placeholder="Amount in USDT" autocomplete="off" spellcheck="false" /><button type="button" class="btn btn-ghost" id="wdAll">All</button></div>
       <div class="note" id="wdAmtNote" style="text-align:left;margin:6px 0 10px;color:#c7ced6"></div>
@@ -1060,15 +1063,24 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
   })();
 
   var wdMethod='bybit';
-  function valid(a){return wdMethod==='moon' ? /^[A-Za-z0-9_.-]{3,32}$/.test(a) : /^[0-9]{5,15}$/.test(a);}
-  function setWdMethod(m){wdMethod=m;var bb=document.getElementById('wdmBybit'),mb=document.getElementById('wdmMoon'),nb=document.getElementById('wdNoteBybit'),nm=document.getElementById('wdNoteMoon');
+  function valid(a){ var m=wdM(); return m.re.test(a); }
+  /* ONE TABLE, NOT ONE BRANCH PER VENUE (2026-10-22). Bybit and Moon were written out twice over here and in
+     valid(); a third copy is how this breaks. A new payout venue is one entry below and nothing else. */
+  var WD_METHODS = [
+    { k: 'bybit', btn: 'wdmBybit', note: 'wdNoteBybit', mode: 'numeric', re: /^[0-9]{5,15}$/, ph: __esT_rewardsindex("yourBybitUidNumbers", 'Your Bybit UID (numbers only)'), bad: __esT_rewardsindex("enterYourBybitUid", 'Enter your Bybit UID (numbers only).') },
+    { k: 'moon', btn: 'wdmMoon', note: 'wdNoteMoon', mode: 'text', re: /^[A-Za-z0-9_.-]{3,32}$/, prefix: 'moon:', lower: true, ph: __esT_rewardsindex("yourMoonUsername", 'Your Moon username'), bad: __esT_rewardsindex("enterYourMoonUsername", 'Enter your Moon username (3-32 letters/numbers).') },
+    { k: 'mexc', btn: 'wdmMexc', note: 'wdNoteMexc', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'mexc:', ph: 'Your MEXC UID (numbers only)', bad: 'Enter your MEXC UID (numbers only).' }
+  ];
+  function wdM(k){ for (var i = 0; i < WD_METHODS.length; i++) if (WD_METHODS[i].k === (k || wdMethod)) return WD_METHODS[i]; return WD_METHODS[0]; }
+  function setWdMethod(m){wdMethod=m;
     var on='flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer';
     var off='flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer';
-    if(bb)bb.style.cssText=(m==='bybit'?on:off); if(mb)mb.style.cssText=(m==='moon'?on:off);
-    if(nb)nb.hidden=(m!=='bybit'); if(nm)nm.hidden=(m!=='moon');
-    if(wdAddr){wdAddr.classList.remove('invalid');wdAddr.setAttribute('inputmode',m==='moon'?'text':'numeric');wdAddr.placeholder=(m==='moon'?__esT_rewardsindex("yourMoonUsername",'Your Moon username'):__esT_rewardsindex("yourBybitUidNumbers",'Your Bybit UID (numbers only)'));}
+    WD_METHODS.forEach(function(x){ var b=document.getElementById(x.btn), n=document.getElementById(x.note);
+      if(b)b.style.cssText=(m===x.k?on:off); if(n)n.hidden=(m!==x.k); });
+    var cur=wdM(m);
+    if(wdAddr){wdAddr.classList.remove('invalid');wdAddr.setAttribute('inputmode',cur.mode);wdAddr.placeholder=cur.ph;}
   }
-  (function(){var bb=document.getElementById('wdmBybit'),mb=document.getElementById('wdmMoon');if(bb)bb.addEventListener('click',function(){setWdMethod('bybit');});if(mb)mb.addEventListener('click',function(){setWdMethod('moon');});})();
+  (function(){ WD_METHODS.forEach(function(x){ var b=document.getElementById(x.btn); if(b)b.addEventListener('click',function(){setWdMethod(x.k);}); }); })();
   function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
@@ -1208,6 +1220,19 @@ function __esT_rewardsindex(k, en) { try { if ((document.documentElement.lang ||
     var amtV=wdAmtVal(); if(!(amtV>=minWd)||amtV>wdBal()){ if(wdAmt)wdAmt.classList.add('invalid'); msg(__esT_rewardsindex("enterAnAmountBetween",'Enter an amount between $')+fmt(minWd)+__esT_rewardsindex("andYourBalance",' and your balance of $')+fmt(wdBal())+'.','err'); return; }
     if(!valid(a)){ wdAddr.classList.add('invalid'); msg(wdMethod==='moon'?__esT_rewardsindex("enterYourMoonUsername",'Enter your Moon username (3-32 letters/numbers).'):__esT_rewardsindex("enterYourBybitUid",'Enter your Bybit UID (numbers only).'),'err'); return; }
     if(wdMethod==='moon'){a='moon:'+a.toLowerCase();wdSend(a);return;}
+    /* MEXC pre-check, the same reason Bybit has one (2026-08-16): a doomed withdrawal used to sit pending for days
+       and end as a support ticket. Ours is answered by MEXC's own affiliate API, so it is a fact rather than a list.
+       An unreachable API answers gate:false and the request goes through - never trap money a member has earned. */
+    if(wdMethod==='mexc'){
+      wdConfirm.disabled=true; clearMsg();
+      fetch('/api/reward/mexccheck?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(j){
+        wdConfirm.disabled=false;
+        if(j&&j.gate&&j.listed===false){ wdAddr.classList.add('invalid');
+          msg('We could not find this UID among the accounts opened through our MEXC link, so we cannot send a payout to it. Open a MEXC account through our link and use that UID, or switch the payout method to Moon. If you did sign up through our link, ask support and we will check - your balance is untouched.','err'); return; }
+        wdSend('mexc:'+a);
+      }).catch(function(){ wdConfirm.disabled=false; wdSend('mexc:'+a); });
+      return;
+    }
     /* Bybit UID pre-check (2026-08-16, support-driven): warn BEFORE submitting - a doomed withdrawal used to sit pending for days and end as a support ticket */
     wdConfirm.disabled=true; clearMsg();
     fetch('/api/reward/uidcheck?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(u9){

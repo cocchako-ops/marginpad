@@ -20622,6 +20622,14 @@ async function handleReward(url, request, env) {
   let b = {}; try { b = JSON.parse(raw || '{}'); } catch (e) {}
   // public address-existence check (the page calls this on Save for instant feedback)
   if (path === '/check') return jr({ exists: await addressExists(b.address || url.searchParams.get('address')) });
+  if (path === '/mexccheck') { // public MEXC-UID pre-check for the withdraw form - yes/no only, same contract as /uidcheck
+    const u9 = String(url.searchParams.get('uid') || '').trim();
+    if (!/^[0-9]{4,20}$/.test(u9)) return jr({ ok: false });
+    const v9 = await mexcAffLookup(env, u9);
+    // gate:false when we could not ASK (no key, 429, network) - a member must never be blocked by our own outage
+    if (!v9.ok) return jr({ ok: true, gate: false, listed: true, why: v9.why });
+    return jr({ ok: true, gate: true, listed: !!v9.found, why: v9.found ? 'ours' : v9.why });
+  }
   if (path === '/uidcheck') { // public Bybit-UID pre-check for the withdraw form (yes/no only - the allowlist itself is never exposed). Lets the user learn in a second what used to take a days-long pending→reject→support-ticket loop.
     const u9 = String(url.searchParams.get('uid') || '').trim();
     if (!/^[0-9]{5,15}$/.test(u9)) return jr({ ok: false });
@@ -20820,6 +20828,21 @@ async function handleReward(url, request, env) {
           return jr({ error: 'uid_not_ours', message: 'This Bybit UID is not registered through MarginPad’s Bybit link, so we can’t send a payout to it. An existing Bybit account can’t be linked afterwards - either create a NEW Bybit account through our link and use that UID, or simply switch the payout method to Moon (just your Moon username, no linking needed). If you DID sign up through our link, contact support and we’ll verify your UID - your balance is untouched.' }, 403);
         }
       } catch (e) {}
+    }
+  }
+  if (path === '/withdraw') { // MEXC gate: we pay a MEXC UID only if it opened under our link. Answered by MEXC's own
+    // affiliate API rather than a hand-kept list - and it FAILS OPEN: an unreachable API or an expired key lets the
+    // request through to the manual queue, because earned money must not be trapped by our outage.
+    const mx = String((b && b.address) || '').trim();
+    if (/^mexc:[0-9]{4,20}$/i.test(mx)) {
+      const uidM = mx.split(':')[1];
+      try {
+        const vm = await mexcAffLookup(env, uidM);
+        if (vm.ok && !vm.found) {
+          try { await evPush(env, request, 'wdreject', 'MEXC UID ' + uidM + ' is not one of our referrals (blocked at request)', '/rewards/'); } catch (e) {}
+          return jr({ error: 'uid_not_ours', message: 'This MEXC UID is not among the accounts that opened through MarginPad\u2019s MEXC link, so we can\u2019t send a payout to it. Open a MEXC account through our link and use that UID, or switch the payout method to Moon (just your Moon username). If you DID sign up through our link, contact support and we\u2019ll check - your balance is untouched.' }, 403);
+        }
+      } catch (e) {} // never block on a throw
     }
   }
   if (path === '/claim') {
@@ -27120,6 +27143,10 @@ export class RewardLedger {
     const validAddr = /^0x[0-9a-f]{40}$/.test(addr); // legacy BEP20 wallet - still used for account identity + admin lookups of old accounts
     const validUid = /^[0-9]{5,15}$/.test(addr); // Bybit UID (numeric) - the payout target entered at withdrawal (replaced the BEP20 wallet 2026-07)
     const validMoon = /^moon:[a-z0-9_.-]{3,32}$/.test(addr); // Moon payout - 'moon:<username>' (addr is lowercased above); shows as-is in the ops Withdrawals queue
+    const validMexc = /^mexc:[0-9]{4,20}$/.test(addr); // MEXC payout - 'mexc:<uid>'. A BARE number already means a Bybit UID,
+    // so the venue has to ride on the address the way Moon's has since it shipped. The worker has already checked, before
+    // this point, that the UID opened under our affiliate link - that gate fails OPEN, so an unreachable MEXC never traps
+    // money a member has earned; it only means the owner looks at this one by hand.
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
     const referred = request.headers.get('x-referred') === '1'; // set only on the signup path for an account made via a referral link - gates the one-time welcome bonus (2026-10-16)
@@ -27170,7 +27197,7 @@ export class RewardLedger {
     }
     if (path === '/withdraw') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
-      if (!validUid && !validMoon) return this.j({ error: 'bad_address' }, 400); // payout target entered HERE: Bybit UID (numeric) or moon:<username>
+      if (!validUid && !validMoon && !validMexc) return this.j({ error: 'bad_address' }, 400); // payout target entered HERE: Bybit UID (numeric), moon:<username> or mexc:<uid>
       const r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
       if (r && r.banned) return this.j({ error: 'banned' }, 403); // banned accounts can't cash out either
       if (!r || r.balance < cfg.minWdC) return this.j({ error: 'min_not_met', minWd: cfg.minWdC / 100 }, 400);
