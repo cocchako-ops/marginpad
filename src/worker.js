@@ -19991,7 +19991,13 @@ async function grantXp(env, uid, xsrc, amt, opts) {
 }
 // ---------- Demo Spot: worker layer (auth + PRICING; the SpotStore DO is the atomic ledger) ----------
 function spotStub(env) { return env.SPOT.get(env.SPOT.idFromName('main')); }
-const SPOT_LOGO_OK = /^https:\/\/(assets\.coingecko\.com|coin-images\.coingecko\.com|s2\.coinmarketcap\.com|static\.geckoterminal\.com|dd\.dexscreener\.com)\//; // logo URLs render as <img src> - whitelist known CDNs, never arbitrary client URLs
+const SPOT_LOGO_OK = /^https:\/\/(assets\.coingecko\.com|coin-images\.coingecko\.com|s2\.coinmarketcap\.com|static\.geckoterminal\.com|dd\.dexscreener\.com|cdn\.dexscreener\.com)\//; // logo URLs render as <img src> - whitelist known CDNs, never arbitrary client URLs
+// A POOL ID IS UP TO 70 CHARS (2026-10-22, Malikush: charts missing, coins unbuyable). A Uniswap v4 pool is identified by a 0x + 64-hex POOL ID (66 chars), not
+// a 42-char pair address, and the old {20,60} cap refused every one of them: measured on the live trending list, 12 of 40 rows (all Base/Ethereum) answered
+// bad_pool to the chart and bad_token to a buy while GeckoTerminal served their candles fine. One regex for every pool check, worker and collector proxy alike.
+const SPOT_POOL_RE = /^[A-Za-z0-9]{20,70}$/;
+const GT_NET = { solana: 'solana', base: 'base', eth: 'eth', bsc: 'bsc', arbitrum: 'arbitrum', polygon: 'polygon_pos', avalanche: 'avax', hyperevm: 'hyperevm', abstract: 'abstract' }; // our chain key -> GeckoTerminal network id
+function gtNet(net) { return GT_NET[net] || net; }
 // GeckoTerminal (free, no key) - the Solana meme universe: trending pools, per-pool price+liquidity, OHLCV candles.
 // Rate limit ~30 req/min → EVERYTHING goes through the edge cache (trending 120s, price 30s, candles 60s) so a
 // crowd of users collapses to one upstream hit per TTL.
@@ -20057,8 +20063,8 @@ async function gtFetchX(env, path, ttl, ckey) {
 // the pair address. So a lookup asks DexScreener first and keeps GT as the fallback; "busy" now means BOTH are
 // down, which is what that word should have meant all along.
 // Chain ids differ from ours by one name only.
-const DS_CHAIN = { solana: 'solana', base: 'base', eth: 'ethereum', bsc: 'bsc' };
-const DS_NET = { solana: 'solana', base: 'base', ethereum: 'eth', bsc: 'bsc' };
+const DS_CHAIN = { solana: 'solana', base: 'base', eth: 'ethereum', bsc: 'bsc', arbitrum: 'arbitrum', polygon: 'polygon', avalanche: 'avalanche', hyperevm: 'hyperevm', abstract: 'abstract' };
+const DS_NET = { solana: 'solana', base: 'base', ethereum: 'eth', bsc: 'bsc', arbitrum: 'arbitrum', polygon: 'polygon', avalanche: 'avalanche', hyperevm: 'hyperevm', abstract: 'abstract' };
 async function dsFetch(env, path, ttl, ckey) { // same edge-cache + one-retry shape as gtFetch, against DexScreener
   const ck = new Request('https://marginpad.io/__ds_' + ckey);
   try { const hit = await caches.default.match(ck); if (hit) return { j: await hit.json(), status: 200 }; } catch (e) {}
@@ -20082,9 +20088,9 @@ function _dsPair(pr, mint) {
   const base = String(pr.baseToken.address || '');
   if (mint && base.toLowerCase() !== String(mint).toLowerCase()) return null;
   const price = +pr.priceUsd || 0; if (!(price > 0)) return null;
-  const pool = String(pr.pairAddress || ''); if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return null;
+  const pool = String(pr.pairAddress || ''); if (!SPOT_POOL_RE.test(pool)) return null;
   return { mint: base, pool, net, native: SPOT_NETS[net].native, sym: String(pr.baseToken.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?',
-    name: String(pr.baseToken.name || '').slice(0, 48), logo: '', price,
+    name: String(pr.baseToken.name || '').slice(0, 48), logo: SPOT_LOGO_OK.test(String((pr.info || {}).imageUrl || '')) ? String(pr.info.imageUrl).slice(0, 300) : '', price,
     liqUsd: +((pr.liquidity || {}).usd) || 0, vol24: +((pr.volume || {}).h24) || 0, fdv: +pr.fdv || 0 };
 }
 // deepest pool for a contract, from DexScreener
@@ -20167,6 +20173,7 @@ async function spotMemeList(env) { // the MULTI-CHAIN meme universe: trending + 
   const nowL = Date.now();
   for (const r of prev) { const k = r.net + ':' + r.mint; if (!seen.has(k) && spotRowFresh(r, nowL, SPOT_ROW_MAX_AGE)) { seen.add(k); out.push(r); } }
   const list = out.slice(0, 220);
+  try { await spotLogoFill(env, list, await spotLogoMap(env), true); } catch (e) {} // DexScreener images for the rows GeckoTerminal left blank (2026-10-22)
   if (list.length >= 20) { try { await env.STATS.put('spot:memes:last', JSON.stringify(list), { expirationTtl: 3 * 86400 }); await env.STATS.put('spot:memes:ts', String(Date.now()), { expirationTtl: 3 * 86400 }); } catch (e) {} }
   try { await caches.default.put(ck, new Response(JSON.stringify(list), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=170' } })); } catch (e) {}
   return list;
@@ -20190,19 +20197,44 @@ function spotSellGuard(o) {
 }
 async function spotMemePrice(env, net, pool) { // live {price, liqUsd, mint} for one pool on one network (30s edge cache)
   net = SPOT_NETS[net] ? net : 'solana';
-  if (!/^[A-Za-z0-9]{20,60}$/.test(String(pool || ''))) return null;
-  const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
+  if (!SPOT_POOL_RE.test(String(pool || ''))) return null;
+  // DEXSCREENER FIRST (2026-10-22, Malikush: "most of the coins would be pumping yet it'll say I can't buy it cos of no live feed"). GeckoTerminal
+  // rate-limits Cloudflare's SHARED egress at ~30 calls a minute for everybody on it, and every pool read on the money path (a buy, a sell, every
+  // portfolio valuation, the board cron pricing 200 accounts) was spending that budget before a chart ever got a turn. MEASURED 2026-10-22: 37 of 40
+  // trending charts came back empty while DexScreener answered the SAME 40 pools 40 of 40 with price, liquidity and the pair's own base token.
+  // DS allows 300 pair reads a minute and returns the base token, so the 'a trade must prove the pool belongs to the token it names' rule holds.
+  try { const d = await dsPool(env, net, pool); if (d && d.price > 0) return d; } catch (e) {}
+  const j = await gtFetch(env, '/networks/' + gtNet(net) + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
   const a = j && j.data && j.data.attributes;
   const price = a ? +a.base_token_price_usd || 0 : 0;
   if (price > 0) { let mint = ''; try { mint = String(j.data.relationships.base_token.data.id || '').replace(/^[a-z0-9-]+_/, ''); } catch (e) {} return { price, liqUsd: +a.reserve_in_usd || 0, mint }; } // mint = the pool's OWN base token; a trade must prove the pool belongs to the token it names
-  // GT could not read the pool: either its 429 burst, or the pair is minutes old and not indexed there yet. Ask
-  // DexScreener for the SAME pair - it returns the pair's own base token, so the "a trade must prove the pool
-  // belongs to the token it names" rule still holds, and this is a live read, not a stale row. (2026-09-10)
-  try { const d = await dsPool(env, net, pool); if (d && d.price > 0) return d; } catch (e) {}
-  // still nothing → fall back to the AGGREGATE meme list price, but ONLY a row read within the
-  // last SPOT_FALLBACK_MAX_AGE. The old "≤~3 min stale" comment was a wish: carried-over rows had no age at all.
+  // still nothing -> fall back to the AGGREGATE meme list price, but ONLY a row read within the last SPOT_FALLBACK_MAX_AGE (carried-over rows used to have no age at all)
   try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0 && spotRowFresh(m, Date.now(), SPOT_FALLBACK_MAX_AGE)) return { price: m.price, liqUsd: m.liqUsd || 0, mint: m.mint || '', stale: true }; } catch (e) {}
   return null;
+}
+// CoinGecko ONCHAIN = GeckoTerminal's own data behind the CoinGecko DEMO key (30 calls/min, 10k/month) - a budget nobody else shares, unlike the
+// anonymous per-IP one GT applies to Cloudflare's egress. CoinGecko WAF-blocks the Worker egress (2026-09-30), so it goes through the droplet's
+// /api/v1/cg proxy with the key forwarded; the proxy allowlists only this OHLCV path. Soft daily cap (KV cannot count exactly - this is a
+// ceiling against a runaway afternoon, not a ledger) so charts can never eat the screener's icon budget on the same key. Own fetch + own
+// ceiling: an optional chart layer must never trip the collector breaker the money paths share (the 2026-10-12 rule), and it honours an open one.
+const CG_ONCHAIN_DAY_CAP = 250;
+async function cgOnchain(env, gpath, ttl) {
+  if (!env.COINGECKO_API_KEY || !env.COLLECTOR_URL) return null;
+  if (Date.now() < COL_DOWN_UNTIL) return null;
+  const ck = new Request('https://marginpad.io/__cgon_' + gpath.replace(/[^A-Za-z0-9]/g, '_').slice(-140));
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  const dk = 'cg:onchain:' + new Date().toISOString().slice(0, 10);
+  let used = 0; try { used = +(await env.STATS.get(dk)) || 0; } catch (e) {}
+  if (used >= CG_ONCHAIN_DAY_CAP) return null;
+  try { await env.STATS.put(dk, String(used + 1), { expirationTtl: 2 * 86400 }); } catch (e) {}
+  try {
+    const r = await __realFetch(String(env.COLLECTOR_URL).replace(/\/$/, '') + '/api/v1/cg?path=' + encodeURIComponent('/onchain' + gpath), { headers: { accept: 'application/json', 'x-cg-demo-api-key': env.COINGECKO_API_KEY }, signal: AbortSignal.timeout(6000) });
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (!j || !j.data || !j.data.attributes) return null;
+    try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
+    return j;
+  } catch (e) { return null; }
 }
 // Simulated DEX slippage: trade size vs pool liquidity - a $500 buy into a $50k pool hurts, majors don't. Clamp 0.2%–3%.
 // The chains the meme universe lives on. Every meme trade SETTLES in the chain's native coin (real life: a Solana
@@ -20213,6 +20245,12 @@ const SPOT_NETS = {
   base: { native: 'ETH', label: 'Base', wdC: 150, gas: 0.00004 },
   eth: { native: 'ETH', label: 'Ethereum', wdC: 800, gas: 0.0015 },
   bsc: { native: 'BNB', label: 'BNB Chain', wdC: 80, gas: 0.0003 },
+  // Reachable by contract address or name search only (2026-10-22): no trending feed is pulled for them, but a coin that lives there is priced from its deepest pool like any other.
+  arbitrum: { native: 'ETH', label: 'Arbitrum', wdC: 100, gas: 0.00005 },
+  polygon: { native: 'POL', label: 'Polygon', wdC: 50, gas: 0.01 },
+  avalanche: { native: 'AVAX', label: 'Avalanche', wdC: 80, gas: 0.001 },
+  hyperevm: { native: 'HYPE', label: 'HyperEVM', wdC: 80, gas: 0.0005 },
+  abstract: { native: 'ETH', label: 'Abstract', wdC: 100, gas: 0.00005 },
 };
 // fake-but-realistic self-custody addresses + a 12-word seed phrase (educational moment; the seed is shown once
 // and NEVER stored - exactly like real wallets)
@@ -20265,15 +20303,29 @@ async function handleSpot(url, request, env) {
   if (path === '/memechart') {
     const pool = String(url.searchParams.get('pool') || '');
     const net = SPOT_NETS[String(url.searchParams.get('net') || '')] ? String(url.searchParams.get('net')) : 'solana';
-    if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_pool' }, 400);
+    if (!SPOT_POOL_RE.test(pool)) return jr({ error: 'bad_pool' }, 400);
     const M = { '1m': ['minute', 1], '5m': ['minute', 5], '15m': ['minute', 15], '1h': ['hour', 1], '4h': ['hour', 4], '1d': ['day', 1] }; // 1m/5m (2026-09-10): a pool minutes old has ONE 15m candle, which draws as an empty chart
-    const mm = M[String(url.searchParams.get('tf') || '1h')] || M['1h'];
-    const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool + '/ohlcv/' + mm[0] + '?aggregate=' + mm[1] + '&limit=300', 60, 'ohlcv_' + net + '_' + pool + '_' + mm[0] + mm[1]);
-    const list = (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || [];
-    const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
-    return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    const tfk = M[String(url.searchParams.get('tf') || '')] ? String(url.searchParams.get('tf')) : '1h';
+    const mm = M[tfk];
+    const gpath = '/networks/' + gtNet(net) + '/pools/' + pool + '/ohlcv/' + mm[0] + '?aggregate=' + mm[1] + '&limit=300';
+    const toBars = j => ((j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || []).map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
+    // THE CASCADE (2026-10-22, Malikush: "most of the charts on the demo spot doesn't show, or if it shows it won't show the next time"): GeckoTerminal
+    // direct, then through the droplet (gtFetch does both), then the same candles behind our CoinGecko key, and when every source is rate-limited
+    // the LAST GOOD copy this pool/timeframe produced in the previous six hours - marked stale in a header so the page says how old it is. A chart
+    // somebody already saw once must not vanish on the next open because a shared egress IP hit a 429.
+    let bars = [], src = 'gt';
+    try { bars = toBars(await gtFetch(env, gpath, 60, 'ohlcv_' + net + '_' + pool + '_' + mm[0] + mm[1])); } catch (e) {}
+    if (!bars.length) { try { bars = toBars(await cgOnchain(env, gpath, 60)); if (bars.length) src = 'cg'; } catch (e) {} }
+    const kk = 'spot:ohlcv:' + net + ':' + pool + ':' + tfk;
+    let stale = 0;
+    if (bars.length) { try { await env.STATS.put(kk, JSON.stringify({ ts: Date.now(), bars }), { expirationTtl: 6 * 3600 }); } catch (e) {} }
+    else { try { const prev = JSON.parse((await env.STATS.get(kk)) || 'null'); if (prev && Array.isArray(prev.bars) && prev.bars.length) { bars = prev.bars; stale = Math.max(1, Math.round((Date.now() - (+prev.ts || 0)) / 1000)); src = 'kv'; } } catch (e) {} }
+    const hd = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + (bars.length && !stale ? 60 : 15), 'x-mp-chart-src': src, ...CORS };
+    if (stale) hd['x-mp-chart-stale'] = String(stale);
+    return new Response(JSON.stringify(bars), { headers: hd });
   }
   if (path === '/token') return spotTokenLookup(url, env, jr);
+  if (path === '/search') return spotNameSearch(url, env, jr);
   if (path === '/feed') { // THE FLOOR (2026-10-16, owner: "feed koji ce da lista sve akcije i ko trenutno sta trejduje"): newest buys and sells by name, plus what is hot today. Public, edge 20 s.
     const ck = new Request('https://marginpad.io/__spot_feed_v1');
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -20282,6 +20334,7 @@ async function handleSpot(url, request, env) {
     try { const d = await (await spotStub(env).fetch(new Request('https://do/s2/hot'))).json(); hot = (d && d.rows) || []; } catch (e) {}
     let names = {}; try { const nr = await usersDO(env, '/names', { ids: [...new Set(rows.map(r => r.uid))].slice(0, 200) }); names = (nr && nr.names) || {}; } catch (e) {}
     const pub = rows.filter(r => names[r.uid] && !/^e2e_/i.test(names[r.uid])).slice(0, 50).map(r => ({ who: names[r.uid], ts: r.ts, side: r.side, sym: r.sym, net: r.net, mint: r.mint, pool: r.pool, logo: r.logo, name: r.name, k: r.k, usdUsd: Math.round(r.usdUsd * 100) / 100, price: r.price, pnlUsd: r.pnlUsd == null ? null : Math.round(r.pnlUsd * 100) / 100 }));
+    try { const lm = await spotLogoMap(env); await spotLogoFill(env, pub.filter(r => r.k === 'meme'), lm, false); await spotLogoFill(env, hot.filter(r => r && r.k === 'meme'), lm, false); } catch (e) {}
     const resp = new Response(JSON.stringify({ rows: pub, hot: hot.slice(0, 8), ts: Date.now() }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
     try { await caches.default.put(ck, resp.clone()); } catch (e) {}
     return resp;
@@ -20296,6 +20349,7 @@ async function handleSpot(url, request, env) {
     if (!d || d.none) out = { none: true };
     else {
       const holds = await spotPriceHolds(env, d.holds || []);
+      try { await spotLogoFill(env, holds.map(h => h.meta).filter(m => m && m.k === 'meme'), await spotLogoMap(env), false); } catch (e) {}
       const equityUsd = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
       const netUsd = Math.round((equityUsd - (+d.depositedUsd || 0)) * 100) / 100;
       const ws = lbPeriodStart(Date.now()), sday = new Date(ws).toISOString().slice(0, 10);
@@ -20343,6 +20397,7 @@ async function handleSpot(url, request, env) {
     let d = null; try { d = await sdo('/s2/portfolio?uid=' + encodeURIComponent(uid)); } catch (e) { return spotFail(env, jr, path); }
     if (d && d.none) return jr({ none: true }); // signed in, no account yet - the page shows the start card
     const holds = await spotPriceHolds(env, d.holds || []);
+    try { await spotLogoFill(env, holds.map(h => h.meta).filter(m => m && m.k === 'meme'), await spotLogoMap(env), true); } catch (e) {} // a bag bought before its logo existed gets one (2026-10-22)
     const equityUsd = Math.round(((+d.usdtUsd || 0) + holds.reduce((s, x) => s + x.valueUsd, 0)) * 100) / 100;
     const netUsd = Math.round((equityUsd - (+d.depositedUsd || 0)) * 100) / 100;
     // season P&L exactly as the board computes it: net worth now minus net worth at the season start (the first daily mark on/after... the last one ON OR BEFORE the season's first day)
@@ -20378,7 +20433,7 @@ async function handleSpot(url, request, env) {
         if (holdMeta.pool) pool = String(holdMeta.pool);
         if (holdMeta.net && SPOT_NETS[holdMeta.net]) { net = holdMeta.net; key = net + ':' + mint; }
       }
-      if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
+      if (!SPOT_POOL_RE.test(pool)) return jr({ error: 'bad_token' }, 400);
       const mp = await spotMemePrice(env, net, pool);
       if (!mp) return jr({ error: 'no_price' }, 503);
       if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token - no fill through a foreign pool, either direction
@@ -20600,7 +20655,7 @@ async function spotTokenLookup(url, env, jr) { // any token by CONTRACT ADDRESS 
     const nets = isSol ? ['solana'] : (SPOT_NETS[want] && want !== 'solana' ? [want] : ['bsc', 'base', 'eth']);
     let found = null, net = null, busy = false;
     for (const n of nets) {
-      const r = await gtFetchX(env, '/networks/' + n + '/tokens/' + addr + '?include=top_pools', 60, 'tok_' + n + '_' + addr);
+      const r = await gtFetchX(env, '/networks/' + gtNet(n) + '/tokens/' + addr + '?include=top_pools', 60, 'tok_' + n + '_' + addr);
       if (r.j && r.j.data && r.j.data.attributes) { found = r.j; net = n; break; }
       if (r.status === 429 || r.status >= 500 || r.status === 0) busy = true;
     }
@@ -20612,13 +20667,55 @@ async function spotTokenLookup(url, env, jr) { // any token by CONTRACT ADDRESS 
     const a = found.data.attributes || {};
     const sym = String(a.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?';
     if (SPOT_MEME_BLOCK.test(sym)) return jr({ error: 'major', sym }, 400); // majors and stables trade on the exchange, not through the DEX path
-    const pools = (found.included || []).filter(x => x && x.type === 'pool' && x.attributes).map(x => ({ id: String(x.id || '').replace(/^[a-z0-9_-]+_/, ''), liq: +x.attributes.reserve_in_usd || 0, vol24: +((x.attributes.volume_usd || {}).h24) || 0 })).filter(p => /^[A-Za-z0-9]{20,60}$/.test(p.id)).sort((x, y) => y.liq - x.liq);
+    const pools = (found.included || []).filter(x => x && x.type === 'pool' && x.attributes).map(x => ({ id: String(x.id || '').replace(/^[a-z0-9_-]+_/, ''), liq: +x.attributes.reserve_in_usd || 0, vol24: +((x.attributes.volume_usd || {}).h24) || 0 })).filter(p => SPOT_POOL_RE.test(p.id)).sort((x, y) => y.liq - x.liq);
     if (!pools.length) return jr({ error: 'no_pool' }, 404);
     const top = pools[0];
     if (top.liq < 1000) return jr({ error: top.liq > 0 ? 'thin_pool' : 'no_pool_yet', liqUsd: top.liq, sym }, 400); // under $1k of liquidity the price is fiction, not a lesson; zero means there is no pool at all yet
     const logo = SPOT_LOGO_OK.test(String(a.image_url || '')) ? String(a.image_url).slice(0, 300) : '';
     return jr({ ok: true, mint: addr, pool: top.id, net, native: SPOT_NETS[net].native, sym, name: String(a.name || '').slice(0, 48), logo, price: +a.price_usd || 0, liqUsd: top.liq, vol24: top.vol24, fdv: +a.fdv_usd || 0, thin: top.liq < 8000, listed: false });
   }
+// NAME SEARCH (2026-10-22, owner: "da pokrivamo skoro sve meme coin-e preko contract search-a"): a reader who knows a coin by its name rather than its
+// address (Malikush: "asteroid ethreum meme coin") asks DexScreener's search, which indexes every DEX on every chain we settle on. Deepest pool per
+// token, our chains only, under $1k of liquidity dropped (the price there is fiction), wrapped natives/stables/majors dropped, eight rows. Keyless,
+// edge-cached a minute per query; a DS rate limit is 'busy', never 'nothing found'.
+async function spotNameSearch(url, env, jr) {
+  const q = String(url.searchParams.get('q') || '').trim().replace(/[^\w $.\-]/g, '').replace(/\s+/g, ' ').slice(0, 40);
+  if (q.length < 2) return jr({ error: 'bad_query' }, 400);
+  const r = await dsFetch(env, '/latest/dex/search?q=' + encodeURIComponent(q), 60, 'srch_' + q.toLowerCase().replace(/[^a-z0-9]/g, '_'));
+  if (!r.j) return jr({ error: (r.status === 429 || r.status >= 500 || r.status === 0) ? 'busy' : 'fail' }, 503);
+  const best = {};
+  for (const pr of (r.j.pairs || [])) {
+    const row = _dsPair(pr, ''); if (!row) continue;
+    if (SPOT_WRAPPED[row.mint] || SPOT_WRAPPED[row.mint.toLowerCase()] || SPOT_MEME_BLOCK.test(row.sym.replace(/[^A-Za-z]/g, ''))) continue;
+    if (!(row.liqUsd >= 1000)) continue;
+    const k = row.net + ':' + row.mint.toLowerCase(); if (!best[k] || row.liqUsd > best[k].liqUsd) best[k] = row;
+  }
+  const rows = Object.values(best).sort((a, b) => b.liqUsd - a.liqUsd).slice(0, 8).map(x => ({ ok: true, mint: x.mint, pool: x.pool, net: x.net, native: x.native, sym: x.sym, name: x.name, logo: x.logo, price: x.price, liqUsd: x.liqUsd, vol24: x.vol24, fdv: x.fdv, thin: x.liqUsd < 8000, listed: false, src: 'ds' }));
+  return new Response(JSON.stringify({ q, rows }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+}
+// LOGOS FOR ROWS THAT ARRIVED WITHOUT ONE (2026-10-22, owner: "slike da imamo za sto vise coin-a"). MEASURED: 50 of 157 trending rows carried no image
+// (GeckoTerminal's token metadata) while DexScreener's token endpoint had one for most of them. ONE KV map {net:mint -> {u, t}}, read once per list
+// rebuild; unknown mints are asked in DexScreener's batch endpoint (30 per call, at most four calls per pass), and a miss is recorded as '' with its
+// time so it is asked again a week later rather than on every rebuild. Holdings, the floor feed and the public card read the same map.
+const SPOT_LOGO_KV = 'spot:logos', SPOT_LOGO_MISS_MS = 7 * 86400000;
+async function spotLogoMap(env) { try { return JSON.parse((await env.STATS.get(SPOT_LOGO_KV)) || '{}') || {}; } catch (e) { return {}; } }
+async function spotLogoFill(env, rows, map, write) { // rows: {net, mint, logo} (a hold's meta works too) - filled in place
+  const need = {}; const now = Date.now();
+  for (const r of rows) { if (!r || r.logo || !r.mint || !DS_CHAIN[r.net]) continue; const k = r.net + ':' + String(r.mint).toLowerCase(); const m = map[k]; if (m && m.u) { r.logo = m.u; continue; } if (m && (now - (+m.t || 0)) < SPOT_LOGO_MISS_MS) continue; (need[r.net] = need[r.net] || []).push(r); }
+  let asked = 0;
+  for (const net of Object.keys(need)) {
+    if (!write || asked >= 4) break;
+    const batch = need[net].slice(0, 30); asked++;
+    try {
+      const r = await dsFetch(env, '/tokens/v1/' + DS_CHAIN[net] + '/' + batch.map(x => x.mint).join(','), 300, 'logos_' + net + '_' + batch.map(x => String(x.mint).slice(0, 5)).join(''));
+      if (!r.j) continue; // DS busy: ask again on the next pass, record nothing
+      const got = {}; for (const pr of (Array.isArray(r.j) ? r.j : [])) { const u = String(((pr || {}).info || {}).imageUrl || ''); const a = String(((pr || {}).baseToken || {}).address || '').toLowerCase(); if (a && SPOT_LOGO_OK.test(u) && !got[a]) got[a] = u.slice(0, 300); }
+      for (const x of batch) { const a = String(x.mint).toLowerCase(); const u = got[a] || ''; map[x.net + ':' + a] = { u, t: now }; if (u) x.logo = u; }
+    } catch (e) {}
+  }
+  if (write && asked) { try { const keys = Object.keys(map); if (keys.length > 3000) for (const k of keys.sort((a, b) => (+map[a].t || 0) - (+map[b].t || 0)).slice(0, keys.length - 3000)) delete map[k]; await env.STATS.put(SPOT_LOGO_KV, JSON.stringify(map), { expirationTtl: 30 * 86400 }); } catch (e) {} }
+  return rows;
+}
 async function handleReward(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26613,7 +26710,8 @@ export class SpotStore {
         const hld = this.rows('SELECT qty,cost,meta FROM sp2hold WHERE user_id=? AND key=?', uid, key)[0];
         let stored = {}; try { stored = JSON.parse((hld && hld.meta) || '{}') || {}; } catch (e) {}
         // the POSITION keeps the pool it was first bought through (that pool prices every later sale - the 2026-09-06 rule); the newest mark always updates
-        const meta = JSON.stringify(Object.assign({}, (b.meta && typeof b.meta === 'object') ? b.meta : {}, stored, { lastPx: price }));
+        const mo = Object.assign({}, (b.meta && typeof b.meta === 'object') ? b.meta : {}, stored, { lastPx: price }); if (!mo.logo && b.meta && b.meta.logo) mo.logo = String(b.meta.logo).slice(0, 300); // the pool stays the first one; a logo the first buy lacked is taken from the new one (2026-10-22)
+        const meta = JSON.stringify(mo);
         sql.exec('UPDATE sp2acct SET usdt=usdt-?, buys=COALESCE(buys,0)+1, last_seen=? WHERE user_id=?', usdC, now, uid);
         if (hld) sql.exec('UPDATE sp2hold SET qty=qty+?, cost=cost+?, meta=?, updated=? WHERE user_id=? AND key=?', qty, usdC, meta, now, uid, key);
         else sql.exec('INSERT INTO sp2hold(user_id,key,qty,cost,meta,updated) VALUES(?,?,?,?,?,?)', uid, key, qty, usdC, meta, now);

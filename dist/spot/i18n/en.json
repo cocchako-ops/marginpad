@@ -59,7 +59,7 @@
  "tok_thin": "THIN",
  "tok_trade": "tap to trade",
  "tok_unknown": "Not on our trending list - check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam; the address is the identity, not the name.",
- "tok_e_not_found": "No token with that address on Solana, BNB Chain, Base or Ethereum.",
+ "tok_e_not_found": "No token with that address on Solana, BNB Chain, Base, Ethereum, Arbitrum, Polygon, Avalanche, HyperEVM or Abstract.",
  "tok_e_major": "That is a major coin or a stablecoin - find it under Majors.",
  "tok_e_major_v": "That is {sym} - find it under Majors.",
  "tok_e_thin_pool": "The deepest pool for that token holds under $1,000 - a price there is fiction. Not tradeable here.",
@@ -169,5 +169,10 @@
  "ths_e_need_username": "Pick a username first (account menu).",
  "ths_e_fail": "Could not publish ({e}) - try again.",
  "s_rug": "<b>This token was rugged.</b> The pool behind it is empty, so there is nothing left to sell into - this holding cannot be turned back into USDT at any price. Nothing was taken from you: what it showed was the pool's last quote, never money you had.",
- "s_rug_go": "Cannot be sold - the pool is gone"
+ "s_rug_go": "Cannot be sold - the pool is gone",
+ "ch_stale": "Chart from {n} min ago - the live candle feed is busy, this is the last one it gave us.",
+ "s_retry": "Price feed busy - trying once more…",
+ "srch_h": "Found across every DEX - not on our trending list",
+ "srch_none": "Nothing by that name on the chains we cover. If you have the contract address, paste it.",
+ "srch_busy": "The DEX search is rate-limiting us - try again in a few seconds."
 }

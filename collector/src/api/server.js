@@ -299,25 +299,29 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // tokens + pools + the pool's CANDLES. The candles were left out on the first pass and it cost every meme its
   // chart: GT 429s the worker, the worker asked here, and here refused the path - /api/spot/memechart returned
   // zero bars for BONK as well as for a coin minted minutes ago (measured 2026-09-10).
-  const GT_ALLOW = /^\/networks\/[a-z]+\/(tokens\/[A-Za-z0-9]{20,60}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,60}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?)$/;
+  // Pool ids run to 70 chars (a Uniswap v4 pool ID is 0x + 64 hex) and GT network ids carry _ and - (polygon_pos, sui-network) - 2026-10-22, the same regex the worker uses.
+  const GT_ALLOW = /^\/networks\/[a-z0-9_-]+\/(tokens\/[A-Za-z0-9]{20,70}(\?include=top_pools)?|pools\/[A-Za-z0-9]{20,70}(\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})?)$/;
   const gtCache = new Map();
   setInterval(() => { const c = Date.now() - 300000; for (const [k, v] of gtCache) if (v.t < c) gtCache.delete(k); }, 120000).unref?.();
   // COINGECKO THROUGH THE DROPLET (2026-09-30). CoinGecko answers the Cloudflare Worker egress with a 403 and
   // an HTML body - a WAF block, not a rejected key (the demo key is set and sent). The screener lost every coin
   // icon to it. Same escape hatch as /api/v1/latam for CriptoYa and /api/v1/dex for GeckoTerminal: the VPS is
   // not on a blocked range. Tight allowlist, its own cache, and a stale copy served when upstream is unhappy.
-  const CG_ALLOW = /^\/(coins\/markets\?[A-Za-z0-9_=&,%.-]{0,240}|global|search\/trending)$/;
+  // + ONCHAIN candles (2026-10-22): GeckoTerminal's own OHLCV behind the CoinGecko demo key - the worker forwards its key in x-cg-demo-api-key because this box holds none;
+  // the Demo Spot chart falls back to it when GT rate-limits both the Worker egress and this droplet. Only the OHLCV path, nothing else from /onchain.
+  const CG_ALLOW = /^\/(coins\/markets\?[A-Za-z0-9_=&,%.-]{0,240}|global|search\/trending|onchain\/networks\/[a-z0-9_-]+\/pools\/[A-Za-z0-9]{20,70}\/ohlcv\/(minute|hour|day)\?aggregate=\d{1,3}&limit=\d{1,4})$/;
   const cgCache = new Map();
   setInterval(() => { const c9 = Date.now() - 3600000; for (const [k, v] of cgCache) if (v.t < c9) cgCache.delete(k); }, 300000).unref?.();
   app.get('/api/v1/cg', async (req, res) => {
     const p9 = String(req.query.path || '');
     if (!CG_ALLOW.test(p9)) return res.status(400).json({ error: 'path_not_allowed' });
-    const url = 'https://api.coingecko.com/api/v3' + p9, ttl = 300000;
+    const url = 'https://api.coingecko.com/api/v3' + p9, ttl = p9.indexOf('/onchain/') === 0 ? 60000 : 300000; // candles go stale in a minute; markets/global keep the five
     const hit = cgCache.get(url);
     if (hit && Date.now() - hit.t < ttl) { res.set('Cache-Control', 'public, max-age=120'); res.set('x-cg-cache', 'hit'); return res.status(hit.status).type('application/json').send(hit.body); }
     try {
       const h9 = { accept: 'application/json', 'user-agent': 'MarginPad/1.0 (+https://marginpad.io)' };
-      if (process.env.COINGECKO_API_KEY) h9['x-cg-demo-api-key'] = process.env.COINGECKO_API_KEY;
+      const fwdKey = String(req.get('x-cg-demo-api-key') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80); // the worker's key, forwarded - never logged, never cached by key
+      if (fwdKey) h9['x-cg-demo-api-key'] = fwdKey; else if (process.env.COINGECKO_API_KEY) h9['x-cg-demo-api-key'] = process.env.COINGECKO_API_KEY;
       const r = await fetch(url, { signal: AbortSignal.timeout(12000), headers: h9 });
       const body = await r.text();
       if (r.status === 200) cgCache.set(url, { t: Date.now(), status: r.status, body });
