@@ -63,6 +63,18 @@ function sourceGuards() {
   ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("venue === 'bitget'") >= 0 && gateSrc.indexOf("'bingx'") < 0,
     'MEXC and Bitget are verifiable automatically, BingX is not (it has no API yet)');
 
+  /* THE WITHDRAWAL QUEUE MUST KNOW EVERY PAYOUT VENUE (2026-10-22, owner: "da znam na koju menjacnicu
+     isplacujem"). It derived the venue from a hand-written prefix ladder that knew moon: and mexc:, so the
+     bitget: method shipped the same morning read as BYBIT and was then judged against the BYBIT allowlist -
+     a red NOT ON LIST beside a good payout. One table now, and it is the same table that draws the mark. */
+  const ops = fs.readFileSync(path.join(__dirname, '..', 'src', 'ops', 'client', 'ops.js.txt'), 'utf8');
+  ok(ops.indexOf("indexOf('mexc:') === 0 ? 'MEXC'") < 0, 'the ops withdrawal venue is not a hand-written prefix ladder');
+  for (const v of ['moon', 'mexc', 'bitget', 'bybit']) {
+    ok(ops.indexOf("k: '" + v + "'") >= 0, 'the withdrawal queue knows how to show a ' + v + ' payout');
+  }
+  ok((ops.match(/function wdVenue\b/g) || []).length === 1 && (ops.match(/function wdMark\b/g) || []).length === 1,
+    'and there is one reading of the venue and one of its mark');
+
   const snap = src.indexOf('reward config snapshot passed to the DO');
   ok(snap > 0, 'the DO config snapshot is readable');
   const snapLine = src.slice(src.lastIndexOf('const cfg = {', snap), snap);

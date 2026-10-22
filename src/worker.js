@@ -15394,7 +15394,10 @@ async function signVerifySweep(env, venue, opts) {
     } else out.held++;
     out.rows.push(rec);
   }
-  try { await env.STATS.put(v + 'verify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, apply }), { expirationTtl: 2592000 }); } catch (e) {}
+  /* ONLY A RUN THAT DID SOMETHING IS A "LAST RUN". The dry-run GET used to write this too, so every time anybody
+     opened the desk it erased the record of what the cron had actually done - and it is the only evidence that
+     the cron runs at all. Caught trying to verify exactly that: my own probe destroyed what I was looking for. */
+  if (apply) { try { await env.STATS.put(v + 'verify:last', JSON.stringify({ ts: Date.now(), checked: out.checked, approved: out.approved, held: out.held, by: (opts && opts.by) || 'cron' }), { expirationTtl: 2592000 }); } catch (e) {} }
   return out;
 }
 /* THE CRON HALF (owner: "nek odobri ako moze"). Runs on the affiliate pass, walks every OPEN venue that has a
@@ -21928,7 +21931,7 @@ export default {
         return J({ roster: seen, n: seen.length, pages });
       }
       let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
-      const res = await signVerifySweep(env, 'mexc', { apply: body.run === true, reject: body.reject === true, limit: body.limit, max: body.max });
+      const res = await signVerifySweep(env, 'mexc', { apply: body.run === true, reject: body.reject === true, limit: body.limit, max: body.max, by: 'owner' });
       let last = null; try { last = JSON.parse((await env.STATS.get('mexcverify:last')) || 'null'); } catch (e) {}
       let keyErr = null; try { keyErr = JSON.parse((await env.STATS.get('mexckey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...res, lastRun: last, keyLastError: keyErr, note: res.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
@@ -21944,7 +21947,7 @@ export default {
       if (url.searchParams.get('list') === '1') { const rB = await bitgetAffAll(env, 6); return J({ roster: rB.list, n: rB.list.length, error: rB.error || null, msg: rB.msg || '', body: rB.body || '' }); }
       if (url.searchParams.get('sync') === '1') return J({ sync: await bitgetRefSync(env) });
       let bodyB = {}; if (request.method === 'POST') { try { bodyB = await request.json(); } catch (e) {} }
-      const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max });
+      const resB = await signVerifySweep(env, 'bitget', { apply: bodyB.run === true, reject: bodyB.reject === true, limit: bodyB.limit, max: bodyB.max, by: 'owner' });
       let lastB = null; try { lastB = JSON.parse((await env.STATS.get('bitgetverify:last')) || 'null'); } catch (e) {}
       let keyErrB = null; try { keyErrB = JSON.parse((await env.STATS.get('bitgetkey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...resB, lastRun: lastB, keyLastError: keyErrB, note: resB.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
