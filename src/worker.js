@@ -15257,7 +15257,7 @@ async function mexcSigned(env, pathname, params) {
     const r = await fetch(MEXC_API + pathname + '?' + qs + '&signature=' + sig, { headers: { 'X-MEXC-APIKEY': key }, signal: AbortSignal.timeout(8000) });
     const txt = await r.text();
     let j = null; try { j = JSON.parse(txt); } catch (e) { return { ok: false, why: 'bad_json', status: r.status, body: txt.slice(0, 300) }; }
-    if (!r.ok || j.success === false) return { ok: false, why: r.status === 429 ? 'rate_limited' : 'refused', status: r.status, body: txt.slice(0, 300) };
+    if (!r.ok || j.success === false) return { ok: false, why: r.status === 429 ? 'rate_limited' : 'refused', code: j.code, status: r.status, body: txt.slice(0, 300) };
     return { ok: true, data: j.data || j };
   } catch (e) { return { ok: false, why: 'fetch_failed', body: String(e && e.message || e).slice(0, 160) }; }
 }
@@ -15267,7 +15267,15 @@ async function mexcAffLookup(env, uid) {
   const u = String(uid || '').trim();
   if (!/^[0-9]{4,20}$/.test(u)) return { ok: true, found: false, why: 'not_a_uid' }; // a MEXC uid is digits; nothing to ask about
   const r = await mexcSigned(env, '/api/v3/rebate/affiliate/referral', { uid: u, pageSize: 10 });
-  if (!r.ok) return { ok: false, found: false, why: r.why, status: r.status, body: r.body };
+  /* MEXC ANSWERS HTTP 200 WITH AN UNDOCUMENTED `code 1035` FOR A UID THAT IS NOT ONE OF OURS, and treating that
+     as a transport failure would park every such claim in limbo for ever. It is not in MEXC's error-code table,
+     so it was settled by MEASUREMENT rather than by reading: our full roster (?list=1) came back as exactly 19
+     referrals - the same count the affiliate portal prints - and all five UIDs that answered 1035 were absent
+     from it while all fourteen that returned data were present. Two independent readings of the same book. */
+  if (!r.ok) {
+    if (r.code === 1035) return { ok: true, found: false, why: 'not_our_referral', via: 'code_1035' };
+    return { ok: false, found: false, why: r.why, status: r.status, body: r.body };
+  }
   const rows = (r.data && (r.data.resultList || r.data.list)) || [];
   const row = rows.filter(x => String(x.uid) === u)[0] || null;
   if (!row) return { ok: true, found: false, why: 'not_our_referral' };
@@ -15294,6 +15302,25 @@ async function mexcVerifySweep(env, opts) {
     const v = await mexcAffLookup(env, row.uid);
     const rec = { id: row.id, uid: row.uid, acct: String(row.address || '').slice(0, 24), verdict: v.found ? 'ours' : (v.ok ? v.why : ('error:' + v.why)) };
     if (v.found) { rec.traded = v.tradingAmount; rec.commission = v.commission; }
+    /* A DEFINITIVE NEGATIVE IS SOMETHING MEXC SAID, NEVER SOMETHING WE FAILED TO ASK. `ok` true means we got a
+       real answer; an error leaves the claim pending for a human whatever the owner switched on. Rejecting is
+       opt-in (`reject:true`) because it is the half that is visible to a member - and it is not final for them:
+       the exsign rule gives one more submission after a rejection, so a mistyped UID is still recoverable. */
+    const _no = v.ok && !v.found && (v.why === 'not_our_referral' || v.why === 'other_invite_code' || v.why === 'not_a_uid');
+    if (_no && apply && opts && opts.reject) {
+      const rnote = v.why === 'not_a_uid'
+        ? 'That does not look like a MEXC UID. Your UID is the number under your email in the MEXC account menu. You can submit once more.'
+        : 'We could not find this UID among the accounts that opened through our MEXC link, so the sign-up bonus does not apply to it. If you created your MEXC account another way, the bonus cannot be paid for it. If you think this is a mistake, write to support and we will look again.';
+      try {
+        const rr2 = await handleReward(new URL('https://marginpad.io/api/reward/mexcsign/review'),
+          new Request('https://marginpad.io/api/reward/mexcsign/review', { method: 'POST', headers: { 'x-admin-key': adminKeyOf(env), 'content-type': 'application/json' }, body: JSON.stringify({ id: row.id, action: 'reject', note: rnote }) }), env);
+        const rj2 = await rr2.json();
+        rec.rejected = !!(rj2 && rj2.status === 'rejected'); if (!rec.rejected) rec.payError = (rj2 && rj2.error) || 'failed';
+      } catch (e) { rec.rejected = false; rec.payError = 'threw'; }
+      if (rec.rejected) out.rejected = (out.rejected || 0) + 1; else out.held++;
+      out.rows.push(rec);
+      continue;
+    }
     if (v.found && apply) {
       const note = 'auto-verified against the MEXC affiliate API: uid ' + v.uid + ' under ' + v.code
         + ', traded $' + v.tradingAmount.toFixed(2) + ', commission $' + v.commission.toFixed(4);
@@ -21514,8 +21541,23 @@ export default {
       if (!isAdminKey(env, ak) && !(await adminCookieOk(request, env))) return J({ error: 'forbidden' }, 403);
       const one9 = url.searchParams.get('uid');
       if (one9) return J({ uid: one9, result: await mexcAffLookup(env, one9) });
+      /* ?list=1 pulls OUR WHOLE referral roster straight from MEXC. It exists because the per-uid lookup answers
+         an undocumented `code 1035` for some UIDs, and no claim should be refused on a guess about an error code:
+         the roster is the second, independent reading that says whether a UID is simply absent from our book. */
+      if (url.searchParams.get('list') === '1') {
+        const pages = [], seen = [];
+        for (let pg = 1; pg <= 6; pg++) {
+          const r9 = await mexcSigned(env, '/api/v3/rebate/affiliate/referral', { page: pg, pageSize: 50 });
+          if (!r9.ok) { pages.push({ page: pg, error: r9.why, body: r9.body }); break; }
+          const d9 = r9.data || {}, rows9 = d9.resultList || [];
+          pages.push({ page: pg, n: rows9.length, totalCount: d9.totalCount, totalPage: d9.totalPage });
+          rows9.forEach(x => seen.push({ uid: String(x.uid), code: x.inviteCode || '', reg: x.registerTime || null, traded: +x.tradingAmount || 0, commission: +x.commission || 0, deposited: +x.depositAmount || 0 }));
+          if (!d9.totalPage || pg >= d9.totalPage) break;
+        }
+        return J({ roster: seen, n: seen.length, pages });
+      }
       let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
-      const res = await mexcVerifySweep(env, { apply: body.run === true, limit: body.limit });
+      const res = await mexcVerifySweep(env, { apply: body.run === true, reject: body.reject === true, limit: body.limit });
       let last = null; try { last = JSON.parse((await env.STATS.get('mexcverify:last')) || 'null'); } catch (e) {}
       let keyErr = null; try { keyErr = JSON.parse((await env.STATS.get('mexckey:lasterr')) || 'null'); } catch (e) {}
       return J({ ...res, lastRun: last, keyLastError: keyErr, note: res.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
