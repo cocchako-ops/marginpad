@@ -19,9 +19,11 @@
 <script>(function(){var n=0,seen={};
 /* ignore noise that isn't our code breaking: browser extensions, Safari autofill, benign warnings, transient network blips */
 var IGN=/_AutofillCallbackHandler|ResizeObserver loop|Non-Error promise rejection|Failed to fetch|Load failed|NetworkError|AbortError|The operation was aborted|^Script error\.?$|view transition|Transition was skipped|Transition was aborted|skipTransition|zaloJSV2|_DumpException|VerifyBeacon|Java exception|globalThis|variable: fetch|window.webkit|^Rejected$|MetaMask|^.{1,3}$/i;
-function rep(m,ln){if(n>=8)return;m=String(m||'').slice(0,140);if(!m||IGN.test(m))return;var k=m+'@'+(ln||0);if(seen[k])return;seen[k]=1;n++;var lbl=(m+(ln?(' :'+ln):'')).replace(/[^a-zA-Z0-9 #:._/-]/g,' ').replace(/\s+/g,' ').slice(0,80);try{var u='/api/track?t=jserr&e='+encodeURIComponent(lbl)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}}
-window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;var b=f?f.split('/').pop().split('?')[0].slice(0,26):'';rep(e.message+(b?' @'+b:''),e.lineno);},true);
-window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((r&&r.message)||(typeof r==='string'?r:'unhandledrejection'),0);});})();</script>
+/* frameOf: the first frame of the stack that is OURS (an /assets/ bundle or a page's inline script), never the library that threw - 'Value is null @lightweight-charts :4' named nothing for three days (2026-10-22) */
+function frameOf(st){try{st=String(st||'');var m,re=/\/assets\/([a-z0-9.-]+)\.js[^\n]*?:(\d+):(\d+)/g;while((m=re.exec(st))){if(!/lightweight/i.test(m[1]))return m[1]+':'+m[2]+':'+m[3];}var m2=/marginpad\.io\/([a-z0-9-]*)[^\n:]*:(\d+):(\d+)/.exec(st);if(m2)return (m2[1]||'page')+':'+m2[2]+':'+m2[3];}catch(_){}return '';}
+function rep(m,ln,fr){if(n>=8)return;m=String(m||'').replace(/^Uncaught (?:[A-Za-z]*Error|Error): /,'').slice(0,140);if(!m||IGN.test(m))return;var k=m+'@'+(fr||ln||0);if(seen[k])return;seen[k]=1;n++;var lbl=(m+(fr?' #'+fr:(ln?(' :'+ln):''))).replace(/[^a-zA-Z0-9 #:._/-]/g,' ').replace(/\s+/g,' ').slice(0,110);try{var u='/api/track?t=jserr&e='+encodeURIComponent(lbl)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}}
+window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;var fr=frameOf(e.error&&e.error.stack);var b=f?f.split('/').pop().split('?')[0].slice(0,26):'';rep(e.message+(fr||!b?'':' @'+b),e.lineno,fr);},true);
+window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((r&&r.message)||(typeof r==='string'?r:'unhandledrejection'),0,frameOf(r&&r.stack));});})();</script>
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -109,7 +111,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=cb817149">
+<link rel="stylesheet" href="/assets/home.css?v=6a336617">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -863,7 +865,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=cb817149"></script>
+<script src="/assets/home.js?v=6a336617"></script>
 <script defer src="/assets/mp-nav.js?v=090d09a2"></script>
 </body>
 </html>

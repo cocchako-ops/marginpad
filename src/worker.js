@@ -6957,7 +6957,7 @@ async function handleTrack(url, request, env, ctx) {
   }
   const p = url.searchParams;
   const type = (p.get('t') || 'event').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
-  let label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
+  let label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, type === 'jserr' ? 110 : 48); // a crash label carries the message AND our frame since 2026-10-22; 48 cut it at the library's name
   // a click-out is a MEASUREMENT, so its label is resolved to a known partner before anything is counted (see PARTNERS)
   let partner = '', rawLabel = '';
   if (type === 'exchange' || type === 'tool') { rawLabel = label; partner = partnerOf(label); label = partner || 'other'; }
@@ -8345,6 +8345,7 @@ async function handleRecapSitemap(env) {
 }
 async function archiveLiq(env) {
   if (!env.BACKUP || !env.COLLECTOR_URL || !env.STATS) return;
+  if (new Date().getUTCMinutes() < 5) return; // the collector's midnight film persist trips the worker's breaker at exactly :00 - this pass threw collector_breaker_open and paged every night, then self-healed at :10. Start at :10. (2026-10-22)
   // key lives in KV liqarch:key (secret-store writes are permission-gated for agents; KV is private and
   // gates only our own data dump). A LIQ_EXPORT_KEY wrangler secret, if ever set, wins over KV.
   const exportKey = env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key');
@@ -14101,7 +14102,12 @@ async function tgLinkedUser(env, chat) { // returns the site account linked to t
 }
 // Call the UserStore DO (bot paper-trades live in the account journal → sync to My Trades on the web, same as the REST Bot API)
 async function usersDO(env, p, body) {
-  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })); return await r.json(); } catch (e) { return null; }
+  // ONE call in five is timed into the perf ring as `do:<path>` (2026-10-22): the store's p95 paged RED at 1,607 ms
+  // over 20,963 samples and nothing could say WHICH route was slow - a single slow query blocks every other caller of a
+  // single-threaded DO, so the route matters more than the aggregate. Read it on /api/admin/perf (groups do:*) and
+  // /api/admin/perfhist?g=do:/botpositions. No ctx here: the buffer flushes with the next timed route that has one.
+  const _t0 = Date.now(), _smp = Math.floor(Math.random() * 5) === 0;
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })); const j = await r.json(); if (_smp) { try { perfPush(env, null, 'do:' + String(p).split('?')[0].slice(0, 32), Date.now() - _t0, r.status < 500); } catch (e) {} } return j; } catch (e) { if (_smp) { try { perfPush(env, null, 'do:' + String(p).split('?')[0].slice(0, 32), Date.now() - _t0, false); } catch (e2) {} } return null; }
 }
 async function connectText(env, chat) {
   const lu = await tgLinkedUser(env, chat);

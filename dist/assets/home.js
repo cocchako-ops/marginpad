@@ -2871,7 +2871,8 @@ window.addEventListener('load', function () {
   function bcol(side,a){ return side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; }
   function kfmt(v){ v=+v||0; return v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+Math.round(v/1e3)+'K':'$'+Math.round(v); }
   function dispStep(p){ if(!(p>0))return 100; var t=p*0.0016,m=Math.pow(10,Math.floor(Math.log10(t))),n=t/m,s=n<1.5?1:n<3.5?2:n<7.5?5:10; return s*m; } // ~$100 bins for BTC, scales for ETH
-  function drawLiq(){ if(!overlay||!chart||!candle)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
+  function _p2c(v){try{var y=candle.priceToCoordinate(v);return (y==null||!isFinite(y))?null:y;}catch(e){return null;}} // LWC throws 'Value is null' on a series with no data - a guard, not a try/catch per line (2026-10-22)
+  function drawLiq(){ if(!overlay||!chart||!candle)return; if(!bars||!bars.length)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
     if(!realMode)return; var ts=chart.timeScale(),paneW; try{paneW=ts.width();}catch(e){paneW=stage.clientWidth-64;} var H=overlay.height/odpr;
     // ---- real liquidation histogram: ±5% of price, ~$100 bins, side-filtered (All / Long / Short) ----
     dispBins=[];
@@ -2885,12 +2886,12 @@ window.addEventListener('load', function () {
         if(bn2.vol>0)dispBins.push(bn2); }
       var vmx=0; for(var i2=0;i2<dispBins.length;i2++) if(dispBins[i2].vol>vmx)vmx=dispBins[i2].vol;
       if(vmx>0){ var maxLen=Math.max(80,paneW*0.46);
-        var p0=candle.priceToCoordinate(cur.price),p1=candle.priceToCoordinate(cur.price+step),barH=Math.max(2.5,(p0!=null&&p1!=null?Math.abs(p0-p1):4)-1);
-        for(var i3=0;i3<dispBins.length;i3++){ var bn3=dispBins[i3],y3=candle.priceToCoordinate(bn3.price); if(y3==null||y3<0||y3>H)continue;
+        var p0=_p2c(cur.price),p1=_p2c(cur.price+step),barH=Math.max(2.5,(p0!=null&&p1!=null?Math.abs(p0-p1):4)-1);
+        for(var i3=0;i3<dispBins.length;i3++){ var bn3=dispBins[i3],y3=_p2c(bn3.price); if(y3==null||y3<0||y3>H)continue;
           var len=Math.max(2,Math.sqrt(bn3.vol/vmx)*maxLen); /* sqrt scale: one giant cluster no longer flattens every other bar to invisible - big stays biggest, the rest stay readable */ octx.fillStyle=bn3.green?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
         var top=dispBins.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,4);
         octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
-        for(var i4=0;i4<top.length;i4++){ var bn4=top[i4],y4=candle.priceToCoordinate(bn4.price); if(y4==null||y4<6||y4>H-6)continue;
+        for(var i4=0;i4<top.length;i4++){ var bn4=top[i4],y4=_p2c(bn4.price); if(y4==null||y4<6||y4>H-6)continue;
           octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(kfmt(bn4.vol),paneW-6,y4);
           octx.fillStyle=bn4.green?'rgba(132,238,198,0.99)':'rgba(255,168,168,0.99)'; octx.fillText(kfmt(bn4.vol),paneW-6,y4); }
         octx.textAlign='left'; } }
@@ -2898,10 +2899,10 @@ window.addEventListener('load', function () {
     levLines=[];
     if(cur.price>0){ var mmr=0.005, levs=[5,10,25,50,100];
       for(var L=0;L<levs.length;L++){ var lev=levs[L]; if(!levSet[lev])continue;
-        if(sideMode!=='short'){ var pl=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,true,0):cur.price*(1-1/lev+mmr),yl=candle.priceToCoordinate(pl); if(yl!=null&&yl>=0&&yl<=H){ levLines.push({y:yl,price:pl,lev:lev,side:'long'});
+        if(sideMode!=='short'){ var pl=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,true,0):cur.price*(1-1/lev+mmr),yl=_p2c(pl); if(yl!=null&&yl>=0&&yl<=H){ levLines.push({y:yl,price:pl,lev:lev,side:'long'});
           octx.strokeStyle='rgba(255,92,92,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yl); octx.lineTo(paneW,yl); octx.stroke(); octx.setLineDash([]);
           octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='bottom'; octx.fillStyle='rgba(255,150,150,0.95)'; octx.fillText(lev+'× long',5,yl-1); } }
-        if(sideMode!=='long'){ var psr=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,false,0):cur.price*(1+1/lev-mmr),yr=candle.priceToCoordinate(psr); if(yr!=null&&yr>=0&&yr<=H){ levLines.push({y:yr,price:psr,lev:lev,side:'short'});
+        if(sideMode!=='long'){ var psr=window.mpLiqPx?window.mpLiqPx(cur.price,lev,mmr,false,0):cur.price*(1+1/lev-mmr),yr=_p2c(psr); if(yr!=null&&yr>=0&&yr<=H){ levLines.push({y:yr,price:psr,lev:lev,side:'short'});
           octx.strokeStyle='rgba(46,211,154,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yr); octx.lineTo(paneW,yr); octx.stroke(); octx.setLineDash([]);
           octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='top'; octx.fillStyle='rgba(120,235,190,0.95)'; octx.fillText(lev+'× short',5,yr+1); } }
       } }
@@ -2910,7 +2911,7 @@ window.addEventListener('load', function () {
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
     if(!realMode||!param.point||!candle){ tip.style.display='none'; return; } var py=param.point.y;
     var lv=null,ld=7; for(var j=0;j<levLines.length;j++){ var d2=Math.abs(levLines[j].y-py); if(d2<ld){ld=d2;lv=levLines[j];} } /* nearest leverage level */
-    var best=null,bd=9; for(var i=0;i<dispBins.length;i++){ var bn=dispBins[i],y=candle.priceToCoordinate(bn.price); if(y==null)continue; var d=Math.abs(y-py); if(d<bd){bd=d;best=bn;} } /* nearest histogram bin */
+    var best=null,bd=9; for(var i=0;i<dispBins.length;i++){ var bn=dispBins[i],y=_p2c(bn.price); if(y==null)continue; var d=Math.abs(y-py); if(d<bd){bd=d;best=bn;} } /* nearest histogram bin */
     var html='';
     if(lv&&ld<=bd){ var pct=(100/lv.lev).toFixed(1); html='<b>'+lv.lev+'× '+(lv.side==='long'?'long':'short')+' liquidation</b>@ $'+money(lv.price)+'<small>where '+lv.lev+'× '+(lv.side==='long'?'longs liquidate (−'+pct+'%)':'shorts liquidate (+'+pct+'%)')+' · estimated</small>'; }
     else if(best){ var L=best.long||0,S=best.short||0,tot=L+S,lp=tot?Math.round(L/tot*100):0;
