@@ -52,7 +52,48 @@ function mpTzMerge(o){
     return hm(d);};
   return o;
 }
-function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
+/* EVERY POINT THAT REACHES A SERIES PASSES THROUGH HERE (2026-10-24). "Uncaught Error: Value is null" thrown inside
+   lightweight-charts is the site's commonest client crash and it is STILL arriving on /paper-trade from real visitors
+   (10-23 16:45-18:00, Greece and Canada). The 2026-10-22 guard wrapped the nineteen candle update() sites and has
+   reported NOTHING in two days - because `value` is the field of a LINE / HISTOGRAM / AREA / BASELINE point, not of a
+   bar, and mpBarOk only ever looked at open/high/low/close. A null `value` is accepted by setData/update and then
+   throws from the library's OWN render loop on a later frame, uncaught, with no frame of ours on the stack - which is
+   exactly why the crash label reads `assets:7:2213`, the minified library, and names nothing of ours.
+   mpCreateChart is the ONE factory all three engines use, so guarding the series it hands out cannot be missed the
+   way a list of call sites can. A bad point is DROPPED (the chart keeps its last good frame) and the series kind, the
+   field and OUR calling frame are named ONCE per session through the crash beacon - at INSERTION time, which is the
+   only moment the culprit is still on the stack. A point that is merely absent (`{time}` alone, which is how
+   lightweight-charts draws a gap) is untouched: only an explicit null or a non-finite number is poison. */
+function mpPtBad(p) { // '' = fine, otherwise the field that would poison the render loop
+  if (!p || typeof p !== 'object') return 'point';
+  var t = p.time; if (t === null || t === undefined || (typeof t === 'number' && !isFinite(t))) return 'time';
+  var ks = ('close' in p) ? ['open', 'high', 'low', 'close'] : ('value' in p) ? ['value'] : [];
+  for (var i = 0; i < ks.length; i++) { var v = p[ks[i]]; if (v === null) return ks[i] + '=null'; if (typeof v === 'number' && !isFinite(v)) return ks[i] + '=' + (v !== v ? 'NaN' : 'Inf'); }
+  return '';
+}
+function mpGuardSeries(s, kind) {
+  try {
+    if (!s || s.__mpG) return s; s.__mpG = 1;
+    var frame = function () { try { var st = String(new Error().stack || '').split('\n'); for (var i = 2; i < st.length; i++) { var m = /\/assets\/([a-z0-9.-]+)\.js[^\n]*?:(\d+):\d+/.exec(st[i]); if (m && !/lightweight/i.test(m[1])) return m[1] + ':' + m[2]; } } catch (e) {} return '?'; };
+    var say = function (what, bad, n) { var S = window.__mpBadPt = window.__mpBadPt || {}; var k = kind + '|' + bad + '|' + what; if (S[k]) return; S[k] = 1;
+      try { console.warn('[mpPtOk] dropped a bad ' + kind + ' point (' + bad + ') in ' + what, n || 1); } catch (e) {}
+      try { window.__mpTrack && window.__mpTrack('jserr', 'bad pt ' + kind + ' ' + bad + ' ' + what + (n > 1 ? ' x' + n : '')); } catch (e) {} };
+    var od = s.setData, ou = s.update;
+    if (typeof od === 'function') s.setData = function (a) { try { if (Array.isArray(a)) { var out = [], bad = '', n = 0; for (var i = 0; i < a.length; i++) { var b = mpPtBad(a[i]); if (b) { n++; if (!bad) bad = b; } else out.push(a[i]); } if (n) { say(frame(), bad, n); a = out; } } } catch (e) {} return od.call(s, a); };
+    if (typeof ou === 'function') s.update = function (p) { try { var b = mpPtBad(p); if (b) { say(frame(), b, 1); return; } } catch (e) {} return ou.call(s, p); };
+  } catch (e) {}
+  return s;
+}
+function mpCreateChart(host, opts) {
+  var c = LightweightCharts.createChart(host, mpTzMerge(opts));
+  try {
+    ['addLineSeries', 'addHistogramSeries', 'addAreaSeries', 'addBaselineSeries', 'addCandlestickSeries', 'addBarSeries'].forEach(function (m) {
+      var o = c[m]; if (typeof o !== 'function') return;
+      c[m] = function () { return mpGuardSeries(o.apply(c, arguments), m.slice(3).replace('Series', '').toLowerCase()); };
+    });
+  } catch (e) {}
+  return c;
+}
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 - DELETE with the pxtag round */
 /* Mobile full-screen Charts - landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){

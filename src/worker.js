@@ -30214,17 +30214,21 @@ export class UserStore {
   async fetch(request) {
     const _p0 = Date.now(); let _pp = '?', _u = null; try { _u = new URL(request.url); _pp = _u.pathname; } catch (e) {}
     this._pfR = 0; this._pfW = 0;
-    /* THE BOARD IS BUILT ONCE PER HALF MINUTE, NOT ONCE PER COLO PER TWENTY SECONDS (2026-10-24). The first reading of
-       doprof: /leaderboard scanned 280,127 rows PER CALL and was called ten times in ninety seconds - 97% of every row
-       this store read, on the thread that also closes trades. The public board sits behind a 20 s edge cache, but
-       caches.default is PER DATA CENTRE, so every colo misses on its own, and eight worker paths (the public board,
-       /api/competition, the profile card's season rank, the brief, the payer...) all ask for the same window. One
-       in-memory copy per query string, 30 s, inside the one instance every colo talks to; ?fresh=1 bypasses it. */
-    const _lb = _pp === '/leaderboard' && _u && !_u.searchParams.get('fresh');
-    if (_lb) { try { const M = this._lbMemo = this._lbMemo || new Map(); const h = M.get(_u.search); if (h && _p0 - h.t < 30000) { this._prof('/leaderboard#memo', 0, 0, 0); return new Response(h.body, { headers: { 'content-type': 'application/json' } }); } } catch (e) {} }
+    /* AN AGGREGATE IS BUILT ONCE PER WINDOW, NOT ONCE PER COLO (2026-10-24). doprof's first reading: /leaderboard
+       scanned 280,127 rows PER CALL, seventy times in five minutes - 97% of every row this store read, on the thread
+       that also closes trades, which is exactly what the owner's chat was calling "closing takes seconds". These reads
+       all sit behind an edge cache already, but `caches.default` is PER DATA CENTRE, so every colo misses on its own
+       and eight worker paths ask for the same window. One in-memory copy per query string inside the ONE instance
+       every colo talks to. Only read-only aggregates belong here, and the window must be shorter than the thing's own
+       meaning: a 14-day season board at 90 s, a 30-day public counter at 5 min, the call board at 60 s. `?fresh=1`
+       bypasses it - deliberately used by nothing, so the payer and the page can never read two different boards
+       (lbpay-e2e's invariant). Measured after: /leaderboard 70 -> 8 calls per five minutes. */
+    const MEMO = { '/leaderboard': 90000, '/counters': 300000, '/pred/board': 60000 };
+    const _mt = (_u && !_u.searchParams.get('fresh')) ? (MEMO[_pp] || 0) : 0;
+    if (_mt) { try { const M = this._agMemo = this._agMemo || new Map(); const h = M.get(_pp + _u.search); if (h && _p0 - h.t < _mt) { this._prof(_pp + '#memo', 0, 0, 0); return new Response(h.body, { headers: { 'content-type': 'application/json' } }); } } catch (e) {} }
     try {
       const res = await this._fetch0(request);
-      if (_lb && res && res.status === 200) { try { const body = await res.clone().text(); const M = this._lbMemo; if (M.size > 20) M.clear(); M.set(_u.search, { t: Date.now(), body }); } catch (e) {} }
+      if (_mt && res && res.status === 200) { try { const body = await res.clone().text(); const M = this._agMemo; if (M.size > 40) M.clear(); M.set(_pp + _u.search, { t: Date.now(), body }); } catch (e) {} }
       return res;
     } finally { this._prof(_pp, Date.now() - _p0, this._pfR, this._pfW); }
   }
