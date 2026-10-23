@@ -2800,6 +2800,14 @@
   .mfc[hidden]{display:none;}
   .mfc-bar{display:flex;align-items:center;gap:6px;padding:calc(7px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 7px calc(8px + env(safe-area-inset-left));background:linear-gradient(180deg,#0d0f13,#0a0b0d);border-bottom:1px solid #1c2025;overflow-x:auto;scrollbar-width:none;flex:0 0 auto;}
   .mfc-bar::-webkit-scrollbar{display:none;}
+  /* THE SYMBOL WHEEL IS A VERTICAL GESTURE ON A HORIZONTALLY SCROLLING BAR (2026-10-24). Measured: hold the coin
+     button, move the thumb 22px, and the wheel VANISHED - on every build back through the pre-guard bundle, so it
+     has been unusable with a real finger. The bar is `overflow-x:auto` and nothing declared a touch-action, so the
+     browser claimed the downward drag as a scroll and fired pointercancel, which wireWheel correctly treats as "the
+     gesture is no longer mine" and closes on. `pan-x` gives the browser exactly what the bar needs (a sideways
+     scroll when the controls overflow) and keeps the vertical drag, which is the whole wheel. Not `none`: that
+     would take the bar's own scrolling away to fix a gesture that only needs the other axis. */
+  .mfc-bar [data-act="sym"]{touch-action:pan-x;}
   .mfc-b{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:#12161c;border:1px solid #232932;border-radius:9px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:8px 11px;cursor:pointer;white-space:nowrap;transition:.13s;}
   .mfc-b:active{transform:scale(.95);}
   .mfc-b.on{background:rgba(63,216,230,.16);border-color:#3fd8e6;color:#3fd8e6;}

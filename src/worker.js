@@ -1275,9 +1275,15 @@ async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor co
     note.ms = Date.now() - t0; note.ts = t0;
     await env.STATS.put('px:warm', JSON.stringify(note), { expirationTtl: 86400 });
     if (!note.ok) {
-      const k = 'px:warmfail:' + new Date(t0).toISOString().slice(0, 10);
+      const day = new Date(t0).toISOString().slice(0, 10);
+      const k = 'px:warmfail:' + day;
       const n = (+(await env.STATS.get(k)) || 0) + 1;
       await env.STATS.put(k, String(n), { expirationTtl: 40 * 86400 });
+      /* AND WHY (2026-10-24). The count alone said 470 failures today and nothing about the cause, while the public
+         status page has drawn the price check amber since 10-21 (144/144 passes before it, 88/147 after). The cold
+         path answers 8 of 8 when driven by hand, so the cause is intermittent and only the cron can see it - which
+         makes the reason worth one more counter a failure. Read it on /api/status as prices.lastWrite.whyToday. */
+      try { const wk = 'px:warmwhy:' + day + ':' + String(note.why || 'other'); await env.STATS.put(wk, String((+(await env.STATS.get(wk)) || 0) + 1), { expirationTtl: 40 * 86400 }); } catch (e) {}
     }
   } catch (e) {}
 }
@@ -28961,6 +28967,10 @@ async function handleStatusApi(env) {
   // bad day as a dead feed. lastWrite is the writer's own account of its last run and has no such lag.
   try { const w = JSON.parse(await env.STATS.get('px:warm') || 'null'); if (w) px.lastWrite = { ok: !!w.ok, agoSec: Math.round((now - (+w.ts || 0)) / 1000), ms: +w.ms || 0, why: w.why || undefined, pairs: w.pairs }; } catch (e) {}
   try { const fk = 'px:warmfail:' + new Date(now).toISOString().slice(0, 10); const fn = +(await env.STATS.get(fk)) || 0; if (px.lastWrite) px.lastWrite.failsToday = fn; } catch (e) {}
+  // ...and which failure it was (2026-10-24): a count with no reason is what made 470 failures a day unexplainable
+  try { const d9 = new Date(now).toISOString().slice(0, 10), why = {};
+    await Promise.all(['upstream', 'empty', 'threw', 'other'].map(async (w) => { const n = +(await env.STATS.get('px:warmwhy:' + d9 + ':' + w)) || 0; if (n) why[w] = n; }));
+    if (px.lastWrite && Object.keys(why).length) px.lastWrite.whyToday = why; } catch (e) {}
   const days = []; const p95 = (a) => { if (!a || !a.length) return null; const s = a.slice().sort((x, y) => x - y); return s[Math.max(0, Math.ceil(s.length * 0.95) - 1)]; };
   const dayKeys = []; for (let i = UP_KEEP_D - 1; i >= 0; i--) dayKeys.push(new Date(now - i * 86400000).toISOString().slice(0, 10));
   const rows = await Promise.all(dayKeys.map(d => env.STATS.get('up:day:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null))); // 90 reads in parallel: sequential they took 2-4 s and the page sat on "Checking…"
