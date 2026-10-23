@@ -14804,7 +14804,7 @@ async function rewardCfg(env) {
   // Bybit board = a rebate (2026-09-28): share of the season's commission, a cap, and the split over ten ranks (see bybitPoolCalc). lbBybit (the old fixed $200) is gone.
   const bybitShare = Math.max(0, Math.min(1, num(m.bybitShare, 0.52))), bybitCap = Math.max(0, num(m.bybitCap, 1000)), bybitBase = Math.max(0, num(m.bybitBase, 100));
   const bybitSplit = (Array.isArray(m.bybitSplit) && m.bybitSplit.length === 10 ? m.bybitSplit : [50, 25, 10, 5, 5, 1, 1, 1, 1, 1]).map(x => Math.max(0, num(x, 0))); /* lbCall = Daily BTC Call board (2026-09-28, owner: "$20 prize pool, ko bude najbolji on osvaja"): $20 to the top three, changeable in ops Settings like every board */ /* lbMoon = King of the Moon (2026-09-17): 28-day contest on real Moon wagering, $300 to the top 5 */ /* lbBybit = Bybit volume board (2026-09-13, owner: "$200 total, 100>50>25>15>10"); pays from BYBIT_LB_START */ // lbGold = Gold Room (most winning trades). Ships at ZERO on the owner's instruction: the board runs unpaid for its first season, prizes are set from ops Settings for the season starting GOLD_LB_START. // lbRoe = Green Days board (key kept from the retired Spot board); lbRoe2 = the re-added Highest-ROE board (owner 2026-08-03, same prizes as XP)
-  return { autoApprove: m.autoApprove !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
+  return { autoApprove: m.autoApprove !== false, autoReject: m.autoReject !== false, enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.10)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), redditC: c(num(m.redditUsd, 0.5)), redditMaxC: c(num(m.redditMaxUsd, 5)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, moonC: c(num(m.moonUsd, 1)), moonEnabled: m.moonEnabled !== false, fomoC: c(num(m.fomoUsd, 1)), fomoEnabled: m.fomoEnabled === true, /* 2026-10-21: the Fomo $1 is RETIRED (owner) - opt-in only, so a stale KV row cannot reopen it */ mexcC: c(num(m.mexcUsd, 1)), mexcEnabled: m.mexcEnabled !== false, bingxC: c(num(m.bingxUsd, 1)), bingxEnabled: m.bingxEnabled !== false, bitgetC: c(num(m.bitgetUsd, 1)), bitgetEnabled: m.bitgetEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.30)), xCommentC: c(num(m.xCommentUsd, 0.50)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, lbRoe2, lbGold, lbMoon, lbCall, lbMeme, bybitShare, bybitCap, bybitBase, bybitSplit, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -15303,6 +15303,12 @@ const MOON_CONTEST_DAYS = 28; // the nominal length: King of the Moon runs TWO S
 /* A CRON THAT PAYS NEEDS A CEILING. Sign-up claims arrive a handful a day, so ten in one ten-minute pass is far
    above anything real and far below anything that could drain the ledger before the Telegram line is read. */
 const AUTO_APPROVE_MAX = 10;
+/* A GRACE BEFORE AN AUTO-REJECT, because a FRESH registration takes time to appear in MEXC's affiliate book - rejecting a
+   real member minutes after they signed up is the "insults a member who did everything right" failure. A claim is only
+   auto-rejected once it is older than this AND the API still cannot find it; younger "not found" claims stay pending and
+   are re-checked next sweep (an eligible one is APPROVED the moment it appears, long before this window matters). Garbage
+   input and a UID under a DIFFERENT invite code are rejected at once - those carry no indexing-delay excuse. */
+const AUTO_REJECT_GRACE_MS = 24 * 3600 * 1000;
 const SIGN_VENUES = { moon: { label: 'Moon', open: true }, mexc: { label: 'MEXC', open: true }, bingx: { label: 'BingX', open: true }, bitget: { label: 'Bitget', open: true }, fomo: { label: 'Fomo', open: false } };
 const SIGN_RE = /^\/(moon|mexc|bingx|bitget|fomo)sign\/(submit|mine|list|review)$/;
 /* EVERY VENUE BUT MOON SHARES ONE SET OF ALIAS ROUTES, and five separate regexes used to spell that list out
@@ -15413,7 +15419,10 @@ async function signVerifySweep(env, venue, opts) {
     if (r.found && r.tradingAmount != null) { rec.traded = r.tradingAmount; rec.commission = r.commission; }
     /* A DEFINITIVE NEGATIVE IS SOMETHING THE VENUE SAID, NEVER SOMETHING WE FAILED TO ASK. */
     const no = r.ok && !r.found && (r.why === 'not_our_referral' || r.why === 'other_invite_code' || r.why === 'not_a_uid');
-    if (no && apply && opts && opts.reject) {
+    /* only "not found under our referral" waits out the grace (a fresh sign-up may not be indexed yet); a non-UID or a
+       UID that MEXC shows under ANOTHER invite code is already indexed and definitively not ours, so it rejects at once */
+    const graceOk = r.why !== 'not_our_referral' || ((+row.ts || 0) > 0 && (Date.now() - (+row.ts || 0)) > AUTO_REJECT_GRACE_MS);
+    if (no && apply && opts && opts.reject && graceOk) {
       const rnote = r.why === 'not_a_uid'
         ? 'That does not look like a ' + label + ' UID. Your UID is the number in your ' + label + ' account menu, not your MarginPad username. You can submit once more.'
         : 'We could not find this UID among the accounts that opened through our ' + label + ' link, so the sign-up bonus does not apply to it. If you created your ' + label + ' account another way, the bonus cannot be paid for it. If you think this is a mistake, write to support and we will look again.';
@@ -15456,25 +15465,40 @@ async function autoApproveSweep(env) {
   if (!env.STATS || !env.REWARDS) return { skipped: 'no_env' };
   let cfg = null; try { cfg = await rewardCfg(env); } catch (e) {}
   if (cfg && cfg.autoApprove === false) return { skipped: 'off' };   // the owner's switch, ops > Reward config
-  const out = { venues: {}, approved: 0 }, paid = [];
+  const out = { venues: {}, approved: 0, rejected: 0 }, paid = [], rejd = [];
+  // AUTO-REJECT TOO (2026-10-23, owner: "ko nije eligable ili nije na listi, da mu stigne obavestenje da je odbijen, da to sve
+  // ide automatski, da nikad ne moram da vodim racuna o tome"). Only a definitive negative the venue's API returns, and only
+  // after the grace (a fresh registration gets time to be indexed) - transient errors and recent "not found" stay pending.
+  const doReject = !(cfg && cfg.autoReject === false);
   for (const v of Object.keys(SIGN_VENUES)) {
     if (!SIGN_VENUES[v].open || !signGateReady(env, v)) continue;
     let r = null;
-    try { r = await signVerifySweep(env, v, { apply: true, limit: 25, max: AUTO_APPROVE_MAX }); }
+    try { r = await signVerifySweep(env, v, { apply: true, reject: doReject, limit: 25, max: AUTO_APPROVE_MAX }); }
     catch (e) { out.venues[v] = { error: String((e && e.message) || e).slice(0, 80) }; continue; }
-    out.venues[v] = { checked: r.checked, approved: r.approved, held: r.held, error: r.error || null };
-    out.approved += r.approved;
+    out.venues[v] = { checked: r.checked, approved: r.approved, rejected: r.rejected || 0, held: r.held, error: r.error || null };
+    out.approved += r.approved; out.rejected += (r.rejected || 0);
+    for (const row of (r.rows || [])) if (row.rejected) rejd.push({ v: v, label: (SIGN_VENUES[v] && SIGN_VENUES[v].label) || v, uid: row.uid, why: row.verdict });
     for (const row of (r.rows || [])) if (row.paid) paid.push({ v: v, label: (SIGN_VENUES[v] && SIGN_VENUES[v].label) || v, uid: row.uid, amount: row.amount, acct: row.acctUid });
   }
-  if (!paid.length) return out;
-  let names = {}; try { names = await resolveProfiles(env, paid.map(p => 'u:' + String(p.acct || '').replace(/^u:/, ''))); } catch (e) {}
-  const who = p => { const k = String(p.acct || '').replace(/^u:/, ''); const n = names && (names[k] || names['u:' + k]); return (n && (n.username || n.name)) ? '@' + (n.username || n.name) : ('account ' + k.slice(0, 8)); };
-  try {
-    await tgOwner(env, 'signup auto-approved', 'Paid ' + paid.length + ' sign-up bonus' + (paid.length === 1 ? '' : 'es') + ' automatically',
-      [paid.map(p => p.label + ' UID ' + p.uid + ' - ' + who(p) + ' - $' + (+p.amount || 0).toFixed(2)).join(String.fromCharCode(10)),
-        'Verified against the venue\u2019s own affiliate API. Anything it could not confirm is still waiting for you.'],
-      'https://marginpad.io/api/stats#money/faucet');
-  } catch (e) {}
+  if (!paid.length && !rejd.length) return out;
+  if (paid.length) {
+    let names = {}; try { names = await resolveProfiles(env, paid.map(p => 'u:' + String(p.acct || '').replace(/^u:/, ''))); } catch (e) {}
+    const who = p => { const k = String(p.acct || '').replace(/^u:/, ''); const n = names && (names[k] || names['u:' + k]); return (n && (n.username || n.name)) ? '@' + (n.username || n.name) : ('account ' + k.slice(0, 8)); };
+    try {
+      await tgOwner(env, 'signup auto-approved', 'Paid ' + paid.length + ' sign-up bonus' + (paid.length === 1 ? '' : 'es') + ' automatically',
+        [paid.map(p => p.label + ' UID ' + p.uid + ' - ' + who(p) + ' - $' + (+p.amount || 0).toFixed(2)).join(String.fromCharCode(10)),
+          'Verified against the venue\u2019s own affiliate API. Anything it could not confirm is still waiting for you.'],
+        'https://marginpad.io/api/stats#money/faucet');
+    } catch (e) {}
+  }
+  if (rejd.length) { // FYI only - the member was already told with a readable notice; the owner does nothing
+    try {
+      await tgOwner(env, 'signup auto-rejected', 'Auto-declined ' + rejd.length + ' sign-up' + (rejd.length === 1 ? '' : 's') + ' not found under our referral',
+        [rejd.map(p => p.label + ' UID ' + p.uid + ' - ' + (p.why || 'not ours')).join(String.fromCharCode(10)),
+          'The member got a notification explaining why. Nothing for you to do - they can write to support if they disagree.'],
+        'https://marginpad.io/api/stats#money/faucet');
+    } catch (e) {}
+  }
   return out;
 }
 /* THE KEY DIES EVERY 90 DAYS BY MEXC'S OWN RULE and a Worker cannot whitelist an egress IP, so this is not an
@@ -21624,8 +21648,10 @@ async function handleReward(url, request, env) {
       if (path === '/support' && _rd.ok) await evPush(env, request, 'support', '', '/rewards/');
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
-  if (r.status === 200 && /sign\/review$/.test(path) && SIGN_RE.test(path) && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17)
-    try { const data = JSON.parse(txt); if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + ((SIGN_VENUES[(SIGN_RE.exec(path) || [])[1]] || {}).label || 'exchange') + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
+  if (r.status === 200 && /sign\/review$/.test(path) && SIGN_RE.test(path) && b && b.notify) { // owner asked for a bell row + celebration with the approval (2026-09-17); a rejection is read as a plain notice (2026-10-23)
+    try { const data = JSON.parse(txt); const vlbl = (SIGN_VENUES[(SIGN_RE.exec(path) || [])[1]] || {}).label || 'exchange';
+      if (data && data.ok && data.status === 'approved' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'gift', body: String(b.notifyBody || ('Your ' + vlbl + ' sign-up has been approved - $' + ((+data.amount || 1)).toFixed(2) + ' landed on your rewards balance')).slice(0, 200), link: '/rewards/' });
+      else if (data && data.ok && data.status === 'rejected' && data.acct) await usersDO(env, '/notify', { uid: String(data.acct).replace(/^u:/, ''), kind: 'reward', body: String(b.note || ('Your ' + vlbl + ' sign-up bonus could not be approved. Tap for details.')).slice(0, 200), link: '/rewards/' }); } catch (e) {}
   }
   if (r.status === 200 && path === '/moonsign/list') { // only moon rows belong to this surface
     try { const data = JSON.parse(txt); data.pending = (data.pending || []).filter(x => x.exchange === 'moon'); data.decided = (data.decided || []).filter(x => x.exchange === 'moon'); data.moonUsd = full.moonC / 100; txt = JSON.stringify(data); } catch (e) {}
@@ -28281,7 +28307,7 @@ export class RewardLedger {
       const p = this.rows('SELECT * FROM exsign WHERE id=?', id)[0];
       if (!p) return this.j({ error: 'not_found' }, 404);
       if (p.status !== 'pending' && !(action === 'approve' && body.force === true && p.status === 'rejected')) return this.j({ error: 'already_decided' }, 409); // force = the owner re-approves a row rejected by mistake (2026-09-17, Ladyp03); an approved row is never paid twice
-      if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
+      if (action === 'reject') { sql.exec("UPDATE exsign SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected', acct: p.acct, exchange: p.exchange }); } // acct so the worker can send the member the rejection notice to read
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
       // one lookup per venue (2026-10-21): a ternary chain had to be edited for every new sign-up bonus
       const _vc = cfg[String(p.exchange || '') + 'C'];
