@@ -394,6 +394,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-ft-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #161c23}.mpa-ft-row:last-child{border-bottom:none}.mpa-ft-rt{flex:1;min-width:0;color:#e9e7df;font-size:13px;font-weight:600}'
     + '.mpa-ft-chips{display:flex;gap:7px;flex-wrap:wrap}.mpa-ft-chip{background:#1a222c;border:1px solid #2a3340;color:#aeb8c4;border-radius:8px;padding:7px 13px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;transition:background .15s,color .15s,border-color .15s}.mpa-ft-chip.on{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d}'
     + '.mpa-ft-lev{display:flex;align-items:center;gap:9px}.mpa-ft-lev input{width:74px;background:#141a22;border:1px solid #2a3340;color:#e9e7df;border-radius:8px;padding:8px 10px;font:700 13px \'Space Mono\',ui-monospace,monospace}.mpa-ft-lev small{color:#6b7480;font-size:11.5px}'
+    + '.mpa-fd-r.tap{cursor:pointer;border-radius:9px}.mpa-fd-r.tap:hover{background:rgba(255,255,255,.03)}'
+    + '.mpa-ts-ov{position:fixed;inset:0;z-index:2147483646;background:rgba(4,6,10,.62);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s}.mpa-ts-ov.in{opacity:1}'
+    + '.mpa-ts{width:min(342px,92vw);background:#0e1218;border:1px solid #242b34;border-radius:16px;padding:16px 16px 14px;box-shadow:0 30px 70px -20px rgba(0,0,0,.8);transform:translateY(8px);transition:transform .18s;position:relative}.mpa-ts-ov.in .mpa-ts{transform:none}'
+    + '.mpa-ts-x{position:absolute;top:10px;right:11px;background:none;border:none;color:#7f8893;font-size:16px;cursor:pointer;line-height:1;padding:3px}'
+    + '.mpa-ts-by{font:800 12px \'Space Mono\',ui-monospace,monospace;letter-spacing:.04em;color:#9fb0c0;margin-bottom:3px}.mpa-ts-t{font-size:15px;color:#e9e7df;font-weight:700;margin-bottom:10px}.mpa-ts-t b{color:#fff}'
+    + '.mpa-ts-b{display:flex;align-items:center;gap:11px;width:100%;background:#151b23;border:1px solid #273040;color:#e9e7df;border-radius:11px;padding:11px 13px;margin-top:8px;cursor:pointer;text-align:left;font-size:13px;font-weight:600}.mpa-ts-b:hover{background:#1a222c}.mpa-ts-b svg{width:19px;height:19px;flex:none;color:#9fe7f0}.mpa-ts-b small{display:block;color:#6b7480;font-size:11px;font-weight:400;margin-top:1px}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
     + '.mpa-nf-r.unseen{background:rgba(180,140,255,.06)}.mpa-nf-r.unseen .mpa-nf-b{color:#f2f0e9}'
     + '.mpa-nf-ic{flex:none;font-size:16px;line-height:1.3;width:22px;text-align:center}'
@@ -1288,13 +1294,47 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!fd) return;
       var ev = (d && d.feed) || [];
       if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? __esT_mpauth("noTradesYetFrom",'No trades yet from the traders you follow - check back soon.') : __esT_mpauth("youReNotFollowing",'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.')) + '</div>'; return; }
-      fd.innerHTML = ev.map(function (e) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
-        return '<div class="mpa-fd-r"><span class="mpa-ib-av" style="width:30px;height:30px;font-size:13px;background:' + dmCol(e.name) + '">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</span>'
+      fd.innerHTML = ev.map(function (e, i) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
+        var tradeable = e.kind === 'open' || e.kind === 'close'; // a trim is not a trade to copy/analyze
+        return '<div class="mpa-fd-r' + (tradeable ? ' tap' : '') + '"' + (tradeable ? ' role="button" data-fdi="' + i + '"' : '') + '><span class="mpa-ib-av" style="width:30px;height:30px;font-size:13px;background:' + dmCol(e.name) + '">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</span>'
           + '<div class="mpa-fd-b"><div class="mpa-fd-nm">' + badge + esc(e.name) + '</div><div class="mpa-fd-act">' + feedLine(e) + '</div></div>'
           + '<div class="mpa-fd-meta">' + xpAgo(e.ts) + '<button class="mpa-fd-dm" type="button" data-fddm="' + esc(e.name) + __esT_mpauth("titleMessage",'" title="Message"></button></div></div>'); }).join('');
-      Array.prototype.forEach.call(fd.querySelectorAll('[data-fddm]'), function (btn) { btn.addEventListener('click', function () { renderDmThread(btn.getAttribute('data-fddm')); }); });
+      Array.prototype.forEach.call(fd.querySelectorAll('[data-fddm]'), function (btn) { btn.addEventListener('click', function (ev2) { ev2.stopPropagation(); renderDmThread(btn.getAttribute('data-fddm')); }); });
+      // tapping a trade row offers the same sheet as the push: Copy / See on chart / Ask the AI (owner 2026-10-23)
+      fd.addEventListener('click', function (ev2) { var row = ev2.target.closest && ev2.target.closest('.mpa-fd-r[data-fdi]'); if (!row || ev2.target.closest('[data-fddm]')) return; var e = ev[+row.getAttribute('data-fdi')]; if (e && window.mpTradeSheet) window.mpTradeSheet({ sym: e.sym, side: e.side, lev: e.lev, by: e.name, act: e.kind === 'open' ? 'o' : (e.liq ? 'l' : 'c'), entry: e.entry, exit: e.exit, pnl: e.pnl, roe: e.roe, openTs: e.openTs, closeTs: e.closeTs }); });
     }).catch(function () { var fd = bodyEl.querySelector('#mpaFd'); if (fd) fd.innerHTML = __esT_mpauth("couldNotLoadYour3",'<div class="mpa-xp-empty">Could not load your feed.</div>'); });
   }
+  // the SAME action sheet the follow-trade push opens (Copy / See on chart / Ask the AI), reusable from the Following feed on
+  // any page - it lives here (the every-page bundle) with its own CSS so home.css need not be loaded (owner 2026-10-23)
+  var TS_IC = {
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>',
+    ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"/><path d="M9.5 11.5 12 9l2.5 2.5"/><path d="M12 9v6"/></svg>'
+  };
+  window.mpTradeSheet = function (c) {
+    if (!c || !c.sym) return;
+    var sym = String(c.sym).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    if (!sym) return;
+    var side = (c.side === 'short') ? 'short' : 'long', lev = Math.min(1000, Math.round(+c.lev || 0)), by = String(c.by || c.name || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), act = c.act || (c.kind === 'open' ? 'o' : (c.liq ? 'l' : 'c'));
+    var verb = act === 'o' ? __esT_mpauth("openedWord",'opened') : (act === 'l' ? __esT_mpauth("wasLiquidatedOn",'was liquidated on') : __esT_mpauth("closedWord",'closed'));
+    var ov = document.createElement('div'); ov.className = 'mpa-ts-ov';
+    ov.innerHTML = '<div class="mpa-ts" role="dialog" aria-modal="true"><button class="mpa-ts-x" type="button" aria-label="Close">&#10005;</button>'
+      + '<div class="mpa-ts-by">' + (by ? '@' + esc(by) : __esT_mpauth("aTraderYouFollow",'A trader you follow')) + '</div>'
+      + '<div class="mpa-ts-t">' + esc(verb) + ' <b>' + esc(sym) + '</b> ' + side + (lev ? ' <b>' + lev + 'x</b>' : '') + '</div>'
+      + '<button class="mpa-ts-b" data-a="copy">' + TS_IC.copy + '<span>' + __esT_mpauth("copyThisTrade",'Copy this trade') + '<small>' + __esT_mpauth("preFillsConfirm",'pre-fills the same trade - you confirm the open') + '</small></span></button>'
+      + '<button class="mpa-ts-b" data-a="chart">' + TS_IC.chart + '<span>' + __esT_mpauth("seeOnChart",'See') + ' ' + esc(sym) + ' ' + __esT_mpauth("onTheChart",'on the chart') + '</span></button>'
+      + '<button class="mpa-ts-b" data-a="ai">' + TS_IC.ai + '<span>' + __esT_mpauth("askAiAboutThisTrade",'Ask the AI about this trade') + '</span></button></div>';
+    document.body.appendChild(ov); requestAnimationFrame(function () { ov.classList.add('in'); }); setTimeout(function () { ov.classList.add('in'); }, 80);
+    var close = function () { ov.classList.remove('in'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 220); };
+    ov.addEventListener('click', function (e) {
+      if (e.target === ov || e.target.closest('.mpa-ts-x')) { close(); return; }
+      var b = e.target.closest('.mpa-ts-b'); if (!b) return; var a = b.getAttribute('data-a');
+      try { if (window.mpBuzz) window.mpBuzz([14]); } catch (_e) {}
+      if (a === 'copy') location.href = '/paper-trade?coin=' + encodeURIComponent(sym) + '&side=' + side + (lev ? '&lev=' + lev : '');
+      else if (a === 'chart') location.href = '/charts?coin=' + encodeURIComponent(sym);
+      else { try { sessionStorage.setItem('mp_ai_trade', JSON.stringify({ sym: sym, side: side, lev: lev, by: by, act: act, entry: +c.entry || 0, exit: +c.exit || 0, pnl: (c.pnl != null && isFinite(c.pnl)) ? +c.pnl : null, roe: (c.roe != null && isFinite(c.roe)) ? +c.roe : null, openTs: +c.openTs || 0, closeTs: +c.closeTs || 0 })); } catch (_e) {} location.href = '/charts?coin=' + encodeURIComponent(sym) + '&ai=1'; }
+    });
+  };
   // ---- Friend duels (weekly stat challenges) ----
   var DMET = { roe: 'ROE', wr: __esT_mpauth("winRate",'Win rate'), win: __esT_mpauth("biggestWin",'Biggest win'), pnl: 'Profit', survival: 'Survival', streak: 'Streak', sniper: 'Sniper' };
   var DTYPES = [
@@ -1985,7 +2025,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small>' + sub + '</span><span class="mpa-sw"><input type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '><i></i></span></label>'; }).join('');
       host.innerHTML = pushBox + rows + saveNote;
       wireNpPush(host.querySelector('#mpaNpPush'));
-      var trOpen = host.querySelector('.mpa-tr-open'); if (trOpen) trOpen.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); renderFollowing(); });
+      var trOpen = host.querySelector('.mpa-tr-open'); if (trOpen) trOpen.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); renderFollowingSettings(); });
       var note = host.querySelector('#mpaNpNote');
       host.addEventListener('change', function (e) { var cb = e.target.closest && e.target.closest('[data-np]'); if (!cb) return;
         var p2 = {}; Array.prototype.forEach.call(host.querySelectorAll('[data-np]'), function (x) { p2[x.getAttribute('data-np')] = x.checked; });
@@ -2009,18 +2049,27 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       + '</div>';
   }
   function renderFollowing() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("tradersTitle",'Following') + '</h3>'
+    // the Following tab shows the LATEST TRADES by default; the settings (filters + per-trader) sit behind the gear, exactly
+    // like Notifications (owner 2026-10-23: "sva podesavanja na following tabu treba da se sakriju iza klika na gear icon")
+    bodyEl.innerHTML = '<div class="mpa-nf-top"><h3 class="mpa-h" style="margin:0">' + __esT_mpauth("tradersTitle",'Following') + '</h3>'
+      + '<button class="mpa-nf-set" id="mpaFwSet" type="button" title="' + __esT_mpauth("followingSettings",'Following settings') + '" aria-label="' + __esT_mpauth("followingSettings",'Following settings') + '">' + ic('gear') + '</button></div>'
+      + '<div class="mpa-np-foot" style="margin:-2px 0 9px">' + __esT_mpauth("latestFollowSub",'Latest trades from the traders you follow. Tap a trade for options.') + '</div>'
+      + '<div class="mpa-fd" id="mpaFd"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
+      + '<button class="mpa-link" id="mpaFwBack" type="button">← ' + __esT_mpauth("backToProfile",'Back to profile') + '</button>';
+    var bk = bodyEl.querySelector('#mpaFwBack'); if (bk) bk.addEventListener('click', render);
+    var st = bodyEl.querySelector('#mpaFwSet'); if (st) st.addEventListener('click', renderFollowingSettings);
+    loadFeedInto(bodyEl.querySelector('#mpaFd'));
+  }
+  function renderFollowingSettings() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("followingSettings",'Following settings') + '</h3>'
       + '<div class="mpa-ft-h" style="margin:0 0 3px">' + __esT_mpauth("tnTradeNotifs",'Trade notifications') + '</div>'
       + '<div class="mpa-np-foot" style="margin:0 0 8px">' + __esT_mpauth("tnSub",'Choose which of their trades reach your phone, then mute any trader below.') + '</div>'
       + '<div id="mpaFtHost"></div>'
       + '<div class="mpa-ft-h" style="margin:0 0 3px">' + __esT_mpauth("tradersListH",'Traders') + '</div>'
       + '<div class="mpa-np-foot" style="margin:0 0 7px">' + __esT_mpauth("tradersSub",'Switch off any trader you do not want notifications from. The "People you follow" switch must be on for these to apply.') + '</div>'
       + '<div class="mpa-tr-list" id="mpaTr"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
-      + '<div class="mpa-ft-h" style="margin:15px 0 6px">' + __esT_mpauth("theirLatestTrades",'Their latest trades') + '</div>'
-      + '<div class="mpa-fd" id="mpaFd"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
-      + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backToProfile",'Back to profile') + '</button>';
-    var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', render);
-    loadFeedInto(bodyEl.querySelector('#mpaFd'));
+      + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backLabel",'Back') + '</button>';
+    var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', renderFollowing);
     var ftHost = bodyEl.querySelector('#mpaFtHost');
     // the trade filters come off /api/push/prefs (ft), the trader list off /api/push/traders - both in parallel
     fetch('/api/push/prefs').then(function (r) { return r.json(); }).then(function (d) {

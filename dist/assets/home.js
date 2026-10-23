@@ -3188,8 +3188,8 @@ window.addEventListener('load', function () {
   // FOLLOW-TRADE ACTION SHEET (2026-10-23): tapping "@X opened BTC long 10x" on the phone lands here with the trade in ?ft - offer to copy it, see it on the chart, or ask the AI about it. Nothing opens a trade on its own; Copy only PRE-FILLS the form.
   (function(){ if(!/[?&]ft=1/.test(location.search))return; function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});} function g(k){var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)'));return m?decodeURIComponent(m[1]):'';}
     var sym=g('ftc').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12),side=g('fts')==='short'?'short':'long',lev=Math.min(1000,Math.round(+g('ftl')||0)),by=g('ftby').replace(/[^a-zA-Z0-9_]/g,'').slice(0,20),act=g('fta'); if(!sym)return;
-    var entry=+g('fte')||0,exit=+g('ftx')||0,pnl=g('ftp')!==''?+g('ftp'):null,roe=g('ftr')!==''?+g('ftr'):null;
-    var tradeCtx={sym:sym,side:side,lev:lev,by:by,act:act,entry:entry,exit:exit,pnl:(pnl!=null&&isFinite(pnl))?pnl:null,roe:(roe!=null&&isFinite(roe))?roe:null};
+    var entry=+g('fte')||0,exit=+g('ftx')||0,pnl=g('ftp')!==''?+g('ftp'):null,roe=g('ftr')!==''?+g('ftr'):null,openTs=+g('fton')||0,closeTs=+g('ftoff')||0;
+    var tradeCtx={sym:sym,side:side,lev:lev,by:by,act:act,entry:entry,exit:exit,pnl:(pnl!=null&&isFinite(pnl))?pnl:null,roe:(roe!=null&&isFinite(roe))?roe:null,openTs:openTs,closeTs:closeTs};
     var verb=act==='o'?'opened':(act==='l'?'was liquidated on':'closed');
     var IC={copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>',ai:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"/><path d="M9.5 11.5 12 9l2.5 2.5"/><path d="M12 9v6"/></svg>'};
     function run(){ var ov=document.createElement('div'); ov.className='ftsh-ov';
@@ -3576,7 +3576,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=368e377c'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=b7b35497'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -4097,7 +4097,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=8e188cab'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=33e27a53'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);

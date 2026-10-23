@@ -548,7 +548,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!p.w.dr.on&&p.w._drCancelMulti)p.w._drCancelMulti();
     p.el.classList.toggle('drawing',p.w.dr.on);ov.classList.toggle('drawing',p.w.dr.on);syncAct('draw',p.w.dr.on);
     p.w._drExit=function(){if(p.w.dr.on)toggleDraw();};} // draw event also fires on MOBILE (2026-08-11) - the "Draw on a chart" mission verifies uevents type 'draw', and only desktop mp-charts sent it, so phone users could never complete it
-  function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}mAiClear(p);try{if(window.__mpAi&&window.__mpAi.ghostClear&&p&&p.w)window.__mpAi.ghostClear(p.w);}catch(e){}}/* the forecast candles belong to the symbol+TF that was on screen */
+  function clearPaneDraw(p){if(p&&p.w){p.w._tmarks=null;if(p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}}mAiClear(p);try{if(window.__mpAi&&window.__mpAi.ghostClear&&p&&p.w)window.__mpAi.ghostClear(p.w);}catch(e){}}/* the forecast candles belong to the symbol+TF that was on screen */
   /* the AI plan on a pane: price lines only (the pane's canvas belongs to the user's drawings) */
   function mAiClear(p){if(p&&p._aiPlan){p._aiPlan.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p._aiPlan=null;}try{if(p&&p.w){p.w._aiPlanObj=null;if(p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}}catch(e){} /* clear the shared legend too */}
   /* ALERTS ON THE AI'S LEVELS (2026-10-04): one tap sets a price alert at the plan's entry/stop/targets (mobile) */
@@ -1113,13 +1113,15 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     showGate(false);proceed(); // portrait works too - the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
-    // a follow-trade "Ask AI about this trade" arrives with the trade in sessionStorage: ONE chart (not the 1h+4h split), then
-    // the AI sheet opens pre-seeded with the trade so the reader picks a timeframe and taps Analyze (owner 2026-10-23)
+    // a follow-trade "Ask AI about this trade" arrives with the trade in sessionStorage: ONE chart on the timeframe picked from
+    // the hold time (not the 1h+4h split, not a user choice), the BUY/SELL marks drawn, then the AI sheet opens (owner 2026-10-23)
     var analyze=null; try{var _at=sessionStorage.getItem('mp_ai_trade');if(_at){var _c=JSON.parse(_at);if(_c&&forcePair&&String(_c.sym||'').toUpperCase()===forcePair){analyze=_c;sessionStorage.removeItem('mp_ai_trade');}}}catch(e){}
     if(!panes.length){
       var sv=mfcLoad(),st=ov.querySelector('#mfcStage');
-      var cfgs=forcePair?(analyze?[{sym:forcePair,tf:'60'}]:[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]):((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); the AI-analyze deep link forces ONE; else default ONE chart on a phone (owner 2026-10-15: two was too cramped); the saved layout still restores up to two
-      if(analyze){mAiTrade=analyze;try{if(window.__mpAiTradeSet)window.__mpAiTradeSet(analyze);}catch(e){}setTimeout(function(){try{openSheet('ai');}catch(e){}},900);}
+      var _atf=(analyze&&window.__mpTfForHold)?window.__mpTfForHold(analyze):'60';
+      var cfgs=forcePair?(analyze?[{sym:forcePair,tf:_atf}]:[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]):((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); the AI-analyze deep link forces ONE on the hold-time timeframe; else default ONE chart on a phone (owner 2026-10-15: two was too cramped); the saved layout still restores up to two
+      if(analyze){mAiTrade=analyze;try{if(window.__mpAiTradeSet)window.__mpAiTradeSet(analyze);}catch(e){}setTimeout(function(){try{openSheet('ai');}catch(e){}},900);
+        var _tm=0;(function _mk(){var p0=panes[0];if(p0&&p0.w&&p0.w.bars&&p0.w.bars.length>=10){try{if(window.__mpTradeMarks)window.__mpTradeMarks(p0.w,analyze);}catch(e){}setTimeout(function(){try{if(window.__mpTradeMarks&&panes[0]&&panes[0].w)window.__mpTradeMarks(panes[0].w,analyze);}catch(e){}},700);return;}if(_tm++<200)setTimeout(_mk,150);})();}
       split=cfgs.length>1?2:1;
       cfgs.forEach(function(c){var p=mkPane(c.sym||'BTC',c.tf||'60');if(c.inds)p.inds=c.inds;if(c.cmp)p.cmp=String(c.cmp).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);if(+c.liqMin)p.liqMin=+c.liqMin;panes.push(p);st.appendChild(p.el);});
       st.classList.toggle('split',split===2);

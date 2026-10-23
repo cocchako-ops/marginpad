@@ -874,27 +874,46 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   /* ---- Ask AI about this chart - multi-turn, streamed, history kept, glued to the window ---- */
   var aiEl=null,aiW=null,aiBusy=false,aiRaf=0,aiLastL=null,aiLastT=null,aiLimit=50,aiPlans={premium:1,plus:50},aiOffX=8,aiOffY=0,aiDragging=false;
   var aiTradeCtx=null; // a trade from a follow-trade notification, to be analyzed (owner 2026-10-23: "ai treba da obradi ovaj trade, njegov entry i close")
+  function mpHoldSec(c){ var o=+((c&&c.openTs)||0),x=+((c&&c.closeTs)||0); return (o>0&&x>o)?(x-o)/1000:0; }
+  function mpFmtHold(sec){ sec=+sec||0; if(sec<=0)return ''; if(sec<3600)return Math.max(1,Math.round(sec/60))+'m'; if(sec<86400){var h=sec/3600;return (h<10?h.toFixed(1).replace(/\.0$/,''):Math.round(h))+'h';} var d=sec/86400; return (d<10?d.toFixed(1).replace(/\.0$/,''):Math.round(d))+'d'; }
+  function mpTfForHold(c){ var h=mpHoldSec(c); if(!(h>0))return '60'; if(h<1200)return '1'; if(h<7200)return '5'; if(h<28800)return '15'; if(h<172800)return '60'; if(h<864000)return '240'; return '1440'; }
   function aiTradeQ(c){ if(!c)return '';
     var side=(c.side==='short')?'short':'long',sym=String(c.sym||''),lev=c.lev?(' '+c.lev+'x'):'';
-    var closed=(c.act==='c'||c.act==='l'),liq=(c.act==='l');
+    var closed=(c.act==='c'||c.act==='l'),liq=(c.act==='l'),hold=mpFmtHold(mpHoldSec(c));
     var q='A trader I follow went '+side+' '+sym+lev+(c.entry>0?' with entry around '+c.entry:'')+'. ';
-    if(liq)q+='It was liquidated'+(c.exit>0?' at '+c.exit:'')+'. ';
-    else if(closed)q+='They closed it'+(c.exit>0?' at '+c.exit:'')+((c.pnl!=null)?' for '+(c.pnl>=0?'+$':'-$')+Math.abs(c.pnl)+((c.roe!=null)?' ('+(c.roe>=0?'+':'')+Math.round(c.roe)+'%)':''):'')+'. ';
+    if(liq)q+='It was liquidated'+(c.exit>0?' at '+c.exit:'')+(hold?' after holding about '+hold:'')+'. ';
+    else if(closed)q+='They closed it'+(c.exit>0?' at '+c.exit:'')+((c.pnl!=null)?' for '+(c.pnl>=0?'+$':'-$')+Math.abs(c.pnl)+((c.roe!=null)?' ('+(c.roe>=0?'+':'')+Math.round(c.roe)+'%)':''):'')+(hold?', holding about '+hold:'')+'. ';
     else q+='It is still open. ';
-    q+='Analyze THIS trade on the chart I have in front of you: was the entry a good level, '+(closed?'was the exit well timed or did they get out too early / leave money on the table':'is this a good position to be in and where is the risk')+', and what is your honest take? Mark the entry'+(closed?' and exit':'')+' on the chart if it helps.';
+    q+='The entry and the exit are already marked on this chart with a BUY and a SELL circle. Analyze THIS trade: was the entry a good level, '+(closed?'was the exit well timed or did they get out too early / leave money on the table':'is this a good position to be in and where is the risk')+', and what is your honest take?';
     return q; }
   function aiTradeCardFor(w){ if(!aiTradeCtx||!w||String(aiTradeCtx.sym||'')!==String(w.sym||''))return '';
     var c=aiTradeCtx,side=(c.side==='short')?'SHORT':'LONG',sdc=side==='SHORT'?'#ff6258':'#2ebd85';
-    var closed=(c.act==='c'||c.act==='l'),liq=(c.act==='l'),row;
+    var closed=(c.act==='c'||c.act==='l'),liq=(c.act==='l'),row,hold=mpFmtHold(mpHoldSec(c));
     if(liq)row='Liquidated'+(c.exit>0?' at '+escHtml(String(c.exit)):'');
     else if(closed)row='Entry '+escHtml(String(c.entry||'?'))+' → Exit '+escHtml(String(c.exit||'?'))+((c.pnl!=null)?' · '+(c.pnl>=0?'+$':'-$')+Math.abs(c.pnl)+((c.roe!=null)?' ('+(c.roe>=0?'+':'')+Math.round(c.roe)+'%)':''):'');
     else row='Entry '+escHtml(String(c.entry||'?'))+' · still open';
+    var sub=__esT_mpcharts("chartSetToHeld",'Chart set to')+' '+escHtml(tfLabel(w.tf))+(hold?' · '+__esT_mpcharts("heldWord",'held')+' '+escHtml(hold):'');
     return '<div class="aimsg-trade" style="border:1px solid #2a3340;border-radius:11px;padding:11px 12px;margin:0 0 11px;background:#0e1116">'
       +'<div style="font:800 12px \'Space Mono\',ui-monospace,monospace;letter-spacing:.04em;margin-bottom:5px"><span style="color:'+sdc+'">'+side+'</span> '+escHtml(String(c.sym||''))+(c.lev?' '+c.lev+'x':'')+(c.by?' · <span style="color:#9fb0c0">@'+escHtml(String(c.by))+'</span>':'')+'</div>'
-      +'<div style="font-size:12px;color:#cdd3da;margin-bottom:9px">'+row+'</div>'
+      +'<div style="font-size:12px;color:#cdd3da;margin-bottom:3px">'+row+'</div>'
+      +'<div style="font-size:10.5px;color:#6b7480;margin-bottom:9px">'+sub+'</div>'
       +'<button class="cwin-ai-chip" data-q="'+escHtml(aiTradeQ(c))+'" style="display:block;width:100%;text-align:center;background:#13343c;border-color:#2e6f7c;color:#9fe7f0;font-weight:700">'+__esT_mpcharts("analyzeThisTrade",'Analyze this trade')+'</button>'
-      +'<div style="font-size:10.5px;color:#6b7480;margin-top:7px">'+__esT_mpcharts("pickTfThenAnalyze",'Pick a timeframe above first, then analyze.')+'</div>'
       +'</div>'; }
+  /* set the buy/sell marks on a window for a trade, and bring the trade into view (shared with the mobile charts) */
+  function mpTradeMarks(w,c){ if(!w||!c)return; var o=+(c.openTs||0),x=+(c.closeTs||0),en=+c.entry,ex=+c.exit,closed=(c.act==='c'||c.act==='l');
+    var mk=[]; if(o>0&&en>0)mk.push({ts:o,p:en,dir:'buy'}); if(closed&&x>0&&ex>0)mk.push({ts:x,p:ex,dir:'sell'});
+    w._tmarks=mk.length?mk:null;
+    /* FRAME THE TRADE and HOLD it for ~1.6s: loadData's "pin the last 120 bars" scroll and the reflow resize both reset the
+       range right after a deep-link load, and they win a one-off set. A short rAF guard re-applies the trade view every frame
+       until they have settled, then releases so the reader can pan. Extra right padding keeps the exit mark LEFT of the AI
+       panel (desktop) rather than hidden behind it. */
+    var tmUntil=Date.now()+1600; w._tmFrame=tmUntil;
+    function frame(){ if(w._tmFrame!==tmUntil)return; try{ if(w.chart&&w.bars&&w.bars.length){ var b0=(o>0)?barAtTs(w.bars,o):-1,b1=(closed&&x>0)?barAtTs(w.bars,x):(w.bars.length-1);
+      if(b0>=0&&b1>=0){var lo=Math.min(b0,b1),hi=Math.max(b0,b1),span=Math.max(8,hi-lo),lp=Math.max(4,Math.round(span*0.3)+3),rp=span+lp;
+        w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,lo-lp),to:hi+rp});}}}catch(e){}
+      if(Date.now()<tmUntil){try{requestAnimationFrame(frame);}catch(e){setTimeout(frame,32);}} }
+    frame(); }
+  try{window.__mpTfForHold=mpTfForHold;window.__mpTradeMarks=mpTradeMarks;window.__mpTradeQ=aiTradeQ;}catch(e){}
   try{window.__mpAiTradeSet=function(c){aiTradeCtx=c||null;};}catch(e){} // the mobile sheet shares this trade context
   /* MODE + STRATEGY (2026-10-15, owner): `trade` asks for a setup under one of the named strategies (or any), `analysis`
      asks for the map - zones, levels, pools, structure - and explicitly no entry. Remembered per browser; the list of
@@ -2128,12 +2147,18 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
   function aiAnalyzeAuto(sym){
     sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return;
     try{var _t=sessionStorage.getItem('mp_ai_trade');if(_t){var c=JSON.parse(_t);if(c&&String(c.sym||'').toUpperCase()===sym)aiTradeCtx=c;sessionStorage.removeItem('mp_ai_trade');}}catch(e){}
-    var tries=0;
+    var tfSet=false,oldBars=null,tries=0;
     (function go(){
       var w=null;for(var i=0;i<wins.length;i++){if(wins[i].sym===sym){w=wins[i];break;}}
-      if(!(w&&window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())){if(tries++<120){setTimeout(go,150);return;}if(!w)return;}
-      /* the trade card + "Analyze this trade" button show in the empty state; the reader picks a timeframe FIRST, then taps
-         it - no auto-fire (owner 2026-10-23: "da mi da izbor na kom timeframe ... pre nego sto pitam ai da ga analizira") */
+      if(!w){if(tries++<120){setTimeout(go,150);return;}return;}
+      /* AUTO-TIMEFRAME from the hold time, so the whole trade fits the screen - the reader does NOT pick it (owner 2026-10-23:
+         "automatski moramo da vidimo koliki je bio hold time i na osnovu toga da otvaramo adekvatan timeframe, a ne da korisnik bira") */
+      if(!tfSet){tfSet=true;if(aiTradeCtx){var tf=mpTfForHold(aiTradeCtx);if(tf&&tf!==w.tf){oldBars=w.bars;try{setWinTf(w,tf);}catch(e){}}}}
+      var barsReady=w.bars&&w.bars.length>=10&&(oldBars==null||w.bars!==oldBars); // wait for the NEW timeframe's bars, not the old ones
+      if(!(barsReady&&window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())){if(tries++<200){setTimeout(go,150);return;}}
+      /* draw the BUY/SELL marks at the real entry/exit and frame them (re-applied once to win over loadData's own scroll),
+         then open the panel - the card's "Analyze this trade" button runs the AI (markers already on; no timeframe to pick) */
+      if(aiTradeCtx){try{mpTradeMarks(w,aiTradeCtx);}catch(e){}setTimeout(function(){try{mpTradeMarks(w,aiTradeCtx);}catch(e){}},600);}
       openAiPanel(w);
     })();
   }
@@ -2572,7 +2597,26 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         ctx.restore();
         w._liqHit.push({x:x,y:y,r:m.r,m:m});
       }}
-    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawLiqMarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
+    /* BUY/SELL MARKS FOR A FOLLOWED TRADE (2026-10-23, owner: "obavezno AI crta kruzic i strelicu gde pise BUY i SELL kad
+       analizira svaki trejd"). Drawn precisely at the real entry/exit (time + price), so "what happened" is unmistakable -
+       a circle at the exact point, an arrow pointing at it, and a BUY / SELL label. Stored by TIMESTAMP in w._tmarks (like
+       w._sess), so they survive a redraw but are cleared on a symbol switch (the ts would land on the wrong candle). */
+    function drawTmarks(){var mk=w._tmarks;if(!mk||!mk.length||!w.bars||!w.bars.length)return;
+      var H=w.dr.H||0,th=0;try{th=w.chart.timeScale().height()||0;}catch(e){}var plotH=Math.max(0,H-th);
+      for(var i=0;i<mk.length;i++){var m=mk[i],bi=barAtTs(w.bars,m.ts),x=(bi<0?null:xOf(bi)),y=yOf(m.p);
+        if(x==null||y==null||x<-30||x>(w.dr.W||0)+30||y<-40||y>plotH+40)continue;
+        var buy=m.dir!=='sell',col=buy?'#2ebd85':'#ff5a4d';
+        ctx.save();
+        var ty=buy?y+34:y-34; // the label + arrow tail sit below a BUY, above a SELL
+        ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(x,ty);ctx.lineTo(x,buy?y+10:y-10);ctx.stroke();
+        ctx.beginPath();if(buy){ctx.moveTo(x,y+8);ctx.lineTo(x-5.5,y+16);ctx.lineTo(x+5.5,y+16);}else{ctx.moveTo(x,y-8);ctx.lineTo(x-5.5,y-16);ctx.lineTo(x+5.5,y-16);}ctx.closePath();ctx.fillStyle=col;ctx.fill();
+        ctx.shadowColor=col;ctx.shadowBlur=8;ctx.beginPath();ctx.arc(x,y,6.5,0,6.283);ctx.fillStyle=buy?'rgba(46,189,133,.85)':'rgba(255,90,77,.85)';ctx.fill();ctx.shadowBlur=0;
+        ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.stroke();
+        ctx.beginPath();ctx.arc(x,y,8.1,0,6.283);ctx.lineWidth=1.2;ctx.strokeStyle=col;ctx.stroke();
+        ctx.restore();
+        inkTxt(x-(buy?12:14),buy?ty+1:ty-13,buy?'BUY':'SELL',col,11);
+      }}
+    function redraw(){if(!ctx)return;ctx.clearRect(0,0,w.dr.W||0,w.dr.H||0);try{drawSess();}catch(e){}try{drawLiqMarks();}catch(e){}try{drawTmarks();}catch(e){}labReset((w.dr.W||0)<430);layoutLabels();w.dr.shapes.forEach(strokeShape);if(w.dr.cur)strokeShape(w.dr.cur);if(w.dr.sel&&w.dr.on&&w.dr.shapes.indexOf(w.dr.sel)>=0)drawHandles(w.dr.sel);try{drawPlanLegend();}catch(e){}}
     w.dr.redraw=redraw;
 
     // ---- persistence: serialize logicals as bar TIME so drawings survive reloads + symbol/TF round-trips ----
@@ -2962,7 +3006,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.sub||w._subSync)return;w._subSync=1;try{w.sub.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;}); /* keep the oscillator sub-pane locked to the main time axis */
       w.legItems=[];var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);w.legEl=lg;try{w.chart.subscribeCrosshairMove(function(param){cwLeg(w,param);syncCrosshair(w,param);});}catch(_){}try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreW(w);});}catch(_){} }catch(e){return;}
     loadData(w,true); }); }
-  function loadData(w,first){ if(tfIsSec(w.tf))window.__mpSecNeed=1;/* restored layouts and the AI's timeframe action reach here too, not only a click */ if(w._rp)try{replayExit(w);}catch(e){}/* a symbol / timeframe change ends a replay */ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol - drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}w._pwRef=null;w._pwA=null;w._pwB=null;/* AI-drawn plan lines AND the forecast candles are a snapshot for the old symbol/TF - clear on switch; the price-axis watcher needs a fresh reference too */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
+  function loadData(w,first){ if(tfIsSec(w.tf))window.__mpSecNeed=1;/* restored layouts and the AI's timeframe action reach here too, not only a click */ if(w._rp)try{replayExit(w);}catch(e){}/* a symbol / timeframe change ends a replay */ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol - drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}w._tmarks=null;/* buy/sell marks are keyed by timestamp - a full reload lands them on the wrong candle; the analyze flow re-adds them after the bars arrive */w._pwRef=null;w._pwA=null;w._pwB=null;/* AI-drawn plan lines AND the forecast candles are a snapshot for the old symbol/TF - clear on switch; the price-axis watcher needs a fresh reference too */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
     var _q=w._kq=(w._kq||0)+1;/* request ticket: a full-window klines response only applies while it is the NEWEST full-window request for this window (2026-09-02) */
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle||_q!==w._kq)return;

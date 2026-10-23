@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=59b48456" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e37c868c" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19235,7 +19235,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '9f25edd8';
+const ASSET_V = 'cc679daf';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -29192,6 +29192,7 @@ export class UserStore {
     try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {}
     try { s.exec('ALTER TABLE tradeev ADD COLUMN sl INTEGER'); } catch (e) {} // skill score (2026-09-06): had a stop set at close (0/1); NULL = before the column existed
     try { s.exec('ALTER TABLE tradeev ADD COLUMN rz TEXT'); } catch (e) {} // realism the trade was FILLED with (2026-09-16): S=slippage, T=size tier, M=venue margin rate. NULL/'' = the defaults, which is every trade before that date - so the Bot arena can say on the board which bots ran on easy mode.
+    for (const col of ['entry REAL', 'exit REAL']) { try { s.exec('ALTER TABLE tradeev ADD COLUMN ' + col); } catch (e) {} } // 2026-10-23: the fill prices, so the Following feed can open the same trade sheet (Copy / Chart / AI analyze) the push does
     try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id - lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
@@ -30030,12 +30031,14 @@ export class UserStore {
                   act = liq ? 'was liquidated on ' + sym + ' ' + side : 'closed ' + sym + ' ' + side + pl; }
                 // the link carries the trade - sym, side, lev, action, trader AND the prices - so tapping the push opens a sheet
                 // offering Copy / See on chart / AI analyze, and the AI can read the actual entry and exit (owner 2026-10-23)
-                const raw = o[3] || {}; const en = +raw.entry, ex2 = +raw.exit;
+                const raw = o[3] || {}; const en = +raw.entry, ex2 = +raw.exit, ots = +raw.ts, cts = +raw.closeTs;
                 const link = '/paper-trade?ft=1&ftc=' + encodeURIComponent(sym) + '&fts=' + side + '&ftl=' + lev + '&fta=' + (k === 'open' ? 'o' : (d.liq ? 'l' : 'c')) + '&ftby=' + encodeURIComponent(an)
                   + (isFinite(en) && en > 0 ? '&fte=' + en : '')
                   + (k !== 'open' && isFinite(ex2) && ex2 > 0 ? '&ftx=' + ex2 : '')
                   + (k !== 'open' && d.pnl != null && isFinite(d.pnl) ? '&ftp=' + d.pnl : '')
-                  + (k !== 'open' && d.roe != null && isFinite(d.roe) ? '&ftr=' + d.roe : '');
+                  + (k !== 'open' && d.roe != null && isFinite(d.roe) ? '&ftr=' + d.roe : '')
+                  + (isFinite(ots) && ots > 0 ? '&fton=' + ots : '')
+                  + (k !== 'open' && isFinite(cts) && cts > 0 ? '&ftoff=' + cts : ''); // open + close timestamps -> the chart auto-picks the timeframe from the hold time and marks BUY/SELL
                 for (const f of fr) { if (!this._followNotifOk(f.uid, uid, k, side, lev)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
             }
           }
@@ -30074,7 +30077,7 @@ export class UserStore {
           if (_q9 > 0 && _en9 > 0 && _ex9 > 0 && _fr9 > 0) _fee9 = Math.round(_q9 * (_en9 + _ex9) * _fr9 * 1e4) / 1e4;
           if (isFinite(+e.fund)) _fnd9 = Math.round(+e.fund * 1e4) / 1e4;
         }
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9); // the client journal says `sl`, a server-filled position says `stop`
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src,sl,rz,fee,fund,entry,exit) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''), ((e.sl != null && +e.sl > 0) || (e.stop != null && +e.stop > 0)) ? 1 : 0, String((e && e.rz) || '').slice(0, 4), _fee9, _fnd9, (isFinite(+e.entry) && +e.entry > 0) ? +e.entry : null, (isFinite(+e.exit) && +e.exit > 0) ? +e.exit : null); // the client journal says `sl`, a server-filled position says `stop`
         nIns++;
       }
       if (nIns) { // history window by plan (2026-09-15): 30 days on Free, 90 on a paid API plan. The tier is
@@ -33431,10 +33434,13 @@ export class UserStore {
       if (!ids.length) return this.j({ feed: [], follows: 0 });
       const ph = ids.map(() => '?').join(',');
       // trade events (opens/closes) from followed accounts, newest first
-      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
-      const feed = rows.filter(r => r.username).map(r => { const L = xpLevelOf(r.xp || 0); return {
+      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,e.entry,e.exit,e.tid,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
+      const feed = rows.filter(r => r.username).map(r => { const L = xpLevelOf(r.xp || 0), isClose = r.kind === 'close', ot = tradeOpenTs(String(r.tid || '')); return {
         name: r.username, level: { k: L.k, name: L.name, col: L.col }, ts: r.ts, kind: r.kind,
-        sym: r.sym, side: r.side, lev: r.lev, margin: r.margin, pnl: r.pnl, roe: r.roe, liq: r.liq }; });
+        sym: r.sym, side: r.side, lev: r.lev, margin: r.margin, pnl: r.pnl, roe: r.roe, liq: r.liq,
+        // the fill prices + the open/close timestamps, so the Following feed opens the same trade sheet the push does (2026-10-23)
+        entry: r.entry == null ? null : +r.entry, exit: r.exit == null ? null : +r.exit,
+        openTs: isClose ? (ot || null) : (+r.ts || 0), closeTs: isClose ? (+r.ts || 0) : 0 }; });
       return this.j({ feed, follows: ids.length });
     }
     if (path === '/duel/challenge') { // a challenges b to a stat duel. from=uid, toName, metric, dur, stake, sym, maxTrades, maxLev
