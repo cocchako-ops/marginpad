@@ -1251,7 +1251,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
           + '<span class="mpa-dtx">' + esc(m.txt) + '</span>' + (m.ed ? '<span class="mpa-ded">edited</span>' : '')
           + '<span class="t">' + xpAgo(m.ts) + '</span></div>'
           + dmRxRow(m.rx, m.id, m.me); }).join(''); if (atBottom) scroll.scrollTop = scroll.scrollHeight; }
-    function pull() { if (!document.body.contains(scroll) || document.hidden) return; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () {}); }
+    /* ONE PULL IN FLIGHT (2026-10-24): the thread is polled every 5 s, and when the store answers in 4-8 s (the UserStore
+       queue the owner's chat called "lagging" on 10-23) a second and third poll left before the first came back - three
+       requests for one thread, each waiting in the same queue it was lengthening, and the replies landing out of order
+       could draw an OLDER copy over a newer one. A poll that finds one in flight simply waits for the next tick. */
+    var pulling = 0;
+    function pull() { if (!document.body.contains(scroll) || document.hidden || pulling) return; pulling = 1; fetch('/api/dm/thread?with=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { pulling = 0; if (d && !d.error && Array.isArray(d.messages) && document.body.contains(scroll)) draw(d.messages); if (d && typeof d.notifUnread === 'number') { try { notifSetBadge(d.notifUnread); } catch (e) {} } /* the server marked this sender's dm notification seen on the read: the bell follows at once, not at the next poll */ }).catch(function () { pulling = 0; }); }
     var dmT = setInterval(function () { if (!document.body.contains(scroll)) { clearInterval(dmT); window.removeEventListener('mp:xp', onXp); return; } pull(); }, 5000);
     var onXp = function (e) { try { if (e && e.detail && +e.detail.dmUnread > 0) pull(); } catch (_) {} }; window.addEventListener('mp:xp', onXp); // the 60 s xp poll carries dmUnread: a new message pulls the thread at once
     window.mpSWR('dm:t:' + name, '/api/dm/thread?with=' + encodeURIComponent(name), function (d) {

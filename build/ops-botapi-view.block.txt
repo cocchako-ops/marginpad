@@ -1,0 +1,90 @@
+  /* BOT API DESK (2026-10-24, owner: "ne prikazuje dobro koji su kljucevi aktivni i pre koliko su korisceni. Hocu jasno da
+     vidim ko koristi API (websocket ili sta vec), koliko dugo jos ima do isteka svog plana"). What it could not say before:
+     HOW a key calls (REST / MCP / the WebSocket stream - botkeys2.via + BotStream presence), WHAT it calls (per-key endpoint
+     split from botuse2), whether it is calling RIGHT NOW (Here-now presence, rpm), and WHEN the plan or the 7-day trial ends -
+     the trial is what every Free key has run on since 2026-10-13 and it was invisible here. A key whose trial ENDED and is
+     still calling is a developer being refused with a 402 every minute: that is the churn tile. */
+  simple('trading/botapi', { urls: ['/api/admin/apistats', '/api/admin/apiplans', '/api/admin/online'], every: 60000, html: function (d, pl, on) {
+    var now = Date.now(), DAY = 86400000;
+    var ks = (d.keys || []).slice().sort(function (a, b) { return (b.last || 0) - (a.last || 0); });
+    var use = d.use || [], plans = d.plans || {};
+    var today = d.today || new Date().toISOString().slice(0, 10), d7 = new Date(now - 7 * DAY).toISOString().slice(0, 10);
+    var byKey = {}, byKeyEp = {}, byKeyToday = {}, byKey7 = {};
+    use.forEach(function (u) { var n = +u.n || 0; byKey[u.k] = (byKey[u.k] || 0) + n; if (u.day === today) byKeyToday[u.k] = (byKeyToday[u.k] || 0) + n; if (u.day >= d7) { byKey7[u.k] = (byKey7[u.k] || 0) + n; var m = byKeyEp[u.k] = byKeyEp[u.k] || {}; m[u.ep] = (m[u.ep] || 0) + n; } });
+    var byDay = daysAgg(use, 'day', 'n', 14); var u7 = byDay.slice(7).reduce(function (s, x) { return s + x.v; }, 0), uP = byDay.slice(0, 7).reduce(function (s, x) { return s + x.v; }, 0);
+    // who is calling at this moment: the Here-now presence rows (one per key seen in the last 5 min) + open WebSocket streams
+    var api = (on && on.api) || {}, liveByKid = {}, liveByUid = {}, wsByUid = {};
+    (api.keys || []).forEach(function (k) { if (k.e2) return; liveByKid[k.kid] = k; liveByUid[k.uid] = liveByUid[k.uid] || k; });
+    (api.streams || []).forEach(function (s) { var u = s.uid || s.u || ''; wsByUid[u] = (wsByUid[u] || 0) + 1; });
+    function kidOf(k) { return String(k.k || '').replace(/^mpb_/, '').slice(0, 6); }
+    function liveOf(k) { return liveByKid[kidOf(k)] || null; }
+    function planCell(k) {
+      var p = plans[k.uid];
+      if (p && p.tier > 0) { var dl = p.days_left; var dlh = dl == null ? '' : dl > 3650 ? ' <span class="meta">no end</span>' : (' <b' + (dl <= 3 ? ' style="color:var(--red)"' : dl <= 7 ? ' style="color:var(--amber)"' : '') + '>' + N(dl) + 'd left</b>'); return '<span class="badge lime">' + esc(p.plan) + '</span>' + dlh + (p.src ? ' <span class="meta">' + esc(p.src) + '</span>' : ''); }
+      var t = p && p.trial;
+      if (!p) return '<span class="badge">free</span> <span class="meta">no call in 60 days</span>';
+      if (!t || t.missing) return '<span class="badge">free</span> <span class="meta">trial starts on first call</span>';
+      if (t.active) return '<span class="badge amber">trial</span> <b' + (t.days_left <= 2 ? ' style="color:var(--amber)"' : '') + '>' + N(t.days_left) + 'd left</b> <span class="meta">to ' + esc(dt(t.until).slice(0, 10)) + '</span>';
+      return '<span class="badge red">trial ended</span> <span class="meta">' + esc(dt(t.until).slice(0, 10)) + ' - engine answers 402, market data still free</span>';
+    }
+    function howCell(k) {
+      var lv = liveOf(k), ws = wsByUid[k.uid] || 0;
+      return (k.via === 'mcp' ? '<span class="badge">MCP</span>' : k.via === 'rest' ? '<span class="badge">REST</span>' : '<span class="meta">-</span>')
+        + (ws ? ' <span class="badge lime" title="open WebSocket stream' + (ws > 1 ? 's' : '') + '">WS' + (ws > 1 ? ' x' + ws : '') + '</span>' : '')
+        + (lv ? ' <span class="badge lime" title="seen in the last 5 minutes, ' + esc(lv.ep || '') + '">live ' + N(lv.rpm || 0) + '/min</span>' : '');
+    }
+    function whatCell(k) { var m = byKeyEp[k.k] || {}; var top = Object.keys(m).sort(function (a, b) { return m[b] - m[a]; }).slice(0, 3); return top.length ? top.map(function (e) { return esc(e) + ' <span class="meta">' + N(m[e]) + '</span>'; }).join(' · ') : '<span class="meta">-</span>'; }
+    function lastCell(k) { if (!k.last) return '<span class="meta">never</span>'; var a = now - k.last; return '<span class="' + (a < 5 * 60000 ? 'up' : a < DAY ? '' : 'meta') + '">' + ago(k.last) + ' ago</span>'; }
+    function ownerCell(k) { return userLink(k.username) + ' <span class="meta">' + esc(k.name || 'default') + (k.book ? ' · book ' + esc(k.book) : '') + '</span>' + (k.revoked ? ' <span class="badge red">REVOKED</span>' : ''); }
+    var keyCols = [
+      { h: 'owner · key', grow: true, f: ownerCell },
+      { h: 'plan · ends', f: planCell },
+      { h: 'how', f: howCell },
+      { h: 'what it calls (7d)', f: whatCell },
+      { h: 'today', r: true, mono: true, f: function (k) { return N(byKeyToday[k.k] || 0); } },
+      { h: '7d', r: true, mono: true, f: function (k) { return N(byKey7[k.k] || 0); } },
+      { h: 'lifetime', r: true, mono: true, f: function (k) { return N(k.calls); } },
+      { h: 'last call', mono: true, f: lastCell },
+      { h: 'created', mono: true, f: function (k) { return dt(k.created).slice(0, 10); } }];
+    var live = ks.filter(function (k) { return !k.revoked && (byKey[k.k] > 0 || (now - (k.last || 0)) < 14 * DAY); }), rest = ks.filter(function (k) { return live.indexOf(k) < 0; });
+    var active24 = live.filter(function (k) { return now - (k.last || 0) < DAY; });
+    var activeNow = live.filter(function (k) { return liveOf(k) || wsByUid[k.uid]; });
+    var trialEnding = live.filter(function (k) { var p = plans[k.uid]; return p && !(p.tier > 0) && p.trial && p.trial.active && p.trial.days_left <= 2; });
+    var refused = live.filter(function (k) { var p = plans[k.uid]; return p && !(p.tier > 0) && p.trial && p.trial.expired && now - (k.last || 0) < 7 * DAY; });
+    var rowCls = function (k) { var p = plans[k.uid]; if (p && !(p.tier > 0) && p.trial && p.trial.expired && now - (k.last || 0) < 7 * DAY) return 'rr-forced'; return ''; };
+    var liveNowRows = (api.keys || []).filter(function (k) { return !k.e2; }).sort(function (a, b) { return (b.rpm || 0) - (a.rpm || 0); });
+    var liveCard = card('Calling right now', liveNowRows.length || (api.streams || []).length
+      ? tbl([{ h: 'owner · key', grow: true, f: function (r) { return userLink(r.u) + ' <span class="meta">' + esc(r.kn || 'default') + '</span>'; } }, { h: 'how', f: function (r) { return '<span class="badge">' + esc(String(r.via || '-').toUpperCase()) + '</span>'; } }, { h: 'last endpoint', mono: true, f: function (r) { return esc(r.ep || '-'); } }, { h: 'req/min', r: true, mono: true, f: function (r) { return N(r.rpm || 0); } }, { h: 'from', f: function (r) { return flag(r.cc) + ' ' + esc(r.cc || ''); } }, { h: 'seen', mono: true, f: function (r) { return ago(r.ts) + ' ago'; } }], liveNowRows, 'no REST or MCP call in the last 5 minutes')
+        + ((api.streams || []).length ? '<div class="line" style="margin-top:8px">' + N((api.streams || []).length) + ' open WebSocket stream' + ((api.streams || []).length === 1 ? '' : 's') + ': ' + (api.streams || []).map(function (s) { return userLink(s.u || s.un || '') + ' <span class="meta">' + ago(s.ts || now) + '</span>'; }).join(' · ') + '</div>' : '<div class="line meta" style="margin-top:8px">no WebSocket stream open</div>')
+      : '<div class="empty">nobody is calling the engine right now - no REST or MCP call in the last 5 minutes and no WebSocket stream open</div>', 'presence from Here now: REST and MCP keys seen in the last 5 minutes, streams while the socket is open');
+    return '<div class="grid g4">' + tile(N(activeNow.length), 'keys calling right now', activeNow.length ? '' : 'dim', N(active24.length) + ' called in the last 24 h · ' + N(live.length) + ' in 14 days')
+      + tile(N(d.todayTotal), 'calls today', d.todayTotal ? '' : 'dim', dl(d.todayTotal, u7 / 7) + (u7 / 7 >= 5 ? ' <span class="meta">vs 7d avg</span>' : ''), mini(byDay, 'v'))
+      + tile(N(trialEnding.length), 'trials ending within 2 days', trialEnding.length ? 'amber' : 'dim', trialEnding.length ? trialEnding.map(function (k) { return '@' + esc(k.username || '?'); }).slice(0, 4).join(', ') : 'they drop to a 402 on the engine unless they buy a plan')
+      + tile(N(refused.length), 'trial ended, still calling', refused.length ? 'red' : 'dim', refused.length ? 'every engine call answers 402 - ' + refused.map(function (k) { return '@' + esc(k.username || '?'); }).slice(0, 4).join(', ') : 'nobody is being refused this week') + '</div>'
+      + liveCard
+      + card('Keys in use', tbl(keyCols, live, 'no key made a call in the last 14 days', rowCls), live.length + ' keys with a call in the last 14 days · red row = trial ended and still calling · click the owner for the card')
+      + (function () { // API plans (2026-09-15): who is paying, who is on the free month, and what it adds up to
+          if (!pl) return card('API plans', failHtml('the plan desk did not answer'));
+          var rows = (pl.rows || []).filter(function (r) { return r.live; });
+          var pcols = [{ h: 'account', grow: true, f: function (r) { return r.username ? userLink(r.username) : '<span class="meta">' + esc(r.uid.slice(0, 10)) + '</span>'; } },
+            { h: 'plan', f: function (r) { return '<span class="badge lime">' + esc(r.plan) + '</span>'; } },
+            { h: 'how', f: function (r) { return r.src === 'trial' ? '<span class="badge amber">free month</span>' : r.src === 'paid' ? 'paid' : '<span class="meta">' + esc(r.src || 'granted') + '</span>'; } },
+            { h: 'days left', num: true, f: function (r) { return r.days_left > 3650 ? '<span class="meta">no end</span>' : r.days_left <= 3 ? '<b style="color:var(--red)">' + N(r.days_left) + '</b>' : N(r.days_left); } },
+            { h: 'until', f: function (r) { return r.days_left > 3650 ? '<span class="meta">-</span>' : dt(r.until); } }];
+          var apGrant = '<div class="apgrant">'
+            + '<div class="bar" style="gap:8px;flex-wrap:wrap;align-items:center">'
+            + '<input class="i" id="apUser" placeholder="username" autocomplete="off" spellcheck="false" style="max-width:190px">'
+            + '<span class="meta">plan</span><span class="chips" id="apPlan">' + API_PLAN_IDS.map(function (x, i) { return '<span class="chip' + (i === 3 ? ' on' : '') + '" data-p="' + x[0] + '">' + x[1] + '</span>'; }).join('') + '</span>'
+            + '<span class="meta">for</span><span class="chips" id="apDays">' + [['30', '30 days'], ['90', '90 days'], ['365', '1 year'], ['3650', 'forever']].map(function (x, i) { return '<span class="chip' + (i === 3 ? ' on' : '') + '" data-d="' + x[0] + '">' + x[1] + '</span>'; }).join('') + '</span>'
+            + '<button class="btn" id="apGive">Give access</button>'
+            + '<button class="btn" id="apTake">Take it away</button>'
+            + '</div><div class="meta" id="apMsg" style="margin-top:7px">Type a username, pick a plan, press Give access. Take it away drops them to Free at once - their keys keep working, on Free limits.</div></div>';
+          return '<div class="grid g4">' + tile(N(rows.length), 'accounts on a paid plan', rows.length ? '' : 'dim', N(pl.paying || 0) + ' paying · ' + N(pl.trials || 0) + ' on the free month')
+            + tile(USD(pl.mrrUsd || 0), 'API MRR', pl.mrrUsd ? '' : 'dim', 'paid plans only, grants and the free month excluded')
+            + tile(USD(pl.lifetimeUsd || 0), 'paid for API plans, all time', pl.lifetimeUsd ? '' : 'dim', N((pl.payments || []).length) + ' payment' + ((pl.payments || []).length === 1 ? '' : 's'))
+            + tile(N(rows.filter(function (r) { return r.src === 'trial' && r.days_left <= 3; }).length), 'free months ending in 3 days', 'dim', 'they drop to Free unless they pick a plan') + '</div>'
+            + card('Who is on a plan', apGrant + tbl(pcols, rows, 'nobody is on a paid plan yet'), 'Free = 7-day trial on the engine, market data always free · Pro $39 · Max $99 · Business $199 · site Premium does not raise any API limit');
+        })()
+      + card('What the API is used for', bars((d.byEp || []).map(function (e) { return { l: e.ep, n: e.n }; }), 'l', 'n'), 'calls per endpoint, last 14 days · price/klines are keyless and not attributed · data = market-data calls sent with a key')
+      + (d.webhooks ? card('Webhooks (API Pro and Max)', '<div class="grid g4">' + tile(N(d.webhooks.active), 'active hooks', d.webhooks.active ? '' : 'dim', N(d.webhooks.accounts) + ' account' + (d.webhooks.accounts === 1 ? '' : 's')) + tile(N(d.webhooks.paused), 'paused after failures', d.webhooks.paused ? 'amber' : 'dim') + tile(N(d.webhooks.delivered), 'deliveries, lifetime', 'dim') + tile(N(d.webhooks.pending), 'queued right now', d.webhooks.pending > 50 ? 'amber' : 'dim') + '</div>', 'a paused hook is one that failed 25 times in a row; its owner sees why in GET /v1/webhooks') : '')
+      + fold('Idle and revoked keys', tbl([{ h: 'owner · key', grow: true, f: ownerCell }, { h: 'plan · ends', f: planCell }, { h: 'how', f: howCell }, { h: 'lifetime', r: true, mono: true, f: function (k) { return N(k.calls); } }, { h: 'last call', mono: true, f: lastCell }, { h: 'created', mono: true, f: function (k) { return dt(k.created).slice(0, 10); } }], rest, 'none'), rest.length + ' keys with no call in 14 days', false);

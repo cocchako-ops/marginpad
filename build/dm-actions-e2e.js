@@ -28,10 +28,14 @@ const as = (tok) => ({
   const a = as(ta), b = as(tb), c = as(tc);
   const nameA = 'e2e_' + A, nameB = 'e2e_' + B;
 
-  // a DM needs a connection; follow each other so the thread is allowed
+  // a DM needs a connection; follow each other so the thread is allowed. FOLLOW IS REQUEST-BASED since 2026-10-23
+  // (Instagram-shaped: a follow is a request the target approves), so each side approves the other's request here -
+  // the suite had asserted `following:true` straight off the follow call and was red for a day on working code.
   const fa = await a.post('/api/lb/follow', { tuid: B, tname: nameB });
+  const apA = await b.post('/api/lb/fapprove', { ruid: A });
   const fb = await b.post('/api/lb/follow', { tuid: A, tname: nameA });
-  ok(!!(fa && fa.following) || !!(fb && fb.following), 'the two members are connected, so a DM is allowed', { fa, fb });
+  const apB = await a.post('/api/lb/fapprove', { ruid: B });
+  ok(!!(fa && (fa.following || fa.requested)) && !!(apA && apA.ok) && !!(apB && apB.ok), 'the two members are connected (request + approval both ways), so a DM is allowed', { fa, apA, fb, apB });
 
   const text = 'dm probe ' + Math.random().toString(36).slice(2, 7);
   const sent = await a.post('/api/dm/send', { to: nameB, text });

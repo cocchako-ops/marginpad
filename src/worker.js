@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=e2d36803" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=69784e19" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19259,7 +19259,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '13c73d80';
+const ASSET_V = '59123a94';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -23427,8 +23427,26 @@ export default {
         note: 'A paid plan is never touched by this - the gate only reads the trial when the tier is 0. Market data on /api/v1/* is outside the trial and stays keyless and free.',
         rows });
     }
+    if (url.pathname === '/api/admin/doprof' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // UserStore per-route thread time (2026-10-24) - which route is loading the single-threaded store
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/doprof', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ error: 'store_unreachable' }), { status: 503, headers: { 'content-type': 'application/json' } }); }
+    }
     if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
-      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
+      try {
+        const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
+        const d = await r.json();
+        // THE PLAN AND THE TRIAL LIVE IN KV, NOT IN THE STORE (2026-10-24, owner: "hocu jasno da vidim ko koristi API ...
+        // koliko dugo jos ima do isteka svog plana"): api:sub:<uid> and api:trial:<uid> are what the engine enforces, and
+        // the desk showed neither - a key's `tier` column is a denormalised copy that says nothing about WHEN it ends,
+        // and the 7-day trial (every Free key since 2026-10-13) was invisible. One read per account that called in 60 days.
+        try {
+          const cut = Date.now() - 60 * 86400000, seen = new Set();
+          (d.keys || []).forEach(k => { if (k.uid && !k.revoked && (+k.last || 0) > cut) seen.add(String(k.uid)); });
+          const plans = {};
+          await Promise.all(Array.from(seen).slice(0, 200).map(async uid => { const [pl, tr] = await Promise.all([apiPlanOf(env, uid), apiTrialState(env, uid)]); plans[uid] = { plan: pl.plan, tier: pl.tier, until: pl.until, days_left: pl.days_left, src: pl.src, trial: { active: tr.active, expired: tr.expired, until: tr.until, days_left: tr.days_left, missing: tr.missing } }; }));
+          d.plans = plans;
+        } catch (e) { d.plans = null; }
+        return new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
     }
     if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) - finds people who are here ONLY for the faucet
       const [ur, ar, cfg] = await Promise.all([
@@ -29240,7 +29258,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS livepos(did TEXT PRIMARY KEY, json TEXT, cc TEXT, updated INTEGER)'); // anonymous (not-signed-in) open paper positions, keyed by the mp_did device cookie - feeds the ops Live-trades board
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
-  rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
+  rows(q, ...b) { const c = this.state.storage.sql.exec(q, ...b); const out = c.toArray(); try { this._pfR += (c.rowsRead || 0); this._pfW += (c.rowsWritten || 0); } catch (e) {} return out; } // rows scanned per request feed _prof - the clock does not tick inside synchronous SQL in a Worker, SQLite row counts do
   // Ticks are deliberately NOT a second XP. XP rewards volume, so it can be farmed by doing more of the
   // same thing; Ticks reward the behaviour the product actually wants - coming back, and closing trades with
   // an exit already set. Every source is capped per day, because the Happy Hour incident showed that any
@@ -29756,8 +29774,21 @@ export class UserStore {
   _followedSet() { if (this._folSet) return this._folSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT tuid FROM ufollows')) s.add(String(r.tuid)); } catch (e) {} this._folSet = s; return s; } // accounts that at least one person follows - so _syncJournal pays a Set lookup, not a query, for the vast majority nobody follows
   _followedBust() { this._folSet = null; }
   _pushUrl(link) { link = String(link || ''); if (link.indexOf('/') === 0) return 'https://marginpad.io' + link; if (link.indexOf('dm:') === 0) return 'https://marginpad.io/paper-trade?dm=' + encodeURIComponent(link.slice(3)); if (link.indexOf('profile:') === 0) return 'https://marginpad.io/paper-trade?profile=' + encodeURIComponent(link.slice(8)); if (link === 'duel') return 'https://marginpad.io/paper-trade?duels=1'; if (link.indexOf('squad') === 0) return 'https://marginpad.io/squads/'; return 'https://marginpad.io/paper-trade?notif=1'; }
-  _notifAllows(uid, kind) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(uid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p || typeof p !== 'object') return true; return p[kind] === undefined ? true : !!p[kind]; } catch (e) { return true; } } // per-user "what reaches my phone" switch (uprefs 'notifpush' blob) - a kind not stored defaults ON; gates ONLY the push, never the in-app bell
-  _followNotifOk(followerUid, actorUid, kind, side, lev) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(followerUid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p) return true;
+  _notifAllows(uid, kind) { try { const p = this._npPref(uid); if (!p) return true; return p[kind] === undefined ? true : !!p[kind]; } catch (e) { return true; } } // per-user "what reaches my phone" switch (uprefs 'notifpush' blob) - a kind not stored defaults ON; gates ONLY the push, never the in-app bell
+  /* ONE PREFS READ PER MEMBER PER TEN MINUTES, NOT ONE PER FOLLOWER PER TRADE (2026-10-24). The follow-trade fan-out
+     ran a uprefs query for EVERY follower of an actor on EVERY journal op (up to 200 per op), and _pushNotif ran a
+     second one for the same blob - on the single-threaded store, in the hot trade path, from the morning the owner's
+     chat filled with "closing takes seconds". The blob is memoised here (busted by both writers: /prefsput with
+     k=notifpush and /push/mute) and a follower with no push device is skipped BEFORE any read, because follow-trade is
+     phone-only and would have been dropped inside _pushNotif anyway. */
+  _npPref(uid) {
+    uid = String(uid || '').replace(/^u:/, ''); const M = this._npM = this._npM || new Map(); const now = Date.now();
+    const m = M.get(uid); if (m && now - m.t < 600000) return m.p;
+    let p = null; try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", uid)[0]; if (r && r.v) { try { p = JSON.parse(r.v); } catch (e) { p = null; } if (p && typeof p !== 'object') p = null; } } catch (e) { p = null; }
+    if (M.size > 5000) M.clear(); M.set(uid, { p, t: now }); return p;
+  }
+  _npBust(uid) { try { if (this._npM) this._npM.delete(String(uid || '').replace(/^u:/, '')); } catch (e) {} }
+  _followNotifOk(followerUid, actorUid, kind, side, lev) { try { const p = this._npPref(followerUid); if (!p) return true;
     if (p.followtrade === false) return false; // global "People you follow" switch
     if (p.m && p.m[String(actorUid || '').replace(/^u:/, '')]) return false; // per-trader mute
     const ft = p.ft; if (ft && typeof ft === 'object') { // the Following-tab filters (owner 2026-10-23): what KIND of trades reach the phone
@@ -30065,7 +30096,8 @@ export class UserStore {
                   + (k !== 'open' && d.roe != null && isFinite(d.roe) ? '&ftr=' + d.roe : '')
                   + (isFinite(ots) && ots > 0 ? '&fton=' + ots : '')
                   + (k !== 'open' && isFinite(cts) && cts > 0 ? '&ftoff=' + cts : ''); // open + close timestamps -> the chart auto-picks the timeframe from the hold time and marks BUY/SELL
-                for (const f of fr) { if (!this._followNotifOk(f.uid, uid, k, side, lev)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
+                const _ps = this._pushUidSet(); // phone-only kind: a follower with no push device costs nothing, not a prefs read (2026-10-24)
+                for (const f of fr) { const fu = String(f.uid); if (!_ps.has(fu)) continue; if (!this._followNotifOk(fu, uid, k, side, lev)) continue; this._pushNotif(fu, 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
             }
           }
         } catch (eF) {}
@@ -30153,11 +30185,39 @@ export class UserStore {
       if (cp > (+row.bp)) sql.exec('UPDATE lbbest SET bp=?, bpSym=?, bpSide=? WHERE user_id=? AND season=?', cp, sym, side, uid, season);
     } catch (e9) {}
   }
+  /* WHICH ROUTE EATS THE SINGLE THREAD (2026-10-24). The store paged RED at p95 4,134 ms on 24,725 session samples
+     while trade-other climbed 1,129 -> 2,348 ms p95 over five days and Bot API traffic FELL 8x - so the load was not
+     the bots, and nothing could say what it was: usersDO() samples only its own callers, and the hot paths (trade,
+     auth, dm, session) call the store directly. A DO handles one request at a time, so the time a handler holds the
+     thread IS the load - measured here, per route, in 5-minute buckets kept for an hour, read at
+     GET /api/admin/doprof. The owner's chat complaint ("closing a trade takes seconds", 2026-10-23) is this queue:
+     since 10-22 a close WAITS for the store, and a store that answers in 4 s at p95 is a close that takes 4 s. */
+  /* THE CLOCK DOES NOT TICK INSIDE A WORKER'S SYNCHRONOUS CODE (first reading: every route 0 ms), so wall time here only
+     counts awaited I/O. The CPU proxy is SQLite's own row counters, summed per request by rows(): rr = rows scanned,
+     rw = rows written. A route that scans a million rows a minute is the route holding the thread. */
+  _prof(p, ms, rr, rw) {
+    try {
+      const B = 300000, k = Math.floor(Date.now() / B); let cur = this._pfCur;
+      if (!cur || cur.k !== k) { const hist = this._pfHist = this._pfHist || []; if (cur) hist.push(cur); while (hist.length > 12) hist.shift(); cur = this._pfCur = { k, t0: k * B, r: {} }; }
+      const r = cur.r[p] || (cur.r[p] = { n: 0, ms: 0, max: 0, slow: 0, rr: 0, rw: 0, rrMax: 0 }); r.n++; r.ms += ms; if (ms > r.max) r.max = ms; if (ms > 250) r.slow++; r.rr += (rr || 0); r.rw += (rw || 0); if ((rr || 0) > r.rrMax) r.rrMax = rr || 0;
+    } catch (e) {}
+  }
+  _profRead() {
+    const out = []; const all = (this._pfHist || []).concat(this._pfCur ? [this._pfCur] : []);
+    all.forEach(bk => { const rows = Object.keys(bk.r).map(p => Object.assign({ p }, bk.r[p])).sort((a, b) => (b.rr + b.rw * 4) - (a.rr + a.rw * 4)); const tot = rows.reduce((s, r) => s + r.ms, 0), n = rows.reduce((s, r) => s + r.n, 0), rr = rows.reduce((s, r) => s + r.rr, 0), rw = rows.reduce((s, r) => s + r.rw, 0); out.push({ t0: bk.t0, ioMs: tot, n, rowsRead: rr, rowsWritten: rw, rows: rows.slice(0, 40) }); });
+    return { buckets: out, now: Date.now(), bucketMs: 300000, note: 'ms = awaited I/O only (the clock is frozen during synchronous SQL); rr/rw = SQLite rows read/written through rows(), the CPU proxy' };
+  }
   async fetch(request) {
+    const _p0 = Date.now(); let _pp = '?'; try { _pp = new URL(request.url).pathname; } catch (e) {}
+    this._pfR = 0; this._pfW = 0;
+    try { return await this._fetch0(request); } finally { this._prof(_pp, Date.now() - _p0, this._pfR, this._pfW); }
+  }
+  async _fetch0(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
     const day = new Date().toISOString().slice(0, 10);
     let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
     this._reqE2 = b && b.e2 === true; // set by the worker only on admin ?uid= hooks (E2E / owner tooling): ops rows written for this request are tagged e2 and hidden from the daily read
+    if (path === '/doprof') return this.j(this._profRead()); // per-route thread time, 5-min buckets, last hour (see _prof)
 
     if (path === '/otp') { // create/rotate a 6-digit code, rate-limited; returns the code for the Worker to email
       const email = String(b.email || '').toLowerCase(); if (!email) return this.j({ error: 'bad_email' });
@@ -30614,6 +30674,7 @@ export class UserStore {
     if (path === '/prefsput') {
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
       const k = String(b.k || '').slice(0, 40); if (!k) return this.j({ error: 'no_key' });
+      if (k === 'notifpush') this._npBust(uid); // the memo behind _notifAllows / _followNotifOk
       const v = String(b.v == null ? '' : b.v);
       if (v.length > 131072) return this.j({ error: 'too_large', max: 131072 }); // 128KB per key - layouts are a few KB; anything near this is a bug, not a workspace
       if ((this.rows('SELECT COUNT(*) n FROM uprefs WHERE user_id=?', uid)[0] || {}).n >= 20 && !this.rows('SELECT 1 FROM uprefs WHERE user_id=? AND k=?', uid, k)[0]) return this.j({ error: 'too_many_keys' });
@@ -30858,7 +30919,7 @@ export class UserStore {
     if (path === '/botstats') { // ops API tab: which KEY is used, by whom, for what
       const cutoff = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
       const today = new Date().toISOString().slice(0, 10);
-      const keys = this.rows('SELECT bk.k, bk.uid, bk.name, bk.created, bk.last, bk.calls, bk.rpm, bk.revoked, bk.tier, u.username, u.email FROM botkeys2 bk LEFT JOIN users u ON u.id=bk.uid ORDER BY bk.calls DESC LIMIT 300');
+      const keys = this.rows('SELECT bk.k, bk.uid, bk.name, bk.created, bk.last, bk.calls, bk.rpm, bk.revoked, bk.tier, bk.via, bk.tuntil, bk.book, u.username, u.email FROM botkeys2 bk LEFT JOIN users u ON u.id=bk.uid ORDER BY bk.calls DESC LIMIT 300'); // via (rest|mcp) + tuntil + book joined 2026-10-24: the ops desk could not say HOW a key calls or when its plan ends
       const use = this.rows('SELECT k, day, ep, n, last FROM botuse2 WHERE day>=? ORDER BY day DESC', cutoff);
       const seenUid = {}; // one journal read per ACCOUNT even when it holds several keys
       const openPos = keys.map(r => { if (!r.uid || seenUid[r.uid]) return null; seenUid[r.uid] = 1; const jn = this._loadJournal(r.uid); const n = jn.filter(t => t && t.src === 'bot' && t.status !== 'win' && t.status !== 'loss').length; return n > 0 ? { uid: r.uid, n } : null; }).filter(Boolean);
@@ -32039,6 +32100,7 @@ export class UserStore {
       if (!blob.m || typeof blob.m !== 'object') blob.m = {};
       if (b.muted) blob.m[tuid] = 1; else delete blob.m[tuid];
       try { sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, 'notifpush', JSON.stringify(blob), now); } catch (e) { return this.j({ error: 'unavailable' }, 503); }
+      this._npBust(uid);
       return this.j({ ok: true, muted: !!b.muted });
     }
     if (path === '/push/has') { const aS = b.token ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', String(b.token), now)[0] : null; if (!aS) return this.j({ has: false }); return this.j({ has: this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', aS.user_id)[0].n > 0, uid: aS.user_id }); }
