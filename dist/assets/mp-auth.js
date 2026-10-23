@@ -165,7 +165,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-modal[hidden]{display:none}'
     + '.mpa-panel{position:relative;width:100%;max-width:376px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:11px 15px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
     + '.mpa-panel::-webkit-scrollbar{width:8px}.mpa-panel::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px}'
-    + '.mpa-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;z-index:3;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}' /* safe-area: in the iOS home-screen app the sheet reaches the top edge and a 12px X falls under the status-bar clock, untappable (owner 2026-10-23) */ /* z-index: the identity header is a positioned box that spans the same row and would otherwise sit on top of the close button (measured: elementFromPoint returned the header) */
+    + '.mpa-x{position:absolute;top:12px;right:14px;z-index:3;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}' /* z-index: the identity header is a positioned box that spans the same row and would otherwise sit on top of the close button (measured: elementFromPoint returned the header) */
     + '.mpa-x:hover{color:#e9e7df}'
     + '.mpa-h{font-size:15px;font-weight:800;color:#f2f0e9;margin:0 0 5px;letter-spacing:-.01em}'
     + '.mpa-sub{font-size:13.5px;color:#9aa3ad;margin:0 0 16px;line-height:1.5}'
@@ -281,7 +281,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-tdy>.mpa-svg:last-child{width:14px;height:14px;color:#556170;flex:none}'
     /* open = a transition, never @keyframes (the owner runs Windows with animation effects off); phone = bottom sheet */
     + '.mpa-panel{transform:translateY(10px);opacity:0;transition:transform .2s ease,opacity .16s ease}.mpa-panel.in{transform:none;opacity:1}'
-    + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:calc(14px + env(safe-area-inset-top, 0px))}}'
+    + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px - env(safe-area-inset-top, 0px));padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:14px}}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
     + '.mpa-dm{display:flex;flex-direction:column;height:min(60vh,440px)}'
@@ -390,6 +390,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-req-y{color:#2ebd85;border-color:rgba(46,189,133,.5)}.mpa-req-y:hover{background:rgba(46,189,133,.14)}.mpa-req-n{color:#ff7a6c;border-color:rgba(255,122,108,.5)}.mpa-req-n:hover{background:rgba(255,122,108,.14)}'
     + '.mpa-np-push{border:1px solid #242b34;border-radius:11px;padding:11px 13px;margin:2px 0 10px;background:#0e1116}.mpa-np-prow{display:flex;align-items:center;gap:10px}.mpa-np-btn{margin-left:auto;background:#c2f64a;color:#0a0b0d;border:none;border-radius:9px;padding:8px 14px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;flex:none}.mpa-np-btn:disabled{opacity:.55}.mpa-np-pnote{font-size:11.5px;color:#6b7480;margin-top:7px;min-height:1px}.mpa-np-pnote.ok{color:#2ebd85}.mpa-np-pnote.err{color:#ff7a6c}'
     + '.mpa-np-foot{color:#6b7480;font-size:11.5px;line-height:1.5;margin-top:11px}.mpa-np-foot.ok{color:#2ebd85}.mpa-np-foot.err{color:#ff7a6c}'
+    + '.mpa-ft-sec{border:1px solid #242b34;border-radius:11px;padding:11px 13px;margin:2px 0 12px;background:#0e1116}.mpa-ft-h{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#7f8893;margin:0 0 3px}.mpa-ft-h:not(:first-child){margin-top:13px}.mpa-ft-sub{color:#6b7480;font-size:11.5px;line-height:1.4;margin:0 0 8px}'
+    + '.mpa-ft-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #161c23}.mpa-ft-row:last-child{border-bottom:none}.mpa-ft-rt{flex:1;min-width:0;color:#e9e7df;font-size:13px;font-weight:600}'
+    + '.mpa-ft-chips{display:flex;gap:7px;flex-wrap:wrap}.mpa-ft-chip{background:#1a222c;border:1px solid #2a3340;color:#aeb8c4;border-radius:8px;padding:7px 13px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;transition:background .15s,color .15s,border-color .15s}.mpa-ft-chip.on{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d}'
+    + '.mpa-ft-lev{display:flex;align-items:center;gap:9px}.mpa-ft-lev input{width:74px;background:#141a22;border:1px solid #2a3340;color:#e9e7df;border-radius:8px;padding:8px 10px;font:700 13px \'Space Mono\',ui-monospace,monospace}.mpa-ft-lev small{color:#6b7480;font-size:11.5px}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
     + '.mpa-nf-r.unseen{background:rgba(180,140,255,.06)}.mpa-nf-r.unseen .mpa-nf-b{color:#f2f0e9}'
     + '.mpa-nf-ic{flex:none;font-size:16px;line-height:1.3;width:22px;text-align:center}'
@@ -1946,7 +1950,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     paintReqs();
     window.mpSWR('notifs', '/api/auth/notifs', function (d, fresh) {
       var nf = bodyEl.querySelector('#mpaNf'); if (!nf) return;
-      var list = ((d && d.notifs) || []).filter(function (n) { return n.kind !== 'followreq'; }); // follow requests render in their own section above, with approve/reject
+      var list = ((d && d.notifs) || []).filter(function (n) { return n.kind !== 'followreq' && n.kind !== 'followtrade'; }); // follow requests render in their own section above; follow-trade is phone-only now, so old trade rows are hidden here (and purged server-side)
       if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">Nothing here yet. Messages, @mentions, duel results and accepted follows show up here.</div>'); }
       else { nf.innerHTML = list.map(function (n) { var link = n.link || ''; return '<div class="mpa-nf-r' + (n.seen ? '' : ' unseen') + '"' + (link ? ' data-nflink="' + esc(link) + '" role="button"' : '') + '><span class="mpa-nf-ic">' + notifIcon(n.kind) + '</span><div class="mpa-nf-b">' + esc(n.body) + '<span class="mpa-nf-ago">' + xpAgo(n.ts) + '</span></div></div>'; }).join('');
         Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.charAt(0) === '/') { location.href = l; return; } /* any path just navigates - a link the handler does not recognise used to be a dead click */ if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
@@ -1978,7 +1982,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
       var prefs = d.prefs || {}, kinds = d.kinds || Object.keys(NP_LABELS);
       var rows = kinds.map(function (k) { var L = NP_LABELS[k] || [k, '']; var on = prefs[k] !== false;
-        var sub = (k === 'followtrade') ? '<button type="button" class="mpa-link mpa-tr-open" style="margin:4px 0 0;text-align:left;font-size:12px;color:#9fb0c0">' + __esT_mpauth("chooseWhichTraders",'Choose which traders →') + '</button>' : '';
+        var sub = (k === 'followtrade') ? '<button type="button" class="mpa-link mpa-tr-open" style="margin:4px 0 0;text-align:left;font-size:12px;color:#9fb0c0">' + __esT_mpauth("filtersAndTraders",'Filters &amp; which traders →') + '</button>' : '';
         return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small>' + sub + '</span><span class="mpa-sw"><input type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '><i></i></span></label>'; }).join('');
       host.innerHTML = pushBox + rows + saveNote;
       wireNpPush(host.querySelector('#mpaNpPush'));
@@ -1991,12 +1995,40 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       });
     }).catch(function () { host.innerHTML = '<div class="mpa-xp-empty">' + __esT_mpauth("couldNotLoad",'Could not load.') + '</div>'; });
   }
+  function ftBlock(ft) { // the Following-tab trade-notification filters (event / side / minimum leverage)
+    ft = ft || {}; var ev = ft.ev || {}, oOn = ev.o !== false, cOn = ev.c !== false, side = (ft.side === 'long' || ft.side === 'short') ? ft.side : 'both', lev = (isFinite(+ft.lev) && +ft.lev > 1) ? Math.round(+ft.lev) : 0;
+    var sideChip = function (v, lbl) { return '<button type="button" class="mpa-ft-chip' + (side === v ? ' on' : '') + '" data-ftside="' + v + '">' + lbl + '</button>'; };
+    return '<div class="mpa-ft-sec" id="mpaFt">'
+      + '<div class="mpa-ft-h">' + __esT_mpauth("ftWhichEvents",'Tell me when they') + '</div>'
+      + '<label class="mpa-ft-row"><span class="mpa-ft-rt">' + __esT_mpauth("ftOpen",'Open a trade') + '</span><span class="mpa-sw"><input type="checkbox" data-fto' + (oOn ? ' checked' : '') + '><i></i></span></label>'
+      + '<label class="mpa-ft-row"><span class="mpa-ft-rt">' + __esT_mpauth("ftClose",'Close a trade') + '</span><span class="mpa-sw"><input type="checkbox" data-ftc' + (cOn ? ' checked' : '') + '><i></i></span></label>'
+      + '<div class="mpa-ft-h">' + __esT_mpauth("ftWhichSide",'Which side') + '</div>'
+      + '<div class="mpa-ft-chips">' + sideChip('both', __esT_mpauth("ftBoth",'Both')) + sideChip('long', __esT_mpauth("ftLong",'Long')) + sideChip('short', __esT_mpauth("ftShort",'Short')) + '</div>'
+      + '<div class="mpa-ft-h">' + __esT_mpauth("ftMinLev",'Minimum leverage') + '</div>'
+      + '<div class="mpa-ft-lev"><input type="number" min="0" max="1000" step="1" data-ftlev value="' + lev + '"><small>' + __esT_mpauth("ftLevNote",'only above this many x · 0 = any') + '</small></div>'
+      + '<div class="mpa-np-foot" id="mpaFtNote">' + __esT_mpauth("ftFoot",'These apply to every trader below. A trade that fails a filter never reaches your phone.') + '</div>'
+      + '</div>';
+  }
   function renderTraderNotifs() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("tradersTitle",'Traders') + '</h3>'
-      + '<div class="mpa-np-foot" style="margin:0 0 9px">' + __esT_mpauth("tradersSub",'Switch off any trader you do not want notifications from. The "People you follow" switch must be on for these to apply.') + '</div>'
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("tradersTitle",'Following') + '</h3>'
+      + '<div id="mpaFtHost"></div>'
+      + '<div class="mpa-ft-h" style="margin:0 0 3px">' + __esT_mpauth("tradersListH",'Traders') + '</div>'
+      + '<div class="mpa-np-foot" style="margin:0 0 7px">' + __esT_mpauth("tradersSub",'Switch off any trader you do not want notifications from. The "People you follow" switch must be on for these to apply.') + '</div>'
       + '<div class="mpa-tr-list" id="mpaTr"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
       + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backLabel",'Back') + '</button>';
     var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', renderNotifSettings);
+    var ftHost = bodyEl.querySelector('#mpaFtHost');
+    // the trade filters come off /api/push/prefs (ft), the trader list off /api/push/traders - both in parallel
+    fetch('/api/push/prefs').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.error) return;
+      ftHost.innerHTML = ftBlock(d.ft);
+      var sec = ftHost.querySelector('#mpaFt'), note = ftHost.querySelector('#mpaFtNote');
+      var gather = function () { return { ev: { o: !!sec.querySelector('[data-fto]').checked, c: !!sec.querySelector('[data-ftc]').checked }, side: (sec.querySelector('.mpa-ft-chip.on') || {}).getAttribute ? sec.querySelector('.mpa-ft-chip.on').getAttribute('data-ftside') : 'both', lev: Math.max(0, Math.min(1000, parseInt(sec.querySelector('[data-ftlev]').value, 10) || 0)) }; };
+      var saveFt = function () { if (note) { note.className = 'mpa-np-foot'; note.textContent = __esT_mpauth("saving",'Saving…'); }
+        fetch('/api/push/prefs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ft: gather() }) }).then(function (r) { return r.json(); }).then(function (rd) { if (note) { note.className = 'mpa-np-foot' + (rd && rd.ok ? ' ok' : ' err'); note.textContent = (rd && rd.ok) ? __esT_mpauth("saved",'Saved.') : __esT_mpauth("couldNotSaveTry2",'Could not save - try again.'); } }).catch(function () { if (note) { note.className = 'mpa-np-foot err'; note.textContent = __esT_mpauth("networkErrorTryAgain3",'Network error - try again.'); } }); };
+      sec.addEventListener('change', function (e) { if (e.target.closest('[data-fto],[data-ftc],[data-ftlev]')) saveFt(); });
+      sec.addEventListener('click', function (e) { var c = e.target.closest && e.target.closest('[data-ftside]'); if (!c) return; Array.prototype.forEach.call(sec.querySelectorAll('.mpa-ft-chip'), function (x) { x.classList.toggle('on', x === c); }); saveFt(); });
+    }).catch(function () {});
     var host = bodyEl.querySelector('#mpaTr');
     fetch('/api/push/traders').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
@@ -2456,8 +2488,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       close();
       if (!document.getElementById('mpPremCss')) { var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
         '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
-        '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
-        '.mpprem-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
+        '.mpprem{width:min(440px,94vw);max-height:92vh;max-height:min(92vh, calc(100dvh - 24px - 2 * env(safe-area-inset-top, 0px)));overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
+        '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
         '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
         '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}' +
         '.mpprem-f{display:flex;gap:11px;padding:10px 0;border-top:1px solid #161c26}.mpprem-f:first-of-type{border-top:0}' +
@@ -2539,8 +2571,8 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (document.getElementById('mpPremCss')) return;
     var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
       '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
-      '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
-      '.mpprem-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
+      '.mpprem{width:min(440px,94vw);max-height:92vh;max-height:min(92vh, calc(100dvh - 24px - 2 * env(safe-area-inset-top, 0px)));overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
+      '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
       '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
       '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}';
     document.head.appendChild(st);
@@ -2553,7 +2585,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      (browser push and/or Telegram, 08:00 or 16:00 UTC). Free members see the market line and a lock. */
   var BRIEF_CSS = '.mpb-ov{align-items:flex-start;padding:24px 14px;overflow-y:auto}'
     + '.mpb{position:relative;width:min(540px,100%);margin:auto 0;background:linear-gradient(180deg,#10141b,#0b0e13);border:1px solid #283039;border-radius:18px;padding:18px 18px 16px;color:#dbe4f5;font-family:system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);transition:transform .2s ease,opacity .16s ease;transform:translateY(10px);opacity:0}.mpb.in{transform:none;opacity:1}'
-    + '@media(max-width:560px){.mpb-ov{padding:0;align-items:flex-end}.mpb{border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overflow-y:auto;padding:10px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpb::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 12px}}'
+    + '@media(max-width:560px){.mpb-ov{padding:0;align-items:flex-end}.mpb{border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px - env(safe-area-inset-top, 0px));overflow-y:auto;padding:10px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpb::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 12px}}'
     + '.mpb-head{display:flex;align-items:center;gap:10px;padding-right:30px;flex-wrap:wrap}.mpb-head .mpprem-tag{margin:0}.mpb-when{font:11px ui-monospace,Consolas,monospace;color:#7f8893}.mpb-when b{color:#c7cdd4;font-weight:700}'
     + '.mpb-load{padding:28px 0;text-align:center;color:#7f8893;font-size:13px}'
     + '.mpb-bias{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0 4px}.mpb-bias>i{width:10px;height:10px;border-radius:50%;background:var(--bc);box-shadow:0 0 10px var(--bc)}.mpb-bias>b{color:var(--bc);font-size:16px;font-weight:800;letter-spacing:-.01em}.mpb-bias>span{width:100%;font-size:12px;color:#8fa3c4}'

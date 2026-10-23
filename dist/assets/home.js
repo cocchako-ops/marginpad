@@ -3185,6 +3185,27 @@ window.addEventListener('load', function () {
       if(_sl||_tp){var _ac=document.getElementById('planAdvChk');if(_ac&&!_ac.checked&&!_ac.disabled){_ac.checked=true;_ac.dispatchEvent(new Event('change',{bubbles:true}));}if(_sl){var _se=document.getElementById('planSlOpt');if(_se){_se.value=String(+_sl);_se.dispatchEvent(new Event('input',{bubbles:true}));}}if(_tp){var _te=document.getElementById('planTpOpt');if(_te){_te.value=String(+_tp);_te.dispatchEvent(new Event('input',{bubbles:true}));}}}
       try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}
     },300);}
+  // FOLLOW-TRADE ACTION SHEET (2026-10-23): tapping "@X opened BTC long 10x" on the phone lands here with the trade in ?ft - offer to copy it, see it on the chart, or ask the AI about it. Nothing opens a trade on its own; Copy only PRE-FILLS the form.
+  (function(){ if(!/[?&]ft=1/.test(location.search))return; function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});} function g(k){var m=location.search.match(new RegExp('[?&]'+k+'=([^&]+)'));return m?decodeURIComponent(m[1]):'';}
+    var sym=g('ftc').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12),side=g('fts')==='short'?'short':'long',lev=Math.min(1000,Math.round(+g('ftl')||0)),by=g('ftby').replace(/[^a-zA-Z0-9_]/g,'').slice(0,20),act=g('fta'); if(!sym)return;
+    var verb=act==='o'?'opened':(act==='l'?'was liquidated on':'closed');
+    var IC={copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg>',ai:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"/><path d="M9.5 11.5 12 9l2.5 2.5"/><path d="M12 9v6"/></svg>'};
+    function run(){ var ov=document.createElement('div'); ov.className='ftsh-ov';
+      ov.innerHTML='<div class="ftsh" role="dialog" aria-modal="true" aria-label="Trade from a trader you follow"><button class="ftsh-x" type="button" aria-label="Close">✕</button>'
+        +'<div class="ftsh-by">'+(by?'@'+esc(by):'A trader you follow')+'</div>'
+        +'<div class="ftsh-t">'+esc(verb)+' <b>'+esc(sym)+'</b> '+side+(lev?' <b>'+lev+'x</b>':'')+'</div>'
+        +'<button class="ftsh-b ftsh-copy" type="button">'+IC.copy+'<span>Copy this trade<small>pre-fills the same trade - you confirm the open</small></span></button>'
+        +'<button class="ftsh-b ftsh-chart" type="button">'+IC.chart+'<span>See '+esc(sym)+' on the chart</span></button>'
+        +'<button class="ftsh-b ftsh-ai" type="button">'+IC.ai+'<span>Ask the AI about this trade</span></button></div>';
+      document.body.appendChild(ov); requestAnimationFrame(function(){ov.classList.add('in');}); setTimeout(function(){ov.classList.add('in');},80);
+      var close=function(){ov.classList.remove('in');setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov);},200);try{var u=new URL(location.href);['ft','ftc','fts','ftl','fta','ftby'].forEach(function(k){u.searchParams.delete(k);});history.replaceState(null,'',u.pathname+(u.search||'')+(u.hash||''));}catch(e){}};
+      ov.addEventListener('click',function(e){ if(e.target===ov||e.target.closest('.ftsh-x')){close();return;} var b=e.target.closest('.ftsh-copy,.ftsh-chart,.ftsh-ai'); if(!b)return; try{if(window.mpBuzz)window.mpBuzz([14]);}catch(_){}
+        if(b.classList.contains('ftsh-copy'))location.href='/paper-trade?coin='+encodeURIComponent(sym)+'&side='+side+(lev?'&lev='+lev:'');
+        else if(b.classList.contains('ftsh-chart'))location.href='/charts?coin='+encodeURIComponent(sym);
+        else location.href='/charts?coin='+encodeURIComponent(sym)+'&ai=1'; });
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else setTimeout(run,250);
+  })();
   if(/^\/calculators\/?$/.test(_mpPath())){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
   if(/^\/(heatmap|swap)\/?$/.test(_mpPath())){var _pid=/heatmap/.test(_mpPath())?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly - the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
   var _pq=(location.search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
@@ -3553,7 +3574,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=4fee321c'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=e7dedc8c'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };

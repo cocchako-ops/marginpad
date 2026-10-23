@@ -2099,6 +2099,23 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       })();
     })();
   }
+  /* ARRIVING FROM A FOLLOW-TRADE NOTIFICATION (2026-10-23): /charts?coin=X&ai=1 opens the pair and then the AI panel
+     and asks it to read the chart for an opportunity - "AI analyze this trade". No auto-draw forced; the reader can
+     carry on from the answer. Same readiness wait as aiScanAuto; the panel's own gate handles a non-Premium reader. */
+  function aiAnalyzeAuto(sym){
+    sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return;var tries=0;
+    (function go(){
+      var w=null;for(var i=0;i<wins.length;i++){if(wins[i].sym===sym){w=wins[i];break;}}
+      var ready=w&&w.bars&&w.bars.length>=50&&window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+      if(!ready){if(tries++<100){setTimeout(go,150);return;}if(!w)return;}
+      openAiPanel(w);
+      var t2=0;(function fire(){
+        if(aiBusy)return;
+        if(aiPremium&&aiEl&&!aiEl.hidden){askAi(__esT_mpcharts("analyzeThisChart",'Read this chart for me right now: the structure, the levels that matter, and whether there is a trade worth taking here - entry, stop and targets - or whether waiting is the move.'));return;}
+        if(t2++<80)setTimeout(fire,200);
+      })();
+    })();
+  }
   /* Set a price alert straight from the chart - tap a level, it creates a real /api/alerts alert + draws an anchored line */
   // remove an alert's line + cancel it server-side (silent skips the toast / used on failed creates)
   function chAlertDel(w,a,silent){if(!a)return;if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}
@@ -3494,7 +3511,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
   function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
-    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}var _as=false;try{_as=/[?&]aiscan=1/i.test(location.search);}catch(e){}if(_as){try{history.replaceState(null,'','/charts?coin='+_fc);}catch(e){}try{aiScanAuto(_fc);}catch(e){}}if(wins.length)return;}}
+    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}var _as=false,_aa=false;try{_as=/[?&]aiscan=1/i.test(location.search);_aa=/[?&]ai=1/i.test(location.search);}catch(e){}if(_as){try{history.replaceState(null,'','/charts?coin='+_fc);}catch(e){}try{aiScanAuto(_fc);}catch(e){}}else if(_aa){try{history.replaceState(null,'','/charts?coin='+_fc);}catch(e){}try{aiAnalyzeAuto(_fc);}catch(e){}}if(wins.length)return;}}
     var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left - windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
     else { showEmpty(true); /* nothing on this device -> restore the account's workspace (new phone, cleared cache) */

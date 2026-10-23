@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=305f67dc" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=d1c6f8a8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -16499,10 +16499,12 @@ async function handlePush(url, env, request) {
     let uid = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); uid = (await hr.json()).uid; } catch (e) {}
     if (!uid) return jr({ error: 'not_signed_in' }, 401);
     let cur = {}; try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, keys: ['notifpush'] }) })); const d = await r.json(); if (d && d.prefs && d.prefs.notifpush && d.prefs.notifpush.v) { try { cur = JSON.parse(d.prefs.notifpush.v) || {}; } catch (e) {} } } catch (e) {}
-    if (request.method !== 'POST') { const full = {}; for (const k of PUSH_PREF_KINDS) full[k] = (cur[k] === undefined ? true : !!cur[k]); return jr({ prefs: full, muted: (cur.m && typeof cur.m === 'object') ? cur.m : {}, kinds: PUSH_PREF_KINDS }); }
+    const ftDef = () => { const f = (cur.ft && typeof cur.ft === 'object') ? cur.ft : {}; return { ev: { o: !(f.ev && f.ev.o === false), c: !(f.ev && f.ev.c === false) }, side: (f.side === 'long' || f.side === 'short') ? f.side : 'both', lev: (isFinite(+f.lev) && +f.lev > 1) ? Math.min(1000, Math.round(+f.lev)) : 0 }; };
+    if (request.method !== 'POST') { const full = {}; for (const k of PUSH_PREF_KINDS) full[k] = (cur[k] === undefined ? true : !!cur[k]); return jr({ prefs: full, muted: (cur.m && typeof cur.m === 'object') ? cur.m : {}, ft: ftDef(), kinds: PUSH_PREF_KINDS }); }
     const inp = (b && b.prefs) || {}; const keep = Object.assign({}, cur); for (const k of PUSH_PREF_KINDS) keep[k] = (inp[k] === undefined ? (cur[k] === undefined ? true : !!cur[k]) : !!inp[k]); // preserve the per-trader mute map (keep.m) across a toggle save
+    if (b && b.ft && typeof b.ft === 'object') { const f = b.ft; keep.ft = { ev: { o: !(f.ev && f.ev.o === false), c: !(f.ev && f.ev.c === false) }, side: (f.side === 'long' || f.side === 'short') ? f.side : 'both', lev: (isFinite(+f.lev) && +f.lev > 1) ? Math.min(1000, Math.round(+f.lev)) : 0 }; } // the Following-tab trade filters
     try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, k: 'notifpush', v: JSON.stringify(keep) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
-    return jr({ ok: true, prefs: keep });
+    return jr({ ok: true, prefs: keep, ft: keep.ft || ftDef() });
   }
   if (sub === '/traders') { // the people the member follows + per-trader follow-trade mute state
     let uid = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); uid = (await hr.json()).uid; } catch (e) {}
@@ -19233,7 +19235,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '6f5a6704';
+const ASSET_V = '72d4bb06';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -23814,6 +23816,12 @@ export default {
         crawlTotal: (byBot || []).reduce((s, r) => s + (+r.n || 0), 0), byBot: byBot || [],
         gap, byDay: (aiDay || []).map(r => ({ day: r.day, visits: +r.n || 0, crawled: ((botDay || []).find(x => x.day === r.day) || {}).n || 0 })),
       });
+    }
+    if (url.pathname === '/api/admin/notifpurge' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one-off: clear old trade-activity bell rows for everyone (?kind=followtrade)
+      const kind = (url.searchParams.get('kind') || '').replace(/[^a-z_]/g, '').slice(0, 24);
+      if (!kind) return new Response('{"error":"no_kind"}', { status: 400, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/notifpurge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind }) })); return new Response(await r.text(), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); }
+      catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } }); }
     }
     if (url.pathname === '/api/admin/aibots' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // AI-crawler hit summary (writer: aibot telemetry in the main fetch). ?days=N (1-90, def 7)
       const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 7)), DA = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
@@ -29722,7 +29730,15 @@ export class UserStore {
   _followedBust() { this._folSet = null; }
   _pushUrl(link) { link = String(link || ''); if (link.indexOf('/') === 0) return 'https://marginpad.io' + link; if (link.indexOf('dm:') === 0) return 'https://marginpad.io/paper-trade?dm=' + encodeURIComponent(link.slice(3)); if (link.indexOf('profile:') === 0) return 'https://marginpad.io/paper-trade?profile=' + encodeURIComponent(link.slice(8)); if (link === 'duel') return 'https://marginpad.io/paper-trade?duels=1'; if (link.indexOf('squad') === 0) return 'https://marginpad.io/squads/'; return 'https://marginpad.io/paper-trade?notif=1'; }
   _notifAllows(uid, kind) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(uid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p || typeof p !== 'object') return true; return p[kind] === undefined ? true : !!p[kind]; } catch (e) { return true; } } // per-user "what reaches my phone" switch (uprefs 'notifpush' blob) - a kind not stored defaults ON; gates ONLY the push, never the in-app bell
-  _followNotifOk(followerUid, actorUid) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(followerUid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p) return true; if (p.followtrade === false) return false; if (p.m && p.m[String(actorUid || '').replace(/^u:/, '')]) return false; return true; } catch (e) { return true; } } // follow-trade = global "People you follow" switch AND a per-trader mute (blob.m); a muted trader produces neither a push nor a bell row
+  _followNotifOk(followerUid, actorUid, kind, side, lev) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(followerUid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p) return true;
+    if (p.followtrade === false) return false; // global "People you follow" switch
+    if (p.m && p.m[String(actorUid || '').replace(/^u:/, '')]) return false; // per-trader mute
+    const ft = p.ft; if (ft && typeof ft === 'object') { // the Following-tab filters (owner 2026-10-23): what KIND of trades reach the phone
+      if (ft.ev && typeof ft.ev === 'object') { const ek = (kind === 'open') ? 'o' : 'c'; if (ft.ev[ek] === false) return false; } // opens / closes
+      if (ft.side && ft.side !== 'both' && side && ft.side !== side) return false; // longs only / shorts only
+      if (ft.lev != null && isFinite(+ft.lev) && +ft.lev > 1 && (+lev || 0) < +ft.lev) return false; // minimum leverage
+    }
+    return true; } catch (e) { return true; } } // follow-trade = global switch AND per-trader mute AND the Following-tab filters; failing any -> no push and no bell
   _windowStats(uid, from, to) { // closed-trade stats over [from,to) from the tradeev log: best ROE, win rate, biggest win $
     uid = String(uid).replace(/^u:/, '');
     const r = this.rows('SELECT pnl, roe, lev, sym FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<?', uid, 'close', from, to);
@@ -30012,8 +30028,9 @@ export class UserStore {
                 if (k === 'open') act = 'opened ' + sym + ' ' + side + ' ' + lev + 'x';
                 else { const liq = d.liq ? 1 : 0, pnl = d.pnl, roe = d.roe; const pl = (pnl != null && isFinite(pnl)) ? ' ' + fmtP(pnl) + (roe != null && isFinite(roe) ? ' (' + (roe >= 0 ? '+' : '') + Math.round(roe) + '%)' : '') : '';
                   act = liq ? 'was liquidated on ' + sym + ' ' + side : 'closed ' + sym + ' ' + side + pl; }
-                const link = '/paper-trade' + (sym ? '?coin=' + encodeURIComponent(sym) : '');
-                for (const f of fr) { if (!this._followNotifOk(f.uid, uid)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
+                // the link carries the trade so tapping the push opens a sheet offering Copy / See on chart / AI analyze (owner 2026-10-23)
+                const link = '/paper-trade?ft=1&ftc=' + encodeURIComponent(sym) + '&fts=' + side + '&ftl=' + lev + '&fta=' + (k === 'open' ? 'o' : (d.liq ? 'l' : 'c')) + '&ftby=' + encodeURIComponent(an);
+                for (const f of fr) { if (!this._followNotifOk(f.uid, uid, k, side, lev)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
             }
           }
         } catch (eF) {}
@@ -31974,6 +31991,7 @@ export class UserStore {
     }
     if (path === '/push/subsof') { const uid0 = String(b.uid || '').replace(/^u:/, ''); if (!uid0) return this.j({ subs: [] }); return this.j({ subs: this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid=?', uid0) }); } // the caller's own devices, for the "send me a test" button
     if (path === '/push/prefsmap') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; const out = {}; for (const u of uids.slice(0, 500)) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(u).replace(/^u:/, ''))[0]; if (r && r.v) { try { out[u] = JSON.parse(r.v); } catch (e) {} } } catch (e) {} } return this.j({ prefs: out }); } // batch notif prefs for a cron (price alerts) to filter who still wants that push
+    if (path === '/notifpurge') { const kind = String(b.kind || '').slice(0, 24); if (!kind) return this.j({ error: 'no_kind' }, 400); let n = 0; try { const r = this.rows('SELECT COUNT(*) n FROM unotifs WHERE kind=?', kind)[0]; n = (r && r.n) || 0; sql.exec('DELETE FROM unotifs WHERE kind=?', kind); } catch (e) {} return this.j({ ok: true, deleted: n }); } // one-off: clear every member's old trade-activity bell rows (followtrade is phone-only now)
     if (path === '/push/traders') { // the people this member follows + whether follow-trade notifications are muted per trader
       const uid = String(b.uid || '').replace(/^u:/, ''); if (!uid) return this.j({ traders: [] });
       let m = {}; try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", uid)[0]; if (r && r.v) { const p = JSON.parse(r.v); if (p && p.m) m = p.m; } } catch (e) {}
