@@ -1,0 +1,179 @@
+{
+  "_why": "The instruments added on 2026-10-24 (owner: more companies, forex, metals). EVERY ONE WAS MEASURED FIRST through the exact Yahoo request the worker makes (scratchpad/yahoo-candidates.js): a real price, 1,500+ hourly candles, 2,500+ daily candles and under 3% FLAT bars at both - the ratio _flatRatio refuses to chart. What is NOT here was refused by that measurement or by a rule, and the reasons are below, because a list of what we left out is worth more than the list we kept.",
+  "_refused": {
+    "SQ, BLOCK, BMWYY, K, X": "Yahoo 404 - renamed, acquired or delisted",
+    "VWAGY, MBGYY": "pink-sheet OTC: 17-22% of their hourly candles are flat, which is the illiquid-feed signature _flatRatio exists to reject",
+    "XPT, XPD": "platinum and palladium futures are clean hourly but 67% and 77% of their DAILY candles are flat - a 1D chart of either would be refused by _flatRatio and fall through to nothing",
+    "FRA40, EU50, HK50, AUS200, ESP35, SWI20, VIX, US2000": "cash indices, and our schedule calls index hours 24/5 on the New York clock while the cash market is open only locally - measured 2026-10-23 21:42 UTC, ^GDAXI's last bar was 15:30 UTC and ^N225's 06:30 UTC. A price frozen for 6-15 hours while we say the market is open is the one-sided bet the close path already refuses weekends for. GER40, UK100 and JPN225 have this hole TODAY - it is in the backlog, and nothing new joins them until it is closed.",
+    "USDTRY, USDZAR": "a currency in structural decline is a one-way trade on a paper board - the lesson is not worth teaching",
+    "EA": "Yahoo serves it fine from a laptop and our worker gets 91 hourly candles and ONE daily - caught only by verifying through our own endpoints after the deploy, which is why that step exists"
+  },
+  "stocks": {
+    "NOW": "ServiceNow",
+    "SNOW": "Snowflake",
+    "CRWD": "CrowdStrike",
+    "PANW": "Palo Alto Networks",
+    "DDOG": "Datadog",
+    "NET": "Cloudflare",
+    "ZS": "Zscaler",
+    "MDB": "MongoDB",
+    "TEAM": "Atlassian",
+    "ROKU": "Roku",
+    "PINS": "Pinterest",
+    "LYFT": "Lyft",
+    "DASH": "DoorDash",
+    "ZM": "Zoom",
+    "DOCU": "Docusign",
+    "TWLO": "Twilio",
+    "U": "Unity",
+    "TTWO": "Take-Two",
+    "SONY": "Sony",
+    "BIDU": "Baidu",
+    "JD": "JD.com",
+    "PDD": "PDD Holdings",
+    "NTES": "NetEase",
+    "TCEHY": "Tencent",
+    "LI": "Li Auto",
+    "XPEV": "XPeng",
+    "TM": "Toyota",
+    "HMC": "Honda",
+    "RACE": "Ferrari",
+    "STLA": "Stellantis",
+    "GM": "General Motors",
+    "CAT": "Caterpillar",
+    "DE": "John Deere",
+    "MMM": "3M",
+    "GE": "GE Aerospace",
+    "HON": "Honeywell",
+    "LMT": "Lockheed Martin",
+    "RTX": "RTX",
+    "NOC": "Northrop Grumman",
+    "UPS": "UPS",
+    "FDX": "FedEx",
+    "CVX": "Chevron",
+    "COP": "ConocoPhillips",
+    "SLB": "SLB",
+    "OXY": "Occidental",
+    "PFE": "Pfizer",
+    "MRK": "Merck",
+    "ABBV": "AbbVie",
+    "AMGN": "Amgen",
+    "GILD": "Gilead",
+    "BMY": "Bristol Myers",
+    "TMO": "Thermo Fisher",
+    "DHR": "Danaher",
+    "ISRG": "Intuitive Surgical",
+    "MDT": "Medtronic",
+    "CVS": "CVS Health",
+    "CI": "Cigna",
+    "ELV": "Elevance",
+    "MCD": "McDonald's",
+    "SBUX": "Starbucks",
+    "NKE": "Nike",
+    "LULU": "Lululemon",
+    "TGT": "Target",
+    "LOW": "Lowe's",
+    "TJX": "TJX",
+    "DG": "Dollar General",
+    "KHC": "Kraft Heinz",
+    "MDLZ": "Mondelez",
+    "MO": "Altria",
+    "PM": "Philip Morris",
+    "CL": "Colgate",
+    "KMB": "Kimberly-Clark",
+    "GIS": "General Mills",
+    "HSY": "Hershey",
+    "SYY": "Sysco",
+    "ADM": "ADM",
+    "BG": "Bunge",
+    "CF": "CF Industries",
+    "MOS": "Mosaic",
+    "NEM": "Newmont",
+    "FCX": "Freeport",
+    "AA": "Alcoa",
+    "CLF": "Cleveland-Cliffs",
+    "VALE": "Vale",
+    "RIO": "Rio Tinto",
+    "BHP": "BHP",
+    "GOLD": "Barrick",
+    "AEM": "Agnico Eagle",
+    "WPM": "Wheaton Precious",
+    "PAAS": "Pan American Silver",
+    "HL": "Hecla",
+    "AG": "First Majestic"
+  },
+  "commodities": {
+    "OIL": {
+      "yahoo": "CL=F",
+      "name": "Crude Oil (WTI)",
+      "lev": 20
+    },
+    "BRENT": {
+      "yahoo": "BZ=F",
+      "name": "Brent Crude",
+      "lev": 20
+    },
+    "NATGAS": {
+      "yahoo": "NG=F",
+      "name": "Natural Gas",
+      "lev": 20
+    },
+    "COPPER": {
+      "yahoo": "HG=F",
+      "name": "Copper",
+      "lev": 20
+    }
+  },
+  "forex": {
+    "USDCHF": {
+      "yahoo": "USDCHF=X",
+      "name": "USD/CHF",
+      "lev": 50
+    },
+    "NZDUSD": {
+      "yahoo": "NZDUSD=X",
+      "name": "NZD/USD",
+      "lev": 50
+    },
+    "EURGBP": {
+      "yahoo": "EURGBP=X",
+      "name": "EUR/GBP",
+      "lev": 50
+    },
+    "EURJPY": {
+      "yahoo": "EURJPY=X",
+      "name": "EUR/JPY",
+      "lev": 50
+    },
+    "GBPJPY": {
+      "yahoo": "GBPJPY=X",
+      "name": "GBP/JPY",
+      "lev": 50
+    },
+    "AUDJPY": {
+      "yahoo": "AUDJPY=X",
+      "name": "AUD/JPY",
+      "lev": 50
+    },
+    "EURCHF": {
+      "yahoo": "EURCHF=X",
+      "name": "EUR/CHF",
+      "lev": 50
+    },
+    "USDMXN": {
+      "yahoo": "USDMXN=X",
+      "name": "USD/MXN",
+      "lev": 20
+    },
+    "USDSEK": {
+      "yahoo": "USDSEK=X",
+      "name": "USD/SEK",
+      "lev": 20
+    },
+    "USDNOK": {
+      "yahoo": "USDNOK=X",
+      "name": "USD/NOK",
+      "lev": 20
+    }
+  }
+}
