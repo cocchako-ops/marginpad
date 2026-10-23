@@ -165,7 +165,7 @@ async function visit(vp, ua, cookie) {
       ok(m.errors.length === 0, 'no page or console errors as a member', m.errors);
       ok(m.signedIn, 'the page knows it is signed in (body.rwd-in)');
       ok(!m.authCard, 'the sign-in card is gone');
-      ok(m.lvlCard, 'the level card appears for a member');
+      ok(m.lvlCard, 'the account card (signed in as / sign out) appears for a member - the level block inside it is hidden since 2026-10-23 (owner)');
       ok(m.board && m.rows === 4, 'the earnings table is there for a member too', { board: m.board, rows: m.rows });
       // THE BRONZE GATE IS OFF (2026-10-23, owner: "svako moze odma da ucestvuje u bilo cemu"): a brand-new member
       // (0 XP) is NOT locked, is never shown the locked card, and sees every card that pays

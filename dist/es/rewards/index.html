@@ -412,6 +412,8 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 #signupHub .rw-panels>.card .note{text-align:left}
 /* the season boards card: four tiles stay, the long paragraph tightens */
 #lbCompCard .lbc-title{font-size:21px}#lbCompCard .lbc-p{font-size:13.5px}
+/* owner 2026-10-23: no "which level you are" on this page - the card keeps only the signed-in line (sign out, contact) */
+#lvlCard>.lbl,#lvlMine,#lvlCard>a[href="/levels/"]{display:none!important}#lvlCard #authWho{margin:0!important;padding-bottom:0!important;border-bottom:0!important}
 /* phone: the four board tiles stay two by two (one column was 1,089px of the page), the scoreboard tiles tighten */
 @media(max-width:460px){#lbCompCard .pboards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}#lbCompCard .pboard{padding:12px 11px 10px}#lbCompCard .pboard-nm{font-size:13.5px}#lbCompCard .pboard-sub{font-size:10.5px;max-width:none}#lbCompCard .pboard-tag{position:static;display:inline-block;margin-bottom:8px}#lbCompCard .pboard-ic{width:28px;height:28px;margin-bottom:8px}}
 @media(max-width:560px){.rwd-table .et-d{font-size:12px;line-height:1.45}.rwd-table .et-r{gap:5px;padding:12px 13px 13px}.rwd-table .eamt{font-size:26px}}
