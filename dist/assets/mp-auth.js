@@ -377,6 +377,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-pl{display:block;font-size:11px;color:#9aa3ad;margin:0 0 5px;font-weight:600}'
     + '.mpa-nf{display:flex;flex-direction:column;max-height:min(58vh,460px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
     + '.mpa-nf::-webkit-scrollbar{width:9px}.mpa-nf::-webkit-scrollbar-track{background:#0a0d11}.mpa-nf::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
+    + '.mpa-nf-top{display:flex;align-items:center;gap:8px;margin:0 0 5px}.mpa-nf-set{margin-left:auto;background:none;border:none;color:#8b97a5;cursor:pointer;padding:4px;display:flex;line-height:0}.mpa-nf-set:hover{color:#e9e7df}.mpa-nf-set svg{width:18px;height:18px}'
+    + '.mpa-np-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #1a2027;cursor:pointer}.mpa-np-row:last-of-type{border-bottom:none}.mpa-np-t{flex:1;min-width:0;color:#e9e7df;font-size:13.5px;font-weight:600;display:flex;flex-direction:column;gap:2px}.mpa-np-t small{color:#6b7480;font-size:11.5px;font-weight:400;line-height:1.35}'
+    + '.mpa-np-cb{flex:none;width:20px;height:20px;accent-color:#c2f64a;cursor:pointer}'
+    + '.mpa-np-push{border:1px solid #242b34;border-radius:11px;padding:11px 13px;margin:2px 0 10px;background:#0e1116}.mpa-np-prow{display:flex;align-items:center;gap:10px}.mpa-np-btn{margin-left:auto;background:#c2f64a;color:#0a0b0d;border:none;border-radius:9px;padding:8px 14px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;flex:none}.mpa-np-btn:disabled{opacity:.55}.mpa-np-pnote{font-size:11.5px;color:#6b7480;margin-top:7px;min-height:1px}.mpa-np-pnote.ok{color:#2ebd85}.mpa-np-pnote.err{color:#ff7a6c}'
+    + '.mpa-np-foot{color:#6b7480;font-size:11.5px;line-height:1.5;margin-top:11px}.mpa-np-foot.ok{color:#2ebd85}.mpa-np-foot.err{color:#ff7a6c}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
     + '.mpa-nf-r.unseen{background:rgba(180,140,255,.06)}.mpa-nf-r.unseen .mpa-nf-b{color:#f2f0e9}'
     + '.mpa-nf-ic{flex:none;font-size:16px;line-height:1.3;width:22px;text-align:center}'
@@ -1914,8 +1919,9 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   window.mpNotifBadge = notifSetBadge;
   function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user', gift: 'gift', squad: 'people' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
   function renderNotifs() {
-    bodyEl.innerHTML = __esT_mpauth("notificationsLoadingBackTo",'<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>');
+    bodyEl.innerHTML = '<div class="mpa-nf-top"><h3 class="mpa-h" style="margin:0">' + __esT_mpauth("notificationsTitle",'Notifications') + '</h3><button class="mpa-nf-set" id="mpaNfSet" type="button" title="' + __esT_mpauth("notifSettings",'Notification settings') + '" aria-label="' + __esT_mpauth("notifSettings",'Notification settings') + '">' + ic('gear') + '</button></div><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div><button class="mpa-link" id="mpaNfBack" type="button">← ' + __esT_mpauth("backToProfile2",'Back to profile') + '</button>';
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
+    var st = bodyEl.querySelector('#mpaNfSet'); if (st) st.addEventListener('click', renderNotifSettings);
     window.mpSWR('notifs', '/api/auth/notifs', function (d, fresh) {
       var nf = bodyEl.querySelector('#mpaNf'); if (!nf) return;
       var list = (d && d.notifs) || [];
@@ -1927,6 +1933,57 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       // strength of a cached list would hide a notification that arrived since it was written
       if (fresh) fetch('/api/auth/notifs?seen=1').then(function () { notifSetBadge(0); }).catch(function () {});
     }, function () { var nf = bodyEl.querySelector('#mpaNf'); if (nf) nf.innerHTML = __esT_mpauth("couldNotLoadNotifications",'<div class="mpa-xp-empty">Could not load notifications.</div>'); });
+  }
+  // ---- Notification settings: what reaches the phone (2026-10-23, owner: "settings sta zelim da mi stize a sta ne") ----
+  var NP_LABELS = {
+    followtrade: [__esT_mpauth("npFollowTrade",'People you follow'), __esT_mpauth("npFollowTradeD",'a trader you follow opens or closes a trade')],
+    dm: [__esT_mpauth("npDm",'Direct messages'), __esT_mpauth("npDmD",'someone sends you a message')],
+    mention: [__esT_mpauth("npMention",'Mentions'), __esT_mpauth("npMentionD",'someone @mentions you in chat')],
+    duel: [__esT_mpauth("npDuel",'Duel challenges'), __esT_mpauth("npDuelD",'someone challenges you to a duel')],
+    follow: [__esT_mpauth("npFollow",'New followers'), __esT_mpauth("npFollowD",'someone follows you')],
+    alert: [__esT_mpauth("npAlert",'Price alerts'), __esT_mpauth("npAlertD",'a price alert you set hits its level')]
+  };
+  function renderNotifSettings() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("notifSettings",'Notification settings') + '</h3>'
+      + '<div class="mpa-np" id="mpaNp"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
+      + '<button class="mpa-link" id="mpaNpBack" type="button">← ' + __esT_mpauth("backLabel",'Back') + '</button>';
+    var bk = bodyEl.querySelector('#mpaNpBack'); if (bk) bk.addEventListener('click', renderNotifs);
+    var host = bodyEl.querySelector('#mpaNp');
+    // the browser-push on/off + a Send-a-test, so the member can prove delivery from the same screen
+    var pushBox = '<div class="mpa-np-push" id="mpaNpPush"></div>';
+    var saveNote = '<div class="mpa-np-foot" id="mpaNpNote">' + __esT_mpauth("npFoot",'These control what reaches your phone when the app is closed. The bell inside the app always keeps everything. On a phone, add MarginPad to the home screen first.') + '</div>';
+    fetch('/api/push/prefs').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
+      var prefs = d.prefs || {}, kinds = d.kinds || Object.keys(NP_LABELS);
+      var rows = kinds.map(function (k) { var L = NP_LABELS[k] || [k, '']; var on = prefs[k] !== false; return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small></span><input class="mpa-np-cb" type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '></label>'; }).join('');
+      host.innerHTML = pushBox + rows + saveNote;
+      wireNpPush(host.querySelector('#mpaNpPush'));
+      var note = host.querySelector('#mpaNpNote');
+      host.addEventListener('change', function (e) { var cb = e.target.closest && e.target.closest('[data-np]'); if (!cb) return;
+        var p2 = {}; Array.prototype.forEach.call(host.querySelectorAll('[data-np]'), function (x) { p2[x.getAttribute('data-np')] = x.checked; });
+        if (note) { note.className = 'mpa-np-foot'; note.textContent = __esT_mpauth("saving",'Saving…'); }
+        fetch('/api/push/prefs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prefs: p2 }) }).then(function (r) { return r.json(); }).then(function (rd) { if (note) { note.className = 'mpa-np-foot' + (rd && rd.ok ? ' ok' : ' err'); note.textContent = (rd && rd.ok) ? __esT_mpauth("saved",'Saved.') : __esT_mpauth("couldNotSaveTry2",'Could not save - try again.'); } }).catch(function () { if (note) { note.className = 'mpa-np-foot err'; note.textContent = __esT_mpauth("networkErrorTryAgain3",'Network error - try again.'); } });
+      });
+    }).catch(function () { host.innerHTML = '<div class="mpa-xp-empty">' + __esT_mpauth("couldNotLoad",'Could not load.') + '</div>'; });
+  }
+  function wireNpPush(box) {
+    if (!box) return;
+    var supp = !!(window.mpPush && window.mpPush.supported && window.mpPush.supported());
+    var draw = function (state) { // state: 'on' | 'off' | 'unsupported'
+      box.innerHTML = '<div class="mpa-np-prow"><span class="mpa-np-t">' + __esT_mpauth("phonePush",'Phone notifications') + '<small id="mpaNpPs">' + (state === 'on' ? __esT_mpauth("pushOnThisDevice",'on for this device') : state === 'unsupported' ? __esT_mpauth("notOnThisBrowser",'not available on this browser') : __esT_mpauth("offTapToTurnOn",'off - tap to turn on')) + '</small></span>'
+        + (state === 'unsupported' ? '' : '<button class="mpa-np-btn" id="mpaNpToggle" type="button">' + (state === 'on' ? __esT_mpauth("sendMeATest",'Send me a test') : __esT_mpauth("turnOn",'Turn on')) + '</button>') + '</div><div class="mpa-np-pnote" id="mpaNpPn"></div>';
+      var btn = box.querySelector('#mpaNpToggle'), pn = box.querySelector('#mpaNpPn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        btn.disabled = true; var done = function (cls, msg) { btn.disabled = false; if (pn) { pn.className = 'mpa-np-pnote' + (cls ? ' ' + cls : ''); pn.textContent = msg; } };
+        var sendTest = function () { fetch('/api/push/test', { method: 'POST', headers: { 'content-type': 'application/json' } }).then(function (r) { return r.json(); }).then(function (td) {
+          if (td && td.ok) done('ok', __esT_mpauth("sentCheckScreen",'Sent - check your lock screen.')); else if (td && td.error === 'no_device') done('err', __esT_mpauth("turnOnPushFirst",'Turn on notifications first.')); else done('err', __esT_mpauth("couldNotSendTest",'Could not send - allow notifications for this site.')); }).catch(function () { done('err', __esT_mpauth("networkErrorTryAgain3",'Network error - try again.')); }); };
+        if (state === 'on') { sendTest(); }
+        else { window.mpPush.enable().then(function () { draw('on'); var pn2 = box.querySelector('#mpaNpPn'); if (pn2) { pn2.className = 'mpa-np-pnote'; pn2.textContent = __esT_mpauth("sendingTest",'On. Sending a test…'); } fetch('/api/push/test', { method: 'POST', headers: { 'content-type': 'application/json' } }).then(function (r) { return r.json(); }).then(function (td) { var pn3 = box.querySelector('#mpaNpPn'); if (pn3) { pn3.className = 'mpa-np-pnote ' + (td && td.ok ? 'ok' : 'err'); pn3.textContent = (td && td.ok) ? __esT_mpauth("sentCheckScreen",'Sent - check your lock screen.') : __esT_mpauth("onNoTestYet",'On - you will start getting notifications.'); } }).catch(function () {}); }).catch(function (e2) { done('err', e2 === 'denied' ? __esT_mpauth("pushIsBlockedFor",'Push is blocked for this site in the browser settings.') : __esT_mpauth("allowNotificationsThenTry",'Allow notifications for this site, then try again.')); }); }
+      });
+    };
+    if (!supp) { draw('unsupported'); return; }
+    window.mpPush.state().then(function (s) { draw(s === 'on' ? 'on' : 'off'); }).catch(function () { draw('off'); });
   }
   // Daily Brief teaser for the profile card: public market-only line, cached 5 min per browser so opening the card costs no request most of the time
   function briefTeaserLine(t) {

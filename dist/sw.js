@@ -27,7 +27,10 @@ self.addEventListener('push', function (e) {
     body: d.body || '',
     icon: d.icon || '/assets/favicon-32.png',
     badge: '/assets/favicon-32.png',
-    tag: d.tag || 'mp-' + (d.url || ''),
+    // A UNIQUE tag per push by default, so each event stacks like a separate chat message (a trader's OPEN and their CLOSE
+    // both show, they do not collapse into one). A payload can still pass an explicit d.tag to deliberately replace an
+    // earlier one. (owner 2026-10-23: "stigne mi kao sto bi mi poruka stigla pa izadje notifikacija")
+    tag: d.tag || ('mp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
     data: { url: d.url || 'https://marginpad.io/' },
     renotify: true
   };

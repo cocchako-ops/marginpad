@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b67b0966" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=815780e8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14975,6 +14975,7 @@ async function sendWebPush(env, sub, payloadObj) {
 // it). Called from the hot trade paths right after their own store writes AND from the cron as a backstop.
 const NPUSH_KINDS = { dm: 1, mention: 1, duel: 1, follow: 1, followtrade: 1, prize: 1 }; // auto-pushed kinds (squad is deliberately NOT here - too frequent)
 const NPUSH_TITLE = { dm: 'New message', mention: 'Mentioned in chat', duel: 'Duel challenge', follow: 'New follower', followtrade: 'A trader you follow', prize: 'Prize paid' };
+const PUSH_PREF_KINDS = ['followtrade', 'dm', 'mention', 'duel', 'follow', 'alert']; // the toggles the member sees in the notification settings (each gates ONE push kind; default ON)
 async function pushDrain(env) {
   if (!env.VAPID_JWK || !env.USERS) return 0;
   let rows = []; try { rows = ((await usersDO(env, '/push/pull', { max: 80 })) || {}).rows || []; } catch (e) { return 0; }
@@ -16461,13 +16462,16 @@ async function checkAccountAlerts(env) {
   if (fired.length) { try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/alerts/fire', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: fired }) })); } catch (e) {} }
   // additive: also push to every browser the user subscribed (in parallel with email/Telegram)
   if (pushTargets.length && env.VAPID_JWK) {
-    const uids = [...new Set(pushTargets.map(t => t.uid))];
+    let pt = pushTargets, uids = [...new Set(pt.map(t => t.uid))];
+    // honour the member's "Price alerts" push switch (default ON); the alert still fires by email/Telegram regardless
+    try { const pr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/push/prefsmap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uids }) })); const pm = ((await pr.json()) || {}).prefs || {}; pt = pt.filter(t => { const p = pm[t.uid]; return !p || p.alert === undefined || !!p.alert; }); uids = [...new Set(pt.map(t => t.uid))]; } catch (e) {}
+    if (!pt.length) return;
     let subs = [];
     try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/push/byuid', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uids }) })); const j = await r.json(); subs = (j && j.subs) || []; } catch (e) {}
     if (subs.length) {
       const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
       const dead = [];
-      await Promise.all(pushTargets.map(async t => {
+      await Promise.all(pt.map(async t => {
         const payload = { title: t.sym + ' price alert', body: t.sym + ' is now $' + tgfmt(t.cur) + ' (' + (t.dir === 'up' ? '≥' : '≤') + ' $' + tgfmt(t.target) + ')', url: 'https://marginpad.io/paper-trade?coin=' + t.sym + '&ref=push' };
         for (const s of (byUid[t.uid] || [])) { try { const res = await sendWebPush(env, s, payload); if (res.status === 404 || res.status === 410) dead.push(s.endpoint); } catch (e) {} }
       }));
@@ -16489,6 +16493,15 @@ async function handlePush(url, env, request) {
   if (sub === '/subscribe') { const r = await stub.fetch(new Request('https://do/push/save', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, sub: b.sub }) })); const _pj = await r.json(); if (_pj && _pj.ok) { try { await evPush(env, request, 'push', '', url.pathname); } catch (e) {} } return jr(_pj); }
   if (sub === '/unsubscribe') { const r = await stub.fetch(new Request('https://do/push/del', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ endpoint: b.endpoint }) })); return jr(await r.json()); }
   if (sub === '/status') { const r = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); return jr(await r.json()); }
+  if (sub === '/prefs') { // what reaches the phone: a per-kind on/off the member sets from the Notifications screen (2026-10-23)
+    let uid = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); uid = (await hr.json()).uid; } catch (e) {}
+    if (!uid) return jr({ error: 'not_signed_in' }, 401);
+    if (request.method !== 'POST') { let prefs = {}; try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, keys: ['notifpush'] }) })); const d = await r.json(); if (d && d.prefs && d.prefs.notifpush && d.prefs.notifpush.v) { try { prefs = JSON.parse(d.prefs.notifpush.v); } catch (e) {} } } catch (e) {}
+      const full = {}; for (const k of PUSH_PREF_KINDS) full[k] = (prefs[k] === undefined ? true : !!prefs[k]); return jr({ prefs: full, kinds: PUSH_PREF_KINDS }); }
+    const inp = (b && b.prefs) || {}; const keep = {}; for (const k of PUSH_PREF_KINDS) keep[k] = (inp[k] === undefined ? true : !!inp[k]);
+    try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, k: 'notifpush', v: JSON.stringify(keep) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, prefs: keep });
+  }
   if (sub === '/test') { // "send me a test" - fires a real web push to the caller's own devices right now, so a member can SEE that notifications work (2026-10-23)
     if (!env.VAPID_JWK) return jr({ error: 'push_unconfigured' }, 503);
     let uid = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); const hj = await hr.json(); uid = hj && hj.uid; } catch (e) {}
@@ -19207,7 +19220,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '934fe206';
+const ASSET_V = '24ecce20';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -29660,10 +29673,11 @@ export class UserStore {
     // web-push bridge: only for a pushable kind AND a uid that actually subscribed a device (one Set lookup, nobody else pays)
     try {
       const wantPush = (opts && opts.push != null) ? !!opts.push : !!NPUSH_KINDS[kind];
-      if (wantPush && this._pushUidSet().has(uid)) {
+      if (wantPush && this._pushUidSet().has(uid) && this._notifAllows(uid, kind)) {
         const title = (opts && opts.title) || NPUSH_TITLE[kind] || 'MarginPad';
+        const pbody = (opts && opts.pushBody) || body; // the phone body can read like a chat message (sender in the title, action in the body) while the bell keeps the full sentence
         const url = (opts && opts.url) || this._pushUrl(link);
-        sql.exec('INSERT INTO npushq(uid,title,body,url,ts) VALUES(?,?,?,?,?)', uid, String(title).slice(0, 80), String(body || '').slice(0, 160), String(url).slice(0, 200), Date.now());
+        sql.exec('INSERT INTO npushq(uid,title,body,url,ts) VALUES(?,?,?,?,?)', uid, String(title).slice(0, 80), String(pbody || '').slice(0, 160), String(url).slice(0, 200), Date.now());
         sql.exec('DELETE FROM npushq WHERE id NOT IN (SELECT id FROM npushq ORDER BY id DESC LIMIT 400)'); // bound the outbox - a cold drain never floods
       }
     } catch (e) {}
@@ -29673,6 +29687,7 @@ export class UserStore {
   _followedSet() { if (this._folSet) return this._folSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT tuid FROM ufollows')) s.add(String(r.tuid)); } catch (e) {} this._folSet = s; return s; } // accounts that at least one person follows - so _syncJournal pays a Set lookup, not a query, for the vast majority nobody follows
   _followedBust() { this._folSet = null; }
   _pushUrl(link) { link = String(link || ''); if (link.indexOf('/') === 0) return 'https://marginpad.io' + link; if (link.indexOf('dm:') === 0) return 'https://marginpad.io/paper-trade?dm=' + encodeURIComponent(link.slice(3)); if (link.indexOf('profile:') === 0) return 'https://marginpad.io/paper-trade?profile=' + encodeURIComponent(link.slice(8)); if (link === 'duel') return 'https://marginpad.io/paper-trade?duels=1'; if (link.indexOf('squad') === 0) return 'https://marginpad.io/squads/'; return 'https://marginpad.io/paper-trade?notif=1'; }
+  _notifAllows(uid, kind) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(uid || '').replace(/^u:/, ''))[0]; if (!r || !r.v) return true; let p = null; try { p = JSON.parse(r.v); } catch (e) { return true; } if (!p || typeof p !== 'object') return true; return p[kind] === undefined ? true : !!p[kind]; } catch (e) { return true; } } // per-user "what reaches my phone" switch (uprefs 'notifpush' blob) - a kind not stored defaults ON; gates ONLY the push, never the in-app bell
   _windowStats(uid, from, to) { // closed-trade stats over [from,to) from the tradeev log: best ROE, win rate, biggest win $
     uid = String(uid).replace(/^u:/, '');
     const r = this.rows('SELECT pnl, roe, lev, sym FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<?', uid, 'close', from, to);
@@ -29958,12 +29973,12 @@ export class UserStore {
               const an = (this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {}).username || 'A trader';
               const fmtP = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(Math.abs(v) >= 100 ? 0 : 2);
               for (const o of ops) { const k = o[0]; if (k === 'trim') continue; const d = o[2] || {}; const sym = String(d.sym || ''), side = (d.side === 'short' ? 'short' : 'long'), lev = d.lev || 1;
-                let msg, title;
-                if (k === 'open') { title = '@' + an + ' opened a trade'; msg = '@' + an + ' opened a ' + sym + ' ' + side + ' ' + lev + 'x'; }
+                let act; // the action, like a chat message body; the trader's name is the push title
+                if (k === 'open') act = 'opened ' + sym + ' ' + side + ' ' + lev + 'x';
                 else { const liq = d.liq ? 1 : 0, pnl = d.pnl, roe = d.roe; const pl = (pnl != null && isFinite(pnl)) ? ' ' + fmtP(pnl) + (roe != null && isFinite(roe) ? ' (' + (roe >= 0 ? '+' : '') + Math.round(roe) + '%)' : '') : '';
-                  title = liq ? '@' + an + ' got liquidated' : '@' + an + ' closed a trade'; msg = '@' + an + ' ' + (liq ? 'was liquidated on ' : 'closed ') + sym + ' ' + side + pl; }
+                  act = liq ? 'was liquidated on ' + sym + ' ' + side : 'closed ' + sym + ' ' + side + pl; }
                 const link = '/paper-trade' + (sym ? '?coin=' + encodeURIComponent(sym) : '');
-                for (const f of fr) this._pushNotif(String(f.uid), 'followtrade', msg, link, { push: true, title }); }
+                for (const f of fr) this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, title: '@' + an, pushBody: act }); }
             }
           }
         } catch (eF) {}
@@ -31923,6 +31938,7 @@ export class UserStore {
       return this.j({ rows });
     }
     if (path === '/push/subsof') { const uid0 = String(b.uid || '').replace(/^u:/, ''); if (!uid0) return this.j({ subs: [] }); return this.j({ subs: this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid=?', uid0) }); } // the caller's own devices, for the "send me a test" button
+    if (path === '/push/prefsmap') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; const out = {}; for (const u of uids.slice(0, 500)) { try { const r = this.rows("SELECT v FROM uprefs WHERE user_id=? AND k='notifpush'", String(u).replace(/^u:/, ''))[0]; if (r && r.v) { try { out[u] = JSON.parse(r.v); } catch (e) {} } } catch (e) {} } return this.j({ prefs: out }); } // batch notif prefs for a cron (price alerts) to filter who still wants that push
     if (path === '/push/has') { const aS = b.token ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', String(b.token), now)[0] : null; if (!aS) return this.j({ has: false }); return this.j({ has: this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', aS.user_id)[0].n > 0, uid: aS.user_id }); }
     if (path === '/push/byuid') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; if (!uids.length) return this.j({ subs: [] }); return this.j({ subs: inChunks(uids, (part, ph) => this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid IN (' + ph + ')', ...part)) }); }
     if (path === '/username') { // user changes their OWN username (session-authenticated); enforces uniqueness
