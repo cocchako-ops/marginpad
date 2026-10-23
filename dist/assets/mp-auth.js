@@ -23,6 +23,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   // clean line-icon set (currentColor stroke) - replaces the emoji buttons
   var ICONS = {
     bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
     chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
     feed: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
     swords: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m3 19 2-2"/>',
@@ -4077,7 +4078,18 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
      intercept a click: fire() -> navigator.vibrate on Android, the programmatic switch (iosTick) on iOS 17.4-26.4, and
      simply nothing on iOS 26.5+ where the web has no tap/drag haptic at all. One listener, every platform. */
   window.mpHapticArm = function () {};  // kept as a safe no-op: other bundles call it after they rebuild UI
-  var TAPSEL = '[data-haptic],.mpbn a,.mpbn button,.mpnav-row,.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.aim-it';
+  // Haptics EVERYWHERE a tap does something (owner 2026-10-23: "ubaci haptics svuda, sta god se dosta klikce, 100+ mesta").
+  // Broadened from a chart-only list to every real control site-wide: buttons, links, role=button/tab/switch, form toggles,
+  // selects, summaries, plus the site's div-based controls (profile card actions, chat sends & reactions & shared trades,
+  // trade buttons, chips, tabs, room/notif/trader toggles). The listener ONLY fires the haptic and never touches the element
+  // or its click, so it can never swallow a tap (the 2026-10-15 overlay bug is impossible with a passive observer).
+  var TAPSEL = '[data-haptic],button,a[href],[role=button],[role=tab],[role=menuitem],[role=switch],summary,select,'
+    + 'input[type=checkbox],input[type=radio],input[type=button],input[type=submit],label.mpa-sw,.mpa-sw,'
+    + '[data-lbu],[data-room],[data-act],[data-rx],[data-rxm],[data-np],[data-tr],[data-fopen],[data-drawx],[data-es],[data-tf],'
+    + '[data-af2],[data-spf],[data-wdf],[data-jmv],[data-jmf],[data-mode],[data-stratpick],[data-sym],[data-b],[data-welcx],'
+    + '.chip,.subtab,.pill,.evf,.pay,.ct-trade,.ct-sig,.lbm-folb,.lbm-port,.mpbn a,.mpbn button,.mpnav-row,'
+    + '.mfc-dock>[data-act],.mfc-b,.mfc-ai-mode [data-mode],.mfc-ai-mode [data-stratpick],#mfcAS,.cwin-ai-send,.aipc-trade,'
+    + '.aipc-on,.aipc-alert,#planSave,.mpcs-go,.mpss-go,.mfc-sr,.cwin-sym-menu [data-sym],.cwin-tf-it,.aim-it';
   try { document.addEventListener('click', function (e) { try { var t = e.target; if (t && t.closest && t.closest(TAPSEL)) fire(P.tick, 60); } catch (x) {} }, true); } catch (e) {}
 })();
 

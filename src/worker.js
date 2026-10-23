@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=9e133b51" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b5cf60eb" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14976,6 +14976,7 @@ async function sendWebPush(env, sub, payloadObj) {
 const NPUSH_KINDS = { dm: 1, mention: 1, duel: 1, follow: 1, followtrade: 1, prize: 1 }; // auto-pushed kinds (squad is deliberately NOT here - too frequent)
 const NPUSH_TITLE = { dm: 'New message', mention: 'Mentioned in chat', duel: 'Duel challenge', follow: 'New follower', followtrade: 'A trader you follow', prize: 'Prize paid' };
 const PUSH_PREF_KINDS = ['followtrade', 'dm', 'mention', 'duel', 'follow', 'alert']; // the toggles the member sees in the notification settings (each gates ONE push kind; default ON)
+const NPREF_GATE = { followtrade: 1, dm: 1, mention: 1, duel: 1, follow: 1 }; // the _pushNotif kinds that have a switch - a switched-off kind produces no bell row and no push ('alert' is not a _pushNotif kind; gift/squad/system have no switch)
 async function pushDrain(env) {
   if (!env.VAPID_JWK || !env.USERS) return 0;
   let rows = []; try { rows = ((await usersDO(env, '/push/pull', { max: 80 })) || {}).rows || []; } catch (e) { return 0; }
@@ -19231,7 +19232,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '684c1511';
+const ASSET_V = 'd30ed020';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -29679,12 +29680,16 @@ export class UserStore {
   }
   _pushNotif(uid, kind, body, link, opts) { // social notification (ring-buffered ~40/user), and - for a pushable kind - a web push to the phone
     uid = String(uid || '').replace(/^u:/, ''); if (!uid) return; const sql = this.state.storage.sql;
+    // The site notification (the bell) follows the member's notification settings too, not only the phone push: a kind they
+    // switched off produces NEITHER a bell row NOR a push (owner 2026-10-23). Only kinds that HAVE a switch are gated -
+    // gift / squad / system have no toggle and always show. (follow-trade is already gated by _followNotifOk at the call site.)
+    if (NPREF_GATE[kind] && !this._notifAllows(uid, kind)) return;
     try { sql.exec('INSERT INTO unotifs(uid,ts,kind,body,link,seen) VALUES(?,?,?,?,?,0)', uid, Date.now(), String(kind || '').slice(0, 24), String(body || '').slice(0, 200), String(link || '').slice(0, 120));
       sql.exec('DELETE FROM unotifs WHERE uid=? AND nid NOT IN (SELECT nid FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 40)', uid, uid); } catch (e) {}
     // web-push bridge: only for a pushable kind AND a uid that actually subscribed a device (one Set lookup, nobody else pays)
     try {
       const wantPush = (opts && opts.push != null) ? !!opts.push : !!NPUSH_KINDS[kind];
-      if (wantPush && this._pushUidSet().has(uid) && this._notifAllows(uid, kind)) {
+      if (wantPush && this._pushUidSet().has(uid)) { // the kind gate above already applied; a non-gated pushable kind (e.g. prize) still pushes
         const title = (opts && opts.title) || NPUSH_TITLE[kind] || 'MarginPad';
         const pbody = (opts && opts.pushBody) || body; // the phone body can read like a chat message (sender in the title, action in the body) while the bell keeps the full sentence
         const url = (opts && opts.url) || this._pushUrl(link);
