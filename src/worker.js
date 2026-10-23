@@ -8288,7 +8288,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=69784e19" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=c18a643d" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -15367,6 +15367,63 @@ async function mexcAffLookup(env, uid) {
   return { ok: true, found: true, code, uid: u, registerTime: row.registerTime || null,
     tradingAmount: +row.tradingAmount || 0, commission: +row.commission || 0, depositAmount: +row.depositAmount || 0 };
 }
+/* BINGX AFFILIATE (2026-10-24, the owner handed over a key on the same day he changed the link). BingX signs
+   like MEXC - two credentials, HMAC-SHA256 over the query string, lowercase hex - but the header is X-BX-APIKEY
+   and the base is open-api.bingx.com. Every endpoint below was MEASURED before a line of this was written
+   (scratchpad/bingx-probe.js), because the three venues answer differently and guessing is what cost a day on
+   Bitget. `/openApi/agent/v1/account/inviteRelationCheck?uid=` gives three unambiguous answers, which is cleaner
+   than MEXC (whose undocumented code 1035 had to be settled against the roster):
+     code 0, data.inviteResult TRUE   -> ours, with the registration date, deposit / trade / KYC flags and balance
+     code 0, data.inviteResult FALSE  -> a real BingX account that is not our referral (our own uid answers this)
+     code 100450 user-not-exist(X)    -> not a BingX uid at all
+   `/openApi/agent/v1/account/inviteAccountList` is the whole roster and carries the same fields per referral -
+   more than MEXC gives - and is what the desk's ?list=1 reads. */
+const BINGX_API = 'https://open-api.bingx.com';
+async function bingxSigned(env, pathname, params) {
+  const key = env.BINGX_API_KEY, secret = env.BINGX_API_SECRET;
+  if (!key || !secret) return { ok: false, why: 'no_key' };
+  // BingX signs the query string EXACTLY as sent, so the string is built once and used for both (encoding the
+  // values for the signature but not for the URL, or the other way round, fails as an opaque signature error)
+  const p = Object.assign({}, params || {}, { timestamp: Date.now(), recvWindow: 5000 });
+  const qs = Object.keys(p).map(k => k + '=' + p[k]).join('&');
+  let sig = '';
+  try {
+    const ck = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const mac = await crypto.subtle.sign('HMAC', ck, new TextEncoder().encode(qs));
+    sig = Array.from(new Uint8Array(mac)).map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) { return { ok: false, why: 'sign_failed' }; }
+  try {
+    const r = await fetch(BINGX_API + pathname + '?' + qs + '&signature=' + sig, { headers: { 'X-BX-APIKEY': key }, signal: AbortSignal.timeout(8000) });
+    const txt = await r.text();
+    let j = null; try { j = JSON.parse(txt); } catch (e) { return { ok: false, why: 'bad_json', status: r.status, body: txt.slice(0, 300) }; }
+    // BingX answers HTTP 200 for its own errors and puts the verdict in `code` - a non-zero code is the failure
+    if (!r.ok || (j.code != null && +j.code !== 0)) return { ok: false, why: r.status === 429 || +j.code === 100410 ? 'rate_limited' : 'refused', code: +j.code || 0, status: r.status, body: txt.slice(0, 300) };
+    return { ok: true, data: j.data || {} };
+  } catch (e) { return { ok: false, why: 'fetch_failed', body: String(e && e.message || e).slice(0, 160) }; }
+}
+/* Is this UID one of our referrals? A VERDICT, never a decision - the sweep decides what to do with it.
+   IT DELIBERATELY DOES NOT GATE ON THE INVITE CODE, and that is the whole reason this reads cleanly through a
+   link change: the endpoint is scoped to OUR agent account (inviterSid 39217090), so `inviteResult: true` already
+   means "mine", whatever code the member arrived under. The owner moved the link to bingx.com/partner/Marginpad
+   on the day this shipped; every referral on the book until then carries K5WJQO and new ones may not, and a code
+   gate copied from MEXC would have started refusing exactly the people the new link brings. The code is recorded
+   in the approval note as information. */
+async function bingxAffLookup(env, uid) {
+  const u = String(uid || '').trim();
+  if (!/^[0-9]{4,20}$/.test(u)) return { ok: true, found: false, why: 'not_a_uid' };
+  const r = await bingxSigned(env, '/openApi/agent/v1/account/inviteRelationCheck', { uid: u });
+  if (!r.ok) {
+    if (r.code === 100450) return { ok: true, found: false, why: 'not_a_uid', via: 'user_not_exist' }; // BingX has never heard of this number
+    return { ok: false, found: false, why: r.why, code: r.code, status: r.status, body: r.body };
+  }
+  const d = r.data || {};
+  if (!d.inviteResult) return { ok: true, found: false, why: 'not_our_referral' };
+  /* `balanceVolume` is a BALANCE, not traded volume, so it is NOT reported as tradingAmount - the generic note
+     would print it as "traded $X" and put a number on the owner's desk that means something else. */
+  return { ok: true, found: true, uid: u, code: String(d.inviteCode || ''), registerTime: +d.registerDateTime || null,
+    extra: 'deposited ' + (d.deposit ? 'yes' : 'no') + ', traded ' + (d.trade ? 'yes' : 'no') + ', KYC ' + (d.kycResult ? 'yes' : 'no') + ', balance $' + (+d.balanceVolume || 0),
+    deposited: !!d.deposit, traded: !!d.trade, kyc: !!d.kycResult, balance: +d.balanceVolume || 0 };
+}
 /* ONE SWEEP FOR EVERY VENUE WHOSE ANSWER COMES FROM AN AFFILIATE API (2026-10-22). This was written twice -
    once for MEXC, once for Bitget - and BingX would have made a third copy of the same forty lines. The venue
    is a parameter; a new one needs a lookup in affVenueLookup and a key test in signGateReady, nothing else.
@@ -15398,11 +15455,12 @@ const BITGET_AFFILIATE_OK = false;
    stored and concludes the thing is broken. */
 function signGateWhy(env, venue) {
   if (venue === 'mexc') return (env.MEXC_API_KEY && env.MEXC_API_SECRET) ? '' : 'no_key';
+  if (venue === 'bingx') return (env.BINGX_API_KEY && env.BINGX_API_SECRET) ? '' : 'no_key'; // agent API confirmed working 2026-10-24
   if (venue === 'bitget') {
     if (!BITGET_AFFILIATE_OK) return 'no_broker_access';
     return (env.BITGET_API_KEY && env.BITGET_API_SECRET && env.BITGET_API_PASSPHRASE) ? '' : 'no_key';
   }
-  return 'no_api';                     // BingX and Moon are checked by hand - there is nothing to ask yet
+  return 'no_api';                     // Moon masks its usernames and publishes no API - it is checked by hand
 }
 function signGateReady(env, venue) { return !signGateWhy(env, venue); }
 async function signVerifySweep(env, venue, opts) {
@@ -15446,6 +15504,7 @@ async function signVerifySweep(env, venue, opts) {
       const note = 'auto-verified against the ' + label + ' affiliate API: uid ' + r.uid + ' is one of our referrals'
         + (r.code ? ' under ' + r.code : '')
         + (r.tradingAmount != null ? ', traded $' + (+r.tradingAmount).toFixed(2) + ', commission $' + (+r.commission).toFixed(4) : '')
+        + (r.extra ? ', ' + r.extra : '') // what THIS venue actually reports, in its own terms (BingX gives deposit/trade/KYC flags and a balance, not a traded total)
         + (r.registerTime ? ', registered ' + new Date(+r.registerTime).toISOString().slice(0, 10) : '');
       try {
         const rr = await handleReward(new URL('https://marginpad.io/api/reward/' + v + 'sign/review'),
@@ -15520,6 +15579,22 @@ async function checkMexcKey(env) {
   if (!muted) {
     try { await env.STATS.put('alrt:mexckey', '1', { expirationTtl: 21600 }); } catch (e) {}
     try { await tgAdmin(env, 'MEXC API kljuc ne radi (' + r.why + (r.status ? ' ' + r.status : '') + '). Auto-odobravanje MEXC prijava stoji - sve ide rucno dok se ne zameni. ' + String(r.body || '').slice(0, 160), { kind: 'mexckey', sev: 'warn' }); } catch (e) {}
+  }
+  return { ok: false, why: r.why };
+}
+/* The same watchdog MEXC and Bybit have, for the same reason: a credential that dies in silence takes the
+   automation with it and nobody learns until a member asks why their bonus is late. BingX does not publish an
+   expiry rule the way MEXC does (90 days without an IP whitelist), so this is the only thing that would notice. */
+async function checkBingxKey(env) {
+  if (!env.BINGX_API_KEY || !env.BINGX_API_SECRET) return { skipped: 'no_key' };
+  const r = await bingxSigned(env, '/openApi/agent/v1/account/inviteAccountList', { pageIndex: 1, pageSize: 1 });
+  if (r.ok) { try { await env.STATS.delete('bingxkey:lasterr'); } catch (e) {} return { ok: true }; }
+  try { await env.STATS.put('bingxkey:lasterr', JSON.stringify({ ts: Date.now(), why: r.why, code: r.code || 0, status: r.status || 0, body: r.body || '' }), { expirationTtl: 604800 }); } catch (e) {}
+  if (r.why === 'rate_limited' || r.why === 'fetch_failed') return { ok: false, soft: r.why }; // not a dead key
+  let muted = false; try { muted = !!(await env.STATS.get('alrt:bingxkey')); } catch (e) {}
+  if (!muted) {
+    try { await env.STATS.put('alrt:bingxkey', '1', { expirationTtl: 21600 }); } catch (e) {}
+    try { await tgAdmin(env, 'BingX API kljuc ne radi (' + r.why + (r.code ? ' code ' + r.code : '') + '). Auto-odobravanje BingX prijava stoji - sve ide rucno dok se ne zameni. ' + String(r.body || '').slice(0, 160), { kind: 'bingxkey', sev: 'warn' }); } catch (e) {}
   }
   return { ok: false, why: r.why };
 }
@@ -15639,6 +15714,7 @@ async function checkBitgetKey(env) {
    The payout gate and the public pre-check both go through it, so the two can never disagree about a member. */
 async function affVenueLookup(env, venue, uid) {
   if (venue === 'mexc') return mexcAffLookup(env, uid);
+  if (venue === 'bingx') return bingxAffLookup(env, uid);
   if (venue === 'bitget') return bitgetAffLookup(env, uid);
   return { ok: false, found: false, why: 'no_gate' };
 }
@@ -19265,7 +19341,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '59123a94';
+const ASSET_V = '44484a5e';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -21075,8 +21151,8 @@ async function handleReward(url, request, env) {
   if (path === '/check') return jr({ exists: await addressExists(b.address || url.searchParams.get('address')) });
   /* Public UID pre-check for the withdraw form - yes/no only, same contract as /uidcheck, and ONE branch for
      every venue whose answer comes from an affiliate API (/mexccheck kept as the name the live page calls). */
-  if (path === '/mexccheck' || path === '/bitgetcheck') {
-    const vN = path === '/bitgetcheck' ? 'bitget' : 'mexc';
+  if (path === '/mexccheck' || path === '/bitgetcheck' || path === '/bingxcheck') {
+    const vN = path === '/bitgetcheck' ? 'bitget' : path === '/bingxcheck' ? 'bingx' : 'mexc';
     const u9 = String(url.searchParams.get('uid') || '').trim();
     if (!/^[0-9]{4,20}$/.test(u9)) return jr({ ok: false });
     const v9 = await affVenueLookup(env, vN, u9);
@@ -22079,6 +22155,31 @@ export default {
       const stateB = BITGET_AFFILIATE_OK ? null
         : 'Bitget sign-ups are checked BY HAND. Measured 2026-10-22: api.bitget.com answers Cloudflare 403 {"cloudflare":"block"}, and from an unblocked IP every /api/v2/broker/* endpoint answers 70102 "Broker identity authentication failed" - this account is not in Bitget’s agent/broker programme, which is applied for through their BD team. The key, secret and passphrase are stored and are provably valid. When agent access is granted: set BITGET_AFFILIATE_OK and route bitgetSigned through the collector (the Cloudflare block is a separate obstacle).';
       return J({ ...resB, automatic: BITGET_AFFILIATE_OK, state: stateB, lastRun: lastB, keyLastError: keyErrB, note: resB.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
+    }
+    /* BingX sign-up verification desk (2026-10-24), the same shape as MEXC's: a DRY RUN unless {run:true},
+       ?uid= checks one UID without touching a claim, ?list=1 is our whole referral roster straight from BingX. */
+    if (url.pathname === '/api/admin/bingxverify') {
+      const akX = adminKeyFrom(request, url);
+      if (!isAdminKey(env, akX) && !(await adminCookieOk(request, env))) return J({ error: 'forbidden' }, 403);
+      const oneX = url.searchParams.get('uid');
+      if (oneX) return J({ uid: oneX, result: await bingxAffLookup(env, oneX) });
+      if (url.searchParams.get('list') === '1') {
+        const seenX = [], pagesX = [];
+        for (let pg = 1; pg <= 6; pg++) {
+          const rX = await bingxSigned(env, '/openApi/agent/v1/account/inviteAccountList', { pageIndex: pg, pageSize: 100 });
+          if (!rX.ok) { pagesX.push({ page: pg, error: rX.why, code: rX.code, body: rX.body }); break; }
+          const rowsX = (rX.data && rX.data.list) || [];
+          pagesX.push({ page: pg, n: rowsX.length });
+          rowsX.forEach(x => seenX.push({ uid: String(x.uid), code: x.inviteCode || '', reg: +x.registerDateTime || null, deposited: !!x.deposit, traded: !!x.trade, kyc: !!x.kycResult, balance: +x.balanceVolume || 0 }));
+          if (rowsX.length < 100) break;
+        }
+        return J({ roster: seenX, n: seenX.length, deposited: seenX.filter(x => x.deposited).length, traded: seenX.filter(x => x.traded).length, kyc: seenX.filter(x => x.kyc).length, pages: pagesX });
+      }
+      let bodyX = {}; if (request.method === 'POST') { try { bodyX = await request.json(); } catch (e) {} }
+      const resX = await signVerifySweep(env, 'bingx', { apply: bodyX.run === true, reject: bodyX.reject === true, limit: bodyX.limit, max: bodyX.max, by: 'owner' });
+      let lastX = null; try { lastX = JSON.parse((await env.STATS.get('bingxverify:last')) || 'null'); } catch (e) {}
+      let keyErrX = null; try { keyErrX = JSON.parse((await env.STATS.get('bingxkey:lasterr')) || 'null'); } catch (e) {}
+      return J({ ...resX, lastRun: lastX, keyLastError: keyErrX, note: resX.apply ? 'applied' : 'DRY RUN - nothing was paid; POST {"run":true} to approve the rows marked ours' });
     }
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)
@@ -26580,7 +26681,7 @@ export default {
         let _affOk = null;
         // checkMexcKey rides this same pass: the MEXC key expires every 90 days by their own rule (a Worker has no
         // fixed egress IP, so no whitelist is possible) and it returns {skipped:'no_key'} until one is set.
-        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs'], [autoApproveSweep, 'autoapprove']]) {
+        for (const [fn, label] of [[bybitAffSync, 'bybitaff'], [checkBybitBonus, 'bybitbonus'], [checkBybitKey, 'bybitkey'], [checkMexcKey, 'mexckey'], [checkBingxKey, 'bingxkey'], [checkBitgetKey, 'bitgetkey'], [bitgetRefSync, 'bitgetrefs'], [autoApproveSweep, 'autoapprove']]) {
           const t0 = Date.now();
           try {
             const r = await fn(env, label === 'bybitkey' ? _affOk : undefined);
@@ -27692,7 +27793,7 @@ export class RewardLedger {
     const validAddr = /^0x[0-9a-f]{40}$/.test(addr); // legacy BEP20 wallet - still used for account identity + admin lookups of old accounts
     const validUid = /^[0-9]{5,15}$/.test(addr); // Bybit UID (numeric) - the payout target entered at withdrawal (replaced the BEP20 wallet 2026-07)
     const validMoon = /^moon:[a-z0-9_.-]{3,32}$/.test(addr); // Moon payout - 'moon:<username>' (addr is lowercased above); shows as-is in the ops Withdrawals queue
-    const validMexc = /^(mexc|bitget):[0-9]{4,20}$/.test(addr); // MEXC and Bitget payouts - '<venue>:<uid>'. A BARE number already means a Bybit UID,
+    const validMexc = /^(mexc|bitget|bingx):[0-9]{4,20}$/.test(addr); // MEXC, Bitget and BingX payouts - '<venue>:<uid>'. A BARE number already means a Bybit UID,
     // so the venue has to ride on the address the way Moon's has since it shipped. The worker has already checked, before
     // this point, that the UID opened under our affiliate link - that gate fails OPEN, so an unreachable MEXC never traps
     // money a member has earned; it only means the owner looks at this one by hand.
@@ -28695,7 +28796,7 @@ function handleExchangeGo(url) {
   if (ex === 'moon') return new Response('', { status: 302, headers: { location: 'https://moon.com/?offer=marginpad', 'cache-control': 'no-store' } }); // no public app scheme - straight to the ref link
   if (ex === 'hyperliquid') return new Response('', { status: 302, headers: { location: 'https://app.hyperliquid.xyz/join/MARGINPAD', 'cache-control': 'no-store' } }); // the referral rides on /join only - a /trade deep link would lose it
   if (ex === 'fomo') return new Response('', { status: 302, headers: { location: 'https://fomo.family/r/Marginpad', 'cache-control': 'no-store' } }); // the referral is the /r/ link itself; there is no public pair deep link that keeps it
-  if (ex === 'bingx') return new Response('', { status: 302, headers: { location: 'https://bingxdao.com/referral-program/K5WJQO?activityId=g_1567322053827448881', 'cache-control': 'no-store' } }); // the campaign id is part of the referral; a pair deep link would drop it (and this one pays a sign-up bonus)
+  if (ex === 'bingx') return new Response('', { status: 302, headers: { location: 'https://bingx.com/partner/Marginpad', 'cache-control': 'no-store' } }); // the campaign id is part of the referral; a pair deep link would drop it (and this one pays a sign-up bonus)
   const c = CFG[ex];
   if (!c) return new Response('', { status: 302, headers: { location: 'https://marginpad.io/charts?coin=' + sym } });
   const web = c.web;

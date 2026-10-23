@@ -39,7 +39,7 @@ function one(name, a, b, skipIf) {
 const MEXC_OLD = '<a class="exs" href="https://s.mexc.com/referral/YkL887dVgt" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6">';
 const MEXC_NEW = '<a class="exs" href="https://promote.mexc.com/a/ZBQaEXe8" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0057ff">';
 
-const BINGX_TILE = '<a class="exs" href="https://bingxdao.com/referral-program/K5WJQO?activityId=g_1567322053827448881"'
+const BINGX_TILE = '<a class="exs" href="https://bingx.com/partner/Marginpad"'
   + ' target="_blank" rel="noopener sponsored" data-ex="BingX" style="--exc:#2b54fc">'
   + '<span class="exs-top"><span class="exs-ic">'
   + '<img src="/assets/ex/bingx.png" alt="BingX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent=\'X\'">'

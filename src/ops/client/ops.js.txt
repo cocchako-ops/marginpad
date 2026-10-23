@@ -489,6 +489,7 @@
   var WDV = [
     { k: 'moon', pre: 'moon:', label: 'Moon', col: '#8a5cff', logo: '/assets/moon.png' },
     { k: 'mexc', pre: 'mexc:', label: 'MEXC', col: '#0057ff', logo: '/assets/ex/mexc.png' },
+    { k: 'bingx', pre: 'bingx:', label: 'BingX', col: '#2b54fc', logo: '/assets/ex/bingx.png' },
     { k: 'bitget', pre: 'bitget:', label: 'Bitget', col: '#00e7d8', logo: '/assets/ex/bitget.png' },
     { k: 'bybit', pre: '', label: 'Bybit', col: '#f7a600', letter: 'B' }            // a BARE number is a Bybit UID
   ];

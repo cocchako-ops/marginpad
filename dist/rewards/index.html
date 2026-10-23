@@ -503,6 +503,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
         <button type="button" id="wdmBybit" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer">Bybit UID</button>
         <button type="button" id="wdmMoon" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/moon.png" alt="" width="16" height="16" style="border-radius:4px;background:#fff;padding:1px">Moon</button>
         <button type="button" id="wdmMexc" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/mexc.png" alt="" width="16" height="16" style="border-radius:4px">MEXC</button>
+        <button type="button" id="wdmBingx" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/bingx.png" alt="" width="16" height="16" style="border-radius:4px">BingX</button>
         <button type="button" id="wdmBitget" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/bitget.png" alt="" width="16" height="16" style="border-radius:4px">Bitget</button>
       </div>
       <!-- Payout notes (2026-09-09): a payout NEEDS an account at the venue, so the link to open one belongs right here.
@@ -514,6 +515,8 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
         <div class="wd-row"><a class="wd-go" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Create your Moon account &rarr;</a></div></div>
       <div class="note wd-note" id="wdNoteMexc" hidden style="--wdc:#5b8cff;--wdb:rgba(91,140,255,.42);--wdg:rgba(91,140,255,.08)">USDT is sent to your <b>MEXC</b> account by UID - the account must have been opened through our MEXC link. Your UID is the number under your email in the MEXC account menu.
         <div class="wd-row"><a class="wd-go" data-mpex="MEXC" href="https://promote.mexc.com/a/ZBQaEXe8" target="_blank" rel="sponsored noopener noreferrer">Create your MEXC account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
+      <div class="note wd-note" id="wdNoteBingx" hidden style="--wdc:#2b54fc;--wdb:rgba(43,84,252,.45);--wdg:rgba(43,84,252,.09)">USDT is sent to your <b>BingX</b> account by UID - the account must have been opened through our BingX link. Your UID is the number in your BingX account menu.
+        <div class="wd-row"><a class="wd-go" data-mpex="BingX" href="https://bingx.com/partner/Marginpad" target="_blank" rel="sponsored noopener noreferrer">Create your BingX account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="note wd-note" id="wdNoteBitget" hidden style="--wdc:#00e7d8;--wdb:rgba(0,231,216,.42);--wdg:rgba(0,231,216,.08)">USDT is sent to your <b>Bitget</b> account by UID - the account must have been opened through our Bitget link. Your UID is the number in your Bitget account menu.
         <div class="wd-row"><a class="wd-go" data-mpex="Bitget" href="https://www.bitget.com/referral/register?clacCode=DSSSQKGK&amp;from=%2Fevents%2Freferral-all-program&amp;source=events&amp;utmSource=PremierInviter" target="_blank" rel="sponsored noopener noreferrer">Create your Bitget account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="lbl" style="margin:12px 0 6px">How much?</div>
@@ -1155,6 +1158,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     { k: 'mexc', btn: 'wdmMexc', note: 'wdNoteMexc', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'mexc:', check: 'mexccheck', ph: 'Your MEXC UID (numbers only)', bad: 'Enter your MEXC UID (numbers only).' },
     /* `check` names the venue's own pre-check endpoint; a method without one simply submits, which is what
        keeps Bybit and Moon on exactly the path they were on. */
+    { k: 'bingx', btn: 'wdmBingx', note: 'wdNoteBingx', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'bingx:', check: 'bingxcheck', ph: 'Your BingX UID (numbers only)', bad: 'Enter your BingX UID (numbers only).' },
     { k: 'bitget', btn: 'wdmBitget', note: 'wdNoteBitget', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'bitget:', check: 'bitgetcheck', ph: 'Your Bitget UID (numbers only)', bad: 'Enter your Bitget UID (numbers only).' }
   ];
   function wdM(k){ for (var i = 0; i < WD_METHODS.length; i++) if (WD_METHODS[i].k === (k || wdMethod)) return WD_METHODS[i]; return WD_METHODS[0]; }
@@ -1464,9 +1468,9 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 })();
 </script>
 <script src="/assets/mp-trade.js?v=eec9594f" defer></script>
-<script defer src="/assets/mp-auth.js?v=59123a94"></script>
+<script defer src="/assets/mp-auth.js?v=44484a5e"></script>
 <script defer src="/assets/mp-profile.js?v=2a0fc614"></script>
-<script defer src="/assets/mp-nav.js?v=69784e19"></script>
+<script defer src="/assets/mp-nav.js?v=c18a643d"></script>
 <script>
 (function(){
   var card=document.getElementById('msnCard');if(!card)return;

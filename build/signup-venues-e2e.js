@@ -20,11 +20,14 @@ const ok = (c, m) => { if (c) { pass++; console.log('  ok  ' + m); } else { fail
 const j = async (p, opt) => { const r = await fetch(O + p, opt); let b = null; try { b = await r.json(); } catch (e) {} return { s: r.status, b }; };
 const AK = { 'x-admin-key': K, 'content-type': 'application/json' };
 
-// the live venues, each with the referral CODE that earns the commission. `/go` answers in TWO shapes - a 302
-// for a venue with no pair deep link (BingX, Moon, Fomo) and a 200 interstitial that fires the app for one that
-// has (MEXC), so the code is looked for in the Location header OR the body. Checking the HOST instead would
-// have been wrong anyway: promote.mexc.com and www.mexc.com?inviteCode=47LrK credit the same account.
-const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'K5WJQO' }, { v: 'bitget', label: 'Bitget', code: 'DSSSQKGK' }];
+// the live venues, each with the MARKER that identifies our affiliate account in the link. `/go` answers in TWO
+// shapes - a 302 for a venue with no pair deep link (BingX, Moon, Fomo) and a 200 interstitial that fires the app
+// for one that has (MEXC), so it is looked for in the Location header OR the body. Checking the HOST instead
+// would have been wrong anyway: promote.mexc.com and www.mexc.com?inviteCode=47LrK credit the same account.
+// BINGX IS A PARTNER URL, NOT A CODE, SINCE 2026-10-24 (the owner moved it to bingx.com/partner/Marginpad). The
+// invite code K5WJQO is still ours and still what the 26 referrals on the book are recorded under, but it is no
+// longer IN the link - which is exactly why bingxAffLookup verifies against our agent account and not the code.
+const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'partner/Marginpad' }, { v: 'bitget', label: 'Bitget', code: 'DSSSQKGK' }];
 
 /* A VENUE MISSING FROM EITHER CENTS TABLE IS PAID THE RETIRED $3 DEFAULT (2026-10-22). The DO decides what an
    approval credits with `cfg[exchange + 'C']`, falling back to the long-retired generic `exsignC` - which is 300
@@ -52,18 +55,28 @@ function sourceGuards() {
   const cronAt = src.indexOf('async function autoApproveSweep');
   ok(cronAt > 0, 'the cron sweep exists');
   const cronSrc = src.slice(cronAt, cronAt + 2600);
-  ok(!/reject/.test(cronSrc), 'the cron sweep NEVER rejects - a wrong auto-reject insults a member who did everything right');
+  /* THE CRON REJECTS TOO SINCE 2026-10-23 (owner: "ko nije eligable ... da mu stigne obavestenje da je odbijen,
+     da to sve ide automatski"), and this check still demanded the opposite - red for a day on working code, the
+     third such test found this week. What must stay true is the SHAPE of it: only a definitive negative the
+     venue's own API returned, only after the grace, and the owner can switch it off. */
+  ok(/reject: doReject/.test(cronSrc) && /autoReject === false/.test(cronSrc),
+    'the cron rejects a definitive negative and the owner can switch that off');
+  ok(src.indexOf('AUTO_REJECT_GRACE_MS') > 0 && /graceOk/.test(src),
+    'a fresh registration gets the grace before any rejection - it may simply not be indexed yet');
   ok(cronSrc.indexOf('max: AUTO_APPROVE_MAX') >= 0, 'it pays at most AUTO_APPROVE_MAX in one pass');
   ok(cronSrc.indexOf('cfg.autoApprove === false') >= 0, 'and the owner can switch it off');
   ok(/const AUTO_APPROVE_MAX = \d+;/.test(src), 'the ceiling is a named constant, not a literal in the loop');
   ok(src.indexOf("[autoApproveSweep, 'autoapprove']") >= 0, 'it is wired into the affiliate cron pass');
-  // a venue with no API must not be claimed as automatic - BingX is waiting for theirs
-  // the venue logic lives in signGateWhy; signGateReady is its one-line negation (it answers WHY not, because
-  // "no key set", "key the account may not use" and "no API at all" are three different problems)
+  // a venue with no API must not be claimed as automatic. The venue logic lives in signGateWhy; signGateReady is
+  // its one-line negation (it answers WHY not, because "no key set", "a key the account may not use" and "no API
+  // at all" are three different problems). BingX joined MEXC on 2026-10-24 when the owner produced a key and its
+  // agent API was measured working; Bitget's is still refused by Bitget, and Moon publishes none.
   const gateAt = src.indexOf('function signGateWhy');
   const gateSrc = src.slice(gateAt, gateAt + 900);
-  ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("'bingx'") < 0,
-    'MEXC is verifiable automatically, BingX is not (it has no API yet)');
+  ok(gateAt > 0 && gateSrc.indexOf("venue === 'mexc'") >= 0 && gateSrc.indexOf("venue === 'bingx'") >= 0,
+    'MEXC and BingX are verifiable automatically');
+  ok(gateSrc.indexOf("'no_broker_access'") >= 0 && /return 'no_api'/.test(gateSrc),
+    'and Bitget says it is refused rather than keyless, while Moon says there is no API at all');
   ok(/function signGateReady\(env, venue\) \{ return !signGateWhy\(env, venue\); \}/.test(src),
     'and there is one reading of it, not two');
   /* BITGET IS OFF ON PURPOSE AND THE REASON IS MEASURED (2026-10-22): api.bitget.com answers Cloudflare's egress

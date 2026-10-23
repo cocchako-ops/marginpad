@@ -3360,10 +3360,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
        coloured pixels) - the old #0ac2d6 teal predates their rebrand and matched nothing they publish. */
     MEXC: { c: '#0057ff', no: 'US', ref: 'https://promote.mexc.com/a/ZBQaEXe8', deep: function (s) { return 'https://www.mexc.com/futures/' + s + '_USDT?inviteCode=47LrK'; }, perk: __esT_mpauth("lowFees",'low fees') },
     /* BingX (2026-10-21, owner). Referral code K5WJQO, confirmed by following the link he gave:
-       bingxdao.com/referral-program/K5WJQO -> bingx.com/en/referral-program/K5WJQO. `deep: null` on purpose -
+       bingx.com/partner/Marginpad (the owner moved it here 2026-10-24; code K5WJQO). `deep: null` on purpose -
        the same rule OKX has: a pair page we cannot PROVE carries the code would turn a money click into a free
        one, so every click goes through the referral page. Colour #2b54fc, read off the official logo. */
-    BingX: { c: '#2b54fc', no: 'US', ref: 'https://bingxdao.com/referral-program/K5WJQO?activityId=g_1567322053827448881', deep: null, perk: __esT_mpauth("bonusForNewTraders",'bonus for new traders'), code: 'K5WJQO' },
+    BingX: { c: '#2b54fc', no: 'US', ref: 'https://bingx.com/partner/Marginpad', deep: null, perk: __esT_mpauth("bonusForNewTraders",'bonus for new traders'), code: 'K5WJQO' },
     OKX: { c: '#cfd3d8', no: 'US,CA', ref: 'https://okx.com/join/96160298', deep: null /* the OKX pair page cannot carry our code (join links only), so a deep link there earned nothing - the join page attributes (2026-09-13) */, perk: 'pro tools' },
     // Gate (2026-09-18): `gate.com/VFIWB10KUG?ref=…` answered a real HTTP 404 ("Sorry, page not found"). The rebate
     // campaign link below returns 200 and writes ref_uid / ref_type / ref_click_time.
