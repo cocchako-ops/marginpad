@@ -1282,11 +1282,10 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (isFinite(pnl) && pnl >= 0) return __esT_mpauth("wonOn",'<b class="fd-win">Won</b> on ') + sym + ' <span class="fd-pos">' + money + rt + '</span>';
     return '<b>Closed</b> ' + sym + (money ? ' <span class="fd-neg">' + money + rt + '</span>' : '');
   }
-  function renderFeed() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Following</h3><p class="mpa-sub" style="margin:-4px 0 10px">Latest trades from traders you follow.</p><div class="mpa-fd" id="mpaFd"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaFdBack" type="button">← Back to profile</button>';
-    var bk = bodyEl.querySelector('#mpaFdBack'); if (bk) bk.addEventListener('click', render);
+  function loadFeedInto(fd) {
+    if (!fd) return;
     fetch('/api/lb/feed').then(function (r) { return r.json(); }).then(function (d) {
-      var fd = bodyEl.querySelector('#mpaFd'); if (!fd) return;
+      if (!fd) return;
       var ev = (d && d.feed) || [];
       if (!ev.length) { fd.innerHTML = '<div class="mpa-xp-empty">' + (d && d.follows ? __esT_mpauth("noTradesYetFrom",'No trades yet from the traders you follow - check back soon.') : __esT_mpauth("youReNotFollowing",'You’re not following anyone yet. Open a trader’s profile from the leaderboard and tap <b>Follow</b> to see their trades here.')) + '</div>'; return; }
       fd.innerHTML = ev.map(function (e) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
@@ -1982,11 +1981,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
       var prefs = d.prefs || {}, kinds = d.kinds || Object.keys(NP_LABELS);
       var rows = kinds.map(function (k) { var L = NP_LABELS[k] || [k, '']; var on = prefs[k] !== false;
-        var sub = (k === 'followtrade') ? '<button type="button" class="mpa-link mpa-tr-open" style="margin:4px 0 0;text-align:left;font-size:12px;color:#9fb0c0">' + __esT_mpauth("filtersAndTraders",'Filters &amp; which traders →') + '</button>' : '';
+        var sub = (k === 'followtrade') ? '<button type="button" class="mpa-link mpa-tr-open" style="margin:4px 0 0;text-align:left;font-size:12px;color:#9fb0c0">' + __esT_mpauth("filterInFollowing",'Filter these in Following →') + '</button>' : '';
         return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small>' + sub + '</span><span class="mpa-sw"><input type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '><i></i></span></label>'; }).join('');
       host.innerHTML = pushBox + rows + saveNote;
       wireNpPush(host.querySelector('#mpaNpPush'));
-      var trOpen = host.querySelector('.mpa-tr-open'); if (trOpen) trOpen.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); renderTraderNotifs(); });
+      var trOpen = host.querySelector('.mpa-tr-open'); if (trOpen) trOpen.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); renderFollowing(); });
       var note = host.querySelector('#mpaNpNote');
       host.addEventListener('change', function (e) { var cb = e.target.closest && e.target.closest('[data-np]'); if (!cb) return;
         var p2 = {}; Array.prototype.forEach.call(host.querySelectorAll('[data-np]'), function (x) { p2[x.getAttribute('data-np')] = x.checked; });
@@ -2009,14 +2008,19 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       + '<div class="mpa-np-foot" id="mpaFtNote">' + __esT_mpauth("ftFoot",'These apply to every trader below. A trade that fails a filter never reaches your phone.') + '</div>'
       + '</div>';
   }
-  function renderTraderNotifs() {
+  function renderFollowing() {
     bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("tradersTitle",'Following') + '</h3>'
+      + '<div class="mpa-ft-h" style="margin:0 0 3px">' + __esT_mpauth("tnTradeNotifs",'Trade notifications') + '</div>'
+      + '<div class="mpa-np-foot" style="margin:0 0 8px">' + __esT_mpauth("tnSub",'Choose which of their trades reach your phone, then mute any trader below.') + '</div>'
       + '<div id="mpaFtHost"></div>'
       + '<div class="mpa-ft-h" style="margin:0 0 3px">' + __esT_mpauth("tradersListH",'Traders') + '</div>'
       + '<div class="mpa-np-foot" style="margin:0 0 7px">' + __esT_mpauth("tradersSub",'Switch off any trader you do not want notifications from. The "People you follow" switch must be on for these to apply.') + '</div>'
       + '<div class="mpa-tr-list" id="mpaTr"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
-      + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backLabel",'Back') + '</button>';
-    var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', renderNotifSettings);
+      + '<div class="mpa-ft-h" style="margin:15px 0 6px">' + __esT_mpauth("theirLatestTrades",'Their latest trades') + '</div>'
+      + '<div class="mpa-fd" id="mpaFd"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
+      + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backToProfile",'Back to profile') + '</button>';
+    var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', render);
+    loadFeedInto(bodyEl.querySelector('#mpaFd'));
     var ftHost = bodyEl.querySelector('#mpaFtHost');
     // the trade filters come off /api/push/prefs (ft), the trader list off /api/push/traders - both in parallel
     fetch('/api/push/prefs').then(function (r) { return r.json(); }).then(function (d) {
@@ -2174,7 +2178,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       var xpB = bodyEl.querySelector('#mpaXp'); if (xpB) xpB.addEventListener('click', function () { renderXpHistory(); });
       var nfB = bodyEl.querySelector('#mpaNotif'); if (nfB) nfB.addEventListener('click', function () { renderNotifs(); });
       var msgB = bodyEl.querySelector('#mpaMsg'); if (msgB) msgB.addEventListener('click', function () { renderDmInbox(); });
-      var fdB = bodyEl.querySelector('#mpaFeed'); if (fdB) fdB.addEventListener('click', function () { renderFeed(); });
+      var fdB = bodyEl.querySelector('#mpaFeed'); if (fdB) fdB.addEventListener('click', function () { renderFollowing(); });
       var duB = bodyEl.querySelector('#mpaDuel'); if (duB) duB.addEventListener('click', function () { renderDuels(); });
       var cdB = bodyEl.querySelector('#mpaCard'); if (cdB) cdB.addEventListener('click', function () { renderCard(); });
       var cpB = bodyEl.querySelector('#mpaComp'); if (cpB) cpB.addEventListener('click', function () { renderCompetitions(); });

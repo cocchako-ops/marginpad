@@ -57,6 +57,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
 /* Mobile full-screen Charts - landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){
   var ov=null,panes=[],activeI=0,split=1,drawOn=false,forcePair=null,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
+  var mAiTrade=null; // a trade from a follow-trade notification to analyze: ONE pane + the AI sheet pre-seeded (owner 2026-10-23)
   try{window.__mpMfcDbg=function(){return panes;};}catch(e){} /* E2E hook (2026-10-08): the pane list is reassigned on a forced symbol, so a getter */
   try{window.__mpMfcReapply=function(){try{for(var i=0;i<panes.length;i++){var p=panes[i];if(p&&p.chart&&p.candle)applyInds(p);}}catch(e){}};}catch(e){} /* mp-charts calls this after it re-asks /api/ind/access (a Premium lapse mid-session) so the phone drops the exclusive indicators without a reload (2026-10-23) */
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
@@ -1009,7 +1010,19 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var chips=(last&&last.chips&&last.chips.length)?last.chips.map(function(c){return [c,c];}):[[__esT_mpmcharts("findMeTheBest",'Find me the best opportunity on this chart right now - where would a good entry be, and what would make it a mistake?'),mcT('mcAiFind',__esT_mpmcharts("findAnOpportunity",'Find an opportunity'))],[__esT_mpmcharts("whereWouldYouWant",'Where would you want to be filled, and why not at the current price?'),mcT('mcAiEntry','Best entry')],[__esT_mpmcharts("whereAreTheKey",'Where are the key support and resistance levels?'),mcT('mcAiLevels','Levels'),1],[__esT_mpmcharts("whatWouldMakeThis",'What would make this a blunder?'),mcT('mcAiAvoid',__esT_mpmcharts("whatToAvoid",'What to avoid')),1]];
       if(arr.length)chips.push(['',mcT('mcAiReread',__esT_mpmcharts("reReadNow",'Re-read now'))]);
       chipsEl.innerHTML=chips.slice(0,5).map(_chip).join('');}
-    function render(){var arr=hist();if(!arr.length)msgs.innerHTML='<div class="mfc-ai-msg ai"><b>'+mcT('mcAiHi',__esT_mpmcharts("hiIAmYour",'Hi - I am your chart assistant.'))+'</b> '+mcT('mcAiIntro',__esT_mpmcharts("iLookForThe",'I look for the opportunity on whatever coin and timeframe you give me: where a setup is worth taking, at what price, and what would make it a mistake. I draw it so you can see whether it lines up - you decide. I will also say plainly when there is nothing here and waiting is the trade.'))+' '+mcT('mcAiNow',__esT_mpmcharts("youAreOn",'You are on'))+' <b>'+esc(p.sym)+' '+tfLabel(p.tf)+'</b>.</div>';else msgs.innerHTML=arr.map(row).join('');fixTrade();msgs.scrollTop=msgs.scrollHeight;renderChips();}
+    function mTradeCard(){ if(!(mAiTrade&&String(mAiTrade.sym||'').toUpperCase()===String(p.sym||'').toUpperCase()))return '';
+      var c=mAiTrade,side=(c.side==='short')?'SHORT':'LONG',sdc=side==='SHORT'?'#ff6258':'#2ebd85';
+      var closed=(c.act==='c'||c.act==='l'),liq=(c.act==='l'),r2;
+      if(liq)r2='Liquidated'+(c.exit>0?' at '+esc(String(c.exit)):'');
+      else if(closed)r2='Entry '+esc(String(c.entry||'?'))+' → Exit '+esc(String(c.exit||'?'))+((c.pnl!=null)?' · '+(c.pnl>=0?'+$':'-$')+Math.abs(c.pnl)+((c.roe!=null)?' ('+(c.roe>=0?'+':'')+Math.round(c.roe)+'%)':''):'');
+      else r2='Entry '+esc(String(c.entry||'?'))+' · still open';
+      var q=(AI&&AI.tradeQ)?AI.tradeQ(c):'Analyze this trade - was the entry and the exit good?';
+      return '<div class="mfc-ai-msg ai" style="border:1px solid #2a3340;background:#0e1116">'
+        +'<div style="font:800 12px \'Space Mono\',ui-monospace,monospace;letter-spacing:.04em;margin-bottom:4px"><span style="color:'+sdc+'">'+side+'</span> '+esc(String(c.sym||''))+(c.lev?' '+c.lev+'x':'')+(c.by?' · <span style="color:#9fb0c0">@'+esc(String(c.by))+'</span>':'')+'</div>'
+        +'<div style="font-size:12px;color:#cdd3da;margin-bottom:9px">'+r2+'</div>'
+        +'<button class="cwin-ai-chip" data-q="'+esc(q)+'" style="display:block;width:100%;text-align:center;background:#13343c;border-color:#2e6f7c;color:#9fe7f0;font-weight:700">'+__esT_mpmcharts("analyzeThisTrade",'Analyze this trade')+'</button>'
+        +'<div style="font-size:10.5px;color:#6b7480;margin-top:7px">'+__esT_mpmcharts("pickTfThenAnalyze",'Pick a timeframe first, then analyze.')+'</div></div>'; }
+    function render(){var arr=hist();if(!arr.length)msgs.innerHTML=mTradeCard()+'<div class="mfc-ai-msg ai"><b>'+mcT('mcAiHi',__esT_mpmcharts("hiIAmYour",'Hi - I am your chart assistant.'))+'</b> '+mcT('mcAiIntro',__esT_mpmcharts("iLookForThe",'I look for the opportunity on whatever coin and timeframe you give me: where a setup is worth taking, at what price, and what would make it a mistake. I draw it so you can see whether it lines up - you decide. I will also say plainly when there is nothing here and waiting is the trade.'))+' '+mcT('mcAiNow',__esT_mpmcharts("youAreOn",'You are on'))+' <b>'+esc(p.sym)+' '+tfLabel(p.tf)+'</b>.</div>';else msgs.innerHTML=mTradeCard()+arr.map(row).join('');fixTrade();msgs.scrollTop=(mAiTrade&&String(mAiTrade.sym||'').toUpperCase()===String(p.sym||'').toUpperCase()&&!p._aiRun)?0:msgs.scrollHeight;renderChips();}
     function ctx(){
       // use the desktop's rich analysis builder (price, swing highs/lows, EMA/SMA, RSI, MACD, ATR…) so the AI can actually read the chart
       try{if(window.__mpAiContext&&p.bars&&p.bars.length>10){var rc=window.__mpAiContext({sym:p.sym,tf:p.tf,bars:p.bars,inds:p.inds,dr:p.w&&p.w.dr,emaList:[],smaList:[]});if(rc){var al=mAllowed(),on=[],lk=[];INDS.forEach(function(d){if(p.inds[d[0]])on.push(d[0]);if(mEx(d[0])&&!al)lk.push(d[0]);});
@@ -1055,7 +1068,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
             if(String(p.sym).toUpperCase()!==String(WK.sym).toUpperCase()){var nk={sym:p.sym},hn=hist(nk);hn.push(uEntry,entry);save(hn,false,nk);WK=nk;if(inp.isConnected){inp.placeholder=mcT('mcAskPh','Ask about')+' '+p.sym+'…';render();}}});}
         (function pump(){rd.read().then(function(res){if(res.done){finish();return;}buf+=dec.decode(res.value,{stream:true});var idx;while((idx=buf.indexOf('\n'))>=0){var line=buf.slice(0,idx).replace(/\r$/,'');buf=buf.slice(idx+1);if(line.indexOf('data:')!==0)continue;var data=line.slice(5).trim();if(!data)continue;try{var ev=JSON.parse(data);if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.text){if(!run.got){run.got=true;setSt('writing');}run.acc+=ev.delta.text;show();}}catch(e){}}pump();}).catch(function(){finish();});})();
       }).catch(function(){end('fail');put(esc(__esT_mpmcharts("networkErrorTryAgain",'Network error - try again.')));});}
-    msgs.addEventListener('click',function(e){var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}
+    msgs.addEventListener('click',function(e){var _tc=e.target.closest&&e.target.closest('.cwin-ai-chip');if(_tc){send(_tc.getAttribute('data-q'),{quick:_tc.getAttribute('data-quick')==='1'});return;}var r=e.target.closest&&e.target.closest('.aipr');if(r){mAiFlash(p,+r.getAttribute('data-px'));return;}
       var un=e.target.closest&&e.target.closest('.aiundo');if(un){var k=(AI&&p.w)?AI.undo(p.w,+un.getAttribute('data-b')):0;un.remove();if(window.mpToast)window.mpToast({msg:k?('Removed '+k+' AI drawing'+(k===1?'':'s')+'.'):__esT_mpmcharts("thoseDrawingsAreAlready",'Those drawings are already gone.'),kind:'info',ms:3000});return;}
       var ob=e.target.closest&&e.target.closest('.aipc-on');if(ob){if(ob.classList.contains('on')){mAiClear(p);ob.classList.remove('on');ob.textContent=__esT_mpmcharts("showOnChart",'Show on chart');}else{try{mAiDraw(p,JSON.parse(ob.getAttribute('data-plan')));ob.classList.add('on');ob.textContent=__esT_mpmcharts("onChart",'On chart');}catch(_){}}try{if(p.w&&p.w.dr&&p.w.dr.save)p.w.dr.save();}catch(_s){}/* the reader's choice of what is on the chart survives a switch and a reload */return;}
       var alb=e.target.closest&&e.target.closest('.aipc-alert');if(alb){try{mAiAlert(p,JSON.parse(alb.getAttribute('data-plan')));}catch(_){}}});
@@ -1100,9 +1113,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     showGate(false);proceed(); // portrait works too - the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
+    // a follow-trade "Ask AI about this trade" arrives with the trade in sessionStorage: ONE chart (not the 1h+4h split), then
+    // the AI sheet opens pre-seeded with the trade so the reader picks a timeframe and taps Analyze (owner 2026-10-23)
+    var analyze=null; try{var _at=sessionStorage.getItem('mp_ai_trade');if(_at){var _c=JSON.parse(_at);if(_c&&forcePair&&String(_c.sym||'').toUpperCase()===forcePair){analyze=_c;sessionStorage.removeItem('mp_ai_trade');}}}catch(e){}
     if(!panes.length){
       var sv=mfcLoad(),st=ov.querySelector('#mfcStage');
-      var cfgs=forcePair?[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]:((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); else default ONE chart on a phone (owner 2026-10-15: two was too cramped); the saved layout still restores up to two
+      var cfgs=forcePair?(analyze?[{sym:forcePair,tf:'60'}]:[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]):((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); the AI-analyze deep link forces ONE; else default ONE chart on a phone (owner 2026-10-15: two was too cramped); the saved layout still restores up to two
+      if(analyze){mAiTrade=analyze;try{if(window.__mpAiTradeSet)window.__mpAiTradeSet(analyze);}catch(e){}setTimeout(function(){try{openSheet('ai');}catch(e){}},900);}
       split=cfgs.length>1?2:1;
       cfgs.forEach(function(c){var p=mkPane(c.sym||'BTC',c.tf||'60');if(c.inds)p.inds=c.inds;if(c.cmp)p.cmp=String(c.cmp).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,12);if(+c.liqMin)p.liqMin=+c.liqMin;panes.push(p);st.appendChild(p.el);});
       st.classList.toggle('split',split===2);
