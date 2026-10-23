@@ -260,6 +260,15 @@
     .sdd-o{padding:12px 12px}
   }
 
+
+  /* The grey track is the whole open book, the red fill is the part of it that is losing right now. It is the
+     only signal on a PHONE, where there is no hover to read the title from, so it is sized to be read at a
+     glance rather than to be discreet. */
+  .opn{display:inline-block;min-width:36px;position:relative;padding-bottom:9px;font-weight:700}
+  .opn::after{content:'';position:absolute;left:0;right:0;bottom:1px;height:4px;border-radius:3px;background:#39424e}
+  .opn i{position:absolute;left:0;bottom:1px;height:4px;border-radius:3px;background:#ff5a4d;z-index:1;box-shadow:0 0 6px rgba(255,90,77,.5)}
+  .opn.all{color:#ff8a80}
+  .opn0{color:#5d666f}
 </style>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Tablas de Clasificación de MarginPad","url":"https://marginpad.io/es/leaderboards/","description":"Las ocho tablas de MarginPad al completo: cuatro tablas de paper gratuitas, la predicción diaria de BTC, la Gold Room, y dos puntuadas con cuentas reales. Cada trader clasificado, el premio que paga cada puesto, y las reglas con las que se puntúa cada tabla.","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"about":{"@type":"Event","name":"Temporada de Competencia de Trading de MarginPad","url":"https://marginpad.io/trading-competition/","eventAttendanceMode":"https://schema.org/OnlineEventAttendanceMode","isAccessibleForFree":true}}</script>
@@ -387,6 +396,15 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
   var $=function(id){return document.getElementById(id);};
   var T=__esT_leaderboardsindex;
   function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  /* STILL OPEN (2026-10-24): the count, and the losing share as the red part of a bar under it. An unpriced
+     position is counted as open and never as losing - a gap in our data is not evidence against a trader. */
+  function openCell(r){
+    var n=+r.open||0; if(!n) return '<span class="opn0">-</span>';
+    var lose=+r.openLose||0, priced=+r.openPriced||0, pct=priced?Math.round(lose/priced*100):0;
+    var ttl=n+' still open'+(!priced?', not priced yet':(priced<n?', '+lose+' of the '+priced+' we could price are losing right now':', '+lose+' of them losing right now'));
+    return '<span class="opn'+(priced&&lose===priced?' all':'')+'" title="'+ttl+'">'+n+'<i style="width:'+pct+'%"></i></span>';
+  }
   function int(n){return Math.round(+n||0).toLocaleString('en-US');}
   function money(v){v=+v||0;var a=Math.abs(v);return (v<0?'-$':'$')+(a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e4?(a/1e3).toFixed(1)+'k':a.toLocaleString('en-US',{maximumFractionDigits:2}));}
   function left(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return d?d+'d '+h+'h':h?h+'h '+m+'m':m+'m';}
@@ -406,10 +424,10 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
       need:'ten',
       rules:[T("aDayIsGreen",'A day is <b>green</b> when the trades you closed that UTC day add up to a profit, red when they add up to a loss; a day with no closes is neither.'),T("rankedByGreenDays",'Ranked by green days; ties break on fewer red days, then on realized P&amp;L.'),T("consistencyBeatsOneBig",'Consistency beats one big day: fourteen small green days rank above one giant win.'),T("tenClosedTradesIn2",'Ten closed trades in the season to enter.')]},
     winrate:{key:'topWr',grp:'free',name:T("bestWinRate",'Best win rate'),sub:T("theHighestShareOf",'the highest share of winning closes, ranked so a short streak cannot win'),
-      head:['#','Trader',T("winRate",'Win rate'),T("wonLostH",'Won / lost'),T("wilsonH",'Wilson score')+'|o',T("prizeH",'Prize')],
-      row:function(r){return ['<td class="v up">'+(+r.wr||0).toFixed(1)+'%</td>','<td class="v">'+int(r.w)+' / '+int(r.l)+'</td>','<td class="v">'+int(r.score)+'</td>'];},
+      head:['#','Trader',T("winRate",'Win rate'),T("wonLostH",'Won / lost')+'|o',T("stillOpenH",'Still open'),T("wilsonH",'Wilson score')+'|o',T("prizeH",'Prize')],
+      row:function(r){return ['<td class="v up">'+(+r.wr||0).toFixed(1)+'%</td>','<td class="v">'+int(r.w)+' / '+int(r.l)+'</td>','<td class="v">'+openCell(r)+'</td>','<td class="v">'+int(r.score)+'</td>'];},
       need:'ten',
-      rules:[T("aCloseIsA",'A close is a <b>win</b> only with at least 5% ROE and a 0.2% real move; everything else is a loss or ignored.'),T("rankedByTheWilson",'Ranked by the <b>Wilson lower bound</b> of the win rate, not the raw percentage - 9 wins of 10 ranks below 60 of 70, because the second record is the surer one.'),T("duplicatedJournalsAreFolde",'Duplicated journals are folded into one entry before ranking.'),T("tenClosedTradesIn2",'Ten closed trades in the season to enter.')]},
+      rules:[T("aCloseIsA",'A close is a <b>win</b> only with at least 5% ROE and a 0.2% real move; everything else is a loss or ignored.'),T("theRateCountsClosed",'The rate counts <b>closed</b> trades only. <b>Still open</b> shows what a trader is holding right now and how much of it is losing - the red part of the bar. Someone who closes their winners and sits on their losers can read 95% with every open position under water, and this column is where you see it.'),T("rankedByTheWilson",'Ranked by the <b>Wilson lower bound</b> of the win rate, not the raw percentage - 9 wins of 10 ranks below 60 of 70, because the second record is the surer one.'),T("duplicatedJournalsAreFolde",'Duplicated journals are folded into one entry before ranking.'),T("tenClosedTradesIn2",'Ten closed trades in the season to enter.')]},
     xp:{key:'topXp',grp:'free',name:T("seasonXp",'Season XP'),sub:T("theMostXpEarned",'the most XP earned since the season started'),
       head:['#','Trader',T("seasonXp",'Season XP'),T("prizeH",'Prize')],
       row:function(r){return ['<td class="v up">'+int(r.xp)+'</td>'];},

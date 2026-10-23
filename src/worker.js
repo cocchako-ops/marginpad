@@ -13865,8 +13865,20 @@ function lbShapeBoards(src, banned, CUT) {
   const _wilson = (w, n) => { if (!n) return 0; const z = 1.96, p = w / n, z2 = z * z; return (p + z2 / (2 * n) - z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
   // ranked by the WILSON LOWER BOUND (95%) of the win rate, not the raw % - 45-3 (score 89.1) beats 20-0
   // (score 83.9): a perfect small sample can no longer lock the board (owner, 2026-08-03). Raw WR still shown.
+  /* WHAT IS STILL OPEN, BESIDE THE RATE (2026-10-24). `openWr` is the DO's raw open book per candidate and
+     `openPx` the prices the worker fetched for it; both are optional, so the archive and the payer - which read
+     this same shaping and have no prices - are byte-for-byte unaffected. A position that could not be priced is
+     counted as open and NOT as losing: an unpriced row is a gap in our data, never evidence against a trader. */
+  const openWr = src.openWr || null, openPx = src.openPx || null;
+  const openOf = (uid) => {
+    const ob = openWr && openWr[uid]; if (!ob || !ob.length) return { open: 0, openLose: 0, openUn: 0, openPriced: 0 };
+    let lose = 0, un = 0, priced = 0;
+    ob.forEach(o => { const p = openPx && openPx[o.sym]; if (!(p > 0)) return; priced++;
+      const pnl = (+o.qty) * (p - (+o.entry)) * (o.side === 'short' ? -1 : 1); un += pnl; if (pnl < 0) lose++; });
+    return { open: ob.length, openLose: lose, openUn: Math.round(un * 100) / 100, openPriced: priced };
+  };
   const qWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
-    .map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1) }; })
+    .map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1), score: +(_wilson(w, w + l) * 100).toFixed(1), ...openOf(x.uid) }; })
     .sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l)));
   const topWr = qWr.slice(0, CUT).map((x, i) => { const y = { rank: i + 1, ...x }; delete y.uid; return y; });
   // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL - can't be gamed by size.
@@ -15732,8 +15744,8 @@ async function moonBoardRebuild(env, id) { // START + END snapshots -> standings
   const rows = st.filter(r => r.rank && r.delta > 0 && !banned[r.acct] && !/^e2e/i.test(String(r.name || ''))).map((r, i) => ({ rank: i + 1, who: r.name || r.moon, uid: String(r.acct).replace(/^u:/, ''), vol: r.delta }));
   const snap = { id, ts: end ? end.ts : start.ts, start: start.ts, end: moonContestEnd(start.ts), final: !!(end && end.final), rows, n: rows.length, members: membersN, updated: end ? end.ts : 0 };
   try { await env.STATS.put('lb:moon:' + id, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v12')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v12')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the key moved to v3 and then v4; this purge was still clearing v2, so a Moon paste stopped refreshing the competition feed
   return snap;
 }
@@ -16367,8 +16379,8 @@ async function bybitSnapshotRebuild(env, ws) { // public snapshot (names + volum
   const b = await bybitVolBoard(env, ws);
   const snap = { ts: (b.upload && b.upload.ts) || 0, final: !!(b.upload && b.upload.final), rows: b.rows.map(r => (r.reg ? { rank: 0, who: r.name, vol: 0, reg: true } : { rank: r.rank, who: r.name, vol: r.vol })), n: b.ranked != null ? b.ranked : b.rows.length, reportN: (b.upload && b.upload.n) || 0, unmatched: b.unmatched.length, registered: b.registered, listed: b.listed || 0, pool: b.pool };
   try { await env.STATS.put('lb:bybit:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 }); } catch (e) {} // 400 d (was 60): the season archive reads this snapshot for ever (2026-10-16)
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v11')); } catch (e) {}
-  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v11')); } catch (e) {} // the full variant has its own key and would otherwise go stale
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_v12')); } catch (e) {}
+  try { await caches.default.delete(new Request('https://marginpad.io/__reward_lb_full_v12')); } catch (e) {} // the full variant has its own key and would otherwise go stale
   try { await caches.default.delete(new Request('https://marginpad.io/__competition_v8')); } catch (e) {} // the competition feed carries the pool too
   return snap;
 }
@@ -21565,10 +21577,10 @@ async function handleReward(url, request, env) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
-        let board = [], xpBoard = [], greenBoard = [], goldBoard = [], greenDiag = null; // greenDiag is read far below, where `ud` is out of scope - that ReferenceError answered the whole body `busy` for an hour
+        let board = [], xpBoard = [], greenBoard = [], goldBoard = [], greenDiag = null, openWr = null; // greenDiag is read far below, where `ud` is out of scope - that ReferenceError answered the whole body `busy` for an hour
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=' + LB_CANDIDATES)); // the same set the payer reads (LB_CANDIDATES)
-          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null;
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || []; goldBoard = (ud && ud.gold) || []; greenDiag = (ud && ud.greenDiag) || null; openWr = (ud && ud.openWr) || null;
         }
         const banned = await lbBanned(env);
         const CUT = lbFull ? 1e6 : 15;
@@ -21584,7 +21596,19 @@ async function handleReward(url, request, env) {
         const memeRows = (meme.rows || []).slice(0, CUT).map(r => ({ rank: r.rank, who: r.who, pnlUsd: r.pnl, equityUsd: r.equity, trades: r.trades }));
         // ONE shaping for the live board and the season archive (2026-10-16): filters, the Wilson ranking and the row
         // shapes live in lbShapeBoards, so an archived season reads exactly the way the live one does.
-        const { qTop, top, qWr, topWr, qXp, topXp, qGreen, topGreen, qGold, topGold, qCall, topCall } = lbShapeBoards({ board, xpBoard, greenBoard, goldBoard, callRows }, banned, CUT);
+        /* The open book is priced HERE, once per board build, because the store cannot fetch. Distinct symbols
+           only (a crowded board repeats the same ten coins), capped, and every price comes from the same cache
+           the terminal reads - so a figure on the board and a figure on a ticket cannot disagree. */
+        let openPx = null;
+        if (openWr && Object.keys(openWr).length) {
+          try {
+            const syms9 = new Set();
+            Object.keys(openWr).forEach(u => (openWr[u] || []).forEach(o => { if (o && o.sym) syms9.add(o.sym); }));
+            const list9 = Array.from(syms9).slice(0, 150); openPx = {}; // measured: 60 left a 17-position book with 7 priced, and the share is only as honest as its denominator
+            await Promise.all(list9.map(async sy => { try { const d9 = await fetchPriceCached(sy); if (d9 && +d9.price > 0) openPx[sy] = +d9.price; } catch (e) {} }));
+          } catch (e) { openPx = null; }
+        }
+        const { qTop, top, qWr, topWr, qXp, topXp, qGreen, topGreen, qGold, topGold, qCall, topCall } = lbShapeBoards({ board, xpBoard, greenBoard, goldBoard, callRows, openWr, openPx }, banned, CUT);
         // ONE TRADER ON THREE BOARDS IS ONE PERSON. The competition page reported "79 entries ranked", which was
         // the sum of seven board lengths - capped at 15 each AND double-counting anybody ranked on more than one.
         // `entrants` is per board, measured before the slice; `people` is the distinct union across all of them.
@@ -24112,6 +24136,14 @@ export default {
         // nor `op:'orphans'` can reach, and support-who-e2e files real ones - a test ticket on the owner's desk
         // is the same pollution as a test post. The purge route cannot do this: it is scoped to inbound mail.
         try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + eu }) })); } catch (e) {}
+        // ...and its SIGN-UP CLAIMS (2026-10-24), the same store and the same reason: signup-venues-e2e files real
+        // ones, and eleven of them sitting on the Bitget desk as "approved" is what made a healthy system read as
+        // if it had paid for referrals that do not exist.
+        try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + eu }) })); } catch (e) {}
+      }
+      // one-shot sweep for the rows earlier runs already left behind (admin only, e2e rows only)
+      if (String((eb && eb.op) || '') === 'exsignsweep') {
+        try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:e2esweep', sweep: true }) })); return new Response(await rr.text(), { status: rr.status, headers: { 'content-type': 'application/json' } }); } catch (e) { return J({ error: 'unavailable' }, 503); }
       }
       // the same sweep for a ticket filed with NO account - support-who-e2e's guest leg; the DO refuses
       // anything that is not an e2e sender, so this is not a general delete-by-email
@@ -28567,6 +28599,23 @@ export class RewardLedger {
       if (emOk) { try { deleted += sql.exec('DELETE FROM support WHERE email=?', em).rowsWritten || 0; } catch (e) {} try { sql.exec('DELETE FROM sreply WHERE email=?', em); } catch (e) {} }
       return this.j({ ok: true, deleted });
     }
+    /* A TEST SIGN-UP CLAIM IS A REAL ROW ON THE SIGN-UP DESK (2026-10-24, and it cost the owner a real scare: he
+       counted 14 approved Bitget bonuses against ONE sign-up on his Bitget affiliate profile. Eleven of those
+       fourteen were my own suite's `e2e...` rows and the other three were July's retired $3 bonus - not one real
+       member had ever been paid a Bitget $1 - but the desk could not say that, and neither could I without
+       reading every row.) The UserStore sweep cannot see this store, so the cleanup has to live here, next to
+       the support one, and it is self-guarded exactly the same way: an e2e ACCOUNT or an e2e UID, nothing else. */
+    if (path === '/exsign/e2erm') {
+      const ac2 = String(body.acct || ''), uid2 = String(body.uid || '');
+      const acOk2 = /^u:e2e/i.test(ac2), uidOk2 = /^e2e/i.test(uid2);
+      if (!acOk2 && !uidOk2) return this.j({ error: 'not_an_e2e_row', acct: ac2, uid: uid2 }, 400);
+      let gone = 0;
+      if (acOk2) { try { gone += sql.exec('DELETE FROM exsign WHERE acct=?', ac2).rowsWritten || 0; } catch (e) {} }
+      if (uidOk2) { try { gone += sql.exec('DELETE FROM exsign WHERE uid=?', uid2).rowsWritten || 0; } catch (e) {} }
+      // the sweep: every row whose UID is one of ours, whatever account it was filed under
+      if (body.sweep === true) { try { gone += sql.exec("DELETE FROM exsign WHERE uid LIKE 'e2e%' OR acct LIKE 'u:e2e%'").rowsWritten || 0; } catch (e) {} }
+      return this.j({ ok: true, deleted: gone });
+    }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) - closes/reopens the WHOLE conversation
       const val = body.reopen ? 0 : 1; let changed = 0;
       // '_legacy' is the conversation the list builds from rows that have NO conv id (pre-conversation era + admin-started rows) - the sanitiser used to
@@ -32624,6 +32673,7 @@ export class UserStore {
       const limit = Math.min(500, Math.max(1, +url.searchParams.get('limit') || 30)); // 50 -> 500: /leaderboards/ shows every qualifying entrant, everything else still asks for its own small slice
       const rows = this.rows("SELECT u.id uid, u.username, t.json FROM utrades t JOIN users u ON u.id=t.user_id WHERE t.n>0 AND (u.status IS NULL OR u.status='active') ORDER BY t.updated DESC LIMIT 1000");
       const best = [];
+      const openBook = {}; // uid -> open positions opened inside the season (the worker prices them; see the loop below)
       const v2 = ws >= LB_V2_START; // from the 3-board launch: a win must clear +5% ROE to count on the win-rate board
       // Weekly win/loss comes from the tradeev log, NOT the utrades blob: the blob is capped at 100 closed trades (oldest
       // trimmed), so a heavy trader's earlier losses vanish from it and inflate their win rate. tradeev keeps every close (14d).
@@ -32779,6 +32829,20 @@ export class UserStore {
         if (!Array.isArray(arr)) continue;
         let top = null, bestPnl = null, wWk = 0, lWk = 0; const wrGroups = {};
         for (const e of arr) {
+          /* WHAT IS STILL OPEN (2026-10-24, owner: "zelim da ubacis koliko jos imaju otvorenih trejdova ... ove
+             abjuzere sto drze otvorene trejdove da bi imali dobar win rate"). A win rate over closed trades alone
+             reads 94% for somebody whose six open positions are all under water, which is the complaint. The DO
+             cannot price a position - it has no fetch - so it hands the worker the raw rows and the worker marks
+             them, exactly as /arena has done since 2026-09-16. The season and symbol rules are the closed side's,
+             or the count beside the rate would be measuring a different book than the rate. */
+          if (e && e.status !== 'win' && e.status !== 'loss') {
+            const ot9 = +e.ts;
+            if (isFinite(ot9) && ot9 >= ws && ot9 < we && !lbExcluded(e.sym) && !(ws >= SRV_LB_START && e.src !== 'srv') && +e.qty > 0 && +e.entry > 0) {
+              const ob9 = openBook[r.uid] = openBook[r.uid] || [];
+              if (ob9.length < 80) ob9.push({ sym: String(e.sym || '').toUpperCase(), side: e.side === 'short' ? 'short' : 'long', entry: +e.entry, qty: +e.qty, margin: +e.margin || 0 });
+            }
+            continue;
+          }
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
           const ct = +e.closeTs; if (!isFinite(ct) || ct < ws || ct >= we) continue; // only trades CLOSED this week count
           if (v2 && !(+e.ts >= ws)) continue; // v2: the trade must ALSO be OPENED this week - no farming an old position by (partial-)closing it into this week's board (partial closes keep the original open ts)
@@ -32867,8 +32931,14 @@ export class UserStore {
       const seen = {};
       const mark = a => { const k = String((a && a.uid) || ''); if (k) seen[k] = 1; };
       best.forEach(mark); green.forEach(mark); gold.forEach(mark); xp.forEach(mark);
+      /* Only the win-rate CANDIDATES carry their open book: the rate is the only published number the open side
+         can falsify, and sending 1,170 positions for every board would put a hundred kilobytes on the hottest
+         read in the store to answer a question four boards never ask. */
+      const openWr = {};
+      best.forEach(b => { if (((+b.w || 0) + (+b.l || 0)) >= 20) { const k = String(b.uid || '').replace(/^u:/, ''); const ob = openBook[k]; if (ob && ob.length) openWr[b.uid] = ob; } });
       return this.j({
         top: best.slice(0, limit), xp: xp.slice(0, limit), green: green.slice(0, limit), gold: gold.slice(0, limit),
+        openWr,
         counts: { top: best.length, green: green.length, gold: gold.length, xp: xp.length },
         greenDiag: this._greenDiag || null, // what the Green board read and what it refused - a counter nobody can read is not a measurement
         people: Object.keys(seen).length
