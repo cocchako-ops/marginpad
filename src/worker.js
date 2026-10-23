@@ -29123,6 +29123,10 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS dms_to ON dms(to_uid, seen)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS unotifs(nid INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, ts INTEGER, kind TEXT, body TEXT, link TEXT, seen INTEGER DEFAULT 0)'); // social notifications (follow/mention/duel/dm), ring-buffered ~40/user
     try { s.exec('CREATE INDEX IF NOT EXISTS unotifs_uid ON unotifs(uid, seen)'); } catch (e) {}
+    // measured 2026-10-24 (doprof): /myfollowers scanned 3,233 rows per call (a full table scan on tuid) and /duel/pending
+    // 1,178 - both run on EVERY 60-second /xp poll of every signed-in tab, on the single-threaded store
+    try { s.exec('CREATE INDEX IF NOT EXISTS ufollows_tuid ON ufollows(tuid, ts)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS duels_b ON duels(b_uid, status)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS udwell(user_id TEXT, path TEXT, secs INTEGER DEFAULT 0, hits INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(user_id, path))'); // accumulated time-on-page per path
     s.exec('CREATE TABLE IF NOT EXISTS alerts(id TEXT PRIMARY KEY, uid TEXT, email TEXT, sym TEXT, dir TEXT, target REAL, note TEXT, active INTEGER DEFAULT 1, created INTEGER, fired_ts INTEGER DEFAULT 0)'); // price alerts (account-based)
     try { s.exec("ALTER TABLE alerts ADD COLUMN channel TEXT DEFAULT 'email'"); } catch (e) {} // delivery channel: 'email' or 'telegram'
@@ -30208,9 +30212,21 @@ export class UserStore {
     return { buckets: out, now: Date.now(), bucketMs: 300000, note: 'ms = awaited I/O only (the clock is frozen during synchronous SQL); rr/rw = SQLite rows read/written through rows(), the CPU proxy' };
   }
   async fetch(request) {
-    const _p0 = Date.now(); let _pp = '?'; try { _pp = new URL(request.url).pathname; } catch (e) {}
+    const _p0 = Date.now(); let _pp = '?', _u = null; try { _u = new URL(request.url); _pp = _u.pathname; } catch (e) {}
     this._pfR = 0; this._pfW = 0;
-    try { return await this._fetch0(request); } finally { this._prof(_pp, Date.now() - _p0, this._pfR, this._pfW); }
+    /* THE BOARD IS BUILT ONCE PER HALF MINUTE, NOT ONCE PER COLO PER TWENTY SECONDS (2026-10-24). The first reading of
+       doprof: /leaderboard scanned 280,127 rows PER CALL and was called ten times in ninety seconds - 97% of every row
+       this store read, on the thread that also closes trades. The public board sits behind a 20 s edge cache, but
+       caches.default is PER DATA CENTRE, so every colo misses on its own, and eight worker paths (the public board,
+       /api/competition, the profile card's season rank, the brief, the payer...) all ask for the same window. One
+       in-memory copy per query string, 30 s, inside the one instance every colo talks to; ?fresh=1 bypasses it. */
+    const _lb = _pp === '/leaderboard' && _u && !_u.searchParams.get('fresh');
+    if (_lb) { try { const M = this._lbMemo = this._lbMemo || new Map(); const h = M.get(_u.search); if (h && _p0 - h.t < 30000) { this._prof('/leaderboard#memo', 0, 0, 0); return new Response(h.body, { headers: { 'content-type': 'application/json' } }); } } catch (e) {} }
+    try {
+      const res = await this._fetch0(request);
+      if (_lb && res && res.status === 200) { try { const body = await res.clone().text(); const M = this._lbMemo; if (M.size > 20) M.clear(); M.set(_u.search, { t: Date.now(), body }); } catch (e) {} }
+      return res;
+    } finally { this._prof(_pp, Date.now() - _p0, this._pfR, this._pfW); }
   }
   async _fetch0(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
