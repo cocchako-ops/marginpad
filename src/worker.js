@@ -8105,6 +8105,7 @@ async function sweepServerPositions(env) {
     }
     await drainXpBoostEvents(env); // boost/HH hits (from ANY close path) -> live activity feed with the username
     try { await webhookDrain(env); } catch (e) {} // fills + SL/TP/liq settled by this pass reach the account's webhooks in the same minute
+    try { await pushDrain(env); } catch (e) {} // and the follow-trade "@x got liquidated / closed" pushes the sweep just enqueued
   } catch (e) {}
 }
 // XP boost hits land in the DO (any close path: site/cron/bot/client). This drains them into the evlog ring
@@ -8281,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0e40a4d4" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b67b0966" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14967,6 +14968,25 @@ async function sendWebPush(env, sub, payloadObj) {
   const res = await fetch(sub.endpoint, { method: 'POST', headers: { 'Authorization': 'vapid t=' + jwt + ', k=' + VAPID_PUBLIC, 'Content-Encoding': 'aes128gcm', 'Content-Type': 'application/octet-stream', 'TTL': '86400' }, body });
   return { ok: res.ok, status: res.status };
 }
+// NOTIFICATION PUSH BRIDGE (2026-10-23, owner: "push kad neko koga pratis otvori/zatvori trejd, alert na nivo, i jos").
+// The in-app bell (_pushNotif -> unotifs) now also reaches the phone for a small set of PERSONAL, low-frequency kinds.
+// The DO can't web-push (VAPID crypto lives in the worker), so _pushNotif ENQUEUES into npushq and this drains it -
+// the same shape as the webhook outbox. Pull-and-delete (at-most-once is fine for a notification; the bell still has
+// it). Called from the hot trade paths right after their own store writes AND from the cron as a backstop.
+const NPUSH_KINDS = { dm: 1, mention: 1, duel: 1, follow: 1, followtrade: 1, prize: 1 }; // auto-pushed kinds (squad is deliberately NOT here - too frequent)
+const NPUSH_TITLE = { dm: 'New message', mention: 'Mentioned in chat', duel: 'Duel challenge', follow: 'New follower', followtrade: 'A trader you follow', prize: 'Prize paid' };
+async function pushDrain(env) {
+  if (!env.VAPID_JWK || !env.USERS) return 0;
+  let rows = []; try { rows = ((await usersDO(env, '/push/pull', { max: 80 })) || {}).rows || []; } catch (e) { return 0; }
+  if (!rows.length) return 0;
+  const uids = [...new Set(rows.map(r => String(r.uid)))];
+  const subsBy = {}; try { ((await usersDO(env, '/push/byuid', { uids })).subs || []).forEach(s => { (subsBy[s.uid] = subsBy[s.uid] || []).push(s); }); } catch (e) {}
+  const dead = []; let sent = 0;
+  await Promise.all(rows.map(async r => { const payload = { title: r.title || 'MarginPad', body: r.body || '', url: r.url || 'https://marginpad.io/' };
+    for (const s of (subsBy[String(r.uid)] || [])) { try { const res = await sendWebPush(env, s, payload); if (res.ok) sent++; else if (res.status === 404 || res.status === 410) dead.push(s.endpoint); } catch (e) {} } }));
+  if (dead.length) { try { await usersDO(env, '/push/delmany', { endpoints: dead }); } catch (e) {} }
+  return sent;
+}
 // Price-alert email (account-based alerts). marginpad.io is verified in Resend so alerts@ works.
 async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
   if (!env.RESEND_API_KEY) return { ok: false };
@@ -16469,6 +16489,17 @@ async function handlePush(url, env, request) {
   if (sub === '/subscribe') { const r = await stub.fetch(new Request('https://do/push/save', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, sub: b.sub }) })); const _pj = await r.json(); if (_pj && _pj.ok) { try { await evPush(env, request, 'push', '', url.pathname); } catch (e) {} } return jr(_pj); }
   if (sub === '/unsubscribe') { const r = await stub.fetch(new Request('https://do/push/del', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ endpoint: b.endpoint }) })); return jr(await r.json()); }
   if (sub === '/status') { const r = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); return jr(await r.json()); }
+  if (sub === '/test') { // "send me a test" - fires a real web push to the caller's own devices right now, so a member can SEE that notifications work (2026-10-23)
+    if (!env.VAPID_JWK) return jr({ error: 'push_unconfigured' }, 503);
+    let uid = ''; try { const hr = await stub.fetch(new Request('https://do/push/has', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok }) })); const hj = await hr.json(); uid = hj && hj.uid; } catch (e) {}
+    if (!uid) return jr({ error: 'not_signed_in' }, 401);
+    let subs = []; try { const sr = await stub.fetch(new Request('https://do/push/subsof', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); subs = ((await sr.json()).subs) || []; } catch (e) {}
+    if (!subs.length) return jr({ error: 'no_device', msg: 'This device is not subscribed yet - turn on notifications first.' }, 400);
+    let sent = 0; const dead = [];
+    for (const s of subs) { try { const res = await sendWebPush(env, s, { title: 'Notifications are on', body: 'This is a test from MarginPad. You will get pushes when a trader you follow opens or closes, when a price alert fires, and more.', url: 'https://marginpad.io/paper-trade?notif=1' }); if (res.ok) sent++; else if (res.status === 404 || res.status === 410) dead.push(s.endpoint); } catch (e) {} }
+    if (dead.length) { try { await stub.fetch(new Request('https://do/push/delmany', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ endpoints: dead }) })); } catch (e) {} }
+    return jr({ ok: sent > 0, sent, devices: subs.length });
+  }
   return jr({ error: 'bad' }, 404);
 }
 // Site-wide announcement banner: GET (public, edge-cached 20s) reads it; POST (admin key) sets it. KV `mp:announce`.
@@ -17454,7 +17485,7 @@ async function handleTrade(url, request, env, ctx) {
   const mk = (n, t) => marks.push(n + ';dur=' + (Date.now() - t));
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
   let wantDrain = false; // Bot API 2.3: site-side opens/closes/SL-TP edits are events for the account's webhooks too - drained right after the store has written
-  const jt = (o, st) => { if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} } const h = { ...jh }; if (marks.length) h['server-timing'] = marks.join(', ') + ', total;dur=' + (Date.now() - T0); return new Response(JSON.stringify(o), { status: st || 200, headers: h }); };
+  const jt = (o, st) => { if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} try { ctx.waitUntil(pushDrain(env)); } catch (e) {} } const h = { ...jh }; if (marks.length) h['server-timing'] = marks.join(', ') + ', total;dur=' + (Date.now() - T0); return new Response(JSON.stringify(o), { status: st || 200, headers: h }); };
   let uid = '';
   const tok = getCookie(request, SESS_COOKIE);
   const tS = Date.now();
@@ -18447,7 +18478,7 @@ async function handleBot(url, request, env, ctx) {
   let wantDrain = false; // set by every mutating path; the response builder then drains the webhook outbox AFTER the store has written (Bot API 2.3)
   const jb = (o, s = 200, extra) => {
     if (wantDrain) { try { if (globalThis.__botSymsV1) delete globalThis.__botSymsV1[uid]; if (globalThis.__botPosRV1) delete globalThis.__botPosRV1[uid]; } catch (e) {} } // a mutating call changes the position list - drop the caches so the next poll is fresh and the bot sees its own trade at once
-    if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} }
+    if (wantDrain && ctx && ctx.waitUntil) { wantDrain = false; try { ctx.waitUntil(webhookDrain(env)); } catch (e) {} try { ctx.waitUntil(pushDrain(env)); } catch (e) {} }
     // EVERY REFUSAL IS WRITTEN DOWN (2026-10-10). Failures only - a 2xx costs nothing extra.
     if (s >= 400 && o && o.error) {
       // `key` and `auth` are declared BELOW this closure, so reading them from a refusal raised before
@@ -19176,7 +19207,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '33a72836';
+const ASSET_V = '934fe206';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -26471,6 +26502,7 @@ export default {
     if (event.cron === '* * * * *') {
       ctx.waitUntil(checkChartSignals(env));
       ctx.waitUntil(pricesKvWarm(env));
+      ctx.waitUntil(pushDrain(env).catch(() => {})); // the 1-min trigger does almost no work - drain the notification push outbox here so a DM / mention / duel / new-follower reaches the phone within a minute (follow-trade already drains on the trade path)
       return;
     }
     // DEAD-MAN (2026-09-02): every */10 run stamps cron:hb; /api/health turns 503 when the stamp is >25 min old, and an EXTERNAL
@@ -26563,6 +26595,7 @@ export default {
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 - server-side SL/TP/liq sweep for srv/bot trades
     bg(webhookDrain, 'webhooks'); // Bot API 2.3 - backstop drain of the webhook outbox (the hot paths drain right after their own writes)
+    bg(pushDrain, 'pushdrain'); // backstop drain of the notification push outbox (duel settles, prize payouts and anything not on a hot path)
     bg(screenerKvWarm, 'scrwarm'); // keep the screener KV floor fresh - no visitor ever pays the full compute
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
       // Once a day is the right cadence: it costs one request carrying a few hundred windows, and a
@@ -29007,6 +29040,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS dm(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, dir TEXT, body TEXT, ts INTEGER, seen INTEGER DEFAULT 0)'); // 1:1 owner↔user direct messages (dir: in=user→owner, out=owner→user; seen tracks the OTHER party read it)
     try { s.exec('CREATE INDEX IF NOT EXISTS dm_uid ON dm(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS psubs(endpoint TEXT PRIMARY KEY, uid TEXT, p256dh TEXT, auth TEXT, created INTEGER)'); // web-push subscriptions (one row per browser/device, keyed by its endpoint)
+    s.exec('CREATE TABLE IF NOT EXISTS npushq(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, title TEXT, body TEXT, url TEXT, ts INTEGER)'); // notification->web-push outbox: _pushNotif enqueues a pushable kind, the worker drains it (2026-10-23)
     try { s.exec('CREATE INDEX IF NOT EXISTS ps_uid ON psubs(uid)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS uev_user ON uevents(user_id, ts)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS ucl_user ON uclicks(user_id, ts)'); } catch (e) {}
@@ -29619,11 +29653,26 @@ export class UserStore {
     if (rw.cents) out.cents = rw.cents;
     return out;
   }
-  _pushNotif(uid, kind, body, link) { // social notification (ring-buffered ~40/user)
+  _pushNotif(uid, kind, body, link, opts) { // social notification (ring-buffered ~40/user), and - for a pushable kind - a web push to the phone
     uid = String(uid || '').replace(/^u:/, ''); if (!uid) return; const sql = this.state.storage.sql;
     try { sql.exec('INSERT INTO unotifs(uid,ts,kind,body,link,seen) VALUES(?,?,?,?,?,0)', uid, Date.now(), String(kind || '').slice(0, 24), String(body || '').slice(0, 200), String(link || '').slice(0, 120));
       sql.exec('DELETE FROM unotifs WHERE uid=? AND nid NOT IN (SELECT nid FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 40)', uid, uid); } catch (e) {}
+    // web-push bridge: only for a pushable kind AND a uid that actually subscribed a device (one Set lookup, nobody else pays)
+    try {
+      const wantPush = (opts && opts.push != null) ? !!opts.push : !!NPUSH_KINDS[kind];
+      if (wantPush && this._pushUidSet().has(uid)) {
+        const title = (opts && opts.title) || NPUSH_TITLE[kind] || 'MarginPad';
+        const url = (opts && opts.url) || this._pushUrl(link);
+        sql.exec('INSERT INTO npushq(uid,title,body,url,ts) VALUES(?,?,?,?,?)', uid, String(title).slice(0, 80), String(body || '').slice(0, 160), String(url).slice(0, 200), Date.now());
+        sql.exec('DELETE FROM npushq WHERE id NOT IN (SELECT id FROM npushq ORDER BY id DESC LIMIT 400)'); // bound the outbox - a cold drain never floods
+      }
+    } catch (e) {}
   }
+  _pushUidSet() { if (this._pushSet) return this._pushSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT uid FROM psubs')) s.add(String(r.uid)); } catch (e) {} this._pushSet = s; return s; } // in-memory index of accounts with at least one push device (the _whUidSet / _sqUids pattern) - busted on subscribe/unsubscribe
+  _pushUidBust() { this._pushSet = null; }
+  _followedSet() { if (this._folSet) return this._folSet; const s = new Set(); try { for (const r of this.rows('SELECT DISTINCT tuid FROM ufollows')) s.add(String(r.tuid)); } catch (e) {} this._folSet = s; return s; } // accounts that at least one person follows - so _syncJournal pays a Set lookup, not a query, for the vast majority nobody follows
+  _followedBust() { this._folSet = null; }
+  _pushUrl(link) { link = String(link || ''); if (link.indexOf('/') === 0) return 'https://marginpad.io' + link; if (link.indexOf('dm:') === 0) return 'https://marginpad.io/paper-trade?dm=' + encodeURIComponent(link.slice(3)); if (link.indexOf('profile:') === 0) return 'https://marginpad.io/paper-trade?profile=' + encodeURIComponent(link.slice(8)); if (link === 'duel') return 'https://marginpad.io/paper-trade?duels=1'; if (link.indexOf('squad') === 0) return 'https://marginpad.io/squads/'; return 'https://marginpad.io/paper-trade?notif=1'; }
   _windowStats(uid, from, to) { // closed-trade stats over [from,to) from the tradeev log: best ROE, win rate, biggest win $
     uid = String(uid).replace(/^u:/, '');
     const r = this.rows('SELECT pnl, roe, lev, sym FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<?', uid, 'close', from, to);
@@ -29900,6 +29949,24 @@ export class UserStore {
           // Webhooks (Bot API 2.3): the same three events the ops feed sees, in the Bot API's own Position shape. A bulk
           // sync (>8 rows, a guest journal arriving at sign-in) is deliberately NOT fanned out - that is history, not news.
           try { if (o[0] !== 'trim' && o[3]) { const _wx = this._j2bot(o[3], null); if (o[2] && o[2].how) _wx.close_reason = o[2].how; _wx.via = viaS; this._whEnqueue(uid, o[0] === 'open' ? 'position.opened' : (o[0] === 'liq' ? 'position.liquidated' : 'position.closed'), _wx); } } catch (e7) {} }
+        // FOLLOW-TRADE (2026-10-23, owner: "push kad neko koga pratis otvori trejd i kad taj isti zatvori"): a trader you follow
+        // opened or closed -> their followers get it on the bell AND the phone. Only the per-op branch (ops<=8); a bulk sync is history.
+        try {
+          if (ops.length && ops.length <= 8 && this._followedSet().has(uid)) {
+            const fr = this.rows('SELECT uid FROM ufollows WHERE tuid=? LIMIT 200', uid);
+            if (fr.length) {
+              const an = (this.rows('SELECT username FROM users WHERE id=?', uid)[0] || {}).username || 'A trader';
+              const fmtP = (v) => (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(Math.abs(v) >= 100 ? 0 : 2);
+              for (const o of ops) { const k = o[0]; if (k === 'trim') continue; const d = o[2] || {}; const sym = String(d.sym || ''), side = (d.side === 'short' ? 'short' : 'long'), lev = d.lev || 1;
+                let msg, title;
+                if (k === 'open') { title = '@' + an + ' opened a trade'; msg = '@' + an + ' opened a ' + sym + ' ' + side + ' ' + lev + 'x'; }
+                else { const liq = d.liq ? 1 : 0, pnl = d.pnl, roe = d.roe; const pl = (pnl != null && isFinite(pnl)) ? ' ' + fmtP(pnl) + (roe != null && isFinite(roe) ? ' (' + (roe >= 0 ? '+' : '') + Math.round(roe) + '%)' : '') : '';
+                  title = liq ? '@' + an + ' got liquidated' : '@' + an + ' closed a trade'; msg = '@' + an + ' ' + (liq ? 'was liquidated on ' : 'closed ') + sym + ' ' + side + pl; }
+                const link = '/paper-trade' + (sym ? '?coin=' + encodeURIComponent(sym) : '');
+                for (const f of fr) this._pushNotif(String(f.uid), 'followtrade', msg, link, { push: true, title }); }
+            }
+          }
+        } catch (eF) {}
       } catch (eo) {}
       const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try - see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
@@ -31844,10 +31911,19 @@ export class UserStore {
       const ps = (b.sub) || {}, ep = String(ps.endpoint || ''), keys = ps.keys || {};
       if (!ep || !keys.p256dh || !keys.auth) return this.j({ error: 'bad' }, 400);
       sql.exec('INSERT INTO psubs(endpoint,uid,p256dh,auth,created) VALUES(?,?,?,?,?) ON CONFLICT(endpoint) DO UPDATE SET uid=excluded.uid,p256dh=excluded.p256dh,auth=excluded.auth', ep, aS.user_id, String(keys.p256dh), String(keys.auth), now);
-      return this.j({ ok: true });
+      this._pushUidBust(); return this.j({ ok: true, uid: aS.user_id });
     }
-    if (path === '/push/del') { sql.exec('DELETE FROM psubs WHERE endpoint=?', String(b.endpoint || '')); return this.j({ ok: true }); }
-    if (path === '/push/has') { const aS = b.token ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', String(b.token), now)[0] : null; if (!aS) return this.j({ has: false }); return this.j({ has: this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', aS.user_id)[0].n > 0 }); }
+    if (path === '/push/del') { sql.exec('DELETE FROM psubs WHERE endpoint=?', String(b.endpoint || '')); this._pushUidBust(); return this.j({ ok: true }); }
+    if (path === '/push/delmany') { const eps = Array.isArray(b.endpoints) ? b.endpoints.map(String) : []; for (const ep of eps) { try { sql.exec('DELETE FROM psubs WHERE endpoint=?', ep); } catch (e) {} } if (eps.length) this._pushUidBust(); return this.j({ ok: true, n: eps.length }); }
+    if (path === '/push/pull') { // worker leases-and-deletes the notification push outbox (at-most-once; the bell keeps the record)
+      try { sql.exec('CREATE TABLE IF NOT EXISTS npushq(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, title TEXT, body TEXT, url TEXT, ts INTEGER)'); } catch (e) {}
+      const max = Math.max(1, Math.min(200, +b.max || 60));
+      const rows = this.rows('SELECT id,uid,title,body,url FROM npushq ORDER BY id ASC LIMIT ?', max);
+      if (rows.length) { const ids = rows.map(r => r.id); try { sql.exec('DELETE FROM npushq WHERE id IN (' + ids.map(() => '?').join(',') + ')', ...ids); } catch (e) {} }
+      return this.j({ rows });
+    }
+    if (path === '/push/subsof') { const uid0 = String(b.uid || '').replace(/^u:/, ''); if (!uid0) return this.j({ subs: [] }); return this.j({ subs: this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid=?', uid0) }); } // the caller's own devices, for the "send me a test" button
+    if (path === '/push/has') { const aS = b.token ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', String(b.token), now)[0] : null; if (!aS) return this.j({ has: false }); return this.j({ has: this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', aS.user_id)[0].n > 0, uid: aS.user_id }); }
     if (path === '/push/byuid') { const uids = Array.isArray(b.uids) ? b.uids.map(String) : []; if (!uids.length) return this.j({ subs: [] }); return this.j({ subs: inChunks(uids, (part, ph) => this.rows('SELECT endpoint,uid,p256dh,auth FROM psubs WHERE uid IN (' + ph + ')', ...part)) }); }
     if (path === '/username') { // user changes their OWN username (session-authenticated); enforces uniqueness
       const token = String(b.token || ''), uname = String(b.username || '').trim();
@@ -33194,9 +33270,9 @@ export class UserStore {
       if (uid === tuid) return this.j({ error: 'self' }, 400);
       const k = uid + '|' + tuid;
       const theyFollowMe = () => !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
-      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); const fm0 = theyFollowMe(); return this.j({ ok: true, following: false, followsMe: fm0, mutual: false }); }
+      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); this._followedBust(); const fm0 = theyFollowMe(); return this.j({ ok: true, following: false, followsMe: fm0, mutual: false }); }
       if ((this.rows('SELECT COUNT(*) c FROM ufollows WHERE uid = ?', uid)[0] || { c: 0 }).c >= 200) return this.j({ error: 'too_many' }, 429);
-      sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now);
+      sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now); this._followedBust();
       const fu = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
       const fn = (fu && fu.username) || 'A trader';
       const nowMutual = theyFollowMe();

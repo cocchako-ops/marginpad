@@ -1094,9 +1094,10 @@
   .mobnav [data-mn="chat"].ct-alert{color:#38bdf8!important;}
   .mn-chat-dot{position:absolute;top:-1px;left:calc(50% + 6px);width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;animation:ctDotPulse 1.3s ease-in-out infinite;pointer-events:none;}
   #chatBox{position:fixed;bottom:20px;right:20px;z-index:51;width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line-bright);border-radius:16px;overflow:hidden;box-shadow:0 14px 44px rgba(0,0,0,.55);}
-  .ct-head{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid var(--line);}
-  .ct-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;}
-  .ct-online{font-size:11px;color:var(--up);font-family:'Space Mono',monospace;}
+  .ct-head{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid var(--line);flex-wrap:nowrap;}
+  .ct-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ct-head.ct-rooms .ct-title{display:none;} /* a room chip is the title once the selector is up - two labels crowd the header (owner 2026-10-23) */
+  .ct-online{font-size:11px;color:var(--up);font-family:'Space Mono',monospace;flex:none;white-space:nowrap;}
 .ct-online{display:inline-flex;align-items:center;gap:5px}
 .ct-ondot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 6px var(--up);display:inline-block;flex:none}
   .ct-x{margin-left:auto;background:none;border:none;color:var(--ink-faint);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1;}

@@ -2594,6 +2594,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         h += sec('Hyperliquid whales', wh, '', (W.tracked || W.n) + ' tracked'); }
       // 9. delivery
       h += __esT_mpauth("everyMorningOneLine",'<section class="mpb-s"><h4>Every morning<small>one line · push or Telegram</small></h4><div class="mpb-dl-row"><label class="mpb-tg"><input type="checkbox" id="mpbPush"') + (prefs.push ? ' checked' : '') + '> Browser push</label><label class="mpb-tg' + (j.tgLinked ? '' : ' off') + '"><input type="checkbox" id="mpbTg"' + (prefs.tg ? ' checked' : '') + (j.tgLinked ? '' : ' disabled') + '> Telegram' + (j.tgLinked ? '' : __esT_mpauth("connectInMarginpadbot",' <small>connect in @MarginPadBot</small>')) + '</label><span class="mpb-seg" id="mpbSeg"><b data-h="8"' + (prefs.h !== 16 ? ' class="on"' : '') + '>08:00 UTC</b><b data-h="16"' + (prefs.h === 16 ? ' class="on"' : '') + '>16:00 UTC</b></span></div><div class="mpb-dl-note" id="mpbDlNote"></div></section>';
+      h += '<section class="mpb-s"><h4>Notifications<small>price alerts · people you follow · DMs</small></h4><div class="mpb-dl-row"><button type="button" id="mpbTest" style="background:#1a1f27;color:#e9e7df;border:1px solid #2a3550;border-radius:9px;padding:8px 14px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer">Send me a test</button><span class="mpb-dl-note" id="mpbTestNote" style="margin-left:4px"></span></div><div class="mpb-foot" style="margin-top:6px">Browser push also delivers: a trader you follow opens or closes a trade, a price alert hits your level, a new follower, a DM or a mention. Works on a phone once MarginPad is added to the home screen.</div></section>';
       h += __esT_mpauth("setupsFromSupertrend10",'<div class="mpb-foot">Setups from Supertrend(10,3) alignment + RSI(14) on 1H/4H; funding, open interest, liquidations and whales measured by MarginPad. Educational only - not financial advice.</div>');
       body.innerHTML = h;
       // next up: same rules as the homepage member card
@@ -2618,6 +2619,20 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       });
       if (tgCb) tgCb.addEventListener('change', function () { cur.tg = !!tgCb.checked; save(); });
       if (seg) seg.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-h]'); if (!b) return; cur.h = +b.getAttribute('data-h') === 16 ? 16 : 8; Array.prototype.forEach.call(seg.querySelectorAll('[data-h]'), function (x) { x.classList.toggle('on', +x.getAttribute('data-h') === cur.h); }); if (cur.push || cur.tg) save(); else say(); });
+      // "Send me a test" - enables push on this device if it isn't yet, then fires a real web push so a member SEES notifications work (owner 2026-10-23)
+      var testBtn = body.querySelector('#mpbTest'), testNote = body.querySelector('#mpbTestNote');
+      if (testBtn) testBtn.addEventListener('click', function () {
+        testBtn.disabled = true; var fin = function (cls, msg) { testBtn.disabled = false; if (testNote) { testNote.className = 'mpb-dl-note' + (cls ? ' ' + cls : ''); testNote.textContent = msg; } };
+        if (testNote) { testNote.className = 'mpb-dl-note'; testNote.textContent = __esT_mpauth("sending",'Sending…'); }
+        var go = function () { fetch('/api/push/test', { method: 'POST', headers: { 'content-type': 'application/json' } }).then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.ok) fin('ok', __esT_mpauth("sentCheckScreen",'Sent - check your lock screen.'));
+          else if (d && d.error === 'no_device') fin('err', __esT_mpauth("turnOnPushFirst",'Turn on Browser push first, then try again.'));
+          else if (d && d.error === 'not_signed_in') fin('err', __esT_mpauth("signInToTest",'Sign in to send a test.'));
+          else fin('err', __esT_mpauth("couldNotSendTest",'Could not send - allow notifications for this site.')); }).catch(function () { fin('err', __esT_mpauth("networkErrorTryAgain3",'Network error - try again.')); }); };
+        if (!cur.push && window.mpPush && window.mpPush.supported && window.mpPush.supported()) {
+          window.mpPush.enable().then(function () { cur.push = true; if (pushCb) pushCb.checked = true; save(); go(); }).catch(function (e2) { fin('err', e2 === 'denied' ? __esT_mpauth("pushIsBlockedFor",'Push is blocked for this site in the browser settings.') : __esT_mpauth("allowNotificationsThenTry",'Allow notifications for this site, then try again.')); });
+        } else go();
+      });
     }).catch(function () { body.innerHTML = __esT_mpauth("couldNotLoadThe",'<div class="mpb-load">Could not load the brief - please try again.</div>'); });
   } };
 

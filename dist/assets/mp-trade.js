@@ -600,6 +600,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     roomBar.innerHTML='<button type="button" class="ct-roombtn" aria-haspopup="true"><span class="ct-ricw">'+roomIcon(room)+'</span><span class="ct-roomcur">'+roomLabel(room)+'</span>'+CT_CARET+'</button>'
       +'<div class="ct-roommenu" hidden>'+chatRooms().map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+(r==='PREMIUM'?' ct-roomprem':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
     var title=head.querySelector('.ct-title');if(title&&title.nextSibling)head.insertBefore(roomBar,title.nextSibling);else head.appendChild(roomBar);
+    head.classList.add('ct-rooms'); /* the room chip IS the title now - the generic "Trader Chat" label is hidden so the header stays one tidy row (owner 2026-10-23) */
     ctImgFallback(roomBar);
     var btn=roomBar.querySelector('.ct-roombtn'),menu=roomBar.querySelector('.ct-roommenu');
     btn.addEventListener('click',function(e){e.stopPropagation();var open=menu.hidden;menu.hidden=!open;btn.classList.toggle('open',open);});
@@ -608,7 +609,8 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   }
   /* MIRROR of home.js premRooms(): _mpPrem arrives from the /api/auth/xp poll, often after the chat opened - ask once while unknown, rebuild on every poll until the selector exists. */
   function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
-  window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
+  function rebuildRoomsIfChanged(){if(!joined)return;if(!roomBar){buildRoomBar();return;}var want=chatRooms();var have=[].map.call(roomBar.querySelectorAll('[data-room]'),function(b){return b.getAttribute('data-room');});if(want.join(',')===have.join(','))return;if(want.indexOf(room)<0){try{switchRoom(want[0]||'global');}catch(e){}}if(roomBar.parentNode)roomBar.parentNode.removeChild(roomBar);roomBar=null;var hd=box&&box.querySelector('.ct-head');if(hd)hd.classList.remove('ct-rooms');buildRoomBar();} /* Premium lapsed -> the PREMIUM lounge must leave the room menu without a reload (and a grant adds it); the server already refuses the socket, this keeps the menu honest (2026-10-23) */
+  window.addEventListener('mp:xp',function(){if(joined)rebuildRoomsIfChanged();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
   /* A squad room can appear AFTER the room bar was built (the squad arrives on the /xp poll, the bar is built
      once on first open), so the bar is thrown away and rebuilt when the squad changes - otherwise a member who

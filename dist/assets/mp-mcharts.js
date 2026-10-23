@@ -58,6 +58,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
 (function(){
   var ov=null,panes=[],activeI=0,split=1,drawOn=false,forcePair=null,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
   try{window.__mpMfcDbg=function(){return panes;};}catch(e){} /* E2E hook (2026-10-08): the pane list is reassigned on a forced symbol, so a getter */
+  try{window.__mpMfcReapply=function(){try{for(var i=0;i<panes.length;i++){var p=panes[i];if(p&&p.chart&&p.candle)applyInds(p);}}catch(e){}};}catch(e){} /* mp-charts calls this after it re-asks /api/ind/access (a Premium lapse mid-session) so the phone drops the exclusive indicators without a reload (2026-10-23) */
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
   // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no - re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
   function resetViewport(){try{var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';var base=c.replace(/,?\s*minimum-scale=[^,]*/,'');m.setAttribute('content',base+', minimum-scale=1.0');setTimeout(function(){m.setAttribute('content',base);},60);}catch(e){}}

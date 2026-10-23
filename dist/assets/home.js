@@ -2271,6 +2271,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     roomBar.innerHTML='<button type="button" class="ct-roombtn" aria-haspopup="true"><span class="ct-ricw">'+roomIcon(room)+'</span><span class="ct-roomcur">'+roomLabel(room)+'</span>'+CT_CARET+'</button>'
       +'<div class="ct-roommenu" hidden>'+chatRooms().map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+(r==='PREMIUM'?' ct-roomprem':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
     var title=head.querySelector('.ct-title');if(title&&title.nextSibling)head.insertBefore(roomBar,title.nextSibling);else head.appendChild(roomBar);
+    head.classList.add('ct-rooms'); /* the room chip IS the title now - the generic "Trader Chat" label is hidden so the header stays one tidy row (owner 2026-10-23) */
     ctImgFallback(roomBar);
     var btn=roomBar.querySelector('.ct-roombtn'),menu=roomBar.querySelector('.ct-roommenu');
     btn.addEventListener('click',function(e){e.stopPropagation();var open=menu.hidden;menu.hidden=!open;btn.classList.toggle('open',open);});
@@ -2281,7 +2282,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
      opened, so buildRoomBar() saw one room, skipped the selector and nothing ever rebuilt it (owner 2026-09-12: "sometimes the
      dropdown shows, sometimes I must close and reopen the chat"). Ask once while unknown, rebuild on every poll until it exists. MIRROR in mp-trade.js. */
   function premRooms(){if(roomBar||!joined)return;if(typeof window._mpPrem==='boolean'){buildRoomBar();return;}if(premRooms._q)return;premRooms._q=true;fetch('/api/premium/status',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(st){window._mpPrem=!!(st&&st.premium);if(joined)buildRoomBar();}).catch(function(){premRooms._q=false;});}
-  window.addEventListener('mp:xp',function(){if(joined&&!roomBar)buildRoomBar();});
+  function rebuildRoomsIfChanged(){if(!joined)return;if(!roomBar){buildRoomBar();return;}var want=chatRooms();var have=[].map.call(roomBar.querySelectorAll('[data-room]'),function(b){return b.getAttribute('data-room');});if(want.join(',')===have.join(','))return;if(want.indexOf(room)<0){try{switchRoom(want[0]||'global');}catch(e){}}if(roomBar.parentNode)roomBar.parentNode.removeChild(roomBar);roomBar=null;var hd=box&&box.querySelector('.ct-head');if(hd)hd.classList.remove('ct-rooms');buildRoomBar();} /* Premium lapsed -> the PREMIUM lounge must leave the room menu without a reload (and a grant adds it); the server already refuses the socket, this keeps the menu honest (2026-10-23) */
+  window.addEventListener('mp:xp',function(){if(joined)rebuildRoomsIfChanged();});
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
   /* A squad room can appear AFTER the room bar was built (the squad arrives on the /xp poll, the bar is built
      once on first open), so the bar is thrown away and rebuilt when the squad changes - otherwise a member who
@@ -3551,7 +3553,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=97e5da2c'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=4fee321c'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -4072,7 +4074,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=873b40b6'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=af559910'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);
