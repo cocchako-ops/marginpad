@@ -377,9 +377,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-pl{display:block;font-size:11px;color:#9aa3ad;margin:0 0 5px;font-weight:600}'
     + '.mpa-nf{display:flex;flex-direction:column;max-height:min(58vh,460px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
     + '.mpa-nf::-webkit-scrollbar{width:9px}.mpa-nf::-webkit-scrollbar-track{background:#0a0d11}.mpa-nf::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
-    + '.mpa-nf-top{display:flex;align-items:center;gap:8px;margin:0 0 5px}.mpa-nf-set{margin-left:auto;background:none;border:none;color:#8b97a5;cursor:pointer;padding:4px;display:flex;line-height:0}.mpa-nf-set:hover{color:#e9e7df}.mpa-nf-set svg{width:18px;height:18px}'
+    + '.mpa-nf-top{display:flex;align-items:center;gap:8px;margin:0 0 7px;padding-right:36px}.mpa-nf-set{margin-left:auto;background:#141922;border:1px solid #28313d;border-radius:9px;color:#aeb9c6;cursor:pointer;padding:7px;display:flex;line-height:0}.mpa-nf-set:hover{color:#e9e7df;border-color:#3a4654}.mpa-nf-set svg{width:17px;height:17px}' /* padding-right clears the panel close X (absolute top-right); the gear is a real boxed button so it reads like the chat gear (owner 2026-10-23: on iOS the X was opening settings) */
     + '.mpa-np-row{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #1a2027;cursor:pointer}.mpa-np-row:last-of-type{border-bottom:none}.mpa-np-t{flex:1;min-width:0;color:#e9e7df;font-size:13.5px;font-weight:600;display:flex;flex-direction:column;gap:2px}.mpa-np-t small{color:#6b7480;font-size:11.5px;font-weight:400;line-height:1.35}'
+    + '.mpa-sw{position:relative;display:inline-block;width:42px;height:24px;flex:none}.mpa-sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:2}.mpa-sw i{position:absolute;inset:0;background:#2a3340;border-radius:20px;transition:background .18s;pointer-events:none}.mpa-sw i:after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#e9e7df;transition:transform .18s;box-shadow:0 1px 2px rgba(0,0,0,.4)}.mpa-sw input:checked+i{background:#c2f64a}.mpa-sw input:checked+i:after{transform:translateX(18px)}'
     + '.mpa-np-cb{flex:none;width:20px;height:20px;accent-color:#c2f64a;cursor:pointer}'
+    + '.mpa-tr-list{display:flex;flex-direction:column;max-height:min(54vh,440px);overflow-y:auto}.mpa-tr-r{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid #1a2027}.mpa-tr-r:last-child{border-bottom:none}.mpa-tr-nm{flex:1;min-width:0;color:#e9e7df;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-tr-nm small{display:block;color:#6b7480;font-size:11px;font-weight:400}'
     + '.mpa-np-push{border:1px solid #242b34;border-radius:11px;padding:11px 13px;margin:2px 0 10px;background:#0e1116}.mpa-np-prow{display:flex;align-items:center;gap:10px}.mpa-np-btn{margin-left:auto;background:#c2f64a;color:#0a0b0d;border:none;border-radius:9px;padding:8px 14px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;flex:none}.mpa-np-btn:disabled{opacity:.55}.mpa-np-pnote{font-size:11.5px;color:#6b7480;margin-top:7px;min-height:1px}.mpa-np-pnote.ok{color:#2ebd85}.mpa-np-pnote.err{color:#ff7a6c}'
     + '.mpa-np-foot{color:#6b7480;font-size:11.5px;line-height:1.5;margin-top:11px}.mpa-np-foot.ok{color:#2ebd85}.mpa-np-foot.err{color:#ff7a6c}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
@@ -1955,14 +1957,34 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     fetch('/api/push/prefs').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
       var prefs = d.prefs || {}, kinds = d.kinds || Object.keys(NP_LABELS);
-      var rows = kinds.map(function (k) { var L = NP_LABELS[k] || [k, '']; var on = prefs[k] !== false; return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small></span><input class="mpa-np-cb" type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '></label>'; }).join('');
+      var rows = kinds.map(function (k) { var L = NP_LABELS[k] || [k, '']; var on = prefs[k] !== false;
+        var sub = (k === 'followtrade') ? '<button type="button" class="mpa-link mpa-tr-open" style="margin:4px 0 0;text-align:left;font-size:12px;color:#9fb0c0">' + __esT_mpauth("chooseWhichTraders",'Choose which traders →') + '</button>' : '';
+        return '<label class="mpa-np-row"><span class="mpa-np-t">' + esc(L[0]) + '<small>' + esc(L[1]) + '</small>' + sub + '</span><span class="mpa-sw"><input type="checkbox" data-np="' + k + '"' + (on ? ' checked' : '') + '><i></i></span></label>'; }).join('');
       host.innerHTML = pushBox + rows + saveNote;
       wireNpPush(host.querySelector('#mpaNpPush'));
+      var trOpen = host.querySelector('.mpa-tr-open'); if (trOpen) trOpen.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); renderTraderNotifs(); });
       var note = host.querySelector('#mpaNpNote');
       host.addEventListener('change', function (e) { var cb = e.target.closest && e.target.closest('[data-np]'); if (!cb) return;
         var p2 = {}; Array.prototype.forEach.call(host.querySelectorAll('[data-np]'), function (x) { p2[x.getAttribute('data-np')] = x.checked; });
         if (note) { note.className = 'mpa-np-foot'; note.textContent = __esT_mpauth("saving",'Saving…'); }
         fetch('/api/push/prefs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prefs: p2 }) }).then(function (r) { return r.json(); }).then(function (rd) { if (note) { note.className = 'mpa-np-foot' + (rd && rd.ok ? ' ok' : ' err'); note.textContent = (rd && rd.ok) ? __esT_mpauth("saved",'Saved.') : __esT_mpauth("couldNotSaveTry2",'Could not save - try again.'); } }).catch(function () { if (note) { note.className = 'mpa-np-foot err'; note.textContent = __esT_mpauth("networkErrorTryAgain3",'Network error - try again.'); } });
+      });
+    }).catch(function () { host.innerHTML = '<div class="mpa-xp-empty">' + __esT_mpauth("couldNotLoad",'Could not load.') + '</div>'; });
+  }
+  function renderTraderNotifs() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">' + __esT_mpauth("tradersTitle",'Traders') + '</h3>'
+      + '<div class="mpa-np-foot" style="margin:0 0 9px">' + __esT_mpauth("tradersSub",'Switch off any trader you do not want notifications from. The "People you follow" switch must be on for these to apply.') + '</div>'
+      + '<div class="mpa-tr-list" id="mpaTr"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div>'
+      + '<button class="mpa-link" id="mpaTrBack" type="button">← ' + __esT_mpauth("backLabel",'Back') + '</button>';
+    var bk = bodyEl.querySelector('#mpaTrBack'); if (bk) bk.addEventListener('click', renderNotifSettings);
+    var host = bodyEl.querySelector('#mpaTr');
+    fetch('/api/push/traders').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.error) { host.innerHTML = '<div class="mpa-xp-empty">' + ((d && d.error === 'not_signed_in') ? __esT_mpauth("signInToChange",'Sign in to change this.') : __esT_mpauth("couldNotLoad",'Could not load.')) + '</div>'; return; }
+      var list = d.traders || [];
+      if (!list.length) { host.innerHTML = '<div class="mpa-xp-empty">' + __esT_mpauth("followNobodyYet",'You are not following anyone yet. Follow a trader and they appear here.') + '</div>'; return; }
+      host.innerHTML = list.map(function (t) { var on = !t.muted; return '<div class="mpa-tr-r"><span class="mpa-tr-nm">@' + esc(t.name || t.uid) + '</span><span class="mpa-sw"><input type="checkbox" data-tr="' + esc(t.uid) + '"' + (on ? ' checked' : '') + '><i></i></span></div>'; }).join('');
+      host.addEventListener('change', function (e) { var cb = e.target.closest && e.target.closest('[data-tr]'); if (!cb) return; var tuid = cb.getAttribute('data-tr'), muted = !cb.checked; cb.disabled = true;
+        fetch('/api/push/mute', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tuid: tuid, muted: muted }) }).then(function (r) { return r.json(); }).then(function (rd) { cb.disabled = false; if (!rd || !rd.ok) cb.checked = !cb.checked; }).catch(function () { cb.disabled = false; cb.checked = !cb.checked; });
       });
     }).catch(function () { host.innerHTML = '<div class="mpa-xp-empty">' + __esT_mpauth("couldNotLoad",'Could not load.') + '</div>'; });
   }
