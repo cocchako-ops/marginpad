@@ -95,6 +95,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
        at once, so the states differed only by border colour; exactly one is visible now. The button carries NO title: a title is a
        tooltip, i.e. text, and this button may never print a word. */
     + '.lbm-folb .fchk{display:none}.lbm-folb.on .fplus{display:none}.lbm-folb.on .fchk{display:block}'
+    + '.lbm-folb .freq{display:none}.lbm-folb.pending .fplus{display:none}.lbm-folb.pending .fchk{display:none}.lbm-folb.pending .freq{display:block}.lbm-folb.pending{background:rgba(234,179,8,.12);border-color:rgba(234,179,8,.55);border-style:dashed;color:#eab308}.lbm-folb.pending:hover{background:rgba(234,179,8,.2)}' /* a sent, not-yet-approved follow request: amber dashed clock (owner 2026-10-23) */
     + '.lbm-folb.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.5);color:#c2f64a}'
     + '.lbm-folb.friend{background:#c2f64a;border-color:#c2f64a;color:#0a0b0d}.lbm-folb.friend:hover{background:#d4ff6a}'
     + '.lbm-port{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid transparent;background:linear-gradient(180deg,#141a22,#0d1117) padding-box,linear-gradient(120deg,#a06bff,#c2f64a 55%,#38bdf8) border-box;color:#ecebe4;font:800 12px "Space Mono",monospace;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 26px -14px rgba(160,107,255,.8),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .14s,box-shadow .14s}'
@@ -265,13 +266,16 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     if (d.isSelf) return 'self';
     if (!d.viewerSignedIn) return 'guest';
     if (d.mutual || (d.iFollow && d.followsMe)) return 'friends';
-    return d.iFollow ? 'follow' : 'none';
+    if (d.iFollow) return 'follow';
+    if (d.requested) return 'requested';
+    return 'none';
   }
   function folTitle(st, followsMe) {
     if (st === 'friends') return __esT_mpprofile('friendsT', 'Friends - you follow each other');
     if (st === 'follow') return __esT_mpprofile('followingT', 'Following - tap to unfollow');
+    if (st === 'requested') return __esT_mpprofile('requestedT', 'Request sent - tap to cancel');
     if (st === 'guest') return __esT_mpprofile('signInToFollow2', 'Sign in to follow');
-    return followsMe ? __esT_mpprofile('followBackT', 'Follows you - follow back') : __esT_mpprofile('followT', 'Follow');
+    return followsMe ? __esT_mpprofile('askToFollowBackT', 'Follows you - ask to follow back') : __esT_mpprofile('askToFollowT', 'Ask to follow');
   }
   /* The pill beside the name says the same thing in words and is painted from the same state - it used to be
      inserted and removed by hand inside the click handler, with its own copy of the wording. */
@@ -284,6 +288,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     if (!btn) return;
     btn.classList.toggle('on', st === 'follow' || st === 'friends');
     btn.classList.toggle('friend', st === 'friends');
+    btn.classList.toggle('pending', st === 'requested');
     btn.setAttribute('aria-pressed', (st === 'follow' || st === 'friends') ? 'true' : 'false');
     btn.removeAttribute('title'); // a title is a tooltip, i.e. TEXT, and this button may never show a word
     btn.setAttribute('aria-label', folTitle(st, followsMe));
@@ -341,7 +346,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
       var DUEL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/></svg>';
       var dmBtn = (folSt !== 'self' && folSt !== 'guest') ? '<button type="button" class="lbm-dm" data-lbdm="' + esc(d.name) + __esT_mpprofile("titleMessage",'" title="Message">') + CHAT_SVG + '</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="' + esc(d.name) + __esT_mpprofile("titleChallengeToA",'" title="Challenge to a duel">') + DUEL_SVG + '</button>' : '';
       // Follow lives beside the close as an icon (person + plus; a check when following); the foot row holds Portfolio instead (2026-10-16)
-      var FOL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path class="fplus" d="M19 8v6M22 11h-6"/><path class="fchk" d="M16 11l2 2 4-4"/></svg>';
+      var FOL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path class="fplus" d="M19 8v6M22 11h-6"/><path class="fchk" d="M16 11l2 2 4-4"/><g class="freq"><circle cx="19" cy="11" r="3.9" stroke-width="1.9"/><path d="M19 9.2v2l1.3.9" stroke-width="1.7"/></g></svg>';
       var PORT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>';
       var folBtn = (folSt === 'self') ? '' : ('<button type="button" class="lbm-folb" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '"' + (folSt === 'guest' ? ' data-auth-open' : '') + '>' + FOL_SVG + '</button>');
       /* FOUR ACTIONS, ONE ROW, ONE SIZE (owner 2026-10-17). Portfolio keeps its own gradient border but loses the
@@ -477,7 +482,7 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
           /* the SERVER's new truth, both directions - the old handler guessed the other direction from a
              data- attribute rendered when the card opened, so following someone who already followed you
              left the button on the one-way glyph until the card was closed and opened again. */
-          folPaint(fb, folState({ viewerSignedIn: true, iFollow: !!j.following, followsMe: !!j.followsMe, mutual: !!j.mutual }), !!j.followsMe);
+          folPaint(fb, folState({ viewerSignedIn: true, iFollow: !!j.following, followsMe: !!j.followsMe, mutual: !!j.mutual, requested: !!j.requested }), !!j.followsMe);
         })
         .catch(function () { fb.removeAttribute('data-busy'); });
       return;

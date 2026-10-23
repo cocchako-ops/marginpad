@@ -8282,7 +8282,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=b5cf60eb" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=305f67dc" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -14973,10 +14973,11 @@ async function sendWebPush(env, sub, payloadObj) {
 // The DO can't web-push (VAPID crypto lives in the worker), so _pushNotif ENQUEUES into npushq and this drains it -
 // the same shape as the webhook outbox. Pull-and-delete (at-most-once is fine for a notification; the bell still has
 // it). Called from the hot trade paths right after their own store writes AND from the cron as a backstop.
-const NPUSH_KINDS = { dm: 1, mention: 1, duel: 1, follow: 1, followtrade: 1, prize: 1 }; // auto-pushed kinds (squad is deliberately NOT here - too frequent)
-const NPUSH_TITLE = { dm: 'New message', mention: 'Mentioned in chat', duel: 'Duel challenge', follow: 'New follower', followtrade: 'A trader you follow', prize: 'Prize paid' };
+const NPUSH_KINDS = { dm: 1, mention: 1, duel: 1, follow: 1, followreq: 1, followtrade: 1, prize: 1 }; // auto-pushed kinds (squad is deliberately NOT here - too frequent)
+const NPUSH_TITLE = { dm: 'New message', mention: 'Mentioned in chat', duel: 'Duel challenge', follow: 'New follower', followreq: 'Follow request', followtrade: 'A trader you follow', prize: 'Prize paid' };
 const PUSH_PREF_KINDS = ['followtrade', 'dm', 'mention', 'duel', 'follow', 'alert']; // the toggles the member sees in the notification settings (each gates ONE push kind; default ON)
-const NPREF_GATE = { followtrade: 1, dm: 1, mention: 1, duel: 1, follow: 1 }; // the _pushNotif kinds that have a switch - a switched-off kind produces no bell row and no push ('alert' is not a _pushNotif kind; gift/squad/system have no switch)
+const NPREF_GATE = { followtrade: 1, dm: 1, mention: 1, duel: 1, follow: 1, followreq: 1 }; // the _pushNotif kinds that have a switch - a switched-off kind produces no bell row and no push ('alert' is not a _pushNotif kind; gift/squad/system have no switch)
+const NPREF_KEY = { followreq: 'follow' }; // a kind whose switch is a DIFFERENT pref key (a follow request rides the "New followers" switch)
 async function pushDrain(env) {
   if (!env.VAPID_JWK || !env.USERS) return 0;
   let rows = []; try { rows = ((await usersDO(env, '/push/pull', { max: 80 })) || {}).rows || []; } catch (e) { return 0; }
@@ -19232,7 +19233,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd30ed020';
+const ASSET_V = '6f5a6704';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -25983,7 +25984,20 @@ export default {
         if (su.status && su.status !== 'active') return new Response('{"error":"restricted"}', { status: 403, headers: jh });
         let bd = {}; try { bd = await request.json(); } catch (e) {}
         try { const r = await stub.fetch(new Request('https://do/lbfollow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, tuid: bd.tuid, tname: bd.tname }) })); const txt = await r.text();
-          try { const jd = JSON.parse(txt); if (jd && jd.following) { const rn = String(bd.tname || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'follow', rn, '')); } } catch (e) {}
+          try { const jd = JSON.parse(txt); if (jd && jd.requested) { const rn = String(bd.tname || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'follow', rn, '')); } } catch (e) {}
+          try { ctx.waitUntil(pushDrain(env)); } catch (e) {} // the "wants to follow you" push to the target
+          return new Response(txt, { status: r.status, headers: jh }); }
+        catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
+      }
+      if (sub === 'freqs') { // the signed-in member's pending incoming follow requests (their Notifications center)
+        try { const r = await stub.fetch(new Request('https://do/followreqs?uid=' + encodeURIComponent(su.id))); return new Response(await r.text(), { headers: jh }); }
+        catch (e) { return new Response('{"reqs":[]}', { headers: jh }); }
+      }
+      if ((sub === 'fapprove' || sub === 'freject') && request.method === 'POST') {
+        let bd2 = {}; try { bd2 = await request.json(); } catch (e) {}
+        const ruid = String(bd2.ruid || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64); if (!ruid) return new Response('{"error":"bad"}', { status: 400, headers: jh });
+        try { const r = await stub.fetch(new Request('https://do/followact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, ruid, action: sub === 'fapprove' ? 'approve' : 'reject' }) })); const txt = await r.text();
+          try { ctx.waitUntil(pushDrain(env)); } catch (e) {} // the "accepted your follow request" push to the requester
           return new Response(txt, { status: r.status, headers: jh }); }
         catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
       }
@@ -29066,6 +29080,7 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS dm_uid ON dm(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS psubs(endpoint TEXT PRIMARY KEY, uid TEXT, p256dh TEXT, auth TEXT, created INTEGER)'); // web-push subscriptions (one row per browser/device, keyed by its endpoint)
     s.exec('CREATE TABLE IF NOT EXISTS npushq(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, title TEXT, body TEXT, url TEXT, ts INTEGER)'); // notification->web-push outbox: _pushNotif enqueues a pushable kind, the worker drains it (2026-10-23)
+    s.exec('CREATE TABLE IF NOT EXISTS followreq(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, uname TEXT, ts INTEGER)'); // pending follow requests (requester uid -> target tuid); follow is approval-based since 2026-10-23
     try { s.exec('CREATE INDEX IF NOT EXISTS ps_uid ON psubs(uid)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS uev_user ON uevents(user_id, ts)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS ucl_user ON uclicks(user_id, ts)'); } catch (e) {}
@@ -29683,9 +29698,12 @@ export class UserStore {
     // The site notification (the bell) follows the member's notification settings too, not only the phone push: a kind they
     // switched off produces NEITHER a bell row NOR a push (owner 2026-10-23). Only kinds that HAVE a switch are gated -
     // gift / squad / system have no toggle and always show. (follow-trade is already gated by _followNotifOk at the call site.)
-    if (NPREF_GATE[kind] && !this._notifAllows(uid, kind)) return;
-    try { sql.exec('INSERT INTO unotifs(uid,ts,kind,body,link,seen) VALUES(?,?,?,?,?,0)', uid, Date.now(), String(kind || '').slice(0, 24), String(body || '').slice(0, 200), String(link || '').slice(0, 120));
-      sql.exec('DELETE FROM unotifs WHERE uid=? AND nid NOT IN (SELECT nid FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 40)', uid, uid); } catch (e) {}
+    if (NPREF_GATE[kind] && !this._notifAllows(uid, NPREF_KEY[kind] || kind)) return;
+    // opts.noBell: a phone-only notification that never joins the in-app bell list. Follow-trade uses this - the bell is for
+    // personal items (follow requests, DMs, mentions, duels); a followed trader's opens/closes are phone push only, so the
+    // bell does not fill with trade activity (owner 2026-10-23: "tu nece da izlazi ko je koji trejd otvorio").
+    if (!(opts && opts.noBell)) { try { sql.exec('INSERT INTO unotifs(uid,ts,kind,body,link,seen) VALUES(?,?,?,?,?,0)', uid, Date.now(), String(kind || '').slice(0, 24), String(body || '').slice(0, 200), String(link || '').slice(0, 120));
+      sql.exec('DELETE FROM unotifs WHERE uid=? AND nid NOT IN (SELECT nid FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 40)', uid, uid); } catch (e) {} }
     // web-push bridge: only for a pushable kind AND a uid that actually subscribed a device (one Set lookup, nobody else pays)
     try {
       const wantPush = (opts && opts.push != null) ? !!opts.push : !!NPUSH_KINDS[kind];
@@ -29995,7 +30013,7 @@ export class UserStore {
                 else { const liq = d.liq ? 1 : 0, pnl = d.pnl, roe = d.roe; const pl = (pnl != null && isFinite(pnl)) ? ' ' + fmtP(pnl) + (roe != null && isFinite(roe) ? ' (' + (roe >= 0 ? '+' : '') + Math.round(roe) + '%)' : '') : '';
                   act = liq ? 'was liquidated on ' + sym + ' ' + side : 'closed ' + sym + ' ' + side + pl; }
                 const link = '/paper-trade' + (sym ? '?coin=' + encodeURIComponent(sym) : '');
-                for (const f of fr) { if (!this._followNotifOk(f.uid, uid)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, title: '@' + an, pushBody: act }); } }
+                for (const f of fr) { if (!this._followNotifOk(f.uid, uid)) continue; this._pushNotif(String(f.uid), 'followtrade', '@' + an + ' ' + act, link, { push: true, noBell: true, title: '@' + an, pushBody: act }); } }
             }
           }
         } catch (eF) {}
@@ -31249,7 +31267,7 @@ export class UserStore {
           if (d.vt === 'ev') { c = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type=?', uid, dayStart, String(d.va))[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'ev:' + String(d.va))[0] || {}).n || 0; if (!c && String(d.va) === 'alert') c = (this.rows('SELECT COUNT(*) n FROM alerts WHERE uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0; } // mev fallback: the uevents ring (500/user) can evict a morning event by evening - the daily counter survives. The alert mission ALSO verifies from the REAL alerts table: the uev forward is fire-and-forget, so a 'main' DO reset at creation time silently ate the event while the alert itself existed (ibrar0805 report, 2026-08-16)
           else if (d.vt === 'pv') { c = (this.rows("SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type='pageview' AND path LIKE ?", uid, dayStart, String(d.va) + '%')[0] || {}).n || 0; if (!c) c = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, day, 'pv:' + String(d.va))[0] || {}).n || 0; }
           // social/academy missions - verified against the real tables (not client-trusted); uid stored without the 'u:' prefix
-          else if (d.vt === 'follow') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'follow') { c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; try { c += (this.rows('SELECT COUNT(*) n FROM followreq WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0; } catch (e) {} } // follow is request-based now - a pending request counts as taking the action (else the mission is uncompletable by the user alone)
           else if (d.vt === 'dm') c = (this.rows('SELECT COUNT(*) n FROM dms WHERE from_uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duel') c = (this.rows('SELECT COUNT(*) n FROM duels WHERE a_uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duelw') c = (this.rows("SELECT COUNT(*) n FROM duels WHERE winner=? AND status='done' AND end_ts>=?", uid, dayStart)[0] || {}).n || 0;
@@ -32684,7 +32702,7 @@ export class UserStore {
       // still authenticated. Found 2026-09-14 by diffing the table list against the ones this deletes.
       if (b.op === 'rm') {
         const BY_USER = ['upred', 'ugoal', 'upass', 'pgift', 'pcode_use', 'cosmetics', 'upb', 'tickday', 'ticklog', 'xplog', 'utrades', 'tradeev', 'porders', 'academy', 'missions', 'uprefs', 'utrades_archive', 'active_srv', 'lbbest', 'xpseason', 'xpday', 'sessions', 'uevents', 'uclicks', 'udwell', 'achievements', 'tickbuy', 'xpboost_ev', 'mev', 'btask'];
-        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk'];
+        const BY_UID = ['porders', 'botkeys2', 'botkeys', 'botwh', 'botwhq', 'botpos', 'botuse', 'botidem', 'ufollows', 'unotifs', 'alerts', 'dm', 'psubs', 'squadm', 'squadinv', 'squadwk', 'followreq'];
         try { this._squadRemoveUser(uid); } catch (e) {} // a squad outlives its leader's account unless this runs FIRST (it reads squadm, which the sweep below deletes)
         for (const t of BY_USER) { try { sql.exec('DELETE FROM ' + t + ' WHERE user_id=? OR user_id LIKE ?', uid, uid + ':%'); } catch (e) {} }
         for (const t of BY_UID) { try { sql.exec('DELETE FROM ' + t + ' WHERE uid=? OR uid LIKE ?', uid, uid + ':%'); } catch (e) {} }
@@ -33062,15 +33080,16 @@ export class UserStore {
       const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
       // viewer-relative relationship (mutual follow = "friends") - only when a signed-in viewer is passed
       const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
-      let iFollow = false, followsMe = false, mutual = false;
+      let iFollow = false, followsMe = false, mutual = false, requested = false;
       const isSelf = !!viewer && viewer === String(u.id); // the card used to ask the DEFERRED mp-auth bundle who the reader was, so a card opened before it parsed offered a Follow button for your own profile
       if (viewer && viewer !== String(u.id)) {
         iFollow = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', viewer + '|' + u.id)[0];
         followsMe = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', u.id + '|' + viewer)[0];
         mutual = iFollow && followsMe;
+        if (!iFollow) { try { requested = !!this.rows('SELECT 1 FROM followreq WHERE k=?', viewer + '|' + u.id)[0]; } catch (e) {} } // a pending follow request the viewer sent, awaiting this profile's approval
       }
       return this.j({ exists: true, isSelf, viewerSignedIn: !!viewer, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp, stars: L.stars || 0 },
-        iFollow, followsMe, mutual,
+        iFollow, followsMe, mutual, requested,
         bio: u.bio || '', avatar: u.avatar || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if ((fr9 === 'neon' || fr9 === 'aurora') && !this._isPrem(u)) return 'default'; /* a Premium frame comes off with the Premium (2026-10-22): /setframe checks at EQUIP time only, so two expired members were still wearing aurora */ if (SEASON_FRAMES.indexOf(fr9) < 0) return fr9; try { const cr9 = this.rows('SELECT ts FROM cosmetics WHERE user_id=? AND item_id=?', u.id, fr9)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < SEASON_WEAR_MS) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // season-winner frames last one 14-day season - the public card must expire them too, not only the equip panel
         records: records, stats: { trades: tradesShown != null ? tradesShown : Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
           realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
@@ -33309,22 +33328,52 @@ export class UserStore {
       const buyers = (this.rows('SELECT COUNT(DISTINCT user_id) c FROM cosmetics')[0] || { c: 0 }).c;
       return this.j({ per: per, buyers: buyers });
     }
-    if (path === '/lbfollow') { // toggle follow (uid follows tuid). uid from worker (session); tuid+tname in body
+    if (path === '/lbfollow') { // follow is REQUEST-BASED now (owner 2026-10-23): tapping follow sends a request the target approves/rejects
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
       const tuid = String((b && b.tuid) || '').replace(/^u:/, '');
       const tname = String((b && b.tname) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!uid || !tuid) return this.j({ error: 'bad' }, 400);
       if (uid === tuid) return this.j({ error: 'self' }, 400);
+      try { sql.exec('CREATE TABLE IF NOT EXISTS followreq(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, uname TEXT, ts INTEGER)'); } catch (e) {}
       const k = uid + '|' + tuid;
       const theyFollowMe = () => !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
-      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); this._followedBust(); const fm0 = theyFollowMe(); return this.j({ ok: true, following: false, followsMe: fm0, mutual: false }); }
+      // already following -> this is an UNFOLLOW
+      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); this._followedBust(); const fm0 = theyFollowMe(); return this.j({ ok: true, following: false, requested: false, followsMe: fm0, mutual: false }); }
+      // a pending request already sent -> this is a CANCEL
+      if (this.rows('SELECT 1 FROM followreq WHERE k = ?', k)[0]) { sql.exec('DELETE FROM followreq WHERE k = ?', k); try { sql.exec("DELETE FROM unotifs WHERE uid=? AND kind='followreq' AND link=?", tuid, 'followreq:' + uid); } catch (e) {} return this.j({ ok: true, following: false, requested: false, followsMe: theyFollowMe(), mutual: false }); }
       if ((this.rows('SELECT COUNT(*) c FROM ufollows WHERE uid = ?', uid)[0] || { c: 0 }).c >= 200) return this.j({ error: 'too_many' }, 429);
-      sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now); this._followedBust();
       const fu = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
       const fn = (fu && fu.username) || 'A trader';
-      const nowMutual = theyFollowMe();
-      this._pushNotif(tuid, 'follow', nowMutual ? '@' + fn + ' followed you back - you’re now friends!' : '@' + fn + ' started following you', fu && fu.username ? 'profile:' + fu.username : '');
-      return this.j({ ok: true, following: true, followsMe: nowMutual, mutual: nowMutual });
+      sql.exec('INSERT INTO followreq(k, uid, tuid, uname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, fn, now);
+      this._pushNotif(tuid, 'followreq', '@' + fn + ' wants to follow you', 'followreq:' + uid, {}); // appears in the target's Notifications with approve/reject; also a phone push (NPUSH_KINDS/follow-family handled below)
+      return this.j({ ok: true, following: false, requested: true, followsMe: theyFollowMe(), mutual: false });
+    }
+    if (path === '/followreqs') { // pending INCOMING follow requests for a member (their Notifications center lists these)
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ reqs: [] });
+      try { sql.exec('CREATE TABLE IF NOT EXISTS followreq(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, uname TEXT, ts INTEGER)'); } catch (e) {}
+      const rows = this.rows('SELECT uid, uname, ts FROM followreq WHERE tuid=? ORDER BY ts DESC LIMIT 50', uid);
+      return this.j({ reqs: rows.map(r => ({ uid: r.uid, name: r.uname || '', ts: +r.ts || 0 })) });
+    }
+    if (path === '/followact') { // approve or reject one incoming request. uid = the member deciding (target); ruid = the requester
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const ruid = String((b && b.ruid) || '').replace(/^u:/, '');
+      const action = (b && b.action) === 'approve' ? 'approve' : 'reject';
+      if (!uid || !ruid) return this.j({ error: 'bad' }, 400);
+      try { sql.exec('CREATE TABLE IF NOT EXISTS followreq(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, uname TEXT, ts INTEGER)'); } catch (e) {}
+      const rk = ruid + '|' + uid;
+      const req = this.rows('SELECT uname FROM followreq WHERE k=?', rk)[0];
+      if (!req) return this.j({ ok: true, gone: true });
+      sql.exec('DELETE FROM followreq WHERE k=?', rk);
+      try { sql.exec("DELETE FROM unotifs WHERE uid=? AND kind='followreq' AND link=?", uid, 'followreq:' + ruid); } catch (e) {}
+      if (action === 'approve') {
+        if (!this.rows('SELECT 1 FROM ufollows WHERE k=?', rk)[0]) {
+          const me = this.rows('SELECT username FROM users WHERE id=?', uid)[0]; const myName = (me && me.username) || '';
+          sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', rk, ruid, uid, myName, now); this._followedBust();
+          this._pushNotif(ruid, 'follow', '@' + myName + ' accepted your follow request', myName ? 'profile:' + myName : ''); // the requester now follows the member
+        }
+        return this.j({ ok: true, approved: true });
+      }
+      return this.j({ ok: true, approved: false });
     }
     if (path === '/lbfollowing') { // list accounts the signed-in user follows, with each target's trade stats + level
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');

@@ -165,7 +165,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-modal[hidden]{display:none}'
     + '.mpa-panel{position:relative;width:100%;max-width:376px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:11px 15px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
     + '.mpa-panel::-webkit-scrollbar{width:8px}.mpa-panel::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px}'
-    + '.mpa-x{position:absolute;top:12px;right:14px;z-index:3;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}' /* z-index: the identity header is a positioned box that spans the same row and would otherwise sit on top of the close button (measured: elementFromPoint returned the header) */
+    + '.mpa-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;z-index:3;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}' /* safe-area: in the iOS home-screen app the sheet reaches the top edge and a 12px X falls under the status-bar clock, untappable (owner 2026-10-23) */ /* z-index: the identity header is a positioned box that spans the same row and would otherwise sit on top of the close button (measured: elementFromPoint returned the header) */
     + '.mpa-x:hover{color:#e9e7df}'
     + '.mpa-h{font-size:15px;font-weight:800;color:#f2f0e9;margin:0 0 5px;letter-spacing:-.01em}'
     + '.mpa-sub{font-size:13.5px;color:#9aa3ad;margin:0 0 16px;line-height:1.5}'
@@ -263,7 +263,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 0}'
     + '.mpa-q{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;background:#0f131a;border:1px solid #222a35;border-radius:12px;padding:9px 2px 7px;cursor:pointer;color:#cfd5dc;transition:border-color .15s,background .15s,transform .05s;-webkit-appearance:none;appearance:none;font:inherit;min-width:0}'
     + '.mpa-q .mpa-svg{width:19px;height:19px;color:#8b97a5;transition:color .15s}.mpa-q:hover{border-color:#38506a;background:#131923}.mpa-q:hover .mpa-svg{color:#7fd6ff}.mpa-q:active{transform:translateY(1px)}'
-    + '.mpa-q-l{font-size:10.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}'
+    + '.mpa-q-l{font-size:9.5px;font-weight:700;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}'
     + '.mpa-q .mpa-tile-dot{top:5px;right:6px}'
     + '.mpa-menu{margin:8px 0 0;background:#0f131a;border:1px solid #1e2530;border-radius:12px;overflow:hidden}'
     + '.mpa-mi{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-top:1px solid #171d25;padding:10px 12px;cursor:pointer;color:#cfd5dc;font:600 13.5px/1.2 system-ui,-apple-system,Segoe UI,sans-serif;text-align:left;transition:background .15s;-webkit-appearance:none;appearance:none}.mpa-mi:first-child{border-top:none}.mpa-mi:hover{background:#141a24}'
@@ -281,7 +281,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-tdy>.mpa-svg:last-child{width:14px;height:14px;color:#556170;flex:none}'
     /* open = a transition, never @keyframes (the owner runs Windows with animation effects off); phone = bottom sheet */
     + '.mpa-panel{transform:translateY(10px);opacity:0;transition:transform .2s ease,opacity .16s ease}.mpa-panel.in{transform:none;opacity:1}'
-    + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:14px}}'
+    + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:calc(14px + env(safe-area-inset-top, 0px))}}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
     + '.mpa-dm{display:flex;flex-direction:column;height:min(60vh,440px)}'
@@ -383,6 +383,11 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     + '.mpa-sw{position:relative;display:inline-block;width:42px;height:24px;flex:none}.mpa-sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:2}.mpa-sw i{position:absolute;inset:0;background:#2a3340;border-radius:20px;transition:background .18s;pointer-events:none}.mpa-sw i:after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#e9e7df;transition:transform .18s;box-shadow:0 1px 2px rgba(0,0,0,.4)}.mpa-sw input:checked+i{background:#c2f64a}.mpa-sw input:checked+i:after{transform:translateX(18px)}'
     + '.mpa-np-cb{flex:none;width:20px;height:20px;accent-color:#c2f64a;cursor:pointer}'
     + '.mpa-tr-list{display:flex;flex-direction:column;max-height:min(54vh,440px);overflow-y:auto}.mpa-tr-r{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid #1a2027}.mpa-tr-r:last-child{border-bottom:none}.mpa-tr-nm{flex:1;min-width:0;color:#e9e7df;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-tr-nm small{display:block;color:#6b7480;font-size:11px;font-weight:400}'
+    + '.mpa-req-h{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#7f8893;margin:2px 0 4px}'
+    + '.mpa-req-r{display:flex;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px solid #1a2027;transition:opacity .15s}.mpa-req-r:last-child{border-bottom:none;margin-bottom:6px}'
+    + '.mpa-req-nm{flex:1;min-width:0;color:#e9e7df;font-size:13px;font-weight:700;overflow:hidden;cursor:pointer}.mpa-req-nm small{display:block;color:#6b7480;font-size:11px;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.mpa-req-y,.mpa-req-n{flex:none;width:34px;height:34px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid;background:transparent}.mpa-req-y svg,.mpa-req-n svg{width:17px;height:17px}.mpa-req-y:disabled,.mpa-req-n:disabled{opacity:.5}'
+    + '.mpa-req-y{color:#2ebd85;border-color:rgba(46,189,133,.5)}.mpa-req-y:hover{background:rgba(46,189,133,.14)}.mpa-req-n{color:#ff7a6c;border-color:rgba(255,122,108,.5)}.mpa-req-n:hover{background:rgba(255,122,108,.14)}'
     + '.mpa-np-push{border:1px solid #242b34;border-radius:11px;padding:11px 13px;margin:2px 0 10px;background:#0e1116}.mpa-np-prow{display:flex;align-items:center;gap:10px}.mpa-np-btn{margin-left:auto;background:#c2f64a;color:#0a0b0d;border:none;border-radius:9px;padding:8px 14px;font:700 12px \'Space Mono\',ui-monospace,monospace;cursor:pointer;flex:none}.mpa-np-btn:disabled{opacity:.55}.mpa-np-pnote{font-size:11.5px;color:#6b7480;margin-top:7px;min-height:1px}.mpa-np-pnote.ok{color:#2ebd85}.mpa-np-pnote.err{color:#ff7a6c}'
     + '.mpa-np-foot{color:#6b7480;font-size:11.5px;line-height:1.5;margin-top:11px}.mpa-np-foot.ok{color:#2ebd85}.mpa-np-foot.err{color:#ff7a6c}'
     + '.mpa-nf-r{display:flex;gap:11px;align-items:flex-start;padding:11px 4px;border-bottom:1px solid #1a2027}.mpa-nf-r:last-child{border-bottom:none}.mpa-nf-r[role=button]{cursor:pointer}.mpa-nf-r[role=button]:hover{background:rgba(255,255,255,.02)}'
@@ -1921,14 +1926,28 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function notifSetBadge(n) { n = +n || 0; window._mpNotifUnread = n; setDot('mpaNotifBadge', n); refreshTrigDot(); }
   window.mpNotifBadge = notifSetBadge;
   function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user', gift: 'gift', squad: 'people' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
+  var REQ_Y = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
+  var REQ_N = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
   function renderNotifs() {
-    bodyEl.innerHTML = '<div class="mpa-nf-top"><h3 class="mpa-h" style="margin:0">' + __esT_mpauth("notificationsTitle",'Notifications') + '</h3><button class="mpa-nf-set" id="mpaNfSet" type="button" title="' + __esT_mpauth("notifSettings",'Notification settings') + '" aria-label="' + __esT_mpauth("notifSettings",'Notification settings') + '">' + ic('gear') + '</button></div><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div><button class="mpa-link" id="mpaNfBack" type="button">← ' + __esT_mpauth("backToProfile2",'Back to profile') + '</button>';
+    bodyEl.innerHTML = '<div class="mpa-nf-top"><h3 class="mpa-h" style="margin:0">' + __esT_mpauth("notificationsTitle",'Notifications') + '</h3><button class="mpa-nf-set" id="mpaNfSet" type="button" title="' + __esT_mpauth("notifSettings",'Notification settings') + '" aria-label="' + __esT_mpauth("notifSettings",'Notification settings') + '">' + ic('gear') + '</button></div><div id="mpaFreq"></div><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">' + __esT_mpauth("loading",'Loading…') + '</div></div><button class="mpa-link" id="mpaNfBack" type="button">← ' + __esT_mpauth("backToProfile2",'Back to profile') + '</button>';
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
     var st = bodyEl.querySelector('#mpaNfSet'); if (st) st.addEventListener('click', renderNotifSettings);
+    // follow requests: approve (check) or reject (x) - minimalist, no words (owner 2026-10-23)
+    var paintReqs = function () { var host = bodyEl.querySelector('#mpaFreq'); if (!host) return;
+      fetch('/api/lb/freqs').then(function (r) { return r.json(); }).then(function (d) { if (!host.isConnected) return; var reqs = (d && d.reqs) || [];
+        if (!reqs.length) { host.innerHTML = ''; return; }
+        host.innerHTML = '<div class="mpa-req-h">' + __esT_mpauth("followRequests",'Follow requests') + '</div>' + reqs.map(function (q) { return '<div class="mpa-req-r" data-rq="' + esc(q.uid) + '"><span class="mpa-req-nm" data-lbu data-openn="' + esc(q.name) + '">@' + esc(q.name) + '<small>' + __esT_mpauth("wantsToFollowYou",'wants to follow you') + ' · ' + xpAgo(q.ts) + '</small></span><button type="button" class="mpa-req-y" data-approve="' + esc(q.uid) + '" aria-label="' + __esT_mpauth("approve",'Approve') + '">' + REQ_Y + '</button><button type="button" class="mpa-req-n" data-reject="' + esc(q.uid) + '" aria-label="' + __esT_mpauth("reject",'Reject') + '">' + REQ_N + '</button></div>'; }).join('');
+        host.querySelectorAll('[data-openn]').forEach(function (nm) { nm.addEventListener('click', function () { var n = nm.getAttribute('data-openn'); if (window.mpOpenProfile) { close(); window.mpOpenProfile(n); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(n); } }); });
+        host.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-approve],[data-reject]'); if (!b) return; var approve = b.hasAttribute('data-approve'); var ruid = b.getAttribute(approve ? 'data-approve' : 'data-reject'); var row = b.closest('.mpa-req-r'); if (row) row.style.opacity = '.4'; if (row) row.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+          fetch('/api/lb/' + (approve ? 'fapprove' : 'freject'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ruid: ruid }) }).then(function (r) { return r.json(); }).then(function (rd) { if (rd && rd.ok) { if (row) row.remove(); var h = bodyEl.querySelector('#mpaFreq'); if (h && !h.querySelector('.mpa-req-r')) h.innerHTML = ''; if (window._mpNotifUnread) notifSetBadge(Math.max(0, (window._mpNotifUnread || 1) - 1)); } else if (row) { row.style.opacity = ''; row.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); } }).catch(function () { if (row) { row.style.opacity = ''; row.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); } });
+        });
+      }).catch(function () {});
+    };
+    paintReqs();
     window.mpSWR('notifs', '/api/auth/notifs', function (d, fresh) {
       var nf = bodyEl.querySelector('#mpaNf'); if (!nf) return;
-      var list = (d && d.notifs) || [];
-      if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">No notifications yet. Follows, messages, @mentions and duel results will show up here.</div>'); }
+      var list = ((d && d.notifs) || []).filter(function (n) { return n.kind !== 'followreq'; }); // follow requests render in their own section above, with approve/reject
+      if (!list.length) { nf.innerHTML = __esT_mpauth("noNotificationsYetFollows",'<div class="mpa-xp-empty">Nothing here yet. Messages, @mentions, duel results and accepted follows show up here.</div>'); }
       else { nf.innerHTML = list.map(function (n) { var link = n.link || ''; return '<div class="mpa-nf-r' + (n.seen ? '' : ' unseen') + '"' + (link ? ' data-nflink="' + esc(link) + '" role="button"' : '') + '><span class="mpa-nf-ic">' + notifIcon(n.kind) + '</span><div class="mpa-nf-b">' + esc(n.body) + '<span class="mpa-nf-ago">' + xpAgo(n.ts) + '</span></div></div>'; }).join('');
         Array.prototype.forEach.call(nf.querySelectorAll('[data-nflink]'), function (r) { r.addEventListener('click', function () { var l = r.getAttribute('data-nflink'); if (l.charAt(0) === '/') { location.href = l; return; } /* any path just navigates - a link the handler does not recognise used to be a dead click */ if (l.indexOf('dm:') === 0) renderDmThread(l.slice(3)); else if (l === 'duel') renderDuels(); else if (l.indexOf('profile:') === 0) { var nm = l.slice(8); if (window.mpOpenProfile) { close(); window.mpOpenProfile(nm); } else if (window.lbOpenProfile) { close(); window.lbOpenProfile(nm); } } }); });
       }
@@ -2070,7 +2089,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:12px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347;margin-top:8px">You are muted in chat.</p>' : '')
         + (hasU ? '<div class="mpa-quick">'
-          + quick('mpaNotif', 'bell', 'Alerts', 'mpaNotifBadge')
+          + quick('mpaNotif', 'bell', __esT_mpauth("notificationsTitle",'Notifications'), 'mpaNotifBadge')
           + quick('mpaMsg', 'chat', 'Messages', 'mpaMsgBadge')
           + quick('mpaFeed', 'feed', 'Following', '')
           + quick('mpaDuel', 'swords', 'Duels', 'mpaDuelBadge')
@@ -2438,7 +2457,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       if (!document.getElementById('mpPremCss')) { var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
         '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
         '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
-        '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer}.mpprem-x:hover{color:#fff}' +
+        '.mpprem-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
         '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
         '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}' +
         '.mpprem-f{display:flex;gap:11px;padding:10px 0;border-top:1px solid #161c26}.mpprem-f:first-of-type{border-top:0}' +
@@ -2521,7 +2540,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
       '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
       '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
-      '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer}.mpprem-x:hover{color:#fff}' +
+      '.mpprem-x{position:absolute;top:calc(12px + env(safe-area-inset-top, 0px));right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer;z-index:4}.mpprem-x:hover{color:#fff}' +
       '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
       '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}';
     document.head.appendChild(st);
