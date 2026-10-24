@@ -3850,9 +3850,40 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
    back under the bar (owner, twice). `.mpbn` is `bottom:calc(env(safe-area-inset-bottom) + 9px)` and about 57px
    tall, so the room it needs is written here in the same terms; JS may RAISE this when it has a reading it
    trusts, never lower it. And the sheets now sit ABOVE the bar (bottom/margin), rather than padding their own
-   content away from it - a scrollbar, a rounded corner and a backdrop edge all belong above it too. */
+   content away from it - a scrollbar, a rounded corner and a backdrop edge all belong above it too.
+   SINCE 2026-10-25 the bar is FLUSH to the bottom edge (mp-nav, the Demo Spot dock's position), so the room it
+   needs is its own height and the expression below is that height, not a guess around a floating pill. */
 :root{--mkb:0px}
-@media(max-width:620px){:root{--mkb:calc(env(safe-area-inset-bottom) + 72px)}}
+@media(max-width:620px){:root{--mkb:calc(43px + max(6px,calc(env(safe-area-inset-bottom) - 16px)))}}
+
+/* ── 1c. A SHEET LOCKS THE PAGE, AND THE BAR BEHIND IT IS NOT DRAWN ─────────────────────────────────────────
+   THE OWNER'S PHOTO (2026-10-25): the market window open, its top off the screen, its bottom 40% up the page,
+   and the trade form + the SEO block + the nav bar bright and undimmed below it. The panel was never wrong -
+   THE PAGE SCROLLED UNDERNEATH IT. Measured on an emulator: with the sheet open and role="dialog" set, the
+   document still scrolled 712px, and on iOS Safari a position:fixed box does not stay put through a scroll
+   that is also collapsing the browser's own toolbar - so the reader sees the sheet adrift over a scrolled page.
+   `body.pt-sheet` removes the only overflow this page has (the parked SEO block), so there is nothing left to
+   scroll, and it HIDES the phone bar: the bar is a dimmed shape behind a full-screen backdrop doing nothing,
+   which is the same reason the Browse drawer hides it, and it is what lets --mkb drop to zero here. */
+body.paper-page.pt-sheet{overflow:hidden!important}
+html.pt-sheet{overflow:hidden!important;touch-action:none}
+@media(max-width:720px){body.pt-sheet .mpbn{display:none!important}}
+
+/* ── 1b2. THE PHONE BAR SITS FLUSH ON THE TERMINAL, THE WAY THE DEMO SPOT DOCK DOES ─────────────────────────
+   (2026-10-25, owner: "nav bar mozes da pretvoris da bude kao i na demo spot, ali samo poziciju ... funkcije
+   ne menjaj. Time cemo da resimo i problem sa slike", then "ovo za nav bar se odnosi samo za terminal a ne za
+   ceo sajt".) POSITION ONLY - the same four cells, the same labels, the same delegated handlers in mp-nav.
+   A floating pill has a top edge nothing can derive, which is why every sheet on this page had to be TOLD
+   where it was; a bar at bottom:0 has a height, and that height is --mkb above. The site's own pages keep the
+   pill: this block is scoped to body.paper-page and to a phone. */
+@media(max-width:720px){
+  body.paper-page .mpbn{left:0;right:0;bottom:0;border:0;border-top:1px solid rgba(194,246,74,.18);border-radius:0;
+    padding:6px 6px max(6px,calc(env(safe-area-inset-bottom) - 16px));background:#0c1109;
+    box-shadow:0 -12px 30px -20px rgba(0,0,0,.9)}
+  /* the terminal is a 100dvh flex column, so the room for the bar is reserved on the BODY and is exactly the
+     bar's own height - not the pill's 84px, which carried a gap and a side shadow that no longer exist */
+  body.paper-page{padding-bottom:var(--mkb)!important}
+}
 
 /* ── 2. THE CHART HEAD: the pair, and under it the candle's own clock ────────────────────────────────────── */
 .ptc-head{display:flex;align-items:center;gap:10px;padding:5px 12px 4px;border-bottom:1px solid rgba(35,41,50,.72);min-width:0}
@@ -3917,7 +3948,11 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 .ptc-grid button svg{flex:0 0 auto;width:15px;height:15px;opacity:.9}
 .ptc-grid button.on svg{color:#c2f64a}
 @media(max-width:620px){
-  .ptc-pop{position:fixed;left:0;right:0;bottom:var(--mkb,0px);top:auto;width:auto;max-height:min(72dvh,calc(100dvh - 80px - var(--mkb,0px)));overflow-y:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px 16px;z-index:2147483000}
+  /* ON A PHONE IT IS THE SAME SMALL WINDOW AS THE TIMEFRAME MENU, NOT A BOTTOM SHEET (2026-10-25, owner:
+     "settings tab moze da bude isti kao i kad se otvori ovaj za timeframe, tako manji windowed"). A sheet
+     pinned to the bottom edge has to know where the phone bar is, lock the page under it and survive iOS
+     re-measuring its own chrome - three things a popover hanging off its own button never has to do. */
+  .ptc-pop{width:min(292px,calc(100vw - 16px));max-height:min(58vh,320px);overflow-y:auto;padding:12px}
   .ptc-grid{grid-template-columns:1fr 1fr 1fr}
 }
 /* [hidden] is a UA rule with almost no specificity: a bare `.ptc-pop-bd{display:block}` beat it and laid a
@@ -3925,7 +3960,9 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
    file already names for the whale page's level filter.) The hidden state wins, loudly. */
 .ptc-pop-bd{display:none;position:fixed;inset:0;z-index:2147482999;background:rgba(5,7,9,.6)}
 .ptc-pop-bd[hidden]{display:none!important}
-@media(max-width:620px){.ptc-pop-bd:not([hidden]){display:block}}
+/* the phone backdrop went with the sheet: a windowed popover is dismissed by the document click handler that
+   has always dismissed the desktop one, and a full-screen scrim behind a 292px window reads as a modal that
+   is not one. The element stays in the markup because popOpen() hides and shows it on both surfaces. */
 
 /* ── 5. THE MARKET PICKER: one window, every market, with a face on every row ─────────────────────────────── */
 /* iOS: a fixed inset:0 box is the LARGE viewport, so the bottom of a sheet anchored to it sits UNDER the
@@ -3979,7 +4016,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 @media(max-width:620px){
   .ptmk{align-items:flex-end}
   /* a FIXED height: with max-height the sheet followed its own content and jumped between tabs */
-  .ptmk-p{width:100%;height:min(82dvh,calc(100dvh - 54px - var(--mkb,0px)));max-height:none;border-radius:18px 18px 0 0;border-bottom:0;margin-bottom:var(--mkb,0px)}
+  .ptmk-p{width:100%;height:min(82dvh,calc(100dvh - 54px));max-height:none;border-radius:18px 18px 0 0;border-bottom:0;margin-bottom:0}
   .ptmk-r{padding:10px 14px;grid-template-columns:34px minmax(0,1fr) auto 32px}
   .ptmk-st{width:32px;height:32px}
 }
@@ -4112,7 +4149,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 .csel-sheet-bd{position:fixed;inset:0;z-index:2147482998;background:rgba(5,7,9,.66);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
 .csel-sheet-bd[hidden]{display:none}
 @media(hover:none),(pointer:coarse){
-  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:var(--mkb,0px)!important;top:auto!important;width:auto!important;max-height:min(66dvh,calc(100dvh - 90px - var(--mkb,0px)));border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:10px}
+  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:auto!important;max-height:min(66dvh,calc(100dvh - 90px));border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:10px}
   .csel-sheet .csel-list{max-height:min(58dvh,440px);overflow-y:auto;overscroll-behavior:contain}
 }
 .csel-sh-h{display:none}

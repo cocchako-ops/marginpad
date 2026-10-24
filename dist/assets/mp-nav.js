@@ -81,6 +81,10 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     /* ===== homepage-style bottom mobile nav bar (mobile only) - gives every standalone page the same nav as the homepage ===== */
     + '.mpbn{display:none;}'
     + '@media(max-width:720px){'
+    /* the floating pill is the SITE's bar and stays exactly as it is. On the Paper Trade terminal ONLY it is
+       re-seated flush to the bottom edge, the way the Demo Spot dock sits (2026-10-25, owner: "ovo za nav bar
+       se odnosi samo za terminal a ne za ceo sajt") - that rule lives in the terminal's own stylesheet, and it
+       changes position only: the same four cells, the same handlers. */
     +   '.mpbn{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}'
     +   '.mpbn a{flex:1;background:none;border:none;color:rgba(255,255,255,.62);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:2px 0;text-decoration:none;transition:transform .12s,color .12s;-webkit-tap-highlight-color:transparent;}'
     +   '.mpbn a:active{color:#c2f64a;transform:scale(.86);}'

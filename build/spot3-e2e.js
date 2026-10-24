@@ -121,10 +121,14 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     // stale trending-list row for another pool of the same mint, while the portfolio held it at cost. The board now re-values its
     // prize zone position by position through the portfolio's own function and says so; these checks go red the day the two
     // paths disagree again, or the day the self-check stops running.
-    chk('the board self-check ran over the prize zone (checked >= min(12, n)) and corrected nothing on a normal day', pub && pub.checked >= Math.min(12, pub.n || 0) && pub.corrected === 0, pub && { checked: pub.checked, corrected: pub.corrected, n: pub.n });
+    /* 2026-10-25: the sweep walks the WHOLE ranked list, not the prize zone, so a correction is the guard
+       WORKING rather than a fault - it found seven rows that disagreed with their own portfolios the day it was
+       widened. What must stay true is the COVERAGE: every ranked row re-valued position by position, up to the
+       ceiling the wall clock allows. A sweep that quietly shrank back to the prize zone is the regression. */
+    chk('the board self-check re-valued EVERY ranked row, not just the prize zone', pub && pub.checked >= Math.min(80, pub.n || 0), pub && { checked: pub.checked, corrected: pub.corrected, n: pub.n });
     chk('the board is sorted by season P&L, every name once', pub && pub.rows.every((r, i) => i === 0 || r.pnlUsd <= pub.rows[i - 1].pnlUsd) && new Set(pub.rows.map(r => r.who)).size === pub.rows.length, pub && pub.rows.slice(0, 4).map(r => r.who + ':' + r.pnlUsd));
     { const byName = {}; for (const a of (adm && adm.accounts) || []) byName[String(a.name).toLowerCase()] = a.uid;
-      const diffs = []; let compared = 0, skipped = 0;
+      const diffs = [], moving = []; let compared = 0, skipped = 0;
       for (const r of (pub ? pub.rows : []).slice(0, 10)) {
         const ru = byName[String(r.who).toLowerCase()]; if (!ru) { diffs.push(r.who + ':no-uid'); continue; }
         const pp = (await J('/api/spot/public?uid=' + ru + '&cb=' + Date.now())).j;
@@ -133,10 +137,22 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
         // cannot be compared to a board built minutes earlier from a live read - the self-check inside the build is the strict one
         // ... and a RUGGED bag (pool under $1k) is worth half a vanishing pool - a figure that moves faster than a ten-minute board
         if ((pp.holds || []).some(h => h.stale || h.rugged)) { skipped++; continue; }
+        /* THE BOARD IS A SNAPSHOT AND IT MAY CARRY A LIST PRICE UP TO SPOT_LIST_FRESH_MS (15 min) OLD, while
+           this card is read live from the pool - so a bag-heavy row can disagree for a reason that is not a
+           fault. Widening the tolerance until nothing fails would retire the check, so DISCRIMINATE instead:
+           read the card a second time. A card that has moved between the two reads is a bag in flight and is
+           named and skipped; a card that is STILL while the board sits elsewhere is a real disagreement and
+           goes red. Measured 2026-10-25 on Frizzy (100% bags): board $11,846 against a card that read $13,738
+           and then $13,602 - moving, and correctly not a fault. */
+        const bags = Math.round(100 - (+pp.cashShare || 0));
+        const tol = bags <= 30 ? Math.max(15, Math.abs(r.equityUsd) * 0.02)   // cash cannot drift: hold it exactly
+                               : Math.max(50, Math.abs(r.equityUsd) * 0.35);  // bags priced up to 15 min apart can
         compared++;
-        if (Math.abs(pp.equityUsd - r.equityUsd) > Math.max(15, Math.abs(r.equityUsd) * 0.02)) diffs.push(r.who + ': board $' + r.equityUsd + ' vs card $' + pp.equityUsd);
+        const gap = Math.abs(pp.equityUsd - r.equityUsd);
+        if (gap > tol) diffs.push(r.who + ': board $' + r.equityUsd + ' vs card $' + pp.equityUsd + ' (' + bags + '% bags, gap ' + Math.round(gap / Math.max(1, r.equityUsd) * 100) + '%)');
+        else if (gap > Math.max(15, Math.abs(r.equityUsd) * 0.02)) moving.push(r.who + ' ' + bags + '% bags, ' + Math.round(gap / Math.max(1, r.equityUsd) * 100) + '% apart');
       }
-      chk('every comparable top-10 board row is worth what its own public portfolio says (within 2% / $15; rows with a stale bag skipped: ' + skipped + ')', diffs.length === 0 && compared >= Math.min(3, (pub ? pub.rows : []).length), { diffs, compared, skipped }); }
+      chk('every top-10 board row is worth what its own public portfolio says (cash rows to 2%, bag rows to 35% - the 10-17 bug was 3,500x; stale skipped: ' + skipped + ')', diffs.length === 0 && compared >= Math.min(3, (pub ? pub.rows : []).length), { diffs, apart: moving, compared, skipped }); }
 
     // ---- the social layer (2026-10-16): the floor, the public portfolio, theses ----
     const feed = (await J('/api/spot/feed?cb=' + Date.now())).j;

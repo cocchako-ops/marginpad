@@ -3438,6 +3438,8 @@ window.addEventListener('load', function () {
     var coarse=function(){try{return !!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);}catch(e){return false;}};
     var bd=null,_home=null,_openAt=0;
     function sheetOn(){ if(!coarse())return;
+      /* a bottom sheet over a page that can still scroll is the owner's 2026-10-25 photo, whatever sheet it is */
+      try{if(window.__mpPtLock)window.__mpPtLock(true,'csel:'+(sel.id||'x'));}catch(e){}
       panel.classList.add('csel-sheet');
       if(!panel.querySelector('.csel-sh-h')){var hd=document.createElement('div');hd.className='csel-sh-h';
         hd.innerHTML='<b></b><button type="button" class="csel-sh-x" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
@@ -3457,7 +3459,7 @@ window.addEventListener('load', function () {
       /* THE PANEL IS NOT MOVED TO <body>. position:fixed already escapes the scrolling column it sits in,
          and relocating the node broke every caller that looks the panel up through its own .csel wrapper -
          feevenue-e2e threw on a null, and so did two measurement probes of mine before I read why. */ }
-    function sheetOff(){ panel.classList.remove('csel-sheet'); if(bd)bd.hidden=true; }
+    function sheetOff(){ panel.classList.remove('csel-sheet'); if(bd)bd.hidden=true; try{if(window.__mpPtLock)window.__mpPtLock(false,'csel:'+(sel.id||'x'));}catch(e){} }
     function open(){ build(); panel.hidden=false; trig.classList.add('open'); trig.setAttribute('aria-expanded','true'); sheetOn(); if(floating&&!panel.classList.contains('csel-sheet')){place();window.addEventListener('scroll',place,true);window.addEventListener('resize',place);} document.addEventListener('touchmove',onTouchMove,{passive:false}); if(search&&!coarse()){search.value='';filter('');setTimeout(function(){search.focus();},20);} var s=list.querySelector('.csel-opt.sel'); if(s)s.scrollIntoView({block:'nearest'}); }
     function close(){ panel.hidden=true; trig.classList.remove('open'); trig.setAttribute('aria-expanded','false'); sheetOff(); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
     function useVal(v){ v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16); if(!v)return; var f=false; for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.toUpperCase()===v){f=true;break;} } if(!f){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } var ch=sel.value!==v; sel.value=v; sync(); if(ch)sel.dispatchEvent(new Event('change',{bubbles:true})); close(); }
@@ -5070,9 +5072,58 @@ window.mpSrvOpen=function(payload,ok,fail){
     } catch (e) { }
   }
 
+  /* THE PAGE DOES NOT MOVE WHILE A SHEET IS OPEN (2026-10-25, the owner's photo: the market window adrift over a
+     scrolled page with the trade form and the nav bar bright beneath it). role="dialog" bought us nothing here -
+     measured with the window open, the document still scrolled 712px - and on iOS Safari a fixed box does not
+     hold its place through a scroll that is also collapsing the browser toolbar. `body.pt-sheet` takes the page's
+     only overflow away (the SEO block parked at top:100%) so there is nothing left to scroll, and the reader's
+     own position is given back on close. Exported so any other sheet on this page can take the same lock. */
+  var _lockY = 0, _lockPin = false, _held = {};
+  function _heldN() { var n = 0, k; for (k in _held) if (_held[k]) n++; return n; }
+  function lockPage(on, key) {
+    var b = document.body, h = document.documentElement; if (!b) return;
+    key = key || 'sheet';
+    if (on) {
+      /* HELD BY NAME, NOT COUNTED. Three sheets share this lock (the market window and the two csel pickers in
+         Advanced); a toggle that fires twice, or a close() on an already-shut panel, drifts a bare count either
+         way and leaves the page pinned or loose. Taking it twice under one name is taking it once. */
+      if (_held[key]) return;
+      _held[key] = 1;
+      if (_heldN() > 1) return;
+      _lockY = window.scrollY || h.scrollTop || 0;
+      b.classList.add('pt-sheet'); h.classList.add('pt-sheet');
+      try { h.style.overflow = 'hidden'; } catch (e) { }
+      /* OVERFLOW ALONE DOES NOT TAKE A PHONE OUT OF THE SCROLL. Measured on this page at 390px: with
+         html AND body computing overflow:hidden the document was still 1,521px tall and still scrolled,
+         because under 881px the terminal is in normal flow and the parked SEO block is positioned against
+         the initial containing block, not the body. Pinning the body is what the Browse drawer does and it
+         is the only thing iOS honours through a toolbar collapse. It is reserved for the width where the
+         sheet IS a sheet: on a desktop the picker is a centred modal and pinning would only cost a
+         scrollbar-width reflow behind it. */
+      _lockPin = false;
+      try { _lockPin = !!(window.matchMedia && window.matchMedia('(max-width:620px)').matches); } catch (e) { }
+      if (_lockPin) {
+        b.style.position = 'fixed'; b.style.top = (-_lockY) + 'px';
+        b.style.left = '0'; b.style.right = '0'; b.style.width = '100%';
+      }
+    } else {
+      if (!_held[key]) return;
+      delete _held[key];
+      if (_heldN() > 0) return;
+      b.classList.remove('pt-sheet'); h.classList.remove('pt-sheet');
+      try { h.style.overflow = ''; } catch (e) { }
+      if (_lockPin) { b.style.position = ''; b.style.top = ''; b.style.left = ''; b.style.right = ''; b.style.width = ''; }
+      var y = _lockY; _lockY = 0; _lockPin = false;
+      if (y) { try { window.scrollTo(0, y); } catch (e) { } }
+    }
+  }
+  window.__mpPtLock = lockPage;
+
   function mkOpen() {
     var w = $('ptMkt'); if (!w) return;
-    setInset();
+    /* no setInset here: the bar is hidden the moment the lock goes on, so measuring it would drop --mkb
+       to its floor and reflow the terminal by the difference behind the backdrop */
+    lockPage(true, 'market');
     var c = cls(symNow()); if (!mkQ && mkTab !== 'fav' && TABS.some(function (t) { return t[0] === c; })) mkTab = c;
     w.hidden = false; document.body.classList.add('ptmk-on');
     var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'true');
@@ -5083,7 +5134,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   }
   function mkClose() {
     var w = $('ptMkt'); if (!w || w.hidden) return;
-    w.hidden = true; document.body.classList.remove('ptmk-on');
+    w.hidden = true; document.body.classList.remove('ptmk-on'); lockPage(false, 'market');
     var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'false');
   }
   function mkPick(s) {
