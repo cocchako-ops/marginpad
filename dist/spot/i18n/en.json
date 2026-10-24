@@ -181,5 +181,6 @@
   "term_coins": "Coins",
   "term_floor": "Floor",
   "term_browse": "Browse",
-  "term_chat": "Chat"
+  "term_chat": "Chat",
+  "term_loading": "Opening the terminal"
 }

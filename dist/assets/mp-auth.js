@@ -3546,13 +3546,27 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   }
   // Clear whatever sits at the bottom of the screen (the phone tab bar) by MEASURING it - a hardcoded offset was
   // exactly how the old side stack ended up printing on top of TRADES and CHAT.
-  window.mpBottomInset = function () { try { var bar = document.querySelector('.mpbn'); if (bar) { var r = bar.getBoundingClientRect(); if (r.height > 0 && r.bottom > innerHeight - 60) return Math.round(innerHeight - r.top) + 10; } } catch (e) {} return 16; };
+  // 2026-10-24: it asked about `.mpbn` ALONE, so the Demo Spot terminal - which hides that bar and puts its own
+  // six-cell dock there - got a toast printed straight onto the dock. Any bar anchored to the bottom counts; a
+  // surface with its own may mark it `data-mpbar` instead of being added here.
+  var BOT_BARS = '.mpbn,.tdock,[data-mpbar]';
+  window.mpBottomInset = function () {
+    var b = 16;
+    try {
+      var bars = document.querySelectorAll(BOT_BARS);
+      for (var i = 0; i < bars.length; i++) {
+        var r = bars[i].getBoundingClientRect();
+        // within 60px of the bottom edge counts as "anchored down there": the tab bar floats a few px above it
+        if (r.height > 0 && r.bottom > innerHeight - 60) b = Math.max(b, Math.round(innerHeight - r.top) + 10);
+      }
+    } catch (e) {}
+    return b;
+  };
   function baseBottom() {
     try {
-      var b = 16, bar = document.querySelector('.mpbn');
-      // within 60px of the bottom edge counts as "anchored down there": the tab bar floats a few px above the
-      // edge (margin + safe area), and a stricter test is exactly why the stack was still printing on it.
-      if (bar) { var r = bar.getBoundingClientRect(); if (r.height > 0 && r.bottom > innerHeight - 60) b = Math.round(innerHeight - r.top) + 10; }
+      // ONE reading of what sits at the bottom, shared with window.mpBottomInset - two copies of this question
+      // is how the Demo Spot dock ended up with a toast on it (2026-10-24).
+      var b = window.mpBottomInset ? window.mpBottomInset() : 16;
       var gn = document.getElementById('mpGn'); if (gn) { var g = gn.getBoundingClientRect(); if (g.height > 0) b = Math.max(b, Math.round(innerHeight - g.top) + 10); } // the guest activation card sits in this corner too
       return b;
     } catch (e) { return 16; }

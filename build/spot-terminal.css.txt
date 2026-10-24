@@ -28,8 +28,13 @@
   .spot-term #app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
   /* mp-nav sets margin:-16px -16px 0 INLINE on the header to cancel the wrap's padding and sit full-bleed;
      with that padding gone the same inline rule pushed it 16px off both edges, which is the one element that
-     made a 390px phone scroll sideways. An inline style needs !important to answer. */
-  .spot-term #siteHead{margin:0!important;padding:13px 16px 12px!important;border-bottom:1px solid var(--line)}
+     made a 390px phone scroll sideways. An inline style needs !important to answer.
+     THE TOP PADDING CARRIES THE NOTCH (2026-10-24, owner: "iphone ima onaj notch ... pada i sat i baterija
+     preko sajta"): mp-nav's own phone rule is `padding-top:calc(env(safe-area-inset-top) + 14px) !important`
+     and this line overrode it with a flat 13px, so on a home-screen iPhone the brand sat under the status bar.
+     Any !important padding on a top header MUST re-add the inset. */
+  .spot-term #siteHead{margin:0!important;border-bottom:1px solid var(--line);
+    padding:calc(13px + env(safe-area-inset-top)) 16px 12px!important}
   .spot-term #app{max-width:none;padding:0}
   .spot-term .term{display:grid;gap:1px;background:var(--line);flex:1 1 auto;min-height:0}
   @media(min-width:1000px){

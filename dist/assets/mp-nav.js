@@ -89,6 +89,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     +   '.mpbn .mpbn-l{font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:.03em;text-transform:uppercase;line-height:1;}'
     +   'body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}'
     +   'header .nav{display:none !important;}'   /* the cramped desktop header links are replaced by the drawer + bottom bar on mobile */
+    /* THE BOTTOM BAR IS GONE WHILE THE DRAWER IS OPEN (2026-10-24, owner: "kad iz onog menija na dnu otvorim
+       browse, taj meni dole se pomeri na gore"). The drawer is a full-screen overlay at z-index 95 over a bar at
+       55, so the bar was only ever a dimmed shape behind it - and the drawer's scroll lock (body position:fixed)
+       makes iOS re-measure its own chrome, which is what moved it. Nothing to move if nothing is drawn. */
+    +   'body.mpnav-on .mpbn,body.mpnav-on .tdock{display:none !important;}'
     /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Full-bleed via the 100vw trick so the bg spans edge-to-edge regardless of the .wrap padding. */
     +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'   /* solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards) */
     +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
@@ -606,9 +611,9 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     if (!hits.length) { box.hidden = true; box.innerHTML = ''; return; }
     box.innerHTML = '<div class="mpnav-sec">'+TR('brPages')+'</div>' + hits.map(function (h) { return '<a class="mpnav-sg" href="' + h.u + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>' + _esc(h.t) + '</span><small>' + _esc(h.u) + '</small></a>'; }).join('');
     box.hidden = false; }
-  function open() { if (!panel.hidden) return; /* re-entry guard: several pages route their burger here AND get the global wiring - never double-open */ if (searchEl) { searchEl.value = ''; filter(''); } loadSidx(); panel.hidden = false; _navY = window.scrollY || window.pageYOffset || 0; document.documentElement.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.top = (-_navY) + 'px'; document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%'; requestAnimationFrame(function () { panel.classList.add('open'); if (searchEl && !touchOnly()) setTimeout(function () { searchEl.focus(); }, 250); }); } // desktop only: on a phone the auto-focus popped the keyboard every time the menu opened (ibrar + AEB, chat 2026-09-04)
+  function open() { if (!panel.hidden) return; /* re-entry guard: several pages route their burger here AND get the global wiring - never double-open */ if (searchEl) { searchEl.value = ''; filter(''); } loadSidx(); panel.hidden = false; _navY = window.scrollY || window.pageYOffset || 0; document.documentElement.style.overflow = 'hidden'; document.body.classList.add('mpnav-on'); document.body.style.position = 'fixed'; document.body.style.top = (-_navY) + 'px'; document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%'; requestAnimationFrame(function () { panel.classList.add('open'); if (searchEl && !touchOnly()) setTimeout(function () { searchEl.focus(); }, 250); }); } // desktop only: on a phone the auto-focus popped the keyboard every time the menu opened (ibrar + AEB, chat 2026-09-04)
   function touchOnly() { try { return window.matchMedia && window.matchMedia('(hover:none) and (pointer:coarse)').matches; } catch (e) { return false; } }
-  function close() { panel.classList.remove('open'); document.documentElement.style.overflow = ''; document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = ''; document.body.style.width = ''; if (_navY) window.scrollTo(0, _navY); setTimeout(function () { panel.hidden = true; }, 300); }
+  function close() { panel.classList.remove('open'); document.documentElement.style.overflow = ''; document.body.classList.remove('mpnav-on'); document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = ''; document.body.style.width = ''; if (_navY) window.scrollTo(0, _navY); setTimeout(function () { panel.hidden = true; }, 300); }
   try { window.mpNavOpen = open; } catch (e) {}  // let other pages (e.g. Rekt's own nav) open this full, single-source-of-truth Browse drawer
   function wire() {
     searchEl = panel.querySelector('.mpnav-search'); scrollEl = panel.querySelector('.mpnav-scroll');
@@ -653,8 +658,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=44484a5e', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=44484a5e"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=7331398f', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=7331398f"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
