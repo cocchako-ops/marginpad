@@ -316,7 +316,53 @@ async function open(browser, m, vp) {
       const noPx = hs.filter(x => x.vis > 0 && x.visPx < x.vis);
       ok(noPx.length === 0, 'every row you can SEE carries a price, on every group (' + hs.map(x => x.tab + ' ' + x.visPx + '/' + x.vis).join(', ') + ')');
       ok(hs.every(x => x.clearsBar), 'and the window sits clear of the phone tab bar');
+      // ── THE LAST ROW OF EVERY GROUP IS REACHABLE (owner: "biranje coin-a koji je poslednji na listi svoje
+      //    vrste je nemoguce jer se sakrije iza nav bar-a") ──────────────────────────────────────────────────
+      const lastRows = [];
+      for (const t of ['crypto', 'forex', 'metal', 'index']) {
+        await p.evaluate((tt) => { const x = document.querySelector('.ptmk-tab[data-mt="' + tt + '"]'); if (x) x.click(); }, t);
+        await wait(800);
+        await p.evaluate(() => { const l = document.getElementById('ptMkList'); l.scrollTop = l.scrollHeight; });
+        await wait(1100);
+        lastRows.push(await p.evaluate((tt) => {
+          const rows = [...document.querySelectorAll('.ptmk-r')], last = rows[rows.length - 1];
+          if (!last) return { tab: tt, ok: true, sym: '(empty)' };
+          const r = last.getBoundingClientRect(), hit = document.elementFromPoint(r.x + 60, r.y + r.height / 2);
+          return { tab: tt, sym: last.querySelector('.ptmk-s1').textContent, ok: !!(hit && last.contains(hit)) };
+        }, t));
+      }
+      ok(lastRows.every(x => x.ok), 'the LAST market of every group can be tapped (' + lastRows.map(x => x.tab + ':' + x.sym + (x.ok ? '' : ' UNREACHABLE')).join(' ') + ')');
       await p.evaluate(() => { const x = document.querySelector('.ptmk-x'); if (x) x.click(); }); await wait(500);
+
+      // ── the settings sheet is above the bar, and every option in it answers a tap ─────────────────────────
+      await p.evaluate(() => document.getElementById('ptChSet').click()); await wait(900);
+      const setSheet = await p.evaluate(() => {
+        const pop = document.getElementById('ptChPop'), bar = document.querySelector('.mpbn');
+        const r = pop.getBoundingClientRect(), br = bar ? bar.getBoundingClientRect() : null;
+        const opts = [...pop.querySelectorAll('button')];
+        const bad = opts.filter(o => { const q = o.getBoundingClientRect(); const h = document.elementFromPoint(q.x + q.width / 2, q.y + q.height / 2); return !(h && o.contains(h)); });
+        return { clears: br ? r.bottom <= br.top + 1 : true, n: opts.length, bad: bad.map(o => o.textContent.trim()), mkb: getComputedStyle(document.documentElement).getPropertyValue('--mkb').trim() };
+      });
+      ok(setSheet.clears, 'the chart-settings sheet sits ABOVE the phone bar (--mkb ' + setSheet.mkb + ')');
+      ok(setSheet.n === 8 && setSheet.bad.length === 0, 'and all eight of its options answer a tap' + (setSheet.bad.length ? ' - dead: ' + setSheet.bad.join(', ') : ''));
+      await p.evaluate(() => { const bd = document.getElementById('ptChPopBd'); if (bd) bd.click(); }); await wait(400);
+
+      // ── Balance Mode is a row of its own, never a badge over the order type ───────────────────────────────
+      const bal = await p.evaluate(async () => {
+        try { localStorage.setItem('mp_balmode', JSON.stringify({ on: true, sid: 'e2e', start: Date.now() })); } catch (e) { }
+        window.dispatchEvent(new Event('mp-balmode'));
+        await new Promise(r => setTimeout(r, 500));
+        const n = document.getElementById('mpBalNote'), t = document.getElementById('planType');
+        if (!n || n.hidden) return { shown: false };
+        const a = n.getBoundingClientRect(), c = t.getBoundingClientRect();
+        const over = !(a.right <= c.left || a.left >= c.right || a.bottom <= c.top || a.top >= c.bottom);
+        const hit = document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2);
+        try { localStorage.removeItem('mp_balmode'); } catch (e) { }
+        window.dispatchEvent(new Event('mp-balmode'));
+        return { shown: true, over: over, typeOk: !!(hit && t.contains(hit)), pos: getComputedStyle(n).position };
+      });
+      ok(bal.shown && !bal.over, 'the Balance Mode badge does not print over Market / Limit');
+      ok(bal.shown && bal.typeOk && bal.pos === 'static', 'and the order type is still tappable under it (' + bal.pos + ')');
 
       // ── the non-candle styles must paint, and must not throw out of the library ──────────────────────────
       const before = p.__err.length;

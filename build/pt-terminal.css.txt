@@ -65,6 +65,17 @@
   body.paper-page .ptt.has-recent{grid-template-columns:1fr!important}
 }
 
+/* ── 1b. THE ROOM ABOVE THE PHONE BAR ──────────────────────────────────────────────────────────────────────
+   MEASURING THE BAR WAS NOT ENOUGH, AND THE FALLBACK HAD TO BE THE CSS ITSELF. mpBottomInset() only answers
+   when the bar's own rect sits within 60px of innerHeight, and on iOS a fixed bar is laid out against a
+   different viewport than innerHeight reports - so on a real phone it answered 0 and every sheet went straight
+   back under the bar (owner, twice). `.mpbn` is `bottom:calc(env(safe-area-inset-bottom) + 9px)` and about 57px
+   tall, so the room it needs is written here in the same terms; JS may RAISE this when it has a reading it
+   trusts, never lower it. And the sheets now sit ABOVE the bar (bottom/margin), rather than padding their own
+   content away from it - a scrollbar, a rounded corner and a backdrop edge all belong above it too. */
+:root{--mkb:0px}
+@media(max-width:620px){:root{--mkb:calc(env(safe-area-inset-bottom) + 72px)}}
+
 /* ── 2. THE CHART HEAD: the pair, and under it the candle's own clock ────────────────────────────────────── */
 .ptc-head{display:flex;align-items:center;gap:10px;padding:5px 12px 4px;border-bottom:1px solid rgba(35,41,50,.72);min-width:0}
 .ptc-sym{display:flex;align-items:center;gap:10px;min-width:0;background:none;border:0;padding:4px 9px 4px 5px;margin-left:-5px;border-radius:11px;cursor:pointer;color:inherit;text-align:left;transition:background .14s}
@@ -128,7 +139,7 @@
 .ptc-grid button svg{flex:0 0 auto;width:15px;height:15px;opacity:.9}
 .ptc-grid button.on svg{color:#c2f64a}
 @media(max-width:620px){
-  .ptc-pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:min(72dvh,calc(100dvh - 80px));overflow-y:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px calc(16px + env(safe-area-inset-bottom) + var(--mkb,0px));z-index:2147483000}
+  .ptc-pop{position:fixed;left:0;right:0;bottom:var(--mkb,0px);top:auto;width:auto;max-height:min(72dvh,calc(100dvh - 80px - var(--mkb,0px)));overflow-y:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px 16px;z-index:2147483000}
   .ptc-grid{grid-template-columns:1fr 1fr 1fr}
 }
 /* [hidden] is a UA rule with almost no specificity: a bare `.ptc-pop-bd{display:block}` beat it and laid a
@@ -190,7 +201,7 @@
 @media(max-width:620px){
   .ptmk{align-items:flex-end}
   /* a FIXED height: with max-height the sheet followed its own content and jumped between tabs */
-  .ptmk-p{width:100%;height:min(86dvh,calc(100dvh - 54px));max-height:none;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:var(--mkb,0px)}
+  .ptmk-p{width:100%;height:min(82dvh,calc(100dvh - 54px - var(--mkb,0px)));max-height:none;border-radius:18px 18px 0 0;border-bottom:0;margin-bottom:var(--mkb,0px)}
   .ptmk-r{padding:10px 14px;grid-template-columns:34px minmax(0,1fr) auto 32px}
   .ptmk-st{width:32px;height:32px}
 }
@@ -323,7 +334,7 @@
 .csel-sheet-bd{position:fixed;inset:0;z-index:2147482998;background:rgba(5,7,9,.66);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
 .csel-sheet-bd[hidden]{display:none}
 @media(hover:none),(pointer:coarse){
-  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:auto!important;max-height:min(72dvh,calc(100dvh - 90px));border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:calc(8px + env(safe-area-inset-bottom) + var(--mkb,0px))}
+  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:var(--mkb,0px)!important;top:auto!important;width:auto!important;max-height:min(66dvh,calc(100dvh - 90px - var(--mkb,0px)));border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:10px}
   .csel-sheet .csel-list{max-height:min(58dvh,440px);overflow-y:auto;overscroll-behavior:contain}
 }
 .csel-sh-h{display:none}
@@ -347,3 +358,9 @@
    refusal at the Open button */
 .ptmk-sh{display:inline-block;margin-left:6px;font-family:'Space Mono',monospace!important;font-size:9px;font-weight:700;letter-spacing:.07em;color:#8a7a52;background:rgba(240,195,90,.13);border:1px solid rgba(240,195,90,.3);border-radius:5px;padding:1px 4px;vertical-align:1px}
 .ptmk-px.wait{color:#4e5763}
+
+/* BALANCE MODE IS NOT A CORNER BADGE ANY MORE. It is `position:absolute;top:0;right:0` inside .pt2-top, which is
+   exactly where the Market / Limit control now lives - so it printed straight over it (owner 2026-10-24). It
+   takes a line of its own under the price, which is what it is about. */
+.ptt-form .pt2-top{flex-wrap:wrap}
+.ptt-form .mp-balnote{position:static;order:3;flex:0 0 auto;margin:8px 0 0;width:-moz-max-content;width:max-content}

@@ -5030,13 +5030,33 @@ window.mpSrvOpen=function(payload,ok,fail){
      every page, so a sheet anchored there covers its own last rows - the chart-style sheet lost "Your entries"
      entirely and the market list lost a row. mpBottomInset() is the one reading of "what is anchored at the
      bottom"; the direct measurement is the fallback for a page where mp-auth has not parsed yet. */
-  function bottomInset() {
-    try { if (window.mpBottomInset) { var v = +window.mpBottomInset(); if (isFinite(v) && v >= 0) return v; } } catch (e) { }
-    var b = document.querySelector('.mpbn, .tdock, [data-mpbar]');
-    if (b) { var r = b.getBoundingClientRect(); if (r.height > 0 && (innerHeight - r.bottom) < 60) return Math.round(r.height); }
-    return 0;
+  /* ASK THE BROWSER WHAT IS PAINTED AT THE BOTTOM OF THE SCREEN, and only then believe a measurement. The old
+     reading went through mpBottomInset(), which answers only when the bar's own rect lands within 60px of
+     innerHeight - and on iOS a fixed bar is laid out against a different viewport than innerHeight reports, so
+     on a real phone it answered 0 and every sheet went back under the bar. elementFromPoint cannot be wrong
+     about what is actually there. Whatever comes out may only RAISE the CSS reservation, never lower it: the
+     stylesheet already holds the bar's own geometry and is the floor. */
+  function barInset() {
+    try {
+      var el = document.elementFromPoint(Math.round(innerWidth / 2), innerHeight - 4);
+      var bar = el && el.closest && el.closest('.mpbn, .tdock, [data-mpbar]');
+      if (!bar) { var q = document.querySelectorAll('.mpbn, .tdock, [data-mpbar]'); for (var i = 0; i < q.length; i++) { var cs = getComputedStyle(q[i]); if (cs.display !== 'none' && cs.visibility !== 'hidden' && cs.position === 'fixed') { bar = q[i]; break; } } }
+      if (!bar) return 0;
+      var r = bar.getBoundingClientRect();
+      if (!(r.height > 4)) return 0;
+      var v = Math.round(innerHeight - r.top);
+      return (v > 0 && v < 240) ? v + 6 : 0;   // +6: the sheet must clear it, not touch it
+    } catch (e) { return 0; }
   }
-  function setInset() { try { document.documentElement.style.setProperty('--mkb', bottomInset() + 'px'); } catch (e) { } }
+  function setInset() {
+    try {
+      var root = document.documentElement;
+      root.style.removeProperty('--mkb');                                  // read the stylesheet's own floor first
+      var floor = parseFloat(getComputedStyle(root).getPropertyValue('--mkb')) || 0;
+      var v = barInset();
+      if (v > floor) root.style.setProperty('--mkb', v + 'px');            // only ever raise it
+    } catch (e) { }
+  }
 
   function mkOpen() {
     var w = $('ptMkt'); if (!w) return;
