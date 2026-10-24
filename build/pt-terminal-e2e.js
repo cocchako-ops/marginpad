@@ -124,6 +124,24 @@ async function open(browser, m, vp) {
       ok(!mk.tabClipped, 'the group chips are not squashed by the list under them');
       ok(mk.reach && mk.stars === mk.n, 'a row is clickable and every row has its own star');
 
+      // ---- commodities: our own icon, never a memecoin wearing the ticker (2026-10-24) ----
+      await p.evaluate(() => document.querySelector('.ptmk-tab[data-mt="metal"]').click()); await wait(2200);
+      const com = await p.evaluate(async () => {
+        const rows = [...document.querySelectorAll('.ptmk-r')];
+        const syms = rows.map(r => r.querySelector('.ptmk-s1').textContent.trim());
+        const broken = rows.filter(r => { const i = r.querySelector('.ptmk-ic img'); return !i || !i.naturalWidth; }).length;
+        const own = [];
+        for (const s of syms) {
+          // the resolver answers with a 302, so the FINAL url is what says where the picture really came from
+          try { const r = await fetch('/api/coinicon?sym=' + s); own.push(s + ':' + (r.ok && r.url.indexOf('/assets/icons/') >= 0 ? 'own' : 'ELSEWHERE(' + r.status + ' ' + r.url.split('/').pop().slice(0, 20) + ')')); }
+          catch (e) { own.push(s + ':threw'); }
+        }
+        return { syms, broken, own };
+      });
+      ok(com.syms.length >= 6 && com.broken === 0, 'every commodity draws a face (' + com.syms.length + ' rows, ' + com.broken + ' broken)');
+      ok(com.own.every(x => /:own$/.test(x)), 'and it is OUR OWN svg, never a coin CDN look-alike (' + com.own.join(' ') + ')');
+      ok(com.syms[0] === 'XAU' && com.syms[1] === 'XAG', 'gold and silver lead the group named after them (' + com.syms.slice(0, 3).join(',') + ')');
+
       const sw = await p.evaluate(async () => {
         document.querySelector('.ptmk-tab[data-mt="stock"]').click();
         await new Promise(r => setTimeout(r, 500));

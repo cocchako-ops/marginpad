@@ -4311,12 +4311,25 @@ const ICON_ALIAS = { aigensyn: 'gensyn', '1000pepe': 'pepe', '1000bonk': 'bonk',
 // a stock-logo CDN; metals and oil are our own SVGs under /assets/icons. ICON_STOCK_EXTRA is the measured list - extend it
 // when a new stock perp shows a letter, never widen it to "any short ticker".
 const ICON_STOCK_EXTRA = { sndk: 1, mu: 1, klac: 1, mcd: 1, crcl: 1, soxl: 1, soxs: 1 };
-const ICON_OWN = { xau: '/assets/icons/xau.svg', xag: '/assets/icons/xag.svg', cl: '/assets/icons/oil.svg', bz: '/assets/icons/oil.svg' };
+// Every COMMOD symbol must be in here, under the name WE trade it by (2026-10-24, owner: "ikonice za metale su neke memes"):
+// CoinGecko answers BRENT with a Pepe oil drop, COPPER with a Doge and OIL with a token called "$OIL ON USD1". Only `cl`/`bz`
+// (the futures codes) were listed, and nothing asks the resolver by those - the terminal asks by OIL, BRENT, NATGAS, COPPER.
+const ICON_OWN = {
+  xau: '/assets/icons/xau.svg', xag: '/assets/icons/xag.svg',
+  oil: '/assets/icons/oil.svg', cl: '/assets/icons/oil.svg',
+  brent: '/assets/icons/brent.svg', bz: '/assets/icons/brent.svg',
+  natgas: '/assets/icons/natgas.svg', ng: '/assets/icons/natgas.svg',
+  copper: '/assets/icons/copper.svg', hg: '/assets/icons/copper.svg'
+};
 async function handleCoinIcon(url, env, request) {
   const sym = String(url.searchParams.get('sym') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
   const bad = (s) => new Response('', { status: s, headers: { 'cache-control': 'public, max-age=86400', ...CORS } });
   if (!sym) return bad(400);
   if (ICON_OWN[sym]) return Response.redirect('https://marginpad.io' + ICON_OWN[sym], 302);
+  // A commodity we have no icon for gets LETTERS, never a CoinGecko look-alike - the same mechanical rule as the stock
+  // branch below. Without it, adding a seventh commodity to COMMOD silently puts whatever memecoin wears that ticker
+  // on the terminal, the screener and the recents rail, and nothing anywhere would report it.
+  if (COMMOD[sym.toUpperCase()]) return bad(404);
   if (STOCKS[sym.toUpperCase()] || ICON_STOCK_EXTRA[sym]) { // a stock or ETF: its own logo, never a CoinGecko look-alike
     const ck0 = new Request('https://marginpad.io/__coinicon_stk_' + sym);
     try { const hit = await caches.default.match(ck0); if (hit) return hit; } catch (e) {}

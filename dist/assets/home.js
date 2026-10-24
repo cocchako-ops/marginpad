@@ -3230,7 +3230,7 @@ window.addEventListener('load', function () {
         var isImg=!ic; /* 2026-10-24: only FX/indices are drawn; stocks and metals resolve like a coin */
         h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+__esT_home("tradeItAgainAria",' - trade it again" aria-label="Switch to ')+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
-          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
+          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2&&!/^(xau|xag|oil|brent|natgas|copper)$/.test(this.dataset.s)){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
           +'</button>'; }
       box.innerHTML=h; box.hidden=false; if(ptt)ptt.classList.add('has-recent');
     }
@@ -4873,12 +4873,17 @@ window.mpSrvOpen=function(payload,ok,fail){
     return '<svg viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="17" text-anchor="middle" font-size="' + (x[0].length > 3 ? 7.5 : 9) + '" font-weight="800" fill="#e2e7ec" font-family="Arial,sans-serif">' + x[0] + '</text>'
       + '<polyline points="10,25.5 14.5,22 18,24 22,18.5 26.5,21" fill="none" stroke="' + x[1] + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   }
+  /* Commodities: every one of these has its own SVG behind /api/coinicon, and none of them may ever be looked up by
+     ticker on a coin CDN (2026-10-24: BRENT came back a Pepe oil drop, COPPER a Doge, OIL a token called $OIL). The
+     list is explicit rather than mpAssetClass, which is filled after the Bybit symbol fetch and answers 'crypto'
+     until then. */
+  var NOTCOIN = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 };
   /* the fallback chain lives on window so the markup carries one short call instead of a paragraph of inline JS */
   window.__mpIcoErr = function (img) {
     var n = (+img.getAttribute('data-f') || 0) + 1; img.setAttribute('data-f', String(n));
     var s = img.getAttribute('data-s') || '';
     if (n === 1) { img.src = '/api/coinicon?sym=' + encodeURIComponent(s); return; }
-    if (n === 2) { img.src = 'https://assets.coincap.io/assets/icons/' + s.toLowerCase() + '@2x.png'; return; }
+    if (n === 2 && !NOTCOIN[s]) { img.src = 'https://assets.coincap.io/assets/icons/' + s.toLowerCase() + '@2x.png'; return; }
     var p = img.parentNode; if (p) { img.remove(); p.innerHTML = '<span>' + esc(s.toUpperCase().slice(0, 4)) + '</span>'; }
   };
   function icoHtml(s) {
@@ -4993,6 +4998,13 @@ window.mpSrvOpen=function(payload,ok,fail){
     }
     if (tab === 'crypto' && !q && _scr) {
       out.sort(function (a, b) { var A = _scr[a], B = _scr[b]; return ((B && B.vol) || 0) - ((A && A.vol) || 0); });
+    }
+    /* The two metals everybody knows lead the group that is NAMED after them (2026-10-24): this tab reads "Metals"
+       and the symbol table's own order put gold and silver below crude, brent and natural gas. sort is stable, so
+       the energy rows keep the order they came in. */
+    if (tab === 'metal' && !q) {
+      var LEAD = { XAU: 1, XAG: 2 };
+      out.sort(function (a, b) { return (LEAD[a] || 9) - (LEAD[b] || 9); });
     }
     return out;
   }
