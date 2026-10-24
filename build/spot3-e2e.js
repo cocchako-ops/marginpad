@@ -21,6 +21,7 @@ const K = (fs.readFileSync(path.join(__dirname, '..', 'ADMIN_KEY.local.txt'), 'u
 if (!K) { console.error('no mpadm_ token in ADMIN_KEY.local.txt'); process.exit(1); }
 const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n + (x !== undefined ? ' ' + JSON.stringify(x).slice(0, 260) : ''));
 const H = { 'x-admin-key': K, 'content-type': 'application/json' };
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const uid = 'e2espot' + Date.now().toString(36);
 const J = async (p, init) => { const r = await fetch(ORIGIN + p, init); let j = null; try { j = await r.json(); } catch (e) {} return { s: r.status, j }; };
 const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') + 'uid=' + uid, body ? { method: 'POST', headers: H, body: JSON.stringify(body) } : { headers: H });
@@ -198,7 +199,49 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
           await page.waitForFunction("document.getElementById('chartMsg').hidden || /No chart|failed/.test(document.getElementById('chartMsg').textContent)", { timeout: 25000 }).catch(() => {});
           const sh = await page.evaluate(() => { const s = document.getElementById('sheet'); const r = s.getBoundingClientRect(); return { on: s.classList.contains('on'), name: document.getElementById('shName').textContent, px: document.getElementById('shPx').textContent, chart: document.getElementById('chartMsg').hidden, canvas: !!document.querySelector('#chart canvas'), sell: document.getElementById('swSell').style.display !== 'none', inView: r.top >= 0 && r.bottom <= window.innerHeight + 1, go: document.getElementById('go').textContent }; });
           chk(vp.t + ': the trade sheet opens on the token - name, price, a drawn chart, Sell offered because it is held, inside the viewport', sh.on && sh.name === pick.sym && /^\$/.test(sh.px) && sh.chart && sh.canvas && sh.sell && sh.inView && /Buy/.test(sh.go), sh);
-          await page.click('#shX');
+          /* THE PAGE IS A TERMINAL SINCE 2026-10-24: the trade sheet is the permanent centre stage, so there
+             is no close button to click (#shX is hidden) and nothing to close. This check is the design
+             itself - three columns at once on a desktop, one at a time with a six-cell dock on a phone, the
+             site's own bottom bar absorbed into that dock rather than hidden underneath it, and the page
+             never scrolling. If the stage ever goes back to being a modal, these go red. */
+          const tm = await page.evaluate(() => {
+            const s = document.getElementById('sheet'), d = document.getElementById('spotDock'), x = document.getElementById('shX');
+            const term = document.getElementById('spotTerm');
+            const bn = document.querySelector('nav.mpbn');
+            return { term: !!term, pos: getComputedStyle(s).position,
+              // ask whether it RENDERS: its own computed display is unchanged when an ancestor is hidden
+              xHidden: x ? !x.getClientRects().length : true,
+              cols: term ? Array.prototype.filter.call(term.children, function (c) { return getComputedStyle(c).display !== 'none'; }).length : 0,
+              dockCells: d ? d.children.length : 0, dockShown: d ? getComputedStyle(d).display !== 'none' : false,
+              headSym: (document.getElementById('tSym') || {}).textContent,
+              chartInStage: !!document.querySelector('#sheet #chart canvas'),
+              mpbn: bn ? getComputedStyle(bn).display : 'absent',
+              pageScroll: document.documentElement.scrollHeight - window.innerHeight };
+          });
+          chk(vp.t + ': the terminal IS the page - the stage is static with the chart inside it, the sheet has no close button, '
+            + (vp.w > 999 ? 'three columns stand at once' : 'one column at a time with a six-cell dock and no second bottom bar under it')
+            + ', and the page itself does not scroll',
+            tm.term && tm.pos === 'static' && tm.xHidden && tm.chartInStage && tm.headSym === pick.sym && tm.pageScroll <= 2
+            && (vp.w > 999 ? (tm.cols === 3 && !tm.dockShown) : (tm.cols === 1 && tm.dockShown && tm.dockCells === 6 && tm.mpbn === 'none')), tm);
+          /* THE STAGE MUST SURVIVE EVERY WAY THE OLD MODAL COULD BE CLOSED. closeSheet() destroys the chart
+             and only a fresh pick rebuilds it, so Escape and the overlay are intercepted - and the thesis
+             modal, which shares that same overlay, must still close by both. */
+          if (vp.w > 999) {
+            const live = () => page.evaluate(() => ({ chart: !!document.querySelector('#chart canvas'), on: document.getElementById('sheet').classList.contains('on'), sym: (document.getElementById('tSym') || {}).textContent }));
+            await page.keyboard.press('Escape'); await sleep(500);
+            const k1 = await live();
+            await page.evaluate(() => document.getElementById('ov').click()); await sleep(500);
+            const k2 = await live();
+            chk(vp.t + ': neither Escape nor a click on the overlay closes the stage - the chart stays drawn', k1.chart && k1.on && k2.chart && k2.on && k2.sym === pick.sym, { k1, k2 });
+            await page.evaluate(() => { const w = document.getElementById('thWrite'); if (w) w.click(); }); await sleep(700);
+            const th1 = await page.evaluate(() => ({ th: document.getElementById('thSheet').classList.contains('on'), ov: getComputedStyle(document.getElementById('ov')).display !== 'none' }));
+            await page.keyboard.press('Escape'); await sleep(600);
+            const th2 = await page.evaluate(() => ({ th: document.getElementById('thSheet').classList.contains('on'), ov: getComputedStyle(document.getElementById('ov')).display !== 'none' }));
+            const k3 = await live();
+            chk(vp.t + ': the thesis modal still dims the page and still closes on Escape, and the stage is untouched by it', th1.th && th1.ov && !th2.th && !th2.ov && k3.chart && k3.on, { th1, th2, k3 });
+          }
+          // back to the market: on a phone the pick moved the dock onto the chart
+          await page.evaluate(() => { if (window.__mpSpotTerm) window.__mpSpotTerm.show('market'); else { const x = document.getElementById('shX'); if (x) x.click(); } });
           await page.evaluate(() => { const q = document.getElementById('q'); q.value = ''; q.dispatchEvent(new Event('input', { bubbles: true })); });
         }
         // screener sorts

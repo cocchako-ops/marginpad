@@ -1,0 +1,197 @@
+/* ─── THE TERMINAL SHELL (2026-10-24) ─────────────────────────────────────────────────────────────────────────
+   This runs AFTER the page's own script and does not touch one line of it. That is the whole safety argument:
+   every control here is bound by id, so the terminal is built by MOVING those nodes into a three-column stage
+   rather than by rewriting the logic that drives them - the same rule the /trading-api/ key manager is under
+   ("lift it, do not retype it"). appendChild MOVES a node, so its id, its listeners and the script's own
+   references survive; the masthead is moved WHOLE because five of its elements (mToday, mRank, mAll, mAllS,
+   mRankS) are written on every repaint and deleting any of them would throw on the next poll.
+   It builds only once the page has shown #app - a signed-out reader meets the gate, which is an ordinary page
+   and must stay one. Nothing here decides anything about money: it arranges what exists and keeps a chart on
+   the screen. */
+(function () {
+  var app = document.getElementById('app'), sheet = document.getElementById('sheet');
+  if (!app || !sheet || document.getElementById('spotTerm')) return;
+  var $ = function (id) { return document.getElementById(id); };
+  var mk = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+  var phone = function () { return !(window.matchMedia && matchMedia('(min-width:1000px)').matches); };
+
+  // the gate is a page, the account is a terminal - wait for the page to decide which this reader gets
+  if (app.hidden) {
+    try {
+      var mo = new MutationObserver(function () { if (!app.hidden) { mo.disconnect(); build(); } });
+      mo.observe(app, { attributes: true, attributeFilter: ['hidden'] });
+    } catch (e) {}
+    return;
+  }
+  build();
+
+  function build() {
+    if (document.getElementById('spotTerm')) return;
+    // English comes from the page's own pack, so there is ONE source for it; a reader on another language is
+    // served by applyStatic(), which re-runs over [data-t] when the pack lands and finds these nodes too.
+    var EN = {}; try { EN = JSON.parse(document.getElementById('spotI18n').textContent) || {}; } catch (e) {}
+    var T = function (k, d) { return EN[k] != null ? EN[k] : d; };
+
+    /* 1. THE STAGE */
+    var term = mk('div', 'term'); term.id = 'spotTerm';
+    var left = mk('div', 'tcol tcol-left'), mid = mk('div', 'tcol tcol-mid tshow'), right = mk('div', 'tcol tcol-right');
+    term.appendChild(left); term.appendChild(mid); term.appendChild(right);
+
+    var buyCard = $('buyCard');
+    var mast = app.querySelector('.mast'), grid2 = app.querySelector('.grid2');
+    var holdCard = $('holdRows') ? $('holdRows').closest('.card') : null;
+    var floorCard = $('floorCard');
+    var thesisCard = $('thesisCard');
+    var histCard = $('hist') ? $('hist').closest('.card') : null;
+    var foot = app.querySelector('.foot');
+
+    /* 2. THE LIVE HEAD - what you are looking at, what it costs, that it is alive. It MIRRORS the sheet's own
+          nodes rather than fetching anything: one price on the page, never two that can disagree. And it
+          REPLACES the sheet's header, which said the same four things 63px lower down - on a 900px desktop
+          that header alone was a quarter of what the chart had left. The logo moves up into it. */
+    var head = mk('div', 'thead', '<span class="tlive"></span><span class="tsym" id="tSym">&mdash;</span>'
+      + '<span class="tsub" id="tSub"></span><span class="tpx" id="tPx"></span><span class="tchg" id="tChg"></span>');
+    var lg = $('shLogo'), lgt = $('shLogoT');
+    if (lg) head.insertBefore(lg, head.firstChild);
+    if (lgt) head.insertBefore(lgt, head.firstChild);
+
+    mid.appendChild(head);
+    mid.appendChild(sheet);
+    if (buyCard) left.appendChild(buyCard);
+    if (holdCard) right.appendChild(holdCard);
+    if (floorCard) right.appendChild(floorCard);
+    if (thesisCard) right.appendChild(thesisCard);
+    if (histCard) right.appendChild(histCard);
+    if (foot) right.appendChild(foot);
+    if (grid2 && grid2.parentNode && !grid2.children.length) grid2.parentNode.removeChild(grid2);
+    app.insertBefore(term, app.firstChild);
+    document.body.classList.add('spot-term');
+
+    /* THE DAILY CLAIM IS THE LOOP, SO IT MUST BE ON THE VIEW A PHONE OPENS ON. There is one masthead and it
+       cannot be in two columns, so its COLUMN depends on the viewport: beside the market on a phone (the
+       default view - worth, cash and Claim are the first thing a reader meets), at the top of the account
+       column on a desktop, where everything stands at once anyway. Copying the numbers into a second strip
+       was the other option and is forbidden - two copies of one figure can disagree. */
+    function placeMast() {
+      if (!mast) return;
+      var host = phone() ? left : right;
+      if (mast.parentNode !== host) host.insertBefore(mast, host.firstChild);
+    }
+    placeMast();
+
+    /* 3. THE EMPTY STAGE. Until a coin is picked it says what to do, in the place the chart will appear. */
+    var ph = mk('div', 'tstage-empty',
+      '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3.5-4.5L14 13l4-6"/></svg><span data-t="term_pick"></span>');
+    ph.querySelector('span').textContent = T('term_pick', 'Pick a coin and its chart opens here.');
+    sheet.appendChild(ph);
+
+    function picked() { return !!((($('shName') || {}).textContent || '').trim()) && sheet.classList.contains('on'); }
+    function syncHead() {
+      var on = picked();
+      sheet.classList.toggle('tempty', !on);
+      $('tSym').textContent = on ? (($('shName') || {}).textContent || '').trim() : '—';
+      $('tSub').innerHTML = on ? (($('shSub') || {}).innerHTML || '') : '';
+      $('tPx').textContent = on ? (($('shPx') || {}).textContent || '').trim() : '';
+      $('tChg').innerHTML = on ? (($('shChg') || {}).innerHTML || '') : '';
+      head.classList.toggle('empty', !on);
+    }
+    // the page script repaints those nodes; watch them rather than hooking its functions
+    try { new MutationObserver(syncHead).observe(sheet, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+    syncHead();
+
+    /* 4. THE STAGE IS PERMANENT, SO THE THREE WAYS TO CLOSE IT ARE ANSWERED HERE. closeSheet() destroys the
+          chart and only a fresh pick rebuilds it, so Escape and the overlay must not reach it; the sheet's
+          own X is hidden in CSS. The thesis modal shares that overlay and keeps both of them. */
+    function thesisOpen() { var t = $('thSheet'); return !!(t && t.classList.contains('on')); }
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (thesisOpen()) { var x = $('thX'); if (x) x.click(); }
+      e.stopPropagation();
+    }, true);
+    var ov = $('ov');
+    if (ov) ov.addEventListener('click', function (e) {
+      if (thesisOpen()) { var x = $('thX'); if (x) x.click(); }
+      e.stopPropagation();
+    }, true);
+    if ($('thSheet')) try {
+      new MutationObserver(function () { document.body.classList.toggle('spot-thesis', thesisOpen()); })
+        .observe($('thSheet'), { attributes: true, attributeFilter: ['class'] });
+    } catch (e) {}
+
+    /* 5. THE DOCK (phone): one view at a time, 54px cells, icon over a short word - the vocabulary the /charts
+          phone terminal already uses, so a reader who knows one knows this one. */
+    var IC = {
+      market: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
+      chart: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 14l3-3 2.5 2.5L17 8"/>',
+      coins: '<circle cx="9" cy="9" r="5.2"/><path d="M12.4 17.4A5.2 5.2 0 1017.4 12"/>',
+      floor: '<path d="M4 7h16M4 12h10M4 17h13"/>',
+      browse: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.9-3.9"/>',
+      chat: '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>'
+    };
+    var VIEWS = [['market', 'Market', left], ['chart', 'Chart', mid], ['coins', 'Coins', right], ['floor', 'Floor', right]];
+    var dock = mk('div', 'tdock'); dock.id = 'spotDock';
+    VIEWS.forEach(function (v) {
+      var b = mk('button', '', '<svg viewBox="0 0 24 24">' + IC[v[0]] + '</svg><span data-t="term_' + v[0] + '"></span><i></i>');
+      b.querySelector('span').textContent = T('term_' + v[0], v[1]);
+      b.type = 'button'; b.setAttribute('data-tv', v[0]); dock.appendChild(b);
+    });
+    /* THE SITE'S OWN PHONE BAR IS ABSORBED, NOT COVERED. mp-nav puts a fixed four-cell nav at the bottom of
+       every page and my dock landed exactly on top of it at a higher z-index - two bars in one place, the
+       lower one unreachable. Browse and Chat are the two that matter here and BOTH ARE ACTIONS, answered by
+       mp-nav's own document-delegated [data-mpbn] listener, so carrying the attribute is all it takes: one
+       bar, nothing lost, and no second copy of either handler. */
+    [['browse', 'Browse'], ['chat', 'Chat']].forEach(function (x) {
+      var a = document.createElement('a');
+      a.href = '#'; a.setAttribute('role', 'button'); a.setAttribute('data-mpbn', x[0]);
+      a.innerHTML = '<svg viewBox="0 0 24 24">' + IC[x[0]] + '</svg><span data-t="term_' + x[0] + '"></span>';
+      a.querySelector('span').textContent = T('term_' + x[0], x[1]);
+      dock.appendChild(a);
+    });
+    document.body.appendChild(dock);
+
+    var VIEW = '';
+    function show(name) {
+      var v = null, i; for (i = 0; i < VIEWS.length; i++) if (VIEWS[i][0] === name) v = VIEWS[i];
+      if (!v) { v = VIEWS[0]; name = v[0]; }
+      VIEW = name;
+      [left, mid, right].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      // Coins and Floor are two places in one column - go to the one that was asked for
+      if (v[2] === right) { var t = name === 'floor' ? floorCard : holdCard; if (t) try { right.scrollTop = Math.max(0, t.offsetTop - right.offsetTop); } catch (e) {} }
+      Array.prototype.forEach.call(dock.children, function (b) { b.classList.toggle('on', b.getAttribute('data-tv') === name); });
+      try { localStorage.setItem('mp_spot_view', name); } catch (e) {}
+    }
+    dock.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-tv]'); if (!b) return;
+      b.classList.remove('dot');
+      show(b.getAttribute('data-tv'));
+    });
+    function layout() {
+      if (phone()) {
+        if (!VIEW) { var s = 'market'; try { s = localStorage.getItem('mp_spot_view') || 'market'; } catch (e) {} show(picked() ? s : 'market'); }
+      } else { VIEW = ''; left.classList.add('tshow'); mid.classList.add('tshow'); right.classList.add('tshow'); }
+    }
+    layout();
+    window.addEventListener('resize', function () { placeMast(); layout(); });
+
+    /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. The page's
+          own handler still does all the work; this only follows it onto the stage. */
+    document.addEventListener('click', function (e) {
+      if (!phone() || !e.target.closest) return;
+      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody')) return;
+      setTimeout(function () { if (picked()) show('chart'); }, 90);
+    }, true);
+
+    /* 7. A new row on the floor marks the dock while the reader is elsewhere - the FOMO half of this, and a
+          mark rather than a toast, so it never covers the thing they are looking at. */
+    var fr = $('floorRows'), seen = fr ? fr.children.length : 0;
+    if (fr) try {
+      new MutationObserver(function () {
+        var n = fr.children.length, btn = dock.querySelector('[data-tv="floor"]');
+        if (n > seen && btn && VIEW !== 'floor') btn.classList.add('dot');
+        seen = n;
+      }).observe(fr, { childList: true });
+    } catch (e) {}
+
+    window.__mpSpotTerm = { show: show, view: function () { return VIEW; }, picked: picked };
+  }
+})();

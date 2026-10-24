@@ -1,0 +1,144 @@
+  /* ─── THE TERMINAL (2026-10-24, owner: "ne zelim neki mini update, zelim bukvalno ceo terminal posvecen meme
+     coins i spot trade") ───────────────────────────────────────────────────────────────────────────────────
+     MEASURED FIRST: with a started account the page was 3.19 desktop screens and 4.02 phone screens, the first
+     live coin price sat 1.19 / 1.64 screens down, and the buy card alone was 1,537px. The decisive finding is
+     that THE CHART DID NOT EXIST ON THE PAGE AT ALL until a coin was tapped - it lives inside the trade sheet,
+     a centred modal. That one fact is why this read as a stack of cards and not as a terminal.
+     The sheet already IS a complete terminal pane: logo, name, price, 24h, chart, timeframes, the position,
+     buy/sell, amount, estimate, action. So this is not a rewrite - it is that pane PROMOTED out of the modal
+     into a permanent stage, with the market list beside it and the account, the coins and the floor on the
+     other side. Every id the page script binds to is where it was; only the parent changed.
+     THE STAGE FILLS WHAT IS LEFT, AND NOTHING MEASURES IT. The first cut had the shell read the header's
+     height into a variable, and it was wrong by 41px whenever the cookie bar landed between two reads - a
+     number that can be stale is the wrong tool for a height that must be exact. A flex chain from the wrap
+     down to the chart is always right, with no reads and no listener: 100dvh for the phone whose address bar
+     retracts, 100vh behind it for a browser that does not know dvh. */
+  /* THE BODY IS THE SCREEN AND THE TERMINAL IS WHAT IS LEFT OF IT. Putting the height on the wrap looked
+     right and was 47px wrong whenever the cookie bar was up: that bar is in flow ABOVE the wrap, so a wrap of
+     exactly 100dvh hung 47px below the fold and the phone's Buy button ended up under the dock. With the body
+     as the flex column, anything in flow above the terminal - cookie bar, announcement strip - takes its room
+     first and the terminal takes the rest, whatever that is.
+     And HEIGHT, not min-height: a minimum caps nothing, so the 1,295px market list grew the page to 1,666px
+     and took the stage with it. */
+  body.spot-term{overflow:hidden;height:100vh;display:flex;flex-direction:column}
+  @supports (height:100dvh){body.spot-term{height:100dvh}}
+  /* full bleed: the page's own .wrap is 1040px wide with 110px of bottom padding, which on a 1366 screen left
+     the terminal floating in the middle of the window with a scroll under it */
+  .spot-term .wrap{max-width:none;padding:0;display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+  .spot-term #app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  /* mp-nav sets margin:-16px -16px 0 INLINE on the header to cancel the wrap's padding and sit full-bleed;
+     with that padding gone the same inline rule pushed it 16px off both edges, which is the one element that
+     made a 390px phone scroll sideways. An inline style needs !important to answer. */
+  .spot-term #siteHead{margin:0!important;padding:13px 16px 12px!important;border-bottom:1px solid var(--line)}
+  .spot-term #app{max-width:none;padding:0}
+  .spot-term .term{display:grid;gap:1px;background:var(--line);flex:1 1 auto;min-height:0}
+  @media(min-width:1000px){
+    .spot-term .term{grid-template-columns:318px minmax(0,1fr) 344px;align-items:stretch}
+  }
+  .spot-term .tcol{background:var(--bg);min-width:0;min-height:0;display:flex;flex-direction:column}
+  .spot-term .tcol-mid{background:#0a0d13;overflow:hidden}
+  .spot-term .tcol-left,.spot-term .tcol-right{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+  .spot-term .tcol-left #list{max-height:none}
+  /* every card loses its own box - in a terminal the COLUMN is the box and a border inside one reads as clutter */
+  .spot-term .tcol .card,.spot-term .tcol .mast .card{border:0;border-radius:0;margin:0!important;background:transparent;padding:0}
+  .spot-term .tcol .card+.card,.spot-term .tcol .mast+*{border-top:1px solid var(--line)}
+  .spot-term .tcol .card>h2,.spot-term .tcol .hist>summary{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);padding:11px 14px 9px;margin:0;border-bottom:1px solid var(--line);background:var(--bg);
+    position:sticky;top:0;z-index:2}
+  .spot-term .tcol .card>h2 small{font-size:10px;letter-spacing:.02em;text-transform:none}
+  .spot-term .tcol .rows,.spot-term .tcol .frows,.spot-term .tcol .throws,.spot-term .tcol .tabs,
+  .spot-term .tcol .srch,.spot-term .tcol .more,.spot-term .tcol #histRows,.spot-term .tcol .mm-foot{padding-left:14px;padding-right:14px}
+  .spot-term .tcol .tabs{padding-top:10px}
+  .spot-term .tcol .foot{padding:14px;margin:0;border-top:1px solid var(--line);font-size:11px;line-height:1.5}
+
+  /* THE STAGE. The chart is the biggest thing on the screen, which is what a terminal is for - and THE ACTION
+     IS ON SCREEN WITH IT, which is what stops it being a page again. Measured at 1366x900 with a fixed 432px
+     chart, the Buy button landed at y=952, below the fold; so the stage is a flex column that fits the
+     viewport and the chart absorbs whatever is left over. It is created with autoSize:true, so it follows its
+     box and the page script is told nothing. */
+  .spot-term #sheet{position:static;transform:none;width:auto;max-width:none;max-height:none;border:0;border-radius:0;
+    background:transparent;padding:0 16px 18px;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;
+    overflow-y:auto;z-index:auto}
+  .spot-term #sheet>*{flex:0 0 auto}
+  .spot-term #sheet .chart{flex:1 1 auto;height:auto;min-height:250px;border-radius:12px}
+  /* the sheet's own header said the same four things the live head says, 63px lower down - on a 900px desktop
+     that was a quarter of what the chart had left, so the head IS the header now and the logo moved into it */
+  .spot-term #sheet .sh-h{display:none}
+  .spot-term .thead .logo{width:22px;height:22px;flex:0 0 22px;border-radius:50%;object-fit:cover}
+  .spot-term .thead .logo.txt{display:flex;align-items:center;justify-content:center;background:var(--panel2);
+    font:700 8.5px 'Space Mono',monospace;color:var(--dim);text-transform:uppercase;overflow:hidden}
+  .spot-term .thead.empty .logo{display:none}
+  .spot-term .thead .logo[hidden]{display:none}   /* the page toggles these two with .hidden - never fight it */
+  .spot-term #sheet .sw{margin-top:14px}
+  .spot-term #sheet .go{margin-top:11px;height:46px;font-size:15px}
+  /* the overlay belongs to the thesis modal now; the trade sheet is not a modal any more and must not dim the
+     page it lives in (openSheet still raises it, so this is a display rule, not a change to the script) */
+  .spot-term #ov.on{display:none}
+  .spot-term.spot-thesis #ov.on{display:block}
+  /* AN EMPTY STAGE IS NOT A TERMINAL: until a coin is picked the stage says what to do, in the place the chart
+     will appear, instead of a blank rectangle or a half-built pane */
+  .spot-term #sheet.tempty>*{display:none}
+  .spot-term #sheet.tempty>.tstage-empty{display:flex}
+  .spot-term .tstage-empty{display:none;flex:1 1 auto;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;color:var(--faint);font-size:13px;text-align:center;padding:0 24px;min-height:250px;
+    border:1px dashed var(--line2);border-radius:12px;margin:14px 0}
+  .spot-term .tstage-empty svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.5;opacity:.55}
+
+  /* the account block: four numbers at the top of the right column, not a 344px card at the top of the page */
+  .spot-term .mast{padding:0}
+  .spot-term .mast .worth{padding:12px 14px 13px!important}
+  .spot-term .mast .worth>.k{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .spot-term .mast #mWorth{font-size:26px;line-height:1.1;margin-top:1px}
+  .spot-term .mast .tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:11px}
+  .spot-term .mast .tile{padding:0;border:0;background:none}
+  .spot-term .mast .tile .v{font-size:14px}
+  .spot-term .mast .claimrow{margin-top:11px}
+
+  /* the live head: what you are looking at, what it costs, and that it is alive */
+  .spot-term .thead{display:flex;align-items:center;gap:9px;padding:0 16px;min-height:46px;flex:0 0 auto;
+    border-bottom:1px solid var(--line);background:#0a0d13}
+  .spot-term .thead .tlive{width:7px;height:7px;border-radius:50%;background:var(--up);flex:0 0 auto}
+  .spot-term .thead .tsym{font:800 15px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;white-space:nowrap}
+  .spot-term .thead .tsub{color:var(--faint);font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .spot-term .thead .tpx{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;margin-left:auto;white-space:nowrap}
+  .spot-term .thead .tchg{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;white-space:nowrap}
+
+  /* THE PHONE IS THE PRODUCT HERE (the audience is mobile): one view at a time and a dock to switch, the same
+     shape the /charts phone terminal uses, so a reader who knows one knows this one */
+  @media(max-width:999px){
+    .spot-term .term{grid-template-columns:1fr;gap:0}
+    .spot-term .tcol{display:none}
+    .spot-term .tcol.tshow{display:flex}
+    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+    /* the dock OVERLAYS the stage, so the room it needs is reserved on the column - padding inside the sheet
+       sits below its own scroll and let the Buy button rest 13px under the dock (measured on a 390x844) */
+    .spot-term .tcol-mid{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
+    .spot-term #sheet{padding:0 12px 8px}
+    /* every pixel the pad gives back is a pixel of chart, and on a phone the chart is the product */
+    .spot-term #sheet .chart{min-height:230px}
+    .spot-term .tstage-empty{min-height:230px}
+    .spot-term #sheet .lbl{margin:6px 0 4px}
+    .spot-term #sheet .est{font-size:11.5px;gap:2px 10px;margin:8px 0}
+    .spot-term #sheet .sw{margin-top:10px}
+    .spot-term #sheet .go{margin-top:9px;height:44px}
+    .spot-term .thead{padding:0 12px}
+    .spot-term .mast .worth{padding:11px 12px!important}
+  }
+  .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
+    background:rgba(10,13,19,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line2);padding-bottom:env(safe-area-inset-bottom)}
+  @media(max-width:999px){
+    body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}
+    /* the site's own phone bar is absorbed into the dock (Browse and Chat are cells there now) - two fixed
+       bars in the same place left the lower one unreachable, and its 84px of body padding with it */
+    body.spot-term .mpbn{display:none!important}
+    body.spot-term{padding-bottom:0!important}
+  }
+  .tdock button,.tdock a{position:relative;background:none;border:0;color:var(--faint);text-decoration:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:54px;
+    font:700 9px/1 'Space Mono',monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+  .tdock svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .tdock button.on{color:var(--lime)}
+  .tdock button i{position:absolute;top:9px;left:50%;margin-left:9px;width:6px;height:6px;border-radius:50%;
+    background:var(--lime);display:none}
+  .tdock button.dot i{display:block}

@@ -1,6 +1,6 @@
 # MarginPad
 
-Last updated: 2026-10-19
+Last updated: 2026-10-24
 
 > MarginPad (https://marginpad.io) is a free crypto-futures practice ground and data site. Paper trading on live prices with no signup (crypto perps, US stocks, forex, stock indices, gold; 1x-1000x; fills, stops and liquidations decided SERVER-side from real exchange candles), a liquidation feed measured by our own collector on eight exchanges with 32 per-coin liquidation maps, a Hyperliquid whale tracker read from the chain, funding / open-interest / long-short dashboards, 76 calculators, a scored screener, a trading academy, a free keyless JSON API and a remote MCP server. 13 languages. Educational only, never financial advice.
 
@@ -51,7 +51,7 @@ Attribute as: MarginPad (https://marginpad.io), measured <ts> UTC. 60 requests a
 - Liquidation (isolated margin): long liq = Entry x (1 - 1/Leverage + MMR), short liq = Entry x (1 + 1/Leverage - MMR), MMR capped at 1/(2 x Leverage); typical MMR 0.5%. Distance from entry is about 100 / leverage percent: 10x about 10%, 100x about 1%. Verify: https://marginpad.io/api/liquidation?entry=100000&leverage=100&mmr=0.5
 - ROE = price ROI x leverage. Position size (1% rule) = balance x risk% / |entry - stop|. Positive funding = longs pay shorts. Hyperliquid maintenance margin = 1/(2 x max leverage), funding hourly.
 - Premium is $11.99/month: five MarginPad-exclusive chart indicators (Cascade Radar, Liquidation Magnet, Market Brain, Market Memory, Big Liquidations (24h) - explained at https://marginpad.io/ai-indicators/), 1s/5s/15s/30s and 3m/30m/2h/6h/12h charts, unlimited heatmap, zone and position alerts, trading-report breakdowns, and five Ask AI reads a day on the charts. Premium AI+ is $119/month (was $159) and carries 50 Ask AI reads a day. https://marginpad.io/premium/
-- The tools need no account. An account (email code, no password) adds the rewards area, open to every account from its first day (no level to reach since 2026-10-23): faucet, daily missions (at most $0.02 each), season prizes, withdrawals from $5 to a Bybit UID or Moon account. The sign-up bonus is paid only to accounts created through a referral link; a referral pays $1. Demo Spot cash is never withdrawable.
+- The tools need no account. An account (email code, no password) adds the rewards area, open to every account from its first day: faucet, daily missions (at most $0.02 each), season prizes, withdrawals from $5 to a Bybit UID, a MEXC UID or a Moon account. The sign-up bonus is paid only to accounts created through a referral link; a referral pays $1. Demo Spot cash is never withdrawable.
 - Exchange access: Bybit, Binance.com and OKX geoblock US residents; Kraken and Coinbase serve US traders.
 
 ## Why a MarginPad number can be trusted
