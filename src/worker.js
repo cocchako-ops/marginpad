@@ -6029,7 +6029,7 @@ const STOCKS = { NOW: 'ServiceNow', SNOW: 'Snowflake', CRWD: 'CrowdStrike', PANW
 // Forex + stock-indices also resolve via Yahoo (real FX rates / real index levels). The Gate USDT-futures perps
 // for these are ILLIQUID → 55-63% flat (h==l) candles on 5m (render as invisible dashes = "missing candles") and
 // EURUSD 1h returned "no data". Yahoo gives clean, session-aware, deep-history data. Our symbol -> Yahoo ticker:
-const YAHOO_MKT = { OIL: 'CL=F', BRENT: 'BZ=F', NATGAS: 'NG=F', COPPER: 'HG=F', USDCHF: 'USDCHF=X', NZDUSD: 'NZDUSD=X', EURGBP: 'EURGBP=X', EURJPY: 'EURJPY=X', GBPJPY: 'GBPJPY=X', AUDJPY: 'AUDJPY=X', EURCHF: 'EURCHF=X', USDMXN: 'USDMXN=X', USDSEK: 'USDSEK=X', USDNOK: 'USDNOK=X', EURUSD: 'EURUSD=X', GBPUSD: 'GBPUSD=X', USDJPY: 'USDJPY=X', AUDUSD: 'AUDUSD=X', USDCAD: 'USDCAD=X', SPX500: '^GSPC', NAS100: '^NDX', US30: '^DJI', GER40: '^GDAXI', UK100: '^FTSE', JPN225: '^N225' };
+const YAHOO_MKT = { FRA40: '^FCHI', EU50: '^STOXX50E', HK50: '^HSI', AUS200: '^AXJO', ESP35: '^IBEX', SWI20: '^SSMI', US2000: '^RUT', VIX: '^VIX', OIL: 'CL=F', BRENT: 'BZ=F', NATGAS: 'NG=F', COPPER: 'HG=F', USDCHF: 'USDCHF=X', NZDUSD: 'NZDUSD=X', EURGBP: 'EURGBP=X', EURJPY: 'EURJPY=X', GBPJPY: 'GBPJPY=X', AUDJPY: 'AUDJPY=X', EURCHF: 'EURCHF=X', USDMXN: 'USDMXN=X', USDSEK: 'USDSEK=X', USDNOK: 'USDNOK=X', EURUSD: 'EURUSD=X', GBPUSD: 'GBPUSD=X', USDJPY: 'USDJPY=X', AUDUSD: 'AUDUSD=X', USDCAD: 'USDCAD=X', SPX500: '^GSPC', NAS100: '^NDX', US30: '^DJI', GER40: '^GDAXI', UK100: '^FTSE', JPN225: '^N225' };
 function yahooSymFor(sym) { if (STOCKS[sym]) return sym; if (YAHOO_MKT[sym]) return YAHOO_MKT[sym]; return null; } // stocks = ticker as-is; forex/indices = mapped; metals(XAU/XAG)+crypto = null → existing Bybit/Gate cascade
 const _YUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 const _YMAP = { '1': { i: '1m', r: '5d', a: 0 }, '5': { i: '5m', r: '1mo', a: 0 }, '15': { i: '15m', r: '60d', a: 0 }, '60': { i: '60m', r: '1y', a: 0 }, '240': { i: '60m', r: '2y', a: 14400 }, '1440': { i: '1d', r: '10y', a: 0 }, '10080': { i: '1wk', r: 'max', a: 0 } }; // our TF -> Yahoo interval+range (Yahoo has no 4h → fetch 1h + aggregate). Ranges widened 2026-08-06 for deep scroll-back (Yahoo max: 1m=7d, 5m/15m=60d, 60m=730d) since Yahoo has no cursor pagination (loadMore can't fetch older).
@@ -12694,7 +12694,7 @@ const WR_MIN_MOVE = 0.2; // …AND the win must reflect a ≥0.2% favorable PRIC
 // IWM 0.456%) AND they track indices already on this list, which was a straight bypass: barred from
 // SPX500, farm SPY instead. TQQQ/SQQQ wrap the same index but realise 1.78% (3.6x crypto), so no safe
 // win exists there and they keep competing. The rule applied is the measured volatility, not the label.
-const LB_EXCL_SET = new Set('OIL BRENT NATGAS COPPER AUDJPY EURCHF USDMXN USDSEK USDNOK EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' '));
+const LB_EXCL_SET = new Set('FRA40 EU50 HK50 AUS200 ESP35 SWI20 US2000 VIX OIL BRENT NATGAS COPPER AUDJPY EURCHF USDMXN USDSEK USDNOK EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' '));
 const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
 function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
@@ -12913,7 +12913,7 @@ const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + 
 // bento source and twelve language homepages), so a hardcoded label meant fourteen edits every rename.
 const CARD_TAG = { chako: 'FOUNDER', gladijator: 'CO FOUNDER' };
 // Per-coin max leverage - mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
-const MAXLEV = { OIL: 20, BRENT: 20, NATGAS: 20, COPPER: 20, USDCHF: 50, NZDUSD: 50, EURGBP: 50, EURJPY: 50, GBPJPY: 50, AUDJPY: 50, EURCHF: 50, USDMXN: 20, USDSEK: 20, USDNOK: 20, BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
+const MAXLEV = { FRA40: 20, EU50: 20, HK50: 20, AUS200: 20, ESP35: 20, SWI20: 20, US2000: 20, VIX: 10, OIL: 20, BRENT: 20, NATGAS: 20, COPPER: 20, USDCHF: 50, NZDUSD: 50, EURGBP: 50, EURJPY: 50, GBPJPY: 50, AUDJPY: 50, EURCHF: 50, USDMXN: 20, USDSEK: 20, USDNOK: 20, BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
 function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); return MAXLEV[sym] || 50; }
 // Asset class of a symbol - MIRROR of window.mpAssetClass in dist/assets/home.js (STOCKS here == that file's STK).
 // The class drives the per-market fee below. Both copies must agree: the client DISPLAYS the fee, the server
@@ -12921,7 +12921,7 @@ function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-
 // was charged 0.055% instead of 0.008% (6.9x), and because feeRate was not a server-held field, the same trade
 // cost a different amount depending on whether a client journal sync landed before the close.
 const FX_SYMS = { USDCHF: 1, NZDUSD: 1, EURGBP: 1, EURJPY: 1, GBPJPY: 1, AUDJPY: 1, EURCHF: 1, USDMXN: 1, USDSEK: 1, USDNOK: 1, EURUSD: 1, GBPUSD: 1, USDJPY: 1, AUDUSD: 1, USDCAD: 1 };
-const IDX_SYMS = { SPX500: 1, NAS100: 1, US30: 1, GER40: 1, UK100: 1, JPN225: 1 };
+const IDX_SYMS = { FRA40: 1, EU50: 1, HK50: 1, AUS200: 1, ESP35: 1, SWI20: 1, US2000: 1, VIX: 1, SPX500: 1, NAS100: 1, US30: 1, GER40: 1, UK100: 1, JPN225: 1 };
 const COMMOD = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 }; // metals AND energy - one table, because `sym === 'XAU' || sym === 'XAG'` was a table of two written as an expression
 function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (STOCKS[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
 // Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
@@ -12942,6 +12942,25 @@ function marketSession(sym, pd, now) {
   if (t.wd === 0 && min < 17 * 60) return { open: false, cls, msg: 'Closed for the weekend - reopens Sunday 17:00 New York time.' };
   if (t.wd === 5 && min >= 17 * 60) return { open: false, cls, msg: 'Closed for the weekend - reopens Sunday 17:00 New York time.' };
   if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time.' };
+  /* THE VENUE'S OWN HOURS, WHEN IT PUBLISHES THEM (2026-10-24, owner: "jel mozemo da resimo to za indekse").
+     Everything above is a New York 24/5 clock, which is right for FX and for a futures contract and WRONG for a
+     CASH index: ^GDAXI prints its last bar at 15:30 UTC and ^N225 at 06:30, so for six to fifteen hours a day we
+     were calling a market open while its price could not move. That is the one-sided bet the weekend rule exists
+     to prevent - a favourable gap still lands at the open while an unfavourable one can be dodged by closing
+     against the stale print - and it was being used: of twenty open index positions, four were opened with the
+     exchange shut (US30 at 01:07 New York, GER40 before Frankfurt opened, NAS100 and SPX500 before 09:30).
+     Yahoo publishes the instrument's regular session in `sess` and fetchPriceCached already carries it, so the
+     rule is simply: if we know the venue's hours, be inside them. XAU and XAG come from Gate, carry no window,
+     and are untouched. This can only ever REFUSE - never open a market the rules above have closed - which is
+     what makes it safe to apply to every class at once. */
+  const w9 = pd && pd.sess;
+  if (w9 && +w9.s > 0 && +w9.e > 0) {
+    const nowS = Math.floor((now || Date.now()) / 1000);
+    if (nowS < +w9.s || nowS > +w9.e) {
+      const hh = (sec) => { const d = new Date((sec + (+w9.gmt || 0)) * 1000); return String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0'); };
+      return { open: false, cls, msg: 'The exchange is closed. This market trades ' + hh(+w9.s) + '-' + hh(+w9.e) + (w9.tz ? ' ' + w9.tz : '') + ', and its price does not move outside those hours.' };
+    }
+  }
   return { open: true, cls };
 }
 // Open-leg taker fee, REPORTED on the fill for the ticket's cost breakdown - never subtracted from the margin.

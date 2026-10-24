@@ -23,7 +23,8 @@ const DRY = process.argv.indexOf('--dry') >= 0;
 const R = path.join(__dirname, '..');
 const M = JSON.parse(fs.readFileSync(path.join(__dirname, 'markets-new.json'), 'utf8'));
 const STK = Object.keys(M.stocks), COM = Object.keys(M.commodities), FX = Object.keys(M.forex);
-const NONC = COM.concat(FX);
+const IDXN = Object.keys(M.indices || {}); // added once marketSession could read the venue's own hours
+const NONC = COM.concat(FX, IDXN);
 
 function edit(file, label, fn) {
   const F = path.join(R, file);
@@ -48,10 +49,18 @@ n += edit('src/worker.js', 'STOCKS (' + STK.length + ' companies)', h => {
   if (h.indexOf("SNOW: 'Snowflake'") >= 0) return h; // a guard has to be a string only THIS edit writes: "NOW: " already appears elsewhere in the file and reported the work as done
   return h.replace('const STOCKS = { ', 'const STOCKS = { ' + STK.map(s => s + ": '" + M.stocks[s].replace(/'/g, "\\'") + "'").join(', ') + ', ');
 });
-n += edit('src/worker.js', 'YAHOO_MKT (' + NONC.length + ' forex + commodities)', h => {
-  if (h.indexOf('OIL:') >= 0) return h;
-  const add = COM.map(k => k + ": '" + M.commodities[k].yahoo + "'").concat(FX.map(k => k + ": '" + M.forex[k].yahoo + "'")).join(', ');
+n += edit('src/worker.js', 'YAHOO_MKT (' + NONC.length + ' forex + commodities + indices)', h => {
+  const line = (h.match(/const YAHOO_MKT = \{[^}]*\}/) || [''])[0];
+  const add = COM.map(k => [k, M.commodities[k].yahoo]).concat(FX.map(k => [k, M.forex[k].yahoo]), IDXN.map(k => [k, M.indices[k].yahoo]))
+    .filter(([k]) => line.indexOf(k + ':') < 0).map(([k, y]) => k + ": '" + y + "'").join(', ');
+  if (!add) return h;
   return h.replace('const YAHOO_MKT = { ', 'const YAHOO_MKT = { ' + add + ', ');
+});
+n += edit('src/worker.js', 'IDX_SYMS (' + IDXN.length + ' indices)', h => {
+  const line = (h.match(/const IDX_SYMS = \{[^}]*\}/) || [''])[0];
+  const add = IDXN.filter(k => line.indexOf(k + ':') < 0).map(k => k + ': 1').join(', ');
+  if (!add) return h;
+  return h.replace('const IDX_SYMS = { ', 'const IDX_SYMS = { ' + add + ', ');
 });
 n += edit('src/worker.js', 'FX_SYMS', h => {
   if (h.indexOf('const FX_SYMS = { USDCHF:') >= 0) return h;
@@ -69,8 +78,10 @@ n += edit('src/worker.js', 'commodity class table', h => {
     .replace("if (sym === 'XAU' || sym === 'XAG') return 'metal';", "if (COMMOD[sym]) return 'metal';");
 });
 n += edit('src/worker.js', 'MAXLEV (never the 50x default)', h => {
-  if (h.indexOf('OIL: 20') >= 0) return h;
-  const add = COM.map(k => k + ': ' + M.commodities[k].lev).concat(FX.map(k => k + ': ' + M.forex[k].lev)).join(', ');
+  const line = (h.match(/const MAXLEV = \{[^}]*\}/) || [''])[0];
+  const add = COM.map(k => [k, M.commodities[k].lev]).concat(FX.map(k => [k, M.forex[k].lev]), IDXN.map(k => [k, M.indices[k].lev]))
+    .filter(([k]) => !new RegExp('[{,] ?' + k + ':').test(line)).map(([k, v]) => k + ': ' + v).join(', ');
+  if (!add) return h;
   return h.replace('const MAXLEV = { ', 'const MAXLEV = { ' + add + ', ');
 });
 /* THE GUARD IS SCOPED TO ITS OWN LINE, and the first draft was not: it asked whether 'NATGAS' appeared anywhere
@@ -99,8 +110,17 @@ n += edit('dist/assets/home.js', 'the second STK table (fee class)', h => {
   return h.slice(0, i) + ',' + STK.map(s => s + ':1').join(',') + h.slice(i);
 });
 n += edit('dist/assets/home.js', 'MKT (tradeable outside the Bybit gate)', h => {
-  if (h.indexOf('var MKT={OIL:1') >= 0) return h;
-  return h.replace('var MKT={', 'var MKT={' + NONC.map(k => k + ':1').join(',') + ',');
+  const line = (h.match(/var MKT=\{[^}]*\}/) || [''])[0];
+  const add = NONC.filter(k => !new RegExp('[{,]' + k + ':').test(line)).map(k => k + ':1').join(',');
+  if (!add) return h;
+  return h.replace('var MKT={', 'var MKT={' + add + ',');
+});
+// the index class lives in home.js TWICE (IDX for mpAssetClass, IDX2 beside the second STK table) - both or neither
+n += edit('dist/assets/home.js', 'IDX + IDX2 (index class, both copies)', h => {
+  const line = (h.match(/IDX=\{[^}]*\}/) || [''])[0];
+  const add = IDXN.filter(k => !new RegExp('[{,]' + k + ':').test(line)).map(k => k + ':1').join(',');
+  if (!add) return h;
+  return h.split('IDX={SPX500:1').join('IDX={' + add + ',SPX500:1').split('IDX2={SPX500:1').join('IDX2={' + add + ',SPX500:1');
 });
 n += edit('dist/assets/home.js', 'FX + commodity class', h => {
   if (h.indexOf('FX={USDCHF:1') >= 0) return h;
@@ -108,19 +128,29 @@ n += edit('dist/assets/home.js', 'FX + commodity class', h => {
     .replace("if(sym==='XAU'||sym==='XAG')return 'metal';", "if(COM[sym])return 'metal';")
     .replace('var IDX={SPX500:1', 'var COM={XAU:1,XAG:1,' + COM.map(k => k + ':1').join(',') + '},IDX={SPX500:1');
 });
+/* A GUARD ASKS ABOUT THE KEYS IT IS ABOUT TO WRITE, not about the first one it wrote last time. Keying this on
+   "NONCRYPTO={NOW:1" made the second batch (the indices) report success without writing a thing - the third
+   time today a guard matched work done by an earlier edit. */
 n += edit('dist/assets/home.js', 'NONCRYPTO (the picker)', h => {
-  if (h.indexOf('NONCRYPTO={NOW:1') >= 0) return h;
-  return h.replace('NONCRYPTO={', 'NONCRYPTO={' + STK.concat(NONC).map(k => k + ':1').join(',') + ',');
+  const line = (h.match(/NONCRYPTO=\{[^}]*\}/) || [''])[0];
+  const add = STK.concat(NONC).filter(k => !new RegExp('[{,]' + k + ':').test(line)).map(k => k + ':1').join(',');
+  if (!add) return h;
+  return h.replace('NONCRYPTO={', 'NONCRYPTO={' + add + ',');
 });
 const NAMES = STK.map(s => s + ":'" + M.stocks[s].replace(/'/g, "\\'") + "'")
-  .concat(COM.map(k => k + ":'" + M.commodities[k].name + "'"), FX.map(k => k + ":'" + M.forex[k].name + "'")).join(',');
+  .concat(COM.map(k => k + ":'" + M.commodities[k].name + "'"), FX.map(k => k + ":'" + M.forex[k].name + "'"),
+          IDXN.map(k => k + ":'" + M.indices[k].name + "'")).join(',');
 /* home.js owns window.mpMarketName, which every surface reads. mp-mcharts' XAU:'Gold' is WHEEL_NAME - the nine
    coins on the phone's hold-to-switch wheel, a deliberately short list - and is left alone. */
+/* The anchor is XAU:'Gold' alone, not "({XAU:'Gold'" - the first batch inserted its names BEFORE it, so the
+   opening brace stopped being adjacent and the second batch could not find the table it had just written into. */
 n += edit('dist/assets/home.js', 'market names', h => {
-  if (h.indexOf("NOW:'ServiceNow'") >= 0) return h;
-  const a = "({XAU:'Gold'";
-  if (h.indexOf(a) < 0) throw new Error('the mpMarketName table was not found');
-  return h.replace(a, "({" + NAMES + ",XAU:'Gold'");
+  const a = "XAU:'Gold'";
+  const i = h.indexOf(a); if (i < 0) throw new Error('the mpMarketName table was not found');
+  const line = h.slice(Math.max(0, i - 12000), i + 2000);
+  const add = NAMES.split(',').filter(p => line.indexOf(p.split(':')[0] + ':') < 0).join(',');
+  if (!add) return h;
+  return h.slice(0, i) + add + ',' + h.slice(i);
 });
 
 // ---- the assertions that make "safely" a fact rather than an intention ----

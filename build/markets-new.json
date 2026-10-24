@@ -4,7 +4,6 @@
     "SQ, BLOCK, BMWYY, K, X": "Yahoo 404 - renamed, acquired or delisted",
     "VWAGY, MBGYY": "pink-sheet OTC: 17-22% of their hourly candles are flat, which is the illiquid-feed signature _flatRatio exists to reject",
     "XPT, XPD": "platinum and palladium futures are clean hourly but 67% and 77% of their DAILY candles are flat - a 1D chart of either would be refused by _flatRatio and fall through to nothing",
-    "FRA40, EU50, HK50, AUS200, ESP35, SWI20, VIX, US2000": "cash indices, and our schedule calls index hours 24/5 on the New York clock while the cash market is open only locally - measured 2026-10-23 21:42 UTC, ^GDAXI's last bar was 15:30 UTC and ^N225's 06:30 UTC. A price frozen for 6-15 hours while we say the market is open is the one-sided bet the close path already refuses weekends for. GER40, UK100 and JPN225 have this hole TODAY - it is in the backlog, and nothing new joins them until it is closed.",
     "USDTRY, USDZAR": "a currency in structural decline is a one-way trade on a paper board - the lesson is not worth teaching",
     "EA": "Yahoo serves it fine from a laptop and our worker gets 91 hourly candles and ONE daily - caught only by verifying through our own endpoints after the deploy, which is why that step exists"
   },
@@ -174,6 +173,49 @@
       "yahoo": "USDNOK=X",
       "name": "USD/NOK",
       "lev": 20
+    }
+  },
+  "_indices_why": "Added 2026-10-24 ONCE marketSession learned to read the venue's own published session window. Until that landed, our schedule called index hours 24/5 on the New York clock while a cash index trades only locally - and four of twenty open index positions had been opened with the exchange shut. Leverage matches the indices we already carry (20x); VIX gets 10x because it routinely moves 10% in a day and 20x on that is a liquidation, not a lesson.",
+  "indices": {
+    "FRA40": {
+      "yahoo": "^FCHI",
+      "name": "CAC 40",
+      "lev": 20
+    },
+    "EU50": {
+      "yahoo": "^STOXX50E",
+      "name": "Euro Stoxx 50",
+      "lev": 20
+    },
+    "HK50": {
+      "yahoo": "^HSI",
+      "name": "Hang Seng",
+      "lev": 20
+    },
+    "AUS200": {
+      "yahoo": "^AXJO",
+      "name": "ASX 200",
+      "lev": 20
+    },
+    "ESP35": {
+      "yahoo": "^IBEX",
+      "name": "IBEX 35",
+      "lev": 20
+    },
+    "SWI20": {
+      "yahoo": "^SSMI",
+      "name": "SMI 20",
+      "lev": 20
+    },
+    "US2000": {
+      "yahoo": "^RUT",
+      "name": "Russell 2000",
+      "lev": 20
+    },
+    "VIX": {
+      "yahoo": "^VIX",
+      "name": "Volatility Index",
+      "lev": 10
     }
   }
 }
