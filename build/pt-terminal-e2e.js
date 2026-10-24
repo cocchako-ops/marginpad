@@ -314,6 +314,26 @@ async function open(browser, m, vp) {
       ok(t3.locked, 'and the page underneath it cannot scroll');
       await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); }); await wait(600);
       ok(!(await read()).open, 'the X closes it');
+      /* AND A THUMB CAN ACTUALLY PICK A VENUE. Every check above passed on 2026-10-25 while the sheet was
+         unusable: the backdrop was a <body> child at z 2147482998 and the panel's 2147482999 was confined
+         inside #plan and .wrap (both position:relative z-index:1), so the backdrop painted OVER the whole
+         list - blurred, dimmed, and every tap aimed at a venue hit the backdrop and shut the sheet.
+         "Opens" is not "works": the invariant is that the option is what is under the finger, and that the
+         pick commits. #planEx options SHARE values (five venues at 0.5%), so it is read by selectedIndex. */
+      await p.touchscreen.tap(tr.x, tr.y); await wait(800);
+      const pk0 = await p.evaluate(() => document.getElementById('planEx').selectedIndex);
+      const pkRow = await p.evaluate(() => {
+        const pan = document.getElementById('planEx').closest('.csel').querySelector('.csel-panel');
+        const o = pan.querySelectorAll('.csel-opt')[3]; if (!o) return null;
+        o.scrollIntoView({ block: 'center' });
+        const r = o.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + 40, r.y + r.height / 2);
+        return { x: Math.round(r.x + 40), y: Math.round(r.y + r.height / 2), mine: !!(hit && o.contains(hit)), was: hit ? String(hit.className || hit.tagName).slice(0, 30) : 'nothing' };
+      });
+      ok(pkRow && pkRow.mine, 'the OPTION is what is under the finger, not the backdrop (' + (pkRow ? pkRow.was : 'no row') + ')');
+      if (pkRow) { await p.touchscreen.tap(pkRow.x, pkRow.y); await wait(800); }
+      const pk1 = await p.evaluate(() => { const s = document.getElementById('planEx'); return { i: s.selectedIndex, lab: (s.closest('.csel').querySelector('.csel-val').textContent || '').trim() }; });
+      ok(pk1.i === 3 && pk1.i !== pk0, 'tapping a venue PICKS it (' + pk0 + ' -> ' + pk1.i + ', "' + pk1.lab + '")');
+      ok(!(await read()).open && !(await read()).locked, 'and the sheet closes behind the pick, lock lifted');
       // ── the market window on a phone: one height, and a price on every row you can see ──────────────────
       await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); const a = document.getElementById('ptAdvBtn'); if (a && document.getElementById('planAdvChk').checked) a.click(); });
       await wait(600);

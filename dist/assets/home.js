@@ -3449,7 +3449,17 @@ window.addEventListener('load', function () {
         hd.querySelector('b').textContent=((_fl&&_fl.textContent||'').trim()||sel.getAttribute('aria-label')||'Choose');
         hd.querySelector('.csel-sh-x').addEventListener('click',function(e){e.stopPropagation();close();});
         panel.insertBefore(hd,panel.firstChild);}
-      if(!bd){bd=document.createElement('div');bd.className='csel-sheet-bd';bd.hidden=true;bd.addEventListener('click',function(){if(Date.now()-_openAt>320)close();});document.body.appendChild(bd);}
+      if(!bd){bd=document.createElement('div');bd.className='csel-sheet-bd';bd.hidden=true;bd.addEventListener('click',function(){if(Date.now()-_openAt>320)close();});}
+      /* A BACKDROP BELONGS IN THE SAME STACKING CONTEXT AS THE THING IT BACKS, OR ITS z-index MEANS NOTHING
+         (2026-10-25, owner: "u advanced settings ne mogu da izaberem exchange, padajuci meni ne radi").
+         It was appended to <body> while the panel stays in its own .csel wrapper - and the terminal's
+         #plan and .wrap are both position:relative z-index:1, i.e. two stacking contexts between them.
+         So the panel's 2147482999 was confined and compared as z:1 against the backdrop's 2147482998 at
+         body level: the backdrop painted OVER the whole sheet. Measured on a 390px thumb - the list stood
+         there blurred and dimmed, elementFromPoint on every option answered .csel-sheet-bd, and the tap
+         meant to pick a venue hit the backdrop and shut the sheet. Inserted beside the panel it is beneath
+         it by construction, on every page the picker is used on, whatever wraps the control. */
+      if(bd.parentNode!==panel.parentNode)panel.parentNode.insertBefore(bd,panel);
       /* THE BACKDROP MUST NOT SWALLOW THE GESTURE THAT RAISED IT: pointerdown opens the sheet and lays the
          backdrop under the finger, and the CLICK of that same tap then landed on it and shut the sheet again -
          measured on a 390px touch viewport, three taps in a row, never open. Nothing in the sheet takes a
