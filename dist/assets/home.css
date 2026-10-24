@@ -3906,7 +3906,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 .ptc-grid button svg{flex:0 0 auto;width:15px;height:15px;opacity:.9}
 .ptc-grid button.on svg{color:#c2f64a}
 @media(max-width:620px){
-  .ptc-pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px calc(16px + env(safe-area-inset-bottom) + var(--mkb,0px));z-index:2147483000}
+  .ptc-pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:min(72dvh,calc(100dvh - 80px));overflow-y:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px calc(16px + env(safe-area-inset-bottom) + var(--mkb,0px));z-index:2147483000}
   .ptc-grid{grid-template-columns:1fr 1fr 1fr}
 }
 /* [hidden] is a UA rule with almost no specificity: a bare `.ptc-pop-bd{display:block}` beat it and laid a
@@ -3917,10 +3917,13 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 @media(max-width:620px){.ptc-pop-bd:not([hidden]){display:block}}
 
 /* ── 5. THE MARKET PICKER: one window, every market, with a face on every row ─────────────────────────────── */
-.ptmk{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center}
+/* iOS: a fixed inset:0 box is the LARGE viewport, so the bottom of a sheet anchored to it sits UNDER the
+   browser chrome and under the site's own phone bar - which is what 'pada iza nav bar-a' is. dvh is the
+   viewport that is actually visible. */
+.ptmk{position:fixed;left:0;right:0;top:0;height:100dvh;z-index:2147483000;display:flex;align-items:center;justify-content:center}
 .ptmk[hidden]{display:none}
 .ptmk-bd{position:absolute;inset:0;background:rgba(5,7,9,.74);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
-.ptmk-p{position:relative;display:flex;flex-direction:column;width:min(580px,calc(100vw - 28px));max-height:min(80vh,680px);background:linear-gradient(180deg,#12161c,#0a0d11);border:1px solid #2d343e;border-radius:18px;overflow:hidden;box-shadow:0 44px 120px -32px #000,inset 0 1px 0 rgba(255,255,255,.05)}
+.ptmk-p{position:relative;display:flex;flex-direction:column;width:min(580px,calc(100vw - 28px));max-height:min(80dvh,680px);background:linear-gradient(180deg,#12161c,#0a0d11);border:1px solid #2d343e;border-radius:18px;overflow:hidden;box-shadow:0 44px 120px -32px #000,inset 0 1px 0 rgba(255,255,255,.05)}
 .ptmk-h{display:flex;align-items:center;gap:10px;padding:14px 15px 11px}
 .ptmk-t{font-family:'Bricolage Grotesque',sans-serif!important;font-weight:700;font-size:16px;letter-spacing:-.015em;color:#f2f0e9}
 .ptmk-x{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid #2b323b;border-radius:9px;background:#11151b;color:#8b97a5;cursor:pointer;transition:.13s}
@@ -3964,7 +3967,8 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 .ptmk-f b{color:#8b97a5;font-weight:600}
 @media(max-width:620px){
   .ptmk{align-items:flex-end}
-  .ptmk-p{width:100%;max-height:88vh;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:var(--mkb,0px)}
+  /* a FIXED height: with max-height the sheet followed its own content and jumped between tabs */
+  .ptmk-p{width:100%;height:min(86dvh,calc(100dvh - 54px));max-height:none;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:var(--mkb,0px)}
   .ptmk-r{padding:10px 14px;grid-template-columns:34px minmax(0,1fr) auto 32px}
   .ptmk-st{width:32px;height:32px}
 }
@@ -4097,8 +4101,8 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 .csel-sheet-bd{position:fixed;inset:0;z-index:2147482998;background:rgba(5,7,9,.66);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
 .csel-sheet-bd[hidden]{display:none}
 @media(hover:none),(pointer:coarse){
-  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:auto!important;max-height:72vh;border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:calc(8px + env(safe-area-inset-bottom) + var(--mkb,0px))}
-  .csel-sheet .csel-list{max-height:min(58vh,440px);overflow-y:auto;overscroll-behavior:contain}
+  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:auto!important;max-height:min(72dvh,calc(100dvh - 90px));border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:calc(8px + env(safe-area-inset-bottom) + var(--mkb,0px))}
+  .csel-sheet .csel-list{max-height:min(58dvh,440px);overflow-y:auto;overscroll-behavior:contain}
 }
 .csel-sh-h{display:none}
 @media(hover:none),(pointer:coarse){
@@ -4116,6 +4120,11 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
   body.paper-page .ptt-chart,body.paper-page[data-prod="plan"] .ptt-chart{height:auto!important;min-height:0!important}
   body.paper-page #ptChart{flex:0 0 auto;height:clamp(250px,42vh,390px);min-height:0}
 }
+
+/* a market that is shut says so on its own row - a reader picking AAPL on a Saturday should not learn it from a
+   refusal at the Open button */
+.ptmk-sh{display:inline-block;margin-left:6px;font-family:'Space Mono',monospace!important;font-size:9px;font-weight:700;letter-spacing:.07em;color:#8a7a52;background:rgba(240,195,90,.13);border:1px solid rgba(240,195,90,.3);border-radius:5px;padding:1px 4px;vertical-align:1px}
+.ptmk-px.wait{color:#4e5763}
 
 /* the guest note mp-auth inserts beside the (now hidden) Advanced label keeps a line of its own */
 .pt-advrow{flex-wrap:wrap}

@@ -292,6 +292,49 @@ async function open(browser, m, vp) {
       ok(t3.clearsBar, 'and it sits clear of the phone tab bar');
       await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); }); await wait(600);
       ok(!(await read()).open, 'the X closes it');
+      // ── the market window on a phone: one height, and a price on every row you can see ──────────────────
+      await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); const a = document.getElementById('ptAdvBtn'); if (a && document.getElementById('planAdvChk').checked) a.click(); });
+      await wait(600);
+      await p.evaluate(() => document.getElementById('ptSymBtn').click()); await wait(2400);
+      const hs = [];
+      for (const t of ['crypto', 'stock', 'forex', 'metal', 'index']) {
+        await p.evaluate((tt) => { const x = document.querySelector('.ptmk-tab[data-mt="' + tt + '"]'); if (x) x.click(); }, t);
+        await wait(1400);
+        hs.push(await p.evaluate((tt) => {
+          const pan = document.querySelector('.ptmk-p'), list = document.getElementById('ptMkList');
+          const lr = list.getBoundingClientRect(), bar = document.querySelector('.mpbn');
+          const vis = [...list.querySelectorAll('.ptmk-r')].filter(r => { const q = r.getBoundingClientRect(); return q.bottom > lr.top + 2 && q.top < lr.bottom - 2; });
+          return {
+            tab: tt, h: Math.round(pan.getBoundingClientRect().height),
+            vis: vis.length, visPx: vis.filter(r => (r.querySelector('.ptmk-px') || {}).textContent.indexOf('$') >= 0).length,
+            clearsBar: bar ? pan.getBoundingClientRect().bottom - (parseFloat(getComputedStyle(pan).paddingBottom) || 0) <= bar.getBoundingClientRect().top + 2 : true
+          };
+        }, t));
+      }
+      const hset = [...new Set(hs.map(x => x.h))];
+      ok(hset.length === 1, 'THE WINDOW IS ONE HEIGHT whatever group is picked (' + hs.map(x => x.tab + ':' + x.h).join(' ') + ')');
+      const noPx = hs.filter(x => x.vis > 0 && x.visPx < x.vis);
+      ok(noPx.length === 0, 'every row you can SEE carries a price, on every group (' + hs.map(x => x.tab + ' ' + x.visPx + '/' + x.vis).join(', ') + ')');
+      ok(hs.every(x => x.clearsBar), 'and the window sits clear of the phone tab bar');
+      await p.evaluate(() => { const x = document.querySelector('.ptmk-x'); if (x) x.click(); }); await wait(500);
+
+      // ── the non-candle styles must paint, and must not throw out of the library ──────────────────────────
+      const before = p.__err.length;
+      await p.evaluate(() => document.getElementById('ptChSet').click()); await wait(700);
+      await p.evaluate(() => { const x = document.querySelector('#ptChPop [data-chstyle="line"]'); if (x) x.click(); }); await wait(3000);
+      await p.evaluate(() => { const bd = document.getElementById('ptChPopBd'); if (bd) bd.click(); }); await wait(400);
+      await p.evaluate(() => { const ps = document.getElementById('planSym'); ps.value = 'ETH'; ps.dispatchEvent(new Event('change', { bubbles: true })); });
+      await wait(7000);
+      const paint = await p.evaluate(() => {
+        const d = window.__mpPT(); const host = document.getElementById('ptChart');
+        const c = host && host.querySelector('canvas');
+        let lit = 0; try { const g = c.getContext('2d'); const a = g.getImageData(0, 0, c.width, Math.min(c.height, 400)).data; for (let i = 3; i < a.length; i += 4 * 97) if (a[i] > 8) lit++; } catch (e) { lit = -1; }
+        return { style: window.__mpPtShellDbg().style, bars: d && d.bars ? d.bars.length : 0, lit };
+      });
+      ok(paint.style === 'line' && paint.bars > 50 && paint.lit > 40, 'the line style still DRAWS after a symbol switch - never a bare dot at the live price (lit ' + paint.lit + ')');
+      ok(p.__err.length === before, 'and the hidden candlestick throws nothing out of lightweight-charts' + (p.__err.length > before ? ': ' + p.__err[p.__err.length - 1] : ''));
+      await p.evaluate(() => { try { localStorage.setItem('mp_ch_style', 'candles'); } catch (e) { } });
+
       ok(p.__err.length === 0, 'no page errors on the phone' + (p.__err.length ? ': ' + p.__err[0] : ''));
       await p.close();
     }, { timeoutMs: 235000 });

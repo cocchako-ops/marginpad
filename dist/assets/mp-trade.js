@@ -760,7 +760,13 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
      strip is inserted ABOVE the stream, the keyboard halves the box. The position stays at a pixel that is by
      then the middle. So PIN it: while ctStick holds, any change re-pins on the next frame. One rAF, so a burst
      of mutations costs one write, and ctStick is what keeps this away from a reader who scrolled up. */
-  var ctPinT=[];function ctOpenPin(){if(!msgs)return;ctStick=true;ctPill(0);ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];[0,60,160,360,700,1200,2000].forEach(function(ms){ctPinT.push(setTimeout(function(){if(!ctStick||!msgs||box.hidden)return;msgs.scrollTop=msgs.scrollHeight;},ms));});}function ctOpenPinStop(){ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];}function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
+  var ctPinT=[];function ctOpenPin(){if(!msgs)return;ctStick=true;ctPill(0);ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];[0,60,160,360,700,1200,2000].forEach(function(ms){ctPinT.push(setTimeout(function(){if(!ctStick||!msgs||box.hidden)return;msgs.scrollTop=msgs.scrollHeight;},ms));});ctGrowWatch();}function ctOpenPinStop(){ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}_ctGrowRO=null;}}
+  var _ctGrowRO=null;
+  function ctGrowWatch(){ if(!msgs||!window.ResizeObserver)return; if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}}
+    var h0=msgs.scrollHeight;
+    _ctGrowRO=new ResizeObserver(function(){ if(!ctStick||!msgs||box.hidden)return; if(msgs.scrollHeight===h0)return; h0=msgs.scrollHeight; msgs.scrollTop=msgs.scrollHeight; });
+    try{_ctGrowRO.observe(msgs);}catch(e){}
+    setTimeout(function(){ if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}_ctGrowRO=null;} },12000); }function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
   (function(){
     if(!msgs)return;
     var q=0; function ping(){ if(q)return; q=1; requestAnimationFrame(function(){ q=0; ctPin(); }); }
@@ -779,7 +785,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
      once the history has rendered that row is centred and lit, the auto-stick is released so the next live message cannot pull the
      view away, and a message the room no longer holds says so instead of silently landing at the bottom. */
   var ctJumpId=(function(){try{var q=location.search.match(/[?&]m=([A-Za-z0-9]+)/);return q?q[1]:'';}catch(e){return '';}})();
-  function ctJump(){if(!ctJumpId||!box||box.hidden)return;var row=msgById(ctJumpId);if(!row){if(msgs&&msgs.querySelector('.ct-msg')){ctJumpId='';try{if(window.mpToast)window.mpToast({msg:'That message is older than the room keeps (the last 150).',kind:'info',ms:6000,key:'ctmnold'});}catch(e){}}return;}ctJumpId='';ctStick=false;ctOpenPinStop();if(row.className.indexOf('ct-hit')<0)row.className+=' ct-hit';try{row.scrollIntoView({block:'center'});}catch(e){try{row.scrollIntoView();}catch(_){}}try{row.animate([{background:'rgba(194,246,74,.38)'},{background:'rgba(194,246,74,.38)',offset:.45},{background:'transparent'}],{duration:2400});}catch(e){}}
+  /* CONSUMED ONCE (2026-10-24). The installed app restores its last URL on every cold start, so an `m=` left
+     in the address bar re-fired this jump on every launch and the room opened in the middle for ever after a
+     single mention. Taking it out of the URL is what makes it a one-off; the back button is unaffected. */
+  function ctJumpDone(){ ctJumpId=''; try{ if(location.search.indexOf('m=')<0)return; var u=new URL(location.href); u.searchParams.delete('m'); history.replaceState(history.state,'',u.pathname+(u.search||'')+u.hash); }catch(e){} }
+  function ctJump(){if(!ctJumpId||!box||box.hidden)return;var row=msgById(ctJumpId);if(!row){if(msgs&&msgs.querySelector('.ct-msg')){ctJumpDone();try{if(window.mpToast)window.mpToast({msg:'That message is older than the room keeps (the last 150).',kind:'info',ms:6000,key:'ctmnold'});}catch(e){}}return;}ctJumpId='';ctStick=false;ctOpenPinStop();if(row.className.indexOf('ct-hit')<0)row.className+=' ct-hit';try{row.scrollIntoView({block:'center'});}catch(e){try{row.scrollIntoView();}catch(_){}}try{row.animate([{background:'rgba(194,246,74,.38)'},{background:'rgba(194,246,74,.38)',offset:.45},{background:'transparent'}],{duration:2400});}catch(e){}ctJumpDone();}
   function ctAfterAdd(d,m){
     var hit=ctHit(d,m),mine=!!(m&&m.u===user);
     if(ctStick||mine){ctStick=true;if(ctNew)ctPill(0);msgs.scrollTop=msgs.scrollHeight;}

@@ -332,7 +332,7 @@ function doJs() {
     mkShowing: 'Mostrando los primeros ', mkOf: ' de ', mkNarrow: 'escribe para acotar.', mkMarkets: 'mercados', mkByVol: 'los más activos primero',
     chStyle: 'Estilo del gráfico', chEntries: 'Tus entradas', chCandles: 'Velas', chHollow: 'Huecas', chHeikin: 'Heikin',
     chBars: 'Barras', chLine: 'Línea', chArea: 'Área', chAsLines: 'Líneas', chAsDots: 'Puntos',
-    xNeedPrice: 'Esperando el precio en vivo: inténtalo de nuevo en un segundo.'
+    xNeedPrice: 'Esperando el precio en vivo: inténtalo de nuevo en un segundo.', mkShut: 'CERRADO'
   };
   let add = '';
   Object.keys(ES).forEach(k => { if (j.indexOf('"' + k + '":') < 0) add += ',"' + k + '":' + JSON.stringify(ES[k]); });

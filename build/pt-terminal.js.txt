@@ -86,11 +86,57 @@
       _scr = m; _scrAt = Date.now(); _scrQ = 0; cb && cb(m);
     }).catch(function () { _scrQ = 0; cb && cb(_scr); });
   }
+  /* EVERY ROW CARRIES A PRICE (owner 2026-10-24: "negde ima cena negde nema, svuda treba da budu cene").
+     The screener answers crypto in one cached call; stocks, forex, metals and indices have no bulk feed, so each
+     row asks `/api/price` for itself WHEN IT COMES INTO VIEW - the route is edge-cached per symbol, a reader
+     sees eight rows at a time, and at most five requests are ever in flight. A row nobody scrolls to costs
+     nothing. The answer also carries the market STATE, so a shut market says so on the row instead of at the
+     Open button. */
+  var _px1 = {}, _pxQ = [], _pxN = 0, _pxIO = null;
   function pxOf(s) {
     var m = _scr && _scr[s]; if (m && m.p > 0) return m;
+    var c = _px1[s]; if (c && c.p > 0 && Date.now() - c.t < 120000) return c;
     var l = window.mpLivePrices && window.mpLivePrices[s];
     if (l && +l.p > 0) return { p: +l.p, chg: (l.chg == null ? null : +l.chg), vol: 0 };
     return null;
+  }
+  function pxPump() {
+    while (_pxN < 5 && _pxQ.length) {
+      (function (s) {
+        _pxN++;
+        fetch('/api/price?symbol=' + encodeURIComponent(s), { cache: 'no-store' })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j && +j.price > 0) _px1[s] = { p: +j.price, chg: (j.chg == null ? null : +j.chg), vol: 0, state: j.state || '', t: Date.now() };
+            else _px1[s] = { p: 0, t: Date.now() };
+            pxFill(s);
+          })
+          .catch(function () { _px1[s] = { p: 0, t: Date.now() }; })
+          .then(function () { _pxN--; pxPump(); });
+      })(_pxQ.shift());
+    }
+  }
+  function pxWant(s) { if (_px1[s] || _pxQ.indexOf(s) >= 0) return; _pxQ.push(s); pxPump(); }
+  function pxFill(s) {
+    var cell = document.querySelector('.ptmk-px[data-px="' + s + '"]'); if (!cell) return;
+    var p = pxOf(s); if (!p || !(p.p > 0)) return;
+    cell.classList.remove('wait'); cell.innerHTML = pxCell(p);
+  }
+  function pxCell(p) {
+    if (!p || !(p.p > 0)) return '';
+    var cg = (p.chg != null && isFinite(p.chg)) ? +p.chg : null;
+    var shut = /^(CLOSED|PREPRE|POSTPOST)$/i.test(p.state || '');
+    return esc(fmtPx(p.p))
+      + (cg != null ? '<span class="ptmk-cg ' + (cg > 0.004 ? 'up' : cg < -0.004 ? 'dn' : 'flat') + '">' + (cg >= 0 ? '+' : '') + cg.toFixed(2) + '%' + (shut ? '<i class="ptmk-sh">' + T('mkShut', 'CLOSED') + '</i>' : '') + '</span>' : '');
+  }
+  function pxWatch() {
+    var box = $('ptMkList'); if (!box) return;
+    if (_pxIO) { try { _pxIO.disconnect(); } catch (e) { } }
+    if (!window.IntersectionObserver) { Array.prototype.forEach.call(box.querySelectorAll('.ptmk-px.wait[data-px]'), function (c) { pxWant(c.getAttribute('data-px')); }); return; }
+    _pxIO = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { pxWant(e.target.getAttribute('data-px')); _pxIO.unobserve(e.target); } });
+    }, { root: box, rootMargin: '220px 0px' });
+    Array.prototype.forEach.call(box.querySelectorAll('.ptmk-px.wait[data-px]'), function (c) { _pxIO.observe(c); });
   }
   function fmtPx(v) {
     if (!(v > 0)) return '';
@@ -125,15 +171,15 @@
     }
     for (var i = 0; i < n; i++) {
       var s = rows[i], nm = nameOf(s), p = pxOf(s), fav = favHas(s);
-      var cg = (p && p.chg != null && isFinite(p.chg)) ? p.chg : null;
       h += '<button type="button" class="ptmk-r' + (s === cur ? ' cur' : '') + '" data-mk="' + esc(s) + '">'
         + '<span class="ptmk-ic">' + icoHtml(s) + '</span>'
         + '<span class="ptmk-nm"><span class="ptmk-s1">' + esc(s) + '</span>' + (nm ? '<span class="ptmk-s2">' + esc(nm) + '</span>' : '') + '</span>'
-        + '<span class="ptmk-px">' + (p ? esc(fmtPx(p.p)) : '') + (cg != null ? '<span class="ptmk-cg ' + (cg > 0.004 ? 'up' : cg < -0.004 ? 'dn' : 'flat') + '">' + (cg >= 0 ? '+' : '') + cg.toFixed(2) + '%</span>' : '') + '</span>'
+        + '<span class="ptmk-px' + (p ? '' : ' wait') + '" data-px="' + esc(s) + '">' + pxCell(p) + '</span>'
         + '<span class="ptmk-st' + (fav ? ' on' : '') + '" data-fav="' + esc(s) + '" role="button" tabindex="0" aria-label="' + (fav ? T('mkUnpin', 'Remove from favourites') : T('mkPin', 'Add to favourites')) + '">' + (fav ? ST_ON : ST_OFF) + '</span>'
         + '</button>';
     }
     box.innerHTML = h;
+    pxWatch();
     var f = $('ptMkFoot');
     if (f) f.innerHTML = (rows.length > n ? T('mkShowing', 'Showing the first ') + '<b>' + n + '</b>' + T('mkOf', ' of ') + '<b>' + rows.length + '</b> - ' + T('mkNarrow', 'type to narrow it down.') : '<b>' + rows.length + '</b> ' + T('mkMarkets', 'markets') + (mkTab === 'crypto' ? ' - ' + T('mkByVol', 'busiest first') : ''));
   }
@@ -220,7 +266,11 @@
   ['area', T('chArea', 'Area'), '<path d="M3 17l5-6 4 3 4-7 5 4v8H3z"/>']];
   var chStyle = 'candles'; try { var _c0 = localStorage.getItem('mp_ch_style'); if (_c0 && CH.some(function (x) { return x[0] === _c0; })) chStyle = _c0; } catch (e) { }
   function haConv(d, prev) { var o = +d.open, h = +d.high, l = +d.low, c = +d.close, hc = (o + h + l + c) / 4, ho = prev ? (prev.open + prev.close) / 2 : (o + c) / 2; return { time: d.time, open: ho, high: Math.max(h, ho, hc), low: Math.min(l, ho, hc), close: hc }; }
+  /* a point the library would choke on is DROPPED here, not handed on: mpCreateChart's own guard catches it at
+     insertion, but a line/area point carries `value`, and value=NaN is the exact shape that throws from the
+     render loop a frame later with none of our frames on the stack. */
   function styleRow(b) { return (chStyle === 'line' || chStyle === 'area') ? { time: b.time, value: +b.close } : b; }
+  function styleRows(raw) { var o = [], i, r; for (i = 0; i < raw.length; i++) { r = raw[i]; if (!r || !isFinite(+r.close) || r.time == null) continue; o.push(styleRow(r)); } return o; }
   function styleSync(w, b) { var s = w._styleS; if (!s) return; try { if (!b) s.setData(w._raw.map(styleRow)); else s.update(styleRow(b)); } catch (e) { } }
   function styleWrap(w) {
     var cs = w.candle; if (!cs || cs._mpWrapped) return; cs._mpWrapped = 1;
@@ -230,27 +280,59 @@
     cs.update = function (b) { var r = w._raw, ha = w._ha, same = !!(r.length && r[r.length - 1].time === b.time); if (same) r[r.length - 1] = b; else r.push(b); var prev = same ? ha[ha.length - 2] : ha[ha.length - 1]; var x = conv(b, prev); if (same) ha[ha.length - 1] = x; else ha.push(x); up(x); styleSync(w, b); };
   }
   var _TR = 'rgba(0,0,0,0)';
+  /* THE CANDLESTICK IS HIDDEN, NOT PAINTED TRANSPARENT (2026-10-24). Transparent colours still run the
+     Candlestick RENDERER on every frame, and that renderer is what threw "Value is null" out of the library -
+     measured: 1 page error with the line style over the same walk, 0 with candles, and the stack named
+     `Candlestick` rather than any insert of ours. `visible:false` takes it out of rendering altogether, and the
+     price scale is unaffected - priceToCoordinate answered the identical y with the series hidden, shown and
+     hidden again, and createPriceLine still works on it. The live price line and its axis badge move to the
+     shadow series so nothing is lost. */
+  function plHue() { try { var l = window.mpLivePrices && window.mpLivePrices[symNow()]; var cg = l && l.chg; return (cg == null || +cg >= 0) ? '#2ebd85' : '#ff5a4d'; } catch (e) { return '#9aa3ad'; } }
   function applyStyle(w) {
     if (!w || !w.candle || !w.chart) return;
     var upC = '#10b981', dnC = '#ef4444', st = chStyle, opt;
     if (w._styleS) { try { w.chart.removeSeries(w._styleS); } catch (e) { } w._styleS = null; }
-    if (st === 'hollow') opt = { upColor: _TR, downColor: dnC, borderVisible: true, borderUpColor: upC, borderDownColor: dnC, wickUpColor: upC, wickDownColor: dnC };
-    else if (st === 'bars' || st === 'line' || st === 'area') opt = { upColor: _TR, downColor: _TR, borderVisible: false, wickUpColor: _TR, wickDownColor: _TR };
-    else opt = { upColor: upC, downColor: dnC, borderVisible: false, wickUpColor: upC, wickDownColor: dnC };
+    var shadow = (st === 'bars' || st === 'line' || st === 'area');
+    if (st === 'hollow') opt = { visible: true, upColor: _TR, downColor: dnC, borderVisible: true, borderUpColor: upC, borderDownColor: dnC, wickUpColor: upC, wickDownColor: dnC, lastValueVisible: true, priceLineVisible: true };
+    else if (shadow) opt = { visible: false, lastValueVisible: false, priceLineVisible: false };
+    else opt = { visible: true, upColor: upC, downColor: dnC, borderVisible: false, wickUpColor: upC, wickDownColor: dnC, lastValueVisible: true, priceLineVisible: true };
     try { w.candle.applyOptions(opt); } catch (e) { }
+    var pl = { priceLineVisible: true, lastValueVisible: true, priceLineColor: plHue(), priceLineStyle: 2 };
     try {
-      if (st === 'bars') w._styleS = w.chart.addBarSeries({ upColor: upC, downColor: dnC, thinBars: false, priceLineVisible: false, lastValueVisible: false });
-      else if (st === 'line') w._styleS = w.chart.addLineSeries({ color: '#c2f64a', lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: true });
-      else if (st === 'area') w._styleS = w.chart.addAreaSeries({ lineColor: '#c2f64a', topColor: 'rgba(194,246,74,.26)', bottomColor: 'rgba(194,246,74,0)', lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
+      if (st === 'bars') w._styleS = w.chart.addBarSeries(Object.assign({ upColor: upC, downColor: dnC, thinBars: false }, pl));
+      else if (st === 'line') w._styleS = w.chart.addLineSeries(Object.assign({ color: '#c2f64a', lineWidth: 2, crosshairMarkerVisible: true }, pl));
+      else if (st === 'area') w._styleS = w.chart.addAreaSeries(Object.assign({ lineColor: '#c2f64a', topColor: 'rgba(194,246,74,.26)', bottomColor: 'rgba(194,246,74,0)', lineWidth: 2 }, pl));
     } catch (e) { w._styleS = null; }
+    /* IF THE SHADOW SERIES COULD NOT BE MADE, THE CANDLES COME BACK. Painting the candlestick transparent and
+       then failing to create the series that replaces it is the one way this can leave a blank chart. */
+    if (shadow && !w._styleS) { try { w.candle.applyOptions({ visible: true, upColor: upC, downColor: dnC, borderVisible: false, wickUpColor: upC, wickDownColor: dnC, lastValueVisible: true, priceLineVisible: true }); } catch (e) { } chStyle = 'candles'; }
+    w._styleN = 0;
     if (w._raw && w._raw.length) { try { w.candle.setData(w._raw); } catch (e) { } }
   }
   var _W = null;
   function chartW() {
     var p = null; try { p = window.__mpPT && window.__mpPT(); } catch (e) { }
     if (!p || !p.chart || !p.candle) return null;
-    if (!_W || _W.candle !== p.candle) { _W = { chart: p.chart, candle: p.candle, _raw: (p.bars || []).slice(), _ha: [], _styleS: null }; styleWrap(_W); applyStyle(_W); }
-    else _W.chart = p.chart;
+    if (!_W || _W.candle !== p.candle || _W.chart !== p.chart) {
+      _W = { chart: p.chart, candle: p.candle, _raw: (p.bars || []).slice(), _ha: [], _styleS: null, _styleN: 0 };
+      styleWrap(_W); applyStyle(_W); return _W;
+    }
+    /* SELF-HEAL, EVERY TWO SECONDS, WHATEVER THE CAUSE. On bars/line/area the candlestick is transparent, so a
+       shadow series that is missing or behind the engine's own bars is a BLANK chart - and the engine rebuilds
+       its series on a symbol switch, a timeframe switch and every liveness recovery. This compares what the
+       engine carries with what we drew and repaints when they have drifted; it costs two length reads. */
+    var n = (p.bars || []).length;
+    if (n > 2 && (chStyle === 'bars' || chStyle === 'line' || chStyle === 'area')) {
+      /* RE-SEED, NEVER REBUILD. Removing and re-adding the shadow series every two seconds is series churn on a
+         live chart, and it threw "Value is null" out of the library's own render loop within a minute (measured
+         on the phone, four times). A series that EXISTS is given the data it is missing; only a series that is
+         genuinely gone is built again. */
+      if (!_W._styleS) applyStyle(_W);
+      else {
+        if ((_W._styleN || 0) < n - 1) { _W._raw = (p.bars || []).slice(); styleSync(_W, null); }
+        var hue = plHue(); if (hue !== _W._plc) { _W._plc = hue; try { _W._styleS.applyOptions({ priceLineColor: hue }); } catch (e) { } }
+      }
+    }
     return _W;
   }
   function setStyle(s) {

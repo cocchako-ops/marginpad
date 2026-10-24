@@ -4560,8 +4560,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
 (function () {
   if (window.mpChatPrefs) return;
   var KEY = 'mp_ct_prefs', DEF = { trades: 'card', size: 'm' }, pop = null;
-  function get() { var p = {}; try { p = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {} var o = {}; for (var k in DEF) o[k] = (p[k] != null ? p[k] : DEF[k]); if (['card', 'link'].indexOf(o.trades) < 0) o.trades = 'card'; if (['s', 'm', 'l'].indexOf(o.size) < 0) o.size = 'm'; return o; }
-  function set(k, v) { var p = get(); p[k] = v; try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} apply(); if (pop) paint(); }
+  /* WRITTEN TWICE, ON PURPOSE (2026-10-24, owner: "hocu tako zauvek da ostane, a ne stalno da moram da
+     vracam na to podesavanje"). localStorage and cookies are evicted by DIFFERENT mechanisms - iOS clears a
+     home-screen app's localStorage under storage pressure long before it drops a cookie - so a setting kept
+     in only one of them can quietly go back to the default. Reading prefers whichever still exists and
+     rewrites the other. Still a device setting: no server, no round trip. */
+  var CKEY = 'mp_ct_prefs_ck';
+  function ckRead() { try { var m = document.cookie.match(/(?:^|;\s*)mp_ct_prefs_ck=([^;]+)/); return m ? JSON.parse(decodeURIComponent(m[1])) : null; } catch (e) { return null; } }
+  function ckWrite(o) { try { document.cookie = CKEY + '=' + encodeURIComponent(JSON.stringify(o)) + ';path=/;max-age=31536000;samesite=lax'; } catch (e) {} }
+  function get() {
+    var p = null; try { p = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    var c = ckRead();
+    if (!p && c) { p = c; try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} }   // localStorage was wiped
+    else if (p && !c) ckWrite(p);                                                                 // the cookie was wiped
+    p = p || {};
+    var o = {}; for (var k in DEF) o[k] = (p[k] != null ? p[k] : DEF[k]);
+    if (['card', 'link'].indexOf(o.trades) < 0) o.trades = 'card'; if (['s', 'm', 'l'].indexOf(o.size) < 0) o.size = 'm';
+    return o;
+  }
+  function set(k, v) { var p = get(); p[k] = v; try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} ckWrite(p); apply(); if (pop) paint(); }
   function apply() {
     var p = get(), box = document.getElementById('chatBox');
     if (box) { box.classList.toggle('ct-fs-s', p.size === 's'); box.classList.toggle('ct-fs-l', p.size === 'l'); }
