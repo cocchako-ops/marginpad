@@ -114,14 +114,30 @@
     .spot-term .term{grid-template-columns:1fr;gap:0}
     .spot-term .tcol{display:none}
     .spot-term .tcol.tshow{display:flex}
-    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(64px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    /* the market list reads as the SECOND half of the chart view (owner: "nek bude tu gore chart a onda nize
+       dole da krenu memes") - one node, moved by placeList(), never a second copy of the list. The COLUMN does
+       the scrolling here, so the stage stops being a fitted box and becomes the top of a page: chart, trade pad,
+       then the coins. On a desktop the fit stays, because there the market has its own column. */
+    .spot-term .tcol-mid{overflow-y:auto;overflow-x:hidden}
+    .spot-term .tcol-mid #sheet{flex:0 0 auto;overflow:visible}
+    .spot-term .tcol-mid #sheet .chart{flex:0 0 auto;height:clamp(240px,42vh,430px)}
+    .spot-term .tcol-mid .card{border-top:1px solid var(--line);margin-top:12px}
+    .spot-term .tcol-mid .card>h2{position:static}
     /* the dock OVERLAYS the stage, so the room it needs is reserved on the column - padding inside the sheet
        sits below its own scroll and let the Buy button rest 13px under the dock (measured on a 390x844) */
-    .spot-term .tcol-mid{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
-    .spot-term #sheet{padding:0 12px 8px}
+    .spot-term .tcol-mid{padding-bottom:calc(60px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    /* THE CHART GOES EDGE TO EDGE (2026-10-24, owner: "cela stranica je isecena sa leve i desne strane od vrha
+       do dna sirine 0.5cm"): nothing was clipped - the stage carried a 12px gutter and the chart its own border
+       and radius, so on a phone the content column read as a page cut down both sides while the header spanned
+       the full width. The /charts phone terminal has been edge-to-edge for exactly this reason since 10-08.
+       The PAD keeps its gutter - a full-bleed input field is not a chart. */
+    .spot-term #sheet{padding:0 0 8px}
+    .spot-term #sheet>*{padding-left:12px;padding-right:12px;box-sizing:border-box}
+    .spot-term #sheet>.chart{padding:0;border-radius:0;border-left:0;border-right:0}
     /* every pixel the pad gives back is a pixel of chart, and on a phone the chart is the product */
     .spot-term #sheet .chart{min-height:230px}
-    .spot-term .tstage-empty{min-height:230px}
+    .spot-term .tstage-empty{min-height:230px;margin:14px 12px}
     .spot-term #sheet .lbl{margin:6px 0 4px}
     .spot-term #sheet .est{font-size:11.5px;gap:2px 10px;margin:8px 0}
     .spot-term #sheet .sw{margin-top:10px}
@@ -129,9 +145,14 @@
     .spot-term .thead{padding:0 12px}
     .spot-term .mast .worth{padding:11px 12px!important}
   }
+  /* THE HOME INDICATOR NEEDS CLEARANCE, NOT THE WHOLE INSET (2026-10-24, owner: "previse si podigao nav bar ...
+     sigurno ima 1cm praznog prostora pri dnu"). env(safe-area-inset-bottom) is 34px on a modern iPhone, and
+     reserving all of it under 54px cells reads as a bar with a centimetre of nothing beneath the labels. The
+     indicator itself is ~5px of glyph in the middle of that strip, so most apps leave a fraction: this keeps a
+     real gap on a phone that has an inset and 4px on one that does not. */
   .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
     background:rgba(10,13,19,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line2);padding-bottom:env(safe-area-inset-bottom)}
+    border-top:1px solid var(--line2);padding-bottom:max(4px, calc(env(safe-area-inset-bottom) - 16px))}
   @media(max-width:999px){
     body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}
     /* the site's own phone bar is absorbed into the dock (Browse and Chat are cells there now) - two fixed

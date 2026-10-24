@@ -276,7 +276,11 @@
   .spot-term #app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
   /* mp-nav sets margin:-16px -16px 0 INLINE on the header to cancel the wrap's padding and sit full-bleed;
      with that padding gone the same inline rule pushed it 16px off both edges, which is the one element that
-     made a 390px phone scroll sideways. An inline style needs !important to answer. */
+     made a 390px phone scroll sideways. An inline style needs !important to answer.
+     THE TOP PADDING CARRIES THE NOTCH (2026-10-24, owner: "iphone ima onaj notch ... pada i sat i baterija
+     preko sajta"): mp-nav's own phone rule is `padding-top:calc(env(safe-area-inset-top) + 14px) !important`
+     and this line overrode it with a flat 13px, so on a home-screen iPhone the brand sat under the status bar.
+     Any !important padding on a top header MUST re-add the inset. */
   .spot-term #siteHead{margin:0!important;border-bottom:1px solid var(--line);
     padding:calc(13px + env(safe-area-inset-top)) 16px 12px!important}
   .spot-term #app{max-width:none;padding:0}
@@ -358,14 +362,30 @@
     .spot-term .term{grid-template-columns:1fr;gap:0}
     .spot-term .tcol{display:none}
     .spot-term .tcol.tshow{display:flex}
-    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(64px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    /* the market list reads as the SECOND half of the chart view (owner: "nek bude tu gore chart a onda nize
+       dole da krenu memes") - one node, moved by placeList(), never a second copy of the list. The COLUMN does
+       the scrolling here, so the stage stops being a fitted box and becomes the top of a page: chart, trade pad,
+       then the coins. On a desktop the fit stays, because there the market has its own column. */
+    .spot-term .tcol-mid{overflow-y:auto;overflow-x:hidden}
+    .spot-term .tcol-mid #sheet{flex:0 0 auto;overflow:visible}
+    .spot-term .tcol-mid #sheet .chart{flex:0 0 auto;height:clamp(240px,42vh,430px)}
+    .spot-term .tcol-mid .card{border-top:1px solid var(--line);margin-top:12px}
+    .spot-term .tcol-mid .card>h2{position:static}
     /* the dock OVERLAYS the stage, so the room it needs is reserved on the column - padding inside the sheet
        sits below its own scroll and let the Buy button rest 13px under the dock (measured on a 390x844) */
-    .spot-term .tcol-mid{padding-bottom:calc(56px + env(safe-area-inset-bottom))}
-    .spot-term #sheet{padding:0 12px 8px}
+    .spot-term .tcol-mid{padding-bottom:calc(60px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    /* THE CHART GOES EDGE TO EDGE (2026-10-24, owner: "cela stranica je isecena sa leve i desne strane od vrha
+       do dna sirine 0.5cm"): nothing was clipped - the stage carried a 12px gutter and the chart its own border
+       and radius, so on a phone the content column read as a page cut down both sides while the header spanned
+       the full width. The /charts phone terminal has been edge-to-edge for exactly this reason since 10-08.
+       The PAD keeps its gutter - a full-bleed input field is not a chart. */
+    .spot-term #sheet{padding:0 0 8px}
+    .spot-term #sheet>*{padding-left:12px;padding-right:12px;box-sizing:border-box}
+    .spot-term #sheet>.chart{padding:0;border-radius:0;border-left:0;border-right:0}
     /* every pixel the pad gives back is a pixel of chart, and on a phone the chart is the product */
     .spot-term #sheet .chart{min-height:230px}
-    .spot-term .tstage-empty{min-height:230px}
+    .spot-term .tstage-empty{min-height:230px;margin:14px 12px}
     .spot-term #sheet .lbl{margin:6px 0 4px}
     .spot-term #sheet .est{font-size:11.5px;gap:2px 10px;margin:8px 0}
     .spot-term #sheet .sw{margin-top:10px}
@@ -373,9 +393,14 @@
     .spot-term .thead{padding:0 12px}
     .spot-term .mast .worth{padding:11px 12px!important}
   }
+  /* THE HOME INDICATOR NEEDS CLEARANCE, NOT THE WHOLE INSET (2026-10-24, owner: "previse si podigao nav bar ...
+     sigurno ima 1cm praznog prostora pri dnu"). env(safe-area-inset-bottom) is 34px on a modern iPhone, and
+     reserving all of it under 54px cells reads as a bar with a centimetre of nothing beneath the labels. The
+     indicator itself is ~5px of glyph in the middle of that strip, so most apps leave a fraction: this keeps a
+     real gap on a phone that has an inset and 4px on one that does not. */
   .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
     background:rgba(10,13,19,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line2);padding-bottom:env(safe-area-inset-bottom)}
+    border-top:1px solid var(--line2);padding-bottom:max(4px, calc(env(safe-area-inset-bottom) - 16px))}
   @media(max-width:999px){
     body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}
     /* the site's own phone bar is absorbed into the dock (Browse and Chat are cells there now) - two fixed
@@ -489,7 +514,7 @@
         <button class="tab" type="button" data-tab="screener" data-t="t_screener">Screener</button>
       </div>
       <div class="chips" id="netChips" style="margin-top:10px"></div>
-      <div id="list" class="rows"><div class="empty" data-t="y_loading">Loading…</div></div>
+      <div id="list" class="rows"><div class="empty mpw-empty"><span class="mpw-slot" data-mpwait="row"></span><span data-t="y_loading">Loading…</span></div></div>
       <div class="tw" id="scrWrap" hidden><table class="scr"><thead id="scrHead"></thead><tbody id="scrBody"></tbody></table></div>
       <button class="more" type="button" id="moreBtn" hidden></button>
     </div>
@@ -514,7 +539,7 @@
 <div class="ov" id="ov"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true">
   <div class="sh-h"><img class="logo" id="shLogo" alt="" hidden><span class="logo txt" id="shLogoT"></span><div class="nm"><b id="shName"></b><small id="shSub"></small></div><div class="px"><b id="shPx"></b><small id="shChg"></small></div><button class="sh-x" type="button" id="shX" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="chart" id="chart"><div class="empty" id="chartMsg" data-t="ch_loading">Loading chart…</div></div><div class="chnote" id="chartNote" hidden></div>
+  <div class="chart" id="chart"><div class="empty mpw-empty col" id="chartMsg"><span class="mpw-slot" data-mpwait="1"></span><span data-t="ch_loading">Loading chart…</span></div></div><div class="chnote" id="chartNote" hidden></div>
   <div class="tfs" id="tfs"></div>
   <div class="warn" id="shWarn" hidden></div>
   <p class="pos" id="shPos" hidden></p>
@@ -832,8 +857,8 @@
   window.__spot={state:function(){return {me:!!ME,port:PORT,board:BOARD,memes:MEMES.length,majors:MAJORS.length,tab:TAB};},open:openSheet,pick:pick};
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=7331398f"></script>
-<script defer src="/assets/mp-nav.js?v=cfe4b98d"></script>
+<script defer src="/assets/mp-auth.js?v=59a05488"></script>
+<script defer src="/assets/mp-nav.js?v=966ae3f1"></script>
 <script>
 /* ─── THE TERMINAL SHELL (2026-10-24) ─────────────────────────────────────────────────────────────────────────
    This runs AFTER the page's own script and does not touch one line of it. That is the whole safety argument:
@@ -916,6 +941,17 @@
     }
     placeMast();
 
+    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (2026-10-24, owner: "kad otvorim chart ne ide bas da bude
+       prazno - nek bude tu gore chart a onda nize dole da krenu memes"). On a phone the market list MOVES under
+       the stage while the Chart view is up and goes back to the Market view when that one is asked for: one
+       node with two homes, exactly as the masthead already works. A second copy of the list is not an option -
+       it would be a second place for a price to be wrong. */
+    function placeList(view) {
+      if (!buyCard || !phone()) { if (buyCard && buyCard.parentNode !== left) left.appendChild(buyCard); return; }
+      var host = view === 'chart' ? mid : left;
+      if (buyCard.parentNode !== host) host.appendChild(buyCard);
+    }
+
     /* 3. THE EMPTY STAGE. Until a coin is picked it says what to do, in the place the chart will appear. */
     var ph = mk('div', 'tstage-empty',
       '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3.5-4.5L14 13l4-6"/></svg><span data-t="term_pick"></span>');
@@ -992,8 +1028,10 @@
       if (!v) { v = VIEWS[0]; name = v[0]; }
       VIEW = name;
       [left, mid, right].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      placeList(name);
       // Coins and Floor are two places in one column - go to the one that was asked for
       if (v[2] === right) { var t = name === 'floor' ? floorCard : holdCard; if (t) try { right.scrollTop = Math.max(0, t.offsetTop - right.offsetTop); } catch (e) {} }
+      if (name === 'chart') { try { mid.scrollTop = 0; } catch (e) {} }   // the chart, not where the list was left
       Array.prototype.forEach.call(dock.children, function (b) { b.classList.toggle('on', b.getAttribute('data-tv') === name); });
       try { localStorage.setItem('mp_spot_view', name); } catch (e) {}
     }
@@ -1012,11 +1050,49 @@
 
     /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. The page's
           own handler still does all the work; this only follows it onto the stage. */
+    var autoPick = false;
     document.addEventListener('click', function (e) {
       if (!phone() || !e.target.closest) return;
       if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody')) return;
+      if (autoPick) { autoPick = false; return; }   // the default major is not a tap - it must not move the view
       setTimeout(function () { if (picked()) show('chart'); }, 90);
     }, true);
+
+    /* 6b. AN EMPTY STAGE IS STILL AN EMPTY STAGE, SO IT OPENS ON A MAJOR (2026-10-24, owner: "kad otvorim chart
+          ne ide bas da bude prazno ... po default-u top 5 majors"). The page's own Majors tab holds the top
+          coins by market cap, so the default is its FIRST row - clicked through the page's own handler, which is
+          the only thing that knows how to price and chart a coin. The tab is put back to whatever the reader had
+          (memes), so the market list below reads as he asked. It runs once, and never over a reader's own pick. */
+    var dflt = false;
+    function defaultCoin() {
+      if (dflt || picked() || !buyCard) return;
+      var tabs = buyCard.querySelectorAll('[data-tab]'), majors = null, was = null;
+      Array.prototype.forEach.call(tabs, function (t) {
+        if (t.getAttribute('data-tab') === 'majors') majors = t;
+        if (t.className.indexOf('on') >= 0) was = t;
+      });
+      if (!majors) return;
+      dflt = true; autoPick = true;
+      majors.click();
+      var tries = 0;
+      (function wait() {
+        if (picked()) return;
+        var row = buyCard.querySelector('#list > *[data-i], #list .tok, #list > div:not(.empty)');
+        if (row && row.click) {
+          row.click();
+          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);   // the reader's own tab back
+          return;
+        }
+        if (++tries < 40) setTimeout(wait, 250);
+        else if (was && was !== majors) was.click();
+      })();
+    }
+    // only once the page has its lists - the first paint of #list is the signal
+    try {
+      var lw = new MutationObserver(function () { if (buyCard && buyCard.querySelector('#list > *:not(.empty)')) { lw.disconnect(); defaultCoin(); } });
+      lw.observe(buyCard || term, { childList: true, subtree: true });
+    } catch (e) {}
+    setTimeout(defaultCoin, 6000);   // a list that never arrives must not leave the stage empty for ever
 
     /* 7. A new row on the floor marks the dock while the reader is elsewhere - the FOMO half of this, and a
           mark rather than a toast, so it never covers the thing they are looking at. */
@@ -1059,5 +1135,6 @@
   if (ready()) off();
 })();
 </script>
+<style>.mpw-empty{display:flex;align-items:center;justify-content:center;gap:9px}.mpw-empty.col{flex-direction:column;gap:6px}.mpw-empty .mpwait{padding:0}</style><script>(function(){function fill(){if(!window.mpWaitHtml)return false;var n=document.querySelectorAll('.mpw-slot:empty');for(var i=0;i<n.length;i++){n[i].innerHTML=window.mpWaitHtml('',{row:n[i].getAttribute('data-mpwait')==='row'});}return true;}if(!fill()){var t=0,iv=setInterval(function(){if(fill()||++t>40)clearInterval(iv);},150);window.addEventListener('load',fill);}})();</script>
 </body>
 </html>

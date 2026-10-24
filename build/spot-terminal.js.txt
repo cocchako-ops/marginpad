@@ -79,6 +79,17 @@
     }
     placeMast();
 
+    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (2026-10-24, owner: "kad otvorim chart ne ide bas da bude
+       prazno - nek bude tu gore chart a onda nize dole da krenu memes"). On a phone the market list MOVES under
+       the stage while the Chart view is up and goes back to the Market view when that one is asked for: one
+       node with two homes, exactly as the masthead already works. A second copy of the list is not an option -
+       it would be a second place for a price to be wrong. */
+    function placeList(view) {
+      if (!buyCard || !phone()) { if (buyCard && buyCard.parentNode !== left) left.appendChild(buyCard); return; }
+      var host = view === 'chart' ? mid : left;
+      if (buyCard.parentNode !== host) host.appendChild(buyCard);
+    }
+
     /* 3. THE EMPTY STAGE. Until a coin is picked it says what to do, in the place the chart will appear. */
     var ph = mk('div', 'tstage-empty',
       '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3.5-4.5L14 13l4-6"/></svg><span data-t="term_pick"></span>');
@@ -155,8 +166,10 @@
       if (!v) { v = VIEWS[0]; name = v[0]; }
       VIEW = name;
       [left, mid, right].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      placeList(name);
       // Coins and Floor are two places in one column - go to the one that was asked for
       if (v[2] === right) { var t = name === 'floor' ? floorCard : holdCard; if (t) try { right.scrollTop = Math.max(0, t.offsetTop - right.offsetTop); } catch (e) {} }
+      if (name === 'chart') { try { mid.scrollTop = 0; } catch (e) {} }   // the chart, not where the list was left
       Array.prototype.forEach.call(dock.children, function (b) { b.classList.toggle('on', b.getAttribute('data-tv') === name); });
       try { localStorage.setItem('mp_spot_view', name); } catch (e) {}
     }
@@ -175,11 +188,49 @@
 
     /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. The page's
           own handler still does all the work; this only follows it onto the stage. */
+    var autoPick = false;
     document.addEventListener('click', function (e) {
       if (!phone() || !e.target.closest) return;
       if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody')) return;
+      if (autoPick) { autoPick = false; return; }   // the default major is not a tap - it must not move the view
       setTimeout(function () { if (picked()) show('chart'); }, 90);
     }, true);
+
+    /* 6b. AN EMPTY STAGE IS STILL AN EMPTY STAGE, SO IT OPENS ON A MAJOR (2026-10-24, owner: "kad otvorim chart
+          ne ide bas da bude prazno ... po default-u top 5 majors"). The page's own Majors tab holds the top
+          coins by market cap, so the default is its FIRST row - clicked through the page's own handler, which is
+          the only thing that knows how to price and chart a coin. The tab is put back to whatever the reader had
+          (memes), so the market list below reads as he asked. It runs once, and never over a reader's own pick. */
+    var dflt = false;
+    function defaultCoin() {
+      if (dflt || picked() || !buyCard) return;
+      var tabs = buyCard.querySelectorAll('[data-tab]'), majors = null, was = null;
+      Array.prototype.forEach.call(tabs, function (t) {
+        if (t.getAttribute('data-tab') === 'majors') majors = t;
+        if (t.className.indexOf('on') >= 0) was = t;
+      });
+      if (!majors) return;
+      dflt = true; autoPick = true;
+      majors.click();
+      var tries = 0;
+      (function wait() {
+        if (picked()) return;
+        var row = buyCard.querySelector('#list > *[data-i], #list .tok, #list > div:not(.empty)');
+        if (row && row.click) {
+          row.click();
+          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);   // the reader's own tab back
+          return;
+        }
+        if (++tries < 40) setTimeout(wait, 250);
+        else if (was && was !== majors) was.click();
+      })();
+    }
+    // only once the page has its lists - the first paint of #list is the signal
+    try {
+      var lw = new MutationObserver(function () { if (buyCard && buyCard.querySelector('#list > *:not(.empty)')) { lw.disconnect(); defaultCoin(); } });
+      lw.observe(buyCard || term, { childList: true, subtree: true });
+    } catch (e) {}
+    setTimeout(defaultCoin, 6000);   // a list that never arrives must not leave the stage empty for ever
 
     /* 7. A new row on the floor marks the dock while the reader is elsewhere - the FOMO half of this, and a
           mark rather than a toast, so it never covers the thing they are looking at. */

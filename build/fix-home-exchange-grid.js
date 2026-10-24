@@ -14,7 +14,7 @@ const fs = require('fs'), path = require('path');
 const PAIR_TO_SIGNUP = [
   ['https://www.bybit.com/trade/usdt/BTCUSDT?affiliate_id=162071&group_id=1922256&group_type=1', 'https://partner.bybit.com/b/162071'],
   ['https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS', 'https://www.binance.com/register?ref=MAOZM9DS'],
-  ['https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK', 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter'],
+  ['https://partner.bitget.com/bg/CUWBCM', 'https://partner.bitget.com/bg/CUWBCM'],
   ['https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG', 'https://www.gate.com/referral/registry?ref=VFIWB10KUG&ref_type=103&page=superRebate'],
   ['https://www.mexc.com/futures/BTC_USDT?inviteCode=47LrK', 'https://s.mexc.com/referral/YkL887dVgt']
 ];

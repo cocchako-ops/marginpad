@@ -44,7 +44,7 @@ const EX = [
     feel: 'A serious trader’s exchange - excellent charting, unified account margin (spot, perps and options share collateral), and deep books just behind Binance/Bybit. Great if you run complex multi-leg positions or want one balance backing everything.',
     pro: ['Unified account - one balance margins spot + perps + options', 'Deep liquidity, strong execution', 'Best-in-class built-in charts & tools'],
     con: ['KYC required', 'Unified-margin model has a learning curve'] },
-  { key: 'bitget', name: 'Bitget', logo: 513, color: '#00e7d8', href: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter',
+  { key: 'bitget', name: 'Bitget', logo: 513, color: '#00e7d8', href: 'https://partner.bitget.com/bg/CUWBCM',
     lev: '125×', tk: '0.06%', mk: '0.02%', pairs: '500+', kyc: 'Optional*', us: 'No', bonus: 'Up to 6,200 USDT + 20% off fees',
     r: { fees: 82, liq: 80, mkts: 88, lev: 88, trust: 74, easy: 84 }, badge: 'Copy-trading leader',
     feel: 'Best-known for copy trading - you can mirror top futures traders automatically, which is handy while you learn. Liquidity on majors is solid (a notch below the top three) and the app is beginner-friendly. A large public insurance fund backs the derivatives engine.',

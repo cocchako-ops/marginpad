@@ -3349,7 +3349,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     // is honest in the US and simply ranks low there - our reader arrives wanting futures. Accent is ours:
     // Fomo's own theme-color is #060510, which is invisible on our dark cards.
     Fomo: { c: '#ff4d8d', no: '', ref: 'https://fomo.family/r/Marginpad', deep: null, perk: __esT_mpauth("socialTrading",'social trading') },
-    Bitget: { c: '#00e7d8', no: 'US', ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK&from=%2Fevents%2Freferral-all-program&source=events&utmSource=PremierInviter', deep: function (s) { return 'https://www.bitget.com/futures/usdt/' + s + 'USDT?clacCode=DSSSQKGK'; }, perk: 'copy trading' },
+    Bitget: { c: '#00e7d8', no: 'US', ref: 'https://partner.bitget.com/bg/CUWBCM', deep: null, perk: 'copy trading' },
     // MEXC (2026-09-18): the old `promote.mexc.com/r/GND4jI97o0` resolved to inviteCode 41aeB - a DIFFERENT MEXC
     // account ("65****35 invites you") - so every MEXC sign-up we sent was credited elsewhere. The owner's link
     // resolves to inviteCode 47LrK ("64****89"), which is what the pair links carry now.
@@ -4593,7 +4593,83 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     b.addEventListener('click', function (e) { e.stopPropagation(); open(); });
     apply(); return true;
   }
-  var tries = 0; (function look() { if (gear() || ++tries > 40) return; setTimeout(look, 500); })();
+  /* THE CHAT IS LAZY ON MOST PAGES, so a bounded poll is a bounded product: open it a minute into
+     reading and the gear was never inserted, which is why the stored text size read as "reverted" - nobody
+     had applied it. gear() is idempotent, so watching for the box costs one call per insertion. */
+  (function () {
+    if (gear()) return;
+    var mo = null, stop = function () { try { mo.disconnect(); } catch (e) {} };
+    try { mo = new MutationObserver(function () { if (document.getElementById('chatBox') && gear()) stop(); });
+      mo.observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+    var t = 0; (function look() { if (gear()) { stop(); return; } if (++t > 240) return; setTimeout(look, 500); })();
+  })();
   window.addEventListener('mp-auth-change', function () { gear(); });
   window.mpChatPrefs = { get: get, set: set, apply: apply, open: open, close: close };
+})();
+
+/* THE WAITING MARK (2026-10-24) - the app icon over a sliding bar, the same mark the Demo Spot splash shows.
+   Every motion here is WAAPI: the owner's Windows renders no @keyframes, and a waiting indicator that does
+   not move is worse than none - it reads as a page that has stopped. See build/add-wait-mark.js. */
+(function () {
+  if (window.mpWaitHtml) return;
+  var ICON = '/assets/app-icon-192.png';
+  var css = '.mpwait{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px 8px}'
+    + '.mpwait.row{flex-direction:row;gap:9px;padding:4px 0}'
+    + '.mpwait img{display:block;width:44px;height:44px;border-radius:12px;flex:0 0 auto}'
+    + '.mpwait.row img{width:20px;height:20px;border-radius:6px}'
+    + '.mpwait-b{position:relative;width:120px;height:3px;border-radius:3px;background:rgba(255,255,255,.10);overflow:hidden;flex:0 0 auto}'
+    + '.mpwait.row .mpwait-b{width:56px;height:2px}'
+    + '.mpwait-b i{position:absolute;left:0;top:0;display:block;width:38%;height:100%;border-radius:3px;background:#c2f64a}'
+    + '.mpwait-t{font:600 10.5px/1.35 "Space Mono",ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.50);text-align:center}';
+  try { var st = document.createElement('style'); st.id = 'mpwait-css'; st.textContent = css; document.head.appendChild(st); } catch (e) {}
+
+  function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  window.mpWaitHtml = function (label, opts) {
+    opts = opts || {};
+    return '<div class="mpwait' + (opts.row ? ' row' : '') + '" role="status" aria-live="polite">'
+      + '<img src="' + ICON + '" width="44" height="44" alt="" aria-hidden="true">'
+      + '<span class="mpwait-b"><i></i></span>'
+      + (label ? '<span class="mpwait-t">' + esc(label) + '</span>' : '') + '</div>';
+  };
+  /* arming is separate from rendering so a surface can paint the markup with innerHTML and never hold a handle */
+  function arm(el) {
+    if (!el || el._mpw || !el.animate) return;
+    el._mpw = [];
+    try {
+      var img = el.querySelector('img'), bar = el.querySelector('.mpwait-b i');
+      if (img) el._mpw.push(img.animate([{ opacity: .50, transform: 'scale(.93)' }, { opacity: 1, transform: 'scale(1)' }, { opacity: .50, transform: 'scale(.93)' }],
+        { duration: 1500, iterations: Infinity, easing: 'ease-in-out' }));
+      if (bar) el._mpw.push(bar.animate([{ transform: 'translateX(-110%)' }, { transform: 'translateX(270%)' }],
+        { duration: 1150, iterations: Infinity, easing: 'cubic-bezier(.45,0,.25,1)' }));
+    } catch (e) {}
+  }
+  window.mpWaitArm = function (root) {
+    try {
+      var r = root || document;
+      if (r.classList && r.classList.contains('mpwait')) arm(r);
+      var n = r.querySelectorAll ? r.querySelectorAll('.mpwait') : [];
+      for (var i = 0; i < n.length; i++) arm(n[i]);
+    } catch (e) {}
+  };
+  window.mpWait = function (host, opts) {
+    opts = opts || {};
+    var box = document.createElement('div');
+    box.innerHTML = window.mpWaitHtml(opts.label, opts);
+    var el = box.firstChild;
+    if (host && host.appendChild) { if (opts.replace !== false) host.innerHTML = ''; host.appendChild(el); }
+    arm(el);
+    return {
+      el: el,
+      say: function (t) { var s2 = el.querySelector('.mpwait-t'); if (!s2 && t) { s2 = document.createElement('span'); s2.className = 'mpwait-t'; el.appendChild(s2); } if (s2) s2.textContent = t || ''; },
+      stop: function () { var a = el._mpw || []; for (var i = 0; i < a.length; i++) { try { a[i].cancel(); } catch (e) {} } el._mpw = null; if (el.parentNode) el.parentNode.removeChild(el); }
+    };
+  };
+  /* anything painted later - a bubble, a page's own markup - arms itself */
+  try {
+    new MutationObserver(function (ms) {
+      for (var i = 0; i < ms.length; i++) { var a = ms[i].addedNodes;
+        for (var j = 0; j < a.length; j++) if (a[j].nodeType === 1) window.mpWaitArm(a[j]); }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+  window.mpWaitArm(document);
 })();

@@ -2468,13 +2468,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     ctPillEl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>'+ctNew+(ctNew===1?' new message':' new messages');
     ctPillEl.className='ct-newp on';
   }
-  if(msgs)msgs.addEventListener('scroll',function(){if(ctBottom()){ctStick=true;if(ctNew)ctPill(0);}else ctStick=false;});
+  if(msgs)msgs.addEventListener('scroll',function(){if(ctBottom()){ctStick=true;if(ctNew)ctPill(0);}else{ctStick=false;ctOpenPinStop();}});
   /* THE BOTTOM MOVES AFTER WE GET THERE (2026-10-22). Scrolling to the bottom once is final while the content
      is not: a trade link becomes a tall card, avatars and coin logos finish loading, a poll box or the squad
      strip is inserted ABOVE the stream, the keyboard halves the box. The position stays at a pixel that is by
      then the middle. So PIN it: while ctStick holds, any change re-pins on the next frame. One rAF, so a burst
      of mutations costs one write, and ctStick is what keeps this away from a reader who scrolled up. */
-  function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
+  var ctPinT=[];function ctOpenPin(){if(!msgs)return;ctStick=true;ctPill(0);ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];[0,60,160,360,700,1200,2000].forEach(function(ms){ctPinT.push(setTimeout(function(){if(!ctStick||!msgs||box.hidden)return;msgs.scrollTop=msgs.scrollHeight;},ms));});}function ctOpenPinStop(){ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];}function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
   (function(){
     if(!msgs)return;
     var q=0; function ping(){ if(q)return; q=1; requestAnimationFrame(function(){ q=0; ctPin(); }); }
@@ -2493,7 +2493,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
      once the history has rendered that row is centred and lit, the auto-stick is released so the next live message cannot pull the
      view away, and a message the room no longer holds says so instead of silently landing at the bottom. */
   var ctJumpId=(function(){try{var q=location.search.match(/[?&]m=([A-Za-z0-9]+)/);return q?q[1]:'';}catch(e){return '';}})();
-  function ctJump(){if(!ctJumpId||!box||box.hidden)return;var row=msgById(ctJumpId);if(!row){if(msgs&&msgs.querySelector('.ct-msg')){ctJumpId='';try{if(window.mpToast)window.mpToast({msg:'That message is older than the room keeps (the last 150).',kind:'info',ms:6000,key:'ctmnold'});}catch(e){}}return;}ctJumpId='';ctStick=false;if(row.className.indexOf('ct-hit')<0)row.className+=' ct-hit';try{row.scrollIntoView({block:'center'});}catch(e){try{row.scrollIntoView();}catch(_){}}try{row.animate([{background:'rgba(194,246,74,.38)'},{background:'rgba(194,246,74,.38)',offset:.45},{background:'transparent'}],{duration:2400});}catch(e){}}
+  function ctJump(){if(!ctJumpId||!box||box.hidden)return;var row=msgById(ctJumpId);if(!row){if(msgs&&msgs.querySelector('.ct-msg')){ctJumpId='';try{if(window.mpToast)window.mpToast({msg:'That message is older than the room keeps (the last 150).',kind:'info',ms:6000,key:'ctmnold'});}catch(e){}}return;}ctJumpId='';ctStick=false;ctOpenPinStop();if(row.className.indexOf('ct-hit')<0)row.className+=' ct-hit';try{row.scrollIntoView({block:'center'});}catch(e){try{row.scrollIntoView();}catch(_){}}try{row.animate([{background:'rgba(194,246,74,.38)'},{background:'rgba(194,246,74,.38)',offset:.45},{background:'transparent'}],{duration:2400});}catch(e){}}
   function ctAfterAdd(d,m){
     var hit=ctHit(d,m),mine=!!(m&&m.u===user);
     if(ctStick||mine){ctStick=true;if(ctNew)ctPill(0);msgs.scrollTop=msgs.scrollHeight;}
@@ -2646,7 +2646,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   }
   window.addEventListener('mp:xp',function(){try{pickRoom();}catch(e){}});
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
-  function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;setTimeout(function(){try{ctJump();}catch(e){}},80);document.body.classList.add('chat-open');try{sqSync();}catch(e){}startOnlinePoll();var u=meUser();if(u){user=u;showChat();}else{showGate();}}
+  function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;ctOpenPin();setTimeout(function(){try{ctJump();}catch(e){}},80);document.body.classList.add('chat-open');try{sqSync();}catch(e){}startOnlinePoll();var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   window.mpOpenChat=openBox; /* 2026-09-12: mp-nav's bottom-bar Chat calls window.mpEnsureChat, which loaded mp-trade.js whenever this global was missing - on /paper-trade that gave the page a SECOND chat (the room selector came and went depending on which copy rendered) and a second `add()` bound to #planSave, so every open after a Chat tap filed a local copy next to the server position (70 twin drops in 7 days, all mobile). home.js owns the chat here. */
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
@@ -3617,7 +3617,7 @@ window.mpLoadCharts=function(cb){
   if(window.mpCharts){ if(cb)cb(); return; }
   window.__chCbs=window.__chCbs||[]; if(cb)window.__chCbs.push(cb);
   if(window.__chLoading)return; window.__chLoading=true;
-  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=16d9ee55'; sc.defer=true;
+  var sc=document.createElement('script'); sc.src='/assets/mp-charts.js?v=ede0f9aa'; sc.defer=true;
   sc.onload=function(){ (window.__chCbs||[]).forEach(function(f){try{f&&f();}catch(e){}}); window.__chCbs=[]; };
   document.head.appendChild(sc);
 };
@@ -4001,7 +4001,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=bf58ab1f';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=c8e5edfa';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -4138,7 +4138,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     try{if(window.mpLoadCharts)window.mpLoadCharts();}catch(e){}
     if(loading){document.addEventListener('mp-mch-ready',function h(){document.removeEventListener('mp-mch-ready',h);cb&&cb();});return;}
     loading=true;
-    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=e017350b'; sc.defer=true;
+    var sc=document.createElement('script'); sc.src='/assets/mp-mcharts.js?v=2823646e'; sc.defer=true;
     sc.onload=function(){try{document.dispatchEvent(new Event('mp-mch-ready'));}catch(e){} cb&&cb();};
     sc.onerror=function(){try{document.documentElement.classList.add('mfc-off');}catch(e){}};/* the shell is hidden on phone /charts until the layer is up (app shell head CSS) - a failed load must bring it back */
     document.head.appendChild(sc);

@@ -99,7 +99,7 @@ const p1 = patch(PAGE, [
   ['rewards: the Bitget payout note',
     '      <div class="lbl" style="margin:12px 0 6px">How much?</div>',
     '      <div class="note wd-note" id="wdNoteBitget" hidden style="--wdc:#00e7d8;--wdb:rgba(0,231,216,.42);--wdg:rgba(0,231,216,.08)">USDT is sent to your <b>Bitget</b> account by UID - the account must have been opened through our Bitget link. Your UID is the number in your Bitget account menu.\n'
-    + '        <div class="wd-row"><a class="wd-go" data-mpex="Bitget" href="https://www.bitget.com/referral/register?clacCode=DSSSQKGK&amp;from=%2Fevents%2Freferral-all-program&amp;source=events&amp;utmSource=PremierInviter" target="_blank" rel="sponsored noopener noreferrer">Create your Bitget account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>\n'
+    + '        <div class="wd-row"><a class="wd-go" data-mpex="Bitget" href="https://partner.bitget.com/bg/CUWBCM" target="_blank" rel="sponsored noopener noreferrer">Create your Bitget account &rarr;</a><a class="wd-alt" href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>\n'
     + '      <div class="lbl" style="margin:12px 0 6px">How much?</div>',
     'id="wdNoteBitget"'],
   ['rewards: WD_METHODS carries Bitget',

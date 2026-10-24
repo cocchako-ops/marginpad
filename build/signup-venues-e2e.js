@@ -27,7 +27,11 @@ const AK = { 'x-admin-key': K, 'content-type': 'application/json' };
 // BINGX IS A PARTNER URL, NOT A CODE, SINCE 2026-10-24 (the owner moved it to bingx.com/partner/Marginpad). The
 // invite code K5WJQO is still ours and still what the 26 referrals on the book are recorded under, but it is no
 // longer IN the link - which is exactly why bingxAffLookup verifies against our agent account and not the code.
-const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'partner/Marginpad' }, { v: 'bitget', label: 'Bitget', code: 'DSSSQKGK' }];
+/* THE OPEN VENUES, AND WHAT EARNS ON EACH (2026-10-24: Bitget's  went to Bybit - Bitget refuses our
+   account agent access, so it could never be approved by itself, which is the whole point of the swap). The
+   code is what has to appear in the money link: a partner URL carries it in the path, a referral URL in a query. */
+const LIVE = [{ v: 'mexc', label: 'MEXC', code: '47LrK' }, { v: 'bingx', label: 'BingX', code: 'partner/Marginpad' }, { v: 'bybit', label: 'Bybit', code: 'affiliate_id=162071' }  /* the deep link earns through the affiliate id; LZKBERJ is the invite CODE a reader types, not what the URL carries */];
+const RETIRED = [{ v: 'fomo', label: 'Fomo' }, { v: 'bitget', label: 'Bitget' }];
 
 /* A VENUE MISSING FROM EITHER CENTS TABLE IS PAID THE RETIRED $3 DEFAULT (2026-10-22). The DO decides what an
    approval credits with `cfg[exchange + 'C']`, falling back to the long-retired generic `exsignC` - which is 300
@@ -147,15 +151,21 @@ function sourceGuards() {
   ok(m0.moonEnabled !== false, 'and Moon, which was not part of this change, is untouched');
 
   // ---------- the retirement ----------
-  const fsub = await j('/api/reward/fomosign/submit', { method: 'POST', headers: a.H, body: JSON.stringify({ uid: 'e2eretired1' }) });
-  ok(fsub.s === 410 && fsub.b && fsub.b.error === 'closed', 'a new Fomo submission is refused with 410 closed (' + fsub.s + ')');
-  ok(!!(fsub.b && fsub.b.hint), 'and the refusal says in words that the bonus has ended');
-  const fmine = await j('/api/reward/fomosign/mine', { headers: a.H });
-  ok(fmine.s === 200, 'a member can still READ their own Fomo history (' + fmine.s + ')');
-  const flist = await j('/api/reward/fomosign/list', { headers: A });
-  ok(flist.s === 200 && flist.b && Array.isArray(flist.b.pending), 'the owner can still reach the Fomo review queue - the pending claims are not stranded');
-  const fpend = ((flist.b && flist.b.pending) || []).filter(x => x.exchange === 'fomo');
-  ok(true, '    (Fomo rows still awaiting a decision: ' + fpend.length + ')');
+  const page0 = await fetch(O + '/rewards/?nc=1&cb=' + Date.now()).then(r => r.text());
+  /* THE RETIREMENT, FOR EVERY CLOSED VENUE (Fomo 2026-10-21, Bitget 2026-10-24). The invariant is the same
+     both ways round: a NEW claim is refused in words, and every claim already filed stays readable by the
+     member and decidable by the owner. A retirement that strands a real claim is worse than the bug it fixes. */
+  for (const { v, label } of RETIRED) {
+    const rsub = await j('/api/reward/' + v + 'sign/submit', { method: 'POST', headers: a.H, body: JSON.stringify({ uid: 'e2eretired1' }) });
+    ok(rsub.s === 410 && rsub.b && rsub.b.error === 'closed', 'a new ' + label + ' submission is refused with 410 closed (' + rsub.s + ')');
+    ok(!!(rsub.b && rsub.b.hint), '    and the refusal says in words that the bonus has ended');
+    const rmine = await j('/api/reward/' + v + 'sign/mine', { headers: a.H });
+    ok(rmine.s === 200, '    a member can still READ their own ' + label + ' history (' + rmine.s + ')');
+    const rlist = await j('/api/reward/' + v + 'sign/list', { headers: A });
+    ok(rlist.s === 200 && rlist.b && Array.isArray(rlist.b.pending), '    the owner can still reach the ' + label + ' review queue - the pending claims are not stranded');
+    ok(true, '    (' + label + ' rows still awaiting a decision: ' + (((rlist.b && rlist.b.pending) || []).filter(x => x.exchange === v).length) + ')');
+    ok(page0.indexOf('data-v=\"' + v + '\"') < 0, '    and ' + label + ' has no tab left on /rewards/ - a tab that opens a card nobody can be paid from is worse than none');
+  }
 
   // ---------- each live venue, on its own ----------
   for (const { v, label, code } of LIVE) {
@@ -236,7 +246,7 @@ function sourceGuards() {
   }
 
   // ---------- the card copy on /rewards/ names both and no longer names Fomo ----------
-  const page = await fetch(O + '/rewards/?nc=1&cb=' + Date.now()).then(r => r.text());
+  const page = page0;
   for (const { v, label } of LIVE) {
     ok(page.indexOf('id="' + v + 'Card"') >= 0, 'the ' + label + ' card is in the served /rewards/ markup');
     ok(page.indexOf('/assets/ex/' + v + '.png') >= 0, 'and its logo is referenced from our own assets, never a hotlink');
