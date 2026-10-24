@@ -3792,7 +3792,7 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     var pnlHtml = (t.pnl != null ? fusd(t.pnl) : '') + (t.margin > 0 ? ' <i>on $' + (+t.margin).toLocaleString('en-US', { maximumFractionDigits: 2 }) + '</i>' : '');
     return '<div class="ct-trade ct-tk ' + r.k + '" data-trade="' + esc(id) + '" role="button" tabindex="0" title="Shared by @' + who + ' - open the ticket">'
       + '<div class="ct-tk-h"><span class="ct-tk-tag">' + r.tag + '</span><span class="ct-tk-who">' + line + '</span>' + (dur ? '<span class="ct-tk-dur">' + dur + (open ? ' in' : '') + '</span>' : '') + '</div>'
-      + '<div class="ct-tk-b"><span class="ct-tk-coin"><img src="/api/coinicon?sym=' + encodeURIComponent(sym) + '" alt="" loading="lazy" onerror="this.parentNode.textContent=\'' + sym.charAt(0) + '\'"></span>'
+      + '<div class="ct-tk-b"><span class="ct-tk-coin"><img src="/api/coinicon?v=2&sym=' + encodeURIComponent(sym) + '" alt="" loading="lazy" onerror="this.parentNode.textContent=\'' + sym.charAt(0) + '\'"></span>'
       + '<div class="ct-tk-n"><b class="ct-tk-roe">' + froe(t.roe) + '</b><span class="ct-tk-pnl">' + pnlHtml + '</span></div>'
       + spark(t, r.k) + '</div>'
       + '<div class="ct-tk-f"><span>entry <code>' + fpx(t.entry) + '</code></span>' + (t.exit != null ? '<span>' + (open ? 'now' : 'exit') + ' <code>' + fpx(t.exit) + '</code></span>' : '') + '<em>' + (open ? 'live ticket' : 'open the ticket') + '</em></div>'

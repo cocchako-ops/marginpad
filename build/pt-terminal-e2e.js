@@ -376,6 +376,27 @@ async function open(browser, m, vp) {
       ok(setSheet.n === 8 && setSheet.bad.length === 0, 'and all eight of its options answer a tap' + (setSheet.bad.length ? ' - dead: ' + setSheet.bad.join(', ') : ''));
       await p.evaluate(() => { const bd = document.getElementById('ptChPopBd'); if (bd) bd.click(); }); await wait(400);
 
+      // ── THE ORDER TYPE STAYS BESIDE THE PRICE, WHATEVER THE PAIR COSTS ───────────────────────────────────
+      //    (2026-10-25, owner: "desilo se da je market/limit buttons ispao u novi red na nekom paru cija cena
+      //    ima vise cifara"). The LIVE mark moved up into the chart head, which freed the row's height, and the
+      //    PRICE is fitted, which is what freed its width - six pixels short at $161,711.34 before it.
+      const prow = await p.evaluate((list) => {
+        const out = [];
+        for (const v of list) {
+          document.getElementById('planLivePx').textContent = '$' + v;
+          if (window.__mpPtFit) window.__mpPtFit();
+          const pxb = document.querySelector('.ptt-form .pt2-px'), ot = document.getElementById('planType'), el = document.getElementById('planLivePx');
+          const a = pxb.getBoundingClientRect(), c = ot.getBoundingClientRect();
+          out.push({ v, wrapped: c.top > a.bottom - 2, font: parseFloat(getComputedStyle(el).fontSize), clipped: el.scrollWidth > el.clientWidth + 1 });
+        }
+        const l = document.querySelector('.pt2-px-lbl.live-lbl');
+        return { rows: out, liveInHead: !!(l && l.closest('.ptc-head')), liveCopies: document.querySelectorAll('.pt2-px-lbl.live-lbl').length };
+      }, ['80,446.9', '161,711.34', '0.00000305', '109,884.21', '1,234,567.89']);
+      ok(prow.liveInHead && prow.liveCopies === 1, 'the LIVE mark sits in the chart head, and there is exactly one of it');
+      ok(prow.rows.every(r => !r.wrapped), 'Market / Limit stay beside the price at every width a price can be (' + prow.rows.map(r => '$' + r.v + (r.wrapped ? ' WRAPPED' : '')).join(', ') + ')');
+      ok(prow.rows.every(r => !r.clipped), 'and the price itself is never cut to make that true - it is fitted, not clipped');
+      ok(prow.rows[0].font >= prow.rows[4].font, 'a short price keeps its full size; only a long one steps down (' + prow.rows.map(r => r.font).join(' -> ') + ')');
+
       // ── Balance Mode is a row of its own, never a badge over the order type ───────────────────────────────
       const bal = await p.evaluate(async () => {
         try { localStorage.setItem('mp_balmode', JSON.stringify({ on: true, sid: 'e2e', start: Date.now() })); } catch (e) { }

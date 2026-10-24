@@ -117,6 +117,11 @@ const LB_CANDIDATES = 1000;
 // up and staying green, not a single lucky trade repeated once a day.
 const GD_DAY = 3, GD_SEASON = 10;
 const SEASON_FRAMES = ['champion', 'deadeye', 'overdrive', 'tycoon'], SEASON_WEAR_MS = LB_PERIOD;
+/* ONE CAP FOR A CHAT MESSAGE. It lived as a bare 280 in five places inside the ChatRoom and as a 400 in the
+   house-line route, and the two disagreed in the direction that loses text: /api/admin/say accepted 400,
+   answered ok with all of it, and the DO stored the first 280 (2026-10-25, owner: "poruka u chat-u nije cela
+   jer je isecena"). Anything that writes a message reads this. */
+const CHAT_MSG_MAX = 280;
 const CHAT_HIST_MAX = 150; // room history kept in DO storage (was 60 = a few hours at 49 DAU; a morning visitor saw none of the night). 150 x <=~400 B stays far under the 128 KB per-key limit.
 // DO SQLite: an IN (...) with many bound parameters SILENTLY returns 0 rows (three incidents by 2026-09-05: users REF chip,
 // leaderboard names, ops All-accounts usernames). Every IN over a caller-sized list goes through this: fn(part, placeholders).
@@ -8301,7 +8306,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=4cd052ee" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=bde84dfd" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19408,7 +19413,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'fd9c56d0';
+const ASSET_V = 'd85f0409';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20993,9 +20998,18 @@ async function spotPriceHolds(env, holds, opt) {
       }
       else { const pd = await fetchPriceCached(x.meta && x.meta.sym || String(x.key).replace(/^cex:/, '')); px = pd ? +pd.price : 0; }
     } catch (e) {}
-    if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed (rugged meme) -> last known mark + a stale flag for the UI
+    if (!(px > 0)) { px = +((x.meta && x.meta.lastPx)) || 0; x.stale = true; } // dead feed -> last known mark + a stale flag for the UI
     x.price = px; let val = x.qty * px;
     if (x.meta && x.meta.k === 'meme' && liq > 0 && val > liq * SPOT_LIQ_CAP) { val = liq * SPOT_LIQ_CAP; x.capped = true; } // the pool could not pay more than this
+    /* A RUGGED BAG IS WORTH NOTHING, BECAUSE THAT IS WHAT IT WOULD FETCH (2026-10-25, owner: "demo spot treba da
+       radi kao i pravi novcanik i blockchain. Ako on ne moze da proda taj coin ... onda mu je vrednost $0 i to je
+       to. Ne mozemo da dozvolimo da rugged coini plasiraju korisnike na mesta sa nagradama."). The sell path has
+       refused a pool under SPOT_THIN_LIQ since the guards went in, so this was already money nobody could take
+       out - it was simply still being counted, and on a board that pays real USD it was ranking people. There is
+       exactly one valuation on the site, so zeroing it here reaches the portfolio, the public card, the floor and
+       the board together. STALE IS NOT RUGGED and must never be zeroed: an unreadable pool (GeckoTerminal 429s
+       our egress for hours at a time) keeps its last mark, or a rate limit would wipe a real holding. */
+    if (x.rugged) { val = 0; x.capped = false; }
     x.valueUsd = Math.round(val * 100) / 100; x.pnlUsd = Math.round((x.valueUsd - x.costUsd) * 100) / 100; x.pnlPct = x.costUsd > 0 ? Math.round(x.pnlUsd / x.costUsd * 10000) / 100 : 0;
   }
   return holds;
@@ -22477,13 +22491,35 @@ export default {
       return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/say' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // one line into the global room as MarginPad (the house voice announceGift uses) - owner notices, e.g. the 2026-09-25 liquidation-formula change
+      /* TWO CAPS THAT DISAGREED, AND THE ROUTE REPORTED THE ONE IT DID NOT KEEP (2026-10-25, owner: "poruka u
+         chat-u nije cela jer je isecena"). This sliced at 400 and answered {ok:true, text} with all 400, while
+         the ChatRoom's own /post slices every message at CHAT_MSG_MAX (280) - so a 360-character notice went out
+         with its last sentence missing and nothing anywhere said so. A house notice is rare and has to arrive
+         WHOLE, so it is split into consecutive messages on sentence boundaries rather than cut, and the answer
+         carries the parts that were really posted. The member cap stays where it is: 280 is room hygiene and a
+         150-row history has a key budget. */
       let b = {}; try { b = await request.json(); } catch (e) {}
-      const text = String(b.text || '').replace(/[<>]/g, '').trim().slice(0, 400);
-      if (!text) return J({ error: 'text_required' }, 400);
+      const raw = String(b.text || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 4000);
+      if (!raw) return J({ error: 'text_required' }, 400);
       if (!env.CHAT) return J({ error: 'no_chat' }, 503);
-      let ok = false; try { const r = await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })); ok = r.ok; } catch (e) {}
-      try { await tgAdmin(env, '<b>House line posted</b> to the global room: ' + text.slice(0, 200), { kind: 'house-say', sev: 'info' }); } catch (e) {}
-      return J({ ok, text });
+      const parts = [];
+      { let cur = '';
+        for (const sent of raw.split(/(?<=[.!?])\s+/)) {
+          let s2 = sent;
+          while (s2.length > CHAT_MSG_MAX) { if (cur) { parts.push(cur); cur = ''; } const cut = s2.lastIndexOf(' ', CHAT_MSG_MAX); parts.push(s2.slice(0, cut > 40 ? cut : CHAT_MSG_MAX).trim()); s2 = s2.slice(cut > 40 ? cut : CHAT_MSG_MAX).trim(); }
+          if (!cur) cur = s2; else if (cur.length + 1 + s2.length <= CHAT_MSG_MAX) cur += ' ' + s2; else { parts.push(cur); cur = s2; }
+        }
+        if (cur) parts.push(cur); }
+      const room = env.CHAT.get(env.CHAT.idFromName('global2'));
+      const sent = [];
+      for (const t of parts) {
+        let okp = false;
+        try { const r = await room.fetch(new Request('https://do/post', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: t }) })); okp = r.ok; } catch (e) {}
+        if (okp) sent.push(t); else break;   // stop rather than leave a notice with a hole in the middle
+      }
+      const ok = sent.length === parts.length && !!parts.length;
+      try { await tgAdmin(env, '<b>House line posted</b> to the global room (' + sent.length + ' of ' + parts.length + ' parts): ' + raw.slice(0, 200), { kind: 'house-say', sev: 'info' }); } catch (e) {}
+      return J({ ok, parts: parts.length, posted: sent.length, sent });
     }
     if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only - restores season-best values provably lost to the utrades blob trim)
       let body8 = {}; try { body8 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
@@ -27654,7 +27690,7 @@ export class ChatRoom {
     if (cp.endsWith('/history')) { return cj({ messages: ((await this.state.storage.get('hist')) || []).map(chatPub) }); }
     if (cp.endsWith('/last')) { const h = (await this.state.storage.get('hist')) || []; const l = h.length ? h[h.length - 1] : null; return cj({ ts: l ? +l.ts || 0 : 0, n: h.length }); } // public: latest message ts + count → drives the "new messages" glow (no content)
     if (cp.endsWith('/online')) return cj({ online: this.online(), ips: new Set(this.sessions.map(x => x.ip || '')).size }); // ops Here now: open chat sockets in this room (2026-09-08)
-    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: chatPub(m), online: this.online() }); return cj({ ok: true }); }
+    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, CHAT_MSG_MAX); if (!text) return cj({ error: 'empty' }); const m = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: chatPub(m), online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/poll')) { // ops-launched chat poll: POST {q,opts[]} starts, {close:1} closes (results stay pinned)
       let b = {}; try { b = await request.json(); } catch (e) {}
       if (b.close) { const pl = await this.state.storage.get('poll'); if (pl) { pl.closed = 1; await this.state.storage.put('poll', pl); this.broadcast({ type: 'poll', poll: { id: pl.id, q: pl.q, opts: pl.opts, votes: pl.votes, closed: 1 } }); } return cj({ ok: true }); }
@@ -27673,7 +27709,7 @@ export class ChatRoom {
       const inc = Array.isArray(b.messages) ? b.messages.filter(x => x && x.t && x.ts).slice(0, 120) : [];
       let hist = (await this.state.storage.get('hist')) || [];
       const seen = new Set(hist.map(x => x.ts + '|' + x.u));
-      inc.forEach(x => { const k = x.ts + '|' + x.u; if (!seen.has(k)) { seen.add(k); hist.push({ u: String(x.u || 'anon').slice(0, 20), t: String(x.t).slice(0, 280), ts: +x.ts, ...(x.admin ? { admin: true } : {}) }); } });
+      inc.forEach(x => { const k = x.ts + '|' + x.u; if (!seen.has(k)) { seen.add(k); hist.push({ u: String(x.u || 'anon').slice(0, 20), t: String(x.t).slice(0, CHAT_MSG_MAX), ts: +x.ts, ...(x.admin ? { admin: true } : {}) }); } });
       hist.sort((a, b2) => a.ts - b2.ts); if (hist.length > CHAT_HIST_MAX) hist = hist.slice(-CHAT_HIST_MAX);
       await this.state.storage.put('hist', hist);
       this.broadcast({ type: 'history', messages: hist.map(chatPub) });
@@ -27759,7 +27795,7 @@ export class ChatRoom {
         // edit
         if (!mine) { try { server.send(JSON.stringify({ type: 'actfail', why: 'notyours' })); } catch (e) {} return; }
         if (now2 - (+tgt.ts || 0) > CHAT_EDIT_MS) { try { server.send(JSON.stringify({ type: 'actfail', why: 'late' })); } catch (e) {} return; }
-        const nt = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
+        const nt = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, CHAT_MSG_MAX);
         if (!nt || nt === tgt.t) return;
         tgt.t = nt; tgt.ed = now2;
         hist2[ix] = tgt;
@@ -27768,7 +27804,7 @@ export class ChatRoom {
         return;
       }
       if (!m || m.type !== 'msg') return;
-      const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
+      const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, CHAT_MSG_MAX);
       if (!text) return;
       // THE AUTHOR'S NAME COMES FROM THE SESSION, NEVER FROM THE SOCKET (2026-10-18, while building @mentions).
       // `sess.un` - the username the WORKER read off the cookie - was written on 2026-09-14 and then READ BY

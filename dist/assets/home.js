@@ -3230,7 +3230,7 @@ window.addEventListener('load', function () {
         var isImg=!ic; /* 2026-10-24: only FX/indices are drawn; stocks and metals resolve like a coin */
         h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+__esT_home("tradeItAgainAria",' - trade it again" aria-label="Switch to ')+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
-          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2&&!/^(xau|xag|oil|brent|natgas|copper)$/.test(this.dataset.s)){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
+          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?v=2&sym=\'+this.dataset.s;}else if(f===2&&!/^(xau|xag|oil|brent|natgas|copper)$/.test(this.dataset.s)){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
           +'</button>'; }
       box.innerHTML=h; box.hidden=false; if(ptt)ptt.classList.add('has-recent');
     }
@@ -4077,7 +4077,7 @@ if(/^\/charts\/?$/.test(_mpPath())){ window.mpLoadCharts(); } /* direct /charts 
 
 ;/* ══════════ inline block from app/index.html line 4921 ══════════ */
 /* Screener lazy-loaded - only the /screener route needs it (was 13KB inline, dead weight on the homepage). */
-if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=c8e5edfa';_ss.defer=true;document.head.appendChild(_ss);}
+if(/^\/screener\/?$/.test(_mpPath())){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js?v=460f7674';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
 /* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
@@ -4884,7 +4884,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   window.__mpIcoErr = function (img) {
     var n = (+img.getAttribute('data-f') || 0) + 1; img.setAttribute('data-f', String(n));
     var s = img.getAttribute('data-s') || '';
-    if (n === 1) { img.src = '/api/coinicon?sym=' + encodeURIComponent(s); return; }
+    if (n === 1) { img.src = '/api/coinicon?v=2&sym=' + encodeURIComponent(s); return; }
     if (n === 2 && !NOTCOIN[s]) { img.src = 'https://assets.coincap.io/assets/icons/' + s.toLowerCase() + '@2x.png'; return; }
     var p = img.parentNode; if (p) { img.remove(); p.innerHTML = '<span>' + esc(s.toUpperCase().slice(0, 4)) + '</span>'; }
   };
@@ -5338,9 +5338,41 @@ window.mpSrvOpen=function(payload,ok,fail){
   function xIsAuto(kind) { var px = $(XF[kind].px); return !!(px && px.getAttribute('data-auto') === '1'); }
 
   /* ── BOOT ────────────────────────────────────────────────────────────────────────────────────────────────── */
+  /* the word LIVE belongs where there is room for it: the chart head carries one button and empty space, while
+     the order row has to fit a price whose width is the pair's business. appendChild MOVES the node. */
+  function liveUp() {
+    var lbl = document.querySelector('.ptt-form .pt2-px-lbl.live-lbl'), head = document.querySelector('.ptc-head');
+    if (!lbl || !head || lbl.parentNode === head) return;
+    lbl.classList.add('ptc-liveup');
+    head.appendChild(lbl);
+  }
+
+  /* the price is the one thing on this row whose width belongs to the market rather than to the design, so it
+     is the one thing that gives way. Driven by an observer on the price itself: every path that paints it -
+     the smooth ticker, a symbol switch, a REST poll - goes through that node and none of them needs to know. */
+  function fitPx() {
+    var v = $('planLivePx'), box = document.querySelector('.ptt-form .pt2-px'), ot = $('planType');
+    if (!v || !box || !ot) return;
+    /* the stylesheet pins this with !important, so the inline has to carry the same weight or it is read back
+       on the element and ignored by the renderer - measured: inline 19px, computed 26px, nothing moved. */
+    v.style.removeProperty('font-size');
+    var size = parseFloat(getComputedStyle(v).fontSize) || 26, g = 0;
+    var wrapped = function () { return ot.getBoundingClientRect().top > box.getBoundingClientRect().top + 2; };
+    while (wrapped() && size > 15 && g++ < 24) { size -= 1; v.style.setProperty('font-size', size + 'px', 'important'); }
+  }
+  window.__mpPtFit = fitPx;   // the live ticker repaints this node constantly, so a test has to set a price AND fit it in one frame
+  function fitPxWatch() {
+    var v = $('planLivePx'); if (!v || fitPxWatch._on) return; fitPxWatch._on = 1;
+    var t = 0, run = function () { clearTimeout(t); t = setTimeout(fitPx, 40); };
+    try { new MutationObserver(run).observe(v, { childList: true, characterData: true, subtree: true }); } catch (e) { }
+    try { window.addEventListener('resize', run); } catch (e) { }
+    try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(run); } catch (e) { }
+    run();
+  }
+
   function wire() {
     if (wire._on) return; wire._on = 1;
-    stripBuild(); stripPaint(); paintHead();
+    stripBuild(); stripPaint(); paintHead(); liveUp(); fitPxWatch();
 
     document.addEventListener('click', function (ev) {
       var t = ev.target;

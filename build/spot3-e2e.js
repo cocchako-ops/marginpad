@@ -47,7 +47,15 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     calls.length = 0; h = await F(null, [mk('POOL-DEAD')], { byPool: { 'pool-other': other }, now });
     chk('pure: a fresh row for ANOTHER pool of the same mint is never used, and an unreadable pool falls back to the last mark, marked stale (the $10 bag stays $10)', h[0].price === 0.01 && h[0].valueUsd === 10 && h[0].stale === true, { price: h[0].price, value: h[0].valueUsd, stale: h[0].stale });
     h = await F(null, [mk('POOL-THIN', { qty: 1000000 })], { byPool: {}, now });
-    chk('pure: a bag is worth at most half its pool (1,000,000 x $100 in a $400 pool = $200), and a thin pool is flagged rugged', h[0].valueUsd === 200 && h[0].capped === true && h[0].rugged === true, { value: h[0].valueUsd, capped: h[0].capped, rugged: h[0].rugged });
+    /* THE OWNER'S RULE (2026-10-25): "ako on ne moze da proda taj coin ... onda mu je vrednost $0 i to je to."
+       A pool under SPOT_THIN_LIQ is one the sell path refuses at any price, so the bag is worth nothing - not
+       half of a pool that cannot pay. This check is what stops a dead coin ranking anybody for a prize. */
+    chk('pure: a bag in a dead pool is worth $0, not half of nothing (1,000,000 x $100 in a $400 pool)', h[0].valueUsd === 0 && h[0].rugged === true && h[0].capped !== true, { value: h[0].valueUsd, capped: h[0].capped, rugged: h[0].rugged });
+    chk('pure: and its P&L is the whole stake back out, never a part of it', h[0].pnlUsd === -h[0].costUsd, { pnl: h[0].pnlUsd, cost: h[0].costUsd });
+    h = await F(null, [mk('POOL-OK', { qty: 1000000 })], { byPool: {}, now });
+    /* the CAP still applies where there is a pool deep enough to have one: $50,000 of liquidity, a bag that
+       claims $2,000,000, and what a sale could realistically fetch is half the pool */
+    chk('pure: a bag in a LIVE pool is still capped at half of it (1,000,000 x $2 against $50,000 = $25,000)', h[0].valueUsd === 25000 && h[0].capped === true && h[0].rugged === false, { value: h[0].valueUsd, capped: h[0].capped, rugged: h[0].rugged });
   } catch (e) { chk('pure: the valuation function could be lifted from the worker and run', false, String(e.message || e)); }
 
   let sess = null;
