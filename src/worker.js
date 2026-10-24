@@ -26623,7 +26623,12 @@ export default {
           { '@type': 'Question', name: 'Can I paper trade stocks and forex too?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. One paper account trades crypto perpetuals, US stocks like Apple and Nvidia, forex pairs, stock indices and gold - each with realistic per-class fees and leverage.' } },
           { '@type': 'Question', name: 'Is paper trading good for beginners?', acceptedAnswer: { '@type': 'Answer', text: 'It is the best way to start. You learn order types, leverage and risk management with zero downside, and the built-in Academy walks you through the concepts lesson by lesson.' } }
         ] }) + '</scr' + 'ipt>';
-        const PT_SEO = '<section style="max-width:900px;margin:14px auto 20px;padding:11px 13px;background:#101318;border:1px solid #232a34;border-radius:14px;color:#7e8894;font-size:11.5px;line-height:1.5">'
+        /* `class="pt-seo"` (2026-10-24): this block is appended to the BODY, so on the fit-screen desktop terminal
+           it is the one thing that stops the chart column from being exactly one viewport - measured 167px, which
+           is where /paper-trade's 41px-plus of slop came from. The class lets home.css park it immediately BELOW
+           the fold instead of inside the terminal's height. It stays in the flow on a phone, stays in the DOM and
+           stays visible to every reader who scrolls - it is never hidden. */
+        const PT_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:11px 13px;background:#101318;border:1px solid #232a34;border-radius:14px;color:#7e8894;font-size:11.5px;line-height:1.5">'
           + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px">'
  + '<div style="padding:2px 4px"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Practice that pays</b>The only simulator where practice earns real USDT - <a href="/levels/" style="color:#c2f64a">paid 14-day season leaderboards</a> and <a href="/rewards/" style="color:#c2f64a">daily missions</a> (open to every account from day one), plus XP, duels and floor chat.</div>'
           + '<div style="padding:2px 4px;border-left:1px solid #1d232c"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Real mechanics, zero risk</b>Live prices, leverage to 1000x, real isolated-margin liquidation, SL/TP and partial closes - P&L exactly as a real account would show.</div>'

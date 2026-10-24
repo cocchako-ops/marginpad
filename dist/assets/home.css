@@ -3776,3 +3776,348 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 
 /* KEYBOARD ON iOS (2026-10-22): the documented WebKit remedy for a field that focuses and raises no keyboard - see build/add-keyboard-diag2.js */
 #chatBox input,#chatBox textarea,.mpa-dm-form input,.mpa-dm-form textarea{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default}
+/* >>> MP-PT-TERMINAL >>> */
+/* ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PAPER TRADE TERMINAL (2026-10-24, owner: "za chart zelim da maksimalno iskoristimo prostor ... ne zelim da bude
+   u nekakvom prozoru ... terminal takodje treba da bude siroko od ivice do ivice")
+
+   THE CHART IS THE PAGE, NOT A CARD. Every gutter between the viewport edge and the candles was chrome: 24px of
+   .wrap padding + 12px of .card padding + the card's own 1px border and 14px radius, on both sides, measured
+   2026-10-24 at 1366x900 (.ptt sat at x=37, w=1292 inside a 1366 viewport). On /paper-trade the card frame is
+   removed outright and the two columns run to their own edge, separated by one hairline.
+
+   MONO IS BACK ON THE NUMBERS. `#plan *{font-family:'Familjen Grotesk' !important}` beat every 'Space Mono'
+   declaration in this file, so the terminal's prices, leverage and stats had been rendering in the body font for
+   months - measured, not guessed (getComputedStyle on .pt2-px-v, .ptt-stats b, #planAmt all answered Familjen).
+   The blanket rule stays (it is what keeps the copy in one voice); the numeric surfaces take it back explicitly.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+.ptmono,#plan .ptmono{font-family:'Space Mono',ui-monospace,monospace!important;font-variant-numeric:tabular-nums}
+
+/* ── 1. EDGE TO EDGE ───────────────────────────────────────────────────────────────────────────────────────
+   THE BODY IS THE FLEX COLUMN, NOT THE WRAP. `.wrap{height:100dvh}` measured 41px too tall on every load,
+   because the site header is a sibling ABOVE it - so the terminal always ran past the fold and whatever sat
+   last (now the timeframe strip) was below it. Anything in flow above the terminal - the cookie bar too -
+   takes its room first and the terminal takes the rest; no reads, no listener. Same answer as /spot. */
+@media(min-width:881px){
+  /* NO overflow on the body: setting it makes the body a scroll CONTAINER, which clipped the parked block below
+     and took the document's scroll height back to exactly one screen - the block became unreachable. The wrap
+     clips instead, and <html> keeps the scroll. */
+  body.paper-page{display:flex;flex-direction:column;height:100dvh;overflow:visible!important;position:relative}
+  /* A FLEX ITEM WITH AUTO CROSS-AXIS MARGINS IS NEVER STRETCHED. `.wrap` carries `margin:0 auto`, so the moment
+     the body became a flex column the wrap stopped filling the viewport and was sized by its CONTENT - 1366px on
+     one load and 723px on the next, with the aurora showing down both sides. The width is stated outright. */
+  body.paper-page .wrap{flex:1 1 auto;height:auto!important;min-height:0;overflow:hidden;width:100%;max-width:none!important;margin-left:0!important;margin-right:0!important}
+  /* the crawlable paper-trade block the worker appends to <body> is parked exactly at the fold: the terminal gets
+     the whole first screen, the block is one scroll away, in the flow of the document, never hidden from anybody */
+  body.paper-page>.pt-seo{position:absolute;top:100%;left:0;right:0;margin:14px auto 20px!important}
+  body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  body.paper-page .ptt{gap:0!important;grid-template-columns:minmax(0,1fr) 384px!important}
+  body.paper-page .ptt.has-recent{grid-template-columns:minmax(0,1fr) 56px 384px!important}
+  /* a solid ground, not transparency: the card used to hide the page's aurora, and without it the ambient green
+     glow bled through the chart head */
+  body.paper-page .ptt-chart{border:0!important;border-radius:0!important;background:var(--bg)!important;overflow:visible!important}
+  /* the floating Chat / My Trades pills are anchored to the bottom-left and sat ON the timeframe strip (measured:
+     14px of overlap across the first four chips). They move up by exactly the strip's height. */
+  body.paper-page #chatFab{bottom:114px}
+  body.paper-page #jrFab{bottom:62px}
+  body.paper-page #mpStreak{bottom:66px}
+  body.paper-page .ptt-recent{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;border-left:1px solid var(--line)!important;border-right:1px solid var(--line)!important;padding:10px 0}
+  body.paper-page .ptt-side{border-left:1px solid var(--line);background:linear-gradient(180deg,#101317,#0b0d10);padding-right:0!important;gap:0!important}
+  body.paper-page .ptt-form{border:0!important;border-radius:0!important;background:transparent!important;padding:16px 18px 18px!important}
+  body.paper-page #ptLastTrade,body.paper-page .pt-bronze{margin-left:18px;margin-right:18px}
+}
+@media(max-width:880px){
+  body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
+  body.paper-page .ptt{gap:0!important}
+  body.paper-page .ptt-chart{border:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;background:transparent!important}
+  body.paper-page .ptt-form{border-left:0!important;border-right:0!important;border-radius:0!important;padding:14px 14px 16px!important}
+  body.paper-page .ptt-side{gap:12px}
+  body.paper-page #ptLastTrade,body.paper-page .pt-bronze{margin-left:12px;margin-right:12px}
+  /* the quick-pair rail is a scrolling ROW under the chart on a phone, never a 42px column that steals a third
+     of a 390px screen (the grid column it lives in is the chart's own width there) */
+  body.paper-page .ptt-recent{flex-direction:row!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;gap:8px!important;padding:9px 12px!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-height:none!important}
+  body.paper-page .ptt-recent::-webkit-scrollbar{display:none}
+  body.paper-page .ptt-recent::before,body.paper-page .ptt-recent::after{display:none}
+  body.paper-page .ptt.has-recent{grid-template-columns:1fr!important}
+}
+
+/* ── 2. THE CHART HEAD: the pair, and under it the candle's own clock ────────────────────────────────────── */
+.ptc-head{display:flex;align-items:center;gap:10px;padding:5px 12px 4px;border-bottom:1px solid rgba(35,41,50,.72);min-width:0}
+.ptc-sym{display:flex;align-items:center;gap:10px;min-width:0;background:none;border:0;padding:4px 9px 4px 5px;margin-left:-5px;border-radius:11px;cursor:pointer;color:inherit;text-align:left;transition:background .14s}
+.ptc-sym:hover{background:rgba(255,255,255,.05)}
+.ptc-sym:active{background:rgba(255,255,255,.09)}
+.ptc-sym:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}
+.ptc-ic{position:relative;flex:0 0 auto;width:30px;height:30px;border-radius:50%;overflow:hidden;background:#141920;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center}
+.ptc-ic img,.ptc-ic svg{width:100%;height:100%;object-fit:cover;display:block}
+.ptc-ic span{font:800 11px/1 'Space Mono',monospace;color:#cfd6de;letter-spacing:-.02em}
+.ptc-sn{display:flex;flex-direction:column;min-width:0}
+.ptc-pair{display:flex;align-items:center;gap:5px;min-width:0}
+.ptc-pair b{font-family:'Bricolage Grotesque',sans-serif!important;font-weight:700;font-size:19px;line-height:1.05;letter-spacing:-.025em;color:#f4f2ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptc-quote{flex:0 0 auto;font-family:'Space Mono',monospace!important;font-size:10px;font-weight:700;letter-spacing:.08em;color:#626c78;transform:translateY(1px)}
+.ptc-chev{flex:0 0 auto;width:13px;height:13px;color:#79838f;transition:transform .18s cubic-bezier(.2,.85,.25,1),color .14s}
+.ptc-sym:hover .ptc-chev{color:#c2f64a}
+.ptc-sym[aria-expanded="true"] .ptc-chev{transform:rotate(180deg);color:#c2f64a}
+.ptc-cd{font-family:'Space Mono',monospace!important;font-size:10.5px;font-weight:500;letter-spacing:.045em;color:#67717d;line-height:1.3;margin-top:2px;white-space:nowrap;transition:color .25s}
+.ptc-cd.soon{color:#c2f64a}
+.ptc-cd:empty{display:none}
+.ptc-hr{margin-left:auto;display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.ptc-live{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace!important;font-size:10px;font-weight:700;letter-spacing:.1em;color:#5f6975}
+.ptc-live i{width:6px;height:6px;border-radius:50%;background:#2ebd85;box-shadow:0 0 8px rgba(46,189,133,.85)}
+@media(max-width:560px){.ptc-pair b{font-size:17px}.ptc-head{padding:7px 10px 6px}}
+
+/* ── 3. THE TIMEFRAME STRIP: glued under the chart, 34px and no more ──────────────────────────────────────── */
+.ptc-bar{position:relative;display:flex;align-items:center;gap:3px;height:34px;padding:0 8px;border-top:1px solid rgba(35,41,50,.72);background:rgba(10,12,15,.4)}
+.ptc-tfs{display:flex;align-items:center;gap:1px;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+.ptc-tfs::-webkit-scrollbar{display:none}
+.ptc-tf{flex:0 0 auto;font-family:'Space Mono',monospace!important;font-size:11.5px;font-weight:700;letter-spacing:.01em;color:#78828f;background:none;border:0;border-radius:7px;padding:5px 9px;cursor:pointer;transition:color .13s,background .13s}
+.ptc-tf:hover{color:#e2e6eb;background:rgba(255,255,255,.06)}
+.ptc-tf.on{color:#0a0b0d;background:#c2f64a}
+.ptc-tf:focus-visible{outline:2px solid #c2f64a;outline-offset:1px}
+.ptc-sp{flex:1 1 auto;min-width:4px}
+/* the full timeframe menu hangs UPWARD from a bar that sits at the bottom of the chart - downward it opened off
+   the end of the viewport and 1s/5s/15s/30s were offered but could not be touched (sectf-e2e caught it) */
+.ptc-bar .ptt-tf{top:auto;bottom:calc(100% + 6px);max-height:min(58vh,330px)}
+.ptc-ib{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:28px;height:24px;padding:0 7px;border:0;border-radius:7px;background:none;color:#78828f;cursor:pointer;transition:color .13s,background .13s;font-family:'Space Mono',monospace!important;font-size:11px;font-weight:700}
+.ptc-ib:hover{color:#e2e6eb;background:rgba(255,255,255,.06)}
+.ptc-ib.on,.ptc-ib[aria-expanded="true"]{color:#c2f64a;background:rgba(194,246,74,.12)}
+.ptc-ib svg{width:14px;height:14px}
+.ptc-ib:focus-visible{outline:2px solid #c2f64a;outline-offset:1px}
+/* the "more timeframes" button shows the live choice when it is one the strip does not carry (30m, 2h, 1s …) */
+.ptc-more .ptc-dots{letter-spacing:.14em}
+.ptc-more #ptTfCur{display:none}
+.ptc-more.named #ptTfCur{display:inline;color:#c2f64a}
+.ptc-more.named .ptc-dots{display:none}
+/* the old absolute pill is retired - the selects stay in the DOM because every deep link, the recents rail and
+   the asset-class wiring drive the terminal through planSym/planClass; only the chrome around them is gone */
+.ptc-keep{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ptt-chart-top{display:none!important}
+
+/* ── 4. CHART SETTINGS: style of candle, and how an entry is drawn ────────────────────────────────────────── */
+.ptc-pop{position:absolute;right:8px;bottom:40px;z-index:40;width:242px;padding:11px;border:1px solid #2b323b;border-radius:13px;background:#0d1014;box-shadow:0 26px 70px -22px rgba(0,0,0,.92)}
+.ptc-pop[hidden]{display:none}
+.ptc-pop-h{font-family:'Space Mono',monospace!important;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#6d7682;padding:2px 2px 7px}
+.ptc-pop-h+.ptc-grid{margin-bottom:11px}
+.ptc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.ptc-grid button{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#aab3bd;background:#12161c;border:1px solid #242b34;border-radius:9px;padding:8px 9px;cursor:pointer;text-align:left;transition:.13s}
+.ptc-grid button:hover{color:#e9e7df;border-color:#39424e}
+.ptc-grid button.on{color:#d7f78a;border-color:rgba(194,246,74,.6);background:rgba(194,246,74,.1)}
+.ptc-grid button svg{flex:0 0 auto;width:15px;height:15px;opacity:.9}
+.ptc-grid button.on svg{color:#c2f64a}
+@media(max-width:620px){
+  .ptc-pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;border-radius:16px 16px 0 0;border-bottom:0;padding:14px 14px calc(16px + env(safe-area-inset-bottom) + var(--mkb,0px));z-index:2147483000}
+  .ptc-grid{grid-template-columns:1fr 1fr 1fr}
+}
+/* [hidden] is a UA rule with almost no specificity: a bare `.ptc-pop-bd{display:block}` beat it and laid a
+   semi-transparent sheet over the whole phone page. Measured: nothing on it was reachable. (The same trap this
+   file already names for the whale page's level filter.) The hidden state wins, loudly. */
+.ptc-pop-bd{display:none;position:fixed;inset:0;z-index:2147482999;background:rgba(5,7,9,.6)}
+.ptc-pop-bd[hidden]{display:none!important}
+@media(max-width:620px){.ptc-pop-bd:not([hidden]){display:block}}
+
+/* ── 5. THE MARKET PICKER: one window, every market, with a face on every row ─────────────────────────────── */
+.ptmk{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center}
+.ptmk[hidden]{display:none}
+.ptmk-bd{position:absolute;inset:0;background:rgba(5,7,9,.74);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.ptmk-p{position:relative;display:flex;flex-direction:column;width:min(580px,calc(100vw - 28px));max-height:min(80vh,680px);background:linear-gradient(180deg,#12161c,#0a0d11);border:1px solid #2d343e;border-radius:18px;overflow:hidden;box-shadow:0 44px 120px -32px #000,inset 0 1px 0 rgba(255,255,255,.05)}
+.ptmk-h{display:flex;align-items:center;gap:10px;padding:14px 15px 11px}
+.ptmk-t{font-family:'Bricolage Grotesque',sans-serif!important;font-weight:700;font-size:16px;letter-spacing:-.015em;color:#f2f0e9}
+.ptmk-x{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid #2b323b;border-radius:9px;background:#11151b;color:#8b97a5;cursor:pointer;transition:.13s}
+.ptmk-x:hover{color:#fff;border-color:#4a5461;background:#171c23}
+.ptmk-x svg{width:13px;height:13px}
+.ptmk-s{position:relative;margin:0 15px 11px}
+.ptmk-s svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#616b77;pointer-events:none}
+.ptmk-s input{width:100%;background:#0b0e12;border:1px solid #262d37;border-radius:11px;color:#e9e7df;font-family:'Familjen Grotesk',sans-serif;font-size:14px;padding:11px 12px 11px 35px;outline:none;transition:border-color .14s,box-shadow .14s}
+.ptmk-s input::placeholder{color:#5d6672}
+.ptmk-s input:focus{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.14)}
+/* overflow-x:auto alone makes the OTHER axis auto too, which clipped the chips' own height - they read as cut
+   off against the list below them. Both axes are stated. */
+.ptmk-tabs{display:flex;gap:4px;padding:2px 15px 11px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+/* everything but the list is fixed height: as flex children with the default shrink they were SQUASHED the
+   moment the panel hit its max-height, which is what cut the tab chips off along their bottom edge. */
+.ptmk-h,.ptmk-s,.ptmk-tabs,.ptmk-f{flex:0 0 auto}
+.ptmk-tabs::-webkit-scrollbar{display:none}
+.ptmk-tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#8b97a5;background:#11151b;border:1px solid #252c35;border-radius:20px;padding:6px 12px;cursor:pointer;transition:.13s;white-space:nowrap}
+.ptmk-tab:hover{color:#e9e7df;border-color:#3b434f}
+.ptmk-tab.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
+.ptmk-tab svg{width:12px;height:12px}
+.ptmk-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;border-top:1px solid #1d232b;scrollbar-width:thin}
+.ptmk-r{display:grid;grid-template-columns:32px minmax(0,1fr) auto 28px;align-items:center;gap:11px;width:100%;padding:9px 15px;background:none;border:0;border-bottom:1px solid rgba(29,35,43,.75);cursor:pointer;text-align:left;transition:background .1s}
+.ptmk-r:hover{background:rgba(255,255,255,.04)}
+.ptmk-r.cur{background:rgba(194,246,74,.08);box-shadow:inset 3px 0 0 #c2f64a}
+.ptmk-ic{position:relative;width:32px;height:32px;border-radius:50%;overflow:hidden;background:#151a21;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center}
+.ptmk-ic img,.ptmk-ic svg{width:100%;height:100%;object-fit:cover;display:block}
+.ptmk-ic span{font:800 11px/1 'Space Mono',monospace;color:#cfd6de}
+.ptmk-nm{min-width:0}
+.ptmk-s1{display:block;font-family:'Space Mono',monospace!important;font-size:13px;font-weight:700;color:#eceade;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptmk-s2{display:block;font-size:11.5px;color:#737d89;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.ptmk-px{text-align:right;font-family:'Space Mono',monospace!important;font-size:12.5px;font-weight:700;color:#d7dce2;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ptmk-cg{display:block;font-family:'Space Mono',monospace!important;font-size:10.5px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.ptmk-cg.up{color:#2ebd85}.ptmk-cg.dn{color:#ff6258}.ptmk-cg.flat{color:#6d7682}
+.ptmk-st{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:0;border-radius:8px;background:none;color:#4e5763;cursor:pointer;transition:.13s}
+.ptmk-st:hover{color:#ffd75a;background:rgba(255,215,90,.1)}
+.ptmk-st.on{color:#ffd75a}
+.ptmk-st svg{width:15px;height:15px}
+.ptmk-empty{padding:28px 18px;text-align:center;color:#6d7682;font-size:13px}
+.ptmk-f{padding:9px 15px calc(11px + env(safe-area-inset-bottom));border-top:1px solid #1d232b;font-size:11px;color:#616b77;line-height:1.45}
+.ptmk-f b{color:#8b97a5;font-weight:600}
+@media(max-width:620px){
+  .ptmk{align-items:flex-end}
+  .ptmk-p{width:100%;max-height:88vh;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:var(--mkb,0px)}
+  .ptmk-r{padding:10px 14px;grid-template-columns:34px minmax(0,1fr) auto 32px}
+  .ptmk-st{width:32px;height:32px}
+}
+
+/* ── 6. THE ORDER FORM ────────────────────────────────────────────────────────────────────────────────────── */
+/* the price and the order type share one row - the type is a property of the ticket, not a step before it */
+.ptt-form .pt2-top{align-items:flex-start}
+.pt2-px-v,#plan .pt2-px-v,.ptt-stats b,#plan .ptt-stats b{font-family:'Space Mono',ui-monospace,monospace!important;font-variant-numeric:tabular-nums}
+/* Space Mono is wider than the body font, and the order type now shares this row: measured, $79,418.8 at the
+   old 40px was clipped by its own box at 1366. 30px fits an eleven-character price with room to spare. */
+.ptt-form .pt2-px{flex:1 1 auto;min-width:0}
+.ptt-form .pt2-px-v{font-size:30px!important;letter-spacing:-1px}
+@media(max-width:560px){.ptt-form .pt2-px-v{font-size:26px!important}}
+.pt2-px-lbl,#plan .pt2-px-lbl,.pt2-px-chg,#plan .pt2-px-chg{font-family:'Space Mono',ui-monospace,monospace!important}
+/* the VALUE never shrinks: a long Spanish label ("Comision de apertura + cierre") took the row and the figure
+   beside it was ellipsised to "$2.20 (2.20% de la gara..." - the number is the point of the row */
+#plan .ptt-stats>div{gap:14px}
+#plan .ptt-stats span{min-width:0}
+#plan .ptt-stats b{flex:0 0 auto;overflow:visible;text-overflow:clip}
+#plan .input-line input,#plan .pt2-lim-q button,#plan .lev-ticks{font-family:'Space Mono',ui-monospace,monospace!important;font-variant-numeric:tabular-nums}
+.pt2-otype{margin-bottom:0!important;flex:0 0 auto;width:152px;grid-template-columns:1fr 1fr;padding:3px;border-radius:11px}
+.pt2-otype::before{top:3px;left:3px;bottom:3px;width:calc(50% - 4.5px)}
+.pt2-otype[data-t="limit"]::before{transform:translateX(calc(100% + 3px))}
+.pt2-otype button{font-size:12px;padding:7px 0}
+@media(max-width:400px){.pt2-otype{width:136px}}
+
+/* Long / Short: the choice the whole ticket hangs on - bigger, with the direction drawn, not only named */
+.pt2-side button{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:7px}
+.pt2-side button svg{width:14px;height:14px;opacity:.65;transition:opacity .14s,transform .18s cubic-bezier(.2,.85,.25,1)}
+.pt2-side button.on svg{opacity:1}
+.pt2-side button[data-side="long"].on{box-shadow:inset 0 0 0 1px rgba(46,189,133,.5),0 10px 26px -14px rgba(46,189,133,.9)}
+.pt2-side button[data-side="short"].on{box-shadow:inset 0 0 0 1px rgba(255,98,88,.5),0 10px 26px -14px rgba(255,98,88,.9)}
+.pt2-side button:hover svg{transform:translateY(-1px)}
+.pt2-side button[data-side="short"]:hover svg{transform:translateY(1px)}
+
+/* STEPPERS: a joined minus/plus pill, never a pair of stacked unicode triangles (a glyph arrow renders as an
+   emoji on a phone - the same reason the replay transport is drawn as SVG). Press and hold accelerates. */
+.input-line.has-stepper input{padding-right:78px}
+.input-line.has-stepper .unit{right:84px}
+.stepper{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:flex;flex-direction:row;gap:0;max-height:none;border:1px solid #2b323b;border-radius:9px;overflow:hidden;background:#0c1014}
+.stepper button{width:31px;height:28px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:0;color:#8b97a5;font-size:0;line-height:0;cursor:pointer;padding:0;transition:color .12s,background .12s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.stepper button+button{border-left:1px solid #2b323b}
+.stepper button svg{width:12px;height:12px;pointer-events:none}
+.stepper button:hover{color:#c2f64a;background:rgba(194,246,74,.1)}
+.stepper button:active{color:#0a0b0d;background:#c2f64a}
+.stepper button:focus-visible{outline:2px solid #c2f64a;outline-offset:-2px}
+[dir="rtl"] .stepper{right:auto;left:7px}
+[dir="rtl"] .input-line.has-stepper input{padding-right:15px;padding-left:78px}
+[dir="rtl"] .input-line.has-stepper .unit{right:auto;left:84px}
+
+/* ADVANCED: a disclosure, not a tick box lost beside the leverage slider */
+.ptt-form .adv-toggle{margin-top:0}
+.pt-advrow{display:flex;align-items:center;gap:12px;margin:2px 0 14px}
+.pt-advrow .lev-slidewrap{flex:1 1 auto;min-width:0}
+.pt-adv-b{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 13px;border:1px solid var(--line-bright);border-radius:11px;background:#0d1115;color:#9aa3ad;font-family:'Familjen Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.14s;user-select:none}
+.pt-adv-b:hover{color:#e9e7df;border-color:#3f4855}
+.pt-adv-b .pt-adv-c{width:13px;height:13px;transition:transform .2s cubic-bezier(.2,.85,.25,1)}
+.pt-adv-b[aria-expanded="true"]{color:#c2f64a;border-color:rgba(194,246,74,.55);background:rgba(194,246,74,.07)}
+.pt-adv-b[aria-expanded="true"] .pt-adv-c{transform:rotate(180deg)}
+.pt-adv-b[data-n]::after{content:attr(data-n);display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:9px;background:#c2f64a;color:#0a0b0d;font-family:'Space Mono',monospace!important;font-size:9.5px;font-weight:800}
+.pt-adv-b[aria-disabled="true"],.pt-adv-b.gated{opacity:.55}
+.pt-adv-b.gated .pt-adv-c{display:none}
+.pt-adv-note{font-size:10.5px;color:#7a838f;line-height:1.35;margin:-8px 0 12px}
+.pt-adv-note a{color:#c2f64a;text-decoration:none}
+
+/* REALISTIC FILLS: two real switches, each saying what it does - not two bare check boxes jammed together.
+   `.rz-it` IS a <label> inside a .field, so `.field label{display:block;text-transform:uppercase;font-size:11px}`
+   claimed it and shouted both descriptions in 11px caps. Neutralised explicitly rather than by moving the markup. */
+.rz-card{border:1px solid var(--line);border-radius:12px;background:#0c0f13;overflow:hidden}
+.field label.rz-it,.rz-it{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;cursor:pointer;user-select:none;margin:0;text-transform:none;letter-spacing:normal;font-family:'Familjen Grotesk',sans-serif;font-size:13px;color:var(--ink-dim)}
+.rz-it+.rz-it{border-top:1px solid rgba(35,41,50,.8)}
+.rz-it:hover{background:rgba(255,255,255,.022)}
+.rz-tx{min-width:0;flex:1 1 auto}
+.rz-tx b{display:block;font-size:12.5px;font-weight:600;color:#cfd6de;line-height:1.3}
+.rz-tx small{display:block;font-size:10.5px;color:#737d89;line-height:1.4;margin-top:2px}
+.rz-it input{position:absolute;opacity:0;width:0;height:0}
+.rz-k{position:relative;flex:0 0 auto;width:38px;height:22px;margin-top:1px;border-radius:12px;background:#171c23;box-shadow:inset 0 0 0 1px #2b323b;transition:background .16s,box-shadow .16s}
+.rz-k::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#79838f;transition:transform .18s cubic-bezier(.2,.85,.25,1),background .16s}
+.rz-it input:checked+.rz-k{background:rgba(194,246,74,.22);box-shadow:inset 0 0 0 1px #c2f64a}
+.rz-it input:checked+.rz-k::after{transform:translateX(16px);background:#c2f64a}
+.rz-it input:focus-visible+.rz-k{outline:2px solid #c2f64a;outline-offset:2px}
+.rz-it input:checked~.rz-tx b{color:#d7f78a}
+.rz-foot{display:flex;align-items:center;gap:7px;padding:8px 12px;border-top:1px solid rgba(35,41,50,.8);background:rgba(255,255,255,.015);font-size:10.5px;color:#6d7682}
+.rz-foot .rz-st{margin-left:0!important;font-size:10.5px;color:inherit}
+.rz-foot .rz-st.on{color:#c2f64a}
+.rz-foot .rz-dot{width:6px;height:6px;border-radius:50%;background:#5c656f;flex:0 0 auto}
+.rz-foot:has(.rz-st.on) .rz-dot{background:#c2f64a;box-shadow:0 0 8px rgba(194,246,74,.8)}
+.rz-foot:has(.rz-st.on){color:#a9b3bd}
+
+/* STOP-LOSS / TAKE-PROFIT: a price AND the percent of margin it costs, each typeable, neither able to disagree */
+.ptx{border:1px solid var(--line);border-radius:12px;background:#0c0f13;padding:11px 12px 10px;margin-bottom:12px}
+.ptx.sl{border-left:3px solid rgba(255,98,88,.75)}
+.ptx.tp{border-left:3px solid rgba(46,189,133,.75)}
+.ptx-h{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.ptx-h label{font-family:'Space Mono',monospace!important;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#8b97a5;margin:0}
+.ptx.sl .ptx-h label{color:#ff8e86}
+.ptx.tp .ptx-h label{color:#53cf9e}
+.ptx-clr{margin-left:auto;font-size:11px;font-weight:600;color:#6d7682;background:none;border:0;padding:3px 6px;border-radius:7px;cursor:pointer;transition:.13s}
+.ptx-clr:hover{color:#e9e7df;background:rgba(255,255,255,.06)}
+.ptx-clr[hidden]{display:none}
+.ptx-row{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:8px;align-items:center}
+.ptx-row .input-line input{font-size:14px!important;padding:11px 12px!important}
+.ptx-pct{position:relative;display:flex;align-items:center}
+.ptx-pct input{width:100%;background:linear-gradient(180deg,var(--panel-2),var(--bg));border:1px solid var(--line-bright);border-radius:11px;color:#e9e7df;font-family:'Space Mono',monospace!important;font-size:14px;font-weight:700;padding:11px 30px 11px 12px;outline:none;text-align:right;font-variant-numeric:tabular-nums;transition:border-color .15s,box-shadow .15s}
+.ptx-pct input::placeholder{color:#515a65;font-weight:400}
+.ptx-pct input:hover{border-color:rgba(194,246,74,.42)}
+.ptx-pct input:focus{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.16)}
+.ptx-pct .u{position:absolute;right:11px;font-family:'Space Mono',monospace!important;font-size:12px;color:var(--ink-faint);pointer-events:none}
+.ptx-q{display:flex;gap:5px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
+.ptx-q::-webkit-scrollbar{display:none}
+.ptx-q button{flex:0 0 auto;font-family:'Space Mono',monospace!important;font-size:11px;font-weight:700;color:#8b97a5;background:#11151b;border:1px solid #242b34;border-radius:8px;padding:6px 9px;cursor:pointer;transition:.12s}
+.ptx-q button:hover{color:#e9e7df;border-color:#3b434f}
+.ptx.sl .ptx-q button.on{color:#ff8e86;border-color:rgba(255,98,88,.6);background:rgba(255,98,88,.12)}
+.ptx.tp .ptx-q button.on{color:#53cf9e;border-color:rgba(46,189,133,.6);background:rgba(46,189,133,.12)}
+.ptx-hint{font-size:10.5px;color:#6d7682;line-height:1.4;margin-top:8px}
+.ptx .plan-risk{margin-top:8px}
+@media(max-width:400px){.ptx-row{grid-template-columns:minmax(0,1fr) 88px}}
+
+/* the two small "off" fields read as one pair rather than two lonely rows */
+.pt-pair2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:400px){.pt-pair2{grid-template-columns:1fr}}
+
+/* ── 7. BRANDED PICKER ROWS: the venue's own mark, not the first letter of its name ───────────────────────── */
+.csel-ex .cx-m{overflow:hidden;background:#fff!important;padding:2px;display:inline-flex;align-items:center;justify-content:center}
+.csel-ex .cx-m img{width:100%;height:100%;object-fit:contain;display:block;border-radius:3px}
+.csel-ex .cx-m.cx-mp{background:#0a0b0d!important;box-shadow:inset 0 0 0 1px rgba(194,246,74,.55);padding:0}
+.csel-ex .cx-m.cx-custom{background:#1b212a!important;color:#9aa3ad!important;padding:0}
+/* a dropdown must be closable with a thumb: on a coarse pointer it is a bottom sheet with a backdrop and an X,
+   never a floating panel whose only exit is a tap on a document that iOS may never report (owner 2026-10-24) */
+.csel-sheet-bd{position:fixed;inset:0;z-index:2147482998;background:rgba(5,7,9,.66);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.csel-sheet-bd[hidden]{display:none}
+@media(hover:none),(pointer:coarse){
+  .csel-panel.csel-sheet{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:auto!important;max-height:72vh;border-radius:16px 16px 0 0;border-bottom:0;z-index:2147482999!important;padding-bottom:calc(8px + env(safe-area-inset-bottom) + var(--mkb,0px))}
+  .csel-sheet .csel-list{max-height:min(58vh,440px);overflow-y:auto;overscroll-behavior:contain}
+}
+.csel-sh-h{display:none}
+@media(hover:none),(pointer:coarse){
+  .csel-sh-h{display:flex;align-items:center;gap:9px;padding:4px 4px 10px;margin-bottom:4px;border-bottom:1px solid #222932}
+  .csel-sh-h b{font-family:'Bricolage Grotesque',sans-serif!important;font-weight:700;font-size:14px;color:#f2f0e9}
+  .csel-sh-x{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #2b323b;border-radius:9px;background:#11151b;color:#8b97a5;cursor:pointer}
+  .csel-sh-x svg{width:13px;height:13px}
+  .csel-opt{min-height:46px}
+}
+.csel-trigger{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+
+/* ── 8. THE CHART TAKES THE ROOM THAT IS LEFT, NEVER A NUMBER SOMEBODY PICKED ─────────────────────────────── */
+@media(min-width:881px){body.paper-page #ptChart{min-height:0!important}}
+@media(max-width:880px){
+  body.paper-page .ptt-chart,body.paper-page[data-prod="plan"] .ptt-chart{height:auto!important;min-height:0!important}
+  body.paper-page #ptChart{flex:0 0 auto;height:clamp(250px,42vh,390px);min-height:0}
+}
+
+/* the guest note mp-auth inserts beside the (now hidden) Advanced label keeps a line of its own */
+.pt-advrow{flex-wrap:wrap}
+.pt-advrow #advGateNote{flex:1 0 100%;margin-left:0!important;order:9}
+/* <<< MP-PT-TERMINAL <<< */

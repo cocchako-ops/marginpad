@@ -44,29 +44,34 @@ async function seed() {
     ok(lev && lev.seen.filter(n => n <= 10).length >= 3, 'below 10x every whole step is still reachable (' + (lev ? lev.seen.filter(n => n <= 10).join(', ') : '') + ')');
     ok(lev && (lev.typed === 110 || lev.typed === 100), 'typing 107 commits to a round number (' + (lev ? lev.typed : '?') + ')');
 
-    // ---- the entry-style control --------------------------------------------------------------------------------
+    /* ---- the entry-style control ---------------------------------------------------------------------------
+       2026-10-24: it is no longer a pill on the chart - the floating crypto/pair/timeframe/entry strip was
+       retired and this control lives in the chart-settings popover behind the gear, beside the chart style.
+       The engine's own `.ptt-es` node is still the one that carries the state (the popover's copies forward to
+       it), so what is asserted here is the PAIR of controls and that the gear reaches them. */
+    await p.evaluate(() => document.getElementById('ptChSet').click());
+    await new Promise(r => setTimeout(r, 700));
     const ctl = await p.evaluate(() => {
       const w = document.querySelector('.ptt-es'); if (!w) return null;
-      w.scrollIntoView({ block: 'center' });
       const bs = [...w.querySelectorAll('button[data-es]')];
-      const r = w.getBoundingClientRect(), tf = document.getElementById('ptTfBtn'), tr = tf ? tf.getBoundingClientRect() : null;
-      const first = bs[0].getBoundingClientRect();
-      const hit = document.elementFromPoint(first.left + first.width / 2, first.top + first.height / 2);
+      const pop = [...document.querySelectorAll('#ptChPop [data-es]')];
+      const first = pop[0] ? pop[0].getBoundingClientRect() : null;
+      const hit = first ? document.elementFromPoint(first.left + first.width / 2, first.top + first.height / 2) : null;
       return {
         opts: bs.map(b => b.getAttribute('data-es')), on: bs.filter(b => b.classList.contains('on')).map(b => b.getAttribute('data-es')),
-        w: Math.round(r.width), h: Math.round(r.height), reachable: !!(hit && bs[0].contains(hit)),
-        separate: tr ? (r.left > tr.right && Math.abs(r.top - tr.top) < 22) : null,
+        inPop: pop.map(b => b.getAttribute('data-es')),
+        reachable: !!(hit && pop[0].contains(hit)),
+        popOn: pop.filter(b => b.classList.contains('on')).map(b => b.getAttribute('data-es')),
       };
     });
-    ok(!!ctl, 'the entry-style control is on the chart toolbar');
+    ok(!!ctl, 'the entry-style control is still the one the engine listens to');
     ok(ctl && ctl.opts.join(',') === 'line,mark', 'it offers both options explicitly, not a toggle (' + (ctl ? ctl.opts.join(', ') : '') + ')');
-    ok(ctl && ctl.separate, 'it is its own control, to the right of the timeframe pill');
-    ok(ctl && ctl.w <= 70 && ctl.h <= 30, 'it stays small (' + (ctl ? ctl.w + 'x' + ctl.h : '?') + ')');
-    ok(ctl && ctl.reachable, 'its buttons are clickable');
-    ok(ctl && ctl.on.join(',') === 'line', 'it opens on lines, as before');
+    ok(ctl && ctl.inPop.join(',') === 'line,mark', 'both options are offered in the chart settings (' + (ctl ? ctl.inPop.join(', ') : '') + ')');
+    ok(ctl && ctl.reachable, 'and they are clickable there');
+    ok(ctl && ctl.on.join(',') === 'line' && ctl.popOn.join(',') === 'line', 'it opens on lines, as before, and the popover agrees');
 
     // ---- switch to dots -----------------------------------------------------------------------------------------
-    await p.evaluate(() => document.querySelector('.ptt-es button[data-es="mark"]').click());
+    await p.evaluate(() => document.querySelector('#ptChPop [data-es="mark"]').click());
     await new Promise(r => setTimeout(r, 1300));
     const dots = await p.evaluate(() => {
       const d = window.__mpPT();

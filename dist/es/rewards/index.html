@@ -499,11 +499,12 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     </div>
     <div id="wdAddrRow" hidden>
       <div class="lbl" style="margin:12px 0 6px">¿A dónde lo enviamos?</div>
-      <div style="display:flex;gap:8px;margin:0 0 10px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px">
         <button type="button" id="wdmBybit" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer">UID de Bybit</button>
         <button type="button" id="wdmMoon" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/moon.png" alt="" width="16" height="16" style="border-radius:4px;background:#fff;padding:1px">Moon</button>
         <button type="button" id="wdmMexc" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/mexc.png" alt="" width="16" height="16" style="border-radius:4px">MEXC</button>
-        <button type="button" id="wdmBitget" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/bitget.png" alt="" width="16" height="16" style="border-radius:4px">Bitget</button>
+        <button type="button" id="wdmBingx" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/ex/bingx.png" alt="" width="16" height="16" style="border-radius:4px">BingX</button>
+        <button type="button" id="wdmBitget" disabled aria-disabled="true" title="Bitget payouts are not open yet" style="flex:1 0 100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px dashed var(--line);background:transparent;color:#7f8893;font-weight:700;font-size:13px;cursor:default"><img src="/assets/ex/bitget.png" alt="" width="16" height="16" style="border-radius:4px;opacity:.5">Bitget<span style="font-size:10px;line-height:1;letter-spacing:.07em;font-weight:800;color:#00e7d8;border:1px solid rgba(0,231,216,.38);border-radius:999px;padding:3px 7px">COMING SOON</span></button>
       </div>
       <!-- Payout notes (2026-09-09): a payout NEEDS an account at the venue, so the link to open one belongs right here.
            It was already in this text, but as bare prose with no tracking at all - measured 4,178 pageviews and 1 click a
@@ -514,6 +515,8 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
         <div class="wd-row"><a class="wd-go" data-mpex="Moon" href="https://moon.com/?offer=marginpad" target="_blank" rel="sponsored noopener noreferrer">Crea tu cuenta de Moon &rarr;</a></div></div>
       <div class="note wd-note" id="wdNoteMexc" hidden style="--wdc:#5b8cff;--wdb:rgba(91,140,255,.42);--wdg:rgba(91,140,255,.08)">USDT is sent to your <b>MEXC</b> account by UID - the account must have been opened through our MEXC link. Your UID is the number under your email in the MEXC account menu.
         <div class="wd-row"><a class="wd-go" data-mpex="MEXC" href="https://promote.mexc.com/a/ZBQaEXe8" target="_blank" rel="sponsored noopener noreferrer">Create your MEXC account &rarr;</a><a class="wd-alt" href="https://marginpad.io/es/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
+      <div class="note wd-note" id="wdNoteBingx" hidden style="--wdc:#2b54fc;--wdb:rgba(43,84,252,.45);--wdg:rgba(43,84,252,.09)">USDT is sent to your <b>BingX</b> account by UID - the account must have been opened through our BingX link. Your UID is the number in your BingX account menu.
+        <div class="wd-row"><a class="wd-go" data-mpex="BingX" href="https://bingx.com/partner/Marginpad" target="_blank" rel="sponsored noopener noreferrer">Create your BingX account &rarr;</a><a class="wd-alt" href="https://marginpad.io/es/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="note wd-note" id="wdNoteBitget" hidden style="--wdc:#00e7d8;--wdb:rgba(0,231,216,.42);--wdg:rgba(0,231,216,.08)">USDT is sent to your <b>Bitget</b> account by UID - the account must have been opened through our Bitget link. Your UID is the number in your Bitget account menu.
         <div class="wd-row"><a class="wd-go" data-mpex="Bitget" href="https://partner.bitget.com/bg/CUWBCM" target="_blank" rel="sponsored noopener noreferrer">Create your Bitget account &rarr;</a><a class="wd-alt" href="https://marginpad.io/es/rewards/#" onclick="return !(window.__mpOpenSupport&amp;&amp;window.__mpOpenSupport());">Already have one? Ask support</a></div></div>
       <div class="lbl" style="margin:12px 0 6px">¿Cuánto?</div>
@@ -587,9 +590,9 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
   <main class="rw-main" aria-label="Ways to earn">
   <div class="card" id="signupHub" hidden>
     <div class="lbl">Exchange sign-up bonuses <span class="rw-amt">+$<span id="hubTotal">4</span> in total</span></div>
-    <p class="rw-p">Open an account through our link, send us the UID it got (Moon: the username), and the bonus lands on your balance after a check. One bonus per exchange, one per account - no level needed.</p>
+    <p class="rw-p">Open an account through our link, send us the UID it got (Moon: the username), and the bonus lands on your balance - automatically for Bybit, MEXC and BingX, after a quick check for Moon. One bonus per exchange, one per account - no level needed.</p>
     <div class="rw-tabs" id="hubTabs" role="tablist" aria-label="Exchange">
-      <button type="button" role="tab" data-v="moon"><img src="/assets/moon.png" alt="" width="18" height="18" style="background:#fff;padding:2px">Moon<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="mexc"><img src="/assets/ex/mexc.png" alt="" width="18" height="18" style="background:#0057ff;padding:0">MEXC<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="bingx"><img src="/assets/ex/bingx.png" alt="" width="18" height="18" style="background:#2b54fc;padding:0">BingX<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="bitget"><img src="/assets/ex/bitget.png" alt="" width="18" height="18" style="background:#00e7d8;padding:0">Bitget<i class="rw-st" aria-hidden="true"></i></button>
+      <button type="button" role="tab" data-v="moon"><img src="/assets/moon.png" alt="" width="18" height="18" style="background:#fff;padding:2px">Moon<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="mexc"><img src="/assets/ex/mexc.png" alt="" width="18" height="18" style="background:#0057ff;padding:0">MEXC<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="bingx"><img src="/assets/ex/bingx.png" alt="" width="18" height="18" style="background:#2b54fc;padding:0">BingX<i class="rw-st" aria-hidden="true"></i></button><button type="button" role="tab" data-v="bybit"><img src="/assets/ex/bybit.png" alt="" width="18" height="18" style="background:#16181e;padding:0">Bybit<i class="rw-st" aria-hidden="true"></i></button>
     </div>
     <div class="rw-panels">
       <div class="card" id="moonCard" hidden>
@@ -621,13 +624,13 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     <div class="msg" id="bingxMsg"></div>
     <div id="bingxStatus" style="margin-top:8px"></div>
   </div>
-      <div class="card" id="bitgetCard" hidden>
-    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/ex/bitget.png" alt="" aria-hidden="true" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block;flex:0 0 auto;background:#00e7d8">Bitget sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="bitgetAmt">1</span></span></div>
-    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Bitget</b> account through our link, then enter your Bitget UID below. We check it against Bitget’s own referral list and add <b style="color:#c2f64a">$<span id="bitgetAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
-    <a class="btn btn-lime" id="bitgetRefBtn" data-mpex="Bitget" href="#" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Bitget account</a>
-    <div id="bitgetForm"><div class="addr-row"><input id="bitgetUser" type="text" placeholder="2) Your Bitget UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="bitgetSubmit" type="button">Enviar</button></div></div>
-    <div class="msg" id="bitgetMsg"></div>
-    <div id="bitgetStatus" style="margin-top:8px"></div>
+      <div class="card" id="bybitCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/ex/bybit.png" alt="" aria-hidden="true" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block;flex:0 0 auto;background:#16181e">Bybit sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="bybitAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Bybit</b> account through our link, then enter your Bybit UID below. We check it against Bybit’s own referral list and the bonus is paid <b>automatically</b> - usually within ten minutes, with <b style="color:#c2f64a">$<span id="bybitAmt2">1</span></b> on your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="bybitRefBtn" data-mpex="Bybit" href="#" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Bybit account</a>
+    <div id="bybitForm"><div class="addr-row"><input id="bybitUser" type="text" inputmode="numeric" placeholder="2) Your Bybit UID" autocomplete="off" spellcheck="false" /><button class="btn btn-ghost" id="bybitSubmit" type="button">Enviar</button></div></div>
+    <div class="msg" id="bybitMsg"></div>
+    <div id="bybitStatus" style="margin-top:8px"></div>
   </div>
     </div>
   </div>
@@ -1147,7 +1150,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
     { k: 'mexc', btn: 'wdmMexc', note: 'wdNoteMexc', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'mexc:', check: 'mexccheck', ph: 'Your MEXC UID (numbers only)', bad: 'Enter your MEXC UID (numbers only).' },
     /* `check` names the venue's own pre-check endpoint; a method without one simply submits, which is what
        keeps Bybit and Moon on exactly the path they were on. */
-    { k: 'bitget', btn: 'wdmBitget', note: 'wdNoteBitget', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'bitget:', check: 'bitgetcheck', ph: 'Your Bitget UID (numbers only)', bad: 'Enter your Bitget UID (numbers only).' }
+    { k: 'bingx', btn: 'wdmBingx', note: 'wdNoteBingx', mode: 'numeric', re: /^[0-9]{5,15}$/, prefix: 'bingx:', check: 'bingxcheck', ph: 'Your BingX UID (numbers only)', bad: 'Enter your BingX UID (numbers only).' }
   ];
   function wdM(k){ for (var i = 0; i < WD_METHODS.length; i++) if (WD_METHODS[i].k === (k || wdMethod)) return WD_METHODS[i]; return WD_METHODS[0]; }
   function setWdMethod(m){wdMethod=m;
@@ -1157,8 +1160,13 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
       if(b)b.style.cssText=(m===x.k?on:off); if(n)n.hidden=(m!==x.k); });
     var cur=wdM(m);
     if(wdAddr){wdAddr.classList.remove('invalid');wdAddr.setAttribute('inputmode',cur.mode);wdAddr.placeholder=cur.ph;}
+    try{wdFitSoon();}catch(e){}
   }
   (function(){ WD_METHODS.forEach(function(x){ var b=document.getElementById(x.btn); if(b)b.addEventListener('click',function(){setWdMethod(x.k);}); }); })();
+  /* the coming-soon tile matches the tiles above it: their height depends on whether the label wraps, which
+     depends on the viewport, so it is read rather than guessed (2026-10-24). */
+  function wdFitSoon(){ var s=document.getElementById('wdmBitget'); if(!s)return; var t=0; WD_METHODS.forEach(function(x){ var b=document.getElementById(x.btn); if(b&&b.offsetHeight>t)t=b.offsetHeight; }); if(t>0)s.style.minHeight=t+'px'; }
+  window.addEventListener('resize',function(){ try{wdFitSoon();}catch(e){} });
   function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
@@ -1281,7 +1289,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
   wdBtn.addEventListener('click',function(){
     if(wdBtn.disabled)return;
     wdAddrRow.hidden=!wdAddrRow.hidden;
-    if(!wdAddrRow.hidden){ if(payoutAddr){ if(payoutAddr.indexOf('moon:')===0){setWdMethod('moon');wdAddr.value=payoutAddr.slice(5);}else{setWdMethod('bybit');wdAddr.value=payoutAddr;} } wdAmtFill(); setTimeout(function(){(wdAmt||wdAddr).focus();},30); }
+    if(!wdAddrRow.hidden){ if(payoutAddr){ if(payoutAddr.indexOf('moon:')===0){setWdMethod('moon');wdAddr.value=payoutAddr.slice(5);}else{setWdMethod('bybit');wdAddr.value=payoutAddr;} } wdAmtFill(); try{wdFitSoon();}catch(e){} setTimeout(function(){(wdAmt||wdAddr).focus();},30); }
   });
   if(wdAddr){ wdAddr.addEventListener('input',function(){var v=wdAddr.value.trim();if(v&&!valid(v))wdAddr.classList.add('invalid');else wdAddr.classList.remove('invalid');});
     wdAddr.addEventListener('keydown',function(e){if(e.key==='Enter')doWithdraw();}); }
@@ -1307,7 +1315,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
        a member must never be stopped by our own outage. */
     var wdC=wdM();
     if(wdC.check){
-      var wdLbl=wdC.k==='bitget'?'Bitget':'MEXC';
+      var wdLbl=(wdC.k||'').toUpperCase()==='BINGX'?'BingX':(wdC.k||'').toUpperCase()==='MEXC'?'MEXC':(wdC.k||'').charAt(0).toUpperCase()+(wdC.k||'').slice(1);
       wdConfirm.disabled=true; clearMsg();
       fetch('/api/reward/'+wdC.check+'?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(j){
         wdConfirm.disabled=false;
@@ -1524,7 +1532,7 @@ body.rwd-in #lbCompCard .lbc-note{display:none}
 </script>
 <script>
 /* the sign-up hub (2026-10-23): switches the four venue panels, disables a venue ops paused, mirrors each panel's status onto its tab, sums the header */
-(function(){var hub=document.getElementById('signupHub'),tabs=document.getElementById('hubTabs');if(!hub||!tabs)return;var V=['moon','mexc','bingx','bitget'];
+(function(){var hub=document.getElementById('signupHub'),tabs=document.getElementById('hubTabs');if(!hub||!tabs)return;var V=['moon','mexc','bingx','bybit'];
   function card(v){return document.getElementById(v+'Card');}
   function show(v){V.forEach(function(k){var c=card(k);if(c)c.classList.toggle('rw-on',k===v);});Array.prototype.forEach.call(tabs.querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});try{localStorage.setItem('mp_rw_hub',v);}catch(e){}}
   function sync(){var any=false,first=null,tot=0;

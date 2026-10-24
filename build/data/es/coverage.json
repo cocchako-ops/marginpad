@@ -319,45 +319,45 @@
  },
  {
   "rel": "bitget-liquidation-calculator/index.html",
-  "cover": 1,
-  "hit": 86,
-  "missing": 0
+  "cover": 0.9883720930232558,
+  "hit": 85,
+  "missing": 1
  },
  {
   "rel": "bitget-pnl-calculator/index.html",
-  "cover": 1,
-  "hit": 62,
-  "missing": 0
+  "cover": 0.9838709677419355,
+  "hit": 61,
+  "missing": 1
  },
  {
   "rel": "bitget-vs-binance/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.9859154929577465,
+  "hit": 70,
+  "missing": 1
  },
  {
   "rel": "bitget-vs-gate/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.9859154929577465,
+  "hit": 70,
+  "missing": 1
  },
  {
   "rel": "bitget-vs-kraken/index.html",
-  "cover": 1,
-  "hit": 67,
-  "missing": 0
+  "cover": 0.9850746268656716,
+  "hit": 66,
+  "missing": 1
  },
  {
   "rel": "bitget-vs-kucoin/index.html",
-  "cover": 1,
-  "hit": 67,
-  "missing": 0
+  "cover": 0.9850746268656716,
+  "hit": 66,
+  "missing": 1
  },
  {
   "rel": "bitget-vs-okx/index.html",
-  "cover": 1,
-  "hit": 69,
-  "missing": 0
+  "cover": 0.9855072463768116,
+  "hit": 68,
+  "missing": 1
  },
  {
   "rel": "blog/ai-crypto-trading-strategies-2026/index.html",
@@ -1063,9 +1063,9 @@
  },
  {
   "rel": "bybit-vs-bitget/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.9859154929577465,
+  "hit": 70,
+  "missing": 1
  },
  {
   "rel": "bybit-vs-gate/index.html",
@@ -1363,9 +1363,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 1,
-  "hit": 364,
-  "missing": 0
+  "cover": 0.9945054945054945,
+  "hit": 362,
+  "missing": 2
  },
  {
   "rel": "fear-greed/index.html",
@@ -1610,9 +1610,9 @@
  },
  {
   "rel": "hyperliquid-vs-bitget/index.html",
-  "cover": 1,
-  "hit": 71,
-  "missing": 0
+  "cover": 0.9859154929577465,
+  "hit": 70,
+  "missing": 1
  },
  {
   "rel": "hyperliquid-vs-bybit/index.html",
@@ -2000,9 +2000,9 @@
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.8663793103448276,
+  "cover": 0.8516949152542372,
   "hit": 201,
-  "missing": 31
+  "missing": 35
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2078,9 +2078,9 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 1,
-  "hit": 73,
-  "missing": 0
+  "cover": 0.9594594594594594,
+  "hit": 71,
+  "missing": 3
  },
  {
   "rel": "squads/index.html",
@@ -2312,8 +2312,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 1,
-  "hit": 472,
-  "missing": 0
+  "cover": 0.9836734693877551,
+  "hit": 482,
+  "missing": 8
  }
 ]

@@ -1,0 +1,450 @@
+
+;/* ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PAPER TRADE TERMINAL SHELL (2026-10-24, owner: the chart edge to edge with no window around it, the pair name
+   opening a real market picker, the timeframe glued under the chart, the candle's clock under the symbol).
+
+   NOTHING HERE REIMPLEMENTS THE ENGINE. The terminal is driven, as it always was, through #planSym / #planClass
+   (every deep link, the recents rail and the asset-class wiring go through them) and through the buttons inside
+   #ptTf (the premium gate, the seconds flag and loadKlines all hang off that one delegated listener). Those nodes
+   stay in the DOM; this block only gives them a face. Same rule as the /trading-api key manager: lift it, never
+   retype it.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+(function () {
+  if (window.__mpPtShell) return; window.__mpPtShell = 1;
+  function T(k, en) { try { return __esT_home(k, en); } catch (e) { return en; } }
+  var $ = function (id) { return document.getElementById(id); };
+  var U = function (s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); };
+  function cls(s) { try { return window.mpAssetClass ? window.mpAssetClass(s) : 'crypto'; } catch (e) { return 'crypto'; } }
+  function nameOf(s) { try { return (window.mpMarketName && window.mpMarketName(s)) || ''; } catch (e) { return ''; } }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  var SV = function (p, w) { return '<svg viewBox="0 0 24 24" width="' + (w || 14) + '" height="' + (w || 14) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
+
+  /* ── ICONS ─────────────────────────────────────────────────────────────────────────────────────────────────
+     Crypto, stocks, metals and oil all resolve through /api/coinicon (the resolver that already knows a stock is
+     not a memecoin wearing its ticker). Forex and indices have no logo anywhere, so they are DRAWN - the same
+     self-hosted shapes the recents rail has used since 2026-08-16, which is why they cannot 404. */
+  var FX = { EURUSD: ['€', '$', '#4b7bec', '#2ebd85'], GBPUSD: ['£', '$', '#e74c5e', '#2ebd85'], USDJPY: ['$', '¥', '#2ebd85', '#e74c5e'], AUDUSD: ['A$', '$', '#2ec4b6', '#2ebd85'], USDCAD: ['$', 'C$', '#2ebd85', '#e74c5e'], USDCHF: ['$', 'Fr', '#2ebd85', '#e74c5e'], NZDUSD: ['N$', '$', '#2ec4b6', '#2ebd85'], EURGBP: ['€', '£', '#4b7bec', '#e74c5e'], EURJPY: ['€', '¥', '#4b7bec', '#e74c5e'], GBPJPY: ['£', '¥', '#e74c5e', '#bc002d'], AUDJPY: ['A$', '¥', '#2ec4b6', '#e74c5e'], EURCHF: ['€', 'Fr', '#4b7bec', '#e74c5e'], USDMXN: ['$', 'Mx', '#2ebd85', '#2e8b57'], USDSEK: ['$', 'kr', '#2ebd85', '#4b7bec'], USDNOK: ['$', 'kr', '#2ebd85', '#e74c5e'] };
+  var IDX = { SPX500: ['SPX', '#b31942'], NAS100: ['NDX', '#0091da'], US30: ['DJI', '#2f72c4'], GER40: ['DAX', '#c79a1c'], UK100: ['FTSE', '#8a5cff'], JPN225: ['N225', '#e0415a'], FRA40: ['CAC', '#4b7bec'], EU50: ['SX5E', '#f0b90b'], HK50: ['HSI', '#e0415a'], AUS200: ['ASX', '#2ec4b6'], ESP35: ['IBEX', '#e8a33d'], SWI20: ['SMI', '#e74c5e'], US2000: ['RUT', '#2ebd85'], VIX: ['VIX', '#ff6258'] };
+  function fxSvg(s) {
+    var f = FX[s]; if (!f) return null;
+    return '<svg viewBox="0 0 36 36" aria-hidden="true"><text x="' + (f[0].length > 1 ? 11 : 12) + '" y="21" text-anchor="middle" font-size="' + (f[0].length > 1 ? 8 : 11.5) + '" font-weight="800" fill="' + f[2] + '" font-family="Arial,sans-serif">' + f[0] + '</text>'
+      + '<line x1="16.8" y1="24.5" x2="19.8" y2="11.5" stroke="rgba(255,255,255,.28)" stroke-width="1.3" stroke-linecap="round"/>'
+      + '<text x="' + (f[1].length > 1 ? 25 : 24.5) + '" y="27" text-anchor="middle" font-size="' + (f[1].length > 1 ? 8 : 11.5) + '" font-weight="800" fill="' + f[3] + '" font-family="Arial,sans-serif">' + f[1] + '</text></svg>';
+  }
+  function idxSvg(s) {
+    var x = IDX[s]; if (!x) return null;
+    return '<svg viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="17" text-anchor="middle" font-size="' + (x[0].length > 3 ? 7.5 : 9) + '" font-weight="800" fill="#e2e7ec" font-family="Arial,sans-serif">' + x[0] + '</text>'
+      + '<polyline points="10,25.5 14.5,22 18,24 22,18.5 26.5,21" fill="none" stroke="' + x[1] + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  /* the fallback chain lives on window so the markup carries one short call instead of a paragraph of inline JS */
+  window.__mpIcoErr = function (img) {
+    var n = (+img.getAttribute('data-f') || 0) + 1; img.setAttribute('data-f', String(n));
+    var s = img.getAttribute('data-s') || '';
+    if (n === 1) { img.src = '/api/coinicon?sym=' + encodeURIComponent(s); return; }
+    if (n === 2) { img.src = 'https://assets.coincap.io/assets/icons/' + s.toLowerCase() + '@2x.png'; return; }
+    var p = img.parentNode; if (p) { img.remove(); p.innerHTML = '<span>' + esc(s.toUpperCase().slice(0, 4)) + '</span>'; }
+  };
+  function icoHtml(s) {
+    s = U(s); var c = cls(s);
+    if (c === 'forex') { var a = fxSvg(s); if (a) return a; }
+    if (c === 'index') { var b = idxSvg(s); if (b) return b; }
+    return '<img alt="" loading="lazy" data-s="' + esc(s) + '" src="/assets/coins/' + esc(s.toLowerCase()) + '.png" onerror="window.__mpIcoErr(this)">';
+  }
+
+  /* ── THE PAIR, AND THE CANDLE'S OWN CLOCK UNDER IT ────────────────────────────────────────────────────── */
+  function symNow() { var e = $('planSym'); return U((e && e.value) || 'BTC') || 'BTC'; }
+  function paintHead() {
+    var s = symNow(), ic = $('ptSymIc'), tx = $('ptSymTxt'), q = document.querySelector('.ptc-quote');
+    if (tx) tx.textContent = s;
+    if (q) q.textContent = 'USD';
+    if (ic && ic.getAttribute('data-for') !== s) { ic.setAttribute('data-for', s); ic.innerHTML = icoHtml(s); }
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-label', T('chooseAMarket', 'Choose a market') + ' - ' + s);
+  }
+
+  /* ── THE MARKET PICKER ────────────────────────────────────────────────────────────────────────────────── */
+  var FAVK = 'mp_pt_favs';
+  function favs() { try { var a = JSON.parse(localStorage.getItem(FAVK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function favWrite(a) { try { localStorage.setItem(FAVK, JSON.stringify(a.slice(0, 80))); } catch (e) { } }
+  function favHas(s) { return favs().indexOf(s) >= 0; }
+  function favTog(s) { var a = favs(), i = a.indexOf(s); if (i >= 0) a.splice(i, 1); else a.unshift(s); favWrite(a); return a.indexOf(s) >= 0; }
+
+  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')]];
+  var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;
+  try { var _t0 = localStorage.getItem('mp_pt_tab'); if (_t0 && TABS.some(function (t) { return t[0] === _t0; })) mkTab = _t0; } catch (e) { }
+
+  /* prices for the rows: the screener answer is edge-cached and already holds every crypto perp with its 24h
+     change AND its volume, so one request per open sorts the busiest market first instead of alphabetically.
+     Stocks, forex and indices have no such feed - those rows carry the market's NAME, which is what is useful
+     there, and no price at all. A figure we cannot measure is never printed. */
+  function scrLoad(cb) {
+    if (_scr && Date.now() - _scrAt < 60000) { cb && cb(_scr); return; }
+    if (_scrQ) { cb && cb(_scr); return; }
+    _scrQ = 1;
+    fetch('/api/screener', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      var rows = (j && (j.rows || j.data)) || (Array.isArray(j) ? j : []);
+      var m = {}; for (var i = 0; i < rows.length; i++) { var r = rows[i]; if (r && r.s) m[U(r.s)] = { p: +r.p, chg: +r.chg, vol: +r.vol || 0 }; }
+      _scr = m; _scrAt = Date.now(); _scrQ = 0; cb && cb(m);
+    }).catch(function () { _scrQ = 0; cb && cb(_scr); });
+  }
+  function pxOf(s) {
+    var m = _scr && _scr[s]; if (m && m.p > 0) return m;
+    var l = window.mpLivePrices && window.mpLivePrices[s];
+    if (l && +l.p > 0) return { p: +l.p, chg: (l.chg == null ? null : +l.chg), vol: 0 };
+    return null;
+  }
+  function fmtPx(v) {
+    if (!(v > 0)) return '';
+    var d = v >= 1000 ? 2 : v >= 1 ? 4 : v >= 0.01 ? 5 : 8;
+    return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: d });
+  }
+  function listFor(tab, q) {
+    var all = (window.mpTokens || []).slice();
+    if (!all.length) all = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE'];
+    var out;
+    if (tab === 'fav') { var f = favs(); out = f.filter(function (s) { return all.indexOf(s) >= 0 || true; }); }
+    else out = all.filter(function (s) { return cls(s) === tab; });
+    if (q) {
+      var qq = q.toLowerCase();
+      var pool = (tab === 'fav') ? all : out;
+      out = pool.filter(function (s) { return s.toLowerCase().indexOf(qq) >= 0 || nameOf(s).toLowerCase().indexOf(qq) >= 0; });
+    }
+    if (tab === 'crypto' && !q && _scr) {
+      out.sort(function (a, b) { var A = _scr[a], B = _scr[b]; return ((B && B.vol) || 0) - ((A && A.vol) || 0); });
+    }
+    return out;
+  }
+  var ST_ON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/></svg>';
+  var ST_OFF = SV('<path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/>', 15);
+  var MK_CAP = 160;
+  function mkRender() {
+    var box = $('ptMkList'); if (!box) return;
+    var cur = symNow(), rows = listFor(mkTab, mkQ), h = '', n = Math.min(rows.length, MK_CAP);
+    if (!rows.length) {
+      box.innerHTML = '<div class="ptmk-empty">' + (mkTab === 'fav' && !mkQ ? T('mkNoFav', 'No favourites yet - tap the star beside a market to pin it here.') : T('mkNone', 'Nothing matches that.')) + '</div>';
+      return;
+    }
+    for (var i = 0; i < n; i++) {
+      var s = rows[i], nm = nameOf(s), p = pxOf(s), fav = favHas(s);
+      var cg = (p && p.chg != null && isFinite(p.chg)) ? p.chg : null;
+      h += '<button type="button" class="ptmk-r' + (s === cur ? ' cur' : '') + '" data-mk="' + esc(s) + '">'
+        + '<span class="ptmk-ic">' + icoHtml(s) + '</span>'
+        + '<span class="ptmk-nm"><span class="ptmk-s1">' + esc(s) + '</span>' + (nm ? '<span class="ptmk-s2">' + esc(nm) + '</span>' : '') + '</span>'
+        + '<span class="ptmk-px">' + (p ? esc(fmtPx(p.p)) : '') + (cg != null ? '<span class="ptmk-cg ' + (cg > 0.004 ? 'up' : cg < -0.004 ? 'dn' : 'flat') + '">' + (cg >= 0 ? '+' : '') + cg.toFixed(2) + '%</span>' : '') + '</span>'
+        + '<span class="ptmk-st' + (fav ? ' on' : '') + '" data-fav="' + esc(s) + '" role="button" tabindex="0" aria-label="' + (fav ? T('mkUnpin', 'Remove from favourites') : T('mkPin', 'Add to favourites')) + '">' + (fav ? ST_ON : ST_OFF) + '</span>'
+        + '</button>';
+    }
+    box.innerHTML = h;
+    var f = $('ptMkFoot');
+    if (f) f.innerHTML = (rows.length > n ? T('mkShowing', 'Showing the first ') + '<b>' + n + '</b>' + T('mkOf', ' of ') + '<b>' + rows.length + '</b> - ' + T('mkNarrow', 'type to narrow it down.') : '<b>' + rows.length + '</b> ' + T('mkMarkets', 'markets') + (mkTab === 'crypto' ? ' - ' + T('mkByVol', 'busiest first') : ''));
+  }
+  function mkTabs() {
+    var w = $('ptMkTabs'); if (!w) return;
+    w.innerHTML = TABS.map(function (t) {
+      return '<button type="button" class="ptmk-tab' + (t[0] === mkTab ? ' on' : '') + '" data-mt="' + t[0] + '">' + (t[0] === 'fav' ? ST_ON : '') + esc(t[1]) + '</button>';
+    }).join('');
+  }
+  /* THE ROOM A SHEET MAY USE IS MEASURED, NEVER A LITERAL. The site's own phone bar is fixed to the bottom of
+     every page, so a sheet anchored there covers its own last rows - the chart-style sheet lost "Your entries"
+     entirely and the market list lost a row. mpBottomInset() is the one reading of "what is anchored at the
+     bottom"; the direct measurement is the fallback for a page where mp-auth has not parsed yet. */
+  function bottomInset() {
+    try { if (window.mpBottomInset) { var v = +window.mpBottomInset(); if (isFinite(v) && v >= 0) return v; } } catch (e) { }
+    var b = document.querySelector('.mpbn, .tdock, [data-mpbar]');
+    if (b) { var r = b.getBoundingClientRect(); if (r.height > 0 && (innerHeight - r.bottom) < 60) return Math.round(r.height); }
+    return 0;
+  }
+  function setInset() { try { document.documentElement.style.setProperty('--mkb', bottomInset() + 'px'); } catch (e) { } }
+
+  function mkOpen() {
+    var w = $('ptMkt'); if (!w) return;
+    setInset();
+    var c = cls(symNow()); if (!mkQ && mkTab !== 'fav' && TABS.some(function (t) { return t[0] === c; })) mkTab = c;
+    w.hidden = false; document.body.classList.add('ptmk-on');
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'true');
+    mkTabs(); mkRender();
+    scrLoad(function () { if (!w.hidden) mkRender(); });
+    var q = $('ptMkQ'); if (q) { q.value = mkQ; if (!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches)) setTimeout(function () { try { q.focus(); } catch (e) { } }, 30); }
+    try { if (window.__mpTrack) window.__mpTrack('ptmarket', 'open'); } catch (e) { }
+  }
+  function mkClose() {
+    var w = $('ptMkt'); if (!w || w.hidden) return;
+    w.hidden = true; document.body.classList.remove('ptmk-on');
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'false');
+  }
+  function mkPick(s) {
+    s = U(s); if (!s) return;
+    var ps = $('planSym'); if (!ps) return;
+    var ok = false; for (var i = 0; i < ps.options.length; i++) if (U(ps.options[i].value) === s) { ok = true; break; }
+    if (!ok) { var o = document.createElement('option'); o.value = s; o.textContent = s + (nameOf(s) ? ' - ' + nameOf(s) : ''); ps.appendChild(o); }
+    ps.value = s; ps.dispatchEvent(new Event('change', { bubbles: true }));
+    mkClose(); paintHead();
+    try { if (window.__mpTrack) window.__mpTrack('ptmarket', 'pick:' + s); } catch (e) { }
+  }
+
+  /* ── THE TIMEFRAME STRIP ──────────────────────────────────────────────────────────────────────────────────
+     #ptTf stays the ONE source of truth: the strip finds that button and clicks it, so the premium gate, the
+     seconds flag and loadKlines all run exactly as they did. The strip then repaints from whichever button in
+     #ptTf carries .on - there is no second idea of "the current timeframe" anywhere. */
+  var STRIP = ['1', '5', '15', '60', '240', '1440'];
+  function tfBtns() { var m = $('ptTf'); return m ? m.querySelectorAll('button[data-tf]') : []; }
+  function tfCurrent() { var b = tfBtns(); for (var i = 0; i < b.length; i++) if (b[i].classList.contains('on')) return b[i].getAttribute('data-tf'); return '5'; }
+  function stripBuild() {
+    var w = $('ptTfs'); if (!w || w.getAttribute('data-built')) return;
+    var m = $('ptTf'); if (!m) return;
+    var h = '';
+    for (var i = 0; i < STRIP.length; i++) {
+      var src = m.querySelector('button[data-tf="' + STRIP[i] + '"]'); if (!src) continue;
+      h += '<button type="button" class="ptc-tf" data-stf="' + STRIP[i] + '">' + esc(src.getAttribute('data-lbl') || STRIP[i]) + '</button>';
+    }
+    w.innerHTML = h; w.setAttribute('data-built', '1');
+  }
+  function stripPaint() {
+    var w = $('ptTfs'); if (!w) return;
+    var cur = tfCurrent(), known = false;
+    Array.prototype.forEach.call(w.querySelectorAll('[data-stf]'), function (b) {
+      var on = b.getAttribute('data-stf') === cur; b.classList.toggle('on', on); if (on) known = true;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var more = $('ptTfBtn'); if (more) more.classList.toggle('named', !known);
+  }
+
+  /* ── CHART SETTINGS: how a candle is drawn, and how an entry is marked ────────────────────────────────────
+     The style engine is the one /charts uses (window.__mpChStyle), lifted here because mp-charts.js is never
+     loaded on this page and a chart style is not worth a 300 KB bundle. The key is the SAME `mp_ch_style`, so a
+     reader's choice follows them between the two surfaces. */
+  var CH = [['candles', T('chCandles', 'Candles'), '<path d="M7 4v16M7 8h0M4 8h6v8H4zM17 2v20M14 7h6v10h-6z"/>'],
+  ['hollow', T('chHollow', 'Hollow'), '<path d="M7 4v16M4 8h6v8H4zM17 2v20M14 7h6v10h-6z"/>'],
+  ['heikin', T('chHeikin', 'Heikin'), '<path d="M5 9h5v7H5zM14 5h5v10h-5z"/>'],
+  ['bars', T('chBars', 'Bars'), '<path d="M6 4v16M6 8h3M3 14h3M18 3v18M18 8h3M15 15h3"/>'],
+  ['line', T('chLine', 'Line'), '<path d="M3 17l5-6 4 3 4-7 5 4"/>'],
+  ['area', T('chArea', 'Area'), '<path d="M3 17l5-6 4 3 4-7 5 4v8H3z"/>']];
+  var chStyle = 'candles'; try { var _c0 = localStorage.getItem('mp_ch_style'); if (_c0 && CH.some(function (x) { return x[0] === _c0; })) chStyle = _c0; } catch (e) { }
+  function haConv(d, prev) { var o = +d.open, h = +d.high, l = +d.low, c = +d.close, hc = (o + h + l + c) / 4, ho = prev ? (prev.open + prev.close) / 2 : (o + c) / 2; return { time: d.time, open: ho, high: Math.max(h, ho, hc), low: Math.min(l, ho, hc), close: hc }; }
+  function styleRow(b) { return (chStyle === 'line' || chStyle === 'area') ? { time: b.time, value: +b.close } : b; }
+  function styleSync(w, b) { var s = w._styleS; if (!s) return; try { if (!b) s.setData(w._raw.map(styleRow)); else s.update(styleRow(b)); } catch (e) { } }
+  function styleWrap(w) {
+    var cs = w.candle; if (!cs || cs._mpWrapped) return; cs._mpWrapped = 1;
+    var sd = cs.setData.bind(cs), up = cs.update.bind(cs); w._raw = []; w._ha = [];
+    function conv(b, prev) { return chStyle === 'heikin' ? haConv(b, prev) : b; }
+    cs.setData = function (d) { d = d || []; w._raw = d.slice(); var out = [], prev = null; for (var i = 0; i < d.length; i++) { var x = conv(d[i], prev); out.push(x); prev = x; } w._ha = out; sd(out); styleSync(w, null); };
+    cs.update = function (b) { var r = w._raw, ha = w._ha, same = !!(r.length && r[r.length - 1].time === b.time); if (same) r[r.length - 1] = b; else r.push(b); var prev = same ? ha[ha.length - 2] : ha[ha.length - 1]; var x = conv(b, prev); if (same) ha[ha.length - 1] = x; else ha.push(x); up(x); styleSync(w, b); };
+  }
+  var _TR = 'rgba(0,0,0,0)';
+  function applyStyle(w) {
+    if (!w || !w.candle || !w.chart) return;
+    var upC = '#10b981', dnC = '#ef4444', st = chStyle, opt;
+    if (w._styleS) { try { w.chart.removeSeries(w._styleS); } catch (e) { } w._styleS = null; }
+    if (st === 'hollow') opt = { upColor: _TR, downColor: dnC, borderVisible: true, borderUpColor: upC, borderDownColor: dnC, wickUpColor: upC, wickDownColor: dnC };
+    else if (st === 'bars' || st === 'line' || st === 'area') opt = { upColor: _TR, downColor: _TR, borderVisible: false, wickUpColor: _TR, wickDownColor: _TR };
+    else opt = { upColor: upC, downColor: dnC, borderVisible: false, wickUpColor: upC, wickDownColor: dnC };
+    try { w.candle.applyOptions(opt); } catch (e) { }
+    try {
+      if (st === 'bars') w._styleS = w.chart.addBarSeries({ upColor: upC, downColor: dnC, thinBars: false, priceLineVisible: false, lastValueVisible: false });
+      else if (st === 'line') w._styleS = w.chart.addLineSeries({ color: '#c2f64a', lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: true });
+      else if (st === 'area') w._styleS = w.chart.addAreaSeries({ lineColor: '#c2f64a', topColor: 'rgba(194,246,74,.26)', bottomColor: 'rgba(194,246,74,0)', lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
+    } catch (e) { w._styleS = null; }
+    if (w._raw && w._raw.length) { try { w.candle.setData(w._raw); } catch (e) { } }
+  }
+  var _W = null;
+  function chartW() {
+    var p = null; try { p = window.__mpPT && window.__mpPT(); } catch (e) { }
+    if (!p || !p.chart || !p.candle) return null;
+    if (!_W || _W.candle !== p.candle) { _W = { chart: p.chart, candle: p.candle, _raw: (p.bars || []).slice(), _ha: [], _styleS: null }; styleWrap(_W); applyStyle(_W); }
+    else _W.chart = p.chart;
+    return _W;
+  }
+  function setStyle(s) {
+    if (!CH.some(function (x) { return x[0] === s; })) return;
+    chStyle = s; try { localStorage.setItem('mp_ch_style', s); } catch (e) { }
+    var w = chartW(); if (w) applyStyle(w);
+    popPaint();
+  }
+  function popPaint() {
+    var p = $('ptChPop'); if (!p) return;
+    var em = 'line'; try { em = (window.mpEntryMode && window.mpEntryMode()) || 'line'; } catch (e) { }
+    Array.prototype.forEach.call(p.querySelectorAll('[data-chstyle]'), function (b) { b.classList.toggle('on', b.getAttribute('data-chstyle') === chStyle); });
+    Array.prototype.forEach.call(p.querySelectorAll('[data-es]'), function (b) { b.classList.toggle('on', b.getAttribute('data-es') === em); });
+  }
+  function popBuild() {
+    var p = $('ptChPop'); if (!p || p.getAttribute('data-built')) return;
+    p.innerHTML = '<div class="ptc-pop-h">' + T('chStyle', 'Chart style') + '</div><div class="ptc-grid">'
+      + CH.map(function (x) { return '<button type="button" data-chstyle="' + x[0] + '">' + SV(x[2], 15) + esc(x[1]) + '</button>'; }).join('')
+      + '</div><div class="ptc-pop-h">' + T('chEntries', 'Your entries') + '</div><div class="ptc-grid">'
+      + '<button type="button" data-es="line">' + SV('<path d="M3 12h18"/>', 15) + T('chAsLines', 'Lines') + '</button>'
+      + '<button type="button" data-es="mark">' + SV('<circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>', 15) + T('chAsDots', 'Dots') + '</button>'
+      + '</div>';
+    p.setAttribute('data-built', '1');
+  }
+  function popOpen(on) {
+    var p = $('ptChPop'), b = $('ptChSet'), bd = $('ptChPopBd'); if (!p) return;
+    if (on) { popBuild(); popPaint(); setInset(); }
+    p.hidden = !on; if (bd) bd.hidden = !on;
+    if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+
+  /* ── STOP-LOSS / TAKE-PROFIT IN PERCENT (owner: "da ljudi mogu da izaberu u procentima, npr SL -30%") ──────
+     THE PRICE IS THE TRUTH and stays in #planSlOpt / #planTpOpt, because that is what the engine, the drag
+     lines and every sweep read. The percent box beside it is a VIEW that is also an input: typing a price
+     rewrites the percent, typing a percent rewrites the price. Two fields, one quantity, and they cannot
+     disagree because each write recomputes the other.
+     The percent is percent OF MARGIN (ROE) - the same unit the readout under the field has always used
+     ("If stop-loss hits -$40.00 (40%)"), never percent of price, which at 20x means something twenty times
+     smaller than the trader thinks. */
+  function entryNow() {
+    if (window.mpPlanType === 'limit' && isFinite(+window.mpPlanLimit) && +window.mpPlanLimit > 0) return +window.mpPlanLimit;
+    var p = window.mpPlanLive && +window.mpPlanLive.price; return (p > 0) ? p : 0;
+  }
+  function isLong() { var s = $('planSeg'), b = s && s.querySelector('button.on'); return !(b && b.getAttribute('data-side') === 'short'); }
+  function levNow() { var v = parseFloat(($('planLev') || {}).value); return (isFinite(v) && v > 0) ? v : 1; }
+  function prec(v) { return v >= 1000 ? 2 : v >= 1 ? 4 : v >= 0.01 ? 5 : 8; }
+  function pxFromPct(kind, pct) {
+    var e = entryNow(), L = levNow(); if (!(e > 0) || !(pct > 0)) return null;
+    var d = e * (pct / 100) / L, lng = isLong();
+    var p = (kind === 'sl') ? (lng ? e - d : e + d) : (lng ? e + d : e - d);
+    if (!(p > 0)) return null;
+    return +p.toFixed(prec(e));
+  }
+  function pctFromPx(kind, px) {
+    var e = entryNow(), L = levNow(); if (!(e > 0) || !(px > 0)) return null;
+    var lng = isLong(), wrong = (kind === 'sl') ? (lng ? px >= e : px <= e) : (lng ? px <= e : px >= e);
+    if (wrong) return null;
+    return Math.abs(px - e) / e * L * 100;
+  }
+  var XF = { sl: { px: 'planSlOpt', pct: 'planSlPct' }, tp: { px: 'planTpOpt', pct: 'planTpPct' } };
+  var _xBusy = 0;
+  function xPaint(kind) {
+    var f = XF[kind], px = $(f.px), pc = $(f.pct); if (!px || !pc) return;
+    var v = parseFloat(px.value), p = (v > 0) ? pctFromPx(kind, v) : null;
+    if (document.activeElement !== pc) pc.value = (p == null) ? '' : String(Math.round(p * 10) / 10);
+    var wrap = px.closest('.ptx'); if (wrap) {
+      var clr = wrap.querySelector('.ptx-clr'); if (clr) clr.hidden = !(v > 0);
+      Array.prototype.forEach.call(wrap.querySelectorAll('[data-xp]'), function (b) {
+        b.classList.toggle('on', p != null && Math.abs(p - +b.getAttribute('data-xp')) < 0.6);
+      });
+    }
+  }
+  function xSetPct(kind, pct) {
+    var f = XF[kind], px = $(f.px); if (!px) return;
+    var p = pxFromPct(kind, pct);
+    if (p == null) { try { if (window.mpToast) window.mpToast({ msg: T('xNeedPrice', 'Waiting for the live price - try again in a second.'), kind: 'warn', ms: 2600 }); } catch (e) { } return; }
+    _xBusy = 1; px.value = String(p); px.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0;
+    xMark(kind, 0); xPaint(kind);
+  }
+  /* an auto-filled level is a SUGGESTION and is re-derived when the side flips; a level the trader typed is
+     theirs and is never moved under them. That flag is also what makes closing Advanced safe. */
+  function xMark(kind, auto) { var px = $(XF[kind].px); if (px) px.setAttribute('data-auto', auto ? '1' : '0'); }
+  function xIsAuto(kind) { var px = $(XF[kind].px); return !!(px && px.getAttribute('data-auto') === '1'); }
+
+  /* ── BOOT ────────────────────────────────────────────────────────────────────────────────────────────────── */
+  function wire() {
+    if (wire._on) return; wire._on = 1;
+    stripBuild(); stripPaint(); paintHead();
+
+    document.addEventListener('click', function (ev) {
+      var t = ev.target;
+      var sb = t.closest && t.closest('#ptSymBtn');
+      if (sb) { ev.preventDefault(); var w = $('ptMkt'); if (w && w.hidden) mkOpen(); else mkClose(); return; }
+      var st = t.closest && t.closest('[data-fav]');
+      if (st) { ev.preventDefault(); ev.stopPropagation(); favTog(st.getAttribute('data-fav')); mkRender(); return; }
+      var row = t.closest && t.closest('[data-mk]');
+      if (row) { mkPick(row.getAttribute('data-mk')); return; }
+      var tb = t.closest && t.closest('[data-mt]');
+      if (tb) { mkTab = tb.getAttribute('data-mt'); try { localStorage.setItem('mp_pt_tab', mkTab); } catch (e) { } mkTabs(); mkRender(); return; }
+      if (t.closest && t.closest('[data-mkx]')) { mkClose(); return; }
+      var sf = t.closest && t.closest('[data-stf]');
+      if (sf) {
+        var b = $('ptTf') && $('ptTf').querySelector('button[data-tf="' + sf.getAttribute('data-stf') + '"]');
+        if (b) b.click(); setTimeout(stripPaint, 40); setTimeout(stripPaint, 400); return;
+      }
+      if (t.closest && t.closest('#ptChSet')) { ev.stopPropagation(); popOpen($('ptChPop').hidden); return; }
+      if (t.closest && t.closest('#ptChPopBd')) { popOpen(false); return; }
+      var cs = t.closest && t.closest('[data-chstyle]');
+      if (cs) { setStyle(cs.getAttribute('data-chstyle')); return; }
+      var pop = $('ptChPop');
+      if (pop && !pop.hidden && !(t.closest && (t.closest('#ptChPop') || t.closest('#ptChSet')))) popOpen(false);
+    }, false);
+
+    /* the entry-style buttons live in the settings popover now; the engine's own delegated listener is bound to
+       .ptt-es, so the popover's copies forward to it rather than owning a second idea of the mode */
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('#ptChPop [data-es]'); if (!b) return;
+      var real = document.querySelector('.ptt-es button[data-es="' + b.getAttribute('data-es') + '"]');
+      if (real) real.click();
+      setTimeout(popPaint, 30);
+    }, false);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var w = $('ptMkt'); if (w && !w.hidden) { mkClose(); return; }
+      var p = $('ptChPop'); if (p && !p.hidden) popOpen(false);
+    });
+
+    var q = $('ptMkQ');
+    if (q) q.addEventListener('input', function () { mkQ = q.value.trim(); mkRender(); });
+
+    var ps = $('planSym');
+    if (ps) ps.addEventListener('change', function () { paintHead(); setTimeout(stripPaint, 60); });
+
+    /* the Advanced disclosure is a BUTTON now; the checkbox that every other block listens to stays and is
+       driven from it, so nothing downstream had to learn a new signal */
+    var ab = $('ptAdvBtn'), ac = $('planAdvChk');
+    if (ab && ac) {
+      /* GATED, NOT DISABLED. A disabled <button> fires no click at all, so a guest tapping Advanced would get
+         nothing - and the whole point of the gate is to offer them the account that unlocks it. The note mp-auth
+         writes beside it keeps its own line under the row. */
+      var sync = function () { var g = !!ac.disabled; ab.setAttribute('aria-expanded', ac.checked ? 'true' : 'false'); ab.setAttribute('aria-disabled', g ? 'true' : 'false'); ab.classList.toggle('gated', g); ab.disabled = false; };
+      ab.addEventListener('click', function () { if (ac.disabled) { try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (e) { } return; } ac.checked = !ac.checked; ac.dispatchEvent(new Event('change', { bubbles: true })); sync(); });
+      ac.addEventListener('change', sync);
+      sync(); setInterval(sync, 1500);
+    }
+
+    // SL / TP: the percent box, the chips, and keeping the two views of one level in step
+    ['sl', 'tp'].forEach(function (k) {
+      var f = XF[k], px = $(f.px), pc = $(f.pct);
+      if (px) px.addEventListener('input', function () { if (!_xBusy) xMark(k, 0); xPaint(k); });
+      if (pc) pc.addEventListener('input', function () {
+        var v = parseFloat(pc.value);
+        if (!(v > 0)) { if (pc.value === '') { var e = $(f.px); if (e && e.value) { e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })); } } return; }
+        var p = pxFromPct(k, Math.min(v, 500)); if (p == null) return;
+        var e2 = $(f.px); _xBusy = 1; e2.value = String(p); e2.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0; xMark(k, 0);
+        var wrap = e2.closest('.ptx'); if (wrap) { var c = wrap.querySelector('.ptx-clr'); if (c) c.hidden = false; Array.prototype.forEach.call(wrap.querySelectorAll('[data-xp]'), function (b) { b.classList.toggle('on', Math.abs(v - +b.getAttribute('data-xp')) < 0.6); }); }
+      });
+    });
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-xp]');
+      if (b) { var w = b.closest('.ptx'); xSetPct(w.getAttribute('data-k'), +b.getAttribute('data-xp')); return; }
+      var c = ev.target.closest && ev.target.closest('.ptx-clr');
+      if (c) {
+        var w2 = c.closest('.ptx'), k = w2.getAttribute('data-k'), e = $(XF[k].px);
+        if (e) { e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })); }
+        var p2 = $(XF[k].pct); if (p2) p2.value = '';
+        xMark(k, 0); xPaint(k);
+      }
+    }, false);
+    // the percent is a view of a price against a moving market - repaint it on the side, the leverage and the tick
+    var seg = $('planSeg'); if (seg) seg.addEventListener('click', function () { setTimeout(function () { sideFlip(); xPaint('sl'); xPaint('tp'); }, 10); });
+    ['planLev', 'planLevR', 'planLimitPx'].forEach(function (id) { var e = $(id); if (e) e.addEventListener('input', function () { xPaint('sl'); xPaint('tp'); }); });
+    document.addEventListener('mp:price', function () { xPaint('sl'); xPaint('tp'); });
+
+    setInset(); window.addEventListener('resize', setInset);
+    setInterval(function () { chartW(); stripPaint(); setInset(); }, 2000);
+    chartW();
+  }
+
+  /* when the side flips, an AUTO level is re-derived for the new side - a suggestion that is now on the wrong
+     side of the market is not a suggestion, it is a refusal waiting to happen at the Open button */
+  function sideFlip() {
+    ['sl', 'tp'].forEach(function (k) {
+      if (!xIsAuto(k)) return;
+      var e = entryNow(); if (!(e > 0)) return;
+      var pct = (k === 'sl') ? 2 * levNow() : 3 * levNow();
+      var p = pxFromPct(k, Math.min(pct, 400)); if (p == null) return;
+      var el = $(XF[k].px); _xBusy = 1; el.value = String(p); el.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0; xMark(k, 1);
+    });
+  }
+  window.__mpPtAuto = { mark: xMark, isAuto: xIsAuto, paint: xPaint, flip: sideFlip };
+  window.__mpPtShellDbg = function () { return { sym: symNow(), tf: tfCurrent(), style: chStyle, favs: favs(), mkOpen: !($('ptMkt') || { hidden: true }).hidden }; };
+
+  function boot() { if (!document.getElementById('ptSymBtn')) { setTimeout(boot, 400); return; } wire(); }
+  if (document.readyState !== 'loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();

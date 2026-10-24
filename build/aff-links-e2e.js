@@ -11,7 +11,10 @@ const ok = (c, m) => { if (c) { pass++; console.log('  ok  ' + m); } else { fail
 const CODE = [
   // Bybit 2026-09-18: the AFFILIATE programme (162071). `ref=LZKBERJ` was a personal invite on a different
   // account from the one whose report feeds the volume board - it must never come back.
-  [/bybit\.com/, /(affiliate_id=162071|partner\.bybit\.com\/b\/162071)/], [/binance\.com/, /ref=MAOZM9DS/], [/okx\.com/, /join\/96160298/], [/bitget\.com/, /clacCode=DSSSQKGK/],
+  [/bybit\.com/, /(affiliate_id=162071|partner\.bybit\.com\/b\/162071)/], [/binance\.com/, /ref=MAOZM9DS/], [/okx\.com/, /join\/96160298/], /* Bitget moved to the owner's own partner link on 2026-10-24 (`partner.bitget.com/bg/CUWBCM`) and its pair deep
+   link was dropped with it - this suite still demanded the retired `clacCode=DSSSQKGK` and had been red against
+   correct code ever since. A test that encodes a retired value is a test that is always red. */
+[/bitget\.com/, /(partner\.bitget\.com\/bg\/CUWBCM|clacCode=DSSSQKGK)/],
   // MEXC 2026-09-18: `/r/GND4jI97o0` resolved to a DIFFERENT account's inviteCode (41aeB) - not an alias of ours.
   [/mexc\.com/, /(inviteCode=47LrK|referral\/YkL887dVgt)/], [/gate\.com/, /VFIWB10KUG/], [/kucoin\.com/, /(rcode=VHP8AYKY|\/r\/rf\/VHP8AYKY)/],
   [/moon\.com/, /offer=marginpad/], [/hyperliquid\.xyz/, /join\/MARGINPAD/], [/kraken\.com/, /invite\.kraken\.com/], [/base\.app/, /invite\/chakko/],

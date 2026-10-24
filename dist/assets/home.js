@@ -12,7 +12,7 @@ function _mpPath() {
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_home = {"priceStale":"desactualizado","priceStaleNote":"Tu fuente de precios está desactualizada: una posición ejecutada en el servidor se cierra al precio de mercado en vivo, no a este.","closingWait":"Cerrando…","closeRefused":"El servidor no cerró esta posición: ","closeNotConfirmed":"No se pudo contactar con el servidor: la posición sigue abierta. Inténtalo de nuevo.","thisDeviceRanOut":"A este dispositivo se le acabó el almacenamiento, así que se eliminaron de él las operaciones cerradas más antiguas. Las posiciones abiertas y tus estadísticas están a salvo: tus estadísticas viven en tu cuenta, no en este dispositivo.","extremeLeverage":"Apalancamiento extremo","aMoveOfOnly":"un movimiento de solo ~","againstYouWipesThe":"en tu contra liquida toda la posición. Opera con menos tamaño.","againstYouWipesThe2":"en tu contra liquida toda la posición. Opera con poco tamaño.","sharesAreBoughtAnd":"Las acciones se compran y venden a través de una bolsa de valores, y las bolsas tienen horario de oficina. Cuando Nueva York cierra, no hay nadie al otro lado de una orden, así que el precio simplemente se detiene hasta que vuelve a abrir. El cripto no tiene una bolsa central, por eso nunca se detiene.","anIndexIsJust":"Un índice es solo un número calculado a partir de las acciones que lo componen. Cuando la bolsa donde cotizan esas acciones está cerrada, no hay precios nuevos con los que calcularlo, así que el índice se queda quieto.","goldAndSilverAre":"El oro y la plata se cotizan en bolsas de futuros que cierran por la noche y los fines de semana, igual que las bolsas de acciones.","currenciesAreTradedBetween":"Las divisas se negocian entre bancos en lugar de en una sola bolsa, así que el mercado funciona sin parar desde el domingo por la noche hasta el viernes por la noche, y luego se detiene el fin de semana mientras esas mesas están cerradas.","yourTime":" tu hora","isClosedTheExchange":" no cotiza - la bolsa abre en ","marketIsClosedRight":" no cotiza ahora mismo - podrás operarlo cuando la bolsa vuelva a abrir.","liveMarketDataUnavailable":"<div class=\"mp-load\">Datos de mercado en vivo no disponibles ahora mismo.</div>","mostRekt24h":"<div class=\"mp-card mp-top\"><div class=\"mp-k\">Más liquidado · 24h</div>","updatedJustNow":"actualizado justo ahora","liveDataUnavailableRight":"<div class=\"db-load\">Datos en vivo no disponibles ahora mismo.</div>","isClosed":" no cotiza</b>","opensIn":"<i>abre en ","nextOpen":"<div class=\"mw-w\">Próxima apertura: ","marketClosed":"Mercado cerrado","placeLimitOrder":"Colocar orden límite","openDemoTrade":"Abrir operación demo","maxLeverageFor":"Apalancamiento máx. para ","thisCoin":"esta moneda","enterThePriceYou":"Introduce el precio al que quieres que se ejecute la orden.","belowTheMarket":"por debajo del mercado","aboveTheMarket":"por encima del mercado","balanceModeOn":"<span class=\"mbn-dot\"></span>Balance Mode ACTIVADO","createAFreeAccount":"Crea una cuenta gratis para usar stop-loss y take-profit","slTpNeedsA":"SL/TP necesita una cuenta gratis - <a href=\"#\" data-auth-open style=\"color:#c2f64a\">inicia sesión</a>","stopLossIsOn":"<div class=\"pr-warn\">⚠ El stop-loss está en el lado equivocado de la entrada</div>","ifStopLossHits":"<div class=\"pr-sl\"><span>Si el stop-loss se activa</span><span class=\"v\"><b>−$","onForNewPositions":"activo para nuevas posiciones","atLiqAwaitingServer":" en liq, esperando al servidor","takeProfitHit":"Take-Profit alcanzado","stopLossHit":"Stop-Loss alcanzado","closedAt":"Cerrado a ","closeButtonDataAct":"\">Cerrar</button><button data-act=\"edit\" data-id=\"","greenArrowTrendJust":"Flecha verde = la tendencia acaba de girar HACIA ARRIBA (posible compra). Flecha roja = giró HACIA ABAJO (posible venta).","smoothAveragePriceRecent":"Precio medio suavizado; las velas recientes pesan más. Por encima de la línea = subiendo; por debajo = bajando.","thePlainAveragePrice":"El precio medio simple de las últimas 50 velas - una línea de tendencia sencilla.","theAveragePriceOver":"El precio medio de las últimas 200 velas - la gran línea de tendencia a largo plazo.","aSuperSmoothFast":"Una línea de precio medio superrápida y muy suavizada - menos vaivenes y menos retraso.","averagePriceWeightedBy":"Precio medio ponderado por cuánto se operó - la idea de precio justo de los grandes traders.","twoBandsAroundPrice":"Dos bandas alrededor del precio. Cerca de la de arriba = caro, cerca de la de abajo = barato. Anchas = volátil, estrechas = tranquilo.","bandsBasedOnHow":"Bandas basadas en cuánto suele moverse el precio. Salirse de ellas = un movimiento fuerte.","theHighestHighAnd":"El máximo más alto y el mínimo más bajo recientes. Romper por encima = una ruptura alcista.","howMuchWasTraded":"Cuánto se operó en cada vela. Barras altas = mucha actividad en ese momento.","showsIfTheTrend":"Muestra si la tendencia está acelerando o frenando. Por encima de 0 = los compradores mandan.","likeRsiForTiming":"Como el RSI pero para calcular giros. Por encima de 80 = sobrecompra, por debajo de 20 = sobreventa.","howMuchPriceUsually":"Cuánto suele moverse el precio por vela. ATR alto = volátil → usa stops más amplios.","williamsRUpsideDown":"Williams %R - el RSI al revés. Cerca de 0 = sobrecompra, cerca de −100 = sobreventa.","howFarPriceIs":"Qué tan lejos está el precio de su media. Por encima de +100 = fuerte subida; por debajo de −100 = fuerte bajada.","limitShort":"LÍMITE SHORT","limitLong":"LÍMITE LONG","closeIn":"cierra en ","levelFilledClosed":" nivel ejecutado - cerrado ","notClosedYetOnly":"Aún no cerrada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedBeforeThisSeason":"Abierta antes de esta temporada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedAndClosedThis":"Abierta y cerrada esta temporada","notFilledByThe":"No ejecutada por el servidor. Las entradas editadas o del diario local nunca cuentan","filledByTheServer":"Ejecutada por el servidor pero no cerrada por él. Las entradas del diario editadas nunca cuentan","filledAndClosedBy":"Ejecutada y cerrada por el servidor","filledByTheServer2":"Ejecutada por el servidor","cryptoPairsOnlyForex":"Solo pares cripto. Forex, metales, índices y stablecoins nunca puntúan","lossLossesAlwaysCount":"Pérdida. Las pérdidas siempre cuentan","notACopyOf":"No es una copia de otra posición","countsOnTheSeason":"Cuenta en las clasificaciones de temporada","notCountedOnThe":"No cuenta en las clasificaciones de temporada. Toca para ver qué reglas incumple","notCountedOnThe2":"No cuenta en las clasificaciones de temporada","shareToChat":"Compartir en el chat","whatThisTradeCost":"Cuánto costó esta operación","openFee":"Comisión de apertura","closeFee":"Comisión de cierre","inTheFillPrice":"(en el precio de ejecución)","alreadySettledIntoThis":"Ya incluido en este PnL — los mismos costes que cobra un exchange real.","youAreTradingAt":"Estás operando a las tasas de MEXC — este viaje de ida y vuelta costó","inFeesAt":"en comisiones, al","mexc0Maker0":"MEXC: 0% maker, ~0.02% taker en futuros — abrir","onMexcThisRound":"En MEXC este viaje de ida y vuelta costaría alrededor de","inFeesNotThe":"en comisiones, no el","youPaidU2014A":"que pagaste — una diferencia de","tapForTheFee":"Toca para ver el desglose de comisiones","premiumMember":"Miembro Premium · ","paperTradeNotFinancial":"Paper trade · no es asesoría financiera","sharedToChat":"Compartido en el chat","tooManySharesRight":"Demasiados compartidos ahora mismo - inténtalo de nuevo más tarde.","couldNotShareThe":"No se pudo compartir el ticket.","copyNotSupported":"Copiar no es compatible","linkCopied":"Enlace copiado","imageLinkCopied":"Imagen + enlace copiados","ariaLabelToggleBalance":"\" aria-label=\"Activar/desactivar Balance Mode\"><span class=\"bal-tgl-k\"></span></button>","inTrades":"En operaciones","fromMarket":"del mercado","thisDeviceOnly":"solo este dispositivo","cancelOrder":"Cancelar orden","winRate":"Tasa de acierto","noOrdersWaitingPlace":"No hay órdenes pendientes - coloca una desde Paper Trade con la pestaña Límite.","noOpenPositionsOpen":"No hay posiciones abiertas - abre una desde Paper Trade.","noClosedTradesYet":"Aún no hay operaciones cerradas.","theseOrdersLiveOn":"Estas órdenes viven en este dispositivo y solo se ejecutan mientras la página está abierta. Inicia sesión y quedarán pendientes en el servidor - se ejecutan incluso si no estás conectado.","showMore":"Mostrar más","newSeasonStatsRestarted":"Nueva temporada - las estadísticas se reiniciaron. Las operaciones anteriores quedan archivadas, tu XP y tu progreso no se tocan.","maxTradeSizeIs":"El tamaño máximo de operación es $100,000 - se limitó el monto.","enterAnAmountUsd":"Introduce un monto (USD) mayor a $0 para abrir una operación.","waitingForTheLive":"Esperando el precio en vivo - inténtalo de nuevo en un segundo.","balanceModeCappedTo":"Balance Mode: limitado a tu $ disponible","waitingForTheLive2":"Esperando el precio en vivo de ","tryAgainInA":" - inténtalo de nuevo en un segundo.","marketIsClosedRight2":" no cotiza ahora mismo.","enterALimitPrice":"Introduce un precio límite (el precio al que quieres que se ejecute).","thatPriceIsMore":"Ese precio está a más de 20x del mercado - revisa el punto decimal.","isOnTheWrong":" está en el lado equivocado del precio de entrada - corrígelo (o vacía el campo) para abrir la operación.","limitOrdersAreStill":"Las órdenes límite todavía se están cargando - inténtalo de nuevo en un segundo.","orderPlaced":"Orden colocada ✓","positionOpenedU2713":"Posición abierta ✓","thisMarketIsClosed":"Este mercado está cerrado ahora mismo.","areYouSureYou":"¿Seguro que quieres eliminar esta operación?","newStopLossPrice":"Nuevo precio de stop-loss:","newTakeProfitBlank":"Nuevo take-profit (vacío = ninguno):","openPositionLongShort":"Abrir posición (Long/Short)","myTradesHeader":"My Trades (encabezado)","closeMyTrades":"Cerrar My Trades","closeMyTradesTap":"Cerrar My Trades (tocar fuera)","leverageInput":"Campo de apalancamiento","stopLossInput":"Campo de stop-loss","takeProfitInput":"Campo de take-profit","myTradesInTerminal":"My Trades (en el terminal)","openChat":"Abrir chat","closeChat":"Cerrar chat","closePosition":"Cerrar posición","deleteTrade":"Eliminar operación","reopenTrade":"Reabrir operación","copyTicket":"Copiar ticket","markWin":"Marcar como ganada","markLoss":"Marcar como perdida","priceChart":"Gráfico de precio","tradeAction":"Acción de la operación: ","freeCryptoFuturesCalculato":" - calculadoras gratis de futuros cripto en marginpad.io","noTradesYetThis":"<div class=\"lbw-empty\">Aún no hay operaciones esta temporada - sé el primero.</div>","premiumLoungeVipsOnly":"Sala Premium - solo VIPs…","roleButtonTabindex0":"\" role=\"button\" tabindex=\"0\" title=\"Abrir ticket compartido\">operación:","deleteThisMessageFor":"¿Eliminar este mensaje para todos?","editYourMessage":"Edita tu mensaje","signInToReact":"Inicia sesión para reaccionar","greenDays":"Días en verde","bestWinRate":"Mejor tasa de acierto","seasonXp":"XP de temporada","thisSeason":" · esta temporada</b><br>","noOneOnThis":"<span style=\"color:#9aa3ad\">Nadie en esta tabla todavía - ¡sé el primero!</span>","greenDay":" día en verde","greenDays2":" días en verde","endsIn":" · termina en ","couldNotLoadThe":"<span style=\"color:#ff6258\">No se pudo cargar la clasificación. Inténtalo de nuevo.</span>","livePollTapTo":"ENCUESTA EN VIVO - toca para votar","signInToDo":"Inicia sesión para hacer eso","youCanOnlyChange":"Solo puedes cambiar tus propios mensajes","tooLateToEdit":"Ya es tarde para editar ese","thatMessageIsGone":"Ese mensaje ya no existe","yourAccountIsCurrently":"Tu cuenta tiene restringido el acceso al chat por ahora. Si crees que es un error, contacta a <b>support@marginpad.io</b>.","commandFailed":"El comando falló.","networkError":"Error de red.","justNow":"justo ahora","marginPad2":"<div class=\"mptk-top\"><span class=\"mptk-brand\">MARGIN<b>PAD</b></span><button class=\"mptk-x\" type=\"button\" aria-label=\"Cerrar\">✕</button></div>","sharedBy":"<div class=\"mptk-by\">Compartido por <b>@","tradeItForReal":"<div class=\"mprl\"><div class=\"mprl-t\">OPÉRALO DE VERDAD</div><div class=\"mprl-row\">","paperTradeNotFinancial2":"<div class=\"mptk-foot\">Paper trade · no es asesoría financiera</div></div>","loadingTicket":"<div class=\"mptk-err\">Cargando ticket…</div>","thisSharedTicketIs":"<div class=\"mptk-err\">Este ticket compartido ya no está disponible.</div>","couldNotLoadThe2":"<div class=\"mptk-err\">No se pudo cargar el ticket. Revisa tu conexión.</div>","tapShareThenAdd":"Toca Compartir, luego “Agregar a pantalla de inicio”.","fullScreenAppLike":"Acceso a pantalla completa, como una app, desde tu pantalla de inicio.","chartFailedToLoad":"<div class=\"heat-err\">No se pudo cargar el gráfico - revisa tu conexión.</div>","estimatedLevelsByLeverage":"Niveles estimados por apalancamiento · no son datos del libro de órdenes","liquidationsLast":" liquidaciones · últimas ","quietLiquidationsSpikeOn":" de calma - las liquidaciones se disparan con los movimientos</span>","noLiquidationsAbove50k":"<span class=\"tk-empty\">Todavía no hay liquidaciones por encima de $50k en esta vista.</span>","tradeItAgainAria":" - vuelve a operarlo\" aria-label=\"Cambiar a ","notOnBybitPaper":" - no disponible en Bybit (paper trade no disponible)","customTypeYourOwn":"<span class=\"csel-ex\"><i class=\"cx-m cx-custom\">%</i><b>Personalizado</b><small>escribe tu propia tasa</small></span>","clickToCopy":"Clic para copiar","theTradeLeagueIs":"The Trade League es para usuarios registrados.","signInFreeTo":"Inicia sesión gratis para unirte","youAreInThe":"Estás en la liga como","closeWinningTradesTo":"- cierra operaciones ganadoras para subir.","14DaySeason":"<div class=\"lg-ends\"> Temporada de 14 días · ","endsIn2":"termina en","tradeBehindThisRank":"Trader detrás de este puesto","openThisMarket":"Abrir este mercado","topPnlIsBragging":"El Top PnL es solo por presumir - las demás tablas pagan USDT real cada temporada de 14 días.","paysTheTop5":"Paga a los 5 primeros cada temporada de 14 días. Clasificado por tasa de acierto ponderada por operaciones jugadas - más partidas hacen que tu % cuente más (un 45G-3P puede superar a un % más alto con menos operaciones). Mínimo 20 operaciones cerradas.","thisBoardPaysThe":"Esta tabla paga a los 5 primeros en USDT real cada temporada de 14 días.","noOneHas20":"Todavía nadie tiene 20 operaciones cerradas esta semana - cierra 20+ operaciones y reclama la corona de tasa de acierto.","bestWinRateThis":"Mejor tasa de acierto esta temporada","noWinningTradesYet":"Aún no hay operaciones ganadoras esta temporada - cierra una en ganancia para liderar la tabla de ROE.","topRoeThisSeason":"Top ROE esta temporada","noWinningTradesYet2":"Aún no hay operaciones ganadoras esta semana - cierra una en ganancia para liderar la tabla de PnL.","topPnlThisSeason":"Top PnL esta temporada","noGreenDaysYet":"Aún no hay días en verde esta temporada - cierra un día en ganancia (3+ operaciones) y entrarás en la tabla.","mostGreenDaysThis":"Más días en verde esta temporada","yourTradingStats":"Tus estadísticas de trading","winStreak":"Racha de victorias","cryptoStocksForexUp":"cripto, acciones y forex · sube o baja · 24/7","100055TradesPracticed":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">5 operaciones practicadas</div><h3>¿Listo para operar de verdad?</h3><p>Ya abriste 5 operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).</p><div class=\"grad-ex\">","firstWinningTrade":"Primera operación ganadora","tradesPracticed":" operaciones practicadas","youJustClosedYour":"Acabas de cerrar tu primera operación ganadora en paper trade. Esa misma operación, en una cuenta real, habría sido ganancia real - futuros en Bybit, o predicciones de subida/bajada en Moon (los nuevos registros reciben bonos en ambos).","youHaveOpened":"Ya abriste ","paperTradesTheMechanics":" operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).","starCoinsOnThe":"<div class=\"cws-w-empty\">Marca monedas con estrella en la página principal para fijarlas aquí.</div>","noSignalsRightNow":"<div class=\"cws-w-empty\">No hay señales ahora mismo - el mercado está tranquilo. Actualizando…</div>","titleOpen":"\" title=\"Abrir ","withIndicatorsSetup":" con indicadores + configuración\">","getAFreeUsdt":"consigue un <b>USDT gratis</b> de bono de bienvenida","10005SaveYourProgress":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">Guarda tu progreso</div><h3>Guarda tus operaciones - crea una cuenta gratis</h3><p>Ya cerraste 2 operaciones en paper trade. Crea una cuenta gratis (solo un código por email, sin contraseña) para conservar tu diario en todos tus dispositivos, ","newHere":"<div class=\"browse-sec\" data-i18n=\"secNew\">¿Nuevo aquí?</div>","whereToStart":"Por dónde empezar","cryptoFromZeroA":"Cripto desde cero - una ruta gratis para principiantes","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño &amp; más","liquidationPrice":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\" data-i18n=\"subLiq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\" data-i18n=\"subSize\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\" data-i18n=\"subDca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\" data-i18n=\"subRr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","tradingTools":"Herramientas de trading","testYourTradingBot":"Prueba tu bot de trading - gratis","priceAlerts":"Alertas de precio","emailOrTelegramWhen":"Email o Telegram cuando una moneda llegue a tu precio","claimEvery5Minutes":"Reclama cada 5 minutos","noMatchesFor":"Sin resultados para","slowDown":"Más despacio - ","opensPerMinuteIs":" aperturas por minuto es el límite. Inténtalo de nuevo en un momento.","youAlreadyHoldThe":"Ya tienes el número máximo de posiciones abiertas","aMonthStraightAt":"Un mes seguido. A este punto el mercado te vigila a ti.","twoWeeksDeepThis":"Dos semanas seguidas - así se ve la disciplina.","aFullWeekMost":"Una semana completa. La mayoría abandona el miércoles.","backToBackDays":"Días consecutivos. El gráfico se dio cuenta.","setAPriceAlert":" Pon una alerta de precio para no perderte ningún movimiento.","welcomeBackShowUp":"Bienvenido de vuelta. Vuelve mañana y esto se convierte en una racha.","setAPriceAlert2":"<a class=\"mps-cta\" href=\"/alerts/\">Pon una alerta de precio →</a>","importedYourTelegramTrade":"Se importó tu operación de Telegram.","importedYourTelegramTrade2":"Se importó tu operación de Telegram - ábrela en <b>My Trades</b>.","limitReached":"Límite alcanzado - ","openTradesIsThe":" operaciones abiertas es el máximo. Cierra algunas para abrir nuevas.","youAlreadyHaveA":"Ya tienes una ","positionOpenCloseIt":" posición abierta - ciérrala antes de abrir una ","limitReachedMax":"Límite alcanzado - máx. ","tradesCloseOneTo":" operaciones. Cierra una para abrir otra.","closesTheWholePosition":"Cierra toda la posición a ","isClosed2":" no cotiza","yourPositionCannotMove":" Tu posición no puede moverse mientras la bolsa está cerrada, y las salidas se ejecutan cuando vuelve a abrir.","savedToMyTrades":" - guardado en My Trades.","inputTypeTextInputmode":"<div class=\"mpss-row\"><input type=\"text\" inputmode=\"decimal\" autocomplete=\"off\" class=\"p\" placeholder=\"precio\" value=\"","stopLossLevelsAdd":"<div class=\"mpss-sec\" data-k=\"sl\"><div class=\"mpss-lab\">Niveles de stop-loss</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar stop-loss</button></div>","takeProfitLevelsAdd":"<div class=\"mpss-sec\" data-k=\"tp\"><div class=\"mpss-lab\">Niveles de take-profit</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar take-profit</button></div>","eachLevelClosesIts":"<div class=\"mpss-hint\">Cada nivel cierra su % de la posición cuando el precio lo toca - el 100% lo cierra todo, un % menor cierra una parte y el resto queda abierto. ✕ elimina un nivel; sin niveles = ninguno.</div>","saveSlTp":"<button type=\"button\" class=\"mpcs-go up\">Guardar SL / TP</button>","u201dIsNotA":"” no es un precio. Usa dígitos, con . o , para los decimales.","stopLossPriceIs":"El precio de stop-loss no es un número.","longEveryStopLoss":"LONG: cada stop-loss debe estar POR DEBAJO de","shortEveryStopLoss":"SHORT: cada stop-loss debe estar POR ENCIMA de","theLivePrice":" el precio en vivo (","takeProfitPriceIs":"El precio de take-profit no es un número.","longEveryTakeProfit":"LONG: cada take-profit debe estar POR ENCIMA de","shortEveryTakeProfit":"SHORT: cada take-profit debe estar POR DEBAJO de","maxTradeSizeIs2":"El tamaño máximo de operación es $100,000.","newSignal":"<div class=\"ctsg-h\"><b>Nueva señal</b><button type=\"button\" class=\"ctsg-x\" aria-label=\"Cerrar\">×</button></div>","enterTheCoinE":"Introduce la moneda (ej. XRP).","fillEntryTp1Tp2":"Completa entrada, TP1, TP2 y SL (números).","maxLevMustBe":"El apalancamiento máx. debe ser 1-125.","forALongTp1":"Para un LONG: TP1 por encima de la entrada, TP2 por encima de TP1, SL por debajo de la entrada.","forAShortTp1":"Para un SHORT: TP1 por debajo de la entrada, TP2 por debajo de TP1, SL por encima de la entrada.","tooLongShortenThe":"Demasiado largo - acorta los números.","chatIsReconnectingTry":"El chat se está reconectando - inténtalo de nuevo en un segundo.","moonRealMarketsTrade":"<img src=\"/assets/moon.png\" alt=\"\"><span class=\"t\"><span class=\"k\">MOON · MERCADOS REALES</span>Opera <b>","forRealOnMoon":"</b> de verdad en Moon - ","thePriceAboveIs":"<div class=\"mw-a\">El precio de arriba es el último que imprimió el exchange, así que no se moverá hasta entonces. La cripto cotiza a toda hora, todos los días, si quieres operar mientras tanto.</div>","dayStreak":"-días de racha</b><br>","dayStreak2":"-días de racha</b><small>"};
+var __esD_home = {"priceStale":"desactualizado","priceStaleNote":"Tu fuente de precios está desactualizada: una posición ejecutada en el servidor se cierra al precio de mercado en vivo, no a este.","closingWait":"Cerrando…","closeRefused":"El servidor no cerró esta posición: ","closeNotConfirmed":"No se pudo contactar con el servidor: la posición sigue abierta. Inténtalo de nuevo.","thisDeviceRanOut":"A este dispositivo se le acabó el almacenamiento, así que se eliminaron de él las operaciones cerradas más antiguas. Las posiciones abiertas y tus estadísticas están a salvo: tus estadísticas viven en tu cuenta, no en este dispositivo.","extremeLeverage":"Apalancamiento extremo","aMoveOfOnly":"un movimiento de solo ~","againstYouWipesThe":"en tu contra liquida toda la posición. Opera con menos tamaño.","againstYouWipesThe2":"en tu contra liquida toda la posición. Opera con poco tamaño.","sharesAreBoughtAnd":"Las acciones se compran y venden a través de una bolsa de valores, y las bolsas tienen horario de oficina. Cuando Nueva York cierra, no hay nadie al otro lado de una orden, así que el precio simplemente se detiene hasta que vuelve a abrir. El cripto no tiene una bolsa central, por eso nunca se detiene.","anIndexIsJust":"Un índice es solo un número calculado a partir de las acciones que lo componen. Cuando la bolsa donde cotizan esas acciones está cerrada, no hay precios nuevos con los que calcularlo, así que el índice se queda quieto.","goldAndSilverAre":"El oro y la plata se cotizan en bolsas de futuros que cierran por la noche y los fines de semana, igual que las bolsas de acciones.","currenciesAreTradedBetween":"Las divisas se negocian entre bancos en lugar de en una sola bolsa, así que el mercado funciona sin parar desde el domingo por la noche hasta el viernes por la noche, y luego se detiene el fin de semana mientras esas mesas están cerradas.","yourTime":" tu hora","isClosedTheExchange":" no cotiza - la bolsa abre en ","marketIsClosedRight":" no cotiza ahora mismo - podrás operarlo cuando la bolsa vuelva a abrir.","liveMarketDataUnavailable":"<div class=\"mp-load\">Datos de mercado en vivo no disponibles ahora mismo.</div>","mostRekt24h":"<div class=\"mp-card mp-top\"><div class=\"mp-k\">Más liquidado · 24h</div>","updatedJustNow":"actualizado justo ahora","liveDataUnavailableRight":"<div class=\"db-load\">Datos en vivo no disponibles ahora mismo.</div>","isClosed":" no cotiza</b>","opensIn":"<i>abre en ","nextOpen":"<div class=\"mw-w\">Próxima apertura: ","marketClosed":"Mercado cerrado","placeLimitOrder":"Colocar orden límite","openDemoTrade":"Abrir operación demo","maxLeverageFor":"Apalancamiento máx. para ","thisCoin":"esta moneda","enterThePriceYou":"Introduce el precio al que quieres que se ejecute la orden.","belowTheMarket":"por debajo del mercado","aboveTheMarket":"por encima del mercado","balanceModeOn":"<span class=\"mbn-dot\"></span>Balance Mode ACTIVADO","createAFreeAccount":"Crea una cuenta gratis para usar stop-loss y take-profit","slTpNeedsA":"SL/TP necesita una cuenta gratis - <a href=\"#\" data-auth-open style=\"color:#c2f64a\">inicia sesión</a>","stopLossIsOn":"<div class=\"pr-warn\">⚠ El stop-loss está en el lado equivocado de la entrada</div>","ifStopLossHits":"<div class=\"pr-sl\"><span>Si el stop-loss se activa</span><span class=\"v\"><b>−$","onForNewPositions":"activo para nuevas posiciones","atLiqAwaitingServer":" en liq, esperando al servidor","takeProfitHit":"Take-Profit alcanzado","stopLossHit":"Stop-Loss alcanzado","closedAt":"Cerrado a ","closeButtonDataAct":"\">Cerrar</button><button data-act=\"edit\" data-id=\"","greenArrowTrendJust":"Flecha verde = la tendencia acaba de girar HACIA ARRIBA (posible compra). Flecha roja = giró HACIA ABAJO (posible venta).","smoothAveragePriceRecent":"Precio medio suavizado; las velas recientes pesan más. Por encima de la línea = subiendo; por debajo = bajando.","thePlainAveragePrice":"El precio medio simple de las últimas 50 velas - una línea de tendencia sencilla.","theAveragePriceOver":"El precio medio de las últimas 200 velas - la gran línea de tendencia a largo plazo.","aSuperSmoothFast":"Una línea de precio medio superrápida y muy suavizada - menos vaivenes y menos retraso.","averagePriceWeightedBy":"Precio medio ponderado por cuánto se operó - la idea de precio justo de los grandes traders.","twoBandsAroundPrice":"Dos bandas alrededor del precio. Cerca de la de arriba = caro, cerca de la de abajo = barato. Anchas = volátil, estrechas = tranquilo.","bandsBasedOnHow":"Bandas basadas en cuánto suele moverse el precio. Salirse de ellas = un movimiento fuerte.","theHighestHighAnd":"El máximo más alto y el mínimo más bajo recientes. Romper por encima = una ruptura alcista.","howMuchWasTraded":"Cuánto se operó en cada vela. Barras altas = mucha actividad en ese momento.","showsIfTheTrend":"Muestra si la tendencia está acelerando o frenando. Por encima de 0 = los compradores mandan.","likeRsiForTiming":"Como el RSI pero para calcular giros. Por encima de 80 = sobrecompra, por debajo de 20 = sobreventa.","howMuchPriceUsually":"Cuánto suele moverse el precio por vela. ATR alto = volátil → usa stops más amplios.","williamsRUpsideDown":"Williams %R - el RSI al revés. Cerca de 0 = sobrecompra, cerca de −100 = sobreventa.","howFarPriceIs":"Qué tan lejos está el precio de su media. Por encima de +100 = fuerte subida; por debajo de −100 = fuerte bajada.","limitShort":"LÍMITE SHORT","limitLong":"LÍMITE LONG","closeIn":"cierra en ","levelFilledClosed":" nivel ejecutado - cerrado ","notClosedYetOnly":"Aún no cerrada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedBeforeThisSeason":"Abierta antes de esta temporada. Solo cuentan las operaciones abiertas y cerradas esta temporada","openedAndClosedThis":"Abierta y cerrada esta temporada","notFilledByThe":"No ejecutada por el servidor. Las entradas editadas o del diario local nunca cuentan","filledByTheServer":"Ejecutada por el servidor pero no cerrada por él. Las entradas del diario editadas nunca cuentan","filledAndClosedBy":"Ejecutada y cerrada por el servidor","filledByTheServer2":"Ejecutada por el servidor","cryptoPairsOnlyForex":"Solo pares cripto. Forex, metales, índices y stablecoins nunca puntúan","lossLossesAlwaysCount":"Pérdida. Las pérdidas siempre cuentan","notACopyOf":"No es una copia de otra posición","countsOnTheSeason":"Cuenta en las clasificaciones de temporada","notCountedOnThe":"No cuenta en las clasificaciones de temporada. Toca para ver qué reglas incumple","notCountedOnThe2":"No cuenta en las clasificaciones de temporada","shareToChat":"Compartir en el chat","whatThisTradeCost":"Cuánto costó esta operación","openFee":"Comisión de apertura","closeFee":"Comisión de cierre","inTheFillPrice":"(en el precio de ejecución)","alreadySettledIntoThis":"Ya incluido en este PnL — los mismos costes que cobra un exchange real.","youAreTradingAt":"Estás operando a las tasas de MEXC — este viaje de ida y vuelta costó","inFeesAt":"en comisiones, al","mexc0Maker0":"MEXC: 0% maker, ~0.02% taker en futuros — abrir","onMexcThisRound":"En MEXC este viaje de ida y vuelta costaría alrededor de","inFeesNotThe":"en comisiones, no el","youPaidU2014A":"que pagaste — una diferencia de","tapForTheFee":"Toca para ver el desglose de comisiones","premiumMember":"Miembro Premium · ","paperTradeNotFinancial":"Paper trade · no es asesoría financiera","sharedToChat":"Compartido en el chat","tooManySharesRight":"Demasiados compartidos ahora mismo - inténtalo de nuevo más tarde.","couldNotShareThe":"No se pudo compartir el ticket.","copyNotSupported":"Copiar no es compatible","linkCopied":"Enlace copiado","imageLinkCopied":"Imagen + enlace copiados","ariaLabelToggleBalance":"\" aria-label=\"Activar/desactivar Balance Mode\"><span class=\"bal-tgl-k\"></span></button>","inTrades":"En operaciones","fromMarket":"del mercado","thisDeviceOnly":"solo este dispositivo","cancelOrder":"Cancelar orden","winRate":"Tasa de acierto","noOrdersWaitingPlace":"No hay órdenes pendientes - coloca una desde Paper Trade con la pestaña Límite.","noOpenPositionsOpen":"No hay posiciones abiertas - abre una desde Paper Trade.","noClosedTradesYet":"Aún no hay operaciones cerradas.","theseOrdersLiveOn":"Estas órdenes viven en este dispositivo y solo se ejecutan mientras la página está abierta. Inicia sesión y quedarán pendientes en el servidor - se ejecutan incluso si no estás conectado.","showMore":"Mostrar más","newSeasonStatsRestarted":"Nueva temporada - las estadísticas se reiniciaron. Las operaciones anteriores quedan archivadas, tu XP y tu progreso no se tocan.","maxTradeSizeIs":"El tamaño máximo de operación es $100,000 - se limitó el monto.","enterAnAmountUsd":"Introduce un monto (USD) mayor a $0 para abrir una operación.","waitingForTheLive":"Esperando el precio en vivo - inténtalo de nuevo en un segundo.","balanceModeCappedTo":"Balance Mode: limitado a tu $ disponible","waitingForTheLive2":"Esperando el precio en vivo de ","tryAgainInA":" - inténtalo de nuevo en un segundo.","marketIsClosedRight2":" no cotiza ahora mismo.","enterALimitPrice":"Introduce un precio límite (el precio al que quieres que se ejecute).","thatPriceIsMore":"Ese precio está a más de 20x del mercado - revisa el punto decimal.","isOnTheWrong":" está en el lado equivocado del precio de entrada - corrígelo (o vacía el campo) para abrir la operación.","limitOrdersAreStill":"Las órdenes límite todavía se están cargando - inténtalo de nuevo en un segundo.","orderPlaced":"Orden colocada ✓","positionOpenedU2713":"Posición abierta ✓","thisMarketIsClosed":"Este mercado está cerrado ahora mismo.","areYouSureYou":"¿Seguro que quieres eliminar esta operación?","newStopLossPrice":"Nuevo precio de stop-loss:","newTakeProfitBlank":"Nuevo take-profit (vacío = ninguno):","openPositionLongShort":"Abrir posición (Long/Short)","myTradesHeader":"My Trades (encabezado)","closeMyTrades":"Cerrar My Trades","closeMyTradesTap":"Cerrar My Trades (tocar fuera)","leverageInput":"Campo de apalancamiento","stopLossInput":"Campo de stop-loss","takeProfitInput":"Campo de take-profit","myTradesInTerminal":"My Trades (en el terminal)","openChat":"Abrir chat","closeChat":"Cerrar chat","closePosition":"Cerrar posición","deleteTrade":"Eliminar operación","reopenTrade":"Reabrir operación","copyTicket":"Copiar ticket","markWin":"Marcar como ganada","markLoss":"Marcar como perdida","priceChart":"Gráfico de precio","tradeAction":"Acción de la operación: ","freeCryptoFuturesCalculato":" - calculadoras gratis de futuros cripto en marginpad.io","noTradesYetThis":"<div class=\"lbw-empty\">Aún no hay operaciones esta temporada - sé el primero.</div>","premiumLoungeVipsOnly":"Sala Premium - solo VIPs…","roleButtonTabindex0":"\" role=\"button\" tabindex=\"0\" title=\"Abrir ticket compartido\">operación:","deleteThisMessageFor":"¿Eliminar este mensaje para todos?","editYourMessage":"Edita tu mensaje","signInToReact":"Inicia sesión para reaccionar","greenDays":"Días en verde","bestWinRate":"Mejor tasa de acierto","seasonXp":"XP de temporada","thisSeason":" · esta temporada</b><br>","noOneOnThis":"<span style=\"color:#9aa3ad\">Nadie en esta tabla todavía - ¡sé el primero!</span>","greenDay":" día en verde","greenDays2":" días en verde","endsIn":" · termina en ","couldNotLoadThe":"<span style=\"color:#ff6258\">No se pudo cargar la clasificación. Inténtalo de nuevo.</span>","livePollTapTo":"ENCUESTA EN VIVO - toca para votar","signInToDo":"Inicia sesión para hacer eso","youCanOnlyChange":"Solo puedes cambiar tus propios mensajes","tooLateToEdit":"Ya es tarde para editar ese","thatMessageIsGone":"Ese mensaje ya no existe","yourAccountIsCurrently":"Tu cuenta tiene restringido el acceso al chat por ahora. Si crees que es un error, contacta a <b>support@marginpad.io</b>.","commandFailed":"El comando falló.","networkError":"Error de red.","justNow":"justo ahora","marginPad2":"<div class=\"mptk-top\"><span class=\"mptk-brand\">MARGIN<b>PAD</b></span><button class=\"mptk-x\" type=\"button\" aria-label=\"Cerrar\">✕</button></div>","sharedBy":"<div class=\"mptk-by\">Compartido por <b>@","tradeItForReal":"<div class=\"mprl\"><div class=\"mprl-t\">OPÉRALO DE VERDAD</div><div class=\"mprl-row\">","paperTradeNotFinancial2":"<div class=\"mptk-foot\">Paper trade · no es asesoría financiera</div></div>","loadingTicket":"<div class=\"mptk-err\">Cargando ticket…</div>","thisSharedTicketIs":"<div class=\"mptk-err\">Este ticket compartido ya no está disponible.</div>","couldNotLoadThe2":"<div class=\"mptk-err\">No se pudo cargar el ticket. Revisa tu conexión.</div>","tapShareThenAdd":"Toca Compartir, luego “Agregar a pantalla de inicio”.","fullScreenAppLike":"Acceso a pantalla completa, como una app, desde tu pantalla de inicio.","chartFailedToLoad":"<div class=\"heat-err\">No se pudo cargar el gráfico - revisa tu conexión.</div>","estimatedLevelsByLeverage":"Niveles estimados por apalancamiento · no son datos del libro de órdenes","liquidationsLast":" liquidaciones · últimas ","quietLiquidationsSpikeOn":" de calma - las liquidaciones se disparan con los movimientos</span>","noLiquidationsAbove50k":"<span class=\"tk-empty\">Todavía no hay liquidaciones por encima de $50k en esta vista.</span>","tradeItAgainAria":" - vuelve a operarlo\" aria-label=\"Cambiar a ","notOnBybitPaper":" - no disponible en Bybit (paper trade no disponible)","customTypeYourOwn":"<span class=\"csel-ex\"><i class=\"cx-m cx-custom\">%</i><b>Personalizado</b><small>escribe tu propia tasa</small></span>","clickToCopy":"Clic para copiar","theTradeLeagueIs":"The Trade League es para usuarios registrados.","signInFreeTo":"Inicia sesión gratis para unirte","youAreInThe":"Estás en la liga como","closeWinningTradesTo":"- cierra operaciones ganadoras para subir.","14DaySeason":"<div class=\"lg-ends\"> Temporada de 14 días · ","endsIn2":"termina en","tradeBehindThisRank":"Trader detrás de este puesto","openThisMarket":"Abrir este mercado","topPnlIsBragging":"El Top PnL es solo por presumir - las demás tablas pagan USDT real cada temporada de 14 días.","paysTheTop5":"Paga a los 5 primeros cada temporada de 14 días. Clasificado por tasa de acierto ponderada por operaciones jugadas - más partidas hacen que tu % cuente más (un 45G-3P puede superar a un % más alto con menos operaciones). Mínimo 20 operaciones cerradas.","thisBoardPaysThe":"Esta tabla paga a los 5 primeros en USDT real cada temporada de 14 días.","noOneHas20":"Todavía nadie tiene 20 operaciones cerradas esta semana - cierra 20+ operaciones y reclama la corona de tasa de acierto.","bestWinRateThis":"Mejor tasa de acierto esta temporada","noWinningTradesYet":"Aún no hay operaciones ganadoras esta temporada - cierra una en ganancia para liderar la tabla de ROE.","topRoeThisSeason":"Top ROE esta temporada","noWinningTradesYet2":"Aún no hay operaciones ganadoras esta semana - cierra una en ganancia para liderar la tabla de PnL.","topPnlThisSeason":"Top PnL esta temporada","noGreenDaysYet":"Aún no hay días en verde esta temporada - cierra un día en ganancia (3+ operaciones) y entrarás en la tabla.","mostGreenDaysThis":"Más días en verde esta temporada","yourTradingStats":"Tus estadísticas de trading","winStreak":"Racha de victorias","cryptoStocksForexUp":"cripto, acciones y forex · sube o baja · 24/7","100055TradesPracticed":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">5 operaciones practicadas</div><h3>¿Listo para operar de verdad?</h3><p>Ya abriste 5 operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).</p><div class=\"grad-ex\">","firstWinningTrade":"Primera operación ganadora","tradesPracticed":" operaciones practicadas","youJustClosedYour":"Acabas de cerrar tu primera operación ganadora en paper trade. Esa misma operación, en una cuenta real, habría sido ganancia real - futuros en Bybit, o predicciones de subida/bajada en Moon (los nuevos registros reciben bonos en ambos).","youHaveOpened":"Ya abriste ","paperTradesTheMechanics":" operaciones en paper trade - la mecánica ya es algo natural para ti. Ponla a trabajar de verdad: futuros en Bybit, o predice si el mercado sube o baja en Moon (los nuevos registros reciben bonos en ambos).","starCoinsOnThe":"<div class=\"cws-w-empty\">Marca monedas con estrella en la página principal para fijarlas aquí.</div>","noSignalsRightNow":"<div class=\"cws-w-empty\">No hay señales ahora mismo - el mercado está tranquilo. Actualizando…</div>","titleOpen":"\" title=\"Abrir ","withIndicatorsSetup":" con indicadores + configuración\">","getAFreeUsdt":"consigue un <b>USDT gratis</b> de bono de bienvenida","10005SaveYourProgress":"<div class=\"grad-panel\"><button class=\"grad-x\" type=\"button\" aria-label=\"Cerrar\">&#10005;</button><div class=\"grad-badge\">Guarda tu progreso</div><h3>Guarda tus operaciones - crea una cuenta gratis</h3><p>Ya cerraste 2 operaciones en paper trade. Crea una cuenta gratis (solo un código por email, sin contraseña) para conservar tu diario en todos tus dispositivos, ","newHere":"<div class=\"browse-sec\" data-i18n=\"secNew\">¿Nuevo aquí?</div>","whereToStart":"Por dónde empezar","cryptoFromZeroA":"Cripto desde cero - una ruta gratis para principiantes","liquidationPnlSizeAmp":"Liquidación, PnL, tamaño &amp; más","liquidationPrice":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"liq\" data-i18n=\"subLiq\">Precio de liquidación</button>","positionSize":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"size\" data-i18n=\"subSize\">Tamaño de posición</button>","dcaAverageDown":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"dca\" data-i18n=\"subDca\">DCA / promediar a la baja</button>","riskReward":"<button type=\"button\" class=\"browse-subrow\" data-calc=\"rr\" data-i18n=\"subRr\">Riesgo / beneficio</button>","practiceAtTheLive":"Practica al precio en vivo · riesgo cero","tradingTools":"Herramientas de trading","testYourTradingBot":"Prueba tu bot de trading - gratis","priceAlerts":"Alertas de precio","emailOrTelegramWhen":"Email o Telegram cuando una moneda llegue a tu precio","claimEvery5Minutes":"Reclama cada 5 minutos","noMatchesFor":"Sin resultados para","slowDown":"Más despacio - ","opensPerMinuteIs":" aperturas por minuto es el límite. Inténtalo de nuevo en un momento.","youAlreadyHoldThe":"Ya tienes el número máximo de posiciones abiertas","aMonthStraightAt":"Un mes seguido. A este punto el mercado te vigila a ti.","twoWeeksDeepThis":"Dos semanas seguidas - así se ve la disciplina.","aFullWeekMost":"Una semana completa. La mayoría abandona el miércoles.","backToBackDays":"Días consecutivos. El gráfico se dio cuenta.","setAPriceAlert":" Pon una alerta de precio para no perderte ningún movimiento.","welcomeBackShowUp":"Bienvenido de vuelta. Vuelve mañana y esto se convierte en una racha.","setAPriceAlert2":"<a class=\"mps-cta\" href=\"/alerts/\">Pon una alerta de precio →</a>","importedYourTelegramTrade":"Se importó tu operación de Telegram.","importedYourTelegramTrade2":"Se importó tu operación de Telegram - ábrela en <b>My Trades</b>.","limitReached":"Límite alcanzado - ","openTradesIsThe":" operaciones abiertas es el máximo. Cierra algunas para abrir nuevas.","youAlreadyHaveA":"Ya tienes una ","positionOpenCloseIt":" posición abierta - ciérrala antes de abrir una ","limitReachedMax":"Límite alcanzado - máx. ","tradesCloseOneTo":" operaciones. Cierra una para abrir otra.","closesTheWholePosition":"Cierra toda la posición a ","isClosed2":" no cotiza","yourPositionCannotMove":" Tu posición no puede moverse mientras la bolsa está cerrada, y las salidas se ejecutan cuando vuelve a abrir.","savedToMyTrades":" - guardado en My Trades.","inputTypeTextInputmode":"<div class=\"mpss-row\"><input type=\"text\" inputmode=\"decimal\" autocomplete=\"off\" class=\"p\" placeholder=\"precio\" value=\"","stopLossLevelsAdd":"<div class=\"mpss-sec\" data-k=\"sl\"><div class=\"mpss-lab\">Niveles de stop-loss</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar stop-loss</button></div>","takeProfitLevelsAdd":"<div class=\"mpss-sec\" data-k=\"tp\"><div class=\"mpss-lab\">Niveles de take-profit</div><div class=\"mpss-rows\"></div><button type=\"button\" class=\"mpss-add\">+ Agregar take-profit</button></div>","eachLevelClosesIts":"<div class=\"mpss-hint\">Cada nivel cierra su % de la posición cuando el precio lo toca - el 100% lo cierra todo, un % menor cierra una parte y el resto queda abierto. ✕ elimina un nivel; sin niveles = ninguno.</div>","saveSlTp":"<button type=\"button\" class=\"mpcs-go up\">Guardar SL / TP</button>","u201dIsNotA":"” no es un precio. Usa dígitos, con . o , para los decimales.","stopLossPriceIs":"El precio de stop-loss no es un número.","longEveryStopLoss":"LONG: cada stop-loss debe estar POR DEBAJO de","shortEveryStopLoss":"SHORT: cada stop-loss debe estar POR ENCIMA de","theLivePrice":" el precio en vivo (","takeProfitPriceIs":"El precio de take-profit no es un número.","longEveryTakeProfit":"LONG: cada take-profit debe estar POR ENCIMA de","shortEveryTakeProfit":"SHORT: cada take-profit debe estar POR DEBAJO de","maxTradeSizeIs2":"El tamaño máximo de operación es $100,000.","newSignal":"<div class=\"ctsg-h\"><b>Nueva señal</b><button type=\"button\" class=\"ctsg-x\" aria-label=\"Cerrar\">×</button></div>","enterTheCoinE":"Introduce la moneda (ej. XRP).","fillEntryTp1Tp2":"Completa entrada, TP1, TP2 y SL (números).","maxLevMustBe":"El apalancamiento máx. debe ser 1-125.","forALongTp1":"Para un LONG: TP1 por encima de la entrada, TP2 por encima de TP1, SL por debajo de la entrada.","forAShortTp1":"Para un SHORT: TP1 por debajo de la entrada, TP2 por debajo de TP1, SL por encima de la entrada.","tooLongShortenThe":"Demasiado largo - acorta los números.","chatIsReconnectingTry":"El chat se está reconectando - inténtalo de nuevo en un segundo.","moonRealMarketsTrade":"<img src=\"/assets/moon.png\" alt=\"\"><span class=\"t\"><span class=\"k\">MOON · MERCADOS REALES</span>Opera <b>","forRealOnMoon":"</b> de verdad en Moon - ","thePriceAboveIs":"<div class=\"mw-a\">El precio de arriba es el último que imprimió el exchange, así que no se moverá hasta entonces. La cripto cotiza a toda hora, todos los días, si quieres operar mientras tanto.</div>","dayStreak":"-días de racha</b><br>","dayStreak2":"-días de racha</b><small>","chooseAMarket":"Elige un mercado","mkFav":"Favoritos","mkCrypto":"Cripto","mkStocks":"Acciones","mkForex":"Forex","mkMetals":"Metales","mkIndices":"Índices","mkNoFav":"Aún no hay favoritos: toca la estrella junto a un mercado para fijarlo aquí.","mkNone":"Nada coincide con eso.","mkPin":"Añadir a favoritos","mkUnpin":"Quitar de favoritos","mkShowing":"Mostrando los primeros ","mkOf":" de ","mkNarrow":"escribe para acotar.","mkMarkets":"mercados","mkByVol":"los más activos primero","chStyle":"Estilo del gráfico","chEntries":"Tus entradas","chCandles":"Velas","chHollow":"Huecas","chHeikin":"Heikin","chBars":"Barras","chLine":"Línea","chArea":"Área","chAsLines":"Líneas","chAsDots":"Puntos","xNeedPrice":"Esperando el precio en vivo: inténtalo de nuevo en un segundo."};
 function __esT_home(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_home[k] != null) return __esD_home[k]; } catch (e) {} return en; }
 /* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
    every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
@@ -189,7 +189,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) - the screener tokens + common coins. Fills #symTokens too. */
   // Paper Trade + Charts are BYBIT-ONLY (owner decision): only tokens Bybit lists get a smooth live WS feed, so the
   // pickers list ONLY Bybit-tradeable symbols and window.mpIsBybit() gates the screener's paper-trade action + free-entry.
-  window.mpMarketName=function(s){return ({NOW:'ServiceNow',SNOW:'Snowflake',CRWD:'CrowdStrike',PANW:'Palo Alto Networks',DDOG:'Datadog',NET:'Cloudflare',ZS:'Zscaler',MDB:'MongoDB',TEAM:'Atlassian',ROKU:'Roku',PINS:'Pinterest',LYFT:'Lyft',DASH:'DoorDash',ZM:'Zoom',DOCU:'Docusign',TWLO:'Twilio',U:'Unity',TTWO:'Take-Two',SONY:'Sony',BIDU:'Baidu',JD:'JD.com',PDD:'PDD Holdings',NTES:'NetEase',TCEHY:'Tencent',LI:'Li Auto',XPEV:'XPeng',TM:'Toyota',HMC:'Honda',RACE:'Ferrari',STLA:'Stellantis',GM:'General Motors',CAT:'Caterpillar',DE:'John Deere',MMM:'3M',GE:'GE Aerospace',HON:'Honeywell',LMT:'Lockheed Martin',RTX:'RTX',NOC:'Northrop Grumman',UPS:'UPS',FDX:'FedEx',CVX:'Chevron',COP:'ConocoPhillips',SLB:'SLB',OXY:'Occidental',PFE:'Pfizer',MRK:'Merck',ABBV:'AbbVie',AMGN:'Amgen',GILD:'Gilead',BMY:'Bristol Myers',TMO:'Thermo Fisher',DHR:'Danaher',ISRG:'Intuitive Surgical',MDT:'Medtronic',CVS:'CVS Health',CI:'Cigna',ELV:'Elevance',MCD:'McDonald\'s',SBUX:'Starbucks',NKE:'Nike',LULU:'Lululemon',TGT:'Target',LOW:'Lowe\'s',TJX:'TJX',DG:'Dollar General',KHC:'Kraft Heinz',MDLZ:'Mondelez',MO:'Altria',PM:'Philip Morris',CL:'Colgate',KMB:'Kimberly-Clark',GIS:'General Mills',HSY:'Hershey',SYY:'Sysco',ADM:'ADM',BG:'Bunge',CF:'CF Industries',MOS:'Mosaic',NEM:'Newmont',FCX:'Freeport',AA:'Alcoa',CLF:'Cleveland-Cliffs',VALE:'Vale',RIO:'Rio Tinto',BHP:'BHP',GOLD:'Barrick',AEM:'Agnico Eagle',WPM:'Wheaton Precious',PAAS:'Pan American Silver',HL:'Hecla',AG:'First Majestic',OIL:'Crude Oil (WTI)',BRENT:'Brent Crude',NATGAS:'Natural Gas',COPPER:'Copper',USDCHF:'USD/CHF',NZDUSD:'NZD/USD',EURGBP:'EUR/GBP',EURJPY:'EUR/JPY',GBPJPY:'GBP/JPY',AUDJPY:'AUD/JPY',EURCHF:'EUR/CHF',USDMXN:'USD/MXN',USDSEK:'USD/SEK',USDNOK:'USD/NOK',FRA40:'CAC 40',EU50:'Euro Stoxx 50',HK50:'Hang Seng',AUS200:'ASX 200',ESP35:'IBEX 35',SWI20:'SMI 20',US2000:'Russell 2000',VIX:'Volatility Index',XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',UK100:'FTSE 100',JPN225:'Nikkei 225',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',AAPL:'Apple',TSLA:'Tesla',NVDA:'NVIDIA',MSFT:'Microsoft',AMZN:'Amazon',GOOGL:'Alphabet',META:'Meta',AMD:'AMD',NFLX:'Netflix',COIN:'Coinbase',MSTR:'Strategy',PLTR:'Palantir',HOOD:'Robinhood',AVGO:'Broadcom',INTC:'Intel',JPM:'JPMorgan',DIS:'Disney',BABA:'Alibaba',SPY:'S&P 500 ETF',QQQ:'Nasdaq 100 ETF',MARA:'MARA Holdings',RIOT:'Riot Platforms',CLSK:'CleanSpark',HUT:'Hut 8',CIFR:'Cipher Mining',WULF:'TeraWulf',GLXY:'Galaxy Digital',BMNR:'Bitmine',SBET:'SharpLink',TSM:'TSMC',QCOM:'Qualcomm',ARM:'Arm',SMCI:'Super Micro',ASML:'ASML',TXN:'Texas Instruments',ORCL:'Oracle',CRM:'Salesforce',ADBE:'Adobe',GME:'GameStop',AMC:'AMC',SOFI:'SoFi',RIVN:'Rivian',LCID:'Lucid',NIO:'NIO',UBER:'Uber',ABNB:'Airbnb',RBLX:'Roblox',DKNG:'DraftKings',SNAP:'Snap',PYPL:'PayPal',SHOP:'Shopify',SPOT:'Spotify',F:'Ford',BA:'Boeing',LLY:'Eli Lilly',V:'Visa',MA:'Mastercard',WMT:'Walmart',COST:'Costco',XOM:'Exxon',JNJ:'Johnson & Johnson',PG:'Procter & Gamble',UNH:'UnitedHealth',HD:'Home Depot',BAC:'Bank of America',GS:'Goldman Sachs',KO:'Coca-Cola',PEP:'PepsiCo',T:'AT&T',IWM:'Russell 2000 ETF',DIA:'Dow ETF',ARKK:'ARK Innovation',TQQQ:'Nasdaq 3x ETF',SQQQ:'Nasdaq -3x ETF',GLD:'Gold ETF',SLV:'Silver ETF',TLT:'20Y Treasury ETF',VOO:'Vanguard S&P 500',XLE:'Energy ETF'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
+  window.mpMarketName=function(s){return ({SNDK:'SanDisk',MU:'Micron',KLAC:'KLA',CRCL:'Circle',SOXL:'Semiconductors 3x',SOXS:'Semiconductors -3x',NOW:'ServiceNow',SNOW:'Snowflake',CRWD:'CrowdStrike',PANW:'Palo Alto Networks',DDOG:'Datadog',NET:'Cloudflare',ZS:'Zscaler',MDB:'MongoDB',TEAM:'Atlassian',ROKU:'Roku',PINS:'Pinterest',LYFT:'Lyft',DASH:'DoorDash',ZM:'Zoom',DOCU:'Docusign',TWLO:'Twilio',U:'Unity',TTWO:'Take-Two',SONY:'Sony',BIDU:'Baidu',JD:'JD.com',PDD:'PDD Holdings',NTES:'NetEase',TCEHY:'Tencent',LI:'Li Auto',XPEV:'XPeng',TM:'Toyota',HMC:'Honda',RACE:'Ferrari',STLA:'Stellantis',GM:'General Motors',CAT:'Caterpillar',DE:'John Deere',MMM:'3M',GE:'GE Aerospace',HON:'Honeywell',LMT:'Lockheed Martin',RTX:'RTX',NOC:'Northrop Grumman',UPS:'UPS',FDX:'FedEx',CVX:'Chevron',COP:'ConocoPhillips',SLB:'SLB',OXY:'Occidental',PFE:'Pfizer',MRK:'Merck',ABBV:'AbbVie',AMGN:'Amgen',GILD:'Gilead',BMY:'Bristol Myers',TMO:'Thermo Fisher',DHR:'Danaher',ISRG:'Intuitive Surgical',MDT:'Medtronic',CVS:'CVS Health',CI:'Cigna',ELV:'Elevance',MCD:'McDonald\'s',SBUX:'Starbucks',NKE:'Nike',LULU:'Lululemon',TGT:'Target',LOW:'Lowe\'s',TJX:'TJX',DG:'Dollar General',KHC:'Kraft Heinz',MDLZ:'Mondelez',MO:'Altria',PM:'Philip Morris',CL:'Colgate',KMB:'Kimberly-Clark',GIS:'General Mills',HSY:'Hershey',SYY:'Sysco',ADM:'ADM',BG:'Bunge',CF:'CF Industries',MOS:'Mosaic',NEM:'Newmont',FCX:'Freeport',AA:'Alcoa',CLF:'Cleveland-Cliffs',VALE:'Vale',RIO:'Rio Tinto',BHP:'BHP',GOLD:'Barrick',AEM:'Agnico Eagle',WPM:'Wheaton Precious',PAAS:'Pan American Silver',HL:'Hecla',AG:'First Majestic',OIL:'Crude Oil (WTI)',BRENT:'Brent Crude',NATGAS:'Natural Gas',COPPER:'Copper',USDCHF:'USD/CHF',NZDUSD:'NZD/USD',EURGBP:'EUR/GBP',EURJPY:'EUR/JPY',GBPJPY:'GBP/JPY',AUDJPY:'AUD/JPY',EURCHF:'EUR/CHF',USDMXN:'USD/MXN',USDSEK:'USD/SEK',USDNOK:'USD/NOK',FRA40:'CAC 40',EU50:'Euro Stoxx 50',HK50:'Hang Seng',AUS200:'ASX 200',ESP35:'IBEX 35',SWI20:'SMI 20',US2000:'Russell 2000',VIX:'Volatility Index',XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',UK100:'FTSE 100',JPN225:'Nikkei 225',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',AAPL:'Apple',TSLA:'Tesla',NVDA:'NVIDIA',MSFT:'Microsoft',AMZN:'Amazon',GOOGL:'Alphabet',META:'Meta',AMD:'AMD',NFLX:'Netflix',COIN:'Coinbase',MSTR:'Strategy',PLTR:'Palantir',HOOD:'Robinhood',AVGO:'Broadcom',INTC:'Intel',JPM:'JPMorgan',DIS:'Disney',BABA:'Alibaba',SPY:'S&P 500 ETF',QQQ:'Nasdaq 100 ETF',MARA:'MARA Holdings',RIOT:'Riot Platforms',CLSK:'CleanSpark',HUT:'Hut 8',CIFR:'Cipher Mining',WULF:'TeraWulf',GLXY:'Galaxy Digital',BMNR:'Bitmine',SBET:'SharpLink',TSM:'TSMC',QCOM:'Qualcomm',ARM:'Arm',SMCI:'Super Micro',ASML:'ASML',TXN:'Texas Instruments',ORCL:'Oracle',CRM:'Salesforce',ADBE:'Adobe',GME:'GameStop',AMC:'AMC',SOFI:'SoFi',RIVN:'Rivian',LCID:'Lucid',NIO:'NIO',UBER:'Uber',ABNB:'Airbnb',RBLX:'Roblox',DKNG:'DraftKings',SNAP:'Snap',PYPL:'PayPal',SHOP:'Shopify',SPOT:'Spotify',F:'Ford',BA:'Boeing',LLY:'Eli Lilly',V:'Visa',MA:'Mastercard',WMT:'Walmart',COST:'Costco',XOM:'Exxon',JNJ:'Johnson & Johnson',PG:'Procter & Gamble',UNH:'UnitedHealth',HD:'Home Depot',BAC:'Bank of America',GS:'Goldman Sachs',KO:'Coca-Cola',PEP:'PepsiCo',T:'AT&T',IWM:'Russell 2000 ETF',DIA:'Dow ETF',ARKK:'ARK Innovation',TQQQ:'Nasdaq 3x ETF',SQQQ:'Nasdaq -3x ETF',GLD:'Gold ETF',SLV:'Silver ETF',TLT:'20Y Treasury ETF',VOO:'Vanguard S&P 500',XLE:'Energy ETF'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     (window.__mpSymJ=window.__mpSymJ||fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(j){ /* shared with mp-nav.js - the same list was fetched twice per load */
@@ -202,7 +202,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       var _byb0=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
       // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) - always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS - fine for slower-moving assets)
       var MKT={FRA40:1,EU50:1,HK50:1,AUS200:1,ESP35:1,SWI20:1,US2000:1,VIX:1,OIL:1,BRENT:1,NATGAS:1,COPPER:1,USDCHF:1,NZDUSD:1,EURGBP:1,EURJPY:1,GBPJPY:1,AUDJPY:1,EURCHF:1,USDMXN:1,USDSEK:1,USDNOK:1,XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1,EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
-      var STK={NOW:1,SNOW:1,CRWD:1,PANW:1,DDOG:1,NET:1,ZS:1,MDB:1,TEAM:1,ROKU:1,PINS:1,LYFT:1,DASH:1,ZM:1,DOCU:1,TWLO:1,U:1,TTWO:1,SONY:1,BIDU:1,JD:1,PDD:1,NTES:1,TCEHY:1,LI:1,XPEV:1,TM:1,HMC:1,RACE:1,STLA:1,GM:1,CAT:1,DE:1,MMM:1,GE:1,HON:1,LMT:1,RTX:1,NOC:1,UPS:1,FDX:1,CVX:1,COP:1,SLB:1,OXY:1,PFE:1,MRK:1,ABBV:1,AMGN:1,GILD:1,BMY:1,TMO:1,DHR:1,ISRG:1,MDT:1,CVS:1,CI:1,ELV:1,MCD:1,SBUX:1,NKE:1,LULU:1,TGT:1,LOW:1,TJX:1,DG:1,KHC:1,MDLZ:1,MO:1,PM:1,CL:1,KMB:1,GIS:1,HSY:1,SYY:1,ADM:1,BG:1,CF:1,MOS:1,NEM:1,FCX:1,AA:1,CLF:1,VALE:1,RIO:1,BHP:1,GOLD:1,AEM:1,WPM:1,PAAS:1,HL:1,AG:1,AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1,MARA:1,RIOT:1,CLSK:1,HUT:1,CIFR:1,WULF:1,GLXY:1,BMNR:1,SBET:1,TSM:1,QCOM:1,ARM:1,SMCI:1,ASML:1,TXN:1,ORCL:1,CRM:1,ADBE:1,GME:1,AMC:1,SOFI:1,RIVN:1,LCID:1,NIO:1,UBER:1,ABNB:1,RBLX:1,DKNG:1,SNAP:1,PYPL:1,SHOP:1,SPOT:1,F:1,BA:1,LLY:1,V:1,MA:1,WMT:1,COST:1,XOM:1,JNJ:1,PG:1,UNH:1,HD:1,BAC:1,GS:1,KO:1,PEP:1,T:1,IWM:1,DIA:1,ARKK:1,TQQQ:1,SQQQ:1,GLD:1,SLV:1,TLT:1,VOO:1,XLE:1}; // real equities via Yahoo (worker leg) - tradeable, REST-priced (no crypto WS)
+      var STK={SNDK:1,MU:1,KLAC:1,CRCL:1,SOXL:1,SOXS:1,NOW:1,SNOW:1,CRWD:1,PANW:1,DDOG:1,NET:1,ZS:1,MDB:1,TEAM:1,ROKU:1,PINS:1,LYFT:1,DASH:1,ZM:1,DOCU:1,TWLO:1,U:1,TTWO:1,SONY:1,BIDU:1,JD:1,PDD:1,NTES:1,TCEHY:1,LI:1,XPEV:1,TM:1,HMC:1,RACE:1,STLA:1,GM:1,CAT:1,DE:1,MMM:1,GE:1,HON:1,LMT:1,RTX:1,NOC:1,UPS:1,FDX:1,CVX:1,COP:1,SLB:1,OXY:1,PFE:1,MRK:1,ABBV:1,AMGN:1,GILD:1,BMY:1,TMO:1,DHR:1,ISRG:1,MDT:1,CVS:1,CI:1,ELV:1,MCD:1,SBUX:1,NKE:1,LULU:1,TGT:1,LOW:1,TJX:1,DG:1,KHC:1,MDLZ:1,MO:1,PM:1,CL:1,KMB:1,GIS:1,HSY:1,SYY:1,ADM:1,BG:1,CF:1,MOS:1,NEM:1,FCX:1,AA:1,CLF:1,VALE:1,RIO:1,BHP:1,GOLD:1,AEM:1,WPM:1,PAAS:1,HL:1,AG:1,AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1,MARA:1,RIOT:1,CLSK:1,HUT:1,CIFR:1,WULF:1,GLXY:1,BMNR:1,SBET:1,TSM:1,QCOM:1,ARM:1,SMCI:1,ASML:1,TXN:1,ORCL:1,CRM:1,ADBE:1,GME:1,AMC:1,SOFI:1,RIVN:1,LCID:1,NIO:1,UBER:1,ABNB:1,RBLX:1,DKNG:1,SNAP:1,PYPL:1,SHOP:1,SPOT:1,F:1,BA:1,LLY:1,V:1,MA:1,WMT:1,COST:1,XOM:1,JNJ:1,PG:1,UNH:1,HD:1,BAC:1,GS:1,KO:1,PEP:1,T:1,IWM:1,DIA:1,ARKK:1,TQQQ:1,SQQQ:1,GLD:1,SLV:1,TLT:1,VOO:1,XLE:1}; // real equities via Yahoo (worker leg) - tradeable, REST-priced (no crypto WS)
       window.mpStk=STK;
       // Centralized market-closed check (stocks only - Yahoo gives marketState for equities, not FX/indices). Populated
       // by the price pollers (window.mpMktState[sym]=state). Default ALLOW when unknown. Used by every trade opener
@@ -470,8 +470,9 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
     if(advChk.checked){window._mpSltpHidden=false;try{ensureDrag();}catch(e){}var sl=document.getElementById('planSlOpt'),tp=document.getElementById('planTpOpt'),entry=(window.mpPlanLive&&+window.mpPlanLive.price)||0,seg=document.getElementById('planSeg'),onb=seg&&seg.querySelector('button.on'),lng=!(onb&&onb.getAttribute('data-side')==='short'),dp=(entry>=1?2:6);
-      if(entry>0&&sl&&!(parseFloat(sl.value)>0))sl.value=String(+(entry*(lng?0.98:1.02)).toFixed(dp));
-      if(entry>0&&tp&&!(parseFloat(tp.value)>0))tp.value=String(+(entry*(lng?1.03:0.97)).toFixed(dp));
+      if(entry>0&&sl&&!(parseFloat(sl.value)>0)){sl.value=String(+(entry*(lng?0.98:1.02)).toFixed(dp));try{window.__mpPtAuto&&window.__mpPtAuto.mark('sl',1);}catch(_e){}}
+      if(entry>0&&tp&&!(parseFloat(tp.value)>0)){tp.value=String(+(entry*(lng?1.03:0.97)).toFixed(dp));try{window.__mpPtAuto&&window.__mpPtAuto.mark('tp',1);}catch(_e){}}
+      try{if(window.__mpPtAuto){window.__mpPtAuto.paint('sl');window.__mpPtAuto.paint('tp');}}catch(_e){}
       try{calc();}catch(e){}}
     try{posDragLines();}catch(e){}try{updatePlanRisk();}catch(e){}});
   // GUEST GATE (owner 2026-08-16): Advanced (SL/TP) needs an account. Guest positions are client-only - no server-side
@@ -1177,13 +1178,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   // Non-interactive readout (pointer-events:none) pinned bottom-left above the time axis; UTC-aligned intervals only
   // (weekly is epoch-anchored → hidden there). Plain text update each second - no CSS animation (owner reduced-motion).
   var _cdEl=null;
-  function tickCd(){var host=document.getElementById('ptChart');if(!host||!chart||!bars||!bars.length){if(_cdEl)_cdEl.textContent='';return;}
+  function tickCd(){var host=document.getElementById('ptChart');var _slot=document.getElementById('ptCd');if(_slot)_cdEl=_slot;/* 2026-10-24: the candle's clock is one line under the pair name, no box and no chip - the old floating pill is only built when that slot is absent */if(!host||!chart||!bars||!bars.length){if(_cdEl)_cdEl.textContent='';return;}
     if(!_cdEl){_cdEl=document.createElement('div');_cdEl.className='pt-cd';_cdEl.style.cssText='position:absolute;top:8px;right:72px;z-index:5;pointer-events:none;font-family:\'Space Mono\',monospace;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#9aa3ad;background:rgba(10,12,15,.72);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:3px 8px;text-shadow:0 1px 3px rgba(0,0,0,.7)';host.appendChild(_cdEl);} // top-right, clear of the right price axis - bottom corners are covered by the page's floating buttons (E2E elementFromPoint proof)
-    if(_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node - re-attach
+    if(_cdEl!==_slot&&_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node - re-attach (but never move the in-flow slot)
     var _ivSc=tfSecs(chartTf);if(!(_ivSc>=5)||_ivSc>=604800){_cdEl.textContent='';return;} /* weekly is epoch-anchored (hidden), and a countdown that ticks once a second cannot count down a 1s candle - 5s/15s/30s still can */
     var ivMs=_ivSc*1000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock - the countdown must be right even on a skewed device
     var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
-    _cdEl.textContent=__esT_home("closeIn",'close in ')+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
+    _cdEl.textContent=__esT_home("closeIn",'close in ')+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));if(_slot)_slot.classList.toggle('soon',s<=10);}
   setInterval(tickCd,1000);
   function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
     updateEdges();
@@ -1789,7 +1790,16 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     }
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee - was 0, which made some closed tickets show no Fees line
-    var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
+    /* ADVANCED CLOSED = NO STOP (2026-10-24, owner: "kad otvorim advanced i ako nisam birao nista od sl ili
+       tp i kad zatvorim advanced i pokusam da otvorim poziciju po market orderu, ne mogu jer su sl i tp
+       parametri lose podeseni a ja uopste nisam imao interakciju sa njima"). Opening Advanced PREFILLS a
+       stop 2% away and a target 3% away; closing it left those two numbers in inputs nobody could see any
+       more and this line read them anyway - so a 2% move, or a flip to Short, refused the open with a
+       message about a field that was not on screen. Reproduced on the live page: live 79401.10, the hidden
+       fields still holding 77844.14 / 81815.78. What the panel hides does not apply; the typed values stay
+       for the next time it is opened. */
+    var _adv=document.getElementById('planAdvChk'),_advOn=!!(_adv&&_adv.checked&&!_adv.disabled);
+    var sl=_advOn?num('planSlOpt'):NaN, tp=_advOn?num('planTpOpt'):NaN, trail=_advOn?num('planTrail'):NaN, be=_advOn?num('planBE'):NaN;
     trail=(isFinite(trail)&&trail>0)?trail:0; be=(isFinite(be)&&be>0)?be:0;
     // Guard: a stop/target already on the WRONG side of the live entry would trigger the instant the position
     // opens (this is what made copied / stale screener setups self-close at open with a random-looking result).
@@ -2805,15 +2815,26 @@ window.addEventListener('load', function () {
   document.querySelectorAll('.panel .input-line').forEach(function(line){
     var inp=line.querySelector('input[type="number"]');
     if(!inp||line.querySelector('.stepper'))return;
+    /* A GLYPH ARROW RENDERS AS AN EMOJI ON A PHONE (the same reason the replay transport is drawn as SVG),
+       and a 14px-tall stacked pair is under every tap-target guideline there is. One joined minus/plus pill,
+       31x28 each, with press-and-hold acceleration. (2026-10-24, owner: "strelice za amount ili leverage kao
+       i za bilo sta ostalo mi se ne svidjaju i mislim da dizajnerski mozemo mnogo bolje da odradimo") */
     var st=document.createElement('div');st.className='stepper';
-    st.innerHTML='<button type="button" data-d="1" tabindex="-1" aria-label="Increase">▲</button><button type="button" data-d="-1" tabindex="-1" aria-label="Decrease">▼</button>';
+    st.innerHTML='<button type="button" class="mp-step-minus" data-d="-1" tabindex="-1" aria-label="Decrease"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/></svg></button>'
+      +'<button type="button" data-d="1" tabindex="-1" aria-label="Increase"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></button>';
     line.appendChild(st);line.classList.add('has-stepper');
-    st.addEventListener('click',function(e){
-      var b=e.target.closest('button');if(!b)return;
-      var dir=+b.getAttribute('data-d'),v=parseFloat(inp.value);if(!isFinite(v))v=0;
-      var nv=v+dir*smartStep(v);if(nv<0)nv=0;nv=Math.round(nv*1e6)/1e6;
-      inp.value=nv;inp.dispatchEvent(new Event('input',{bubbles:true}));
-    });
+    (function(){
+      function bump(dir){var v=parseFloat(inp.value);if(!isFinite(v))v=0;var nv=v+dir*smartStep(v);if(nv<0)nv=0;nv=Math.round(nv*1e6)/1e6;inp.value=nv;inp.dispatchEvent(new Event('input',{bubbles:true}));}
+      var _hold=null,_rep=null;
+      function stop(){if(_hold){clearTimeout(_hold);_hold=null;}if(_rep){clearInterval(_rep);_rep=null;}}
+      st.addEventListener('pointerdown',function(e){var b=e.target.closest('button');if(!b)return;e.preventDefault();
+        var dir=+b.getAttribute('data-d');bump(dir);stop();
+        _hold=setTimeout(function(){_rep=setInterval(function(){bump(dir);},70);},420);
+        try{b.setPointerCapture&&b.setPointerCapture(e.pointerId);}catch(_){}});
+      ['pointerup','pointercancel','pointerleave'].forEach(function(ev){st.addEventListener(ev,stop);});
+      window.addEventListener('blur',stop);
+      st.addEventListener('click',function(e){e.preventDefault();});
+    })();
   });
 });
 
@@ -3196,7 +3217,7 @@ window.addEventListener('load', function () {
       }
       var h='';
       for(var i=0;i<syms.length;i++){ var s=syms[i], letters=s.length>4?s.slice(0,4):s, ic=icon(s);
-        var isImg=!ic&&!NONCRYPTO[s];
+        var isImg=!ic; /* 2026-10-24: only FX/indices are drawn; stocks and metals resolve like a coin */
         h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+__esT_home("tradeItAgainAria",' - trade it again" aria-label="Switch to ')+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
           +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
@@ -3399,12 +3420,46 @@ window.addEventListener('load', function () {
     }
     function onTouchMove(e){ if(list.contains(e.target))return; e.preventDefault(); } // while the dropdown is open, only the list scrolls - never the page behind it (fixes mobile scroll-chaining / first-touch break-through)
     function place(){ var r=trig.getBoundingClientRect(); panel.style.position='fixed'; panel.style.left=r.left+'px'; panel.style.top=(r.bottom+6)+'px'; panel.style.width=Math.max(r.width,160)+'px'; panel.style.right='auto'; panel.style.zIndex='1000'; } // floating mode: anchor the panel to the trigger and escape the chart card's overflow/stacking so it never hides behind the chart
-    function open(){ build(); panel.hidden=false; trig.classList.add('open'); if(floating){place();window.addEventListener('scroll',place,true);window.addEventListener('resize',place);} document.addEventListener('touchmove',onTouchMove,{passive:false}); if(search){search.value='';filter('');setTimeout(function(){search.focus();},20);} var s=list.querySelector('.csel-opt.sel'); if(s)s.scrollIntoView({block:'nearest'}); }
-    function close(){ panel.hidden=true; trig.classList.remove('open'); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
+    /* A COARSE POINTER GETS A SHEET WITH A BACKDROP AND AN X (2026-10-24, owner: "kad otvaram ove padajuce
+       menije da izaberem exchange, zabaguju i ne mogu da se zatvore"). The only way out was a tap on the
+       document, and a document click is exactly what iOS does not reliably report for a tap on a
+       non-interactive area - so on a phone the panel could stand there with nothing to press. A backdrop
+       and a close button are real elements with real handlers; they cannot go missing. */
+    var coarse=function(){try{return !!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);}catch(e){return false;}};
+    var bd=null,_home=null,_openAt=0;
+    function sheetOn(){ if(!coarse())return;
+      panel.classList.add('csel-sheet');
+      if(!panel.querySelector('.csel-sh-h')){var hd=document.createElement('div');hd.className='csel-sh-h';
+        hd.innerHTML='<b></b><button type="button" class="csel-sh-x" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+        /* the title a reader already saw above the control beats the aria-label, which is written for a
+           screen reader ("Exchange maintenance-margin preset") rather than for a sheet header */
+        var _fl=sel.closest&&sel.closest('.field')&&sel.closest('.field').querySelector('label');
+        hd.querySelector('b').textContent=((_fl&&_fl.textContent||'').trim()||sel.getAttribute('aria-label')||'Choose');
+        hd.querySelector('.csel-sh-x').addEventListener('click',function(e){e.stopPropagation();close();});
+        panel.insertBefore(hd,panel.firstChild);}
+      if(!bd){bd=document.createElement('div');bd.className='csel-sheet-bd';bd.hidden=true;bd.addEventListener('click',function(){if(Date.now()-_openAt>320)close();});document.body.appendChild(bd);}
+      /* THE BACKDROP MUST NOT SWALLOW THE GESTURE THAT RAISED IT: pointerdown opens the sheet and lays the
+         backdrop under the finger, and the CLICK of that same tap then landed on it and shut the sheet again -
+         measured on a 390px touch viewport, three taps in a row, never open. Nothing in the sheet takes a
+         pointer until the gesture that opened it is over. */
+      bd.hidden=false;_openAt=Date.now();bd.style.pointerEvents='none';panel.style.pointerEvents='none';
+      setTimeout(function(){bd.style.pointerEvents='';panel.style.pointerEvents='';},320);
+      /* THE PANEL IS NOT MOVED TO <body>. position:fixed already escapes the scrolling column it sits in,
+         and relocating the node broke every caller that looks the panel up through its own .csel wrapper -
+         feevenue-e2e threw on a null, and so did two measurement probes of mine before I read why. */ }
+    function sheetOff(){ panel.classList.remove('csel-sheet'); if(bd)bd.hidden=true; }
+    function open(){ build(); panel.hidden=false; trig.classList.add('open'); trig.setAttribute('aria-expanded','true'); sheetOn(); if(floating&&!panel.classList.contains('csel-sheet')){place();window.addEventListener('scroll',place,true);window.addEventListener('resize',place);} document.addEventListener('touchmove',onTouchMove,{passive:false}); if(search&&!coarse()){search.value='';filter('');setTimeout(function(){search.focus();},20);} var s=list.querySelector('.csel-opt.sel'); if(s)s.scrollIntoView({block:'nearest'}); }
+    function close(){ panel.hidden=true; trig.classList.remove('open'); trig.setAttribute('aria-expanded','false'); sheetOff(); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
     function useVal(v){ v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16); if(!v)return; var f=false; for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.toUpperCase()===v){f=true;break;} } if(!f){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } var ch=sel.value!==v; sel.value=v; sync(); if(ch)sel.dispatchEvent(new Event('change',{bubbles:true})); close(); }
     function filter(q){ q=(q||'').toLowerCase(); var exact=false,o=list.children; for(var i=0;i<o.length;i++){ if(o[i].classList.contains('csel-add'))continue; var t=o[i].textContent.toLowerCase(); o[i].style.display=t.indexOf(q)>=0?'':'none'; if(t===q)exact=true; }
       if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+__esT_home("notOnBybitPaper",' - not on Bybit (paper trade unavailable)'); add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
-    trig.addEventListener('click',function(e){ e.stopPropagation(); if(panel.hidden){open();}else{close();} });
+    /* ONE ACTIVATION PER TAP. The toggle ran on `click`, and a tap that produces two of them (the iOS ghost
+       click after touchend is the classic one) reads exactly as the owner described it - "kad kliknem isto
+       sto sam kliknuo da je otvorim, kao da je refresuje": closed and reopened inside one tap. It is driven
+       from pointerdown now and the click that follows the same gesture is swallowed. */
+    var _tDown=0;
+    trig.addEventListener('pointerdown',function(e){ if(e.button&&e.button!==0)return; e.preventDefault(); e.stopPropagation(); _tDown=Date.now(); if(panel.hidden){open();}else{close();} });
+    trig.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); if(Date.now()-_tDown<700)return; if(panel.hidden){open();}else{close();} });
     if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var _q=(search.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!window.mpIsBybit||window.mpIsBybit(_q))useVal(search.value); } }); }
     document.addEventListener('click',function(e){ if(!wrap.contains(e.target)&&!panel.contains(e.target)) close(); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
@@ -3457,10 +3512,19 @@ window.addEventListener('load', function () {
     })();
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
     var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff'],'Hyperliquid':['#97fce4','#072723'],'MarginPad':['#c2f64a','#0a0b0d'],'Coinbase':['#0052ff','#ffffff']};
+    /* SELF-HOSTED LOGOS (2026-10-24, owner: "te ikonice tu takodje treba da se update sa pravim logom
+       menjacnice kao i nas logo"). The marks live in dist/assets/ex/ beside the ones the sign-up venues
+       already use - a CDN that goes dark must not blank the picker. A venue with no file keeps the old
+       brand-coloured monogram, so adding one is a FILE, never a code change. */
+    var EXLOGO={Binance:'binance',Bybit:'bybit',OKX:'okx',Bitget:'bitget',KuCoin:'kucoin',Gate:'gate',Kraken:'kraken',MEXC:'mexc',Hyperliquid:'hyperliquid',Coinbase:'coinbase',BingX:'bingx'};
     function exDeco(o){var t=o.textContent||'',m=t.split('-'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
       if(!rate&&/custom/i.test(name))return __esT_home("customTypeYourOwn",'<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>');
-      var c=EXCOL[name]||['#3a4450','#e9e7df'];
-      return '<span class="csel-ex"><i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i><b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
+      var c=EXCOL[name]||['#3a4450','#e9e7df'],k=EXLOGO[name],mark;
+      if(name==='MarginPad')mark='<i class="cx-m cx-mp"><img src="/assets/app-icon-192.png" alt="" width="22" height="22" loading="lazy"></i>';
+      else if(k)mark='<i class="cx-m"><img src="/assets/ex/'+k+'.png" alt="" width="22" height="22" loading="lazy" data-x="'+name.charAt(0)+'" data-c="'+c[0]+'" data-f="'+c[1]+'" onerror="window.__mpExLogoErr&&window.__mpExLogoErr(this)"></i>';
+      else mark='<i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i>';
+      return '<span class="csel-ex">'+mark+'<b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
+    window.__mpExLogoErr=function(img){var p=img.parentNode;if(!p)return;p.style.background=img.getAttribute('data-c')||'#3a4450';p.style.color=img.getAttribute('data-f')||'#e9e7df';p.style.padding='0';p.textContent=img.getAttribute('data-x')||'?';};
     ['liqEx','crEx','planEx','planFeeVenue'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}}); // planFeeVenue = the "Fees as on" picker in Advanced, same rows as the margin-rate picker beside it
     /* langSel stays a native select - matches the homepage header (EN box, not a globe) */
     (window.requestIdleCallback||function(f){setTimeout(f,1500);})(function(){if(window.mpLoadTokens)window.mpLoadTokens(function(toks){var ps=document.getElementById('planSym');if(!ps)return;var have={};for(var i=0;i<ps.options.length;i++)have[ps.options[i].value.toUpperCase()]=1;toks.forEach(function(s){if(!have[s]){var o=document.createElement('option');o.value=s;o.textContent=s;ps.appendChild(o);}});});});
@@ -4760,3 +4824,456 @@ window.mpSrvOpen=function(payload,ok,fail){
   document.addEventListener('gestureend',function(e){if(!isChart(e.target))setTimeout(unzoom,50);},{passive:true});
   window.__mpUnzoom=unzoom;
 })();
+
+;/* >>> MP-PT-SHELL >>> */
+;/* ══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+   PAPER TRADE TERMINAL SHELL (2026-10-24, owner: the chart edge to edge with no window around it, the pair name
+   opening a real market picker, the timeframe glued under the chart, the candle's clock under the symbol).
+
+   NOTHING HERE REIMPLEMENTS THE ENGINE. The terminal is driven, as it always was, through #planSym / #planClass
+   (every deep link, the recents rail and the asset-class wiring go through them) and through the buttons inside
+   #ptTf (the premium gate, the seconds flag and loadKlines all hang off that one delegated listener). Those nodes
+   stay in the DOM; this block only gives them a face. Same rule as the /trading-api key manager: lift it, never
+   retype it.
+   ══════════════════════════════════════════════════════════════════════════════════════════════════════════ */
+(function () {
+  if (window.__mpPtShell) return; window.__mpPtShell = 1;
+  function T(k, en) { try { return __esT_home(k, en); } catch (e) { return en; } }
+  var $ = function (id) { return document.getElementById(id); };
+  var U = function (s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); };
+  function cls(s) { try { return window.mpAssetClass ? window.mpAssetClass(s) : 'crypto'; } catch (e) { return 'crypto'; } }
+  function nameOf(s) { try { return (window.mpMarketName && window.mpMarketName(s)) || ''; } catch (e) { return ''; } }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  var SV = function (p, w) { return '<svg viewBox="0 0 24 24" width="' + (w || 14) + '" height="' + (w || 14) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
+
+  /* ── ICONS ─────────────────────────────────────────────────────────────────────────────────────────────────
+     Crypto, stocks, metals and oil all resolve through /api/coinicon (the resolver that already knows a stock is
+     not a memecoin wearing its ticker). Forex and indices have no logo anywhere, so they are DRAWN - the same
+     self-hosted shapes the recents rail has used since 2026-08-16, which is why they cannot 404. */
+  var FX = { EURUSD: ['€', '$', '#4b7bec', '#2ebd85'], GBPUSD: ['£', '$', '#e74c5e', '#2ebd85'], USDJPY: ['$', '¥', '#2ebd85', '#e74c5e'], AUDUSD: ['A$', '$', '#2ec4b6', '#2ebd85'], USDCAD: ['$', 'C$', '#2ebd85', '#e74c5e'], USDCHF: ['$', 'Fr', '#2ebd85', '#e74c5e'], NZDUSD: ['N$', '$', '#2ec4b6', '#2ebd85'], EURGBP: ['€', '£', '#4b7bec', '#e74c5e'], EURJPY: ['€', '¥', '#4b7bec', '#e74c5e'], GBPJPY: ['£', '¥', '#e74c5e', '#bc002d'], AUDJPY: ['A$', '¥', '#2ec4b6', '#e74c5e'], EURCHF: ['€', 'Fr', '#4b7bec', '#e74c5e'], USDMXN: ['$', 'Mx', '#2ebd85', '#2e8b57'], USDSEK: ['$', 'kr', '#2ebd85', '#4b7bec'], USDNOK: ['$', 'kr', '#2ebd85', '#e74c5e'] };
+  var IDX = { SPX500: ['SPX', '#b31942'], NAS100: ['NDX', '#0091da'], US30: ['DJI', '#2f72c4'], GER40: ['DAX', '#c79a1c'], UK100: ['FTSE', '#8a5cff'], JPN225: ['N225', '#e0415a'], FRA40: ['CAC', '#4b7bec'], EU50: ['SX5E', '#f0b90b'], HK50: ['HSI', '#e0415a'], AUS200: ['ASX', '#2ec4b6'], ESP35: ['IBEX', '#e8a33d'], SWI20: ['SMI', '#e74c5e'], US2000: ['RUT', '#2ebd85'], VIX: ['VIX', '#ff6258'] };
+  function fxSvg(s) {
+    var f = FX[s]; if (!f) return null;
+    return '<svg viewBox="0 0 36 36" aria-hidden="true"><text x="' + (f[0].length > 1 ? 11 : 12) + '" y="21" text-anchor="middle" font-size="' + (f[0].length > 1 ? 8 : 11.5) + '" font-weight="800" fill="' + f[2] + '" font-family="Arial,sans-serif">' + f[0] + '</text>'
+      + '<line x1="16.8" y1="24.5" x2="19.8" y2="11.5" stroke="rgba(255,255,255,.28)" stroke-width="1.3" stroke-linecap="round"/>'
+      + '<text x="' + (f[1].length > 1 ? 25 : 24.5) + '" y="27" text-anchor="middle" font-size="' + (f[1].length > 1 ? 8 : 11.5) + '" font-weight="800" fill="' + f[3] + '" font-family="Arial,sans-serif">' + f[1] + '</text></svg>';
+  }
+  function idxSvg(s) {
+    var x = IDX[s]; if (!x) return null;
+    return '<svg viewBox="0 0 36 36" aria-hidden="true"><text x="18" y="17" text-anchor="middle" font-size="' + (x[0].length > 3 ? 7.5 : 9) + '" font-weight="800" fill="#e2e7ec" font-family="Arial,sans-serif">' + x[0] + '</text>'
+      + '<polyline points="10,25.5 14.5,22 18,24 22,18.5 26.5,21" fill="none" stroke="' + x[1] + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  /* the fallback chain lives on window so the markup carries one short call instead of a paragraph of inline JS */
+  window.__mpIcoErr = function (img) {
+    var n = (+img.getAttribute('data-f') || 0) + 1; img.setAttribute('data-f', String(n));
+    var s = img.getAttribute('data-s') || '';
+    if (n === 1) { img.src = '/api/coinicon?sym=' + encodeURIComponent(s); return; }
+    if (n === 2) { img.src = 'https://assets.coincap.io/assets/icons/' + s.toLowerCase() + '@2x.png'; return; }
+    var p = img.parentNode; if (p) { img.remove(); p.innerHTML = '<span>' + esc(s.toUpperCase().slice(0, 4)) + '</span>'; }
+  };
+  function icoHtml(s) {
+    s = U(s); var c = cls(s);
+    if (c === 'forex') { var a = fxSvg(s); if (a) return a; }
+    if (c === 'index') { var b = idxSvg(s); if (b) return b; }
+    return '<img alt="" loading="lazy" data-s="' + esc(s) + '" src="/assets/coins/' + esc(s.toLowerCase()) + '.png" onerror="window.__mpIcoErr(this)">';
+  }
+
+  /* ── THE PAIR, AND THE CANDLE'S OWN CLOCK UNDER IT ────────────────────────────────────────────────────── */
+  function symNow() { var e = $('planSym'); return U((e && e.value) || 'BTC') || 'BTC'; }
+  function paintHead() {
+    var s = symNow(), ic = $('ptSymIc'), tx = $('ptSymTxt'), q = document.querySelector('.ptc-quote');
+    if (tx) tx.textContent = s;
+    if (q) q.textContent = 'USD';
+    if (ic && ic.getAttribute('data-for') !== s) { ic.setAttribute('data-for', s); ic.innerHTML = icoHtml(s); }
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-label', T('chooseAMarket', 'Choose a market') + ' - ' + s);
+  }
+
+  /* ── THE MARKET PICKER ────────────────────────────────────────────────────────────────────────────────── */
+  var FAVK = 'mp_pt_favs';
+  function favs() { try { var a = JSON.parse(localStorage.getItem(FAVK) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function favWrite(a) { try { localStorage.setItem(FAVK, JSON.stringify(a.slice(0, 80))); } catch (e) { } }
+  function favHas(s) { return favs().indexOf(s) >= 0; }
+  function favTog(s) { var a = favs(), i = a.indexOf(s); if (i >= 0) a.splice(i, 1); else a.unshift(s); favWrite(a); return a.indexOf(s) >= 0; }
+
+  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')]];
+  var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;
+  try { var _t0 = localStorage.getItem('mp_pt_tab'); if (_t0 && TABS.some(function (t) { return t[0] === _t0; })) mkTab = _t0; } catch (e) { }
+
+  /* prices for the rows: the screener answer is edge-cached and already holds every crypto perp with its 24h
+     change AND its volume, so one request per open sorts the busiest market first instead of alphabetically.
+     Stocks, forex and indices have no such feed - those rows carry the market's NAME, which is what is useful
+     there, and no price at all. A figure we cannot measure is never printed. */
+  function scrLoad(cb) {
+    if (_scr && Date.now() - _scrAt < 60000) { cb && cb(_scr); return; }
+    if (_scrQ) { cb && cb(_scr); return; }
+    _scrQ = 1;
+    fetch('/api/screener', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      var rows = (j && (j.rows || j.data)) || (Array.isArray(j) ? j : []);
+      var m = {}; for (var i = 0; i < rows.length; i++) { var r = rows[i]; if (r && r.s) m[U(r.s)] = { p: +r.p, chg: +r.chg, vol: +r.vol || 0 }; }
+      _scr = m; _scrAt = Date.now(); _scrQ = 0; cb && cb(m);
+    }).catch(function () { _scrQ = 0; cb && cb(_scr); });
+  }
+  function pxOf(s) {
+    var m = _scr && _scr[s]; if (m && m.p > 0) return m;
+    var l = window.mpLivePrices && window.mpLivePrices[s];
+    if (l && +l.p > 0) return { p: +l.p, chg: (l.chg == null ? null : +l.chg), vol: 0 };
+    return null;
+  }
+  function fmtPx(v) {
+    if (!(v > 0)) return '';
+    var d = v >= 1000 ? 2 : v >= 1 ? 4 : v >= 0.01 ? 5 : 8;
+    return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: d });
+  }
+  function listFor(tab, q) {
+    var all = (window.mpTokens || []).slice();
+    if (!all.length) all = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE'];
+    var out;
+    if (tab === 'fav') { var f = favs(); out = f.filter(function (s) { return all.indexOf(s) >= 0 || true; }); }
+    else out = all.filter(function (s) { return cls(s) === tab; });
+    if (q) {
+      var qq = q.toLowerCase();
+      var pool = (tab === 'fav') ? all : out;
+      out = pool.filter(function (s) { return s.toLowerCase().indexOf(qq) >= 0 || nameOf(s).toLowerCase().indexOf(qq) >= 0; });
+    }
+    if (tab === 'crypto' && !q && _scr) {
+      out.sort(function (a, b) { var A = _scr[a], B = _scr[b]; return ((B && B.vol) || 0) - ((A && A.vol) || 0); });
+    }
+    return out;
+  }
+  var ST_ON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/></svg>';
+  var ST_OFF = SV('<path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4-5.8-3-5.8 3 1.1-6.4L2.6 9.4l6.5-.9z"/>', 15);
+  var MK_CAP = 160;
+  function mkRender() {
+    var box = $('ptMkList'); if (!box) return;
+    var cur = symNow(), rows = listFor(mkTab, mkQ), h = '', n = Math.min(rows.length, MK_CAP);
+    if (!rows.length) {
+      box.innerHTML = '<div class="ptmk-empty">' + (mkTab === 'fav' && !mkQ ? T('mkNoFav', 'No favourites yet - tap the star beside a market to pin it here.') : T('mkNone', 'Nothing matches that.')) + '</div>';
+      return;
+    }
+    for (var i = 0; i < n; i++) {
+      var s = rows[i], nm = nameOf(s), p = pxOf(s), fav = favHas(s);
+      var cg = (p && p.chg != null && isFinite(p.chg)) ? p.chg : null;
+      h += '<button type="button" class="ptmk-r' + (s === cur ? ' cur' : '') + '" data-mk="' + esc(s) + '">'
+        + '<span class="ptmk-ic">' + icoHtml(s) + '</span>'
+        + '<span class="ptmk-nm"><span class="ptmk-s1">' + esc(s) + '</span>' + (nm ? '<span class="ptmk-s2">' + esc(nm) + '</span>' : '') + '</span>'
+        + '<span class="ptmk-px">' + (p ? esc(fmtPx(p.p)) : '') + (cg != null ? '<span class="ptmk-cg ' + (cg > 0.004 ? 'up' : cg < -0.004 ? 'dn' : 'flat') + '">' + (cg >= 0 ? '+' : '') + cg.toFixed(2) + '%</span>' : '') + '</span>'
+        + '<span class="ptmk-st' + (fav ? ' on' : '') + '" data-fav="' + esc(s) + '" role="button" tabindex="0" aria-label="' + (fav ? T('mkUnpin', 'Remove from favourites') : T('mkPin', 'Add to favourites')) + '">' + (fav ? ST_ON : ST_OFF) + '</span>'
+        + '</button>';
+    }
+    box.innerHTML = h;
+    var f = $('ptMkFoot');
+    if (f) f.innerHTML = (rows.length > n ? T('mkShowing', 'Showing the first ') + '<b>' + n + '</b>' + T('mkOf', ' of ') + '<b>' + rows.length + '</b> - ' + T('mkNarrow', 'type to narrow it down.') : '<b>' + rows.length + '</b> ' + T('mkMarkets', 'markets') + (mkTab === 'crypto' ? ' - ' + T('mkByVol', 'busiest first') : ''));
+  }
+  function mkTabs() {
+    var w = $('ptMkTabs'); if (!w) return;
+    w.innerHTML = TABS.map(function (t) {
+      return '<button type="button" class="ptmk-tab' + (t[0] === mkTab ? ' on' : '') + '" data-mt="' + t[0] + '">' + (t[0] === 'fav' ? ST_ON : '') + esc(t[1]) + '</button>';
+    }).join('');
+  }
+  /* THE ROOM A SHEET MAY USE IS MEASURED, NEVER A LITERAL. The site's own phone bar is fixed to the bottom of
+     every page, so a sheet anchored there covers its own last rows - the chart-style sheet lost "Your entries"
+     entirely and the market list lost a row. mpBottomInset() is the one reading of "what is anchored at the
+     bottom"; the direct measurement is the fallback for a page where mp-auth has not parsed yet. */
+  function bottomInset() {
+    try { if (window.mpBottomInset) { var v = +window.mpBottomInset(); if (isFinite(v) && v >= 0) return v; } } catch (e) { }
+    var b = document.querySelector('.mpbn, .tdock, [data-mpbar]');
+    if (b) { var r = b.getBoundingClientRect(); if (r.height > 0 && (innerHeight - r.bottom) < 60) return Math.round(r.height); }
+    return 0;
+  }
+  function setInset() { try { document.documentElement.style.setProperty('--mkb', bottomInset() + 'px'); } catch (e) { } }
+
+  function mkOpen() {
+    var w = $('ptMkt'); if (!w) return;
+    setInset();
+    var c = cls(symNow()); if (!mkQ && mkTab !== 'fav' && TABS.some(function (t) { return t[0] === c; })) mkTab = c;
+    w.hidden = false; document.body.classList.add('ptmk-on');
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'true');
+    mkTabs(); mkRender();
+    scrLoad(function () { if (!w.hidden) mkRender(); });
+    var q = $('ptMkQ'); if (q) { q.value = mkQ; if (!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches)) setTimeout(function () { try { q.focus(); } catch (e) { } }, 30); }
+    try { if (window.__mpTrack) window.__mpTrack('ptmarket', 'open'); } catch (e) { }
+  }
+  function mkClose() {
+    var w = $('ptMkt'); if (!w || w.hidden) return;
+    w.hidden = true; document.body.classList.remove('ptmk-on');
+    var b = $('ptSymBtn'); if (b) b.setAttribute('aria-expanded', 'false');
+  }
+  function mkPick(s) {
+    s = U(s); if (!s) return;
+    var ps = $('planSym'); if (!ps) return;
+    var ok = false; for (var i = 0; i < ps.options.length; i++) if (U(ps.options[i].value) === s) { ok = true; break; }
+    if (!ok) { var o = document.createElement('option'); o.value = s; o.textContent = s + (nameOf(s) ? ' - ' + nameOf(s) : ''); ps.appendChild(o); }
+    ps.value = s; ps.dispatchEvent(new Event('change', { bubbles: true }));
+    mkClose(); paintHead();
+    try { if (window.__mpTrack) window.__mpTrack('ptmarket', 'pick:' + s); } catch (e) { }
+  }
+
+  /* ── THE TIMEFRAME STRIP ──────────────────────────────────────────────────────────────────────────────────
+     #ptTf stays the ONE source of truth: the strip finds that button and clicks it, so the premium gate, the
+     seconds flag and loadKlines all run exactly as they did. The strip then repaints from whichever button in
+     #ptTf carries .on - there is no second idea of "the current timeframe" anywhere. */
+  var STRIP = ['1', '5', '15', '60', '240', '1440'];
+  function tfBtns() { var m = $('ptTf'); return m ? m.querySelectorAll('button[data-tf]') : []; }
+  function tfCurrent() { var b = tfBtns(); for (var i = 0; i < b.length; i++) if (b[i].classList.contains('on')) return b[i].getAttribute('data-tf'); return '5'; }
+  function stripBuild() {
+    var w = $('ptTfs'); if (!w || w.getAttribute('data-built')) return;
+    var m = $('ptTf'); if (!m) return;
+    var h = '';
+    for (var i = 0; i < STRIP.length; i++) {
+      var src = m.querySelector('button[data-tf="' + STRIP[i] + '"]'); if (!src) continue;
+      h += '<button type="button" class="ptc-tf" data-stf="' + STRIP[i] + '">' + esc(src.getAttribute('data-lbl') || STRIP[i]) + '</button>';
+    }
+    w.innerHTML = h; w.setAttribute('data-built', '1');
+  }
+  function stripPaint() {
+    var w = $('ptTfs'); if (!w) return;
+    var cur = tfCurrent(), known = false;
+    Array.prototype.forEach.call(w.querySelectorAll('[data-stf]'), function (b) {
+      var on = b.getAttribute('data-stf') === cur; b.classList.toggle('on', on); if (on) known = true;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var more = $('ptTfBtn'); if (more) more.classList.toggle('named', !known);
+  }
+
+  /* ── CHART SETTINGS: how a candle is drawn, and how an entry is marked ────────────────────────────────────
+     The style engine is the one /charts uses (window.__mpChStyle), lifted here because mp-charts.js is never
+     loaded on this page and a chart style is not worth a 300 KB bundle. The key is the SAME `mp_ch_style`, so a
+     reader's choice follows them between the two surfaces. */
+  var CH = [['candles', T('chCandles', 'Candles'), '<path d="M7 4v16M7 8h0M4 8h6v8H4zM17 2v20M14 7h6v10h-6z"/>'],
+  ['hollow', T('chHollow', 'Hollow'), '<path d="M7 4v16M4 8h6v8H4zM17 2v20M14 7h6v10h-6z"/>'],
+  ['heikin', T('chHeikin', 'Heikin'), '<path d="M5 9h5v7H5zM14 5h5v10h-5z"/>'],
+  ['bars', T('chBars', 'Bars'), '<path d="M6 4v16M6 8h3M3 14h3M18 3v18M18 8h3M15 15h3"/>'],
+  ['line', T('chLine', 'Line'), '<path d="M3 17l5-6 4 3 4-7 5 4"/>'],
+  ['area', T('chArea', 'Area'), '<path d="M3 17l5-6 4 3 4-7 5 4v8H3z"/>']];
+  var chStyle = 'candles'; try { var _c0 = localStorage.getItem('mp_ch_style'); if (_c0 && CH.some(function (x) { return x[0] === _c0; })) chStyle = _c0; } catch (e) { }
+  function haConv(d, prev) { var o = +d.open, h = +d.high, l = +d.low, c = +d.close, hc = (o + h + l + c) / 4, ho = prev ? (prev.open + prev.close) / 2 : (o + c) / 2; return { time: d.time, open: ho, high: Math.max(h, ho, hc), low: Math.min(l, ho, hc), close: hc }; }
+  function styleRow(b) { return (chStyle === 'line' || chStyle === 'area') ? { time: b.time, value: +b.close } : b; }
+  function styleSync(w, b) { var s = w._styleS; if (!s) return; try { if (!b) s.setData(w._raw.map(styleRow)); else s.update(styleRow(b)); } catch (e) { } }
+  function styleWrap(w) {
+    var cs = w.candle; if (!cs || cs._mpWrapped) return; cs._mpWrapped = 1;
+    var sd = cs.setData.bind(cs), up = cs.update.bind(cs); w._raw = []; w._ha = [];
+    function conv(b, prev) { return chStyle === 'heikin' ? haConv(b, prev) : b; }
+    cs.setData = function (d) { d = d || []; w._raw = d.slice(); var out = [], prev = null; for (var i = 0; i < d.length; i++) { var x = conv(d[i], prev); out.push(x); prev = x; } w._ha = out; sd(out); styleSync(w, null); };
+    cs.update = function (b) { var r = w._raw, ha = w._ha, same = !!(r.length && r[r.length - 1].time === b.time); if (same) r[r.length - 1] = b; else r.push(b); var prev = same ? ha[ha.length - 2] : ha[ha.length - 1]; var x = conv(b, prev); if (same) ha[ha.length - 1] = x; else ha.push(x); up(x); styleSync(w, b); };
+  }
+  var _TR = 'rgba(0,0,0,0)';
+  function applyStyle(w) {
+    if (!w || !w.candle || !w.chart) return;
+    var upC = '#10b981', dnC = '#ef4444', st = chStyle, opt;
+    if (w._styleS) { try { w.chart.removeSeries(w._styleS); } catch (e) { } w._styleS = null; }
+    if (st === 'hollow') opt = { upColor: _TR, downColor: dnC, borderVisible: true, borderUpColor: upC, borderDownColor: dnC, wickUpColor: upC, wickDownColor: dnC };
+    else if (st === 'bars' || st === 'line' || st === 'area') opt = { upColor: _TR, downColor: _TR, borderVisible: false, wickUpColor: _TR, wickDownColor: _TR };
+    else opt = { upColor: upC, downColor: dnC, borderVisible: false, wickUpColor: upC, wickDownColor: dnC };
+    try { w.candle.applyOptions(opt); } catch (e) { }
+    try {
+      if (st === 'bars') w._styleS = w.chart.addBarSeries({ upColor: upC, downColor: dnC, thinBars: false, priceLineVisible: false, lastValueVisible: false });
+      else if (st === 'line') w._styleS = w.chart.addLineSeries({ color: '#c2f64a', lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: true });
+      else if (st === 'area') w._styleS = w.chart.addAreaSeries({ lineColor: '#c2f64a', topColor: 'rgba(194,246,74,.26)', bottomColor: 'rgba(194,246,74,0)', lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
+    } catch (e) { w._styleS = null; }
+    if (w._raw && w._raw.length) { try { w.candle.setData(w._raw); } catch (e) { } }
+  }
+  var _W = null;
+  function chartW() {
+    var p = null; try { p = window.__mpPT && window.__mpPT(); } catch (e) { }
+    if (!p || !p.chart || !p.candle) return null;
+    if (!_W || _W.candle !== p.candle) { _W = { chart: p.chart, candle: p.candle, _raw: (p.bars || []).slice(), _ha: [], _styleS: null }; styleWrap(_W); applyStyle(_W); }
+    else _W.chart = p.chart;
+    return _W;
+  }
+  function setStyle(s) {
+    if (!CH.some(function (x) { return x[0] === s; })) return;
+    chStyle = s; try { localStorage.setItem('mp_ch_style', s); } catch (e) { }
+    var w = chartW(); if (w) applyStyle(w);
+    popPaint();
+  }
+  function popPaint() {
+    var p = $('ptChPop'); if (!p) return;
+    var em = 'line'; try { em = (window.mpEntryMode && window.mpEntryMode()) || 'line'; } catch (e) { }
+    Array.prototype.forEach.call(p.querySelectorAll('[data-chstyle]'), function (b) { b.classList.toggle('on', b.getAttribute('data-chstyle') === chStyle); });
+    Array.prototype.forEach.call(p.querySelectorAll('[data-es]'), function (b) { b.classList.toggle('on', b.getAttribute('data-es') === em); });
+  }
+  function popBuild() {
+    var p = $('ptChPop'); if (!p || p.getAttribute('data-built')) return;
+    p.innerHTML = '<div class="ptc-pop-h">' + T('chStyle', 'Chart style') + '</div><div class="ptc-grid">'
+      + CH.map(function (x) { return '<button type="button" data-chstyle="' + x[0] + '">' + SV(x[2], 15) + esc(x[1]) + '</button>'; }).join('')
+      + '</div><div class="ptc-pop-h">' + T('chEntries', 'Your entries') + '</div><div class="ptc-grid">'
+      + '<button type="button" data-es="line">' + SV('<path d="M3 12h18"/>', 15) + T('chAsLines', 'Lines') + '</button>'
+      + '<button type="button" data-es="mark">' + SV('<circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>', 15) + T('chAsDots', 'Dots') + '</button>'
+      + '</div>';
+    p.setAttribute('data-built', '1');
+  }
+  function popOpen(on) {
+    var p = $('ptChPop'), b = $('ptChSet'), bd = $('ptChPopBd'); if (!p) return;
+    if (on) { popBuild(); popPaint(); setInset(); }
+    p.hidden = !on; if (bd) bd.hidden = !on;
+    if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+
+  /* ── STOP-LOSS / TAKE-PROFIT IN PERCENT (owner: "da ljudi mogu da izaberu u procentima, npr SL -30%") ──────
+     THE PRICE IS THE TRUTH and stays in #planSlOpt / #planTpOpt, because that is what the engine, the drag
+     lines and every sweep read. The percent box beside it is a VIEW that is also an input: typing a price
+     rewrites the percent, typing a percent rewrites the price. Two fields, one quantity, and they cannot
+     disagree because each write recomputes the other.
+     The percent is percent OF MARGIN (ROE) - the same unit the readout under the field has always used
+     ("If stop-loss hits -$40.00 (40%)"), never percent of price, which at 20x means something twenty times
+     smaller than the trader thinks. */
+  function entryNow() {
+    if (window.mpPlanType === 'limit' && isFinite(+window.mpPlanLimit) && +window.mpPlanLimit > 0) return +window.mpPlanLimit;
+    var p = window.mpPlanLive && +window.mpPlanLive.price; return (p > 0) ? p : 0;
+  }
+  function isLong() { var s = $('planSeg'), b = s && s.querySelector('button.on'); return !(b && b.getAttribute('data-side') === 'short'); }
+  function levNow() { var v = parseFloat(($('planLev') || {}).value); return (isFinite(v) && v > 0) ? v : 1; }
+  function prec(v) { return v >= 1000 ? 2 : v >= 1 ? 4 : v >= 0.01 ? 5 : 8; }
+  function pxFromPct(kind, pct) {
+    var e = entryNow(), L = levNow(); if (!(e > 0) || !(pct > 0)) return null;
+    var d = e * (pct / 100) / L, lng = isLong();
+    var p = (kind === 'sl') ? (lng ? e - d : e + d) : (lng ? e + d : e - d);
+    if (!(p > 0)) return null;
+    return +p.toFixed(prec(e));
+  }
+  function pctFromPx(kind, px) {
+    var e = entryNow(), L = levNow(); if (!(e > 0) || !(px > 0)) return null;
+    var lng = isLong(), wrong = (kind === 'sl') ? (lng ? px >= e : px <= e) : (lng ? px <= e : px >= e);
+    if (wrong) return null;
+    return Math.abs(px - e) / e * L * 100;
+  }
+  var XF = { sl: { px: 'planSlOpt', pct: 'planSlPct' }, tp: { px: 'planTpOpt', pct: 'planTpPct' } };
+  var _xBusy = 0;
+  function xPaint(kind) {
+    var f = XF[kind], px = $(f.px), pc = $(f.pct); if (!px || !pc) return;
+    var v = parseFloat(px.value), p = (v > 0) ? pctFromPx(kind, v) : null;
+    if (document.activeElement !== pc) pc.value = (p == null) ? '' : String(Math.round(p * 10) / 10);
+    var wrap = px.closest('.ptx'); if (wrap) {
+      var clr = wrap.querySelector('.ptx-clr'); if (clr) clr.hidden = !(v > 0);
+      Array.prototype.forEach.call(wrap.querySelectorAll('[data-xp]'), function (b) {
+        b.classList.toggle('on', p != null && Math.abs(p - +b.getAttribute('data-xp')) < 0.6);
+      });
+    }
+  }
+  function xSetPct(kind, pct) {
+    var f = XF[kind], px = $(f.px); if (!px) return;
+    var p = pxFromPct(kind, pct);
+    if (p == null) { try { if (window.mpToast) window.mpToast({ msg: T('xNeedPrice', 'Waiting for the live price - try again in a second.'), kind: 'warn', ms: 2600 }); } catch (e) { } return; }
+    _xBusy = 1; px.value = String(p); px.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0;
+    xMark(kind, 0); xPaint(kind);
+  }
+  /* an auto-filled level is a SUGGESTION and is re-derived when the side flips; a level the trader typed is
+     theirs and is never moved under them. That flag is also what makes closing Advanced safe. */
+  function xMark(kind, auto) { var px = $(XF[kind].px); if (px) px.setAttribute('data-auto', auto ? '1' : '0'); }
+  function xIsAuto(kind) { var px = $(XF[kind].px); return !!(px && px.getAttribute('data-auto') === '1'); }
+
+  /* ── BOOT ────────────────────────────────────────────────────────────────────────────────────────────────── */
+  function wire() {
+    if (wire._on) return; wire._on = 1;
+    stripBuild(); stripPaint(); paintHead();
+
+    document.addEventListener('click', function (ev) {
+      var t = ev.target;
+      var sb = t.closest && t.closest('#ptSymBtn');
+      if (sb) { ev.preventDefault(); var w = $('ptMkt'); if (w && w.hidden) mkOpen(); else mkClose(); return; }
+      var st = t.closest && t.closest('[data-fav]');
+      if (st) { ev.preventDefault(); ev.stopPropagation(); favTog(st.getAttribute('data-fav')); mkRender(); return; }
+      var row = t.closest && t.closest('[data-mk]');
+      if (row) { mkPick(row.getAttribute('data-mk')); return; }
+      var tb = t.closest && t.closest('[data-mt]');
+      if (tb) { mkTab = tb.getAttribute('data-mt'); try { localStorage.setItem('mp_pt_tab', mkTab); } catch (e) { } mkTabs(); mkRender(); return; }
+      if (t.closest && t.closest('[data-mkx]')) { mkClose(); return; }
+      var sf = t.closest && t.closest('[data-stf]');
+      if (sf) {
+        var b = $('ptTf') && $('ptTf').querySelector('button[data-tf="' + sf.getAttribute('data-stf') + '"]');
+        if (b) b.click(); setTimeout(stripPaint, 40); setTimeout(stripPaint, 400); return;
+      }
+      if (t.closest && t.closest('#ptChSet')) { ev.stopPropagation(); popOpen($('ptChPop').hidden); return; }
+      if (t.closest && t.closest('#ptChPopBd')) { popOpen(false); return; }
+      var cs = t.closest && t.closest('[data-chstyle]');
+      if (cs) { setStyle(cs.getAttribute('data-chstyle')); return; }
+      var pop = $('ptChPop');
+      if (pop && !pop.hidden && !(t.closest && (t.closest('#ptChPop') || t.closest('#ptChSet')))) popOpen(false);
+    }, false);
+
+    /* the entry-style buttons live in the settings popover now; the engine's own delegated listener is bound to
+       .ptt-es, so the popover's copies forward to it rather than owning a second idea of the mode */
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('#ptChPop [data-es]'); if (!b) return;
+      var real = document.querySelector('.ptt-es button[data-es="' + b.getAttribute('data-es') + '"]');
+      if (real) real.click();
+      setTimeout(popPaint, 30);
+    }, false);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var w = $('ptMkt'); if (w && !w.hidden) { mkClose(); return; }
+      var p = $('ptChPop'); if (p && !p.hidden) popOpen(false);
+    });
+
+    var q = $('ptMkQ');
+    if (q) q.addEventListener('input', function () { mkQ = q.value.trim(); mkRender(); });
+
+    var ps = $('planSym');
+    if (ps) ps.addEventListener('change', function () { paintHead(); setTimeout(stripPaint, 60); });
+
+    /* the Advanced disclosure is a BUTTON now; the checkbox that every other block listens to stays and is
+       driven from it, so nothing downstream had to learn a new signal */
+    var ab = $('ptAdvBtn'), ac = $('planAdvChk');
+    if (ab && ac) {
+      /* GATED, NOT DISABLED. A disabled <button> fires no click at all, so a guest tapping Advanced would get
+         nothing - and the whole point of the gate is to offer them the account that unlocks it. The note mp-auth
+         writes beside it keeps its own line under the row. */
+      var sync = function () { var g = !!ac.disabled; ab.setAttribute('aria-expanded', ac.checked ? 'true' : 'false'); ab.setAttribute('aria-disabled', g ? 'true' : 'false'); ab.classList.toggle('gated', g); ab.disabled = false; };
+      ab.addEventListener('click', function () { if (ac.disabled) { try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (e) { } return; } ac.checked = !ac.checked; ac.dispatchEvent(new Event('change', { bubbles: true })); sync(); });
+      ac.addEventListener('change', sync);
+      sync(); setInterval(sync, 1500);
+    }
+
+    // SL / TP: the percent box, the chips, and keeping the two views of one level in step
+    ['sl', 'tp'].forEach(function (k) {
+      var f = XF[k], px = $(f.px), pc = $(f.pct);
+      if (px) px.addEventListener('input', function () { if (!_xBusy) xMark(k, 0); xPaint(k); });
+      if (pc) pc.addEventListener('input', function () {
+        var v = parseFloat(pc.value);
+        if (!(v > 0)) { if (pc.value === '') { var e = $(f.px); if (e && e.value) { e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })); } } return; }
+        var p = pxFromPct(k, Math.min(v, 500)); if (p == null) return;
+        var e2 = $(f.px); _xBusy = 1; e2.value = String(p); e2.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0; xMark(k, 0);
+        var wrap = e2.closest('.ptx'); if (wrap) { var c = wrap.querySelector('.ptx-clr'); if (c) c.hidden = false; Array.prototype.forEach.call(wrap.querySelectorAll('[data-xp]'), function (b) { b.classList.toggle('on', Math.abs(v - +b.getAttribute('data-xp')) < 0.6); }); }
+      });
+    });
+    document.addEventListener('click', function (ev) {
+      var b = ev.target.closest && ev.target.closest('[data-xp]');
+      if (b) { var w = b.closest('.ptx'); xSetPct(w.getAttribute('data-k'), +b.getAttribute('data-xp')); return; }
+      var c = ev.target.closest && ev.target.closest('.ptx-clr');
+      if (c) {
+        var w2 = c.closest('.ptx'), k = w2.getAttribute('data-k'), e = $(XF[k].px);
+        if (e) { e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })); }
+        var p2 = $(XF[k].pct); if (p2) p2.value = '';
+        xMark(k, 0); xPaint(k);
+      }
+    }, false);
+    // the percent is a view of a price against a moving market - repaint it on the side, the leverage and the tick
+    var seg = $('planSeg'); if (seg) seg.addEventListener('click', function () { setTimeout(function () { sideFlip(); xPaint('sl'); xPaint('tp'); }, 10); });
+    ['planLev', 'planLevR', 'planLimitPx'].forEach(function (id) { var e = $(id); if (e) e.addEventListener('input', function () { xPaint('sl'); xPaint('tp'); }); });
+    document.addEventListener('mp:price', function () { xPaint('sl'); xPaint('tp'); });
+
+    setInset(); window.addEventListener('resize', setInset);
+    setInterval(function () { chartW(); stripPaint(); setInset(); }, 2000);
+    chartW();
+  }
+
+  /* when the side flips, an AUTO level is re-derived for the new side - a suggestion that is now on the wrong
+     side of the market is not a suggestion, it is a refusal waiting to happen at the Open button */
+  function sideFlip() {
+    ['sl', 'tp'].forEach(function (k) {
+      if (!xIsAuto(k)) return;
+      var e = entryNow(); if (!(e > 0)) return;
+      var pct = (k === 'sl') ? 2 * levNow() : 3 * levNow();
+      var p = pxFromPct(k, Math.min(pct, 400)); if (p == null) return;
+      var el = $(XF[k].px); _xBusy = 1; el.value = String(p); el.dispatchEvent(new Event('input', { bubbles: true })); _xBusy = 0; xMark(k, 1);
+    });
+  }
+  window.__mpPtAuto = { mark: xMark, isAuto: xIsAuto, paint: xPaint, flip: sideFlip };
+  window.__mpPtShellDbg = function () { return { sym: symNow(), tf: tfCurrent(), style: chStyle, favs: favs(), mkOpen: !($('ptMkt') || { hidden: true }).hidden }; };
+
+  function boot() { if (!document.getElementById('ptSymBtn')) { setTimeout(boot, 400); return; } wire(); }
+  if (document.readyState !== 'loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+
+/* <<< MP-PT-SHELL <<< */

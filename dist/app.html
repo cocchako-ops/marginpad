@@ -113,7 +113,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=2500317c">
+<link rel="stylesheet" href="/assets/home.css?v=e9254a13">
 <!-- COLD-LOAD WATERFALL (restored 2026-09-05). home.js is the last tag in the body, so on a slow phone the chart's two
      biggest dependencies - the klines request and the charting library - only started AFTER ~450 KB of JS had been
      parsed and executed (measured: home.js arrives 2.5 s, candles paint 4.8 s on Slow 4G + 4x CPU). home.js has always
@@ -344,33 +344,43 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <section class="panel" id="plan">
       <div class="ptt">
         <div class="ptt-chart">
-          <div class="ptt-chart-top">
-            <select id="planClass" class="pt2-class" aria-label="Asset class"><option value="crypto">Crypto</option><option value="stock">Stocks</option><option value="forex">Forex</option><option value="metal">Metals</option><option value="index">Indices</option></select>
-            <select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select>
-            <div class="ptt-tfwrap">
-              <button type="button" class="ptt-tf-btn" id="ptTfBtn" aria-haspopup="menu" aria-expanded="false"><span id="ptTfCur">5m</span><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-              <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1s" data-lbl="1s" data-prem="1" type="button">1s</button><button data-tf="5s" data-lbl="5s" data-prem="1" type="button">5s</button><button data-tf="15s" data-lbl="15s" data-prem="1" type="button">15s</button><button data-tf="30s" data-lbl="30s" data-prem="1" type="button">30s</button><button data-tf="1" data-lbl="1m" type="button">1m</button><button data-tf="3" data-lbl="3m" data-prem="1" type="button">3m</button><button data-tf="5" data-lbl="5m" class="on" type="button">5m</button><button data-tf="15" data-lbl="15m" type="button">15m</button><button data-tf="30" data-lbl="30m" data-prem="1" type="button">30m</button><button data-tf="60" data-lbl="1h" type="button">1h</button><button data-tf="120" data-lbl="2h" data-prem="1" type="button">2h</button><button data-tf="240" data-lbl="4h" type="button">4h</button><button data-tf="360" data-lbl="6h" data-prem="1" type="button">6h</button><button data-tf="720" data-lbl="12h" data-prem="1" type="button">12h</button><button data-tf="1440" data-lbl="1D" type="button">1D</button><button data-tf="10080" data-lbl="1W" type="button">1W</button></div>
-            </div>
-            <div class="ptt-es" role="group" aria-label="Entry style">
-              <button type="button" data-es="line" class="on" title="Entries as price lines" aria-pressed="true"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1 8h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-              <button type="button" data-es="mark" title="Entries as a dot at the entry price" aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><circle cx="8" cy="8" r="3.4" fill="currentColor"/></svg></button>
-            </div>
+          <div class="ptc-head">
+            <button type="button" class="ptc-sym" id="ptSymBtn" aria-haspopup="dialog" aria-expanded="false">
+              <span class="ptc-ic" id="ptSymIc"></span>
+              <span class="ptc-sn"><span class="ptc-pair"><b id="ptSymTxt">BTC</b><span class="ptc-quote">USD</span><svg class="ptc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span><span class="ptc-cd" id="ptCd"></span></span>
+            </button>
           </div>
           <div id="ptChart"></div>
+          <div class="ptc-bar">
+            <div class="ptc-tfs" id="ptTfs" role="group" aria-label="Timeframe"></div>
+            <div class="ptt-tfwrap">
+              <button type="button" class="ptc-ib ptc-more" id="ptTfBtn" aria-haspopup="menu" aria-expanded="false" aria-label="More timeframes"><span class="ptc-dots">&#183;&#183;&#183;</span><span id="ptTfCur">5m</span></button>
+              <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1s" data-lbl="1s" data-prem="1" type="button">1s</button><button data-tf="5s" data-lbl="5s" data-prem="1" type="button">5s</button><button data-tf="15s" data-lbl="15s" data-prem="1" type="button">15s</button><button data-tf="30s" data-lbl="30s" data-prem="1" type="button">30s</button><button data-tf="1" data-lbl="1m" type="button">1m</button><button data-tf="3" data-lbl="3m" data-prem="1" type="button">3m</button><button data-tf="5" data-lbl="5m" class="on" type="button">5m</button><button data-tf="15" data-lbl="15m" type="button">15m</button><button data-tf="30" data-lbl="30m" data-prem="1" type="button">30m</button><button data-tf="60" data-lbl="1h" type="button">1h</button><button data-tf="120" data-lbl="2h" data-prem="1" type="button">2h</button><button data-tf="240" data-lbl="4h" type="button">4h</button><button data-tf="360" data-lbl="6h" data-prem="1" type="button">6h</button><button data-tf="720" data-lbl="12h" data-prem="1" type="button">12h</button><button data-tf="1440" data-lbl="1D" type="button">1D</button><button data-tf="10080" data-lbl="1W" type="button">1W</button></div>
+            </div>
+            <span class="ptc-sp"></span>
+            <button type="button" class="ptc-ib" id="ptChSet" aria-expanded="false" aria-label="Chart settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.9 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.2a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H4a2 2 0 1 1 0-4h.2A1.6 1.6 0 0 0 5.3 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.2a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
+          </div>
+          <div class="ptc-pop-bd" id="ptChPopBd" hidden></div>
+          <div class="ptc-pop" id="ptChPop" hidden></div>
+          <div class="ptc-keep" aria-hidden="true"><select id="planClass" class="pt2-class" aria-label="Asset class"><option value="crypto">Crypto</option><option value="stock">Stocks</option><option value="forex">Forex</option><option value="metal">Metals</option><option value="index">Indices</option></select><select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select><div class="ptt-es" role="group" aria-label="Entry style">
+              <button type="button" data-es="line" class="on" title="Entries as price lines" aria-pressed="true"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1 8h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+              <button type="button" data-es="mark" title="Entries as a dot at the entry price" aria-pressed="false"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><circle cx="8" cy="8" r="3.4" fill="currentColor"/></svg></button>
+            </div></div>
         </div>
         <div class="ptt-recent" id="ptRecent" aria-label="Recently traded pairs" hidden></div>
         <div class="ptt-side">
           <div class="ptt-form">
             <div class="pt2-top">
               <div class="pt2-px"><div class="pt2-px-lbl live-lbl"><span class="lvdot"></span>LIVE</div><div class="pt2-px-v copynum" id="planLivePx" title="Click to copy">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
-            </div>
-            <div class="pt2-otype" id="planType" role="tablist" aria-label="Order type">
+              <div class="pt2-otype" id="planType" role="tablist" aria-label="Order type">
               <button type="button" class="on" data-otype="market" role="tab" aria-selected="true" data-i18n="otMarket">Market</button>
               <button type="button" data-otype="limit" role="tab" aria-selected="false" data-i18n="otLimit">Limit</button>
             </div>
+            </div>
+            
             <div class="pt2-side" id="planSeg">
-              <button class="on" data-side="long" type="button"><span data-i18n="long">Long</span></button>
-              <button data-side="short" type="button"><span data-i18n="short">Short</span></button>
+              <button class="on" data-side="long" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span data-i18n="long">Long</span></button>
+              <button data-side="short" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg><span data-i18n="short">Short</span></button>
             </div>
             <div class="pt2-lim" id="planLimWrap" hidden>
               <label for="planLimitPx" data-i18n="lLimitPx">Limit price</label>
@@ -382,8 +392,8 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div><div class="lev-warn"><svg class="lw-ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="levWarn">High leverage - liquidation sits very close to entry</span></div></div>
               <div class="pt2-lev"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="planLev" value="20" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div></div>
             </div>
-            <div class="lev-row">
-              <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span>Advanced</span></label>
+            <div class="lev-row pt-advrow">
+              <label class="adv-toggle ptc-keep"><input type="checkbox" id="planAdvChk"><span>Advanced</span></label><button type="button" class="pt-adv-b" id="ptAdvBtn" aria-expanded="false" aria-controls="planAdvIn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><span data-i18n="advBtn">Advanced</span><svg class="pt-adv-c" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
               <div class="lev-slidewrap"><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="1000" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Position size</span><b id="planSize">-</b></div><div><span data-i18n="rNotional">Notional value</span><b id="planNotional">-</b></div><div><span data-i18n="rEstLiq">Est. liquidation</span><b id="planLiq">-</b></div><div><span data-i18n="rFeeRound">Fee to open + close</span><b id="planFee">-</b></div></div>
@@ -402,17 +412,26 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
                 <option value="1.33">Coinbase - 1.33%</option>
               </select></div><p class="plan-hint" id="planExHint" hidden><b>Maintenance margin</b> is the slice of your position the exchange makes you keep on deposit; the moment your margin falls to it, you are liquidated. Binance asks 0.4%, Bybit 0.5%, Kraken 0.6%, MEXC 0.1% on its first tier, Hyperliquid 1.25% on BTC, Coinbase 1.33%; MarginPad default is 0.5%. It moves <b>only where your liquidation price sits</b>. Position size, fees and P&amp;L do not change.</p></div>
               <div class="field" id="planFeeField"><div class="fl-row"><label for="planFeeVenue">Fees as on (sets taker fee)</label><button type="button" class="ptt-q" data-hint="planFeeHint" aria-expanded="false" aria-label="What does the fee schedule do?">?</button></div><div class="input-line"><select id="planFeeVenue" aria-label="Fee schedule"><option value="">MarginPad - 0.055%</option></select></div><p class="plan-hint" id="planFeeHint" hidden><b>Taker fee</b> is what the venue charges per side on the full position size (not on your margin), once at open and once at close, less the discount a MarginPad sign-up gets there. It changes <b>only what the trade costs and your net P&amp;L</b>, never the liquidation price. <a href="/trading-api/#fees" target="_blank" rel="noopener">How the fee schedules work</a></p></div>
-              <div class="field" id="planRzField"><div class="fl-row"><label>Realistic fills</label><button type="button" class="ptt-q" data-hint="planRzHint" aria-expanded="false" aria-label="What do realistic fills change?">?</button></div><div class="rz-row"><label class="rz-sw"><input type="checkbox" id="planRzSlip"><span>Slippage</span></label><label class="rz-sw"><input type="checkbox" id="planRzTier"><span>Margin tiers</span></label><span class="rz-st" id="planRzSt"></span></div><p class="plan-hint" id="planRzHint" hidden>By default a market order fills at the <b>live price</b> and maintenance margin is a flat <b>0.5%</b> - the entry line sits exactly where you clicked and a new position reads 0.00. That is easier than a real venue. <b>Slippage</b> moves the fill against you the way walking a real order book does: 0.01% on the majors, 0.05% on thinner crypto, 0.005% on forex, 0.02% on stocks, metals and indices. <b>Margin tiers</b> raise the maintenance margin as the position grows, the way an exchange risk-limit table does, so a large position is liquidated sooner - a higher maintenance requirement leaves less room before it closes you. Both are off unless you switch them on, they apply to <b>positions opened from now on</b>, and a position always keeps the maintenance margin it was filled with. The same setting is what your bots use through the API.</p></div>
-              <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
-              <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="-"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
-              <div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
-              <div class="field"><label data-i18n="lBreakEven">Break-even at ROE</label><div class="input-line"><input type="number" id="planBE" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
+              <div class="field" id="planRzField"><div class="fl-row"><label data-i18n="lRealFills">Realistic fills</label><button type="button" class="ptt-q" data-hint="planRzHint" aria-expanded="false" aria-label="What do realistic fills change?">?</button></div><div class="rz-card"><label class="rz-it"><input type="checkbox" id="planRzSlip"><span class="rz-k"></span><span class="rz-tx"><b data-i18n="rzSlipT">Slippage</b><small data-i18n="rzSlipD">Your fill moves against you the way walking a real order book does - 0.01% on the majors, more on thinner markets.</small></span></label><label class="rz-it"><input type="checkbox" id="planRzTier"><span class="rz-k"></span><span class="rz-tx"><b data-i18n="rzTierT">Margin tiers</b><small data-i18n="rzTierD">A bigger position needs more maintenance margin, exactly as an exchange risk-limit table asks - so it liquidates sooner.</small></span></label><div class="rz-foot"><span class="rz-dot"></span><span class="rz-st" id="planRzSt"></span></div></div><p class="plan-hint" id="planRzHint" hidden>By default a market order fills at the <b>live price</b> and maintenance margin is a flat <b>0.5%</b> - the entry line sits exactly where you clicked and a new position reads 0.00. That is easier than a real venue. <b>Slippage</b> moves the fill against you the way walking a real order book does: 0.01% on the majors, 0.05% on thinner crypto, 0.005% on forex, 0.02% on stocks, metals and indices. <b>Margin tiers</b> raise the maintenance margin as the position grows, the way an exchange risk-limit table does, so a large position is liquidated sooner - a higher maintenance requirement leaves less room before it closes you. Both are off unless you switch them on, they apply to <b>positions opened from now on</b>, and a position always keeps the maintenance margin it was filled with. The same setting is what your bots use through the API.</p></div>
+              <div class="ptx sl" data-k="sl"><div class="ptx-h"><label for="planSlOpt" data-i18n="lStopOpt">Stop-loss</label><button type="button" class="ptx-clr" hidden data-i18n="xClear">Clear</button></div><div class="ptx-row"><div class="input-line"><input type="number" id="planSlOpt" step="any" inputmode="decimal" placeholder="price"><span class="unit">USD</span></div><div class="ptx-pct"><input type="number" id="planSlPct" step="any" min="0" inputmode="decimal" placeholder="&#8722;%" aria-label="Stop-loss as a percent of margin"><span class="u">%</span></div></div><div class="ptx-q"><button type="button" data-xp="10">&#8722;10%</button><button type="button" data-xp="25">&#8722;25%</button><button type="button" data-xp="50">&#8722;50%</button><button type="button" data-xp="75">&#8722;75%</button></div><div class="ptx-hint" data-i18n="xHintSl">The percent is of your margin, not of the price - at 20x a 1% move against you is 20%.</div><div class="plan-risk" id="planRiskSl" hidden></div></div>
+              <div class="ptx tp" data-k="tp"><div class="ptx-h"><label for="planTpOpt" data-i18n="lTpOpt">Take-profit</label><button type="button" class="ptx-clr" hidden data-i18n="xClear">Clear</button></div><div class="ptx-row"><div class="input-line"><input type="number" id="planTpOpt" step="any" inputmode="decimal" placeholder="price"><span class="unit">USD</span></div><div class="ptx-pct"><input type="number" id="planTpPct" step="any" min="0" inputmode="decimal" placeholder="+%" aria-label="Take-profit as a percent of margin"><span class="u">%</span></div></div><div class="ptx-q"><button type="button" data-xp="25">+25%</button><button type="button" data-xp="50">+50%</button><button type="button" data-xp="100">+100%</button><button type="button" data-xp="200">+200%</button></div><div class="ptx-hint" data-i18n="xHintTp">Type a price, or the profit you are aiming for as a percent of your margin.</div><div class="plan-risk" id="planRiskTp" hidden></div></div>
+              <div class="pt-pair2"><div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div><div class="field"><label data-i18n="lBreakEven">Break-even at ROE</label><div class="input-line"><input type="number" id="planBE" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div></div>
               <p class="note" style="margin-top:2px" data-i18n="advNote">Trailing stop follows the price by that %; break-even moves your stop to entry once profit (ROE) reaches the set %.</p>
             </div>
             <button type="button" class="pt2-open" id="planSave"><span id="planOpenTxt" data-i18n="mtOpen">Open demo trade</span></button>
           </div>
           <div id="ptLastTrade" class="pt-tickets" hidden></div>
           <div id="ptBronze" class="pt-bronze" hidden></div>
+      <div class="ptmk" id="ptMkt" hidden role="dialog" aria-modal="true" aria-label="Choose a market">
+        <div class="ptmk-bd" data-mkx></div>
+        <div class="ptmk-p">
+          <div class="ptmk-h"><div class="ptmk-t" data-i18n="mkTitle">Choose a market</div><button type="button" class="ptmk-x" data-mkx aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+          <div class="ptmk-s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><input id="ptMkQ" type="text" autocomplete="off" spellcheck="false" placeholder="Search a coin, a company, a pair&#8230;" aria-label="Search markets"></div>
+          <div class="ptmk-tabs" id="ptMkTabs"></div>
+          <div class="ptmk-list" id="ptMkList"></div>
+          <div class="ptmk-f" id="ptMkFoot"></div>
+        </div>
+      </div>
         </div>
       </div>
     </section>
@@ -859,7 +878,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=2500317c"></script>
+<script src="/assets/home.js?v=e9254a13"></script>
 <script defer src="/assets/mp-nav.js?v=966ae3f1"></script>
 </body>
 </html>
