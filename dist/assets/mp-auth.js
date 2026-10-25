@@ -282,6 +282,27 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     /* open = a transition, never @keyframes (the owner runs Windows with animation effects off); phone = bottom sheet */
     + '.mpa-panel{transform:translateY(10px);opacity:0;transition:transform .2s ease,opacity .16s ease}.mpa-panel.in{transform:none;opacity:1}'
     + '@media(max-width:560px){.mpa-modal{align-items:flex-end;padding:0}.mpa-panel{max-width:none;border-radius:22px 22px 0 0;border-bottom:none;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px - env(safe-area-inset-top, 0px));padding:8px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(40px)}.mpa-panel.in{transform:none}.mpa-panel::before{content:"";display:block;width:38px;height:4px;border-radius:4px;background:#2c3440;margin:0 auto 10px}.mpa-x{top:14px}}'
+    /* THE SHEET FOLLOWS THE VISUAL VIEWPORT WHILE THE KEYBOARD IS UP (2026-10-25, owner: "dok sam koristio DMs
+       sa aplikacije, chat mi je non stop padao za po 1mm iza tastature"). The panel is a bottom sheet sized by
+       `100dvh` and the DM view by `60vh` - and NEITHER unit shrinks for an iOS keyboard, which is the whole
+       problem: the sheet keeps its full height, the composer is laid out underneath the keyboard, and iOS
+       scrolls it back into view while every relayout (the 5 s thread poll, a ResizeObserver, a toast) lets it
+       settle down a notch. That is the millimetre a second. `visualViewport.height` DOES shrink for the
+       keyboard, so the sheet is given the room that really exists and there is nothing left to creep into.
+       Measured first: on an emulator with no keyboard the panel did not move one pixel in fifteen seconds -
+       the creep needs the keyboard, so this is the only unit that can answer it. */
+    + '@media(max-width:560px){body.mpa-kb .mpa-modal{top:var(--mpa-vvt,0px);height:var(--mpa-vvh,100dvh);bottom:auto}'
+    /* THE PANEL BECOMES THE FLEX COLUMN, or `flex:1` on the DM block means nothing - the panel is an ordinary
+       scrolling box, so a child told to flex inside it simply took its content height and the thread collapsed
+       to 33px: you could type and no longer read what you were answering. Measured with a faked 336px keyboard,
+       which is the only way to see this without a phone. */
+    + 'body.mpa-kb .mpa-panel{max-height:var(--mpa-vvh,100dvh);padding-bottom:10px;display:flex;flex-direction:column;overflow:hidden}'
+    /* a sheet is shrink-to-fit, so capping its height changed nothing: measured at 221px of a possible 508,
+       and the thread inside it got 33. A conversation TAKES the room the keyboard left - and the room has to
+       be handed down through .mpa-body, the one child between the panel and the thread, or it stops there. */
+    + 'body.mpa-kb .mpa-panel:has(.mpa-dm){height:var(--mpa-vvh,100dvh)}'
+    + 'body.mpa-kb .mpa-body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}'
+    + 'body.mpa-kb .mpa-dm{height:auto;flex:1 1 auto;min-height:120px}}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
     + '.mpa-dm{display:flex;flex-direction:column;height:min(60vh,440px)}'
@@ -3528,20 +3549,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function css() {
     if (cssDone) return; cssDone = true;
     var s = document.createElement('style'); s.id = 'mptoast-css';
-    s.textContent = '#' + HOST + '{position:fixed;right:14px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none;max-width:min(320px,calc(100vw - 28px))}'
+    /* SMALLER CARD, ONE TYPOGRAPHY (2026-10-25, owner: "notifikacije generalno mogu da budu manje sa nekim
+       citljivijim fontom"). The two text paths had drifted apart: `msg` landed in .mpxp-msg at 12.5px Familjen
+       Grotesk on #dfe4ec, while `html` - which every richer notice uses, the streak card included - landed in a
+       bare span at 11.5px MONOSPACE on #9aa3ad. So the notices carrying the most to read were set in the least
+       readable of the two. Both are the sans now, at one size and one colour; monospace is kept for the MARK,
+       which is a figure. The box itself gives back room: narrower, tighter padding, smaller mark and button. */
+    s.textContent = '#' + HOST + '{position:fixed;right:14px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;align-items:flex-end;gap:7px;pointer-events:none;max-width:min(288px,calc(100vw - 28px))}'
       // the frame is the level; --xc is only the small mark that says what kind of message this is
-      + '.mpxp{position:relative;display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;background:linear-gradient(180deg,#141821,#0e1117);border:1px solid var(--lc-line,#2a3550);border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:10px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5),0 0 0 1px var(--lc-glow,transparent);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;pointer-events:none}'
+      + '.mpxp{position:relative;display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;background:linear-gradient(180deg,#141821,#0e1117);border:1px solid var(--lc-line,#2a3550);border-left:3px solid var(--xc,#c2f64a);border-radius:11px;padding:8px 11px;box-shadow:0 10px 28px rgba(0,0,0,.5),0 0 0 1px var(--lc-glow,transparent);font-family:"Familjen Grotesk",system-ui,sans-serif;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;pointer-events:none}'
       + '.mpxp.on{transform:none;opacity:1}'
       + '.mpxp.out{transform:translateX(120%);opacity:0}'
-      + '.mpxp::after{content:"";position:absolute;inset:0;border-radius:11px;background:linear-gradient(100deg,var(--lc-tint,transparent),transparent 68%);pointer-events:none}'
-      + '.mpxp b{color:var(--xc,#c2f64a);font-size:15px;font-weight:800;flex:none}'
-      + '.mpxp span{font-size:11.5px;color:#9aa3ad;line-height:1.25;min-width:0;overflow-wrap:anywhere}'
-      + '.mpxp .mpxp-msg{font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:12.5px;color:#dfe4ec;line-height:1.35}'
-      + '.mpxp .mpxp-msg i{font-style:normal;color:var(--xc,#c2f64a);font-weight:700}'
-      + '.mpxp .mpxp-act{position:relative;z-index:1;flex:none;margin-left:2px;background:var(--lc-btn,#c2f64a);color:#0a0b0d;border:0;border-radius:8px;padding:6px 10px;font:800 11px "Familjen Grotesk",system-ui,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}'
-      + '.mpxp .mpxp-x{position:relative;z-index:1;flex:none;background:none;border:0;color:#6d7986;font-size:14px;line-height:1;cursor:pointer;padding:2px 0 2px 4px}'
+      + '.mpxp::after{content:"";position:absolute;inset:0;border-radius:10px;background:linear-gradient(100deg,var(--lc-tint,transparent),transparent 68%);pointer-events:none}'
+      + '.mpxp b{font-family:ui-monospace,Consolas,monospace;color:var(--xc,#c2f64a);font-size:13px;font-weight:800;flex:none;letter-spacing:-.01em}'
+      + '.mpxp span,.mpxp .mpxp-msg{font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:12.5px;color:#dfe4ec;line-height:1.4;min-width:0;overflow-wrap:anywhere}'
+      + '.mpxp .mpxp-msg i,.mpxp span i{font-style:normal;color:var(--xc,#c2f64a);font-weight:700}'
+      + '.mpxp .mpxp-act{position:relative;z-index:1;flex:none;margin-left:2px;background:var(--lc-btn,#c2f64a);color:#0a0b0d;border:0;border-radius:7px;padding:5px 9px;font:800 10.5px "Familjen Grotesk",system-ui,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}'
+      + '.mpxp .mpxp-x{position:relative;z-index:1;flex:none;background:none;border:0;color:#6d7986;font-size:13px;line-height:1;cursor:pointer;padding:2px 0 2px 4px}'
       + '.mpxp .mpxp-x:hover{color:#c9d2dc}'
-      + '@media(max-width:560px){#' + HOST + '{right:10px;max-width:calc(100vw - 20px)}.mpxp{padding:9px 11px}}';
+      + '@media(max-width:560px){#' + HOST + '{right:10px;max-width:calc(100vw - 20px)}.mpxp{padding:8px 10px}}';
     (document.head || document.documentElement).appendChild(s);
   }
   // Clear whatever sits at the bottom of the screen (the phone tab bar) by MEASURING it - a hardcoded offset was
@@ -4476,6 +4502,21 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function isComposer(t) { try { return !!(t && t.closest && t.closest(SEL)); } catch (e) { return false; } }
   function nm(el) { if (!el) return 'none'; var c = (el.className && typeof el.className === 'string') ? el.className.split(/\s+/)[0] : ''; return (el.tagName || '?').toLowerCase() + (el.id ? '#' + el.id : '') + (c ? '.' + c : ''); }
   function vvh() { return (window.visualViewport && window.visualViewport.height) || window.innerHeight; }
+  /* The account sheet is told how much screen is really left (see the body.mpa-kb rules). A home-screen app has
+     no URL bar to collapse, so anything over 120px of lost height is the keyboard and nothing else; the write
+     is one rAF per burst, and it runs only while a panel is actually open so a page with no sheet pays nothing. */
+  (function () { var vv = window.visualViewport; if (!vv) return; var raf = 0;
+    function sync() { raf = 0;
+      try { var open = document.querySelector('.mpa-modal');
+        var kb = open && (window.innerHeight - vv.height) > 120, r = document.documentElement;
+        if (kb) { r.style.setProperty('--mpa-vvh', Math.round(vv.height) + 'px'); r.style.setProperty('--mpa-vvt', Math.round(vv.offsetTop) + 'px'); document.body.classList.add('mpa-kb'); }
+        else { document.body.classList.remove('mpa-kb'); r.style.removeProperty('--mpa-vvh'); r.style.removeProperty('--mpa-vvt'); }
+      } catch (e) {} }
+    function ping() { if (raf) return; raf = requestAnimationFrame(sync); }
+    vv.addEventListener('resize', ping); vv.addEventListener('scroll', ping);
+    document.addEventListener('focusin', ping, true); document.addEventListener('focusout', function () { setTimeout(ping, 60); }, true);
+    window.__mpKbSheet = sync; // the E2E drives it with a faked visual viewport - no emulator raises a keyboard
+  })();
   function hf() { try { return document.hasFocus() ? 1 : 0; } catch (e) { return '?'; } }
   var sent = 0;
   function send(lbl) {

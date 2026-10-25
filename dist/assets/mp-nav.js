@@ -114,13 +114,13 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + 'header.mpnav-hdr .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
     + 'header.mpnav-hdr .hmenu span:nth-child(2){width:13px;}'
     + 'header.mpnav-hdr .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}'
-    + 'header.mpnav-hdr .hnav{display:flex;align-items:center;gap:3px;}'
+    + 'header.mpnav-hdr .hnav{display:flex;align-items:center;gap:7px;}'
     + "header.mpnav-hdr .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}"
     + 'header.mpnav-hdr .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}'
     + 'header.mpnav-hdr .hlink svg{flex-shrink:0;}'
     + 'header.mpnav-hdr .hbot{color:#7cc4ff;}header.mpnav-hdr .hrwd,header.mpnav-hdr .hjr{color:#c2f64a;}'
     + "header.mpnav-hdr .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
-    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}header.mpnav-hdr .hnav{gap:2px;}header.mpnav-hdr .lang{max-width:64px;}}'
+    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}header.mpnav-hdr .hnav{gap:8px;}header.mpnav-hdr .lang{max-width:64px;}}'
     /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap - break out) */
     + '@media(min-width:721px){html{overflow-x:clip;}header.mpnav-hdr{width:100vw;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
     /* site-wide header tweaks (apply to canonical + injected headers): bigger account icon, language as a transparent globe */
@@ -662,8 +662,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=d85f0409', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=d85f0409"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=f8e6e31f', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=f8e6e31f"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }

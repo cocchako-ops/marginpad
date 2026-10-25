@@ -45,7 +45,7 @@
   .brand .mark:hover{letter-spacing:-.02em;}
   .brand .mark b{color:#c2f64a;}
   .brand .tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.18em;}
-  .hnav{display:flex;align-items:center;gap:3px;}
+  .hnav{display:flex;align-items:center;gap:7px;}
   .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim);text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}
   .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}
   .hlink svg{flex-shrink:0;}
@@ -2237,7 +2237,7 @@
     header{padding:16px 0 12px;gap:8px 10px;}
     .brand .tag{display:none;}
     .brand .mark{font-size:20px;}
-    .hnav{gap:1px;flex-wrap:wrap;justify-content:flex-end;}
+    .hnav{gap:8px;flex-wrap:wrap;justify-content:flex-end;}
     .hlink{padding:7px 8px;font-size:11px;letter-spacing:.03em;}
     .hlink svg{width:13px;height:13px;}
     .lang{font-size:11px;padding:6px 8px;}
@@ -3811,6 +3811,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
      the whole first screen, the block is one scroll away, in the flow of the document, never hidden from anybody */
   body.paper-page>.pt-seo{position:absolute;top:100%;left:0;right:0;margin:14px auto 20px!important}
   body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page>.wrap>header,body.paper-page>header{padding-left:16px!important;padding-right:16px!important}
   body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
   body.paper-page .ptt{gap:0!important;grid-template-columns:minmax(0,1fr) 384px!important}
   body.paper-page .ptt.has-recent{grid-template-columns:minmax(0,1fr) 56px 384px!important}
@@ -3829,6 +3830,7 @@ body.ch-light .cwin-ai-gate{color:#1d242e;}
 }
 @media(max-width:880px){
   body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page>.wrap>header,body.paper-page>header{padding-left:16px!important;padding-right:16px!important}
   body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
   body.paper-page .ptt{gap:0!important}
   body.paper-page .ptt-chart{border:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;background:transparent!important}

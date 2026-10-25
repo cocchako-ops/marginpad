@@ -8306,7 +8306,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=bde84dfd" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=d7b05ba8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19413,7 +19413,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd85f0409';
+const ASSET_V = 'f8e6e31f';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -20879,7 +20879,7 @@ async function handleSpot(url, request, env) {
   }
   if (path === '/board') { // the Meme Spot season board, public: the KV snapshot the */10 cron writes (lb:meme:<ws>) - a request never prices every account
     const ck = new Request('https://marginpad.io/__meme_board_v1');
-    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {} } // ?nc=1 reads past the 60 s edge copy - without it a corrected board cannot be verified at all
     const ws = lbPeriodStart(Date.now());
     const snap = await memeSnapshot(env, ws);
     let prizes = [15, 10, 5, 0, 0]; try { prizes = (await rewardCfg(env)).lbMeme; } catch (e) {}
@@ -22995,6 +22995,43 @@ export default {
     }
     if (url.pathname === '/api/admin/retention' && (await adminCookieOk(request, env))) { // Retention tab data
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/retention')); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ cohorts: [], power: [], churned: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
+    }
+    /* THE CORRECTION DESK (2026-10-25). A DRY RUN by default, like every destructive route here: it answers what
+       it WOULD move and writes nothing until `apply:true`. The member is named rather than keyed by uid, because
+       the person is what the decision is about; `ref` is the audit key and makes a repeat a no-op; `why` is
+       written into the member's own history row. The board is rebuilt in the same breath - a correction that
+       leaves the published standing stale has not finished. */
+    if (url.pathname === '/api/admin/spotcorrect' && env.SPOT && adminKeyFrom(request, url) === adminKeyOf(env)) {
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let bd = {}; if (request.method === 'POST') { try { bd = await request.json(); } catch (e) {} }
+      const list = Array.isArray(bd.rows) ? bd.rows.slice(0, 20) : [];
+      if (!list.length) return new Response(JSON.stringify({ error: 'no_rows', how: 'POST {apply?:true, rows:[{username, usd, ref, why}]}' }), { status: 400, headers: jh2 });
+      const out = [];
+      for (const r of list) {
+        const nm = String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+        const usd = +r.usd || 0, cents = Math.round(usd * 100);
+        const row = { username: nm, usd, ref: String(r.ref || ''), why: String(r.why || '') }; let uid = '';
+        if (!nm || !cents || !row.ref) { row.error = 'bad_row'; out.push(row); continue; }
+        /* `/lbuser` is the PUBLIC profile card and deliberately carries no uid - identifying the member is the
+           caller's job here, and the username travels beside it so the audit row names a person. */
+        uid = String(r.uid || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 64);
+        if (!uid) { row.error = 'uid_required'; out.push(row); continue; }
+        row.uid = uid;
+        let pf = null; try { pf = await (await spotStub(env).fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(uid) + '&ro=1'))).json(); } catch (e) {}
+        row.cashBeforeUsd = pf ? (+pf.usdtUsd || 0) : null; // the portfolio answers in DOLLARS (usdtUsd); a desk that misreports a balance is how a clamp goes unnoticed
+        if (!bd.apply) { row.wouldMoveUsd = usd; out.push(row); continue; }
+        try { const w = await (await spotStub(env).fetch(new Request('https://do/s2/correct', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, cents, ref: row.ref, why: row.why }) }))).json();
+          row.result = w; } catch (e) { row.error = 'store_failed'; }
+        out.push(row);
+      }
+      let board = null;
+      /* spotBoardBuild only COMPUTES - spotBoardCron is what PUTs the snapshot in KV and purges the public
+         board's edge copy. Calling the builder alone rebuilt the standing and threw it away, so the published
+         board kept the pre-correction rows: a figure computed and written nowhere, the same shape as every
+         other dead field in this file. One definition, and the correction is not finished until it is live. */
+      if (bd.apply) { try { await spotBoardCron(env); board = await memeSnapshot(env, lbPeriodStart(Date.now())); } catch (e) {}
+        try { await caches.default.delete(new Request('https://marginpad.io/__adm_spot_v3')); } catch (e) {} }
+      return new Response(JSON.stringify({ ok: true, dryRun: !bd.apply, rows: out, board: board ? { n: board.n, checked: board.checked, corrected: board.corrected, top: (board.rows || []).slice(0, 6) } : null }, null, 1), { headers: jh2 });
     }
     if (url.pathname === '/api/admin/spot' && env.SPOT && (await adminCookieOk(request, env))) { // Demo Spot (v3, 2026-10-16): every account with its live worth, season P&L, claims and holdings. Roster edge-cached 60s.
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -27454,7 +27491,9 @@ export class SpotStore {
     if (path === '/s2/tx') {
       if (!uid) return this.j({ error: 'bad' }, 400);
       const list = this.rows('SELECT ts,side,key,qty,price,usd,pnl,meta FROM sp2tx WHERE user_id=? ORDER BY ts DESC LIMIT 150', uid)
-        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, key: t.key, qty: t.qty, price: t.price, usdUsd: t.usd / 100, pnlUsd: (t.pnl || 0) / 100, sym: m.sym || String(t.key || '').replace(/^cex:/, ''), name: m.name || '', logo: m.logo || '', net: m.net || '' }; });
+        // a `fix` row carries its REASON to the member - a balance that changes with no sentence beside it is
+        // exactly the silent edit a correction must never be
+        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, key: t.key, qty: t.qty, price: t.price, usdUsd: t.usd / 100, pnlUsd: (t.pnl || 0) / 100, sym: m.sym || String(t.key || '').replace(/^cex:/, ''), name: m.name || '', logo: m.logo || '', net: m.net || '', meta: t.side === 'fix' ? { why: m.why || '', ref: m.ref || '' } : undefined }; });
       return this.j({ tx: list });
     }
     if (path === '/s2/allsyms') { // the pricing crons: every distinct held key + one meta sample (net/pool for a meme, sym for a major)
@@ -27507,6 +27546,25 @@ export class SpotStore {
       const holds = this.rows('SELECT user_id, key, qty, cost, meta FROM sp2hold WHERE qty>0');
       const byU = {}; for (const x of holds) { let m = {}; try { m = JSON.parse(x.meta || '{}'); } catch (e) {} (byU[x.user_id] = byU[x.user_id] || []).push({ key: x.key, qty: x.qty, costC: x.cost, meta: m }); }
       return this.j({ accounts: accts.map(a => ({ uid: a.uid, usdtC: a.usdt, claims: +a.claims || 0, depC: this._dep(a), created: a.created, last: a.last_seen, realizedC: a.realized || 0, buys: +a.buys || 0, sells: +a.sells || 0, holds: byU[a.uid] || [] })) });
+    }
+    /* A CORRECTION IS A LEDGER ROW, NEVER A QUIET EDIT (2026-10-25, owner: "oduzmi mesta i profite onima koji su
+       preko bug-a ili abusom dosli do toga"). Two fills on this board were produced by our own faults - a sale
+       priced from a pool that had been drained, and a round trip across two quotes we published for one pool -
+       and the money they created has to come back out. The member must be able to SEE it: the adjustment moves
+       `usdt`, which is what the board reads, and writes its own sp2tx row with the reason, so the history
+       explains the change instead of a balance silently shrinking. `ref` makes it idempotent - a repeated call
+       answers `dup` and moves nothing, because a correction applied twice is a second bug. */
+    if (path === '/s2/correct' && request.method === 'POST') {
+      const ref = String(b.ref || '').replace(/[^a-zA-Z0-9_.:-]/g, '').slice(0, 64);
+      const cents = Math.round(+b.cents || 0), why = String(b.why || '').slice(0, 120);
+      if (!uid || !ref || !cents) return this.j({ error: 'bad' }, 400);
+      const a = this._acct2(uid, now, false); if (!a) return this.j({ error: 'no_account' }, 404);
+      const seen = this.rows("SELECT id FROM sp2tx WHERE user_id=? AND side='fix' AND meta LIKE ?", uid, '%"ref":"' + ref + '"%')[0];
+      if (seen) return this.j({ ok: true, dup: true, usdtC: a.usdt });
+      const after = Math.max(0, (+a.usdt || 0) + cents); // a balance never goes negative; the shortfall is stated
+      sql.exec('UPDATE sp2acct SET usdt=?, realized=COALESCE(realized,0)+? WHERE user_id=?', after, cents, uid);
+      sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'fix','USD',0,0,?,?,?)", uid, now, cents, cents, JSON.stringify({ ref, why }));
+      return this.j({ ok: true, beforeC: +a.usdt || 0, afterC: after, appliedC: after - (+a.usdt || 0), askedC: cents });
     }
     if (path === '/s2/e2erm') { // E2E cleanup: e2e-prefixed uids only, the /e2euser rule
       if (!/^e2e/i.test(uid)) return this.j({ error: 'not_e2e' }, 400);

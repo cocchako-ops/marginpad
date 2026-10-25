@@ -33,6 +33,7 @@
      the whole first screen, the block is one scroll away, in the flow of the document, never hidden from anybody */
   body.paper-page>.pt-seo{position:absolute;top:100%;left:0;right:0;margin:14px auto 20px!important}
   body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page>.wrap>header,body.paper-page>header{padding-left:16px!important;padding-right:16px!important}
   body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
   body.paper-page .ptt{gap:0!important;grid-template-columns:minmax(0,1fr) 384px!important}
   body.paper-page .ptt.has-recent{grid-template-columns:minmax(0,1fr) 56px 384px!important}
@@ -51,6 +52,7 @@
 }
 @media(max-width:880px){
   body.paper-page .wrap{padding-left:0!important;padding-right:0!important}
+  body.paper-page>.wrap>header,body.paper-page>header{padding-left:16px!important;padding-right:16px!important}
   body.paper-page .card{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
   body.paper-page .ptt{gap:0!important}
   body.paper-page .ptt-chart{border:0!important;border-left:0!important;border-right:0!important;border-radius:0!important;background:transparent!important}

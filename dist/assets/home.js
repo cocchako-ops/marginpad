@@ -4137,8 +4137,22 @@ window.mpSrvOpen=function(payload,ok,fail){
   window.mpStreak=s;
   if(!returning)return; // only nudge on a real return visit (new day), never on first-ever visit or same-day reloads
   var n=s.d||1,el=document.getElementById('mpStreak');if(!el)return;
+  /* A SIGNED-IN MEMBER HAS A STREAK ON THE SERVER AND IT IS THE REAL ONE (2026-10-25, owner: "streak
+     notifikacija se pokvarila i ne broji preko 100. Ja imam streak 102 dana i stize mi notifikacija za 2").
+     Two counters of the same quantity, and the toast was printing the weaker one. The server's lives in
+     users.streak, is written on any event a signed-in browser sends, survives a freeze, and reads 102 on his
+     account right now; THIS counter is localStorage on one device, so it restarts at 1 whenever the storage
+     is cleared, the app is reinstalled or another browser is used - and iOS drops a home-screen app's
+     localStorage under storage pressure, which this file already documents for the chat preferences.
+     The day change on THIS device stays the trigger (a toast must not fire twice in a day); only the NUMBER
+     comes from the server now, and the local record is pulled up to it so window.mpStreak stops disagreeing. */
+  function paint(n){
   var line;
-  if(n>=30)line=__esT_home("aMonthStraightAt",'A month straight. At this point the market checks on YOU.');
+  /* the ladder stopped at 30, so a real 102-day streak was told "a month straight" - the top rungs exist
+     because the number can now be the server's, and the server's goes as high as somebody keeps showing up */
+  if(n>=365)line=__esT_home("aYearOfShowingUp",'A year of showing up. Nobody here has done this twice.');
+  else if(n>=100)line=__esT_home("threeFiguresOfDays",'Three figures of days in a row. That is the whole game.');
+  else if(n>=30)line=__esT_home("aMonthStraightAt",'A month straight. At this point the market checks on YOU.');
   else if(n>=14)line=__esT_home("twoWeeksDeepThis",'Two weeks deep - this is what discipline looks like.');
   else if(n>=7)line=__esT_home("aFullWeekMost",'A full week. Most people quit by Wednesday.');
   else if(n>=3)line='Day '+n+'. Habits beat hunches - keep stacking.';
@@ -4151,6 +4165,18 @@ window.mpSrvOpen=function(payload,ok,fail){
   el.addEventListener('click',function(e){if(e.target.closest('.mps-cta'))return;hide();});
   setTimeout(function(){el.hidden=false;requestAnimationFrame(function(){el.classList.add('show');});},1400);
   setTimeout(hide,8500);
+  }
+  // a guest has no account, so the device count IS their streak and nothing is waited for
+  if(!(window.mpSignedInCookie&&window.mpSignedInCookie())){paint(n);return;}
+  var done=false;
+  function fromServer(d){ if(done)return; var sv=d&&+d.streak; if(!(sv>0))return; done=true;
+    if(sv>(s.d||0)){s.d=sv;s.best=Math.max(s.best||0,sv);try{localStorage.setItem(K,JSON.stringify(s));}catch(e){}}
+    paint(sv); }
+  fromServer(window._mpXpLast);
+  if(!done){ var onXp=function(e){fromServer(e&&e.detail);if(done)window.removeEventListener('mp:xp',onXp);};
+    window.addEventListener('mp:xp',onXp);
+    // mp-auth is deferred and the poll can fail; after twelve seconds the device count is all we have
+    setTimeout(function(){if(done)return;done=true;window.removeEventListener('mp:xp',onXp);paint(n);},12000); }
 }catch(e){}})();
 
 ;/* ══════════ inline block from app/index.html line 4955 ══════════ */
