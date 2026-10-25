@@ -301,39 +301,44 @@ async function open(browser, m, vp) {
         const bar = document.querySelector('.mpbn');
         return { open: !!open, bd: !!document.querySelector('.csel-sheet-bd:not([hidden])'), x: !!(pn && pn.querySelector('.csel-sh-x')), title: pn && pn.querySelector('.csel-sh-h b') ? pn.querySelector('.csel-sh-h b').textContent : '', logos: pn ? pn.querySelectorAll('.cx-m img').length : 0, barDrawn: !!(bar && bar.getBoundingClientRect().height > 0), onScreen: !open ? true : open.getBoundingClientRect().bottom <= innerHeight + 2, locked: document.body.classList.contains('pt-sheet') };
       });
-      await p.touchscreen.tap(tr.x, tr.y); await wait(800); const t1 = await read();
-      await p.touchscreen.tap(tr.x, tr.y); await wait(800); const t2 = await read();
-      await p.touchscreen.tap(tr.x, tr.y); await wait(800); const t3 = await read();
-      ok(t1.open, 'ONE TAP OPENS the exchange dropdown on a phone');
-      ok(!t2.open, 'the same tap again CLOSES it - it cannot get stuck open');
-      ok(t3.open, 'and opens it again');
-      ok(t3.bd && t3.x, 'it is a sheet with a backdrop and a close button, not a floating panel with no exit');
-      ok(t3.logos >= 9, 'every venue wears its own mark (' + t3.logos + ' logos)');
-      ok(/exchange/i.test(t3.title), 'the sheet is titled with the label the reader already saw ("' + t3.title + '")');
-      ok(!t3.barDrawn && t3.onScreen, 'the phone bar is NOT DRAWN while it is open and the sheet is wholly on screen');
-      ok(t3.locked, 'and the page underneath it cannot scroll');
-      await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); }); await wait(600);
-      ok(!(await read()).open, 'the X closes it');
-      /* AND A THUMB CAN ACTUALLY PICK A VENUE. Every check above passed on 2026-10-25 while the sheet was
-         unusable: the backdrop was a <body> child at z 2147482998 and the panel's 2147482999 was confined
-         inside #plan and .wrap (both position:relative z-index:1), so the backdrop painted OVER the whole
-         list - blurred, dimmed, and every tap aimed at a venue hit the backdrop and shut the sheet.
-         "Opens" is not "works": the invariant is that the option is what is under the finger, and that the
-         pick commits. #planEx options SHARE values (five venues at 0.5%), so it is read by selectedIndex. */
-      await p.touchscreen.tap(tr.x, tr.y); await wait(800);
-      const pk0 = await p.evaluate(() => document.getElementById('planEx').selectedIndex);
-      const pkRow = await p.evaluate(() => {
-        const pan = document.getElementById('planEx').closest('.csel').querySelector('.csel-panel');
-        const o = pan.querySelectorAll('.csel-opt')[3]; if (!o) return null;
-        o.scrollIntoView({ block: 'center' });
-        const r = o.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + 40, r.y + r.height / 2);
-        return { x: Math.round(r.x + 40), y: Math.round(r.y + r.height / 2), mine: !!(hit && o.contains(hit)), was: hit ? String(hit.className || hit.tagName).slice(0, 30) : 'nothing' };
+      /* THE VENUE PICKER ON A PHONE IS THE NATIVE CONTROL SINCE 2026-10-25, and these nine checks used to
+         describe our own sheet - the thing the owner reported three times running that he could not open in
+         his installed app. Two rounds of measuring found every engine here rendering that sheet correctly
+         (panel fixed, visible, backdrop beneath it, the option under its own centre), and there is no WebKit
+         to run locally, so the MECHANISM went instead of the symptom: `.csel-native` - the real <select> that
+         has been under our button the whole time - covers the trigger at opacity 0 and takes the tap, and iOS
+         draws its own wheel above the page where no stacking context, backdrop, page lock or dvh can reach
+         it. So what is asserted here now is the only thing that decides whether a thumb can use it: WHAT IS
+         UNDER THE FINGER, and that the pick commits. The branded rows and the sheet chrome are a DESKTOP
+         property and are asserted there (feevenue-e2e); the wheel is drawn by the OS from the option TEXT,
+         which is why that text must stay "Name - rate". Deliberately no tap on the select: a real tap raises
+         the browser's own popup, which is not ours to measure. */
+      const nat = await p.evaluate(() => {
+        const sel = document.getElementById('planEx'), wrap = sel.closest('.csel');
+        const trig = wrap.querySelector('.csel-trigger'); trig.scrollIntoView({ block: 'center' });
+        const r = trig.getBoundingClientRect();
+        const hit = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height / 2));
+        const sr = sel.getBoundingClientRect(), cs = getComputedStyle(sel);
+        const texts = Array.from(sel.options).map(o => (o.textContent || '').trim());
+        return { marked: wrap.classList.contains('csel-nat'), under: hit ? hit.tagName + (hit.id ? '#' + hit.id : '') : null,
+          isSelect: !!(hit && hit.id === 'planEx'), covers: Math.round(sr.width) > 100 && Math.round(sr.height) > 20,
+          invisible: cs.opacity === '0' && cs.pointerEvents !== 'none', fs: parseFloat(cs.fontSize),
+          n: texts.length, named: texts.filter(t => /-/.test(t) && /%/.test(t)).length };
       });
-      ok(pkRow && pkRow.mine, 'the OPTION is what is under the finger, not the backdrop (' + (pkRow ? pkRow.was : 'no row') + ')');
-      if (pkRow) { await p.touchscreen.tap(pkRow.x, pkRow.y); await wait(800); }
+      ok(nat.marked && nat.isSelect, 'A THUMB LANDS ON THE REAL <select>, not on our button (' + nat.under + ')');
+      ok(nat.covers && nat.invisible, 'it covers the trigger, invisible, and takes the tap');
+      ok(nat.fs >= 16, 'at 16px or more, so iOS does not zoom the page on focus (' + nat.fs + 'px)');
+      ok(nat.n >= 10 && nat.named === nat.n, 'the wheel is drawn from "Name - rate" on every venue (' + nat.named + '/' + nat.n + ')');
+      const t1 = await read();
+      ok(!t1.open && !t1.bd && !t1.locked, 'and it raises NOTHING of ours - no sheet, no backdrop, no page lock');
+      ok(t1.barDrawn, 'so the phone bar is not hidden either - there is nothing to unwind');
+      /* THE PICK COMMITS. #planEx options SHARE values (five venues at 0.5%), so it is read by selectedIndex,
+         never by value - the lesson from the day the sheet looked green over an unusable control. */
+      const pk0 = await p.evaluate(() => document.getElementById('planEx').selectedIndex);
+      await p.evaluate(() => { const s = document.getElementById('planEx'); s.selectedIndex = 3; s.dispatchEvent(new Event('change', { bubbles: true })); });
+      await wait(800);
       const pk1 = await p.evaluate(() => { const s = document.getElementById('planEx'); return { i: s.selectedIndex, lab: (s.closest('.csel').querySelector('.csel-val').textContent || '').trim() }; });
-      ok(pk1.i === 3 && pk1.i !== pk0, 'tapping a venue PICKS it (' + pk0 + ' -> ' + pk1.i + ', "' + pk1.lab + '")');
-      ok(!(await read()).open && !(await read()).locked, 'and the sheet closes behind the pick, lock lifted');
+      ok(pk1.i === 3 && pk1.i !== pk0, 'picking a venue on the wheel commits and relabels the trigger (' + pk0 + ' -> ' + pk1.i + ', "' + pk1.lab + '")');
       // ── the market window on a phone: one height, and a price on every row you can see ──────────────────
       await p.evaluate(() => { const x = document.querySelector('.csel-sh-x'); if (x) x.click(); const a = document.getElementById('ptAdvBtn'); if (a && document.getElementById('planAdvChk').checked) a.click(); });
       await wait(600);

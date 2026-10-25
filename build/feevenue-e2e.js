@@ -43,8 +43,38 @@ async function walk(page, label, expect) {
     return { feeW: Math.round(rf.width), exW: Math.round(re.width), sameWidth: Math.abs(rf.width - re.width) < 2, sameFont: csF.fontFamily === csE.fontFamily && csF.fontSize === csE.fontSize && csF.borderRadius === csE.borderRadius && csF.padding === csE.padding, reachable: !!(hit && tf.contains(hit)), feeLabel: tf.innerText.replace(/\s+/g, ' ').trim(), exLabel: te.innerText.replace(/\s+/g, ' ').trim(), feeTile: !!tf.querySelector('.csel-ex .cx-m'), exTile: !!te.querySelector('.csel-ex .cx-m') };
   });
   chk(label + ': both triggers are the same component (same width, font, radius, padding) and both show the branded tile', open.sameWidth && open.sameFont && open.feeTile && open.exTile, open);
-  chk(label + ': the fee trigger is reachable at its centre and reads ' + expect + (expect === 'MEXC' ? ' (the account default picked on the desktop)' : ' by default'), open.reachable && open.feeLabel.indexOf(expect) >= 0, { hit: open.reachable, label: open.feeLabel });
+  /* WHAT MUST BE UNDER THE FINGER DEPENDS ON THE SURFACE (2026-10-25). On a coarse pointer these two plain
+     pickers fall back to the REAL <select>, laid over the trigger at opacity 0, so iOS draws its own wheel -
+     the owner could not open our sheet in his installed app at all. There the correct answer at the centre is
+     the select, not the button; on a fine pointer it is still the button. Asking for the button on both
+     surfaces is asking for the bug back. */
+  const NAT = await page.evaluate(() => !!document.getElementById('planFeeVenue').closest('.csel').classList.contains('csel-nat'));
+  const centre = await page.evaluate(() => {
+    const fee = document.getElementById('planFeeVenue'), tf = fee.closest('.csel').querySelector('.csel-trigger');
+    tf.scrollIntoView({ block: 'center' }); const r = tf.getBoundingClientRect();
+    const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return { tag: hit ? hit.tagName + (hit.id ? '#' + hit.id : '') : null, isSelect: hit === fee, isTrigger: !!(hit && tf.contains(hit)) };
+  });
+  chk(label + ': the ' + (NAT ? 'real <select> is what a thumb lands on' : 'fee trigger is reachable at its centre') + ' and it reads ' + expect + (expect === 'MEXC' ? ' (the account default picked on the desktop)' : ' by default'),
+    (NAT ? centre.isSelect : centre.isTrigger) && open.feeLabel.indexOf(expect) >= 0, { nat: NAT, under: centre.tag, label: open.feeLabel });
   const fee0 = await page.evaluate(() => document.getElementById('planFee').textContent.trim());
+  if (NAT) {
+    /* THE WHEEL IS DRAWN BY THE OS AND NO PAGE API CAN SEE IT, so what is checked is what it will be drawn
+       FROM: the option text, which is why CLAUDE.md requires it to stay exactly "Name - rate". The branded
+       rows are a desktop property and are asserted there. */
+    const opts = await page.evaluate(() => {
+      const s = document.getElementById('planFeeVenue');
+      const t = Array.from(s.options).map(o => (o.textContent || '').trim());
+      return { n: t.length, texts: t, panelShown: !!s.closest('.csel').querySelector('.csel-panel:not([hidden])') };
+    });
+    chk(label + ': the native wheel carries 10 venues, each reading "Name - rate", and no panel of ours is raised',
+      opts.n === 10 && !opts.panelShown && opts.texts.every(t => /-/.test(t) && /%/.test(t)) && opts.texts.some(t => /MEXC/.test(t)) && opts.texts.some(t => /Hyperliquid/.test(t)), opts);
+    await page.evaluate((target) => {
+      const s = document.getElementById('planFeeVenue');
+      s.selectedIndex = Array.from(s.options).findIndex(o => (o.textContent || '').indexOf(target) >= 0);
+      s.dispatchEvent(new Event('change', { bubbles: true }));
+    }, target); await sleep(500);
+  } else {
   await page.evaluate(() => { document.getElementById('planFeeVenue').closest('.csel').querySelector('.csel-trigger').click(); }); await sleep(350);
   const list = await page.evaluate(() => {
     const p = document.getElementById('planFeeVenue').closest('.csel').querySelector('.csel-panel'); const rows = Array.from(p.querySelectorAll('.csel-opt'));
@@ -53,19 +83,58 @@ async function walk(page, label, expect) {
   });
   chk(label + ': the list opens with 10 branded rows (MarginPad + 9 venues), each with a tile, name and rate', list.open && list.n === 10 && list.tiles === 10 && list.mexc > 0 && /Hyperliquid/.test(list.names.join(',')) && list.rates.every(r => /%/.test(r || '')), { n: list.n, names: list.names, rates: list.rates });
   await page.evaluate((target) => { const p = document.getElementById('planFeeVenue').closest('.csel').querySelector('.csel-panel'); Array.from(p.querySelectorAll('.csel-opt')).find(r => r.textContent.indexOf(target) >= 0).click(); }, target); await sleep(500);
+  }
   const after = await page.evaluate(() => ({ val: document.getElementById('planFeeVenue').value, mp: window.mpFeeVenue, ls: localStorage.getItem('mp_feevenue'), fee: document.getElementById('planFee').textContent.trim(), label: document.getElementById('planFeeVenue').closest('.csel').querySelector('.csel-trigger').innerText.replace(/\s+/g, ' ').trim(), closed: document.getElementById('planFeeVenue').closest('.csel').querySelector('.csel-panel').hidden }));
   const num = s => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0;
   const moved = target === 'MEXC' ? num(after.fee) < num(fee0) : num(after.fee) > num(fee0);
   chk(label + ': picking ' + target + ' closes the list, relabels the trigger, persists, and the quoted round-trip fee ' + (target === 'MEXC' ? 'drops (0.02% vs 0.055%)' : 'rises back (0.055% vs 0.02%)'), after.val === tval && after.mp === tval && after.ls === tval && after.closed && after.label.indexOf(target) >= 0 && moved && num(after.fee) > 0, { before: fee0, after: after.fee, label: after.label });
   // the "?" circles: reachable, and each reveals a plain-words hint that says what the picker moves (owner 2026-09-12: "I did not know")
-  const q = await page.evaluate(() => {
-    const out = {}; ['planExHint', 'planFeeHint'].forEach(id => { const b = document.querySelector('.ptt-q[data-hint="' + id + '"]'), h = document.getElementById(id); b.scrollIntoView({ block: 'center' }); const r = b.getBoundingClientRect(); const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const wasHidden = h.hidden; b.click(); out[id] = { reachable: !!(hit && (hit === b || b.contains(hit))), wasHidden, nowShown: !h.hidden && h.getBoundingClientRect().height > 20, text: h.innerText.replace(/\s+/g, ' ').slice(0, 80), on: b.classList.contains('on') }; b.click(); out[id].closesAgain = h.hidden; }); return out;
-  });
+  /* MEASURED IN STEPS, NOT IN ONE FRAME (2026-10-25). This check used to click and read in the same evaluate
+     and went red on a working page in two runs of three - the terminal repaints the Advanced fields on every
+     live tick, so a node read, scrolled to and clicked inside one task can be the one that is being replaced,
+     and the signature of that is exactly "the class was never added". A flaky check is a broken check: each
+     step is its own turn now, and the node is re-queried every time. */
+  const q = {};
+  for (const id of ['planExHint', 'planFeeHint']) {
+    const reach = await page.evaluate((hid) => {
+      const b = document.querySelector('.ptt-q[data-hint="' + hid + '"]'), h = document.getElementById(hid);
+      b.scrollIntoView({ block: 'center' });
+      const r = b.getBoundingClientRect(), hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return { reachable: !!(hit && (hit === b || b.contains(hit))), wasHidden: h.hidden };
+    }, id);
+    await sleep(120);
+    await page.evaluate((hid) => { document.querySelector('.ptt-q[data-hint="' + hid + '"]').click(); }, id);
+    await sleep(200);
+    const shown = await page.evaluate((hid) => {
+      const b = document.querySelector('.ptt-q[data-hint="' + hid + '"]'), h = document.getElementById(hid);
+      const r = h.getBoundingClientRect();
+      return { nowShown: !h.hidden && r.height > 20, text: h.innerText.replace(/\s+/g, ' ').slice(0, 80), on: b.classList.contains('on'),
+        qN: document.querySelectorAll('.ptt-q[data-hint="' + hid + '"]').length, hN: document.querySelectorAll('#' + hid).length,
+        hHidden: h.hidden, hBox: Math.round(r.height), advOpen: !document.getElementById('planAdvIn').hidden, disp: getComputedStyle(h).display };
+    }, id);
+    await page.evaluate((hid) => { document.querySelector('.ptt-q[data-hint="' + hid + '"]').click(); }, id);
+    await sleep(200);
+    const closed = await page.evaluate((hid) => document.getElementById(hid).hidden, id);
+    q[id] = Object.assign({}, reach, shown, { closesAgain: closed });
+  }
   chk(label + ': the margin-rate "?" is reachable and opens a hint that names maintenance margin and the liquidation price', q.planExHint.reachable && q.planExHint.wasHidden && q.planExHint.nowShown && q.planExHint.on && q.planExHint.closesAgain && /Maintenance margin/.test(q.planExHint.text), q.planExHint);
   chk(label + ': the fee "?" is reachable and opens a hint about the taker fee', q.planFeeHint.reachable && q.planFeeHint.wasHidden && q.planFeeHint.nowShown && q.planFeeHint.closesAgain && /Taker fee/.test(q.planFeeHint.text), q.planFeeHint);
+  if (NAT) {
+    /* Same rule for the margin-rate picker: the RATES are the money fact and must survive onto the wheel,
+       the branded tiles are the desktop's. A rate read off the option text is the rate the engine charges,
+       because the client parses the venue out of exactly that string. */
+    const exl = await page.evaluate(() => {
+      const s = document.getElementById('planEx'), t = Array.from(s.options).map(o => (o.textContent || '').trim());
+      return { n: t.length, texts: t, sel: s.closest('.csel').querySelector('.csel-trigger').innerText.replace(/\s+/g, ' ').trim() };
+    });
+    const rateOf = n => { const r = (exl.texts.find(t => t.indexOf(n) === 0) || '').match(/([\d.]+)%/); return r ? r[1] + '%' : null; };
+    chk(label + ': the native margin-rate wheel carries 11 venues with MEXC 0.1%, Hyperliquid 1.25% and Coinbase 1.33%',
+      exl.n === 11 && /MarginPad/.test(exl.sel) && rateOf('MEXC') === '0.1%' && rateOf('Hyperliquid') === '1.25%' && rateOf('Coinbase') === '1.33%', exl);
+  } else {
   await page.evaluate(() => { document.getElementById('planEx').closest('.csel').querySelector('.csel-trigger').click(); }); await sleep(350);
   const exl = await page.evaluate(() => { const p = document.getElementById('planEx').closest('.csel').querySelector('.csel-panel'); const rows = Array.from(p.querySelectorAll('.csel-opt')); const names = rows.map(r => (r.querySelector('b') || {}).textContent); const rates = rows.map(r => (r.querySelector('small') || {}).textContent); document.getElementById('planEx').closest('.csel').querySelector('.csel-trigger').click(); return { n: rows.length, names, rates, sel: document.getElementById('planEx').closest('.csel').querySelector('.csel-trigger').innerText.replace(/\s+/g, ' ').trim(), tiles: rows.filter(r => r.querySelector('.csel-ex .cx-m')).length }; });
   chk(label + ': the margin-rate list has MarginPad (default), MEXC 0.1%, Hyperliquid 1.25% and Coinbase 1.33% among 11 branded rows', exl.n === 11 && exl.tiles === 11 && /MarginPad/.test(exl.sel) && exl.names.indexOf('MEXC') > 0 && exl.rates[exl.names.indexOf('MEXC')] === '0.1%' && exl.rates[exl.names.indexOf('Hyperliquid')] === '1.25%' && exl.rates[exl.names.indexOf('Coinbase')] === '1.33%', exl);
+  }
   // non-crypto class hides BOTH exchange pickers together
   await page.evaluate(() => { const pc = document.getElementById('planClass'); pc.value = 'forex'; pc.dispatchEvent(new Event('change', { bubbles: true })); }); await sleep(900);
   const fx = await page.evaluate(() => ({ ex: document.getElementById('planEx').closest('.field').style.display, fee: document.getElementById('planFeeField').style.display }));

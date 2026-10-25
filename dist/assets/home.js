@@ -3475,7 +3475,14 @@ window.addEventListener('load', function () {
 (function(){
   function enhance(sel, withSearch, freeEntry, floating){
     if(!sel||sel._csel)return; sel._csel=true;
-    var wrap=document.createElement('div'); wrap.className='csel';
+    /* A PLAIN PICKER ON A COARSE POINTER IS THE NATIVE CONTROL (2026-10-25, owner's third report on the venue
+       picker). Our sheet is a reimplementation of a <select> and can be defeated by a stacking context, a
+       backdrop, a page lock or a dvh that resolves to nothing - none of which can touch the wheel iOS draws
+       itself. Only the four plain pickers qualify: a searchable or free-entry one (heatCoin, planSym) cannot
+       be a native select at all. The decision is taken ONCE, here, so no later branch has to remember it. */
+    var _plain=!withSearch&&!freeEntry;
+    var _nat=_plain&&(function(){try{return !!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);}catch(e){return false;}})();
+    var wrap=document.createElement('div'); wrap.className='csel'+(_nat?' csel-nat':'');
     sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel); sel.classList.add('csel-native');
     var trig=document.createElement('button'); trig.type='button'; trig.className='csel-trigger';
     trig.innerHTML='<span class="csel-val"></span><svg class="csel-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
@@ -3545,8 +3552,11 @@ window.addEventListener('load', function () {
        sto sam kliknuo da je otvorim, kao da je refresuje": closed and reopened inside one tap. It is driven
        from pointerdown now and the click that follows the same gesture is swallowed. */
     var _tDown=0;
-    trig.addEventListener('pointerdown',function(e){ if(e.button&&e.button!==0)return; e.preventDefault(); e.stopPropagation(); _tDown=Date.now(); if(panel.hidden){open();}else{close();} });
-    trig.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); if(Date.now()-_tDown<700)return; if(panel.hidden){open();}else{close();} });
+    /* THE NATIVE PICKER OPENS NOTHING OF OURS. The select lies over the trigger and takes the tap itself, so
+       there is no panel to raise, no backdrop to lay down and no page to lock - which is the whole point: every
+       one of those is a thing that can go wrong on an engine we cannot test. */
+    trig.addEventListener('pointerdown',function(e){ if(_nat)return; if(e.button&&e.button!==0)return; e.preventDefault(); e.stopPropagation(); _tDown=Date.now(); if(panel.hidden){open();}else{close();} });
+    trig.addEventListener('click',function(e){ if(_nat)return; e.stopPropagation(); e.preventDefault(); if(Date.now()-_tDown<700)return; if(panel.hidden){open();}else{close();} });
     if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var _q=(search.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!window.mpIsBybit||window.mpIsBybit(_q))useVal(search.value); } }); }
     document.addEventListener('click',function(e){ if(!wrap.contains(e.target)&&!panel.contains(e.target)) close(); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
