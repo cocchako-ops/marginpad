@@ -4731,3 +4731,64 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   } catch (e) {}
   window.mpWaitArm(document);
 })();
+
+/* ══════════ APP DIAGNOSTIC (2026-10-25) ══════════
+   The owner's installed app disagrees with every emulator on two things, and no engine here can reproduce
+   either. One row per session per surface, over the ordinary /api/track beacon, so the answer arrives the
+   next time he opens the page instead of after another round of guessing. Delete this block once both are
+   settled - it is an instrument, not a feature. */
+(function(){
+  if(window.__mpAppDiag)return; window.__mpAppDiag=1;
+  var sent={};
+  function send(tag,label){
+    if(sent[tag])return; sent[tag]=1;
+    try{fetch('/api/track?t=diag&e='+encodeURIComponent(String(label).slice(0,108))+'&p='+encodeURIComponent(location.pathname),{keepalive:true,cache:'no-store'});}catch(e){}
+  }
+  // env(safe-area-inset-bottom) cannot be read any other way: an emulator resolves it to 0 and getComputedStyle
+  // never reports the env() itself, so a throwaway element whose HEIGHT is the inset is the only honest reading
+  function inset(){
+    try{var d=document.createElement('div');
+      d.style.cssText='position:fixed;left:-9999px;bottom:0;width:1px;height:env(safe-area-inset-bottom,0px)';
+      document.body.appendChild(d); var h=Math.round(d.getBoundingClientRect().height); d.remove(); return h;
+    }catch(e){return -1;}
+  }
+  function R(e){ if(!e)return null; var r=e.getBoundingClientRect(); return {y:Math.round(r.y),h:Math.round(r.height),b:Math.round(r.bottom),w:Math.round(r.width)}; }
+  var N=function(v){return Math.round(parseFloat(v)||0);};
+
+  // ── the Demo Spot dock ─────────────────────────────────────────────────────
+  function dock(){
+    var d=document.querySelector('.tdock'); if(!d)return false;
+    var r=R(d); if(!r||!r.h)return false;
+    var cs=getComputedStyle(d), col=document.querySelector('.tcol-left,.tcol-mid,.tcol');
+    var vv=(window.visualViewport&&Math.round(window.visualViewport.height))||0;
+    send('dock','dock y'+r.y+' h'+r.h+' b'+r.b+' ih'+window.innerHeight+' vv'+vv
+      +' pb'+N(cs.paddingBottom)+' ins'+inset()+' col'+(col?N(getComputedStyle(col).paddingBottom):-1)
+      +' bp'+N(getComputedStyle(document.body).paddingBottom)+' sa'+(window.navigator.standalone?1:0));
+    return true;
+  }
+
+  // ── the exchange / fee picker's sheet ──────────────────────────────────────
+  function csel(panel){
+    var r=R(panel); var cs=getComputedStyle(panel);
+    var bd=document.querySelector('.csel-sheet-bd'), br=R(bd);
+    var hit=null;
+    try{ if(r&&r.w>0&&r.h>0){ var el=document.elementFromPoint(Math.round(r.y>=0?r.w/2:1), Math.round(r.y+Math.min(30,r.h/2)));
+      hit=el?String(el.className||el.tagName).replace(/\s+/g,'.').slice(0,14):'null'; } }catch(e){}
+    send('csel','csel y'+(r?r.y:-1)+' h'+(r?r.h:-1)+' w'+(r?r.w:-1)+' d'+cs.display.slice(0,4)
+      +' v'+cs.visibility.slice(0,4)+' o'+cs.opacity+' mh'+N(cs.maxHeight)+' p'+cs.position.slice(0,5)
+      +' z'+String(cs.zIndex).slice(-4)+' bdh'+(br?br.h:-1)+' hit'+hit
+      +' bf'+(getComputedStyle(document.body).position==='fixed'?1:0)+' ih'+window.innerHeight+' ins'+inset());
+  }
+
+  function scan(){
+    try{ dock(); }catch(e){}
+    try{ var p=document.querySelector('.csel-panel.csel-sheet:not([hidden])'); if(p)csel(p); }catch(e){}
+  }
+  // a sheet is opened by a tap and the dock is built after the page decides who the reader is, so watch rather
+  // than sample once - and stop watching as soon as both rows are in, this must cost a reader nothing
+  try{
+    var mo=new MutationObserver(function(){ scan(); if(sent.dock&&sent.csel)mo.disconnect(); });
+    mo.observe(document.documentElement,{subtree:true,attributes:true,childList:true,attributeFilter:['class','hidden','style']});
+    setTimeout(scan,2500); setTimeout(scan,6000);
+  }catch(e){}
+})();

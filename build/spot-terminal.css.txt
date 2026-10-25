@@ -114,7 +114,7 @@
     .spot-term .term{grid-template-columns:1fr;gap:0}
     .spot-term .tcol{display:none}
     .spot-term .tcol.tshow{display:flex}
-    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(64px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(64px + max(2px, calc(env(safe-area-inset-bottom) - 24px)))}
     /* the market list reads as the SECOND half of the chart view (owner: "nek bude tu gore chart a onda nize
        dole da krenu memes") - one node, moved by placeList(), never a second copy of the list. The COLUMN does
        the scrolling here, so the stage stops being a fitted box and becomes the top of a page: chart, trade pad,
@@ -126,7 +126,7 @@
     .spot-term .tcol-mid .card>h2{position:static}
     /* the dock OVERLAYS the stage, so the room it needs is reserved on the column - padding inside the sheet
        sits below its own scroll and let the Buy button rest 13px under the dock (measured on a 390x844) */
-    .spot-term .tcol-mid{padding-bottom:calc(60px + max(4px, calc(env(safe-area-inset-bottom) - 16px)))}
+    .spot-term .tcol-mid{padding-bottom:calc(60px + max(2px, calc(env(safe-area-inset-bottom) - 24px)))}
     /* THE CHART GOES EDGE TO EDGE (2026-10-24, owner: "cela stranica je isecena sa leve i desne strane od vrha
        do dna sirine 0.5cm"): nothing was clipped - the stage carried a 12px gutter and the chart its own border
        and radius, so on a phone the content column read as a page cut down both sides while the header spanned
@@ -152,7 +152,7 @@
      real gap on a phone that has an inset and 4px on one that does not. */
   .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
     background:rgba(10,13,19,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line2);padding-bottom:max(4px, calc(env(safe-area-inset-bottom) - 16px))}
+    border-top:1px solid var(--line2);padding-bottom:max(2px, calc(env(safe-area-inset-bottom) - 24px))}
   @media(max-width:999px){
     body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}
     /* the site's own phone bar is absorbed into the dock (Browse and Chat are cells there now) - two fixed
