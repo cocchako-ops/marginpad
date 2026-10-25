@@ -53,7 +53,7 @@ const SUNDAY = 1792947180000; // Sunday 2026-10-25, 00:53 New York
 
 function pureChecks() {
   const src = fs.readFileSync('src/worker.js', 'utf8');
-  const sandbox = liftFn(src, '_nextOpenAt') + '\n' + liftFn(src, '_nextOpenMsg')
+  const sandbox = liftFn(src, '_nextOpenAt') + '\n' + liftFn(src, '_clockAt') + '\n' + liftFn(src, '_nextOpenMsg')
     + '\nreturn { _nextOpenAt, _nextOpenMsg };';
   const guard = (src.match(/const SESS_EXCH_MAX = ([^;]+);/) || [])[1];
   // eslint-disable-next-line no-new-func
@@ -97,8 +97,8 @@ function pureChecks() {
   ok(/20\s*\*\s*3600/.test(home), 'the terminal states the SAME ceiling, so the two cannot disagree');
   ok(!/reopens Sunday 17:00 New York time\.'/.test(src.replace(/currency market reopens Sunday 17:00 New York time/g, '')),
     'the one-sentence-for-every-class weekend line is gone from the worker');
-  ok(/the currency market reopens Sunday 17:00/.test(src), 'the FX week keeps the sentence that is true of it');
-  ok(/this market reopens Sunday evening New York time/.test(src), 'a futures market says Sunday evening, a time we can stand behind');
+  ok(/'Sunday 17:00' : 'Sunday 18:00'/.test(src), 'the two gate minutes are stated exactly - FX 17:00, everything else 18:00');
+  ok(!/reopens Sunday evening/.test(src), 'no vague reopen sentence survives (2026-10-25: the owner asked for the exact minute)');
   ok(!/if\(!STK\[sym\]\)return false;/.test(home), 'mpIsMktClosed no longer answers for stocks alone');
   ok(/window\.mpIsMktClosed\(sym\)\)\{_say\(window\.mpMktClosedMsg/.test(home.replace(/\s+/g, ' ').replace(/ /g, '')) || /mpIsMktClosed\(sym\)/.test(home),
     'the plan form asks mpIsMktClosed');

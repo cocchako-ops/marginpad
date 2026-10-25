@@ -13019,13 +13019,27 @@ function _nextOpenAt(pd, now) {
   while (guard++ < 14) { const d = new Date((open + gmt) * 1000).getUTCDay(); if (d !== 0 && d !== 6) break; open += DAY; close += DAY; }
   return open > nowS ? open : 0;
 }
+/* THE EXCHANGE'S OWN CLOCK IS NEW YORK'S, FORMATTED FROM THE TIMESTAMP (2026-10-25, owner: "da je po
+   njujorku samo nek bude tacna informacija"). Europe left summer time on 2026-10-25 and the United States
+   leaves on 2026-11-01, so for one week the offset between Frankfurt and New York is not what it is in any
+   other week - deriving the New York hour by arithmetic on an offset is wrong exactly then, and formatting
+   the instant in America/New_York is right always. The venue's own city follows in brackets when it is not
+   New York, so a reader can check it against what the exchange says about itself. */
+function _clockAt(ms, tz) {
+  try {
+    const p = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date(ms));
+    const g = (t) => ((p.find((x) => x.type === t) || {}).value || '');
+    const h = g('hour') === '24' ? '00' : g('hour'); // some ICU builds print midnight as 24 under hour12:false
+    return { day: g('weekday'), hm: h + ':' + g('minute') };
+  } catch (e) { return null; }
+}
 function _nextOpenMsg(pd, now) {
   const at = _nextOpenAt(pd, now); if (!at) return '';
-  const w = pd.sess, d = new Date((at + (+w.gmt || 0)) * 1000);
-  const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getUTCDay()];
-  const hh = String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0');
-  const city = String(w.tz || '').split('/').pop().replace(/_/g, ' ');
-  return 'It opens again ' + day + ' ' + hh + (city ? ' ' + city + ' time' : '') + '.';
+  const tz = String((pd && pd.sess && pd.sess.tz) || '') || 'America/New_York';
+  const ny = _clockAt(at * 1000, 'America/New_York'); if (!ny) return '';
+  if (tz === 'America/New_York') return 'It opens again ' + ny.day + ' ' + ny.hm + ' New York time.';
+  const vn = _clockAt(at * 1000, tz), city = tz.split('/').pop().replace(/_/g, ' ');
+  return 'It opens again ' + ny.day + ' ' + ny.hm + ' New York time' + (vn ? ' (' + vn.hm + ' ' + city + ')' : '') + '.';
 }
 function marketSession(sym, pd, now) {
   const cls = assetClassOf(sym);
@@ -13050,11 +13064,15 @@ function marketSession(sym, pd, now) {
        starts Sunday 17:00 New York, and everything else here comes back on Sunday evening. */
     const nx = _nextOpenMsg(pd, now);
     if (nx) return { open: false, cls, msg: 'Closed for the weekend. ' + nx };
-    return { open: false, cls, msg: cls === 'forex'
-      ? 'Closed for the weekend - the currency market reopens Sunday 17:00 New York time.'
-      : 'Closed for the weekend - this market reopens Sunday evening New York time.' };
+    /* NO PUBLISHED EXCHANGE SESSION (XAU, XAG) OR A 24h ONE (futures, FX) - so the schedule is the rule in
+       THIS function, and the minute can therefore be stated exactly rather than vaguely: the currency week
+       opens Sunday 17:00 New York, and a metal or an energy contract is then held by the daily 17:00-18:00
+       break below until 18:00. market-open-e2e walks the SHIPPED gate minute by minute across a weekend and
+       requires these two sentences to name its own first open to the minute. */
+    return { open: false, cls, msg: 'Closed for the weekend. It opens again '
+      + (cls === 'forex' ? 'Sunday 17:00' : 'Sunday 18:00') + ' New York time.' };
   }
-  if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time.' };
+  if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time. It opens again 18:00 New York time today.' };
   /* THE VENUE'S OWN HOURS, WHEN IT PUBLISHES THEM (2026-10-24, owner: "jel mozemo da resimo to za indekse").
      Everything above is a New York 24/5 clock, which is right for FX and for a futures contract and WRONG for a
      CASH index: ^GDAXI prints its last bar at 15:30 UTC and ^N225 at 06:30, so for six to fifteen hours a day we

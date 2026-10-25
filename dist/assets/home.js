@@ -255,11 +255,36 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(h<24) return h+'h'+(m2?' '+m2+'m':'');
     var dd=Math.floor(h/24); return dd+'d'+((h%24)?' '+(h%24)+'h':'');
   };
+  /* WHEN OUR OWN GATE OPENS A MARKET THAT PUBLISHES NO SESSION (2026-10-25). XAU and XAG publish nothing and
+     a futures or FX contract publishes a 24h window, so the schedule is the worker's weekend rule and its daily
+     17:00-18:00 New York break - the same two constants, stated here so the terminal can name the minute and
+     count down to it instead of falling back to "when the exchange reopens". Stepping UTC hour boundaries and
+     ASKING what New York reads is DST-proof; deriving it from an offset is not, and the week of 2026-10-25 is
+     exactly the week that would catch it (Europe off summer time, the United States still on it). */
+  window.mpNextGateOpen=function(cls){
+    var want=(cls==='forex')?17:18, base=Math.ceil(Date.now()/3600000)*3600000;
+    for(var i=0;i<=24*9;i++){
+      var ms=base+i*3600000, p=null;
+      try{
+        var pr=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date(ms));
+        var g=function(k){var f=pr.filter(function(x){return x.type===k;})[0];return f?f.value:'';};
+        p={wd:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(g('weekday')),h:(+g('hour')||0)%24,m:+g('minute')||0};
+      }catch(e){return 0;}
+      if(!p||p.m!==0||p.h!==want) continue;
+      if(cls==='forex'){ if(p.wd===0) return ms; }        // the FX week starts Sunday 17:00 New York
+      else if(p.wd>=0&&p.wd<=4) return ms;                 // Sunday to Thursday 18:00 - never Friday or Saturday
+    }
+    return 0;
+  };
   window.mpMktExplain=function(sym){
     sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     var cls=window.mpAssetClass?window.mpAssetClass(sym):'crypto';
     if(cls==='crypto') return null;
     var open=window.mpNextOpen(sym), ss=window.mpMktSess[sym]||{};
+    // no published exchange session to roll forward (gold, silver, a futures contract, a currency pair) - the
+    // worker's own weekend / daily-break rule is the schedule, so ask it rather than going vague
+    var fromSess=!!open; // a venue bracket is only honest when the minute came from the VENUE's own session
+    if(!open&&cls!=='crypto'){try{open=window.mpNextGateOpen(cls)||0;}catch(e){}}
     var when='', local='', exWhen='';
     if(open){
       var dt=new Date(open), now=new Date();
@@ -274,11 +299,18 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
          names neither the exchange nor the hour anybody quotes, so there was no way for a reader to check it
          against what the world says about New York. The hour the venue keeps leads now, the reader's own
          follows in brackets, and both are read off the SAME timestamp so they cannot disagree. */
-      if(ss.tz){try{
-        var _p=new Intl.DateTimeFormat('en-US',{timeZone:ss.tz,weekday:'long',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(dt);
-        var _g=function(k){var f=_p.filter(function(x){return x.type===k;})[0];return f?f.value:'';};
-        exWhen=_g('weekday')+' '+_g('hour')+':'+_g('minute')+' '+String(ss.tz).split('/').pop().replace(/_/g,' ')+__esT_home("exchangeTime",' time');
-      }catch(e){}}
+      try{
+        var _clk=function(tz){
+          var _p=new Intl.DateTimeFormat('en-US',{timeZone:tz,weekday:'long',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(dt);
+          var _g=function(k){var f=_p.filter(function(x){return x.type===k;})[0];return f?f.value:'';};
+          var _h=_g('hour')==='24'?'00':_g('hour');
+          return {day:_g('weekday'),hm:_h+':'+_g('minute')};
+        };
+        var _ny=_clk('America/New_York'), _tz=String(ss.tz||'America/New_York');
+        exWhen=_ny.day+' '+_ny.hm+__esT_home("newYorkTime",' New York time');
+        // the venue's own clock follows in brackets, so a reader can check it against what the exchange says
+        if(fromSess&&_tz&&_tz!=='America/New_York'){var _v=_clk(_tz);exWhen+=' ('+_v.hm+' '+_tz.split('/').pop().replace(/_/g,' ')+')';}
+      }catch(e){}
     }
     return {open:open, when:when, local:local, exWhen:exWhen, until:open?window.mpUntil(open):'', why:MKT_WHY[cls]||MKT_WHY.stock,
       tz:ss.tz||''};
@@ -286,7 +318,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // One phrasing for every "you cannot open this now" message, so the toast and the panel never disagree.
   window.mpMktClosedMsg=function(sym){
     var ex=window.mpMktExplain&&window.mpMktExplain(sym);
-    if(ex&&ex.exWhen) return sym+__esT_home("isClosedExchangeOpens",' is closed - the exchange opens ')+ex.exWhen+(ex.until?' (in '+ex.until+(ex.local?', '+ex.local:'')+')':'')+'.';
+    /* ONE BRACKET, NEVER TWO: a foreign venue already spends the brackets on its own clock ("Monday 03:00 New
+       York time (08:00 Berlin)"), so the countdown follows as its own sentence rather than a second pair. */
+    if(ex&&ex.exWhen) return sym+__esT_home("isClosedExchangeOpens",' is closed - the exchange opens ')+ex.exWhen+'.'+(ex.until?__esT_home("inX",' In ')+ex.until+(ex.local?', '+ex.local:'')+'.':'');
     if(ex&&ex.until) return sym+__esT_home("isClosedTheExchange",' is closed - the exchange opens in ')+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
     return sym+__esT_home("marketIsClosedRight",' market is closed right now - you can trade it when the exchange reopens.');
   };
