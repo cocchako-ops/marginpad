@@ -588,30 +588,51 @@ async function handlePrices(env, ctx, prof) {
   const qs = '?symbols=' + encodeURIComponent(JSON.stringify(PRICE_SYMBOLS));
   // Bybit FIRST - it is the only source that actually answers from Cloudflare egress (Binance has 403-blocked
   // CF worker IPs for years; keep both only as fallbacks in case that ever flips).
+  const want = new Set(PRICE_SYMBOLS);
+  const pct = (last, open) => (open > 0 ? (((last - open) / open) * 100).toFixed(2) : '0.00');
+  // ONE PARSER PER SOURCE. The old loop guessed from the shape, and a Gate array is indistinguishable from a
+  // Binance one by shape alone while naming every field differently.
   const sources = [
-    'https://api.bybit.com/v5/market/tickers?category=spot',
-    'https://data-api.binance.vision/api/v3/ticker/24hr' + qs,
-    'https://api.binance.com/api/v3/ticker/24hr' + qs,
+    { name: 'bybit', url: 'https://api.bybit.com/v5/market/tickers?category=spot',
+      parse: (d) => ((d && d.result && d.result.list) || []).filter((x) => want.has(x.symbol))
+        .map((x) => ({ symbol: x.symbol, price: x.lastPrice, changePct: (parseFloat(x.price24hPcnt) * 100).toFixed(2) })) },
+    // OKX and Gate answer this egress - the /api/price cascade has used both since August. Bybit stays first:
+    // it is the venue every other price on the site comes from, so the floor agrees with the terminal when it can.
+    { name: 'okx', url: 'https://www.okx.com/api/v5/market/tickers?instType=SPOT',
+      parse: (d) => ((d && d.data) || []).filter((x) => want.has(String(x.instId || '').replace('-', '')))
+        .map((x) => ({ symbol: String(x.instId).replace('-', ''), price: x.last, changePct: pct(+x.last, +x.open24h) })) },
+    { name: 'gate', url: 'https://api.gateio.ws/api/v4/spot/tickers',
+      parse: (d) => (Array.isArray(d) ? d : []).filter((x) => want.has(String(x.currency_pair || '').replace('_', '')))
+        .map((x) => ({ symbol: String(x.currency_pair).replace('_', ''), price: x.last, changePct: (+x.change_percentage || 0).toFixed(2) })) },
+    // Kept as the last two because the day Binance stops blocking CF egress they are the deepest books there are.
+    { name: 'bnc_vision', url: 'https://data-api.binance.vision/api/v3/ticker/24hr' + qs,
+      parse: (d) => (Array.isArray(d) ? d : []).map((x) => ({ symbol: x.symbol, price: x.lastPrice, changePct: x.priceChangePercent })) },
+    { name: 'bnc_com', url: 'https://api.binance.com/api/v3/ticker/24hr' + qs,
+      parse: (d) => (Array.isArray(d) ? d : []).map((x) => ({ symbol: x.symbol, price: x.lastPrice, changePct: x.priceChangePercent })) },
   ];
   let pairs = null;
-  for (const u of sources) {
+  for (const src of sources) {
+    const u = src.url;
     const tU = Date.now();
-    const srcName = 'up_' + (u.indexOf('vision') > 0 ? 'bnc_vision' : (u.indexOf('bybit') > 0 ? 'bybit' : 'bnc_com'));
+    const srcName = 'up_' + src.name;
     try {
       const r = await fetch(u, { cf: { cacheTtl: 15, cacheEverything: true } });
       if (!r.ok) { mk(srcName + '_' + r.status, tU); continue; }
       const data = await r.json();
       mk(srcName, tU);
-      if (Array.isArray(data)) {
-        pairs = data.map(d => ({ symbol: d.symbol, price: d.lastPrice, changePct: d.priceChangePercent }));
-      } else if (data && data.result && Array.isArray(data.result.list)) {
-        const want = new Set(PRICE_SYMBOLS);
-        pairs = data.result.list.filter(d => want.has(d.symbol)).map(d => ({ symbol: d.symbol, price: d.lastPrice, changePct: (parseFloat(d.price24hPcnt) * 100).toFixed(2) }));
-      }
-      if (pairs && pairs.length) break;
+      let got = null; try { got = src.parse(data); } catch (e) { got = null; }
+      // A source that answers 200 with a body we cannot read is a FAILURE, not a floor: half a payload here
+      // becomes the figure every cold colo serves for the next five minutes.
+      if (got && got.length >= PRICE_SYMBOLS.length) { pairs = got; break; }
+      mk(srcName + '_thin' + (got ? got.length : 0), tU);
     } catch (e) { mk(srcName + '_err', tU); }
   }
-  if (!pairs || !pairs.length) return J({ error: 'upstream temporarily unavailable' }, 503);
+  // THE FAILING PATH KEPT NO READING, WHICH IS WHY "upstream" WAS ALL ANYBODY COULD LEARN (2026-10-25).
+  // Every source failure above is caught per source and recorded as a MARK (`up_bybit_err`, `up_bybit_429`,
+  // `up_bnc_vision_403`...), and then this return threw the marks away - it did not go through `withProf`. So
+  // the status page has drawn the price floor amber since 10-21, the writer's reason counter has said
+  // `upstream` ~470 times a day, and the one thing that would name the cause was computed and discarded.
+  if (!pairs || !pairs.length) return withProf(J({ error: 'upstream temporarily unavailable' }, 503), 'cold_fail');
   const fresh = JSON.stringify({ pairs, ts: Date.now() });
   const resp = new Response(fresh, {
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=15', ...CORS },
@@ -1262,7 +1283,10 @@ async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor co
   const t0 = Date.now(); let note = null;
   try {
     const r = await handlePrices(env, null, 2);
-    if (!r || !r.ok) note = { ok: false, why: 'upstream', status: r ? r.status : 0 };
+    // `up` is the per-source Server-Timing the cold path now keeps on its failing return: it says whether each
+    // source answered a STATUS (`up_bybit_429`) or threw (`up_bybit_err`), which is the difference between
+    // "Bybit refused us" and "this invocation ran out of subrequests before it could ask".
+    if (!r || !r.ok) note = { ok: false, why: 'upstream', status: r ? r.status : 0, up: r ? String(r.headers.get('server-timing') || '').slice(0, 200) : '' };
     else {
       const txt = await r.text();
       if (!txt || txt.length <= 50) note = { ok: false, why: 'empty', len: txt ? txt.length : 0 };
@@ -18554,12 +18578,28 @@ async function syncBotTiers(env) {
 // `book` is DEPTH, not the book itself: the consolidated summary stays keyless for everyone, because that
 // is what assistants cite and it is deliberately not for sale. What a plan buys is the RAW LADDER - every
 // price level, per venue - which is the part a bot actually builds on.
-const API_PLANS = [
+// THE LIST PRICE. Everything else about a plan is derived from this row.
+const API_PLANS_RAW = [
   { id: 'free', tier: 0, cents: 0, label: 'Free', rpm: 120, maxKeys: 3, maxOpen: 50, maxBooks: 1, hooks: 0, ai: 0, book: 0 },
   { id: 'pro', tier: 1, cents: 3900, label: 'Pro', rpm: 600, maxKeys: 10, maxOpen: 200, maxBooks: 5, hooks: 3, ai: 0, book: 0 },
   { id: 'max', tier: 2, cents: 9900, label: 'Max', rpm: 2000, maxKeys: 30, maxOpen: 500, maxBooks: 20, hooks: 15, ai: 0, book: 1 },
   { id: 'business', tier: 3, cents: 19900, label: 'Business', rpm: 5000, maxKeys: 100, maxOpen: 1000, maxBooks: 50, hooks: 50, ai: 0, book: 1 },
 ];
+// A PROMO IS A PERCENT OFF THE LIST, NEVER THREE RETYPED NUMBERS (owner 2026-10-25: "30% popusta na svaki API
+// plan"). `pct: 0` turns it off and every surface follows in one deploy - the catalogue, both BUY paths, every
+// 402/429 hint, the JSON-LD Offers and the page. That is the whole point: on 2026-09-22 the plans were repriced
+// and five surfaces published the old figure for nineteen days, one response body quoting both at once.
+// NO END DATE, deliberately: API_PLANS is built ONCE per isolate, so a date compared here would go on being
+// true for as long as that isolate lives. An expiry has to be read lazily at request time, not baked into a
+// module-level const - the same trap as the `_trialMemo` note and the AI_DAILY startup crash.
+const API_PROMO = { pct: 30, label: '30% off' };
+// Rounded DOWN to the whole dollar, so the member always gets AT LEAST the percentage promised and the price is
+// a figure a human reads: $39 -> $27 (30.8% off), $99 -> $69 (30.3%), $199 -> $139 (30.2%).
+const apiPromoCents = (c) => (API_PROMO.pct > 0 && c > 0) ? Math.floor((c * (100 - API_PROMO.pct)) / 10000) * 100 : c;
+// `cents` stays the price that is CHARGED, so all ten existing readers - including /apiplan/buy and the
+// NOWPayments invoice - are correct with no call site touched. `was` is the struck-through list price, 0 when
+// there is no promo, exactly the shape /premium/ already uses for Premium AI+ (`cents` + `was`).
+const API_PLANS = API_PLANS_RAW.map((p) => { const c = apiPromoCents(p.cents); return { ...p, cents: c, was: c !== p.cents ? p.cents : 0 }; });
 // The tier at which the raw order-book ladder unlocks. Read it, never write the number 2 anywhere else -
 // that literal is exactly how a new plan silently collapses into the one below it.
 const API_BOOK_TIER = API_PLANS.filter((p) => p.book)[0].tier;
@@ -18583,7 +18623,9 @@ const API_UPGRADE = 'https://marginpad.io/trading-api/#plans';
 const API_PRICE = (id) => '$' + Math.round(((API_PLANS.find((x) => x.id === id) || {}).cents || 0) / 100);
 const API_HOOKS = (id) => (API_PLANS.find((x) => x.id === id) || {}).hooks;
 const API_UPGRADE_HINT = (() => { const p = id => API_PLANS.find(x => x.id === id) || {}, usd = x => '$' + Math.round((x.cents || 0) / 100), pro = p('pro'), max = p('max'), biz = p('business');
-  return 'API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min). Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
+  return 'API Pro is ' + usd(pro) + ' a month (' + pro.rpm + ' requests/minute, ' + pro.maxKeys + ' keys, ' + pro.maxOpen + ' open positions, ' + pro.hooks + ' webhooks), Max is ' + usd(max) + ' (' + max.rpm + '/min) and Business is ' + usd(biz) + ' (' + biz.rpm + '/min).'
+    + (pro.was ? ' Every plan is ' + API_PROMO.label + ' at the moment (list ' + usd({ cents: pro.was }) + ' / ' + usd({ cents: max.was }) + ' / ' + usd({ cents: biz.was }) + ').' : '')
+    + ' Premium is a separate product and does not raise API limits. Plans: ' + API_UPGRADE; })();
 // KV api:sub:<uid> = {"p":1|2,"until":<ms>,"src":"paid|trial|owner|founder"}. This is the ONLY source of an API plan -
 // nothing here ever reads Premium. An expired row resolves to free on its own, so a lapsed plan cannot linger.
 async function apiPlanOf(env, uid) {
@@ -18773,7 +18815,7 @@ async function handleBot(url, request, env, ctx) {
     } catch (e) {} }
     if (r.plan) { r.plan.until = sub.until || null; r.plan.days_left = sub.until ? sub.days_left : null; r.plan.source = sub.src || 'free'; r.plan.free_month = sub.trial; }
     r.trial = trial && !trial.missing ? { days: API_TRIAL_DAYS, ends: new Date(trial.until).toISOString(), days_left: trial.days_left, active: trial.active, note: API_TRIAL_NOTE(trial) } : null; // what the page prints // the countdown the page prints
-    r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
+    r.plans = API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai }));
     return jb(r, 200);
   }
 
@@ -19269,7 +19311,7 @@ async function handleBot(url, request, env, ctx) {
       limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, max_books: L.maxBooks, max_resting_orders: PORDER_MAX, trade_history_days: paid ? 90 : 30, report_max_days: paid ? 90 : 30, websocket: true, market_data: 'free, no key required; send this key and /api/v1/* counts against ' + (+auth.limit || L.rpm) + '/min instead of the 60/min per-IP limit', data_api_requests_per_minute: (+auth.limit || L.rpm) },
       features: { webhooks: L.hooks, trailing_stops: true, stop_entries: true, modify_order: true, dry_run: true, report_totals: true, report_breakdowns: paid, ai_market_read: L.ai ? L.ai + '/day' : false, fee_venues: Object.keys(FEE_VENUES) },
       window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
-      plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, ai_per_day: p.ai })),
+      plans: API_PLANS.map((p) => ({ plan: p.id, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, webhooks: p.hooks, ai_per_day: p.ai })),
       upgrade: (+auth.tier || 0) < 2 ? API_UPGRADE : null,
       note: 'API plans are separate from site Premium since 2026-09-15. A Premium subscription does not change any limit on this page.',
     });
@@ -22426,7 +22468,11 @@ export default {
       const mine = u && u.id ? await apiPlanOf(env, String(u.id)) : null;
       const myTrial = u && u.id ? await apiTrialState(env, String(u.id)) : null; // the page prints the caller's OWN deadline, not the policy
       return J({
-        plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks, webhooks: p.hooks, ai_per_day: p.ai })),
+        // The promo the page draws its struck prices from. ABSENT rather than false when there is none, so a
+        // reader cannot mistake "no discount" for "a discount of zero" - the same rule the `api` block on
+        // /api/status follows for an unwritten figure.
+        promo: API_PROMO.pct > 0 ? { percent_off: API_PROMO.pct, label: API_PROMO.label } : null,
+        plans: API_PLANS.map((p) => ({ plan: p.id, label: p.label, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, requests_per_minute: p.rpm, max_keys: p.maxKeys, max_open_positions: p.maxOpen, max_books: p.maxBooks,webhooks: p.hooks, ai_per_day: p.ai })),
         current: mine ? { plan: mine.plan, tier: mine.tier, until: mine.until || null, days_left: mine.until ? mine.days_left : null, source: mine.src || 'free', free_month: mine.trial } : null,
         my_trial: myTrial && !myTrial.missing ? { ends: new Date(myTrial.until).toISOString(), days_left: myTrial.days_left, active: myTrial.active } : null,
         free_trial: { days: API_TRIAL_DAYS, note: 'The paper-trading engine is free for ' + API_TRIAL_DAYS + ' days from the day the first key is minted. After that it needs a plan. Market data on /api/v1/* is keyless and free with no account and no trial.' },
@@ -22469,7 +22515,15 @@ export default {
       if (!u || !u.id) return J({ error: 'login_required' }, 401);
       const pl = API_PLAN_BY_ID(cb.plan || url.searchParams.get('plan')); if (!pl || !pl.cents) return J({ error: 'bad_plan' }, 400);
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
+      // WHAT THE INVOICE WILL COLLECT, READABLE WITHOUT CREATING ONE (2026-10-25, owner: "vodi racuna da i na
+      // nowpayments bude ista cifra za placanje, a ne stara bez popusta"). NOWPayments publishes no way to read
+      // an invoice back, so the only alternative was to argue that `price_amount` reads the same `cents` the
+      // catalogue does - and an argument is not a measurement. `dry:true` builds the real body and returns it
+      // without calling them, so a test can assert the charged figure for ever. Admin key only: it names the
+      // callback and the order id. Same shape as `dry_run` on /v1/open.
+      const dryInv = cb.dry === true && adminKeyFrom(request, url) === adminKeyOf(env);
       const body = { price_amount: pl.cents / 100, price_currency: 'usd', order_id: 'api_' + pl.id + '_' + String(u.id), order_description: 'MarginPad API ' + pl.label + ' - 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/trading-api/?plan=ok', cancel_url: 'https://marginpad.io/trading-api/#plans' };
+      if (dryInv) return J({ dry: true, invoice: body, list_price_usd: pl.was ? pl.was / 100 : null, promo: API_PROMO.pct > 0 ? { percent_off: API_PROMO.pct } : null });
       try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', 'API ' + pl.label + ' $' + (pl.cents / 100).toFixed(2), '/trading-api/'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
@@ -23305,7 +23359,7 @@ export default {
       pay = pay.filter(r => url.searchParams.get('e2e') === '1' || !/^u:e2e/.test(r.acct));
       const lifetime = pay.reduce((a, r) => a + (+r.cents || 0), 0);
       return new Response(JSON.stringify({
-        plans: API_PLANS.map(p => ({ plan: p.id, price_usd: p.cents / 100, rpm: p.rpm })),
+        plans: API_PLANS.map(p => ({ plan: p.id, price_usd: p.cents / 100, list_price_usd: p.was ? p.was / 100 : null, rpm: p.rpm })),
         rows, live: rows.filter(r => r.live).length,
         trials: rows.filter(r => r.live && r.src === 'trial').length,
         paying: rows.filter(r => r.live && r.src === 'paid').length,
@@ -29347,7 +29401,7 @@ async function handleStatusApi(env) {
   // The AGE above is read through Workers KV, whose read cache is 60 s at its shortest, so it carries up
   // to a minute of read staleness on top of the real one - which is worth knowing before anybody reads a
   // bad day as a dead feed. lastWrite is the writer's own account of its last run and has no such lag.
-  try { const w = JSON.parse(await env.STATS.get('px:warm') || 'null'); if (w) px.lastWrite = { ok: !!w.ok, agoSec: Math.round((now - (+w.ts || 0)) / 1000), ms: +w.ms || 0, why: w.why || undefined, pairs: w.pairs }; } catch (e) {}
+  try { const w = JSON.parse(await env.STATS.get('px:warm') || 'null'); if (w) px.lastWrite = { ok: !!w.ok, agoSec: Math.round((now - (+w.ts || 0)) / 1000), ms: +w.ms || 0, why: w.why || undefined, up: w.up || undefined, status: w.status || undefined, pairs: w.pairs }; } catch (e) {}
   try { const fk = 'px:warmfail:' + new Date(now).toISOString().slice(0, 10); const fn = +(await env.STATS.get(fk)) || 0; if (px.lastWrite) px.lastWrite.failsToday = fn; } catch (e) {}
   // ...and which failure it was (2026-10-24): a count with no reason is what made 470 failures a day unexplainable
   try { const d9 = new Date(now).toISOString().slice(0, 10), why = {};

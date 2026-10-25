@@ -31,8 +31,12 @@ const did = [];
 const src = fs.readFileSync(path.join(ROOT, 'src', 'worker.js'), 'utf8');
 
 function planTable() {
-  const at = src.indexOf('const API_PLANS = [');
-  if (at < 0) throw new Error('API_PLANS not found in src/worker.js');
+  // API_PLANS is DERIVED since 2026-10-25 (the list price minus API_PROMO), so the LIST table is the authority
+  // and this repeats the one discount rule: a percent off, rounded DOWN to the whole dollar.
+  const at = src.indexOf('const API_PLANS_RAW = [');
+  if (at < 0) throw new Error('API_PLANS_RAW not found in src/worker.js');
+  const PCT = (() => { const m = src.match(/API_PROMO = \{ pct: (\d+)/); return m ? +m[1] : 0; })();
+  const promoC = (c) => (PCT > 0 && c > 0) ? Math.floor((c * (100 - PCT)) / 10000) * 100 : c;
   const blk = src.slice(at, src.indexOf('\n];', at));
   const rows = [];
   for (const m of blk.matchAll(/\{\s*id:\s*'(\w+)'[\s\S]*?\}/g)) {
@@ -40,7 +44,8 @@ function planTable() {
     const g = (k) => { const r = new RegExp(k + ':\\s*(-?\\d+)').exec(o); return r ? +r[1] : null; };
     const lbl = (/label:\s*'([^']+)'/.exec(o) || [])[1];
     rows.push({
-      id: m[1], label: lbl, usd: Math.round((g('cents') || 0) / 100),
+      id: m[1], label: lbl, usd: Math.round(promoC(g('cents') || 0) / 100),
+      wasUsd: promoC(g('cents') || 0) !== (g('cents') || 0) ? Math.round((g('cents') || 0) / 100) : 0,
       rpm: g('rpm'), keys: g('maxKeys'), open: g('maxOpen'), books: g('maxBooks'), hooks: g('hooks'),
     });
   }
@@ -84,7 +89,7 @@ function limitsBlock() {
   L.push('');
   // An API plan is its own product. Saying so here is what stops a reader assuming the site subscription
   // covers the API - which is exactly what this paragraph used to tell them.
-  L.push('An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. The whole engine, the simulation, several books per key, the replay, the WebSocket stream and every market-data endpoint are free - only webhooks and the AI read are gated. Trade history is 30 days on Free and 90 on a paid plan.');
+  L.push('An API plan is its own product: a MarginPad Premium subscription buys nothing here, and an API plan buys nothing on the site. Every market-data endpoint is free and keyless, with no account and no trial. The paper-trading engine, the simulation, books, replay and the WebSocket stream are free for 7 days from the day the first key is minted (since 2026-10-13); after that they need a paid plan, and only webhooks and the AI read are gated by tier within it. Trade history is 30 days on the trial and 90 on a paid plan.');
   L.push('');
   // Measured, and it is the honest thing to put next to a throughput table: nobody is short of throughput.
   L.push('Measured in production: the busiest bot peaks at 66 requests a minute against the Free ceiling of '
@@ -127,15 +132,21 @@ function simBlock() {
 // would mean re-finding sentences this script itself wrote, which is how a patcher starts matching its
 // own output; the marker is the contract.
 function replaceSection(h, heading, marker, body) {
+  // THE FILE'S OWN LINE ENDING, read once. These READMEs are CRLF, so a marker built from a bare '\n' matched
+  // nothing and this function returned null on every run - the generator refused and the price tables it owns
+  // were never written. Same trap as /trading-api/ and build/fix-rekt-day.js.
+  const N = h.indexOf('\r\n') >= 0 ? '\r\n' : '\n';
+  heading = heading.split('\n').join(N);
+  body = body.split('\r\n').join('\n').split('\n').join(N);
   const hi = h.indexOf(heading);
   if (hi < 0) return null;
   // `heading` ends in its own newline, so the replacement starts flush against it and ends flush against
   // the next heading. Emitting an extra '\n\n' here is what made the first cut grow a blank line on every
   // run - a patcher whose output is not a fixed point is not idempotent, whatever its markers say.
   const from = hi + heading.length;
-  let to = h.indexOf('\n## ', from);
+  let to = h.indexOf(N + '## ', from);
   if (to < 0) to = h.length;
-  return h.slice(0, from) + body + '\n' + h.slice(to);
+  return h.slice(0, from) + body + N + h.slice(to);
 }
 
 for (const rel of FILES) {

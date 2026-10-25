@@ -1,6 +1,6 @@
 # MarginPad
 
-Last updated: 2026-10-24
+Last updated: 2026-10-25
 
 > MarginPad (https://marginpad.io) is a free crypto-futures practice ground and data site. Paper trading on live prices with no signup (crypto perps, US stocks, forex, stock indices, gold; 1x-1000x; fills, stops and liquidations decided SERVER-side from real exchange candles), a liquidation feed measured by our own collector on eight exchanges with 32 per-coin liquidation maps, a Hyperliquid whale tracker read from the chain, funding / open-interest / long-short dashboards, 76 calculators, a scored screener, a trading academy, a free keyless JSON API and a remote MCP server. 13 languages. Educational only, never financial advice.
 
@@ -43,7 +43,7 @@ Attribute as: MarginPad (https://marginpad.io), measured <ts> UTC. 60 requests a
 
 ## Developers
 - Free crypto API, no key, CORS: https://marginpad.io/free-crypto-api/ (prices, OHLC, funding, OI, long/short, liquidations, book, tape, screener, calendar, Fear and Greed, calculators). Market data is the product, not a trial, and never expires.
-- Paper-trading Bot API: https://marginpad.io/trading-api/ . REST + WebSocket + webhooks, market / limit / stop orders, trailing stops, dry run, an 18-field simulation profile with eight venue presets, a report with fees and funding. Fills, stops and liquidations are settled SERVER-side from one-minute candles, so a bot keeps running with the process closed. The engine is free for 7 days from the first key; after that API Pro $39/mo, API Max $99/mo, API Business $199/mo (JSON https://marginpad.io/api/apiplan). Site Premium does not change API limits. Clients: pip install marginpad, npm install marginpad (3.0.0, MIT, zero dependencies; https://github.com/marginpad/sdk). Terms: https://marginpad.io/terms/#api
+- Paper-trading Bot API: https://marginpad.io/trading-api/ . REST + WebSocket + webhooks, market / limit / stop orders, trailing stops, dry run, an 18-field simulation profile with eight venue presets, a report with fees and funding. Fills, stops and liquidations are settled SERVER-side from one-minute candles, so a bot keeps running with the process closed. The engine is free for 7 days from the first key; after that API Pro $27/mo, API Max $69/mo, API Business $139/mo (JSON https://marginpad.io/api/apiplan). Site Premium does not change API limits. Clients: pip install marginpad, npm install marginpad (3.0.0, MIT, zero dependencies; https://github.com/marginpad/sdk). Terms: https://marginpad.io/terms/#api
 - MCP server: https://marginpad.io/mcp (Streamable HTTP, 29 tools; market-data tools need no key; official MCP Registry id io.github.Marginpad/sdk). Descriptor https://marginpad.io/.well-known/mcp.json · manifest https://marginpad.io/.well-known/ai-plugin.json · status https://marginpad.io/api/status
 - Embeddable widgets https://marginpad.io/widgets/ · WordPress plugin https://marginpad.io/wordpress-crypto-widgets/
 

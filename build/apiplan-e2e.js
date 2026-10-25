@@ -254,9 +254,17 @@ const usage = async () => (await bot('/usage')).body.data || {};
   // discount that did not exist. API_PLANS in src/worker.js is the authority; everything else must match it.
   {
     const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'worker.js'), 'utf8');
-    const tbl = src.slice(src.indexOf('const API_PLANS = ['), src.indexOf('\n];', src.indexOf('const API_PLANS = [')));
+    // API_PLANS is DERIVED since 2026-10-25 (list price minus API_PROMO), so the LIST table is the authority and
+    // the suite repeats the one discount rule: a percent off, rounded DOWN to the whole dollar so the buyer
+    // always gets at least the percentage promised. Reading `const API_PLANS = [` as a literal crashed here.
+    const tbl = src.slice(src.indexOf('const API_PLANS_RAW = ['), src.indexOf('\n];', src.indexOf('const API_PLANS_RAW = [')));
+    const PCT = (() => { const m = src.match(/API_PROMO = \{ pct: (\d+)/); return m ? +m[1] : 0; })();
+    const promoC = (c) => (PCT > 0 && c > 0) ? Math.floor((c * (100 - PCT)) / 10000) * 100 : c;
     const PL = {};
-    for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'/g)) PL[m[1]] = { usd: Math.round(+m[2] / 100), label: m[3] };
+    for (const m of tbl.matchAll(/\{\s*id:\s*'(\w+)'[^}]*?cents:\s*(\d+)[^}]*?label:\s*'(\w+)'/g)) {
+      const list = +m[2], now = promoC(list);
+      PL[m[1]] = { usd: Math.round(now / 100), wasUsd: now !== list ? Math.round(list / 100) : 0, label: m[3] };
+    }
     chk('API_PLANS parses, four plans', ['free', 'pro', 'max', 'business'].every(id => PL[id]), Object.keys(PL));
     const P1 = PL.pro, M1 = PL.max, B1 = PL.business;
 
@@ -265,6 +273,32 @@ const usage = async () => (await bot('/usage')).body.data || {};
     const byId = {}; ((cat.body && cat.body.plans) || []).forEach(p => { byId[p.plan] = p; });
     chk('/api/apiplan prices match API_PLANS', ['pro', 'max', 'business'].every(id => byId[id] && +byId[id].price_usd === PL[id].usd),
       ['pro', 'max', 'business'].map(id => id + ':' + (byId[id] && byId[id].price_usd)).join(' '));
+
+    // 1b. THE PROMO, AND THE TWO PATHS THAT TAKE MONEY (2026-10-25). An advertised discount charged at the old
+    //     price is the worst outcome available here, and NOWPayments publishes no way to read an invoice back,
+    //     so /api/apiplan/checkout takes `dry:true` (admin key) and returns the real invoice body unsent.
+    const promoOn = PCT > 0;
+    chk('the catalogue publishes the promo' + (promoOn ? '' : ' (none running)'),
+      promoOn ? !!(cat.body && cat.body.promo && +cat.body.promo.percent_off === PCT) : !(cat.body && cat.body.promo),
+      cat.body && JSON.stringify(cat.body.promo));
+    if (promoOn) {
+      chk('every paid plan carries its struck list price', ['pro', 'max', 'business'].every(id => byId[id] && +byId[id].list_price_usd === PL[id].wasUsd),
+        ['pro', 'max', 'business'].map(id => id + ':' + (byId[id] && byId[id].list_price_usd) + ' want ' + PL[id].wasUsd).join(' '));
+      chk('and the discount is really at least the percentage promised', ['pro', 'max', 'business'].every(id => (1 - PL[id].usd / PL[id].wasUsd) * 100 >= PCT - 0.01),
+        ['pro', 'max', 'business'].map(id => id + ':' + ((1 - PL[id].usd / PL[id].wasUsd) * 100).toFixed(1) + '%').join(' '));
+    }
+    {
+      const UIDQ = 'e2einv' + Math.random().toString(36).slice(2, 5);
+      await admin('/api/admin/e2euser', { uid: UIDQ, op: 'mk' });
+      const sq = await admin('/api/admin/e2euser', { uid: UIDQ, op: 'sess' });
+      for (const id of ['pro', 'max', 'business']) {
+        const d = await (await fetch(ORIGIN + '/api/apiplan/checkout', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token, 'x-admin-key': K }, body: JSON.stringify({ plan: id, dry: true }) })).json().catch(() => ({}));
+        chk('the crypto invoice for ' + id + ' collects $' + PL[id].usd, !!(d.invoice && +d.invoice.price_amount === PL[id].usd), d.invoice && d.invoice.price_amount);
+        const b = await (await fetch(ORIGIN + '/api/apiplan/buy', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + sq.body.token }, body: JSON.stringify({ plan: id }) })).json().catch(() => ({}));
+        chk('and the balance path prices ' + id + ' at $' + PL[id].usd, b.price_usd == null || +b.price_usd === PL[id].usd, b.price_usd);
+      }
+      await admin('/api/admin/e2euser', { uid: UIDQ, op: 'rm' });
+    }
 
     // 2. THE REFUSAL A DEVELOPER ACTUALLY RECEIVES. A free key asking for webhooks gets plan_required plus
     //    the upgrade hint; both used to be literals, and one of them was stale.
@@ -287,6 +321,13 @@ const usage = async () => (await bot('/usage')).body.data || {};
       offers.map(o => o.join(':')).join(' '));
     const card = [...pg.matchAll(/class="appx">\$(\d+)<small>/g)].map(m => +m[1]);
     chk('the price CARDS match API_PLANS', card.length === 3 && card[0] === P1.usd && card[1] === M1.usd && card[2] === B1.usd, card.join('/'));
+    if (PCT > 0) {
+      const sk = [...pg.matchAll(/class="apwas"><s>\$(\d+)<\/s>/g)].map(m => +m[1]);
+      chk('and each card shows its struck LIST price, so the discount is visible', sk.length === 3 && sk[0] === P1.wasUsd && sk[1] === M1.wasUsd && sk[2] === B1.wasUsd, sk.join('/'));
+      const visible = pg.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ').replace(/<s>[\s\S]*?<\/s>/g, ' ');
+      const leak = [P1, M1, B1].filter(pl => pl.wasUsd && new RegExp('\\$' + pl.wasUsd + '\\b').test(visible)).map(pl => '$' + pl.wasUsd);
+      chk('and no list price is left on the page UNstruck', leak.length === 0, leak.join(' '));
+    }
     const tblHdr = (pg.match(/Pro &middot; \$(\d+)<\/th><th>Max &middot; \$(\d+)/) || []).slice(1).map(Number);
     chk('the comparison TABLE matches the cards (it disagreed by $10 for 19 days)', tblHdr.length === 2 && tblHdr[0] === P1.usd && tblHdr[1] === M1.usd, tblHdr.join('/'));
     const faqP = +((pg.match(/API Pro \(\$(\d+) a month\)/) || [])[1] || 0);
