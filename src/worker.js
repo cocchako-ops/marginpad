@@ -13003,6 +13003,15 @@ function _nyParts(ms) { try { const p = new Intl.DateTimeFormat('en-US', { timeZ
 function marketSession(sym, pd, now) {
   const cls = assetClassOf(sym);
   if (cls === 'crypto') return { open: true, cls };
+  /* A BYBIT EQUITY PERP IS A STOCK FOR THE FEE AND A 24/7 MARKET FOR THE CLOCK (2026-10-25, Emapolako14 in the
+     global room: "no deja cerrar posiciones del dia anterior pq las confunde con activos del mercado de NY").
+     The stock branch below demands `pd.state === 'REGULAR'`, and these are priced from Bybit, which publishes no
+     session at all - so `String(undefined || 'CLOSED')` made every one of the ten CLOSED the moment BYBIT_EQ
+     gave them the stock class for the fee, and the gate refused to OPEN or CLOSE them with a message about New
+     York. He held seven. The venue really does trade them around the clock (measured: the perp prints through
+     the night within ~1% of the cash listing), so this branch is the truth, not an exemption - and it must sit
+     ABOVE the stock branch, which is the one that defaults to closed when it knows no session. */
+  if (BYBIT_EQ[String(sym || '').toUpperCase().replace(/USDT$/, '')]) return { open: true, cls };
   if (cls === 'stock') { const st = String((pd && pd.state) || 'CLOSED').toUpperCase(); return { open: st === 'REGULAR', cls, msg: st === 'REGULAR' ? '' : 'US stocks trade 9:30-16:00 New York time, Monday to Friday (now: ' + st.toLowerCase() + ').' }; }
   const t = _nyParts(now || Date.now()); if (!t) return { open: true, cls };
   const min = t.h * 60 + t.m; // minutes into the New York day

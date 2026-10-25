@@ -208,7 +208,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // by the price pollers (window.mpMktState[sym]=state). Default ALLOW when unknown. Used by every trade opener
       // (plan form, mterm, /charts quick-trade, mobile demo) so the market-closed block is consistent, not plan-form-only.
       window.mpMktState=window.mpMktState||{};
-      window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!STK[sym])return false;return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
+      window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!STK[sym])return false;if(BEQ[sym])return false;/* a Bybit equity perp is a stock for the fee and a 24/7 market for the clock - the server says the same in marketSession, and the two must never disagree about whether an exit is allowed */return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
   // ---- market-closed explainer -------------------------------------------------------------------
   // window.mpMktSess[SYM] = {s,e,tz,gmt} from the price poller: the exchange's own regular session.
   window.mpMktSess=window.mpMktSess||{};

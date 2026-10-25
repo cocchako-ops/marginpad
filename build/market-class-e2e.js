@@ -9,7 +9,9 @@
  * the second of them realisable onto a board that pays real money.
  *
  * Bybit publishes `symbolType` on every instrument, so this is checkable rather than a matter of remembering.
- * Run after ANY change to STOCKS / COMMOD / IDX_SYMS / FX_SYMS / SYM_DROP / handleSymbols / handleCoinIcon.
+ * Run after ANY change to STOCKS / BYBIT_EQ / COMMOD / IDX_SYMS / FX_SYMS / assetClassOf / marketSession /
+ * handleSymbols / handleCoinIcon - the class decides the fee, the leverage cap AND whether a market can be
+ * traded at all, which is how ten of them became impossible to close on 2026-10-25.
  *   node build/market-class-e2e.js
  */
 'use strict';
@@ -134,6 +136,40 @@ function tableOf(src, name) {
     for (const s of ['MU', 'SOXL', 'SKHYNIX', 'SKHY']) ok(pct(s) === pct('AAPL'), s.padEnd(7) + ' is charged the STOCK rate (' + pct(s) + '% a side, same as AAPL)');
     ok(pct('BTC') > pct('AAPL'), 'a coin is still charged more than a stock (' + pct('BTC') + '% vs ' + pct('AAPL') + '%)');
     ok(pct('DASH') === pct('BTC'), 'DASH is charged the COIN rate now (' + pct('DASH') + '%), which is what it is');
+  }
+
+  // 4c. A BYBIT EQUITY PERP MUST BE TRADEABLE AT ANY HOUR, AND THAT IS NOT A CODE READ (2026-10-25).
+  //     `marketSession` answers the stock class by demanding `pd.state === 'REGULAR'`, and a Bybit-priced
+  //     symbol publishes no session at all - so the moment BYBIT_EQ gave these ten the stock class for the fee,
+  //     `String(undefined || 'CLOSED')` made every one of them refuse to OPEN or CLOSE with a message about New
+  //     York. Emapolako14 held seven and said so in the global room before any test did. The check is a real
+  //     open and a real close, outside US hours as often as inside them, because the branch reads fine either way.
+  {
+    const UIDM = 'e2e-mkt' + Math.random().toString(36).slice(2, 6);
+    const ah = { 'x-admin-key': process.env.MP_ADMIN_KEY || (require('fs').existsSync('ADMIN_KEY.local.txt') ? (require('fs').readFileSync('ADMIN_KEY.local.txt', 'utf8').match(/mpadm_[A-Za-z0-9_-]+/) || [])[0] : ''), 'content-type': 'application/json' };
+    const post = async (p, b, hh) => { const r = await fetch(O + p, { method: 'POST', headers: hh || ah, body: JSON.stringify(b) }); return { s: r.status, j: await r.json().catch(() => ({})) }; };
+    await post('/api/admin/e2euser', { uid: UIDM, op: 'mk' });
+    const se = await post('/api/admin/e2euser', { uid: UIDM, op: 'sess' });
+    const ck = { 'content-type': 'application/json', cookie: 'mp_sess=' + (se.j.token || se.j.sess) };
+    for (const s of Object.keys(BEQ).slice(0, 3)) {
+      const o = await post('/api/trade/open', { sym: s, side: 'long', lev: 5, margin: 10, cid: 'mk' + Math.random().toString(36).slice(2, 8) }, ck);
+      const id = o.j && (o.j.id || (o.j.position && o.j.position.id) || (o.j.raw && o.j.raw.id)); // the open answers {ok, position:{id}} - reading o.j.id alone failed a check on a working product
+      ok(o.s === 200 && !!id, s.padEnd(7) + ' opens at this hour (a 24/7 venue is never "closed")',
+        o.j && (o.j.error ? o.j.error + ': ' + String(o.j.message || '').slice(0, 70) : JSON.stringify(o.j).slice(0, 80)));
+      if (id) {
+        const c = await post('/api/trade/close', { id: String(id), pct: 100 }, ck);
+        ok(c.s === 200 && !(c.j && c.j.error), s.padEnd(7) + ' and CLOSES - a member must never be locked into a position',
+          c.j && (c.j.error || '') + ' ' + String((c.j && c.j.message) || '').slice(0, 70));
+      }
+    }
+    // the other side of the same rule: a REAL stock must still obey its exchange's hours
+    const ap = await (await fetch(O + '/api/price?symbol=AAPL', { headers: { 'cache-control': 'no-cache' } })).json().catch(() => null);
+    const regular = ap && String(ap.state || '').toUpperCase() === 'REGULAR';
+    const a1 = await post('/api/trade/open', { sym: 'AAPL', side: 'long', lev: 5, margin: 10, cid: 'mk' + Math.random().toString(36).slice(2, 8) }, ck);
+    ok(regular ? a1.s === 200 : (a1.s === 409 && a1.j.error === 'market_closed'),
+      'AAPL still follows New York (' + (ap && ap.state) + ' -> ' + (a1.j.error || 'opened') + ')');
+    { const aid = a1.j && (a1.j.id || (a1.j.position && a1.j.position.id) || (a1.j.raw && a1.j.raw.id)); if (a1.s === 200 && aid) await post('/api/trade/close', { id: String(aid), pct: 100 }, ck); }
+    await post('/api/admin/e2euser', { uid: UIDM, op: 'rm' });
   }
 
   // 5. EVERY OFFERED MARKET HAS A PRICE, and the price's own class agrees with the table.
