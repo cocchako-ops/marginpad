@@ -20678,7 +20678,23 @@ function spotRowFresh(row, now, maxAge) { const ts = +((row || {}).ts) || 0; ret
 // outside - and a liquid pool fills but pages the owner (a real 20x in a day is rare enough to look at every time).
 function spotSellGuard(o) {
   const price = +(o && o.price) || 0, lastPx = +(o && o.lastPx) || 0, liq = +(o && o.liqUsd) || 0, stale = !!(o && o.stale);
-  const x = (price > 0 && lastPx > 0) ? price / lastPx : 0;
+  /* THE REFERENCE WAS A DAILY MARK, SO A POSITION BOUGHT AND SOLD INSIDE ONE DAY WAS NEVER GUARDED AT ALL
+     (2026-10-25, owner: "ako je prvo mesto doslo tu na neku foru, bug ili exploit, reci mi"). `lastPx` is
+     written by the daily snapshot; a buy stores none. So for a same-day trade lastPx was 0, x computed as 0,
+     and `!(0 > 20)` waved every fill through in silence - which is why a 162x sale ($1,000 -> $162,123 on a
+     pool that was trading $0) produced no alarm, and why there have been ZERO spotjump rows in thirty days
+     against two real windfalls. Every position has a COST BASIS, so there is always a reference. */
+  const costPx = +(o && o.costPx) || 0;
+  const ref = lastPx > 0 ? lastPx : costPx;
+  const estUsd = +(o && o.estUsd) || 0;
+  /* AND A SALE MAY NOT TAKE MORE OUT OF A POOL THAN THE POOL COULD PAY. `spotPriceHolds` has valued a meme
+     bag at no more than SPOT_LIQ_CAP of its pool since 2026-10-17 - the portfolio was already telling the
+     holder the bag was worth that much and no more - while the FILL was unbounded, so the two paths said
+     different things about the same coin and the sale won. This is the owner's 2026-10-24 rule applied to
+     the other half: a coin you cannot sell is worth nothing, and a sale the pool cannot pay did not happen.
+     Checked before the jump test, because it is true whatever the price did. */
+  if (estUsd > 0 && liq > 0 && estUsd > liq * SPOT_LIQ_CAP) return { block: 'pool_too_small', alert: true, x: (price > 0 && ref > 0) ? price / ref : 0, payable: liq * SPOT_LIQ_CAP };
+  const x = (price > 0 && ref > 0) ? price / ref : 0;
   if (!(x > SPOT_JUMP_X)) return { block: null, alert: false, x };
   if (stale) return { block: 'no_price', alert: true, x };
   if (liq < SPOT_THIN_LIQ) return { block: 'thin_pool', alert: true, x };
@@ -20928,6 +20944,15 @@ async function handleSpot(url, request, env) {
       if (mp.mint && mp.mint.toLowerCase() !== mint.toLowerCase()) return jr({ error: 'bad_pool' }, 400); // the pool prices a DIFFERENT token - no fill through a foreign pool, either direction
       price = mp.price; liq = mp.liqUsd; priceStale = !!mp.stale;
       if (side === 'buy' && liq > 0 && liq < SPOT_THIN_LIQ) return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400); // under $1k of liquidity the price is fiction, and the board pays real money
+      /* A BUY MAY NOT FILL AT A LIST-FALLBACK PRICE, AND A MEMBER ARBITRAGED OUR OWN FEED BECAUSE IT COULD
+         (2026-10-25). The fallback exists for the HOLDER: when a pool cannot be read, a sale is still
+         possible at the last listed price rather than being trapped. A buy needs no such mercy - if the pool
+         is unreadable, come back in a moment. Measured on NAMI, 2026-10-23: our quote for ONE pool alternated
+         between 0.00001667 and 0.00016298 (a factor of ten - the list row's price against the pool's own),
+         and a member bought on the low one and sold on the high one, the same minute, three times, scaling
+         $100 -> $500 -> $1,000 for $13,145. The moment the two agreed again every round trip booked exactly
+         $0. Two prices for one pool is the bug; letting only the SELL side use the weaker one closes it. */
+      if (side === 'buy' && priceStale) return jr({ error: 'no_price' }, 503);
       meta = { k: 'meme', mint, pool, net, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
     } else {
       const sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
@@ -20947,7 +20972,7 @@ async function handleSpot(url, request, env) {
       return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
     }
     // sell: the hold decides the exact qty (100% = the stored qty) and, for a meme, the pool
-    let hq = 0; try { const hd = await sdo('/s2/hold?uid=' + encodeURIComponent(uid) + '&key=' + encodeURIComponent(key)); hq = +hd.qty || 0; if (!holdMeta) holdMeta = hd.meta || {}; } catch (e) {}
+    let hq = 0, hCost = 0; try { const hd = await sdo('/s2/hold?uid=' + encodeURIComponent(uid) + '&key=' + encodeURIComponent(key)); hq = +hd.qty || 0; hCost = +hd.costUsd || 0; if (!holdMeta) holdMeta = hd.meta || {}; } catch (e) {}
     if (!(hq > 0)) return jr({ error: 'no_position' }, 400);
     const pct = Math.min(100, Math.max(0, +b.pct || 0));
     const qty = pct >= 100 ? hq : (isFinite(+b.qty) && +b.qty > 0 ? Math.min(+b.qty, hq) : hq * pct / 100);
@@ -20955,9 +20980,11 @@ async function handleSpot(url, request, env) {
     const estUsd = qty * price;
     if (estUsd < 0.5 && pct < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400); // dust positions may sell whole regardless of the $1 floor
     if (kind === 'meme') { // integrity guard: a fill far above the position's own last mark needs a pool that could actually pay it
-      const gd = spotSellGuard({ price, lastPx: +(holdMeta && holdMeta.lastPx) || 0, liqUsd: liq, stale: priceStale });
+      const gd = spotSellGuard({ price, lastPx: +(holdMeta && holdMeta.lastPx) || 0, costPx: hq > 0 ? hCost / hq : 0, estUsd, liqUsd: liq, stale: priceStale });
       if (gd.alert) { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['spotjump'], blobs: ['spotjump', key.slice(0, 64), String(gd.block || 'filled'), String(uid)], doubles: [1, gd.x, estUsd, liq] }); } catch (e) {} try { await tgAdmin(env, '<b>Demo Spot: sell fill ' + Math.round(gd.x) + 'x above the last mark' + (gd.block ? ' (refused: ' + gd.block + ')' : '') + '</b>\n' + (meta.sym || key.slice(0, 20)) + ' est $' + Math.round(estUsd) + ' at ' + price.toPrecision(4) + ' (last mark ' + (+(holdMeta && holdMeta.lastPx) || 0).toPrecision(4) + ', pool liq $' + Math.round(liq) + (priceStale ? ', list fallback' : '') + ')\nuid ' + String(uid).slice(0, 12), { kind: 'spotjump', sev: gd.block ? 'warn' : 'red' }); } catch (e) {} }
       if (gd.block === 'thin_pool') return jr({ error: 'thin_pool', liqUsd: Math.round(liq) }, 400);
+      // the pool can pay this much right now - a smaller slice still goes through, which is what a real holder does
+      if (gd.block === 'pool_too_small') return jr({ error: 'pool_too_small', liqUsd: Math.round(liq), payableUsd: Math.round(gd.payable * 100) / 100, estUsd: Math.round(estUsd * 100) / 100 }, 400);
       if (gd.block) return jr({ error: gd.block }, 503);
     }
     let d = null; try { d = await sdo('/s2/trade', { uid, side: 'sell', key, qty, pct: pct >= 100 ? 100 : 0, price }); } catch (e) { return spotFail(env, jr, path); }
