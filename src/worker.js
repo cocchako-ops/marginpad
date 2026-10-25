@@ -13000,6 +13000,33 @@ function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-
 // would fill at a stale price. Forex: 24/5, Sunday 17:00 to Friday 17:00 New York time. Metals and indices trade
 // like CME Globex / CFDs: 24/5 with the daily 17:00-18:00 New York maintenance break (US/NY clock, DST-aware).
 function _nyParts(ms) { try { const p = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false }).formatToParts(new Date(ms)); const g = (t) => (p.find(x => x.type === t) || {}).value; return { wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(g('weekday')), h: (+g('hour') || 0) % 24, m: +g('minute') || 0 }; } catch (e) { return null; } }
+/* WHEN IT OPENS AGAIN IS DERIVED, NEVER ASSERTED (2026-10-25, owner: "Njujork se ne otvara nedeljom vec
+   ponedeljkom ... berza se otvara u 09:30 po njujorskom vremenu"). The weekend used to answer with ONE sentence
+   naming Sunday 17:00 New York for every non-crypto class at once - measured that morning, BRENT, OIL, COPPER,
+   XAU, SPX500, US30 and EURUSD all got it. It is true of the currency week and false of a New York cash index,
+   which is calculated from shares that open MONDAY 09:30. Yahoo publishes the instrument's own regular session,
+   so where that window is a real exchange session (under 20 h) the next open is rolled forward out of it, over
+   the weekend, which is the same walk the terminal's own mpNextOpen does. A ~24 h futures or FX window carries
+   no such information and gets a class sentence instead. */
+const SESS_EXCH_MAX = 20 * 3600; // longer than this is a 24h futures/FX day, not an exchange session
+function _nextOpenAt(pd, now) {
+  const w = pd && pd.sess; if (!w || !(+w.s > 0) || !(+w.e > 0)) return 0;
+  const dur = +w.e - +w.s; if (dur <= 0 || dur > SESS_EXCH_MAX) return 0;
+  const DAY = 86400, gmt = +w.gmt || 0, nowS = Math.floor((now || Date.now()) / 1000);
+  let open = +w.s, close = +w.e, guard = 0;
+  while ((open <= nowS || close <= nowS) && guard++ < 14) { open += DAY; close += DAY; }
+  guard = 0; // an exchange does not open at the weekend - step over Saturday and Sunday in EXCHANGE-local time
+  while (guard++ < 14) { const d = new Date((open + gmt) * 1000).getUTCDay(); if (d !== 0 && d !== 6) break; open += DAY; close += DAY; }
+  return open > nowS ? open : 0;
+}
+function _nextOpenMsg(pd, now) {
+  const at = _nextOpenAt(pd, now); if (!at) return '';
+  const w = pd.sess, d = new Date((at + (+w.gmt || 0)) * 1000);
+  const day = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getUTCDay()];
+  const hh = String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0');
+  const city = String(w.tz || '').split('/').pop().replace(/_/g, ' ');
+  return 'It opens again ' + day + ' ' + hh + (city ? ' ' + city + ' time' : '') + '.';
+}
 function marketSession(sym, pd, now) {
   const cls = assetClassOf(sym);
   if (cls === 'crypto') return { open: true, cls };
@@ -13012,12 +13039,21 @@ function marketSession(sym, pd, now) {
      the night within ~1% of the cash listing), so this branch is the truth, not an exemption - and it must sit
      ABOVE the stock branch, which is the one that defaults to closed when it knows no session. */
   if (BYBIT_EQ[String(sym || '').toUpperCase().replace(/USDT$/, '')]) return { open: true, cls };
-  if (cls === 'stock') { const st = String((pd && pd.state) || 'CLOSED').toUpperCase(); return { open: st === 'REGULAR', cls, msg: st === 'REGULAR' ? '' : 'US stocks trade 9:30-16:00 New York time, Monday to Friday (now: ' + st.toLowerCase() + ').' }; }
+  if (cls === 'stock') { const st = String((pd && pd.state) || 'CLOSED').toUpperCase(); const nx = _nextOpenMsg(pd, now); return { open: st === 'REGULAR', cls, msg: st === 'REGULAR' ? '' : 'US stocks trade 9:30-16:00 New York time, Monday to Friday (now: ' + st.toLowerCase() + ').' + (nx ? ' ' + nx : '') }; }
   const t = _nyParts(now || Date.now()); if (!t) return { open: true, cls };
   const min = t.h * 60 + t.m; // minutes into the New York day
-  if (t.wd === 6) return { open: false, cls, msg: 'Closed for the weekend - reopens Sunday 17:00 New York time (' + (cls === 'forex' ? '22:00' : '22:00') + ' UTC in summer).' };
-  if (t.wd === 0 && min < 17 * 60) return { open: false, cls, msg: 'Closed for the weekend - reopens Sunday 17:00 New York time.' };
-  if (t.wd === 5 && min >= 17 * 60) return { open: false, cls, msg: 'Closed for the weekend - reopens Sunday 17:00 New York time.' };
+  if (t.wd === 6 || (t.wd === 0 && min < 17 * 60) || (t.wd === 5 && min >= 17 * 60)) {
+    /* THE REOPEN MUST MATCH THE INSTRUMENT. Where the venue publishes a real exchange session we say the day and
+       the minute it opens, out of that session (a New York cash index: Monday 09:30 New York time). Where it
+       publishes a 24 h window - a futures contract, a currency pair - that window cannot say when the pit
+       reopens, so the class sentence does, and only as far as it can be checked: the currency week genuinely
+       starts Sunday 17:00 New York, and everything else here comes back on Sunday evening. */
+    const nx = _nextOpenMsg(pd, now);
+    if (nx) return { open: false, cls, msg: 'Closed for the weekend. ' + nx };
+    return { open: false, cls, msg: cls === 'forex'
+      ? 'Closed for the weekend - the currency market reopens Sunday 17:00 New York time.'
+      : 'Closed for the weekend - this market reopens Sunday evening New York time.' };
+  }
   if (cls !== 'forex' && min >= 17 * 60 && min < 18 * 60) return { open: false, cls, msg: (cls === 'metal' ? 'Metals' : 'Indices') + ' pause daily 17:00-18:00 New York time.' };
   /* THE VENUE'S OWN HOURS, WHEN IT PUBLISHES THEM (2026-10-24, owner: "jel mozemo da resimo to za indekse").
      Everything above is a New York 24/5 clock, which is right for FX and for a futures contract and WRONG for a
@@ -13035,7 +13071,8 @@ function marketSession(sym, pd, now) {
     const nowS = Math.floor((now || Date.now()) / 1000);
     if (nowS < +w9.s || nowS > +w9.e) {
       const hh = (sec) => { const d = new Date((sec + (+w9.gmt || 0)) * 1000); return String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0'); };
-      return { open: false, cls, msg: 'The exchange is closed. This market trades ' + hh(+w9.s) + '-' + hh(+w9.e) + (w9.tz ? ' ' + w9.tz : '') + ', and its price does not move outside those hours.' };
+      const nx9 = _nextOpenMsg(pd, now);
+      return { open: false, cls, msg: 'The exchange is closed. This market trades ' + hh(+w9.s) + '-' + hh(+w9.e) + (w9.tz ? ' ' + w9.tz : '') + ', and its price does not move outside those hours.' + (nx9 ? ' ' + nx9 : '') };
     }
   }
   return { open: true, cls };

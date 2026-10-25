@@ -208,7 +208,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // by the price pollers (window.mpMktState[sym]=state). Default ALLOW when unknown. Used by every trade opener
       // (plan form, mterm, /charts quick-trade, mobile demo) so the market-closed block is consistent, not plan-form-only.
       window.mpMktState=window.mpMktState||{};
-      window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!STK[sym])return false;if(BEQ[sym])return false;/* a Bybit equity perp is a stock for the fee and a 24/7 market for the clock - the server says the same in marketSession, and the two must never disagree about whether an exit is allowed */return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
+      window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(BEQ[sym])return false;/* EVERY MARKET THAT KEEPS HOURS, NOT ONLY A STOCK (2026-10-25): this asked `STK[sym]` first, so a
+     commodity, an index and a currency pair were never closed as far as the client was concerned - and on a Sunday
+     the plan form therefore fell through to its 3 s freshness test and promised a BRENT price "in a second". The
+     state is written from our own /api/price, which publishes one ONLY for a Yahoo-fed instrument, so the state's
+     own presence is what says this market keeps hours - a coin never has one, and XAU/XAG (Bybit linear, no
+     published session) correctly stay unknown and therefore allowed. *//* a Bybit equity perp is a stock for the fee and a 24/7 market for the clock - the server says the same in marketSession, and the two must never disagree about whether an exit is allowed */return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
   // ---- market-closed explainer -------------------------------------------------------------------
   // window.mpMktSess[SYM] = {s,e,tz,gmt} from the price poller: the exchange's own regular session.
   window.mpMktSess=window.mpMktSess||{};
@@ -223,6 +228,13 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   window.mpNextOpen=function(sym){
     sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     var ss=window.mpMktSess[sym]; if(!ss||!ss.s) return null;
+    /* ONLY A REAL EXCHANGE SESSION CAN SAY WHEN THE NEXT ONE STARTS (2026-10-25). Yahoo publishes a ~24h window
+       for a futures contract and for a currency pair - BRENT reads Sun 00:00-23:59 New York - and rolling THAT
+       forward over the weekend lands on Monday 00:00, a day and eighteen hours after the pit really reopens.
+       Under 20h is an exchange session (AAPL and SPX500 read 09:30-16:00) and rolls forward correctly; anything
+       longer makes no claim at all, and mpMktClosedMsg falls back to the sentence that promises no minute.
+       The worker's own marketSession applies the identical rule, and the two must never disagree. */
+    if(!(+ss.e>+ss.s)||((+ss.e-+ss.s)>20*3600)) return null;
     var now=Date.now(), open=ss.s*1000, close=ss.e*1000, DAY=86400000;
     var guard=0;
     while((open<=now||close<=now)&&guard++<10){ open+=DAY; close+=DAY; }
@@ -248,7 +260,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var cls=window.mpAssetClass?window.mpAssetClass(sym):'crypto';
     if(cls==='crypto') return null;
     var open=window.mpNextOpen(sym), ss=window.mpMktSess[sym]||{};
-    var when='';
+    var when='', local='', exWhen='';
     if(open){
       var dt=new Date(open), now=new Date();
       var sameDay=dt.toDateString()===now.toDateString();
@@ -256,13 +268,25 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       var t=dt.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
       var day=sameDay?'today':tmr?'tomorrow':dt.toLocaleDateString([], {weekday:'long'});
       when=day+' at '+t+__esT_home("yourTime",' your time');
+      local=t+__esT_home("yourTime",' your time');
+      /* THE EXCHANGE'S OWN CLOCK IS THE FACT; THE READER'S IS THE CONVENIENCE (2026-10-25, owner: "Berza se
+         otvara u 09:30 po njujorskom vremenu"). This said only "tomorrow at 14:30 your time" - true, and it
+         names neither the exchange nor the hour anybody quotes, so there was no way for a reader to check it
+         against what the world says about New York. The hour the venue keeps leads now, the reader's own
+         follows in brackets, and both are read off the SAME timestamp so they cannot disagree. */
+      if(ss.tz){try{
+        var _p=new Intl.DateTimeFormat('en-US',{timeZone:ss.tz,weekday:'long',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(dt);
+        var _g=function(k){var f=_p.filter(function(x){return x.type===k;})[0];return f?f.value:'';};
+        exWhen=_g('weekday')+' '+_g('hour')+':'+_g('minute')+' '+String(ss.tz).split('/').pop().replace(/_/g,' ')+__esT_home("exchangeTime",' time');
+      }catch(e){}}
     }
-    return {open:open, when:when, until:open?window.mpUntil(open):'', why:MKT_WHY[cls]||MKT_WHY.stock,
+    return {open:open, when:when, local:local, exWhen:exWhen, until:open?window.mpUntil(open):'', why:MKT_WHY[cls]||MKT_WHY.stock,
       tz:ss.tz||''};
   };
       // One phrasing for every "you cannot open this now" message, so the toast and the panel never disagree.
   window.mpMktClosedMsg=function(sym){
     var ex=window.mpMktExplain&&window.mpMktExplain(sym);
+    if(ex&&ex.exWhen) return sym+__esT_home("isClosedExchangeOpens",' is closed - the exchange opens ')+ex.exWhen+(ex.until?' (in '+ex.until+(ex.local?', '+ex.local:'')+')':'')+'.';
     if(ex&&ex.until) return sym+__esT_home("isClosedTheExchange",' is closed - the exchange opens in ')+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
     return sym+__esT_home("marketIsClosedRight",' market is closed right now - you can trade it when the exchange reopens.');
   };
@@ -1779,9 +1803,13 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     // the live price MUST be a fresh reading for THIS exact symbol - a stale mpPlanLive, or one still holding the
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
+    /* A CLOSED MARKET IS NOT A SLOW ONE, SO IT IS ASKED ABOUT FIRST (2026-10-25, owner's photo: "Waiting for the
+       live price for BRENT - try again in a second" at 00:53 Sunday New York, with "Ovaj iskaz nije tacan"). A shut
+       market's price is stale by definition - it stopped when the exchange did - so the freshness test below was
+       always the one that fired, and it is the one sentence that cannot be true in that state. */
+    if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+__esT_home("marketIsClosedRight2",' market is closed right now.')));add._busy=false;return;}
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say(__esT_home("waitingForTheLive2",'Waiting for the live price for ')+(sym||__esT_home("thisCoin",'this coin'))+__esT_home("tryAgainInA",' - try again in a second.'));add._busy=false;return;}
     entry=+pl.price;
-    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+__esT_home("marketIsClosedRight2",' market is closed right now.')));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
     /* LIMIT MODE: everything below (size, notional, liq, the SL/TP side checks) is computed against the price this
        ticket will actually be entered at - so `entry` becomes the limit price here, and the marketable case is
        refused rather than quietly turned into a market order. */
