@@ -4232,8 +4232,12 @@ async function handleCgPulse(url, env) {
   return resp;
 }
 // Big tradable-symbol list for the symbol pickers / dropdowns - every Bybit USDT-perp by 24h volume (~500). Edge-cached 10 min.
+// A ticker we refuse to OFFER at all, with the reason, because a market we cannot price honestly is worse than one
+// market fewer. SKHYNIX is Bybit's KOREAN SK hynix line (marketRegion KR, underlyingTicker 000660): the same company
+// already trades here as SKHY (its Nasdaq listing, which Yahoo prices in dollars with a real session), and the only
+// other feed for the Korean line quotes 1,277,000 KRW - a figure that cannot share a book with a USD position.
 async function handleSymbols() {
-  const ck = new Request('https://marginpad.io/__symbols_v2');
+  const ck = new Request('https://marginpad.io/__symbols_v3'); // v3: the list no longer carries a ticker another asset class owns
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let syms = [];
   try {
@@ -4245,6 +4249,16 @@ async function handleSymbols() {
       .filter(t => /USDT$/.test(t.symbol) && (+t.turnover24h || 0) >= 5e6)
       .sort((a, b) => (+b.turnover24h || 0) - (+a.turnover24h || 0))
       .map(t => t.symbol.replace(/USDT$/, ''))
+      // A TICKER OUR OWN TABLES CLAIM FOR ANOTHER ASSET CLASS MUST NEVER REACH THE CRYPTO LIST (2026-10-25).
+      // Bybit trades DASHUSDT (Dash), CVXUSDT (Convex Finance), FUSDT (SynFutures), TUSDT (Threshold),
+      // DIAUSDT (dia) and CLUSDT (WTI crude) - and STOCKS claims the same six tickers for DoorDash, Chevron,
+      // Ford, AT&T, the Dow ETF and Colgate. `assetClassOf` already decides the FEE, the leverage cap and the
+      // market-closed guard off STOCKS, so both halves of the terminal were offering one ticker as two markets
+      // and whichever list the trader tapped decided which asset they really bought: two members entered DASH at
+      // the coin's price (53.16 and 54.08) and were being marked against DoorDash at 179.38, one of them at
+      // -2374% ROE. **METALS STAY** - XAU/XAG really are the Bybit linear perp and `mpIsBybit` must keep them
+      // on the websocket (anything mpIsYahoo answers true for is priced from somewhere else entirely).
+      .filter(s => { const c = assetClassOf(s); return c === 'crypto' || c === 'metal' || !!BYBIT_EQ[s]; })
       .slice(0, 500);
   } catch (e) {}
   const out = { ts: Date.now(), symbols: syms };
@@ -4335,7 +4349,12 @@ async function handleCoinIcon(url, env, request) {
   // branch below. Without it, adding a seventh commodity to COMMOD silently puts whatever memecoin wears that ticker
   // on the terminal, the screener and the recents rail, and nothing anywhere would report it.
   if (COMMOD[sym.toUpperCase()]) return bad(404);
-  if (STOCKS[sym.toUpperCase()] || ICON_STOCK_EXTRA[sym]) { // a stock or ETF: its own logo, never a CoinGecko look-alike
+  // AN INDEX AND A CURRENCY PAIR ARE DRAWN CLIENT-SIDE, so a 404 here has always been the design - but the branch
+  // was MISSING, so they fell past this point into CoinGecko (2026-10-25: /api/coinicon?sym=VIX answered a
+  // 115,388-byte gold token called "VIX777"). Same class as BRENT=Pepe on 10-24, one asset class further out:
+  // the stock branch has refused CoinGecko since 10-05, commodities since 10-24, and indices never did.
+  if (IDX_SYMS[sym.toUpperCase()] || FX_SYMS[sym.toUpperCase()]) return bad(404);
+  if (STOCKS[sym.toUpperCase()] || BYBIT_EQ[sym.toUpperCase()] || ICON_STOCK_EXTRA[sym]) { // a stock or ETF: its own logo, never a CoinGecko look-alike
     const ck0 = new Request('https://marginpad.io/__coinicon_stk_' + sym);
     try { const hit = await caches.default.match(ck0); if (hit) return hit; } catch (e) {}
     try {
@@ -6043,7 +6062,7 @@ async function postSignalDigest(env) {
 // an upstream fan-out (and exchange IP bans; Binance already blocks CF IPs). This wrapper reuses the same edge
 // cache the /api/price route maintains (5s TTL), so a burst of fills costs ONE upstream fetch per symbol/5s.
 // ─── Stocks: real equities via Yahoo Finance (keyless, works from CF egress - verified 2026-08-06) ───
-const STOCKS = { NOW: 'ServiceNow', SNOW: 'Snowflake', CRWD: 'CrowdStrike', PANW: 'Palo Alto Networks', DDOG: 'Datadog', NET: 'Cloudflare', ZS: 'Zscaler', MDB: 'MongoDB', TEAM: 'Atlassian', ROKU: 'Roku', PINS: 'Pinterest', LYFT: 'Lyft', DASH: 'DoorDash', ZM: 'Zoom', DOCU: 'Docusign', TWLO: 'Twilio', U: 'Unity', TTWO: 'Take-Two', SONY: 'Sony', BIDU: 'Baidu', JD: 'JD.com', PDD: 'PDD Holdings', NTES: 'NetEase', TCEHY: 'Tencent', LI: 'Li Auto', XPEV: 'XPeng', TM: 'Toyota', HMC: 'Honda', RACE: 'Ferrari', STLA: 'Stellantis', GM: 'General Motors', CAT: 'Caterpillar', DE: 'John Deere', MMM: '3M', GE: 'GE Aerospace', HON: 'Honeywell', LMT: 'Lockheed Martin', RTX: 'RTX', NOC: 'Northrop Grumman', UPS: 'UPS', FDX: 'FedEx', CVX: 'Chevron', COP: 'ConocoPhillips', SLB: 'SLB', OXY: 'Occidental', PFE: 'Pfizer', MRK: 'Merck', ABBV: 'AbbVie', AMGN: 'Amgen', GILD: 'Gilead', BMY: 'Bristol Myers', TMO: 'Thermo Fisher', DHR: 'Danaher', ISRG: 'Intuitive Surgical', MDT: 'Medtronic', CVS: 'CVS Health', CI: 'Cigna', ELV: 'Elevance', MCD: 'McDonald\'s', SBUX: 'Starbucks', NKE: 'Nike', LULU: 'Lululemon', TGT: 'Target', LOW: 'Lowe\'s', TJX: 'TJX', DG: 'Dollar General', KHC: 'Kraft Heinz', MDLZ: 'Mondelez', MO: 'Altria', PM: 'Philip Morris', CL: 'Colgate', KMB: 'Kimberly-Clark', GIS: 'General Mills', HSY: 'Hershey', SYY: 'Sysco', ADM: 'ADM', BG: 'Bunge', CF: 'CF Industries', MOS: 'Mosaic', NEM: 'Newmont', FCX: 'Freeport', AA: 'Alcoa', CLF: 'Cleveland-Cliffs', VALE: 'Vale', RIO: 'Rio Tinto', BHP: 'BHP', GOLD: 'Barrick', AEM: 'Agnico Eagle', WPM: 'Wheaton Precious', PAAS: 'Pan American Silver', HL: 'Hecla', AG: 'First Majestic', AAPL: 'Apple', TSLA: 'Tesla', NVDA: 'NVIDIA', MSFT: 'Microsoft', AMZN: 'Amazon', GOOGL: 'Alphabet', META: 'Meta', AMD: 'AMD', NFLX: 'Netflix', COIN: 'Coinbase', MSTR: 'Strategy', PLTR: 'Palantir', HOOD: 'Robinhood', AVGO: 'Broadcom', INTC: 'Intel', JPM: 'JPMorgan', DIS: 'Disney', BABA: 'Alibaba', SPY: 'S&P 500 ETF', QQQ: 'Nasdaq 100 ETF' , MARA: 'MARA Holdings', RIOT: 'Riot Platforms', CLSK: 'CleanSpark', HUT: 'Hut 8', CIFR: 'Cipher Mining', WULF: 'TeraWulf', GLXY: 'Galaxy Digital', BMNR: 'Bitmine', SBET: 'SharpLink', TSM: 'TSMC', QCOM: 'Qualcomm', ARM: 'Arm', SMCI: 'Super Micro', ASML: 'ASML', TXN: 'Texas Instruments', ORCL: 'Oracle', CRM: 'Salesforce', ADBE: 'Adobe', GME: 'GameStop', AMC: 'AMC', SOFI: 'SoFi', RIVN: 'Rivian', LCID: 'Lucid', NIO: 'NIO', UBER: 'Uber', ABNB: 'Airbnb', RBLX: 'Roblox', DKNG: 'DraftKings', SNAP: 'Snap', PYPL: 'PayPal', SHOP: 'Shopify', SPOT: 'Spotify', F: 'Ford', BA: 'Boeing', LLY: 'Eli Lilly', V: 'Visa', MA: 'Mastercard', WMT: 'Walmart', COST: 'Costco', XOM: 'Exxon', JNJ: 'Johnson & Johnson', PG: 'Procter & Gamble', UNH: 'UnitedHealth', HD: 'Home Depot', BAC: 'Bank of America', GS: 'Goldman Sachs', KO: 'Coca-Cola', PEP: 'PepsiCo', T: 'AT&T', IWM: 'Russell 2000 ETF', DIA: 'Dow ETF', ARKK: 'ARK Innovation', TQQQ: 'Nasdaq 3x ETF', SQQQ: 'Nasdaq -3x ETF', GLD: 'Gold ETF', SLV: 'Silver ETF', TLT: '20Y Treasury ETF', VOO: 'Vanguard S&P 500', XLE: 'Energy ETF'};
+const STOCKS = { NOW: 'ServiceNow', SNOW: 'Snowflake', CRWD: 'CrowdStrike', PANW: 'Palo Alto Networks', DDOG: 'Datadog', NET: 'Cloudflare', ZS: 'Zscaler', MDB: 'MongoDB', TEAM: 'Atlassian', ROKU: 'Roku', PINS: 'Pinterest', LYFT: 'Lyft', ZM: 'Zoom', DOCU: 'Docusign', TWLO: 'Twilio', U: 'Unity', TTWO: 'Take-Two', SONY: 'Sony', BIDU: 'Baidu', JD: 'JD.com', PDD: 'PDD Holdings', NTES: 'NetEase', TCEHY: 'Tencent', LI: 'Li Auto', XPEV: 'XPeng', TM: 'Toyota', HMC: 'Honda', RACE: 'Ferrari', STLA: 'Stellantis', GM: 'General Motors', CAT: 'Caterpillar', DE: 'John Deere', MMM: '3M', GE: 'GE Aerospace', HON: 'Honeywell', LMT: 'Lockheed Martin', RTX: 'RTX', NOC: 'Northrop Grumman', UPS: 'UPS', FDX: 'FedEx', CVX: 'Chevron', COP: 'ConocoPhillips', SLB: 'SLB', OXY: 'Occidental', PFE: 'Pfizer', MRK: 'Merck', ABBV: 'AbbVie', AMGN: 'Amgen', GILD: 'Gilead', BMY: 'Bristol Myers', TMO: 'Thermo Fisher', DHR: 'Danaher', ISRG: 'Intuitive Surgical', MDT: 'Medtronic', CVS: 'CVS Health', CI: 'Cigna', ELV: 'Elevance', MCD: 'McDonald\'s', SBUX: 'Starbucks', NKE: 'Nike', LULU: 'Lululemon', TGT: 'Target', LOW: 'Lowe\'s', TJX: 'TJX', DG: 'Dollar General', KHC: 'Kraft Heinz', MDLZ: 'Mondelez', MO: 'Altria', PM: 'Philip Morris', CL: 'Colgate', KMB: 'Kimberly-Clark', GIS: 'General Mills', HSY: 'Hershey', SYY: 'Sysco', ADM: 'ADM', BG: 'Bunge', CF: 'CF Industries', MOS: 'Mosaic', NEM: 'Newmont', FCX: 'Freeport', AA: 'Alcoa', CLF: 'Cleveland-Cliffs', VALE: 'Vale', RIO: 'Rio Tinto', BHP: 'BHP', GOLD: 'Barrick', AEM: 'Agnico Eagle', WPM: 'Wheaton Precious', PAAS: 'Pan American Silver', HL: 'Hecla', AG: 'First Majestic', AAPL: 'Apple', TSLA: 'Tesla', NVDA: 'NVIDIA', MSFT: 'Microsoft', AMZN: 'Amazon', GOOGL: 'Alphabet', META: 'Meta', AMD: 'AMD', NFLX: 'Netflix', COIN: 'Coinbase', MSTR: 'Strategy', PLTR: 'Palantir', HOOD: 'Robinhood', AVGO: 'Broadcom', INTC: 'Intel', JPM: 'JPMorgan', DIS: 'Disney', BABA: 'Alibaba', SPY: 'S&P 500 ETF', QQQ: 'Nasdaq 100 ETF' , MARA: 'MARA Holdings', RIOT: 'Riot Platforms', CLSK: 'CleanSpark', HUT: 'Hut 8', CIFR: 'Cipher Mining', WULF: 'TeraWulf', GLXY: 'Galaxy Digital', BMNR: 'Bitmine', SBET: 'SharpLink', TSM: 'TSMC', QCOM: 'Qualcomm', ARM: 'Arm', SMCI: 'Super Micro', ASML: 'ASML', TXN: 'Texas Instruments', ORCL: 'Oracle', CRM: 'Salesforce', ADBE: 'Adobe', GME: 'GameStop', AMC: 'AMC', SOFI: 'SoFi', RIVN: 'Rivian', LCID: 'Lucid', NIO: 'NIO', UBER: 'Uber', ABNB: 'Airbnb', RBLX: 'Roblox', DKNG: 'DraftKings', SNAP: 'Snap', PYPL: 'PayPal', SHOP: 'Shopify', SPOT: 'Spotify', F: 'Ford', BA: 'Boeing', LLY: 'Eli Lilly', V: 'Visa', MA: 'Mastercard', WMT: 'Walmart', COST: 'Costco', XOM: 'Exxon', JNJ: 'Johnson & Johnson', PG: 'Procter & Gamble', UNH: 'UnitedHealth', HD: 'Home Depot', BAC: 'Bank of America', GS: 'Goldman Sachs', KO: 'Coca-Cola', PEP: 'PepsiCo', T: 'AT&T', IWM: 'Russell 2000 ETF', DIA: 'Dow ETF', ARKK: 'ARK Innovation', TQQQ: 'Nasdaq 3x ETF', SQQQ: 'Nasdaq -3x ETF', GLD: 'Gold ETF', SLV: 'Silver ETF', TLT: '20Y Treasury ETF', VOO: 'Vanguard S&P 500', XLE: 'Energy ETF'};
 // Forex + stock-indices also resolve via Yahoo (real FX rates / real index levels). The Gate USDT-futures perps
 // for these are ILLIQUID → 55-63% flat (h==l) candles on 5m (render as invisible dashes = "missing candles") and
 // EURUSD 1h returned "no data". Yahoo gives clean, session-aware, deep-history data. Our symbol -> Yahoo ticker:
@@ -12940,8 +12959,15 @@ function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-
 // cost a different amount depending on whether a client journal sync landed before the close.
 const FX_SYMS = { USDCHF: 1, NZDUSD: 1, EURGBP: 1, EURJPY: 1, GBPJPY: 1, AUDJPY: 1, EURCHF: 1, USDMXN: 1, USDSEK: 1, USDNOK: 1, EURUSD: 1, GBPUSD: 1, USDJPY: 1, AUDUSD: 1, USDCAD: 1 };
 const IDX_SYMS = { FRA40: 1, EU50: 1, HK50: 1, AUS200: 1, ESP35: 1, SWI20: 1, US2000: 1, VIX: 1, SPX500: 1, NAS100: 1, US30: 1, GER40: 1, UK100: 1, JPN225: 1 };
+// Bybit's own TOKENIZED EQUITY perps. A stock for the FEE and the leverage cap, priced from BYBIT because that is
+// where they trade: 24/7, and within ~1% of the cash listing (measured 2026-10-25). Routing them through Yahoo
+// instead - the only way STOCKS could have classed them - would freeze every one for the 17 hours New York is shut
+// AND move the mark on 17 live positions, one of them a 49x long that would land at about -99%. The CLASS and the
+// FEED are two questions; this table answers the first and `yahooSymFor` deliberately does not read it.
+// Found by `node build/market-class-e2e.js`, which compares Bybit's own `symbolType` against our tables.
+const BYBIT_EQ = { MU: 'Micron', SNDK: 'SanDisk', KLAC: 'KLA', CRCL: 'Circle', SOXL: 'Semiconductors 3x', SOXS: 'Semiconductors -3x', KORU: 'South Korea 3x', SKHY: 'SK hynix', SPCX: 'SpaceX', SKHYNIX: 'SK hynix (Korea)' };
 const COMMOD = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 }; // metals AND energy - one table, because `sym === 'XAU' || sym === 'XAG'` was a table of two written as an expression
-function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (STOCKS[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
+function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
 // Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
 // Real-world cost by class: crypto perp taker ~0.055% | stocks ~0.02% | forex majors ~0.008% | metals & indices ~0.015%.
 // Clamped so the round-trip fee can never exceed ~10% of margin at extreme leverage. Mirror of window.mpFeeRate.
