@@ -211,6 +211,13 @@
        for the home indicator, and it is the ONE expression both the dock and the columns read. */
     .spot-term{--tdock:calc(57px + max(0px, calc(env(safe-area-inset-bottom) - 30px)))}
     .spot-term .tcol-left,.spot-term .tcol-coins,.spot-term .tcol-floor,.spot-term .tcol-theses,.spot-term .tcol-acct{padding-bottom:var(--tdock)}
+    /* A LIST THAT IS THE WHOLE VIEW IS NOT A 420px WINDOW INSIDE IT (owner 2026-10-26: "Floor tab je zasecen na dnu do
+       mesta gde je stari nav tab bio"). The page's own feed box is `.frows{max-height:420px;overflow:auto}` - right for a
+       card among cards in the desktop's right column, wrong on the phone's dedicated Floor column: measured, 25 rows
+       rendered, 9 visible, 16 behind a nested scroll nobody expects, and the column stood empty from the box's edge down
+       to the dock. The COLUMN scrolls; the box inside it does not. (#list in the market column had the same cap lifted
+       on 2026-10-24.) */
+    .spot-term .tcol-floor .frows{max-height:none;overflow:visible}
     .spot-term .tcol-mid{overflow-y:auto;overflow-x:hidden;padding-bottom:var(--tdock)}
     .spot-term .tcol-mid #sheet{flex:0 0 auto;overflow:visible}
     .spot-term .tcol-mid #sheet .chart{flex:0 0 auto;height:clamp(240px,42vh,430px)}
