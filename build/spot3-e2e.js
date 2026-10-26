@@ -184,7 +184,7 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     const thesisBody = ('I hold SOL on Demo Spot because the trend on the daily chart is still up and every pullback to the twenty day average has been bought for six weeks. The thesis is simple: as long as price holds above the last swing low I stay in, and if it closes a daily candle below it I am wrong and I sell the position whole. The level that proves me wrong is the one marked on my chart, not a feeling. I am sizing this at fifteen percent of the account so a loss there costs about two percent of the portfolio. ').repeat(2).trim();
     const thR = await fetch(ORIGIN + '/api/comm/post', { method: 'POST', headers: { 'content-type': 'application/json', cookie: 'mp_sess=' + tok.token }, body: JSON.stringify({ title: 'E2E thesis: why this demo account holds SOL this season', body: thesisBody, cat: 'thesis', syms: 'SOL' }) });
     const thJ = await thR.json().catch(() => null);
-    chk('a thesis publishes as a Community post in the thesis category and pays 20 XP + 5 Ticks (the reward rides on the response)', thR.status === 200 && thJ && thJ.ok && thJ.id && thJ.reward && thJ.reward.xp === 20 && thJ.reward.ticks === 5, thJ);
+    chk('a thesis publishes as a Community post in the thesis category and pays 50 XP + 5 Ticks (the reward rides on the response; 20 -> 50 on 2026-10-26)', thR.status === 200 && thJ && thJ.ok && thJ.id && thJ.reward && thJ.reward.xp === 50 && thJ.reward.ticks === 5, thJ);
     const thList = (await J('/api/spot/theses?cb=' + Date.now())).j;
     chk('/api/spot/theses lists the newest five by title/author/coins/excerpt with the blog section as "more" - an e2e author never appears there', !!thList && Array.isArray(thList.rows) && thList.rows.length <= 5 && thList.more === '/blog/theses/' && thList.rows.every(r => r.id && r.title && r.author && !/^e2e_/i.test(r.author)), thList && { n: thList.rows.length });
     const bt = await fetch(ORIGIN + '/blog/theses/?nc=1&cb=' + Date.now()); const btH = await bt.text();
@@ -251,10 +251,10 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
               pageScroll: document.documentElement.scrollHeight - window.innerHeight };
           });
           chk(vp.t + ': the terminal IS the page - the stage is static with the chart inside it, the sheet has no close button, '
-            + (vp.w > 999 ? 'three columns stand at once' : 'one column at a time with a five-cell dock (Market, Coins, Floor, Assets, Chat - owner 2026-10-26, no Chart cell) and no second bottom bar under it')
+            + (vp.w > 999 ? 'three columns stand at once' : 'one column at a time with a six-cell dock (Market, Coins, Floor, Theses, Assets, Chat - owner 2026-10-26, no Chart cell) and no second bottom bar under it')
             + ', and the page itself does not scroll',
             tm.term && tm.pos === 'static' && tm.xHidden && tm.chartInStage && tm.headSym === pick.sym && tm.pageScroll <= 2
-            && (vp.w > 999 ? (tm.cols === 3 && !tm.dockShown) : (tm.cols === 1 && tm.dockShown && tm.dockCells === 5 && tm.mpbn === 'none')), tm);
+            && (vp.w > 999 ? (tm.cols === 3 && !tm.dockShown) : (tm.cols === 1 && tm.dockShown && tm.dockCells === 6 && tm.mpbn === 'none')), tm);
           if (vp.w <= 999) {
             /* THE DOCK IS FLUSH WITH THE SCREEN EDGE and the five cells are the owner's five, in his order; the Assets
                view holds the masthead (worth, claim) plus the curve / allocation / season blocks, Coins holds the bags
@@ -271,7 +271,7 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
               return { b: Math.round(r.bottom), ih: innerHeight, cells, mastIn, curve, seasonHas: /rank|Pays|ends/i.test(season), coinsIn, sumHas: /Bags|Unrealized/i.test(sum), moversHas: /Risers|Claim/i.test(movers), back: !!document.querySelector('.thead .tback') };
             });
             chk(vp.t + ': the dock sits flush at the bottom edge, five cells in the owner\'s order, Assets carries the masthead + curve + season, Coins carries the bags with a summary, the market carries the movers strip, the head carries Back',
-              dk.b === dk.ih && dk.cells.join(',') === 'market,coins,floor,assets,chat' && dk.mastIn && dk.curve && dk.seasonHas && dk.coinsIn && dk.sumHas && dk.moversHas && dk.back, dk);
+              dk.b === dk.ih && dk.cells.join(',') === 'market,coins,floor,theses,assets,chat' && dk.mastIn && dk.curve && dk.seasonHas && dk.coinsIn && dk.sumHas && dk.moversHas && dk.back, dk);
           }
           /* THE STAGE MUST SURVIVE EVERY WAY THE OLD MODAL COULD BE CLOSED. closeSheet() destroys the chart
              and only a fresh pick rebuilds it, so Escape and the overlay are intercepted - and the thesis

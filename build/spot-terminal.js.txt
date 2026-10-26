@@ -53,8 +53,8 @@
           two homes, never a second copy of a figure. */
     var term = mk('div', 'term'); term.id = 'spotTerm';
     var left = mk('div', 'tcol tcol-left'), mid = mk('div', 'tcol tcol-mid tshow'), right = mk('div', 'tcol tcol-right');
-    var cCoins = mk('div', 'tcol tcol-coins'), cFloor = mk('div', 'tcol tcol-floor'), cAcct = mk('div', 'tcol tcol-acct');
-    [left, mid, right, cCoins, cFloor, cAcct].forEach(function (c) { term.appendChild(c); });
+    var cCoins = mk('div', 'tcol tcol-coins'), cFloor = mk('div', 'tcol tcol-floor'), cTheses = mk('div', 'tcol tcol-theses'), cAcct = mk('div', 'tcol tcol-acct');
+    [left, mid, right, cCoins, cFloor, cTheses, cAcct].forEach(function (c) { term.appendChild(c); });
 
     var buyCard = $('buyCard');
     var mast = app.querySelector('.mast'), grid2 = app.querySelector('.grid2');
@@ -79,11 +79,29 @@
     var sum = mk('div', 'tsum'); sum.id = 'tCoinsSum';
     bCoins.appendChild(sum);
     if (holdCard) bCoins.appendChild(holdCard);
-    // FLOOR: the biggest buys, the feed, the theses
+    // FLOOR: the biggest buys, the feed
     var fstrip = mk('div', 'tstrip'); fstrip.id = 'tFloorTop';
     bFloor.appendChild(fstrip);
     if (floorCard) bFloor.appendChild(floorCard);
-    if (thesisCard) bFloor.appendChild(thesisCard);
+    // THESES (2026-10-26, owner: "thesis hocu da bude na nav baru"): its own view - the page's card whole (lead, Write, the thirty with what each earned)
+    var bTheses = mk('div', 'tblk tblk-theses');
+    var tpay = mk('div', 'tpay'); tpay.id = 'tThPay';
+    bTheses.appendChild(tpay);
+    if (thesisCard) bTheses.appendChild(thesisCard);
+    // HOW A THESIS PAYS, as three figures the server states (the same table the route publishes), and the theses that earned the most
+    function paintTheses() {
+      var s = ST(), p = s.thPays, th = s.theses || [];
+      var key = { p: p, t: th.map(function (x) { return x.id + ':' + (x.stat ? x.stat.xp + '/' + x.stat.buyers : ''); }) };
+      if (!changed('thpay', key)) return;
+      var pub = p ? p.publishXp : 50, per = p ? p.perBuyerXp : 25, cap = p ? p.dailyCapXp : 1000, days = p ? p.windowDays : 14;
+      var h = '<div class="tpay-g"><div><b>+' + pub + '</b><span>' + esc(T('tp_publish', 'XP for publishing')) + '</span></div>'
+        + '<div><b>+' + per + '</b><span>' + esc(T('tp_buyer', 'XP per member who buys it')) + '</span></div>'
+        + '<div><b>' + cap.toLocaleString('en-US') + '</b><span>' + esc(T('tp_cap', 'XP a day, at most')) + '</span></div></div>'
+        + '<div class="tpay-n">' + esc(T('tp_note', 'A buy counts for {d} days after the thesis, once per member, $25 or more. Name the coin, say why, say what proves you wrong.', { d: days })) + '</div>';
+      var top = th.filter(function (x) { return x.stat && x.stat.xp > 0; }).sort(function (a, b) { return b.stat.xp - a.stat.xp; }).slice(0, 3);
+      if (top.length) h += '<div class="tpay-top"><span class="tk">' + esc(T('tp_top', 'Earned the most')) + '</span>' + top.map(function (x) { return '<a class="tchip" href="/community/p/' + esc(x.id) + '/' + esc(x.slug || '') + '"><span class="au">@' + esc(x.author) + '</span> <small class="up">+' + x.stat.xp + ' XP</small><small>' + x.stat.buyers + '</small></a>'; }).join('') + '</div>';
+      tpay.innerHTML = h;
+    }
 
     /* 2. THE LIVE HEAD mirrors the sheet's own nodes (one price on the page, never two that can disagree) and
           REPLACES the sheet's header. Back (phone) returns to the view the coin was tapped from; Watch stars it. */
@@ -115,8 +133,9 @@
         if (bAcct.parentNode !== cAcct) cAcct.appendChild(bAcct);
         if (bCoins.parentNode !== cCoins) cCoins.appendChild(bCoins);
         if (bFloor.parentNode !== cFloor) cFloor.appendChild(bFloor);
+        if (bTheses.parentNode !== cTheses) cTheses.appendChild(bTheses);
       } else {
-        [bAcct, bCoins, bFloor].forEach(function (b) { if (b.parentNode !== right) right.appendChild(b); });
+        [bAcct, bCoins, bFloor, bTheses].forEach(function (b) { if (b.parentNode !== right) right.appendChild(b); });
       }
     }
     placeAll();
@@ -175,11 +194,12 @@
       coins: '<ellipse cx="12" cy="6.5" rx="7" ry="2.8"/><path d="M5 6.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/><path d="M5 11.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/>',
       floor: '<path d="M2 12h3l2.5-6 4 12 3-8 2 4h5.5"/>',
       assets: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/>',
+      theses: '<path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/><path d="M16 4v3h3"/>',
       chat: '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>'
     };
-    var VIEWS = [['market', 'Market', left], ['coins', 'Coins', cCoins], ['floor', 'Floor', cFloor], ['assets', 'Assets', cAcct], ['chart', 'Chart', mid]];
+    var VIEWS = [['market', 'Market', left], ['coins', 'Coins', cCoins], ['floor', 'Floor', cFloor], ['theses', 'Theses', cTheses], ['assets', 'Assets', cAcct], ['chart', 'Chart', mid]];
     var dock = mk('div', 'tdock'); dock.id = 'spotDock';
-    VIEWS.slice(0, 4).forEach(function (v) {
+    VIEWS.slice(0, 5).forEach(function (v) {
       var b = mk('button', '', '<svg viewBox="0 0 24 24">' + IC[v[0]] + '</svg><span data-t="term_' + v[0] + '"></span><i></i>');
       b.querySelector('span').textContent = T('term_' + v[0], v[1]);
       b.type = 'button'; b.setAttribute('data-tv', v[0]); dock.appendChild(b);
@@ -199,7 +219,7 @@
       if (!v) { v = VIEWS[0]; name = v[0]; }
       if (VIEW && VIEW !== 'chart' && name === 'chart') PREV = VIEW;
       VIEW = name;
-      [left, mid, cCoins, cFloor, cAcct].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      [left, mid, cCoins, cFloor, cTheses, cAcct].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
       placeList(name);
       if (name === 'chart') { try { mid.scrollTop = 0; } catch (e) {} }   // the chart, not where the list was left
       Array.prototype.forEach.call(dock.children, function (b) { var on = b.getAttribute('data-tv') === name; b.classList.toggle('on', on); if (on) b.classList.remove('dot'); });
@@ -236,7 +256,7 @@
     var autoPick = false;
     document.addEventListener('click', function (e) {
       if (!phone() || !e.target.closest) return;
-      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody,#tokRes,#hotRow')) return;
+      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody,#tokRes,#hotRow,#thRows [data-thsym]')) return;
       if (e.target.closest('[data-lbu],[data-sell]')) return;   // a name opens the card, Sell opens the sell side - both already move the stage themselves when they mean to
       if (autoPick) { autoPick = false; return; }   // the default major is not a tap - it must not move the view
       setTimeout(function () { if (picked()) show('chart'); }, 90);
@@ -462,7 +482,7 @@
       var ab = dock.querySelector('[data-tv="assets"]'); if (ab) ab.classList.toggle('dot', p.claimedToday === false && VIEW !== 'assets');
     }
 
-    function tick() { try { paintMovers(); paintStats(); paintCoins(); paintFloorTop(); paintAcct(); paintWatchBtn(); } catch (e) {} }
+    function tick() { try { paintMovers(); paintStats(); paintCoins(); paintFloorTop(); paintAcct(); paintTheses(); paintWatchBtn(); } catch (e) {} }
     tick(); setInterval(tick, 4000);
     // a pick repaints the stats at once rather than on the next tick
     try { new MutationObserver(function () { setTimeout(paintStats, 30); }).observe($('shName') || sheet, { childList: true, characterData: true, subtree: true }); } catch (e) {}

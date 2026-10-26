@@ -16723,6 +16723,10 @@ async function payWeeklyPrizes(env) {
       }
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
+    /* THE DEMO SPOT SEASON RESTARTS LEVEL THE MOMENT THE ENDED ONE IS PAID (2026-10-26, owner): the season that opened when
+       this one closed gets every account back to $10,000. Only for the season now running - a back-payment of an older
+       season must never wipe the live field - and idempotent on the season's own start inside the store. */
+    if (ws >= MEME_LB_START && ws + LB_PERIOD === lbPeriodStart(now)) { try { await spotSeasonReset(env, ws + LB_PERIOD); } catch (e) {} }
   }
   // Scheduled prize changes land AFTER the ended season has been paid: the season that just finished pays the numbers
   // that were in force while it ran, and the season now starting opens with the new ones. That is the whole point of
@@ -21001,11 +21005,14 @@ async function handleSpot(url, request, env) {
     return resp;
   }
   if (path === '/theses') { // the newest five theses (Community posts in the thesis category), for the Demo Spot card; public, edge 60 s
-    const ck = new Request('https://marginpad.io/__spot_theses_v1');
+    const ck = new Request('https://marginpad.io/__spot_theses_v2_' + (Math.max(1, Math.min(30, +url.searchParams.get('n') || 5)) >= 30 ? 'n30' : 'n5')); // two editions: the card's five and the Theses view's thirty
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
     let posts = []; try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new&cat=thesis')); posts = ((await r.json()) || {}).posts || []; } catch (e) {}
-    const rows = posts.filter(p => !/^e2e_/i.test(p.author || '')).slice(0, 5).map(p => ({ id: p.id, title: p.title, author: p.author, ts: p.ts, syms: String(p.syms || '').split(',').filter(Boolean), likes: p.likes || 0, ncom: p.ncom || 0, excerpt: String(p.body || '').replace(/[#*_>\[\]()`]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150), slug: commSlug(p.title) }));
-    const resp = new Response(JSON.stringify({ rows, more: '/blog/theses/' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    // ?n= up to 30 for the Theses view (the card keeps five); each row carries what the thesis EARNED - members it moved, dollars, XP paid to its author (2026-10-26)
+    const tn = Math.max(1, Math.min(30, +url.searchParams.get('n') || 5));
+    const rows = posts.filter(p => !/^e2e_/i.test(p.author || '')).slice(0, tn).map(p => ({ id: p.id, title: p.title, author: p.author, ts: p.ts, syms: String(p.syms || '').split(',').filter(Boolean), likes: p.likes || 0, ncom: p.ncom || 0, excerpt: String(p.body || '').replace(/[#*_>\[\]()`]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150), slug: commSlug(p.title) }));
+    const st = await thesisStats(env, rows.map(r => r.id)); rows.forEach(r => { r.stat = st[r.id] || null; });
+    const resp = new Response(JSON.stringify({ rows, more: '/blog/theses/', pays: { publishXp: THESIS_XP, perBuyerXp: THESIS_BUY_XP, dailyCapXp: THESIS_BUY_CAP, windowDays: Math.round(THESIS_WIN_MS / 86400000), minBuyUsd: THESIS_MIN_BUY_C / 100 } }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
     try { await caches.default.put(ck, resp.clone()); } catch (e) {}
     return resp;
   }
@@ -21100,7 +21107,8 @@ async function handleSpot(url, request, env) {
       if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
       let d = null; try { d = await sdo('/s2/trade', { uid, side: 'buy', key, usdC, price, meta }); } catch (e) { return spotFail(env, jr, path); }
       if (d && d.none) return jr({ error: 'no_account' }, 404);
-      if (d && d.ok) { d.sym = meta.sym || key.replace(/^cex:/, ''); d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + d.sym + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', d.sym); }
+      if (d && d.ok) { d.sym = meta.sym || key.replace(/^cex:/, ''); d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + d.sym + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', d.sym);
+        try { const tc = await thesisBuyCredit(env, uid, d.sym, usdC, ''); if (tc && tc.credited && tc.credited.length) d.thesis = tc.credited; } catch (e) {} } // a buy of a coin somebody wrote a thesis about pays that author (2026-10-26)
       return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
     }
     // sell: the hold decides the exact qty (100% = the stored qty) and, for a meme, the pool
@@ -21300,6 +21308,75 @@ async function spotBoardCron(env) {
     await env.STATS.put('lb:meme:' + ws, JSON.stringify(snap), { expirationTtl: 400 * 86400 });
     try { await caches.default.delete(new Request('https://marginpad.io/__meme_board_v1')); } catch (e) {}
   } catch (e) {}
+}
+/* THE SEASON RESET (2026-10-26, owner). Runs ONCE per season start: the DO wipes every bag, puts every account back to
+   $10,000 and writes the day's snapshot level, then the public board is rebuilt at once so a member who opens /spot/ a
+   minute later sees the level field rather than yesterday's standing. `ws` is the season being OPENED; the ref is the
+   season's own start, so the cron can ask every ten minutes and only the first ask moves anything. */
+async function spotSeasonReset(env, ws, opts) {
+  opts = opts || {};
+  if (!env || !env.SPOT || !env.STATS || !(ws > 0)) return { error: 'no_env' };
+  const ref = 'season:' + new Date(ws).toISOString().slice(0, 10);
+  let d = null;
+  try { const r = await spotStub(env).fetch(new Request('https://do/s2/season-reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ref, why: opts.why || 'New season - every account back to $10,000', dry: !!opts.dry, resnap: true }) })); const tx = await r.text(); try { d = JSON.parse(tx); } catch (e) { return { error: 'store', status: r.status, detail: tx.slice(0, 160) }; } } catch (e) { return { error: 'store', detail: String(e && e.message || e).slice(0, 120) }; }
+  if (d && d.ok && !d.dry) { // a repeat ask re-writes the day's level snapshot and the board follows it - the first run of 10-26 needed exactly that
+    try { await spotBoardCron(env); } catch (e) {}
+    if (!d.dup) {
+      try { await env.STATS.put('spot:reset:last', JSON.stringify({ ws, ref, ts: Date.now(), accounts: d.accounts }), { expirationTtl: 400 * 86400 }); } catch (e) {}
+      try { await tgAdmin(env, '<b>Demo Spot season reset</b> - ' + d.accounts + ' accounts back to $10,000 for the season starting ' + ref.slice(7) + '.', { kind: 'spotreset', sev: 'info' }); } catch (e) {}
+    }
+  }
+  return d || { error: 'fail' };
+}
+/* THESES PAY WHEN THEY MOVE SOMEBODY (2026-10-26, owner: "po tezi mogu da zarade xp ako neko kupi coin o kom je neko pisao,
+   daily cap 1000 xp"). A published thesis is indexed under each coin it names (KV `thesis:sym:<SYM>`, the newest 30, 30 days);
+   a Demo Spot BUY of that coin by somebody else, inside THESIS_WIN days of the thesis, pays the author THESIS_BUY_XP once per
+   distinct buyer per thesis (KV `thesis:b:<pid>:<buyer>`), through the one grant path with its own dayCap - THESIS_BUY_CAP a
+   day across every thesis the author has. The thesis keeps a running tally (KV `thesis:st:<pid>`: buyers, dollars, XP paid)
+   that the Theses view prints, so an author can see what a thesis earned and a reader can see which theses moved people. */
+const THESIS_BUY_XP = 25, THESIS_BUY_CAP = 1000, THESIS_WIN_MS = 14 * 86400000, THESIS_MIN_BUY_C = 2500; // $25 minimum: a $1 buy must not be worth 25 XP to a friend
+async function thesisIndexAdd(env, t) {
+  if (!env || !env.STATS || !t || !t.pid) return;
+  const syms = String(t.syms || '').toUpperCase().split(/[,\s]+/).map(s => s.replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 6);
+  for (const s of syms) {
+    const k = 'thesis:sym:' + s;
+    let arr = []; try { arr = JSON.parse(await env.STATS.get(k) || '[]') || []; } catch (e) { arr = []; }
+    arr = arr.filter(x => x && x.pid !== t.pid && (Date.now() - (+x.ts || 0)) < THESIS_WIN_MS);
+    arr.unshift({ pid: t.pid, uid: String(t.uid).replace(/^u:/, ''), un: t.un || '', ts: t.ts || Date.now(), title: String(t.title || '').slice(0, 90) });
+    try { await env.STATS.put(k, JSON.stringify(arr.slice(0, 30)), { expirationTtl: 31 * 86400 }); } catch (e) {}
+  }
+  try { await env.STATS.put('thesis:st:' + t.pid, JSON.stringify({ buyers: 0, usdC: 0, xp: 0, syms, ts: t.ts || Date.now() }), { expirationTtl: 400 * 86400 }); } catch (e) {}
+}
+async function thesisBuyCredit(env, buyerUid, sym, usdC, buyerName) {
+  const out = { credited: [] };
+  try {
+    if (!env || !env.STATS || !env.USERS || !sym || !(usdC >= THESIS_MIN_BUY_C)) return out;
+    const buyer = String(buyerUid || '').replace(/^u:/, '');
+    let arr = []; try { arr = JSON.parse(await env.STATS.get('thesis:sym:' + String(sym).toUpperCase()) || '[]') || []; } catch (e) { return out; }
+    const now = Date.now();
+    for (const t of arr.slice(0, 12)) {
+      if (!t || !t.pid || !t.uid || t.uid === buyer || now - (+t.ts || 0) > THESIS_WIN_MS) continue;
+      if (/^e2e_/i.test(t.un || '') && !/^e2e/i.test(buyer)) continue; // a test thesis pays only a test buyer - a real member's buy must never credit a throwaway account
+      const dk = 'thesis:b:' + t.pid + ':' + buyer;
+      if (await env.STATS.get(dk)) continue; // one buyer pays an author once per thesis, however many times they buy
+      try { await env.STATS.put(dk, String(now), { expirationTtl: 31 * 86400 }); } catch (e) { continue; }
+      if (!buyerName) { try { const pr = await resolveProfiles(env, ['u:' + buyer]); buyerName = ((pr[buyer] || {}).username) || ''; } catch (e) {} } // resolved only when a credit really happens - never a store hop on every buy
+      let granted = 0;
+      try { const xr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: t.uid, src: 'thesis_buy', amt: THESIS_BUY_XP, dayCap: THESIS_BUY_CAP, note: 'a member bought ' + sym + ' after your thesis' }) })); const xj = await xr.json(); granted = (xj && !xj.error) ? (+xj.granted || 0) : 0; } catch (e) {}
+      let st = { buyers: 0, usdC: 0, xp: 0 }; try { st = JSON.parse(await env.STATS.get('thesis:st:' + t.pid) || '{}') || st; } catch (e) {}
+      st.buyers = (+st.buyers || 0) + 1; st.usdC = (+st.usdC || 0) + usdC; st.xp = (+st.xp || 0) + granted; st.last = now; st.lastBy = String(buyerName || '').slice(0, 24);
+      try { await env.STATS.put('thesis:st:' + t.pid, JSON.stringify(st), { expirationTtl: 400 * 86400 }); } catch (e) {}
+      if (granted > 0) { try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/notify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: t.uid, kind: 'xp', body: (buyerName ? '@' + buyerName : 'A member') + ' bought ' + sym + ' after reading your thesis: +' + granted + ' XP', link: '/spot/#theses' }) })); } catch (e) {} }
+      out.credited.push({ pid: t.pid, author: t.un, xp: granted });
+    }
+    try { await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n5')); await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n30')); } catch (e) {}
+  } catch (e) {}
+  return out;
+}
+async function thesisStats(env, pids) {
+  const out = {}; if (!env || !env.STATS) return out;
+  await Promise.all((pids || []).slice(0, 40).map(async pid => { try { const s = JSON.parse(await env.STATS.get('thesis:st:' + pid) || 'null'); if (s) out[pid] = { buyers: +s.buyers || 0, usd: Math.round((+s.usdC || 0) / 100), xp: +s.xp || 0, lastBy: s.lastBy || '', last: +s.last || 0 }; } catch (e) {} }));
+  return out;
 }
 async function spotTokenLookup(url, env, jr) { // any token by CONTRACT ADDRESS (owner, 2026-09-03, "like Phantom"). Our trending list first (no upstream call), then GeckoTerminal token + deepest pool; a GT rate-limit is reported as busy, never as "no such token".
     const addr = String(url.searchParams.get('addr') || '').trim();
@@ -23145,6 +23222,14 @@ export default {
        the person is what the decision is about; `ref` is the audit key and makes a repeat a no-op; `why` is
        written into the member's own history row. The board is rebuilt in the same breath - a correction that
        leaves the published standing stale has not finished. */
+    if (url.pathname === '/api/admin/spotreset' && env.SPOT && adminKeyFrom(request, url) === adminKeyOf(env)) { // the season reset desk: DRY RUN unless {apply:true}; `ws` defaults to the season now running
+      const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let bd = {}; if (request.method === 'POST') { try { bd = await request.json(); } catch (e) {} }
+      const ws = +bd.ws || lbPeriodStart(Date.now());
+      let last = null; try { last = JSON.parse(await env.STATS.get('spot:reset:last') || 'null'); } catch (e) {}
+      const r = await spotSeasonReset(env, ws, { dry: bd.apply !== true, why: bd.why });
+      return new Response(JSON.stringify({ ...r, ws, applied: bd.apply === true, last }), { headers: jh3 });
+    }
     if (url.pathname === '/api/admin/spotcorrect' && env.SPOT && adminKeyFrom(request, url) === adminKeyOf(env)) {
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let bd = {}; if (request.method === 'POST') { try { bd = await request.json(); } catch (e) {} }
@@ -27712,6 +27797,35 @@ export class SpotStore {
       sql.exec('UPDATE sp2acct SET usdt=?, realized=COALESCE(realized,0)+? WHERE user_id=?', after, cents, uid);
       sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'fix','USD',0,0,?,?,?)", uid, now, cents, cents, JSON.stringify({ ref, why }));
       return this.j({ ok: true, beforeC: +a.usdt || 0, afterC: after, appliedC: after - (+a.usdt || 0), askedC: cents });
+    }
+    /* A SEASON STARTS LEVEL (2026-10-26, owner: "resetujes sezonu i vratis sve na 10k ... automatski nakon svake sezone").
+       Every account goes back to exactly $10,000 of cash with no bags, claims restart at zero, and the day's snapshot is
+       written as 10,000 / 10,000 so the board's season base is 0 for everybody - the standing that follows is this
+       season's trading and nothing else. The bags are gone, not sold: there is no sale to price and nothing to book, the
+       reset is the house closing the book. Each account gets a `reset` row in its own history carrying the reason, the
+       same rule a correction follows - a balance that changes with no sentence beside it is the silent edit this ledger
+       never makes. Idempotent on `ref` (one reset per season, however many times the cron asks). */
+    if (path === '/s2/season-reset' && request.method === 'POST') {
+      const ref = String(b.ref || '').replace(/[^a-zA-Z0-9_.:-]/g, '').slice(0, 64), why = String(b.why || 'New season - every account back to $10,000').slice(0, 160), day = this._day(now);
+      if (!ref) return this.j({ error: 'bad' }, 400);
+      const seen = this.rows("SELECT id FROM sp2tx WHERE side='reset' AND meta LIKE ? LIMIT 1", '%"ref":"' + ref + '"%')[0];
+      /* the day's level snapshot is the base every season P&L is measured from, so it is (re)written on a repeat ask too:
+         the first run of 2026-10-26 reset the accounts and then threw on this very statement (SQLite needs `WHERE 1` before
+         ON CONFLICT in an INSERT ... SELECT, or it reads ON as a join), which left the base at each member's pre-reset worth */
+      const snapAll = () => sql.exec('INSERT INTO sp2snap(user_id,day,value,dep) SELECT user_id, ?, ?, ? FROM sp2acct WHERE 1 ON CONFLICT(user_id,day) DO UPDATE SET value=excluded.value, dep=excluded.dep', day, SP2_START_C, SP2_START_C);
+      if (seen) { if (b.resnap && !b.dry) snapAll(); return this.j({ ok: true, dup: true, ref, resnap: !!(b.resnap && !b.dry) }); }
+      const accts = this.rows('SELECT user_id, usdt, claims FROM sp2acct');
+      if (b.dry) { const held = (this.rows('SELECT COUNT(*) n, COUNT(DISTINCT user_id) u FROM sp2hold WHERE qty>0')[0] || { n: 0, u: 0 }); return this.j({ ok: true, dry: true, accounts: accts.length, holdRows: +held.n || 0, accountsWithBags: +held.u || 0, ref }); }
+      let n = 0;
+      for (const a of accts) {
+        const held = this.rows('SELECT COUNT(*) n FROM sp2hold WHERE user_id=? AND qty>0', a.user_id)[0];
+        sql.exec("INSERT INTO sp2tx(user_id,ts,side,key,qty,price,usd,pnl,meta) VALUES(?,?,'reset','USD',0,0,?,0,?)", a.user_id, now, SP2_START_C, JSON.stringify({ ref, why, prevUsdtC: +a.usdt || 0, prevClaims: +a.claims || 0, prevBags: +(held && held.n) || 0 }));
+        n++;
+      }
+      sql.exec('DELETE FROM sp2hold');
+      sql.exec("UPDATE sp2acct SET usdt=?, claims=0, claim_day='', realized=0", SP2_START_C);
+      snapAll();
+      return this.j({ ok: true, ref, accounts: n, day });
     }
     if (path === '/s2/e2erm') { // E2E cleanup: e2e-prefixed uids only, the /e2euser rule
       if (!/^e2e/i.test(uid)) return this.j({ error: 'not_e2e' }, 400);
@@ -35178,7 +35292,7 @@ function escH(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').repl
 const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates', thesis: 'Theses' }; // thesis (2026-10-16): a Demo Spot thesis - written on /spot/, listed on /blog/theses/, pays XP + Ticks
 // Category names for the /es/community/ twin (audit 2026-09-25: the SSR crumb and the category page title were English there).
 const COMM_CATS_ES = { ideas: 'Ideas de trading', analysis: 'Análisis técnico', news: 'Noticias del mercado', education: 'Educación', crypto: 'Crypto', forex: 'Forex', stocks: 'Acciones', futures: 'Futuros', strategies: 'Estrategias', psychology: 'Psicología', risk: 'Gestión del riesgo', indicators: 'Indicadores', platform: 'Novedades de la plataforma', thesis: 'Tesis' };
-const THESIS_XP = 20, THESIS_TICKS = 5; // what publishing a thesis pays (owner 2026-10-16: "XP i ticks, ne nesto puno"); Ticks are day-capped by TICK_CAP.thesis
+const THESIS_XP = 50, THESIS_TICKS = 5; // what publishing a thesis pays (2026-10-26, owner: "da ovde moze stvarno da se zaradi lepo xp" - 20 -> 50, two a day; the real money is THESIS_BUY_XP per member a thesis moves, up to THESIS_BUY_CAP a day); Ticks are day-capped by TICK_CAP.thesis
 function commCatName(k, request) { return ((request && esLang(request) === 'es') ? COMM_CATS_ES[k] : null) || COMM_CATS[k] || k; }
 function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
 // Anti-gibberish gate (2026-08-13, owner: reward-farm posts like "wweegrdddd…" + 500 dots beat the pure
@@ -35658,7 +35772,9 @@ async function handleComm(url, request, env, ctx) {
       try { const xr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, src: 'thesis', amt: THESIS_XP, dayCap: THESIS_XP * 2, note: 'published a thesis' }) })); const xj = await xr.json(); if (xj && !xj.error) rw.xp = +xj.granted || 0; } catch (e) {} // granted = what the day cap let through (0 on the third thesis of a day)
       try { const tj = await usersDO(env, '/ticks/grant', { uid, src: 'thesis', amt: THESIS_TICKS, note: 'published a thesis' }); if (tj && tj.ok) rw.ticks = +tj.granted || 0; if (/^e2e_/i.test(author)) rw.debug = tj; } catch (e) { if (/^e2e_/i.test(author)) rw.debug = String(e && e.message || e); }
       try { await evPush(env, request, 'thesis', author, '/spot/'); } catch (e) {}
-      try { await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v1')); } catch (e) {}
+      // index it under every coin it names: a Demo Spot buy of that coin by somebody else pays this author (2026-10-26)
+      try { const pb2 = JSON.parse(rawBody || '{}'); await thesisIndexAdd(env, { pid: _pd.id, uid, un: author, syms: pb2.syms || '', title: pb2.title || '', ts: Date.now() }); } catch (e) {}
+      try { await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n5')); await caches.default.delete(new Request('https://marginpad.io/__spot_theses_v2_n30')); } catch (e) {}
       _pd.reward = rw; txt = JSON.stringify(_pd);
     }
   } } catch (e) {} }
