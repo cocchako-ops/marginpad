@@ -23275,8 +23275,11 @@ export default {
         out = await r.json();
       } catch (e) {}
       try {
-        const prof = await resolveProfiles(env, (out.wds || []).map(w => w.acct));
-        out.wds = (out.wds || []).map(w => { const pr = prof[String(w.acct || '').replace(/^u:/, '')]; return { ...w, who: (pr && pr.username) || '', email: (pr && pr.email) || '' }; });
+        // the other accounts that used the same payout target are named too (owner reads "@who already withdrew to this UID", never a hash)
+        const accts = []; (out.wds || []).forEach(w => { accts.push(w.acct); (w.shared || []).forEach(s => accts.push(s.acct)); });
+        const prof = await resolveProfiles(env, accts);
+        const nameOf = a => { const pr = prof[String(a || '').replace(/^u:/, '')]; return pr || null; };
+        out.wds = (out.wds || []).map(w => { const pr = nameOf(w.acct); return { ...w, who: (pr && pr.username) || '', email: (pr && pr.email) || '', shared: (w.shared || []).map(s => { const p2 = nameOf(s.acct); return { ...s, who: (p2 && p2.username) || '', email: (p2 && p2.email) || '' }; }) }; });
       } catch (e) {}
       try { // Bybit affiliate check per row: ok = UID on the allowlist · missing = numeric UID not on it (rejectable) · na = legacy 0x wallet, or the list is empty
         const set9 = await bybitUidSet(env);
@@ -28326,7 +28329,24 @@ export class RewardLedger {
     }
     if (path === '/wdlist') { // Withdrawals tab: every withdrawal enriched with the owning account's ip/cc/dev/claims/balance
       const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.bonus,w.status,w.ts,w.paid_ts,w.txid,w.note,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
-      return this.j({ wds: rows.map(w => ({ id: w.id, wallet: w.address, acct: w.acct || w.address, usd: w.amount / 100, bonusUsd: (w.bonus || 0) / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', note: w.note || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned })) });
+      // WHO ELSE HAS WITHDRAWN TO THIS SAME PAYOUT TARGET (owner 2026-10-26: "ako je neko ranije vec povlacio na taj isti,
+      // treba da mi izadje taj i taj je vec povlacio na ovaj username/uid"). Computed over EVERY withdrawal row, never over
+      // the 500 the list shows - a UID that was paid out to a different account a year ago is exactly the one that matters,
+      // and it is the first row to fall off a newest-first cap. The target is compared lowercased and trimmed (a Moon
+      // name is stored lowercased already; a UID is digits), per (target, account, status).
+      const byTarget = {};
+      try {
+        this.rows("SELECT LOWER(TRIM(address)) t, COALESCE(acct,address) acct, status, COUNT(*) n, COALESCE(SUM(amount),0) amt, MAX(ts) last FROM withdrawals GROUP BY 1,2,3").forEach(r => {
+          const list = byTarget[r.t] || (byTarget[r.t] = {}); const h = list[r.acct] || (list[r.acct] = { acct: r.acct, paidN: 0, paidUsd: 0, pendN: 0, otherN: 0, last: 0 });
+          if (r.status === 'paid') { h.paidN += r.n; h.paidUsd += r.amt / 100; } else if (r.status === 'pending') h.pendN += r.n; else h.otherN += r.n;
+          if (r.last > h.last) h.last = r.last;
+        });
+      } catch (e) {}
+      return this.j({ wds: rows.map(w => {
+        const acct = w.acct || w.address, t = String(w.address || '').trim().toLowerCase();
+        const shared = Object.values(byTarget[t] || {}).filter(h => h.acct !== acct).sort((a, b) => (b.paidN - a.paidN) || (b.last - a.last)); // OTHER accounts on this target; the row's own history is the "Nth payout" column
+        return { id: w.id, wallet: w.address, acct, usd: w.amount / 100, bonusUsd: (w.bonus || 0) / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', note: w.note || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned, shared };
+      }) });
     }
     if (path === '/import') { // E1 restore test (mirror of UserStore /import): only ever routed to the 'bkp-restore-test'
       // instance; a marker table + refuse-if-populated guard means the live 'ledger' (real balances) can never be wiped.
