@@ -4619,7 +4619,25 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
     if (['card', 'link'].indexOf(o.trades) < 0) o.trades = 'card'; if (['s', 'm', 'l'].indexOf(o.size) < 0) o.size = 'm';
     return o;
   }
-  function set(k, v) { var p = get(); p[k] = v; try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} ckWrite(p); apply(); if (pop) paint(); }
+  /* AND THE ACCOUNT KEEPS A COPY (2026-10-26, owner on the installed iPhone app: "settings moram opet da podesavam" -
+     and the cookie notice came back for him the same evening, i.e. iOS wiped the web app's storage, localStorage and
+     script cookies together, which neither local copy survives). A signed-in member's chat look is written to
+     /api/push/device (uprefs dev:chat) on every change and read ONCE per load: a server copy newer than the local one
+     wins and is written back locally; a local change made offline keeps its own newer stamp. A guest keeps the device copies. */
+  var li = false; try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {}
+  function srvPut(p) { if (!li) return; try { fetch('/api/push/device', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: 'chat', v: p }), keepalive: true }).catch(function () {}); } catch (e) {} }
+  function srvPull() {
+    if (!li) return;
+    try { fetch('/api/push/device', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      var row = j && j.prefs && j.prefs.chat, sv = row && row.v; if (!sv || typeof sv !== 'object') return;
+      var loc = null; try { loc = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+      if (loc && +loc.ts > +sv.ts) { srvPut(loc); return; }   // the device is ahead (an offline change) - the server takes it
+      var p = { trades: sv.trades, size: sv.size, ts: +sv.ts || +row.ts || Date.now() };
+      try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} ckWrite(p); apply(); if (pop) paint();
+    }).catch(function () {}); } catch (e) {}
+  }
+  function set(k, v) { var p = get(); p[k] = v; p.ts = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} ckWrite(p); srvPut(p); apply(); if (pop) paint(); }
+  setTimeout(srvPull, 1200); window.addEventListener('mp-auth-change', function () { try { li = /(^|; )mp_li=1/.test(document.cookie); } catch (e) {} srvPull(); });
   function apply() {
     var p = get(), box = document.getElementById('chatBox');
     if (box) { box.classList.toggle('ct-fs-s', p.size === 's'); box.classList.toggle('ct-fs-l', p.size === 'l'); }

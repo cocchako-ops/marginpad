@@ -476,9 +476,14 @@
      a coin is tapped and the head carries the way back). Flush at bottom:0; the inset keeps only a sliver because
      the home indicator is ~5px of glyph in a 34px strip and a bar with a centimetre of nothing under its labels
      read as "raised" (owner, three reports). Active = lime glyph + a lit rule across the top of the cell. */
-  .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
+  /* --tgap (set by the shell, 0 everywhere but an installed iPhone whose viewport is shorter than its screen) pulls the
+     dock's BACKGROUND down over the band under the viewport; the cells keep their place at the viewport's edge */
+  .tdock{position:fixed;left:0;right:0;bottom:calc(-1 * var(--tgap, 0px));z-index:2147483002;display:none;
     background:rgba(9,11,15,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border-top:1px solid var(--line2);padding-bottom:max(0px, calc(env(safe-area-inset-bottom) - 30px))}
+    border-top:1px solid var(--line2);padding-bottom:calc(var(--tgap, 0px) + max(0px, calc(env(safe-area-inset-bottom) - 30px)))}
+  /* the cookie notice is in flow ABOVE the header and already carries the top inset - the header must not add it again
+     (owner's photo 2026-10-26: a status-bar-high black gap between the notice and the brand) */
+  html.mp-ckbar .spot-term #siteHead{padding-top:13px!important}
   @media(max-width:999px){
     body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}   /* Market, Coins, Floor, Theses, Assets, Chat (owner 2026-10-26) */
     /* the site's own phone bar is absorbed into the dock (Chat is a cell there) - two fixed bars in one place left
@@ -946,8 +951,8 @@
   window.__spot={state:function(){return {me:!!ME,port:PORT,board:BOARD,memes:MEMES.length,majors:MAJORS.length,tab:TAB,memeList:MEMES,majorList:MAJORS,feed:FEED,coin:C,hist:HIST,theses:TH,thPays:THPAYS};},open:openSheet,pick:pick};
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=792fbcdc"></script>
-<script defer src="/assets/mp-nav.js?v=cae4c445"></script>
+<script defer src="/assets/mp-auth.js?v=ee2dac93"></script>
+<script defer src="/assets/mp-nav.js?v=9b4479cf"></script>
 <script>
 /* ─── THE TERMINAL SHELL (2026-10-24; v2 2026-10-26) ─────────────────────────────────────────────────────────
    This runs AFTER the page's own script and does not touch one line of it. Every control is bound by id, so the
@@ -1188,7 +1193,26 @@
       } else { VIEW = ''; [left, mid, right].forEach(function (c) { c.classList.add('tshow'); }); }
     }
     layout();
-    window.addEventListener('resize', function () { placeAll(); layout(); });
+    /* THE BAND UNDER THE DOCK ON AN INSTALLED iPHONE (2026-10-26, owner's photo + his phone's own rows: `dock2 b793 ih793 sy0
+       vt0 vh793 dh793 sh852 ins34 sa1`, and a second iPhone 932/873). The web app's viewport is SHORTER than the screen by
+       exactly the status-bar height - 59px on both - while the page is laid out from the top under that bar, so the last
+       59px of the screen belong to nothing: not scrolled, not the keyboard, not our padding. A fixed element at bottom:0
+       therefore ends 59px above the glass. `--tgap` publishes that measured difference (standalone only, no scroll, no
+       visual-viewport offset, and only when the top inset says the page really is laid out under the status bar) and the
+       dock extends its BACKGROUND down by it; the cells stay where the viewport ends, because whether that band can be
+       painted at all is still an open question on this iOS - a dock moved into a band that is not painted is a dock
+       nobody can tap. */
+    function gapMeasure() {
+      try {
+        var sa = !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+        var vv = window.visualViewport, gap = Math.round((screen && screen.height || 0) - window.innerHeight);
+        var top = 0; try { var pr = document.createElement('div'); pr.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:env(safe-area-inset-top,0px)'; document.body.appendChild(pr); top = Math.round(pr.getBoundingClientRect().height); pr.parentNode.removeChild(pr); } catch (e) {}
+        var ok = sa && gap >= 20 && gap <= 120 && (!vv || (Math.round(vv.offsetTop) === 0 && Math.round(vv.height) === window.innerHeight)) && top >= gap - 4 && !window.scrollY;
+        document.body.style.setProperty('--tgap', (ok ? gap : 0) + 'px');
+      } catch (e) {}
+    }
+    gapMeasure(); setTimeout(gapMeasure, 1500);
+    window.addEventListener('resize', function () { placeAll(); layout(); gapMeasure(); });
 
     /* A SCREEN-SIZED BODY MUST NEVER BE SCROLLED (2026-10-26). iOS scrolls the layout viewport to bring a focused
        input above the keyboard and sometimes leaves that scroll behind when the keyboard goes - every fixed element,

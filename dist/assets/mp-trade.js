@@ -762,11 +762,14 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
      of mutations costs one write, and ctStick is what keeps this away from a reader who scrolled up. */
   var ctPinT=[];function ctOpenPin(){if(!msgs)return;ctStick=true;ctPill(0);ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];[0,60,160,360,700,1200,2000].forEach(function(ms){ctPinT.push(setTimeout(function(){if(!ctStick||!msgs||box.hidden)return;msgs.scrollTop=msgs.scrollHeight;},ms));});ctGrowWatch();}function ctOpenPinStop(){ctPinT.forEach(function(t){clearTimeout(t);});ctPinT=[];if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}_ctGrowRO=null;}}
   var _ctGrowRO=null;
-  function ctGrowWatch(){ if(!msgs||!window.ResizeObserver)return; if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}}
+  /* STUCK TO THE BOTTOM MEANS STUCK (2026-10-26): the observer watches every ROW, not the list box (a ResizeObserver never fires on scrollHeight), lives while the box is open, and re-pins on any growth while ctStick - Safari has no scroll anchoring, so a card hydrating above the view pushed it up by its own height on every cold start of the installed app */
+  var _ctGrowMO=null;
+  function ctGrowWatch(){ if(!msgs||!window.ResizeObserver)return; if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}} if(_ctGrowMO){try{_ctGrowMO.disconnect();}catch(e){}_ctGrowMO=null;}
     var h0=msgs.scrollHeight;
     _ctGrowRO=new ResizeObserver(function(){ if(!ctStick||!msgs||box.hidden)return; if(msgs.scrollHeight===h0)return; h0=msgs.scrollHeight; msgs.scrollTop=msgs.scrollHeight; });
-    try{_ctGrowRO.observe(msgs);}catch(e){}
-    setTimeout(function(){ if(_ctGrowRO){try{_ctGrowRO.disconnect();}catch(e){}_ctGrowRO=null;} },12000); }function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
+    var watch=function(el){ try{ if(el&&el.nodeType===1)_ctGrowRO.observe(el); }catch(e){} };
+    try{ Array.prototype.forEach.call(msgs.children,watch); }catch(e){}
+    try{ _ctGrowMO=new MutationObserver(function(ml){ for(var i=0;i<ml.length;i++){ var a=ml[i].addedNodes; for(var j=0;j<a.length;j++)watch(a[j]); } }); _ctGrowMO.observe(msgs,{childList:true}); }catch(e){} }function ctPin(){ if(ctStick&&msgs) msgs.scrollTop=msgs.scrollHeight; }
   (function(){
     if(!msgs)return;
     var q=0; function ping(){ if(q)return; q=1; requestAnimationFrame(function(){ q=0; ctPin(); }); }

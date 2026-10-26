@@ -100,6 +100,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     +   'body.mpnav-on .mpbn,body.mpnav-on .tdock{display:none !important;}'
     /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Full-bleed via the 100vw trick so the bg spans edge-to-edge regardless of the .wrap padding. */
     +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'   /* solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards) */
+    +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
     +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
     +   '.mpnav-burger{top:calc(env(safe-area-inset-top) + 9px);}'
     + '}';
@@ -633,7 +634,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       + __esT_mpnav("traderChatU2715",'<div id="chatBox" hidden><div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">\u2715</button></div>')
       + '<div class="ct-gate" id="ctGate"><p>Sign in to join the chat \u2014 it\u2019s free (just an email code). Please don\u2019t post your email in the chat.</p><button id="ctSignin" type="button">Sign in to chat</button></div>'
       + '<div class="ct-msgs" id="ctMsgs" hidden></div><form class="ct-form" id="ctForm" hidden><input id="ctInput" maxlength="280" placeholder="Type a message\u2026" autocomplete="off"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button></form></div>';
-    var CHAT_JS = '/assets/mp-trade.js?v=7a47ca8c', CHAT_CSS = '/assets/mp-trade.css?v=b2507a6d', chatLoading = null;
+    var CHAT_JS = '/assets/mp-trade.js?v=f1f94dc5', CHAT_CSS = '/assets/mp-trade.css?v=b2507a6d', chatLoading = null;
     function chatWanted() { var pth = location.pathname; return !/^\/(spot|api)(\/|$)/.test(pth) && !document.getElementById('chatFab') && !document.getElementById('ctMsgs'); }
     function chatCss() { if (document.querySelector('link[href*="/assets/mp-trade.css?v=b2507a6d"]')) return; var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CHAT_CSS; document.head.appendChild(l); }
     function chatMarkup() { if (document.getElementById('chatFab')) return; var w = document.createElement('div'); w.id = 'mpChatHost'; w.innerHTML = CHAT_HTML; document.body.appendChild(w); }
@@ -662,8 +663,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=792fbcdc', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=792fbcdc"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=ee2dac93', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=ee2dac93"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }
@@ -820,15 +821,29 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
 (function(){
   try{if(localStorage.getItem('mp_ck_ok'))return;}catch(e){return;}
   if(document.getElementById('mpCkBar'))return;
+  /* THE ACKNOWLEDGEMENT FOLLOWS THE ACCOUNT (2026-10-26): the owner's installed iPhone app showed the notice again after
+     he had accepted it weeks ago - iOS had wiped the web app's storage, localStorage and script cookies together. A signed-in
+     member is asked once at /api/push/device (uprefs dev:ckok) before the notice is mounted, and OK writes it there too.
+     A guest keeps the local flag alone: there is no account to carry it. */
+  var li=false;try{li=/(^|; )mp_li=1/.test(document.cookie);}catch(e){}
   function mount(){
     if(document.getElementById('mpCkBar'))return;
+    try{document.documentElement.classList.add('mp-ckbar');}catch(e){}
     var b=document.createElement('div');b.id='mpCkBar';
     b.style.cssText='position:relative;z-index:94;margin:0;display:flex;align-items:center;gap:9px;background:rgba(13,16,21,.97);border-bottom:1px solid #2b323b;padding:calc(7px + env(safe-area-inset-top)) 12px 7px;font-family:Familjen Grotesk,system-ui,sans-serif;font-size:12px;line-height:1.35;color:#aab2bd'; // one slim line (2026-09-07 UX pass); padded by the safe-area inset since 2026-10-22 - the installed app draws under the iOS status bar and this is body's FIRST child, so it was the one thing under the clock: the four-line card sat above the brand on every first visit and covered drawer headers
     b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">' + ((window.__mpTR && window.__mpTR('ckBar')) || __esT_mpnav("cookiesSignInSecurity",'Cookies: sign-in, security and anonymous analytics. No ad tracking.')) + '</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:5px 11px;cursor:pointer">OK</button>';
     document.body.insertBefore(b,document.body.firstChild); // in the document flow at the top (2026-09-02): the fixed bottom card covered the primary buttons on phones
-    document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
+    document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}try{document.cookie='mp_ck_ok=1;path=/;max-age=31536000;samesite=lax';}catch(e){}b.remove();try{document.documentElement.classList.remove('mp-ckbar');}catch(e){}
+      if(li){try{fetch('/api/push/device',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({k:'ckok',v:Date.now()}),keepalive:true}).catch(function(){});}catch(e){}}});
   }
-  if(document.readyState!=='loading')setTimeout(mount,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,900);});
+  function go(){
+    try{if(/(^|; )mp_ck_ok=1/.test(document.cookie)){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}return;}}catch(e){}
+    if(!li){mount();return;}
+    try{fetch('/api/push/device',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(j&&j.prefs&&j.prefs.ckok&&j.prefs.ckok.v){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}return;}
+      mount();}).catch(mount);}catch(e){mount();}
+  }
+  if(document.readyState!=='loading')setTimeout(go,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(go,900);});
 })();
 
 /* Universal pageview beacon (2026-07-17): mp-nav.js loads on EVERY standalone page, so this closes the
