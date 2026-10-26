@@ -204,8 +204,9 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
         // the browser member is the SAME throwaway account, which already has an account from the API legs - so the app opens straight away
         await page.goto(ORIGIN + '/spot/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
         await page.waitForFunction("!document.getElementById('app').hidden && /\\$/.test(document.getElementById('mWorth').textContent)", { timeout: 25000 }).catch(() => {});
-        const a = await page.evaluate(() => { const cb = document.getElementById('claimBtn'); const r = cb.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { app: !document.getElementById('app').hidden, worth: document.getElementById('mWorth').textContent, cash: document.getElementById('mCash').textContent, claim: cb.textContent.trim(), claimDisabled: cb.disabled, claimReach: !!(el && (el === cb || cb.contains(el))), holds: document.querySelectorAll('#holdRows .row').length, boardRows: document.querySelectorAll('#bRows .brow').length, pz: document.querySelectorAll('#bPz span').length, sx: document.documentElement.scrollWidth > window.innerWidth }; });
-        chk(vp.t + ': the member sees the app - worth and cash printed, Claim already used today (a small button, disabled with the countdown), the meme position listed, no sideways scroll', a.app && /^\$[\d,]+\.\d\d$/.test(a.worth) && /^\$[\d,]+\.\d\d$/.test(a.cash) && a.claimDisabled && /Claimed/.test(a.claim) && a.claimReach && a.holds === (p3.holds || []).length && !a.sx, a);
+        // the masthead (worth, cash, Claim) lives on the ASSETS view on a phone since 2026-10-26 - the Market view opens first, so the claim's reachability is measured where it is
+        const a = await page.evaluate(() => { if (window.__mpSpotTerm && innerWidth < 1000) window.__mpSpotTerm.show('assets'); const cb = document.getElementById('claimBtn'); const r = cb.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); const out = { app: !document.getElementById('app').hidden, worth: document.getElementById('mWorth').textContent, cash: document.getElementById('mCash').textContent, claim: cb.textContent.trim(), claimDisabled: cb.disabled, claimReach: !!(el && (el === cb || cb.contains(el))), holds: document.querySelectorAll('#holdRows .row').length, boardRows: document.querySelectorAll('#bRows .brow').length, pz: document.querySelectorAll('#bPz span').length, sx: document.documentElement.scrollWidth > window.innerWidth }; if (window.__mpSpotTerm && innerWidth < 1000) window.__mpSpotTerm.show('market'); return out; });
+        chk(vp.t + ': the member sees the app - worth and cash printed, Claim already used today (a small button, disabled with the countdown, reachable on the Assets view), the meme position listed, no sideways scroll', a.app && /^\$[\d,]+\.\d\d$/.test(a.worth) && /^\$[\d,]+\.\d\d$/.test(a.cash) && a.claimDisabled && /Claimed/.test(a.claim) && a.claimReach && a.holds === (p3.holds || []).length && !a.sx, a);
         await page.waitForFunction("document.querySelectorAll('#floorRows .frow').length>0 || /Quiet/.test(document.getElementById('floorRows').textContent)", { timeout: 20000 }).catch(() => {});
         const fl = await page.evaluate(() => { const rows = [...document.querySelectorAll('#floorRows .frow')]; const r0 = rows[0]; const names = rows.map(r => (r.querySelector('[data-lbu]') || {}).textContent); return { rows: rows.length, hot: document.querySelectorAll('#hotRow .hchip').length, named: names.every(Boolean), noBoard: !document.querySelector('#bRows'), theses: !!document.getElementById('thesisCard'), write: !!document.getElementById('thWrite'), sx: document.documentElement.scrollWidth > window.innerWidth, first: r0 ? r0.textContent.replace(/\s+/g, ' ').slice(0, 80) : '' }; });
         chk(vp.t + ': the floor lists real members\' moves by name with hot-today chips, the board card is gone, the theses card with Write a thesis is on the page, nothing wider than the screen', fl.rows > 0 && fl.named && fl.noBoard && fl.theses && fl.write && !fl.sx, fl);
@@ -228,7 +229,7 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
           await page.evaluate(() => { const r = document.querySelector('#tokRes [data-tok]'); r.scrollIntoView({ block: 'center' }); r.click(); });
           await page.waitForFunction("document.getElementById('sheet').classList.contains('on')", { timeout: 10000 }).catch(() => {});
           await page.waitForFunction("document.getElementById('chartMsg').hidden || /No chart|failed/.test(document.getElementById('chartMsg').textContent)", { timeout: 25000 }).catch(() => {});
-          const sh = await page.evaluate(() => { const s = document.getElementById('sheet'); const r = s.getBoundingClientRect(); return { on: s.classList.contains('on'), name: document.getElementById('shName').textContent, px: document.getElementById('shPx').textContent, chart: document.getElementById('chartMsg').hidden, canvas: !!document.querySelector('#chart canvas'), sell: document.getElementById('swSell').style.display !== 'none', inView: r.top >= 0 && r.bottom <= window.innerHeight + 1, go: document.getElementById('go').textContent }; });
+          const sh = await page.evaluate(() => { const s = document.getElementById('sheet'); const r = s.getBoundingClientRect(); return { on: s.classList.contains('on'), name: document.getElementById('shName').textContent, px: document.getElementById('shPx').textContent, chart: document.getElementById('chartMsg').hidden, canvas: !!document.querySelector('#chart canvas'), sell: document.getElementById('swSell').style.display !== 'none', /* on a phone the stage is the top of a scrolling column (chart, stats, pad, then the market list), so "in view" is its TOP on screen; a desktop fits the whole pane */ inView: r.top >= 0 && (window.innerWidth < 1000 ? r.top < window.innerHeight / 2 : r.bottom <= window.innerHeight + 1), go: document.getElementById('go').textContent }; });
           chk(vp.t + ': the trade sheet opens on the token - name, price, a drawn chart, Sell offered because it is held, inside the viewport', sh.on && sh.name === pick.sym && /^\$/.test(sh.px) && sh.chart && sh.canvas && sh.sell && sh.inView && /Buy/.test(sh.go), sh);
           /* THE PAGE IS A TERMINAL SINCE 2026-10-24: the trade sheet is the permanent centre stage, so there
              is no close button to click (#shX is hidden) and nothing to close. This check is the design
@@ -250,10 +251,28 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
               pageScroll: document.documentElement.scrollHeight - window.innerHeight };
           });
           chk(vp.t + ': the terminal IS the page - the stage is static with the chart inside it, the sheet has no close button, '
-            + (vp.w > 999 ? 'three columns stand at once' : 'one column at a time with a six-cell dock and no second bottom bar under it')
+            + (vp.w > 999 ? 'three columns stand at once' : 'one column at a time with a five-cell dock (Market, Coins, Floor, Assets, Chat - owner 2026-10-26, no Chart cell) and no second bottom bar under it')
             + ', and the page itself does not scroll',
             tm.term && tm.pos === 'static' && tm.xHidden && tm.chartInStage && tm.headSym === pick.sym && tm.pageScroll <= 2
-            && (vp.w > 999 ? (tm.cols === 3 && !tm.dockShown) : (tm.cols === 1 && tm.dockShown && tm.dockCells === 6 && tm.mpbn === 'none')), tm);
+            && (vp.w > 999 ? (tm.cols === 3 && !tm.dockShown) : (tm.cols === 1 && tm.dockShown && tm.dockCells === 5 && tm.mpbn === 'none')), tm);
+          if (vp.w <= 999) {
+            /* THE DOCK IS FLUSH WITH THE SCREEN EDGE and the five cells are the owner's five, in his order; the Assets
+               view holds the masthead (worth, claim) plus the curve / allocation / season blocks, Coins holds the bags
+               with the summary line, and Back in the head returns from the chart to the view the coin was tapped from */
+            const dk = await page.evaluate(() => {
+              const d = document.getElementById('spotDock'), r = d.getBoundingClientRect();
+              const cells = [...d.children].map(c => c.getAttribute('data-tv') || c.getAttribute('data-mpbn'));
+              window.__mpSpotTerm.show('assets');
+              const acct = document.querySelector('.tcol-acct'), mastIn = !!acct.querySelector('#mWorth'), curve = !!document.getElementById('tCurve'), season = (document.getElementById('tSeason') || {}).textContent || '';
+              window.__mpSpotTerm.show('coins');
+              const coinsIn = !!document.querySelector('.tcol-coins #holdRows'), sum = (document.getElementById('tCoinsSum') || {}).textContent || '';
+              window.__mpSpotTerm.show('market');
+              const movers = (document.getElementById('tMovers') || {}).textContent || '';
+              return { b: Math.round(r.bottom), ih: innerHeight, cells, mastIn, curve, seasonHas: /rank|Pays|ends/i.test(season), coinsIn, sumHas: /Bags|Unrealized/i.test(sum), moversHas: /Risers|Claim/i.test(movers), back: !!document.querySelector('.thead .tback') };
+            });
+            chk(vp.t + ': the dock sits flush at the bottom edge, five cells in the owner\'s order, Assets carries the masthead + curve + season, Coins carries the bags with a summary, the market carries the movers strip, the head carries Back',
+              dk.b === dk.ih && dk.cells.join(',') === 'market,coins,floor,assets,chat' && dk.mastIn && dk.curve && dk.seasonHas && dk.coinsIn && dk.sumHas && dk.moversHas && dk.back, dk);
+          }
           /* THE STAGE MUST SURVIVE EVERY WAY THE OLD MODAL COULD BE CLOSED. closeSheet() destroys the chart
              and only a fresh pick rebuilds it, so Escape and the overlay are intercepted - and the thesis
              modal, which shares that same overlay, must still close by both. */

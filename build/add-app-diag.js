@@ -72,8 +72,23 @@ const BLOCK = `
     var vv=(window.visualViewport&&Math.round(window.visualViewport.height))||0;
     send('dock','dock y'+r.y+' h'+r.h+' b'+r.b+' ih'+window.innerHeight+' vv'+vv
       +' pb'+N(cs.paddingBottom)+' ins'+INS+' col'+(col?N(getComputedStyle(col).paddingBottom):-1)
-      +' bp'+N(getComputedStyle(document.body).paddingBottom)+' sa'+(window.navigator.standalone?1:0));
+      +' bp'+N(getComputedStyle(document.body).paddingBottom)+' sa'+(window.navigator.standalone?1:0)
+      +' sh'+(screen&&screen.height||0)+' sy'+Math.round(window.scrollY||0));
   }
+  /* THE SAME DOCK, MEASURED AT THE MOMENT THE OWNER TAPS IT (2026-10-26, owner: "izdignut od ivice za toliko i
+     ostavlja prazan prostor ispod"). The load-time row said the dock's bottom equals innerHeight on his phone, so
+     whatever he sees happens LATER or is outside what the browser calls the viewport: a layout-viewport scroll left
+     behind by the keyboard (sy), a visual viewport offset (vt/vh), or a webview shorter than the screen (sh vs ih).
+     Once per session, from a tap, read on the next frame - no observer, no feedback path. */
+  function dock2(){
+    if(sent.dock2||dead)return;
+    var d=document.querySelector('.tdock'); if(!d)return; var r=R(d); if(!r)return;
+    var vv=window.visualViewport;
+    send('dock2','dock2 y'+r.y+' h'+r.h+' b'+r.b+' ih'+window.innerHeight+' sy'+Math.round(window.scrollY||0)
+      +' vt'+(vv?Math.round(vv.offsetTop):-1)+' vh'+(vv?Math.round(vv.height):-1)+' dh'+document.documentElement.scrollHeight
+      +' sh'+(screen&&screen.height||0)+' ins'+INS+' sa'+(window.navigator.standalone?1:0));
+  }
+  try{ document.addEventListener('click',function(ev){ if(sent.dock2||dead)return; var t=ev.target; if(!t||!t.closest||!t.closest('.tdock'))return; requestAnimationFrame(function(){ setTimeout(dock2,120); }); },true); }catch(e){}
 
   function csel(){
     if(sent.csel||dead)return;

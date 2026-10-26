@@ -18,7 +18,7 @@
 <!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<script>(function(){var S=['en','sr','es','de','fr','pt','nl','ru','tr','id','zh','ja','ko','ar'];function pick(){var u=null;try{u=new URLSearchParams(location.search).get('lang');}catch(e){}if(u&&S.indexOf(u)>=0){try{localStorage.setItem('mp_spot_lang',u);localStorage.setItem('mp_lang',u);}catch(e){}return u;}try{var pfx=String(location.pathname||'').split('/')[1];if(pfx&&S.indexOf(pfx)>=0)return pfx;}catch(e){}var s=null;try{s=localStorage.getItem('mp_spot_lang')||localStorage.getItem('mp_lang');}catch(e){}if(s&&S.indexOf(s)>=0)return s;var n=String(navigator.language||'en').slice(0,2).toLowerCase();return S.indexOf(n)>=0?n:'en';}var l=pick();window.__spotLang=l;window.__mpLangCur=l;window.SPOT_I18N_V='?v=57a328ee';if(l!=='en'){document.documentElement.className+=' i18n-wait';window.__spotPack=fetch('/spot/i18n/'+l+'.json'+window.SPOT_I18N_V).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});setTimeout(function(){document.documentElement.classList.remove('i18n-wait');},2500);}})();</script>
+<script>(function(){var S=['en','sr','es','de','fr','pt','nl','ru','tr','id','zh','ja','ko','ar'];function pick(){var u=null;try{u=new URLSearchParams(location.search).get('lang');}catch(e){}if(u&&S.indexOf(u)>=0){try{localStorage.setItem('mp_spot_lang',u);localStorage.setItem('mp_lang',u);}catch(e){}return u;}try{var pfx=String(location.pathname||'').split('/')[1];if(pfx&&S.indexOf(pfx)>=0)return pfx;}catch(e){}var s=null;try{s=localStorage.getItem('mp_spot_lang')||localStorage.getItem('mp_lang');}catch(e){}if(s&&S.indexOf(s)>=0)return s;var n=String(navigator.language||'en').slice(0,2).toLowerCase();return S.indexOf(n)>=0?n:'en';}var l=pick();window.__spotLang=l;window.__mpLangCur=l;window.SPOT_I18N_V='?v=38102cb1';if(l!=='en'){document.documentElement.className+=' i18n-wait';window.__spotPack=fetch('/spot/i18n/'+l+'.json'+window.SPOT_I18N_V).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});setTimeout(function(){document.documentElement.classList.remove('i18n-wait');},2500);}})();</script>
 <style>html.i18n-wait body{visibility:hidden}</style>
 <title>Free Demo Spot Trading - $10,000 of Practice Cash, Meme Coins and Majors | MarginPad</title>
 <meta name="description" content="Buy and hold meme coins on Solana, Base, Ethereum and BNB Chain plus the top 250 coins with $10,000 of free demo cash and $100 more every day you claim it. No fees, no leverage, live prices. One season board pays $30 to the top three in real USDT." />
@@ -247,89 +247,74 @@
   .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#171c24;border:1px solid var(--line2);color:var(--ink);padding:10px 14px;border-radius:12px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:2147483002;max-width:min(92vw,520px);}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
   /* ─── THE TERMINAL (2026-10-24, owner: "ne zelim neki mini update, zelim bukvalno ceo terminal posvecen meme
-     coins i spot trade") ───────────────────────────────────────────────────────────────────────────────────
-     MEASURED FIRST: with a started account the page was 3.19 desktop screens and 4.02 phone screens, the first
-     live coin price sat 1.19 / 1.64 screens down, and the buy card alone was 1,537px. The decisive finding is
-     that THE CHART DID NOT EXIST ON THE PAGE AT ALL until a coin was tapped - it lives inside the trade sheet,
-     a centred modal. That one fact is why this read as a stack of cards and not as a terminal.
-     The sheet already IS a complete terminal pane: logo, name, price, 24h, chart, timeframes, the position,
-     buy/sell, amount, estimate, action. So this is not a rewrite - it is that pane PROMOTED out of the modal
-     into a permanent stage, with the market list beside it and the account, the coins and the floor on the
-     other side. Every id the page script binds to is where it was; only the parent changed.
-     THE STAGE FILLS WHAT IS LEFT, AND NOTHING MEASURES IT. The first cut had the shell read the header's
-     height into a variable, and it was wrong by 41px whenever the cookie bar landed between two reads - a
-     number that can be stale is the wrong tool for a height that must be exact. A flex chain from the wrap
-     down to the chart is always right, with no reads and no listener: 100dvh for the phone whose address bar
-     retracts, 100vh behind it for a browser that does not know dvh. */
-  /* THE BODY IS THE SCREEN AND THE TERMINAL IS WHAT IS LEFT OF IT. Putting the height on the wrap looked
-     right and was 47px wrong whenever the cookie bar was up: that bar is in flow ABOVE the wrap, so a wrap of
-     exactly 100dvh hung 47px below the fold and the phone's Buy button ended up under the dock. With the body
-     as the flex column, anything in flow above the terminal - cookie bar, announcement strip - takes its room
-     first and the terminal takes the rest, whatever that is.
-     And HEIGHT, not min-height: a minimum caps nothing, so the 1,295px market list grew the page to 1,666px
-     and took the stage with it. */
+     coins i spot trade"; v2 2026-10-26: "dizajnerski uzdigni dosta ... bas cool mesto za demo spot, sa dosta
+     features") ──────────────────────────────────────────────────────────────────────────────────────────────
+     MEASURED FIRST (10-24): the chart did not exist on the page until a coin was tapped - it lived inside a
+     centred modal. So the trade sheet was PROMOTED out of the modal into a permanent stage; every id the page
+     script binds to is where it was, only the parent changed. v2 keeps that rule and adds blocks the shell
+     builds from data the page already fetched (window.__spot.state()).
+     THE BODY IS THE SCREEN AND THE TERMINAL IS WHAT IS LEFT OF IT: anything in flow above the terminal (cookie
+     bar, announcement strip) takes its room first, the terminal takes the rest. HEIGHT, not min-height - a
+     minimum caps nothing. 100dvh where it exists, 100vh behind it. */
   body.spot-term{overflow:hidden;height:100vh;display:flex;flex-direction:column}
   @supports (height:100dvh){body.spot-term{height:100dvh}}
-  /* full bleed: the page's own .wrap is 1040px wide with 110px of bottom padding, which on a 1366 screen left
-     the terminal floating in the middle of the window with a scroll under it */
-  .spot-term .wrap{max-width:none;padding:0;display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
-  .spot-term #app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  /* mp-nav sets margin:-16px -16px 0 INLINE on the header to cancel the wrap's padding and sit full-bleed;
-     with that padding gone the same inline rule pushed it 16px off both edges, which is the one element that
-     made a 390px phone scroll sideways. An inline style needs !important to answer.
-     THE TOP PADDING CARRIES THE NOTCH (2026-10-24, owner: "iphone ima onaj notch ... pada i sat i baterija
-     preko sajta"): mp-nav's own phone rule is `padding-top:calc(env(safe-area-inset-top) + 14px) !important`
-     and this line overrode it with a flat 13px, so on a home-screen iPhone the brand sat under the status bar.
-     Any !important padding on a top header MUST re-add the inset. */
+  /* width:100% + no auto margins: the body is a flex column and A FLEX ITEM WITH AUTO CROSS-AXIS MARGINS IS NEVER
+     STRETCHED - it takes its content's width instead. Measured 2026-10-26: the Coins view, whose rows are narrower
+     than the screen, shrank the whole wrap to 355px with 17px of page showing down both sides, while every view
+     holding an overflowing list filled 390 and hid the fault. The /paper-trade terminal hit the same rule on 10-24. */
+  .spot-term .wrap{max-width:none;width:100%;margin-left:0;margin-right:0;padding:0;display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+  .spot-term #app{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;max-width:none;padding:0}
+  /* mp-nav sets margin:-16px -16px 0 INLINE on the header; an inline style needs !important to answer.
+     THE TOP PADDING CARRIES THE NOTCH: any !important padding on a top header MUST re-add the inset. */
   .spot-term #siteHead{margin:0!important;border-bottom:1px solid var(--line);
     padding:calc(13px + env(safe-area-inset-top)) 16px 12px!important}
-  .spot-term #app{max-width:none;padding:0}
   .spot-term .term{display:grid;gap:1px;background:var(--line);flex:1 1 auto;min-height:0}
   @media(min-width:1000px){
-    .spot-term .term{grid-template-columns:318px minmax(0,1fr) 344px;align-items:stretch}
+    .spot-term .term{grid-template-columns:318px minmax(0,1fr) 352px;align-items:stretch}
+    /* the three phone-only columns do not exist on a desktop: their blocks live in the right column. Three classes,
+       not two: the base `.spot-term .tcol{display:flex}` is written LATER in this sheet and would win a plain tie -
+       the first cut shipped six columns on a desktop, three of them wrapped onto a second grid row. */
+    .spot-term .tcol.tcol-coins,.spot-term .tcol.tcol-floor,.spot-term .tcol.tcol-acct{display:none}
   }
   .spot-term .tcol{background:var(--bg);min-width:0;min-height:0;display:flex;flex-direction:column}
   .spot-term .tcol-mid{background:#0a0d13;overflow:hidden}
-  .spot-term .tcol-left,.spot-term .tcol-right{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+  .spot-term .tcol-left,.spot-term .tcol-right,.spot-term .tcol-coins,.spot-term .tcol-floor,.spot-term .tcol-acct{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
   .spot-term .tcol-left #list{max-height:none}
   /* every card loses its own box - in a terminal the COLUMN is the box and a border inside one reads as clutter */
   .spot-term .tcol .card,.spot-term .tcol .mast .card{border:0;border-radius:0;margin:0!important;background:transparent;padding:0}
-  .spot-term .tcol .card+.card,.spot-term .tcol .mast+*{border-top:1px solid var(--line)}
-  .spot-term .tcol .card>h2,.spot-term .tcol .hist>summary{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  .spot-term .tcol .card+.card,.spot-term .tcol .mast+*,.spot-term .tcol .tblk+.tblk{border-top:1px solid var(--line)}
+  .spot-term .tcol .card>h2,.spot-term .tcol .hist>summary,.spot-term .tblk h2{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--faint);padding:11px 14px 9px;margin:0;border-bottom:1px solid var(--line);background:var(--bg);
-    position:sticky;top:0;z-index:2}
-  .spot-term .tcol .card>h2 small{font-size:10px;letter-spacing:.02em;text-transform:none}
+    position:sticky;top:0;z-index:2;font-family:'Space Mono',monospace;font-weight:700;display:flex;align-items:baseline;gap:10px}
+  .spot-term .tcol .card>h2 small,.spot-term .tblk h2 small{font-size:10px;letter-spacing:.02em;text-transform:none;font-weight:600;color:var(--faint)}
+  .spot-term .tblk h2 .r{margin-left:auto;font-size:10px;letter-spacing:.02em;text-transform:none}
   .spot-term .tcol .rows,.spot-term .tcol .frows,.spot-term .tcol .throws,.spot-term .tcol .tabs,
   .spot-term .tcol .srch,.spot-term .tcol .more,.spot-term .tcol #histRows,.spot-term .tcol .mm-foot{padding-left:14px;padding-right:14px}
   .spot-term .tcol .tabs{padding-top:10px}
+  .spot-term .tcol .th-lead,.spot-term .tcol .you{padding-left:14px;padding-right:14px}
+  .spot-term .tcol a.more{margin:8px 14px 12px;width:auto;display:block}
   .spot-term .tcol .foot{padding:14px;margin:0;border-top:1px solid var(--line);font-size:11px;line-height:1.5}
+  .spot-term .tcol .search{padding:10px 14px 0;margin:0}
+  .spot-term .tcol .tokres{padding:0 14px}
+  .spot-term .tcol #netChips{padding:0 14px}
 
-  /* THE STAGE. The chart is the biggest thing on the screen, which is what a terminal is for - and THE ACTION
-     IS ON SCREEN WITH IT, which is what stops it being a page again. Measured at 1366x900 with a fixed 432px
-     chart, the Buy button landed at y=952, below the fold; so the stage is a flex column that fits the
-     viewport and the chart absorbs whatever is left over. It is created with autoSize:true, so it follows its
-     box and the page script is told nothing. */
+  /* THE STAGE. The chart is the biggest thing on the screen and THE ACTION IS ON SCREEN WITH IT: a flex column
+     that fits the viewport, the chart absorbing what is left (autoSize:true, so the page script is told nothing). */
   .spot-term #sheet{position:static;transform:none;width:auto;max-width:none;max-height:none;border:0;border-radius:0;
     background:transparent;padding:0 16px 18px;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;
     overflow-y:auto;z-index:auto}
   .spot-term #sheet>*{flex:0 0 auto}
   .spot-term #sheet .chart{flex:1 1 auto;height:auto;min-height:250px;border-radius:12px}
-  /* the sheet's own header said the same four things the live head says, 63px lower down - on a 900px desktop
-     that was a quarter of what the chart had left, so the head IS the header now and the logo moved into it */
   .spot-term #sheet .sh-h{display:none}
   .spot-term .thead .logo{width:22px;height:22px;flex:0 0 22px;border-radius:50%;object-fit:cover}
   .spot-term .thead .logo.txt{display:flex;align-items:center;justify-content:center;background:var(--panel2);
     font:700 8.5px 'Space Mono',monospace;color:var(--dim);text-transform:uppercase;overflow:hidden}
-  .spot-term .thead.empty .logo{display:none}
+  .spot-term .thead.empty .logo,.spot-term .thead.empty .twatch{display:none}
   .spot-term .thead .logo[hidden]{display:none}   /* the page toggles these two with .hidden - never fight it */
-  .spot-term #sheet .sw{margin-top:14px}
+  .spot-term #sheet .sw{margin-top:12px}
   .spot-term #sheet .go{margin-top:11px;height:46px;font-size:15px}
-  /* the overlay belongs to the thesis modal now; the trade sheet is not a modal any more and must not dim the
-     page it lives in (openSheet still raises it, so this is a display rule, not a change to the script) */
   .spot-term #ov.on{display:none}
   .spot-term.spot-thesis #ov.on{display:block}
-  /* AN EMPTY STAGE IS NOT A TERMINAL: until a coin is picked the stage says what to do, in the place the chart
-     will appear, instead of a blank rectangle or a half-built pane */
   .spot-term #sheet.tempty>*{display:none}
   .spot-term #sheet.tempty>.tstage-empty{display:flex}
   .spot-term .tstage-empty{display:none;flex:1 1 auto;flex-direction:column;align-items:center;justify-content:center;
@@ -337,17 +322,18 @@
     border:1px dashed var(--line2);border-radius:12px;margin:14px 0}
   .spot-term .tstage-empty svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.5;opacity:.55}
 
-  /* the account block: four numbers at the top of the right column, not a 344px card at the top of the page */
-  .spot-term .mast{padding:0}
-  .spot-term .mast .worth{padding:12px 14px 13px!important}
-  .spot-term .mast .worth>.k{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
-  .spot-term .mast #mWorth{font-size:26px;line-height:1.1;margin-top:1px}
-  .spot-term .mast .tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:11px}
-  .spot-term .mast .tile{padding:0;border:0;background:none}
-  .spot-term .mast .tile .v{font-size:14px}
-  .spot-term .mast .claimrow{margin-top:11px}
+  /* THE STATS STRIP under the timeframes: what the coin IS, in the numbers a meme trader checks before a buy
+     (liquidity, FDV, volume, age, how many members bought it today). Built by the shell from the lists the page
+     already holds - no request. A figure the lists do not carry is left out, never printed as 0. */
+  .spot-term .tstats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0 6px;margin-top:2px}
+  .spot-term .tstats::-webkit-scrollbar{display:none}
+  .spot-term .tstats:empty{display:none}
+  .spot-term .tstats span{flex:0 0 auto;background:#10141b;border:1px solid var(--line);border-radius:9px;padding:6px 9px;
+    font:600 11px 'Familjen Grotesk',sans-serif;color:var(--dim);white-space:nowrap}
+  .spot-term .tstats span b{display:block;font:700 12.5px 'Space Mono',monospace;color:var(--ink);margin-top:2px}
+  .spot-term .tstats span b.up{color:var(--up)}.spot-term .tstats span b.dn{color:var(--red)}
 
-  /* the live head: what you are looking at, what it costs, and that it is alive */
+  /* the live head: what you are looking at, what it costs, and that it is alive; a Watch star; a Back on the phone */
   .spot-term .thead{display:flex;align-items:center;gap:9px;padding:0 16px;min-height:46px;flex:0 0 auto;
     border-bottom:1px solid var(--line);background:#0a0d13}
   .spot-term .thead .tlive{width:7px;height:7px;border-radius:50%;background:var(--up);flex:0 0 auto}
@@ -355,35 +341,103 @@
   .spot-term .thead .tsub{color:var(--faint);font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .spot-term .thead .tpx{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;margin-left:auto;white-space:nowrap}
   .spot-term .thead .tchg{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .spot-term .thead .twatch,.spot-term .thead .tback{background:none;border:1px solid var(--line2);color:var(--dim);width:30px;height:30px;
+    border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0}
+  .spot-term .thead .twatch svg,.spot-term .thead .tback svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .spot-term .thead .twatch.on{color:var(--lime);border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.08)}
+  .spot-term .thead .twatch.on svg{fill:currentColor}
+  .spot-term .thead .tback{display:none}
 
-  /* THE PHONE IS THE PRODUCT HERE (the audience is mobile): one view at a time and a dock to switch, the same
-     shape the /charts phone terminal uses, so a reader who knows one knows this one */
+  /* MOVERS: the market's own pulse at the top of the list - the biggest 24h risers, the biggest fallers, the newest
+     pools, and the reader's watchlist - as chips that open the coin on the stage. The claim chip stands first while
+     the daily $100 is still unclaimed: the claim moved to Assets, and the loop must stay one tap away. */
+  .spot-term .tstrip{padding:9px 14px 4px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid var(--line)}
+  .spot-term .tstrip:empty{display:none}
+  .spot-term .trow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center;min-width:0;padding-bottom:3px}
+  .spot-term .trow::-webkit-scrollbar{display:none}
+  .spot-term .trow .tk{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;white-space:nowrap;flex:0 0 auto;margin-right:2px}
+  .spot-term .tchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:#11151c;border:1px solid var(--line2);border-radius:999px;
+    padding:4px 10px 4px 4px;color:var(--ink);font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap}
+  .spot-term .tchip .logo{width:20px;height:20px;flex-basis:20px;font-size:8px}
+  .spot-term .tchip small{font:700 10.5px 'Space Mono',monospace}
+  .spot-term .tchip small.up{color:var(--up)}.spot-term .tchip small.dn{color:var(--red)}.spot-term .tchip small.nw{color:var(--viol)}
+  /* named tclaim, not claim: the page's own .claim rule is a flex COLUMN and turned the chip into two stacked lines */
+  .spot-term .tchip.tclaim{background:var(--lime);color:#0a0b0d;border-color:var(--lime);padding:5px 12px 5px 9px;font-size:12px}
+  .spot-term .tchip.tclaim svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+  .spot-term .tchip.x{padding-right:6px}
+  .spot-term .tchip .rm{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px;line-height:1}
+
+  /* ASSETS: the account block - the masthead the page paints, then the shell's own reads of the same data:
+     the net P&L curve from the daily marks, where the money sits (cash vs each bag), and the season as a race
+     (ends in, your rank, what #3 holds against you). All of it from PORT and BOARD, already fetched. */
+  .spot-term .mast{padding:0}
+  .spot-term .mast .worth{padding:12px 14px 13px!important}
+  .spot-term .mast .worth>.k{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .spot-term .mast #mWorth{font-size:28px;line-height:1.1;margin-top:1px}
+  .spot-term .mast .tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;margin-top:11px}
+  .spot-term .mast .tile{padding:0;border:0;background:none}
+  .spot-term .mast .tile .v{font-size:14px}
+  .spot-term .mast .claimrow{margin-top:11px}
+  .spot-term .tblk{padding:0}
+  .spot-term .tblk .tb{padding:11px 14px 13px}
+  .spot-term .tcurve{display:block;width:100%;height:84px}
+  .spot-term .tcurve-k{display:flex;justify-content:space-between;align-items:baseline;font:600 11px 'Familjen Grotesk',sans-serif;color:var(--faint);margin-top:4px}
+  .spot-term .tcurve-k b{font:700 13px 'Space Mono',monospace}
+  .spot-term .tcurve-none{color:var(--faint);font-size:12px;line-height:1.5;padding:4px 0 2px}
+  .spot-term .talloc{display:flex;height:8px;border-radius:5px;overflow:hidden;background:var(--panel2);margin-top:4px}
+  .spot-term .talloc i{display:block;height:100%;min-width:2px}
+  .spot-term .talloc-l{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font:600 11px 'Familjen Grotesk',sans-serif;color:var(--dim)}
+  .spot-term .talloc-l span{display:inline-flex;align-items:center;gap:5px}
+  .spot-term .talloc-l i{width:8px;height:8px;border-radius:2px;display:inline-block}
+  .spot-term .talloc-l b{font:700 11px 'Space Mono',monospace;color:var(--ink)}
+  .spot-term .trace{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+  .spot-term .trace .t{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+  .spot-term .trace .t .k{font:700 9px 'Space Mono',monospace;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spot-term .trace .t .v{font:800 14px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spot-term .trace .t .v small{font:600 10px 'Space Mono',monospace;color:var(--faint)}
+  .spot-term .tpod{display:flex;align-items:center;gap:9px;padding:6px 0;border-top:1px solid var(--line);font-size:12.5px}
+  .spot-term .tpod:first-child{border-top:0}
+  .spot-term .tpod .rk{width:18px;font:700 11px 'Space Mono',monospace;color:var(--faint)}
+  .spot-term .tpod .rk.g{color:var(--lime)}
+  .spot-term .tpod .who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+  .spot-term .tpod .who [data-lbu]{color:var(--ink);cursor:pointer}
+  .spot-term .tpod .pn{font:700 12px 'Space Mono',monospace;white-space:nowrap}
+  .spot-term .tpod .pz{font:700 10.5px 'Space Mono',monospace;color:var(--lime);width:34px;text-align:right}
+  .spot-term .tpod.me{background:rgba(194,246,74,.06);margin:0 -6px;padding-left:6px;padding-right:6px;border-radius:7px}
+  .spot-term .tgap{margin-top:9px;color:var(--dim);font-size:12.5px;line-height:1.55}
+  .spot-term .tgap b{color:var(--ink);font-family:'Space Mono',monospace;font-weight:700}
+  .spot-term .tgap .up{color:var(--up)}
+
+  /* COINS: one line of truth above the bags - what they are worth together, what is unrealized, the best and
+     the worst - then the page's own rows */
+  .spot-term .tsum{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;padding:11px 14px 12px;border-bottom:1px solid var(--line)}
+  .spot-term .tsum .k{font:700 9px 'Space Mono',monospace;letter-spacing:.12em;color:var(--faint);text-transform:uppercase;white-space:nowrap}
+  .spot-term .tsum .v{font:800 15px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .spot-term .tsum .v small{font:600 10.5px 'Space Mono',monospace;color:var(--faint)}
+  .spot-term .tsum:empty{display:none}
+
+  /* THE PHONE IS THE PRODUCT HERE: one view at a time and a dock to switch */
   @media(max-width:999px){
     .spot-term .term{grid-template-columns:1fr;gap:0}
     .spot-term .tcol{display:none}
     .spot-term .tcol.tshow{display:flex}
-    .spot-term .tcol-left,.spot-term .tcol-right{padding-bottom:calc(64px + max(2px, calc(env(safe-area-inset-bottom) - 24px)))}
-    /* the market list reads as the SECOND half of the chart view (owner: "nek bude tu gore chart a onda nize
-       dole da krenu memes") - one node, moved by placeList(), never a second copy of the list. The COLUMN does
-       the scrolling here, so the stage stops being a fitted box and becomes the top of a page: chart, trade pad,
-       then the coins. On a desktop the fit stays, because there the market has its own column. */
-    .spot-term .tcol-mid{overflow-y:auto;overflow-x:hidden}
+    .spot-term .tcol-right{display:none!important}   /* its blocks are in their own columns on a phone */
+    /* THE DOCK IS FLUSH WITH THE SCREEN EDGE (2026-10-26, owner: "izdignut od ivice za toliko i ostavlja prazan prostor
+       ispod - pusti ga dole"). bottom:0 and the room it needs reserved on the scrolling COLUMNS, never inside the sheet
+       (padding inside the sheet sits below its own scroll). --tdock is the dock's whole height, cells + the sliver kept
+       for the home indicator, and it is the ONE expression both the dock and the columns read. */
+    .spot-term{--tdock:calc(57px + max(0px, calc(env(safe-area-inset-bottom) - 30px)))}
+    .spot-term .tcol-left,.spot-term .tcol-coins,.spot-term .tcol-floor,.spot-term .tcol-acct{padding-bottom:var(--tdock)}
+    .spot-term .tcol-mid{overflow-y:auto;overflow-x:hidden;padding-bottom:var(--tdock)}
     .spot-term .tcol-mid #sheet{flex:0 0 auto;overflow:visible}
     .spot-term .tcol-mid #sheet .chart{flex:0 0 auto;height:clamp(240px,42vh,430px)}
     .spot-term .tcol-mid .card{border-top:1px solid var(--line);margin-top:12px}
     .spot-term .tcol-mid .card>h2{position:static}
-    /* the dock OVERLAYS the stage, so the room it needs is reserved on the column - padding inside the sheet
-       sits below its own scroll and let the Buy button rest 13px under the dock (measured on a 390x844) */
-    .spot-term .tcol-mid{padding-bottom:calc(60px + max(2px, calc(env(safe-area-inset-bottom) - 24px)))}
-    /* THE CHART GOES EDGE TO EDGE (2026-10-24, owner: "cela stranica je isecena sa leve i desne strane od vrha
-       do dna sirine 0.5cm"): nothing was clipped - the stage carried a 12px gutter and the chart its own border
-       and radius, so on a phone the content column read as a page cut down both sides while the header spanned
-       the full width. The /charts phone terminal has been edge-to-edge for exactly this reason since 10-08.
-       The PAD keeps its gutter - a full-bleed input field is not a chart. */
+    .spot-term .tcol-mid .tstrip{display:none}   /* the movers belong to the Market view; under the chart the list alone reads better */
+    /* THE CHART GOES EDGE TO EDGE on a phone; the pad keeps its gutter - a full-bleed input is not a chart */
     .spot-term #sheet{padding:0 0 8px}
     .spot-term #sheet>*{padding-left:12px;padding-right:12px;box-sizing:border-box}
     .spot-term #sheet>.chart{padding:0;border-radius:0;border-left:0;border-right:0}
-    /* every pixel the pad gives back is a pixel of chart, and on a phone the chart is the product */
     .spot-term #sheet .chart{min-height:230px}
     .spot-term .tstage-empty{min-height:230px;margin:14px 12px}
     .spot-term #sheet .lbl{margin:6px 0 4px}
@@ -391,32 +445,37 @@
     .spot-term #sheet .sw{margin-top:10px}
     .spot-term #sheet .go{margin-top:9px;height:44px}
     .spot-term .thead{padding:0 12px}
+    .spot-term .thead .tback{display:inline-flex}
     .spot-term .mast .worth{padding:11px 12px!important}
+    .spot-term .tstrip,.spot-term .tsum,.spot-term .tblk .tb{padding-left:12px;padding-right:12px}
   }
-  /* THE HOME INDICATOR NEEDS CLEARANCE, NOT THE WHOLE INSET (2026-10-24, owner: "previse si podigao nav bar ...
-     sigurno ima 1cm praznog prostora pri dnu"). env(safe-area-inset-bottom) is 34px on a modern iPhone, and
-     reserving all of it under 54px cells reads as a bar with a centimetre of nothing beneath the labels. The
-     indicator itself is ~5px of glyph in the middle of that strip, so most apps leave a fraction: this keeps a
-     real gap on a phone that has an inset and 4px on one that does not. */
+  /* THE DOCK. Five cells - Market, Coins, Floor, Assets, Chat (owner 2026-10-26; the chart has no cell, it opens when
+     a coin is tapped and the head carries the way back). Flush at bottom:0; the inset keeps only a sliver because
+     the home indicator is ~5px of glyph in a 34px strip and a bar with a centimetre of nothing under its labels
+     read as "raised" (owner, three reports). Active = lime glyph + a lit rule across the top of the cell. */
   .tdock{position:fixed;left:0;right:0;bottom:0;z-index:2147483002;display:none;
-    background:rgba(10,13,19,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    border-top:1px solid var(--line2);padding-bottom:max(2px, calc(env(safe-area-inset-bottom) - 24px))}
+    background:rgba(9,11,15,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line2);padding-bottom:max(0px, calc(env(safe-area-inset-bottom) - 30px))}
   @media(max-width:999px){
-    body.spot-term .tdock{display:grid;grid-template-columns:repeat(6,1fr)}
-    /* the site's own phone bar is absorbed into the dock (Browse and Chat are cells there now) - two fixed
-       bars in the same place left the lower one unreachable, and its 84px of body padding with it */
+    body.spot-term .tdock{display:grid;grid-template-columns:repeat(5,1fr)}
+    /* the site's own phone bar is absorbed into the dock (Chat is a cell there) - two fixed bars in one place left
+       the lower one unreachable, and its 84px of body padding with it */
     body.spot-term .mpbn{display:none!important}
     body.spot-term{padding-bottom:0!important}
   }
   .tdock button,.tdock a{position:relative;background:none;border:0;color:var(--faint);text-decoration:none;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:54px;
-    font:700 9px/1 'Space Mono',monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
-  .tdock svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:56px;
+    font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+    transition:color .18s ease}
+  .tdock button::before{content:"";position:absolute;top:-1px;left:22%;right:22%;height:2px;border-radius:0 0 3px 3px;
+    background:var(--lime);box-shadow:0 0 12px 2px rgba(194,246,74,.45);opacity:0;transform:scaleX(.4);
+    transition:opacity .18s ease,transform .22s ease}
+  .tdock button.on::before{opacity:1;transform:scaleX(1)}
+  .tdock svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
   .tdock button.on{color:var(--lime)}
-  .tdock button i{position:absolute;top:9px;left:50%;margin-left:9px;width:6px;height:6px;border-radius:50%;
-    background:var(--lime);display:none}
+  .tdock button i{position:absolute;top:9px;left:50%;margin-left:9px;width:7px;height:7px;border-radius:50%;
+    background:var(--lime);box-shadow:0 0 8px var(--lime);display:none}
   .tdock button.dot i{display:block}
-
   /* ─── THE BOOT SPLASH (2026-10-24) ───────────────────────────────────────────────────────────────────── */
   /* a member never reads the sign-up gate (measured: 4 s of it) - but ONLY while the page is still deciding.
      A member with no Spot account yet is shown that same gate with a Start button, so hiding it for good would
@@ -572,7 +631,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script type="application/json" id="spotI18n">{"age_d":"{n}d","age_h":"{n}h","age_m":"{n}m","ago_h":"{n}h ago","ago_m":"{n}m ago","ago_s":"{n}s ago","b_full":"Full board","c_already":"Already claimed today - come back after midnight UTC.","c_btn":"Claim $100","c_claimed":"Claimed · next in {t}","c_claiming":"Claiming…","c_ok":"$100 added to your cash.","c_row":"Daily top-up · <b>$100</b> of demo cash, once per UTC day. Never counts as profit.","ch_fail":"Chart failed to load.","ch_loading":"Loading chart…","ch_none":"No chart data for this pair yet.","ch_stale":"Chart from {n} min ago - the live candle feed is busy, this is the last one it gave us.","e_cash":"Cash available","e_fee":"Fee","e_get":"You get","e_pnl":"P&L on this sale","e_price":"Price","e_recv":"You receive","e_sell":"Selling","err_net":"Network error - try again.","err_pack":"Translation pack failed to load.","f_bought":"bought","f_empty":"Quiet for now - the first buy on the floor shows up here.","f_h":"The floor","f_hot":"Hot today","f_live":"live","f_s":"who is buying what, live","f_s2":"last {n} moves","f_sold":"sold","f_text":"Demo cash only - prices are live from exchanges and on-chain pools, but nothing here is real money and the cash cannot be withdrawn. The season prize is real USDT paid to your MarginPad rewards balance. Pools under $1,000 of liquidity are refused because their price is not real. Not financial advice. · <a href=\"/paper-trade\">Futures paper trading</a> · <a href=\"/academy/\">Academy</a>","g_cta_signin":"Sign in to start","g_cta_start":"Start with $10,000","g_disc":"Free. Email sign-in, no password, no deposit. The demo cash is not withdrawable; the prize is.","g_f1":"Everyone starts level. Press Claim once a day for $100 more - it never counts as profit.","g_f2":"Trending on four chains, the top 250 majors, or any token by contract address.","g_f2_b":"150+ memes","g_f3":"Every 14-day season the top three season profits are paid $15 / $10 / $5.","g_h1":"<em>$10,000</em> to start. <em>$100</em> every day.<br>One board, $30 a season.","g_kick":"DEMO SPOT <i>·</i> BUY AND HOLD, NOTHING AT STAKE","g_start_fail":"Could not start the account - try again.","g_starting":"Starting…","g_sub":"Buy and hold <b>meme coins</b> on Solana, Base, Ethereum and BNB Chain and the <b>top 250 majors</b> at live prices. No fees, no leverage, no liquidations. Paste any contract address and it prices from its deepest pool. The three biggest season profits are paid <b>$15, $10 and $5</b> in real USDT.","h_avg":"avg","h_hold":"Your coins","h_none":"Nothing yet. Pick a coin below - your first buy puts you on the board.","h_sub":"{n} · {usd}","hs_buy":"BUY","hs_claim":"CLAIM","hs_claim_t":"Daily $100 claimed","hs_csv":"Export CSV","hs_fix":"CORRECTION","hs_fix_t":"Balance correction","hs_h":"History","hs_none":"Nothing yet.","hs_sell":"SELL","l_fdv":"FDV","l_liq":"liq","l_major":"major · exchange price","l_mcap":"mcap","m_all":"All time","m_all_s":"against {dep} put in · {n} claims","m_cash":"Cash","m_cash_s":"to buy with","m_rank_k":"Board","m_rank_pz":"${usd} if it holds","m_season":"Season P&L","m_today":"today","m_today_none":"the first daily mark lands after midnight UTC","m_worth":"Portfolio worth","n_all":"All chains","rug_badge":"RUGGED","s_amt":"Amount (USD)","s_bought":"Bought <b>{qty} {sym}</b> at {px} for {usd}.","s_buy":"Buy","s_buyS":"Buy {sym}","s_filling":"Filling…","s_how":"Sell how much?","s_max":"Max","s_pos":"You hold <b>{qty}</b> · avg {avg} · worth <b>{usd}</b> · {pnl}","s_retry":"Price feed busy - trying once more…","s_rug":"<b>This token was rugged.</b> The pool behind it is empty, so there is nothing left to sell into - this holding cannot be turned back into USDT at any price. Nothing was taken from you: what it showed was the pool's last quote, never money you had.","s_rug_go":"Cannot be sold - the pool is gone","s_sell":"Sell","s_sellS":"Sell {sym}","s_sold":"Sold at {px} for <b>{usd}</b> · P&L {pnl}","s_thin":"<b>Thin pool.</b> Only {usd} of liquidity sits behind this coin - a real fill would move it, and a rug takes it to zero.","sc_24h":"24h","sc_age":"Seen","sc_coin":"Coin","sc_fdv":"FDV","sc_liq":"Liquidity","sc_price":"Price","sc_vol":"Volume 24h","srch_busy":"The DEX search is rate-limiting us - try again in a few seconds.","srch_h":"Found across every DEX - not on our trending list","srch_none":"Nothing by that name on the chains we cover. If you have the contract address, paste it.","stale":"STALE","t_bought":"Bought {sym} for {usd}","t_dh":"{d}d {h}h","t_hm":"{h}h {m}m","t_m":"{m}m","t_majors":"Majors","t_memes":"Trending memes","t_screener":"Screener","t_sold":"Sold {sym} · {pnl}","t_started":"Your $10,000 is in. Pick a coin.","term_browse":"Browse","term_chart":"Chart","term_chat":"Chat","term_coins":"Coins","term_floor":"Floor","term_loading":"Opening the terminal","term_market":"Market","term_pick":"Pick a coin on the left and its chart opens here.","th_empty":"No thesis yet - the first one lands here within a minute of being written.","th_h":"Theses","th_lead":"Say what you hold, why, and what would prove you wrong. A published thesis pays <b>20 XP</b> and <b>5 Ticks</b> and lands on <a href=\"/blog/theses/\">the blog</a>.","th_likes":"likes","th_more":"All theses","th_s":"why members hold what they hold","th_write":"Write a thesis","ths_body":"Thesis","ths_body_ph":"The setup, the reasoning, the level that would prove you wrong. At least 500 characters - real sentences, not padding.","ths_coins":"Coins (comma separated)","ths_e_body_short":"A thesis needs at least 500 characters of real text.","ths_e_body_words":"The thesis has to be readable text - real sentences, not padding.","ths_e_daily_cap":"Daily post limit reached.","ths_e_fail":"Could not publish ({e}) - try again.","ths_e_login_required":"Sign in to publish.","ths_e_need_username":"Pick a username first (account menu).","ths_e_short":"A thesis needs at least 500 characters ({n} so far) - the setup, the reasoning, the levels.","ths_e_slow_down":"Easy - wait two minutes between posts.","ths_e_title":"The title needs at least 15 characters - a real headline.","ths_e_title_short":"The title needs at least 15 characters.","ths_e_title_words":"The title has to be real words.","ths_go":"Publish","ths_h":"Write a thesis","ths_ok":"Published. <b>+{xp} XP</b> and <b>+{ticks} Ticks</b> - it is on the blog and in the Community.","ths_publishing":"Publishing…","ths_s":"it lands on the blog and in the Community · 20 XP + 5 Ticks","ths_title":"Title","ths_title_ph":"Why I hold PEPE into the listing","ths_toast":"Thesis published · +{xp} XP · +{ticks} Ticks","tm_e_bad_pool":"That pool prices a different token. Nothing was filled.","tm_e_bad_sym":"That symbol cannot be traded here.","tm_e_bad_token":"That token cannot be traded - check the contract address.","tm_e_dust":"That position is dust - sell 100% of it to clear it.","tm_e_fail":"Trade failed ({e}) - try again.","tm_e_insufficient":"Not enough cash.","tm_e_insufficient_v":"Not enough cash - you have {usd}.","tm_e_login_required":"Please sign in first.","tm_e_min_trade":"Minimum trade is $1.","tm_e_no_account":"Start your account first.","tm_e_no_position":"Nothing to sell.","tm_e_no_price":"No live price right now - try again in a moment.","tm_e_price_jump":"The price moved too far from the last mark to fill safely - try again in a minute.","tm_e_restricted":"Your account is restricted.","tm_e_thin_pool":"The pool behind this coin is gone, so there is nothing to sell into. The holding cannot be turned back into USDT - that is what a rug looks like from outside.","tm_e_thin_pool_v":"The pool behind this coin holds only {usd}, which cannot honestly fill this sale. The quoted value is the pool's number, not money you can take out.","tm_e_too_big":"Maximum per trade is $1,000,000.","tm_e_too_much":"That is more than you hold.","tm_e_transient":"Our store hiccuped - nothing was charged. Try again in a few seconds.","tok_e_bad_address":"That is not a Solana or EVM contract address.","tok_e_busy":"The price source is rate-limiting us right now - try again in a few seconds.","tok_e_fail":"Lookup failed - try again in a moment.","tok_e_major":"That is a major coin or a stablecoin - find it under Majors.","tok_e_major_v":"That is {sym} - find it under Majors.","tok_e_no_pool":"That token has no liquidity pool yet - nothing to buy it from.","tok_e_no_pool_yet":"That coin is still on its launch curve - no pool to price it against yet. It becomes tradeable once it graduates to a real pool.","tok_e_not_found":"No token with that address on Solana, BNB Chain, Base, Ethereum, Arbitrum, Polygon, Avalanche, HyperEVM or Abstract.","tok_e_thin_pool":"The deepest pool for that token holds under $1,000 - a price there is fiction. Not tradeable here.","tok_look":"Looking up that contract…","tok_thin":"THIN","tok_trade":"tap to trade","tok_unknown":"Not on our trending list - check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam; the address is the identity, not the name.","y_h":"Buy a coin","y_loading":"Loading…","y_more":"Show {n} more · {left} left","y_nomatch":"Nothing matches.","y_ph":"Search a coin or paste a contract address","y_s":"live prices · no fees"}</script>
+<script type="application/json" id="spotI18n">{"a_alloc":"Where the money sits","a_cash":"Cash","a_curve":"Net P&L, daily marks","a_curve_none":"Your first daily mark lands after midnight UTC - the curve starts there.","a_curve_now":"net {v}","a_curve_over":"over {n} days","a_ends_in":"ends in {t}","a_in_money":"You are in a paid place - hold it to the end of the season.","a_other":"Other","a_pays":"Pays","a_rank":"Your rank","a_season":"The season","a_to_prize":"A paid place starts at <b>{v}</b> of season P&L - you are <b>{gap}</b> away.","a_unranked":"unranked","age_d":"{n}d","age_h":"{n}h","age_m":"{n}m","ago_h":"{n}h ago","ago_m":"{n}m ago","ago_s":"{n}s ago","b_full":"Full board","c_already":"Already claimed today - come back after midnight UTC.","c_best":"Best","c_btn":"Claim $100","c_claimed":"Claimed · next in {t}","c_claiming":"Claiming…","c_ok":"$100 added to your cash.","c_row":"Daily top-up · <b>$100</b> of demo cash, once per UTC day. Never counts as profit.","c_sum":"Bags","c_unreal":"Unrealized P&L","c_worst":"Worst","ch_fail":"Chart failed to load.","ch_loading":"Loading chart…","ch_none":"No chart data for this pair yet.","ch_stale":"Chart from {n} min ago - the live candle feed is busy, this is the last one it gave us.","e_cash":"Cash available","e_fee":"Fee","e_get":"You get","e_pnl":"P&L on this sale","e_price":"Price","e_recv":"You receive","e_sell":"Selling","err_net":"Network error - try again.","err_pack":"Translation pack failed to load.","f_big":"Biggest buys","f_bought":"bought","f_empty":"Quiet for now - the first buy on the floor shows up here.","f_h":"The floor","f_hot":"Hot today","f_live":"live","f_s":"who is buying what, live","f_s2":"last {n} moves","f_sold":"sold","f_text":"Demo cash only - prices are live from exchanges and on-chain pools, but nothing here is real money and the cash cannot be withdrawn. The season prize is real USDT paid to your MarginPad rewards balance. Pools under $1,000 of liquidity are refused because their price is not real. Not financial advice. · <a href=\"/paper-trade\">Futures paper trading</a> · <a href=\"/academy/\">Academy</a>","g_cta_signin":"Sign in to start","g_cta_start":"Start with $10,000","g_disc":"Free. Email sign-in, no password, no deposit. The demo cash is not withdrawable; the prize is.","g_f1":"Everyone starts level. Press Claim once a day for $100 more - it never counts as profit.","g_f2":"Trending on four chains, the top 250 majors, or any token by contract address.","g_f2_b":"150+ memes","g_f3":"Every 14-day season the top three season profits are paid $15 / $10 / $5.","g_h1":"<em>$10,000</em> to start. <em>$100</em> every day.<br>One board, $30 a season.","g_kick":"DEMO SPOT <i>·</i> BUY AND HOLD, NOTHING AT STAKE","g_start_fail":"Could not start the account - try again.","g_starting":"Starting…","g_sub":"Buy and hold <b>meme coins</b> on Solana, Base, Ethereum and BNB Chain and the <b>top 250 majors</b> at live prices. No fees, no leverage, no liquidations. Paste any contract address and it prices from its deepest pool. The three biggest season profits are paid <b>$15, $10 and $5</b> in real USDT.","h_avg":"avg","h_hold":"Your coins","h_none":"Nothing yet. Pick a coin below - your first buy puts you on the board.","h_sub":"{n} · {usd}","hs_buy":"BUY","hs_claim":"CLAIM","hs_claim_t":"Daily $100 claimed","hs_csv":"Export CSV","hs_fix":"CORRECTION","hs_fix_t":"Balance correction","hs_h":"History","hs_none":"Nothing yet.","hs_sell":"SELL","l_fdv":"FDV","l_liq":"liq","l_major":"major · exchange price","l_mcap":"mcap","m_all":"All time","m_all_s":"against {dep} put in · {n} claims","m_cash":"Cash","m_cash_s":"to buy with","m_rank_k":"Board","m_rank_pz":"${usd} if it holds","m_season":"Season P&L","m_today":"today","m_today_none":"the first daily mark lands after midnight UTC","m_worth":"Portfolio worth","n_all":"All chains","rug_badge":"RUGGED","s_amt":"Amount (USD)","s_bought":"Bought <b>{qty} {sym}</b> at {px} for {usd}.","s_buy":"Buy","s_buyS":"Buy {sym}","s_filling":"Filling…","s_how":"Sell how much?","s_max":"Max","s_pos":"You hold <b>{qty}</b> · avg {avg} · worth <b>{usd}</b> · {pnl}","s_retry":"Price feed busy - trying once more…","s_rug":"<b>This token was rugged.</b> The pool behind it is empty, so there is nothing left to sell into - this holding cannot be turned back into USDT at any price. Nothing was taken from you: what it showed was the pool's last quote, never money you had.","s_rug_go":"Cannot be sold - the pool is gone","s_sell":"Sell","s_sellS":"Sell {sym}","s_sold":"Sold at {px} for <b>{usd}</b> · P&L {pnl}","s_thin":"<b>Thin pool.</b> Only {usd} of liquidity sits behind this coin - a real fill would move it, and a rug takes it to zero.","sc_24h":"24h","sc_age":"Seen","sc_coin":"Coin","sc_fdv":"FDV","sc_liq":"Liquidity","sc_price":"Price","sc_vol":"Volume 24h","srch_busy":"The DEX search is rate-limiting us - try again in a few seconds.","srch_h":"Found across every DEX - not on our trending list","srch_none":"Nothing by that name on the chains we cover. If you have the contract address, paste it.","st_24h":"24h","st_age":"Listed","st_buyers":"Members bought today","st_fdv":"FDV","st_liq":"Liquidity","st_liqfdv":"Liq / FDV","st_mcap":"Market cap","st_vol":"Volume 24h","stale":"STALE","t_bought":"Bought {sym} for {usd}","t_dh":"{d}d {h}h","t_hm":"{h}h {m}m","t_m":"{m}m","t_majors":"Majors","t_memes":"Trending memes","t_screener":"Screener","t_sold":"Sold {sym} · {pnl}","t_started":"Your $10,000 is in. Pick a coin.","term_assets":"Assets","term_back":"Back","term_chat":"Chat","term_claim_now":"Claim $100 today","term_coins":"Coins","term_floor":"Floor","term_gainers":"Risers 24h","term_loading":"Opening the terminal","term_losers":"Fallers","term_market":"Market","term_new":"New","term_pick":"Pick a coin on the left and its chart opens here.","term_unwatched":"{sym} removed from your watchlist","term_watch":"Watch this coin","term_watched":"{sym} added to your watchlist","term_watching":"On your watchlist","term_watchlist":"Watching","th_empty":"No thesis yet - the first one lands here within a minute of being written.","th_h":"Theses","th_lead":"Say what you hold, why, and what would prove you wrong. A published thesis pays <b>20 XP</b> and <b>5 Ticks</b> and lands on <a href=\"/blog/theses/\">the blog</a>.","th_likes":"likes","th_more":"All theses","th_s":"why members hold what they hold","th_write":"Write a thesis","ths_body":"Thesis","ths_body_ph":"The setup, the reasoning, the level that would prove you wrong. At least 500 characters - real sentences, not padding.","ths_coins":"Coins (comma separated)","ths_e_body_short":"A thesis needs at least 500 characters of real text.","ths_e_body_words":"The thesis has to be readable text - real sentences, not padding.","ths_e_daily_cap":"Daily post limit reached.","ths_e_fail":"Could not publish ({e}) - try again.","ths_e_login_required":"Sign in to publish.","ths_e_need_username":"Pick a username first (account menu).","ths_e_short":"A thesis needs at least 500 characters ({n} so far) - the setup, the reasoning, the levels.","ths_e_slow_down":"Easy - wait two minutes between posts.","ths_e_title":"The title needs at least 15 characters - a real headline.","ths_e_title_short":"The title needs at least 15 characters.","ths_e_title_words":"The title has to be real words.","ths_go":"Publish","ths_h":"Write a thesis","ths_ok":"Published. <b>+{xp} XP</b> and <b>+{ticks} Ticks</b> - it is on the blog and in the Community.","ths_publishing":"Publishing…","ths_s":"it lands on the blog and in the Community · 20 XP + 5 Ticks","ths_title":"Title","ths_title_ph":"Why I hold PEPE into the listing","ths_toast":"Thesis published · +{xp} XP · +{ticks} Ticks","tm_e_bad_pool":"That pool prices a different token. Nothing was filled.","tm_e_bad_sym":"That symbol cannot be traded here.","tm_e_bad_token":"That token cannot be traded - check the contract address.","tm_e_dust":"That position is dust - sell 100% of it to clear it.","tm_e_fail":"Trade failed ({e}) - try again.","tm_e_insufficient":"Not enough cash.","tm_e_insufficient_v":"Not enough cash - you have {usd}.","tm_e_login_required":"Please sign in first.","tm_e_min_trade":"Minimum trade is $1.","tm_e_no_account":"Start your account first.","tm_e_no_position":"Nothing to sell.","tm_e_no_price":"No live price right now - try again in a moment.","tm_e_price_jump":"The price moved too far from the last mark to fill safely - try again in a minute.","tm_e_restricted":"Your account is restricted.","tm_e_thin_pool":"The pool behind this coin is gone, so there is nothing to sell into. The holding cannot be turned back into USDT - that is what a rug looks like from outside.","tm_e_thin_pool_v":"The pool behind this coin holds only {usd}, which cannot honestly fill this sale. The quoted value is the pool's number, not money you can take out.","tm_e_too_big":"Maximum per trade is $1,000,000.","tm_e_too_much":"That is more than you hold.","tm_e_transient":"Our store hiccuped - nothing was charged. Try again in a few seconds.","tok_e_bad_address":"That is not a Solana or EVM contract address.","tok_e_busy":"The price source is rate-limiting us right now - try again in a few seconds.","tok_e_fail":"Lookup failed - try again in a moment.","tok_e_major":"That is a major coin or a stablecoin - find it under Majors.","tok_e_major_v":"That is {sym} - find it under Majors.","tok_e_no_pool":"That token has no liquidity pool yet - nothing to buy it from.","tok_e_no_pool_yet":"That coin is still on its launch curve - no pool to price it against yet. It becomes tradeable once it graduates to a real pool.","tok_e_not_found":"No token with that address on Solana, BNB Chain, Base, Ethereum, Arbitrum, Polygon, Avalanche, HyperEVM or Abstract.","tok_e_thin_pool":"The deepest pool for that token holds under $1,000 - a price there is fiction. Not tradeable here.","tok_look":"Looking up that contract…","tok_thin":"THIN","tok_trade":"tap to trade","tok_unknown":"Not on our trending list - check it on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">the explorer</a> before you trust the name. Copies of famous tokens with the same ticker are the classic scam; the address is the identity, not the name.","y_h":"Buy a coin","y_loading":"Loading…","y_more":"Show {n} more · {left} left","y_nomatch":"Nothing matches.","y_ph":"Search a coin or paste a contract address","y_s":"live prices · no fees"}</script>
 <script>
 (function(){
   'use strict';
@@ -854,28 +913,30 @@
       if(stale){cn.hidden=false;cn.textContent=L('ch_stale',{n:Math.max(1,Math.round(stale/60))});}
     }).catch(function(){if(my===chartReq)cm.textContent=L('ch_fail');});}
   function precOf(bars){var c=+(bars[bars.length-1]||{}).close||1;if(c>=1000)return 2;if(c>=1)return 4;if(c>=0.01)return 6;if(c>=0.0001)return 8;return 10;}
-  window.__spot={state:function(){return {me:!!ME,port:PORT,board:BOARD,memes:MEMES.length,majors:MAJORS.length,tab:TAB};},open:openSheet,pick:pick};
+  // the terminal shell (injected after this script) builds its blocks from THESE - the lists, the feed and the picked coin are exposed read-only so nothing fetches a second copy (2026-10-26)
+  window.__spot={state:function(){return {me:!!ME,port:PORT,board:BOARD,memes:MEMES.length,majors:MAJORS.length,tab:TAB,memeList:MEMES,majorList:MAJORS,feed:FEED,coin:C,hist:HIST};},open:openSheet,pick:pick};
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=fc6705fe"></script>
-<script defer src="/assets/mp-nav.js?v=d49899c9"></script>
+<script defer src="/assets/mp-auth.js?v=792fbcdc"></script>
+<script defer src="/assets/mp-nav.js?v=cae4c445"></script>
 <script>
-/* ─── THE TERMINAL SHELL (2026-10-24) ─────────────────────────────────────────────────────────────────────────
-   This runs AFTER the page's own script and does not touch one line of it. That is the whole safety argument:
-   every control here is bound by id, so the terminal is built by MOVING those nodes into a three-column stage
-   rather than by rewriting the logic that drives them - the same rule the /trading-api/ key manager is under
-   ("lift it, do not retype it"). appendChild MOVES a node, so its id, its listeners and the script's own
-   references survive; the masthead is moved WHOLE because five of its elements (mToday, mRank, mAll, mAllS,
-   mRankS) are written on every repaint and deleting any of them would throw on the next poll.
-   It builds only once the page has shown #app - a signed-out reader meets the gate, which is an ordinary page
-   and must stay one. Nothing here decides anything about money: it arranges what exists and keeps a chart on
-   the screen. */
+/* ─── THE TERMINAL SHELL (2026-10-24; v2 2026-10-26) ─────────────────────────────────────────────────────────
+   This runs AFTER the page's own script and does not touch one line of it. Every control is bound by id, so the
+   terminal is built by MOVING those nodes into a stage (appendChild moves a node: id, listeners and the script's
+   own references survive) - the /trading-api/ key manager rule, "lift it, do not retype it". The masthead is
+   moved WHOLE because five of its elements are written on every repaint.
+   v2 (owner: "dizajnerski uzdigni dosta ... bas cool mesto za demo spot, sa dosta features") adds blocks the
+   shell BUILDS FROM DATA THE PAGE ALREADY HOLDS - window.__spot.state() exposes the lists, the portfolio, the
+   board, the feed and the picked coin - so nothing here fetches a second copy of anything. The dock is five
+   cells - Market, Coins, Floor, Assets, Chat (owner) - and the chart opens when a coin is tapped.
+   Nothing here decides anything about money: it arranges what exists and reads it back. */
 (function () {
   var app = document.getElementById('app'), sheet = document.getElementById('sheet');
   if (!app || !sheet || document.getElementById('spotTerm')) return;
   var $ = function (id) { return document.getElementById(id); };
   var mk = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   var phone = function () { return !(window.matchMedia && matchMedia('(min-width:1000px)').matches); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
 
   // the gate is a page, the account is a terminal - wait for the page to decide which this reader gets
   if (app.hidden) {
@@ -889,15 +950,33 @@
 
   function build() {
     if (document.getElementById('spotTerm')) return;
-    // English comes from the page's own pack, so there is ONE source for it; a reader on another language is
-    // served by applyStatic(), which re-runs over [data-t] when the pack lands and finds these nodes too.
     var EN = {}; try { EN = JSON.parse(document.getElementById('spotI18n').textContent) || {}; } catch (e) {}
-    var T = function (k, d) { return EN[k] != null ? EN[k] : d; };
+    var T = function (k, d, m) { var s = EN[k] != null ? EN[k] : d; if (m) s = s.replace(/\{(\w+)\}/g, function (x, n) { return m[n] != null ? m[n] : x; }); return s; };
+    var ST = function () { try { return (window.__spot && window.__spot.state && window.__spot.state()) || {}; } catch (e) { return {}; } };
 
-    /* 1. THE STAGE */
+    // ---- formatting (the page's own rules, kept identical so a figure never reads two ways on one screen)
+    function fmtUsd(v, dec) { v = +v || 0; return '$' + v.toLocaleString('en-US', { minimumFractionDigits: dec == null ? 2 : dec, maximumFractionDigits: dec == null ? 2 : dec }); }
+    function fmtK(v) { v = +v || 0; if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B'; if (v >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M'; if (v >= 1e3) return '$' + (v / 1e3).toFixed(1) + 'k'; return '$' + v.toFixed(0); }
+    function sgn(v, dec) { v = +v || 0; return (v >= 0 ? '+' : '-') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: dec == null ? 2 : dec, maximumFractionDigits: dec == null ? 2 : dec }); }
+    function pct(p) { if (p == null || !isFinite(+p)) return '-'; return (+p >= 0 ? '+' : '') + (+p).toFixed(1) + '%'; }
+    function cls(v) { return (+v || 0) >= 0 ? 'up' : 'dn'; }
+    function ageTxt(ts) { var m = Math.round((Date.now() - ts) / 60000); if (m < 60) return T('age_m', '{n}m', { n: m }); var h = Math.floor(m / 60); if (h < 48) return T('age_h', '{n}h', { n: h }); return T('age_d', '{n}d', { n: Math.floor(h / 24) }); }
+    // named fmtLeft, not left: `left` is the market COLUMN below, and a hoisted function of the same name was silently
+    // replaced by that element - the season block threw "left is not a function" inside the tick's try/catch and stayed empty
+    function fmtLeft(ms) { var s = Math.max(0, Math.round(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? T('t_dh', '{d}d {h}h', { d: d, h: h }) : h ? T('t_hm', '{h}h {m}m', { h: h, m: m }) : T('t_m', '{m}m', { m: m }); }
+    function logo(src, sym) { if (src) return '<img class="logo" loading="lazy" src="' + esc(src) + '" alt="" onerror="this.outerHTML=\'<span class=&quot;logo txt&quot;>' + esc(String(sym || '?').slice(0, 3)) + '</span>\'">'; return '<span class="logo txt">' + esc(String(sym || '?').slice(0, 3)) + '</span>'; }
+    function coinOfMeme(m) { return { kind: 'meme', mint: m.mint, pool: m.pool, net: m.net, sym: m.sym, name: m.name, logo: m.logo, price: +m.price || 0, chg24: m.chg24, liqUsd: m.liqUsd, vol24: m.vol24, fdv: m.fdv, key: m.net + ':' + m.mint }; }
+    function coinOfMajor(m) { return { kind: 'cex', sym: m.sym, name: m.name, logo: m.logo, price: m.price, chg24: m.chg24, key: 'cex:' + m.sym }; }
+    function coinOfRow(r) { return r.k === 'meme' ? { kind: 'meme', mint: r.mint, pool: r.pool, net: r.net, sym: r.sym, name: r.name || '', logo: r.logo || '', price: +r.price || 0, key: r.net + ':' + r.mint } : { kind: 'cex', sym: r.sym, name: r.name || '', logo: r.logo || '', price: +r.price || 0, key: 'cex:' + r.sym }; }
+    function openCoin(c) { if (!c || !window.__spot || !window.__spot.open) return; window.__spot.open(c, 'buy'); if (phone()) show('chart'); }
+
+    /* 1. THE STAGE: five columns. On a desktop the right three fold into one scrolling column (tcol-right); on a
+          phone each is a view of its own. placeAll() moves the blocks between those homes on resize - one node,
+          two homes, never a second copy of a figure. */
     var term = mk('div', 'term'); term.id = 'spotTerm';
     var left = mk('div', 'tcol tcol-left'), mid = mk('div', 'tcol tcol-mid tshow'), right = mk('div', 'tcol tcol-right');
-    term.appendChild(left); term.appendChild(mid); term.appendChild(right);
+    var cCoins = mk('div', 'tcol tcol-coins'), cFloor = mk('div', 'tcol tcol-floor'), cAcct = mk('div', 'tcol tcol-acct');
+    [left, mid, right, cCoins, cFloor, cAcct].forEach(function (c) { term.appendChild(c); });
 
     var buyCard = $('buyCard');
     var mast = app.querySelector('.mast'), grid2 = app.querySelector('.grid2');
@@ -907,52 +986,72 @@
     var histCard = $('hist') ? $('hist').closest('.card') : null;
     var foot = app.querySelector('.foot');
 
-    /* 2. THE LIVE HEAD - what you are looking at, what it costs, that it is alive. It MIRRORS the sheet's own
-          nodes rather than fetching anything: one price on the page, never two that can disagree. And it
-          REPLACES the sheet's header, which said the same four things 63px lower down - on a 900px desktop
-          that header alone was a quarter of what the chart had left. The logo moves up into it. */
-    var head = mk('div', 'thead', '<span class="tlive"></span><span class="tsym" id="tSym">&mdash;</span>'
-      + '<span class="tsub" id="tSub"></span><span class="tpx" id="tPx"></span><span class="tchg" id="tChg"></span>');
+    // the three blocks the right side is made of (desktop: stacked; phone: one view each)
+    var bAcct = mk('div', 'tblk tblk-acct'), bCoins = mk('div', 'tblk tblk-coins'), bFloor = mk('div', 'tblk tblk-floor');
+    // ASSETS: masthead, then the curve, the allocation, the season race, then history + the foot
+    var acctX = mk('div', 'tblk-x');
+    acctX.innerHTML = '<h2><span data-t="a_curve">' + esc(T('a_curve', 'Net P&L, daily marks')) + '</span><span class="r" id="tCurveR"></span></h2><div class="tb" id="tCurve"></div>'
+      + '<h2><span data-t="a_alloc">' + esc(T('a_alloc', 'Where the money sits')) + '</span></h2><div class="tb" id="tAlloc"></div>'
+      + '<h2><span data-t="a_season">' + esc(T('a_season', 'The season')) + '</span><span class="r" id="tSeasonR"></span></h2><div class="tb" id="tSeason"></div>';
+    if (mast) bAcct.appendChild(mast);
+    bAcct.appendChild(acctX);
+    if (histCard) bAcct.appendChild(histCard);
+    if (foot) bAcct.appendChild(foot);
+    // COINS: the summary line, then the page's own rows
+    var sum = mk('div', 'tsum'); sum.id = 'tCoinsSum';
+    bCoins.appendChild(sum);
+    if (holdCard) bCoins.appendChild(holdCard);
+    // FLOOR: the biggest buys, the feed, the theses
+    var fstrip = mk('div', 'tstrip'); fstrip.id = 'tFloorTop';
+    bFloor.appendChild(fstrip);
+    if (floorCard) bFloor.appendChild(floorCard);
+    if (thesisCard) bFloor.appendChild(thesisCard);
+
+    /* 2. THE LIVE HEAD mirrors the sheet's own nodes (one price on the page, never two that can disagree) and
+          REPLACES the sheet's header. Back (phone) returns to the view the coin was tapped from; Watch stars it. */
+    var head = mk('div', 'thead', '<button type="button" class="tback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'
+      + '<span class="tlive"></span><span class="tsym" id="tSym">&mdash;</span>'
+      + '<span class="tsub" id="tSub"></span><span class="tpx" id="tPx"></span><span class="tchg" id="tChg"></span>'
+      + '<button type="button" class="twatch" id="tWatch" aria-label="Watch"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></button>');
     var lg = $('shLogo'), lgt = $('shLogoT');
-    if (lg) head.insertBefore(lg, head.firstChild);
-    if (lgt) head.insertBefore(lgt, head.firstChild);
+    var tsym = head.querySelector('.tsym');
+    if (lg) head.insertBefore(lg, tsym);
+    if (lgt) head.insertBefore(lgt, tsym);
+
+    // the market strip (movers + watchlist + the claim) sits above the market card
+    var mstrip = mk('div', 'tstrip'); mstrip.id = 'tMovers';
+    // the stats strip under the timeframes
+    var stats = mk('div', 'tstats'); stats.id = 'tStats';
 
     mid.appendChild(head);
     mid.appendChild(sheet);
+    if ($('tfs') && $('tfs').parentNode === sheet) sheet.insertBefore(stats, $('tfs').nextSibling); else sheet.appendChild(stats);
+    left.appendChild(mstrip);
     if (buyCard) left.appendChild(buyCard);
-    if (holdCard) right.appendChild(holdCard);
-    if (floorCard) right.appendChild(floorCard);
-    if (thesisCard) right.appendChild(thesisCard);
-    if (histCard) right.appendChild(histCard);
-    if (foot) right.appendChild(foot);
     if (grid2 && grid2.parentNode && !grid2.children.length) grid2.parentNode.removeChild(grid2);
     app.insertBefore(term, app.firstChild);
     document.body.classList.add('spot-term');
 
-    /* THE DAILY CLAIM IS THE LOOP, SO IT MUST BE ON THE VIEW A PHONE OPENS ON. There is one masthead and it
-       cannot be in two columns, so its COLUMN depends on the viewport: beside the market on a phone (the
-       default view - worth, cash and Claim are the first thing a reader meets), at the top of the account
-       column on a desktop, where everything stands at once anyway. Copying the numbers into a second strip
-       was the other option and is forbidden - two copies of one figure can disagree. */
-    function placeMast() {
-      if (!mast) return;
-      var host = phone() ? left : right;
-      if (mast.parentNode !== host) host.insertBefore(mast, host.firstChild);
+    function placeAll() {
+      if (phone()) {
+        if (bAcct.parentNode !== cAcct) cAcct.appendChild(bAcct);
+        if (bCoins.parentNode !== cCoins) cCoins.appendChild(bCoins);
+        if (bFloor.parentNode !== cFloor) cFloor.appendChild(bFloor);
+      } else {
+        [bAcct, bCoins, bFloor].forEach(function (b) { if (b.parentNode !== right) right.appendChild(b); });
+      }
     }
-    placeMast();
+    placeAll();
 
-    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (2026-10-24, owner: "kad otvorim chart ne ide bas da bude
-       prazno - nek bude tu gore chart a onda nize dole da krenu memes"). On a phone the market list MOVES under
-       the stage while the Chart view is up and goes back to the Market view when that one is asked for: one
-       node with two homes, exactly as the masthead already works. A second copy of the list is not an option -
-       it would be a second place for a price to be wrong. */
+    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (owner 10-24): on a phone the market list MOVES under the stage
+       while the Chart view is up - one node with two homes, exactly as the blocks above. */
     function placeList(view) {
       if (!buyCard || !phone()) { if (buyCard && buyCard.parentNode !== left) left.appendChild(buyCard); return; }
       var host = view === 'chart' ? mid : left;
       if (buyCard.parentNode !== host) host.appendChild(buyCard);
     }
 
-    /* 3. THE EMPTY STAGE. Until a coin is picked it says what to do, in the place the chart will appear. */
+    /* 3. THE EMPTY STAGE */
     var ph = mk('div', 'tstage-empty',
       '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3.5-4.5L14 13l4-6"/></svg><span data-t="term_pick"></span>');
     ph.querySelector('span').textContent = T('term_pick', 'Pick a coin and its chart opens here.');
@@ -967,14 +1066,14 @@
       $('tPx').textContent = on ? (($('shPx') || {}).textContent || '').trim() : '';
       $('tChg').innerHTML = on ? (($('shChg') || {}).innerHTML || '') : '';
       head.classList.toggle('empty', !on);
+      paintWatchBtn();
     }
-    // the page script repaints those nodes; watch them rather than hooking its functions
-    try { new MutationObserver(syncHead).observe(sheet, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+    // the page script repaints those nodes; watch them rather than hooking its functions (writes go to OTHER nodes)
+    try { new MutationObserver(syncHead).observe(sheet.querySelector('.sh-h') || sheet, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'hidden'] }); } catch (e) {}
+    try { new MutationObserver(syncHead).observe(sheet, { attributes: true, attributeFilter: ['class'] }); } catch (e) {}
     syncHead();
 
-    /* 4. THE STAGE IS PERMANENT, SO THE THREE WAYS TO CLOSE IT ARE ANSWERED HERE. closeSheet() destroys the
-          chart and only a fresh pick rebuilds it, so Escape and the overlay must not reach it; the sheet's
-          own X is hidden in CSS. The thesis modal shares that overlay and keeps both of them. */
+    /* 4. THE STAGE IS PERMANENT: Escape and the overlay must not reach closeSheet(); the thesis modal keeps both. */
     function thesisOpen() { var t = $('thSheet'); return !!(t && t.classList.contains('on')); }
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
@@ -991,48 +1090,41 @@
         .observe($('thSheet'), { attributes: true, attributeFilter: ['class'] });
     } catch (e) {}
 
-    /* 5. THE DOCK (phone): one view at a time, 54px cells, icon over a short word - the vocabulary the /charts
-          phone terminal already uses, so a reader who knows one knows this one. */
+    /* 5. THE DOCK: Market, Coins, Floor, Assets, Chat. No chart cell - a coin tap opens the stage and the head
+          carries the way back. Chat is an ACTION answered by mp-nav's own [data-mpbn] listener. */
     var IC = {
-      market: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
-      chart: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 14l3-3 2.5 2.5L17 8"/>',
-      coins: '<circle cx="9" cy="9" r="5.2"/><path d="M12.4 17.4A5.2 5.2 0 1017.4 12"/>',
-      floor: '<path d="M4 7h16M4 12h10M4 17h13"/>',
-      browse: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.9-3.9"/>',
+      market: '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+      coins: '<ellipse cx="12" cy="6.5" rx="7" ry="2.8"/><path d="M5 6.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/><path d="M5 11.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/>',
+      floor: '<path d="M2 12h3l2.5-6 4 12 3-8 2 4h5.5"/>',
+      assets: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/>',
       chat: '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>'
     };
-    var VIEWS = [['market', 'Market', left], ['chart', 'Chart', mid], ['coins', 'Coins', right], ['floor', 'Floor', right]];
+    var VIEWS = [['market', 'Market', left], ['coins', 'Coins', cCoins], ['floor', 'Floor', cFloor], ['assets', 'Assets', cAcct], ['chart', 'Chart', mid]];
     var dock = mk('div', 'tdock'); dock.id = 'spotDock';
-    VIEWS.forEach(function (v) {
+    VIEWS.slice(0, 4).forEach(function (v) {
       var b = mk('button', '', '<svg viewBox="0 0 24 24">' + IC[v[0]] + '</svg><span data-t="term_' + v[0] + '"></span><i></i>');
       b.querySelector('span').textContent = T('term_' + v[0], v[1]);
       b.type = 'button'; b.setAttribute('data-tv', v[0]); dock.appendChild(b);
     });
-    /* THE SITE'S OWN PHONE BAR IS ABSORBED, NOT COVERED. mp-nav puts a fixed four-cell nav at the bottom of
-       every page and my dock landed exactly on top of it at a higher z-index - two bars in one place, the
-       lower one unreachable. Browse and Chat are the two that matter here and BOTH ARE ACTIONS, answered by
-       mp-nav's own document-delegated [data-mpbn] listener, so carrying the attribute is all it takes: one
-       bar, nothing lost, and no second copy of either handler. */
-    [['browse', 'Browse'], ['chat', 'Chat']].forEach(function (x) {
+    (function () {
       var a = document.createElement('a');
-      a.href = '#'; a.setAttribute('role', 'button'); a.setAttribute('data-mpbn', x[0]);
-      a.innerHTML = '<svg viewBox="0 0 24 24">' + IC[x[0]] + '</svg><span data-t="term_' + x[0] + '"></span>';
-      a.querySelector('span').textContent = T('term_' + x[0], x[1]);
+      a.href = '#'; a.setAttribute('role', 'button'); a.setAttribute('data-mpbn', 'chat');
+      a.innerHTML = '<svg viewBox="0 0 24 24">' + IC.chat + '</svg><span data-t="term_chat"></span>';
+      a.querySelector('span').textContent = T('term_chat', 'Chat');
       dock.appendChild(a);
-    });
+    })();
     document.body.appendChild(dock);
 
-    var VIEW = '';
+    var VIEW = '', PREV = 'market';
     function show(name) {
       var v = null, i; for (i = 0; i < VIEWS.length; i++) if (VIEWS[i][0] === name) v = VIEWS[i];
       if (!v) { v = VIEWS[0]; name = v[0]; }
+      if (VIEW && VIEW !== 'chart' && name === 'chart') PREV = VIEW;
       VIEW = name;
-      [left, mid, right].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      [left, mid, cCoins, cFloor, cAcct].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
       placeList(name);
-      // Coins and Floor are two places in one column - go to the one that was asked for
-      if (v[2] === right) { var t = name === 'floor' ? floorCard : holdCard; if (t) try { right.scrollTop = Math.max(0, t.offsetTop - right.offsetTop); } catch (e) {} }
       if (name === 'chart') { try { mid.scrollTop = 0; } catch (e) {} }   // the chart, not where the list was left
-      Array.prototype.forEach.call(dock.children, function (b) { b.classList.toggle('on', b.getAttribute('data-tv') === name); });
+      Array.prototype.forEach.call(dock.children, function (b) { var on = b.getAttribute('data-tv') === name; b.classList.toggle('on', on); if (on) b.classList.remove('dot'); });
       try { localStorage.setItem('mp_spot_view', name); } catch (e) {}
     }
     dock.addEventListener('click', function (e) {
@@ -1040,29 +1132,45 @@
       b.classList.remove('dot');
       show(b.getAttribute('data-tv'));
     });
+    head.querySelector('.tback').addEventListener('click', function () { show(PREV || 'market'); });
     function layout() {
       if (phone()) {
-        if (!VIEW) { var s = 'market'; try { s = localStorage.getItem('mp_spot_view') || 'market'; } catch (e) {} show(picked() ? s : 'market'); }
-      } else { VIEW = ''; left.classList.add('tshow'); mid.classList.add('tshow'); right.classList.add('tshow'); }
+        if (!VIEW) { var s = 'market'; try { s = localStorage.getItem('mp_spot_view') || 'market'; } catch (e) {} if (s === 'chart' && !picked()) s = 'market'; show(s); }
+      } else { VIEW = ''; [left, mid, right].forEach(function (c) { c.classList.add('tshow'); }); }
     }
     layout();
-    window.addEventListener('resize', function () { placeMast(); layout(); });
+    window.addEventListener('resize', function () { placeAll(); layout(); });
 
-    /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. The page's
-          own handler still does all the work; this only follows it onto the stage. */
+    /* A SCREEN-SIZED BODY MUST NEVER BE SCROLLED (2026-10-26). iOS scrolls the layout viewport to bring a focused
+       input above the keyboard and sometimes leaves that scroll behind when the keyboard goes - every fixed element,
+       the dock included, then sits that many pixels above the edge with the page's background showing under it.
+       The body here is exactly the viewport, so any window scroll is that artefact: put it back once no field has
+       the focus. Never while typing (the scroll is what shows the field). */
+    function unscroll() {
+      var a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+      if (window.scrollY || window.pageYOffset) { try { window.scrollTo(0, 0); } catch (e) {} }
+    }
+    window.addEventListener('scroll', function () { setTimeout(unscroll, 60); }, { passive: true });
+    document.addEventListener('focusout', function () { setTimeout(unscroll, 250); setTimeout(unscroll, 700); });
+    if (window.visualViewport) try { window.visualViewport.addEventListener('resize', function () { setTimeout(unscroll, 120); }); } catch (e) {}
+
+    /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. */
     var autoPick = false;
     document.addEventListener('click', function (e) {
       if (!phone() || !e.target.closest) return;
-      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody')) return;
+      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody,#tokRes,#hotRow')) return;
+      if (e.target.closest('[data-lbu],[data-sell]')) return;   // a name opens the card, Sell opens the sell side - both already move the stage themselves when they mean to
       if (autoPick) { autoPick = false; return; }   // the default major is not a tap - it must not move the view
       setTimeout(function () { if (picked()) show('chart'); }, 90);
     }, true);
+    // Sell on a bag opens the sheet on the sell side - follow it onto the stage too
+    document.addEventListener('click', function (e) {
+      if (!phone() || !e.target.closest || !e.target.closest('#holdRows [data-sell]')) return;
+      setTimeout(function () { if (picked()) show('chart'); }, 90);
+    }, true);
 
-    /* 6b. AN EMPTY STAGE IS STILL AN EMPTY STAGE, SO IT OPENS ON A MAJOR (2026-10-24, owner: "kad otvorim chart
-          ne ide bas da bude prazno ... po default-u top 5 majors"). The page's own Majors tab holds the top
-          coins by market cap, so the default is its FIRST row - clicked through the page's own handler, which is
-          the only thing that knows how to price and chart a coin. The tab is put back to whatever the reader had
-          (memes), so the market list below reads as he asked. It runs once, and never over a reader's own pick. */
+    /* 6b. AN EMPTY STAGE OPENS ON A MAJOR (owner 10-24): the first row of the page's own Majors tab, clicked through
+          the page's own handler, the tab put back afterwards. Once, never over a reader's own pick. */
     var dflt = false;
     function defaultCoin() {
       if (dflt || picked() || !buyCard) return;
@@ -1080,22 +1188,20 @@
         var row = buyCard.querySelector('#list > *[data-i], #list .tok, #list > div:not(.empty)');
         if (row && row.click) {
           row.click();
-          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);   // the reader's own tab back
+          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);
           return;
         }
         if (++tries < 40) setTimeout(wait, 250);
         else if (was && was !== majors) was.click();
       })();
     }
-    // only once the page has its lists - the first paint of #list is the signal
     try {
       var lw = new MutationObserver(function () { if (buyCard && buyCard.querySelector('#list > *:not(.empty)')) { lw.disconnect(); defaultCoin(); } });
       lw.observe(buyCard || term, { childList: true, subtree: true });
     } catch (e) {}
-    setTimeout(defaultCoin, 6000);   // a list that never arrives must not leave the stage empty for ever
+    setTimeout(defaultCoin, 6000);
 
-    /* 7. A new row on the floor marks the dock while the reader is elsewhere - the FOMO half of this, and a
-          mark rather than a toast, so it never covers the thing they are looking at. */
+    /* 7. A new row on the floor marks the dock while the reader is elsewhere - a mark, never a toast. */
     var fr = $('floorRows'), seen = fr ? fr.children.length : 0;
     if (fr) try {
       new MutationObserver(function () {
@@ -1105,7 +1211,185 @@
       }).observe(fr, { childList: true });
     } catch (e) {}
 
-    window.__mpSpotTerm = { show: show, view: function () { return VIEW; }, picked: picked };
+    /* 8. THE WATCHLIST - the reader's own shortlist, on this device (localStorage), opened from the Market strip and
+          toggled from the head. A coin is stored whole so it can be opened without the trending list carrying it. */
+    var WKEY = 'mp_spot_watch';
+    function watchGet() { try { var a = JSON.parse(localStorage.getItem(WKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+    function watchSet(a) { try { localStorage.setItem(WKEY, JSON.stringify(a.slice(0, 30))); } catch (e) {} }
+    function curCoin() { var s = ST(); return s.coin || null; }
+    function watched(key) { return watchGet().some(function (w) { return w.key === key; }); }
+    function paintWatchBtn() { var c = curCoin(), b = $('tWatch'); if (!b) return; var on = !!(c && picked() && watched(c.key)); b.classList.toggle('on', on); b.title = on ? T('term_watching', 'On your watchlist') : T('term_watch', 'Watch this coin'); }
+    head.querySelector('#tWatch').addEventListener('click', function () {
+      var c = curCoin(); if (!c || !picked()) return;
+      var a = watchGet(), i = -1; a.forEach(function (w, j) { if (w.key === c.key) i = j; });
+      if (i >= 0) a.splice(i, 1); else a.unshift({ key: c.key, kind: c.kind, mint: c.mint, pool: c.pool, net: c.net, sym: c.sym, name: c.name || '', logo: c.logo || '', price: c.price });
+      watchSet(a); paintWatchBtn(); paintMovers(true);
+      try { if (window.__mpTrack) window.__mpTrack('spot', (i >= 0 ? 'unwatch:' : 'watch:') + c.sym); } catch (e) {}
+      try { if (window.mpToast) window.mpToast({ msg: (i >= 0 ? T('term_unwatched', '{sym} removed from your watchlist', { sym: c.sym }) : T('term_watched', '{sym} added to your watchlist', { sym: c.sym })), ms: 2200, key: 'spotwatch' }); } catch (e) {}
+    });
+
+    /* 9. THE BLOCKS. One painter each, driven by a 4 s read of window.__spot.state() and repainted only when the
+          thing it reads changed - the page already polls the portfolio every 30 s, the feed every 30 s and the memes
+          every 2 min; this adds no request. */
+    var sig = {};
+    function changed(k, v) { var s = JSON.stringify(v); if (sig[k] === s) return false; sig[k] = s; return true; }
+
+    // MOVERS + WATCHLIST + CLAIM on the market view
+    function chipMeme(m, tag, tagCls) { return '<button type="button" class="tchip" data-mv="m:' + esc(m.mint) + '">' + logo(m.logo, m.sym) + esc(m.sym) + (tag ? ' <small class="' + tagCls + '">' + tag + '</small>' : '') + '</button>'; }
+    function paintMovers(force) {
+      var s = ST(), memes = s.memeList || [], port = s.port;
+      var w = watchGet();
+      var claim = !!(port && port.claimedToday === false);
+      var key = { n: memes.length, u: memes.length ? (memes[0].ts || 0) + ':' + memes[memes.length - 1].ts : 0, w: w.map(function (x) { return x.key; }), c: claim, h: ((s.feed && s.feed.hot) || []).slice(0, 4).map(function (x) { return x.key + x.buyers; }) };
+      if (!force && !changed('movers', key)) return;
+      /* a riser is a coin with a market behind it: liquidity, volume, and a move a chart can show - a brand-new pool
+         printing +199,821% on its first hour is a launch curve, not a move, and the cap keeps it off the strip */
+      var live = memes.filter(function (m) { return +m.liqUsd >= 20000 && +m.vol24 >= 20000 && isFinite(+m.chg24) && +m.price > 0 && +m.chg24 <= 1000 && +m.chg24 >= -99; });
+      var up = live.filter(function (m) { return +m.chg24 > 0; }).sort(function (a, b) { return (+b.chg24) - (+a.chg24); }).slice(0, 4);
+      var dn = live.filter(function (m) { return +m.chg24 < 0; }).sort(function (a, b) { return (+a.chg24) - (+b.chg24); }).slice(0, 3);
+      // HOT = what members are buying today (the feed's own count), the FOMO half of a meme terminal
+      var hot = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.buyers >= 2; }).slice(0, 4);
+      var h = '';
+      if (claim || up.length) {
+        h += '<div class="trow">' + (claim ? '<button type="button" class="tchip tclaim" data-claim="1"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>' + esc(T('term_claim_now', 'Claim $100 today')) + '</button>' : '')
+          + (up.length ? '<span class="tk">' + esc(T('term_gainers', 'Risers 24h')) + '</span>' + up.map(function (m) { return chipMeme(m, pct(m.chg24), 'up'); }).join('') : '') + '</div>';
+      }
+      if (dn.length || hot.length) {
+        h += '<div class="trow">' + (hot.length ? '<span class="tk">' + esc(T('f_hot', 'Hot today')) + '</span>' + hot.map(function (x, i) { return '<button type="button" class="tchip" data-hot="' + i + '">' + logo(x.logo, x.sym) + esc(x.sym) + ' <small class="nw">' + x.buyers + '</small></button>'; }).join('') : '')
+          + (dn.length ? '<span class="tk">' + esc(T('term_losers', 'Fallers')) + '</span>' + dn.map(function (m) { return chipMeme(m, pct(m.chg24), 'dn'); }).join('') : '') + '</div>';
+      }
+      mstrip._hot = hot;
+      if (w.length) {
+        h += '<div class="trow"><span class="tk">' + esc(T('term_watchlist', 'Watching')) + '</span>' + w.map(function (x, i) { return '<button type="button" class="tchip x" data-wi="' + i + '">' + logo(x.logo, x.sym) + esc(x.sym) + '<span class="rm" data-wrm="' + i + '" aria-label="Remove">&times;</span></button>'; }).join('') + '</div>';
+      }
+      mstrip.innerHTML = h;
+    }
+    mstrip.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t.closest('[data-claim]')) { var cb = $('claimBtn'); if (cb && !cb.disabled) cb.click(); return; }
+      var rm = t.closest('[data-wrm]'); if (rm) { e.stopPropagation(); var a = watchGet(); a.splice(+rm.getAttribute('data-wrm'), 1); watchSet(a); paintMovers(true); paintWatchBtn(); return; }
+      var wi = t.closest('[data-wi]'); if (wi) { var c = watchGet()[+wi.getAttribute('data-wi')]; if (c) openCoin(c); return; }
+      var ht = t.closest('[data-hot]'); if (ht && mstrip._hot) { var hx = mstrip._hot[+ht.getAttribute('data-hot')]; if (hx) { openCoin(coinOfRow(hx)); try { if (window.__mpTrack) window.__mpTrack('spot', 'hot:' + hx.sym); } catch (x) {} } return; }
+      var mv = t.closest('[data-mv]'); if (mv) { var k = mv.getAttribute('data-mv'), memes = ST().memeList || [], m = memes.filter(function (x) { return 'm:' + x.mint === k; })[0]; if (m) { openCoin(coinOfMeme(m)); try { if (window.__mpTrack) window.__mpTrack('spot', 'mover:' + m.sym); } catch (x) {} } }
+    });
+
+    // STATS under the chart for the picked coin
+    function paintStats() {
+      var s = ST(), c = s.coin; var on = picked();
+      var key = c ? c.key + ':' + on : '';
+      // the majors list lands AFTER the default coin is picked, so its length is part of the signature or a major's mcap/volume never appears
+      if (!changed('stats', key + ':' + ((s.memeList || []).length) + ':' + ((s.majorList || []).length) + ':' + ((s.feed && s.feed.ts) || 0))) return;
+      if (!c || !on) { stats.innerHTML = ''; return; }
+      // the strip belongs right under the timeframes - measured once at the end of the sheet after a build, so it is placed by its anchor, not by order of insertion
+      var tfs = $('tfs'); if (tfs && tfs.parentNode === sheet && stats.previousElementSibling !== tfs) tfs.insertAdjacentElement('afterend', stats);
+      var it = [];
+      function cell(k, v, c2) { it.push('<span>' + esc(k) + '<b' + (c2 ? ' class="' + c2 + '"' : '') + '>' + v + '</b></span>'); }
+      if (c.kind === 'meme') {
+        var m = (s.memeList || []).filter(function (x) { return x.mint === c.mint; })[0] || c;
+        if (m.liqUsd != null) cell(T('st_liq', 'Liquidity'), fmtK(m.liqUsd));
+        if (m.fdv != null) cell(T('st_fdv', 'FDV'), fmtK(m.fdv));
+        if (m.vol24 != null) cell(T('st_vol', 'Volume 24h'), fmtK(m.vol24));
+        if (m.chg24 != null && isFinite(+m.chg24)) cell(T('st_24h', '24h'), pct(m.chg24), cls(m.chg24));
+        var hot = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.key === c.key; })[0];
+        if (hot && hot.buyers) cell(T('st_buyers', 'Members bought today'), String(hot.buyers));
+        if (m.liqUsd != null && m.fdv) { var lf = m.liqUsd / m.fdv * 100; cell(T('st_liqfdv', 'Liq / FDV'), lf.toFixed(lf < 1 ? 2 : 1) + '%'); }
+      } else {
+        var mj = (s.majorList || []).filter(function (x) { return x.sym === c.sym; })[0];
+        if (mj && mj.mcap) cell(T('st_mcap', 'Market cap'), fmtK(mj.mcap));
+        if (mj && mj.vol24) cell(T('st_vol', 'Volume 24h'), fmtK(mj.vol24));
+        if (c.chg24 != null && isFinite(+c.chg24)) cell(T('st_24h', '24h'), pct(c.chg24), cls(c.chg24));
+        var hot2 = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.key === c.key; })[0];
+        if (hot2 && hot2.buyers) cell(T('st_buyers', 'Members bought today'), String(hot2.buyers));
+      }
+      stats.innerHTML = it.join('');
+    }
+
+    // COINS summary
+    function paintCoins() {
+      var p = ST().port; var hs = (p && p.holds) || [];
+      var key = hs.map(function (h) { return h.key + ':' + h.valueUsd + ':' + h.pnlUsd; });
+      if (!changed('coins', key)) return;
+      if (!hs.length) { sum.innerHTML = ''; return; }
+      var val = 0, pn = 0, cost = 0, best = null, worst = null;
+      hs.forEach(function (h) { val += +h.valueUsd || 0; pn += +h.pnlUsd || 0; cost += +h.costUsd || 0; if (h.pnlPct != null) { if (!best || h.pnlPct > best.pnlPct) best = h; if (!worst || h.pnlPct < worst.pnlPct) worst = h; } });
+      var sy = function (h) { return (h.meta && h.meta.sym) || String(h.key).replace(/^cex:/, ''); };
+      sum.innerHTML = '<div><div class="k">' + esc(T('c_sum', 'Bags')) + '</div><div class="v">' + fmtUsd(val) + ' <small>' + hs.length + '</small></div></div>'
+        + '<div><div class="k">' + esc(T('c_unreal', 'Unrealized P&L')) + '</div><div class="v ' + cls(pn) + '">' + sgn(pn) + ' <small>' + (cost > 0 ? pct(pn / cost * 100) : '') + '</small></div></div>'
+        + (best ? '<div><div class="k">' + esc(T('c_best', 'Best')) + '</div><div class="v"><span class="up">' + pct(best.pnlPct) + '</span> <small>' + esc(sy(best)) + '</small></div></div>' : '')
+        + (worst && worst !== best ? '<div><div class="k">' + esc(T('c_worst', 'Worst')) + '</div><div class="v"><span class="dn">' + pct(worst.pnlPct) + '</span> <small>' + esc(sy(worst)) + '</small></div></div>' : '');
+    }
+
+    // FLOOR: the biggest buys in the feed it already holds
+    function paintFloorTop() {
+      var f = ST().feed; var rows = (f && f.rows) || [];
+      if (!changed('ftop', (f && f.ts) || rows.length)) return;
+      var big = rows.filter(function (r) { return r.side === 'buy' && +r.usdUsd > 0; }).sort(function (a, b) { return (+b.usdUsd) - (+a.usdUsd); }).slice(0, 5);
+      fstrip.innerHTML = big.length ? '<div class="trow"><span class="tk">' + esc(T('f_big', 'Biggest buys')) + '</span>' + big.map(function (r, i) { return '<button type="button" class="tchip" data-fb="' + i + '">' + logo(r.logo, r.sym) + esc(r.sym) + ' <small>' + fmtK(r.usdUsd) + '</small></button>'; }).join('') + '</div>' : '';
+      fstrip._big = big;
+    }
+    fstrip.addEventListener('click', function (e) { var b = e.target.closest('[data-fb]'); if (!b || !fstrip._big) return; var r = fstrip._big[+b.getAttribute('data-fb')]; if (r) openCoin(coinOfRow(r)); });
+
+    // ASSETS: curve, allocation, season
+    var COLS = ['#c2f64a', '#a78bfa', '#7db4ff', '#ffd75a', '#ff8a80', '#7ff5d6', '#f0c34a'];
+    function paintAcct() {
+      var s = ST(), p = s.port, b = s.board;
+      if (!p) return;
+      var key = { e: p.equityUsd, d: p.depositedUsd, n: (p.snaps || []).length, h: (p.holds || []).map(function (h) { return h.key + ':' + h.valueUsd; }), c: p.usdtUsd, sp: p.seasonPnlUsd, r: p.season && p.season.rank, bn: b && b.ts, bt: b && b.rows && b.rows.slice(0, 3).map(function (r) { return r.who + r.pnlUsd; }) };
+      if (!changed('acct', key)) return;
+      // the curve: net P&L (value minus what was put in) at each daily mark, plus the live point
+      var pts = (p.snaps || []).map(function (x) { return { t: x.day, v: (+x.valueUsd || 0) - (+x.depUsd || 0) }; });
+      pts.push({ t: 'now', v: (+p.equityUsd || 0) - (+p.depositedUsd || 0) });
+      var cv = $('tCurve'), cr = $('tCurveR');
+      if (pts.length < 2) { cv.innerHTML = '<div class="tcurve-none">' + esc(T('a_curve_none', 'Your first daily mark lands after midnight UTC - the curve starts there.')) + '</div>'; cr.textContent = ''; }
+      else {
+        var W = 320, Hh = 84, pad = 4, min = Infinity, max = -Infinity; pts.forEach(function (q) { if (q.v < min) min = q.v; if (q.v > max) max = q.v; }); if (max - min < 1) { max += 1; min -= 1; }
+        var X = function (i) { return pad + i * (W - 2 * pad) / (pts.length - 1); }, Y = function (v) { return pad + (max - v) * (Hh - 2 * pad) / (max - min); };
+        var d = pts.map(function (q, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(q.v).toFixed(1); }).join(' ');
+        var last = pts[pts.length - 1].v, first = pts[0].v, col = last >= first ? '#2ebd85' : '#ff6258', zy = Y(0);
+        var area = d + ' L' + X(pts.length - 1).toFixed(1) + ' ' + Hh + ' L' + X(0).toFixed(1) + ' ' + Hh + ' Z';
+        var gid = 'tcg' + Math.floor(Math.random() * 1e9);
+        cv.innerHTML = '<svg class="tcurve" viewBox="0 0 ' + W + ' ' + Hh + '" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".28"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>'
+          + (zy >= 0 && zy <= Hh ? '<line x1="0" x2="' + W + '" y1="' + zy.toFixed(1) + '" y2="' + zy.toFixed(1) + '" stroke="#2c3440" stroke-dasharray="3 4"/>' : '')
+          + '<path d="' + area + '" fill="url(#' + gid + ')"/><path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+          + '<circle cx="' + X(pts.length - 1).toFixed(1) + '" cy="' + Y(last).toFixed(1) + '" r="3" fill="' + col + '"/></svg>'
+          + '<div class="tcurve-k"><span>' + esc(T('a_curve_over', 'over {n} days', { n: pts.length - 1 })) + '</span><b class="' + cls(last - first) + '">' + sgn(last - first) + '</b></div>';
+        cr.textContent = T('a_curve_now', 'net {v}', { v: sgn(last) });
+      }
+      // allocation: cash and each bag as a share of the whole
+      var al = $('tAlloc'), eq = +p.equityUsd || 0, hs = (p.holds || []).slice().sort(function (a, b2) { return (+b2.valueUsd || 0) - (+a.valueUsd || 0); });
+      if (eq > 0) {
+        var parts = [{ n: T('a_cash', 'Cash'), v: +p.usdtUsd || 0, c: '#5a636e' }];
+        hs.slice(0, 6).forEach(function (h, i) { parts.push({ n: (h.meta && h.meta.sym) || String(h.key).replace(/^cex:/, ''), v: +h.valueUsd || 0, c: COLS[i % COLS.length] }); });
+        var rest = hs.slice(6).reduce(function (t, h) { return t + (+h.valueUsd || 0); }, 0); if (rest > 0) parts.push({ n: T('a_other', 'Other'), v: rest, c: '#2c3440' });
+        al.innerHTML = '<div class="talloc">' + parts.map(function (q) { return '<i style="width:' + (q.v / eq * 100).toFixed(2) + '%;background:' + q.c + '" title="' + esc(q.n) + '"></i>'; }).join('') + '</div>'
+          + '<div class="talloc-l">' + parts.map(function (q) { return '<span><i style="background:' + q.c + '"></i>' + esc(q.n) + ' <b>' + Math.round(q.v / eq * 100) + '%</b></span>'; }).join('') + '</div>';
+      } else al.innerHTML = '';
+      // the season as a race
+      var se = $('tSeason'), sr = $('tSeasonR'), sn = p.season || {}, rows = (b && b.rows) || [], pz = (b && b.prizes) || [15, 10, 5];
+      var endsIn = sn.we ? fmtLeft(sn.we - Date.now()) : '';
+      sr.textContent = endsIn ? T('a_ends_in', 'ends in {t}', { t: endsIn }) : '';
+      var me = sn.rank ? '#' + sn.rank + ' <small>/ ' + (sn.n || 0) + '</small>' : T('a_unranked', 'unranked');
+      var paid = pz.filter(function (x) { return x > 0; }).length;
+      var h2 = '<div class="trace"><div class="t"><div class="k">' + esc(T('a_rank', 'Your rank')) + '</div><div class="v">' + me + '</div></div>'
+        + '<div class="t"><div class="k">' + esc(T('m_season', 'Season P&L')) + '</div><div class="v ' + cls(p.seasonPnlUsd) + '">' + sgn(p.seasonPnlUsd) + '</div></div>'
+        + '<div class="t"><div class="k">' + esc(T('a_pays', 'Pays')) + '</div><div class="v">' + pz.slice(0, paid).map(function (x) { return '$' + x; }).join(' ') + '</div></div></div>';
+      if (rows.length) {
+        h2 += rows.slice(0, 3).map(function (r) { return '<div class="tpod' + (sn.rank === r.rank ? ' me' : '') + '"><span class="rk' + (r.rank <= paid ? ' g' : '') + '">' + r.rank + '</span><span class="who"><a data-lbu="' + esc(r.who) + '">' + esc(r.who) + '</a></span><span class="pn ' + cls(r.pnlUsd) + '">' + sgn(r.pnlUsd) + '</span><span class="pz">' + (pz[r.rank - 1] > 0 ? '$' + pz[r.rank - 1] : '') + '</span></div>'; }).join('');
+        var cut = rows[paid - 1];
+        if (cut && (!sn.rank || sn.rank > paid)) { var need = (+cut.pnlUsd || 0) - (+p.seasonPnlUsd || 0); h2 += '<div class="tgap">' + T('a_to_prize', 'A paid place starts at <b>{v}</b> of season P&L - you are <b>{gap}</b> away.', { v: sgn(cut.pnlUsd), gap: sgn(Math.max(0, need)) }) + '</div>'; }
+        else if (sn.rank && sn.rank <= paid) h2 += '<div class="tgap"><span class="up">' + esc(T('a_in_money', 'You are in a paid place - hold it to the end of the season.')) + '</span></div>';
+      }
+      se.innerHTML = h2;
+      // the daily claim is the loop: the Assets cell carries a dot while it is still unclaimed today
+      var ab = dock.querySelector('[data-tv="assets"]'); if (ab) ab.classList.toggle('dot', p.claimedToday === false && VIEW !== 'assets');
+    }
+
+    function tick() { try { paintMovers(); paintStats(); paintCoins(); paintFloorTop(); paintAcct(); paintWatchBtn(); } catch (e) {} }
+    tick(); setInterval(tick, 4000);
+    // a pick repaints the stats at once rather than on the next tick
+    try { new MutationObserver(function () { setTimeout(paintStats, 30); }).observe($('shName') || sheet, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+
+    window.__mpSpotTerm = { show: show, view: function () { return VIEW; }, picked: picked, watch: watchGet };
   }
 })();
 </script>

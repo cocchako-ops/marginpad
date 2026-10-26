@@ -1,19 +1,20 @@
-/* ─── THE TERMINAL SHELL (2026-10-24) ─────────────────────────────────────────────────────────────────────────
-   This runs AFTER the page's own script and does not touch one line of it. That is the whole safety argument:
-   every control here is bound by id, so the terminal is built by MOVING those nodes into a three-column stage
-   rather than by rewriting the logic that drives them - the same rule the /trading-api/ key manager is under
-   ("lift it, do not retype it"). appendChild MOVES a node, so its id, its listeners and the script's own
-   references survive; the masthead is moved WHOLE because five of its elements (mToday, mRank, mAll, mAllS,
-   mRankS) are written on every repaint and deleting any of them would throw on the next poll.
-   It builds only once the page has shown #app - a signed-out reader meets the gate, which is an ordinary page
-   and must stay one. Nothing here decides anything about money: it arranges what exists and keeps a chart on
-   the screen. */
+/* ─── THE TERMINAL SHELL (2026-10-24; v2 2026-10-26) ─────────────────────────────────────────────────────────
+   This runs AFTER the page's own script and does not touch one line of it. Every control is bound by id, so the
+   terminal is built by MOVING those nodes into a stage (appendChild moves a node: id, listeners and the script's
+   own references survive) - the /trading-api/ key manager rule, "lift it, do not retype it". The masthead is
+   moved WHOLE because five of its elements are written on every repaint.
+   v2 (owner: "dizajnerski uzdigni dosta ... bas cool mesto za demo spot, sa dosta features") adds blocks the
+   shell BUILDS FROM DATA THE PAGE ALREADY HOLDS - window.__spot.state() exposes the lists, the portfolio, the
+   board, the feed and the picked coin - so nothing here fetches a second copy of anything. The dock is five
+   cells - Market, Coins, Floor, Assets, Chat (owner) - and the chart opens when a coin is tapped.
+   Nothing here decides anything about money: it arranges what exists and reads it back. */
 (function () {
   var app = document.getElementById('app'), sheet = document.getElementById('sheet');
   if (!app || !sheet || document.getElementById('spotTerm')) return;
   var $ = function (id) { return document.getElementById(id); };
   var mk = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   var phone = function () { return !(window.matchMedia && matchMedia('(min-width:1000px)').matches); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
 
   // the gate is a page, the account is a terminal - wait for the page to decide which this reader gets
   if (app.hidden) {
@@ -27,15 +28,33 @@
 
   function build() {
     if (document.getElementById('spotTerm')) return;
-    // English comes from the page's own pack, so there is ONE source for it; a reader on another language is
-    // served by applyStatic(), which re-runs over [data-t] when the pack lands and finds these nodes too.
     var EN = {}; try { EN = JSON.parse(document.getElementById('spotI18n').textContent) || {}; } catch (e) {}
-    var T = function (k, d) { return EN[k] != null ? EN[k] : d; };
+    var T = function (k, d, m) { var s = EN[k] != null ? EN[k] : d; if (m) s = s.replace(/\{(\w+)\}/g, function (x, n) { return m[n] != null ? m[n] : x; }); return s; };
+    var ST = function () { try { return (window.__spot && window.__spot.state && window.__spot.state()) || {}; } catch (e) { return {}; } };
 
-    /* 1. THE STAGE */
+    // ---- formatting (the page's own rules, kept identical so a figure never reads two ways on one screen)
+    function fmtUsd(v, dec) { v = +v || 0; return '$' + v.toLocaleString('en-US', { minimumFractionDigits: dec == null ? 2 : dec, maximumFractionDigits: dec == null ? 2 : dec }); }
+    function fmtK(v) { v = +v || 0; if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B'; if (v >= 1e6) return '$' + (v / 1e6).toFixed(2) + 'M'; if (v >= 1e3) return '$' + (v / 1e3).toFixed(1) + 'k'; return '$' + v.toFixed(0); }
+    function sgn(v, dec) { v = +v || 0; return (v >= 0 ? '+' : '-') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: dec == null ? 2 : dec, maximumFractionDigits: dec == null ? 2 : dec }); }
+    function pct(p) { if (p == null || !isFinite(+p)) return '-'; return (+p >= 0 ? '+' : '') + (+p).toFixed(1) + '%'; }
+    function cls(v) { return (+v || 0) >= 0 ? 'up' : 'dn'; }
+    function ageTxt(ts) { var m = Math.round((Date.now() - ts) / 60000); if (m < 60) return T('age_m', '{n}m', { n: m }); var h = Math.floor(m / 60); if (h < 48) return T('age_h', '{n}h', { n: h }); return T('age_d', '{n}d', { n: Math.floor(h / 24) }); }
+    // named fmtLeft, not left: `left` is the market COLUMN below, and a hoisted function of the same name was silently
+    // replaced by that element - the season block threw "left is not a function" inside the tick's try/catch and stayed empty
+    function fmtLeft(ms) { var s = Math.max(0, Math.round(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return d ? T('t_dh', '{d}d {h}h', { d: d, h: h }) : h ? T('t_hm', '{h}h {m}m', { h: h, m: m }) : T('t_m', '{m}m', { m: m }); }
+    function logo(src, sym) { if (src) return '<img class="logo" loading="lazy" src="' + esc(src) + '" alt="" onerror="this.outerHTML=\'<span class=&quot;logo txt&quot;>' + esc(String(sym || '?').slice(0, 3)) + '</span>\'">'; return '<span class="logo txt">' + esc(String(sym || '?').slice(0, 3)) + '</span>'; }
+    function coinOfMeme(m) { return { kind: 'meme', mint: m.mint, pool: m.pool, net: m.net, sym: m.sym, name: m.name, logo: m.logo, price: +m.price || 0, chg24: m.chg24, liqUsd: m.liqUsd, vol24: m.vol24, fdv: m.fdv, key: m.net + ':' + m.mint }; }
+    function coinOfMajor(m) { return { kind: 'cex', sym: m.sym, name: m.name, logo: m.logo, price: m.price, chg24: m.chg24, key: 'cex:' + m.sym }; }
+    function coinOfRow(r) { return r.k === 'meme' ? { kind: 'meme', mint: r.mint, pool: r.pool, net: r.net, sym: r.sym, name: r.name || '', logo: r.logo || '', price: +r.price || 0, key: r.net + ':' + r.mint } : { kind: 'cex', sym: r.sym, name: r.name || '', logo: r.logo || '', price: +r.price || 0, key: 'cex:' + r.sym }; }
+    function openCoin(c) { if (!c || !window.__spot || !window.__spot.open) return; window.__spot.open(c, 'buy'); if (phone()) show('chart'); }
+
+    /* 1. THE STAGE: five columns. On a desktop the right three fold into one scrolling column (tcol-right); on a
+          phone each is a view of its own. placeAll() moves the blocks between those homes on resize - one node,
+          two homes, never a second copy of a figure. */
     var term = mk('div', 'term'); term.id = 'spotTerm';
     var left = mk('div', 'tcol tcol-left'), mid = mk('div', 'tcol tcol-mid tshow'), right = mk('div', 'tcol tcol-right');
-    term.appendChild(left); term.appendChild(mid); term.appendChild(right);
+    var cCoins = mk('div', 'tcol tcol-coins'), cFloor = mk('div', 'tcol tcol-floor'), cAcct = mk('div', 'tcol tcol-acct');
+    [left, mid, right, cCoins, cFloor, cAcct].forEach(function (c) { term.appendChild(c); });
 
     var buyCard = $('buyCard');
     var mast = app.querySelector('.mast'), grid2 = app.querySelector('.grid2');
@@ -45,52 +64,72 @@
     var histCard = $('hist') ? $('hist').closest('.card') : null;
     var foot = app.querySelector('.foot');
 
-    /* 2. THE LIVE HEAD - what you are looking at, what it costs, that it is alive. It MIRRORS the sheet's own
-          nodes rather than fetching anything: one price on the page, never two that can disagree. And it
-          REPLACES the sheet's header, which said the same four things 63px lower down - on a 900px desktop
-          that header alone was a quarter of what the chart had left. The logo moves up into it. */
-    var head = mk('div', 'thead', '<span class="tlive"></span><span class="tsym" id="tSym">&mdash;</span>'
-      + '<span class="tsub" id="tSub"></span><span class="tpx" id="tPx"></span><span class="tchg" id="tChg"></span>');
+    // the three blocks the right side is made of (desktop: stacked; phone: one view each)
+    var bAcct = mk('div', 'tblk tblk-acct'), bCoins = mk('div', 'tblk tblk-coins'), bFloor = mk('div', 'tblk tblk-floor');
+    // ASSETS: masthead, then the curve, the allocation, the season race, then history + the foot
+    var acctX = mk('div', 'tblk-x');
+    acctX.innerHTML = '<h2><span data-t="a_curve">' + esc(T('a_curve', 'Net P&L, daily marks')) + '</span><span class="r" id="tCurveR"></span></h2><div class="tb" id="tCurve"></div>'
+      + '<h2><span data-t="a_alloc">' + esc(T('a_alloc', 'Where the money sits')) + '</span></h2><div class="tb" id="tAlloc"></div>'
+      + '<h2><span data-t="a_season">' + esc(T('a_season', 'The season')) + '</span><span class="r" id="tSeasonR"></span></h2><div class="tb" id="tSeason"></div>';
+    if (mast) bAcct.appendChild(mast);
+    bAcct.appendChild(acctX);
+    if (histCard) bAcct.appendChild(histCard);
+    if (foot) bAcct.appendChild(foot);
+    // COINS: the summary line, then the page's own rows
+    var sum = mk('div', 'tsum'); sum.id = 'tCoinsSum';
+    bCoins.appendChild(sum);
+    if (holdCard) bCoins.appendChild(holdCard);
+    // FLOOR: the biggest buys, the feed, the theses
+    var fstrip = mk('div', 'tstrip'); fstrip.id = 'tFloorTop';
+    bFloor.appendChild(fstrip);
+    if (floorCard) bFloor.appendChild(floorCard);
+    if (thesisCard) bFloor.appendChild(thesisCard);
+
+    /* 2. THE LIVE HEAD mirrors the sheet's own nodes (one price on the page, never two that can disagree) and
+          REPLACES the sheet's header. Back (phone) returns to the view the coin was tapped from; Watch stars it. */
+    var head = mk('div', 'thead', '<button type="button" class="tback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'
+      + '<span class="tlive"></span><span class="tsym" id="tSym">&mdash;</span>'
+      + '<span class="tsub" id="tSub"></span><span class="tpx" id="tPx"></span><span class="tchg" id="tChg"></span>'
+      + '<button type="button" class="twatch" id="tWatch" aria-label="Watch"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></button>');
     var lg = $('shLogo'), lgt = $('shLogoT');
-    if (lg) head.insertBefore(lg, head.firstChild);
-    if (lgt) head.insertBefore(lgt, head.firstChild);
+    var tsym = head.querySelector('.tsym');
+    if (lg) head.insertBefore(lg, tsym);
+    if (lgt) head.insertBefore(lgt, tsym);
+
+    // the market strip (movers + watchlist + the claim) sits above the market card
+    var mstrip = mk('div', 'tstrip'); mstrip.id = 'tMovers';
+    // the stats strip under the timeframes
+    var stats = mk('div', 'tstats'); stats.id = 'tStats';
 
     mid.appendChild(head);
     mid.appendChild(sheet);
+    if ($('tfs') && $('tfs').parentNode === sheet) sheet.insertBefore(stats, $('tfs').nextSibling); else sheet.appendChild(stats);
+    left.appendChild(mstrip);
     if (buyCard) left.appendChild(buyCard);
-    if (holdCard) right.appendChild(holdCard);
-    if (floorCard) right.appendChild(floorCard);
-    if (thesisCard) right.appendChild(thesisCard);
-    if (histCard) right.appendChild(histCard);
-    if (foot) right.appendChild(foot);
     if (grid2 && grid2.parentNode && !grid2.children.length) grid2.parentNode.removeChild(grid2);
     app.insertBefore(term, app.firstChild);
     document.body.classList.add('spot-term');
 
-    /* THE DAILY CLAIM IS THE LOOP, SO IT MUST BE ON THE VIEW A PHONE OPENS ON. There is one masthead and it
-       cannot be in two columns, so its COLUMN depends on the viewport: beside the market on a phone (the
-       default view - worth, cash and Claim are the first thing a reader meets), at the top of the account
-       column on a desktop, where everything stands at once anyway. Copying the numbers into a second strip
-       was the other option and is forbidden - two copies of one figure can disagree. */
-    function placeMast() {
-      if (!mast) return;
-      var host = phone() ? left : right;
-      if (mast.parentNode !== host) host.insertBefore(mast, host.firstChild);
+    function placeAll() {
+      if (phone()) {
+        if (bAcct.parentNode !== cAcct) cAcct.appendChild(bAcct);
+        if (bCoins.parentNode !== cCoins) cCoins.appendChild(bCoins);
+        if (bFloor.parentNode !== cFloor) cFloor.appendChild(bFloor);
+      } else {
+        [bAcct, bCoins, bFloor].forEach(function (b) { if (b.parentNode !== right) right.appendChild(b); });
+      }
     }
-    placeMast();
+    placeAll();
 
-    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (2026-10-24, owner: "kad otvorim chart ne ide bas da bude
-       prazno - nek bude tu gore chart a onda nize dole da krenu memes"). On a phone the market list MOVES under
-       the stage while the Chart view is up and goes back to the Market view when that one is asked for: one
-       node with two homes, exactly as the masthead already works. A second copy of the list is not an option -
-       it would be a second place for a price to be wrong. */
+    /* THE CHART VIEW IS A CHART AND THEN THE MARKET (owner 10-24): on a phone the market list MOVES under the stage
+       while the Chart view is up - one node with two homes, exactly as the blocks above. */
     function placeList(view) {
       if (!buyCard || !phone()) { if (buyCard && buyCard.parentNode !== left) left.appendChild(buyCard); return; }
       var host = view === 'chart' ? mid : left;
       if (buyCard.parentNode !== host) host.appendChild(buyCard);
     }
 
-    /* 3. THE EMPTY STAGE. Until a coin is picked it says what to do, in the place the chart will appear. */
+    /* 3. THE EMPTY STAGE */
     var ph = mk('div', 'tstage-empty',
       '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3.5-4.5L14 13l4-6"/></svg><span data-t="term_pick"></span>');
     ph.querySelector('span').textContent = T('term_pick', 'Pick a coin and its chart opens here.');
@@ -105,14 +144,14 @@
       $('tPx').textContent = on ? (($('shPx') || {}).textContent || '').trim() : '';
       $('tChg').innerHTML = on ? (($('shChg') || {}).innerHTML || '') : '';
       head.classList.toggle('empty', !on);
+      paintWatchBtn();
     }
-    // the page script repaints those nodes; watch them rather than hooking its functions
-    try { new MutationObserver(syncHead).observe(sheet, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+    // the page script repaints those nodes; watch them rather than hooking its functions (writes go to OTHER nodes)
+    try { new MutationObserver(syncHead).observe(sheet.querySelector('.sh-h') || sheet, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'hidden'] }); } catch (e) {}
+    try { new MutationObserver(syncHead).observe(sheet, { attributes: true, attributeFilter: ['class'] }); } catch (e) {}
     syncHead();
 
-    /* 4. THE STAGE IS PERMANENT, SO THE THREE WAYS TO CLOSE IT ARE ANSWERED HERE. closeSheet() destroys the
-          chart and only a fresh pick rebuilds it, so Escape and the overlay must not reach it; the sheet's
-          own X is hidden in CSS. The thesis modal shares that overlay and keeps both of them. */
+    /* 4. THE STAGE IS PERMANENT: Escape and the overlay must not reach closeSheet(); the thesis modal keeps both. */
     function thesisOpen() { var t = $('thSheet'); return !!(t && t.classList.contains('on')); }
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
@@ -129,48 +168,41 @@
         .observe($('thSheet'), { attributes: true, attributeFilter: ['class'] });
     } catch (e) {}
 
-    /* 5. THE DOCK (phone): one view at a time, 54px cells, icon over a short word - the vocabulary the /charts
-          phone terminal already uses, so a reader who knows one knows this one. */
+    /* 5. THE DOCK: Market, Coins, Floor, Assets, Chat. No chart cell - a coin tap opens the stage and the head
+          carries the way back. Chat is an ACTION answered by mp-nav's own [data-mpbn] listener. */
     var IC = {
-      market: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
-      chart: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 14l3-3 2.5 2.5L17 8"/>',
-      coins: '<circle cx="9" cy="9" r="5.2"/><path d="M12.4 17.4A5.2 5.2 0 1017.4 12"/>',
-      floor: '<path d="M4 7h16M4 12h10M4 17h13"/>',
-      browse: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.9-3.9"/>',
+      market: '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+      coins: '<ellipse cx="12" cy="6.5" rx="7" ry="2.8"/><path d="M5 6.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/><path d="M5 11.5v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/>',
+      floor: '<path d="M2 12h3l2.5-6 4 12 3-8 2 4h5.5"/>',
+      assets: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 15h2"/><path d="M6 6V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/>',
       chat: '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>'
     };
-    var VIEWS = [['market', 'Market', left], ['chart', 'Chart', mid], ['coins', 'Coins', right], ['floor', 'Floor', right]];
+    var VIEWS = [['market', 'Market', left], ['coins', 'Coins', cCoins], ['floor', 'Floor', cFloor], ['assets', 'Assets', cAcct], ['chart', 'Chart', mid]];
     var dock = mk('div', 'tdock'); dock.id = 'spotDock';
-    VIEWS.forEach(function (v) {
+    VIEWS.slice(0, 4).forEach(function (v) {
       var b = mk('button', '', '<svg viewBox="0 0 24 24">' + IC[v[0]] + '</svg><span data-t="term_' + v[0] + '"></span><i></i>');
       b.querySelector('span').textContent = T('term_' + v[0], v[1]);
       b.type = 'button'; b.setAttribute('data-tv', v[0]); dock.appendChild(b);
     });
-    /* THE SITE'S OWN PHONE BAR IS ABSORBED, NOT COVERED. mp-nav puts a fixed four-cell nav at the bottom of
-       every page and my dock landed exactly on top of it at a higher z-index - two bars in one place, the
-       lower one unreachable. Browse and Chat are the two that matter here and BOTH ARE ACTIONS, answered by
-       mp-nav's own document-delegated [data-mpbn] listener, so carrying the attribute is all it takes: one
-       bar, nothing lost, and no second copy of either handler. */
-    [['browse', 'Browse'], ['chat', 'Chat']].forEach(function (x) {
+    (function () {
       var a = document.createElement('a');
-      a.href = '#'; a.setAttribute('role', 'button'); a.setAttribute('data-mpbn', x[0]);
-      a.innerHTML = '<svg viewBox="0 0 24 24">' + IC[x[0]] + '</svg><span data-t="term_' + x[0] + '"></span>';
-      a.querySelector('span').textContent = T('term_' + x[0], x[1]);
+      a.href = '#'; a.setAttribute('role', 'button'); a.setAttribute('data-mpbn', 'chat');
+      a.innerHTML = '<svg viewBox="0 0 24 24">' + IC.chat + '</svg><span data-t="term_chat"></span>';
+      a.querySelector('span').textContent = T('term_chat', 'Chat');
       dock.appendChild(a);
-    });
+    })();
     document.body.appendChild(dock);
 
-    var VIEW = '';
+    var VIEW = '', PREV = 'market';
     function show(name) {
       var v = null, i; for (i = 0; i < VIEWS.length; i++) if (VIEWS[i][0] === name) v = VIEWS[i];
       if (!v) { v = VIEWS[0]; name = v[0]; }
+      if (VIEW && VIEW !== 'chart' && name === 'chart') PREV = VIEW;
       VIEW = name;
-      [left, mid, right].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
+      [left, mid, cCoins, cFloor, cAcct].forEach(function (c) { c.classList.toggle('tshow', c === v[2]); });
       placeList(name);
-      // Coins and Floor are two places in one column - go to the one that was asked for
-      if (v[2] === right) { var t = name === 'floor' ? floorCard : holdCard; if (t) try { right.scrollTop = Math.max(0, t.offsetTop - right.offsetTop); } catch (e) {} }
       if (name === 'chart') { try { mid.scrollTop = 0; } catch (e) {} }   // the chart, not where the list was left
-      Array.prototype.forEach.call(dock.children, function (b) { b.classList.toggle('on', b.getAttribute('data-tv') === name); });
+      Array.prototype.forEach.call(dock.children, function (b) { var on = b.getAttribute('data-tv') === name; b.classList.toggle('on', on); if (on) b.classList.remove('dot'); });
       try { localStorage.setItem('mp_spot_view', name); } catch (e) {}
     }
     dock.addEventListener('click', function (e) {
@@ -178,29 +210,45 @@
       b.classList.remove('dot');
       show(b.getAttribute('data-tv'));
     });
+    head.querySelector('.tback').addEventListener('click', function () { show(PREV || 'market'); });
     function layout() {
       if (phone()) {
-        if (!VIEW) { var s = 'market'; try { s = localStorage.getItem('mp_spot_view') || 'market'; } catch (e) {} show(picked() ? s : 'market'); }
-      } else { VIEW = ''; left.classList.add('tshow'); mid.classList.add('tshow'); right.classList.add('tshow'); }
+        if (!VIEW) { var s = 'market'; try { s = localStorage.getItem('mp_spot_view') || 'market'; } catch (e) {} if (s === 'chart' && !picked()) s = 'market'; show(s); }
+      } else { VIEW = ''; [left, mid, right].forEach(function (c) { c.classList.add('tshow'); }); }
     }
     layout();
-    window.addEventListener('resize', function () { placeMast(); layout(); });
+    window.addEventListener('resize', function () { placeAll(); layout(); });
 
-    /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. The page's
-          own handler still does all the work; this only follows it onto the stage. */
+    /* A SCREEN-SIZED BODY MUST NEVER BE SCROLLED (2026-10-26). iOS scrolls the layout viewport to bring a focused
+       input above the keyboard and sometimes leaves that scroll behind when the keyboard goes - every fixed element,
+       the dock included, then sits that many pixels above the edge with the page's background showing under it.
+       The body here is exactly the viewport, so any window scroll is that artefact: put it back once no field has
+       the focus. Never while typing (the scroll is what shows the field). */
+    function unscroll() {
+      var a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+      if (window.scrollY || window.pageYOffset) { try { window.scrollTo(0, 0); } catch (e) {} }
+    }
+    window.addEventListener('scroll', function () { setTimeout(unscroll, 60); }, { passive: true });
+    document.addEventListener('focusout', function () { setTimeout(unscroll, 250); setTimeout(unscroll, 700); });
+    if (window.visualViewport) try { window.visualViewport.addEventListener('resize', function () { setTimeout(unscroll, 120); }); } catch (e) {}
+
+    /* 6. ON A PHONE, PICKING A COIN GOES STRAIGHT TO THE CHART, because that is what the tap meant. */
     var autoPick = false;
     document.addEventListener('click', function (e) {
       if (!phone() || !e.target.closest) return;
-      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody')) return;
+      if (!e.target.closest('#list,#holdRows,#floorRows,#scrBody,#tokRes,#hotRow')) return;
+      if (e.target.closest('[data-lbu],[data-sell]')) return;   // a name opens the card, Sell opens the sell side - both already move the stage themselves when they mean to
       if (autoPick) { autoPick = false; return; }   // the default major is not a tap - it must not move the view
       setTimeout(function () { if (picked()) show('chart'); }, 90);
     }, true);
+    // Sell on a bag opens the sheet on the sell side - follow it onto the stage too
+    document.addEventListener('click', function (e) {
+      if (!phone() || !e.target.closest || !e.target.closest('#holdRows [data-sell]')) return;
+      setTimeout(function () { if (picked()) show('chart'); }, 90);
+    }, true);
 
-    /* 6b. AN EMPTY STAGE IS STILL AN EMPTY STAGE, SO IT OPENS ON A MAJOR (2026-10-24, owner: "kad otvorim chart
-          ne ide bas da bude prazno ... po default-u top 5 majors"). The page's own Majors tab holds the top
-          coins by market cap, so the default is its FIRST row - clicked through the page's own handler, which is
-          the only thing that knows how to price and chart a coin. The tab is put back to whatever the reader had
-          (memes), so the market list below reads as he asked. It runs once, and never over a reader's own pick. */
+    /* 6b. AN EMPTY STAGE OPENS ON A MAJOR (owner 10-24): the first row of the page's own Majors tab, clicked through
+          the page's own handler, the tab put back afterwards. Once, never over a reader's own pick. */
     var dflt = false;
     function defaultCoin() {
       if (dflt || picked() || !buyCard) return;
@@ -218,22 +266,20 @@
         var row = buyCard.querySelector('#list > *[data-i], #list .tok, #list > div:not(.empty)');
         if (row && row.click) {
           row.click();
-          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);   // the reader's own tab back
+          setTimeout(function () { if (was && was !== majors) was.click(); }, 120);
           return;
         }
         if (++tries < 40) setTimeout(wait, 250);
         else if (was && was !== majors) was.click();
       })();
     }
-    // only once the page has its lists - the first paint of #list is the signal
     try {
       var lw = new MutationObserver(function () { if (buyCard && buyCard.querySelector('#list > *:not(.empty)')) { lw.disconnect(); defaultCoin(); } });
       lw.observe(buyCard || term, { childList: true, subtree: true });
     } catch (e) {}
-    setTimeout(defaultCoin, 6000);   // a list that never arrives must not leave the stage empty for ever
+    setTimeout(defaultCoin, 6000);
 
-    /* 7. A new row on the floor marks the dock while the reader is elsewhere - the FOMO half of this, and a
-          mark rather than a toast, so it never covers the thing they are looking at. */
+    /* 7. A new row on the floor marks the dock while the reader is elsewhere - a mark, never a toast. */
     var fr = $('floorRows'), seen = fr ? fr.children.length : 0;
     if (fr) try {
       new MutationObserver(function () {
@@ -243,6 +289,184 @@
       }).observe(fr, { childList: true });
     } catch (e) {}
 
-    window.__mpSpotTerm = { show: show, view: function () { return VIEW; }, picked: picked };
+    /* 8. THE WATCHLIST - the reader's own shortlist, on this device (localStorage), opened from the Market strip and
+          toggled from the head. A coin is stored whole so it can be opened without the trending list carrying it. */
+    var WKEY = 'mp_spot_watch';
+    function watchGet() { try { var a = JSON.parse(localStorage.getItem(WKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+    function watchSet(a) { try { localStorage.setItem(WKEY, JSON.stringify(a.slice(0, 30))); } catch (e) {} }
+    function curCoin() { var s = ST(); return s.coin || null; }
+    function watched(key) { return watchGet().some(function (w) { return w.key === key; }); }
+    function paintWatchBtn() { var c = curCoin(), b = $('tWatch'); if (!b) return; var on = !!(c && picked() && watched(c.key)); b.classList.toggle('on', on); b.title = on ? T('term_watching', 'On your watchlist') : T('term_watch', 'Watch this coin'); }
+    head.querySelector('#tWatch').addEventListener('click', function () {
+      var c = curCoin(); if (!c || !picked()) return;
+      var a = watchGet(), i = -1; a.forEach(function (w, j) { if (w.key === c.key) i = j; });
+      if (i >= 0) a.splice(i, 1); else a.unshift({ key: c.key, kind: c.kind, mint: c.mint, pool: c.pool, net: c.net, sym: c.sym, name: c.name || '', logo: c.logo || '', price: c.price });
+      watchSet(a); paintWatchBtn(); paintMovers(true);
+      try { if (window.__mpTrack) window.__mpTrack('spot', (i >= 0 ? 'unwatch:' : 'watch:') + c.sym); } catch (e) {}
+      try { if (window.mpToast) window.mpToast({ msg: (i >= 0 ? T('term_unwatched', '{sym} removed from your watchlist', { sym: c.sym }) : T('term_watched', '{sym} added to your watchlist', { sym: c.sym })), ms: 2200, key: 'spotwatch' }); } catch (e) {}
+    });
+
+    /* 9. THE BLOCKS. One painter each, driven by a 4 s read of window.__spot.state() and repainted only when the
+          thing it reads changed - the page already polls the portfolio every 30 s, the feed every 30 s and the memes
+          every 2 min; this adds no request. */
+    var sig = {};
+    function changed(k, v) { var s = JSON.stringify(v); if (sig[k] === s) return false; sig[k] = s; return true; }
+
+    // MOVERS + WATCHLIST + CLAIM on the market view
+    function chipMeme(m, tag, tagCls) { return '<button type="button" class="tchip" data-mv="m:' + esc(m.mint) + '">' + logo(m.logo, m.sym) + esc(m.sym) + (tag ? ' <small class="' + tagCls + '">' + tag + '</small>' : '') + '</button>'; }
+    function paintMovers(force) {
+      var s = ST(), memes = s.memeList || [], port = s.port;
+      var w = watchGet();
+      var claim = !!(port && port.claimedToday === false);
+      var key = { n: memes.length, u: memes.length ? (memes[0].ts || 0) + ':' + memes[memes.length - 1].ts : 0, w: w.map(function (x) { return x.key; }), c: claim, h: ((s.feed && s.feed.hot) || []).slice(0, 4).map(function (x) { return x.key + x.buyers; }) };
+      if (!force && !changed('movers', key)) return;
+      /* a riser is a coin with a market behind it: liquidity, volume, and a move a chart can show - a brand-new pool
+         printing +199,821% on its first hour is a launch curve, not a move, and the cap keeps it off the strip */
+      var live = memes.filter(function (m) { return +m.liqUsd >= 20000 && +m.vol24 >= 20000 && isFinite(+m.chg24) && +m.price > 0 && +m.chg24 <= 1000 && +m.chg24 >= -99; });
+      var up = live.filter(function (m) { return +m.chg24 > 0; }).sort(function (a, b) { return (+b.chg24) - (+a.chg24); }).slice(0, 4);
+      var dn = live.filter(function (m) { return +m.chg24 < 0; }).sort(function (a, b) { return (+a.chg24) - (+b.chg24); }).slice(0, 3);
+      // HOT = what members are buying today (the feed's own count), the FOMO half of a meme terminal
+      var hot = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.buyers >= 2; }).slice(0, 4);
+      var h = '';
+      if (claim || up.length) {
+        h += '<div class="trow">' + (claim ? '<button type="button" class="tchip tclaim" data-claim="1"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>' + esc(T('term_claim_now', 'Claim $100 today')) + '</button>' : '')
+          + (up.length ? '<span class="tk">' + esc(T('term_gainers', 'Risers 24h')) + '</span>' + up.map(function (m) { return chipMeme(m, pct(m.chg24), 'up'); }).join('') : '') + '</div>';
+      }
+      if (dn.length || hot.length) {
+        h += '<div class="trow">' + (hot.length ? '<span class="tk">' + esc(T('f_hot', 'Hot today')) + '</span>' + hot.map(function (x, i) { return '<button type="button" class="tchip" data-hot="' + i + '">' + logo(x.logo, x.sym) + esc(x.sym) + ' <small class="nw">' + x.buyers + '</small></button>'; }).join('') : '')
+          + (dn.length ? '<span class="tk">' + esc(T('term_losers', 'Fallers')) + '</span>' + dn.map(function (m) { return chipMeme(m, pct(m.chg24), 'dn'); }).join('') : '') + '</div>';
+      }
+      mstrip._hot = hot;
+      if (w.length) {
+        h += '<div class="trow"><span class="tk">' + esc(T('term_watchlist', 'Watching')) + '</span>' + w.map(function (x, i) { return '<button type="button" class="tchip x" data-wi="' + i + '">' + logo(x.logo, x.sym) + esc(x.sym) + '<span class="rm" data-wrm="' + i + '" aria-label="Remove">&times;</span></button>'; }).join('') + '</div>';
+      }
+      mstrip.innerHTML = h;
+    }
+    mstrip.addEventListener('click', function (e) {
+      var t = e.target;
+      if (t.closest('[data-claim]')) { var cb = $('claimBtn'); if (cb && !cb.disabled) cb.click(); return; }
+      var rm = t.closest('[data-wrm]'); if (rm) { e.stopPropagation(); var a = watchGet(); a.splice(+rm.getAttribute('data-wrm'), 1); watchSet(a); paintMovers(true); paintWatchBtn(); return; }
+      var wi = t.closest('[data-wi]'); if (wi) { var c = watchGet()[+wi.getAttribute('data-wi')]; if (c) openCoin(c); return; }
+      var ht = t.closest('[data-hot]'); if (ht && mstrip._hot) { var hx = mstrip._hot[+ht.getAttribute('data-hot')]; if (hx) { openCoin(coinOfRow(hx)); try { if (window.__mpTrack) window.__mpTrack('spot', 'hot:' + hx.sym); } catch (x) {} } return; }
+      var mv = t.closest('[data-mv]'); if (mv) { var k = mv.getAttribute('data-mv'), memes = ST().memeList || [], m = memes.filter(function (x) { return 'm:' + x.mint === k; })[0]; if (m) { openCoin(coinOfMeme(m)); try { if (window.__mpTrack) window.__mpTrack('spot', 'mover:' + m.sym); } catch (x) {} } }
+    });
+
+    // STATS under the chart for the picked coin
+    function paintStats() {
+      var s = ST(), c = s.coin; var on = picked();
+      var key = c ? c.key + ':' + on : '';
+      // the majors list lands AFTER the default coin is picked, so its length is part of the signature or a major's mcap/volume never appears
+      if (!changed('stats', key + ':' + ((s.memeList || []).length) + ':' + ((s.majorList || []).length) + ':' + ((s.feed && s.feed.ts) || 0))) return;
+      if (!c || !on) { stats.innerHTML = ''; return; }
+      // the strip belongs right under the timeframes - measured once at the end of the sheet after a build, so it is placed by its anchor, not by order of insertion
+      var tfs = $('tfs'); if (tfs && tfs.parentNode === sheet && stats.previousElementSibling !== tfs) tfs.insertAdjacentElement('afterend', stats);
+      var it = [];
+      function cell(k, v, c2) { it.push('<span>' + esc(k) + '<b' + (c2 ? ' class="' + c2 + '"' : '') + '>' + v + '</b></span>'); }
+      if (c.kind === 'meme') {
+        var m = (s.memeList || []).filter(function (x) { return x.mint === c.mint; })[0] || c;
+        if (m.liqUsd != null) cell(T('st_liq', 'Liquidity'), fmtK(m.liqUsd));
+        if (m.fdv != null) cell(T('st_fdv', 'FDV'), fmtK(m.fdv));
+        if (m.vol24 != null) cell(T('st_vol', 'Volume 24h'), fmtK(m.vol24));
+        if (m.chg24 != null && isFinite(+m.chg24)) cell(T('st_24h', '24h'), pct(m.chg24), cls(m.chg24));
+        var hot = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.key === c.key; })[0];
+        if (hot && hot.buyers) cell(T('st_buyers', 'Members bought today'), String(hot.buyers));
+        if (m.liqUsd != null && m.fdv) { var lf = m.liqUsd / m.fdv * 100; cell(T('st_liqfdv', 'Liq / FDV'), lf.toFixed(lf < 1 ? 2 : 1) + '%'); }
+      } else {
+        var mj = (s.majorList || []).filter(function (x) { return x.sym === c.sym; })[0];
+        if (mj && mj.mcap) cell(T('st_mcap', 'Market cap'), fmtK(mj.mcap));
+        if (mj && mj.vol24) cell(T('st_vol', 'Volume 24h'), fmtK(mj.vol24));
+        if (c.chg24 != null && isFinite(+c.chg24)) cell(T('st_24h', '24h'), pct(c.chg24), cls(c.chg24));
+        var hot2 = ((s.feed && s.feed.hot) || []).filter(function (x) { return x.key === c.key; })[0];
+        if (hot2 && hot2.buyers) cell(T('st_buyers', 'Members bought today'), String(hot2.buyers));
+      }
+      stats.innerHTML = it.join('');
+    }
+
+    // COINS summary
+    function paintCoins() {
+      var p = ST().port; var hs = (p && p.holds) || [];
+      var key = hs.map(function (h) { return h.key + ':' + h.valueUsd + ':' + h.pnlUsd; });
+      if (!changed('coins', key)) return;
+      if (!hs.length) { sum.innerHTML = ''; return; }
+      var val = 0, pn = 0, cost = 0, best = null, worst = null;
+      hs.forEach(function (h) { val += +h.valueUsd || 0; pn += +h.pnlUsd || 0; cost += +h.costUsd || 0; if (h.pnlPct != null) { if (!best || h.pnlPct > best.pnlPct) best = h; if (!worst || h.pnlPct < worst.pnlPct) worst = h; } });
+      var sy = function (h) { return (h.meta && h.meta.sym) || String(h.key).replace(/^cex:/, ''); };
+      sum.innerHTML = '<div><div class="k">' + esc(T('c_sum', 'Bags')) + '</div><div class="v">' + fmtUsd(val) + ' <small>' + hs.length + '</small></div></div>'
+        + '<div><div class="k">' + esc(T('c_unreal', 'Unrealized P&L')) + '</div><div class="v ' + cls(pn) + '">' + sgn(pn) + ' <small>' + (cost > 0 ? pct(pn / cost * 100) : '') + '</small></div></div>'
+        + (best ? '<div><div class="k">' + esc(T('c_best', 'Best')) + '</div><div class="v"><span class="up">' + pct(best.pnlPct) + '</span> <small>' + esc(sy(best)) + '</small></div></div>' : '')
+        + (worst && worst !== best ? '<div><div class="k">' + esc(T('c_worst', 'Worst')) + '</div><div class="v"><span class="dn">' + pct(worst.pnlPct) + '</span> <small>' + esc(sy(worst)) + '</small></div></div>' : '');
+    }
+
+    // FLOOR: the biggest buys in the feed it already holds
+    function paintFloorTop() {
+      var f = ST().feed; var rows = (f && f.rows) || [];
+      if (!changed('ftop', (f && f.ts) || rows.length)) return;
+      var big = rows.filter(function (r) { return r.side === 'buy' && +r.usdUsd > 0; }).sort(function (a, b) { return (+b.usdUsd) - (+a.usdUsd); }).slice(0, 5);
+      fstrip.innerHTML = big.length ? '<div class="trow"><span class="tk">' + esc(T('f_big', 'Biggest buys')) + '</span>' + big.map(function (r, i) { return '<button type="button" class="tchip" data-fb="' + i + '">' + logo(r.logo, r.sym) + esc(r.sym) + ' <small>' + fmtK(r.usdUsd) + '</small></button>'; }).join('') + '</div>' : '';
+      fstrip._big = big;
+    }
+    fstrip.addEventListener('click', function (e) { var b = e.target.closest('[data-fb]'); if (!b || !fstrip._big) return; var r = fstrip._big[+b.getAttribute('data-fb')]; if (r) openCoin(coinOfRow(r)); });
+
+    // ASSETS: curve, allocation, season
+    var COLS = ['#c2f64a', '#a78bfa', '#7db4ff', '#ffd75a', '#ff8a80', '#7ff5d6', '#f0c34a'];
+    function paintAcct() {
+      var s = ST(), p = s.port, b = s.board;
+      if (!p) return;
+      var key = { e: p.equityUsd, d: p.depositedUsd, n: (p.snaps || []).length, h: (p.holds || []).map(function (h) { return h.key + ':' + h.valueUsd; }), c: p.usdtUsd, sp: p.seasonPnlUsd, r: p.season && p.season.rank, bn: b && b.ts, bt: b && b.rows && b.rows.slice(0, 3).map(function (r) { return r.who + r.pnlUsd; }) };
+      if (!changed('acct', key)) return;
+      // the curve: net P&L (value minus what was put in) at each daily mark, plus the live point
+      var pts = (p.snaps || []).map(function (x) { return { t: x.day, v: (+x.valueUsd || 0) - (+x.depUsd || 0) }; });
+      pts.push({ t: 'now', v: (+p.equityUsd || 0) - (+p.depositedUsd || 0) });
+      var cv = $('tCurve'), cr = $('tCurveR');
+      if (pts.length < 2) { cv.innerHTML = '<div class="tcurve-none">' + esc(T('a_curve_none', 'Your first daily mark lands after midnight UTC - the curve starts there.')) + '</div>'; cr.textContent = ''; }
+      else {
+        var W = 320, Hh = 84, pad = 4, min = Infinity, max = -Infinity; pts.forEach(function (q) { if (q.v < min) min = q.v; if (q.v > max) max = q.v; }); if (max - min < 1) { max += 1; min -= 1; }
+        var X = function (i) { return pad + i * (W - 2 * pad) / (pts.length - 1); }, Y = function (v) { return pad + (max - v) * (Hh - 2 * pad) / (max - min); };
+        var d = pts.map(function (q, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(q.v).toFixed(1); }).join(' ');
+        var last = pts[pts.length - 1].v, first = pts[0].v, col = last >= first ? '#2ebd85' : '#ff6258', zy = Y(0);
+        var area = d + ' L' + X(pts.length - 1).toFixed(1) + ' ' + Hh + ' L' + X(0).toFixed(1) + ' ' + Hh + ' Z';
+        var gid = 'tcg' + Math.floor(Math.random() * 1e9);
+        cv.innerHTML = '<svg class="tcurve" viewBox="0 0 ' + W + ' ' + Hh + '" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".28"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>'
+          + (zy >= 0 && zy <= Hh ? '<line x1="0" x2="' + W + '" y1="' + zy.toFixed(1) + '" y2="' + zy.toFixed(1) + '" stroke="#2c3440" stroke-dasharray="3 4"/>' : '')
+          + '<path d="' + area + '" fill="url(#' + gid + ')"/><path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+          + '<circle cx="' + X(pts.length - 1).toFixed(1) + '" cy="' + Y(last).toFixed(1) + '" r="3" fill="' + col + '"/></svg>'
+          + '<div class="tcurve-k"><span>' + esc(T('a_curve_over', 'over {n} days', { n: pts.length - 1 })) + '</span><b class="' + cls(last - first) + '">' + sgn(last - first) + '</b></div>';
+        cr.textContent = T('a_curve_now', 'net {v}', { v: sgn(last) });
+      }
+      // allocation: cash and each bag as a share of the whole
+      var al = $('tAlloc'), eq = +p.equityUsd || 0, hs = (p.holds || []).slice().sort(function (a, b2) { return (+b2.valueUsd || 0) - (+a.valueUsd || 0); });
+      if (eq > 0) {
+        var parts = [{ n: T('a_cash', 'Cash'), v: +p.usdtUsd || 0, c: '#5a636e' }];
+        hs.slice(0, 6).forEach(function (h, i) { parts.push({ n: (h.meta && h.meta.sym) || String(h.key).replace(/^cex:/, ''), v: +h.valueUsd || 0, c: COLS[i % COLS.length] }); });
+        var rest = hs.slice(6).reduce(function (t, h) { return t + (+h.valueUsd || 0); }, 0); if (rest > 0) parts.push({ n: T('a_other', 'Other'), v: rest, c: '#2c3440' });
+        al.innerHTML = '<div class="talloc">' + parts.map(function (q) { return '<i style="width:' + (q.v / eq * 100).toFixed(2) + '%;background:' + q.c + '" title="' + esc(q.n) + '"></i>'; }).join('') + '</div>'
+          + '<div class="talloc-l">' + parts.map(function (q) { return '<span><i style="background:' + q.c + '"></i>' + esc(q.n) + ' <b>' + Math.round(q.v / eq * 100) + '%</b></span>'; }).join('') + '</div>';
+      } else al.innerHTML = '';
+      // the season as a race
+      var se = $('tSeason'), sr = $('tSeasonR'), sn = p.season || {}, rows = (b && b.rows) || [], pz = (b && b.prizes) || [15, 10, 5];
+      var endsIn = sn.we ? fmtLeft(sn.we - Date.now()) : '';
+      sr.textContent = endsIn ? T('a_ends_in', 'ends in {t}', { t: endsIn }) : '';
+      var me = sn.rank ? '#' + sn.rank + ' <small>/ ' + (sn.n || 0) + '</small>' : T('a_unranked', 'unranked');
+      var paid = pz.filter(function (x) { return x > 0; }).length;
+      var h2 = '<div class="trace"><div class="t"><div class="k">' + esc(T('a_rank', 'Your rank')) + '</div><div class="v">' + me + '</div></div>'
+        + '<div class="t"><div class="k">' + esc(T('m_season', 'Season P&L')) + '</div><div class="v ' + cls(p.seasonPnlUsd) + '">' + sgn(p.seasonPnlUsd) + '</div></div>'
+        + '<div class="t"><div class="k">' + esc(T('a_pays', 'Pays')) + '</div><div class="v">' + pz.slice(0, paid).map(function (x) { return '$' + x; }).join(' ') + '</div></div></div>';
+      if (rows.length) {
+        h2 += rows.slice(0, 3).map(function (r) { return '<div class="tpod' + (sn.rank === r.rank ? ' me' : '') + '"><span class="rk' + (r.rank <= paid ? ' g' : '') + '">' + r.rank + '</span><span class="who"><a data-lbu="' + esc(r.who) + '">' + esc(r.who) + '</a></span><span class="pn ' + cls(r.pnlUsd) + '">' + sgn(r.pnlUsd) + '</span><span class="pz">' + (pz[r.rank - 1] > 0 ? '$' + pz[r.rank - 1] : '') + '</span></div>'; }).join('');
+        var cut = rows[paid - 1];
+        if (cut && (!sn.rank || sn.rank > paid)) { var need = (+cut.pnlUsd || 0) - (+p.seasonPnlUsd || 0); h2 += '<div class="tgap">' + T('a_to_prize', 'A paid place starts at <b>{v}</b> of season P&L - you are <b>{gap}</b> away.', { v: sgn(cut.pnlUsd), gap: sgn(Math.max(0, need)) }) + '</div>'; }
+        else if (sn.rank && sn.rank <= paid) h2 += '<div class="tgap"><span class="up">' + esc(T('a_in_money', 'You are in a paid place - hold it to the end of the season.')) + '</span></div>';
+      }
+      se.innerHTML = h2;
+      // the daily claim is the loop: the Assets cell carries a dot while it is still unclaimed today
+      var ab = dock.querySelector('[data-tv="assets"]'); if (ab) ab.classList.toggle('dot', p.claimedToday === false && VIEW !== 'assets');
+    }
+
+    function tick() { try { paintMovers(); paintStats(); paintCoins(); paintFloorTop(); paintAcct(); paintWatchBtn(); } catch (e) {} }
+    tick(); setInterval(tick, 4000);
+    // a pick repaints the stats at once rather than on the next tick
+    try { new MutationObserver(function () { setTimeout(paintStats, 30); }).observe($('shName') || sheet, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+
+    window.__mpSpotTerm = { show: show, view: function () { return VIEW; }, picked: picked, watch: watchGet };
   }
 })();
