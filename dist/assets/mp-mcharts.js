@@ -342,10 +342,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=p.bars[0].time){_mism=true;break;}continue;}
           if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) - strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
-        if(_mism){_rm=2;p.bars=kd;if(_lastK.time===_lastA.time)p.bars[p.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])p.bars[p.bars.length-1]=_tmap[_lastK.time];p.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
+        if(_mism){_rm=2;
+          /* A HEAL MERGES, IT NEVER REPLACES (2026-10-26, mirrored from the desktop engine): replacing the book with the server
+             window dropped every paginated bar and left each index-anchored drawing that many bars off the data */
+          var _pre=p.bars.filter(function(b){return b.time<kd[0].time;}),_oldFirst=p.bars[0]&&p.bars[0].time;
+          p.bars=_pre.concat(kd);if(_lastK.time===_lastA.time)p.bars[p.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])p.bars[p.bars.length-1]=_tmap[_lastK.time];p.bars.push(_lastA);}
+          var _sh=0;for(var _si=0;_si<p.bars.length;_si++){if(p.bars[_si].time>=_oldFirst){_sh=_si;break;}}
+          if(_sh>0)try{var _dsh=p.w&&p.w.dr&&p.w.dr.shapes;if(_dsh&&_dsh.length){_dsh.forEach(function(s){if(s.l!=null)s.l+=_sh;if(s.l1!=null)s.l1+=_sh;if(s.l2!=null)s.l2+=_sh;if(s.l3!=null)s.l3+=_sh;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=_sh;});});}}catch(e){}
+          p._healShift=_sh;}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;p.bars=p.bars.concat(_app);}
       }
-      if(_rm===2){try{p.candle.setData(p.bars);}catch(e){}}
+      if(_rm===2){var _vrh=null;try{if(p._healShift)_vrh=p.chart.timeScale().getVisibleLogicalRange();}catch(e){}try{p.candle.setData(p.bars);}catch(e){}if(_vrh&&p._healShift)try{p.chart.timeScale().setVisibleLogicalRange({from:_vrh.from+p._healShift,to:_vrh.to+p._healShift});}catch(e){}p._healShift=0;try{if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();}catch(e){}}
       else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{(function(_b){if(window.mpBarOk(_b,'m304'))p.candle.update(_b);})(_app[_a3]);}catch(e){}}}
       if(_rm!==0){p.lastBar=p.bars[p.bars.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{applyInds(p);}catch(e){}if(p.trades)try{drawTrades(p);}catch(e){}try{if(p.w)p.w.bars=p.bars;}catch(e){}}
       p._hole=0;/* cleared ONLY on a successful snapshot apply/compare - a rolled live bar makes lastBar look current, blinding the interval gap check (same _holeK lesson as desktop) */
@@ -365,7 +372,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var vr0=null;try{vr0=p.chart.timeScale().getVisibleLogicalRange();}catch(e){}
       try{p.candle.setData(p.bars);}catch(e){}
       if(vr0)try{p.chart.timeScale().setVisibleLogicalRange({from:vr0.from+shift,to:vr0.to+shift});}catch(e){} // keep the user exactly where they were scrolled
-      try{if(p.w){p.w.bars=p.bars;if(p.w.dr&&p.w.dr.shapes&&p.w.dr.shapes.length){p.w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=shift;if(s.l1!=null)s.l1+=shift;if(s.l2!=null)s.l2+=shift;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=shift;});});if(p.w.dr.redraw)p.w.dr.redraw();}}}catch(e){} // anchor drawings after older bars prepended (logical indices shift by `shift`)
+      try{if(p.w){p.w.bars=p.bars;if(p.w.dr&&p.w.dr.shapes&&p.w.dr.shapes.length){p.w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=shift;if(s.l1!=null)s.l1+=shift;if(s.l2!=null)s.l2+=shift;if(s.l3!=null)s.l3+=shift;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=shift;});});if(p.w.dr.redraw)p.w.dr.redraw();}}}catch(e){} // anchor drawings after older bars prepended (logical indices shift by `shift`)
       try{applyInds(p);}catch(e){}
       if(p.trades)drawTrades(p);
     });
@@ -537,9 +544,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     }
     if(p.inds.dl&&S&&S.dailyLevels){var _dl=S.dailyLevels(p.bars,p.tf);if(_dl)_dl.forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.v,color:L.c,lineWidth:1,lineStyle:L.k==='OPEN'?0:2,axisLabelVisible:true,title:L.k}));}catch(e){}});}
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
-    function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:d,sub:!!(opts.priceScaleId&&p.sub),key:opts.priceScaleId||''});}}
+    /* the sub-chart indexes its bars exactly as the main chart does (2026-10-26, mirrored from mp-charts): whitespace points
+       from the first candle give a late-starting series (RSI, the Magnet's 48-point history) the main chart's index base,
+       so the logical-range sync between the two charts means the same stretch of time on both */
+    function padSub(d){try{if(!d||!d.length||!t.length)return d;var t0=+d[0].time;if(!(t0>+t[0]))return d;var pre=[];for(var _pi=0;_pi<t.length&&+t[_pi]<t0;_pi++)pre.push({time:t[_pi]});return pre.concat(d);}catch(e){return d;}}
+    function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData((opts.priceScaleId&&p.sub)?padSub(d):d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:d,sub:!!(opts.priceScaleId&&p.sub),key:opts.priceScaleId||''});}}
     function addZone(id,from,to,color){try{if(!p.sub)return;var top=to>from,s=p.sub.addBaselineSeries({priceScaleId:id,baseValue:{type:'price',price:from},topLineColor:'rgba(0,0,0,0)',bottomLineColor:'rgba(0,0,0,0)',topFillColor1:top?color:'rgba(0,0,0,0)',topFillColor2:top?color:'rgba(0,0,0,0)',bottomFillColor1:top?'rgba(0,0,0,0)':color,bottomFillColor2:top?'rgba(0,0,0,0)':color,lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});s.setData(t.map(function(tm){return {time:tm,value:to};}));p.subSeries.push(s);}catch(e){}}
-    function addHist(id,vals,up,dn){try{if(!p.sub)return;var s=p.sub.addHistogramSeries({priceScaleId:id,priceLineVisible:false,lastValueVisible:false,base:0}),d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i],color:vals[i]>=0?up:dn});s.setData(d);p.subSeries.push(s);}catch(e){}}
+    function addHist(id,vals,up,dn){try{if(!p.sub)return;var s=p.sub.addHistogramSeries({priceScaleId:id,priceLineVisible:false,lastValueVisible:false,base:0}),d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i],color:vals[i]>=0?up:dn});s.setData(padSub(d));p.subSeries.push(s);}catch(e){}}
     var MA=[['ema9',9,'e','#7fb6ff'],['ema21',21,'e','#3fd8e6'],['ema50',50,'e','#5fe0a6'],['ema100',100,'e','#c2f64a'],['ema200',200,'e','#ffd75a'],['sma20',20,'s','#ff9f43'],['sma50',50,'s','#ff7b72'],['sma100',100,'s','#e0a0ff'],['sma200',200,'s','#ff5a4d']];
     var oscs=['rsi','macd','stoch','atr','vol','wr','cci'].concat((S&&IA)?['casc','brain','memory','magnet']:[]).filter(function(k){return p.inds[k]&&(k!=='magnet'||p._mag);}),oN=oscs.length;
     try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:0.08}});}catch(e){} /* candles own the full pane - oscillators live in the sub strip */

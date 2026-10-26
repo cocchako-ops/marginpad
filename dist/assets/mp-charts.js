@@ -688,13 +688,20 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function pm(key){var idx=paneKeys.indexOf(key),inH=w._subInH||1,band=w._subBand||(inH/Math.max(1,paneN));return {top:Math.min(0.9,(idx*band+SUB_CARD)/inH),bottom:Math.min(0.9,((paneN-1-idx)*band+4)/inH)};}
     function pscale(id,key){try{if(w.sub)w.sub.priceScale(id).applyOptions({scaleMargins:pm(key)});}catch(e){}}
     if(!bars.length){cwLeg(w);return;}
-    function addS(opts,data,leg){try{var _tc=(opts.priceScaleId&&w.sub)?w.sub:w.chart;var s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));s.setData(data);if(_tc===w.sub)w.subSeries.push(s);else w.indSeries.push(s);if(leg){var last=null;for(var i=data.length-1;i>=0;i--){if(data[i]&&data[i].value!=null&&isFinite(data[i].value)){last=data[i].value;break;}}w.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:data,sub:_tc===w.sub,key:opts.priceScaleId||''});}return s;}catch(e){}}
+    /* THE SUB-CHART MUST INDEX ITS BARS EXACTLY AS THE MAIN CHART DOES (2026-10-26). The two time scales are kept in step by
+       LOGICAL index, and a sub series that starts late (RSI from bar 14, the Magnet's 48-point history) gives the sub chart
+       a time scale whose index 0 is a later candle - so a main range {940..1006} meant a different stretch of time below,
+       and whenever the sub re-fit itself its range came back up to the main chart as somewhere else. Whitespace points
+       (time only, no value - LWC draws nothing for them) from the first candle give every sub series the main chart's
+       index base. The main chart's own overlays are left alone: they share the candles' scale already. */
+    function padSub(data){try{if(!data||!data.length||!bars.length)return data;var t0=+data[0].time;if(!(t0>+bars[0].time))return data;var pre=[];for(var _pi=0;_pi<bars.length&&+bars[_pi].time<t0;_pi++)pre.push({time:bars[_pi].time});return pre.concat(data);}catch(e){return data;}}
+    function addS(opts,data,leg){try{var _tc=(opts.priceScaleId&&w.sub)?w.sub:w.chart;var s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));s.setData(_tc===w.sub?padSub(data):data);if(_tc===w.sub)w.subSeries.push(s);else w.indSeries.push(s);if(leg){var last=null;for(var i=data.length-1;i>=0;i--){if(data[i]&&data[i].value!=null&&isFinite(data[i].value)){last=data[i].value;break;}}w.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:data,sub:_tc===w.sub,key:opts.priceScaleId||''});}return s;}catch(e){}}
     function addPL(o){try{w.indLines.push(w.candle.createPriceLine(o));}catch(e){}}
     /* SHADED ZONES IN THE OSCILLATOR BANDS (2026-10-08): overbought / oversold are areas, not two dashed lines - a baseline
        series with a constant value fills from the threshold to the edge of the band. HISTOGRAM for MACD: the bars are the
        momentum the reader is looking for, the two lines alone hid it. */
     function addZone(id,from,to,color){try{if(!w.sub)return;var top=to>from,s=w.sub.addBaselineSeries({priceScaleId:id,baseValue:{type:'price',price:from},topLineColor:'rgba(0,0,0,0)',bottomLineColor:'rgba(0,0,0,0)',topFillColor1:top?color:'rgba(0,0,0,0)',topFillColor2:top?color:'rgba(0,0,0,0)',bottomFillColor1:top?'rgba(0,0,0,0)':color,bottomFillColor2:top?'rgba(0,0,0,0)':color,lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});s.setData(bars.map(function(b){return {time:b.time,value:to};}));w.subSeries.push(s);}catch(e){}}
-    function addHist(id,data,up,dn){try{if(!w.sub)return;var s=w.sub.addHistogramSeries({priceScaleId:id,priceLineVisible:false,lastValueVisible:false,base:0});s.setData(data.filter(function(d){return d&&isFinite(d.value);}).map(function(d){return {time:d.time,value:d.value,color:d.value>=0?up:dn};}));w.subSeries.push(s);}catch(e){}}
+    function addHist(id,data,up,dn){try{if(!w.sub)return;var s=w.sub.addHistogramSeries({priceScaleId:id,priceLineVisible:false,lastValueVisible:false,base:0});s.setData(padSub(data.filter(function(d){return d&&isFinite(d.value);}).map(function(d){return {time:d.time,value:d.value,color:d.value>=0?up:dn};})));w.subSeries.push(s);}catch(e){}}
     if(w.inds.psar)addS({color:'#c2f64a',lineWidth:1,lineStyle:1},mapVal(bars,psarCalc(bars)),{label:'PSAR',dec:null});
     if(w.inds.ichi){var _ic=ichimoku(bars);addS({color:'#3fd8e6',lineWidth:1.6},mapVal(bars,_ic.conv),{label:'Tenkan',dec:null});addS({color:'#ff9f4d',lineWidth:1.6},mapVal(bars,_ic.base),{label:'Kijun',dec:null});addS({color:'rgba(46,189,133,.7)',lineStyle:2},mapVal(bars,_ic.spanA),{label:'Span A',dec:null});addS({color:'rgba(255,98,88,.7)',lineStyle:2},mapVal(bars,_ic.spanB),{label:'Span B',dec:null});}
     if(w.inds.sr)computeSR(bars).forEach(function(L){addPL({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'});});
@@ -1895,7 +1902,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       /* A DRAWING THAT POINTS FORWARD HAS TO BE ON SCREEN (2026-09-17): the chart rests with ~6 candles of air to the right, so a
          target zone projected 14 candles ahead was three quarters off the edge. Widen the window just enough to hold what was drawn. */
       try{var mx=last0(w);var vr=w.chart.timeScale().getVisibleLogicalRange();
-        if(vr&&mx>vr.to-2)w.chart.timeScale().setVisibleLogicalRange({from:vr.from,to:mx+2});}catch(e){}
+        /* never past 45 candles of future: a shape index beyond that is a shape that drifted off the data (a heal that
+           re-based the book, 2026-10-26), and framing up to it zooms the whole chart out to a sliver */
+        if(vr&&mx>vr.to-2&&mx<=n-1+45)w.chart.timeScale().setVisibleLogicalRange({from:vr.from,to:mx+2});}catch(e){}
       if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();aiRescale(w);}return k;}
   function last0(w){var mx=-Infinity;(w.dr.shapes||[]).forEach(function(s){if(s.by!=='ai')return;[s.l,s.l1,s.l2].forEach(function(v){if(v!=null&&isFinite(v)&&v>mx)mx=v;});});return mx;}
   /* symbol / timeframe changes shared by the header controls and the AI - one path, the same side effects */
@@ -3087,10 +3096,22 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=w.bars[0].time){_mism=true;break;}continue;}
           if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) - strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
-        if(_mism){_rm=2;w.bars=kd;if(_lastK.time===_lastA.time)w.bars[w.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])w.bars[w.bars.length-1]=_tmap[_lastK.time];w.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
+        if(_mism){_rm=2;
+          /* A HEAL MERGES, IT NEVER REPLACES (2026-10-26, owner: after an AI drawing the chart "zoomed out and went days back,
+             the drawing out of frame" at a candle close). MEASURED: with 2,000 paginated bars loaded, this branch set the
+             1,000-bar server window as the whole book - every drawing is anchored on a LOGICAL INDEX, so a line on bar 1995
+             sat 1,000 bars off the data (in the future) after the heal, and the AI's "widen to the furthest drawing" then
+             framed the chart from the first candle to that index. Bars older than the server window are kept in front of it;
+             the index base only ever moves when the server reaches FURTHER back than we hold, and then every shape moves
+             with it, exactly as loadMoreW does. */
+          var _pre=w.bars.filter(function(b){return b.time<kd[0].time;}),_oldFirst=w.bars[0]&&w.bars[0].time;
+          w.bars=_pre.concat(kd);if(_lastK.time===_lastA.time)w.bars[w.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])w.bars[w.bars.length-1]=_tmap[_lastK.time];w.bars.push(_lastA);}
+          var _sh=0;for(var _si=0;_si<w.bars.length;_si++){if(w.bars[_si].time>=_oldFirst){_sh=_si;break;}}
+          if(_sh>0)try{if(w.dr&&w.dr.shapes&&w.dr.shapes.length){w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=_sh;if(s.l1!=null)s.l1+=_sh;if(s.l2!=null)s.l2+=_sh;if(s.l3!=null)s.l3+=_sh;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=_sh;});});}}catch(e){}
+          w._healShift=_sh;}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;w.bars=w.bars.concat(_app);}
       }
-      if(_rm===2){try{w.candle.setData(w.bars);}catch(e){}}
+      if(_rm===2){var _vrh=null;try{if(w._healShift)_vrh=w.chart.timeScale().getVisibleLogicalRange();}catch(e){}try{w.candle.setData(w.bars);}catch(e){}if(_vrh&&w._healShift)try{w.chart.timeScale().setVisibleLogicalRange({from:_vrh.from+w._healShift,to:_vrh.to+w._healShift});}catch(e){}w._healShift=0;try{if(w.dr&&w.dr.redraw)w.dr.redraw();}catch(e){}}
       else if(_rm===1){for(var _a3=0;_a3<_app.length;_a3++){try{(function(_b){if(window.mpBarOk(_b,'c2969'))w.candle.update(_b);})(_app[_a3]);}catch(e){}}}
       if(_rm!==0){w.lastBar=w.bars[w.bars.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}} /* mode 0 = matched → touch nothing (no lastBar swap, no indicator churn) */
     }); }
@@ -3110,7 +3131,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       // keep the user exactly where they were scrolled (shift the visible range by the prepended count) → seamless, no jump
       if(vr0)try{w.chart.timeScale().setVisibleLogicalRange({from:vr0.from+shift,to:vr0.to+shift});}catch(e){}
       // keep canvas drawings anchored after older bars are prepended (logical indices shift by `shift`)
-      try{if(w.dr&&w.dr.shapes&&w.dr.shapes.length){w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=shift;if(s.l1!=null)s.l1+=shift;if(s.l2!=null)s.l2+=shift;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=shift;});});if(w.dr.redraw)w.dr.redraw();}}catch(e){}
+      try{if(w.dr&&w.dr.shapes&&w.dr.shapes.length){w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=shift;if(s.l1!=null)s.l1+=shift;if(s.l2!=null)s.l2+=shift;if(s.l3!=null)s.l3+=shift;/* l3: the channel's third anchor, missed here since the kit shipped */if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=shift;});});if(w.dr.redraw)w.dr.redraw();}}catch(e){}
       try{applyInds(w);}catch(e){}
     });
   }
