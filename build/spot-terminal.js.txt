@@ -238,25 +238,11 @@
     }
     layout();
     /* THE BAND UNDER THE DOCK ON AN INSTALLED iPHONE (2026-10-26, owner's photo + his phone's own rows: `dock2 b793 ih793 sy0
-       vt0 vh793 dh793 sh852 ins34 sa1`, and a second iPhone 932/873). The web app's viewport is SHORTER than the screen by
-       exactly the status-bar height - 59px on both - while the page is laid out from the top under that bar, so the last
-       59px of the screen belong to nothing: not scrolled, not the keyboard, not our padding. A fixed element at bottom:0
-       therefore ends 59px above the glass. `--tgap` publishes that measured difference (standalone only, no scroll, no
-       visual-viewport offset, and only when the top inset says the page really is laid out under the status bar) and the
-       dock extends its BACKGROUND down by it; the cells stay where the viewport ends, because whether that band can be
-       painted at all is still an open question on this iOS - a dock moved into a band that is not painted is a dock
-       nobody can tap. */
-    function gapMeasure() {
-      try {
-        var sa = !!(window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
-        var vv = window.visualViewport, gap = Math.round((screen && screen.height || 0) - window.innerHeight);
-        var top = 0; try { var pr = document.createElement('div'); pr.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:env(safe-area-inset-top,0px)'; document.body.appendChild(pr); top = Math.round(pr.getBoundingClientRect().height); pr.parentNode.removeChild(pr); } catch (e) {}
-        var ok = sa && gap >= 20 && gap <= 120 && (!vv || (Math.round(vv.offsetTop) === 0 && Math.round(vv.height) === window.innerHeight)) && top >= gap - 4 && !window.scrollY;
-        document.body.style.setProperty('--tgap', (ok ? gap : 0) + 'px');
-      } catch (e) {}
-    }
-    gapMeasure(); setTimeout(gapMeasure, 1500);
-    window.addEventListener('resize', function () { placeAll(); layout(); gapMeasure(); });
+       vt0 vh793 dh793 sh852 ins34 sa1`, and a second iPhone 932/873) is answered in CSS now - see the standalone rule in
+       spot-terminal.css.txt: the body is 100lvh and the dock sits (100lvh - 100dvh) below the layout viewport's bottom. The
+       first cut measured screen.height - innerHeight here and only widened the dock's background; the owner's phone then
+       read `dock h120 b852` and he still saw the gap, because the cells had not moved. WebKit bug 301108. */
+    window.addEventListener('resize', function () { placeAll(); layout(); });
 
     /* A SCREEN-SIZED BODY MUST NEVER BE SCROLLED (2026-10-26). iOS scrolls the layout viewport to bring a focused
        input above the keyboard and sometimes leaves that scroll behind when the keyboard goes - every fixed element,

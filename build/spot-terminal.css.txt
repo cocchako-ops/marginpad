@@ -10,6 +10,19 @@
      minimum caps nothing. 100dvh where it exists, 100vh behind it. */
   body.spot-term{overflow:hidden;height:100vh;display:flex;flex-direction:column}
   @supports (height:100dvh){body.spot-term{height:100dvh}}
+  /* AN INSTALLED iPHONE'S VIEWPORT IS SHORT BY THE STATUS BAR, AND 100lvh IS THE REAL HEIGHT (2026-10-26, the owner's
+     third report; WebKit bug 301108). With viewport-fit=cover + the black-translucent status bar, iOS 18/26 sizes a
+     home-screen app's layout viewport as screen MINUS status bar - innerHeight / 100dvh / visualViewport.height read 793
+     on an 852 screen and 873 on a 932 one, both off the owners' own phones - while the page is laid out from the top of
+     the glass, so a fixed element at bottom:0 stops 59px above the edge. That band IS the web view's: 100lvh resolves to
+     the full screen there and what is sized by it is drawn and tappable (three independent real-device reports agree).
+     So inside an installed app the body is 100lvh and the dock moves DOWN by exactly (100lvh - 100dvh) - cells included,
+     not only its background. On a phone whose viewport is honest that difference is zero; outside an installed app the
+     rule does not apply at all. No measurement, no JS - the previous cut measured screen.height - innerHeight in JS and
+     only widened the background, which left the cells where they were. */
+  @media (display-mode: standalone){@supports (height:100lvh){
+    body.spot-term{height:100lvh;--tgap:calc(100lvh - 100dvh)}
+  }}
   /* width:100% + no auto margins: the body is a flex column and A FLEX ITEM WITH AUTO CROSS-AXIS MARGINS IS NEVER
      STRETCHED - it takes its content's width instead. Measured 2026-10-26: the Coins view, whose rows are narrower
      than the screen, shrank the whole wrap to 355px with 17px of page showing down both sides, while every view
@@ -223,11 +236,11 @@
      a coin is tapped and the head carries the way back). Flush at bottom:0; the inset keeps only a sliver because
      the home indicator is ~5px of glyph in a 34px strip and a bar with a centimetre of nothing under its labels
      read as "raised" (owner, three reports). Active = lime glyph + a lit rule across the top of the cell. */
-  /* --tgap (set by the shell, 0 everywhere but an installed iPhone whose viewport is shorter than its screen) pulls the
-     dock's BACKGROUND down over the band under the viewport; the cells keep their place at the viewport's edge */
+  /* --tgap = (100lvh - 100dvh) inside an installed app (see the body rule above), 0 everywhere else: the whole dock,
+     cells and all, sits that much below what the layout viewport calls its bottom, which is where the glass ends */
   .tdock{position:fixed;left:0;right:0;bottom:calc(-1 * var(--tgap, 0px));z-index:2147483002;display:none;
     background:rgba(9,11,15,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border-top:1px solid var(--line2);padding-bottom:calc(var(--tgap, 0px) + max(0px, calc(env(safe-area-inset-bottom) - 30px)))}
+    border-top:1px solid var(--line2);padding-bottom:max(0px, calc(env(safe-area-inset-bottom) - 30px))}
   /* the cookie notice is in flow ABOVE the header and already carries the top inset - the header must not add it again
      (owner's photo 2026-10-26: a status-bar-high black gap between the notice and the brand) */
   html.mp-ckbar .spot-term #siteHead{padding-top:13px!important}

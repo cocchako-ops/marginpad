@@ -91,6 +91,9 @@
   body.paper-page .mpbn{left:0;right:0;bottom:0;border:0;border-top:1px solid rgba(194,246,74,.18);border-radius:0;
     padding:6px 6px max(6px,calc(env(safe-area-inset-bottom) - 16px));background:#0c1109;
     box-shadow:0 -12px 30px -20px rgba(0,0,0,.9)}
+  /* an installed iPhone's layout viewport is short by the status bar (WebKit bug 301108, 2026-10-26 - see the Demo Spot
+     dock): bottom:0 there is 59px above the glass, and 100lvh is the real height. Zero on an honest viewport. */
+  @media (display-mode: standalone){@supports (height:100lvh){body.paper-page .mpbn{bottom:calc(100dvh - 100lvh)}}}
   /* the terminal is a 100dvh flex column, so the room for the bar is reserved on the BODY and is exactly the
      bar's own height - not the pill's 84px, which carried a gap and a side shadow that no longer exist */
   body.paper-page{padding-bottom:var(--mkb)!important}

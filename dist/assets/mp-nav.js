@@ -139,6 +139,11 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
        se odnosi samo za terminal a ne za ceo sajt") - that rule lives in the terminal's own stylesheet, and it
        changes position only: the same four cells, the same handlers. */
     +   '.mpbn{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}'
+    /* AN INSTALLED iPHONE'S LAYOUT VIEWPORT IS SHORT BY THE STATUS BAR (2026-10-26, WebKit bug 301108: viewport-fit=cover +
+       black-translucent -> innerHeight/100dvh = screen minus status bar, 793 of 852 on the owner's phone, while 100lvh is
+       the real height and the band under the viewport is drawn). A bar at bottom:9px therefore floated 59px above the
+       glass. In standalone the pill drops by exactly (100lvh - 100dvh); zero on an honest viewport, nothing in a tab. */
+    +   '@media (display-mode: standalone){@supports (height:100lvh){.mpbn{bottom:calc(env(safe-area-inset-bottom) + 9px + 100dvh - 100lvh);}}}'
     +   '.mpbn a{flex:1;background:none;border:none;color:rgba(255,255,255,.62);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:2px 0;text-decoration:none;transition:transform .12s,color .12s;-webkit-tap-highlight-color:transparent;}'
     +   '.mpbn a:active{color:#c2f64a;transform:scale(.86);}'
     +   '.mpbn a.cur{color:#c2f64a;}'
