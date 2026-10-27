@@ -1957,6 +1957,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     w&&(w._aiPlanObj=null); // null it FIRST so the legend (which reads _aiPlanObj) is gone on the redraw below
     if(w&&w.dr&&w.dr.shapes){w.dr.shapes=w.dr.shapes.filter(function(sh){return !sh.ai;});if(w.dr.redraw)w.dr.redraw();}
     if(w)aiRescale(w);try{if(aiEl){[].forEach.call(aiEl.querySelectorAll('.aipc-on'),function(b){b.classList.remove('on');b.textContent=__esT_mpcharts("showOnChart",'Show on chart');});}}catch(e){}}
+  /* THE READER CAN TAKE THE AI'S TRADE OFF THE CHART (2026-10-27, gladijator: "ne moze da obrise Ask AI charts kad napise entry stop
+     loss"). The plan is price lines (unhittable by the drawing canvas) plus ai:1 rects, persisted beside the drawings since 10-15 -
+     and until today the palette's Clear deliberately KEPT it, Delete could not reach the lines, and the AI's composite shapes were
+     unhittable. So: planWipe() is the ONE way the plan leaves (desktop lines or the phone pane's lines through w._planClear, the
+     ghost, the ai:1 rects, _aiPlanObj nulled BEFORE the save so a reload cannot resurrect it); Clear calls it; a selected ai:1 rect or
+     a tap near a plan line selects the plan as a unit (w._aiSel sentinel, never in shapes) and Delete / the palette's bin removes it;
+     the AI's own zone / pos / fibx / fork select and delete like any drawing - they still never drag (aiFixed). */
+  function aiFixed(s){return !!s&&s.by==='ai'&&(s.t==='zone'||s.t==='vp'||s.t==='pos'||s.t==='fibx'||s.t==='fork');}
+  function planWipe(w){if(!w)return;try{if(w._planClear)w._planClear();else aiClearPlan(w);}catch(e){}w._aiPlanObj=null;w._aiPlanDrew=false;try{aiGhostClear(w);}catch(e){}
+    try{if(w.dr&&w.dr.shapes){w.dr.shapes=w.dr.shapes.filter(function(s){return !s.ai;});if(w.dr.sel&&w.dr.sel.ai)w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}}catch(e){}
+    try{if(w.dr&&w.dr.save)w.dr.save();}catch(e){}}
   /* flash one level: a thick copy of the line for a moment, so a tap on a card row points at the chart */
   function aiFlash(w,price){if(!w||!w.candle||!(price>0))return;try{var l=w.candle.createPriceLine({price:+price,color:'#ffffff',lineWidth:3,lineStyle:0,axisLabelVisible:true,title:''});setTimeout(function(){try{w.candle.removePriceLine(l);}catch(e){}},900);}catch(e){}}
   /* drew = the model drew the setup itself with actions. Then the plan contributes ONLY the trade levels (entry, stop, targets):
@@ -2718,12 +2729,22 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
     // ---- interactions ----
     function pos(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
     function d2seg(px,py,x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy,t=L2?((px-x1)*dx+(py-y1)*dy)/L2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));}
+    /* the AI plan as a selectable unit: its price lines live on the LWC series, not on this canvas, so a tap within 7px of one
+       selects a sentinel (never pushed into shapes - redraw/strokeShape never see it; handleAt refuses it; delSel wipes the plan) */
+    function planPrices(){var P=w._aiPlanObj;if(!P||typeof P!=='object')return [];var a=[];[P.entry,P.stop].forEach(function(v){if(+v>0)a.push(+v);});(P.targets||[]).forEach(function(v){if(+v>0)a.push(+v);});(P.levels||[]).forEach(function(l){if(l&&+l.price>0)a.push(+l.price);});return a;}
+    function planHit(y){var ps=planPrices();for(var i=0;i<ps.length;i++){var yy=yOf(ps[i]);if(yy!=null&&Math.abs(y-yy)<=7)return true;}return false;}
+    function planSel(){w._aiSel=w._aiSel||{t:'aiplan',ai:1,color:'#3fd8e6',w:2,dash:false};return w._aiSel;}
+    function delSel(){var s=w.dr.sel;if(!s)return false;
+      if(s.ai){planWipe(w);w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();try{chartToast(__esT_mpcharts("aiPlanRemoved",'AI plan removed - Show on chart in the answer brings it back.'));}catch(e){}return true;}
+      var ix=w.dr.shapes.indexOf(s);if(ix>=0){mark();w.dr.shapes.splice(ix,1);}w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();return true;}
+    w.dr.delSel=delSel;w.dr.planHit=planHit;w.dr.planSel=planSel;
     function hitShape(s,x,y){var TH=7;
       if(s.t==='hline'){var hy=yOf(s.p);return hy!=null&&Math.abs(y-hy)<=TH;}
       if(s.t==='vline'){var vx=xOf(s.l);return vx!=null&&Math.abs(x-vx)<=TH;}
       if(s.t==='text'){var b=s._bb;return !!b&&x>=b.x-6&&x<=b.x+b.w+6&&y>=b.y-b.h-6&&y<=b.y+6;}
       if(s.t==='hray'){var hy2=yOf(s.p),hx2=xOf(s.l1);return hy2!=null&&Math.abs(y-hy2)<=TH&&(hx2==null||x>=hx2-TH);}
-      if(s.by==='ai'&&(s.t==='zone'||s.t==='vp'||s.t==='pos'||s.t==='fibx'||s.t==='fork'))return false;/* the AI's composite shapes are rebuilt from the analysis, never dragged; the reader's own (same types, drawn by hand since 2026-10-08) select and move like anything else */
+      /* the AI's composite shapes (zone / pos / fibx / fork) SELECT like any drawing since 2026-10-27 so they can be deleted; they
+         still never drag or resize (aiFixed() at every drag entry) - they are rebuilt from the analysis, not nudged */
       if(s.t==='vp')return false;
       if(s.t==='zone'){var zy1=yOf(s.p1),zy2=yOf(s.p2),zx1=(s.l1==null)?0:xOf(s.l1);if(zy1==null||zy2==null)return false;return y>=Math.min(zy1,zy2)-TH&&y<=Math.max(zy1,zy2)+TH&&(zx1==null||x>=zx1-TH);}
       if(s.t==='pos'){var py=yOf(s.p),px1=(s.l1==null)?0:xOf(s.l1),ps=yOf(s.stop),pt=(s.tgts&&s.tgts.length)?yOf(+s.tgts[s.tgts.length-1]):null;if(py==null)return false;var lo=Math.min(py,ps==null?py:ps,pt==null?py:pt),hi=Math.max(py,ps==null?py:ps,pt==null?py:pt);return x>=(px1==null?0:px1)-TH&&y>=lo-TH&&y<=hi+TH;}
@@ -2736,7 +2757,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
       if(s.t==='ray'){var en=rayEnd(q.x1,q.y1,q.x2,q.y2);return d2seg(x,y,q.x1,q.y1,en.x,en.y)<=TH;}
       if(s.t==='rect'||s.t==='measure'){var xa=Math.min(q.x1,q.x2),xb=Math.max(q.x1,q.x2),ya=Math.min(q.y1,q.y2),yb=Math.max(q.y1,q.y2);return x>=xa-TH&&x<=xb+TH&&y>=ya-TH&&y<=yb+TH;}
       return false;}
-    function handleAt(s,x,y){if(!s||s.t==='hline'||s.t==='vline'||s.t==='pen'||s.t==='text')return null;
+    function handleAt(s,x,y){if(!s||s.t==='hline'||s.t==='vline'||s.t==='pen'||s.t==='text'||s.t==='aiplan'||aiFixed(s))return null;
       var q=proj2(s);if(q.x1==null||q.y1==null||q.x2==null||q.y2==null)return null;
       if(Math.hypot(x-q.x1,y-q.y1)<=11)return 'h1';if(Math.hypot(x-q.x2,y-q.y2)<=11)return 'h2';return null;}
     var drag=null;
@@ -2746,8 +2767,10 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
         var h=handleAt(w.dr.sel,p.x,p.y);
         if(h){mark();drag={mode:h,s:w.dr.sel};return;}
         var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
+        if(!hitS&&planHit(p.y))hitS=planSel();/* a tap on the AI's entry / stop / target line selects the plan as one unit */
         w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
-        if(hitS){var snap;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){snap=null;}mark();drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};}
+        if(hitS&&!hitS.ai&&!aiFixed(hitS)){var snap;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){snap=null;}mark();drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};}
+        else if(hitS){/* the AI's plan or one of its composite shapes: selected (the bin lights up), never dragged */}
         else if(w.dr._auto){w.dr._auto=0;w.dr.on=false;try{w.el.classList.remove('drawing');var _atg=w.el.querySelector('.cwin-draw-tg');if(_atg)_atg.classList.remove('on');}catch(_3){}}/* auto edit-session (entered by clicking a drawing outside draw mode) ends on an empty click - this one click is consumed, the next gesture pans the chart normally */
         return;}
       if(tl==='alert'){createChartAlert(w,p.y);return;}
@@ -2847,16 +2870,18 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
        a deselect click the same way). Zero overhead with no drawings (early return). */
     w._drBodyPd=function(e){
       lastDrW=w;/* the window the keyboard shortcuts belong to */
-      if(w.dead||!w.dr||w.dr.on||!w.dr.shapes.length)return;
+      if(w.dead||!w.dr||w.dr.on||(!w.dr.shapes.length&&!w._aiPlanObj))return;
       if(e.button!=null&&e.button!==0)return;
       var p=pos(e);if(!(p.x>=0&&p.y>=0&&p.x<=w.dr.W&&p.y<=w.dr.H))return;
       var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
+      if(!hitS&&planHit(p.y))hitS=planSel();/* the AI's plan lines are selectable outside draw mode too - one tap, then the bin or Delete */
       if(!hitS)return;
       e.preventDefault();e.stopPropagation();
       w.dr.on=true;w.dr._auto=1;
       try{w.el.classList.add('drawing');var tg=w.el.querySelector('.cwin-draw-tg');if(tg)tg.classList.add('on');}catch(_){}
       if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';
       w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
+      if(hitS.ai||aiFixed(hitS))return;/* selected for deletion, never dragged */
       var L=toL(p.x),P=toP(p.y),snap=null;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){}
       mark();drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};
       try{cv.setPointerCapture(e.pointerId);}catch(_3){}
@@ -2867,7 +2892,7 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          tries first. Only one window may answer a keystroke, so the most recently pointed-at one does. */
       if((e.ctrlKey||e.metaKey)&&!e.altKey&&/^[zyZY]$/.test(e.key||'')){if(lastDrW&&lastDrW!==w)return;var isRedo=(e.key==='y'||e.key==='Y'||e.shiftKey);var did=isRedo?(w.dr.redo&&w.dr.redo()):(w.dr.undo&&w.dr.undo());if(did){e.preventDefault();try{if(typeof chartToast==='function')chartToast(isRedo?__esT_mpcharts("redone",'Redone'):__esT_mpcharts("undone",'Undone - the drawing is back where it was'));}catch(_){}}return;}
       if(!w.dr.on)return;
-      if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){var ix=w.dr.shapes.indexOf(w.dr.sel);if(ix>=0){mark();w.dr.shapes.splice(ix,1);}w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();e.preventDefault();}
+      if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){delSel();e.preventDefault();}
       else if(e.key==='Escape'&&w._drCancelMulti&&w._drCancelMulti()){e.preventDefault();}
       else if(e.key==='Enter'&&w.dr.cur&&w.dr.cur._multi){finishMulti();e.preventDefault();}
       else if(e.key==='Escape'&&w.dr.sel){w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();}};window.addEventListener('keydown',w._drKey); // handler ref kept on w so closeWin can removeEventListener (was leaking per window over preset/layout switches)
@@ -2936,8 +2961,11 @@ try{var _wr=w&&w.el&&w.el.getBoundingClientRect();if(_wr&&_wr.height>0){aiEl.sty
          redo beside it; the Done-less multi-tool in progress is cancelled first, as before. */
       if(b.hasAttribute('data-undo')){if(w._drCancelMulti&&w._drCancelMulti()){closePops();return;}var _u=w.dr.undo?w.dr.undo():false;if(!_u&&w.dr.shapes.length){/* nothing recorded yet (shapes restored from storage): fall back to the old behaviour */w.dr.shapes.pop();w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}closePops();syncUI();return;}
       if(b.hasAttribute('data-redo')){if(w.dr.redo)w.dr.redo();closePops();syncUI();return;}
-      if(b.hasAttribute('data-clear')){if(w.dr.mark)w.dr.mark();w.dr.shapes=w.dr.shapes.filter(function(x){return !!x.ai;});w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
-      if(b.hasAttribute('data-del')){if(sel){var ix=w.dr.shapes.indexOf(sel);if(ix>=0){if(w.dr.mark)w.dr.mark();w.dr.shapes.splice(ix,1);}w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();}closePops();return;}
+      /* CLEAR CLEARS EVERYTHING (2026-10-27): it used to keep the AI's plan overlay on purpose, back when that overlay was transient;
+         since the plan is persisted (10-15) that left a reader with entry / stop / target lines nothing on the palette could remove
+         (gladijator). The reader's shapes come back through Undo; the AI plan through "Show on chart" in the answer. */
+      if(b.hasAttribute('data-clear')){if(w.dr.mark)w.dr.mark();var _hadPlan=!!w._aiPlanObj;w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;planWipe(w);if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();if(_hadPlan){try{chartToast(__esT_mpcharts("aiPlanRemoved",'AI plan removed - Show on chart in the answer brings it back.'));}catch(_e){}}return;}
+      if(b.hasAttribute('data-del')){if(sel){if(w.dr.delSel)w.dr.delSel();else{var ix=w.dr.shapes.indexOf(sel);if(ix>=0){if(w.dr.mark)w.dr.mark();w.dr.shapes.splice(ix,1);}w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}syncUI();}closePops();return;}
       if(b.hasAttribute('data-lw')){var lw=+b.getAttribute('data-lw')||2;if(sel){if(w.dr.mark)w.dr.mark();sel.w=lw;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.lw=lw;syncUI();return;}
       if(b.hasAttribute('data-dash')){if(sel){if(w.dr.mark)w.dr.mark();sel.dash=!sel.dash;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.dash=!w.dr.dash;syncUI();return;}
       if(b.classList.contains('cwin-color')){var c=b.getAttribute('data-color');if(sel){if(w.dr.mark)w.dr.mark();sel.color=c;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}w.dr.color=c;closePops();syncUI();return;}

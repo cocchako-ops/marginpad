@@ -292,7 +292,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{if(window.__mpChScale&&window.__mpChScale.get()!=='lin')window.__mpChScale.apply(p);}catch(e){}
     try{if(window.__mpChStyle){window.__mpChStyle.wrap(p);if(window.__mpChStyle.get()!=='candles')window.__mpChStyle.apply(p,'#2ebd85','#ff6258');}}catch(e){}
     // price-anchored drawing (reuse the desktop engine → trendline/fib/h-line/v-line/pen + colours, and it re-projects on rotation/resize)
-    try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,sym:p.sym,tf:p.tf,bars:p.bars,dead:false};p.w._planRestore=function(plan){try{mAiDraw(p,plan);}catch(e){}};/* the stored AI plan comes back through the pane's own price-line drawer (2026-10-15) */window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
+    try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,sym:p.sym,tf:p.tf,bars:p.bars,dead:false};p.w._planRestore=function(plan){try{mAiDraw(p,plan);}catch(e){}};/* the stored AI plan comes back through the pane's own price-line drawer (2026-10-15) */p.w._planClear=function(){try{mAiClear(p);}catch(e){}try{document.querySelectorAll('.mfc .aipc-on.on').forEach(function(b){b.classList.remove('on');b.textContent=__esT_mpmcharts("showOnChart",'Show on chart');});}catch(e){}};/* and leaves through it too: the engine's Clear / Delete on the plan call this on a phone (2026-10-27) */window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
     loadKlines(p);
   }
   // klines fetch is split into two JOBS so the CALLER picks intent, never a bool it passes in (the loadData/chartSync

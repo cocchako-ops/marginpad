@@ -252,7 +252,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + 'header .hsoc-ic svg{display:block;width:16px;height:16px}'
     + 'header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}'
     + "header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}"
-    + "header .hsoc-t i{font-family:'Space Mono',monospace;font-style:normal;font-size:10px;letter-spacing:.03em;color:#7f8893;margin-top:2px}"
+    + "header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}"
     + 'header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}'
     + '@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}'
     + 'header .hsoc+.hjr{margin-left:2px}';
