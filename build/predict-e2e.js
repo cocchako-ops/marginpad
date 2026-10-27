@@ -67,14 +67,15 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
   chk('cron waits for the NEXT 1D candle before settling (closed-candle rule)', /const later = [\s\S]{0,200}some\(b => \+b\.time > want\)/.test(src) && src.indexOf('!later) return;') > 0);
   chk('Ticks source declared with a day cap', /k: 'predict', label: 'Daily call', cap: 13/.test(src));
 
-  // ---- browser: the homepage card
+  // ---- browser: the call box under its board. It was a Today card on /season/ until 2026-09-28, then a box under the season
+  // page's board, and since 2026-10-27 it lives under the Daily BTC call board on /leaderboards/ (owner: the boards moved there).
   let guest = null, member = null;
   await withBrowser(async (browser) => {
     const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
     await page.setCacheEnabled(false); await page.setBypassServiceWorker(true); await page.setViewport({ width: 1366, height: 900 });
-    await page.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 }); // the daily-call card moved from the homepage to /season/ (2026-09-06 homepage by intent)
-    await page.waitForFunction("document.getElementById('dc') && !document.getElementById('dc').hidden", { timeout: 20000 }).catch(() => {});
-    guest = await page.evaluate(() => { const b = document.getElementById('dc'); if (!b || b.hidden) return { shown: false }; return { shown: true, formHidden: document.getElementById('dcForm').hidden, sub: document.getElementById('dcSub').textContent.slice(0, 60), state: document.getElementById('dcState').textContent }; });
+    await page.goto(ORIGIN + '/leaderboards/?cb=' + Date.now() + '#call', { waitUntil: 'networkidle2', timeout: 90000 });
+    await page.waitForFunction("document.querySelector('#callbox .bybox2.call .sub')", { timeout: 20000 }).catch(() => {});
+    guest = await page.evaluate(() => { const b = document.getElementById('callbox'); if (!b || b.hidden || !b.querySelector('.bybox2.call')) return { shown: false }; return { shown: true, formHidden: !document.getElementById('dcForm'), sub: (b.querySelector('.sub') || {}).textContent.slice(0, 60), state: (b.querySelector('.st') || {}).textContent }; });
     await ctx.close();
 
     const ctx2 = await browser.createBrowserContext(); const p2 = await ctx2.newPage();
@@ -82,27 +83,27 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
     await p2.setRequestInterception(true);
     p2.on('request', (req) => {
       const u = req.url();
-      if (u.indexOf('/api/predict') >= 0 && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ day, yday: day, cutoff: Date.now() + 3600000, open: true, live, cutoffH: 20, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], board: [{ name: 'alpha', pts: 20, n: 2 }, { name: 'beta', pts: 8, n: 1 }], callers: 2, me: { today: null, yday: { guess: live * 1.004, close: live, err: 0.4, pts: 8, ticks: 9, settled: 1 }, streak: 1, season: { pts: 8, n: 1, rank: 2 } }, signedIn: true }) });
+      if (u.indexOf('/api/predict') >= 0 && req.method() === 'GET') return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ day, yday: day, cutoff: Date.now() + 3600000, open: true, live, cutoffH: 20, tiers: [[0.25, 12], [0.5, 8], [1, 5], [2, 2]], prizes: [12, 5, 3], board: [{ name: 'alpha', pts: 20, n: 2 }, { name: 'beta', pts: 8, n: 1 }], callers: 2, me: { today: null, yday: { guess: live * 1.004, close: live, err: 0.4, pts: 8, ticks: 0, settled: 1 }, streak: 1, season: { pts: 8, n: 1, rank: 2 } }, signedIn: true }) });
       return req.continue();
     });
-    await p2.goto(ORIGIN + '/season/?cb=' + Date.now() + '#today', { waitUntil: 'networkidle2', timeout: 90000 });
-    await p2.waitForFunction("document.getElementById('dc') && !document.getElementById('dc').hidden && !document.getElementById('dcForm').hidden", { timeout: 20000 }).catch(() => {});
+    await p2.goto(ORIGIN + '/leaderboards/?cb=' + Date.now() + '#call', { waitUntil: 'networkidle2', timeout: 90000 });
+    await p2.waitForFunction("document.getElementById('dcForm') && document.getElementById('dcIn')", { timeout: 20000 }).catch(() => {});
     member = await p2.evaluate(() => {
-      const b = document.getElementById('dc'); if (!b || b.hidden) return { shown: false };
+      const b = document.getElementById('callbox'); if (!b || b.hidden || !b.querySelector('.bybox2.call')) return { shown: false };
       b.scrollIntoView({ block: 'center' });
-      const r = b.getBoundingClientRect(), col = b.parentElement.getBoundingClientRect();
-      const hh = document.getElementById('hhWrap'); const hr = hh && !hh.hidden ? hh.getBoundingClientRect() : null;
-      const inp = document.getElementById('dcIn'), ir = inp.getBoundingClientRect(); const hit = document.elementFromPoint(ir.left + ir.width / 2, ir.top + ir.height / 2);
+      const r = b.getBoundingClientRect(), col = document.getElementById('board').getBoundingClientRect();
+      const inp = document.getElementById('dcIn'); if (!inp) return { shown: true, formHidden: true };
+      const ir = inp.getBoundingClientRect(); const hit = document.elementFromPoint(ir.left + ir.width / 2, ir.top + ir.height / 2);
       const go = document.getElementById('dcGo'), gr = go.getBoundingClientRect(); const hit2 = document.elementFromPoint(gr.left + gr.width / 2, gr.top + gr.height / 2);
-      return { shown: true, formHidden: document.getElementById('dcForm').hidden, inputReach: hit === inp, buttonReach: hit2 === go, inside: r.left >= col.left - .5 && r.right <= col.right + .5, clearOfHH: !hr || r.top >= hr.bottom - .5 || r.bottom <= hr.top + .5, yday: document.getElementById('dcY').textContent.slice(0, 80), board: document.getElementById('dcBoard').textContent.slice(0, 60), scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 };
+      return { shown: true, formHidden: false, inputReach: hit === inp, buttonReach: hit2 === go, inside: r.left >= col.left - .5 && r.right <= col.right + .5, yday: (b.querySelector('.dc-y') || {}).textContent || '', banner: (document.getElementById('bBanner') || {}).textContent || '', scrollsX: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 };
     });
     await p2.screenshot({ path: path.join(__dirname, 'vault-shots', 'predict-member.png') });
     await ctx2.close();
   });
-  chk('season page: guest sees the card with the sign-in copy and no form', guest && guest.shown && guest.formHidden && /Sign in/.test(guest.sub), guest);
-  chk('season page: member sees the form, input and button reachable', member && member.shown && !member.formHidden && member.inputReach && member.buttonReach, member);
-  chk('season page: card inside its column, clear of Happy Hour, no horizontal scroll', member && member.inside && member.clearOfHH && !member.scrollsX, member && { inside: member.inside, clear: member.clearOfHH, sx: member.scrollsX });
-  chk('season page: yesterday result and the board render', member && /Yesterday/.test(member.yday) && /alpha/.test(member.board), member && { y: member.yday, b: member.board });
+  chk('leaderboards: guest sees the call box with the sign-in copy and no form', guest && guest.shown && guest.formHidden && /Sign in/.test(guest.sub), guest);
+  chk('leaderboards: member sees the form, input and button reachable', member && member.shown && !member.formHidden && member.inputReach && member.buttonReach, member);
+  chk('leaderboards: the box sits inside the board panel, no horizontal scroll', member && member.inside && !member.scrollsX, member && { inside: member.inside, sx: member.scrollsX });
+  chk('leaderboards: yesterday\'s result renders and the banner counts who is calling today', member && /Yesterday/.test(member.yday) && /2 calling today/.test(member.banner), member && { y: member.yday, b: member.banner });
 
   await dropUser(UID); await dropUser(UID2);
   const gone = await get('/api/predict?uid=' + UID);

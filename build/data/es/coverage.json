@@ -1099,38 +1099,38 @@
  },
  {
   "rel": "coin/bnb/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
   "rel": "coin/btc/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
   "rel": "coin/doge/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
   "rel": "coin/eth/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
   "rel": "coin/sol/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
   "rel": "coin/xrp/index.html",
-  "cover": 0.9242424242424242,
-  "hit": 61,
+  "cover": 0.9264705882352942,
+  "hit": 63,
   "missing": 5
  },
  {
@@ -1652,9 +1652,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.9827586206896551,
-  "hit": 228,
-  "missing": 4
+  "cover": 0.9700854700854701,
+  "hit": 227,
+  "missing": 7
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1730,9 +1730,9 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.9361702127659575,
-  "hit": 88,
-  "missing": 6
+  "cover": 0.8297872340425532,
+  "hit": 78,
+  "missing": 16
  },
  {
   "rel": "levels/index.html",
@@ -1785,7 +1785,7 @@
  {
   "rel": "liquidations/index.html",
   "cover": 1,
-  "hit": 92,
+  "hit": 94,
   "missing": 0
  },
  {
@@ -1994,15 +1994,15 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.9477611940298507,
-  "hit": 127,
-  "missing": 7
+  "cover": 0.9264705882352942,
+  "hit": 126,
+  "missing": 10
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.8178137651821862,
-  "hit": 202,
-  "missing": 45
+  "cover": 0.8072289156626506,
+  "hit": 201,
+  "missing": 48
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2036,9 +2036,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.9351851851851852,
-  "hit": 101,
-  "missing": 7
+  "cover": 0.8363636363636363,
+  "hit": 92,
+  "missing": 18
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2078,9 +2078,9 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 0.9594594594594594,
-  "hit": 71,
-  "missing": 3
+  "cover": 0.92,
+  "hit": 69,
+  "missing": 6
  },
  {
   "rel": "squads/index.html",
@@ -2312,8 +2312,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 0.9791666666666666,
-  "hit": 470,
-  "missing": 10
+  "cover": 0.9735772357723578,
+  "hit": 479,
+  "missing": 13
  }
 ]

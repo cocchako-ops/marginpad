@@ -8349,7 +8349,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=acab8d12" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=074c95b8" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -20595,7 +20595,7 @@ async function handleAuth(url, request, env, ctx) {
     // the dashboard polls this every 30s and every deploy resets the DO - a mid-flight reset threw
     // "internal error; reference = …" as a 500 that lit the Health tab. Retry once, then fail SOFT.
     for (let attempt = 0; attempt < 2; attempt++) {
-      try { const r = await stub.fetch(new Request('https://do/admin' + url.search)); return jr(await r.json()); } catch (e) {}
+      try { const r = await stub.fetch(new Request('https://do/admin' + url.search)); const d = await r.json(); if (d && Array.isArray(d.users) && url.searchParams.get('e2e') !== '1') d.users = d.users.filter(u => !/^e2e[_-]/i.test(String(u.username || ''))); return jr(d); } catch (e) {} // test accounts leave the Users tab by default (2026-10-27); ?e2e=1 shows them
     }
     return jr({ users: [], total: 0, newToday: 0, activeToday: 0, transient: true });
   }
@@ -22127,6 +22127,15 @@ async function handleReward(url, request, env) {
       if (Array.isArray(arr) && arr.length) {
         const prof = await resolveProfiles(env, arr.map(e => e.address));
         arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } }); // faucet rows minted from an account carry no device/country of their own - borrow the user's
+        // TEST ROWS NEVER REACH THE DESK BY DEFAULT (2026-10-27, owner: "users with balance" was a list of e2e accounts) - the
+        // activity feed's rule applied here: hidden unless ?e2e=1; the purge route takes them out of the store, this keeps the
+        // next suite's leftovers out of the owner's read in the meantime
+        if (url.searchParams.get('e2e') !== '1') {
+          const isE2 = e => /^u:e2e/i.test(String(e.address || '')) || /^e2e[_-]/i.test(String(e.username || ''));
+          if (path === '/accounts' && Array.isArray(data.accounts)) { const b4 = data.accounts.length; data.accounts = data.accounts.filter(e => !isE2(e)); if (typeof data.count === 'number') data.count -= (b4 - data.accounts.length); }
+          else if (path === '/log' && Array.isArray(data.log)) data.log = data.log.filter(e => !isE2(e));
+          else if (Array.isArray(data.pending) || Array.isArray(data.decided)) { data.pending = (data.pending || []).filter(e => !isE2(e)); data.decided = (data.decided || []).filter(e => !isE2(e)); }
+        }
         txt = JSON.stringify(data);
       }
     } catch (e) {}
@@ -23382,6 +23391,7 @@ export default {
         const accts = []; (out.wds || []).forEach(w => { accts.push(w.acct); (w.shared || []).forEach(s => accts.push(s.acct)); });
         const prof = await resolveProfiles(env, accts);
         const nameOf = a => { const pr = prof[String(a || '').replace(/^u:/, '')]; return pr || null; };
+        if (url.searchParams.get('e2e') !== '1') out.wds = (out.wds || []).filter(w => !/^u:e2e/i.test(String(w.acct || ''))); // test payouts never reach the desk by default (2026-10-27)
         out.wds = (out.wds || []).map(w => { const pr = nameOf(w.acct); return { ...w, who: (pr && pr.username) || '', email: (pr && pr.email) || '', shared: (w.shared || []).map(s => { const p2 = nameOf(s.acct); return { ...s, who: (p2 && p2.username) || '', email: (p2 && p2.email) || '' }; }) }; });
       } catch (e) {}
       try { // Bybit affiliate check per row: ok = UID on the allowlist · missing = numeric UID not on it (rejectable) · na = legacy 0x wallet, or the list is empty
@@ -23860,8 +23870,9 @@ export default {
         env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/accounts')).then(r => r.json()).catch(() => null) : null,
         env.COMM ? env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new&q=' + encodeURIComponent(q))).then(r => r.json()).catch(() => null) : null,
       ]);
-      const users = ((ur && ur.users) || []).slice(0, 6).map(u => ({ email: u.email || '', username: u.username || '', cc: u.cc || '', pv: u.pv || 0, trades: u.trades || 0, created: u.created || 0 }));
-      const accounts = ((ar && ar.accounts) || []).filter(a => String(a.address || '').toLowerCase().indexOf(ql) >= 0).slice(0, 6).map(a => ({ address: a.address, balanceUsd: +a.balanceUsd || 0, claims: a.claims || 0, banned: !!a.banned }));
+      const showE2 = url.searchParams.get('e2e') === '1'; // test accounts are not search results (2026-10-27)
+      const users = ((ur && ur.users) || []).filter(u => showE2 || !/^e2e[_-]/i.test(String(u.username || ''))).slice(0, 6).map(u => ({ email: u.email || '', username: u.username || '', cc: u.cc || '', pv: u.pv || 0, trades: u.trades || 0, created: u.created || 0 }));
+      const accounts = ((ar && ar.accounts) || []).filter(a => String(a.address || '').toLowerCase().indexOf(ql) >= 0 && (showE2 || !/^u:e2e/i.test(String(a.address || '')))).slice(0, 6).map(a => ({ address: a.address, balanceUsd: +a.balanceUsd || 0, claims: a.claims || 0, banned: !!a.banned }));
       const posts = ((cr && cr.posts) || []).slice(0, 6).map(x => ({ id: x.id, title: x.title, author: x.author, ncom: x.ncom || 0, likes: x.likes || 0 }));
       return new Response(JSON.stringify({ users, accounts, posts }), { headers: jh2 });
     }
@@ -24549,6 +24560,22 @@ export default {
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
     }
+    /* THE E2E PURGE DESK (2026-10-27, owner: "obrisi istoriju svih e2e naloga svuda na mp-ops"): one call sweeps every store a
+       test account can leave a row in - the ledger (every table, by the `u:e2e` prefix), the OpsLog rings (rows naming an
+       e2e account or written with the admin key), and the sign-up/support queues. DRY RUN by default; `{apply:true}` deletes.
+       UserStore accounts themselves go through `node build/e2e-sweep.js` / `e2euser rm` (per uid). The predicate is the prefix,
+       never a heuristic - a real member can never match it. */
+    if (url.pathname === '/api/admin/e2epurge' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      let pb = {}; if (request.method === 'POST') { try { pb = await request.json(); } catch (e) {} }
+      const apply = pb.apply === true, out = { dry: !apply };
+      const led = env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')) : null;
+      if (led) {
+        try { out.ledger = await (await led.fetch(new Request('https://do/acct/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ sweep: true, dry: !apply }) }))).json(); } catch (e) { out.ledger = { error: String(e && e.message || e) }; }
+        if (apply) { try { out.exsign = await (await led.fetch(new Request('https://do/exsign/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:e2esweep', sweep: true }) }))).json(); } catch (e) {} }
+      }
+      if (apply && env.OPSLOG) { out.rings = {}; for (const frag of ['e2e_', 'u:e2e', '"e2":1', '"e2":true']) { try { out.rings[frag] = (await (await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: frag, keys: ['evlog', 'pvlog', 'authlog', 'alertlog', 'bylog'] }) }))).json()).deleted; } catch (e) { out.rings[frag] = 'err'; } } }
+      return new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/e2euser' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E: mint/remove a throwaway member {uid, op}
       let eb = {}; try { eb = await request.json(); } catch (e) {}
       // {op:'mk', xp:N} also grants XP (e2e uids only) so an E2E can pass the Bronze gate on rewards routes (moon-limit-e2e, 2026-09-13)
@@ -24566,6 +24593,7 @@ export default {
         // nor `op:'orphans'` can reach, and support-who-e2e files real ones - a test ticket on the owner's desk
         // is the same pollution as a test post. The purge route cannot do this: it is scoped to inbound mail.
         try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + eu }) })); } catch (e) {}
+        try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/acct/e2erm', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + eu }) })); } catch (e) {} // the whole ledger footprint (accounts, acctlog, withdrawals, shoplog, prempay...) - 2026-10-27
         // ...and its SIGN-UP CLAIMS (2026-10-24), the same store and the same reason: signup-venues-e2e files real
         // ones, and eleven of them sitting on the Bitget desk as "approved" is what made a healthy system read as
         // if it had paid for referrals that do not exist.
@@ -25857,9 +25885,11 @@ export default {
     }
     if (url.pathname === '/api/admin/activity' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops People > Activity (2026-09-06): the 24h ring, every actor (user or guest device), and the abuse radar computed over the window
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      if (request.method === 'POST' && url.searchParams.get('purge')) { // POST ?purge=<substring>: delete matching rows from the 24h rings (owner cleanup of test traffic)
+      if (request.method === 'POST' && url.searchParams.get('purge')) { // POST ?purge=<substring>: delete matching rows from the 24h rings (owner cleanup of test traffic); ?purge=pred + a JSON body {pred:{ip,since,until,nouid,pathq,burstMs},dry} purges by predicate (2026-10-27, probe visits)
         const q = String(url.searchParams.get('purge') || '').slice(0, 64);
-        try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q, keys: ['evlog', 'pvlog', 'authlog'] }) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info', quiet: true }); } catch (e) {} /* quiet = record-only: the E2E cleanup ran this 26 times a week into the owner's phone (2026-09-12); mp-ops Alerts keeps the trail */ return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response('{"error":"unavailable"}', { status: 503, headers: jh2 }); }
+        let pbody = { q, keys: ['evlog', 'pvlog', 'authlog'] };
+        if (q === 'pred') { let pb = {}; try { pb = await request.json(); } catch (e) {} if (!pb || !pb.pred) return new Response('{"error":"pred_missing"}', { status: 400, headers: jh2 }); pbody = { pred: pb.pred, dry: pb.dry === true, keys: Array.isArray(pb.keys) ? pb.keys : ['evlog', 'pvlog'] }; }
+        try { const pr = await env.OPSLOG.get(env.OPSLOG.idFromName('main')).fetch(new Request('https://do/purge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(pbody) })); const pj = await pr.json(); try { await tgAdmin(env, '<b>Activity log</b> purged rows containing "' + q + '": ' + JSON.stringify(pj.deleted || {}), { kind: 'activity-purge', sev: 'info', quiet: true }); } catch (e) {} /* quiet = record-only: the E2E cleanup ran this 26 times a week into the owner's phone (2026-09-12); mp-ops Alerts keeps the trail */ return new Response(JSON.stringify(pj), { status: pr.status, headers: jh2 }); } catch (e) { return new Response(JSON.stringify({ error: 'unavailable', why: String(e && e.message || e).slice(0, 200) }), { status: 503, headers: jh2 }); } // `why`: a purge of 300 rows answered a bare "unavailable" twice on 2026-10-27 while an 80-row one passed - the swallowed reason rule
       }
       if (request.method === 'POST' && url.searchParams.get('inject') && isAdminKey(env, adminKeyFrom(request, url))) { // E2E hook (key only): store rows as if the site had written them - every row is forced e2 so the daily read never shows them
         let b = {}; try { b = await request.json(); } catch (e) {}
@@ -27600,6 +27630,34 @@ export class OpsLog {
     if (path === '/purge' && request.method === 'POST') { // ops: drop every ring row whose payload contains a substring (test-traffic cleanup, 2026-09-06: "e2e_ keeps gifting")
       let b = {}; try { b = await request.json(); } catch (e) {}
       const q = String(b.q || '').slice(0, 64); const keys = (Array.isArray(b.keys) ? b.keys : ['evlog', 'pvlog']).map(k => String(k).replace(/[^a-z]/g, '')).filter(Boolean);
+      /* PREDICATE PURGE (2026-10-27, owner: "posete koje si nabio danas sa testiranjem da sklonis"): a substring cannot name a
+         probe visit - it is an ordinary pageview from the owner's own IP. `pred` names it exactly: the IP, a time window, no
+         account (`nouid`), and either a path carrying a probe query (`pathq`) or a visitor id that occurs only inside a short
+         burst and never again (`burstMs`: every row of that visitor fits in that many ms; a real reader comes back). `dry`
+         counts and deletes nothing; the ids returned by a dry run are what the apply deletes, nothing else. */
+      if (b.pred && typeof b.pred === 'object') {
+        const P = b.pred, dry = b.dry === true, ip = String(P.ip || ''), since = +P.since || 0, until = +P.until || Date.now(), pathq = Array.isArray(P.pathq) ? P.pathq.map(String) : [], burstMs = +P.burstMs || 0;
+        if (!ip || !since) return this.j({ error: 'pred_needs_ip_and_since' }, 400);
+        const out = {}, sample = [];
+        for (const k of keys) {
+          const rows = this.rows('SELECT id, ts, j FROM ring WHERE k=? AND ts>=? AND ts<=?', k, since, until);
+          const parsed = rows.map(r => { let o = null; try { o = JSON.parse(r.j); } catch (e) {} return { id: r.id, ts: r.ts, o }; }).filter(r => r.o && String(r.o.ip || '') === ip && (!P.nouid || !r.o.uid));
+          const byV = {}; parsed.forEach(r => { const v = String(r.o.v || r.o.vid || ''); if (!byV[v]) byV[v] = []; byV[v].push(r); });
+          const hit = [];
+          parsed.forEach(r => {
+            const p = String(r.o.p || r.o.path || '');
+            const q1 = pathq.some(s => s && p.indexOf(s) >= 0);
+            const v = String(r.o.v || r.o.vid || ''); const vr = byV[v] || [];
+            const span = vr.length ? Math.max.apply(null, vr.map(x => x.ts)) - Math.min.apply(null, vr.map(x => x.ts)) : 0;
+            const burst = burstMs > 0 && v && !r.o.uid && span <= burstMs && !vr.some(x => x.o.uid);
+            if (q1 || burst || P.any === true) hit.push(r); // `any`: every row that passed the ip / window / nouid filter - the probes' first request of each fresh context carries no did yet, so they collapse into ONE ip|ua-hashed visitor with a day-long span that no burst rule can name
+          });
+          out[k] = hit.length; if (sample.length < 12) hit.slice(0, 12 - sample.length).forEach(r => sample.push({ k, ts: r.ts, p: r.o.p || r.o.path, d: r.o.d, v: r.o.v, t: r.o.t }));
+          // 50 ids a statement: the first apply (2026-10-27) bound 200 and the DO threw on the bound-parameter cap - the dry run had passed because it binds nothing, so the worker answered "unavailable" for a purge whose count it had just printed
+          if (!dry && hit.length) { for (let i = 0; i < hit.length; i += 50) { const ch = hit.slice(i, i + 50).map(r => r.id); this.state.storage.sql.exec('DELETE FROM ring WHERE id IN (' + ch.map(() => '?').join(',') + ')', ...ch); } }
+        }
+        return this.j({ ok: 1, dry, deleted: out, sample });
+      }
       if (q.length < 3) return this.j({ error: 'q_too_short' }, 400);
       const out = {};
       for (const k of keys) { try { out[k] = +(this.rows('SELECT COUNT(*) c FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%')[0] || {}).c || 0; this.state.storage.sql.exec('DELETE FROM ring WHERE k=? AND j LIKE ?', k, '%' + q + '%'); } catch (e) { out[k] = -1; } }
@@ -29157,6 +29215,25 @@ export class RewardLedger {
       // the sweep: every row whose UID is one of ours, whatever account it was filed under
       if (body.sweep === true) { try { gone += sql.exec("DELETE FROM exsign WHERE uid LIKE 'e2e%' OR acct LIKE 'u:e2e%'").rowsWritten || 0; } catch (e) {} }
       return this.j({ ok: true, deleted: gone });
+    }
+    /* THE WHOLE LEDGER FOOTPRINT OF A TEST ACCOUNT (2026-10-27, owner: "obrisi istoriju svih e2e naloga svuda na mp-ops ...
+       na rewards 'users with balance' izaslo mi je mnogo tih naloga"). `/remove` wipes accounts/vidlock/lb only; a throwaway
+       member also leaves acctlog, withdrawals, shoplog, prempay/apipay, lbpay rows, promos, msgs, notes - and the faucet desk
+       listed every one of them. Self-guarded like the two routes above: an `u:e2e` account, or `sweep` over that prefix;
+       `dry` counts and deletes nothing. */
+    if (path === '/acct/e2erm') {
+      const ac3 = String(body.acct || ''), sweep3 = body.sweep === true, dry3 = body.dry === true;
+      if (!sweep3 && !/^u:e2e/i.test(ac3)) return this.j({ error: 'not_an_e2e_row', acct: ac3 }, 400);
+      const T = [['accounts', 'address'], ['withdrawals', 'address'], ['msgs', 'address'], ['log', 'address'], ['vidlock', 'address'], ['lb', 'address'], ['notes', 'address'], ['lbban', 'address'],
+        ['shoplog', 'acct'], ['acctlog', 'acct'], ['prempay', 'acct'], ['apipay', 'acct'], ['promos', 'acct'], ['xengage', 'acct'], ['lbpayouts', 'acct'], ['lbpay', 'acct']];
+      const out = {}; let total = 0;
+      for (const [tb, col] of T) {
+        try {
+          const n = sweep3 ? (+(this.rows('SELECT COUNT(*) c FROM ' + tb + ' WHERE ' + col + " LIKE 'u:e2e%'")[0] || {}).c || 0) : (+(this.rows('SELECT COUNT(*) c FROM ' + tb + ' WHERE ' + col + '=?', ac3)[0] || {}).c || 0);
+          if (n) { out[tb] = n; total += n; if (!dry3) { if (sweep3) sql.exec('DELETE FROM ' + tb + ' WHERE ' + col + " LIKE 'u:e2e%'"); else sql.exec('DELETE FROM ' + tb + ' WHERE ' + col + '=?', ac3); } }
+        } catch (e) { out[tb] = 'err'; }
+      }
+      return this.j({ ok: true, dry: dry3, sweep: sweep3, acct: sweep3 ? null : ac3, total, tables: out });
     }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen) - closes/reopens the WHOLE conversation
       const val = body.reopen ? 0 : 1; let changed = 0;
@@ -35799,6 +35876,26 @@ async function handleComm(url, request, env, ctx) {
     return new Response(txt, { headers: jh });
   }
   const rawBody = request.method === 'POST' ? await request.text() : undefined;
+  // A THESIS IS ABOUT A COIN YOU HOLD (2026-10-27, owner: "thesis moze da funkcionise samo ako je neko kupio taj par - ne moze
+  // free write, vec samo za tokene koje drzis"). Checked HERE, against the member's own Demo Spot book, because the page's
+  // picker is a convenience and the Community DO cannot read SpotStore. Every named coin must be held and at least one must
+  // be named; a sale after publishing does not retract the thesis (history is not rewritten).
+  if (request.method === 'POST' && path === '/post') {
+    let pb0 = null; try { pb0 = JSON.parse(rawBody || '{}'); } catch (e) {}
+    if (pb0 && String(pb0.cat || '') === 'thesis') {
+      if (!uid) return jr({ error: 'login_required' }, 401);
+      const want = String(pb0.syms || '').toUpperCase().replace(/[^A-Z0-9,]/g, '').split(',').filter(Boolean).slice(0, 6);
+      let held = null;
+      try {
+        const d = await (await spotStub(env).fetch(new Request('https://do/s2/portfolio?uid=' + encodeURIComponent(uid) + '&ro=1'))).json();
+        held = new Set((d && !d.none ? (d.holds || []) : []).map(h => String((h.meta && h.meta.sym) || String(h.key || '').replace(/^cex:/, '')).toUpperCase()).filter(Boolean));
+      } catch (e) { return jr({ error: 'busy', transient: true }, 503); } // the book could not be read - never let a thesis through on a guess, never blame the member
+      if (!held.size) return jr({ error: 'no_holdings' }, 400);
+      if (!want.length) return jr({ error: 'pick_coin' }, 400);
+      const notHeld = want.filter(s => !held.has(s));
+      if (notHeld.length) return jr({ error: 'not_held', coins: notHeld, held: [...held] }, 400);
+    }
+  }
   const fwd = new Request('https://do' + path + (request.method === 'GET' ? url.search : ''), {
     method: request.method,
     headers: { 'content-type': 'application/json', 'x-uid': uid, 'x-author': author, 'x-admin': admin ? '1' : '0' },

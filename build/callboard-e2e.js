@@ -56,9 +56,11 @@ const UID = 'e2e-callboard1';
   const season = await fetch(B + '/season/?cb=' + Date.now()).then(r => r.text());
   const todaySec = season.slice(season.indexOf('<section class="sec" id="today">'), season.indexOf('<section class="sec" id="pass">'));
   ok(todaySec.length > 200 && !/id="dc"/.test(todaySec) && !/dcForm/.test(todaySec) && !/Daily call/.test(todaySec), '/season/ no longer carries the free daily-call card in the Today section (the form is built by script under the board)');
-  ok(/id="callbox"/.test(season) && /k:'call',key:'topCall'/.test(season) && /Daily BTC call\.<\/b>/.test(season), '/season/ carries the call box under the boards, the board definition and its rule');
+  /* 2026-10-27: the boards and the call box moved to /leaderboards/ (owner); the season page keeps one chip per board linking there */
+  ok(/class="bch"[^>]*data-board="call"[^>]*href="\/leaderboards\/#call"/.test(season) && !/id="callbox"/.test(season), '/season/ links the call board on the leaderboards page and no longer carries the call box');
   const lbp = await fetch(B + '/leaderboards/?cb=' + Date.now()).then(r => r.text());
   ok(/data-b="call"/.test(lbp) && /id="tl-call"/.test(lbp) && (lbp.match(/class="tab[ "]/g) || []).length === 9, '/leaderboards/ has the Daily BTC call tab (nine tabs)');
+  ok(/id="callbox"/.test(lbp) && /call:\{key:'topCall'/.test(lbp) && /function paintCallbox\(/.test(lbp) && /One call a day<\/b>, before 20:00 UTC/.test(lbp), '/leaderboards/ carries the call box under the board, the board definition and its rule');
   const home = await fetch(B + '/?cb=' + Date.now()).then(r => r.text());
   ok(/data-b="call"/.test(home) && /\$\d{3}\+/.test(home), 'the homepage competition card lists the board and a three-figure pool'); /* the static figure is today's all-boards pool; JS is the authority */
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });

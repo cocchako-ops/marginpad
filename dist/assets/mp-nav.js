@@ -91,7 +91,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     /* HOT is the row's badge; the pulse is WAAPI from open() (the old @keyframes never rendered on the owner's
        animations-off Windows) */
     + ".mpnav-hotb{font-style:normal;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.08em;background:var(--lime);color:#0a0b0d;border-radius:5px;padding:2px 5px;flex:0 0 auto;line-height:1.2;}"
-    + '.mpnav-ic{flex-shrink:0;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;}.mpnav-ic svg{width:19px;height:19px;display:block;}'
+    + '.mpnav-ic{flex-shrink:0;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;color:#aab3bf;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);transition:color .15s,border-color .15s,background .15s;}.mpnav-row:hover .mpnav-ic,.mpnav-row.mpnav-kb .mpnav-ic{color:#e9e7df;border-color:rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.04));}.mpnav-here .mpnav-ic{color:#c2f64a;border-color:rgba(194,246,74,.28);background:linear-gradient(180deg,rgba(194,246,74,.1),rgba(194,246,74,.03));}.mpnav-ic svg{width:19px;height:19px;display:block;}'
     + '.mpnav-rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}'
     + '.mpnav-tt{display:flex;align-items:center;gap:6px;min-width:0;}'
     + ".mpnav-rt b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;line-height:1.2;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}"
@@ -188,7 +188,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
        much, which moves everything under it - stating it here means nothing moves */
     + 'body>.wrap:has(>header:first-child){padding-top:0 !important;}'
     // ===== canonical desktop header (homepage-identical) for standalone pages that lack it - applied by normalizeHeader() =====
-    + 'HDRSEL{display:flex !important;align-items:center;justify-content:space-between;gap:14px;}'
+    + 'HDRSEL{display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}'
     + 'HDRSEL .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}'
     + "HDRSEL .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}"
     + 'HDRSEL .mark b{color:#c2f64a;}'
@@ -210,7 +210,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
        account button + 12 + the 1px border = 67px; a page's own header carries no such button before it is rebuilt,
        so the floor is what keeps the first frame the height of the last. */
     + '@media(max-width:720px){HDRSEL .hbot,HDRSEL .hjr{display:none;}HDRSEL .hauth span{display:none;}HDRSEL .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}HDRSEL .hnav{gap:8px;}HDRSEL .lang{max-width:64px;}'
-    +   'HDRSEL{box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);}html.mp-ckbar HDRSEL{min-height:67px;}}'
+    +   'HDRSEL{box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);padding-left:18px !important;padding-right:18px !important;}html.mp-ckbar HDRSEL{min-height:67px;}}'
     /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap - break out) */
     /* height stated (15 + the 32px link + 15), not derived from whatever the page's own markup puts in the bar before
        it is rebuilt - a static header measured 57px on /academy/ and 69px on /premium/ against the canonical 62 */
@@ -219,7 +219,35 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + 'header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}'
     + 'header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}'
     + 'header .lang option{color:#e7ecf2;background:#12161c}'
-    + 'header .htg{color:#229ed9 !important}header .htg:hover{color:#3bb0e8 !important;background:rgba(34,158,217,.14)}header .htg svg{display:block}';
+    /* THE SOCIALS BUTTON (2026-10-27, owner: "jedan logo za socials ... cool padajuci meni sa sva 3"): ONE 30px ring in the header
+       (the Telegram + Instagram pair it replaced took 72px) and a drop-down under it listing Telegram, Instagram and X - each row
+       a 32px ring in its brand colour on hover, the open button lit lime; hover rules under @media(hover:hover) only (a phone
+       latches :hover after a tap); every motion is a transition here or WAAPI in the script, never @keyframes. */
+    /* the bento homepage (and its 12 language copies) paints its header under `contain:paint`, which clips every descendant to the
+       header's box - the open menu was cut off at the header's bottom edge (measured: 62px desktop, 90 phone). Two separate rules on
+       purpose: a browser without :has() drops only the second. */
+    + 'header.mpnav-hdr{contain:none !important}'
+    + 'header:has(.hsoc-m){contain:none !important}'
+    + 'header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}'
+    + 'header .hsocb{width:30px !important;min-width:30px !important;height:30px !important;padding:0 !important;margin:0;border-radius:50% !important;display:inline-flex !important;align-items:center;justify-content:center;color:#9aa3ad !important;background:rgba(255,255,255,.035) !important;border:1px solid rgba(255,255,255,.09) !important;box-sizing:border-box;cursor:pointer;transition:color .15s,border-color .15s,background .15s,box-shadow .18s,transform .12s;-webkit-tap-highlight-color:transparent}'
+    + 'header .hsocb svg{display:block;width:15px;height:15px}'
+    + 'header .hsocb:active{transform:scale(.88);transition-duration:.06s}'
+    + 'header .hsoc.on .hsocb{color:#c2f64a !important;border-color:rgba(194,246,74,.5) !important;background:rgba(194,246,74,.1) !important;box-shadow:0 0 16px rgba(194,246,74,.28)}'
+    + '@media(hover:hover){header .hsocb:hover{color:#e7ecf2 !important;border-color:rgba(255,255,255,.22) !important;background:rgba(255,255,255,.07) !important;box-shadow:0 0 14px rgba(194,246,74,.16)}}'
+    + 'header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}'
+    + 'header .hsoc-m[hidden]{display:none !important}'
+    + 'header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}'
+    + 'header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}'
+    + 'header .hsoc-i+.hsoc-i{margin-top:2px}'
+    + 'header .hsoc-i:active{transform:scale(.97)}'
+    + 'header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}'
+    + 'header .hsoc-ic svg{display:block;width:16px;height:16px}'
+    + 'header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}'
+    + "header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}"
+    + "header .hsoc-t i{font-family:'Space Mono',monospace;font-style:normal;font-size:10px;letter-spacing:.03em;color:#7f8893;margin-top:2px}"
+    + 'header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}'
+    + '@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}'
+    + 'header .hsoc+.hjr{margin-left:2px}';
   /* HDRSEL stands at the START of a selector and each rule carries ONE selector list in which every member starts
      with it (or none does) - hdrCss() rewrites each such member once per alternative. The bundle uses the class
      normalizeHeader() adds; the inline copy uses the first-paint predicate (see add-hdr-crit.js). */
@@ -319,13 +347,13 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   function row(tKey, sKey, href, c, ic, kw, badge) {
     return '<a class="mpnav-row' + (badge === 'HOT' ? ' mpnav-hot' : '') + '" href="' + href + '" data-ic="' + ic + '" data-c="' + c + '"'
       + (kw ? ' data-kw="' + kw + '"' : '') + '>'
-      + '<span class="mpnav-ic" style="color:' + c + ';background:' + c + '22">' + I[ic] + '</span>'
+      + '<span class="mpnav-ic">' + I[ic] + '</span>'
       + '<span class="mpnav-rt"><span class="mpnav-tt"><b>' + TR(tKey) + '</b>' + (badge ? '<i class="mpnav-hotb">' + badge + '</i>' : '') + '</span><small>' + TR(sKey) + '</small></span>'
       + I.chev + '</a>';
   }
   function xrow(key, t, s, c, ic, kw) { // expandable parent row
     return '<button type="button" class="mpnav-row mpnav-expand" data-mpexpand="' + key + '" aria-expanded="false"' + (kw ? ' data-kw="' + kw + '"' : '') + '>'
-      + '<span class="mpnav-ic" style="color:' + c + ';background:' + c + '22">' + I[ic] + '</span>'
+      + '<span class="mpnav-ic">' + I[ic] + '</span>'
       + '<span class="mpnav-rt"><span class="mpnav-tt"><b>' + TR(t) + '</b></span><small>' + TR(s) + '</small></span>' + I.chev + '</button>';
   }
   function sub(href, label, kw) { return '<a class="mpnav-subrow" href="' + href + '" data-ic="calc" data-c="#c2f64a"' + (kw ? ' data-kw="' + kw + '"' : '') + '>' + TR(label) + '</a>'; }
@@ -502,7 +530,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       + __esT_mpnav("marginPad",'<a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a></div>')
       + '<nav class="hnav">'
       + '<a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>'
-      + '<a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="' + TR('hTgTitle') + '" aria-label="' + TR('hTgAria') + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>'
+      + SOC_HTML
       + '<a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' + TR('hMyTrades') + '</a>'
       + '<button type="button" class="hlink hauth" data-auth-open aria-label="' + TR('hSignIn') + '"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>' + TR('hSignIn') + '</span></button>'
       + '<select class="lang" id="langSel" aria-label="Language">' + lo + '</select></nav>';
@@ -603,22 +631,61 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       }
     }
   } catch (e) {} }
-  // Every page's header gets the blue Telegram-group plane after the Bot link. Canonical/injected headers already
-  // carry it inline; this covers standalone pages that keep their OWN inline header (defi, blog, coin, tools…).
-  function ensureTelegram() {
+  // ONE SOCIALS BUTTON (2026-10-27, owner: "ne svidja mi se koliko mesta zauzimaju te 4 stvari gore u header-u ... jedan logo za
+  // socials i da kad kliknu tu izadje im cool padajuci meni sa sva 3"): the Telegram + Instagram pair (72px) is one 30px ring
+  // whose drop-down lists Telegram, Instagram and X. The markup is ONE string here - the canonical header template uses it,
+  // ensureSocials() puts it into a page that keeps its own header (and takes the retired pair out), and build/add-social.js
+  // writes the same string STATICALLY into every such page, so the first frame already carries it (a button that appears when
+  // this bundle runs would slide the whole right cluster - the layout-shift rule). Open/close is WAAPI (the owner's machine
+  // renders no @keyframes), a tap buzzes through mpBuzz, an outside click / Escape / a scroll closes it.
+  /* @SOCHTML */
+  var SOC_HTML = '<div class="hsoc"><button type="button" class="hlink hsocb" aria-label="Follow MarginPad" title="Follow MarginPad" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-4.2M8.4 13.3l7.2 4.2"/></svg></button><div class="hsoc-m" role="menu" hidden><a class="hsoc-i tg" role="menuitem" href="https://t.me/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span><span class="hsoc-t"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class="hsoc-i ig" role="menuitem" href="https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="hsoc-t"><b>Instagram</b><i>@marginpad</i></span></a><a class="hsoc-i x" role="menuitem" href="https://x.com/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span class="hsoc-t"><b>X</b><i>@marginpad</i></span></a></div></div>';
+  /* @/SOCHTML */
+  function socBuzz(p) { try { if (window.mpBuzz) window.mpBuzz(p); else if (navigator.vibrate) navigator.vibrate(p); } catch (_) {} }
+  function socSet(w, on) {
+    var b = w.querySelector('.hsocb'), m = w.querySelector('.hsoc-m'); if (!b || !m) return;
+    if (on) {
+      m.hidden = false; w.classList.add('on'); b.setAttribute('aria-expanded', 'true');
+      try {
+        m.animate([{ opacity: 0, transform: 'translateY(-6px) scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: 190, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        var rows = m.querySelectorAll('.hsoc-i');
+        for (var i = 0; i < rows.length; i++) rows[i].animate([{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: 50 + i * 45, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
+      } catch (e) {}
+      socBuzz(8);
+    } else {
+      w.classList.remove('on'); b.setAttribute('aria-expanded', 'false');
+      var done = function () { if (!w.classList.contains('on')) m.hidden = true; };
+      try { var a = m.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-4px) scale(.97)' }], { duration: 120, easing: 'ease-in' }); a.onfinish = done; a.oncancel = done; } catch (e) { done(); }
+    }
+  }
+  function socCloseAll() { try { var l = document.querySelectorAll('header .hsoc.on'); for (var i = 0; i < l.length; i++) socSet(l[i], false); } catch (e) {} }
+  try {
+    // capture phase: it runs before any page's own delegated handler, and a row's navigation (target=_blank) is left alone
+    document.addEventListener('click', function (e) {
+      var t = e.target; if (!t || !t.closest) return;
+      var b = t.closest('header .hsocb');
+      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll(); if (on) socSet(w, true); return; }
+      if (t.closest('header .hsoc-i')) { socBuzz(10); setTimeout(socCloseAll, 120); return; }
+      if (!t.closest('header .hsoc')) socCloseAll();
+    }, true);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') socCloseAll(); });
+    window.addEventListener('scroll', socCloseAll, { passive: true });
+    window.addEventListener('resize', socCloseAll);
+  } catch (e) {}
+  try { window.mpSocialsClose = socCloseAll; } catch (e) {}
+  function ensureSocials() {
     try {
-      if (document.querySelector('header .htg')) return;
+      if (document.querySelector('header .hsoc')) return;
+      var w = document.createElement('span'); w.innerHTML = SOC_HTML; var el = w.firstChild;
+      var tg = document.querySelector('header .htg');   // a page still carrying the retired pair (a stale cache): the button takes its place
+      if (tg && tg.parentNode) { var ig = document.querySelector('header .hig'); tg.parentNode.insertBefore(el, tg); tg.parentNode.removeChild(tg); if (ig && ig.parentNode) ig.parentNode.removeChild(ig); return; }
       var bot = document.querySelector('header .hbot'); if (!bot || !bot.parentNode) return;
-      var a = document.createElement('a');
-      a.href = 'https://t.me/marginpad'; a.target = '_blank'; a.rel = 'noopener';
-      a.className = 'hlink htg'; a.title = 'Join our Telegram group'; a.setAttribute('aria-label', 'Telegram group');
-      a.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>';
-      bot.parentNode.insertBefore(a, bot.nextSibling);
+      bot.parentNode.insertBefore(el, bot.nextSibling);
     } catch (e) {}
   }
   function mount() { if (!document.body) return;
     normalizeHeader();
-    ensureTelegram();
+    ensureSocials();
     pinHeader();
     window.addEventListener('resize', function () { clearTimeout(window.__mpHdrT); window.__mpHdrT = setTimeout(pinHeader, 150); });
     // Pages that already have their OWN header burger (homepage / lang homepages / defi / app-shell = .hmenu/#mBurger)
@@ -806,7 +873,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     var here = location.pathname.replace(/\/$/, '') || '/';
     var list = recRead().filter(function (r) { return (r.h.split('?')[0].replace(/\/$/, '') || '/') !== here; }).slice(0, 4);
     if (!list.length) { box.hidden = true; box.innerHTML = ''; return; }
-    box.innerHTML = '<span>' + TR('brRecent') + '</span>' + list.map(function (r) { var c = /^#[0-9a-f]{6}$/i.test(r.c) ? r.c : '#9aa3ad'; return '<a class="mpnav-rc" href="' + _esc(r.h) + '"><span style="display:inline-flex;color:' + c + '">' + (I[r.ic] || '') + '</span>' + _esc(r.t) + '</a>'; }).join('');
+    box.innerHTML = '<span>' + TR('brRecent') + '</span>' + list.map(function (r) { return '<a class="mpnav-rc" href="' + _esc(r.h) + '"><span style="display:inline-flex;color:#aab3bf">' + (I[r.ic] || '') + '</span>' + _esc(r.t) + '</a>'; }).join('');
     box.hidden = false;
   }
   // ---- the page you are on ----

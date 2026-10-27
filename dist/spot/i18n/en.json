@@ -94,7 +94,7 @@
   "m_today": "today",
   "m_today_none": "the first daily mark lands after midnight UTC",
   "m_worth": "Portfolio worth",
-  "n_all": "All chains",
+  "n_all": "All",
   "rug_badge": "RUGGED",
   "s_amt": "Amount (USD)",
   "s_bought": "Bought <b>{qty} {sym}</b> at {px} for {usd}.",
@@ -186,7 +186,7 @@
   "ths_h": "Write a thesis",
   "ths_ok": "Published. <b>+{xp} XP</b> and <b>+{ticks} Ticks</b> - it is on the blog and in the Community.",
   "ths_publishing": "Publishing…",
-  "ths_s": "it lands on the blog and in the Community · 50 XP + 5 Ticks, then 25 XP per member who buys on it",
+  "ths_s": "about a coin you hold · it lands on the blog and in the Community · 50 XP + 5 Ticks, then 25 XP per member who buys on it",
   "ths_title": "Title",
   "ths_title_ph": "Why I hold PEPE into the listing",
   "ths_toast": "Thesis published · +{xp} XP · +{ticks} Ticks",
@@ -232,5 +232,11 @@
   "y_more": "Show {n} more · {left} left",
   "y_nomatch": "Nothing matches.",
   "y_ph": "Search a coin or paste a contract address",
-  "y_s": "live prices · no fees"
+  "y_s": "live prices · no fees",
+  "ths_pick": "Which coin is this thesis about?",
+  "ths_rule": "A thesis is written about a coin you hold on Demo Spot. Buy it first, then say why you hold it - and what would prove you wrong.",
+  "ths_none": "You hold no coins yet. Buy one on Demo Spot first - a thesis is about something you hold.",
+  "ths_e_not_held": "You can only write about a coin you hold - sell-side opinions are for the floor chat.",
+  "ths_e_no_holdings": "Buy a coin on Demo Spot first - a thesis is about something you hold.",
+  "ths_e_pick_coin": "Pick the coin the thesis is about."
 }

@@ -62,10 +62,13 @@ const near = (a, b) => Math.abs(a - b) < 0.006;
   const bb = comp && (comp.boards || []).find(b => b.id === 'bybit');
   ok(bb && bb.pool && bb.pool.rebate === true && bb.pool.base_usd === 100 && bb.pool.share_of_commission === 0.52 && typeof bb.pool.per_100k_volume_usd === 'number' && Array.isArray(bb.prize_usd_ranks) && bb.prize_usd_ranks.length === 10 && near(bb.prize_pool_usd, lb.bybitPool.usd), '/api/competition: the Bybit board starts at $100 and states its growth per $100k, same pool as /lb, ten ranks', bb && { pool: bb.prize_pool_usd, how: (bb.pool || {}).how });
   ok(comp && comp.prize_pool_usd_per_season >= 270, 'the season total is at least $270 ($170 fixed + the $100 Bybit start)', comp && comp.prize_pool_usd_per_season);
+  /* 2026-10-27: the boards moved from /season/#boards to /leaderboards/ (owner). The pool helpers, the tier attribute and the
+     per-rank split live on the leaderboards page now; the season page keeps one chip per board linking there. */
   const season = await fetch(B + '/season/?cb=' + Date.now()).then(r => r.text());
-  ok(/function bybPool\(/.test(season) && /data-tier=/.test(season) && /The pool starts at \$100 every season/.test(season) && /\$50, \$25, \$10, \$5, \$5 and \$1 each/.test(season) && !/\$200/.test(season), '/season/: pool helpers, tier attribute, the $100-start rule with the per-rank split, no $200 left');
+  ok(/class="bch bybit"[^>]*href="\/leaderboards\/#bybit"/.test(season) && /data-tier=/.test(season) && !/function bybPool\(/.test(season) && !/\$200/.test(season), '/season/: the Bybit chip carries the tier and links /leaderboards/#bybit; the board code is gone; no $200 left');
   const lbp = await fetch(B + '/leaderboards/?cb=' + Date.now()).then(r => r.text());
   ok(/START · GROWS( WITH VOLUME)?/.test(lbp) && /* the one-row tab (2026-10-05) prints "START · GROWS"; the rule text below still says it in full */ /\$100 is the start, volume adds to it/.test(lbp) && !/\$200/.test(lbp), '/leaderboards/: the tab says $100 start, the rule says volume adds to it, no $200 left');
+  ok(/function bybPool\(/.test(lbp) && /data-tier=/.test(lbp) && /\$50, \$25, \$10, \$5, \$5 and \$1 at the start/.test(lbp) && /id="bybox"/.test(lbp), '/leaderboards/: pool helpers, tier attribute, the per-rank split and the UID registration box');
   // clean up
   await J('/api/admin/bybitvol?ws=' + WS, { method: 'POST', headers: H, body: JSON.stringify({ clear: true }) });
   await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });

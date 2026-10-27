@@ -25,6 +25,15 @@ const M = [{ uid: 'e2e-thxa' }, { uid: 'e2e-thxb' }, { uid: 'e2e-thxc' }].map(m 
   const xpOf = async m => { const d = await J('/api/admin/xpdiag?u=' + encodeURIComponent(m.un), { headers: H }); return d && d.user ? +d.user.xp_life || +d.user.xp || 0 : null; };
   const [A, Bm, C] = M;
   ok(A.id && Bm.id && C.id, 'three throwaway members minted with Demo Spot accounts');
+  // A THESIS IS ABOUT A COIN YOU HOLD (2026-10-27, owner): a thesis naming a coin the author does not hold is refused before
+  // it reaches the Community DO, and a holder's thesis goes through. A holds nothing yet -> refused; then A buys SOL and publishes.
+  const bodyEarly = ('I hold SOL on Demo Spot because the trend on the daily chart is still up and every pullback to the twenty day average has been bought for six weeks. The thesis is simple: as long as price holds above the last swing low I stay in, and if it closes below that level for two days in a row I am out. ').repeat(3);
+  const th0 = await J('/api/comm/post', { method: 'POST', headers: A.MH, body: JSON.stringify({ title: 'E2E thesis: why this demo account holds SOL this season', body: bodyEarly, cat: 'thesis', syms: 'SOL' }) });
+  ok(th0 && th0.error === 'no_holdings', 'a member who holds nothing cannot publish a thesis (no_holdings)', th0);
+  const a0 = await A.spot('/trade', { side: 'buy', kind: 'cex', sym: 'SOL', usd: 50 });
+  ok(a0 && a0.ok, 'A buys $50 of SOL first', a0 && { ok: a0.ok, error: a0.error });
+  const th1 = await J('/api/comm/post', { method: 'POST', headers: A.MH, body: JSON.stringify({ title: 'E2E thesis: why this demo account holds BTC this season', body: bodyEarly, cat: 'thesis', syms: 'BTC' }) });
+  ok(th1 && th1.error === 'not_held' && Array.isArray(th1.coins) && th1.coins[0] === 'BTC', 'a thesis naming a coin A does NOT hold is refused (not_held) and names the coin', th1);
   const xpA0 = await xpOf(A);
   const body = ('I hold SOL on Demo Spot because the trend on the daily chart is still up and every pullback to the twenty day average has been bought for six weeks. The thesis is simple: as long as price holds above the last swing low I stay in, and if it closes a daily candle below it I am wrong and I sell the position whole. The level that proves me wrong is the one marked on my chart, not a feeling. I am sizing this at fifteen percent of the account so a loss there costs about two percent of the portfolio. ').repeat(2).trim();
   const th = await J('/api/comm/post', { method: 'POST', headers: A.MH, body: JSON.stringify({ title: 'E2E thesis: why this demo account holds SOL this season', body, cat: 'thesis', syms: 'SOL' }) });
