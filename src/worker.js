@@ -6576,6 +6576,35 @@ const isStatsKey = (env, k) => !!k && (k === statsKeyOf(env) || k === adminKeyOf
 async function sha8(s) {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; }
 }
+/* THE CRAWLER'S ENTRY FILES ANSWER 304 WHEN NOTHING CHANGED (2026-10-27, owner: "jos uvek nema poseta od claude AI").
+   MEASURED over 30 days before writing a line: ClaudeBot made 2,196 requests and **1,933 of them (88%) were robots.txt
+   and the four sitemaps** - sitemap.xml 383 times, sitemap-es.xml 385, sitemap-recaps.xml 386 (a file holding ONE url),
+   community/sitemap.xml 394, robots.txt 385, i.e. all five re-downloaded about every two hours - while /paper-trade got
+   16 hits and most of the 972 urls those sitemaps declare got none at all. Every one of the five answered 200 with the
+   whole body: three carried no ETag, and the three that did (served by the assets binding) ignored `If-None-Match` and
+   answered 200 anyway, so a conditional request was impossible and `max-age=0, must-revalidate` invited the next poll.
+   A crawler that spends seven requests in eight on files that have not changed never reaches the pages.
+   This is also the only half of "be cited by Claude" that is ours: delivery is fine (every Claude and Google agent
+   gets 200 with the full body, verified), and what index Claude searches is not. */
+async function condRes(request, body, ctype, maxAge) {
+  /* THE TAG IS WEAK ON PURPOSE. Cloudflare compresses these files at the edge and converts a STRONG ETag to a weak one
+     on the way out, so a strong tag here came back to the crawler as `W/"..."` while our own 304 repeated it strong -
+     the same file describing itself two ways on two answers. Measured on production the day this shipped. It is also
+     the honest form: the tag is derived from the content, which is byte-identical, while the transfer encoding is not. */
+  const bare = '"' + (await sha8(String(body))) + '"', tag = 'W/' + bare;
+  const inm = String(request.headers.get('if-none-match') || '');
+  const h = { 'content-type': ctype, 'cache-control': 'public, max-age=' + maxAge, 'etag': tag };
+  // a client may send several tags, and either form of ours
+  if (inm && (inm === '*' || inm.split(',').some(t => t.trim().replace(/^W\//, '') === bare))) return new Response(null, { status: 304, headers: h });
+  return new Response(body, { headers: h });
+}
+// the same treatment for a file the assets binding serves (robots.txt, sitemap-es.xml, the llms trio): take the bytes,
+// then answer the conditional request ourselves - the binding's own ETag is never honoured through a worker fetch
+async function condAsset(request, env, path, ctype, maxAge) {
+  const r = await env.ASSETS.fetch(new Request('https://marginpad.io' + path));
+  if (!r.ok) return r;
+  return condRes(request, await r.text(), ctype, maxAge);
+}
 // ---- X (Twitter) posting: OAuth 1.0a user-context, POST /2/tweets. Own scheduled posts only (no auto-reply to others). ----
 function _xEnc(s) { return encodeURIComponent(String(s)).replace(/[!*'()]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase()); }
 async function _hmacSha1(key, msg) { const enc = new TextEncoder(); const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']); const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg)); return btoa(String.fromCharCode.apply(null, new Uint8Array(sig))); }
@@ -8520,11 +8549,14 @@ async function handleLiqRecap(url, env) {
   const extraHead = '<script type="application/ld+json">' + faq + '</script><meta property="og:title" content="' + title + '"><meta property="og:description" content="' + desc + '">';
   return new Response(_rcShell(title, desc, 'https://marginpad.io/liquidations/recap/' + day + '/', body, extraHead), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
 }
-async function handleRecapSitemap(env) {
+async function handleRecapSitemap(env, request) {
   let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
   const urls = ['<url><loc>https://marginpad.io/liquidations/recap/</loc><changefreq>daily</changefreq></url>']
     .concat(idx.map(x => '<url><loc>https://marginpad.io/liquidations/recap/' + x.day + '/</loc><lastmod>' + x.day + '</lastmod></url>'));
-  return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls.join('') + '</urlset>', { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+  const body = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls.join('') + '</urlset>';
+  // ClaudeBot fetched this ONE-url file 386 times in 30 days (2026-10-27) - the conditional answer is in condRes
+  if (request) return condRes(request, body, 'application/xml; charset=utf-8', 21600);
+  return new Response(body, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=21600' } });
 }
 async function archiveLiq(env) {
   if (!env.BACKUP || !env.COLLECTOR_URL || !env.STATS) return;
@@ -22509,7 +22541,13 @@ export default {
       const ua9 = request.headers.get('user-agent') || '';
       // Bravebot joined 2026-10-16: Brave Search is the index Claude's web search runs on, and Brave held 19 of our ~870 pages
       // that day - whether its crawler comes at all was unmeasurable because the token was not here.
-      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot|Bravebot/i);
+      /* Claude-SearchBot and Google-CloudVertexBot joined 2026-10-27 and the reason is the Googlebot lesson of 09-19 all
+         over again: a token that is not in this regex reads as "that crawler has never come", which is not the same
+         statement at all. Claude-SearchBot is the bot that builds Claude's OWN search index (none of ClaudeBot,
+         Claude-User or Claude-Web matches that string, so it was recorded nowhere), and Google-CloudVertexBot is
+         Gemini's grounding fetcher. The two crawlers behind the owner's question were the two we could not see.
+         A more specific token goes BEFORE the shorter one it contains. */
+      const m9 = ua9.match(/OAI-SearchBot|ChatGPT-User|GPTBot|PerplexityBot|Perplexity-User|Claude-SearchBot|ClaudeBot|Claude-User|Claude-Web|anthropic-ai|bingbot|copilot|DuckAssistBot|Google-CloudVertexBot|Googlebot|Google-InspectionTool|Google-Extended|Applebot-Extended|Applebot|Amazonbot|MistralAI-User|YouBot|cohere-ai|Meta-ExternalAgent|Bytespider|CCBot|Bravebot/i);
       if (m9) env.AE.writeDataPoint({ blobs: ['aibot', m9[0].toLowerCase(), url.pathname.slice(0, 96)], doubles: [1], indexes: ['aibot'] });
       /* SEO tooling, and the distinction that makes it worth reporting. The web-wide crawlers are
          background noise - they visit everyone, always. The site-audit crawlers have no web-wide
@@ -23044,8 +23082,17 @@ export default {
           ? u.replace(/<lastmod>[^<]*<\/lastmod>/, '<lastmod>' + smDay + '</lastmod>')
           : u.replace('</loc>', '</loc><lastmod>' + smDay + '</lastmod>');
       });
-      return new Response(smXml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600', 'x-mp-sitemap-fresh': String(smN) } });
+      // 6h, and a 304 when the day's rewrite has not moved it: the body changes at most once a day (74 entries take
+      // today's date), so a crawler polling every two hours cost us four full downloads a day for nothing
+      const smR = await condRes(request, smXml, 'application/xml; charset=utf-8', 21600);
+      smR.headers.set('x-mp-sitemap-fresh', String(smN));
+      return smR;
     }
+    // The other four files a crawler polls, with the same conditional answer (2026-10-27 - see condRes). robots.txt keeps
+    // a one-hour ceiling because a rule we change has to reach crawlers the same day; the rest are six hours.
+    if (url.pathname === '/robots.txt') return condAsset(request, env, '/robots.txt', 'text/plain; charset=utf-8', 3600);
+    if (url.pathname === '/sitemap-es.xml') return condAsset(request, env, '/sitemap-es.xml', 'application/xml; charset=utf-8', 21600);
+    if (url.pathname === '/llms.txt' || url.pathname === '/llms-full.txt' || url.pathname === '/llms-changelog.txt') return condAsset(request, env, url.pathname, 'text/plain; charset=utf-8', 21600);
     if (url.pathname === '/openapi.json') return handleOpenApi();
     if (url.pathname === '/.well-known/ai-plugin.json' || url.pathname === '/.well-known/openapi.json' || url.pathname === '/.well-known/mcp.json') return handleAgentManifest(url);
     if (url.pathname === '/api/changelog.xml' || url.pathname === '/api/changelog.json') { // Bot API changelog as a feed (Phase 0, 2026-09-12): a builder subscribes once and learns about every change
@@ -24634,6 +24681,87 @@ export default {
       const top = (byPath || []).slice(0, 25).map(r => String(r.path || '')).filter(p => /^\/[a-z0-9\/_.-]*$/i.test(p));
       const direct = top.length ? await aeQuery(env, `SELECT toDateTime(timestamp) AS ts, blob3 AS path, blob2 AS cc, blob5 AS dev FROM marginpad_events WHERE blob1='pageview' AND blob4='direct' AND blob3 IN (${top.map(p => "'" + p + "'").join(',')}) AND ${D} ORDER BY ts DESC LIMIT 6000`) : [];
       return J({ bot, days: dA, rows: rows || [], byPath: byPath || [], refDay: refDay || [], refSrc: refSrc || [], direct: direct || [], aeErr: aeQuery.lastErr || '' });
+    }
+    /* HOW MANY PEOPLE DOES CLAUDE SEND US? (2026-10-27, owner: "jos uvek nema poseta od claude AI").
+       The honest answer is that we CANNOT see them the way we see ChatGPT: chatgpt.com appends
+       `utm_source=chatgpt.com` to every link it hands a reader, so those 5,775 visits name themselves, while
+       claude.ai sends no referrer and no parameter at all - measured, zero pageviews carrying "claude" in 30 days
+       against 350 Claude-User page fetches. So this estimates the channel instead of pretending to count it, and
+       states its own error bar:
+         for every page an assistant's fetcher pulled on a reader's behalf, count the DIRECT arrivals on that same
+         page in the W minutes AFTER the fetch, and against them the direct arrivals in the W minutes BEFORE it.
+       The window before is the CONTROL - the same page, the same time of day, the same traffic - so `excess` is
+       what the fetch itself brought. **The estimator is calibrated on ChatGPT**, where the true figure is known
+       from the utm: if it cannot reproduce a number we already know, it may not be trusted for Claude. That
+       calibration is the whole reason this route is worth reading, and `ratio` is what to look at. */
+    if (url.pathname === '/api/admin/aiclicks' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const dC = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), DC = "timestamp > NOW() - INTERVAL '" + dC + "' DAY";
+      const winM = Math.max(1, Math.min(120, +url.searchParams.get('win') || 15)), W = winM * 60000;
+      const BOTS = ['claude-user', 'claude-searchbot', 'claudebot', 'google-cloudvertexbot', 'chatgpt-user', 'oai-searchbot', 'perplexity-user', 'duckassistbot'];
+      const inList = BOTS.map(b => "'" + b + "'").join(',');
+      // a path a reader could have landed on: not robots/sitemaps, and not the secret-probing a spoofed UA does
+      const realPath = (p) => /^\/[A-Za-z0-9\/_.-]*$/.test(p) && !/^\/(robots\.txt|sitemap|community\/sitemap|llms)/.test(p) && !/\/\.|\.env|credentials|secrets|\.git|tfvars|\.zshrc|firebase/i.test(p);
+      // ORDER BY the ALIAS, never the raw `timestamp` column - the AE SQL API refuses that and the route then
+      // answers an empty set with no error at all (caught the day this shipped: coverage 0%, aeErr none)
+      const fetches = await aeQuery(env, `SELECT blob2 AS bot, toDateTime(timestamp) AS ts, blob3 AS path FROM marginpad_events WHERE blob1='aibot' AND blob2 IN (${inList}) AND ${DC} ORDER BY ts DESC LIMIT 30000`);
+      const fr = (fetches || []).map(r => ({ bot: String(r.bot || ''), t: Date.parse(String(r.ts).replace(' ', 'T') + 'Z'), p: String(r.path || '') })).filter(r => r.t && realPath(r.p));
+      // the pages to pull direct arrivals for: the busiest, capped so the IN(...) stays sane - `coverage` says what share of fetches they are
+      const cnt = {}; fr.forEach(r => { cnt[r.p] = (cnt[r.p] || 0) + 1; });
+      const paths = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).slice(0, 80);
+      const pset = new Set(paths);
+      const coverage = fr.length ? Math.round(fr.filter(r => pset.has(r.p)).length / fr.length * 100) : 0;
+      const direct = paths.length ? await aeQuery(env, `SELECT toDateTime(timestamp) AS ts, blob3 AS path FROM marginpad_events WHERE blob1='pageview' AND blob4='direct' AND blob3 IN (${paths.map(p => "'" + p + "'").join(',')}) AND ${DC} ORDER BY ts DESC LIMIT 60000`) : [];
+      const byPath = {};
+      for (const r of (direct || [])) { const t = Date.parse(String(r.ts).replace(' ', 'T') + 'Z'); if (!t) continue; const p = String(r.path || ''); (byPath[p] = byPath[p] || []).push(t); }
+      for (const p of Object.keys(byPath)) byPath[p].sort((a, b) => a - b);
+      const span = (arr, from, to) => { let n = 0; for (const t of arr) { if (t >= from && t < to) n++; else if (t >= to) break; } return n; }; // sorted, so the scan stops early
+      const per = {};
+      for (const r of fr) {
+        if (!pset.has(r.p)) continue;
+        const a = byPath[r.p] || [];
+        const o = per[r.bot] = per[r.bot] || { bot: r.bot, fetches: 0, after: 0, before: 0, pages: new Set() };
+        o.fetches++; o.pages.add(r.p);
+        o.after += span(a, r.t, r.t + W);
+        o.before += span(a, r.t - W, r.t);
+      }
+      // the known channels, for scale and for the calibration
+      const [utmChat, refClaude, refGem, refAll] = await Promise.all([
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE 'chatgpt%' AND ${DC}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE '%claude%' AND ${DC}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND (blob4 LIKE 'gemini%' OR blob4 LIKE '%bard%' OR blob4 LIKE '%vertex%') AND ${DC}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${DC}`),
+      ]);
+      const known = { chatgpt: +((utmChat || [])[0] || {}).n || 0, claude: +((refClaude || [])[0] || {}).n || 0, gemini: +((refGem || [])[0] || {}).n || 0, allPageviews: +((refAll || [])[0] || {}).n || 0 };
+      const rows = Object.values(per).map(o => {
+        const excess = o.after - o.before;
+        return { bot: o.bot, fetches: o.fetches, pages: o.pages.size, arrivalsAfter: o.after, arrivalsBefore: o.before, excess, perFetch: o.fetches ? Math.round(excess / o.fetches * 100) / 100 : 0 };
+      }).sort((a, b) => b.excess - a.excess);
+      // CALIBRATION: ChatGPT names itself, so the estimator can be checked against the truth before it is believed
+      const cg = rows.find(r => r.bot === 'chatgpt-user' || r.bot === 'oai-searchbot');
+      const cgEx = rows.filter(r => r.bot === 'chatgpt-user' || r.bot === 'oai-searchbot').reduce((s, r) => s + r.excess, 0);
+      const ratio = known.chatgpt ? Math.round(cgEx / known.chatgpt * 100) / 100 : null;
+      /* THE CALIBRATION FAILED ON THE DAY THIS SHIPPED AND THE ROUTE SAYS SO (ratio 0.04: the method recovered 232 of
+         5,775 ChatGPT visits we can actually count). The reason is structural, not a tuning problem - most assistant
+         clicks are NOT preceded by a live fetch of that page: the reader clicks a link the assistant took from its
+         INDEX, hours or days after the crawl. So `rows.excess` is not an answer and must never be read as one; several
+         rows are NEGATIVE, which is the honest shape of noise. Publishing a number here would have been a model
+         output dressed as a measurement. What IS countable is below, in `crawlHealth`. */
+      const trust = ratio != null && ratio >= 0.5 && ratio <= 2;
+      const calib = { method: 'direct arrivals on the same page within ' + winM + ' min of the fetch, minus the same window before it', knownChatgptUtm: known.chatgpt, estimatedChatgpt: cgEx, ratio, trustworthy: trust, verdict: ratio == null ? 'uncalibrated - no ChatGPT fetches in the window' : trust ? 'the method reproduces a figure we already know, so the other rows may be read as estimates' : 'METHOD REJECTED (ratio ' + ratio + '): it recovers only a fraction of a channel we can count, so no row here is an estimate of anything. Claude arrivals are not countable - watch crawlHealth instead.' };
+      /* WHAT IS COUNTABLE, AND THEREFORE WHAT TO WATCH. An assistant can only cite a page it has READ. Measured
+         2026-10-27: ClaudeBot made 2,196 requests in 30 days and 1,933 of them (88%) were robots.txt and the four
+         sitemaps re-downloaded whole, leaving ~9 page fetches a day for the 972 urls those sitemaps declare. The
+         conditional answers shipped the same day (condRes) are meant to move this ratio; `pagePct` is the number
+         that says whether they did, and it needs no inference at all. */
+      const entryRe = /^\/(robots\.txt|sitemap|community\/sitemap|llms)/;
+      const health = {};
+      for (const r of (fetches || [])) {
+        const b = String(r.bot || ''), p = String(r.path || ''); if (!b) continue;
+        const h = health[b] = health[b] || { bot: b, entryFiles: 0, pages: 0, junk: 0 };
+        if (entryRe.test(p)) h.entryFiles++; else if (!realPath(p)) h.junk++; else h.pages++;
+      }
+      const crawlHealth = Object.values(health).map(h => Object.assign(h, { total: h.entryFiles + h.pages + h.junk, pagePct: (h.entryFiles + h.pages + h.junk) ? Math.round(h.pages / (h.entryFiles + h.pages + h.junk) * 100) : 0 })).sort((a, b) => b.total - a.total);
+      return J({ days: dC, windowMin: winM, note: 'claude.ai sends no referrer and no utm, so Claude arrivals cannot be COUNTED. Read calib.verdict first: if the method is rejected, ignore `rows` entirely and read `crawlHealth`, which is a plain count.', coveragePct: coverage, pathsSampled: paths.length, crawlHealth, calib, rows, known, aeErr: aeQuery.lastErr || '' });
     }
     if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
@@ -27367,7 +27495,7 @@ export default {
  const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match - 'recap' must never be parsed as a coin slug
-      if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env);
+      if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env, request);
       const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
       if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
     }
@@ -36229,7 +36357,8 @@ async function commPage(url, request, env) {
       + Object.keys(COMM_CATS).map(c => '  <url><loc>https://marginpad.io/community/c/' + c + '</loc><changefreq>daily</changefreq><priority>0.6</priority></url>').join('\n') + '\n'
       + items.map(p => '  <url><loc>https://marginpad.io/community/p/' + p.id + '/' + commSlug(p.title) + '</loc><lastmod>' + new Date(p.ts).toISOString().slice(0, 10) + '</lastmod></url>').join('\n')
       + '\n</urlset>';
-    return new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+    // ClaudeBot fetched this 394 times in 30 days (2026-10-27) - see condRes
+    return condRes(request, xml, 'application/xml; charset=utf-8', 21600);
   }
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }

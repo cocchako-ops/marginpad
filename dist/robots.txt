@@ -53,6 +53,11 @@ Allow: /
 User-agent: Claude-User
 Allow: /
 
+# Claude-SearchBot builds Claude's own search index - the one that decides whether Claude can cite us at all. It was
+# missing from this list AND from our crawler telemetry until 2026-10-27, so "it has never come" was unmeasurable.
+User-agent: Claude-SearchBot
+Allow: /
+
 # Brave Search is the index Claude's web search runs on (Anthropic's subprocessor list). It followed Googlebot's
 # permissions anyway; this names it so nothing a future rule does to "*" can shut it out by accident.
 User-agent: Bravebot
