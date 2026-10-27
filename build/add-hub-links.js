@@ -205,20 +205,56 @@ for (const hub of HUBS) {
     if (inject(path.join(DIST, l, hub, 'index.html'), null, [block('Other languages', '', links)])) n++;
   }
 }
+/* 6b) THE PAGE THAT ANSWERS THE QUESTION GOES ON THE POST A CRAWLER ALREADY WALKS (2026-10-27, owner: "jos uvek nema
+   poseta od claude AI"). MEASURED that day: `/blog/liquidation-cascade-explained/` is the single most-crawled page we
+   own - 1,762 Googlebot hits in 30 days - and it linked exactly ONE MarginPad page. Meanwhile five of the six
+   one-question pages, which exist precisely to be cited by an assistant and sit in the sitemap at daily/priority 1.0
+   with today's lastmod, took ZERO hits from any AI crawler in the same 30 days. Cadence was never their problem;
+   nothing a crawler walks pointed at them. This is the lever the 2026-09-15 round already measured on /trading-api/
+   (6 crawls with 53 inbound links, all on pages crawlers rarely reach -> linked from the coin pages -> 39 assistant
+   visits). Matched on the post's OWN subject, so a post gets the question it actually answers and nothing else - a
+   block that appears on all 107 posts with the same five links is boilerplate, and a post that matches nothing
+   keeps only its translations. */
+const ASK_TOPICS = [
+  { re: /liquidat|cascade|rekt|wipe|margin-call|forced/i, links: [['/how-many-traders-liquidated-today/', 'How many traders were liquidated today'], ['/longs-or-shorts-liquidated-more/', 'Longs or shorts - who lost more'], ['/biggest-liquidation-today/', 'The biggest liquidation today'], ['/heatmap', 'Live liquidation heatmap']] },
+  { re: /funding|basis|carry|perpetual-fee/i, links: [['/is-funding-positive-or-negative/', 'Is funding positive or negative right now'], ['/funding/', 'Live funding rates']] },
+  { re: /\bbot\b|api|algo|automat|script|backtest|mcp/i, links: [['/where-can-i-test-a-trading-bot/', 'Where can I test a trading bot'], ['/mcp-server-for-crypto-trading/', 'MCP server for crypto trading'], ['/trading-api/', 'Free paper-trading API']] },
+  { re: /paper|simulat|practice|demo|journal|beginner|learn|mistake/i, links: [['/paper-trade', 'Free paper trading, no sign-up'], ['/academy/', 'Trading academy']] },
+  { re: /leverage|position-siz|risk|stop-loss|liquidation-price/i, links: [['/calculators', 'Liquidation and position-size calculators']] },
+  { re: /open-interest|long-short|sentiment|positioning/i, links: [['/open-interest/', 'Live open interest'], ['/long-short/', 'Long/short ratio']] },
+];
+// a destination is offered only if it really exists in dist (a tool route is served by the app shell, so allow those by name)
+const ROUTES = new Set(['/paper-trade', '/heatmap', '/calculators', '/screener', '/charts']);
+const liveLink = ([href]) => ROUTES.has(href) || has(href.replace(/^\/|\/$/g, ''));
+function askFor(slug, file) {
+  let hay = slug;
+  try { const h = fs.readFileSync(file, 'utf8'); hay += ' ' + (h.match(/<title>([^<]*)/) || ['', ''])[1] + ' ' + (h.match(/<meta name="description" content="([^"]*)/) || ['', ''])[1]; } catch (e) {}
+  const out = [], seen = new Set();
+  for (const t of ASK_TOPICS) { if (!t.re.test(hay)) continue; for (const l of t.links) { if (seen.has(l[0]) || !liveLink(l)) continue; seen.add(l[0]); out.push(l); } }
+  return out.slice(0, 5); // curated, never a dump
+}
 // 6) blog posts with translations: the English post links every translation, each translation links English + siblings
 const BLOG = path.join(DIST, 'blog');
 if (fs.existsSync(BLOG)) for (const e of fs.readdirSync(BLOG, { withFileTypes: true })) {
   if (!e.isDirectory()) continue;
   const base = path.join(BLOG, e.name);
+  const idx = path.join(base, 'index.html');
+  if (!fs.existsSync(idx)) continue;
   const langs = LANGS.filter(l => fs.existsSync(path.join(base, l, 'index.html')));
-  if (!langs.length || !fs.existsSync(path.join(base, 'index.html'))) continue;
-  if (inject(path.join(base, 'index.html'), null, [block('Read this guide in other languages', '', langs.map(l => ['/blog/' + e.name + '/' + l + '/', LANG_NAMES[l]]))])) n++;
+  // ONE inject per file with EVERY block it should carry: a second inject() on the same file is a no-op without
+  // --refresh and, with it, cuts out the block the first call had just written
+  const bl = [];
+  if (langs.length) bl.push(block('Read this guide in other languages', '', langs.map(l => ['/blog/' + e.name + '/' + l + '/', LANG_NAMES[l]])));
+  const ask = askFor(e.name, idx);
+  if (ask.length) bl.push(block('Answered live on MarginPad', 'Measured from our own feeds, updated continuously.', ask));
+  if (bl.length && inject(idx, null, bl)) n++;
+  if (!langs.length) continue;
   for (const l of langs) {
     const links = [['/blog/' + e.name + '/', 'English']].concat(langs.filter(x => x !== l).map(x => ['/blog/' + e.name + '/' + x + '/', LANG_NAMES[x]]));
     if (inject(path.join(base, l, 'index.html'), null, [block('Other languages', '', links)])) n++;
   }
 }
-// 7) the tools hub points at the pages that had no parent at all
+// 7) the tools hub points at the pages that had no parent at all (numbering kept - 6b sits above with the blog)
 if (has('tools')) {
   const links = [['/premium/', 'MarginPad Premium'], ['/pnl-fee-checker/', 'PnL and fee checker'], ['/best-liquidation-heatmap-tools/', 'Best liquidation heatmap tools'], ['/where-to-start/', 'Where to start'], ['/free-crypto-api/', 'Free crypto API']].filter(([h]) => has(h.replace(/^\/|\/$/g, '')));
   if (inject(rel('tools'), null, [block('More from MarginPad', '', links)])) n++;
