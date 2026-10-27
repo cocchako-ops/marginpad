@@ -140,7 +140,7 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
        re-seated flush to the bottom edge, the way the Demo Spot dock sits (2026-10-25, owner: "ovo za nav bar
        se odnosi samo za terminal a ne za ceo sajt") - that rule lives in the terminal's own stylesheet, and it
        changes position only: the same four cells, the same handlers. */
-    +   '.mpbn{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}'
+    +   '.mpbn{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:9px 2px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}'
     /* AN INSTALLED iPHONE'S LAYOUT VIEWPORT IS SHORT BY THE STATUS BAR (2026-10-26, WebKit bug 301108: viewport-fit=cover +
        black-translucent -> innerHeight/100dvh = screen minus status bar, 793 of 852 on the owner's phone, while 100lvh is
        the real height and the band under the viewport is drawn). A bar at bottom:9px therefore floated 59px above the
@@ -180,8 +180,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     +   'body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}'
     +   'header .nav{display:none !important;}'   /* the cramped desktop header links are replaced by the drawer + bottom bar on mobile */
     /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards). */
-    +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'
-    +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
+    +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'
+    +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
     +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
     + '}'
     /* a header inside a padded .wrap starts that padding down; pinHeader() pulls it to the top edge by exactly that
@@ -190,13 +190,15 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // ===== canonical desktop header (homepage-identical) for standalone pages that lack it - applied by normalizeHeader() =====
     + 'HDRSEL{display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}'
     + 'HDRSEL .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}'
-    + "HDRSEL .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}"
+    /* the mark sits 5px lower than its line box would put it, so the CAPS BASELINE lands on the burger's bottom bar (owner 2026-10-27:
+       "logo nije u ravni sa poslednjom crticom od browse button-a"): measured baseline 33.3 against the bar's bottom 38.3 */
+    + "HDRSEL .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}"
     + 'HDRSEL .mark b{color:#c2f64a;}'
     + 'HDRSEL .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}'
     + 'HDRSEL .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
     + 'HDRSEL .hmenu span:nth-child(2){width:13px;}'
     + 'HDRSEL .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}'
-    + 'HDRSEL .hnav{display:flex;align-items:center;gap:7px;}'
+    + 'HDRSEL .hnav{display:flex;align-items:center;gap:5px;}'
     /* line-height stated, not inherited: a blog page's 1.6 made the same link 2px taller than a tool page's 1.45, so the
        canonical bar measured 65px on one family and 62px on another (12px x 1.5 + 14 of padding = 32, the bar 62) */
     + "HDRSEL .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}"
@@ -206,18 +208,19 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + "HDRSEL .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
     /* the phone variant of the canonical bar - AFTER the base rules above, because `.hbot{display:none}` and
        `.hlink{display:inline-flex}` tie on specificity and the later one wins (the first cut put this block first and
-       the Bot and My Trades links came back on a 390px screen, wrapping the bar to 111px). The bar is 14 + a 40px
-       account button + 12 + the 1px border = 67px; a page's own header carries no such button before it is rebuilt,
-       so the floor is what keeps the first frame the height of the last. */
-    + '@media(max-width:720px){HDRSEL .hbot,HDRSEL .hjr{display:none;}HDRSEL .hauth span{display:none;}HDRSEL .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}HDRSEL .hnav{gap:8px;}HDRSEL .lang{max-width:64px;}'
-    +   'HDRSEL{box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);padding-left:18px !important;padding-right:18px !important;}html.mp-ckbar HDRSEL{min-height:67px;}}'
+       the Bot and My Trades links came back on a 390px screen, wrapping the bar to 111px). The bar is 12 + a 36px
+       account button + 10 + the 1px border = 59px (owner 2026-10-27: a tenth off the 67 it was, the three right-hand
+       controls a tenth smaller, 5px apart and pushed to a 10px right gutter); a page's own header carries no such
+       button before it is rebuilt, so the floor is what keeps the first frame the height of the last. */
+    + '@media(max-width:720px){HDRSEL .hbot,HDRSEL .hjr{display:none;}HDRSEL .hauth span{display:none;}HDRSEL .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}HDRSEL .hnav{gap:5px;}HDRSEL .lang{max-width:64px;}'
+    +   'HDRSEL{box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar HDRSEL{min-height:59px;}}'
     /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap - break out) */
-    /* height stated (15 + the 32px link + 15), not derived from whatever the page's own markup puts in the bar before
-       it is rebuilt - a static header measured 57px on /academy/ and 69px on /premium/ against the canonical 62 */
-    + '@media(min-width:721px){html{overflow-x:clip;}HDRSEL{width:100vw;height:62px;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
+    /* height stated (12 + the 32px link + 12 = 56, a tenth under the 62 it was - owner 2026-10-27), not derived from whatever the
+       page's own markup puts in the bar before it is rebuilt - a static header measured 57px on /academy/ and 69px on /premium/ */
+    + '@media(min-width:721px){html{overflow-x:clip;}HDRSEL{width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
     /* site-wide header tweaks (apply to canonical + injected headers): bigger account icon, language as a transparent globe */
-    + 'header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}'
-    + 'header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}'
+    + 'header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}'
+    + 'header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}'
     + 'header .lang option{color:#e7ecf2;background:#12161c}'
     /* THE SOCIALS BUTTON (2026-10-27, owner: "jedan logo za socials ... cool padajuci meni sa sva 3"): ONE 30px ring in the header
        (the Telegram + Instagram pair it replaced took 72px) and a drop-down under it listing Telegram, Instagram and X - each row
@@ -229,11 +232,12 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + 'header.mpnav-hdr{contain:none !important}'
     + 'header:has(.hsoc-m){contain:none !important}'
     + 'header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}'
-    + 'header .hsocb{width:30px !important;min-width:30px !important;height:30px !important;padding:0 !important;margin:0;border-radius:50% !important;display:inline-flex !important;align-items:center;justify-content:center;color:#9aa3ad !important;background:rgba(255,255,255,.035) !important;border:1px solid rgba(255,255,255,.09) !important;box-sizing:border-box;cursor:pointer;transition:color .15s,border-color .15s,background .15s,box-shadow .18s,transform .12s;-webkit-tap-highlight-color:transparent}'
-    + 'header .hsocb svg{display:block;width:15px;height:15px}'
+    /* no ring (owner 2026-10-27: "treba skinuti taj kruzic"): the glyph alone, 27px of hit area, 10% under the first cut */
+    + 'header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}'
+    + 'header .hsocb svg{display:block;width:17px;height:17px}'
     + 'header .hsocb:active{transform:scale(.88);transition-duration:.06s}'
-    + 'header .hsoc.on .hsocb{color:#c2f64a !important;border-color:rgba(194,246,74,.5) !important;background:rgba(194,246,74,.1) !important;box-shadow:0 0 16px rgba(194,246,74,.28)}'
-    + '@media(hover:hover){header .hsocb:hover{color:#e7ecf2 !important;border-color:rgba(255,255,255,.22) !important;background:rgba(255,255,255,.07) !important;box-shadow:0 0 14px rgba(194,246,74,.16)}}'
+    + 'header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}'
+    + '@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}'
     + 'header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}'
     + 'header .hsoc-m[hidden]{display:none !important}'
     + 'header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}'
@@ -503,11 +507,12 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     var items = [
       ['browse', 'Browse', 'mnBrowse', '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'],
       ['/paper-trade', 'Practice', 'mnPaper', '<path d="M7 3.5v3M7 17.5v3M17 3.5v3M17 13.5v3"/><rect x="4.5" y="6.5" width="5" height="11" rx="1"/><rect x="14.5" y="6.5" width="5" height="7" rx="1"/>'], // candlestick icon + the label reads "Paper Trade" via i18n mnPaper (owner 2026-08-15; internal key stays 'Practice' for the analytics map below)
+      ['/', 'Home', 'mnHome', '<path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.2 10v9.5h11.6V10"/><path d="M10 19.5V14h4v5.5"/>'], // a plain house between Practice and Trades (owner 2026-10-27; a symmetric roof, not the earlier one)
       ['/paper-trade?trades=1', 'Trades', 'mnTrades', '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'],
       ['/', 'Chat', 'mnChat', '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>']
     ];
     var path = location.pathname.replace(/\/$/, '') || '/';
-    var keys = { Browse: 'browse', Practice: 'practice', Trades: 'trades', Chat: 'chat' };
+    var keys = { Browse: 'browse', Practice: 'practice', Home: 'home', Trades: 'trades', Chat: 'chat' };
     var bn = document.createElement('nav'); bn.className = 'mpbn'; bn.setAttribute('aria-label', 'Quick navigation');
     bn.innerHTML = items.map(function (it) {
       var browse = it[0] === 'browse', act = browse || it[1] === 'Chat'; // Chat is an ACTION, not a destination (2026-10-23): a real href here is what pwa-nav.js navigates to in the installed app - see build/fix-pwa-chat-tab.js
@@ -663,13 +668,18 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // capture phase: it runs before any page's own delegated handler, and a row's navigation (target=_blank) is left alone
     document.addEventListener('click', function (e) {
       var t = e.target; if (!t || !t.closest) return;
+      // A SYNTHETIC CLICK IS NOT AN OUTSIDE TAP (owner 2026-10-27: "meni se odmah zatvori ... prozor zatreperi"): on iOS mpBuzz has no
+      // navigator.vibrate and fires the Taptic engine by .click()-ing a hidden <label>, and that click bubbled here as a tap outside
+      // the menu - the very buzz that greeted the open closed it in the same tick. Only a trusted pointer closes.
+      if (e.isTrusted === false) return;
       var b = t.closest('header .hsocb');
-      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll(); if (on) socSet(w, true); return; }
+      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll(); if (on) { socSet(w, true); socOpenY = window.scrollY || 0; } return; }
       if (t.closest('header .hsoc-i')) { socBuzz(10); setTimeout(socCloseAll, 120); return; }
       if (!t.closest('header .hsoc')) socCloseAll();
     }, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') socCloseAll(); });
-    window.addEventListener('scroll', socCloseAll, { passive: true });
+    var socOpenY = 0; // a real scroll closes it; the few pixels a phone settles after a tap do not
+    window.addEventListener('scroll', function () { if (Math.abs((window.scrollY || 0) - socOpenY) > 12) socCloseAll(); }, { passive: true });
     window.addEventListener('resize', socCloseAll);
   } catch (e) {}
   try { window.mpSocialsClose = socCloseAll; } catch (e) {}

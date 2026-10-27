@@ -8227,6 +8227,124 @@ async function settleDailyCalls(env) {
     await env.STATS.put('pred:last', JSON.stringify({ day: yday, close: +bar.close, settled: rj.settled || 0, ticksPaid: rj.ticksPaid || 0, ts: Date.now() }), { expirationTtl: 40 * 86400 });
   } catch (e) {}
 }
+// one backup object, R2 when bound, KV otherwise (25MB/value cap - refuse loudly rather than truncate)
+async function backupPut(env, key, txt) {
+  if (env.BACKUP) { await env.BACKUP.put(key, txt); return; }
+  if (txt.length > 20000000) throw new Error(key + ' ' + Math.round(txt.length / 1e6) + 'MB nears the 25MB KV cap - enable R2 now');
+  await env.STATS.put('bkp:' + key.replace(/^backup\//, '').replace(/\.json$/, '').replace(/-(?=[a-z]+$)/, ':'), txt);
+}
+// ONE PAGED EXPORT FOR EVERY STORE (2026-10-27, the owner's "svako vece spam nightly backup failed"). MEASURED on the probe route:
+// the whole-store dump of UserStore 'main' answers "Invalid string length" after 7 s and every call that follows it answers
+// "Durable Object's isolate exceeded its memory limit and was reset" - i.e. THE NIGHTLY BACKUP WAS RESETTING THE LIVE USER STORE
+// on every */10 retry (28 times on the night of 10-26/27), with every member request inside that window failing. So: a store is
+// read ONE PAGE AT A TIME, a page being at most EXPORT_PAGE_BYTES of JSON, walked by rowid keyset (`?t=<table>&after=<rowid>`,
+// `x-next` carries the cursor, OFFSET paging when a table exposes no rowid), so neither the DO nor the worker ever holds a whole
+// table. `?list=1` names the tables with their COUNT(*). The whole-store answer stays for the small stores (the ledger's 6h set
+// and the rewards restore test read it) and is REFUSED by UserStore (`whole:false`) so no stale caller can repeat the reset.
+const EXPORT_PAGE_BYTES = 3500000;
+function doExport(self, url, TABS, opt) {
+  opt = opt || {};
+  const t = url.searchParams.get('t');
+  if (url.searchParams.get('list')) { const counts = {}; for (const x of TABS) { try { counts[x] = (self.rows('SELECT COUNT(*) n FROM ' + x)[0] || {}).n || 0; } catch (e) { counts[x] = null; } } return self.j({ tables: TABS, counts, page: EXPORT_PAGE_BYTES }); }
+  if (!t) {
+    if (opt.whole === false) return self.j({ error: 'whole_export_retired', why: 'this store is read one page at a time (?list=1, then ?t=<table>&after=<cursor>)', tables: TABS }, 400);
+    const out = { at: Date.now(), tables: {} }; let nRows = 0;
+    for (const x of TABS) { try { out.tables[x] = self.rows('SELECT * FROM ' + x + ' LIMIT 200000'); nRows += out.tables[x].length; } catch (e) { out.tables[x] = { _err: String(e).slice(0, 120) }; } }
+    return new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'x-rows': String(nRows) } });
+  }
+  if (TABS.indexOf(t) < 0) return self.j({ error: 'no_such_table', tables: TABS }, 400);
+  const cap = Math.min(8000000, +url.searchParams.get('cap') || EXPORT_PAGE_BYTES), after = url.searchParams.get('after') || '';
+  const parts = []; let bytes = 0, n = 0, more = false, mode = /^o/.test(after) ? 'offset' : 'rowid', last = +String(after).replace(/^o/, '') || 0;
+  const walk = (byOffset) => { // fills parts from `last`; returns true when a further page exists
+    let cursor = last; parts.length = 0; bytes = 0; n = 0;
+    while (true) {
+      const rows = byOffset ? self.rows('SELECT * FROM ' + t + ' LIMIT 400 OFFSET ?', cursor) : self.rows('SELECT rowid AS _rid, * FROM ' + t + ' WHERE rowid > ? ORDER BY rowid LIMIT 400', cursor);
+      if (!rows.length) { last = cursor; return false; }
+      for (const r of rows) { if (byOffset) cursor++; else { cursor = r._rid; delete r._rid; } const s = JSON.stringify(r); parts.push(s); bytes += s.length + 1; n++; }
+      if (bytes >= cap) { last = cursor; return true; }
+    }
+  };
+  try { more = walk(mode === 'offset'); }
+  catch (e) { // a table without a usable rowid: walk it by OFFSET instead (slower per page, bounded all the same)
+    if (mode === 'offset') return self.j({ error: String(e).slice(0, 160), t }, 500);
+    mode = 'offset'; last = 0; try { more = walk(true); } catch (e2) { return self.j({ error: String(e2).slice(0, 160), t }, 500); }
+  }
+  const next = more ? (mode === 'offset' ? 'o' + last : String(last)) : '';
+  const body = '{"t":' + JSON.stringify(t) + ',"mode":"' + mode + '","n":' + n + ',"next":' + (next ? JSON.stringify(next) : 'null') + ',"rows":[' + parts.join(',') + ']}';
+  return new Response(body, { headers: { 'content-type': 'application/json', 'x-rows': String(n), 'x-next': next } });
+}
+// The restore sandbox's import, shared by the three stores: `{tables:{t:[rows]}}` loads a whole dump, `{table, rows, append}`
+// loads ONE PAGE of a paged dump (append=false truncates the table first - the first page of each table). Each DO keeps its own
+// "never on an instance holding real accounts" guard in front of this. Table names may carry digits (sp2acct, sp2tx) - the
+// first regex here had `[a-z_]` and silently skipped every Spot v3 table.
+function doImportRows(self, sqlX, body) {
+  const counts = {}, errs = {}, added = {}; // errs = the FIRST insert error per table - 1,449 users rows restored as 0 with every error swallowed is how a restore test lies; added = columns the sandbox had to grow
+  const jobs = body && body.tables ? Object.keys(body.tables).map(tn => [tn, body.tables[tn], false]) : (body && body.table ? [[String(body.table), body.rows, !!body.append]] : []);
+  for (const [tn, rows2, append] of jobs) {
+    if (!/^[a-z][a-z0-9_]{1,23}$/.test(tn)) continue;
+    if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
+    if (!append) { try { sqlX.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; } }
+    for (const r2 of rows2.slice(0, 200000)) {
+      if (!r2 || typeof r2 !== 'object') continue;
+      const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
+      if (!cols.length) continue;
+      const ins = 'INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', vals = cols.map(c => (r2[c] === undefined ? null : r2[c]));
+      try { sqlX.exec(ins, ...vals); } catch (e) {
+        const m = /has no column named (\w+)/.exec(String(e && e.message || e));
+        if (m) { // a column the LIVE table grew by a lazy ALTER that the sandbox never ran (users.tickboost_until restored 1,449 rows as 0, 2026-10-27): add it here and retry once - this only ever runs on the restore sandbox
+          const v = r2[m[1]], ty = typeof v === 'number' ? (Number.isInteger(v) ? 'INTEGER' : 'REAL') : 'TEXT';
+          try { sqlX.exec('ALTER TABLE ' + tn + ' ADD COLUMN ' + m[1] + ' ' + ty); sqlX.exec(ins, ...vals); (added[tn] = added[tn] || []).push(m[1]); continue; } catch (e2) { if (!errs[tn]) errs[tn] = String(e2 && e2.message || e2).slice(0, 160); continue; }
+        }
+        if (!errs[tn]) errs[tn] = String(e && e.message || e).slice(0, 160);
+      }
+    }
+    try { counts[tn] = (self.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
+  }
+  return { counts, errs, added };
+}
+// ONE STORE'S DUMP. `opt.whole` = try the whole-store answer first (rewards 1 MB, spot 2.6 MB measured 2026-10-27; a failure
+// falls through to the pages); UserStore is ALWAYS paged (see doExport). Pages are written as their own objects,
+// `backup/<store>/<dow>/<table>.<k>.json` + `backup/<store>/latest/<table>.<k>.json`, and `<store>-<dow>.json` / `-latest.json`
+// become the MANIFEST `{at, split:true, paged:true, tables:{<t>:{rows, expected, bytes, parts[], ms}}}` that restoretest follows.
+// `opt.dry` measures everything and writes nothing (the probe route). Returns {line, whole|manifest}.
+async function backupStore(env, name, stub, dow, opt) {
+  opt = opt || {}; const dry = !!opt.dry; const put = async (k, v) => { if (!dry) await backupPut(env, k, v); };
+  let whyWhole = '';
+  if (opt.whole) {
+    const t0 = Date.now();
+    try {
+      const r = await stub.fetch(new Request('https://do/export'));
+      const txt = await r.text();
+      if (!r.ok || txt.length < 50) throw new Error('export bad (' + r.status + ', ' + txt.length + 'b)');
+      await put('backup/' + name + '-' + dow + '.json', txt);
+      await put('backup/' + name + '-latest.json', txt);
+      return { line: name + ' ' + Math.round(txt.length / 1024) + 'KB', whole: { bytes: txt.length, ms: Date.now() - t0 } };
+    } catch (e) { whyWhole = String(e && e.message || e).slice(0, 140); }
+  }
+  let names = [], counts = {};
+  try { const lj = await (await stub.fetch(new Request('https://do/export?list=1'))).json(); names = (lj && lj.tables) || []; counts = (lj && lj.counts) || {}; } catch (e) {}
+  if (!names.length) throw new Error(name + ': ' + (whyWhole || 'no table list from the store'));
+  const man = { at: Date.now(), split: true, paged: true, whyWhole, tables: {} }; let total = 0, pages = 0;
+  for (const t of names) {
+    const parts = []; let after = '', rows = 0, bytes = 0, k = 0, ms = 0;
+    while (true) {
+      const t0 = Date.now();
+      const pr = await stub.fetch(new Request('https://do/export?t=' + encodeURIComponent(t) + (after ? '&after=' + encodeURIComponent(after) : '')));
+      const pt = await pr.text(); ms += Date.now() - t0;
+      if (!pr.ok) throw new Error(name + '/' + t + ' page ' + k + ': ' + pr.status + ' ' + pt.slice(0, 120));
+      const part = t + '.' + k + '.json';
+      await put('backup/' + name + '/' + dow + '/' + part, pt); await put('backup/' + name + '/latest/' + part, pt);
+      parts.push(part); rows += +(pr.headers.get('x-rows') || 0); bytes += pt.length; k++; pages++;
+      const nx = pr.headers.get('x-next'); if (!nx) break; after = nx;
+      if (k > 500) throw new Error(name + '/' + t + ': over 500 pages');
+    }
+    man.tables[t] = { rows, expected: counts[t] == null ? null : counts[t], bytes, parts, ms }; total += bytes;
+  }
+  const mt = JSON.stringify(man);
+  await put('backup/' + name + '-' + dow + '.json', mt);
+  await put('backup/' + name + '-latest.json', mt);
+  return { line: name + ' paged ' + names.length + 't/' + pages + 'p ' + Math.round(total / 1024) + 'KB', manifest: man };
+}
 async function nightlyBackup(env) {
   try {
     if (!env.STATS || !env.USERS || !env.REWARDS) return;
@@ -8240,24 +8358,17 @@ async function nightlyBackup(env) {
     ];
     if (env.SPOT) jobs.push(['spot', env.SPOT.get(env.SPOT.idFromName('main'))]); // Demo Spot wallets (user "money")
     const sizes = [];
-    for (const [name, stub] of jobs) {
-      const r = await stub.fetch(new Request('https://do/export'));
-      const txt = await r.text();
-      if (!r.ok || txt.length < 50) throw new Error(name + ' export bad (' + r.status + ', ' + txt.length + 'b)');
-      if (env.BACKUP) { // R2 when available
-        await env.BACKUP.put('backup/' + name + '-' + dow + '.json', txt);
-        await env.BACKUP.put('backup/' + name + '-latest.json', txt);
-      } else { // KV fallback (25MB/value cap - alert loudly if we ever approach it)
-        if (txt.length > 20000000) throw new Error(name + ' dump ' + Math.round(txt.length / 1e6) + 'MB nears the 25MB KV cap - enable R2 now');
-        await env.STATS.put('bkp:' + name + ':' + dow, txt);
-        await env.STATS.put('bkp:' + name + ':latest', txt);
-      }
-      sizes.push(name + ' ' + Math.round(txt.length / 1024) + 'KB');
-    }
+    for (const [name, stub] of jobs) sizes.push((await backupStore(env, name, stub, dow, { whole: name !== 'users' })).line); // users is paged, always - never ask that store for its whole dump
     try { await evPush(env, null, 'backup', sizes.join(' · '), ''); } catch (e) {}
+    try { await env.STATS.put('bkp:last', JSON.stringify({ ts: Date.now(), sizes }), { expirationTtl: 14 * 86400 }); } catch (e) {}
+    return { ok: true, sizes };
   } catch (e) {
+    const err = String(e && e.message || e).slice(0, 300);
+    try { await env.STATS.put('bkp:lasterr', JSON.stringify({ ts: Date.now(), err }), { expirationTtl: 14 * 86400 }); } catch (e4) {} // the reason, readable at /api/admin/backup?probe=1 (lastErr) - a run that only says "failed" costs an afternoon
     try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e2) {}
-    try { await tgAdmin(env, '<b>NIGHTLY BACKUP FAILED</b> - ' + String(e).slice(0, 180) + '\nUser/balance data currently has NO second copy. Check /api/admin/backup?run=1'); } catch (e3) {}
+    // the */10 cron keeps retrying; the OWNER is told once per three hours, with the store named - not 28 times a night
+    try { const k = 'alrt:bkpfail'; const last = +(await env.STATS.get(k) || 0); if (Date.now() - last > 3 * 3600000) { await env.STATS.put(k, String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>NIGHTLY BACKUP FAILED</b> - ' + err.slice(0, 200) + '\nUser/balance data currently has NO second copy today. Retrying every 10 min; this line repeats at most every 3 h. Check /api/admin/backup?probe=1'); } } catch (e3) {}
+    return { ok: false, err };
   }
 }
 // RewardLedger every 6h (2026-09-02): the nightly dump alone gave the money ledger a 24h recovery point. Four rotating
@@ -8349,7 +8460,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=074c95b8" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=7b118db7" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -13993,8 +14104,8 @@ const PRED_CUTOFF_H = 20;
 const CALL_LB_START = Date.UTC(2026, 8, 28); // the season running when it shipped - the owner wanted it paid from now
 // The season's call standings, ONE function for the public board and the payer: uid + name + points + calls, ranked
 // by points then by fewer calls (a closer caller beats a busier one). `limit` is a cut on an already-ranked list.
-async function predBoardRows(env, atMs, limit, inclE2e) {
-  const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pred/board?now=' + (+atMs || Date.now()) + '&limit=' + (limit || 50) + (inclE2e ? '&e2e=1' : '')));
+async function predBoardRows(env, atMs, limit, inclE2e, fresh) { // fresh = skip the DO's 60 s memo of /pred/board (the support/E2E desk reads right after a write; the pages and the payer may take the memo)
+  const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/pred/board?now=' + (+atMs || Date.now()) + '&limit=' + (limit || 50) + (inclE2e ? '&e2e=1' : '') + (fresh ? '&fresh=1' : '')));
   const j = await r.json();
   return (j && j.board) || [];
 }
@@ -25493,14 +25604,38 @@ export default {
     }
     if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E1: prove the backup is restorable - load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const which = url.searchParams.get('which') === 'rewards' ? 'rewards' : 'users';
+      const which = url.searchParams.get('which') === 'rewards' ? 'rewards' : (url.searchParams.get('which') === 'spot' && env.SPOT ? 'spot' : 'users');
       let txt = null;
       try { if (env.BACKUP) { const o = await env.BACKUP.get('backup/' + which + '-latest.json'); txt = o ? await o.text() : null; } } catch (e) {}
       if (!txt) { try { txt = await env.STATS.get('bkp:' + which + ':latest'); } catch (e) {} }
       if (!txt) return new Response('{"error":"no_backup"}', { status: 404, headers: jh });
       let dump = null; try { dump = JSON.parse(txt); } catch (e) { return new Response('{"error":"bad_dump"}', { status: 500, headers: jh }); }
+      const stub = which === 'rewards' ? env.REWARDS.get(env.REWARDS.idFromName('bkp-restore-test')) : which === 'spot' ? env.SPOT.get(env.SPOT.idFromName('bkp-restore-test')) : env.USERS.get(env.USERS.idFromName('bkp-restore-test'));
+      if (dump && dump.paged && dump.tables && env.BACKUP) { // a PAGED dump (2026-10-27): the manifest names each table's pages; every page is read and imported on its own, so the sandbox restore never holds a whole table either
+        const tables = {}; let allOk = true;
+        for (const tn of Object.keys(dump.tables)) {
+          const m = dump.tables[tn] || {}; let restored = null, read = 0, detail = null;
+          for (let k = 0; k < (m.parts || []).length; k++) {
+            let pj = null; try { const po = await env.BACKUP.get('backup/' + which + '/latest/' + m.parts[k]); pj = po ? JSON.parse(await po.text()) : null; } catch (e) { detail = 'part_unreadable ' + m.parts[k]; break; }
+            if (!pj || !Array.isArray(pj.rows)) { detail = 'part_missing ' + m.parts[k]; break; }
+            read += pj.rows.length;
+            let rj = null; try { const r = await stub.fetch(new Request('https://do/import', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ table: tn, rows: pj.rows, append: k > 0 }) })); rj = await r.json(); } catch (e) { detail = 'import_failed ' + String(e).slice(0, 120); break; }
+            if (!rj || rj.error) { detail = 'import_refused ' + JSON.stringify(rj).slice(0, 160); break; }
+            restored = rj.counts ? rj.counts[tn] : null;
+            if (rj.errs && rj.errs[tn] && !detail) detail = 'insert: ' + rj.errs[tn];
+            if (rj.added && rj.added[tn] && rj.added[tn].length) detail = (detail ? detail + '; ' : '') + 'sandbox grew ' + rj.added[tn].join(',');
+          }
+          const row = { dump: m.rows, expected: m.expected, read, restored, match: typeof restored === 'number' && restored === m.rows && read === m.rows }; if (detail) row.detail = detail;
+          tables[tn] = row; if (!row.match) allOk = false;
+        }
+        return new Response(JSON.stringify({ ok: allOk, paged: true, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: 'r2', tables }, null, 1), { headers: jh });
+      }
+      if (dump && dump.split && dump.tables && env.BACKUP) { // the first (one object per table) split shape, 2026-10-27 morning: the latest file is a manifest, each table its own object
+        const tabs = {};
+        for (const tn of Object.keys(dump.tables)) { try { const po = await env.BACKUP.get(dump.tables[tn].file || ('backup/' + which + '-' + tn + '-latest.json')); const pj = po ? JSON.parse(await po.text()) : null; tabs[tn] = pj && pj.tables && pj.tables[tn] ? pj.tables[tn] : { _err: 'part_missing' }; } catch (e) { tabs[tn] = { _err: String(e).slice(0, 120) }; } }
+        dump = { at: dump.at, split: true, tables: tabs };
+      }
       const src = {}; for (const tn of Object.keys(dump.tables || {})) src[tn] = Array.isArray(dump.tables[tn]) ? dump.tables[tn].length : null;
-      const stub = which === 'rewards' ? env.REWARDS.get(env.REWARDS.idFromName('bkp-restore-test')) : env.USERS.get(env.USERS.idFromName('bkp-restore-test'));
       let res = null;
       try { const r = await stub.fetch(new Request('https://do/import', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tables: dump.tables }) })); res = await r.json(); } catch (e) { return new Response(JSON.stringify({ error: 'import_failed', detail: String(e).slice(0, 160) }), { status: 500, headers: jh }); }
       if (!res || res.error) return new Response(JSON.stringify({ error: 'import_refused', detail: res }), { status: 500, headers: jh });
@@ -26129,11 +26264,24 @@ export default {
         if (txt == null) return new Response(JSON.stringify({ error: 'no_backup_yet' }), { status: 404, headers: jh });
         return new Response(txt, { headers: { 'content-type': 'application/json; charset=utf-8', 'content-disposition': 'attachment; filename="marginpad-' + getW + '-backup.json"' } });
       }
-      if (url.searchParams.get('run') === '1') {
+      if (url.searchParams.get('probe') === '1') { // MEASURE exactly what the nightly does, writing nothing (backupStore dry run): pages, rows, bytes, ms per table. ?store=users|rewards|spot narrows it
+        const jobs = [['users', env.USERS.get(env.USERS.idFromName('main'))], ['rewards', env.REWARDS.get(env.REWARDS.idFromName('ledger'))]];
+        if (env.SPOT) jobs.push(['spot', env.SPOT.get(env.SPOT.idFromName('main'))]);
+        const onlyS = url.searchParams.get('store') || '';
+        const out = {}; let last = null, lastErr = null; try { last = JSON.parse(await env.STATS.get('bkp:last') || 'null'); lastErr = JSON.parse(await env.STATS.get('bkp:lasterr') || 'null'); } catch (e) {}
+        if (onlyS === 'none') return new Response(JSON.stringify({ ok: true, last, lastErr }, null, 1), { headers: jh }); // the stamps alone, no export at all
+        for (const [name, stub] of jobs) {
+          if (onlyS && name !== onlyS) continue;
+          const t0 = Date.now();
+          try { const r = await backupStore(env, name, stub, 'probe', { dry: true, whole: name !== 'users' }); out[name] = Object.assign({ ms: Date.now() - t0 }, r); }
+          catch (e) { out[name] = { error: String(e && e.message || e).slice(0, 200), ms: Date.now() - t0 }; }
+        }
+        return new Response(JSON.stringify({ ok: true, last, lastErr, stores: out }, null, 1), { headers: jh });
+      }
+      if (url.searchParams.get('run') === '1') { // force the nightly now; answers what it wrote, or WHY it did not (the old answer said ok:true over a swallowed failure)
         try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e) {}
-        await nightlyBackup(env);
-        const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
-        return new Response(JSON.stringify({ ok: true, store: env.BACKUP ? 'r2' : 'kv', usersKB: u ? Math.round(u.length / 1024) : null, rewardsKB: rr ? Math.round(rr.length / 1024) : null }), { headers: jh });
+        const t0 = Date.now(); const r = await nightlyBackup(env);
+        return new Response(JSON.stringify(Object.assign({ store: env.BACKUP ? 'r2' : 'kv', ms: Date.now() - t0 }, r || { ok: false, err: 'skipped (no stores bound)' })), { status: r && r.ok ? 200 : 500, headers: jh });
       }
       const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
       return new Response(JSON.stringify({ store: env.BACKUP ? 'r2' : 'kv', hasUsers: !!u, hasRewards: !!rr, usersKB: u ? Math.round(u.length / 1024) : 0, rewardsKB: rr ? Math.round(rr.length / 1024) : 0, note: 'daily @ first */10 cron after midnight UTC; 7-day rotation bkp:<store>:<dow>' }), { headers: jh });
@@ -26598,7 +26746,7 @@ export default {
     if (url.pathname === '/api/admin/callboard' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // support/E2E: the Daily BTC Call board exactly as the payer computes it for a season (?ws=, default the running one); ?e2e=1 includes test accounts
       const jh5 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const ws5 = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
-      let rows5 = []; try { rows5 = await predBoardRows(env, ws5, +url.searchParams.get('limit') || 50, url.searchParams.get('e2e') === '1'); } catch (e) {}
+      let rows5 = []; try { rows5 = await predBoardRows(env, ws5, +url.searchParams.get('limit') || 50, url.searchParams.get('e2e') === '1', true); } catch (e) {}
       let prizes5 = []; try { prizes5 = (await rewardCfg(env)).lbCall; } catch (e) {}
       return new Response(JSON.stringify({ ws: ws5, we: ws5 + LB_PERIOD, paidFrom: CALL_LB_START, prizes: prizes5, rows: rows5 }), { headers: jh5 });
     }
@@ -27948,10 +28096,8 @@ export class SpotStore {
       for (const t of ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap']) sql.exec('DELETE FROM ' + t + ' WHERE user_id=?', uid);
       return this.j({ ok: true });
     }
-    if (path === '/export') { // nightly backup dump
-      const out = { at: Date.now(), tables: {} };
-      for (const t of ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap', 'spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']) { try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; } }
-      return this.j(out);
+    if (path === '/export') { // nightly backup dump · whole (2.6 MB measured 2026-10-27), ?list=1 with counts, ?t=<table>&after= one page (doExport)
+      return doExport(this, url, ['sp2acct', 'sp2hold', 'sp2tx', 'sp2snap', 'spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']);
     }
     if (path === '/import') { // restore-test sandbox only (same guard as the other DOs: refuses on an instance with real accounts)
       const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
@@ -27960,20 +28106,7 @@ export class SpotStore {
         if (realN > 0) return this.j({ error: 'refused_real_instance', accounts: realN });
         try { sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
       }
-      const counts = {};
-      for (const tn of Object.keys(b.tables || {})) {
-        if (!/^[a-z_]{2,24}$/.test(tn)) continue;
-        const rows2 = b.tables[tn]; if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
-        try { sql.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; }
-        for (const r2 of rows2.slice(0, 200000)) {
-          if (!r2 || typeof r2 !== 'object') continue;
-          const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
-          if (!cols.length) continue;
-          try { sql.exec('INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', ...cols.map(c => (r2[c] === undefined ? null : r2[c]))); } catch (e) {}
-        }
-        try { counts[tn] = (this.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
-      }
-      return this.j({ ok: true, counts });
+      const im = doImportRows(this, sql, b); return this.j({ ok: true, counts: im.counts, errs: im.errs });
     }
     return this.j({ error: 'not_found' }, 404);
   }
@@ -28586,28 +28719,10 @@ export class RewardLedger {
         if (realN > 0) return this.j({ error: 'refused_real_instance', accounts: realN });
         try { this.state.storage.sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
       }
-      const sqlI = this.state.storage.sql, counts = {};
-      for (const tn of Object.keys(body.tables || {})) {
-        if (!/^[a-z_]{2,24}$/.test(tn)) continue;
-        const rows2 = body.tables[tn];
-        if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
-        try { sqlI.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; }
-        for (const r2 of rows2.slice(0, 200000)) {
-          if (!r2 || typeof r2 !== 'object') continue;
-          const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
-          if (!cols.length) continue;
-          try { sqlI.exec('INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', ...cols.map(c => (r2[c] === undefined ? null : r2[c]))); } catch (e) {}
-        }
-        try { counts[tn] = (this.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
-      }
-      return this.j({ ok: true, counts });
+      const im = doImportRows(this, this.state.storage.sql, body); return this.j({ ok: true, counts: im.counts, errs: im.errs });
     }
-    if (path === '/export') { // nightly backup dump - every balance-bearing table (accounts = user money!)
-      const out = { at: Date.now(), tables: {} };
-      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply', 'prempay', 'shoplog']) {
-        try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
-      }
-      return this.j(out);
+    if (path === '/export') { // nightly backup dump - every balance-bearing table (accounts = user money!) · whole (1 MB measured 2026-10-27, the 6h set reads it), ?list=1 with counts, ?t=<table>&after= one page (doExport)
+      return doExport(this, url, ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply', 'prempay', 'shoplog']);
     }
     if (path === '/kinds') { // WHERE THE MONEY GOES (2026-09-27, owner: "which maths halves rewards without touching the boards"): credits by type over a window
       const from = +body.from || (Date.now() - 7 * 86400000), to = +body.to || Date.now();
@@ -32753,11 +32868,8 @@ export class UserStore {
       });
     }
     if (path === '/export') { // nightly backup dump - identity, money-adjacent progress and social state. Ephemeral/analytics tables (sessions, otp, uevents, uclicks, udwell) are deliberately excluded.
-      const out = { at: Date.now(), tables: {} };
-      for (const t of ['users', 'utrades', 'academy', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts']) {
-        try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
-      }
-      return this.j(out);
+      // PAGED ONLY (doExport, whole:false): the whole dump of this store exceeded the DO's memory and RESET the live store on every nightly retry (2026-10-27) - ?list=1 with counts, then ?t=<table>&after=<cursor>
+      return doExport(this, url, ['users', 'utrades', 'academy', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts'], { whole: false });
     }
     if (path === '/briefstats') { // morning-brief cron: signups + actives over the last 24h/48h
       const d24 = now - 86400000, d48 = now - 2 * 86400000;
@@ -32998,21 +33110,7 @@ export class UserStore {
         if (realN > 0) return this.j({ error: 'refused_real_instance', realUsers: realN });
         try { sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
       }
-      const counts = {};
-      for (const tn of Object.keys(b.tables || {})) {
-        if (!/^[a-z_]{2,24}$/.test(tn)) continue;
-        const rows2 = b.tables[tn];
-        if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
-        try { sql.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; }
-        for (const r2 of rows2.slice(0, 200000)) {
-          if (!r2 || typeof r2 !== 'object') continue;
-          const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
-          if (!cols.length) continue;
-          try { sql.exec('INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', ...cols.map(c => (r2[c] === undefined ? null : r2[c]))); } catch (e) {}
-        }
-        try { counts[tn] = (this.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
-      }
-      return this.j({ ok: true, counts });
+      const im = doImportRows(this, sql, b); return this.j({ ok: true, counts: im.counts, errs: im.errs });
     }
     if (path === '/mktestuser') { // admin tooling for the E2E suites (test-multidevice/test-trading): /trades sync + tradeev feeds are guarded on a real users row. HARD-limited to 'e2e-' ids so it can never touch a real account.
       const tu = String(b.uid || ''); if (!/^e2e-[a-z0-9-]{2,40}$/.test(tu)) return this.j({ error: 'bad_uid' });

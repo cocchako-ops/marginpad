@@ -73,7 +73,8 @@ const M = [{ uid: 'e2e-thxa' }, { uid: 'e2e-thxb' }, { uid: 'e2e-thxc' }].map(m 
   // the season-reset desk is a DRY RUN by default and moved nothing
   const dr = await J('/api/admin/spotreset', { method: 'POST', headers: H, body: JSON.stringify({}) });
   const pA = await A.spot('/portfolio');
-  ok(dr && dr.ok && dr.dry === true && dr.accounts > 0 && dr.applied === false && pA && (pA.holds || []).length === 1, 'POST /api/admin/spotreset with no apply:true is a dry run - it counts the accounts and bags and moves nothing', { dr: dr && { dry: dr.dry, accounts: dr.accounts, bags: dr.holdRows }, holds: pA && pA.holds.length });
+  // once this season's reset has been applied the desk answers `dup:true` (idempotent on `ref`) instead of counting - either way it moves nothing
+  ok(dr && dr.ok && dr.applied === false && ((dr.dry === true && dr.accounts > 0) || dr.dup === true) && pA && (pA.holds || []).length === 1, 'POST /api/admin/spotreset with no apply:true is a dry run (or a dup once the season was reset) - it moves nothing', { dr: dr && { dry: dr.dry, dup: dr.dup, accounts: dr.accounts, bags: dr.holdRows }, holds: pA && pA.holds.length });
   for (const m of M) await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: m.uid, op: 'rm' }) });
   console.log(out.join('\n')); console.log('\nthesis-xp-e2e: pass ' + pass + '  fail ' + fail);
   process.exitCode = fail ? 1 : 0;

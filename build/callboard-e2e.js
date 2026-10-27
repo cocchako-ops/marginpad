@@ -63,9 +63,10 @@ const UID = 'e2e-callboard1';
   ok(/id="callbox"/.test(lbp) && /call:\{key:'topCall'/.test(lbp) && /function paintCallbox\(/.test(lbp) && /One call a day<\/b>, before 20:00 UTC/.test(lbp), '/leaderboards/ carries the call box under the board, the board definition and its rule');
   const home = await fetch(B + '/?cb=' + Date.now()).then(r => r.text());
   ok(/data-b="call"/.test(home) && /\$\d{3}\+/.test(home), 'the homepage competition card lists the board and a three-figure pool'); /* the static figure is today's all-boards pool; JS is the authority */
-  await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });
-  const gone = await J('/api/admin/callboard?e2e=1', { headers: H });
-  ok(gone && !(gone.rows || []).some(r => r.uid === UID), 'the throwaway member and its call are removed (upred is in BY_USER)');
+  const rmr = await J('/api/admin/e2euser', { method: 'POST', headers: H, body: JSON.stringify({ uid: UID, op: 'rm' }) });
+  let gone = null, left = [];
+  for (let i = 0; i < 4; i++) { gone = await J('/api/admin/callboard?e2e=1', { headers: H }); left = (gone && gone.rows || []).filter(r => r.uid === UID || /callboard/.test(String(r.name || ''))); if (!left.length) break; await new Promise(r => setTimeout(r, 1500)); }
+  ok(gone && !left.length, 'the throwaway member and its call are removed (upred is in BY_USER)', { rm: rmr, left });
   console.log(out.join('\n')); console.log('\ncallboard-e2e: pass ' + pass + '  fail ' + fail);
   process.exitCode = fail ? 1 : 0;
 })().catch(e => { console.error(e); process.exitCode = 1; });

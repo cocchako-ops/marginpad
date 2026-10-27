@@ -47,9 +47,10 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
 
   // settle TODAY with the close = live, only for our two uids (real users' calls stay open for the cron)
   const st1 = await get('/api/admin/predict?settle=' + day + '&close=' + live + '&uid=' + UID);
-  chk('forced settlement scores one account', st1.body.ok && st1.body.settled === 1 && st1.body.ticksPaid === 9, st1.body);
+  // since 2026-09-28 the call pays NO Ticks - its points score the Daily BTC Call board, which pays money (callboard-e2e proves 8 points + zero Ticks)
+  chk('forced settlement scores one account and pays no Ticks', st1.body.ok && st1.body.settled === 1 && st1.body.ticksPaid === 0, st1.body);
   const st2 = await get('/api/admin/predict?settle=' + day + '&close=' + live + '&uid=' + UID2);
-  chk('second account settles in the 12 tier (+1 for showing up)', st2.body.ok && st2.body.settled === 1 && st2.body.ticksPaid === 13, st2.body);
+  chk('second account settles in the 12 tier, still no Ticks', st2.body.ok && st2.body.settled === 1 && st2.body.ticksPaid === 0, st2.body);
 
   const again = await post('/api/predict?uid=' + UID + force, { guess: live });
   chk('a settled day cannot be re-called', again.status === 409 && again.body.error === 'settled', again.body);
@@ -65,7 +66,7 @@ async function dropUser(uid) { await post('/api/admin/e2euser', { uid, op: 'rm' 
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'worker.js'), 'utf8');
   chk('cron registered in the */10 schedule', src.indexOf("bg(settleDailyCalls, 'predict')") > 0);
   chk('cron waits for the NEXT 1D candle before settling (closed-candle rule)', /const later = [\s\S]{0,200}some\(b => \+b\.time > want\)/.test(src) && src.indexOf('!later) return;') > 0);
-  chk('Ticks source declared with a day cap', /k: 'predict', label: 'Daily call', cap: 13/.test(src));
+  chk('the call is no longer a Ticks source (retired 2026-09-28 - the board pays money)', !/k: 'predict', label: 'Daily call'/.test(src) && !/TICK_CAP\.predict/.test(src.replace(/\/\/[^\n]*/g, '')));
 
   // ---- browser: the call box under its board. It was a Today card on /season/ until 2026-09-28, then a box under the season
   // page's board, and since 2026-10-27 it lives under the Daily BTC call board on /leaderboards/ (owner: the boards moved there).

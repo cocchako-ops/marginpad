@@ -1750,14 +1750,14 @@ VIEWS['people/activity'] = { render: function (el, arg) {
       if (st.g !== 'all' && (GROUPS[st.g] || []).indexOf(e.t) < 0) return false;
       var k = keyFor(e);
       if (st.who === 'users' && k.indexOf('u:') !== 0) return false; if (st.who === 'guests' && k.indexOf('v:') !== 0) return false; if (st.who === 'system' && k !== 'sys') return false;
-      if (st.q) { var s = ((e.u || '') + ' ' + (e.un || '') + ' ' + (e.e || '') + ' ' + (e.t || '') + ' ' + (e.p || '') + ' ' + (e.cc || '') + ' ' + (e.ip || '') + ' ' + (e.di || '') + ' ' + (e.v || '') + ' ' + (e.s || '') + ' ' + (e.x && e.x.sym ? e.x.sym : '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      if (st.q) { var s = ((e.un || e.u || '') + ' ' + (e.e || '') + ' ' + (e.t || '') + ' ' + (e.p || '') + ' ' + (e.cc || '') + ' ' + (e.s || '') + ' ' + (e.x && e.x.sym ? e.x.sym : '')).toLowerCase(); if (s.indexOf(st.q) < 0 && !idHit([e.ip, e.di, e.v, e.u, e.uid, e.k], st.q)) return false; } // text matches anywhere; an id (ip, device, visitor, account id) only by PREFIX - "btc" used to keep member pjhbtc7's rows (2026-10-27)
       return true;
     }
     function passActor(a) {
       if (st.who === 'users' && a.key.indexOf('u:') !== 0) return false; if (st.who === 'guests' && a.key.indexOf('v:') !== 0) return false; if (st.who === 'system') return false;
       if (st.g !== 'all' && st.g !== 'pages') { var g = GROUPS[st.g] || [], hit = false; for (var i = 0; i < g.length; i++) if (a.types[g[i]]) { hit = true; break; } if (!hit) return false; }
       if (st.g === 'pages' && !a.pv) return false;
-      if (st.q) { var s = ((a.u || '') + ' ' + (a.v || '') + ' ' + (a.cc || '') + ' ' + (a.d || '') + ' ' + (a.b || '') + ' ' + (a.net || '') + ' ' + (a.s || '') + ' ' + a.ips.join(' ') + ' ' + a.dids.join(' ') + ' ' + a.path.join(' ')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      if (st.q) { var s = ((a.u || '') + ' ' + (a.names || []).join(' ') + ' ' + (a.cc || '') + ' ' + (a.d || '') + ' ' + (a.b || '') + ' ' + (a.net || '') + ' ' + (a.s || '') + ' ' + a.path.join(' ')).toLowerCase(); if (s.indexOf(st.q) < 0 && !idHit([a.v, a.key].concat(a.ips, a.dids), st.q)) return false; }
       return true;
     }
     // arrival = the first pageview of a visit: no in-site previous page, or 30+ min since this person's last pageview
@@ -1767,6 +1767,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
     var PH = (innerWidth <= 760); // phone: fewer rows, folded filters, no hover wording
     var data = null, rendered = {}, MAXROWS = (PH ? 150 : 800), onlineN = 0, lastPoll = 0, wsOk = false, ws = null, wsTry = 0, wsTimer = null, pings = null, visDirty = false;
     function actorName(k) { if (!k) return ''; return k.indexOf('u:') === 0 ? '@' + k.slice(2) : k.indexOf('v:') === 0 ? 'guest ' + k.slice(2) : k.indexOf('d:') === 0 ? 'device ' + k.slice(2) : k.indexOf('ip:') === 0 ? 'ip ' + k.slice(3) : k; }
+    function idHit(ids, q) { for (var i = 0; i < ids.length; i++) { var x = String(ids[i] || '').toLowerCase(); if (x && x.indexOf(q) === 0) return true; } return false; } // an id matches a typed filter by prefix only (nobody types the middle of a hash)
     function actorBtn(k, label) { return k ? '<button type="button" class="lnk" data-actor="' + esc(k) + '">' + (label || esc(actorName(k))) + '</button>' : ''; }
     function save() { remember('people/activity', st, FIELDS); }
     function head() {
@@ -1899,7 +1900,7 @@ VIEWS['people/activity'] = { render: function (el, arg) {
     function personLink(p) { return p.uid ? (p.u ? userLink(p.u) : '<span class="mono">#' + esc(String(p.uid).slice(0, 6)) + '</span>') : '<a href="#people/activity/' + encodeURIComponent('v:' + p.v) + '" class="gst" title="everything this visitor did today">guest ' + esc(p.v) + '</a>'; }
     function passP(p) { var now = Date.now();
       if (st.who === 'members' && !p.uid) return false; if (st.who === 'guests' && p.uid) return false; if (st.who === 'new' && !(p.nv || p.first > now - 900000)) return false;
-      if (st.q) { var s = ((p.u || '') + ' ' + (p.v || '') + ' ' + (p.p || '') + ' ' + (p.cc || '') + ' ' + (p.d || '') + ' ' + (p.b || '') + ' ' + (p.net || '') + ' ' + (p.s || '') + ' ' + (p.la || '')).toLowerCase(); if (s.indexOf(st.q) < 0) return false; }
+      if (st.q) { var s = ((p.u || '') + ' ' + (p.p || '') + ' ' + (p.cc || '') + ' ' + (p.d || '') + ' ' + (p.b || '') + ' ' + (p.net || '') + ' ' + (p.s || '') + ' ' + (p.la || '')).toLowerCase(); if (s.indexOf(st.q) < 0 && !idHit([p.v], st.q)) return false; }
       return true; }
     function bars3(items) { if (!items.length) return '<div class="empty">nobody</div>'; var mx = 1; items.forEach(function (x) { if (x.n > mx) mx = x.n; }); return '<div class="hb">' + items.map(function (x) { return '<div class="hb-r"><span class="hb-l" title="' + esc(x.l) + '">' + (x.html || esc(x.l)) + '</span><span class="hb-t"><i style="width:' + Math.round(x.n / mx * 100) + '%"></i></span><span class="hb-v">' + N(x.n) + (x.m ? '<small>' + N(x.m) + ' m</small>' : '') + '</span></div>'; }).join('') + '</div>'; }
     function strip(d) { // 180 one-minute bars, gaps = nobody heartbeated that minute; the dashed line is the measured usual for this hour
