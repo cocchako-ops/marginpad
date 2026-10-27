@@ -138759,8 +138759,8 @@
    "w": 65
   },
   "HumWsVmjqJ": {
-   "en": "<b>A live trading floor</b>Chat with the floor while you trade, follow traders worth studying, challenge anyone to a <b>duel</b> (seven days, best stats win the pot), share your P&L tickets, and build a public trader card with XP levels and unlockable frames from <a href=\"/vault/\">The Vault</a>.",
-   "es": "<b>Una comunidad de trading en vivo</b>Chatea con la comunidad mientras operas, sigue a traders que valgan la pena estudiar, reta a cualquiera a un <b>duelo</b> (siete días, gana el bote quien tenga mejores estadísticas), comparte tus tickets de PnL y construye una tarjeta pública de trader con niveles de XP y marcos desbloqueables de <a href=\"/vault/\">The Vault</a>.",
+   "en": "<b>A live trading floor</b>Chat with the floor while you trade, follow traders worth studying, challenge anyone to a <b>duel</b> (seven days, best stats win the pot), share your P&L tickets, and build a public trader card with XP levels and unlockable frames from <a href=\"/vault/\">MP Shop</a>.",
+   "es": "<b>Una comunidad de trading en vivo</b>Chatea con la comunidad mientras operas, sigue a traders que valgan la pena estudiar, reta a cualquiera a un <b>duelo</b> (siete días, gana el bote quien tenga mejores estadísticas), comparte tus tickets de PnL y construye una tarjeta pública de trader con niveles de XP y marcos desbloqueables de <a href=\"/vault/\">MP Shop</a>.",
    "kind": [
     "html"
    ],
@@ -150814,8 +150814,8 @@
    "w": 13
   },
   "T5sNGePLjs": {
-   "en": "<span class=\"oi\"><span class=\"t\">Unlock pro with your balance</span><span class=\"d\">From your withdrawable rewards balance. Final, like a Vault buy.</span><span class=\"p\" id=\"pUsd\">$2.99</span></span>",
-   "es": "<span class=\"oi\"><span class=\"t\">Desbloquea Pro con tu saldo</span><span class=\"d\">Desde tu saldo de recompensas retirable. Definitivo, como una compra en The Vault.</span><span class=\"p\" id=\"pUsd\">$2.99</span></span>",
+   "en": "<span class=\"oi\"><span class=\"t\">Unlock pro with your balance</span><span class=\"d\">From your withdrawable rewards balance. Final, like an MP Shop buy.</span><span class=\"p\" id=\"pUsd\">$2.99</span></span>",
+   "es": "<span class=\"oi\"><span class=\"t\">Desbloquea Pro con tu saldo</span><span class=\"d\">Desde tu saldo de recompensas retirable. Definitivo, como una compra en MP Shop.</span><span class=\"p\" id=\"pUsd\">$2.99</span></span>",
    "kind": [
     "html"
    ],
@@ -151150,8 +151150,8 @@
    "w": 27
   },
   "ABu0Bm_ekR": {
-   "en": "<b>Ticks are mostly earned</b>Goals and the pass pay Ticks, and the Vault spends them; calls score the Daily BTC call board instead. You can top up with a small pack, but prize money still only moves one way: from the boards to your rewards balance.",
-   "es": "<b>Los Ticks se ganan, sobre todo</b>Las metas y el pase pagan Ticks, y el Vault los gasta; las predicciones puntúan en la tabla Predicción diaria de BTC en su lugar. Puedes recargar con un pack pequeño, pero el dinero de los premios sigue moviéndose en una sola dirección: de las tablas a tu saldo de recompensas.",
+   "en": "<b>Ticks are mostly earned</b>Goals and the pass pay Ticks, and MP Shop spends them; calls score the Daily BTC call board instead. You can top up with a small pack, but prize money still only moves one way: from the boards to your rewards balance.",
+   "es": "<b>Los Ticks se ganan, sobre todo</b>Las metas y el pase pagan Ticks, y MP Shop los gasta; las predicciones puntúan en la tabla Predicción diaria de BTC en su lugar. Puedes recargar con un pack pequeño, pero el dinero de los premios sigue moviéndose en una sola dirección: de las tablas a tu saldo de recompensas.",
    "kind": [
     "html"
    ],
@@ -169691,8 +169691,8 @@
    "w": 9
   },
   "bHp4joymXi": {
-   "en": "The Vault - Frames, Levels &amp; Cosmetics | MarginPad",
-   "es": "The Vault - Marcos, Niveles y Cosméticos | MarginPad",
+   "en": "MP Shop - Frames, Levels &amp; Cosmetics | MarginPad",
+   "es": "MP Shop - Marcos, Niveles y Cosméticos | MarginPad",
    "kind": [
     "title"
    ],
@@ -169703,8 +169703,8 @@
    "w": 6
   },
   "uTktQxgulU": {
-   "en": "<a href=\"/\">Home</a> / The Vault",
-   "es": "<a href=\"/\">Inicio</a> / The Vault",
+   "en": "<a href=\"/\">Home</a> / MP Shop",
+   "es": "<a href=\"/\">Inicio</a> / MP Shop",
    "kind": [
     "html"
    ],
@@ -169763,7 +169763,7 @@
    "w": 1
   },
   "7BLHz_YxNS": {
-   "en": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Earn Ticks by using the site, or top up. Spend them on anything in the Vault.</span>",
+   "en": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Earn Ticks by using the site, or top up. Spend them on anything in MP Shop.</span>",
    "es": "<span class=\"tickbig\" id=\"aTicks\">0<small>T</small></span> <span class=\"tickcap\" id=\"aTickCap\">Gana Ticks usando el sitio, o recarga. Gástalos en lo que quieras de la Bóveda.</span>",
    "kind": [
     "html"
@@ -170136,8 +170136,8 @@
    "w": 10
   },
   "c7tSrZ5OBw": {
-   "en": "Vault frames",
-   "es": "Marcos de The Vault",
+   "en": "MP Shop frames",
+   "es": "Marcos de MP Shop",
    "kind": [
     "html"
    ],
@@ -170268,7 +170268,7 @@
    "w": 10
   },
   "u_h8rdKPpO": {
-   "en": "Ticks are the Vault&#39;s currency. Earn them by using the site, or top up with a small pack - but the frames on the earned shelf carry no price at all and can never be bought.",
+   "en": "Ticks are MP Shop&#39;s currency. Earn them by using the site, or top up with a small pack - but the frames on the earned shelf carry no price at all and can never be bought.",
    "es": "Los Ticks son la moneda de la Bóveda. Gánalos usando el sitio, o recarga con un paquete pequeño - pero los marcos del estante ganado no tienen precio alguno y nunca se pueden comprar.",
    "kind": [
     "html"
@@ -170304,7 +170304,7 @@
    "w": 6
   },
   "JstGVIq-AF": {
-   "en": "<b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T, apex 9,000 T.</span>",
+   "en": "<b>MP Shop</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T, apex 9,000 T.</span>",
    "es": "<b>La Bóveda</b><span>Marcos, skins de tickets y fondos de tarjeta. Común 300 T, raro 1,200 T, épico 3,000 T, legendario 7,000 T, apex 9,000 T.</span>",
    "kind": [
     "html"
@@ -170340,8 +170340,8 @@
    "w": 31
   },
   "gAgmMyR78y": {
-   "en": "Ticks are the Vault's earned currency: spending them can never cost you a level, because XP is now purely your progress and is never deducted. Balance purchases come out of your withdrawable rewards balance and are final. Equipped items show on your public trader card, in chat and on the leaderboards.",
-   "es": "Los Ticks son la moneda ganada de The Vault: gastarlos nunca puede costarte un nivel, porque el XP ahora es puramente tu progreso y nunca se descuenta. Las compras con saldo salen de tu saldo de recompensas retirable y son definitivas. Los artículos equipados se ven en tu tarjeta pública de trader, en el chat y en las tablas de clasificación.",
+   "en": "Ticks are MP Shop's earned currency: spending them can never cost you a level, because XP is now purely your progress and is never deducted. Balance purchases come out of your withdrawable rewards balance and are final. Equipped items show on your public trader card, in chat and on the leaderboards.",
+   "es": "Los Ticks son la moneda ganada de MP Shop: gastarlos nunca puede costarte un nivel, porque el XP ahora es puramente tu progreso y nunca se descuenta. Las compras con saldo salen de tu saldo de recompensas retirable y son definitivas. Los artículos equipados se ven en tu tarjeta pública de trader, en el chat y en las tablas de clasificación.",
    "kind": [
     "html"
    ],
@@ -170400,8 +170400,8 @@
    "w": 2
   },
   "2lv40qtVfm": {
-   "en": "Vault sections",
-   "es": "Secciones de The Vault",
+   "en": "MP Shop sections",
+   "es": "Secciones de MP Shop",
    "kind": [
     "attr:aria-label"
    ],
@@ -170460,8 +170460,8 @@
    "w": 2
   },
   "kuhklU4qY9": {
-   "en": "The Vault: earn Ticks by trading and showing up, then spend them on profile frames, ticket skins and card backgrounds. Try any of them on your own card first.",
-   "es": "The Vault: gana Ticks operando y participando cada día, y gástalos en marcos de perfil, skins de tickets y fondos de tarjeta. Pruébalos primero en tu propia tarjeta.",
+   "en": "MP Shop: earn Ticks by trading and showing up, then spend them on profile frames, ticket skins and card backgrounds. Try any of them on your own card first.",
+   "es": "MP Shop: gana Ticks operando y participando cada día, y gástalos en marcos de perfil, skins de tickets y fondos de tarjeta. Pruébalos primero en tu propia tarjeta.",
    "kind": [
     "attr:content"
    ],
@@ -170484,7 +170484,7 @@
    "w": 5
   },
   "b4gR0uKCVm": {
-   "en": "Ticks are the currency of The Vault, MarginPad’s cosmetics shop. Most Ticks are earned by using the site; small top-up packs can also be bought. The frames on the earned shelf carry no price at all and can never be bought. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend.",
+   "en": "Ticks are the currency of MP Shop, MarginPad’s cosmetics shop. Most Ticks are earned by using the site; small top-up packs can also be bought. The frames on the earned shelf carry no price at all and can never be bought. They are separate from XP: XP only ever goes up and decides your level, while Ticks are what you spend.",
    "es": "Los Ticks son la moneda de La Bóveda, la tienda de cosméticos de MarginPad. La mayoría de los Ticks se ganan usando el sitio; también se pueden comprar paquetes pequeños de recarga. Los marcos del estante ganado no tienen precio alguno y nunca se pueden comprar. Son independientes del XP: el XP solo sube y decide tu nivel, mientras que los Ticks son lo que gastas.",
    "kind": [
     "ld"
@@ -170556,8 +170556,8 @@
    "w": 6
   },
   "jilCGK87BR": {
-   "en": "Two things: cosmetics in The Vault — profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 9,000 for the apex tier — and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot.",
-   "es": "Dos cosas: las cosméticas de The Vault — marcos de perfil, skins de tickets y fondos de tarjeta, con precios desde 300 Ticks para las comunes hasta 9,000 para el tier apex — y las apuestas de los duelos, donde apuestas Ticks cara a cara contra otro trader y el ganador se lleva el bote.",
+   "en": "Two things: cosmetics in MP Shop — profile frames, ticket skins and card backgrounds, priced 300 Ticks for common up to 9,000 for the apex tier — and duel stakes, where you wager Ticks head to head against another trader and the winner takes the pot.",
+   "es": "Dos cosas: las cosméticas de MP Shop — marcos de perfil, skins de tickets y fondos de tarjeta, con precios desde 300 Ticks para las comunes hasta 9,000 para el tier apex — y las apuestas de los duelos, donde apuestas Ticks cara a cara contra otro trader y el ganador se lleva el bote.",
    "kind": [
     "ld"
    ],
@@ -170592,8 +170592,8 @@
    "w": 42
   },
   "cf4BQVZ4ml": {
-   "en": "The Vault",
-   "es": "The Vault",
+   "en": "MP Shop",
+   "es": "MP Shop",
    "kind": [
     "ld"
    ],
@@ -170604,8 +170604,8 @@
    "w": 2
   },
   "-TZQ0Kza0q": {
-   "en": "The Vault - Frames, Levels &amp; Cosmetics",
-   "es": "The Vault - Marcos, Niveles y Cosméticos",
+   "en": "MP Shop - Frames, Levels &amp; Cosmetics",
+   "es": "MP Shop - Marcos, Niveles y Cosméticos",
    "kind": [
     "ld"
    ],
@@ -171875,7 +171875,7 @@
    "w": 4
   },
   "Hg1VFsXRKn": {
-   "en": "<a class=\"step\" href=\"/trading-competition/\" data-lv=\"new some pro\"><span class=\"sn\">1</span><span class=\"sb\"><span class=\"st\">Trading competition</span><span class=\"sw\">Free entry, seven boards, prizes paid every 14 days. What it is and how the scoring works.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/season/\" data-lv=\"new some pro\"><span class=\"sn\">2</span><span class=\"sb\"><span class=\"st\">Your season</span><span class=\"sw\">The boards you are on, the pass, the daily call and your goals.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/rewards/\" data-lv=\"new some pro\"><span class=\"sn\">3</span><span class=\"sb\"><span class=\"st\">Rewards</span><span class=\"sw\">Claims, missions and withdrawals. Open to every account from day one - no level to reach first.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/levels/\" data-lv=\"new some\"><span class=\"sn\">4</span><span class=\"sb\"><span class=\"st\">Levels<span class=\"tag\">new/basics</span></span><span class=\"sw\">Bronze to Diamond: how XP is earned and what each level pays.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/vault/\" data-lv=\"some pro\"><span class=\"sn\">5</span><span class=\"sb\"><span class=\"st\">The Vault<span class=\"tag\">basics/trading</span></span><span class=\"sw\">What the Ticks you earn actually buy.</span></span><span class=\"sa\">&rsaquo;</span></a>",
+   "en": "<a class=\"step\" href=\"/trading-competition/\" data-lv=\"new some pro\"><span class=\"sn\">1</span><span class=\"sb\"><span class=\"st\">Trading competition</span><span class=\"sw\">Free entry, seven boards, prizes paid every 14 days. What it is and how the scoring works.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/season/\" data-lv=\"new some pro\"><span class=\"sn\">2</span><span class=\"sb\"><span class=\"st\">Your season</span><span class=\"sw\">The boards you are on, the pass, the daily call and your goals.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/rewards/\" data-lv=\"new some pro\"><span class=\"sn\">3</span><span class=\"sb\"><span class=\"st\">Rewards</span><span class=\"sw\">Claims, missions and withdrawals. Open to every account from day one - no level to reach first.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/levels/\" data-lv=\"new some\"><span class=\"sn\">4</span><span class=\"sb\"><span class=\"st\">Levels<span class=\"tag\">new/basics</span></span><span class=\"sw\">Bronze to Diamond: how XP is earned and what each level pays.</span></span><span class=\"sa\">&rsaquo;</span></a><a class=\"step\" href=\"/vault/\" data-lv=\"some pro\"><span class=\"sn\">5</span><span class=\"sb\"><span class=\"st\">MP Shop<span class=\"tag\">basics/trading</span></span><span class=\"sw\">What the Ticks you earn actually buy.</span></span><span class=\"sa\">&rsaquo;</span></a>",
    "es": "",
    "kind": [
     "html"

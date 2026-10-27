@@ -1474,8 +1474,8 @@ ${'<scr'+'ipt type="application/ld+json">'+JSON.stringify({'@context':'https://s
     <span style="flex:1;min-width:0"><b style="color:#c2f64a">The MarginPad Community is live</b><span style="display:block;color:#9aa3ad;font-size:13px;margin-top:2px">Publish your own trading ideas, embed live charts, discuss markets with other traders - free with an email sign-in.</span></span>
     <span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap">Join →</span>
   </a>
-  <a href="/blog/theses/" style="display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(160,107,255,.12),rgba(194,246,74,.05));border:1px solid rgba(160,107,255,.32);border-radius:14px;padding:14px 16px;margin:0 0 18px;text-decoration:none;color:#ecebe4">
-    <span style="flex:1;min-width:0"><b style="color:#c2f64a">Traders' theses</b><span style="display:block;color:#9aa3ad;font-size:13px;margin-top:2px">Why members hold what they hold on Demo Spot - a thesis a post, newest first. Write yours and it lands here.</span></span>
+  <a href="/community/c/thesis" style="display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(160,107,255,.12),rgba(194,246,74,.05));border:1px solid rgba(160,107,255,.32);border-radius:14px;padding:14px 16px;margin:0 0 18px;text-decoration:none;color:#ecebe4">
+    <span style="flex:1;min-width:0"><b style="color:#c2f64a">Traders' theses</b><span style="display:block;color:#9aa3ad;font-size:13px;margin-top:2px">Why members hold what they hold on Demo Spot - a thesis a post, newest first, in the Community. Write yours from Demo Spot.</span></span>
     <span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap">Read them &rarr;</span>
   </a>
   <div class="cat-chips">${chips}</div>

@@ -129,7 +129,7 @@ function plan(rel, html) {
       fields: ['Entry', 'Leverage', 'Size'], vals: ['60,000', '20x', '$500'], outK: 'Liquidation', outV: '57,150' }],
     '/season/': ['product', { title: 'Your season', sub: 'Six leaderboards, a 40-tier pass, and prizes every fourteen days.', accent: ACCENT.lime, path: '/season/',
       points: ['Six boards', 'Free entry', '40-tier pass', 'Paid every 14 days'], tag: 'LIVE STANDINGS' }],
-    '/vault/': ['product', { title: 'The Vault', sub: 'Frames, backgrounds and ticket skins earned by trading.', accent: ACCENT.violet, path: '/vault/', points: ['Frames', 'Backgrounds', 'Ticket skins'] }],
+    '/vault/': ['product', { title: 'MP Shop', sub: 'Frames, backgrounds and ticket skins earned by trading.', accent: ACCENT.violet, path: '/vault/', points: ['Frames', 'Backgrounds', 'Ticket skins'] }],
     '/rewards/': ['product', { title: 'Earn while you learn to trade', sub: 'A faucet, daily missions and season prizes - paid in real USDT.', accent: ACCENT.green, path: '/rewards/', tag: 'REAL PAYOUTS' }],
     '/premium/': ['product', { title: 'MarginPad Premium', sub: 'AI chart reads, position alerts, the full Bot API tier.', accent: ACCENT.gold, path: '/premium/', points: ['Ask the AI', 'Position alerts', '600 req/min API', 'Trading report'] }],
     '/academy/': ['product', { title: 'Learn futures properly', sub: '17 courses, 147 lessons, in 13 languages. Free.', accent: ACCENT.blue, path: '/academy/', points: ['16 courses', '140 lessons', '13 languages'], tag: 'FREE' }],

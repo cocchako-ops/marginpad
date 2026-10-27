@@ -1183,7 +1183,7 @@ function bkSelect(cls, opts, cur) {
   // market. It reads the open paper positions this browser already holds and the bands already drawn, so
   // it costs no request. What it answers is the question the map cannot: how much modelled leverage stands
   // between the price and YOUR liquidation, and how heavy the worst of it is. Shown locked rather than
-  // hidden for everybody else, because a locked thing has to be visible to be wanted (the Vault rule).
+  // hidden for everybody else, because a locked thing has to be visible to be wanted (MP Shop rule).
   function riskLine() {
     var pos = (S.myPos || []); if (!pos.length) return '';
     if (S.prem !== 1) {

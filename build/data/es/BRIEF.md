@@ -24,9 +24,9 @@ Each chunk is a JSON array of items: `{ "id", "ctx", "kind", "en", "es": "" }`.
    Hyperliquid, Coinbase, Moon), numbers, currency amounts, percentages, `{placeholders}`, `%s`.
 3. **Numbers stay exactly as written** (60,000 stays 60,000; 0.4% stays 0.4%). Live widgets print numbers in
    that format and the static text must match them.
-4. Product names stay in English: **MarginPad, Paper Trade, The Vault, Rekt, The Gold Room, Demo Spot,
+4. Product names stay in English: **MarginPad, Paper Trade, MP Shop (formerly The Vault), Rekt, The Gold Room, Demo Spot,
    Premium, Founder, Ticks, XP, Bot API, MCP, Daily Wrap, Happy Hour, Moon, Trading Report**.
-   Common nouns around them are translated ("abre Paper Trade", "en The Vault").
+   Common nouns around them are translated ("abre Paper Trade", "en MP Shop (formerly The Vault)").
 5. **Tuteo** (tú / tu / haz clic), never usted, never vos. Neutral Spanish: no "ordenador/computadora"
    (say "equipo" or "dispositivo"), no "celular" (say "teléfono" or "móvil"), no "coger", no "plata".
 6. Spanish punctuation and accents: ¿…? ¡…! and proper tildes. Keep “ ” for quotes. Use the en dash and

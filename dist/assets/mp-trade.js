@@ -359,6 +359,61 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +'<div class="pp-btns"><button class="ed" data-act="ordcancel" data-oid="'+esc(o.id)+'">'+MT('otCancel',__esT_mptrade("cancelOrder",'Cancel order'))+'</button></div>'
       +'<div class="pp-times">'+MT('otPlacedAt','Placed')+' '+tsf(+o.ts)+'</div></div>';}
   function ordersNow(){try{return (window.mpOrders&&window.mpOrders.list())||[];}catch(e){return [];}}
+  /* MY TRADES FILTERS (2026-10-27). One state for the Open and Closed tabs, remembered per device (localStorage mp_jr_f),
+     applied AFTER the season scope and BEFORE the render window - the tab counts stay the unfiltered truth and the bar
+     says "N of M". A result filter that belongs to the other tab (Wins on Open, In profit on Closed) is ignored there
+     rather than hiding everything. MIRROR of the same block in the other journal bundle. */
+  var jrF=(function(){var d={side:'',res:'',when:'',lev:'',sort:'new',q:'',open:false};try{var s=JSON.parse(localStorage.getItem('mp_jr_f')||'{}');for(var k in d)if(s[k]!=null)d[k]=s[k];}catch(e){}return d;})();
+  var jrFFocus=false,jrFT=null;
+  function jrFSave(){try{localStorage.setItem('mp_jr_f',JSON.stringify(jrF));}catch(e){}}
+  function jrRes(){var r=jrF.res||'';if(jrTab==='open'&&/^(win|loss|liq)$/.test(r))return '';if(jrTab!=='open'&&/^(green|red)$/.test(r))return '';return r;}
+  function jrFN(){return (jrF.side?1:0)+(jrRes()?1:0)+(jrF.when?1:0)+(jrF.lev?1:0)+(jrF.q?1:0)+((jrF.sort&&jrF.sort!=='new')?1:0);}
+  function jrPnl(e){if(e.status==='open'){var m=metrics(e);return m.pnl!=null?+m.pnl:0;}return +e.pnl||0;}
+  function jrRoe(e){if(e.status==='open'){var m=metrics(e);return m.roe!=null?+m.roe:0;}return (+e.margin>0&&e.pnl!=null)?(+e.pnl)/(+e.margin):0;}
+  function jrApply(rows){
+    var f=jrF,res=jrRes(),now=Date.now(),q=String(f.q||'').trim().toUpperCase(),m0=new Date();m0.setHours(0,0,0,0);m0=m0.getTime();
+    return rows.filter(function(e){
+      if(f.side==='long'&&e.side==='short')return false;if(f.side==='short'&&e.side!=='short')return false;
+      if(res){var cl=e.status!=='open';
+        if(res==='win'&&!(cl&&(+e.pnl)>=0&&!e.liquidated))return false;if(res==='loss'&&!(cl&&(+e.pnl)<0&&!e.liquidated))return false;if(res==='liq'&&!(cl&&e.liquidated))return false;
+        if(res==='green'&&!(!cl&&jrPnl(e)>=0))return false;if(res==='red'&&!(!cl&&jrPnl(e)<0))return false;}
+      if(f.when){var t=+(e.closeTs||e.ts)||0,d=now-t;if(f.when==='today'){if(t<m0)return false;}else if(f.when==='7d'){if(d>7*864e5)return false;}else if(f.when==='30d'){if(d>30*864e5)return false;}}
+      if(f.lev){var l=+e.lev||1;if(f.lev==='lo'&&l>10)return false;if(f.lev==='mid'&&(l<=10||l>50))return false;if(f.lev==='hi'&&l<=50)return false;}
+      if(q&&String(e.sym||'').toUpperCase().indexOf(q)<0)return false;
+      return true;});}
+  function jrOrder(rows){
+    var s=jrF.sort||'new',a=rows.slice();
+    if(s==='old')return a;
+    var k=s==='pnl'?function(e){return jrPnl(e);}:s==='pnlw'?function(e){return -jrPnl(e);}:s==='roe'?function(e){return jrRoe(e);}:s==='roew'?function(e){return -jrRoe(e);}:s==='size'?function(e){return +e.margin||0;}:s==='held'?function(e){return ((+e.closeTs||Date.now())-(+e.ts||0));}:null;
+    if(!k)return a.reverse();
+    return a.map(function(e,i){return [k(e),i,e];}).sort(function(x,y){return (y[0]-x[0])||(y[1]-x[1]);}).map(function(x){return x[2];});}
+  function jrFbar(all,n){
+    var closedTab=jrTab==='closed',res=jrRes();
+    function chip(k,v,l,cur){return '<button type="button" data-jf="'+k+':'+v+'" class="'+((cur!=null?cur:(jrF[k]||''))===v?'on':'')+'">'+l+'</button>';}
+    function grp(l,html){return '<div class="jr-fg"><span class="jr-fl">'+l+'</span><div class="jr-fc">'+html+'</div></div>';}
+    var n2=jrFN(),sum=[];
+    if(jrF.side)sum.push(jrF.side==='long'?MT('jFLong','Long'):MT('jFShort','Short'));
+    if(res)sum.push({win:MT('jFWins','Wins'),loss:MT('jFLosses','Losses'),liq:MT('jFLiq','Liquidated'),green:MT('jFGreen','In profit'),red:MT('jFRed','In loss')}[res]||'');
+    if(jrF.when)sum.push({today:MT('jFToday','Today'),'7d':MT('jF7d','7 days'),'30d':MT('jF30d','30 days')}[jrF.when]);
+    if(jrF.lev)sum.push({lo:MT('jFLevLo','up to 10x'),mid:MT('jFLevMid','11-50x'),hi:MT('jFLevHi','over 50x')}[jrF.lev]);
+    if(jrF.q)sum.push(String(jrF.q).toUpperCase());
+    if(jrF.sort&&jrF.sort!=='new')sum.push({old:MT('jFOld','oldest first'),pnl:MT('jFPnl','biggest P&L'),pnlw:MT('jFPnlW','worst P&L'),roe:MT('jFRoe','best ROE'),roew:MT('jFRoeW','worst ROE'),size:MT('jFSize','biggest size'),held:MT('jFHeld','held longest')}[jrF.sort]);
+    var head='<div class="jr-fh"><button type="button" class="jr-ft'+(jrF.open?' on':'')+(n2?' has':'')+'" data-jft="1" aria-expanded="'+(jrF.open?'true':'false')+'">'
+      +'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>'+MT('jFilters','Filters')+(n2?'<i>'+n2+'</i>':'')+'</button>'
+      +'<span class="jr-fsum">'+(n2?'<b>'+n+'</b> '+MT('jFOf','of')+' '+all+' · '+sum.filter(Boolean).join(' · '):all+' '+(closedTab?MT('jFClosedN','closed'):MT('jFOpenN','open')))+'</span>'
+      +(n2?'<button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button>':'')+'</div>';
+    if(!jrF.open)return '<div class="jr-fb">'+head+'</div>';
+    var body='<div class="jr-fp">'
+      +grp(MT('jFSide','Side'),chip('side','',MT('jFAll','All'))+chip('side','long',MT('jFLong','Long'))+chip('side','short',MT('jFShort','Short')))
+      +grp(MT('jFResult','Result'),chip('res','',MT('jFAll','All'),res)+(closedTab?chip('res','win',MT('jFWins','Wins'),res)+chip('res','loss',MT('jFLosses','Losses'),res)+chip('res','liq',MT('jFLiq','Liquidated'),res):chip('res','green',MT('jFGreen','In profit'),res)+chip('res','red',MT('jFRed','In loss'),res)))
+      +grp(MT('jFWhen','When'),chip('when','',MT('jFAll','All'))+chip('when','today',MT('jFToday','Today'))+chip('when','7d',MT('jF7d','7 days'))+chip('when','30d',MT('jF30d','30 days')))
+      +grp(MT('jFLev','Leverage'),chip('lev','',MT('jFAll','All'))+chip('lev','lo',MT('jFLevLo','up to 10x'))+chip('lev','mid',MT('jFLevMid','11-50x'))+chip('lev','hi',MT('jFLevHi','over 50x')))
+      +grp(MT('jFSort','Sort'),chip('sort','new',MT('jFNew','Newest'))+chip('sort','old',MT('jFOldest','Oldest'))+chip('sort','pnl',MT('jFPnlB','Biggest P&L'))+chip('sort','pnlw',MT('jFPnlWB','Worst P&L'))+chip('sort','roe',MT('jFRoeB','Best ROE'))+chip('sort','roew',MT('jFRoeWB','Worst ROE'))+chip('sort','size',MT('jFSizeB','Biggest size'))+chip('sort','held',MT('jFHeldB','Held longest')))
+      +'<div class="jr-fg"><span class="jr-fl">'+MT('jFCoin','Coin')+'</span><div class="jr-fc"><input id="jrFq" class="jr-fq" type="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="BTC, ETH…" value="'+esc(jrF.q||'')+'"></div></div>'
+      +'</div>';
+    return '<div class="jr-fb on">'+head+body+'</div>';}
+  document.addEventListener('input',function(ev){var t=ev.target;if(!t||t.id!=='jrFq'||!t.closest('#jrList'))return;jrF.q=String(t.value||'').replace(/[^a-zA-Z0-9]/g,'').slice(0,12);jrFSave();jrShow=50;jrFFocus=true;clearTimeout(jrFT);
+    jrFT=setTimeout(function(){render();var i=document.getElementById('jrFq');if(i&&jrFFocus){i.focus();try{var L=i.value.length;i.setSelectionRange(L,L);}catch(e){}}jrFFocus=false;},180);});
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -378,21 +433,25 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var ords=ordersNow();
     var rows=(jrTab==='orders'?ords:(jrTab==='open'?open:closed));
-    var _ord=rows.slice().reverse(),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
+    var _all=rows.length;if(jrTab!=='orders')rows=jrApply(rows);
+    var _ord=jrOrder(rows),_vis=_ord.slice(0,jrShow),_rest=_ord.length-_vis.length;
     /* MIRROR of home.js render(): the partner line goes on the newest WINNING close, not on index 0 whatever it is. */
     _glIdx=-1;
     if(jrTab!=='orders'&&jrTab!=='open')for(var _gi=0;_gi<_vis.length;_gi++){if(_vis[_gi]&&(+_vis[_gi].pnl)>0){_glIdx=_gi;break;}}
-    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone',__esT_mptrade("noOrdersWaitingPlace",'No orders waiting - place one from Paper Trade with the Limit tab.')):(jrTab==='open'?MT('jNoOpen',__esT_mptrade("noOpenPositionsOpen",'No open positions - open one from Paper Trade.')):MT('jNoClosed',__esT_mptrade("noClosedTradesYet",'No closed trades yet.'))))+'</span></div>';
+    var cards=rows.length?_vis.map(jrTab==='orders'?orderCard:(jrTab==='open'?openCard:closedCard)).join(''):(jrTab!=='orders'&&_all)?'':'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='orders'?MT('otNone',__esT_mptrade("noOrdersWaitingPlace",'No orders waiting - place one from Paper Trade with the Limit tab.')):(jrTab==='open'?MT('jNoOpen',__esT_mptrade("noOpenPositionsOpen",'No open positions - open one from Paper Trade.')):MT('jNoClosed',__esT_mptrade("noClosedTradesYet",'No closed trades yet.'))))+'</span></div>';
     if(jrTab==='orders'&&ords.length&&window.mpOrders&&window.mpOrders.guest())cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#8a7a52;padding:10px 12px 4px">'+MT('otGuestNote',__esT_mptrade("theseOrdersLiveOn",'These orders live on this device and fill only while the page is open. Sign in and they rest on the server - they fill even when you are away.'))+'</div>';
     if(_rest>0)cards+='<button type="button" data-more="1" style="display:block;width:100%;margin:10px 0 2px;padding:11px;background:rgba(255,255,255,.05);border:1px solid #2a313c;border-radius:10px;color:#c2f64a;font:600 13px/1 \'Familjen Grotesk\',sans-serif;cursor:pointer">'+MT('jShowMore',__esT_mptrade("showMore",'Show more'))+' ('+_rest+')</button>';
     if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch',__esT_mptrade("newSeasonStatsRestarted",'New season - stats restarted. Earlier trades are archived, your XP and progress are untouched.'))+'</div>';
-    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
+    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="orders" class="'+(jrTab==='orders'?'on':'')+'">'+MT('otOrders','Orders')+' ('+ords.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+(jrTab!=='orders'?jrFbar(_all,rows.length):'')+(jrTab!=='orders'&&_all&&!rows.length?'<div class="pp-empty jr-fempty"><span>'+MT('jFNone','Nothing matches these filters.')+'</span><button type="button" class="jr-fx" data-jfx="1">'+MT('jFReset','Reset')+'</button></div>':'')+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   /* the local-only add() that used to live here was deleted 2026-09-12: every page with a plan form ships home.js, whose add() is server-first (mpSrvOpen, cid, fresh-price and market-closed checks) - this copy opened locally with none of that and doubled trades when both bundles met */
   document.addEventListener('click',function(ev){
-    var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more]'); if(!b)return;
+    var b=ev.target.closest&&ev.target.closest('#jrList [data-act], #jrList [data-jt], #jrList [data-more], #jrList [data-jf], #jrList [data-jfx], #jrList [data-jft]'); if(!b)return;
     if(b.hasAttribute('data-more')){jrShow+=100;render();return;}
+    if(b.hasAttribute('data-jft')){jrF.open=!jrF.open;jrFSave();render();return;}
+    if(b.hasAttribute('data-jfx')){jrF={side:'',res:'',when:'',lev:'',sort:'new',q:'',open:jrF.open};jrFSave();jrShow=50;render();return;}
+    if(b.hasAttribute('data-jf')){var _kv=b.getAttribute('data-jf').split(':');jrF[_kv[0]]=_kv[1]||'';jrFSave();jrShow=50;render();return;}
     if(b.hasAttribute('data-jt')){jrTab=b.getAttribute('data-jt');jrShow=50;render();return;}
     var oid=b.getAttribute('data-oid'); // an order id is not a journal id - handle it before the journal lookup bails out
     if(oid&&b.getAttribute('data-act')==='ordcancel'){if(window.mpOrders)window.mpOrders.cancel(oid,function(){render();});render();return;}

@@ -120,7 +120,11 @@ svg.ic{width:15px;height:15px;vertical-align:-2.5px;fill:none;stroke:currentColo
 .chip.pin{background:rgba(194,246,74,.12);color:var(--lime)}
 .pc h3{margin:0 0 6px;font-size:17.5px;line-height:1.3}
 .pc .snip{color:var(--dim);font-size:13.5px;max-height:62px;overflow:hidden;line-height:1.5}
-.pc .syms{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.pc .syms{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.buyspot{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(180deg,rgba(194,246,74,.18),rgba(194,246,74,.08));border:1px solid rgba(194,246,74,.45);color:#c2f64a;border-radius:8px;padding:5px 10px;font:700 11.5px 'Space Mono',monospace;cursor:pointer;transition:background .15s,border-color .15s,transform .15s;font-family:'Space Mono',monospace}
+.buyspot svg{width:13px;height:13px}.buyspot:hover{background:rgba(194,246,74,.26);border-color:#c2f64a;transform:translateY(-1px)}
+.pbuy{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 16px}.pbuy .buyspot{padding:9px 14px;font-size:12.5px;border-radius:10px}.pbuy .buyspot svg{width:15px;height:15px}
+.pbuy-a{display:inline-flex;align-items:center;gap:6px;background:rgba(194,246,74,.12);border:1px solid rgba(194,246,74,.45);color:#c2f64a;border-radius:10px;padding:9px 14px;font:700 12.5px 'Space Mono',monospace;text-decoration:none;margin:0 8px 8px 0}
 .sym{display:inline-block;background:#0c1117;border:1px solid var(--line2);border-radius:7px;padding:2px 8px;font-family:'Space Mono',monospace;font-size:11px;color:#7dd3fc;cursor:default}
 .pc .foot{display:flex;align-items:center;gap:16px;margin-top:11px;color:var(--faint);font-size:12.5px;font-family:'Space Mono',monospace}
 .act{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--faint);cursor:pointer;font-family:'Space Mono',monospace;font-size:12.5px;padding:0}
@@ -387,6 +391,11 @@ function me(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||ME;}
 (function(){var h='';Object.keys(CATS).forEach(function(c){h+='<a href="/community/c/'+c+'" data-cat="'+c+'"><i>'+ic(CATI[c])+'</i> '+CATS[c]+'</a>';});document.getElementById('catLinks').innerHTML=h;
   var sel=document.getElementById('cCat'),o='';Object.keys(CATS).forEach(function(c){o+='<option value="'+c+'">'+CATS[c]+'</option>';});sel.innerHTML=o;})();
 // ---- feed ----
+/* A THESIS IS ABOUT A COIN, SO THE COIN IS ONE TAP AWAY (2026-10-27, owner: "iz thesis treba da bude previse jednostavno da se
+   otvori i kupi coin/token o kome neko prica, bukvalno u 2-3 klika"): /spot/?coin=SYM opens that coin's buy sheet on Demo Spot.
+   A button, not a link, because the feed card is itself an <a>; the click is answered by the document listener below. */
+function buyBtns(syms){return String(syms||'').split(',').map(function(s){return s.replace(/[^A-Za-z0-9]/g,'').toUpperCase();}).filter(Boolean).slice(0,4).map(function(s){return '<button type="button" class="buyspot" data-buy="'+esc(s)+'">'+ic('spark')+__esT_communityindex("buyOnDemoSpot",' Buy ')+esc(s)+__esT_communityindex("onDemoSpot",' on Demo Spot')+'</button>';}).join('');}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-buy]');if(!b)return;e.preventDefault();e.stopPropagation();var s=b.getAttribute('data-buy');try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=nav&e='+encodeURIComponent('thesis-buy:'+s)+'&p='+encodeURIComponent(location.pathname));}catch(_){}location.href='/spot/?coin='+encodeURIComponent(s);},true);
 function cardHtml(p){
   var url='/community/p/'+p.id+'/'+slug(p.title);
   var syms=(p.syms||'').split(',').filter(Boolean).map(function(s2){return '<span class="sym" data-sym="'+esc(s2)+'">'+esc(s2)+'</span>';}).join('');
@@ -395,7 +404,7 @@ function cardHtml(p){
     +'<div class="top">'+avatar(p.author)+'<div><div class="who">'+esc(p.author)+'<span data-lvlu="'+esc(p.uid||'')+'"></span></div><div class="sub">'+(__esC?'hace '+ago(p.ts)+' · '+(p.views||0)+' vistas':ago(p.ts)+' ago · '+(p.views||0)+' views')+'</div></div><span style="margin-left:auto"></span>'+(p.pinned?'<span class="chip pin">'+ic('star')+' pick</span> ':'')+'<span class="chip">'+esc(CATS[p.cat]||p.cat)+'</span></div>'
     +'<h3>'+esc(p.title)+'</h3>'
     +(snip?'<div class="snip">'+esc(snip)+'</div>':'')
-    +(syms?'<div class="syms">'+syms+'</div>':'')
+    +(syms?'<div class="syms">'+syms+(p.cat==='thesis'?buyBtns(p.syms):'')+'</div>':'')
     +'<div class="foot"><button class="act heart'+(p.liked?' on':'')+'" data-like="'+p.id+'" type="button">'+ic('heart')+' <span>'+(p.likes||0)+'</span></button><span>'+ic('msg')+' '+(p.ncom||0)+'</span><span class="readmeta">'+readMin(p.body)+__esT_communityindex("minRead",' min read</span></div></a>');
 }
 function feedTabsHtml(){
@@ -462,6 +471,7 @@ function postView(id){
       +'<div class="pmeta"><a href="/community/u/'+encodeURIComponent(p.author)+'" style="display:inline-flex;align-items:center;gap:8px">'+avatar(p.author,1)+'<span class="who">'+esc(p.author)+'</span></a><span data-lvlu="'+esc(p.uid||'')+'"></span>'
       +'<button class="followb'+(d.following?' on':'')+'" id="pvFollow" type="button">'+(d.following?'Following ✓':'+ Follow')+'</button>'
       +'<span>'+ago(p.ts)+(__esC?'</span><span>'+(p.views||0)+' vistas</span>':' ago</span><span>'+(p.views||0)+' views</span>')+'<span>'+readMin(p.body)+__esT_communityindex("minRead2",' min read</span>')+(syms?'<span>'+syms+'</span>':'')+'</div>'
+      +(p.cat==='thesis'&&p.syms?'<div class="pbuy">'+buyBtns(p.syms)+'</div>':'')
       +'<div class="pbody">'+md(p.body)+'</div>'
       +'<div class="actions">'
       +'<button class="act heart'+(d.liked?' on':'')+'" id="pvLike" type="button" style="font-size:15px">'+ic('heart')+' <span>'+(p.likes||0)+'</span></button>'
@@ -710,8 +720,8 @@ try{if(window.innerWidth<880)document.getElementById('q').placeholder=(__esC?'Bu
 route();widgets();setTimeout(pollNotifs,1200);setInterval(pollNotifs,60000);setInterval(widgets,90000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=2d18eed5"></script>
-<script defer src="/assets/mp-nav.js?v=03a8f426"></script>
+<script defer src="/assets/mp-auth.js?v=2634abfc"></script>
+<script defer src="/assets/mp-nav.js?v=a5ecb4bd"></script>
 <script>(function(){var ta=document.getElementById('cBody'),cn=document.getElementById('cCnt');if(!ta||!cn)return;function upd(){var n=(ta.value||'').trim().length;var okk=n>=500;cn.textContent=(n<500?(n+__esT_communityindex("500MinCharactersKeep",' / 500 min characters - keep going, real analysis ranks on Google')):(n+__esT_communityindex("charactersReadyToPublish",' characters ✓ ready to publish')));cn.style.color=okk?'#2ebd85':'#8b93a7';}ta.addEventListener('input',upd);upd();})();</script><script>(function(){var MAX=3,shots=[];function el(i){return document.getElementById(i);}function draw(){var t=el("cThumbs"),b=el("cImgBtn"),n=el("cImgN");if(!t)return;t.innerHTML=shots.map(function(x,i){return "<figure><img src=\""+x.url+"\" alt=\"\"><button type=button data-rm=\""+i+__esT_communityindex("titleRemoveTimes","\" title=\"Remove\">&times;</button></figure>");}).join("");if(b)b.disabled=shots.length>=MAX;if(n)n.textContent=shots.length?(shots.length+" of "+MAX+" added"):__esT_communityindex("upTo33","up to 3, 3 MB each - uploaded to MarginPad so they keep working");[].forEach.call(t.querySelectorAll("[data-rm]"),function(x){x.onclick=function(){var i=+x.getAttribute("data-rm");var u=shots[i]&&shots[i].url;shots.splice(i,1);var ta=el("cBody");if(ta&&u)ta.value=ta.value.split("\n\n![image]("+u+")").join("").split("![image]("+u+")").join("");draw();try{ta&&ta.dispatchEvent(new Event("input"));}catch(e){}};});}function put(file){return new Promise(function(res,rej){var r=new FileReader();r.onerror=function(){rej(new Error("read"));};r.onload=function(){fetch("/api/comm/upload",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({type:file.type,data:String(r.result)})}).then(function(x){return x.json();}).then(function(j){if(j&&j.ok&&j.url)res(j);else rej(new Error((j&&j.hint)||(j&&j.error)||__esT_communityindex("uploadFailed","upload failed")));}).catch(rej);};r.readAsDataURL(file);});}document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("#cImgBtn");if(!b)return;e.preventDefault();var i=el("cImgIn");if(i)i.click();});document.addEventListener("change",function(e){if(!e.target||e.target.id!=="cImgIn")return;var files=[].slice.call(e.target.files||[]).slice(0,MAX-shots.length);e.target.value="";if(!files.length)return;var n=el("cImgN");if(n)n.textContent="Uploading...";files.reduce(function(p,file){return p.then(function(){return put(file).then(function(j){shots.push(j);var ta=el("cBody");if(ta){ta.value=(ta.value.replace(/\s+$/,""))+"\n\n![image]("+j.url+")";try{ta.dispatchEvent(new Event("input"));}catch(e2){}}draw();});});},Promise.resolve()).then(function(){draw();}).catch(function(err){var n2=el("cImgN");if(n2)n2.textContent=String(err&&err.message||__esT_communityindex("uploadFailed2","Upload failed"));});});})();</script>
 </body>
 </html>

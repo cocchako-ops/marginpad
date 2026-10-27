@@ -108,7 +108,7 @@ const GOALS = [
       { u: '/season/', t: 'Your season', why: 'The boards you are on, the pass, the daily call and your goals.', lv: ALL3 },
       { u: '/rewards/', t: 'Rewards', why: 'Claims, missions and withdrawals. Open to every account from day one - no level to reach first.', lv: ALL3 },
       { u: '/levels/', t: 'Levels', why: 'Bronze to Diamond: how XP is earned and what each level pays.', lv: ['new', 'some'] },
-      { u: '/vault/', t: 'The Vault', why: 'What the Ticks you earn actually buy.', lv: ['some', 'pro'] },
+      { u: '/vault/', t: 'MP Shop', why: 'What the Ticks you earn actually buy.', lv: ['some', 'pro'] },
     ],
   },
 ];

@@ -186,9 +186,10 @@ const spot = (p, body) => J('/api/spot' + p + (p.indexOf('?') >= 0 ? '&' : '?') 
     const thJ = await thR.json().catch(() => null);
     chk('a thesis publishes as a Community post in the thesis category and pays 50 XP + 5 Ticks (the reward rides on the response; 20 -> 50 on 2026-10-26)', thR.status === 200 && thJ && thJ.ok && thJ.id && thJ.reward && thJ.reward.xp === 50 && thJ.reward.ticks === 5, thJ);
     const thList = (await J('/api/spot/theses?cb=' + Date.now())).j;
-    chk('/api/spot/theses lists the newest five by title/author/coins/excerpt with the blog section as "more" - an e2e author never appears there', !!thList && Array.isArray(thList.rows) && thList.rows.length <= 5 && thList.more === '/blog/theses/' && thList.rows.every(r => r.id && r.title && r.author && !/^e2e_/i.test(r.author)), thList && { n: thList.rows.length });
-    const bt = await fetch(ORIGIN + '/blog/theses/?nc=1&cb=' + Date.now()); const btH = await bt.text();
-    chk('/blog/theses/ is a server-rendered blog section: 200, indexable, CollectionPage JSON-LD, the write-your-own call to Demo Spot', bt.status === 200 && bt.headers.get('x-mp-ssr') === 'blog-theses' && /index, follow/.test(btH) && /"@type":"CollectionPage"/.test(btH) && /href="\/spot\/#thesis"/.test(btH));
+    chk('/api/spot/theses lists the newest five by title/author/coins/excerpt with the Community category as "more" - an e2e author never appears there', !!thList && Array.isArray(thList.rows) && thList.rows.length <= 5 && thList.more === '/community/c/thesis' && thList.rows.every(r => r.id && r.title && r.author && !/^e2e_/i.test(r.author)), thList && { n: thList.rows.length });
+    // theses live in the Community since 2026-10-27 (owner): the old blog section is a 301 onto the category page
+    const bt = await fetch(ORIGIN + '/blog/theses/?cb=' + Date.now(), { redirect: 'manual' });
+    chk('/blog/theses/ is a 301 onto /community/c/thesis', bt.status === 301 && /\/community\/c\/thesis$/.test(bt.headers.get('location') || ''), { status: bt.status, loc: bt.headers.get('location') });
     await withBrowser(async (browser) => {
       for (const vp of [{ w: 1366, h: 900, t: 'desktop' }, { w: 390, h: 800, t: 'phone' }]) {
         const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
