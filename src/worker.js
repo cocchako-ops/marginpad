@@ -21842,7 +21842,7 @@ async function handleReward(url, request, env) {
     // no on-chain wallet check at claim anymore - there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
   if ((path === '/detail' || path === '/adjust' || path === '/lbban') && !adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR ADMIN_KEY - same tier as the neighbouring /wd/cancel and /dispense/adjust key-accepting admin routes
-  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || path === '/moonsign/list' || path === '/moonsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
+  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/promo/abuse' || path === '/promo/rejectacct' || path === '/exsign/list' || path === '/exsign/review' || path === '/moonsign/list' || path === '/moonsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
   if (path === '/dispense/adjust' && request.method === 'POST') { // admin: correct today's dispensed counter (clawback truth)
     if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403);
     try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/dispenseadjust', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deltaUsd: +((b && b.deltaUsd) || 0) }) })); return jr(await rr.json()); } catch (e) { return jr({ error: 'transient' }, 503); }
@@ -22161,6 +22161,18 @@ async function handleReward(url, request, env) {
   let r, txt;
   try { r = await stub.fetch(fwd); txt = await r.text(); }
   catch (e) { return jr({ error: 'busy' }, 503); } // transient DO overload/reset - fail soft instead of a hard 500
+  // A BLOCKED PROMO ATTEMPT IS NEVER SILENT (2026-10-27): the member is told, the activity ring gets a row, and the owner is
+  // paged once per X handle per day with both names - the pattern he found by hand on the desk now finds him
+  if (path === '/promo/submit' && r.status === 409) {
+    try { const _hb = JSON.parse(txt);
+      if (_hb && _hb.error === 'handle_taken') {
+        await evPush(env, request, 'promo', 'BLOCKED - X @' + _hb.handle + ' already pays another account', '/rewards/');
+        const hk = 'alrt:promoh:' + String(_hb.handle).slice(0, 20) + ':' + new Date().toISOString().slice(0, 10);
+        if (!(await env.STATS.get(hk))) { await env.STATS.put(hk, '1', { expirationTtl: 90000 });
+          const pf = await resolveProfiles(env, [acct, _hb.other]); const nm = (a) => { const q = pf[String(a || '').replace(/^u:/, '')]; return q && q.username ? '@' + q.username : String(a || '').replace(/^u:/, '').slice(0, 10); };
+          await tgAdmin(env, '<b>Promo post blocked</b> - X account @' + _hb.handle + ' already pays ' + nm(_hb.other) + ', and ' + nm(acct) + ' just tried to file a post from it.\nOne X account, one MarginPad account. Review and ban: https://marginpad.io/api/stats#money/faucet (Promo abuse)', { kind: 'promo-abuse', sev: 'warn' }); }
+      } } catch (e) {}
+  }
     if (r.status === 200) { try { const _rd = JSON.parse(txt);
       // /claim credits the CLAIMER (their own session acct); reviews credit the RECIPIENT (_rd.acct) regardless of who approved - admin reviews carry no reward session, so this must NOT depend on the reviewer's acct
       if (path === '/claim' && acct && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
@@ -22236,8 +22248,9 @@ async function handleReward(url, request, env) {
       const data = JSON.parse(txt);
       const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list' || _signList || path === '/xengage/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
       if (Array.isArray(arr) && arr.length) {
-        const prof = await resolveProfiles(env, arr.map(e => e.address));
-        arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } }); // faucet rows minted from an account carry no device/country of their own - borrow the user's
+        const prof = await resolveProfiles(env, arr.map(e => e.address).concat(...arr.map(e => Array.isArray(e.also) ? e.also : [])));
+        arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; if (!e.dev && p.dev) e.dev = p.dev; if (!e.cc && p.cc) e.cc = p.cc; } // faucet rows minted from an account carry no device/country of their own - borrow the user's
+          if (Array.isArray(e.also) && e.also.length) e.alsoNames = e.also.map(a => { const q = prof[String(a).replace(/^u:/, '')]; return (q && q.username) || String(a).replace(/^u:/, '').slice(0, 10); }); }); // the promo desk: who else posts from this X account
         // TEST ROWS NEVER REACH THE DESK BY DEFAULT (2026-10-27, owner: "users with balance" was a list of e2e accounts) - the
         // activity feed's rule applied here: hidden unless ?e2e=1; the purge route takes them out of the store, this keeps the
         // next suite's leftovers out of the owner's read in the meantime
@@ -24232,6 +24245,46 @@ export default {
        THE MAIN KEEPS ITS DEVICE. If the main shares the device with the accounts being banned - which is the
        commonest shape, one browser, several accounts - banning the device would lock the main out too, so those
        bans pass `keepdev`. A banned account on a device the main does NOT use still burns that device. */
+    /* PROMO ABUSE DESK (2026-10-27): GET = the patterns the ledger sees (one X handle on 2+ accounts, one post on 2+,
+       one IP on 2+, one account on 2+ handles, the blocked attempts) with every account NAMED and the proposed ban
+       marked - the HOLDER of a handle is the account that filed under it first, everyone after is a candidate.
+       POST {ban:[uid...]} is a DRY RUN unless apply:true; it only accepts an account that is a member of a cluster
+       listed right now (never an arbitrary uid, never the owner's), bans BOTH books + the device through
+       banEverywhere, rejects the account's pending posts, and pages the owner with the list. */
+    if (url.pathname === '/api/admin/promoabuse' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      let ab; try { ab = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/promo/abuse'))).json(); } catch (e) { return J({ error: 'ledger_unavailable' }, 503); }
+      if (!ab || !ab.ok) return J({ error: 'ledger_error', detail: ab && ab.error }, 502);
+      const showE2 = url.searchParams.get('e2e') === '1' || bq.e2e === true;
+      const isE2 = a => /^u:e2e/i.test(String(a || ''));
+      const allAccts = new Set();
+      [...ab.handles, ...ab.posts, ...ab.ips].forEach(c => c.members.forEach(m => allAccts.add(m.acct)));
+      ab.multi.forEach(m => allAccts.add(m.acct)); ab.blocked.forEach(b => allAccts.add(b.acct));
+      const prof = await resolveProfiles(env, [...allAccts]);
+      let prot = []; try { prot = String(await env.STATS.get('sec:protect') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean); } catch (e) {}
+      for (const p of ['chako', 'whyme', 'gladijator']) if (prot.indexOf(p) < 0) prot.push(p);
+      const bannedL = new Set(ab.banned || []);
+      const name = (a) => { const uid = String(a || '').replace(/^u:/, ''), q = prof[uid] || {}; return { uid, username: q.username || '', email: q.email || '', status: q.status || '', ledgerBanned: bannedL.has(a), protected: prot.indexOf(String(q.username || '').toLowerCase()) >= 0 }; };
+      const shape = (c) => { const members = c.members.map(m => Object.assign({}, m, name(m.acct), { paidUsd: m.paidC / 100 })).filter(m => showE2 || !isE2('u:' + m.uid)); if (members.length < 2) return null; const holder = members[0].uid; return { kind: c.kind, key: c.key, cc: c.cc, paidUsd: c.paidC / 100, holder, members: members.map(m => Object.assign(m, { holder: m.uid === holder, candidate: m.uid !== holder && !m.protected && m.status !== 'banned' })) }; };
+      const handles = ab.handles.map(shape).filter(Boolean), posts = ab.posts.map(shape).filter(Boolean), ips = ab.ips.map(shape).filter(Boolean);
+      const multi = ab.multi.map(m => Object.assign({ handles: m.handles }, name(m.acct))).filter(m => showE2 || !isE2('u:' + m.uid));
+      const blocked = ab.blocked.map(b => Object.assign({ id: b.id, url: b.url, ts: b.ts, handle: b.xh, cc: b.cc, note: b.note }, name(b.acct))).filter(b => showE2 || !isE2('u:' + b.uid));
+      const candidates = [...new Set([...handles, ...posts].flatMap(c => c.members.filter(m => m.candidate).map(m => m.uid)))];
+      const sweepable = new Set([...handles, ...posts, ...ips].flatMap(c => c.members.filter(m => !m.protected).map(m => m.uid)));
+      const out = { ok: true, rows: ab.n, handles, posts, ips, multi, blocked, candidates, protected: prot };
+      if (request.method !== 'POST' || !Array.isArray(bq.ban)) return J(out);
+      const apply = bq.apply === true, note = String(bq.note || 'One X account, one MarginPad account - this account filed promo posts from an X account that already pays another member.').slice(0, 200);
+      const want = [...new Set(bq.ban.map(x => String(x || '').replace(/^u:/, '')))].slice(0, 50);
+      const refused = want.filter(u => !sweepable.has(u)), targets = want.filter(u => sweepable.has(u));
+      const results = [];
+      if (apply) for (const uid of targets) {
+        const r9 = await banEverywhere(env, uid, { by: 'promoabuse' });
+        let rej = 0; try { rej = (+((await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/promo/rejectacct', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: 'u:' + uid, note }) }))).json()).rejected) || 0); } catch (e) {}
+        results.push(Object.assign({ rejected: rej }, r9, name('u:' + uid)));
+      }
+      if (apply && results.length) { try { await tgAdmin(env, '<b>Promo abuse: ' + results.length + ' account' + (results.length === 1 ? '' : 's') + ' banned</b>\n' + results.map(r => (r.username ? '@' + r.username : r.uid.slice(0, 10)) + ' - site ' + (r.site ? 'ok' : 'FAILED') + ', ledger ' + (r.ledger ? 'ok' : 'FAILED') + (r.rejected ? ', ' + r.rejected + ' pending post' + (r.rejected === 1 ? '' : 's') + ' rejected' : '')).join('\n'), { kind: 'promo-abuse-ban', sev: 'info' }); } catch (e) {} }
+      return J(Object.assign(out, { dry: !apply, targets, refused, results }));
+    }
     if (url.pathname === '/api/admin/multiacct' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       const apply = !!bq.apply;
@@ -27574,6 +27627,31 @@ export default {
 };
 // WHO IS NEVER A REAL CORRESPONDENT. Pure, so the E2E runs exactly what production runs.
 // Returns a REASON string when the sender cannot be genuine, '' when the mail should be filed as a ticket.
+/* PROMO POSTS: THE X ACCOUNT IS THE IDENTITY, NOT THE LINK (2026-10-27, owner: "neki nalozi salju X post link isti na
+   vise naloga ... anti abuse sistem ... mora da prepoznaje te paterne"). MEASURED over the whole promos table before
+   touching anything (557 rows, $68.60 paid): the exact-URL check held - not one post id was paid to two accounts - but
+   THREE X accounts were each feeding TWO MarginPad accounts on alternate days (salmanali165974 -> azmat786 + salma786,
+   24 paid posts; salamisiaqabdul -> Abdulsalam + Ayinla; abdulgafar04 -> Gafsky + Abdulgafar), and the old
+   normaliser kept `/photo/1`, `twitter.com` and `/i/status/<id>` as three different links for one post. This is the ONE
+   reading of an X post link: the handle and the status id, nothing else. The ledger refuses a handle another account
+   already posts under (handle_taken), dedupes by status id across every spelling, and lists the pattern on the desk
+   (/promo/abuse) for the owner to ban - the sweep proposes, the owner selects. */
+function promoXParse(raw) {
+  let u = String(raw || '').trim().slice(0, 300);
+  if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+  let host = '', p = '';
+  try { const U = new URL(u); host = U.hostname.toLowerCase().replace(/^(www|mobile|m)\./, ''); p = U.pathname; } catch (e) { return { ok: false, why: 'bad_url' }; }
+  if (host !== 'x.com' && host !== 'twitter.com') return { ok: false, why: 'bad_host', host };
+  const parts = p.split('/').filter(Boolean);
+  // /<handle>/status/<id>[/photo/1 ...] · /i/status/<id> · /i/web/status/<id> - the status id is the post, the handle the account
+  let h = '', sid = '';
+  const si = parts.findIndex((x, i) => i > 0 && /^status(es)?$/i.test(x));
+  if (si > 0 && /^\d{6,30}$/.test(parts[si + 1] || '')) { sid = parts[si + 1]; h = (parts[0] === 'i') ? '' : parts[0].toLowerCase(); }
+  else if (parts.length === 1 && /^[A-Za-z0-9_]{1,15}$/.test(parts[0])) return { ok: false, why: 'profile', handle: parts[0].toLowerCase() };
+  if (!sid) return { ok: false, why: 'not_a_post' };
+  if (h && !/^[a-z0-9_]{1,15}$/.test(h)) return { ok: false, why: 'bad_handle' };
+  return { ok: true, handle: h, sid, norm: h ? 'https://x.com/' + h + '/status/' + sid : 'https://x.com/i/status/' + sid };
+}
 function supportSenderJunk(from) {
   const f = String(from || '').trim().toLowerCase();
   if (!f) return 'no sender';
@@ -28496,6 +28574,9 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS lbban(address TEXT PRIMARY KEY, ts INTEGER)'); // wallets barred from the weekly leaderboard competition
     s.exec("CREATE TABLE IF NOT EXISTS promos(id TEXT PRIMARY KEY, acct TEXT, platform TEXT, url TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // social promo posts (X/TikTok $1 each, manual review, 24h min live)
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_promos_acct ON promos(acct)'); } catch (e) {}
+    // the X handle and the status id the link parsed to (2026-10-27) - backfilled lazily by _promoBackfill, '' = unparsable
+    for (const c of ['xh TEXT', 'sid TEXT']) { try { s.exec('ALTER TABLE promos ADD COLUMN ' + c); } catch (e) {} }
+    for (const ix of ['CREATE INDEX IF NOT EXISTS idx_promos_xh ON promos(xh)', 'CREATE INDEX IF NOT EXISTS idx_promos_sid ON promos(sid)']) { try { s.exec(ix); } catch (e) {} }
     s.exec("CREATE TABLE IF NOT EXISTS exsign(id TEXT PRIMARY KEY, acct TEXT, exchange TEXT, uid TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // exchange sign-up bonus claims ($3 per exchange account via our ref link, manual review against the affiliate dashboard)
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_exsign_acct ON exsign(acct)'); } catch (e) {}
     s.exec("CREATE TABLE IF NOT EXISTS xengage(id TEXT PRIMARY KEY, acct TEXT, username TEXT, action TEXT, tweet_id TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // like/comment our X post → reward (manual review; the X read confirms the submitted username actually engaged)
@@ -28508,6 +28589,15 @@ export class RewardLedger {
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
 
+  // one pass over rows the xh/sid columns have not seen yet (557 on the day it shipped, then nothing): a row that does not parse gets '' so it is never asked again
+  _promoBackfill() {
+    const s = this.state.storage.sql;
+    try {
+      const rows = [...s.exec('SELECT id,url FROM promos WHERE xh IS NULL LIMIT 500')];
+      for (const r of rows) { const p = promoXParse(r.url); s.exec('UPDATE promos SET xh=?, sid=? WHERE id=?', p.ok ? p.handle : (p.handle || ''), p.ok ? p.sid : '', r.id); }
+      return rows.length;
+    } catch (e) { return -1; }
+  }
   log(type, address, cc, dev, amount) { const s = this.state.storage.sql; try { s.exec('INSERT INTO log(ts,type,address,cc,dev,amount) VALUES(?,?,?,?,?,?)', Date.now(), type, address || '', cc || '', dev || '', amount || 0); s.exec('DELETE FROM log WHERE rowid NOT IN (SELECT rowid FROM log ORDER BY ts DESC LIMIT 200)'); } catch (e) {}
     // durable per-account copy of every movement (the third argument is the detail on money rows: mission id, item, gift sender, week/board)
     try { if (amount && address && type !== 'dispadj') s.exec('INSERT INTO acctlog(ts,acct,type,detail,amount) VALUES(?,?,?,?,?)', Date.now(), address, type, String(cc || '').slice(0, 40), Math.round(+amount || 0)); } catch (e) {} }
@@ -28871,6 +28961,9 @@ export class RewardLedger {
     }
     if (path === '/ban') { // admin: ban a wallet from the faucet - future claims rejected (account + balance kept for review)
       if (!validAcct) return this.j({ error: 'bad_address' }, 400);
+      // a member who never touched the faucet has no row here, and an UPDATE over no row "succeeds" while banning nothing - the
+      // first /account read would then mint a clean, unbanned row (found by promo-abuse-e2e 2026-10-27). The ban is a stub row now.
+      sql.exec('INSERT OR IGNORE INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,0,0)', addr, day, now);
       sql.exec('UPDATE accounts SET banned=1 WHERE address=?', addr); this.log('ban', addr, '', '', 0);
       return this.j({ ok: true });
     }
@@ -29069,19 +29162,54 @@ export class RewardLedger {
  // TikTok removed 2026-07-25; Reddit removed 2026-08-20 (owner). Only NEW Reddit submissions are refused -
  // the /promo/review reddit branch below stays alive so posts already in the queue can still be paid out.
  if (platform !== 'x') return this.j({ error: 'bad_platform' }, 400);
-      let u = String(body.url || '').trim().slice(0, 300);
-      if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
-      let host = ''; try { host = new URL(u).hostname.toLowerCase().replace(/^www\./, ''); } catch (e) { return this.j({ error: 'bad_url' }, 400); }
- const okHost = (host === 'x.com' || host === 'twitter.com' || host === 'mobile.twitter.com');
-      if (!okHost) return this.j({ error: 'bad_url' }, 400);
-      const norm = u.replace(/[?#].*$/, '').replace(/\/+$/, '');
-      if (this.rows('SELECT id FROM promos WHERE lower(url)=lower(?)', norm).length) return this.j({ error: 'url_taken' }, 409); // each post link pays once, ever - across ALL accounts
+      this._promoBackfill();
+      // ONE reading of the link (promoXParse): a profile link is not a post, and `/photo/1`, `twitter.com`, `?s=20`,
+      // `/i/status/<id>` are all the same post - the old normaliser kept them apart, so one post could be filed
+      // again under another spelling on another day
+      const px = promoXParse(body.url);
+      if (!px.ok) return this.j({ error: 'bad_url', why: px.why }, 400);
+      const norm = px.norm;
+      if (this.rows('SELECT id FROM promos WHERE sid=? OR lower(url)=lower(?)', px.sid, norm).length) return this.j({ error: 'url_taken' }, 409); // each post pays once, ever - across ALL accounts and every spelling
       const dayStart = new Date(day + 'T00:00:00Z').getTime();
       if (this.rows("SELECT id FROM promos WHERE acct=? AND platform=? AND ts>=? AND status!='rejected'", acct, platform, dayStart).length) return this.j({ error: 'daily_limit' }, 429);
       const id = 'pr' + now.toString(36) + Math.floor(Math.random() * 1679616).toString(36);
-      sql.exec('INSERT INTO promos(id,acct,platform,url,ts,status,ip,cc) VALUES(?,?,?,?,?,?,?,?)', id, acct, platform, norm, now, 'pending', ip, cc);
+      /* ONE X ACCOUNT, ONE MARGINPAD ACCOUNT. A handle that already has a pending or paid post on ANOTHER account is
+         refused, and the attempt is KEPT as a `blocked` row (never payable, shown to the member with the reason, listed
+         on the owner's desk) - a refusal that leaves no trace is a pattern nobody can see. Rejected rows do not bind
+         the handle: a mistyped link the owner turned down must not lock an X account to the wrong member. */
+      const other = px.handle ? this.rows("SELECT acct FROM promos WHERE xh=? AND acct!=? AND status IN ('pending','approved') ORDER BY ts ASC LIMIT 1", px.handle, acct)[0] : null;
+      if (other) {
+        sql.exec('INSERT INTO promos(id,acct,platform,url,ts,status,note,decided_ts,ip,cc,xh,sid) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', id, acct, platform, norm, now, 'blocked', 'X account @' + px.handle + ' already posts for another MarginPad account', now, ip, cc, px.handle, px.sid);
+        this.log('promo_block', acct, cc, dev, 0);
+        return this.j({ error: 'handle_taken', handle: px.handle, other: other.acct, id }, 409);
+      }
+      sql.exec('INSERT INTO promos(id,acct,platform,url,ts,status,ip,cc,xh,sid) VALUES(?,?,?,?,?,?,?,?,?,?)', id, acct, platform, norm, now, 'pending', ip, cc, px.handle, px.sid);
       this.log('promo', acct, cc, dev, 0);
-      return this.j({ ok: true, id, status: 'pending' });
+      return this.j({ ok: true, id, status: 'pending', handle: px.handle });
+    }
+    if (path === '/promo/abuse') { // admin: the patterns, computed over the WHOLE table (one X handle on 2+ accounts, one post on 2+ accounts, one IP on 2+ accounts, one account on 2+ handles, the blocked attempts)
+      this._promoBackfill();
+      const rows = this.rows("SELECT id,acct,url,ts,status,amount,ip,cc,xh,sid FROM promos WHERE platform='x'");
+      const byH = {}, byS = {}, byIp = {}, byA = {};
+      for (const r of rows) {
+        if (r.xh && r.status !== 'rejected') (byH[r.xh] = byH[r.xh] || []).push(r);
+        if (r.sid) (byS[r.sid] = byS[r.sid] || []).push(r);
+        if (r.ip && r.status !== 'rejected') (byIp[r.ip] = byIp[r.ip] || []).push(r);
+        if (r.xh && r.status !== 'rejected') { byA[r.acct] = byA[r.acct] || {}; byA[r.acct][r.xh] = (byA[r.acct][r.xh] || 0) + 1; }
+      }
+      const members = (list) => { const m = {}; for (const r of list) { const a = m[r.acct] = m[r.acct] || { acct: r.acct, n: 0, approved: 0, blocked: 0, paidC: 0, first: r.ts, last: r.ts }; a.n++; if (r.status === 'approved') { a.approved++; a.paidC += +r.amount || 0; } if (r.status === 'blocked') a.blocked++; if (r.ts < a.first) a.first = r.ts; if (r.ts > a.last) a.last = r.ts; } return Object.values(m).sort((x, y) => x.first - y.first); };
+      const cluster = (kind, g) => Object.entries(g).map(([k, v]) => ({ kind, key: k, members: members(v) })).filter(c => c.members.length > 1).map(c => Object.assign(c, { paidC: c.members.reduce((s, m) => s + m.paidC, 0), cc: [...new Set(g[c.key].map(r => r.cc).filter(Boolean))] })).sort((a, b) => b.paidC - a.paidC);
+      const banned = {}; for (const r of this.rows('SELECT address,banned FROM accounts WHERE banned=1')) banned[r.address] = 1;
+      const multi = Object.entries(byA).filter(([a, hs]) => Object.keys(hs).length > 1).map(([acct, hs]) => ({ acct, handles: Object.entries(hs).map(([h, n]) => ({ h, n })).sort((x, y) => y.n - x.n) }));
+      const blocked = this.rows("SELECT id,acct,url,ts,xh,cc,note FROM promos WHERE status='blocked' ORDER BY ts DESC LIMIT 60");
+      return this.j({ ok: true, n: rows.length, handles: cluster('handle', byH), posts: cluster('post', byS), ips: cluster('ip', byIp), multi, blocked, banned: Object.keys(banned) });
+    }
+    if (path === '/promo/rejectacct') { // admin (the ban path): every pending post of one account is rejected with the reason, so nothing of theirs can be paid after the fact
+      if (!validAcct) return this.j({ error: 'bad_address' }, 400);
+      const note = String(body.note || 'account closed').slice(0, 200);
+      const n = this.rows("SELECT id FROM promos WHERE acct=? AND status='pending'", addr).length;
+      if (n) sql.exec("UPDATE promos SET status='rejected', note=?, decided_ts=? WHERE acct=? AND status='pending'", note, now, addr);
+      return this.j({ ok: true, rejected: n });
     }
     if (path === '/promo/mine') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
@@ -29089,7 +29217,10 @@ export class RewardLedger {
       return this.j({ promos: rows.map(r => ({ ...r, amount: (r.amount || 0) / 100 })) });
     }
     if (path === '/promo/list') { // admin: review queue + recent decisions
-      const pending = this.rows("SELECT id,acct AS address,platform,url,ts,ip,cc FROM promos WHERE status='pending' ORDER BY ts ASC LIMIT 100");
+      this._promoBackfill();
+      const pending = this.rows("SELECT id,acct AS address,platform,url,ts,ip,cc,xh FROM promos WHERE status='pending' ORDER BY ts ASC LIMIT 100");
+      // the pattern at the moment of the decision: `also` = every OTHER account this X handle has a pending or paid post on (the owner reads this beside the Approve button)
+      for (const p of pending) { p.also = p.xh ? [...new Set(this.rows("SELECT acct FROM promos WHERE xh=? AND acct!=? AND status IN ('pending','approved','blocked')", p.xh, p.address).map(r => r.acct))] : []; }
       const decided = this.rows("SELECT id,acct AS address,platform,url,ts,status,note,amount,decided_ts FROM promos WHERE status!='pending' ORDER BY decided_ts DESC LIMIT 30");
       return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.10), redditUsd: (cfg.redditC == null ? 0.5 : cfg.redditC / 100), redditMaxUsd: (cfg.redditMaxC == null ? 5 : cfg.redditMaxC / 100), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, minAgeMs: 86400000 });
     }
@@ -29101,6 +29232,8 @@ export class RewardLedger {
       if (action === 'reject') { sql.exec("UPDATE promos SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
       if (!body.force && now - p.ts < 86400000) return this.j({ error: 'too_early', waitMs: 86400000 - (now - p.ts) }, 400); // 24h-live gate - admin can bypass with force
+      // the same X account on another MarginPad account is answered BEFORE the money moves (2026-10-27) - the desk names the other account and asks again; `force` pays anyway
+      if (!body.force && p.xh) { const also = [...new Set(this.rows("SELECT acct FROM promos WHERE xh=? AND acct!=? AND status IN ('pending','approved','blocked')", p.xh, p.acct).map(r => r.acct))]; if (also.length) return this.j({ error: 'handle_shared', handle: p.xh, also }, 409); }
       let amt, revNote = String(body.note || '').slice(0, 200);
       if (p.platform === 'tiktok') { // TikTok pays per views: $ttRate per 1000 views, capped at $ttMax
         const views = Math.max(0, Math.floor(+body.views || 0));
@@ -32141,7 +32274,7 @@ export class UserStore {
       // "All accounts" list showed "user eea32a0c · ?" for everyone because of exactly this (owner report 2026-09-05)
       for (let i = 0; i < ids.length; i += 60) {
         const part = ids.slice(i, i + 60), ph = part.map(() => '?').join(',');
-        try { this.rows('SELECT id,email,username,tg_chat,dev,cc FROM users WHERE id IN (' + ph + ')', ...part).forEach(u => { out[u.id] = { username: u.username || '', email: u.email || '', tg: !!u.tg_chat, dev: u.dev || '', cc: u.cc || '' }; }); } catch (e) {}
+        try { this.rows('SELECT id,email,username,tg_chat,dev,cc,status FROM users WHERE id IN (' + ph + ')', ...part).forEach(u => { out[u.id] = { username: u.username || '', email: u.email || '', tg: !!u.tg_chat, dev: u.dev || '', cc: u.cc || '', status: u.status || '' }; }); } catch (e) {}
       }
       return this.j({ profiles: out });
     }

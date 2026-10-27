@@ -114,6 +114,20 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       const md = await page.evaluate(() => ({ open: !!document.querySelector('.modal'), kv: document.querySelectorAll('.modal .kvgrid .kv').length, earn: !!document.getElementById('amEarn'), actions: ['amBan', 'amLb', 'amUnlock', 'amRemove', 'amAdd', 'amNoteSave', 'amMsgSend'].filter(id => !document.getElementById(id)) }));
       chk('faucet: account card opens with fields, earnings and every action button', md.open && md.kv >= 10 && md.earn && md.actions.length === 0, md);
       await page.keyboard.press('Escape'); await sleep(300); chk('faucet: Escape closes the card', await page.evaluate(() => !document.querySelector('.modal')));
+      // PROMO ABUSE (2026-10-27): the fold renders off /api/admin/promoabuse, the ban button exists, pressing it with nothing ticked
+      // sends NOTHING, and with a tick it ARMS (data-armed) instead of opening a dialog or firing - the 10-19 confirm() rule
+      const pab = await page.evaluate(() => { const f = Array.from(document.querySelectorAll('details.fold')).find(d => /Promo abuse/.test(d.querySelector('summary') ? d.querySelector('summary').textContent : '')); const b = document.getElementById('pabBan'); return { fold: !!f, sub: f ? f.querySelector('summary span') && f.querySelector('summary span').textContent : '', btn: !!b, ticks: document.querySelectorAll('[data-pab]').length }; });
+      chk('faucet: Promo abuse fold renders with the ban button and a summary line', pab.fold && pab.btn && /X account/.test(pab.sub || ''), pab);
+      const sent = []; page.on('request', r => { if (r.method() === 'POST' && r.url().indexOf('/api/admin/promoabuse') >= 0) sent.push(r.url()); });
+      await page.evaluate(() => { document.querySelectorAll('[data-pab]').forEach(c => { c.checked = false; }); const f = document.getElementById('pabBan').closest('details'); if (f) f.open = true; document.getElementById('pabBan').click(); }); await sleep(400);
+      const pab1 = await page.evaluate(() => { const b = document.getElementById('pabBan'); return { armed: b.getAttribute('data-armed'), label: b.textContent }; });
+      chk('faucet: Ban with nothing ticked sends nothing and does not arm', sent.length === 0 && !pab1.armed, pab1);
+      if (pab.ticks > 0) {
+        await page.evaluate(() => { document.querySelector('[data-pab]').checked = true; document.getElementById('pabBan').click(); }); await sleep(400);
+        const pab2 = await page.evaluate(() => { const b = document.getElementById('pabBan'); return { armed: b.getAttribute('data-armed'), label: b.textContent }; });
+        chk('faucet: Ban with a tick ARMS on the first click (no dialog, no request)', pab2.armed === '1' && /confirm/i.test(pab2.label) && sent.length === 0, pab2);
+        await page.evaluate(() => { document.querySelectorAll('[data-pab]').forEach(c => { c.checked = false; }); }); await sleep(6500); // let the arm lapse so nothing can fire by accident
+      } else chk('faucet: no member to tick right now (skipped the arm check)', true, pab);
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-money-faucet.png') }); } catch (e) {}
     }
     if (!only.length || only.includes('people/journeys')) {
