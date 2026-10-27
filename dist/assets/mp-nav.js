@@ -231,6 +231,10 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
        purpose: a browser without :has() drops only the second. */
     + 'header.mpnav-hdr{contain:none !important}'
     + 'header:has(.hsoc-m){contain:none !important}'
+    /* the glow (the lime drop-shadow on the open socials button, the hover ring on the account button) must leave the nav's
+       box: /leaderboards/ and its twin style `.hnav{overflow:hidden}` on their own, and the nav is exactly as tall as the
+       account button, so a 6px shadow was cut flat at the top and bottom (owner 2026-10-27: "glow efekat zasecen") */
+    + 'header .hnav{overflow:visible !important}'
     + 'header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}'
     /* no ring (owner 2026-10-27: "treba skinuti taj kruzic"): the glyph alone, 27px of hit area, 10% under the first cut */
     + 'header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}'
@@ -673,14 +677,20 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
       // the menu - the very buzz that greeted the open closed it in the same tick. Only a trusted pointer closes.
       if (e.isTrusted === false) return;
       var b = t.closest('header .hsocb');
-      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll(); if (on) { socSet(w, true); socOpenY = window.scrollY || 0; } return; }
+      if (b) { e.preventDefault(); var w = b.parentNode, on = !w.classList.contains('on'); socCloseAll(); if (on) { socSet(w, true); socOpenY = window.scrollY || 0; socOpenAt = Date.now(); } return; }
       if (t.closest('header .hsoc-i')) { socBuzz(10); setTimeout(socCloseAll, 120); return; }
       if (!t.closest('header .hsoc')) socCloseAll();
     }, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') socCloseAll(); });
-    var socOpenY = 0; // a real scroll closes it; the few pixels a phone settles after a tap do not
-    window.addEventListener('scroll', function () { if (Math.abs((window.scrollY || 0) - socOpenY) > 12) socCloseAll(); }, { passive: true });
-    window.addEventListener('resize', socCloseAll);
+    var socOpenY = 0, socOpenAt = 0; // a real scroll closes it; the few pixels a phone settles after a tap do not
+    // NOTHING THAT HAPPENS IN THE FIRST 800 ms IS THE READER LEAVING (owner 2026-10-27, second report, "odmah se ugasi"): the
+    // haptic that greets the open (.click() on mp-auth's hidden switch) FOCUSES that switch, and WebKit scrolls a focused
+    // element into view - on an iPhone that moves the page and fires scroll (and, in Safari, a toolbar resize) within the
+    // same tick as the open. Measured here: a `scroll` event right after the open with the haptic's LABEL as its target.
+    // A reader who really scrolls or rotates inside that window keeps the menu for a moment; the next outside tap closes it.
+    var socGrace = function () { return Date.now() - socOpenAt < 800; };
+    window.addEventListener('scroll', function () { if (socGrace()) return; if (Math.abs((window.scrollY || 0) - socOpenY) > 12) socCloseAll(); }, { passive: true });
+    window.addEventListener('resize', function () { if (!socGrace()) socCloseAll(); });
   } catch (e) {}
   try { window.mpSocialsClose = socCloseAll; } catch (e) {}
   function ensureSocials() {
@@ -950,8 +960,8 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     // JS, already used to paint the member card before first frame) says this browser has a session, and any feature
     // that needs identity asks for it through ensureAuth. mp-auth self-guards on window.mpAuth, so a page that already
     // ships it is untouched.
-    var AUTH_JS = '/assets/mp-auth.js?v=ee2dac93', authLoading = null;
-    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=ee2dac93"]'); } catch (e) { return false; } }
+    var AUTH_JS = '/assets/mp-auth.js?v=2d18eed5', authLoading = null;
+    function hasAuthTag() { try { return !!document.querySelector('script[src*="/assets/mp-auth.js?v=2d18eed5"]'); } catch (e) { return false; } }
     function liCookie() { try { return /(?:^|;\s*)mp_li=1/.test(document.cookie); } catch (e) { return false; } }
     function ensureAuth(cb) {
       if (window.mpAuth || hasAuthTag()) { if (cb) cb(); return; }

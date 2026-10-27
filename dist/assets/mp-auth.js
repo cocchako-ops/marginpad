@@ -4188,8 +4188,13 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   function iosTick() {
     try {
       if (!/iPhone|iPad|iPod/.test(navigator.userAgent)) return false;
-      if (!_sw) { var l = document.createElement('label'); l.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none'; var i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); i.setAttribute('aria-hidden', 'true'); l.appendChild(i); (document.body || document.documentElement).appendChild(l); _sw = l; }
+      // THE SWITCH SITS INSIDE THE VIEWPORT, NEVER AT -9999px (2026-10-27): clicking the label focuses the checkbox, and WebKit
+      // scrolls a focused element into view - parked off-screen that focus moved the page under every buzz (and closed the
+      // socials menu that had just opened). At 0,0 at 1px and opacity 0 there is nothing to scroll to; focus is handed back.
+      if (!_sw) { var l = document.createElement('label'); l.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:visible;opacity:0;pointer-events:none;z-index:-1'; var i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); i.setAttribute('aria-hidden', 'true'); i.tabIndex = -1; l.appendChild(i); (document.body || document.documentElement).appendChild(l); _sw = l; }
+      var prev = document.activeElement;
       _sw.click();
+      try { var now = document.activeElement; if (now && now !== prev && _sw.contains(now)) { if (prev && prev !== document.body && prev.focus) prev.focus({ preventScroll: true }); else now.blur(); } } catch (e2) {}
       return true;
     } catch (e) { return false; }
   }
