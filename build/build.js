@@ -95,6 +95,10 @@ run('Inject Yandex.Metrica into every page', 'node build/add-metrica.js');
 
 // 11) warm the fonts.gstatic.com connection on every font-loading page (LCP perf; idempotent)
 run('Inject font preconnect', 'node build/add-preconnect.js');
+// 2026-10-27 (layout shift pass): the latin faces are preloaded so a cached font is ready for the first paint, and the
+// header's critical CSS is inlined so the static header is already the mp-nav header before the bundle runs.
+run('Preload the latin font faces', 'node build/add-font-preload.js');
+run('Inline the header critical CSS', 'node build/add-hdr-crit.js');
 
 // 11b) re-add hand-maintained pages the sitemap generator doesn't know about
 run('Sitemap extras (hand-made pages)', 'node build/add-sitemap-extras.js');

@@ -2,6 +2,7 @@
 <html lang="es" data-es-twin="/leaderboards/">
 <head>
 <meta charset="UTF-8" />
+<script>try{if(/(^|; )mp_li=1/.test(document.cookie))document.documentElement.className+=" mp-li";}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -32,6 +33,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css" />
 <style>
   :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--amber:#ffd75a;--violet:#9d7bff;--blue:#6aa3ff;--orange:#f7a600;}
@@ -45,6 +50,9 @@
   .hnav{display:flex;align-items:center;gap:14px;}
   .hnav a{color:var(--dim);text-decoration:none;font-size:14px;font-weight:600;}
   .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  /* CLS 2026-10-27: mp-nav rebuilds this header into the canonical one ~40 ms after first paint; until then the three static links
+     wrapped to two lines in the 354px column (header 79px, canonical 67px) and the whole page jumped up 12px. One row, clipped, never taller. */
+  @media(max-width:720px){header .hnav{flex-wrap:nowrap;overflow:hidden;max-height:40px;}header .hnav a{white-space:nowrap;flex:none;}}
   /* 2026-10-05: the standings are the page, so the top is one title row + one strip + one row of tabs. Measured before: the
      first table row sat 952px down a desktop and 1,644px down a phone, behind a five-line lead, three 100px tiles and two
      rows of board cards. */
@@ -59,6 +67,7 @@
   .sc{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px 12px;background:#0d1014;border:1px solid var(--line);border-radius:14px;padding:10px 14px;}
   .sc:first-child{flex:1.5 1 0;}
   .sc .k{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);flex:none;}
+  #sEye{display:inline-block;min-width:176px;} /* CLS: wide enough for the Spanish static eyebrow too ("Temporada · 14 días" = 174px) */
   .sc .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:#fff;margin:0;line-height:1.05;white-space:nowrap;flex:none;}
   .sc .v b{color:var(--amber);}
   .sc .s{font:600 10px/1.35 'Space Mono',monospace;color:var(--faint);margin:0;min-width:0;flex:1 1 auto;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
@@ -129,27 +138,29 @@
   .bh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .bh h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(21px,3.2vw,28px);letter-spacing:-.03em;margin:0;line-height:1.1;}
   .bh h2 small{display:block;font:600 12.5px 'Familjen Grotesk',sans-serif;color:var(--dim);letter-spacing:0;margin-top:4px;}
-  .prizes{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  /* @lbcls */ /* CLS 2026-10-27: every slot the script fills takes its painted room from the first frame, so nothing below it moves */
+  .prizes{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:44px;}
   .pz{display:inline-flex;flex-direction:column;align-items:center;min-width:48px;padding:5px 7px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line);}
   .pz i{font:800 9px 'Space Mono',monospace;color:var(--faint);font-style:normal;}
   .pz b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;color:#fff;line-height:1.1;margin-top:2px;}
   .pz.p1 b{color:var(--amber);}.pz.p2 b{color:#cfd6df;}.pz.p3 b{color:#d19a66;}
-  .you{margin:12px 0 0;padding:9px 12px;border-radius:10px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);font-size:13.5px;color:var(--ink);display:block;line-height:1.45;} /* block, not flex: as a flex row the "Sign in" link took a line of its own on a phone */
+  .you{margin:12px 0 0;padding:9px 12px;border-radius:10px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.22);font-size:13.5px;color:var(--ink);display:block;line-height:1.45;min-height:40px;} /* block, not flex: as a flex row the "Sign in" link took a line of its own on a phone */
   .you b{color:var(--lime);}
   .you a{font-weight:700;text-decoration:none;}
   .you[hidden]{display:none;}
+  html.mp-li #bYou .yg,html:not(.mp-li) #bYou .ym{display:none;}
   /* count + find box on one line above the list */
   .btools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap;}
-  .bcount{font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0;min-width:0;}
+  .bcount{font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0;min-width:0;min-height:15px;}
   .bcount b{color:var(--dim);}
   .bfind{display:flex;gap:6px;align-items:center;margin-left:auto;}
   .bfind input{width:170px;max-width:52vw;background:#0d1014;border:1px solid var(--line);border-radius:9px;padding:7px 10px;color:var(--ink);font:600 13px 'Familjen Grotesk',sans-serif;outline:none;}
   .bfind input:focus{border-color:var(--lime);}
   .bfind button{background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.35);color:var(--lime);border-radius:9px;padding:7px 10px;font:700 11px 'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
   .bfind button[hidden]{display:none;}
-  .tw{overflow:auto;max-height:620px;margin-top:10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  .tw{overflow:auto;height:620px;margin-top:10px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
   .tw thead th{position:sticky;top:0;z-index:1;background:linear-gradient(180deg,var(--panel),var(--panel));}
-  @media(max-width:620px){.tw{max-height:70vh;}}
+  @media(max-width:620px){.tw{height:70vh;}}
   table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
   th{text-align:left;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:0 10px 9px 0;white-space:nowrap;}
   td{padding:9px 10px 9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap;}
@@ -176,9 +187,11 @@
     .board{padding:14px 14px 14px;}
     .bh{gap:8px;}
     .pz{min-width:40px;padding:3px 6px;}.pz b{font-size:13px;}
-    .you{font-size:12.5px;padding:8px 10px;margin-top:10px;}
+    .you{font-size:12.5px;padding:8px 10px;margin-top:10px;min-height:54px;}
     .btools{flex-wrap:nowrap;margin-top:8px;}
-    .bcount{flex:1 1 auto;white-space:normal;line-height:1.4;font-size:9.5px;}
+    #sEye{min-width:136px;} /* CLS: "Season · 14 days" -> "Day N of 14" is 43px narrower and slid the ticks and the countdown sideways */
+  .bcount{flex:1 1 auto;white-space:normal;line-height:1.4;font-size:9.5px;min-height:27px;}
+    .prizes{min-height:37px;flex:1 1 100%;} /* an EMPTY prizes row is 0 wide and sits beside the h2; the chips wrap under it (+45px) - always its own row */
     .bfind input{width:120px;padding:6px 9px;font-size:12.5px;}
     .sc{flex-wrap:wrap;}
     .sc .s{flex:1 1 100%;-webkit-line-clamp:1;}
@@ -195,7 +208,7 @@
 .fhero{display:flex;align-items:baseline;gap:10px 18px;flex-wrap:wrap;margin-top:16px;}
 .fhero .n{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(36px,6.6vw,54px);line-height:.94;letter-spacing:-.035em;color:var(--lime);}
 .fhero .n small{font-size:.36em;color:var(--dim);letter-spacing:-.01em;margin-left:4px;font-family:'Familjen Grotesk',sans-serif;}
-.fhero .cap{font-size:13.5px;line-height:1.5;color:var(--dim);max-width:32ch;}
+.fhero .cap{font-size:13.5px;line-height:1.5;color:var(--dim);max-width:32ch;min-height:61px;} /* CLS: the static three-line caption is replaced by a two-line one when the runs land */
 .frules{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
 .fr{flex:1 1 104px;min-width:0;display:flex;flex-direction:column;gap:3px;padding:9px 12px;border:1px solid var(--line);border-radius:13px;background:#0d1014;}
 .fr b{font:700 16px 'Space Mono',monospace;color:var(--ink);}
@@ -207,7 +220,7 @@
 .ftbl .w{font-weight:700;color:#fff;}
 .ftbl .g{color:var(--up);font-family:'Space Mono',monospace;}
 .fnote{margin-top:14px;font-size:12.5px;line-height:1.6;color:var(--dim);}
-@media(max-width:560px){.fhero .cap{max-width:none;}}
+@media(max-width:560px){.fhero .cap{max-width:none;min-height:0;}}
 .rules{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
   .rules .lbl{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
   .rules ul{margin:0;padding-left:18px;}
@@ -250,7 +263,7 @@
   .snote b{color:#e9e7df}
   .board.arch .you{display:none}
   .board.arch-pz .btools{display:none}
-  .board.arch-pz #bTw{max-height:none}
+  .board.arch-pz #bTw{height:auto;max-height:none}
   td.pzc{text-align:right;font-family:'Space Mono',monospace;font-weight:700;color:#c2f64a;white-space:nowrap}
   @media(max-width:620px){
     /* a 340px panel opened from a control this far down the page ran past the bottom edge (measured:
@@ -287,6 +300,7 @@
 <meta name="apple-mobile-web-app-title" content="MarginPad" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:7px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:8px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:67px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:62px;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header .htg{color:#229ed9 !important}header .htg:hover{color:#3bb0e8 !important;background:rgba(34,158,217,.14)}header .htg svg{display:block}</style>
 </head>
 <body>
 <div class="wrap">
@@ -338,8 +352,8 @@
 
   <section class="board" id="board">
     <div class="bh"><h2 id="bT">ROE más alto<small id="bS">el mejor retorno en una sola operación cerrada esta temporada</small></h2><div class="prizes" id="bPz"></div></div>
-    <div class="you" id="bYou" hidden></div>
-    <div class="sbar" id="sBar" hidden>
+    <div class="you" id="bYou"><span class="yg"><a href="#" data-auth-open>Sign in</a> to see where you stand - your trades already count.</span><span class="ym">Checking where you stand…</span></div>
+    <div class="sbar" id="sBar">
       <div class="sdd" id="sDd">
         <button type="button" class="sdd-b" id="sDdB" aria-haspopup="listbox" aria-expanded="false"><span class="cl">Viendo</span><span class="cv" id="sDdV">&mdash;</span><svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="sdd-p" id="sDdP" role="listbox" hidden></div>
@@ -348,7 +362,7 @@
     </div>
     <div class="btools"><p class="bcount" id="bCount"></p><div class="bfind"><input id="bFind" type="search" placeholder="Buscar un trader" autocomplete="off" spellcheck="false" aria-label="Buscar un trader"><button type="button" id="bMe" hidden>Encuéntrame</button></div></div>
     <div class="tw" id="bTw"><table id="bTbl"><thead id="bHead"></thead><tbody id="bBody"><tr><td class="empty" colspan="6">Cargando las posiciones…</td></tr></tbody></table></div>
-    <div class="rules"><p class="lbl">Cómo se puntúa esta tabla</p><ul id="bRules"></ul></div>
+    <div class="rules"><p class="lbl">Cómo se puntúa esta tabla</p><ul id="bRules"><li>Scored on the <b>single best closed trade</b> of the season, by return on the margin you put up (ROE).</li><li><b>No minimum here</b>: a +3% best trade ranks above a +2% one. The 5% ROE / 0.2% move rule defines a <i>win</i> on the Best win rate board, not a place on this one.</li><li><b>One closed trade</b> opened this season, filled and closed server-side, puts you on the board; forex, metals and indices never rank.</li><li>Filled and closed server-side against real candles - a browser cannot report a trade onto this board.</li></ul></div>
   </section>
 
   <section class="board" id="funded">
@@ -672,6 +686,6 @@ function __esT_leaderboardsindex(k, en) { try { if ((document.documentElement.la
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=ee2dac93"></script>
-<script defer src="/assets/mp-nav.js?v=48b325f4"></script>
+<script defer src="/assets/mp-nav.js?v=acab8d12"></script>
 </body>
 </html>

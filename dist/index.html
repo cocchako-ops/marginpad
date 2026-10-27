@@ -81,6 +81,14 @@ function __esV_srv(s){try{if((document.documentElement.lang||"").slice(0,2).toLo
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
 <link rel="shortcut icon" href="/favicon.ico" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+
+
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/mp-trade.css?v=b2507a6d">
 <style>
@@ -150,7 +158,7 @@ function __esV_srv(s){try{if((document.documentElement.lang||"").slice(0,2).toLo
   @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}.hnav{gap:2px;}}
 
   /* ================= ticker ================= */
-  .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
+  .tape{min-height:37px;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
   .tape:hover .tape-in{animation-play-state:paused;}
   .tape-in{display:inline-block;padding:8px 0;animation:tape 70s linear infinite;}
   .tape span{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);margin:0 24px;font-variant-numeric:tabular-nums;}
@@ -989,6 +997,46 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 <meta name="apple-mobile-web-app-title" content="MarginPad" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+<!-- 2026-10-27: this block used to sit at the end of the body, so the first frame painted the MP-TAPE strip with no styles at all (a 160px unstyled div in the header) until the parser reached it. Styles for anything in the static markup belong in the head. -->
+<style>
+/* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
+.mpq{position:fixed;left:0;right:0;bottom:0;z-index:46;height:32px;display:flex;align-items:center;background:rgba(7,9,12,.93);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid #1c2230;cursor:pointer;overflow:hidden}
+.mpq-cap{flex:none;display:flex;align-items:center;gap:7px;padding:0 14px;height:100%;border-right:1px solid #1c2230;background:rgba(11,14,19,.9);font:700 10.5px 'Space Mono',monospace;letter-spacing:.09em;color:#c2f64a}
+.mpq-cap i{width:6px;height:6px;border-radius:50%;background:#ff5a4d;animation:mpqB 1.1s infinite}
+@keyframes mpqB{0%,100%{opacity:1}50%{opacity:.25}}
+.mpq-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
+.mpq-trk{display:inline-flex;gap:34px;white-space:nowrap;font:11.5px 'Space Mono',monospace;animation:mpqS 46s linear infinite;padding-left:20px}
+.mpq:hover .mpq-trk{animation-play-state:paused}
+@keyframes mpqS{to{transform:translateX(-50%)}}
+.mpq-it{color:#8fa3c4}.mpq-it b{font-weight:700}
+.mpq-it .lg{color:#2ebd85}.mpq-it .sh{color:#ff6258}.mpq-it .ex{color:#5c6b84;text-transform:uppercase}
+@media(max-width:980px){.mpq{display:none}}
+.mpqm{display:none}
+@media(max-width:980px){
+  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px solid #1c2230;background:#07090c;margin:0;box-shadow:0 10px 16px -6px rgba(7,9,12,.95)} /* 2026-09-12: sticky under the header - no 2px gap and no dashed edge for the scrolling card to peek through; the shadow fades content out under the bar instead of cutting it */
+  .mpqm-cap{flex:none;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#c2f64a;padding:0 10px;border-right:1px solid #1c2230;height:100%;display:flex;align-items:center;gap:5px}
+  .mpqm-cap s{display:inline-block;width:6px;height:11px;background:#c2f64a;animation:mpqB 1s infinite;text-decoration:none}
+  .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
+  .mpqm-trk{display:inline-flex;gap:22px;white-space:nowrap;font:10.5px 'Space Mono',monospace;animation:mpqS 30s linear infinite;padding-left:14px}
+  .mpqm-trk b{color:#e9e7df;font-weight:700}.mpqm-trk .up{color:#2ebd85}.mpqm-trk .dn{color:#ff6258}.mpqm-trk .sym{color:#8fa3c4}
+  .mpqm.ev{cursor:pointer;background:#0d0b05;border-bottom-color:rgba(255,215,90,.35)}
+  .mpqm.ev .mpqm-cap{color:#ffd75a}.mpqm.ev .mpqm-cap s{background:#ffd75a}
+  .mpqm.ev .mpqm-trk{animation:none!important;transform:none!important;display:block;padding-left:10px;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .mpqm.ev .tape-ev{font-size:10.5px;gap:6px;letter-spacing:.04em}.mpqm.ev .tape-ev i{width:6px;height:6px}.mpqm.ev .tape-ev a{display:none}
+  /* 2026-10-27 (layout shift): the tape is in the static header markup now, so the first frame already has the 90px header
+     the script used to build 23px taller a moment after paint. These rules say in CSS what the script sets inline. */
+  header>.mpqm{flex:0 0 calc(100% + 2*var(--pad));width:calc(100% + 2*var(--pad));margin:6px calc(-1*var(--pad)) 0;position:static}
+  body>header:has(>.mpqm){flex-wrap:wrap;row-gap:0;padding-bottom:0!important;border-bottom:none!important;margin-bottom:0!important}
+}
+/* 2026-10-27 (layout shift, owner: "da elementi ne skacu"): every slot the scripts fill AFTER paint is reserved at the size it ends up
+   at, measured with shift-diff on 1366 and 390 - a block that grows when its data lands pushes everything under it. */
+#movers{min-height:245px}#mkts{min-height:179px}.mcal{min-height:122px}.chain-bars{min-height:69px}.mpq-trk{min-height:17px}
+.rk-24:empty::before,.fng-hist:empty::before,.snap .s:empty::before,.lq:empty::before,.dash-nx:empty::before{content:"\00a0"}#news{min-height:184px}
+@media(min-width:981px){.pt-viz{min-height:333px}}
+@media(max-width:720px){.cp-left{min-height:30px}.dash-hero{min-height:105px}}
+</style>
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:7px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:8px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:67px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:62px;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header .htg{color:#229ed9 !important}header .htg:hover{color:#3bb0e8 !important;background:rgba(34,158,217,.14)}header .htg svg{display:block}</style>
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 </head>
@@ -1007,6 +1055,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     <select class="lang" id="langSel" aria-label="Language"><option value="/">EN</option><option value="/es/">ES</option><option value="/pt/">PT</option><option value="/fr/">FR</option><option value="/de/">DE</option><option value="/ru/">RU</option><option value="/tr/">TR</option><option value="/zh/">ZH</option><option value="/ja/">JA</option><option value="/ko/">KO</option><option value="/ar/">AR</option><option value="/id/">ID</option><option value="/nl/">NL</option></select>
   </nav>
+  <div class="mpqm" aria-hidden="true"><span class="mpqm-cap">MP·TAPE<s></s></span><span class="mpqm-win"><span class="mpqm-trk" id="mpqMT"><span data-tp="BTC"><span class="sym">BTC</span> <b data-p>-</b> <span data-c></span></span><span data-tp="ETH"><span class="sym">ETH</span> <b data-p>-</b> <span data-c></span></span><span data-tp="SOL"><span class="sym">SOL</span> <b data-p>-</b> <span data-c></span></span><span data-tp="BNB"><span class="sym">BNB</span> <b data-p>-</b> <span data-c></span></span><span data-tp="XRP"><span class="sym">XRP</span> <b data-p>-</b> <span data-c></span></span><span data-tp="DOGE"><span class="sym">DOGE</span> <b data-p>-</b> <span data-c></span></span><span class="sym">· marginpad.io ·</span><span data-tp="BTC"><span class="sym">BTC</span> <b data-p>-</b> <span data-c></span></span><span data-tp="ETH"><span class="sym">ETH</span> <b data-p>-</b> <span data-c></span></span><span data-tp="SOL"><span class="sym">SOL</span> <b data-p>-</b> <span data-c></span></span><span data-tp="BNB"><span class="sym">BNB</span> <b data-p>-</b> <span data-c></span></span><span data-tp="XRP"><span class="sym">XRP</span> <b data-p>-</b> <span data-c></span></span><span data-tp="DOGE"><span class="sym">DOGE</span> <b data-p>-</b> <span data-c></span></span></span></span></div>
 </header>
 
 
@@ -1016,7 +1065,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 <a class="dash" id="dash" href="/season/" hidden>
   <div class="dash-hero"><div class="dash-av" id="dashAv">M</div><div class="dash-l"><span class="dash-k" id="dashEye">Season</span><span class="dash-t" id="dashT">Welcome back</span><div class="dash-lvl"><span class="nm" id="dashLvl">Unranked</span><i class="dash-bar"><b id="dashBar"></b></i><span class="dash-nx" id="dashNx"></span></div><div class="dash-days" id="dashDays"></div></div></div>
   <div class="dash-stats" id="dashChips"><span class="dst sk"><b>-</b><em>Pass tier</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Daily call</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Goals</em><i>loading</i></span><span class="dst sk"><b>-</b><em>Boards</em><i>loading</i></span></div><!-- skeleton in the MARKUP: with html.mp-li the card is the right shape on the very first frame, so nothing resizes when the numbers land -->
-  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"><span><i>1</i>Checking your season…</span></div><span class="dash-go">Open your season →</span></div>
+  <div class="dash-next"><span class="dash-k" style="color:#c2f64a">Next up</span><div class="dash-todo" id="dashTodo"><span><i>1</i>Checking your season…</span><span><i>2</i>&nbsp;</span><span><i>3</i>&nbsp;</span></div><!-- three rows statically: quick() always writes three actions, and a one-row skeleton made the whole card grow 29px on the first frame it was filled (layout shift, 2026-10-27) --><span class="dash-go">Open your season →</span></div>
 </a>
 <section class="hero">
   <div>
@@ -2196,35 +2245,8 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
 </div>
 <script defer src="/assets/mp-trade.js?v=f1f94dc5"></script>
 <script defer src="/assets/mp-auth.js?v=ee2dac93"></script>
-<script defer src="/assets/mp-nav.js?v=48b325f4"></script>
+<script defer src="/assets/mp-nav.js?v=acab8d12"></script>
 
-<style>
-/* ── MP TAPE: desktop = live liquidation ticker (bottom), mobile = terminal price tape (top) ── */
-.mpq{position:fixed;left:0;right:0;bottom:0;z-index:46;height:32px;display:flex;align-items:center;background:rgba(7,9,12,.93);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid #1c2230;cursor:pointer;overflow:hidden}
-.mpq-cap{flex:none;display:flex;align-items:center;gap:7px;padding:0 14px;height:100%;border-right:1px solid #1c2230;background:rgba(11,14,19,.9);font:700 10.5px 'Space Mono',monospace;letter-spacing:.09em;color:#c2f64a}
-.mpq-cap i{width:6px;height:6px;border-radius:50%;background:#ff5a4d;animation:mpqB 1.1s infinite}
-@keyframes mpqB{0%,100%{opacity:1}50%{opacity:.25}}
-.mpq-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
-.mpq-trk{display:inline-flex;gap:34px;white-space:nowrap;font:11.5px 'Space Mono',monospace;animation:mpqS 46s linear infinite;padding-left:20px}
-.mpq:hover .mpq-trk{animation-play-state:paused}
-@keyframes mpqS{to{transform:translateX(-50%)}}
-.mpq-it{color:#8fa3c4}.mpq-it b{font-weight:700}
-.mpq-it .lg{color:#2ebd85}.mpq-it .sh{color:#ff6258}.mpq-it .ex{color:#5c6b84;text-transform:uppercase}
-@media(max-width:980px){.mpq{display:none}}
-.mpqm{display:none}
-@media(max-width:980px){
-  .mpqm{display:flex;align-items:center;gap:0;height:30px;overflow:hidden;border-bottom:1px solid #1c2230;background:#07090c;margin:0;box-shadow:0 10px 16px -6px rgba(7,9,12,.95)} /* 2026-09-12: sticky under the header - no 2px gap and no dashed edge for the scrolling card to peek through; the shadow fades content out under the bar instead of cutting it */
-  .mpqm-cap{flex:none;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#c2f64a;padding:0 10px;border-right:1px solid #1c2230;height:100%;display:flex;align-items:center;gap:5px}
-  .mpqm-cap s{display:inline-block;width:6px;height:11px;background:#c2f64a;animation:mpqB 1s infinite;text-decoration:none}
-  .mpqm-win{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
-  .mpqm-trk{display:inline-flex;gap:22px;white-space:nowrap;font:10.5px 'Space Mono',monospace;animation:mpqS 30s linear infinite;padding-left:14px}
-  .mpqm-trk b{color:#e9e7df;font-weight:700}.mpqm-trk .up{color:#2ebd85}.mpqm-trk .dn{color:#ff6258}.mpqm-trk .sym{color:#8fa3c4}
-  .mpqm.ev{cursor:pointer;background:#0d0b05;border-bottom-color:rgba(255,215,90,.35)}
-  .mpqm.ev .mpqm-cap{color:#ffd75a}.mpqm.ev .mpqm-cap s{background:#ffd75a}
-  .mpqm.ev .mpqm-trk{animation:none!important;transform:none!important;display:block;padding-left:10px;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .mpqm.ev .tape-ev{font-size:10.5px;gap:6px;letter-spacing:.04em}.mpqm.ev .tape-ev i{width:6px;height:6px}.mpqm.ev .tape-ev a{display:none}
-}
-</style>
 <script>
 (function(){try{
   var money=function(n){n=+n||0;var a=Math.abs(n);if(a>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(n/1e3).toFixed(1)+'K';return '$'+n.toFixed(0);};
@@ -2258,7 +2280,7 @@ html.mp-li .dash[hidden]{display:grid} /* the static markup below already carrie
     pull(); setInterval(pull,9000);
   } else { /* mobile: terminal price tape under the header - live via the same WS map mp-trade.js feeds */
     var hd=document.querySelector('header'); if(!hd)return;
-    var m=document.createElement('div');m.className='mpqm';
+    var m=hd.querySelector(':scope>.mpqm')||document.createElement('div');m.className='mpqm';m.removeAttribute('aria-hidden'); /* 2026-10-27: the strip is in the static markup (no layout shift); the script fills it */
     /* 2026-09-12 (owner: "the tape sometimes slides under the header or vanishes and comes back"): (1) the track was rebuilt with innerHTML
        every 1.5 s and only for coins that already had a price, so its width - and the -50% loop point of the CSS animation - jumped
        whenever a coin appeared or a price changed digits, which read as the tape blinking out; now every coin has a fixed slot from the

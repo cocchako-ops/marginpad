@@ -2,6 +2,8 @@
 <html lang="es" data-es-twin="/season/">
 <head>
 <meta charset="UTF-8" />
+<script>/* first-frame identity (2026-10-27, CLS): the member card, the Road to Bronze and the how-to bar used to appear only after the API answered, pushing the whole page down. html.mp-li = this browser holds a session (the non-HttpOnly mp_li cookie); html.mp-bz = the Road to Bronze was shown on this device last time (localStorage, written by the card's own paint). The scripts below toggle both off again when the server disagrees. */
+try{var _c=document.documentElement;if(/(^|; )mp_li=1/.test(document.cookie)){_c.className+=' mp-li';if(localStorage.getItem('mp_season_bz')==='1')_c.className+=' mp-bz';}}catch(e){}</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -32,6 +34,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css" />
 <style>
 :root{--bg:#0a0b0d;--panel:#11151c;--panel2:#0d1015;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--gold:#ffd75a;--pro:#c792ff;--sky:#57c7f7;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--pad:clamp(16px,3vw,34px)}
@@ -439,6 +445,16 @@ h1 b{color:var(--lime)}
 .redeem{grid-template-columns:auto minmax(0,1fr);align-items:center;padding:10px 14px}.redeem .code{max-width:420px;justify-self:end;width:100%}.redeem .k{white-space:nowrap}.redeem .rq{margin-left:8px;width:18px;height:18px;border-radius:50%;border:1px solid var(--line2);background:transparent;color:var(--dim);font:700 11px 'Space Mono',monospace;cursor:pointer;vertical-align:middle}.redeem .rq:hover{border-color:var(--lime);color:var(--ink)}.redeem .rsub{grid-column:1/-1;margin-top:2px}.redeem .rsub[hidden]{display:none}
 @media(max-width:640px){.redeem{grid-template-columns:1fr}.redeem .code{max-width:none;justify-self:stretch}}
 </style>
+<style id="clsRes">/* 2026-10-27 CLS reservations: the first frame takes the space the final layout takes, so nothing below jumps when the data lands. Every figure is a measured final height (shift-diff, 1366 + 390). */
+.days{min-height:12px}
+.hh-rows{min-height:61px}.sg-list{min-height:208px}#hhSub{min-height:36px}#sgSub{min-height:18px}
+.k .st:empty::before{content:"\00a0"}
+.road{min-height:250px}
+/* !important because this page's own [hidden] rule is !important; the scripts drop html.mp-li / html.mp-bz when the server disagrees, so the hidden attribute wins again then */
+html.mp-li #gate{display:none!important}html.mp-li #meIn{display:block!important}html.mp-li #meRanks{min-height:138px}html.mp-li #hwBar{display:block!important}
+html.mp-li.mp-bz #bronze{display:block!important;min-height:523px}
+@media(max-width:720px){html.mp-li #meRanks{min-height:246px}#hhSub{min-height:54px}#sgSub{min-height:36px}html.mp-li.mp-bz #bronze{min-height:864px}}
+</style>
 <meta property="og:image" content="https://marginpad.io/assets/og/season.jpg" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og/season.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -455,6 +471,7 @@ h1 b{color:var(--lime)}
 <meta name="apple-mobile-web-app-title" content="MarginPad" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:7px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:8px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:67px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:62px;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header .htg{color:#229ed9 !important}header .htg:hover{color:#3bb0e8 !important;background:rgba(34,158,217,.14)}header .htg svg{display:block}</style>
 </head>
 <body>
 <div class="fx"></div>
@@ -639,6 +656,8 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
   var left=function(ms){var s=Math.max(0,Math.round(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;return d?d+'d '+h+'h '+m+'m':h?h+'h '+m+'m '+(x<10?'0':'')+x+'s':m+'m '+(x<10?'0':'')+x+'s';};
   var ago=function(ts){var s=Math.max(0,Math.round((Date.now()-ts)/1000));return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';};
   var me=function(){return (window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;};
+  /* mp-auth fires this after /api/auth/me has answered (and on sign-in/out). Only from here on may the first-frame html.mp-li stamp be taken back - see paintBanner. */
+  window.addEventListener('mp-auth-change',function(e){window.__mpAuthReady=true;try{if(!(e&&e.detail&&e.detail.user)){document.documentElement.classList.remove('mp-li');document.documentElement.classList.remove('mp-bz');}}catch(_){}try{paintBanner();}catch(_){}});
   var SEASON=null,LB=null,PASS=null,GOALS=null,PRED=null,HH=null;
   var toastT=null;function toast(html){if(window.mpToast){window.mpToast({html:html,ms:4200,key:String(html).slice(0,40)});return;} /* one channel, mp-auth.js - this page had its own bottom-centre card */
     var t=$('tst');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
@@ -650,7 +669,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
       $('eyeb').textContent=__esT_seasonindex("seasonN","Season ")+(sk.idx+1)+__esT_seasonindex("dayN"," · day ")+day+__esT_seasonindex("of14"," of 14");
       $('days').innerHTML=Array.apply(null,Array(14)).map(function(_,i){return '<i class="'+(i+1<day?'on':i+1===day?__esT_seasonindex("onNow",'on now'):'')+__esT_seasonindex("titleDay",'" title="Day ')+(i+1)+'"></i>';}).join('');SEASON=sk;}
     if(PRED)$('callers').textContent=int(PRED.callers||0)+__esT_seasonindex("calling"," calling");
-    var signed=!!m;$('gate').hidden=signed;$('meIn').hidden=!signed;
+    var signed=!!m;$('gate').hidden=signed;$('meIn').hidden=!signed;try{if(window.__mpAuthReady){document.documentElement.classList.toggle('mp-li',signed);if(!signed)document.documentElement.classList.remove('mp-bz');}}catch(e){} /* the head stamp is a guess from the cookie; mp-auth's /api/auth/me answer is the fact - and ONLY that: on a warm load the edge-cached /api/reward/lb lands before the deferred bundle has even restored the account, so m is null here for a real member, and dropping the class on that pass flashed the guest layout for a frame (measured 0.29 CLS). __mpAuthReady is set by the mp-auth-change listener below. */
     if(signed){var nm=m.username||(m.email||'you').split('@')[0];$('meName').textContent='@'+nm;$('meLvl').setAttribute('data-lvln',nm);$('meLvl').removeAttribute('data-lvldone');$('meAv').innerHTML=(m.avatar&&/^data:image\//.test(m.avatar))?'<img src="'+esc(m.avatar)+'" alt="">':esc((m.avatar&&m.avatar.length<3)?m.avatar:nm.charAt(0).toUpperCase());
       var L=m.level||null;$('meLvlT').textContent=L?(L.name+(L.next?' · '+int(L.toNext||0)+' XP to '+L.next:'')):'';
       if(PASS){$('meXp').textContent=int(PASS.xp);$('meTier').textContent=PASS.tier+'/'+(PASS.n||PASS.tiers.length);$('meClaim').textContent=PASS.claimable||0;}
@@ -1004,7 +1023,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/mp-auth.js?v=ee2dac93"></script>
-<script defer src="/assets/mp-nav.js?v=48b325f4"></script>
+<script defer src="/assets/mp-nav.js?v=acab8d12"></script>
 <script defer src="/assets/mp-profile.js?v=2a0fc614"></script>
 
 <script>
@@ -1074,12 +1093,14 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
 (function () {
   var sec = document.getElementById('bronze'); if (!sec) return;
   var grid = document.getElementById('bzGrid'), busy = false, D = null;
+  /* the head script pre-shows this card from localStorage (html.mp-bz) so a member under 500 XP meets it in the first frame; paint() is the fact and writes the memory back */
+  function bzRemember(on) { try { document.documentElement.classList.toggle('mp-bz', !!on); localStorage.setItem('mp_season_bz', on ? '1' : '0'); } catch (e) {} }
   var GO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>';
   var OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function T(x) { return (window.__esV_srv ? window.__esV_srv(x) : x); }
   function paint(d) {
-    D = d; if (!d || !d.signedIn || d.ranked) { sec.hidden = true; return; }
+    D = d; if (!d || !d.signedIn || d.ranked) { sec.hidden = true; bzRemember(false); return; }
     var need = +d.need || 500, xp = Math.max(0, +d.xp || 0), ts = d.tasks || [];
     var got = ts.filter(function (t) { return t.claimed; }).length;
     document.getElementById('bzXp').textContent = xp.toLocaleString('en-US');
@@ -1096,7 +1117,7 @@ function __esT_seasonindex(k, en) { try { if ((document.documentElement.lang || 
         + '><span class="bz-x">+' + t.xp + ' XP</span><span class="bz-h">' + esc(T(t.title))
         + '</span><span class="bz-d">' + esc(T(t.desc)) + '</span><span class="bz-a">' + act + '</span></button>';
     }).join('');
-    sec.hidden = false;
+    sec.hidden = false; bzRemember(true);
     var gotEl = document.getElementById('bzGot');
     if (gotEl) { gotEl.hidden = !got; if (got) { gotEl.innerHTML = '<button type="button" class="ftg">' + got + __esT_seasonindex('bzBankedN', ' banked') + ' \u00b7 <span>' + (sec.classList.contains('showgot') ? __esT_seasonindex('foldClose', 'Hide') : __esT_seasonindex('foldOpen', 'Show')) + '</span></button>'; } }
     /* the owner's Windows has animation effects off, so @keyframes never render for him - WAAPI does */

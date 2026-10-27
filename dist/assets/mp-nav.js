@@ -48,14 +48,16 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     + '.mpnav-search:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(194,246,74,.12);}.mpnav-search::placeholder{color:var(--dim);}'
     + '.mpnav-sx{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:9px;border:0;background:transparent;color:var(--mut);cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}.mpnav-sx svg{width:14px;height:14px;display:block;}.mpnav-sx:hover{color:var(--ink);background:var(--card2);}.mpnav-q .mpnav-sx{display:flex;}'
     /* the section rail: every section one tap away, the one in view lit (scroll-spied) */
-    + '.mpnav-rail{display:flex;gap:6px;padding:4px 16px 8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}.mpnav-rail::-webkit-scrollbar{display:none;}'
+    /* 10px of air above the chips (6 from the search box + 4 here) and 10px below them - the list starts with no top
+       padding (a stuck header must sit flush), so the gap to the Where-to-start card is this padding alone */
+    + '.mpnav-rail{display:flex;gap:6px;padding:4px 16px 10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}.mpnav-rail::-webkit-scrollbar{display:none;}'
     + ".mpnav-rail button{flex:0 0 auto;height:32px;padding:0 11px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--mut);font-family:'Familjen Grotesk',system-ui,sans-serif;font-size:12.5px;font-weight:600;white-space:nowrap;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}"
     + '.mpnav-rail button:hover{color:var(--ink);border-color:#2f3742;}.mpnav-rail button.on{color:var(--lime);border-color:rgba(194,246,74,.42);background:rgba(194,246,74,.1);}'
     /* while chips remain off to the right the rail fades at that edge, so it reads as a strip that scrolls */
     + '.mpnav-rail.more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);}'
     + '@media(pointer:coarse){.mpnav-rail button,.mpnav-rc{height:36px;}}'
     /* the pages you opened last, from this drawer - one line of chips, only once there are any */
-    + '.mpnav-rec{display:flex;align-items:center;gap:6px;padding:0 16px 8px;overflow-x:auto;scrollbar-width:none;}.mpnav-rec::-webkit-scrollbar{display:none;}.mpnav-rec[hidden]{display:none;}'
+    + '.mpnav-rec{display:flex;align-items:center;gap:6px;padding:0 16px 10px;margin-top:-2px;overflow-x:auto;scrollbar-width:none;}.mpnav-rec::-webkit-scrollbar{display:none;}.mpnav-rec[hidden]{display:none;}'
     + ".mpnav-rec>span{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-right:2px;}"
     + ".mpnav-rc{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px 0 8px;border-radius:99px;border:1px solid var(--bd);background:var(--card);color:var(--ink);text-decoration:none;font-size:12.5px;font-family:'Familjen Grotesk',system-ui,sans-serif;white-space:nowrap;}.mpnav-rc svg{width:14px;height:14px;flex:0 0 auto;}.mpnav-rc:hover,.mpnav-rc.mpnav-kb{border-color:#2f3742;background:var(--card2);}"
     + '.mpnav-q .mpnav-rail,.mpnav-q .mpnav-rec{display:none;}'
@@ -149,44 +151,86 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
     +   '.mpbn a.cur{color:#c2f64a;}'
     +   '.mpbn svg{width:21px;height:21px;}'
     +   '.mpbn .mpbn-l{font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:.03em;text-transform:uppercase;line-height:1;}'
-    +   'body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}'
-    +   'header .nav{display:none !important;}'   /* the cramped desktop header links are replaced by the drawer + bottom bar on mobile */
     /* THE BOTTOM BAR IS GONE WHILE THE DRAWER IS OPEN (2026-10-24, owner: "kad iz onog menija na dnu otvorim
        browse, taj meni dole se pomeri na gore"). The drawer is a full-screen overlay at z-index 95 over a bar at
        55, so the bar was only ever a dimmed shape behind it - and the drawer's scroll lock (body position:fixed)
        makes iOS re-measure its own chrome, which is what moved it. Nothing to move if nothing is drawn. */
     +   'body.mpnav-on .mpbn,body.mpnav-on .tdock{display:none !important;}'
-    /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Full-bleed via the 100vw trick so the bg spans edge-to-edge regardless of the .wrap padding. */
-    +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'   /* solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards) */
-    +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
-    +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
     +   '.mpnav-burger{top:calc(env(safe-area-inset-top) + 9px);}'
     + '}';
   // WEAK-PHONE GPU RESCUE: kill backdrop-filter:blur on mobile (old WebViews freeze the compositor on blurred elements). Solid bottom bar for legibility.
   css += '@media(max-width:760px){*{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}.mpbn{background:#0c1109 !important;}}';
-  // ===== canonical desktop header (homepage-identical) for standalone pages that lack it - applied by normalizeHeader() =====
-  css += 'header.mpnav-hdr{display:flex !important;align-items:center;justify-content:space-between;gap:14px;}'
-    + 'header.mpnav-hdr .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}'
-    + "header.mpnav-hdr .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}"
-    + 'header.mpnav-hdr .mark b{color:#c2f64a;}'
-    + 'header.mpnav-hdr .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}'
-    + 'header.mpnav-hdr .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
-    + 'header.mpnav-hdr .hmenu span:nth-child(2){width:13px;}'
-    + 'header.mpnav-hdr .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}'
-    + 'header.mpnav-hdr .hnav{display:flex;align-items:center;gap:7px;}'
-    + "header.mpnav-hdr .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}"
-    + 'header.mpnav-hdr .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}'
-    + 'header.mpnav-hdr .hlink svg{flex-shrink:0;}'
-    + 'header.mpnav-hdr .hbot{color:#7cc4ff;}header.mpnav-hdr .hrwd,header.mpnav-hdr .hjr{color:#c2f64a;}'
-    + "header.mpnav-hdr .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
-    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}header.mpnav-hdr .hnav{gap:8px;}header.mpnav-hdr .lang{max-width:64px;}}'
+  /* ===== THE HEADER'S GEOMETRY, ONE BLOCK, TWO READERS (2026-10-27) =====
+     Everything that decides the HEIGHT, the width and the position of the site header lives in HDR_CRIT: the
+     mobile sticky bar (notch padding, border, margin), the canonical desktop header normalizeHeader() turns a
+     standalone page's header into (header.mpnav-hdr - padding 15/28, full-bleed, sticky), and the two site-wide
+     tweaks that change its height (the 17px account icon, the language select drawn as a 30px globe).
+     Reader one is this bundle, which applies it under `header.mpnav-hdr` as it always has. Reader two is
+     build/add-hdr-crit.js, which lifts the SAME string out of this file (between the @HDRCRIT markers) and inlines it
+     into every page's <head>, under a first-paint selector that is true exactly where normalizeHeader() will act -
+     a header already carrying .mpnav-hdr, or a plain one (no .hbot sentinel, no widget inside). Measured before:
+     every standalone page's content jumped when this bundle landed - 23px on a coin page, a blog post, a
+     liquidation page and /trading-api/, 44px on /funding/, 46px on a phone - because the static header had its own
+     padding and the canonical one arrived with the JS. `HDRSEL` is the placeholder; `hdrCss()` expands it.
+     The vertical pin (pinHeader() measures the header's offset inside a padded .wrap and pulls it up) is the same
+     arithmetic as a .wrap with no top padding when the header is its first child, so that is what the CSS says. */
+  /* @HDRCRIT */
+  var HDR_CRIT = ''
+    + '@media(max-width:720px){'
+    +   'body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}'
+    +   'header .nav{display:none !important;}'   /* the cramped desktop header links are replaced by the drawer + bottom bar on mobile */
+    /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Solid bg (no 100vw / no backdrop-filter - both are iOS WebKit hazards). */
+    +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'
+    +   'html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:14px !important;}'   /* the cookie notice above it already carries the top inset - adding it again drew a status-bar-high gap between the two (owner's photo, 2026-10-26) */
+    +   'body>.wrap>header .brand,body>header .brand{margin-left:0;}'   /* no burger on mobile → logo sits at its natural left edge */
+    + '}'
+    /* a header inside a padded .wrap starts that padding down; pinHeader() pulls it to the top edge by exactly that
+       much, which moves everything under it - stating it here means nothing moves */
+    + 'body>.wrap:has(>header:first-child){padding-top:0 !important;}'
+    // ===== canonical desktop header (homepage-identical) for standalone pages that lack it - applied by normalizeHeader() =====
+    + 'HDRSEL{display:flex !important;align-items:center;justify-content:space-between;gap:14px;}'
+    + 'HDRSEL .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}'
+    + "HDRSEL .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}"
+    + 'HDRSEL .mark b{color:#c2f64a;}'
+    + 'HDRSEL .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}'
+    + 'HDRSEL .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
+    + 'HDRSEL .hmenu span:nth-child(2){width:13px;}'
+    + 'HDRSEL .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}'
+    + 'HDRSEL .hnav{display:flex;align-items:center;gap:7px;}'
+    /* line-height stated, not inherited: a blog page's 1.6 made the same link 2px taller than a tool page's 1.45, so the
+       canonical bar measured 65px on one family and 62px on another (12px x 1.5 + 14 of padding = 32, the bar 62) */
+    + "HDRSEL .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}"
+    + 'HDRSEL .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}'
+    + 'HDRSEL .hlink svg{flex-shrink:0;}'
+    + 'HDRSEL .hbot{color:#7cc4ff;}HDRSEL .hrwd,HDRSEL .hjr{color:#c2f64a;}'
+    + "HDRSEL .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
+    /* the phone variant of the canonical bar - AFTER the base rules above, because `.hbot{display:none}` and
+       `.hlink{display:inline-flex}` tie on specificity and the later one wins (the first cut put this block first and
+       the Bot and My Trades links came back on a 390px screen, wrapping the bar to 111px). The bar is 14 + a 40px
+       account button + 12 + the 1px border = 67px; a page's own header carries no such button before it is rebuilt,
+       so the floor is what keeps the first frame the height of the last. */
+    + '@media(max-width:720px){HDRSEL .hbot,HDRSEL .hjr{display:none;}HDRSEL .hauth span{display:none;}HDRSEL .hauth{padding:9px;min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;}HDRSEL .hnav{gap:8px;}HDRSEL .lang{max-width:64px;}'
+    +   'HDRSEL{box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 67px);}html.mp-ckbar HDRSEL{min-height:67px;}}'
     /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap - break out) */
-    + '@media(min-width:721px){html{overflow-x:clip;}header.mpnav-hdr{width:100vw;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
+    /* height stated (15 + the 32px link + 15), not derived from whatever the page's own markup puts in the bar before
+       it is rebuilt - a static header measured 57px on /academy/ and 69px on /premium/ against the canonical 62 */
+    + '@media(min-width:721px){html{overflow-x:clip;}HDRSEL{width:100vw;height:62px;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}'
     /* site-wide header tweaks (apply to canonical + injected headers): bigger account icon, language as a transparent globe */
     + 'header .hlink.hauth svg,header .hauth svg{width:17px !important;height:17px !important}'
     + 'header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:32px !important;min-width:32px !important;max-width:32px !important;height:30px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:19px 19px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}'
     + 'header .lang option{color:#e7ecf2;background:#12161c}'
     + 'header .htg{color:#229ed9 !important}header .htg:hover{color:#3bb0e8 !important;background:rgba(34,158,217,.14)}header .htg svg{display:block}';
+  /* HDRSEL stands at the START of a selector and each rule carries ONE selector list in which every member starts
+     with it (or none does) - hdrCss() rewrites each such member once per alternative. The bundle uses the class
+     normalizeHeader() adds; the inline copy uses the first-paint predicate (see add-hdr-crit.js). */
+  function hdrCss(src, alts) {
+    return src.replace(/(^|[{}])([^{}]*HDRSEL[^{}]*)\{/g, function (m0, pre, sel) {
+      var out = []; sel.split(',').forEach(function (s) { s = s.trim(); if (s.indexOf('HDRSEL') < 0) { out.push(s); return; } alts.forEach(function (a) { out.push(s.split('HDRSEL').join(a)); }); });
+      return pre + out.join(',') + '{';
+    });
+  }
+  /* @/HDRCRIT */
+  css += hdrCss(HDR_CRIT, ['header.mpnav-hdr']);
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   // ===== ICON SET =====
@@ -297,8 +341,12 @@ function __esT_mpnav(k, en) { try { if ((document.documentElement.lang || "").sl
   var html = '<div class="mpnav-sheet" role="dialog" aria-modal="true" aria-label="' + TR('brBrowse') + '" tabindex="-1"><div class="mpnav-head"><span class="mpnav-title">' + TR('brBrowse') + '<small>MarginPad</small></span><button type="button" class="mpnav-x" aria-label="' + TR('navClose') + '" title="' + TR('navClose') + ' (Esc)">' + XSVG + '</button></div>'
     + '<div class="mpnav-sw">' + LENS + '<input type="text" class="mpnav-search" placeholder="' + TR('brSearch') + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Search"><button type="button" class="mpnav-sx" aria-label="' + TR('brClear') + '">' + XSVG + '</button></div>'
     // the section rail: the eight headers as chips, the one in view lit, a tap scrolls the list to it
-    + '<div class="mpnav-rail" id="mpnavRail" role="tablist" aria-label="' + TR('brJump') + '">' + SECS.map(function (k, i) { return '<button type="button" role="tab" data-sec="' + i + '">' + TR(k) + '</button>'; }).join('') + '</div>'
-    + '<div class="mpnav-rec" id="mpnavRec" hidden></div>'
+    /* data-nohs: the rail and the recents strip fade their own right edge (`.more` mask); the site-wide horizontal-
+       scroll cue (the INSET shadow at the tail of this file) painted a dark column over the rail's full height -
+       4px above the chips, 8px below, flush with the Where-to-start card - which read as a grey box around the chips
+       that vanished once the spy scrolled the rail to its end (owner, 2026-10-27). */
+    + '<div class="mpnav-rail" id="mpnavRail" role="tablist" data-nohs aria-label="' + TR('brJump') + '">' + SECS.map(function (k, i) { return '<button type="button" role="tab" data-sec="' + i + '">' + TR(k) + '</button>'; }).join('') + '</div>'
+    + '<div class="mpnav-rec" id="mpnavRec" data-nohs hidden></div>'
     + '<div class="mpnav-scroll">'
     // Where to start sits ABOVE every section (owner 2026-09-17): the one row for a reader who does not yet know
     // which section to open. It belongs to no section, so the search filter and the E2E leave it uncounted.

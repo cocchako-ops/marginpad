@@ -43,6 +43,12 @@ const CSS = `
   .lqls-l{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;gap:8px}
   .lqls-l .lng{color:#ff7b72}.lqls-l .sht{color:#34d99a}
   .lqls-l small{display:block;font-size:9.5px;font-weight:400;color:var(--ink-faint)}
+  /* 2026-10-27 (layout shift): the two side labels gain their dollar line when the data lands (19 -> 35px, 54 on a phone where
+     the label wraps), the count's sub-line wraps to two lines on a phone, and the "updated" span goes from empty to one line -
+     every one of them pushed the tape, the chips and the list down. Reserved at the filled size. */
+  .lqls-l .lng,.lqls-l .sht{display:inline-block;min-height:35px}
+  #lqUpd:empty::before{content:"\\00a0"}
+  @media(max-width:480px){.lqls-l .lng,.lqls-l .sht{min-height:54px}#lqCntS{min-height:29px}}
   @media(max-width:900px){.lq-top{grid-template-columns:1fr 1fr}}
   @media(max-width:480px){.lq-top{grid-template-columns:1fr 1fr;gap:8px}.lq-stat{padding:12px 13px}.lq-stat.big{grid-column:1/-1}.lq-stat .k{font-size:8.5px;letter-spacing:.06em}.lq-stat .s{white-space:normal;line-height:1.4}} /* measured at 390px: the two-word labels wrapped and the biggest-hit note was cut mid-word */
   /* live tape */

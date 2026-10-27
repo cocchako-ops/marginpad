@@ -8349,7 +8349,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=48b325f4" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=acab8d12" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -26978,7 +26978,15 @@ export default {
         ? { '/paper-trade': 'Paper trading de cripto a precio en vivo', '/calculators': 'Calculadoras de futuros cripto', '/charts': 'Espacio multigráfico de cripto', '/screener': 'Screener de futuros cripto', '/heatmap': 'Mapa de calor de liquidaciones en vivo', '/swap': 'Swap de cripto' }
         : { '/paper-trade': 'Crypto paper trading at live prices', '/calculators': 'Crypto futures calculators', '/charts': 'Multi-chart crypto workspace', '/screener': 'Crypto futures screener', '/heatmap': 'Live crypto liquidation heatmap', '/swap': 'Swap crypto' })[url.pathname.replace(/\/$/, '')]; // the shared shell's h1 reads "Everything you need to trade futures." on every tool route (2026-09-07 UX pass); the hero is hidden on tool routes, so this is for crawlers and screen readers
       let h1done = false;
+      /* THE ROUTE'S BODY CLASS IS WRITTEN HERE, BEFORE THE FIRST FRAME (2026-10-27, owner: "elementi ne skacu ...
+         na sekundu budu na jednom mestu pa kad se full load page malo mrdnu"). home.js's applyRoute() adds
+         `paper-page` / `charts-page` / `heatmap-page` + data-prod after it has parsed, and every rule keyed on them
+         (the full-width .wrap, the flex column, the hidden homepage sections) landed one frame later - measured
+         0.14-0.28 of layout shift on a warm load of /paper-trade, /charts and /heatmap: the 980px reading column
+         jumping to 1366. The shell's head script already stamps html.route-*; this is the body half, from the server. */
+      const ROUTE_BODY = { '/paper-trade': ['paper-page', 'plan'], '/charts': ['charts-page', 'charts'], '/calculators': ['calc-page', 'calc'], '/heatmap': ['heatmap-page', 'heat'], '/swap': ['swap-page', 'swap'], '/screener': ['', ''] }[url.pathname.replace(/\/$/, '')];
       let rw = new HTMLRewriter()
+        .on('body', { element(e) { if (!ROUTE_BODY) return; if (ROUTE_BODY[0]) e.setAttribute('class', ((e.getAttribute('class') || '') + ' ' + ROUTE_BODY[0]).trim()); if (ROUTE_BODY[1]) e.setAttribute('data-prod', ROUTE_BODY[1]); } })
         .on('h1', { element(e) { if (H1 && !h1done) { h1done = true; e.setInnerContent(H1); } } })
         .on('title', { element(e) { e.setInnerContent(m.title); } })
         .on('meta[name="description"]', { element(e) { e.setAttribute('content', m.desc); } })
@@ -27004,20 +27012,52 @@ export default {
            is where /paper-trade's 41px-plus of slop came from. The class lets home.css park it immediately BELOW
            the fold instead of inside the terminal's height. It stays in the flow on a phone, stays in the DOM and
            stays visible to every reader who scrolls - it is never hidden. */
-        const PT_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:11px 13px;background:#101318;border:1px solid #232a34;border-radius:14px;color:#7e8894;font-size:11.5px;line-height:1.5">'
-          + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px">'
- + '<div style="padding:2px 4px"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Practice that pays</b>The only simulator where practice earns real USDT - <a href="/levels/" style="color:#c2f64a">paid 14-day season leaderboards</a> and <a href="/rewards/" style="color:#c2f64a">daily missions</a> (open to every account from day one), plus XP, duels and floor chat.</div>'
-          + '<div style="padding:2px 4px;border-left:1px solid #1d232c"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Real mechanics, zero risk</b>Live prices, leverage to 1000x, real isolated-margin liquidation, SL/TP and partial closes - P&L exactly as a real account would show.</div>'
-          + '<div style="padding:2px 4px;border-left:1px solid #1d232c"><b style="display:block;color:#d7dce2;font-size:11.5px;margin-bottom:2px">Every market, one account</b>60+ crypto perps plus <a href="/stock-trading-simulator/" style="color:#c2f64a">US stocks</a>, <a href="/forex-trading-simulator/" style="color:#c2f64a">forex</a>, <a href="/index-trading-simulator/" style="color:#c2f64a">indices</a> and gold - up to $100,000 margin.</div>'
+        /* REDRAWN 2026-10-27 (owner: "mnogo mnogo bolje i vise cool ... na istom prostoru"): the same three facts
+           and the same six links in the SAME footprint (measured before: 900x167 desktop, 308px tall on a 390
+           phone - the budget this must not exceed), as three cells with a coloured icon tile, a mono eyebrow and
+           a real headline, over a chip rail with a lime dot on hover. The stylesheet rides INSIDE the block: the
+           worker is this block's only writer and home.css is restored wholesale by the terminal patcher, so a
+           rule kept there could be lost without anybody noticing. Every sentence a crawler read is still here. */
+        const PT_ICO = {
+          pay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.6h3.6a1.8 1.8 0 0 1 0 3.6h-2.2a1.8 1.8 0 0 0 0 3.6H14.5"/></svg>',
+          mech: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+          mkt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3z"/></svg>'
+        };
+        const PT_SEO = '<section class="pt-seo" style="max-width:900px;margin:14px auto 20px;padding:0;background:#101318;border:1px solid #232a34;border-radius:14px;overflow:hidden;color:#8a94a0;font-size:11.5px;line-height:1.4">'
+          + '<style>'
+          + '.pt-seo::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,rgba(194,246,74,.55),rgba(46,189,133,.35) 45%,rgba(96,165,250,.3));pointer-events:none}'
+          + '.pts-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}'
+          + '.pts-c{display:flex;gap:10px;align-items:flex-start;min-width:0;padding:10px 14px 8px}'
+          + '.pts-c+.pts-c{border-left:1px solid #1d232c}'
+          + '.pts-i{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(194,246,74,.1);color:#c2f64a;margin-top:1px}'
+          + '.pts-i svg{width:16px;height:16px;display:block}'
+          + '.pts-c.m .pts-i{background:rgba(46,189,133,.12);color:#2ebd85}.pts-c.w .pts-i{background:rgba(96,165,250,.12);color:#60a5fa}'
+          + '.pts-b{min-width:0;flex:1}'
+          + ".pts-k{display:block;font-family:'Space Mono',monospace;font-weight:400;font-size:9px;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:#4f5a66;margin-bottom:3px}"
+          + ".pts-h{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13.5px;line-height:1.15;letter-spacing:-.01em;color:#e6ebf0;margin-bottom:3px}"
+          + '.pts-p{margin:0;color:#8a94a0;font-size:11.5px;line-height:1.4}'
+          + '.pts-p a{color:#c2f64a;text-decoration:none;border-bottom:1px solid rgba(194,246,74,.35);transition:border-color .15s}.pts-p a:hover{border-bottom-color:#c2f64a}'
+          + '.pts-f{display:flex;flex-wrap:wrap;gap:4px 5px;align-items:center;padding:6px 14px 7px;border-top:1px solid #1d232c;background:#0d1015}'
+          + '.pts-f a{display:inline-flex;align-items:center;gap:6px;color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px 2px 8px;font-size:10.5px;line-height:1.5;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}'
+          + '.pts-f a::before{content:"";width:5px;height:5px;border-radius:50%;background:#2a313c;flex:0 0 auto;transition:background .15s}'
+          + '.pts-f a:hover{color:#e6ebf0;border-color:#2f3742}.pts-f a:hover::before{background:#c2f64a}'
+          + ".pts-t{margin-left:auto;font-family:'Space Mono',monospace;font-size:9.5px;line-height:1.3;letter-spacing:.02em;color:#4a525c}"
+          /* a phone stacks the cells; the eyebrow and the tail line go, the chips become one scrolling row - that is what keeps it inside the 308px it took before */
+          + '@media(max-width:720px){.pts-g{grid-template-columns:1fr}.pts-c+.pts-c{border-left:0;border-top:1px solid #1d232c}.pts-c{padding:9px 13px}.pts-k,.pts-t{display:none}.pts-f{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:7px 13px 8px}.pts-f::-webkit-scrollbar{display:none}}'
+          + '</style>'
+          + '<div class="pts-g">'
+          + '<div class="pts-c"><span class="pts-i">' + PT_ICO.pay + '</span><div class="pts-b"><span class="pts-k">Real rewards</span><b class="pts-h">Practice that pays</b><p class="pts-p">The only simulator where practice earns real USDT - <a href="/levels/">paid 14-day season leaderboards</a> and <a href="/rewards/">daily missions</a>, open from day one. Plus XP, duels and floor chat.</p></div></div>'
+          + '<div class="pts-c m"><span class="pts-i">' + PT_ICO.mech + '</span><div class="pts-b"><span class="pts-k">Real mechanics</span><b class="pts-h">Real mechanics, zero risk</b><p class="pts-p">Live prices, leverage to 1000x, real isolated-margin liquidation, SL/TP and partial closes - P&amp;L exactly as a real account would show.</p></div></div>'
+          + '<div class="pts-c w"><span class="pts-i">' + PT_ICO.mkt + '</span><div class="pts-b"><span class="pts-k">Every market</span><b class="pts-h">Every market, one account</b><p class="pts-p">60+ crypto perps plus <a href="/stock-trading-simulator/">US stocks</a>, <a href="/forex-trading-simulator/">forex</a>, <a href="/index-trading-simulator/">indices</a> and gold - up to $100,000 margin.</p></div></div>'
           + '</div>'
-          + '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;align-items:center">'
-          + '<a href="/academy/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">Free Academy</a>'
-          + '<a href="/paper-trading/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">Paper trading guide</a>'
-          + '<a href="/leverage-trading-simulator/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">Leverage simulator</a>'
-          + '<a href="/crypto-trading-simulator-no-sign-up/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">No sign-up simulator</a>'
-          + '<a href="/tradingview-paper-trading-alternative/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">vs TradingView</a>'
-          + '<a href="/binance-testnet-alternative/" style="color:#aab3bd;background:#151a21;border:1px solid #232a34;border-radius:16px;padding:2px 10px;font-size:10.5px;text-decoration:none">vs Binance Testnet</a>'
-          + '<span style="font-size:10px;color:#4a525c;margin-left:auto">Free crypto paper trading - no sign-up, no deposit, live prices, real USDT rewards.</span>'
+          + '<div class="pts-f">'
+          + '<a href="/academy/">Free Academy</a>'
+          + '<a href="/paper-trading/">Paper trading guide</a>'
+          + '<a href="/leverage-trading-simulator/">Leverage simulator</a>'
+          + '<a href="/crypto-trading-simulator-no-sign-up/">No sign-up simulator</a>'
+          + '<a href="/tradingview-paper-trading-alternative/">vs TradingView</a>'
+          + '<a href="/binance-testnet-alternative/">vs Binance Testnet</a>'
+          + '<span class="pts-t">Free crypto paper trading - no sign-up, no deposit, live prices, real USDT rewards.</span>'
           + '</div>'
           + '</section>';
         rw = rw.on('head', { element(e) { e.append(PT_SCHEMA, { html: true }); } }).on('body', { element(e) { e.append(PT_SEO, { html: true }); } });

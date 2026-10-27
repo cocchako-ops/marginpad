@@ -121,6 +121,7 @@ const CSS = `
   .cdgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
   @media(min-width:620px){.cdgrid{grid-template-columns:repeat(4,1fr)}}
   .cdcard{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:13px;padding:13px 14px}
+  .cdgrid .cdcard{min-height:80px;box-sizing:border-box}#cdLs{min-height:82px;box-sizing:border-box} /* 2026-10-27: the filled card (value + sub-line, or the long/short bar) is reserved before the data lands - layout shift */
   .cd-k{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;margin-bottom:6px}
   .cd-v{font-family:'Space Mono',monospace;font-weight:800;font-size:18px;color:var(--ink)}
   .cd-v small{font-size:11px;font-weight:700}.cd-v .up{color:#34d99a}.cd-v .dn{color:#ff7b72}
@@ -240,11 +241,14 @@ ${ld}
     </div>
     <div class="cdcard" id="cdLs"><div class="cd-k">${L.cardPos}</div><div class="cd-v cdload">…</div></div>
 
-    <div class="cdmkt" id="cdMkt" hidden>
+    <!-- 2026-10-27 (layout shift): the market overview is in the flow from the first frame with the same four+four
+         cells it ends up with, so nothing under it moves when CoinGecko answers (it used to appear 252/339px tall
+         above the trade block). A failed fetch leaves the dashes - that is honest, a block that pops in is not. -->
+    <div class="cdmkt" id="cdMkt">
       <div class="cdmkt-h"><span id="cdMktH">${L.jsMktOverview}</span></div>
       <svg class="cdspark" id="cdSpark" viewBox="0 0 100 56" preserveAspectRatio="none"></svg>
-      <div class="cdchgs" id="cdChgs"></div>
-      <div class="cdmstat" id="cdMstat"></div>
+      <div class="cdchgs" id="cdChgs"><div class="cdchg"><div class="w">1H</div><div class="p">-</div></div><div class="cdchg"><div class="w">24H</div><div class="p">-</div></div><div class="cdchg"><div class="w">7D</div><div class="p">-</div></div><div class="cdchg"><div class="w">30D</div><div class="p">-</div></div></div>
+      <div class="cdmstat" id="cdMstat"><div class="cdcard"><div class="cd-k">${L.jsMcap}</div><div class="cd-v" style="font-size:16px">-</div></div><div class="cdcard"><div class="cd-k">${L.jsVol}</div><div class="cd-v" style="font-size:16px">-</div></div><div class="cdcard"><div class="cd-k">${L.jsAth}</div><div class="cd-v" style="font-size:16px">-</div></div><div class="cdcard"><div class="cd-k">${L.jsCirc}</div><div class="cd-v" style="font-size:16px">-</div></div></div>
     </div>
 
     <div class="cdtrade">
