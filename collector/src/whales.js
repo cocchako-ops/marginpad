@@ -490,6 +490,9 @@ export function getWhales() {
     fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
     coins: state.coins, best: state.best, perf: perfShown(),
     wallets: state.wallets || {},
+    // THIS FUNCTION IS A WHITELIST: a field added to `state` and not named here is published nowhere, which
+    // is how `alerts.kind` stayed invisible for a month. `since` = "user|coin" -> [first seen, we watched it open]
+    since: state.since || {},
     posN: state.posN || 0, core: Math.min(CORE_N, state.tracked.length),
     pos429: state.pos429 || 0, rotN: state.rotN != null ? state.rotN : ROTATE_N,
     sweepMin: state.tracked.length > CORE_N ? Math.round(((state.tracked.length - CORE_N) / Math.max(1, ROTATE_N)) * 4) : 0,
