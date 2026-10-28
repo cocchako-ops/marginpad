@@ -1627,9 +1627,9 @@
  },
  {
   "rel": "hyperliquid-whales/index.html",
-  "cover": 1,
-  "hit": 78,
-  "missing": 0
+  "cover": 0.9871794871794872,
+  "hit": 77,
+  "missing": 1
  },
  {
   "rel": "icp-liquidation-calculator/index.html",

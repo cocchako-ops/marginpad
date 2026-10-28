@@ -316,6 +316,7 @@ const CSS = HEADER_CSS + `
   /* the account behind the row: on cross margin it is what decides where this position liquidates */
   .wl-acc{font-family:'Space Mono',monospace;font-size:10.5px;text-align:right;color:var(--ink-dim)}
   .wl-acc small{display:block;font-size:9px;color:var(--ink-faint);line-height:1.15}
+  .wl-xm.iso{background:rgba(255,179,71,.18);color:var(--amber)}
   .wl-xm{display:inline-block;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:800;padding:1px 4px;border-radius:4px;background:rgba(94,198,255,.16);color:var(--wh);letter-spacing:.04em;cursor:help}
   .wl-30{display:inline;font-size:9px;margin:0}
   .wl-more{display:block;width:100%;margin-top:10px;padding:10px;border:1px dashed var(--line-bright);border-radius:10px;background:none;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em}
@@ -464,7 +465,7 @@ ${ld}
       <!-- THE QUESTION THE PAGE KEPT PROVOKING (owner 2026-10-28: "pise da je pozicija long otvorena na npr $30
            a likvidacija je na $69 sto nema nikakvog smisla"). It does make sense, and the reason is one word -
            so the page says it where the reader meets it rather than leaving two numbers that look impossible. -->
-      <p class="wl-note" id="wlXnote" hidden>Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class="wl-xm">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. <span id="wlXcnt"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.</p>
+      <p class="wl-note" id="wlXnote" hidden>Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class="wl-xm">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. A row marked <span class="wl-xm iso">M</span> is isolated margin whose margin has been changed since it was opened - added to, or profit withdrawn. <span id="wlXcnt"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.</p>
     </section>
 
     <!-- TRADES -->
@@ -702,8 +703,8 @@ ${ld}
          The liquidation price is then a function of the WHOLE account's equity, not of this position - 117 of
          120 tracked positions are cross - so the row says so instead of leaving the reader with two numbers
          that look impossible together. */
-      var odd=(p.x&&ent&&p.liq)&&(p.long?p.liq>ent:p.liq<ent);
-      var xm=p.x?'<span class="wl-xm" title="'+(ES?'Margen cruzado: el precio de liquidacion lo fija el patrimonio de TODA la cuenta, no esta posicion - por eso puede quedar por encima de la entrada de un long.':'Cross margin: the liquidation price is set by the WHOLE account’s equity, not by this position - which is why it can sit above a long’s entry.')+'">X</span>':'';
+      var odd=(ent&&p.liq)&&(p.long?p.liq>ent:p.liq<ent);
+      var xm=!odd?'':p.x?'<span class="wl-xm" title="'+(ES?'Margen cruzado: el precio de liquidacion lo fija el patrimonio de TODA la cuenta, no esta posicion - por eso puede quedar por encima de la entrada de un long.':'Cross margin: the liquidation price is set by the WHOLE account’s equity, not by this position - which is why it can sit above a long’s entry.')+'">X</span>':'<span class="wl-xm iso" title="'+(ES?'Margen aislado: el margen de esta posicion se ha cambiado desde que se abrio - se ha ampliado, o se han retirado ganancias - asi que la liquidacion ya no esta donde la entrada y el apalancamiento solos la pondrian.':'Isolated margin: the margin on this position has been changed since it was opened - added to, or profit withdrawn - so the liquidation is no longer where the entry and leverage alone would put it.')+'">M</span>';
       var coin=mkt(p.sym);
       return '<div class="wl-pr" data-w="'+esc(p.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
