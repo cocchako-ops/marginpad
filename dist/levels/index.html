@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_levelsindex = {"listedByLifetimeXp":" en la lista, por XP total","inADuelAnd":" en un duelo y ocupa su lugar"};
+function __esT_levelsindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_levelsindex[k] != null) return __esD_levelsindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -258,7 +264,7 @@ footer a{color:var(--dim)}
   </footer>
 </div>
 
-<script defer src="/assets/mp-auth.js?v=7dd1b8ac"></script>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p=/levels/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9='referral';if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
@@ -297,7 +303,7 @@ footer a{color:var(--dim)}
        because a scroll box that does not say how long its list is cannot be told from a truncated one, and a
        member who is on it can jump to their own row instead of hunting through two hundred. */
     try{
-      var _c=document.getElementById('tmCount');if(_c)_c.textContent=t.length+' listed, by lifetime XP';
+      var _c=document.getElementById('tmCount');if(_c)_c.textContent=t.length+__esT_levelsindex("listedByLifetimeXp",' listed, by lifetime XP');
       var _me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
       var _un=_me&&_me.username?String(_me.username).toLowerCase():'';
       var _row=null;
@@ -317,7 +323,7 @@ footer a{color:var(--dim)}
         if(!row||row.querySelector('.tm-duelbtn'))return;
         var btn=document.createElement('button');
         btn.type='button';btn.className='tm-duelbtn';btn.textContent='Duel';
-        btn.title='Beat @'+above.username+' in a duel and take their spot';
+        btn.title='Beat @'+above.username+__esT_levelsindex("inADuelAnd",' in a duel and take their spot');
         btn.style.cssText='flex:0 0 auto;margin-left:8px;background:rgba(245,166,35,.14);color:#f5a623;border:1px solid rgba(245,166,35,.5);border-radius:8px;padding:4px 11px;font:800 11px "Familjen Grotesk",sans-serif;cursor:pointer';
         btn.addEventListener('click',function(ev){ev.stopPropagation();if(window.mpAuth&&window.mpAuth.duel)window.mpAuth.duel(above.username);});
         row.appendChild(btn);
@@ -327,7 +333,7 @@ footer a{color:var(--dim)}
   }).catch(function(){});
 })();
 </script>
-<script defer src="/assets/mp-profile.js?v=92ff8246"></script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-profile.js?v=55c3eac0"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_cryptobacktesterindex = {"notEnoughDataFor":"No hay datos suficientes para ","tryAnotherCoinOr":" - prueba con otra moneda o temporalidad.","couldNotLoadData":"No se pudieron cargar los datos - inténtalo de nuevo.","winRate":"Tasa de acierto","profitFactor":"Factor de beneficio","avgWin":"Ganancia media","avgLoss":"Pérdida media","openMarked":"abierta · marcada"};
+function __esT_cryptobacktesterindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_cryptobacktesterindex[k] != null) return __esD_cryptobacktesterindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -188,7 +194,7 @@
     fetch('/api/klines?symbol='+coin+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
       var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);
       k=k.map(function(x){return Array.isArray(x)?{time:x[0],open:+x[1],high:+x[2],low:+x[3],close:+x[4]}:{time:x.time,open:+x.open,high:+x.high,low:+x.low,close:+x.close};}).filter(function(x){return isFinite(x.close);});
-      if(k.length<60){$('status').textContent="Not enough data for "+coin+" - try another coin or timeframe.";$('run').disabled=false;return;}
+      if(k.length<60){$('status').textContent=__esT_cryptobacktesterindex("notEnoughDataFor","Not enough data for ")+coin+__esT_cryptobacktesterindex("tryAnotherCoinOr"," - try another coin or timeframe.");$('run').disabled=false;return;}
       var c=k.map(function(x){return x.close;}),h=k.map(function(x){return x.high;}),l=k.map(function(x){return x.low;});
       var want=signals(strat,c,h,l);
       var eq=cap0, pos=0, entry=0, trades=[], curve=[], bh=cap0, peak=cap0, maxDD=0;
@@ -208,7 +214,7 @@
       var pf=gl>0?gw/gl:(gw>0?99:0), avgW=wins.length?gw/wins.length:0, avgL=losses.length?-gl/losses.length:0;
       render({coin:coin,tf:tf,ret:ret,bhret:bhret,eq:eq,cap0:cap0,trades:trades,wr:wr,pf:pf,avgW:avgW,avgL:avgL,maxDD:maxDD,curve:curve,bars:k.length});
       $('status').textContent=''; $('run').disabled=false;
-    }).catch(function(){$('status').textContent="Could not load data - try again.";$('run').disabled=false;});
+    }).catch(function(){$('status').textContent=__esT_cryptobacktesterindex("couldNotLoadData","Could not load data - try again.");$('run').disabled=false;});
   }
   function render(R){
     $('out').hidden=false;
@@ -219,10 +225,10 @@
       +kpi(pct(R.bhret),"Buy & hold",R.bhret>=0?'pos':'neg')
       +kpi((R.ret-R.bhret>=0?'+':'')+(R.ret-R.bhret).toFixed(1)+'%',"vs hold",R.ret-R.bhret>=0?'pos':'neg')
       +kpi(R.trades.length,"Trades")
-      +kpi(R.wr.toFixed(0)+'%',"Win rate")
-      +kpi(R.pf.toFixed(2),"Profit factor")
-      +kpi(R.avgW.toFixed(1)+'%',"Avg win",'pos')
-      +kpi(R.avgL.toFixed(1)+'%',"Avg loss",'neg')
+      +kpi(R.wr.toFixed(0)+'%',__esT_cryptobacktesterindex("winRate","Win rate"))
+      +kpi(R.pf.toFixed(2),__esT_cryptobacktesterindex("profitFactor","Profit factor"))
+      +kpi(R.avgW.toFixed(1)+'%',__esT_cryptobacktesterindex("avgWin","Avg win"),'pos')
+      +kpi(R.avgL.toFixed(1)+'%',__esT_cryptobacktesterindex("avgLoss","Avg loss"),'neg')
       +kpi(R.maxDD.toFixed(1)+'%',"Max drawdown",'neg')
       +kpi(money(R.eq),"Final equity",R.eq>=R.cap0?'pos':'neg');
     var cv=R.curve,mn=Infinity,mx=-Infinity;cv.forEach(function(p){mn=Math.min(mn,p.s,p.b);mx=Math.max(mx,p.s,p.b);});
@@ -231,7 +237,7 @@
     $('eq').innerHTML='<path d="'+path('b')+'" fill="none" stroke="#5c656f" stroke-width="1.5"/><path d="'+path('s')+'" fill="none" stroke="#c2f64a" stroke-width="2"/>';
     $('trSub').textContent='· '+R.trades.length+" total";
     var rows='<thead><tr><th>#</th><th>Entry</th><th>Exit</th><th>Return</th></tr></thead><tbody>';
-    R.trades.slice().reverse().forEach(function(t,idx){var n=R.trades.length-idx;rows+='<tr><td>'+n+(t.open?' <span style="color:#ffb347" title="still open - exit and return are marked at the last close">'+"open · marked"+'</span>':'')+'</td><td>'+t.entry.toPrecision(6)+'</td><td>'+t.exit.toPrecision(6)+'</td><td class="'+(t.ret>=0?'pos':'neg')+'">'+pct(t.ret)+'</td></tr>';});
+    R.trades.slice().reverse().forEach(function(t,idx){var n=R.trades.length-idx;rows+='<tr><td>'+n+(t.open?' <span style="color:#ffb347" title="still open - exit and return are marked at the last close">'+__esT_cryptobacktesterindex("openMarked","open · marked")+'</span>':'')+'</td><td>'+t.entry.toPrecision(6)+'</td><td>'+t.exit.toPrecision(6)+'</td><td class="'+(t.ret>=0?'pos':'neg')+'">'+pct(t.ret)+'</td></tr>';});
     rows+='</tbody>';
     $('trades').innerHTML=rows;
   }
@@ -240,6 +246,6 @@
   run();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

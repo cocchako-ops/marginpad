@@ -1,0 +1,77 @@
+{
+ "file": "where-to-start/index.html",
+ "helper": "__esT_wheretostartindex",
+ "dict": "__esD_wheretostartindex",
+ "items": [
+  {
+   "key": "understandHowAnyOf",
+   "raw": "\"Understand how any of this works\"",
+   "en": "Understand how any of this works",
+   "n": 1,
+   "es": "Entiende cómo funciona todo esto"
+  },
+  {
+   "key": "readWhatTheMarket",
+   "raw": "\"Read what the market is doing\"",
+   "en": "Read what the market is doing",
+   "n": 1,
+   "es": "Lee qué está haciendo el mercado"
+  },
+  {
+   "key": "moveToRealMoney",
+   "raw": "\"Move to real money, carefully\"",
+   "en": "Move to real money, carefully",
+   "n": 1,
+   "es": "Pasa a dinero real, con cuidado"
+  },
+  {
+   "key": "buildOrTestA",
+   "raw": "\"Build or test a trading bot\"",
+   "en": "Build or test a trading bot",
+   "n": 1,
+   "es": "Crea o prueba un bot de trading"
+  },
+  {
+   "key": "competeAndEarnWhile",
+   "raw": "\"Compete, and earn while practising\"",
+   "en": "Compete, and earn while practising",
+   "n": 1,
+   "es": "Compite, y gana mientras practicas"
+  },
+  {
+   "key": "startHere",
+   "raw": "'start here'",
+   "en": "start here",
+   "n": 1,
+   "es": "empieza aquí"
+  },
+  {
+   "key": "yourNextSteps",
+   "raw": "'Your next steps - '",
+   "en": "Your next steps - ",
+   "n": 1,
+   "es": "Tus próximos pasos - "
+  },
+  {
+   "key": "yourNextSteps2",
+   "raw": "'Your next steps'",
+   "en": "Your next steps",
+   "n": 1,
+   "es": "Tus próximos pasos"
+  },
+  {
+   "key": "narrowedToYourLevel",
+   "raw": "'Narrowed to your level'",
+   "en": "Narrowed to your level",
+   "n": 1,
+   "es": "Filtrado para tu nivel"
+  },
+  {
+   "key": "nowPickHowMuch",
+   "raw": "'Now pick how much you have done before'",
+   "en": "Now pick how much you have done before",
+   "n": 1,
+   "es": "Ahora elige cuánto has hecho antes"
+  }
+ ]
+}

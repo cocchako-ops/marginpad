@@ -1,0 +1,259 @@
+{
+ "file": "home.js",
+ "helper": "__esT_home",
+ "dict": "__esD_home",
+ "items": [
+  {
+   "key": "closeNow",
+   "raw": "'Close now'",
+   "en": "Close now",
+   "n": 2,
+   "es": "Cerrar ahora"
+  },
+  {
+   "key": "inProfit",
+   "raw": "'In profit'",
+   "en": "In profit",
+   "n": 2,
+   "es": "En ganancia"
+  },
+  {
+   "key": "inLoss",
+   "raw": "'In loss'",
+   "en": "In loss",
+   "n": 2,
+   "es": "En pérdida"
+  },
+  {
+   "key": "oldestFirst",
+   "raw": "'oldest first'",
+   "en": "oldest first",
+   "n": 1,
+   "es": "más antiguas primero"
+  },
+  {
+   "key": "nothingMatchesTheseFilters",
+   "raw": "'Nothing matches these filters.'",
+   "en": "Nothing matches these filters.",
+   "n": 1,
+   "es": "Ningún resultado coincide con estos filtros."
+  },
+  {
+   "key": "myTrades",
+   "raw": "'My Trades'",
+   "en": "My Trades",
+   "n": 2,
+   "es": "Mis operaciones"
+  },
+  {
+   "key": "noAccountIsNamed",
+   "raw": "'No account is named @'",
+   "en": "No account is named @",
+   "n": 1,
+   "es": "Ninguna cuenta se llama @"
+  },
+  {
+   "key": "couldNotLookUp",
+   "raw": "'Could not look up that name'",
+   "en": "Could not look up that name",
+   "n": 1,
+   "es": "No se pudo buscar ese nombre"
+  },
+  {
+   "key": "inTheRoom",
+   "raw": "'in the room'",
+   "en": "in the room",
+   "n": 1,
+   "es": "en la sala"
+  },
+  {
+   "key": "newMessage",
+   "raw": "' new message'",
+   "en": " new message",
+   "n": 1,
+   "es": " mensaje nuevo"
+  },
+  {
+   "key": "newMessages",
+   "raw": "' new messages'",
+   "en": " new messages",
+   "n": 1,
+   "es": " mensajes nuevos"
+  },
+  {
+   "key": "thatMessageIsOlder",
+   "raw": "'That message is older than the room keeps (the last 150).'",
+   "en": "That message is older than the room keeps (the last 150).",
+   "n": 1,
+   "es": "Ese mensaje es más antiguo que lo que la sala conserva (los últimos 150)."
+  },
+  {
+   "key": "mentionedYouInChat",
+   "raw": "'</b> mentioned you in chat'",
+   "en": "</b> mentioned you in chat",
+   "n": 1,
+   "es": "</b> te mencionó en el chat"
+  },
+  {
+   "key": "openChat",
+   "raw": "'Open chat'",
+   "en": "Open chat",
+   "n": 1,
+   "es": "Abrir chat"
+  },
+  {
+   "key": "pickAUsernameTo",
+   "raw": "'Pick a username to chat - one second, and it is yours for good.'",
+   "en": "Pick a username to chat - one second, and it is yours for good.",
+   "n": 1,
+   "es": "Elige un nombre de usuario para chatear - un segundo, y es tuyo para siempre."
+  },
+  {
+   "key": "pickOne",
+   "raw": "'Pick one'",
+   "en": "Pick one",
+   "n": 1,
+   "es": "Elige uno"
+  },
+  {
+   "key": "pickAUsernameIn",
+   "raw": "'Pick a username in your account to chat.'",
+   "en": "Pick a username in your account to chat.",
+   "n": 1,
+   "es": "Elige un nombre de usuario en tu cuenta para chatear."
+  },
+  {
+   "key": "wasLiquidatedOn",
+   "raw": "'was liquidated on'",
+   "en": "was liquidated on",
+   "n": 1,
+   "es": "fue liquidado en"
+  },
+  {
+   "key": "aTraderYouFollow",
+   "raw": "'A trader you follow'",
+   "en": "A trader you follow",
+   "n": 1,
+   "es": "Un trader que sigues"
+  },
+  {
+   "key": "copyThisTradePre",
+   "raw": "'<span>Copy this trade<small>pre-fills the same trade - you confirm the open</small></span></button>'",
+   "en": "<span>Copy this trade<small>pre-fills the same trade - you confirm the open</small></span></button>",
+   "n": 1,
+   "es": "<span>Copiar esta operación<small>rellena la misma operación - tú confirmas la apertura</small></span></button>"
+  },
+  {
+   "key": "onTheChart",
+   "raw": "' on the chart</span></button>'",
+   "en": " on the chart</span></button>",
+   "n": 1,
+   "es": " en el gráfico</span></button>"
+  },
+  {
+   "key": "askTheAiAbout",
+   "raw": "'<span>Ask the AI about this trade</span></button></div>'",
+   "en": "<span>Ask the AI about this trade</span></button></div>",
+   "n": 1,
+   "es": "<span>Pregúntale a la IA sobre esta operación</span></button></div>"
+  },
+  {
+   "key": "showLabels",
+   "raw": "'Show labels'",
+   "en": "Show labels",
+   "n": 1,
+   "es": "Mostrar etiquetas"
+  },
+  {
+   "key": "iconsOnly",
+   "raw": "'Icons only'",
+   "en": "Icons only",
+   "n": 1,
+   "es": "Solo iconos"
+  },
+  {
+   "key": "theServerDidNot",
+   "raw": "'The server did not close this position: '",
+   "en": "The server did not close this position: ",
+   "n": 1,
+   "es": "El servidor no cerró esta posición: "
+  },
+  {
+   "key": "couldNotReachThe",
+   "raw": "'Could not reach the server - the position is still open. Try again.'",
+   "en": "Could not reach the server - the position is still open. Try again.",
+   "n": 1,
+   "es": "No se pudo contactar con el servidor - la posición sigue abierta. Inténtalo de nuevo."
+  },
+  {
+   "key": "chooseAMarket",
+   "raw": "'Choose a market'",
+   "en": "Choose a market",
+   "n": 1,
+   "es": "Elige un mercado"
+  },
+  {
+   "key": "noFavouritesYetTap",
+   "raw": "'No favourites yet - tap the star beside a market to pin it here.'",
+   "en": "No favourites yet - tap the star beside a market to pin it here.",
+   "n": 1,
+   "es": "Todavía no tienes favoritos - toca la estrella junto a un mercado para fijarlo aquí."
+  },
+  {
+   "key": "nothingMatchesThat",
+   "raw": "'Nothing matches that.'",
+   "en": "Nothing matches that.",
+   "n": 1,
+   "es": "Nada coincide con eso."
+  },
+  {
+   "key": "removeFromFavourites",
+   "raw": "'Remove from favourites'",
+   "en": "Remove from favourites",
+   "n": 1,
+   "es": "Quitar de favoritos"
+  },
+  {
+   "key": "addToFavourites",
+   "raw": "'Add to favourites'",
+   "en": "Add to favourites",
+   "n": 1,
+   "es": "Añadir a favoritos"
+  },
+  {
+   "key": "showingTheFirst",
+   "raw": "'Showing the first '",
+   "en": "Showing the first ",
+   "n": 1,
+   "es": "Mostrando los primeros "
+  },
+  {
+   "key": "typeToNarrowIt",
+   "raw": "'type to narrow it down.'",
+   "en": "type to narrow it down.",
+   "n": 1,
+   "es": "escribe para acotarlo."
+  },
+  {
+   "key": "busiestFirst",
+   "raw": "'busiest first'",
+   "en": "busiest first",
+   "n": 1,
+   "es": "más activos primero"
+  },
+  {
+   "key": "yourEntries",
+   "raw": "'Your entries'",
+   "en": "Your entries",
+   "n": 1,
+   "es": "Tus entradas"
+  },
+  {
+   "key": "waitingForTheLive",
+   "raw": "'Waiting for the live price - try again in a second.'",
+   "en": "Waiting for the live price - try again in a second.",
+   "n": 1,
+   "es": "Esperando el precio en vivo - inténtalo de nuevo en un segundo."
+  }
+ ]
+}

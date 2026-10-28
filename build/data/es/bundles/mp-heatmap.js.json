@@ -1,0 +1,896 @@
+{
+ "file": "mp-heatmap.js",
+ "helper": "__esT_mpheatmap",
+ "dict": "__esD_mpheatmap",
+ "items": [
+  {
+   "key": "theBookOverTime",
+   "raw": "'The book over time'",
+   "en": "The book over time",
+   "n": 1,
+   "es": "El libro de órdenes en el tiempo"
+  },
+  {
+   "key": "allPrints",
+   "raw": "'All prints'",
+   "en": "All prints",
+   "n": 1,
+   "es": "Todas las operaciones"
+  },
+  {
+   "key": "theLastHour",
+   "raw": "'the last hour'",
+   "en": "the last hour",
+   "n": 1,
+   "es": "la última hora"
+  },
+  {
+   "key": "theLast",
+   "raw": "'the last '",
+   "en": "the last ",
+   "n": 2,
+   "es": "los últimos "
+  },
+  {
+   "key": "liquidatesAt",
+   "raw": "'liquidates at '",
+   "en": "liquidates at ",
+   "n": 1,
+   "es": "se liquida en "
+  },
+  {
+   "key": "openPositionsOn",
+   "raw": "'Open positions on'",
+   "en": "Open positions on",
+   "n": 1,
+   "es": "Posiciones abiertas en"
+  },
+  {
+   "key": "leverageIsStillBeing",
+   "raw": "'leverage is still being added'",
+   "en": "leverage is still being added",
+   "n": 1,
+   "es": "todavía se está añadiendo apalancamiento"
+  },
+  {
+   "key": "leverageIsBeingUnwound",
+   "raw": "'leverage is being unwound'",
+   "en": "leverage is being unwound",
+   "n": 1,
+   "es": "el apalancamiento se está deshaciendo"
+  },
+  {
+   "key": "leverageIsFlat",
+   "raw": "'leverage is flat'",
+   "en": "leverage is flat",
+   "n": 1,
+   "es": "el apalancamiento está estable"
+  },
+  {
+   "key": "seeWhatStandsBetween",
+   "raw": "'See what stands between the price and your own liquidation'",
+   "en": "See what stands between the price and your own liquidation",
+   "n": 1,
+   "es": "Ve qué hay entre el precio y tu propia liquidación"
+  },
+  {
+   "key": "betweenThePriceAnd",
+   "raw": "'between the price and your liq at'",
+   "en": "between the price and your liq at",
+   "n": 1,
+   "es": "entre el precio y tu liq en"
+  },
+  {
+   "key": "bandsThatHeavyHave",
+   "raw": "'bands that heavy have really liquidated a median of'",
+   "en": "bands that heavy have really liquidated a median of",
+   "n": 1,
+   "es": "bandas así de pesadas realmente han liquidado una mediana de"
+  },
+  {
+   "key": "noZoneHeavierThan",
+   "raw": "'no zone heavier than average stands between the price and your liq at'",
+   "en": "no zone heavier than average stands between the price and your liq at",
+   "n": 1,
+   "es": "ninguna zona más pesada que el promedio se interpone entre el precio y tu liq en"
+  },
+  {
+   "key": "nothingReallyLiquidatedHer",
+   "raw": "'nothing really liquidated here in '",
+   "en": "nothing really liquidated here in ",
+   "n": 1,
+   "es": "aquí realmente no se liquidó nada en "
+  },
+  {
+   "key": "getToldWhenPrice",
+   "raw": "'Get told when price goes for a zone this heavy'",
+   "en": "Get told when price goes for a zone this heavy",
+   "n": 1,
+   "es": "Recibe un aviso cuando el precio vaya hacia una zona así de pesada"
+  },
+  {
+   "key": "alertingOnZonesThis",
+   "raw": "'Alerting on zones this heavy - tap to stop'",
+   "en": "Alerting on zones this heavy - tap to stop",
+   "n": 1,
+   "es": "Alertando en zonas así de pesadas - toca para detener"
+  },
+  {
+   "key": "alertMeWhenPrice",
+   "raw": "'Alert me when price nears a zone this heavy'",
+   "en": "Alert me when price nears a zone this heavy",
+   "n": 1,
+   "es": "Avísame cuando el precio se acerque a una zona así de pesada"
+  },
+  {
+   "key": "signInFirst",
+   "raw": "'Sign in first'",
+   "en": "Sign in first",
+   "n": 2,
+   "es": "Primero inicia sesión"
+  },
+  {
+   "key": "anAlertHasTo",
+   "raw": "'An alert has to reach somebody. Sign in, link Telegram, and a zone this heavy reaches your chat.'",
+   "en": "An alert has to reach somebody. Sign in, link Telegram, and a zone this heavy reaches your chat.",
+   "n": 1,
+   "es": "Una alerta tiene que llegarle a alguien. Inicia sesión, vincula Telegram, y una zona así de pesada llegará a tu chat."
+  },
+  {
+   "key": "goToAlerts",
+   "raw": "'Go to alerts'",
+   "en": "Go to alerts",
+   "n": 2,
+   "es": "Ir a alertas"
+  },
+  {
+   "key": "zoneAlertsArePremium",
+   "raw": "'Zone alerts are Premium'",
+   "en": "Zone alerts are Premium",
+   "n": 1,
+   "es": "Las alertas de zona son Premium"
+  },
+  {
+   "key": "theMapIsFree",
+   "raw": "'The map is free to read. Being told the moment price goes for a heavy zone - without watching it - is the part Premium pays for.'",
+   "en": "The map is free to read. Being told the moment price goes for a heavy zone - without watching it - is the part Premium pays for.",
+   "n": 1,
+   "es": "El mapa es gratis de leer. Que te avisen en el momento en que el precio va hacia una zona pesada - sin tener que vigilarlo - es la parte que paga Premium."
+  },
+  {
+   "key": "seePremium",
+   "raw": "'See Premium'",
+   "en": "See Premium",
+   "n": 1,
+   "es": "Ver Premium"
+  },
+  {
+   "key": "telegramIsNotLinked",
+   "raw": "'Telegram is not linked yet'",
+   "en": "Telegram is not linked yet",
+   "n": 2,
+   "es": "Telegram aún no está vinculado"
+  },
+  {
+   "key": "theAlertIsReady",
+   "raw": "'The alert is ready - it just has nowhere to go. Linking takes one tap on the alerts page: open the bot, press start, and come back.'",
+   "en": "The alert is ready - it just has nowhere to go. Linking takes one tap on the alerts page: open the bot, press start, and come back.",
+   "n": 2,
+   "es": "La alerta está lista - solo que no tiene adónde ir. Vincular toma un toque en la página de alertas: abre el bot, pulsa start y vuelve."
+  },
+  {
+   "key": "linkTelegram",
+   "raw": "'Link Telegram'",
+   "en": "Link Telegram",
+   "n": 2,
+   "es": "Vincular Telegram"
+  },
+  {
+   "key": "couldNotSaveThat",
+   "raw": "'Could not save that alert. Try again in a moment.'",
+   "en": "Could not save that alert. Try again in a moment.",
+   "n": 4,
+   "es": "No se pudo guardar esa alerta. Inténtalo de nuevo en un momento."
+  },
+  {
+   "key": "zoneAlertOnFor",
+   "raw": "'Zone alert on for'",
+   "en": "Zone alert on for",
+   "n": 1,
+   "es": "Alerta de zona activada para"
+  },
+  {
+   "key": "zonesFrom",
+   "raw": "'zones from'",
+   "en": "zones from",
+   "n": 1,
+   "es": "zonas desde"
+  },
+  {
+   "key": "wereClosedOut",
+   "raw": "'were closed out'",
+   "en": "were closed out",
+   "n": 1,
+   "es": "se cerraron"
+  },
+  {
+   "key": "thisSweepIsOlder",
+   "raw": "'This sweep is older than the liquidations loaded for the window you are on - pick a longer one and the real figure appears.'",
+   "en": "This sweep is older than the liquidations loaded for the window you are on - pick a longer one and the real figure appears.",
+   "n": 1,
+   "es": "Este barrido es más antiguo que las liquidaciones cargadas para la ventana en la que estás - elige una más larga y aparecerá la cifra real."
+  },
+  {
+   "key": "reallyWasLiquidatedHere",
+   "raw": "'really was liquidated here, across'",
+   "en": "really was liquidated here, across",
+   "n": 1,
+   "es": "realmente se liquidó aquí, a lo largo de"
+  },
+  {
+   "key": "countingTheLiquidationsThi",
+   "raw": "'Counting the liquidations this window has loaded, which on a long view is only those over'",
+   "en": "Counting the liquidations this window has loaded, which on a long view is only those over",
+   "n": 1,
+   "es": "Contando las liquidaciones que esta ventana ha cargado, que en una vista larga son solo las superiores a"
+  },
+  {
+   "key": "ourCollectorRecordedNo",
+   "raw": "'Our collector recorded no liquidation at this price when the candles went through - the crowd our model put here was smaller than it looked, or it had already left.'",
+   "en": "Our collector recorded no liquidation at this price when the candles went through - the crowd our model put here was smaller than it looked, or it had already left.",
+   "n": 1,
+   "es": "Nuestro colector no registró ninguna liquidación a este precio cuando las velas pasaron por aquí - la multitud que nuestro modelo puso aquí era más pequeña de lo que parecía, o ya se había ido."
+  },
+  {
+   "key": "theLineStopsWhere",
+   "raw": "'The line stops where the candles crossed it: that leverage is gone. What is left of it is the record.'",
+   "en": "The line stops where the candles crossed it: that leverage is gone. What is left of it is the record.",
+   "n": 1,
+   "es": "La línea se detiene donde las velas la cruzaron: ese apalancamiento ya desapareció. Lo que queda de ella es el registro."
+  },
+  {
+   "key": "bandsThisHeavyHave",
+   "raw": "'Bands this heavy have liquidated a median of'",
+   "en": "Bands this heavy have liquidated a median of",
+   "n": 1,
+   "es": "Las bandas así de pesadas han liquidado una mediana de"
+  },
+  {
+   "key": "whenThePriceReached",
+   "raw": "'when the price reached them'",
+   "en": "when the price reached them",
+   "n": 1,
+   "es": "cuando el precio las alcanzó"
+  },
+  {
+   "key": "measuredOn",
+   "raw": "'measured on'",
+   "en": "measured on",
+   "n": 1,
+   "es": "medido en"
+  },
+  {
+   "key": "ofOurOwnSwept",
+   "raw": "'of our own swept levels; half fell between'",
+   "en": "of our own swept levels; half fell between",
+   "n": 1,
+   "es": "de nuestros propios niveles barridos; la mitad cayó entre"
+  },
+  {
+   "key": "aRealWhalePosition",
+   "raw": "'<span><b style=\"color:#e9e7df\">—</b> a real whale position\\u2019s liquidation price (measured)</span>'",
+   "en": "<span><b style=\"color:#e9e7df\">—</b> a real whale position\\u2019s liquidation price (measured)</span>",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "buysOnly",
+   "raw": "'Buys only'",
+   "en": "Buys only",
+   "n": 1,
+   "es": "Solo compras"
+  },
+  {
+   "key": "sellsOnly",
+   "raw": "'Sells only'",
+   "en": "Sells only",
+   "n": 1,
+   "es": "Solo ventas"
+  },
+  {
+   "key": "theLastMinute",
+   "raw": "'the last minute'",
+   "en": "the last minute",
+   "n": 1,
+   "es": "el último minuto"
+  },
+  {
+   "key": "theBiggestReachingBack",
+   "raw": "'the biggest, reaching back'",
+   "en": "the biggest, reaching back",
+   "n": 1,
+   "es": "el más grande, remontándose"
+  },
+  {
+   "key": "whatJustHappened",
+   "raw": "'what just happened'",
+   "en": "what just happened",
+   "n": 1,
+   "es": "lo que acaba de pasar"
+  },
+  {
+   "key": "nothingThatBigHas",
+   "raw": "'Nothing that big has gone through'",
+   "en": "Nothing that big has gone through",
+   "n": 1,
+   "es": "Nada tan grande ha pasado"
+  },
+  {
+   "key": "inTheHoursWe",
+   "raw": "'in the hours we have been watching'",
+   "en": "in the hours we have been watching",
+   "n": 1,
+   "es": "en las horas que hemos estado observando"
+  },
+  {
+   "key": "inTheLastMinute",
+   "raw": "'in the last minute'",
+   "en": "in the last minute",
+   "n": 1,
+   "es": "en el último minuto"
+  },
+  {
+   "key": "theTapeIsQuiet",
+   "raw": "'the tape is quiet right now'",
+   "en": "the tape is quiet right now",
+   "n": 1,
+   "es": "la cinta está tranquila ahora mismo"
+  },
+  {
+   "key": "showEveryPrint",
+   "raw": "'Show every print'",
+   "en": "Show every print",
+   "n": 1,
+   "es": "Mostrar todas las operaciones"
+  },
+  {
+   "key": "buysOnly2",
+   "raw": "'buys only'",
+   "en": "buys only",
+   "n": 1,
+   "es": "solo compras"
+  },
+  {
+   "key": "sellsOnly2",
+   "raw": "'sells only'",
+   "en": "sells only",
+   "n": 1,
+   "es": "solo ventas"
+  },
+  {
+   "key": "rowsOf",
+   "raw": "'rows of'",
+   "en": "rows of",
+   "n": 1,
+   "es": "filas de"
+  },
+  {
+   "key": "atThePrice",
+   "raw": "'At the price'",
+   "en": "At the price",
+   "n": 1,
+   "es": "Al precio"
+  },
+  {
+   "key": "whereMoneyHasBeen",
+   "raw": "'where money has been standing, and what happened to it'",
+   "en": "where money has been standing, and what happened to it",
+   "n": 1,
+   "es": "donde el dinero ha estado parado, y qué le pasó"
+  },
+  {
+   "key": "allFive",
+   "raw": "'All five'",
+   "en": "All five",
+   "n": 1,
+   "es": "Los cinco"
+  },
+  {
+   "key": "backToNow",
+   "raw": "'Back to now'",
+   "en": "Back to now",
+   "n": 1,
+   "es": "Volver a ahora"
+  },
+  {
+   "key": "buildingTheFilmA",
+   "raw": "'building the film - a picture needs a few frames'",
+   "en": "building the film - a picture needs a few frames",
+   "n": 1,
+   "es": "construyendo la película - una imagen necesita unos pocos fotogramas"
+  },
+  {
+   "key": "oneBookOnly",
+   "raw": "'one book only'",
+   "en": "one book only",
+   "n": 1,
+   "es": "un solo libro"
+  },
+  {
+   "key": "noRowIsCarrying",
+   "raw": "'no row is carrying far more than the rows around it right now'",
+   "en": "no row is carrying far more than the rows around it right now",
+   "n": 1,
+   "es": "ninguna fila está cargando mucho más que las filas a su alrededor ahora mismo"
+  },
+  {
+   "key": "wallsThatWent",
+   "raw": "'Walls that went'",
+   "en": "Walls that went",
+   "n": 1,
+   "es": "Muros que"
+  },
+  {
+   "key": "mostOfThemWere",
+   "raw": "'most of them were withdrawn, not traded through - those offers were never a commitment'",
+   "en": "most of them were withdrawn, not traded through - those offers were never a commitment",
+   "n": 1,
+   "es": "la mayoría se retiraron, no se ejecutaron - esas ofertas nunca fueron un compromiso"
+  },
+  {
+   "key": "wereEatenRealMoney",
+   "raw": "'were eaten - real money changed hands there'",
+   "en": "were eaten - real money changed hands there",
+   "n": 1,
+   "es": "se ejecutaron - ahí cambió de manos dinero real"
+  },
+  {
+   "key": "nothingTradedThroughThem",
+   "raw": "'nothing traded through them'",
+   "en": "nothing traded through them",
+   "n": 1,
+   "es": "nada se ejecutó a través de ellos"
+  },
+  {
+   "key": "thePriceMoneyKeeps",
+   "raw": "'The price money keeps returning to'",
+   "en": "The price money keeps returning to",
+   "n": 1,
+   "es": "El precio al que el dinero sigue regresando"
+  },
+  {
+   "key": "onAverage",
+   "raw": "'on average'",
+   "en": "on average",
+   "n": 1,
+   "es": "en promedio"
+  },
+  {
+   "key": "ofTheWindow",
+   "raw": "'of the window'",
+   "en": "of the window",
+   "n": 1,
+   "es": "de la ventana"
+  },
+  {
+   "key": "howTheBookHas",
+   "raw": "'How the book has leaned'",
+   "en": "How the book has leaned",
+   "n": 1,
+   "es": "Cómo se ha inclinado el libro"
+  },
+  {
+   "key": "toTheBid",
+   "raw": "'to the bid'",
+   "en": "to the bid",
+   "n": 1,
+   "es": "hacia la compra"
+  },
+  {
+   "key": "toTheOffer",
+   "raw": "'to the offer'",
+   "en": "to the offer",
+   "n": 1,
+   "es": "hacia la venta"
+  },
+  {
+   "key": "balancedOverTheWhole",
+   "raw": "'balanced over the whole window, not just this second'",
+   "en": "balanced over the whole window, not just this second",
+   "n": 1,
+   "es": "equilibrado durante toda la ventana, no solo este segundo"
+  },
+  {
+   "key": "moreMoneyHasBeen",
+   "raw": "'more money has been waiting to buy than to sell, most of the window'",
+   "en": "more money has been waiting to buy than to sell, most of the window",
+   "n": 1,
+   "es": "ha habido más dinero esperando para comprar que para vender, durante la mayor parte de la ventana"
+  },
+  {
+   "key": "moreMoneyHasBeen2",
+   "raw": "'more money has been waiting to sell than to buy, most of the window'",
+   "en": "more money has been waiting to sell than to buy, most of the window",
+   "n": 1,
+   "es": "ha habido más dinero esperando para vender que para comprar, durante la mayor parte de la ventana"
+  },
+  {
+   "key": "colourIsRestingMoney",
+   "raw": "'Colour is resting money against the busiest price on screen; green waits to buy, red waits to sell. '",
+   "en": "Colour is resting money against the busiest price on screen; green waits to buy, red waits to sell. ",
+   "n": 1,
+   "es": "El color es el dinero en espera comparado con el precio más activo en pantalla; el verde espera para comprar, el rojo espera para vender. "
+  },
+  {
+   "key": "thePaleLineIs",
+   "raw": "'The pale line is the price. A dot with a bar is a wall and the bar is how long it has stood; a cross is a wall that was withdrawn, a plus is one that was traded through. '",
+   "en": "The pale line is the price. A dot with a bar is a wall and the bar is how long it has stood; a cross is a wall that was withdrawn, a plus is one that was traded through. ",
+   "n": 1,
+   "es": "La línea pálida es el precio. Un punto con una barra es un muro, y la barra indica cuánto tiempo ha estado ahí; una cruz es un muro que fue retirado, un más es uno que fue ejecutado. "
+  },
+  {
+   "key": "restingOrdersCanBe",
+   "raw": "'Resting orders can be cancelled at any moment - this is what is there, never what will hold.'",
+   "en": "Resting orders can be cancelled at any moment - this is what is there, never what will hold.",
+   "n": 1,
+   "es": "Las órdenes pendientes pueden cancelarse en cualquier momento - esto es lo que hay, nunca lo que se mantendrá."
+  },
+  {
+   "key": "moneyWaitingToBuy",
+   "raw": "'money waiting to BUY at this price'",
+   "en": "money waiting to BUY at this price",
+   "n": 1,
+   "es": "dinero esperando para COMPRAR a este precio"
+  },
+  {
+   "key": "moneyWaitingToSell",
+   "raw": "'money waiting to SELL at this price'",
+   "en": "money waiting to SELL at this price",
+   "n": 1,
+   "es": "dinero esperando para VENDER a este precio"
+  },
+  {
+   "key": "restingHere",
+   "raw": "'Resting here'",
+   "en": "Resting here",
+   "n": 1,
+   "es": "En espera aquí"
+  },
+  {
+   "key": "shareOfThatSide",
+   "raw": "'Share of that side on screen'",
+   "en": "Share of that side on screen",
+   "n": 1,
+   "es": "Porción de ese lado en pantalla"
+  },
+  {
+   "key": "distanceFromThePrice",
+   "raw": "'Distance from the price'",
+   "en": "Distance from the price",
+   "n": 2,
+   "es": "Distancia desde el precio"
+  },
+  {
+   "key": "thisFrame",
+   "raw": "'This frame'",
+   "en": "This frame",
+   "n": 1,
+   "es": "Este fotograma"
+  },
+  {
+   "key": "booksQuotingIt",
+   "raw": "'Books quoting it'",
+   "en": "Books quoting it",
+   "n": 2,
+   "es": "Libros que lo cotizan"
+  },
+  {
+   "key": "moneyHasRestedHere",
+   "raw": "'Money has rested here'",
+   "en": "Money has rested here",
+   "n": 1,
+   "es": "El dinero ha permanecido en espera aquí"
+  },
+  {
+   "key": "itHasJustAppeared",
+   "raw": "'it has just appeared'",
+   "en": "it has just appeared",
+   "n": 1,
+   "es": "acaba de aparecer"
+  },
+  {
+   "key": "atLeast",
+   "raw": "'at least'",
+   "en": "at least",
+   "n": 1,
+   "es": "al menos"
+  },
+  {
+   "key": "sinceItAppeared",
+   "raw": "'Since it appeared'",
+   "en": "Since it appeared",
+   "n": 1,
+   "es": "Desde que apareció"
+  },
+  {
+   "key": "mostItHasHeld",
+   "raw": "'Most it has held'",
+   "en": "Most it has held",
+   "n": 1,
+   "es": "El máximo que ha mantenido"
+  },
+  {
+   "key": "anExchangePublishesThe",
+   "raw": "'An exchange publishes the TOTAL size resting at a price, never the individual orders inside it - so nobody can tell you that one trader cancelled one order. What is measured here is the money: when it appeared at this price, whether it has grown or shrunk since, and how many of the five books are quoting it. Any of it can be withdrawn in a second.'",
+   "en": "An exchange publishes the TOTAL size resting at a price, never the individual orders inside it - so nobody can tell you that one trader cancelled one order. What is measured here is the money: when it appeared at this price, whether it has grown or shrunk since, and how many of the five books are quoting it. Any of it can be withdrawn in a second.",
+   "n": 1,
+   "es": "Un exchange publica el tamaño TOTAL en espera a un precio, nunca las órdenes individuales dentro de él - así que nadie puede decirte que un trader canceló una orden. Lo que se mide aquí es el dinero: cuándo apareció a este precio, si ha crecido o disminuido desde entonces, y cuántos de los cinco libros lo están cotizando. Cualquier parte de él puede retirarse en un segundo."
+  },
+  {
+   "key": "theTapeExecutedThrough",
+   "raw": "'the tape executed through this price while the money stood here - it was real, somebody bought it, and the level is spent'",
+   "en": "the tape executed through this price while the money stood here - it was real, somebody bought it, and the level is spent",
+   "n": 1,
+   "es": "la cinta se ejecutó a través de este precio mientras el dinero estaba aquí - fue real, alguien lo compró, y el nivel está gastado"
+  },
+  {
+   "key": "someOfItTraded",
+   "raw": "'some of it traded and the rest went away - part commitment, part display'",
+   "en": "some of it traded and the rest went away - part commitment, part display",
+   "n": 1,
+   "es": "parte se ejecutó y el resto desapareció - en parte compromiso, en parte exhibición"
+  },
+  {
+   "key": "theMoneyWentAway",
+   "raw": "'the money went away with nothing trading at this price. It was taken back rather than filled, so it was never a commitment. We do not call that spoofing - intent cannot be measured, only the fact.'",
+   "en": "the money went away with nothing trading at this price. It was taken back rather than filled, so it was never a commitment. We do not call that spoofing - intent cannot be measured, only the fact.",
+   "n": 1,
+   "es": "el dinero desapareció sin que nada se negociara a este precio. Se retiró en lugar de ejecutarse, así que nunca fue un compromiso. No llamamos a eso spoofing - la intención no se puede medir, solo el hecho."
+  },
+  {
+   "key": "someIsStillResting",
+   "raw": "'Some is still resting there, but far too little to be a wall any more.'",
+   "en": "Some is still resting there, but far too little to be a wall any more.",
+   "n": 1,
+   "es": "Todavía queda algo en espera ahí, pero muy poco para seguir siendo un muro."
+  },
+  {
+   "key": "stillRestingAtThis",
+   "raw": "'still resting at this price right now'",
+   "en": "still resting at this price right now",
+   "n": 1,
+   "es": "todavía en espera a este precio ahora mismo"
+  },
+  {
+   "key": "aWallOfBuy",
+   "raw": "'a wall of buy orders'",
+   "en": "a wall of buy orders",
+   "n": 1,
+   "es": "un muro de órdenes de compra"
+  },
+  {
+   "key": "aWallOfSell",
+   "raw": "'a wall of sell orders'",
+   "en": "a wall of sell orders",
+   "n": 1,
+   "es": "un muro de órdenes de venta"
+  },
+  {
+   "key": "biggestItGot",
+   "raw": "'Biggest it got'",
+   "en": "Biggest it got",
+   "n": 1,
+   "es": "Lo más grande que llegó a ser"
+  },
+  {
+   "key": "restingRightNow",
+   "raw": "'Resting right now'",
+   "en": "Resting right now",
+   "n": 1,
+   "es": "En espera ahora mismo"
+  },
+  {
+   "key": "againstThePricesBeside",
+   "raw": "'Against the prices beside it'",
+   "en": "Against the prices beside it",
+   "n": 1,
+   "es": "Frente a los precios a su lado"
+  },
+  {
+   "key": "standingFor",
+   "raw": "'Standing for'",
+   "en": "Standing for",
+   "n": 1,
+   "es": "Lleva en pie"
+  },
+  {
+   "key": "stoodFor",
+   "raw": "'Stood for'",
+   "en": "Stood for",
+   "n": 1,
+   "es": "Estuvo en pie"
+  },
+  {
+   "key": "heldBy",
+   "raw": "'Held by'",
+   "en": "Held by",
+   "n": 1,
+   "es": "Mantenido por"
+  },
+  {
+   "key": "tradedIntoIt",
+   "raw": "'Traded into it'",
+   "en": "Traded into it",
+   "n": 1,
+   "es": "Se ejecutó contra él"
+  },
+  {
+   "key": "leftBehind",
+   "raw": "'Left behind'",
+   "en": "Left behind",
+   "n": 1,
+   "es": "Restante"
+  },
+  {
+   "key": "oneBookWasHolding",
+   "raw": "'One book was holding this on its own, which is the kind that can vanish between two blinks.'",
+   "en": "One book was holding this on its own, which is the kind that can vanish between two blinks.",
+   "n": 1,
+   "es": "Un solo libro sostenía esto por sí solo, que es el tipo que puede desaparecer entre dos parpadeos."
+  },
+  {
+   "key": "within25BpsOf",
+   "raw": "'within 25 bps of the price'",
+   "en": "within 25 bps of the price",
+   "n": 1,
+   "es": "a menos de 25 pb del precio"
+  },
+  {
+   "key": "aPriceCarryingFar",
+   "raw": "'A price carrying far more resting money than the prices either side of it - at least two and a half times the middling neighbour, and never under $250,000. Measured against its own book, so it means the same thing on Bitcoin as on a small coin.'",
+   "en": "A price carrying far more resting money than the prices either side of it - at least two and a half times the middling neighbour, and never under $250,000. Measured against its own book, so it means the same thing on Bitcoin as on a small coin.",
+   "n": 1,
+   "es": "Un precio que acumula mucho más dinero en espera que los precios a cada lado - al menos dos veces y media el vecino intermedio, y nunca por debajo de $250,000. Medido contra su propio libro, así que significa lo mismo en Bitcoin que en una moneda pequeña."
+  },
+  {
+   "key": "theMoneyAtThat",
+   "raw": "'The money at that price went away without anything trading there. The order was taken back rather than filled, so it was never a commitment. Marked with a cross.'",
+   "en": "The money at that price went away without anything trading there. The order was taken back rather than filled, so it was never a commitment. Marked with a cross.",
+   "n": 1,
+   "es": "El dinero a ese precio desapareció sin que nada se negociara ahí. La orden se retiró en lugar de ejecutarse, así que nunca fue un compromiso. Marcado con una cruz."
+  },
+  {
+   "key": "theTapeExecutedThrough2",
+   "raw": "'The tape executed through that price while the money stood there - somebody actually bought or sold it, and the level is spent. Marked with a plus.'",
+   "en": "The tape executed through that price while the money stood there - somebody actually bought or sold it, and the level is spent. Marked with a plus.",
+   "n": 1,
+   "es": "La cinta se ejecutó a través de ese precio mientras el dinero estaba ahí - alguien realmente compró o vendió, y el nivel está gastado. Marcado con un más."
+  },
+  {
+   "key": "oneLineOfThe",
+   "raw": "'One line of the picture, covering a slice of price. The slice is sized so that about sixty rows cover the part of the book that really exists, which on a major coin is a quarter of one percent either side.'",
+   "en": "One line of the picture, covering a slice of price. The slice is sized so that about sixty rows cover the part of the book that really exists, which on a major coin is a quarter of one percent either side.",
+   "n": 1,
+   "es": "Una línea de la imagen, cubriendo una porción de precio. La porción está dimensionada para que unas sesenta filas cubran la parte del libro que realmente existe, que en una moneda principal es un cuarto de uno por ciento a cada lado."
+  },
+  {
+   "key": "howManyOfThe",
+   "raw": "'How many of the five exchanges have money at that price. One book alone can vanish in a blink; four books agreeing is a different object entirely.'",
+   "en": "How many of the five exchanges have money at that price. One book alone can vanish in a blink; four books agreeing is a different object entirely.",
+   "n": 1,
+   "es": "Cuántos de los cinco exchanges tienen dinero a ese precio. Un solo libro puede desaparecer en un parpadeo; cuatro libros coincidiendo es un objeto completamente distinto."
+  },
+  {
+   "key": "whichSideHasHad",
+   "raw": "'Which side has had more money waiting, averaged over the whole window rather than this second. A book is lopsided all day at small numbers; a lasting lean is the one worth reading.'",
+   "en": "Which side has had more money waiting, averaged over the whole window rather than this second. A book is lopsided all day at small numbers; a lasting lean is the one worth reading.",
+   "n": 1,
+   "es": "Qué lado ha tenido más dinero esperando, promediado sobre toda la ventana en vez de este segundo. Un libro está desequilibrado todo el día en números pequeños; una inclinación duradera es la que vale la pena leer."
+  },
+  {
+   "key": "limitOrdersSittingIn",
+   "raw": "'Limit orders sitting in the book, unspent. It is a fact about this second and never a promise: any of it can be cancelled before price reaches it.'",
+   "en": "Limit orders sitting in the book, unspent. It is a fact about this second and never a promise: any of it can be cancelled before price reaches it.",
+   "n": 1,
+   "es": "Órdenes límite reposando en el libro, sin usar. Es un hecho sobre este segundo y nunca una promesa: cualquier parte puede cancelarse antes de que el precio la alcance."
+  },
+  {
+   "key": "waitingToBuy",
+   "raw": "'waiting to buy'",
+   "en": "waiting to buy",
+   "n": 1,
+   "es": "esperando para comprar"
+  },
+  {
+   "key": "waitingToSell",
+   "raw": "'waiting to sell'",
+   "en": "waiting to sell",
+   "n": 1,
+   "es": "esperando para vender"
+  },
+  {
+   "key": "telegramAlertIsOn",
+   "raw": "'Telegram alert is ON for prints over '",
+   "en": "Telegram alert is ON for prints over ",
+   "n": 1,
+   "es": "La alerta de Telegram está ACTIVADA para operaciones por encima de "
+  },
+  {
+   "key": "pressToStop",
+   "raw": "' - press to stop'",
+   "en": " - press to stop",
+   "n": 1,
+   "es": " - pulsa para detener"
+  },
+  {
+   "key": "sendMeATelegram",
+   "raw": "'Send me a Telegram when a print over '",
+   "en": "Send me a Telegram when a print over ",
+   "n": 1,
+   "es": "Envíame un Telegram cuando una operación por encima de "
+  },
+  {
+   "key": "telegramAlertsStartAt",
+   "raw": "'Telegram alerts start at '",
+   "en": "Telegram alerts start at ",
+   "n": 2,
+   "es": "Las alertas de Telegram empiezan en "
+  },
+  {
+   "key": "pickABiggerSize",
+   "raw": "' - pick a bigger size and the bell wakes up'",
+   "en": " - pick a bigger size and the bell wakes up",
+   "n": 1,
+   "es": " - elige un tamaño mayor y la campana se activa"
+  },
+  {
+   "key": "notNow",
+   "raw": "'Not now'",
+   "en": "Not now",
+   "n": 1,
+   "es": "Ahora no"
+  },
+  {
+   "key": "aPrintPickThat",
+   "raw": "' a print. Pick that size or bigger in the tape filter, then press the bell.'",
+   "en": " a print. Pick that size or bigger in the tape filter, then press the bell.",
+   "n": 1,
+   "es": " una operación. Elige ese tamaño o uno mayor en el filtro de la cinta, y luego pulsa la campana."
+  },
+  {
+   "key": "anAlertHasTo2",
+   "raw": "'An alert has to reach somebody. Sign in and link Telegram, and every print over this size lands in your chat.'",
+   "en": "An alert has to reach somebody. Sign in and link Telegram, and every print over this size lands in your chat.",
+   "n": 1,
+   "es": "Una alerta tiene que llegarle a alguien. Inicia sesión y vincula Telegram, y cada operación por encima de este tamaño llegará a tu chat."
+  },
+  {
+   "key": "telegramAlertOnEvery",
+   "raw": "'Telegram alert on: every '",
+   "en": "Telegram alert on: every ",
+   "n": 1,
+   "es": "Alerta de Telegram activada: cada "
+  },
+  {
+   "key": "thatIsABuy",
+   "raw": "' that is a buy'",
+   "en": " that is a buy",
+   "n": 1,
+   "es": " que sea una compra"
+  },
+  {
+   "key": "thatIsASell",
+   "raw": "' that is a sell'",
+   "en": " that is a sell",
+   "n": 1,
+   "es": " que sea una venta"
+  },
+  {
+   "key": "reachesYou",
+   "raw": "' reaches you.'",
+   "en": " reaches you.",
+   "n": 1,
+   "es": " te llegará."
+  }
+ ]
+}

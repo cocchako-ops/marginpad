@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_cryptotaxcalculatorindex = {"estimatedTaxOnShort":"Impuesto estimado sobre el corto plazo","estimatedTaxOnLong":"Impuesto estimado sobre el largo plazo","federalEstimateOnlyExclude":"Solo estimación federal. No incluye el impuesto estatal sobre la renta, el 3.8% de impuesto sobre la renta neta de inversión, deducciones ni pérdidas compensables de ejercicios anteriores. Usa tramos representativos de 2026 - confirma las cifras vigentes.","estimatedFederalTaxOn":"Impuesto federal estimado sobre las ganancias","federalEstimateOnlyProvinc":"Solo estimación federal - el impuesto provincial (aproximadamente otro 5–21% marginal) NO está incluido, así que tu total real es mayor. Usa la tasa de inclusión del 50% y tramos federales representativos de 2025-26. No es asesoramiento fiscal.","taxedAt18Within":"Tributa al 18% (dentro del tramo básico)","taxedAt24Higher":"Tributa al 24% (tramo superior)","estimateUsing202425":"Estimación con tasas de CGT al estilo 2024-25 (18%/24%) y un mínimo exento anual de £3,000. No incluye variaciones escocesas, pérdidas ni deducciones. No es asesoramiento fiscal.","effectiveRateOnGains":"Tasa efectiva sobre las ganancias","afterTaxProfit":"Beneficio después de impuestos","allOfThisIs":"Todo esto es a corto plazo y tributa como renta ordinaria - la tasa más alta que pagas. Mantener una posición más de un año la llevaría a las tasas de largo plazo (","hereThatGapIs":" aquí). Esa diferencia es la razón por la que quien mantiene a largo plazo se queda con más de la misma ganancia.","taxIsTakingA":"El impuesto se está llevando una parte grande (","ofYourGainsBefore":" de tus ganancias). Antes de dimensionar operaciones reales, recuerda que tu ventaja real es la cifra después de impuestos - menor que el P&L bruto. Prueba estrategias gratis en paper trading primero.","thisIsGeneralInformation":" Esto es información general, no asesoramiento fiscal.","noClosedTradesFound":"Todavía no hay operaciones cerradas en tu diario. Abre una cuenta gratuita de paper trading, cierra unas cuantas operaciones y luego impórtalas.","closedTradesPaperTrades":" operaciones cerradas (las operaciones en paper no pagan impuestos reales - esto es una estimación educativa). Corto plazo "};
+function __esT_cryptotaxcalculatorindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_cryptotaxcalculatorindex[k] != null) return __esD_cryptotaxcalculatorindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -206,19 +212,19 @@
       var ltTax = Math.max(0,ltg)*ltRate;
       tax = stTax + ltTax;
       row('Short-term gains (ordinary rate)', money(stg));
-      row('Estimated tax on short-term', money(stTax));
+      row(__esT_cryptotaxcalculatorindex("estimatedTaxOnShort",'Estimated tax on short-term'), money(stTax));
       row('Long-term gains', money(ltg));
       row('Long-term rate applied', pct(ltRate*100));
-      row('Estimated tax on long-term', money(ltTax));
-      disc='Federal estimate only. Excludes state income tax, the 3.8% net investment income tax, deductions and loss carry-forwards. Uses representative 2026 brackets - confirm current figures.';
+      row(__esT_cryptotaxcalculatorindex("estimatedTaxOnLong",'Estimated tax on long-term'), money(ltTax));
+      disc=__esT_cryptotaxcalculatorindex("federalEstimateOnlyExclude",'Federal estimate only. Excludes state income tax, the 3.8% net investment income tax, deductions and loss carry-forwards. Uses representative 2026 brackets - confirm current figures.');
     } else if(ctry==='CA'){
       $('ctryL').textContent='Canada federal';
       var taxable = totalGain*0.5; // 50% inclusion rate
       tax = marginalOn(inc, taxable, CA_FED);
       row('Total capital gain', money(totalGain));
       row('Taxable portion (50% inclusion)', money(taxable));
-      row('Estimated federal tax on gains', money(tax));
-      disc='Federal estimate only - provincial tax (roughly another 5–21% marginal) is NOT included, so your real total is higher. Uses the 50% inclusion rate and representative 2025-26 federal brackets. Not tax advice.';
+      row(__esT_cryptotaxcalculatorindex("estimatedFederalTaxOn",'Estimated federal tax on gains'), money(tax));
+      disc=__esT_cryptotaxcalculatorindex("federalEstimateOnlyProvinc",'Federal estimate only - provincial tax (roughly another 5–21% marginal) is NOT included, so your real total is higher. Uses the 50% inclusion rate and representative 2025-26 federal brackets. Not tax advice.');
     } else { // UK
       $('ctryL').textContent='UK';
       var gain=totalGain, taxableGain=Math.max(0, gain-UK.cgtExempt);
@@ -229,9 +235,9 @@
       row('Total capital gain', money(gain).replace('$','£'));
       row('Annual CGT exempt amount', '£'+UK.cgtExempt.toLocaleString('en-US'));
       row('Taxable gain', money(taxableGain).replace('$','£'));
-      row('Taxed at 18% (within basic band)', money(atBasic*UK.cgtBasic).replace('$','£'));
-      row('Taxed at 24% (higher band)', money(atHigher*UK.cgtHigher).replace('$','£'));
-      disc='Estimate using 2024-25-style CGT rates (18%/24%) and a £3,000 annual exempt amount. Excludes Scottish variations, losses and allowances. Not tax advice.';
+      row(__esT_cryptotaxcalculatorindex("taxedAt18Within",'Taxed at 18% (within basic band)'), money(atBasic*UK.cgtBasic).replace('$','£'));
+      row(__esT_cryptotaxcalculatorindex("taxedAt24Higher",'Taxed at 24% (higher band)'), money(atHigher*UK.cgtHigher).replace('$','£'));
+      disc=__esT_cryptotaxcalculatorindex("estimateUsing202425",'Estimate using 2024-25-style CGT rates (18%/24%) and a £3,000 annual exempt amount. Excludes Scottish variations, losses and allowances. Not tax advice.');
     }
 
     var cur = ctry==='UK'?'£':'$';
@@ -239,17 +245,17 @@
     var eff = totalGain>0 ? tax/totalGain*100 : 0;
     var after = totalGain - tax;
     main.push(kpi(m2(tax),'Estimated tax owed','neg'));
-    main.push(kpi(pct(eff),'Effective rate on gains', eff>25?'neg':''));
-    main.push(kpi(m2(after),'After-tax profit', after>=0?'pos':'neg'));
+    main.push(kpi(pct(eff),__esT_cryptotaxcalculatorindex("effectiveRateOnGains",'Effective rate on gains'), eff>25?'neg':''));
+    main.push(kpi(m2(after),__esT_cryptotaxcalculatorindex("afterTaxProfit",'After-tax profit'), after>=0?'pos':'neg'));
     main.push(kpi(m2(totalGain),'Total gains',''));
     $('kMain').innerHTML=main.join('');
     $('brkT').innerHTML=rows.join('');
 
-    if(ctry==='US' && stg>0 && ltg===0) verdict='All of this is short-term, taxed as ordinary income - the highest rate you pay. Holding a position past one year would move it to long-term rates ('+pct((usLtcgRate(inc+stg,US_LTCG[$('filing').value]||US_LTCG.single))*100)+' here). That gap is why long-term holders keep more of the same gain.';
-    else if(eff>30) verdict='Tax is taking a large bite ('+pct(eff)+' of your gains). Before sizing real trades, remember your true edge is the after-tax number - smaller than the raw P&L. Test strategies free in paper trading first.';
+    if(ctry==='US' && stg>0 && ltg===0) verdict=__esT_cryptotaxcalculatorindex("allOfThisIs",'All of this is short-term, taxed as ordinary income - the highest rate you pay. Holding a position past one year would move it to long-term rates (')+pct((usLtcgRate(inc+stg,US_LTCG[$('filing').value]||US_LTCG.single))*100)+__esT_cryptotaxcalculatorindex("hereThatGapIs",' here). That gap is why long-term holders keep more of the same gain.');
+    else if(eff>30) verdict=__esT_cryptotaxcalculatorindex("taxIsTakingA",'Tax is taking a large bite (')+pct(eff)+__esT_cryptotaxcalculatorindex("ofYourGainsBefore",' of your gains). Before sizing real trades, remember your true edge is the after-tax number - smaller than the raw P&L. Test strategies free in paper trading first.');
     else verdict='This is a planning estimate - your real bill depends on your full return, where you live, and rules this tool simplifies. Keep clean records of every trade so filing is not a guess.';
     $('verdict').textContent=verdict;
-    $('disc').textContent=disc+' This is general information, not tax advice.';
+    $('disc').textContent=disc+__esT_cryptotaxcalculatorindex("thisIsGeneralInformation",' This is general information, not tax advice.');
     $('out').hidden=false; $('status').textContent='';
   }
 
@@ -257,7 +263,7 @@
   function importJournal(){
     var j=[]; try{ j=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]; }catch(e){}
     var closed=j.filter(function(t){return t && (t.status==='win'||t.status==='loss');});
-    if(!closed.length){ $('status').textContent='No closed trades found in your journal yet. Open a free paper-trade account, close a few trades, then import.'; return; }
+    if(!closed.length){ $('status').textContent=__esT_cryptotaxcalculatorindex("noClosedTradesFound",'No closed trades found in your journal yet. Open a free paper-trade account, close a few trades, then import.'); return; }
     var st=0, lt=0, YR=365*86400000;
     closed.forEach(function(t){
       var pnl=+t.pnl; if(!isFinite(pnl)) return;
@@ -268,7 +274,7 @@
     $('stg').value=Math.round(st); $('ltg').value=Math.round(lt);
     try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=tax_import&p=/crypto-tax-calculator/');}catch(_){}
     calc(); // calc() clears status, so set the import note AFTER it
-    $('status').textContent='Imported '+closed.length+' closed trades (paper trades owe no real tax - this is an educational estimate). Short-term '+money(st)+', long-term '+money(lt)+'.';
+    $('status').textContent='Imported '+closed.length+__esT_cryptotaxcalculatorindex("closedTradesPaperTrades",' closed trades (paper trades owe no real tax - this is an educational estimate). Short-term ')+money(st)+', long-term '+money(lt)+'.';
   }
 
   function syncFields(){var us=$('ctry').value==='US';
@@ -281,6 +287,6 @@
   syncFields(); calc();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

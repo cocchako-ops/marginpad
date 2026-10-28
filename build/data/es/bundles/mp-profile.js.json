@@ -1,0 +1,77 @@
+{
+ "file": "mp-profile.js",
+ "helper": "__esT_mpprofile",
+ "dict": "__esD_mpprofile",
+ "items": [
+  {
+   "key": "greenDays",
+   "raw": "'Green Days'",
+   "en": "Green Days",
+   "n": 1,
+   "es": "Días en Verde"
+  },
+  {
+   "key": "bestWinRate",
+   "raw": "'Best Win Rate'",
+   "en": "Best Win Rate",
+   "n": 1,
+   "es": "Mejor Tasa de Acierto"
+  },
+  {
+   "key": "seasonXp",
+   "raw": "'Season XP'",
+   "en": "Season XP",
+   "n": 1,
+   "es": "XP de Temporada"
+  },
+  {
+   "key": "friendsYouFollowEach",
+   "raw": "'Friends - you follow each other'",
+   "en": "Friends - you follow each other",
+   "n": 1,
+   "es": "Amigos - se siguen mutuamente"
+  },
+  {
+   "key": "followingTapToUnfollow",
+   "raw": "'Following - tap to unfollow'",
+   "en": "Following - tap to unfollow",
+   "n": 1,
+   "es": "Siguiendo - toca para dejar de seguir"
+  },
+  {
+   "key": "requestSentTapTo",
+   "raw": "'Request sent - tap to cancel'",
+   "en": "Request sent - tap to cancel",
+   "n": 1,
+   "es": "Solicitud enviada - toca para cancelar"
+  },
+  {
+   "key": "signInToFollow",
+   "raw": "'Sign in to follow'",
+   "en": "Sign in to follow",
+   "n": 1,
+   "es": "Inicia sesión para seguir"
+  },
+  {
+   "key": "followsYouAskTo",
+   "raw": "'Follows you - ask to follow back'",
+   "en": "Follows you - ask to follow back",
+   "n": 1,
+   "es": "Te sigue - pide seguirle también"
+  },
+  {
+   "key": "askToFollow",
+   "raw": "'Ask to follow'",
+   "en": "Ask to follow",
+   "n": 1,
+   "es": "Pedir seguir"
+  },
+  {
+   "key": "followsYou",
+   "raw": "'<span class=\"lbm-fw\" title=\"Follows you\">Follows you</span>'",
+   "en": "<span class=\"lbm-fw\" title=\"Follows you\">Follows you</span>",
+   "n": 1,
+   "es": "<span class=\"lbm-fw\" title=\"Te sigue\">Te sigue</span>"
+  }
+ ]
+}

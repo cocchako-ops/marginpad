@@ -1,0 +1,70 @@
+{
+ "file": "crypto-cost-basis-calculator/index.html",
+ "helper": "__esT_cryptocostbasiscalculatorindex",
+ "dict": "__esD_cryptocostbasiscalculatorindex",
+ "items": [
+  {
+   "key": "youAreSelling",
+   "raw": "'You are selling '",
+   "en": "You are selling ",
+   "n": 1,
+   "es": "Estás vendiendo "
+  },
+  {
+   "key": "coinsButYourLots",
+   "raw": "' coins but your lots only total '",
+   "en": " coins but your lots only total ",
+   "n": 1,
+   "es": " monedas pero tus lotes solo suman "
+  },
+  {
+   "key": "capitalLoss",
+   "raw": "'Capital loss'",
+   "en": "Capital loss",
+   "n": 1,
+   "es": "Pérdida de capital"
+  },
+  {
+   "key": "lotBoughtQtySold",
+   "raw": "'<tr><th>Lot bought</th><th>Qty sold</th><th>Buy price</th><th>Gain</th><th>Term</th></tr>'",
+   "en": "<tr><th>Lot bought</th><th>Qty sold</th><th>Buy price</th><th>Gain</th><th>Term</th></tr>",
+   "n": 1,
+   "es": "<tr><th>Lote comprado</th><th>Cant. vendida</th><th>Precio de compra</th><th>Ganancia</th><th>Plazo</th></tr>"
+  },
+  {
+   "key": "thisSaleIsA",
+   "raw": "'This sale is a capital loss of '",
+   "en": "This sale is a capital loss of ",
+   "n": 1,
+   "es": "Esta venta es una pérdida de capital de "
+  },
+  {
+   "key": "isLongTermLower",
+   "raw": "' is long-term (lower rate) and '",
+   "en": " is long-term (lower rate) and ",
+   "n": 1,
+   "es": " es a largo plazo (tasa más baja) y "
+  },
+  {
+   "key": "isShortTermYour",
+   "raw": "' is short-term (your ordinary rate). Selling the longer-held lots first can move more of the gain into the lower bracket.'",
+   "en": " is short-term (your ordinary rate). Selling the longer-held lots first can move more of the gain into the lower bracket.",
+   "n": 1,
+   "es": " es a corto plazo (tu tasa ordinaria). Vender primero los lotes que llevas más tiempo manteniendo puede llevar más ganancia al tramo más bajo."
+  },
+  {
+   "key": "allLongTermThis",
+   "raw": "'All long-term - this gain qualifies for the lower long-term capital-gains rate. Holding past one year did its job.'",
+   "en": "All long-term - this gain qualifies for the lower long-term capital-gains rate. Holding past one year did its job.",
+   "n": 1,
+   "es": "Todo a largo plazo - esta ganancia califica para la tasa reducida de ganancias de capital a largo plazo. Mantener más de un año hizo su trabajo."
+  },
+  {
+   "key": "allShortTermTaxed",
+   "raw": "'All short-term - taxed at your ordinary income rate. Holding lots past one year would move them to the lower long-term rate.'",
+   "en": "All short-term - taxed at your ordinary income rate. Holding lots past one year would move them to the lower long-term rate.",
+   "n": 1,
+   "es": "Todo a corto plazo - tributa a tu tasa de renta ordinaria. Mantener los lotes más de un año los llevaría a la tasa reducida de largo plazo."
+  }
+ ]
+}

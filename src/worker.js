@@ -1664,6 +1664,15 @@ const SSR_ES = {
   liqTotal: 'Las liquidaciones de futuros cripto suman {t} en las últimas 24 horas: {l} de largos y {s} de cortos en {n} monedas monitorizadas.',
   whaleHold: 'Las ballenas de Hyperliquid mantienen ahora {t} en posiciones abiertas repartidas en {n} carteras monitorizadas - {l} en largos frente a {s} en cortos, {net} en conjunto.',
   netLong: 'neto largo', netShort: 'neto corto', netFlat: 'prácticamente equilibrado',
+  /* /es/fear-greed/ was the one hub page whose SSR sentences had no Spanish branch at all (found 2026-10-28 by
+     walking the site as a Spanish reader - a grep cannot see a sentence the worker writes). The index's own
+     classification words arrive from the upstream in English and are mapped too: "Neutral" is the same word in
+     Spanish and the other four are not. */
+  fngNow: 'El índice Crypto Fear & Greed marca {v} ({c}) ahora mismo',
+  fngYday: ', frente a {v} ({c}) ayer',
+  fngWeek: ' y {v} hace una semana',
+  fngRange: 'En los últimos {n} días el índice se ha movido entre {lo} y {hi}.',
+  fngCls: { 'Extreme Fear': 'Miedo extremo', 'Fear': 'Miedo', 'Neutral': 'Neutral', 'Greed': 'Codicia', 'Extreme Greed': 'Codicia extrema' },
 };
 const SSR_L10N = {
   de: { px: '{name} ({sym}) notiert aktuell bei {px}{ch}.', chFlat: ', kaum verändert in den letzten 24 Stunden', chUp: ', plus {v}% in den letzten 24 Stunden', chDn: ', minus {v}% in den letzten 24 Stunden',
@@ -2770,7 +2779,7 @@ async function handleSsrVenues(request, url, env, ctx) {
   const lead = vs.length > 1 && vs[0].total > 0
     ? '<p>Over the last 24 hours <strong>' + (NAMES[vs[0].venue] || vs[0].venue) + '</strong> liquidated the most at ' + usd(vs[0].total) + ', which is ' + vs[0].share + '% of everything our collector saw across eight venues (' + usd(d.total) + ' in total).</p>' : '';
   const inner = lead + '<div class="vx-wrap"><table class="vx"><thead><tr><th>Exchange</th><th>24h liquidated</th><th>Share</th><th>Longs</th><th>Shorts</th><th>Long / short</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-    + '<p class="vx-stamp">Measured by the MarginPad collector across nine exchange websockets &middot; rolling 24h &middot; ' + stamp + ' UTC</p>';
+    + '<p class="vx-stamp">Measured by the MarginPad collector across eight exchange websockets &middot; rolling 24h &middot; ' + stamp + ' UTC</p>';
   html = ssrStampDate(html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + inner + html.slice(close), Date.now());
   const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'venues' } });
   try { await caches.default.put(ck, out.clone()); } catch (e) {}
@@ -2824,7 +2833,7 @@ async function handleSsrCompare(request, url, env, ak, bk, ctx) {
   }
   const stamp = new Date(d.ts || Date.now()).toISOString().slice(0, 16).replace('T', ' ');
   const inner = '<div class="vs-grid">' + col(an, A) + col(bn, B) + '</div>' + lead
-    + '<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; ' + stamp + ' UTC</p>';
+    + '<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; ' + stamp + ' UTC</p>';
   html = ssrStampDate(html.slice(0, open) + '<div id="vstat" data-ssr="1">' + inner + html.slice(close), Date.now());
 
   const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
@@ -3460,12 +3469,15 @@ async function ssrHubSentences(page, sym, env, request) {
     const j = await jget(() => handleFng(env));
     const d = (j && j.data) || []; if (!d.length || !d[0] || !isFinite(+d[0].v)) return { S };
     const now = d[0], y = d[1], w = d[7];
-    let s1 = 'The Crypto Fear & Greed Index reads ' + now.v + ' (' + now.c + ') right now';
-    if (y && isFinite(+y.v)) s1 += ', versus ' + y.v + ' (' + y.c + ') yesterday';
-    if (w && isFinite(+w.v)) s1 += ' and ' + w.v + ' a week ago';
+    const _es = esLang(request) === 'es', _cl = c => (_es && SSR_ES.fngCls[String(c)]) || c;
+    let s1 = _es ? SSR_ES.fngNow.split('{v}').join(now.v).split('{c}').join(_cl(now.c))
+      : 'The Crypto Fear & Greed Index reads ' + now.v + ' (' + now.c + ') right now';
+    if (y && isFinite(+y.v)) s1 += _es ? SSR_ES.fngYday.split('{v}').join(y.v).split('{c}').join(_cl(y.c)) : ', versus ' + y.v + ' (' + y.c + ') yesterday';
+    if (w && isFinite(+w.v)) s1 += _es ? SSR_ES.fngWeek.split('{v}').join(w.v) : ' and ' + w.v + ' a week ago';
     S.push(s1 + '.');
     const yr = d.slice(0, 365).map(x => +x.v).filter(isFinite);
-    if (yr.length > 30) S.push('Over the past ' + yr.length + ' days the index has ranged from ' + Math.min.apply(null, yr) + ' to ' + Math.max.apply(null, yr) + '.');
+    if (yr.length > 30) S.push(_es ? SSR_ES.fngRange.split('{n}').join(yr.length).split('{lo}').join(Math.min.apply(null, yr)).split('{hi}').join(Math.max.apply(null, yr))
+      : 'Over the past ' + yr.length + ' days the index has ranged from ' + Math.min.apply(null, yr) + ' to ' + Math.max.apply(null, yr) + '.');
     return { S, links: [['/bitcoin-cycle/', 'Cycle indicators'], ['/screener', 'Live market screener']] };
   }
   if (page === 'funding') {
@@ -8544,7 +8556,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3b1d9450" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=cd4a2960" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19988,7 +20000,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '7dd1b8ac';
+const ASSET_V = '353d3dd6';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

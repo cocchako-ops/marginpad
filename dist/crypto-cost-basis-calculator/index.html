@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_cryptocostbasiscalculatorindex = {"youAreSelling":"Estás vendiendo ","coinsButYourLots":" monedas pero tus lotes solo suman ","capitalLoss":"Pérdida de capital","lotBoughtQtySold":"<tr><th>Lote comprado</th><th>Cant. vendida</th><th>Precio de compra</th><th>Ganancia</th><th>Plazo</th></tr>","thisSaleIsA":"Esta venta es una pérdida de capital de ","isLongTermLower":" es a largo plazo (tasa más baja) y ","isShortTermYour":" es a corto plazo (tu tasa ordinaria). Vender primero los lotes que llevas más tiempo manteniendo puede llevar más ganancia al tramo más bajo.","allLongTermThis":"Todo a largo plazo - esta ganancia califica para la tasa reducida de ganancias de capital a largo plazo. Mantener más de un año hizo su trabajo.","allShortTermTaxed":"Todo a corto plazo - tributa a tu tasa de renta ordinaria. Mantener los lotes más de un año los llevaría a la tasa reducida de largo plazo."};
+function __esT_cryptocostbasiscalculatorindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_cryptocostbasiscalculatorindex[k] != null) return __esD_cryptocostbasiscalculatorindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -205,7 +211,7 @@
     else if(method==='LIFO') lots.sort(function(a,b){return b.t-a.t;});
     else lots.sort(function(a,b){return b.price-a.price;}); // HIFO
     var need=sq, proceeds=sq*sp, basis=0, stGain=0, ltGain=0, used=[], available=lots.reduce(function(a,l){return a+l.rem;},0);
-    if(sq>available+1e-9){ $('status').textContent='You are selling '+sq+' coins but your lots only total '+available.toFixed(6)+'. Add more buy lots or lower the sale quantity.'; $('out').hidden=true; return; }
+    if(sq>available+1e-9){ $('status').textContent=__esT_cryptocostbasiscalculatorindex("youAreSelling",'You are selling ')+sq+__esT_cryptocostbasiscalculatorindex("coinsButYourLots",' coins but your lots only total ')+available.toFixed(6)+'. Add more buy lots or lower the sale quantity.'; $('out').hidden=true; return; }
     for(var i=0;i<lots.length && need>1e-12;i++){
       var l=lots[i], take=Math.min(l.rem,need); if(take<=0)continue;
       var costPortion=take*l.price, gainPortion=take*(sp-l.price);
@@ -218,16 +224,16 @@
     function kpi(v,l,cls){return '<div class="kpi"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
     $('kMain').innerHTML=kpi(money(proceeds),'Sale proceeds','')
       +kpi(money(basis),'Cost basis','')
-      +kpi(money(gain),(gain>=0?'Capital gain':'Capital loss'),gain>=0?'pos':'neg')
+      +kpi(money(gain),(gain>=0?'Capital gain':__esT_cryptocostbasiscalculatorindex("capitalLoss",'Capital loss')),gain>=0?'pos':'neg')
       +kpi(money(stGain),'Short-term portion',stGain>=0?'':'neg')
       +kpi(money(ltGain),'Long-term portion','lt');
-    $('brkT').innerHTML='<tr><th>Lot bought</th><th>Qty sold</th><th>Buy price</th><th>Gain</th><th>Term</th></tr>'
+    $('brkT').innerHTML=__esT_cryptocostbasiscalculatorindex("lotBoughtQtySold",'<tr><th>Lot bought</th><th>Qty sold</th><th>Buy price</th><th>Gain</th><th>Term</th></tr>')
       +used.map(function(u){return '<tr><td>'+u.date+'</td><td class="n">'+u.qty.toLocaleString('en-US',{maximumFractionDigits:8})+'</td><td class="n">'+money(u.price)+'</td><td class="n">'+money(u.gain)+'</td><td>'+(u.lt?'<span class="lt">Long</span>':'<span class="st">Short</span>')+'</td></tr>';}).join('');
     var v;
-    if(gain<0) v='This sale is a capital loss of '+money(-gain)+'. Losses can offset other capital gains and may carry forward - a reason to log every trade. See the tax calculator for how gains and losses net out.';
-    else if(ltGain>0 && stGain>0) v='Mixed holding periods: '+money(ltGain)+' is long-term (lower rate) and '+money(stGain)+' is short-term (your ordinary rate). Selling the longer-held lots first can move more of the gain into the lower bracket.';
-    else if(ltGain>0) v='All long-term - this gain qualifies for the lower long-term capital-gains rate. Holding past one year did its job.';
-    else v='All short-term - taxed at your ordinary income rate. Holding lots past one year would move them to the lower long-term rate.';
+    if(gain<0) v=__esT_cryptocostbasiscalculatorindex("thisSaleIsA",'This sale is a capital loss of ')+money(-gain)+'. Losses can offset other capital gains and may carry forward - a reason to log every trade. See the tax calculator for how gains and losses net out.';
+    else if(ltGain>0 && stGain>0) v='Mixed holding periods: '+money(ltGain)+__esT_cryptocostbasiscalculatorindex("isLongTermLower",' is long-term (lower rate) and ')+money(stGain)+__esT_cryptocostbasiscalculatorindex("isShortTermYour",' is short-term (your ordinary rate). Selling the longer-held lots first can move more of the gain into the lower bracket.');
+    else if(ltGain>0) v=__esT_cryptocostbasiscalculatorindex("allLongTermThis",'All long-term - this gain qualifies for the lower long-term capital-gains rate. Holding past one year did its job.');
+    else v=__esT_cryptocostbasiscalculatorindex("allShortTermTaxed",'All short-term - taxed at your ordinary income rate. Holding lots past one year would move them to the lower long-term rate.');
     $('verdict').textContent=v;
     $('out').hidden=false; $('status').textContent='';
   }
@@ -241,6 +247,6 @@
   renderBuys(); calc();
 })();
 </script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

@@ -1,0 +1,14 @@
+{
+ "file": "leaderboards/index.html",
+ "helper": "__esT_leaderboardsindex",
+ "dict": "__esD_leaderboardsindex",
+ "items": [
+  {
+   "key": "onFire",
+   "raw": "'On fire'",
+   "en": "On fire",
+   "n": 1,
+   "es": "En racha"
+  }
+ ]
+}

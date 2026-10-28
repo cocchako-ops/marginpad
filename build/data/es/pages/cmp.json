@@ -1,0 +1,84 @@
+{
+ "file": "bybit-vs-okx/index.html",
+ "helper": "__esT_bybitvsokxindex",
+ "dict": "__esD_bybitvsokxindex",
+ "items": [
+  {
+   "key": "baseTakerFeesAre",
+   "raw": "\"Base taker fees are identical on these two.\"",
+   "en": "Base taker fees are identical on these two.",
+   "n": 1,
+   "es": "Las comisiones taker base son idénticas en estos dos."
+  },
+  {
+   "key": "youSave",
+   "raw": "\"You save\"",
+   "en": "You save",
+   "n": 1,
+   "es": "Ahorras"
+  },
+  {
+   "key": "perMonth",
+   "raw": "\"(per month)\"",
+   "en": "(per month)",
+   "n": 1,
+   "es": "(al mes)"
+  },
+  {
+   "key": "ourCollectorDidNot",
+   "raw": "'<p class=\"vstat-wait\">Our collector did not record liquidations on either venue in the last 24 hours.</p>'",
+   "en": "<p class=\"vstat-wait\">Our collector did not record liquidations on either venue in the last 24 hours.</p>",
+   "n": 1,
+   "es": "<p class=\"vstat-wait\">Nuestro recolector no registró liquidaciones en ninguno de los dos exchanges en las últimas 24 horas.</p>"
+  },
+  {
+   "key": "noLiquidationsRecordedIn",
+   "raw": "'</b><span class=\"vs-none\">no liquidations recorded in 24h</span></div>'",
+   "en": "</b><span class=\"vs-none\">no liquidations recorded in 24h</span></div>",
+   "n": 1,
+   "es": "</b><span class=\"vs-none\">sin liquidaciones registradas en 24h</span></div>"
+  },
+  {
+   "key": "ofAllEightVenues",
+   "raw": "'% of all eight venues</span>'",
+   "en": "% of all eight venues</span>",
+   "n": 1,
+   "es": "% de los ocho exchanges</span>"
+  },
+  {
+   "key": "xMoreThan",
+   "raw": "'x more than '",
+   "en": "x more than ",
+   "n": 1,
+   "es": "x más que "
+  },
+  {
+   "key": "roughlyTheSameAs",
+   "raw": "'roughly the same as '",
+   "en": "roughly the same as ",
+   "n": 1,
+   "es": "aproximadamente lo mismo que "
+  },
+  {
+   "key": "overTheLast24",
+   "raw": "' over the last 24 hours.</p>'",
+   "en": " over the last 24 hours.</p>",
+   "n": 1,
+   "es": " en las últimas 24 horas.</p>"
+  },
+  {
+   "key": "liveVenueFiguresAre",
+   "raw": "'<p class=\"vstat-wait\">Live venue figures are unavailable right now.</p>'",
+   "en": "<p class=\"vstat-wait\">Live venue figures are unavailable right now.</p>",
+   "n": 1,
+   "es": "<p class=\"vstat-wait\">Las cifras en vivo de los exchanges no están disponibles ahora mismo.</p>"
+  },
+  {
+   "key": "measuredByTheMarginpad",
+   "raw": "",
+   "n": 1,
+   "en": "<p class=\"vs-src\">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; ",
+   "es": "<p class=\"vs-src\">Medido por el recolector de MarginPad en ocho websockets de exchanges &middot; ventana de 24h &middot; "
+  }
+ ]
+}

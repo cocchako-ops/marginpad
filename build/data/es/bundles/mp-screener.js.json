@@ -1,0 +1,154 @@
+{
+ "file": "mp-screener.js",
+ "helper": "__esT_mpscreener",
+ "dict": "__esD_mpscreener",
+ "items": [
+  {
+   "key": "loadingOnChainPools",
+   "raw": "'<div class=\"scr-loading\">Loading on-chain pools…</div>'",
+   "en": "<div class=\"scr-loading\">Loading on-chain pools…</div>",
+   "n": 1,
+   "es": "<div class=\"scr-loading\">Cargando pools on-chain…</div>"
+  },
+  {
+   "key": "noPoolsRightNow",
+   "raw": "'<div class=\"scr-loading\">No pools right now - try the other tab.</div>'",
+   "en": "<div class=\"scr-loading\">No pools right now - try the other tab.</div>",
+   "n": 1,
+   "es": "<div class=\"scr-loading\">No hay pools ahora - prueba la otra pestaña.</div>"
+  },
+  {
+   "key": "technicalAnalysisNotAvaila",
+   "raw": "'<div class=\"scr-an-note\">Technical analysis not available for this pair yet.</div>'",
+   "en": "<div class=\"scr-an-note\">Technical analysis not available for this pair yet.</div>",
+   "n": 1,
+   "es": "<div class=\"scr-an-note\">El análisis técnico aún no está disponible para este par.</div>"
+  },
+  {
+   "key": "openInt",
+   "raw": "'</b></div><div><span>Open Int.</span><b>'",
+   "en": "</b></div><div><span>Open Int.</span><b>",
+   "n": 1,
+   "es": "</b></div><div><span>Int. abierto</span><b>"
+  },
+  {
+   "key": "noHighConvictionSetup",
+   "raw": "'<div class=\"scr-an-note\">No high-conviction setup - neutral zone, wait for confirmation.</div>'",
+   "en": "<div class=\"scr-an-note\">No high-conviction setup - neutral zone, wait for confirmation.</div>",
+   "n": 1,
+   "es": "<div class=\"scr-an-note\">Sin setup de alta convicción - zona neutral, espera confirmación.</div>"
+  },
+  {
+   "key": "mostVolatile",
+   "raw": "'Most volatile'",
+   "en": "Most volatile",
+   "n": 1,
+   "es": "Más volátil"
+  },
+  {
+   "key": "noPairsMatchClear",
+   "raw": "'No pairs match - clear the search/filter.'",
+   "en": "No pairs match - clear the search/filter.",
+   "n": 1,
+   "es": "Ningún par coincide - borra la búsqueda o el filtro."
+  },
+  {
+   "key": "noDataRetryShortly",
+   "raw": "'No data - retry shortly.'",
+   "en": "No data - retry shortly.",
+   "n": 1,
+   "es": "Sin datos - vuelve a intentarlo en breve."
+  },
+  {
+   "key": "marketsUnavailableRetrySho",
+   "raw": "'<div class=\"scr-loading\">Markets unavailable - retry shortly.</div>'",
+   "en": "<div class=\"scr-loading\">Markets unavailable - retry shortly.</div>",
+   "n": 1,
+   "es": "<div class=\"scr-loading\">Mercados no disponibles - vuelve a intentarlo en breve.</div>"
+  },
+  {
+   "key": "yourCountry",
+   "raw": "'your country'",
+   "en": "your country",
+   "n": 1,
+   "es": "tu país"
+  },
+  {
+   "key": "tradeRarr",
+   "raw": "'Trade &rarr;'",
+   "en": "Trade &rarr;",
+   "n": 1,
+   "es": "Operar &rarr;"
+  },
+  {
+   "key": "openInterest",
+   "raw": "'<div><span>Open interest</span><b>'",
+   "en": "<div><span>Open interest</span><b>",
+   "n": 1,
+   "es": "<div><span>Interés abierto</span><b>"
+  },
+  {
+   "key": "openInPaperTrade",
+   "raw": "'Open in Paper Trade (demo)'",
+   "en": "Open in Paper Trade (demo)",
+   "n": 1,
+   "es": "Abrir en Paper Trade (demo)"
+  },
+  {
+   "key": "notOnBybitView",
+   "raw": "'Not on Bybit · view only'",
+   "en": "Not on Bybit · view only",
+   "n": 1,
+   "es": "No está en Bybit · solo lectura"
+  },
+  {
+   "key": "openOnTheChart",
+   "raw": "'Open on the chart'",
+   "en": "Open on the chart",
+   "n": 1,
+   "es": "Abrir en el gráfico"
+  },
+  {
+   "key": "setAPriceAlert",
+   "raw": "'Set a price alert'",
+   "en": "Set a price alert",
+   "n": 1,
+   "es": "Configurar una alerta de precio"
+  },
+  {
+   "key": "liquidatedIn24hWatch",
+   "raw": "' liquidated in 24h - watch live →</a>'",
+   "en": " liquidated in 24h - watch live →</a>",
+   "n": 1,
+   "es": " liquidado en 24h - ver en vivo →</a>"
+  },
+  {
+   "key": "loadingLiveDerivativesData",
+   "raw": "'<div class=\"scr-live-load\">Loading live derivatives data…</div>'",
+   "en": "<div class=\"scr-live-load\">Loading live derivatives data…</div>",
+   "n": 1,
+   "es": "<div class=\"scr-live-load\">Cargando datos de derivados en vivo…</div>"
+  },
+  {
+   "key": "openDrawOnChart",
+   "raw": "\"Open & draw on chart\"",
+   "en": "Open & draw on chart",
+   "n": 1,
+   "es": "Abrir y dibujar en el gráfico"
+  },
+  {
+   "key": "justNow",
+   "raw": "\"just now\"",
+   "en": "just now",
+   "n": 1,
+   "es": "justo ahora"
+  },
+  {
+   "key": "the3StrongestSetups",
+   "raw": "\"The 3 strongest setups across the majors, ranked by AI - tap to open and draw.\"",
+   "en": "The 3 strongest setups across the majors, ranked by AI - tap to open and draw.",
+   "n": 1,
+   "es": "Los 3 setups más fuertes entre las principales, clasificados por la IA - toca para abrir y dibujar."
+  }
+ ]
+}

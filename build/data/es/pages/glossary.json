@@ -1,0 +1,105 @@
+{
+ "file": "glossary/index.html",
+ "helper": "__esT_glossaryindex",
+ "dict": "__esD_glossaryindex",
+ "items": [
+  {
+   "key": "enterAnEntryPrice",
+   "raw": "'Enter an entry price and leverage.'",
+   "en": "Enter an entry price and leverage.",
+   "n": 1,
+   "es": "Introduce un precio de entrada y un apalancamiento."
+  },
+  {
+   "key": "enterAMoveAnd",
+   "raw": "'Enter a move and a leverage.'",
+   "en": "Enter a move and a leverage.",
+   "n": 1,
+   "es": "Introduce un movimiento y un apalancamiento."
+  },
+  {
+   "key": "middotAMoveThe",
+   "raw": "' &middot; a move the other way of '",
+   "en": " &middot; a move the other way of ",
+   "n": 1,
+   "es": " &middot; un movimiento en contra de "
+  },
+  {
+   "key": "wipesItOut",
+   "raw": "' wipes it out'",
+   "en": " wipes it out",
+   "n": 1,
+   "es": " lo liquida por completo"
+  },
+  {
+   "key": "enterBalanceRiskEntry",
+   "raw": "'Enter balance, risk, entry and stop.'",
+   "en": "Enter balance, risk, entry and stop.",
+   "n": 1,
+   "es": "Introduce saldo, riesgo, entrada y stop."
+  },
+  {
+   "key": "theStopHasTo",
+   "raw": "'The stop has to be away from the entry.'",
+   "en": "The stop has to be away from the entry.",
+   "n": 1,
+   "es": "El stop tiene que estar separado de la entrada."
+  },
+  {
+   "key": "ofNotionalRisks",
+   "raw": "'</b><span>of notional risks '",
+   "en": "</b><span>of notional risks ",
+   "n": 1,
+   "es": "</b><span>de nocional arriesga "
+  },
+  {
+   "key": "xYourBalance",
+   "raw": "'x your balance</span>'",
+   "en": "x your balance</span>",
+   "n": 1,
+   "es": "x tu saldo</span>"
+  },
+  {
+   "key": "enterARewardTo",
+   "raw": "'Enter a reward-to-risk ratio.'",
+   "en": "Enter a reward-to-risk ratio.",
+   "n": 1,
+   "es": "Introduce una relación beneficio-riesgo."
+  },
+  {
+   "key": "ofTradesMustWin",
+   "raw": "'%</b><span>of trades must win just to break even, before fees</span>'",
+   "en": "%</b><span>of trades must win just to break even, before fees</span>",
+   "n": 1,
+   "es": "%</b><span>de las operaciones tienen que ganar solo para no perder nada, antes de comisiones</span>"
+  },
+  {
+   "key": "enterNotionalRateAnd",
+   "raw": "'Enter notional, rate and days.'",
+   "en": "Enter notional, rate and days.",
+   "n": 1,
+   "es": "Introduce nocional, tasa y días."
+  },
+  {
+   "key": "paidByLongs",
+   "raw": "'paid by longs'",
+   "en": "paid by longs",
+   "n": 1,
+   "es": "lo pagan los longs"
+  },
+  {
+   "key": "paidByShorts",
+   "raw": "'paid by shorts'",
+   "en": "paid by shorts",
+   "n": 1,
+   "es": "lo pagan los shorts"
+  },
+  {
+   "key": "middot3PaymentsA",
+   "raw": "' &middot; 3 payments a day</span>'",
+   "en": " &middot; 3 payments a day</span>",
+   "n": 1,
+   "es": " &middot; 3 pagos al día</span>"
+  }
+ ]
+}

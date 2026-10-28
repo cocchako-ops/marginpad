@@ -1,0 +1,63 @@
+{
+ "file": "crypto-backtester/index.html",
+ "helper": "__esT_cryptobacktesterindex",
+ "dict": "__esD_cryptobacktesterindex",
+ "items": [
+  {
+   "key": "notEnoughDataFor",
+   "raw": "\"Not enough data for \"",
+   "en": "Not enough data for ",
+   "n": 1,
+   "es": "No hay datos suficientes para "
+  },
+  {
+   "key": "tryAnotherCoinOr",
+   "raw": "\" - try another coin or timeframe.\"",
+   "en": " - try another coin or timeframe.",
+   "n": 1,
+   "es": " - prueba con otra moneda o temporalidad."
+  },
+  {
+   "key": "couldNotLoadData",
+   "raw": "\"Could not load data - try again.\"",
+   "en": "Could not load data - try again.",
+   "n": 1,
+   "es": "No se pudieron cargar los datos - inténtalo de nuevo."
+  },
+  {
+   "key": "winRate",
+   "raw": "\"Win rate\"",
+   "en": "Win rate",
+   "n": 1,
+   "es": "Tasa de acierto"
+  },
+  {
+   "key": "profitFactor",
+   "raw": "\"Profit factor\"",
+   "en": "Profit factor",
+   "n": 1,
+   "es": "Factor de beneficio"
+  },
+  {
+   "key": "avgWin",
+   "raw": "\"Avg win\"",
+   "en": "Avg win",
+   "n": 1,
+   "es": "Ganancia media"
+  },
+  {
+   "key": "avgLoss",
+   "raw": "\"Avg loss\"",
+   "en": "Avg loss",
+   "n": 1,
+   "es": "Pérdida media"
+  },
+  {
+   "key": "openMarked",
+   "raw": "\"open · marked\"",
+   "en": "open · marked",
+   "n": 1,
+   "es": "abierta · marcada"
+  }
+ ]
+}

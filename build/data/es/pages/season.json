@@ -1,0 +1,910 @@
+{
+ "file": "season/index.html",
+ "helper": "__esT_seasonindex",
+ "dict": "__esD_seasonindex",
+ "items": [
+  {
+   "key": "warmingUp",
+   "raw": "\"Warming up\"",
+   "en": "Warming up",
+   "n": 1,
+   "es": "Calentando"
+  },
+  {
+   "key": "heatingUp",
+   "raw": "\"Heating up\"",
+   "en": "Heating up",
+   "n": 1,
+   "es": "Subiendo de temperatura"
+  },
+  {
+   "key": "onFire",
+   "raw": "\"On fire\"",
+   "en": "On fire",
+   "n": 1,
+   "es": "En llamas"
+  },
+  {
+   "key": "close20Trades",
+   "raw": "\"Close 20 trades\"",
+   "en": "Close 20 trades",
+   "n": 1,
+   "es": "Cierra 20 operaciones"
+  },
+  {
+   "key": "5GreenDays",
+   "raw": "\"5 green days\"",
+   "en": "5 green days",
+   "n": 1,
+   "es": "5 días en verde"
+  },
+  {
+   "key": "make7DailyCalls",
+   "raw": "\"Make 7 daily calls\"",
+   "en": "Make 7 daily calls",
+   "n": 1,
+   "es": "Haz 7 pronósticos diarios"
+  },
+  {
+   "key": "checkIn10Days",
+   "raw": "\"Check in 10 days\"",
+   "en": "Check in 10 days",
+   "n": 1,
+   "es": "Entra 10 días"
+  },
+  {
+   "key": "greenDays",
+   "raw": "\"Green Days\"",
+   "en": "Green Days",
+   "n": 1,
+   "es": "Días en Verde"
+  },
+  {
+   "key": "greenDays2",
+   "raw": "\"Green days\"",
+   "en": "Green days",
+   "n": 1,
+   "es": "Días en verde"
+  },
+  {
+   "key": "bestWinRate",
+   "raw": "\"Best Win Rate\"",
+   "en": "Best Win Rate",
+   "n": 1,
+   "es": "Mejor Tasa de Acierto"
+  },
+  {
+   "key": "winRate",
+   "raw": "\"Win rate\"",
+   "en": "Win rate",
+   "n": 1,
+   "es": "Tasa de acierto"
+  },
+  {
+   "key": "seasonXp",
+   "raw": "\"Season XP\"",
+   "en": "Season XP",
+   "n": 1,
+   "es": "XP de Temporada"
+  },
+  {
+   "key": "theGoldRoom",
+   "raw": "\"The Gold Room\"",
+   "en": "The Gold Room",
+   "n": 2,
+   "es": ""
+  },
+  {
+   "key": "greenDays3",
+   "raw": "\"green days\"",
+   "en": "green days",
+   "n": 1,
+   "es": "días en verde"
+  },
+  {
+   "key": "openYourFirstPaper",
+   "raw": "\"Open your first paper trade\"",
+   "en": "Open your first paper trade",
+   "n": 1,
+   "es": "Abre tu primera operación en Paper Trade"
+  },
+  {
+   "key": "nothingAtRiskIn",
+   "raw": "\"Nothing at risk. In here the market cannot hurt you\"",
+   "en": "Nothing at risk. In here the market cannot hurt you",
+   "n": 1,
+   "es": "Nada en juego. Aquí el mercado no puede hacerte daño"
+  },
+  {
+   "key": "setAStopLoss",
+   "raw": "\"Set a stop-loss or take-profit\"",
+   "en": "Set a stop-loss or take-profit",
+   "n": 1,
+   "es": "Pon un stop-loss o un take-profit"
+  },
+  {
+   "key": "ponUnStopLoss",
+   "raw": "\"Pon un stop-loss o un take-profit\"",
+   "en": "Pon un stop-loss o un take-profit",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "pickYourExitBefore",
+   "raw": "\"Pick your exit before the market picks one for you\"",
+   "en": "Pick your exit before the market picks one for you",
+   "n": 1,
+   "es": "Elige tu salida antes de que el mercado elija una por ti"
+  },
+  {
+   "key": "closeATradeIn",
+   "raw": "\"Close a trade in the green\"",
+   "en": "Close a trade in the green",
+   "n": 1,
+   "es": "Cierra una operación en verde"
+  },
+  {
+   "key": "bankedBeatsBrilliantTake",
+   "raw": "\"Banked beats brilliant. Take one profit\"",
+   "en": "Banked beats brilliant. Take one profit",
+   "n": 1,
+   "es": "Más vale cobrado que brillante. Toma una ganancia"
+  },
+  {
+   "key": "finishYourFirstAcademy",
+   "raw": "\"Finish your first Academy lesson\"",
+   "en": "Finish your first Academy lesson",
+   "n": 1,
+   "es": "Termina tu primera lección de la Academy"
+  },
+  {
+   "key": "theFastestXpOn",
+   "raw": "\"The fastest XP on the site, and it costs nothing\"",
+   "en": "The fastest XP on the site, and it costs nothing",
+   "n": 1,
+   "es": "El XP más rápido del sitio, y no cuesta nada"
+  },
+  {
+   "key": "fourInOneSitting",
+   "raw": "\"Four in one sitting is a proper study session\"",
+   "en": "Four in one sitting is a proper study session",
+   "n": 1,
+   "es": "Cuatro de una sentada ya es una buena sesión de estudio"
+  },
+  {
+   "key": "openTheChartsWorkspace",
+   "raw": "\"Open the charts workspace\"",
+   "en": "Open the charts workspace",
+   "n": 1,
+   "es": "Abre el espacio de gráficos"
+  },
+  {
+   "key": "eightWindowsIndicatorsDraw",
+   "raw": "\"Eight windows, indicators, drawings and the AI\"",
+   "en": "Eight windows, indicators, drawings and the AI",
+   "n": 1,
+   "es": "Ocho ventanas, indicadores, dibujos y la IA"
+  },
+  {
+   "key": "readTheLiquidationMap",
+   "raw": "\"Read the liquidation map\"",
+   "en": "Read the liquidation map",
+   "n": 1,
+   "es": "Lee el mapa de liquidaciones"
+  },
+  {
+   "key": "seeWhereTheStop",
+   "raw": "\"See where the stop-hunts are loaded before you trade\"",
+   "en": "See where the stop-hunts are loaded before you trade",
+   "n": 1,
+   "es": "Mira dónde están cargadas las cacerías de stops antes de operar"
+  },
+  {
+   "key": "sayHelloInThe",
+   "raw": "\"Say hello in the trader chat\"",
+   "en": "Say hello in the trader chat",
+   "n": 1,
+   "es": "Saluda en el chat de traders"
+  },
+  {
+   "key": "saludaEnElChat",
+   "raw": "\"Saluda en el chat de traders\"",
+   "en": "Saluda en el chat de traders",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "theFloorIsBetter",
+   "raw": "\"The floor is better when you talk. Lurking earns nothing\"",
+   "en": "The floor is better when you talk. Lurking earns nothing",
+   "n": 1,
+   "es": "El piso es mejor cuando hablas. Mirar en silencio no da nada"
+  },
+  {
+   "key": "elPisoEsMejor",
+   "raw": "\"El piso es mejor cuando hablas. Mirar en silencio no da nada\"",
+   "en": "El piso es mejor cuando hablas. Mirar en silencio no da nada",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "comeBackTomorrow",
+   "raw": "\"Come back tomorrow\"",
+   "en": "Come back tomorrow",
+   "n": 1,
+   "es": "Vuelve mañana"
+  },
+  {
+   "key": "theOneThatMatters",
+   "raw": "\"The one that matters most. Two days is where a habit starts\"",
+   "en": "The one that matters most. Two days is where a habit starts",
+   "n": 1,
+   "es": "El que más importa. Dos días es donde empieza un hábito"
+  },
+  {
+   "key": "streakShield",
+   "raw": "'Streak Shield'",
+   "en": "Streak Shield",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "warmingUp2",
+   "raw": "'Warming up'",
+   "en": "Warming up",
+   "n": 1,
+   "es": "Calentando"
+  },
+  {
+   "key": "umaContaPorPessoa",
+   "raw": "\"Uma conta por pessoa. Os prêmios caem no seu saldo de recompensas e podem ser sacados. As tabelas de simulado são pontuadas no servidor, a partir de operações que você realmente fechou.\"",
+   "en": "Uma conta por pessoa. Os prêmios caem no seu saldo de recompensas e podem ser sacados. As tabelas de simulado são pontuadas no servidor, a partir de operações que você realmente fechou.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "tuEsDansLa",
+   "raw": "\"Tu es dans la course. Le faucet, les missions et les retraits te sont ouverts, et tout ce que tu gagnes sur les quatre tableaux est à toi. The Gold Room s'ouvre au niveau Gold, soit 12,000 XP.\"",
+   "en": "Tu es dans la course. Le faucet, les missions et les retraits te sont ouverts, et tout ce que tu gagnes sur les quatre tableaux est à toi. The Gold Room s'ouvre au niveau Gold, soit 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "connecteToiGratuitementAve",
+   "raw": "\"Connecte-toi, gratuitement, avec un code par email, et cette carte montrera où tu en es.\"",
+   "en": "Connecte-toi, gratuitement, avec un code par email, et cette carte montrera où tu en es.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "tuEsGoldTous",
+   "raw": "\"Tu es Gold. Tous les tableaux te sont ouverts, The Gold Room comprise.\"",
+   "en": "Tu es Gold. Tous les tableaux te sont ouverts, The Gold Room comprise.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dasGeldIstVon",
+   "raw": "\"Das Geld ist von Tag eins an offen\"",
+   "en": "Das Geld ist von Tag eins an offen",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "derFaucetDieT",
+   "raw": "\"Der faucet, die täglichen Missionen, Auszahlungen und Empfehlungen stehen jedem Konto offen, sobald es sich anmeldet. Kein Level, keine Einzahlung, nichts freizuschalten. Level zählen trotzdem: ein höheres Level zahlt größere faucet-Beträge aus und trägt sein eigenes Abzeichen.\"",
+   "en": "Der faucet, die täglichen Missionen, Auszahlungen und Empfehlungen stehen jedem Konto offen, sobald es sich anmeldet. Kein Level, keine Einzahlung, nichts freizuschalten. Level zählen trotzdem: ein höheres Level zahlt größere faucet-Beträge aus und trägt sein eigenes Abzeichen.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dieAcademyIstDer",
+   "raw": "\"Die Academy ist der schnellste Weg, ein Level höher zu kommen\"",
+   "en": "Die Academy ist der schnellste Weg, ein Level höher zu kommen",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "jedeLektionBringt25",
+   "raw": "\"Jede Lektion bringt +25 XP, und ein Kurs abzuschließen bringt weitere +50. Zwanzig Lektionen sind Bronze, dein erstes Level-Abzeichen, das ist etwa ein Abend. Traden bringt auch XP, aber viel langsamer.\"",
+   "en": "Jede Lektion bringt +25 XP, und ein Kurs abzuschließen bringt weitere +50. Zwanzig Lektionen sind Bronze, dein erstes Level-Abzeichen, das ist etwa ein Abend. Traden bringt auch XP, aber viel langsamer.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "einKontoProPerson",
+   "raw": "\"Ein Konto pro Person. Preise landen auf deinem Rewards-Guthaben und können ausgezahlt werden. Die Paper-Ranglisten werden serverseitig aus Trades gewertet, die du tatsächlich geschlossen hast.\"",
+   "en": "Ein Konto pro Person. Preise landen auf deinem Rewards-Guthaben und können ausgezahlt werden. Die Paper-Ranglisten werden serverseitig aus Trades gewertet, die du tatsächlich geschlossen hast.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "duBistDabeiFaucet",
+   "raw": "\"Du bist dabei. Faucet, Missionen und Auszahlungen stehen dir offen, und was du auf den vier Ranglisten gewinnst, gehört dir. The Gold Room öffnet ab Gold, also 12,000 XP.\"",
+   "en": "Du bist dabei. Faucet, Missionen und Auszahlungen stehen dir offen, und was du auf den vier Ranglisten gewinnst, gehört dir. The Gold Room öffnet ab Gold, also 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "meldeDichKostenlosMit",
+   "raw": "\"Melde dich kostenlos mit einem E-Mail-Code an, dann zeigt dir diese Karte, wie weit du bist.\"",
+   "en": "Melde dich kostenlos mit einem E-Mail-Code an, dann zeigt dir diese Karte, wie weit du bist.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "duBistGoldAlle",
+   "raw": "\"Du bist Gold. Alle Ranglisten stehen dir offen, The Gold Room eingeschlossen.\"",
+   "en": "Du bist Gold. Alle Ranglisten stehen dir offen, The Gold Room eingeschlossen.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "eridesinFaucetGRevler",
+   "raw": "\"İçeridesin. faucet, görevler ve çekimler sana açık, ve dört tabloda kazandığın her şey senindir. The Gold Room, 12,000 XP olan Gold seviyesinde açılıyor.\"",
+   "en": "İçeridesin. faucet, görevler ve çekimler sana açık, ve dört tabloda kazandığın her şey senindir. The Gold Room, 12,000 XP olan Gold seviyesinde açılıyor.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetClaimFaucet",
+   "raw": "\"faucet, ежедневные задания, вывод средств и рефералы открыты для любого аккаунта в момент входа. Без уровня, без депозита, без разблокировки. Уровни всё равно важны: более высокий уровень платит больше при каждом claim с faucet и носит свой собственный значок.\"",
+   "en": "faucet, ежедневные задания, вывод средств и рефералы открыты для любого аккаунта в момент входа. Без уровня, без депозита, без разблокировки. Уровни всё равно важны: более высокий уровень платит больше при каждом claim с faucet и носит свой собственный значок.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "usdtTheGoldRoom",
+   "raw": "\"Четыре бумажные таблицы платят реальные USDT каждые четырнадцать дней, без депозита и без аккаунта на бирже, и твоя первая закрытая сделка сразу ставит тебя в них. То, что ты выигрываешь, твоё — и можно вывести на любом уровне. The Gold Room — для участников Gold с 12,000 XP, а ещё две таблицы считаются по реальным аккаунтам, открытым через MarginPad: Bybit volume и King of the Moon.\"",
+   "en": "Четыре бумажные таблицы платят реальные USDT каждые четырнадцать дней, без депозита и без аккаунта на бирже, и твоя первая закрытая сделка сразу ставит тебя в них. То, что ты выигрываешь, твоё — и можно вывести на любом уровне. The Gold Room — для участников Gold с 12,000 XP, а ещё две таблицы считаются по реальным аккаунтам, открытым через MarginPad: Bybit volume и King of the Moon.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "leftXpNAcademy",
+   "raw": "\"Осталось {left} XP — это примерно {n} уроков Academy.\"",
+   "en": "Осталось {left} XP — это примерно {n} уроков Academy.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom",
+   "raw": "\"Ты в игре. faucet, миссии и вывод средств открыты для тебя, и всё, что ты выигрываешь на четырёх таблицах, твоё. The Gold Room открывается на уровне Gold, а это 12,000 XP.\"",
+   "en": "Ты в игре. faucet, миссии и вывод средств открыты для тебя, и всё, что ты выигрываешь на четырёх таблицах, твоё. The Gold Room открывается на уровне Gold, а это 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom",
+   "raw": "\"У тебя уровень Gold. Все таблицы открыты для тебя, включая The Gold Room.\"",
+   "en": "У тебя уровень Gold. Все таблицы открыты для тебя, включая The Gold Room.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "usdtExchangeTheGold",
+   "raw": "\"أربعة جداول تجريبية تدفع USDT حقيقي كل أربعة عشر يومًا، بدون إيداع وبدون حساب في أي exchange، وأول صفقة تغلقها تضعك عليها مباشرة. ما تربحه هو لك، يمكنك سحبه عند أي مستوى. The Gold Room مخصص لأعضاء Gold عند 12,000 XP، وهناك جدولان آخران يُحتسبان بحسابات حقيقية مفتوحة عبر MarginPad: Bybit volume و King of the Moon.\"",
+   "en": "أربعة جداول تجريبية تدفع USDT حقيقي كل أربعة عشر يومًا، بدون إيداع وبدون حساب في أي exchange، وأول صفقة تغلقها تضعك عليها مباشرة. ما تربحه هو لك، يمكنك سحبه عند أي مستوى. The Gold Room مخصص لأعضاء Gold عند 12,000 XP، وهناك جدولان آخران يُحتسبان بحسابات حقيقية مفتوحة عبر MarginPad: Bybit volume و King of the Moon.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeBybitUid",
+   "raw": "\"Bybit volume يُصنّفك حسب حجم العقود الآجلة الحقيقي الذي تتداوله على Bybit: تسجّل UID ذلك الحساب في هذه الصفحة، مرة واحدة فقط. King of the Moon يُصنّفك حسب ما تراهن به فعليًا على Moon: يجب أن تتم الموافقة على مكافأة التسجيل الخاصة بك في Moon، وهكذا نعرف أي حساب هو حسابك. كلاهما يقرأ الأرقام من تقرير الإحالة الخاص بالـ exchange نفسه عدة مرات في اليوم.\"",
+   "en": "Bybit volume يُصنّفك حسب حجم العقود الآجلة الحقيقي الذي تتداوله على Bybit: تسجّل UID ذلك الحساب في هذه الصفحة، مرة واحدة فقط. King of the Moon يُصنّفك حسب ما تراهن به فعليًا على Moon: يجب أن تتم الموافقة على مكافأة التسجيل الخاصة بك في Moon، وهكذا نعرف أي حساب هو حسابك. كلاهما يقرأ الأرقام من تقرير الإحالة الخاص بالـ exchange نفسه عدة مرات في اليوم.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "leftXpNAcademy2",
+   "raw": "\"تبقّى {left} XP، أي ما يعادل تقريبًا {n} درسًا في Academy.\"",
+   "en": "تبقّى {left} XP، أي ما يعادل تقريبًا {n} درسًا في Academy.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom2",
+   "raw": "\"أنت داخل. الـ faucet والمهام والسحوبات مفتوحة لك، وكل ما تربحه في الجداول الأربعة هو لك. The Gold Room يفتح عند Gold، أي 12,000 XP.\"",
+   "en": "أنت داخل. الـ faucet والمهام والسحوبات مفتوحة لك، وكل ما تربحه في الجداول الأربعة هو لك. The Gold Room يفتح عند Gold، أي 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom2",
+   "raw": "\"أنت الآن Gold. كل الجداول مفتوحة لك، بما فيها The Gold Room.\"",
+   "en": "أنت الآن Gold. كل الجداول مفتوحة لك، بما فيها The Gold Room.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetMisiHarianPenarikan",
+   "raw": "\"faucet, misi harian, penarikan dana, dan referral terbuka untuk setiap akun begitu akun itu masuk. Tanpa level, tanpa deposit, tidak ada yang perlu dibuka. Level tetap penting: level yang lebih tinggi membayar klaim faucet lebih besar dan memakai lencananya sendiri.\"",
+   "en": "faucet, misi harian, penarikan dana, dan referral terbuka untuk setiap akun begitu akun itu masuk. Tanpa level, tanpa deposit, tidak ada yang perlu dibuka. Level tetap penting: level yang lebih tinggi membayar klaim faucet lebih besar dan memakai lencananya sendiri.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "academyAdalahCaraTercepat",
+   "raw": "\"Academy adalah cara tercepat untuk naik level\"",
+   "en": "Academy adalah cara tercepat untuk naik level",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "setiapPelajaranMemberi25",
+   "raw": "\"Setiap pelajaran memberi +25 XP dan menyelesaikan satu kursus memberi +50 XP lagi. Dua puluh pelajaran sudah cukup untuk Bronze, lencana level pertamamu, yang kira-kira semalam saja. Trading juga menghasilkan XP, tapi jauh lebih lambat.\"",
+   "en": "Setiap pelajaran memberi +25 XP dan menyelesaikan satu kursus memberi +50 XP lagi. Dua puluh pelajaran sudah cukup untuk Bronze, lencana level pertamamu, yang kira-kira semalam saja. Trading juga menghasilkan XP, tapi jauh lebih lambat.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "empatPapanPaperMembayar",
+   "raw": "\"Empat papan paper membayar USDT asli setiap empat belas hari, tanpa deposit dan tanpa akun exchange, dan trading pertamamu yang ditutup langsung memasukkanmu ke sana. Apa yang kamu menangkan adalah milikmu, bisa ditarik di level mana pun. The Gold Room untuk anggota Gold dengan 12,000 XP, dan dua papan lagi dinilai dari akun asli yang dibuka melalui MarginPad: Bybit volume dan King of the Moon.\"",
+   "en": "Empat papan paper membayar USDT asli setiap empat belas hari, tanpa deposit dan tanpa akun exchange, dan trading pertamamu yang ditutup langsung memasukkanmu ke sana. Apa yang kamu menangkan adalah milikmu, bisa ditarik di level mana pun. The Gold Room untuk anggota Gold dengan 12,000 XP, dan dua papan lagi dinilai dari akun asli yang dibuka melalui MarginPad: Bybit volume dan King of the Moon.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "satuAkunPerOrang",
+   "raw": "\"Satu akun per orang. Hadiah masuk ke saldo reward kamu dan bisa ditarik. Papan simulasi dinilai di sisi server dari transaksi yang benar-benar kamu tutup.\"",
+   "en": "Satu akun per orang. Hadiah masuk ke saldo reward kamu dan bisa ditarik. Papan simulasi dinilai di sisi server dari transaksi yang benar-benar kamu tutup.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "kamuSudahMasukFaucet",
+   "raw": "\"Kamu sudah masuk. faucet, misi, dan penarikan terbuka untukmu, dan apa pun yang kamu menangkan di empat papan peringkat adalah milikmu. The Gold Room terbuka di Gold, yaitu 12,000 XP.\"",
+   "en": "Kamu sudah masuk. faucet, misi, dan penarikan terbuka untukmu, dan apa pun yang kamu menangkan di empat papan peringkat adalah milikmu. The Gold Room terbuka di Gold, yaitu 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "masukGratisDenganKode",
+   "raw": "\"Masuk gratis dengan kode lewat email, dan kartu ini akan menunjukkan seberapa jauh progresmu.\"",
+   "en": "Masuk gratis dengan kode lewat email, dan kartu ini akan menunjukkan seberapa jauh progresmu.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "kamuGoldSemuaPapan",
+   "raw": "\"Kamu Gold. Semua papan peringkat terbuka untukmu, termasuk The Gold Room.\"",
+   "en": "Kamu Gold. Semua papan peringkat terbuka untukmu, termasuk The Gold Room.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "usdtExchangeTheGold2",
+   "raw": "\"चार पेपर बोर्ड्स हर चौदह दिन में असली USDT देते हैं, न कोई डिपॉज़िट, न कोई exchange अकाउंट, और तुम्हारा पहला बंद किया गया ट्रेड तुम्हें उन पर रख देता है। जो तुम जीतते हो वो तुम्हारा है, किसी भी लेवल पर निकाला जा सकता है। The Gold Room Gold सदस्यों के लिए है, 12,000 XP पर, और दो और बोर्ड्स MarginPad के ज़रिए खोले गए असली अकाउंट्स पर आँके जाते हैं — Bybit volume और King of the Moon।\"",
+   "en": "चार पेपर बोर्ड्स हर चौदह दिन में असली USDT देते हैं, न कोई डिपॉज़िट, न कोई exchange अकाउंट, और तुम्हारा पहला बंद किया गया ट्रेड तुम्हें उन पर रख देता है। जो तुम जीतते हो वो तुम्हारा है, किसी भी लेवल पर निकाला जा सकता है। The Gold Room Gold सदस्यों के लिए है, 12,000 XP पर, और दो और बोर्ड्स MarginPad के ज़रिए खोले गए असली अकाउंट्स पर आँके जाते हैं — Bybit volume और King of the Moon।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeBybitUid2",
+   "raw": "\"Bybit volume तुम्हें Bybit पर किए गए असली फ़्यूचर्स वॉल्यूम के आधार पर रैंक करता है: तुम उस अकाउंट का UID इस पेज पर, एक बार रजिस्टर करते हो। King of the Moon तुम्हें Moon पर सच में लगाई गई रकम के आधार पर रैंक करता है: तुम्हारा Moon साइन-अप बोनस अप्रूव होना ज़रूरी है, इसी से हमें पता चलता है कि कौन-सा अकाउंट तुम्हारा है। दोनों दिन में कई बार exchange की अपनी एफ़िलिएट रिपोर्ट से आँकड़े पढ़ते हैं।\"",
+   "en": "Bybit volume तुम्हें Bybit पर किए गए असली फ़्यूचर्स वॉल्यूम के आधार पर रैंक करता है: तुम उस अकाउंट का UID इस पेज पर, एक बार रजिस्टर करते हो। King of the Moon तुम्हें Moon पर सच में लगाई गई रकम के आधार पर रैंक करता है: तुम्हारा Moon साइन-अप बोनस अप्रूव होना ज़रूरी है, इसी से हमें पता चलता है कि कौन-सा अकाउंट तुम्हारा है। दोनों दिन में कई बार exchange की अपनी एफ़िलिएट रिपोर्ट से आँकड़े पढ़ते हैं।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom3",
+   "raw": "\"तुम अंदर हो। faucet, मिशन और निकासी तुम्हारे लिए खुले हैं, और चार बोर्ड्स में तुम जो भी जीतो वो तुम्हारा है। The Gold Room Gold पर खुलता है, यानी 12,000 XP पर।\"",
+   "en": "तुम अंदर हो। faucet, मिशन और निकासी तुम्हारे लिए खुले हैं, और चार बोर्ड्स में तुम जो भी जीतो वो तुम्हारा है। The Gold Room Gold पर खुलता है, यानी 12,000 XP पर।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom3",
+   "raw": "\"तुम Gold हो। हर बोर्ड तुम्हारे लिए खुला है, The Gold Room भी।\"",
+   "en": "तुम Gold हो। हर बोर्ड तुम्हारे लिए खुला है, The Gold Room भी।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetSignInLevel",
+   "raw": "\"faucet، روزانہ کے مشن، نکاسی اور ریفرلز، ہر اکاؤنٹ کے لیے sign in کرتے ہی کھل جاتے ہیں۔ نہ کوئی level، نہ کوئی deposit، اَن لاک کرنے کو کچھ نہیں۔ levels اب بھی اہم ہیں: زیادہ level بڑا faucet claim دیتا ہے اور اپنا بیج پہنتا ہے۔\"",
+   "en": "faucet، روزانہ کے مشن، نکاسی اور ریفرلز، ہر اکاؤنٹ کے لیے sign in کرتے ہی کھل جاتے ہیں۔ نہ کوئی level، نہ کوئی deposit، اَن لاک کرنے کو کچھ نہیں۔ levels اب بھی اہم ہیں: زیادہ level بڑا faucet claim دیتا ہے اور اپنا بیج پہنتا ہے۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "academyLevel",
+   "raw": "\"Academy level بڑھانے کا سب سے تیز راستہ ہے\"",
+   "en": "Academy level بڑھانے کا سب سے تیز راستہ ہے",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "xpLevelAccount",
+   "raw": "\"تمہارا XP اور level اس صفحے کے اوپر اور تمہارے account مینو میں نظر آتا ہے۔ نیچے والی بار جیسے جیسے تم کماتے ہو، آگے بڑھتی ہے۔\"",
+   "en": "تمہارا XP اور level اس صفحے کے اوپر اور تمہارے account مینو میں نظر آتا ہے۔ نیچے والی بار جیسے جیسے تم کماتے ہو، آگے بڑھتی ہے۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bronzeBoards",
+   "raw": "\"Bronze پر تم boards میں شامل ہو جاتے ہو\"",
+   "en": "Bronze پر تم boards میں شامل ہو جاتے ہو",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "paperBoardsUsdtDeposit",
+   "raw": "\"چار paper boards ہر چودہ دن بعد اصلی USDT دیتے ہیں، نہ کوئی deposit، نہ کوئی exchange اکاؤنٹ، اور تمہارا پہلا بند کیا گیا trade تمہیں ان پر لا دیتا ہے۔ جو تم جیتتے ہو وہ تمہارا ہے، کسی بھی level پر نکالا جا سکتا ہے۔ The Gold Room، Gold ممبرز کے لیے ہے، 12,000 XP پر، اور دو مزید boards MarginPad کے ذریعے کھولے گئے اصلی اکاؤنٹس پر ناپے جاتے ہیں — Bybit volume اور King of the Moon۔\"",
+   "en": "چار paper boards ہر چودہ دن بعد اصلی USDT دیتے ہیں، نہ کوئی deposit، نہ کوئی exchange اکاؤنٹ، اور تمہارا پہلا بند کیا گیا trade تمہیں ان پر لا دیتا ہے۔ جو تم جیتتے ہو وہ تمہارا ہے، کسی بھی level پر نکالا جا سکتا ہے۔ The Gold Room، Gold ممبرز کے لیے ہے، 12,000 XP پر، اور دو مزید boards MarginPad کے ذریعے کھولے گئے اصلی اکاؤنٹس پر ناپے جاتے ہیں — Bybit volume اور King of the Moon۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "boardsExchange",
+   "raw": "\"دو boards ایک اصلی exchange اکاؤنٹ پر ناپے جاتے ہیں\"",
+   "en": "دو boards ایک اصلی exchange اکاؤنٹ پر ناپے جاتے ہیں",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeBybitFutures",
+   "raw": "\"Bybit volume تمہیں Bybit پر کیے گئے اصلی futures volume کی بنیاد پر رینک کرتا ہے: تم اُس اکاؤنٹ کا UID اس صفحے پر، ایک بار رجسٹر کرتے ہو۔ King of the Moon تمہیں Moon پر واقعی لگائی گئی رقم کی بنیاد پر رینک کرتا ہے: تمہارا Moon sign-up bonus اپروو ہونا ضروری ہے، اسی سے ہمیں پتا چلتا ہے کہ کون سا اکاؤنٹ تمہارا ہے۔ دونوں دن میں کئی بار exchange کی اپنی affiliate رپورٹ سے اعداد پڑھتے ہیں۔\"",
+   "en": "Bybit volume تمہیں Bybit پر کیے گئے اصلی futures volume کی بنیاد پر رینک کرتا ہے: تم اُس اکاؤنٹ کا UID اس صفحے پر، ایک بار رجسٹر کرتے ہو۔ King of the Moon تمہیں Moon پر واقعی لگائی گئی رقم کی بنیاد پر رینک کرتا ہے: تمہارا Moon sign-up bonus اپروو ہونا ضروری ہے، اسی سے ہمیں پتا چلتا ہے کہ کون سا اکاؤنٹ تمہارا ہے۔ دونوں دن میں کئی بار exchange کی اپنی affiliate رپورٹ سے اعداد پڑھتے ہیں۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "rewardsPaperBoardsTrades",
+   "raw": "\"ایک شخص، ایک اکاؤنٹ۔ انعامات تمہارے rewards بیلنس میں آتے ہیں اور نکالے جا سکتے ہیں۔ paper boards سرور پر، تمہارے حقیقتاً بند کیے گئے trades سے ناپے جاتے ہیں۔\"",
+   "en": "ایک شخص، ایک اکاؤنٹ۔ انعامات تمہارے rewards بیلنس میں آتے ہیں اور نکالے جا سکتے ہیں۔ paper boards سرور پر، تمہارے حقیقتاً بند کیے گئے trades سے ناپے جاتے ہیں۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetBoardsTheGold",
+   "raw": "\"تم اندر ہو۔ faucet، مشنز اور نکاسی تمہارے لیے کھلے ہیں، اور چار boards میں تم جو بھی جیتو وہ تمہارا ہے۔ The Gold Room گولڈ پر کھلتا ہے، یعنی 12,000 XP پر۔\"",
+   "en": "تم اندر ہو۔ faucet، مشنز اور نکاسی تمہارے لیے کھلے ہیں، اور چار boards میں تم جو بھی جیتو وہ تمہارا ہے۔ The Gold Room گولڈ پر کھلتا ہے، یعنی 12,000 XP پر۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "signInCard",
+   "raw": "\"ای میل کوڈ سے مفت sign in کرو، اور یہ card دکھائے گا کہ تم کتنی دور ہو۔\"",
+   "en": "ای میل کوڈ سے مفت sign in کرو، اور یہ card دکھائے گا کہ تم کتنی دور ہو۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldBoardTheGold",
+   "raw": "\"تم Gold ہو۔ ہر board تمہارے لیے کھلا ہے، The Gold Room بھی۔\"",
+   "en": "تم Gold ہو۔ ہر board تمہارے لیے کھلا ہے، The Gold Room بھی۔",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetFaucetClaim",
+   "raw": "\"faucet, প্রতিদিনের মিশন, উইথড্র আর রেফারেল — সব অ্যাকাউন্টের জন্য খোলা থাকে, সাইন ইন করার সাথে সাথেই। কোনো লেভেল না, কোনো ডিপোজিট না, আনলক করার কিছুই নেই। লেভেল তবুও গুরুত্বপূর্ণ: উঁচু লেভেল বড় faucet claim দেয় আর নিজের ব্যাজ পরে।\"",
+   "en": "faucet, প্রতিদিনের মিশন, উইথড্র আর রেফারেল — সব অ্যাকাউন্টের জন্য খোলা থাকে, সাইন ইন করার সাথে সাথেই। কোনো লেভেল না, কোনো ডিপোজিট না, আনলক করার কিছুই নেই। লেভেল তবুও গুরুত্বপূর্ণ: উঁচু লেভেল বড় faucet claim দেয় আর নিজের ব্যাজ পরে।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "usdtExchangeTheGold3",
+   "raw": "\"চারটে পেপার বোর্ড প্রতি চোদ্দ দিনে আসল USDT দেয়, কোনো ডিপোজিট বা exchange অ্যাকাউন্ট ছাড়াই, আর তোমার প্রথম বন্ধ করা ট্রেড তোমাকে সেখানে বসিয়ে দেয়। তুমি যা জেতো সেটা তোমারই, যেকোনো লেভেলে তুলে নেওয়া যায়। The Gold Room, Gold সদস্যদের জন্য, 12,000 XP-তে, আর আরও দুটো বোর্ড MarginPad-এর মাধ্যমে খোলা আসল অ্যাকাউন্টের ভিত্তিতে গণনা হয় — Bybit volume আর King of the Moon।\"",
+   "en": "চারটে পেপার বোর্ড প্রতি চোদ্দ দিনে আসল USDT দেয়, কোনো ডিপোজিট বা exchange অ্যাকাউন্ট ছাড়াই, আর তোমার প্রথম বন্ধ করা ট্রেড তোমাকে সেখানে বসিয়ে দেয়। তুমি যা জেতো সেটা তোমারই, যেকোনো লেভেলে তুলে নেওয়া যায়। The Gold Room, Gold সদস্যদের জন্য, 12,000 XP-তে, আর আরও দুটো বোর্ড MarginPad-এর মাধ্যমে খোলা আসল অ্যাকাউন্টের ভিত্তিতে গণনা হয় — Bybit volume আর King of the Moon।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeBybitFutures2",
+   "raw": "\"Bybit volume তোমাকে Bybit-এ যে আসল futures volume ট্রেড করো তার ভিত্তিতে র‌্যাংক করে: তুমি সেই অ্যাকাউন্টের UID এই পেজে, একবারই রেজিস্টার করো। King of the Moon তোমাকে Moon-এ সত্যিকারের যে অর্থ বাজি ধরো তার ভিত্তিতে র‌্যাংক করে: তোমার Moon সাইন-আপ বোনাস অনুমোদিত হতে হবে, এভাবেই আমরা জানি কোন অ্যাকাউন্টটা তোমার। দুটোই দিনে কয়েকবার exchange-এর নিজস্ব affiliate রিপোর্ট থেকে সংখ্যা পড়ে।\"",
+   "en": "Bybit volume তোমাকে Bybit-এ যে আসল futures volume ট্রেড করো তার ভিত্তিতে র‌্যাংক করে: তুমি সেই অ্যাকাউন্টের UID এই পেজে, একবারই রেজিস্টার করো। King of the Moon তোমাকে Moon-এ সত্যিকারের যে অর্থ বাজি ধরো তার ভিত্তিতে র‌্যাংক করে: তোমার Moon সাইন-আপ বোনাস অনুমোদিত হতে হবে, এভাবেই আমরা জানি কোন অ্যাকাউন্টটা তোমার। দুটোই দিনে কয়েকবার exchange-এর নিজস্ব affiliate রিপোর্ট থেকে সংখ্যা পড়ে।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "leftXpNAcademy3",
+   "raw": "\"আরও {left} XP লাগবে, যা প্রায় {n} টা Academy পাঠের সমান।\"",
+   "en": "আরও {left} XP লাগবে, যা প্রায় {n} টা Academy পাঠের সমান।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom4",
+   "raw": "\"তুমি ঢুকে পড়েছ। faucet, মিশন আর উইথড্র তোমার জন্য খোলা, আর চারটা বোর্ডে তুমি যা জেতো সেটা তোমারই। The Gold Room খোলে Gold-এ, মানে 12,000 XP-তে।\"",
+   "en": "তুমি ঢুকে পড়েছ। faucet, মিশন আর উইথড্র তোমার জন্য খোলা, আর চারটা বোর্ডে তুমি যা জেতো সেটা তোমারই। The Gold Room খোলে Gold-এ, মানে 12,000 XP-তে।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom4",
+   "raw": "\"তুমি Gold। প্রতিটা বোর্ড তোমার জন্য খোলা, The Gold Room সহ।\"",
+   "en": "তুমি Gold। প্রতিটা বোর্ড তোমার জন্য খোলা, The Gold Room সহ।",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetClaimFaucet2",
+   "raw": "\"faucet، ماموریت‌های روزانه، برداشت‌ها و ارجاع‌ها برای هر حساب، همان لحظه‌ای که وارد می‌شود باز است. بدون سطح، بدون واریز، چیزی برای باز کردن نیست. سطح‌ها هنوز هم اهمیت دارند: سطح بالاتر claim‌های بزرگ‌تری از faucet می‌دهد و نشان خودش را دارد.\"",
+   "en": "faucet، ماموریت‌های روزانه، برداشت‌ها و ارجاع‌ها برای هر حساب، همان لحظه‌ای که وارد می‌شود باز است. بدون سطح، بدون واریز، چیزی برای باز کردن نیست. سطح‌ها هنوز هم اهمیت دارند: سطح بالاتر claim‌های بزرگ‌تری از faucet می‌دهد و نشان خودش را دارد.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "paperUsdtExchangeThe",
+   "raw": "\"چهار جدول paper هر چهارده روز USDT واقعی پرداخت می‌کنند، بدون واریز و بدون حساب در هیچ exchange، و اولین معامله‌ای که ببندی تو را روی آن‌ها می‌گذارد. چیزی که می‌بری مال توست، در هر سطحی قابل برداشت. The Gold Room برای اعضای Gold با 12,000 XP است، و دو جدول دیگر بر اساس حساب‌های واقعی باز شده از طریق MarginPad محاسبه می‌شوند: Bybit volume و King of the Moon.\"",
+   "en": "چهار جدول paper هر چهارده روز USDT واقعی پرداخت می‌کنند، بدون واریز و بدون حساب در هیچ exchange، و اولین معامله‌ای که ببندی تو را روی آن‌ها می‌گذارد. چیزی که می‌بری مال توست، در هر سطحی قابل برداشت. The Gold Room برای اعضای Gold با 12,000 XP است، و دو جدول دیگر بر اساس حساب‌های واقعی باز شده از طریق MarginPad محاسبه می‌شوند: Bybit volume و King of the Moon.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeFuturesBybit",
+   "raw": "\"Bybit volume تو را بر اساس حجم واقعی futures که در Bybit ترید می‌کنی رتبه‌بندی می‌کند: UID آن حساب را در همین صفحه، فقط یک بار ثبت می‌کنی. King of the Moon تو را بر اساس چیزی که واقعاً در Moon شرط می‌بندی رتبه‌بندی می‌کند: باید پاداش ثبت‌نام Moon تو تأیید شده باشد، این‌طور می‌فهمیم کدام حساب مال توست. هر دو چند بار در روز ارقام را از گزارش affiliate خود آن exchange می‌خوانند.\"",
+   "en": "Bybit volume تو را بر اساس حجم واقعی futures که در Bybit ترید می‌کنی رتبه‌بندی می‌کند: UID آن حساب را در همین صفحه، فقط یک بار ثبت می‌کنی. King of the Moon تو را بر اساس چیزی که واقعاً در Moon شرط می‌بندی رتبه‌بندی می‌کند: باید پاداش ثبت‌نام Moon تو تأیید شده باشد، این‌طور می‌فهمیم کدام حساب مال توست. هر دو چند بار در روز ارقام را از گزارش affiliate خود آن exchange می‌خوانند.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "rewardsPaper",
+   "raw": "\"یک حساب برای هر نفر. جوایز به موجودی rewards تو می‌رسد و قابل برداشت است. جدول‌های paper در سمت سرور، از معاملاتی که واقعاً بسته‌ای محاسبه می‌شوند.\"",
+   "en": "یک حساب برای هر نفر. جوایز به موجودی rewards تو می‌رسد و قابل برداشت است. جدول‌های paper در سمت سرور، از معاملاتی که واقعاً بسته‌ای محاسبه می‌شوند.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom5",
+   "raw": "\"تو وارد شده‌ای. faucet، ماموریت‌ها و برداشت‌ها برای تو باز هستند، و هر چیزی که در چهار جدول ببری مال توست. The Gold Room در سطح Gold باز می‌شود، یعنی 12,000 XP.\"",
+   "en": "تو وارد شده‌ای. faucet، ماموریت‌ها و برداشت‌ها برای تو باز هستند، و هر چیزی که در چهار جدول ببری مال توست. The Gold Room در سطح Gold باز می‌شود، یعنی 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom5",
+   "raw": "\"تو Gold هستی. همه جدول‌ها برای تو باز است، از جمله The Gold Room.\"",
+   "en": "تو Gold هستی. همه جدول‌ها برای تو باز است، از جمله The Gold Room.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "paperUsdtTheGold",
+   "raw": "\"四个 paper 榜单每十四天发放真实的 USDT，不需要充值也不需要交易所账户，你平仓的第一笔交易就会让你上榜。你赢到的都是你的，任何等级都能提现。The Gold Room 面向 12,000 XP 的 Gold 会员，另外两个榜单按通过 MarginPad 开设的真实账户计分：Bybit volume 和 King of the Moon。\"",
+   "en": "四个 paper 榜单每十四天发放真实的 USDT，不需要充值也不需要交易所账户，你平仓的第一笔交易就会让你上榜。你赢到的都是你的，任何等级都能提现。The Gold Room 面向 12,000 XP 的 Gold 会员，另外两个榜单按通过 MarginPad 开设的真实账户计分：Bybit volume 和 King of the Moon。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeBybitUid3",
+   "raw": "\"Bybit volume 按你在 Bybit 上交易的真实合约成交量为你排名：你只需在这个页面注册一次那个账户的 UID。King of the Moon 按你在 Moon 上真实下注的金额为你排名：你的 Moon 注册奖励必须先获批，我们就是这样知道哪个账户是你的。两者都是每天从交易所自己的联盟报告中读取几次数据。\"",
+   "en": "Bybit volume 按你在 Bybit 上交易的真实合约成交量为你排名：你只需在这个页面注册一次那个账户的 UID。King of the Moon 按你在 Moon 上真实下注的金额为你排名：你的 Moon 注册奖励必须先获批，我们就是这样知道哪个账户是你的。两者都是每天从交易所自己的联盟报告中读取几次数据。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "rewardsPaper2",
+   "raw": "\"每人限一个账户。奖金会进入你的 rewards 余额，并可以提现。paper 榜单是在服务器端根据你真正平仓的交易计算的。\"",
+   "en": "每人限一个账户。奖金会进入你的 rewards 余额，并可以提现。paper 榜单是在服务器端根据你真正平仓的交易计算的。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "leftXpNAcademy4",
+   "raw": "\"还差 {left} XP，大约相当于 {n} 节 Academy 课程。\"",
+   "en": "还差 {left} XP，大约相当于 {n} 节 Academy 课程。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetTheGoldRoom6",
+   "raw": "\"你已经进来了。faucet、任务和提现都已对你开放，你在四个榜单上赢到的都归你。The Gold Room 在 Gold 等级开放，也就是 12,000 XP。\"",
+   "en": "你已经进来了。faucet、任务和提现都已对你开放，你在四个榜单上赢到的都归你。The Gold Room 在 Gold 等级开放，也就是 12,000 XP。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTheGoldRoom6",
+   "raw": "\"你已经是 Gold 了。所有榜单都对你开放，包括 The Gold Room。\"",
+   "en": "你已经是 Gold 了。所有榜单都对你开放，包括 The Gold Room。",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "faucetDnevneMisijeIsplate",
+   "raw": "\"faucet, dnevne misije, isplate i preporuke su otvoreni za svaki nalog u trenutku kad se prijavi. Nema nivoa, nema depozita, nema ničega što treba otključati. Nivoi su i dalje bitni: viši nivo isplaćuje veće faucet claimove i nosi svoj bedž.\"",
+   "en": "faucet, dnevne misije, isplate i preporuke su otvoreni za svaki nalog u trenutku kad se prijavi. Nema nivoa, nema depozita, nema ničega što treba otključati. Nivoi su i dalje bitni: viši nivo isplaćuje veće faucet claimove i nosi svoj bedž.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "academyJeNajbrI",
+   "raw": "\"Academy je najbrži način da podigneš nivo\"",
+   "en": "Academy je najbrži način da podigneš nivo",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "svakaLekcijaDonosi25",
+   "raw": "\"Svaka lekcija donosi +25 XP, a završen kurs donosi još +50. Dvadeset lekcija je Bronze, tvoj prvi bedž nivoa, što traje otprilike jedno veče. Trgovanje takođe donosi XP, ali mnogo sporije.\"",
+   "en": "Svaka lekcija donosi +25 XP, a završen kurs donosi još +50. Dvadeset lekcija je Bronze, tvoj prvi bedž nivoa, što traje otprilike jedno veče. Trgovanje takođe donosi XP, ali mnogo sporije.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "etiriPaperTableIspla",
+   "raw": "\"Četiri paper table isplaćuju pravi USDT svakih četrnaest dana, bez depozita i bez naloga na exchange-u, i tvoj prvi zatvoreni trejd te stavlja na njih. Ono što osvojiš je tvoje, možeš da povučeš na bilo kom nivou. The Gold Room je za Gold članove sa 12,000 XP, a još dve table se boduju na osnovu pravih naloga otvorenih preko MarginPad-a — Bybit volume i King of the Moon.\"",
+   "en": "Četiri paper table isplaćuju pravi USDT svakih četrnaest dana, bez depozita i bez naloga na exchange-u, i tvoj prvi zatvoreni trejd te stavlja na njih. Ono što osvojiš je tvoje, možeš da povučeš na bilo kom nivou. The Gold Room je za Gold članove sa 12,000 XP, a još dve table se boduju na osnovu pravih naloga otvorenih preko MarginPad-a — Bybit volume i King of the Moon.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bybitVolumeTeRangira",
+   "raw": "\"Bybit volume te rangira po pravom obimu futures-a koji trguješ na Bybit-u: registruješ UID tog naloga na ovoj stranici, jednom. King of the Moon te rangira po tome koliko stvarno ulažeš na Moon-u: tvoj Moon bonus za registraciju mora biti odobren, tako znamo koji nalog je tvoj. Obe table čitaju brojke iz samog affiliate izveštaja tog exchange-a, nekoliko puta dnevno.\"",
+   "en": "Bybit volume te rangira po pravom obimu futures-a koji trguješ na Bybit-u: registruješ UID tog naloga na ovoj stranici, jednom. King of the Moon te rangira po tome koliko stvarno ulažeš na Moon-u: tvoj Moon bonus za registraciju mora biti odobren, tako znamo koji nalog je tvoj. Obe table čitaju brojke iz samog affiliate izveštaja tog exchange-a, nekoliko puta dnevno.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "jedanNalogPoOsobi",
+   "raw": "\"Jedan nalog po osobi. Nagrade stižu na tvoj rewards balans i mogu se isplatiti. Paper table se boduju na serveru, na osnovu trejdova koje si stvarno zatvorio.\"",
+   "en": "Jedan nalog po osobi. Nagrade stižu na tvoj rewards balans i mogu se isplatiti. Paper table se boduju na serveru, na osnovu trejdova koje si stvarno zatvorio.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "unutraSiFaucetMisije",
+   "raw": "\"Unutra si. faucet, misije i isplate su ti otvoreni, i sve što osvojiš na četiri table je tvoje. The Gold Room se otvara na Gold nivou, a to je 12,000 XP.\"",
+   "en": "Unutra si. faucet, misije i isplate su ti otvoreni, i sve što osvojiš na četiri table je tvoje. The Gold Room se otvara na Gold nivou, a to je 12,000 XP.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "prijaviSeBesplatnoSa",
+   "raw": "\"Prijavi se besplatno sa kodom preko email-a, i ova kartica će pokazati koliko ti je ostalo.\"",
+   "en": "Prijavi se besplatno sa kodom preko email-a, i ova kartica će pokazati koliko ti je ostalo.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "tiSiGoldSve",
+   "raw": "\"Ti si Gold. Sve tabele su ti otvorene, uključujući i The Gold Room.\"",
+   "en": "Ti si Gold. Sve tabele su ti otvorene, uključujući i The Gold Room.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "startHere",
+   "raw": "\"Start here\"",
+   "en": "Start here",
+   "n": 1,
+   "es": "Empieza aquí"
+  },
+  {
+   "key": "fourThingsAndNone",
+   "raw": "\"Four things, and none of them is a gate.\"",
+   "en": "Four things, and none of them is a gate.",
+   "n": 1,
+   "es": "Cuatro cosas, y ninguna es una barrera."
+  },
+  {
+   "key": "theMoneyIsOpen",
+   "raw": "\"The money is open from day one\"",
+   "en": "The money is open from day one",
+   "n": 1,
+   "es": "El dinero está abierto desde el primer día"
+  },
+  {
+   "key": "theFaucetTheDaily",
+   "raw": "\"The faucet, the daily missions, withdrawals and referrals are open to every account the moment it signs in. No level, no deposit, nothing to unlock. Levels still matter: a higher level pays bigger faucet claims and wears its own badge.\"",
+   "en": "The faucet, the daily missions, withdrawals and referrals are open to every account the moment it signs in. No level, no deposit, nothing to unlock. Levels still matter: a higher level pays bigger faucet claims and wears its own badge.",
+   "n": 1,
+   "es": "El faucet, las misiones diarias, los retiros y las referencias están abiertos para cualquier cuenta en el momento en que inicia sesión. Sin nivel, sin depósito, nada que desbloquear. Los niveles siguen importando: un nivel más alto paga claims de faucet más grandes y lleva su propia insignia."
+  },
+  {
+   "key": "theAcademyIsThe",
+   "raw": "\"The Academy is the fastest way to level up\"",
+   "en": "The Academy is the fastest way to level up",
+   "n": 1,
+   "es": "La Academy es la forma más rápida de subir de nivel"
+  },
+  {
+   "key": "everyLessonPays25",
+   "raw": "\"Every lesson pays +25 XP and finishing a course pays +50 more. Twenty lessons is Bronze, your first level badge, which is about one evening. Trading earns XP too, but far more slowly.\"",
+   "en": "Every lesson pays +25 XP and finishing a course pays +50 more. Twenty lessons is Bronze, your first level badge, which is about one evening. Trading earns XP too, but far more slowly.",
+   "n": 1,
+   "es": "Cada lección paga +25 XP y terminar un curso paga +50 más. Veinte lecciones te dan Bronze, tu primera insignia de nivel, y eso es más o menos una noche. Operar también gana XP, pero mucho más lento."
+  },
+  {
+   "key": "openTheAcademy",
+   "raw": "\"Open the Academy\"",
+   "en": "Open the Academy",
+   "n": 1,
+   "es": "Abre la Academy"
+  },
+  {
+   "key": "watchYourProgressHere",
+   "raw": "\"Watch your progress here\"",
+   "en": "Watch your progress here",
+   "n": 1,
+   "es": "Sigue tu progreso aquí"
+  },
+  {
+   "key": "yourXpAndYour",
+   "raw": "\"Your XP and your level sit at the top of this page and in your account menu. The bar below moves as you earn.\"",
+   "en": "Your XP and your level sit at the top of this page and in your account menu. The bar below moves as you earn.",
+   "n": 1,
+   "es": "Tu XP y tu nivel están en la parte de arriba de esta página y en el menú de tu cuenta. La barra de abajo avanza a medida que ganas."
+  },
+  {
+   "key": "youAreAlreadyOn",
+   "raw": "\"You are already on the boards\"",
+   "en": "You are already on the boards",
+   "n": 1,
+   "es": "Ya estás en las tablas"
+  },
+  {
+   "key": "fourPaperBoardsPay",
+   "raw": "\"Four paper boards pay real USDT every fourteen days, with no deposit and no exchange account, and your first closed trade puts you on them. What you win is yours to withdraw at any level. The Gold Room is for Gold members at 12,000 XP, and two more boards are scored on real accounts opened through MarginPad - Bybit volume and King of the Moon.\"",
+   "en": "Four paper boards pay real USDT every fourteen days, with no deposit and no exchange account, and your first closed trade puts you on them. What you win is yours to withdraw at any level. The Gold Room is for Gold members at 12,000 XP, and two more boards are scored on real accounts opened through MarginPad - Bybit volume and King of the Moon.",
+   "n": 1,
+   "es": "Cuatro tablas de paper pagan USDT real cada catorce días, sin depósito y sin cuenta en un exchange, y tu primera operación cerrada te pone en ellas. Lo que ganas es tuyo, y puedes retirarlo en cualquier nivel. The Gold Room es para miembros Gold con 12,000 XP, y otras dos tablas se puntúan con cuentas reales abiertas a través de MarginPad: Bybit volume y King of the Moon."
+  },
+  {
+   "key": "seeTheBoards",
+   "raw": "\"See the boards\"",
+   "en": "See the boards",
+   "n": 1,
+   "es": "Ver las tablas"
+  },
+  {
+   "key": "twoBoardsAreScored",
+   "raw": "\"Two boards are scored on a real exchange account\"",
+   "en": "Two boards are scored on a real exchange account",
+   "n": 1,
+   "es": "Dos tablas se puntúan con una cuenta real en un exchange"
+  },
+  {
+   "key": "bybitVolumeRanksYou",
+   "raw": "\"Bybit volume ranks you on the real futures volume you trade on Bybit: you register that account's UID on this page, once. King of the Moon ranks you on what you really wager on Moon: your Moon sign-up bonus has to be approved, which is how we know which account is yours. Both read the figures from the exchange's own affiliate report, a few times a day.\"",
+   "en": "Bybit volume ranks you on the real futures volume you trade on Bybit: you register that account's UID on this page, once. King of the Moon ranks you on what you really wager on Moon: your Moon sign-up bonus has to be approved, which is how we know which account is yours. Both read the figures from the exchange's own affiliate report, a few times a day.",
+   "n": 1,
+   "es": "Bybit volume te clasifica por el volumen real de futuros que operas en Bybit: registras el UID de esa cuenta en esta página, una sola vez. King of the Moon te clasifica por lo que realmente apuestas en Moon: tu bono de registro en Moon tiene que estar aprobado, así es como sabemos qué cuenta es la tuya. Ambas leen las cifras del propio informe de afiliados del exchange, varias veces al día."
+  },
+  {
+   "key": "bothNeedAnAccount",
+   "raw": "\"Both need an account opened through a MarginPad link. One you already had cannot be registered: the exchange only reports the traders it sent us.\"",
+   "en": "Both need an account opened through a MarginPad link. One you already had cannot be registered: the exchange only reports the traders it sent us.",
+   "n": 1,
+   "es": "Ambas necesitan una cuenta abierta a través de un enlace de MarginPad. Una que ya tenías no se puede registrar: el exchange solo reporta a los traders que nos envió."
+  },
+  {
+   "key": "oneAccountPerPerson",
+   "raw": "\"One account per person. Prizes land on your rewards balance and can be withdrawn. The paper boards are scored server-side from trades you actually closed.\"",
+   "en": "One account per person. Prizes land on your rewards balance and can be withdrawn. The paper boards are scored server-side from trades you actually closed.",
+   "n": 1,
+   "es": "Una cuenta por persona. Los premios caen en tu saldo de recompensas y se pueden retirar. Las tablas de paper se puntúan en el servidor, a partir de operaciones que realmente cerraste."
+  },
+  {
+   "key": "youAreInThe",
+   "raw": "\"You are in. The faucet, the missions and withdrawals are open to you, and anything you win on the four boards is yours to take. The Gold Room opens at Gold, which is 12,000 XP.\"",
+   "en": "You are in. The faucet, the missions and withdrawals are open to you, and anything you win on the four boards is yours to take. The Gold Room opens at Gold, which is 12,000 XP.",
+   "n": 1,
+   "es": "Ya estás dentro. El faucet, las misiones y los retiros están abiertos para ti, y todo lo que ganes en las cuatro tablas es tuyo. The Gold Room se abre en Gold, es decir, 12,000 XP."
+  },
+  {
+   "key": "signInFreeWith",
+   "raw": "\"Sign in, free, with an email code and this card will show how far you are.\"",
+   "en": "Sign in, free, with an email code and this card will show how far you are.",
+   "n": 1,
+   "es": "Inicia sesión gratis con un código por email y esta tarjeta te mostrará qué tan cerca estás."
+  },
+  {
+   "key": "readThisIn",
+   "raw": "\"Read this in\"",
+   "en": "Read this in",
+   "n": 1,
+   "es": "Lee esto en"
+  },
+  {
+   "key": "youAreGoldEvery",
+   "raw": "\"You are Gold. Every board is open to you, The Gold Room included.\"",
+   "en": "You are Gold. Every board is open to you, The Gold Room included.",
+   "n": 1,
+   "es": "Eres Gold. Todas las tablas están abiertas para ti, incluyendo The Gold Room."
+  }
+ ]
+}

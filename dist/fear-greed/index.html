@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_feargreedindex = {"vsNow":" ahora</div>","theMarketIsIn":"<b>El mercado está en pánico.</b> Un miedo extremo como este ha marcado históricamente zonas de capitulación - la mayoría está vendiendo por miedo. Aquí es donde los contrarians empiezan a prestar atención.","fearIsInCharge":"<b>El miedo manda.</b> El sentimiento está débil y el posicionamiento es defensivo - las bajadas se sienten más grandes de lo que son. Vigila si aparece una estabilización.","theMarketIsUndecided":"<b>El mercado está indeciso.</b> Ni el miedo ni la codicia dominan - las tendencias que nacen aquí necesitan confirmación de volumen y momentum.","greedIsBuildingMomentum":"<b>La codicia va en aumento.</b> Se persigue el momentum; las caídas se compran rápido. Disfrútalo, pero aquí es donde la disciplina empieza a dar frutos.","euphoriaEveryoneIsGreedy":"<b>Euforia.</b> Todo el mundo es codicioso, el apalancamiento se acumula y \"esta vez es diferente\" está de moda. Históricamente, la zona donde nacen las correcciones.","lastWeek":"Semana pasada","lastMonth":"Mes pasado"};
+function __esT_feargreedindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_feargreedindex[k] != null) return __esD_feargreedindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -248,13 +254,13 @@
   function zone(v){return v<25?0:v<45?1:v<55?2:v<76?3:4;}
   var DATA=null,range=90;
   function st(l,v,c,dNow){var d=dNow!=null?(dNow>=0?'+':'')+dNow:null;
-    return '<div class="st"><div class="l">'+l+'</div><div class="v" style="color:'+col(v)+'">'+v+'</div><div class="c">'+c+'</div>'+(d!=null?'<div class="d '+(dNow>=0?'up':'dn')+'">'+d+' vs now</div>':'<div class="d" style="color:transparent">·</div>')+'</div>';}
+    return '<div class="st"><div class="l">'+l+'</div><div class="v" style="color:'+col(v)+'">'+v+'</div><div class="c">'+c+'</div>'+(d!=null?'<div class="d '+(dNow>=0?'up':'dn')+'">'+d+__esT_feargreedindex("vsNow",' vs now</div>'):'<div class="d" style="color:transparent">·</div>')+'</div>';}
   function verdict(v){
-    if(v<25)return ['','<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones - most people are selling in fear. Contrarians start paying attention here.'];
-    if(v<45)return ['','<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive - moves down feel bigger than they are. Watch for stabilization.'];
-    if(v<55)return ['','<b>The market is undecided.</b> Neither fear nor greed dominates - trends born here need confirmation from volume and momentum.'];
-    if(v<76)return ['','<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.'];
-    return ['','<b>Euphoria.</b> Everyone is greedy, leverage is stacked and "this time is different" is trending. Historically the zone where pullbacks are born.'];
+    if(v<25)return ['',__esT_feargreedindex("theMarketIsIn",'<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones - most people are selling in fear. Contrarians start paying attention here.')];
+    if(v<45)return ['',__esT_feargreedindex("fearIsInCharge",'<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive - moves down feel bigger than they are. Watch for stabilization.')];
+    if(v<55)return ['',__esT_feargreedindex("theMarketIsUndecided",'<b>The market is undecided.</b> Neither fear nor greed dominates - trends born here need confirmation from volume and momentum.')];
+    if(v<76)return ['',__esT_feargreedindex("greedIsBuildingMomentum",'<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.')];
+    return ['',__esT_feargreedindex("euphoriaEveryoneIsGreedy",'<b>Euphoria.</b> Everyone is greedy, leverage is stacked and "this time is different" is trending. Historically the zone where pullbacks are born.')];
   }
   function renderTop(data){
     var now=data[0],c=col(now.v);
@@ -270,8 +276,8 @@
     document.getElementById('fgStats').innerHTML=
       st('Now',now.v,cls(now.v),null)
       +(y?st('Yesterday',y.v,cls(y.v),now.v-y.v):'')
-      +(w?st('Last week',w.v,cls(w.v),now.v-w.v):'')
-      +(mo?st('Last month',mo.v,cls(mo.v),now.v-mo.v):'');
+      +(w?st(__esT_feargreedindex("lastWeek",'Last week'),w.v,cls(w.v),now.v-w.v):'')
+      +(mo?st(__esT_feargreedindex("lastMonth",'Last month'),mo.v,cls(mo.v),now.v-mo.v):'');
     var vd=verdict(now.v);
     document.getElementById('fgVerdict').innerHTML='<span class="ic">'+vd[0]+'</span><span>'+vd[1]+'</span>';
     var z=zone(now.v);
@@ -316,7 +322,7 @@
   load();setInterval(load,600000);
 })();
 </script>
-<script defer src="/assets/mp-auth.js?v=7dd1b8ac"></script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

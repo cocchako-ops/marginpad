@@ -1,39 +1,39 @@
 [
  {
   "rel": "100x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "10x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "20x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "25x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "50x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "5x-liquidation-calculator/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "aave-liquidation-calculator/index.html",
@@ -55,9 +55,9 @@
  },
  {
   "rel": "academy/index.html",
-  "cover": 0.9523809523809523,
-  "hit": 220,
-  "missing": 11
+  "cover": 1,
+  "hit": 231,
+  "missing": 0
  },
  {
   "rel": "ada-liquidation-calculator/index.html",
@@ -314,91 +314,91 @@
  {
   "rel": "bitcoin-cycle/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "bitget-liquidation-calculator/index.html",
-  "cover": 0.9888888888888889,
-  "hit": 89,
-  "missing": 1
+  "cover": 1,
+  "hit": 90,
+  "missing": 0
  },
  {
   "rel": "bitget-pnl-calculator/index.html",
-  "cover": 0.9848484848484849,
-  "hit": 65,
-  "missing": 1
+  "cover": 1,
+  "hit": 66,
+  "missing": 0
  },
  {
   "rel": "bitget-vs-binance/index.html",
-  "cover": 0.9859154929577465,
-  "hit": 70,
-  "missing": 1
+  "cover": 1,
+  "hit": 71,
+  "missing": 0
  },
  {
   "rel": "bitget-vs-gate/index.html",
-  "cover": 0.9859154929577465,
-  "hit": 70,
-  "missing": 1
+  "cover": 1,
+  "hit": 71,
+  "missing": 0
  },
  {
   "rel": "bitget-vs-kraken/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "bitget-vs-kucoin/index.html",
-  "cover": 0.9850746268656716,
-  "hit": 66,
-  "missing": 1
+  "cover": 1,
+  "hit": 67,
+  "missing": 0
  },
  {
   "rel": "bitget-vs-okx/index.html",
-  "cover": 0.9855072463768116,
-  "hit": 68,
-  "missing": 1
+  "cover": 1,
+  "hit": 69,
+  "missing": 0
  },
  {
   "rel": "blog/ai-crypto-trading-strategies-2026/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 62,
   "missing": 0
  },
  {
   "rel": "blog/backtesting-vs-paper-trading-vs-live/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "blog/best-crypto-exchanges-canada/index.html",
   "cover": 1,
-  "hit": 60,
+  "hit": 64,
   "missing": 0
  },
  {
   "rel": "blog/best-crypto-exchanges-europe-mica/index.html",
   "cover": 1,
-  "hit": 63,
+  "hit": 67,
   "missing": 0
  },
  {
   "rel": "blog/best-crypto-exchanges-us-traders/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 58,
   "missing": 0
  },
  {
   "rel": "blog/best-crypto-futures-exchanges/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "blog/best-leverage-for-beginners/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
@@ -422,7 +422,7 @@
  {
   "rel": "blog/bitcoin-etf-flows-explained/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
@@ -440,13 +440,13 @@
  {
   "rel": "blog/bybit-vs-binance-futures/index.html",
   "cover": 1,
-  "hit": 83,
+  "hit": 87,
   "missing": 0
  },
  {
   "rel": "blog/bybit-vs-binance/index.html",
   "cover": 1,
-  "hit": 61,
+  "hit": 65,
   "missing": 0
  },
  {
@@ -464,31 +464,31 @@
  {
   "rel": "blog/copy-trading-crypto-explained/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
   "rel": "blog/cpi-week-crypto-playbook/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/cross-vs-isolated-margin/index.html",
   "cover": 1,
-  "hit": 73,
+  "hit": 77,
   "missing": 0
  },
  {
   "rel": "blog/crypto-cost-basis-fifo-lifo-hifo/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/crypto-economic-calendar-guide/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
@@ -506,13 +506,13 @@
  {
   "rel": "blog/crypto-futures-australia/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 62,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-canada/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 58,
   "missing": 0
  },
  {
@@ -524,19 +524,19 @@
  {
   "rel": "blog/crypto-futures-france/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-germany/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-italy/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -548,73 +548,73 @@
  {
   "rel": "blog/crypto-futures-netherlands/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-poland/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-scandinavia/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-singapore/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-spain/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-switzerland/index.html",
   "cover": 1,
-  "hit": 56,
+  "hit": 60,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-taxes-us/index.html",
   "cover": 1,
-  "hit": 61,
+  "hit": 65,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-uk/index.html",
   "cover": 1,
-  "hit": 67,
+  "hit": 71,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-us-taxes/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-usa/index.html",
   "cover": 1,
-  "hit": 64,
+  "hit": 68,
   "missing": 0
  },
  {
   "rel": "blog/crypto-futures-vs-options/index.html",
   "cover": 1,
-  "hit": 83,
+  "hit": 87,
   "missing": 0
  },
  {
   "rel": "blog/crypto-leverage-explained/index.html",
   "cover": 1,
-  "hit": 136,
+  "hit": 140,
   "missing": 0
  },
  {
@@ -626,7 +626,7 @@
  {
   "rel": "blog/crypto-position-sizing-risk-management/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
@@ -644,67 +644,67 @@
  {
   "rel": "blog/crypto-taxes-canada/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/crypto-trading-for-beginners/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 59,
   "missing": 0
  },
  {
   "rel": "blog/do-you-pay-tax-on-crypto-losses/index.html",
   "cover": 1,
-  "hit": 45,
+  "hit": 49,
   "missing": 0
  },
  {
   "rel": "blog/dxy-dollar-index-bitcoin/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/fomc-july-2026-bitcoin/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/funding-rate-arbitrage/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/grid-trading-bot-explained/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
   "rel": "blog/how-much-to-start-crypto-futures/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 62,
   "missing": 0
  },
  {
   "rel": "blog/how-to-avoid-liquidation-crypto/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
   "rel": "blog/how-to-avoid-liquidation/index.html",
   "cover": 1,
-  "hit": 92,
+  "hit": 96,
   "missing": 0
  },
  {
   "rel": "blog/how-to-calculate-liquidation-price/index.html",
   "cover": 1,
-  "hit": 82,
+  "hit": 86,
   "missing": 0
  },
  {
@@ -716,43 +716,43 @@
  {
   "rel": "blog/how-to-calculate-position-size/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 54,
   "missing": 0
  },
  {
   "rel": "blog/how-to-hedge-crypto-with-futures/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "blog/how-to-read-a-liquidation-heatmap/index.html",
   "cover": 1,
-  "hit": 73,
+  "hit": 77,
   "missing": 0
  },
  {
   "rel": "blog/how-to-read-crypto-candlestick-charts/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "blog/how-to-set-a-stop-loss/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 53,
   "missing": 0
  },
  {
   "rel": "blog/how-to-swap-crypto-without-an-account/index.html",
   "cover": 1,
-  "hit": 84,
+  "hit": 88,
   "missing": 0
  },
  {
   "rel": "blog/how-to-test-a-crypto-trading-bot/index.html",
   "cover": 1,
-  "hit": 60,
+  "hit": 64,
   "missing": 0
  },
  {
@@ -764,7 +764,7 @@
  {
   "rel": "blog/htx-sanctioned-what-us-traders-should-know/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 53,
   "missing": 0
  },
  {
@@ -782,7 +782,7 @@
  {
   "rel": "blog/is-binance-bybit-okx-legal-us/index.html",
   "cover": 1,
-  "hit": 50,
+  "hit": 54,
   "missing": 0
  },
  {
@@ -800,31 +800,31 @@
  {
   "rel": "blog/liquidation-cascade-explained/index.html",
   "cover": 1,
-  "hit": 78,
+  "hit": 82,
   "missing": 0
  },
  {
   "rel": "blog/liquidation-clusters-explained/index.html",
   "cover": 1,
-  "hit": 82,
+  "hit": 86,
   "missing": 0
  },
  {
   "rel": "blog/long-short-ratio-explained/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/long-vs-short-crypto/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/long-vs-short-liquidations/index.html",
   "cover": 1,
-  "hit": 74,
+  "hit": 78,
   "missing": 0
  },
  {
@@ -836,7 +836,7 @@
  {
   "rel": "blog/mark-price-vs-last-price/index.html",
   "cover": 1,
-  "hit": 46,
+  "hit": 50,
   "missing": 0
  },
  {
@@ -854,31 +854,31 @@
  {
   "rel": "blog/moon-trading-platform-review/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 59,
   "missing": 0
  },
  {
   "rel": "blog/new-crypto-futures-exchanges-2026/index.html",
   "cover": 1,
-  "hit": 57,
+  "hit": 61,
   "missing": 0
  },
  {
   "rel": "blog/nfp-bitcoin-jobs-report/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/nodejs-crypto-trading-bot-tutorial/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
   "rel": "blog/paper-trade-crypto-futures/index.html",
   "cover": 1,
-  "hit": 54,
+  "hit": 58,
   "missing": 0
  },
  {
@@ -890,115 +890,115 @@
  {
   "rel": "blog/perpetual-futures-explained/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/python-crypto-trading-bot-tutorial/index.html",
   "cover": 1,
-  "hit": 58,
+  "hit": 62,
   "missing": 0
  },
  {
   "rel": "blog/risk-reward-ratio-explained/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 53,
   "missing": 0
  },
  {
   "rel": "blog/roe-vs-roi/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "blog/rsi-indicator-explained/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 59,
   "missing": 0
  },
  {
   "rel": "blog/spot-vs-futures-trading/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/trading-crypto-in-china/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/treasury-yields-bitcoin/index.html",
   "cover": 1,
-  "hit": 47,
+  "hit": 51,
   "missing": 0
  },
  {
   "rel": "blog/uae-crypto-tax-residency/index.html",
   "cover": 1,
-  "hit": 61,
+  "hit": 65,
   "missing": 0
  },
  {
   "rel": "blog/usdt-mica-eu-2026/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 53,
   "missing": 0
  },
  {
   "rel": "blog/what-is-a-margin-call/index.html",
   "cover": 1,
-  "hit": 49,
+  "hit": 53,
   "missing": 0
  },
  {
   "rel": "blog/what-is-a-trading-journal/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 59,
   "missing": 0
  },
  {
   "rel": "blog/what-is-a-trailing-stop/index.html",
   "cover": 1,
-  "hit": 55,
+  "hit": 59,
   "missing": 0
  },
  {
   "rel": "blog/what-is-funding-rate/index.html",
   "cover": 1,
-  "hit": 134,
+  "hit": 138,
   "missing": 0
  },
  {
   "rel": "blog/what-is-liquidation-in-crypto/index.html",
   "cover": 1,
-  "hit": 63,
+  "hit": 67,
   "missing": 0
  },
  {
   "rel": "blog/what-is-open-interest/index.html",
   "cover": 1,
-  "hit": 48,
+  "hit": 52,
   "missing": 0
  },
  {
   "rel": "blog/what-is-slippage/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 56,
   "missing": 0
  },
  {
   "rel": "blog/what-leverage-to-use-crypto/index.html",
   "cover": 1,
-  "hit": 51,
+  "hit": 55,
   "missing": 0
  },
  {
   "rel": "blog/why-most-crypto-traders-lose-money/index.html",
   "cover": 1,
-  "hit": 53,
+  "hit": 57,
   "missing": 0
  },
  {
@@ -1063,9 +1063,9 @@
  },
  {
   "rel": "bybit-vs-bitget/index.html",
-  "cover": 0.9859154929577465,
-  "hit": 70,
-  "missing": 1
+  "cover": 1,
+  "hit": 71,
+  "missing": 0
  },
  {
   "rel": "bybit-vs-gate/index.html",
@@ -1094,44 +1094,44 @@
  {
   "rel": "calendar/index.html",
   "cover": 1,
-  "hit": 42,
+  "hit": 46,
   "missing": 0
  },
  {
   "rel": "coin/bnb/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coin/btc/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coin/doge/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coin/eth/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coin/sol/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coin/xrp/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 63,
-  "missing": 5
+  "cover": 1,
+  "hit": 68,
+  "missing": 0
  },
  {
   "rel": "coinglass-alternative/index.html",
@@ -1286,7 +1286,7 @@
  {
   "rel": "defi/index.html",
   "cover": 1,
-  "hit": 75,
+  "hit": 79,
   "missing": 0
  },
  {
@@ -1346,7 +1346,7 @@
  {
   "rel": "etf-flows/index.html",
   "cover": 1,
-  "hit": 52,
+  "hit": 56,
   "missing": 0
  },
  {
@@ -1363,9 +1363,9 @@
  },
  {
   "rel": "exchanges/index.html",
-  "cover": 0.9945054945054945,
-  "hit": 362,
-  "missing": 2
+  "cover": 1,
+  "hit": 368,
+  "missing": 0
  },
  {
   "rel": "fear-greed/index.html",
@@ -1465,10 +1465,9 @@
  },
  {
   "rel": "glossary/index.html",
-  "cover": 0.27158774373259054,
-  "hit": 195,
-  "missing": 523,
-  "skipped": true
+  "cover": 1,
+  "hit": 718,
+  "missing": 0
  },
  {
   "rel": "grt-liquidation-calculator/index.html",
@@ -1610,9 +1609,9 @@
  },
  {
   "rel": "hyperliquid-vs-bitget/index.html",
-  "cover": 0.9859154929577465,
-  "hit": 70,
-  "missing": 1
+  "cover": 1,
+  "hit": 71,
+  "missing": 0
  },
  {
   "rel": "hyperliquid-vs-bybit/index.html",
@@ -1628,9 +1627,9 @@
  },
  {
   "rel": "hyperliquid-whales/index.html",
-  "cover": 0.978021978021978,
-  "hit": 89,
-  "missing": 2
+  "cover": 1,
+  "hit": 95,
+  "missing": 0
  },
  {
   "rel": "icp-liquidation-calculator/index.html",
@@ -1652,9 +1651,9 @@
  },
  {
   "rel": "index.html",
-  "cover": 0.9700854700854701,
-  "hit": 227,
-  "missing": 7
+  "cover": 1,
+  "hit": 233,
+  "missing": 0
  },
  {
   "rel": "inj-liquidation-calculator/index.html",
@@ -1730,15 +1729,15 @@
  },
  {
   "rel": "leaderboards/index.html",
-  "cover": 0.8297872340425532,
-  "hit": 78,
-  "missing": 16
+  "cover": 1,
+  "hit": 94,
+  "missing": 0
  },
  {
   "rel": "levels/index.html",
-  "cover": 0.9344262295081968,
-  "hit": 114,
-  "missing": 8
+  "cover": 1,
+  "hit": 122,
+  "missing": 0
  },
  {
   "rel": "leverage-calculator/index.html",
@@ -1982,9 +1981,9 @@
  },
  {
   "rel": "premium/index.html",
-  "cover": 0.9921568627450981,
-  "hit": 253,
-  "missing": 2
+  "cover": 1,
+  "hit": 255,
+  "missing": 0
  },
  {
   "rel": "privacy/index.html",
@@ -1994,15 +1993,15 @@
  },
  {
   "rel": "rekt/index.html",
-  "cover": 0.9264705882352942,
-  "hit": 126,
-  "missing": 10
+  "cover": 1,
+  "hit": 135,
+  "missing": 0
  },
  {
   "rel": "rewards/index.html",
-  "cover": 0.8072289156626506,
-  "hit": 201,
-  "missing": 48
+  "cover": 1,
+  "hit": 248,
+  "missing": 0
  },
  {
   "rel": "risk-of-ruin-calculator/index.html",
@@ -2036,9 +2035,9 @@
  },
  {
   "rel": "season/index.html",
-  "cover": 0.8363636363636363,
-  "hit": 92,
-  "missing": 18
+  "cover": 1,
+  "hit": 109,
+  "missing": 0
  },
  {
   "rel": "sei-liquidation-calculator/index.html",
@@ -2078,21 +2077,21 @@
  },
  {
   "rel": "spot/index.html",
-  "cover": 0.92,
-  "hit": 69,
-  "missing": 6
+  "cover": 1,
+  "hit": 75,
+  "missing": 0
  },
  {
   "rel": "squads/index.html",
-  "cover": 0.875,
-  "hit": 28,
-  "missing": 4
+  "cover": 1,
+  "hit": 32,
+  "missing": 0
  },
  {
   "rel": "status/index.html",
-  "cover": 0.9629629629629629,
-  "hit": 26,
-  "missing": 1
+  "cover": 1,
+  "hit": 27,
+  "missing": 0
  },
  {
   "rel": "stock-trading-simulator/index.html",
@@ -2174,9 +2173,9 @@
  },
  {
   "rel": "trading-api/index.html",
-  "cover": 0.9790076335877863,
-  "hit": 513,
-  "missing": 11
+  "cover": 1,
+  "hit": 524,
+  "missing": 0
  },
  {
   "rel": "trading-competition/index.html",
@@ -2228,9 +2227,9 @@
  },
  {
   "rel": "vault/index.html",
-  "cover": 0.989010989010989,
-  "hit": 90,
-  "missing": 1
+  "cover": 1,
+  "hit": 91,
+  "missing": 0
  },
  {
   "rel": "what-leverage-should-a-beginner-use/index.html",
@@ -2246,9 +2245,9 @@
  },
  {
   "rel": "where-to-start/index.html",
-  "cover": 0.9855072463768116,
-  "hit": 68,
-  "missing": 1
+  "cover": 1,
+  "hit": 69,
+  "missing": 0
  },
  {
   "rel": "widgets/index.html",
@@ -2312,8 +2311,8 @@
  },
  {
   "rel": "app.html → app-es.html",
-  "cover": 0.9735772357723578,
-  "hit": 479,
-  "missing": 13
+  "cover": 1,
+  "hit": 491,
+  "missing": 0
  }
 ]

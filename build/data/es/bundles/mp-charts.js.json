@@ -1,0 +1,1071 @@
+{
+ "file": "mp-charts.js",
+ "helper": "__esT_mpcharts",
+ "dict": "__esD_mpcharts",
+ "items": [
+  {
+   "key": "dailyLevelsPdhPdl",
+   "raw": "'Daily levels (PDH / PDL / open)'",
+   "en": "Daily levels (PDH / PDL / open)",
+   "n": 1,
+   "es": "Niveles diarios (PDH / PDL / apertura)"
+  },
+  {
+   "key": "tradingSessions",
+   "raw": "'Trading sessions'",
+   "en": "Trading sessions",
+   "n": 1,
+   "es": "Sesiones de trading"
+  },
+  {
+   "key": "everyLiquidationOverThe",
+   "raw": "'Every liquidation over the floor in the last 24 hours, marked on the chart where and when it happened. Tap one for its size, side and venue. Real events from our own feed, not a model.'",
+   "en": "Every liquidation over the floor in the last 24 hours, marked on the chart where and when it happened. Tap one for its size, side and venue. Real events from our own feed, not a model.",
+   "n": 1,
+   "es": "Cada liquidación por encima del mínimo en las últimas 24 horas, marcada en el gráfico donde y cuando ocurrió. Toca una para ver su tamaño, lado y exchange. Son eventos reales de nuestro propio feed, no un modelo."
+  },
+  {
+   "key": "leaningUp",
+   "raw": "'<span class=\"st\">leaning up</span>'",
+   "en": "<span class=\"st\">leaning up</span>",
+   "n": 1,
+   "es": "<span class=\"st\">inclinado al alza</span>"
+  },
+  {
+   "key": "leaningDown",
+   "raw": "'<span class=\"st\">leaning down</span>'",
+   "en": "<span class=\"st\">leaning down</span>",
+   "n": 1,
+   "es": "<span class=\"st\">inclinado a la baja</span>"
+  },
+  {
+   "key": "perCandleA1",
+   "raw": "'% per candle</span><span class=\"st\">a 1.5x ATR stop = '",
+   "en": "% per candle</span><span class=\"st\">a 1.5x ATR stop = ",
+   "n": 1,
+   "es": "% por vela</span><span class=\"st\">stop de 1.5x ATR = "
+  },
+  {
+   "key": "stretchedUp",
+   "raw": "'<span class=\"st dn\">stretched up</span>'",
+   "en": "<span class=\"st dn\">stretched up</span>",
+   "n": 1,
+   "es": "<span class=\"st dn\">estirado al alza</span>"
+  },
+  {
+   "key": "stretchedDown",
+   "raw": "'<span class=\"st up\">stretched down</span>'",
+   "en": "<span class=\"st up\">stretched down</span>",
+   "n": 1,
+   "es": "<span class=\"st up\">estirado a la baja</span>"
+  },
+  {
+   "key": "insideTheBand",
+   "raw": "'<span class=\"st\">inside the band</span>'",
+   "en": "<span class=\"st\">inside the band</span>",
+   "n": 1,
+   "es": "<span class=\"st\">dentro de la banda</span>"
+  },
+  {
+   "key": "xThe20Bar",
+   "raw": "'x the 20-bar average</span>'",
+   "en": "x the 20-bar average</span>",
+   "n": 1,
+   "es": "x el promedio de 20 barras</span>"
+  },
+  {
+   "key": "belowPriceLongLiqs",
+   "raw": "'BELOW price (long liqs) - a dip can run'",
+   "en": "BELOW price (long liqs) - a dip can run",
+   "n": 1,
+   "es": "POR DEBAJO del precio (liquidaciones long) - una caída puede extenderse"
+  },
+  {
+   "key": "abovePriceShortLiqs",
+   "raw": "'ABOVE price (short liqs) - a pop can run'",
+   "en": "ABOVE price (short liqs) - a pop can run",
+   "n": 1,
+   "es": "POR ENCIMA del precio (liquidaciones short) - una subida puede extenderse"
+  },
+  {
+   "key": "noStrongEdge",
+   "raw": "'no strong edge'",
+   "en": "no strong edge",
+   "n": 1,
+   "es": "sin ventaja clara"
+  },
+  {
+   "key": "drivenBy",
+   "raw": "'<span class=\"sv\">driven by '",
+   "en": "<span class=\"sv\">driven by ",
+   "n": 1,
+   "es": "<span class=\"sv\">impulsado por "
+  },
+  {
+   "key": "analogsWentUp",
+   "raw": "' analogs went up</span>'",
+   "en": " analogs went up</span>",
+   "n": 1,
+   "es": " de los análogos subieron</span>"
+  },
+  {
+   "key": "shadesTheAsia00",
+   "raw": "'Shades the Asia (00-08 UTC), London (08-16) and New York (13-21) sessions on intraday charts - where the volume and the ranges come from.'",
+   "en": "Shades the Asia (00-08 UTC), London (08-16) and New York (13-21) sessions on intraday charts - where the volume and the ranges come from.",
+   "n": 1,
+   "es": "Sombrea las sesiones de Asia (00-08 UTC), Londres (08-16) y Nueva York (13-21) en gráficos intradía - de ahí vienen el volumen y los rangos."
+  },
+  {
+   "key": "couldNotCaptureThe",
+   "raw": "'Could not capture the chart'",
+   "en": "Could not capture the chart",
+   "n": 2,
+   "es": "No se pudo capturar el gráfico"
+  },
+  {
+   "key": "onMarginpadIoCharts",
+   "raw": "' on marginpad.io/charts'",
+   "en": " on marginpad.io/charts",
+   "n": 1,
+   "es": " en marginpad.io/charts"
+  },
+  {
+   "key": "chartCopiedToThe",
+   "raw": "'Chart copied to the clipboard and saved as '",
+   "en": "Chart copied to the clipboard and saved as ",
+   "n": 1,
+   "es": "Gráfico copiado al portapapeles y guardado como "
+  },
+  {
+   "key": "backToTheLatest",
+   "raw": "'Back to the latest candle'",
+   "en": "Back to the latest candle",
+   "n": 2,
+   "es": "Volver a la última vela"
+  },
+  {
+   "key": "yesterdaySHighLow",
+   "raw": "'Yesterday\\'s high, low and close (UTC) and today\\'s open as lines - the levels every desk watches first. Intraday charts only.'",
+   "en": "Yesterday\\'s high, low and close (UTC) and today\\'s open as lines - the levels every desk watches first. Intraday charts only.",
+   "n": 1,
+   "es": "El máximo, mínimo y cierre de ayer (UTC) y la apertura de hoy como líneas - los niveles que toda mesa mira primero. Solo en gráficos intradía."
+  },
+  {
+   "key": "notEnoughHistoryTo",
+   "raw": "'Not enough history to replay'",
+   "en": "Not enough history to replay",
+   "n": 1,
+   "es": "No hay suficiente historial para repetir"
+  },
+  {
+   "key": "replayDragTheSlider",
+   "raw": "'Replay: drag the slider to pick a start, play or step one candle at a time.'",
+   "en": "Replay: drag the slider to pick a start, play or step one candle at a time.",
+   "n": 1,
+   "es": "Repetición: arrastra el control deslizante para elegir un punto de inicio, reproduce o avanza vela por vela."
+  },
+  {
+   "key": "replaySpacePlaysThe",
+   "raw": "'Replay: Space plays, the arrow keys step one candle. The live feed waits until you exit.'",
+   "en": "Replay: Space plays, the arrow keys step one candle. The live feed waits until you exit.",
+   "n": 1,
+   "es": "Repetición: la barra espaciadora reproduce, las flechas avanzan vela por vela. El feed en vivo espera hasta que salgas."
+  },
+  {
+   "key": "circlesOnTheChart",
+   "raw": "'Circles on the chart at the exact price and candle where a big liquidation happened in the last 24 hours. Red = a long was force-SOLD there, green = a short was force-BOUGHT. The bigger the circle, the bigger the position. Tap one for its size, the venue and how far it is from the price now.'",
+   "en": "Circles on the chart at the exact price and candle where a big liquidation happened in the last 24 hours. Red = a long was force-SOLD there, green = a short was force-BOUGHT. The bigger the circle, the bigger the position. Tap one for its size, the venue and how far it is from the price now.",
+   "n": 1,
+   "es": "Círculos en el gráfico en el precio y la vela exactos donde ocurrió una gran liquidación en las últimas 24 horas. Rojo = un long fue VENDIDO a la fuerza ahí, verde = un short fue COMPRADO a la fuerza. Cuanto más grande el círculo, más grande la posición. Toca uno para ver su tamaño, el exchange y a qué distancia está del precio ahora."
+  },
+  {
+   "key": "theseAreNotForecasts",
+   "raw": "'These are not forecasts and not a model - they are events our own collector recorded across eight exchanges. Where they cluster is where leverage actually died, and that price tends to matter again: it is where stops sat, and it is where the market proved somebody was offside. A wall of red circles under a drop is the cascade that caused it.'",
+   "en": "These are not forecasts and not a model - they are events our own collector recorded across eight exchanges. Where they cluster is where leverage actually died, and that price tends to matter again: it is where stops sat, and it is where the market proved somebody was offside. A wall of red circles under a drop is the cascade that caused it.",
+   "n": 1,
+   "es": "No son pronósticos ni un modelo - son eventos que nuestro propio recolector registró en ocho exchanges. Donde se agrupan es donde el apalancamiento realmente murió, y ese precio suele volver a importar: ahí estaban los stops, y ahí el mercado demostró que alguien estaba del lado equivocado. Un muro de círculos rojos debajo de una caída es la cascada que la causó."
+  },
+  {
+   "key": "priceComingBackDown",
+   "raw": "'Price coming back DOWN into a thick band of red circles is arriving where forced selling already happened once - either it gets absorbed and that is your level, or it breaks and the same thing happens again. Green circles above you mark where shorts were squeezed out; a move back up through them has fuel behind it.'",
+   "en": "Price coming back DOWN into a thick band of red circles is arriving where forced selling already happened once - either it gets absorbed and that is your level, or it breaks and the same thing happens again. Green circles above you mark where shorts were squeezed out; a move back up through them has fuel behind it.",
+   "n": 1,
+   "es": "El precio volviendo a BAJAR hacia una banda densa de círculos rojos está llegando a donde ya hubo venta forzada una vez - o se absorbe y ese es tu nivel, o se rompe y pasa lo mismo otra vez. Los círculos verdes por encima marcan donde los shorts fueron exprimidos; un movimiento de vuelta al alza a través de ellos tiene combustible detrás."
+  },
+  {
+   "key": "theMirrorShortingInto",
+   "raw": "'The mirror. Shorting into a band of green circles means shorting where short positions were already force-closed once. The emptier the chart, the calmer the market has been - which is information too.'",
+   "en": "The mirror. Shorting into a band of green circles means shorting where short positions were already force-closed once. The emptier the chart, the calmer the market has been - which is information too.",
+   "n": 1,
+   "es": "El espejo. Abrir un short hacia una banda de círculos verdes significa hacerlo donde posiciones short ya fueron cerradas a la fuerza una vez. Cuanto más vacío el gráfico, más tranquilo ha estado el mercado - lo cual también es información."
+  },
+  {
+   "key": "oneLineBetween0",
+   "raw": "'One line between 0 and 100. The shaded areas are above 70 and below 30.'",
+   "en": "One line between 0 and 100. The shaded areas are above 70 and below 30.",
+   "n": 1,
+   "es": "Una línea entre 0 y 100. Las zonas sombreadas están por encima de 70 y por debajo de 30."
+  },
+  {
+   "key": "howMuchOfThe",
+   "raw": "'How much of the last 14 candles went up against down. Above 70 the move is stretched, below 30 it is washed out. A divergence - price prints a new high but RSI does not - means the move is running on fewer buyers.'",
+   "en": "How much of the last 14 candles went up against down. Above 70 the move is stretched, below 30 it is washed out. A divergence - price prints a new high but RSI does not - means the move is running on fewer buyers.",
+   "n": 1,
+   "es": "Cuánto de las últimas 14 velas subió frente a bajó. Por encima de 70 el movimiento está estirado, por debajo de 30 está agotado. Una divergencia - el precio marca un nuevo máximo pero el RSI no - significa que el movimiento avanza con menos compradores."
+  },
+  {
+   "key": "aTurnUpOut",
+   "raw": "'A turn up out of the oversold area, or a pullback that holds above 40 in an uptrend. Buying at 75 is buying the stretch.'",
+   "en": "A turn up out of the oversold area, or a pullback that holds above 40 in an uptrend. Buying at 75 is buying the stretch.",
+   "n": 1,
+   "es": "Un giro al alza saliendo de la zona de sobreventa, o un retroceso que se mantiene por encima de 40 en una tendencia alcista. Comprar en 75 es comprar el estiramiento."
+  },
+  {
+   "key": "aTurnDownOut",
+   "raw": "'A turn down out of the overbought area, or a bounce that fails under 60 in a downtrend. Shorting at 25 is shorting the washout.'",
+   "en": "A turn down out of the overbought area, or a bounce that fails under 60 in a downtrend. Shorting at 25 is shorting the washout.",
+   "n": 1,
+   "es": "Un giro a la baja saliendo de la zona de sobrecompra, o un rebote que falla por debajo de 60 en una tendencia bajista. Abrir un short en 25 es shortear el agotamiento."
+  },
+  {
+   "key": "twoLinesAndA",
+   "raw": "'Two lines and a histogram around zero. The bars are the gap between the lines.'",
+   "en": "Two lines and a histogram around zero. The bars are the gap between the lines.",
+   "n": 1,
+   "es": "Dos líneas y un histograma alrededor de cero. Las barras son la distancia entre las líneas."
+  },
+  {
+   "key": "momentumTheMacdLine",
+   "raw": "'Momentum. The MACD line crossing above the signal line is momentum turning up; the histogram shrinking while price still rises is momentum fading before price shows it.'",
+   "en": "Momentum. The MACD line crossing above the signal line is momentum turning up; the histogram shrinking while price still rises is momentum fading before price shows it.",
+   "n": 1,
+   "es": "Momento. La línea MACD cruzando por encima de la línea de señal es el momento girando al alza; el histograma reduciéndose mientras el precio sigue subiendo es el momento debilitándose antes de que el precio lo muestre."
+  },
+  {
+   "key": "aBullCrossFrom",
+   "raw": "'A bull cross from below zero is the strongest form; a cross far above zero is late. Rising bars confirm, shrinking bars warn.'",
+   "en": "A bull cross from below zero is the strongest form; a cross far above zero is late. Rising bars confirm, shrinking bars warn.",
+   "n": 1,
+   "es": "Un cruce alcista desde debajo de cero es la forma más fuerte; un cruce muy por encima de cero llega tarde. Las barras creciendo confirman, las barras reduciéndose advierten."
+  },
+  {
+   "key": "aBearCrossFrom",
+   "raw": "'A bear cross from above zero. A histogram that peaks and shrinks while price makes a higher high is the classic exhaustion.'",
+   "en": "A bear cross from above zero. A histogram that peaks and shrinks while price makes a higher high is the classic exhaustion.",
+   "n": 1,
+   "es": "Un cruce bajista desde encima de cero. Un histograma que alcanza un pico y se reduce mientras el precio marca un máximo más alto es el agotamiento clásico."
+  },
+  {
+   "key": "kFastAndD",
+   "raw": "'%K (fast) and %D (slow) between 0 and 100, with shaded areas above 80 and below 20.'",
+   "en": "%K (fast) and %D (slow) between 0 and 100, with shaded areas above 80 and below 20.",
+   "n": 1,
+   "es": "%K (rápida) y %D (lenta) entre 0 y 100, con zonas sombreadas por encima de 80 y por debajo de 20."
+  },
+  {
+   "key": "whereTheCloseSits",
+   "raw": "'Where the close sits inside the recent range. High = closing near the top of the range, low = near the bottom. In a strong trend it can stay pinned for a long time - that is the trend, not a signal.'",
+   "en": "Where the close sits inside the recent range. High = closing near the top of the range, low = near the bottom. In a strong trend it can stay pinned for a long time - that is the trend, not a signal.",
+   "n": 1,
+   "es": "Dónde se ubica el cierre dentro del rango reciente. Alto = cerrando cerca de la parte superior del rango, bajo = cerca de la inferior. En una tendencia fuerte puede quedar clavado ahí mucho tiempo - eso es la tendencia, no una señal."
+  },
+  {
+   "key": "kCrossingAboveD",
+   "raw": "'%K crossing above %D inside the lower area, in an uptrend. Not a long because it is low: because it turned.'",
+   "en": "%K crossing above %D inside the lower area, in an uptrend. Not a long because it is low: because it turned.",
+   "n": 1,
+   "es": "%K cruzando por encima de %D dentro de la zona baja, en una tendencia alcista. No es un long porque está bajo: es porque giró."
+  },
+  {
+   "key": "kCrossingBelowD",
+   "raw": "'%K crossing below %D inside the upper area, in a downtrend.'",
+   "en": "%K crossing below %D inside the upper area, in a downtrend.",
+   "n": 1,
+   "es": "%K cruzando por debajo de %D dentro de la zona alta, en una tendencia bajista."
+  },
+  {
+   "key": "oneLineInPrice",
+   "raw": "'One line in price units: the average candle range over 14 candles.'",
+   "en": "One line in price units: the average candle range over 14 candles.",
+   "n": 1,
+   "es": "Una línea en unidades de precio: el rango medio de vela en las últimas 14 velas."
+  },
+  {
+   "key": "howFarThisMarket",
+   "raw": "'How far this market moves per candle right now. It sizes stops and targets - a stop inside one ATR is noise and gets hit by nothing.'",
+   "en": "How far this market moves per candle right now. It sizes stops and targets - a stop inside one ATR is noise and gets hit by nothing.",
+   "n": 1,
+   "es": "Cuánto se mueve este mercado por vela ahora mismo. Sirve para calcular stops y objetivos - un stop dentro de un ATR es ruido y lo toca cualquier cosa."
+  },
+  {
+   "key": "putTheStopAt",
+   "raw": "'Put the stop at least 1.5 ATR under the entry level, and size the position so that distance is the risk you accept.'",
+   "en": "Put the stop at least 1.5 ATR under the entry level, and size the position so that distance is the risk you accept.",
+   "n": 1,
+   "es": "Pon el stop al menos a 1.5 ATR por debajo del nivel de entrada, y calcula el tamaño de la posición para que esa distancia sea el riesgo que aceptas."
+  },
+  {
+   "key": "theSameAboveThe",
+   "raw": "'The same above the entry. A rising ATR into your target means the target can be reached faster, and the stop too.'",
+   "en": "The same above the entry. A rising ATR into your target means the target can be reached faster, and the stop too.",
+   "n": 1,
+   "es": "Lo mismo por encima de la entrada. Un ATR en aumento hacia tu objetivo significa que puede alcanzarse más rápido, y el stop también."
+  },
+  {
+   "key": "oneLineBetween100",
+   "raw": "'One line between -100 and 0. Shaded above -20 and below -80.'",
+   "en": "One line between -100 and 0. Shaded above -20 and below -80.",
+   "n": 1,
+   "es": "Una línea entre -100 y 0. Sombreado por encima de -20 y por debajo de -80."
+  },
+  {
+   "key": "theMirrorOfThe",
+   "raw": "'The mirror of the stochastic: where the close sits in the 14-candle range. Above -20 price closes near the highs, below -80 near the lows.'",
+   "en": "The mirror of the stochastic: where the close sits in the 14-candle range. Above -20 price closes near the highs, below -80 near the lows.",
+   "n": 1,
+   "es": "El espejo del estocástico: dónde se ubica el cierre en el rango de 14 velas. Por encima de -20 el precio cierra cerca de los máximos, por debajo de -80 cerca de los mínimos."
+  },
+  {
+   "key": "aClimbOutOf",
+   "raw": "'A climb out of the lower area while structure holds. A reading that refuses to leave -90 is a falling knife.'",
+   "en": "A climb out of the lower area while structure holds. A reading that refuses to leave -90 is a falling knife.",
+   "n": 1,
+   "es": "Una subida saliendo de la zona baja mientras la estructura se mantiene. Una lectura que se niega a salir de -90 es un cuchillo cayendo."
+  },
+  {
+   "key": "aDropOutOf",
+   "raw": "'A drop out of the upper area. Pinned at -10 in a strong trend is strength, not a short.'",
+   "en": "A drop out of the upper area. Pinned at -10 in a strong trend is strength, not a short.",
+   "n": 1,
+   "es": "Una caída saliendo de la zona alta. Clavado en -10 en una tendencia fuerte es fuerza, no una señal de short."
+  },
+  {
+   "key": "oneLineAroundZero",
+   "raw": "'One line around zero. Shaded past +100 and -100.'",
+   "en": "One line around zero. Shaded past +100 and -100.",
+   "n": 1,
+   "es": "Una línea alrededor de cero. Sombreado más allá de +100 y -100."
+  },
+  {
+   "key": "howFarTheTypical",
+   "raw": "'How far the typical price sits from its 20-candle average, scaled by its usual deviation. Beyond 100 the market is stretched from its mean.'",
+   "en": "How far the typical price sits from its 20-candle average, scaled by its usual deviation. Beyond 100 the market is stretched from its mean.",
+   "n": 1,
+   "es": "A qué distancia está el precio típico de su promedio de 20 velas, ajustado por su desviación habitual. Más allá de 100 el mercado está estirado respecto a su media."
+  },
+  {
+   "key": "barsInTheCandle",
+   "raw": "'Bars in the candle colour. The card compares the newest bar with the 20-bar average.'",
+   "en": "Bars in the candle colour. The card compares the newest bar with the 20-bar average.",
+   "n": 1,
+   "es": "Barras en el color de la vela. La tarjeta compara la barra más reciente con el promedio de 20 barras."
+  },
+  {
+   "key": "participationAMoveOn",
+   "raw": "'Participation. A move on 2x average volume has people behind it; a breakout on half the average usually comes back.'",
+   "en": "Participation. A move on 2x average volume has people behind it; a breakout on half the average usually comes back.",
+   "n": 1,
+   "es": "Participación. Un movimiento con 2x el volumen promedio tiene gente detrás; una ruptura con la mitad del promedio suele volver atrás."
+  },
+  {
+   "key": "aBreakoutCandleAt",
+   "raw": "'A breakout candle at 1.5x or more, and a pullback that goes quiet. Rising price on falling volume is a move running out of buyers.'",
+   "en": "A breakout candle at 1.5x or more, and a pullback that goes quiet. Rising price on falling volume is a move running out of buyers.",
+   "n": 1,
+   "es": "Una vela de ruptura con 1.5x o más, y un retroceso que se calma. Precio subiendo con volumen cayendo es un movimiento quedándose sin compradores."
+  },
+  {
+   "key": "aBreakdownOnVolume",
+   "raw": "'A breakdown on volume, a bounce on none. A selling climax (3x and more, long wick) often ends the fall rather than starts it.'",
+   "en": "A breakdown on volume, a bounce on none. A selling climax (3x and more, long wick) often ends the fall rather than starts it.",
+   "n": 1,
+   "es": "Una ruptura a la baja con volumen, un rebote sin él. Un clímax de ventas (3x o más, mecha larga) suele terminar la caída más que iniciarla."
+  },
+  {
+   "key": "aScoreFrom0",
+   "raw": "'A score from 0 to 100 with its band shaded past 90, and which side the liquidation fuel sits on.'",
+   "en": "A score from 0 to 100 with its band shaded past 90, and which side the liquidation fuel sits on.",
+   "n": 1,
+   "es": "Una puntuación de 0 a 100 con su banda sombreada más allá de 90, y de qué lado está el combustible de liquidación."
+  },
+  {
+   "key": "liquidationFuelWithin5",
+   "raw": "'Liquidation fuel within 5% of price against what 20 candles of volume can absorb, ranked against the last 200 candles. Above 70 the market is fragile, above 90 one push can cascade.'",
+   "en": "Liquidation fuel within 5% of price against what 20 candles of volume can absorb, ranked against the last 200 candles. Above 70 the market is fragile, above 90 one push can cascade.",
+   "n": 1,
+   "es": "Combustible de liquidación dentro del 5% del precio frente a lo que pueden absorber 20 velas de volumen, clasificado contra las últimas 200 velas. Por encima de 70 el mercado es frágil, por encima de 90 un solo empujón puede generar una cascada."
+  },
+  {
+   "key": "fuelBelowPriceUnder",
+   "raw": "'Fuel BELOW price under a long is a chain of long liquidations - keep the stop beyond it or wait for it to clear. Fuel above price is your target.'",
+   "en": "Fuel BELOW price under a long is a chain of long liquidations - keep the stop beyond it or wait for it to clear. Fuel above price is your target.",
+   "n": 1,
+   "es": "Combustible POR DEBAJO del precio con un long es una cadena de liquidaciones long - mantén el stop más allá de ella o espera a que se despeje. El combustible por encima del precio es tu objetivo."
+  },
+  {
+   "key": "fuelAbovePriceUnder",
+   "raw": "'Fuel ABOVE price under a short is a short squeeze waiting for a push. Fuel below is where a short can run.'",
+   "en": "Fuel ABOVE price under a short is a short squeeze waiting for a push. Fuel below is where a short can run.",
+   "n": 1,
+   "es": "Combustible POR ENCIMA del precio con un short es un short squeeze esperando un empujón. El combustible por debajo es hasta donde puede llegar un short."
+  },
+  {
+   "key": "aScoreFrom100",
+   "raw": "'A score from -100 to +100 with the strong-lean bands shaded past +55 and -55, and the factors driving it now.'",
+   "en": "A score from -100 to +100 with the strong-lean bands shaded past +55 and -55, and the factors driving it now.",
+   "n": 1,
+   "es": "Una puntuación de -100 a +100 con las bandas de sesgo fuerte sombreadas más allá de +55 y -55, y los factores que la impulsan ahora."
+  },
+  {
+   "key": "eightFactorsTrendMomentum",
+   "raw": "'Eight factors - trend, momentum, volume, fragility, real liquidation flow, funding, crowd positioning, structure - blended with weights re-learned every 10 candles from the trailing 280, never the future. Beyond 55 the model sees a one-sided market.'",
+   "en": "Eight factors - trend, momentum, volume, fragility, real liquidation flow, funding, crowd positioning, structure - blended with weights re-learned every 10 candles from the trailing 280, never the future. Beyond 55 the model sees a one-sided market.",
+   "n": 1,
+   "es": "Ocho factores - tendencia, momento, volumen, fragilidad, flujo real de liquidación, funding, posicionamiento de la multitud, estructura - combinados con pesos reaprendidos cada 10 velas a partir de las últimas 280, nunca del futuro. Más allá de 55 el modelo ve un mercado unilateral."
+  },
+  {
+   "key": "tradeWithAStrong",
+   "raw": "'Trade with a strong bullish lean, size down inside the band, and read the driving factors: a lean built on funding and crowd is a squeeze, one built on trend and volume is a trend.'",
+   "en": "Trade with a strong bullish lean, size down inside the band, and read the driving factors: a lean built on funding and crowd is a squeeze, one built on trend and volume is a trend.",
+   "n": 1,
+   "es": "Opera con un sesgo alcista fuerte, reduce el tamaño dentro de la banda, y lee los factores que lo impulsan: un sesgo construido sobre funding y la multitud es un squeeze, uno construido sobre tendencia y volumen es una tendencia."
+  },
+  {
+   "key": "theMirrorAStrong",
+   "raw": "'The mirror. A strong bearish lean with fragility among the drivers is where cascades start.'",
+   "en": "The mirror. A strong bearish lean with fragility among the drivers is where cascades start.",
+   "n": 1,
+   "es": "El espejo. Un sesgo bajista fuerte con fragilidad entre los factores es donde empiezan las cascadas."
+  },
+  {
+   "key": "a70UpRate",
+   "raw": "'A 70% up-rate with a large projected move is drift in your favour; 70% with a tiny move says the edge is small.'",
+   "en": "A 70% up-rate with a large projected move is drift in your favour; 70% with a tiny move says the edge is small.",
+   "n": 1,
+   "es": "Una tasa de subida del 70% con un movimiento proyectado grande es una deriva a tu favor; un 70% con un movimiento diminuto dice que la ventaja es pequeña."
+  },
+  {
+   "key": "aLowUpRate",
+   "raw": "'A low up-rate with a negative projection. When analogs split 50/50 the memory has nothing to say - trade the structure.'",
+   "en": "A low up-rate with a negative projection. When analogs split 50/50 the memory has nothing to say - trade the structure.",
+   "n": 1,
+   "es": "Una tasa de subida baja con una proyección negativa. Cuando los análogos se dividen 50/50 la memoria no tiene nada que decir - opera según la estructura."
+  },
+  {
+   "key": "theDominantLiquidationPool",
+   "raw": "'The dominant liquidation pool above and below price, and a bar showing which way the pull leans right now.'",
+   "en": "The dominant liquidation pool above and below price, and a bar showing which way the pull leans right now.",
+   "n": 1,
+   "es": "El pool de liquidación dominante por encima y por debajo del precio, y una barra que muestra hacia dónde se inclina la atracción ahora mismo."
+  },
+  {
+   "key": "sizeXProximityOf",
+   "raw": "'Size x proximity of the standing pools from our leverage-ladder model. Price tends to visit the stronger pool - it is where forced orders wait.'",
+   "en": "Size x proximity of the standing pools from our leverage-ladder model. Price tends to visit the stronger pool - it is where forced orders wait.",
+   "n": 1,
+   "es": "Tamaño x proximidad de los pools existentes según nuestro modelo de escalera de apalancamiento. El precio suele visitar el pool más fuerte - ahí esperan las órdenes forzadas."
+  },
+  {
+   "key": "aPoolAboveIs",
+   "raw": "'A pool above is a target. A pool just below is the level to keep a stop beyond, because the sweep through it is the most common stop-out.'",
+   "en": "A pool above is a target. A pool just below is the level to keep a stop beyond, because the sweep through it is the most common stop-out.",
+   "n": 1,
+   "es": "Un pool por encima es un objetivo. Un pool justo por debajo es el nivel en el que mantener el stop más allá, porque el barrido a través de él es el stop-out más común."
+  },
+  {
+   "key": "aPoolBelowIs",
+   "raw": "'A pool below is the target. A pool above is the squeeze risk - keep the stop beyond it.'",
+   "en": "A pool below is the target. A pool above is the squeeze risk - keep the stop beyond it.",
+   "n": 1,
+   "es": "Un pool por debajo es el objetivo. Un pool por encima es el riesgo de squeeze - mantén el stop más allá de él."
+  },
+  {
+   "key": "whatYouSee",
+   "raw": "'<div class=\"ix-r\"><i>What you see</i><p>'",
+   "en": "<div class=\"ix-r\"><i>What you see</i><p>",
+   "n": 1,
+   "es": "<div class=\"ix-r\"><i>Lo que ves</i><p>"
+  },
+  {
+   "key": "whatItMeans",
+   "raw": "'</p></div><div class=\"ix-r\"><i>What it means</i><p>'",
+   "en": "</p></div><div class=\"ix-r\"><i>What it means</i><p>",
+   "n": 1,
+   "es": "</p></div><div class=\"ix-r\"><i>Qué significa</i><p>"
+  },
+  {
+   "key": "learnMoreInThe",
+   "raw": "'<a href=\"/academy/\" target=\"_blank\" rel=\"noopener\">Learn more in the Academy</a>'",
+   "en": "<a href=\"/academy/\" target=\"_blank\" rel=\"noopener\">Learn more in the Academy</a>",
+   "n": 1,
+   "es": "<a href=\"/academy/\" target=\"_blank\" rel=\"noopener\">Más información en la Academia</a>"
+  },
+  {
+   "key": "removeFromChart",
+   "raw": "'<button type=\"button\" data-act=\"rm\">Remove from chart</button>'",
+   "en": "<button type=\"button\" data-act=\"rm\">Remove from chart</button>",
+   "n": 1,
+   "es": "<button type=\"button\" data-act=\"rm\">Quitar del gráfico</button>"
+  },
+  {
+   "key": "candlesAsThisChart",
+   "raw": "' candles as this chart; the figures are both symbols over the last 24 candles'",
+   "en": " candles as this chart; the figures are both symbols over the last 24 candles",
+   "n": 1,
+   "es": " velas que este gráfico; las cifras son de ambos símbolos en las últimas 24 velas"
+  },
+  {
+   "key": "noCandlesFor",
+   "raw": "'No candles for '",
+   "en": "No candles for ",
+   "n": 1,
+   "es": "Sin velas para "
+  },
+  {
+   "key": "measuredNotModelledEvery",
+   "raw": "'MEASURED, not modelled: every move of that size on '",
+   "en": "MEASURED, not modelled: every move of that size on ",
+   "n": 1,
+   "es": "MEDIDO, no modelado: cada movimiento de ese tamaño en "
+  },
+  {
+   "key": "inTheLast",
+   "raw": "' in the last '",
+   "en": " in the last ",
+   "n": 1,
+   "es": " en los últimos "
+  },
+  {
+   "key": "daysAndWhatThe",
+   "raw": "' days, and what the WHOLE market liquidated while it happened - the median, with the number of real moves behind it. A bigger move than any listed liquidates more than the biggest figure here. A size with fewer than three real examples is not shown at all.'",
+   "en": " days, and what the WHOLE market liquidated while it happened - the median, with the number of real moves behind it. A bigger move than any listed liquidates more than the biggest figure here. A size with fewer than three real examples is not shown at all.",
+   "n": 1,
+   "es": " días, y lo que TODO el mercado liquidó mientras ocurría - la mediana, con el número de movimientos reales detrás. Un movimiento más grande que cualquiera de la lista liquida más que la cifra más alta aquí. Un tamaño con menos de tres ejemplos reales no se muestra."
+  },
+  {
+   "key": "everythingThisMarketLiquid",
+   "raw": "'Everything this market liquidated in the last 24 hours: '",
+   "en": "Everything this market liquidated in the last 24 hours: ",
+   "n": 1,
+   "es": "Todo lo que este mercado liquidó en las últimas 24 horas: "
+  },
+  {
+   "key": "positionsTheCirclesAre",
+   "raw": "' positions. The circles are the '",
+   "en": " positions. The circles are the ",
+   "n": 1,
+   "es": " posiciones. Los círculos son las "
+  },
+  {
+   "key": "biggestOfThem",
+   "raw": "' biggest of them ('",
+   "en": " biggest of them (",
+   "n": 1,
+   "es": " más grandes de ellas ("
+  },
+  {
+   "key": "everyLiquidationOverThe2",
+   "raw": "'Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. '",
+   "en": "Every liquidation over the per-coin floor in the last 24 hours, drawn at the price and the candle it happened on. ",
+   "n": 1,
+   "es": "Cada liquidación por encima del mínimo por moneda en las últimas 24 horas, dibujada en el precio y la vela en que ocurrió. "
+  },
+  {
+   "key": "tapAMarkFor",
+   "raw": "'Tap a mark for the size, the side and the venue. Measured from our own feed across eight exchanges - these are events that happened, not forecasts.'",
+   "en": "Tap a mark for the size, the side and the venue. Measured from our own feed across eight exchanges - these are events that happened, not forecasts.",
+   "n": 1,
+   "es": "Toca una marca para ver el tamaño, el lado y el exchange. Medido con nuestro propio feed en ocho exchanges - son eventos que ocurrieron, no pronósticos."
+  },
+  {
+   "key": "liquidationsNoFeedFor",
+   "raw": "'LIQUIDATIONS no feed for '",
+   "en": "LIQUIDATIONS no feed for ",
+   "n": 1,
+   "es": "LIQUIDACIONES sin feed para "
+  },
+  {
+   "key": "weRecordLiquidationsFor",
+   "raw": "'We record liquidations for ten majors; this market is not one of them.'",
+   "en": "We record liquidations for ten majors; this market is not one of them.",
+   "n": 1,
+   "es": "Registramos liquidaciones de diez monedas principales; este mercado no es una de ellas."
+  },
+  {
+   "key": "liquidationsNothingOverThe",
+   "raw": "'LIQUIDATIONS nothing over the floor on '",
+   "en": "LIQUIDATIONS nothing over the floor on ",
+   "n": 1,
+   "es": "LIQUIDACIONES nada por encima del mínimo en "
+  },
+  {
+   "key": "theFeedIsLive",
+   "raw": "'The feed is live for this coin and no liquidation large enough to mark has happened in the last day.'",
+   "en": "The feed is live for this coin and no liquidation large enough to mark has happened in the last day.",
+   "n": 1,
+   "es": "El feed está activo para esta moneda y no ha ocurrido ninguna liquidación lo bastante grande para marcar en el último día."
+  },
+  {
+   "key": "aTraderIFollow",
+   "raw": "'A trader I follow went '",
+   "en": "A trader I follow went ",
+   "n": 1,
+   "es": "Un trader al que sigo abrió un "
+  },
+  {
+   "key": "withEntryAround",
+   "raw": "' with entry around '",
+   "en": " with entry around ",
+   "n": 1,
+   "es": " con entrada alrededor de "
+  },
+  {
+   "key": "itWasLiquidated",
+   "raw": "'It was liquidated'",
+   "en": "It was liquidated",
+   "n": 1,
+   "es": "Fue liquidado"
+  },
+  {
+   "key": "theyClosedIt",
+   "raw": "'They closed it'",
+   "en": "They closed it",
+   "n": 1,
+   "es": "Lo cerraron"
+  },
+  {
+   "key": "itIsStillOpen",
+   "raw": "'It is still open. '",
+   "en": "It is still open. ",
+   "n": 1,
+   "es": "Sigue abierto. "
+  },
+  {
+   "key": "theEntryAndThe",
+   "raw": "'The entry and the exit are already marked on this chart with a BUY and a SELL circle. Analyze THIS trade: was the entry a good level, '",
+   "en": "The entry and the exit are already marked on this chart with a BUY and a SELL circle. Analyze THIS trade: was the entry a good level, ",
+   "n": 1,
+   "es": "La entrada y la salida ya están marcadas en este gráfico con un círculo de COMPRA y uno de VENTA. Analiza ESTA operación: fue la entrada un buen nivel, "
+  },
+  {
+   "key": "wasTheExitWell",
+   "raw": "'was the exit well timed or did they get out too early / leave money on the table'",
+   "en": "was the exit well timed or did they get out too early / leave money on the table",
+   "n": 1,
+   "es": "fue la salida bien cronometrada o salió demasiado pronto / dejó dinero sobre la mesa"
+  },
+  {
+   "key": "isThisAGood",
+   "raw": "'is this a good position to be in and where is the risk'",
+   "en": "is this a good position to be in and where is the risk",
+   "n": 1,
+   "es": "es esta una buena posición y dónde está el riesgo"
+  },
+  {
+   "key": "stillOpen",
+   "raw": "' · still open'",
+   "en": " · still open",
+   "n": 1,
+   "es": " · sigue abierto"
+  },
+  {
+   "key": "anySetup",
+   "raw": "'Any setup'",
+   "en": "Any setup",
+   "n": 1,
+   "es": "Cualquier setup"
+  },
+  {
+   "key": "breakoutAndRetest",
+   "raw": "'Breakout and retest'",
+   "en": "Breakout and retest",
+   "n": 1,
+   "es": "Ruptura y retest"
+  },
+  {
+   "key": "supplyAndDemand",
+   "raw": "'Supply and demand'",
+   "en": "Supply and demand",
+   "n": 1,
+   "es": "Oferta y demanda"
+  },
+  {
+   "key": "swingWithHtfStructure",
+   "raw": "'Swing with HTF structure'",
+   "en": "Swing with HTF structure",
+   "n": 1,
+   "es": "Swing con estructura HTF"
+  },
+  {
+   "key": "trackRecordLast30",
+   "raw": "'Track record, last 30 days, all members'",
+   "en": "Track record, last 30 days, all members",
+   "n": 1,
+   "es": "Historial, últimos 30 días, todos los miembros"
+  },
+  {
+   "key": "replayBacktestOnThe",
+   "raw": "'Replay backtest on the same 24 historical moments: wins / losses / unclear. Small sample - a lean, not a promise.'",
+   "en": "Replay backtest on the same 24 historical moments: wins / losses / unclear. Small sample - a lean, not a promise.",
+   "n": 1,
+   "es": "Backtest de repetición sobre los mismos 24 momentos históricos: ganancias / pérdidas / sin definir. Muestra pequeña - un sesgo, no una promesa."
+  },
+  {
+   "key": "bullishDIsA",
+   "raw": "'bullish (D is a low - watch for a bounce up)'",
+   "en": "bullish (D is a low - watch for a bounce up)",
+   "n": 1,
+   "es": "alcista (D es un mínimo - vigila un rebote al alza)"
+  },
+  {
+   "key": "bearishDIsA",
+   "raw": "'bearish (D is a high - watch for a drop)'",
+   "en": "bearish (D is a high - watch for a drop)",
+   "n": 1,
+   "es": "bajista (D es un máximo - vigila una caída)"
+  },
+  {
+   "key": "dThePrzIs",
+   "raw": "'D (the PRZ) is where the pattern completes - a reversal zone, confirm with a reaction before trading it. Draw it with pattern, points X-A-B-C-D.'",
+   "en": "D (the PRZ) is where the pattern completes - a reversal zone, confirm with a reaction before trading it. Draw it with pattern, points X-A-B-C-D.",
+   "n": 1,
+   "es": "D (la PRZ) es donde se completa el patrón - una zona de reversión, confirma con una reacción antes de operarla. Dibújalo con la herramienta pattern, puntos X-A-B-C-D."
+  },
+  {
+   "key": "aLongWasForce",
+   "raw": "'a long was force-sold'",
+   "en": "a long was force-sold",
+   "n": 1,
+   "es": "un long fue vendido a la fuerza"
+  },
+  {
+   "key": "aShortWasForce",
+   "raw": "'a short was force-bought'",
+   "en": "a short was force-bought",
+   "n": 1,
+   "es": "un short fue comprado a la fuerza"
+  },
+  {
+   "key": "theCirclesAreOnly",
+   "raw": "'the circles are only the biggest events, not the whole day'",
+   "en": "the circles are only the biggest events, not the whole day",
+   "n": 1,
+   "es": "los círculos son solo los eventos más grandes, no todo el día"
+  },
+  {
+   "key": "measuredNotModelledEvery2",
+   "raw": "'MEASURED, not modelled: every move of this size on this coin in the last '",
+   "en": "MEASURED, not modelled: every move of this size on this coin in the last ",
+   "n": 1,
+   "es": "MEDIDO, no modelado: cada movimiento de este tamaño en esta moneda en los últimos "
+  },
+  {
+   "key": "daysAndWhatThe2",
+   "raw": "' days and what the WHOLE market liquidated while it happened. A move bigger than any listed liquidates more than the biggest figure here.'",
+   "en": " days and what the WHOLE market liquidated while it happened. A move bigger than any listed liquidates more than the biggest figure here.",
+   "n": 1,
+   "es": " días y lo que TODO el mercado liquidó mientras ocurría. Un movimiento más grande que cualquiera de la lista liquida más que la cifra más alta aquí."
+  },
+  {
+   "key": "measuredFromTheseCandles",
+   "raw": "'MEASURED from these candles: half the time, within '",
+   "en": "MEASURED from these candles: half the time, within ",
+   "n": 1,
+   "es": "MEDIDO a partir de estas velas: la mitad de las veces, dentro de "
+  },
+  {
+   "key": "candlesThisMarketGets",
+   "raw": "' candles, this market gets at least '",
+   "en": " candles, this market gets at least ",
+   "n": 1,
+   "es": " velas, este mercado alcanza al menos "
+  },
+  {
+   "key": "aboveAnd",
+   "raw": "'% above and '",
+   "en": "% above and ",
+   "n": 1,
+   "es": "% por encima y "
+  },
+  {
+   "key": "belowWhereItIs",
+   "raw": "'% below where it is. An `entry` outside entryBandLow..entryBandHigh is a level price will probably never come back to, and the chart will REFUSE to draw it as a trade - it shows the reader NO POSITION NOW instead. Put the entry inside the band, or say plainly that there is no position right now and give the chart read.'",
+   "en": "% below where it is. An `entry` outside entryBandLow..entryBandHigh is a level price will probably never come back to, and the chart will REFUSE to draw it as a trade - it shows the reader NO POSITION NOW instead. Put the entry inside the band, or say plainly that there is no position right now and give the chart read.",
+   "n": 1,
+   "es": "% por debajo de donde está. Un `entry` fuera de entryBandLow..entryBandHigh es un nivel al que el precio probablemente nunca volverá, y el gráfico SE NEGARÁ a dibujarlo como operación - en su lugar le muestra al lector SIN POSICIÓN AHORA. Pon la entrada dentro de la banda, o di claramente que no hay posición ahora mismo y da la lectura del gráfico."
+  },
+  {
+   "key": "theValueAreaHolds",
+   "raw": "'the value area holds 70% of the volume - price inside it is balanced, a break and hold outside it is directional. Draw the full histogram with the volprofile tool.'",
+   "en": "the value area holds 70% of the volume - price inside it is balanced, a break and hold outside it is directional. Draw the full histogram with the volprofile tool.",
+   "n": 1,
+   "es": "el área de valor contiene el 70% del volumen - el precio dentro de ella está equilibrado, una ruptura y sostenimiento fuera de ella es direccional. Dibuja el histograma completo con la herramienta volprofile."
+  },
+  {
+   "key": "nOnTheChart",
+   "raw": "'\\n[On the chart now (the exact result - adjust from THESE if a shape is wrong): '",
+   "en": "\\n[On the chart now (the exact result - adjust from THESE if a shape is wrong): ",
+   "n": 1,
+   "es": "\\n[En el gráfico ahora (el resultado exacto - ajusta a partir de ESTO si una forma está mal): "
+  },
+  {
+   "key": "noVolumeToBuild",
+   "raw": "'no volume to build a profile from'",
+   "en": "no volume to build a profile from",
+   "n": 1,
+   "es": "sin volumen para construir un perfil"
+  },
+  {
+   "key": "drawnAt",
+   "raw": "' drawn at '",
+   "en": " drawn at ",
+   "n": 1,
+   "es": " dibujado en "
+  },
+  {
+   "key": "snappedOntoTheNearest",
+   "raw": "' (snapped onto the nearest real level)'",
+   "en": " (snapped onto the nearest real level)",
+   "n": 1,
+   "es": " (ajustado al nivel real más cercano)"
+  },
+  {
+   "key": "noteOutsideTheVisible",
+   "raw": "' (NOTE: outside the visible price range - the reader will not see it unless they zoom out)'",
+   "en": " (NOTE: outside the visible price range - the reader will not see it unless they zoom out)",
+   "n": 1,
+   "es": " (NOTA: fuera del rango de precio visible - el lector no lo verá a menos que haga zoom out)"
+  },
+  {
+   "key": "switchCoinOrTimeframe",
+   "raw": "'</b>. Switch coin or timeframe any time and ask again.<br><span class=\"aimsg-modeline\">'",
+   "en": "</b>. Switch coin or timeframe any time and ask again.<br><span class=\"aimsg-modeline\">",
+   "n": 1,
+   "es": "</b>. Cambia de moneda o de temporalidad cuando quieras y pregunta de nuevo.<br><span class=\"aimsg-modeline\">"
+  },
+  {
+   "key": "readingTheChart",
+   "raw": "'Reading the chart'",
+   "en": "Reading the chart",
+   "n": 2,
+   "es": "Leyendo el gráfico"
+  },
+  {
+   "key": "mapTheChart",
+   "raw": "'Map the chart'",
+   "en": "Map the chart",
+   "n": 1,
+   "es": "Mapear el gráfico"
+  },
+  {
+   "key": "whereTheMoneySits",
+   "raw": "'Where the money sits'",
+   "en": "Where the money sits",
+   "n": 1,
+   "es": "Dónde está el dinero"
+  },
+  {
+   "key": "structureAndTrend",
+   "raw": "'Structure and trend'",
+   "en": "Structure and trend",
+   "n": 1,
+   "es": "Estructura y tendencia"
+  },
+  {
+   "key": "volatilityAndMomentum",
+   "raw": "'Volatility and momentum'",
+   "en": "Volatility and momentum",
+   "n": 1,
+   "es": "Volatilidad y momento"
+  },
+  {
+   "key": "reReadNow",
+   "raw": "'Re-read now'",
+   "en": "Re-read now",
+   "n": 3,
+   "es": "Releer ahora"
+  },
+  {
+   "key": "findAnOpportunity",
+   "raw": "'Find an opportunity'",
+   "en": "Find an opportunity",
+   "n": 1,
+   "es": "Buscar una oportunidad"
+  },
+  {
+   "key": "whatToAvoid",
+   "raw": "'What to avoid'",
+   "en": "What to avoid",
+   "n": 1,
+   "es": "Qué evitar"
+  },
+  {
+   "key": "thinkingItThrough",
+   "raw": "'Thinking it through'",
+   "en": "Thinking it through",
+   "n": 1,
+   "es": "Pensándolo"
+  },
+  {
+   "key": "writingTheRead",
+   "raw": "'Writing the read'",
+   "en": "Writing the read",
+   "n": 1,
+   "es": "Escribiendo la lectura"
+  },
+  {
+   "key": "drawingOnYourChart",
+   "raw": "'Drawing on your chart'",
+   "en": "Drawing on your chart",
+   "n": 1,
+   "es": "Dibujando en tu gráfico"
+  },
+  {
+   "key": "allSet",
+   "raw": "'All set'",
+   "en": "All set",
+   "n": 1,
+   "es": "Listo"
+  },
+  {
+   "key": "couldNotFinish",
+   "raw": "'Could not finish'",
+   "en": "Could not finish",
+   "n": 1,
+   "es": "No se pudo terminar"
+  },
+  {
+   "key": "quickRead",
+   "raw": "'quick read'",
+   "en": "quick read",
+   "n": 1,
+   "es": "lectura rápida"
+  },
+  {
+   "key": "weWillEmailYou",
+   "raw": "' - we will email you when '",
+   "en": " - we will email you when ",
+   "n": 1,
+   "es": " - te avisaremos por correo cuando "
+  },
+  {
+   "key": "dragExtendsToThe",
+   "raw": "'Drag - extends to the right'",
+   "en": "Drag - extends to the right",
+   "n": 1,
+   "es": "Arrastra - se extiende hacia la derecha"
+  },
+  {
+   "key": "oneClick",
+   "raw": "'One click'",
+   "en": "One click",
+   "n": 2,
+   "es": "Un clic"
+  },
+  {
+   "key": "oneClickALine",
+   "raw": "'One click: a line from that candle to the right'",
+   "en": "One click: a line from that candle to the right",
+   "n": 1,
+   "es": "Un clic: una línea desde esa vela hacia la derecha"
+  },
+  {
+   "key": "dragTopToBottom",
+   "raw": "'Drag top to bottom: a supply / demand band from that candle to the right edge'",
+   "en": "Drag top to bottom: a supply / demand band from that candle to the right edge",
+   "n": 1,
+   "es": "Arrastra de arriba a abajo: una banda de oferta / demanda desde esa vela hasta el borde derecho"
+  },
+  {
+   "key": "dragTheBaseLine",
+   "raw": "'Drag the base line, then click where the parallel goes'",
+   "en": "Drag the base line, then click where the parallel goes",
+   "n": 1,
+   "es": "Arrastra la línea base, luego haz clic donde va la paralela"
+  },
+  {
+   "key": "clickEachPointHead",
+   "raw": "'Click each point (head and shoulders, triangle, wedge...), then Done or click the last point again'",
+   "en": "Click each point (head and shoulders, triangle, wedge...), then Done or click the last point again",
+   "n": 1,
+   "es": "Haz clic en cada punto (hombro-cabeza-hombro, triángulo, cuña...), luego pulsa Listo o haz clic de nuevo en el último punto"
+  },
+  {
+   "key": "dragFromTheSwing",
+   "raw": "'Drag from the swing low to the swing high'",
+   "en": "Drag from the swing low to the swing high",
+   "n": 1,
+   "es": "Arrastra desde el mínimo del swing hasta el máximo del swing"
+  },
+  {
+   "key": "threeClicksThePivot",
+   "raw": "'Three clicks: the pivot, then the two points of the next swing'",
+   "en": "Three clicks: the pivot, then the two points of the next swing",
+   "n": 1,
+   "es": "Tres clics: el pivote, luego los dos puntos del siguiente swing"
+  },
+  {
+   "key": "threeClicksEntryStop",
+   "raw": "'Three clicks: entry, stop, target - prints the reward-to-risk'",
+   "en": "Three clicks: entry, stop, target - prints the reward-to-risk",
+   "n": 1,
+   "es": "Tres clics: entrada, stop, objetivo - muestra la relación riesgo/beneficio"
+  },
+  {
+   "key": "dragPricePercentAnd",
+   "raw": "'Drag: price, percent and candles between two points'",
+   "en": "Drag: price, percent and candles between two points",
+   "n": 1,
+   "es": "Arrastra: precio, porcentaje y velas entre dos puntos"
+  },
+  {
+   "key": "dragAcrossARange",
+   "raw": "'Drag across a range of candles'",
+   "en": "Drag across a range of candles",
+   "n": 1,
+   "es": "Arrastra a lo largo de un rango de velas"
+  },
+  {
+   "key": "clickThenType",
+   "raw": "'Click, then type'",
+   "en": "Click, then type",
+   "n": 1,
+   "es": "Haz clic, luego escribe"
+  },
+  {
+   "key": "oneClickAtThe",
+   "raw": "'One click at the price'",
+   "en": "One click at the price",
+   "n": 1,
+   "es": "Un clic en el precio"
+  },
+  {
+   "key": "waitingNotATrade",
+   "raw": "'WAITING - not a trade yet'",
+   "en": "WAITING - not a trade yet",
+   "n": 1,
+   "es": "ESPERANDO - todavía no es una operación"
+  },
+  {
+   "key": "waitFor",
+   "raw": "'Wait for  '",
+   "en": "Wait for  ",
+   "n": 1,
+   "es": "Esperar  "
+  },
+  {
+   "key": "wouldStop",
+   "raw": "'Would stop  '",
+   "en": "Would stop  ",
+   "n": 1,
+   "es": "Pararía en  "
+  },
+  {
+   "key": "maximizeInTheBoard",
+   "raw": "'Maximize in the board (or double-click the header)'",
+   "en": "Maximize in the board (or double-click the header)",
+   "n": 1,
+   "es": "Maximizar en el panel (o doble clic en el encabezado)"
+  }
+ ]
+}

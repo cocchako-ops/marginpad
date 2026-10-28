@@ -1,0 +1,1092 @@
+{
+ "file": "vault/index.html",
+ "helper": "__esT_vaultindex",
+ "dict": "__esD_vaultindex",
+ "items": [
+  {
+   "key": "matteBlackWeaveWith",
+   "raw": "\"Matte black weave with a soft steel edge\"",
+   "en": "Matte black weave with a soft steel edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "deepJadeWithA",
+   "raw": "\"Deep jade with a polished stone sheen\"",
+   "en": "Deep jade with a polished stone sheen",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "flatBlueGreyStone",
+   "raw": "\"Flat blue-grey stone with a single cool highlight along the top edge\"",
+   "en": "Flat blue-grey stone with a single cool highlight along the top edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dryIvoryEdgeOver",
+   "raw": "\"Dry ivory edge over a warm brown shadow, matte, with no glow at all\"",
+   "en": "Dry ivory edge over a warm brown shadow, matte, with no glow at all",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "mutedForestGreenDesaturate",
+   "raw": "\"Muted forest green, desaturated like lichen on north-facing rock\"",
+   "en": "Muted forest green, desaturated like lichen on north-facing rock",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "indigoWorkwearBlueWith",
+   "raw": "\"Indigo workwear blue with a faint tan stitch line running outside it\"",
+   "en": "Indigo workwear blue with a faint tan stitch line running outside it",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "imperialPurpleWithGold",
+   "raw": "\"Imperial purple with gold corner caps\"",
+   "en": "Imperial purple with gold corner caps",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "crimsonGradientWithA",
+   "raw": "\"Crimson gradient with a dark pulse edge\"",
+   "en": "Crimson gradient with a dark pulse edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "codeGreenTerminalGlow",
+   "raw": "\"Code-green terminal glow\"",
+   "en": "Code-green terminal glow",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "tealLightAtThe",
+   "raw": "\"Teal light at the top fading down into near-black water\"",
+   "en": "Teal light at the top fading down into near-black water",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "deepBurgundyShadingTo",
+   "raw": "\"Deep burgundy shading to dusty rose, closer to plum than to red\"",
+   "en": "Deep burgundy shading to dusty rose, closer to plum than to red",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "charcoalCloudSplitBy",
+   "raw": "\"Charcoal cloud split by one pale seam of lightning\"",
+   "en": "Charcoal cloud split by one pale seam of lightning",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "coldBlueMirrorWith",
+   "raw": "\"Cold blue mirror with frosted corners\"",
+   "en": "Cold blue mirror with frosted corners",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "softRoseGradientWith",
+   "raw": "\"Soft rose gradient with a silver lining\"",
+   "en": "Soft rose gradient with a silver lining",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aFrameThatIs",
+   "raw": "\"A frame that is actually on fire, flickering flames and rising embers\"",
+   "en": "A frame that is actually on fire, flickering flames and rising embers",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "amberCrtBandUnder",
+   "raw": "\"Amber CRT band under horizontal scanlines, with the glow of a warm tube\"",
+   "en": "Amber CRT band under horizontal scanlines, with the glow of a warm tube",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "roseHorizonBleedingUpward",
+   "raw": "\"Rose horizon bleeding upward into violet and deep night blue\"",
+   "en": "Rose horizon bleeding upward into violet and deep night blue",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "oilFilmIridescenceTeal",
+   "raw": "\"Oil-film iridescence, teal turning to blue and magenta, over an inner sheen ring\"",
+   "en": "Oil-film iridescence, teal turning to blue and magenta, over an inner sheen ring",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dryDesertStoneWarm",
+   "raw": "\"Dry desert stone, warm beige over a darker grain, matte all the way through\"",
+   "en": "Dry desert stone, warm beige over a darker grain, matte all the way through",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "paleIceWhiteEdge",
+   "raw": "\"Pale ice-white edge cooling down into hard grey-blue\"",
+   "en": "Pale ice-white edge cooling down into hard grey-blue",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "agedCopperWithA",
+   "raw": "\"Aged copper with a band of verdigris where the weather got in\"",
+   "en": "Aged copper with a band of verdigris where the weather got in",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackStreetAtNight",
+   "raw": "\"Black street at night with magenta bleeding in one corner and cyan in the other\"",
+   "en": "Black street at night with magenta bleeding in one corner and cyan in the other",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenStalksSegmentedBy",
+   "raw": "\"Green stalks segmented by pale nodes, running the whole way around\"",
+   "en": "Green stalks segmented by pale nodes, running the whole way around",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "acidGreenCuttingThrough",
+   "raw": "\"Acid green cutting through black, the colour of something you should not touch\"",
+   "en": "Acid green cutting through black, the colour of something you should not touch",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "violetFieldLinesWhipping",
+   "raw": "\"Violet field lines whipping around a dark core, with an inner magnetic ring\"",
+   "en": "Violet field lines whipping around a dark core, with an inner magnetic ring",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackWaterWithWhite",
+   "raw": "\"Black water with white and vermilion koi turning through it, gold ripples inside\"",
+   "en": "Black water with white and vermilion koi turning through it, gold ripples inside",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackVioletDepthThat",
+   "raw": "\"Black-violet depth that eats the light\"",
+   "en": "Black-violet depth that eats the light",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "volcanicBlackGlassSplit",
+   "raw": "\"Volcanic black glass split into hard facets, three lime fractures burning through the breaks\"",
+   "en": "Volcanic black glass split into hard facets, three lime fractures burning through the breaks",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "mirrorPolishedLiquidMetal",
+   "raw": "\"Mirror-polished liquid metal with a razor dark horizon and two frozen specular glints\"",
+   "en": "Mirror-polished liquid metal with a razor dark horizon and two frozen specular glints",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "colourlessGlassThatCatches",
+   "raw": "\"Colourless glass that catches light in one arc and throws a full spectrum out of it\"",
+   "en": "Colourless glass that catches light in one arc and throws a full spectrum out of it",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "goldTracesDownThe",
+   "raw": "\"Gold traces down the long edges, cyan up the sides, four solder pads lit inside the card\"",
+   "en": "Gold traces down the long edges, cyan up the sides, four solder pads lit inside the card",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "violetInkDroppedInto",
+   "raw": "\"Violet ink dropped into black water, blooming inward instead of framing\"",
+   "en": "Violet ink dropped into black water, blooming inward instead of framing",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "fiveJewelledPanesHeld",
+   "raw": "\"Five jewelled panes held in black lead, each lit from behind and spilling its colour\"",
+   "en": "Five jewelled panes held in black lead, each lit from behind and spilling its colour",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "moltenScalesBreathingHeat",
+   "raw": "\"Molten scales, breathing heat and rising embers\"",
+   "en": "Molten scales, breathing heat and rising embers",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aBlackCoreWith",
+   "raw": "\"A black core with a spinning accretion ring, light bending around your name\"",
+   "en": "A black core with a spinning accretion ring, light bending around your name",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "twinRingsOfLiquid",
+   "raw": "\"Twin rings of liquid gold. Everything you touch turns to profit\"",
+   "en": "Twin rings of liquid gold. Everything you touch turns to profit",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "somethingBioluminescentMov",
+   "raw": "\"Something bioluminescent moving in water far too deep to see the bottom of\"",
+   "en": "Something bioluminescent moving in water far too deep to see the bottom of",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "carvedImperialJadeWith",
+   "raw": "\"Carved imperial jade with gold inlay running through every vein\"",
+   "en": "Carved imperial jade with gold inlay running through every vein",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aHouseCrestA",
+   "raw": "\"A house crest: a cut ruby set in gold at the crown, dark wings folded down both sides, and a battle ribbon across the foot\"",
+   "en": "A house crest: a cut ruby set in gold at the crown, dark wings folded down both sides, and a battle ribbon across the foot",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "theApexOfMp",
+   "raw": "\"The apex of MP Shop: profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house\"",
+   "en": "The apex of MP Shop: profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "laCimaDeMp",
+   "raw": "\"La cima de MP Shop: fuego verde ganancia en una tormenta dorada. El dinero en realidad no puede comprar este; suele llegar como un regalo de la casa\"",
+   "en": "La cima de MP Shop: fuego verde ganancia en una tormenta dorada. El dinero en realidad no puede comprar este; suele llegar como un regalo de la casa",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "augustDropABlack",
+   "raw": "\"August drop: a black sun with a burning corona. Gone Sep 1, forever\"",
+   "en": "August drop: a black sun with a burning corona. Gone Sep 1, forever",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenWhiteGreenRibbon",
+   "raw": "\"Green-white-green ribbon with the eagle roundel. Naija to the world\"",
+   "en": "Green-white-green ribbon with the eagle roundel. Naija to the world",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "whiteHoistOnDeep",
+   "raw": "\"White hoist on deep green, the crescent pinned to the frame\"",
+   "en": "White hoist on deep green, the crescent pinned to the frame",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "starsOnNavyThirteen",
+   "raw": "\"Stars on navy, thirteen stripes, one white star on the edge\"",
+   "en": "Stars on navy, thirteen stripes, one white star on the edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "saffronWhiteAndGreen",
+   "raw": "\"Saffron, white and green under the Ashoka chakra\"",
+   "en": "Saffron, white and green under the Ashoka chakra",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "merahPutihWithA",
+   "raw": "\"Merah putih with a Garuda-gold glint\"",
+   "en": "Merah putih with a Garuda-gold glint",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redBlueAndWhite",
+   "raw": "\"Red, blue and white with the gold crest\"",
+   "en": "Red, blue and white with the gold crest",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "schwarzRotGoldWith",
+   "raw": "\"Schwarz-Rot-Gold with a gold halo\"",
+   "en": "Schwarz-Rot-Gold with a gold halo",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "crimsonFieldWhiteCrescent",
+   "raw": "\"Crimson field, white crescent on the edge\"",
+   "en": "Crimson field, white crescent on the edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "fiveBandsWithA",
+   "raw": "\"Five bands with a royal-blue heart\"",
+   "en": "Five bands with a royal-blue heart",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenWhiteAndRed",
+   "raw": "\"Green, white and red with the tulip emblem\"",
+   "en": "Green, white and red with the tulip emblem",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blueOverRedWhite",
+   "raw": "\"Blue over red, white hoist, the golden sun\"",
+   "en": "Blue over red, white hoist, the golden sun",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sixColoursAndThe",
+   "raw": "\"Six colours and the black-and-gold chevron\"",
+   "en": "Six colours and the black-and-gold chevron",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redWhiteAndBlue",
+   "raw": "\"Red, white and blue with an Oranje glow\"",
+   "en": "Red, white and blue with an Oranje glow",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redHoistAndFly",
+   "raw": "\"Red hoist and fly, the maple leaf on the edge\"",
+   "en": "Red hoist and fly, the maple leaf on the edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "whiteOverCrimsonWith",
+   "raw": "\"White over crimson with the shield\"",
+   "en": "White over crimson with the shield",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "bottleGreenWithThe",
+   "raw": "\"Bottle green with the red sun\"",
+   "en": "Bottle green with the red sun",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "theUnionJackCut",
+   "raw": "\"The Union Jack cut straight into the ring\"",
+   "en": "The Union Jack cut straight into the ring",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "verdeAmareloWithThe",
+   "raw": "\"Verde-amarelo with the blue globe\"",
+   "en": "Verde-amarelo with the blue globe",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redFieldGoldStar",
+   "raw": "\"Red field, gold star on the edge\"",
+   "en": "Red field, gold star on the edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "skyOverWheatWith",
+   "raw": "\"Sky over wheat with a sunflower\"",
+   "en": "Sky over wheat with a sunflower",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenGoldAndRed",
+   "raw": "\"Green, gold and red under the blue star disc\"",
+   "en": "Green, gold and red under the blue star disc",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redOverBlackWith",
+   "raw": "\"Red over black with a gold star\"",
+   "en": "Red over black with a gold star",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redOverWhiteWith",
+   "raw": "\"Red over white with the crescent\"",
+   "en": "Red over white with the crescent",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "ilTricoloreGreenWhite",
+   "raw": "\"Il Tricolore: green, white and red\"",
+   "en": "Il Tricolore: green, white and red",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "deepRedWithThe",
+   "raw": "\"Deep red with the green pentagram\"",
+   "en": "Deep red with the green pentagram",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenWhiteAndRed2",
+   "raw": "\"Green, white and red behind the black hoist\"",
+   "en": "Green, white and red behind the black hoist",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "crimsonFieldTheDouble",
+   "raw": "\"Crimson field, the double-headed eagle\"",
+   "en": "Crimson field, the double-headed eagle",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "maroonAndGoldWith",
+   "raw": "\"Maroon and gold with the green and orange bands\"",
+   "en": "Maroon and gold with the green and orange bands",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackRedAndGreen",
+   "raw": "\"Black, red and green with the Maasai shield\"",
+   "en": "Black, red and green with the Maasai shield",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blueYellowAndRed",
+   "raw": "\"Blue, yellow and red\"",
+   "en": "Blue, yellow and red",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "whiteFieldTheRising",
+   "raw": "\"White field, the rising sun disc\"",
+   "en": "White field, the rising sun disc",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "navyWithTheUnion",
+   "raw": "\"Navy with the Union canton and the Commonwealth Star\"",
+   "en": "Navy with the Union canton and the Commonwealth Star",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "maroonAndWhiteWith",
+   "raw": "\"Maroon and white with the nine-point serration\"",
+   "en": "Maroon and white with the nine-point serration",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "skyBlueSplitBy",
+   "raw": "\"Sky blue split by the black and white band\"",
+   "en": "Sky blue split by the black and white band",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redWhiteAndBlack",
+   "raw": "\"Red, white and black\"",
+   "en": "Red, white and black",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "crimsonInABlue",
+   "raw": "\"Crimson in a blue border, the white sun\"",
+   "en": "Crimson in a blue border, the white sun",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redWhiteAndBlack2",
+   "raw": "\"Red, white and black with the golden eagle\"",
+   "en": "Red, white and black with the golden eagle",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenBetweenTwoRed",
+   "raw": "\"Green between two red bands, the gold crescent\"",
+   "en": "Green between two red bands, the gold crescent",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blueBlackAndWhite",
+   "raw": "\"Blue, black and white\"",
+   "en": "Blue, black and white",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenAndWhiteWith",
+   "raw": "\"Green and white with the red crescent\"",
+   "en": "Green and white with the red crescent",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "celesteAndWhiteUnder",
+   "raw": "\"Celeste and white under the Sun of May\"",
+   "en": "Celeste and white under the Sun of May",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenWhiteAndRed3",
+   "raw": "\"Green, white and red with the eagle seal\"",
+   "en": "Green, white and red with the eagle seal",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "whiteFieldTheRed",
+   "raw": "\"White field, the red and blue taegeuk\"",
+   "en": "White field, the red and blue taegeuk",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redGoldAndGreen",
+   "raw": "\"Red, gold and green with the black star\"",
+   "en": "Red, gold and green with the black star",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "deepGreenWithThe",
+   "raw": "\"Deep green with the white sword\"",
+   "en": "Deep green with the white sword",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "twoBlueBandsAnd",
+   "raw": "\"Two blue bands and the Star of David\"",
+   "en": "Two blue bands and the Star of David",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blueWithTheGolden",
+   "raw": "\"Blue with the golden Nordic cross\"",
+   "en": "Blue with the golden Nordic cross",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "redFieldWithThe",
+   "raw": "\"Red field with the golden star\"",
+   "en": "Red field with the golden star",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "whiteWithTheBold",
+   "raw": "\"White with the bold red cross\"",
+   "en": "White with the bold red cross",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sevenStraightDaysOn",
+   "raw": "\"Seven straight days on the desk\"",
+   "en": "Seven straight days on the desk",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aFullMonthWithout",
+   "raw": "\"A full month without missing a day\"",
+   "en": "A full month without missing a day",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "oneHundredDaysUnbuyable",
+   "raw": "\"One hundred days. Unbuyable. Unquestionable.\"",
+   "en": "One hundred days. Unbuyable. Unquestionable.",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "reservedForTheSeason",
+   "raw": "\"Reserved for the season&#39;s #1 - expires when the crown moves on\"",
+   "en": "Reserved for the season&#39;s #1 - expires when the crown moves on",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aScopeLockedReticle",
+   "raw": "\"A scope-locked reticle for the most surgical trader on the desk\"",
+   "en": "A scope-locked reticle for the most surgical trader on the desk",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "rawVoltageTheGrind",
+   "raw": "\"Raw voltage - the grind made visible\"",
+   "en": "Raw voltage - the grind made visible",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "emeraldAndBullionThe",
+   "raw": "\"Emerald and bullion - the house always notices money\"",
+   "en": "Emerald and bullion - the house always notices money",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "tenRealHoursOn",
+   "raw": "\"Ten real hours on the desk - you live here now\"",
+   "en": "Ten real hours on the desk - you live here now",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "oneHundredHoursThe",
+   "raw": "\"One hundred hours. The desk has your name on it\"",
+   "en": "One hundred hours. The desk has your name on it",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "fiveHundredClosedTickets",
+   "raw": "\"Five hundred closed tickets - volume is a lifestyle\"",
+   "en": "Five hundred closed tickets - volume is a lifestyle",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "fiveHundredMissionsLogged",
+   "raw": "\"Five hundred missions logged - the supply line never slipped\"",
+   "en": "Five hundred missions logged - the supply line never slipped",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "hereBeforeItWas",
+   "raw": "\"Here before it was cool - half a year on the pad\"",
+   "en": "Here before it was cool - half a year on the pad",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sixFiguresOfXp",
+   "raw": "\"Six figures of XP, earned the long way\"",
+   "en": "Six figures of XP, earned the long way",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "twoThousandClosedTickets",
+   "raw": "\"Two thousand closed tickets - the terminal runs hot\"",
+   "en": "Two thousand closed tickets - the terminal runs hot",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "fiveHundredHoursYou",
+   "raw": "\"Five hundred hours. You are part of the desk now\"",
+   "en": "Five hundred hours. You are part of the desk now",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "oneExtraStreakFreeze",
+   "raw": "\"One extra streak freeze, bankable up to 5 (a missed day auto-spends one)\"",
+   "en": "One extra streak freeze, bankable up to 5 (a missed day auto-spends one)",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "threeStreakFreezesAt",
+   "raw": "\"Three streak freezes at once, at a discount. Needs room in the bank: buy it with 2 or fewer already held\"",
+   "en": "Three streak freezes at once, at a discount. Needs room in the bank: buy it with 2 or fewer already held",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "doubleXpFromEverything",
+   "raw": "\"Double XP from everything you earn for the next 24 hours\"",
+   "en": "Double XP from everything you earn for the next 24 hours",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "threeFullDaysOf",
+   "raw": "\"Three full days of double XP - three times the length, cheaper than three Surges bought one by one\"",
+   "en": "Three full days of double XP - three times the length, cheaper than three Surges bought one by one",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "darkReceiptStockWith",
+   "raw": "\"Dark receipt stock with printer ruling and two curled, shadowed edges\"",
+   "en": "Dark receipt stock with printer ruling and two curled, shadowed edges",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackoutTicketWithA",
+   "raw": "\"Blackout ticket with a cold silver seam\"",
+   "en": "Blackout ticket with a cold silver seam",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "solderMaskBoardWith",
+   "raw": "\"Solder-mask board with copper traces running to three vias\"",
+   "en": "Solder-mask board with copper traces running to three vias",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aCharcoalSlabCut",
+   "raw": "\"A charcoal slab cut through by pale veins\"",
+   "en": "A charcoal slab cut through by pale veins",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "iridescentFoilThatShifts",
+   "raw": "\"Iridescent foil that shifts between blue, violet and green\"",
+   "en": "Iridescent foil that shifts between blue, violet and green",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "brushedMetalWithOne",
+   "raw": "\"Brushed metal with one cold sweep of light across the grain\"",
+   "en": "Brushed metal with one cold sweep of light across the grain",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "liquidGoldPlateFor",
+   "raw": "\"Liquid gold plate, for your wins and your losses alike\"",
+   "en": "Liquid gold plate, for your wins and your losses alike",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "brownKraftCardWith",
+   "raw": "\"Brown kraft card with a punched perforation strip down the left edge\"",
+   "en": "Brown kraft card with a punched perforation strip down the left edge",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenPhosphorOnBlack",
+   "raw": "\"Green phosphor on black with the cursor still blinking on line one\"",
+   "en": "Green phosphor on black with the cursor still blinking on line one",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "airlineStubWithA",
+   "raw": "\"Airline stub with a dashed tear line and a printed barcode\"",
+   "en": "Airline stub with a dashed tear line and a printed barcode",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "frostedGlassFracturedBy",
+   "raw": "\"Frosted glass fractured by three ice cracks\"",
+   "en": "Frosted glass fractured by three ice cracks",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "coldWhiteMetalWith",
+   "raw": "\"Cold white metal with a single mirror sweep across the grain\"",
+   "en": "Cold white metal with a single mirror sweep across the grain",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dropletsAndRunnelsOn",
+   "raw": "\"Droplets and runnels on a window at night\"",
+   "en": "Droplets and runnels on a window at night",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aQuietStarfieldFor",
+   "raw": "\"A quiet starfield for the 3am candles\"",
+   "en": "A quiet starfield for the 3am candles",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "subwayLinesCrossingWith",
+   "raw": "\"Subway lines crossing, with white dots where they meet\"",
+   "en": "Subway lines crossing, with white dots where they meet",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "lightShaftsThinningOut",
+   "raw": "\"Light shafts thinning out down a deep water column\"",
+   "en": "Light shafts thinning out down a deep water column",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "ghostCandlesticksMarchingU",
+   "raw": "\"Ghost candlesticks marching up and to the right\"",
+   "en": "Ghost candlesticks marching up and to the right",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "rangeRingsACrosshair",
+   "raw": "\"Range rings, a crosshair, and one sweep frozen mid-turn\"",
+   "en": "Range rings, a crosshair, and one sweep frozen mid-turn",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sparksLiftingOffA",
+   "raw": "\"Sparks lifting off a bed of coals\"",
+   "en": "Sparks lifting off a bed of coals",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "northernLightsAndA",
+   "raw": "\"Northern lights and a field of stars, calm above the chaos\"",
+   "en": "Northern lights and a field of stars, calm above the chaos",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aDustLaneCutting",
+   "raw": "\"A dust lane cutting across distant nebulae and pinprick stars\"",
+   "en": "A dust lane cutting across distant nebulae and pinprick stars",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sandRidgesStackedIn",
+   "raw": "\"Sand ridges stacked in low evening light\"",
+   "en": "Sand ridges stacked in low evening light",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "deadChannelNoiseThe",
+   "raw": "\"Dead-channel noise, the screen nobody is watching\"",
+   "en": "Dead-channel noise, the screen nobody is watching",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "threeLongOceanSwells",
+   "raw": "\"Three long ocean swells rolling in from open water\"",
+   "en": "Three long ocean swells rolling in from open water",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "greenDataFallingIn",
+   "raw": "\"Green data falling in columns behind your whole card\"",
+   "en": "Green data falling in columns behind your whole card",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aDarkCityBlock",
+   "raw": "\"A dark city block with the windows of the people still working\"",
+   "en": "A dark city block with the windows of the people still working",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "theNightSideOf",
+   "raw": "\"The night side of the planet, its atmosphere lit on the rim, cities burning below\"",
+   "en": "The night side of the planet, its atmosphere lit on the rim, cities burning below",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "moltenGoldGroundReserved",
+   "raw": "\"Molten gold ground reserved for the people who built this place\"",
+   "en": "Molten gold ground reserved for the people who built this place",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "printedPaperTapeRow",
+   "raw": "\"Printed paper tape, row after row of prices nobody reads twice\"",
+   "en": "Printed paper tape, row after row of prices nobody reads twice",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "steelLatticeCrossingOverhe",
+   "raw": "\"Steel lattice crossing overhead, rivets catching the work light\"",
+   "en": "Steel lattice crossing overhead, rivets catching the work light",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "charcoalSmokeTurningOver",
+   "raw": "\"Charcoal smoke turning over in a room with one lamp left on\"",
+   "en": "Charcoal smoke turning over in a room with one lamp left on",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "concentricSteelRingsAnd",
+   "raw": "\"Concentric steel rings and bolt heads, one seam lit from inside\"",
+   "en": "Concentric steel rings and bolt heads, one seam lit from inside",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "frozenPlatesCrackedApart",
+   "raw": "\"Frozen plates cracked apart, black water in every fracture\"",
+   "en": "Frozen plates cracked apart, black water in every fracture",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "floodedRiceStepsStacked",
+   "raw": "\"Flooded rice steps stacked up a hillside, each one holding the sky\"",
+   "en": "Flooded rice steps stacked up a hillside, each one holding the sky",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackCrustSplitBy",
+   "raw": "\"Black crust split by molten seams still moving underneath\"",
+   "en": "Black crust split by molten seams still moving underneath",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "cherenkovBlueGlowingUp",
+   "raw": "\"Cherenkov blue glowing up from the bottom of very deep water\"",
+   "en": "Cherenkov blue glowing up from the bottom of very deep water",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aRingedGiantComing",
+   "raw": "\"A ringed giant coming up over the dead horizon of its own moon\"",
+   "en": "A ringed giant coming up over the dead horizon of its own moon",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "blackWaterUnderA",
+   "raw": "\"Black water under a sky that keeps opening, one wave lit from above\"",
+   "en": "Black water under a sky that keeps opening, one wave lit from above",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aguaNegraBajoUn",
+   "raw": "\"Agua negra bajo un cielo que no deja de abrirse, una ola iluminada desde arriba\"",
+   "en": "Agua negra bajo un cielo que no deja de abrirse, una ola iluminada desde arriba",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "aStarInThe",
+   "raw": "\"A star in the act of going off: a plasma ring turning around your card, a core that flares, and light thrown out past the edge. Twenty days only\"",
+   "en": "A star in the act of going off: a plasma ring turning around your card, a core that flares, and light thrown out past the edge. Twenty days only",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "sectionDataVsecNot",
+   "raw": "'section[data-vsec]:not([hidden])'",
+   "en": "section[data-vsec]:not([hidden])",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "dataPrice",
+   "raw": "'\" data-price=\"'",
+   "en": "\" data-price=\"",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "theCloser",
+   "raw": "'The Closer'",
+   "en": "The Closer",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "msgShow",
+   "raw": "'msg show '",
+   "en": "msg show ",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "enterTheTrader39",
+   "raw": "'Enter the trader&#39;s username.'",
+   "en": "Enter the trader&#39;s username.",
+   "n": 1,
+   "es": ""
+  }
+ ]
+}

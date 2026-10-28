@@ -1,0 +1,63 @@
+{
+ "file": "fear-greed/index.html",
+ "helper": "__esT_feargreedindex",
+ "dict": "__esD_feargreedindex",
+ "items": [
+  {
+   "key": "vsNow",
+   "raw": "' vs now</div>'",
+   "en": " vs now</div>",
+   "n": 1,
+   "es": " ahora</div>"
+  },
+  {
+   "key": "theMarketIsIn",
+   "raw": "'<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones - most people are selling in fear. Contrarians start paying attention here.'",
+   "en": "<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones - most people are selling in fear. Contrarians start paying attention here.",
+   "n": 1,
+   "es": "<b>El mercado está en pánico.</b> Un miedo extremo como este ha marcado históricamente zonas de capitulación - la mayoría está vendiendo por miedo. Aquí es donde los contrarians empiezan a prestar atención."
+  },
+  {
+   "key": "fearIsInCharge",
+   "raw": "'<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive - moves down feel bigger than they are. Watch for stabilization.'",
+   "en": "<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive - moves down feel bigger than they are. Watch for stabilization.",
+   "n": 1,
+   "es": "<b>El miedo manda.</b> El sentimiento está débil y el posicionamiento es defensivo - las bajadas se sienten más grandes de lo que son. Vigila si aparece una estabilización."
+  },
+  {
+   "key": "theMarketIsUndecided",
+   "raw": "'<b>The market is undecided.</b> Neither fear nor greed dominates - trends born here need confirmation from volume and momentum.'",
+   "en": "<b>The market is undecided.</b> Neither fear nor greed dominates - trends born here need confirmation from volume and momentum.",
+   "n": 1,
+   "es": "<b>El mercado está indeciso.</b> Ni el miedo ni la codicia dominan - las tendencias que nacen aquí necesitan confirmación de volumen y momentum."
+  },
+  {
+   "key": "greedIsBuildingMomentum",
+   "raw": "'<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.'",
+   "en": "<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.",
+   "n": 1,
+   "es": "<b>La codicia va en aumento.</b> Se persigue el momentum; las caídas se compran rápido. Disfrútalo, pero aquí es donde la disciplina empieza a dar frutos."
+  },
+  {
+   "key": "euphoriaEveryoneIsGreedy",
+   "raw": "'<b>Euphoria.</b> Everyone is greedy, leverage is stacked and \"this time is different\" is trending. Historically the zone where pullbacks are born.'",
+   "en": "<b>Euphoria.</b> Everyone is greedy, leverage is stacked and \"this time is different\" is trending. Historically the zone where pullbacks are born.",
+   "n": 1,
+   "es": "<b>Euforia.</b> Todo el mundo es codicioso, el apalancamiento se acumula y \"esta vez es diferente\" está de moda. Históricamente, la zona donde nacen las correcciones."
+  },
+  {
+   "key": "lastWeek",
+   "raw": "'Last week'",
+   "en": "Last week",
+   "n": 1,
+   "es": "Semana pasada"
+  },
+  {
+   "key": "lastMonth",
+   "raw": "'Last month'",
+   "en": "Last month",
+   "n": 1,
+   "es": "Mes pasado"
+  }
+ ]
+}

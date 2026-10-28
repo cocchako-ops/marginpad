@@ -1,0 +1,224 @@
+{
+ "file": "mp-mcharts.js",
+ "helper": "__esT_mpmcharts",
+ "dict": "__esD_mpmcharts",
+ "items": [
+  {
+   "key": "tradingSessions",
+   "raw": "'Trading sessions'",
+   "en": "Trading sessions",
+   "n": 1,
+   "es": "Sesiones de trading"
+  },
+  {
+   "key": "liquidationsNoFeedFor",
+   "raw": "'LIQUIDATIONS no feed for '",
+   "en": "LIQUIDATIONS no feed for ",
+   "n": 1,
+   "es": "LIQUIDACIONES sin feed para "
+  },
+  {
+   "key": "liquidationsNothingOverThe",
+   "raw": "'LIQUIDATIONS nothing over the floor on '",
+   "en": "LIQUIDATIONS nothing over the floor on ",
+   "n": 1,
+   "es": "LIQUIDACIONES nada por encima del mínimo en "
+  },
+  {
+   "key": "alertsSetOn",
+   "raw": "'Alerts set on '",
+   "en": "Alerts set on ",
+   "n": 1,
+   "es": "Alertas activadas en "
+  },
+  {
+   "key": "weWillEmailYou",
+   "raw": "' - we will email you.'",
+   "en": " - we will email you.",
+   "n": 1,
+   "es": " - te avisaremos por correo."
+  },
+  {
+   "key": "couldNotSetAlerts",
+   "raw": "'Could not set alerts.'",
+   "en": "Could not set alerts.",
+   "n": 1,
+   "es": "No se pudieron activar las alertas."
+  },
+  {
+   "key": "yesterdaySHighLow",
+   "raw": "'Yesterday\\'s high / low / close and today\\'s open (UTC)'",
+   "en": "Yesterday\\'s high / low / close and today\\'s open (UTC)",
+   "n": 1,
+   "es": "Máximo / mínimo / cierre de ayer y apertura de hoy (UTC)"
+  },
+  {
+   "key": "asiaLondonAndNew",
+   "raw": "'Asia, London and New York sessions shaded (UTC, intraday)'",
+   "en": "Asia, London and New York sessions shaded (UTC, intraday)",
+   "n": 1,
+   "es": "Sesiones de Asia, Londres y Nueva York sombreadas (UTC, intradía)"
+  },
+  {
+   "key": "supertrendBuySellArrows",
+   "raw": "'Supertrend buy / sell arrows on the candles'",
+   "en": "Supertrend buy / sell arrows on the candles",
+   "n": 1,
+   "es": "Flechas de compra / venta de Supertrend en las velas"
+  },
+  {
+   "key": "recentPivotHighsAnd",
+   "raw": "'Recent pivot highs and lows as lines'",
+   "en": "Recent pivot highs and lows as lines",
+   "n": 1,
+   "es": "Máximos y mínimos de pivote recientes como líneas"
+  },
+  {
+   "key": "theSwingTraderS",
+   "raw": "'The swing trader’s trend line'",
+   "en": "The swing trader’s trend line",
+   "n": 1,
+   "es": "La línea de tendencia del trader swing"
+  },
+  {
+   "key": "mediumTermTrendPrice",
+   "raw": "'Medium-term trend; price above = uptrend'",
+   "en": "Medium-term trend; price above = uptrend",
+   "n": 1,
+   "es": "Tendencia de medio plazo; precio por encima = tendencia alcista"
+  },
+  {
+   "key": "theLongTermTrend",
+   "raw": "'The long-term trend line most desks watch'",
+   "en": "The long-term trend line most desks watch",
+   "n": 1,
+   "es": "La línea de tendencia de largo plazo que más mesas vigilan"
+  },
+  {
+   "key": "simple200BarAverage",
+   "raw": "'Simple 200-bar average - the classic bull / bear line'",
+   "en": "Simple 200-bar average - the classic bull / bear line",
+   "n": 1,
+   "es": "Promedio simple de 200 barras - la línea clásica de mercado alcista / bajista"
+  },
+  {
+   "key": "volumeWeightedAveragePrice",
+   "raw": "'Volume-weighted average price of the session'",
+   "en": "Volume-weighted average price of the session",
+   "n": 1,
+   "es": "Precio medio ponderado por volumen de la sesión"
+  },
+  {
+   "key": "rsi14MomentumAbove",
+   "raw": "'RSI 14 - momentum; above 70 stretched, below 30 washed out'",
+   "en": "RSI 14 - momentum; above 70 stretched, below 30 washed out",
+   "n": 1,
+   "es": "RSI 14 - momento; por encima de 70 estirado, por debajo de 30 agotado"
+  },
+  {
+   "key": "macdTrendMomentumAnd",
+   "raw": "'MACD - trend momentum and its signal line'",
+   "en": "MACD - trend momentum and its signal line",
+   "n": 1,
+   "es": "MACD - momento de la tendencia y su línea de señal"
+  },
+  {
+   "key": "stochasticWhereTheClose",
+   "raw": "'Stochastic - where the close sits in the recent range'",
+   "en": "Stochastic - where the close sits in the recent range",
+   "n": 1,
+   "es": "Estocástico - dónde se ubica el cierre en el rango reciente"
+  },
+  {
+   "key": "atr14HowMuch",
+   "raw": "'ATR 14 - how much this market moves per candle'",
+   "en": "ATR 14 - how much this market moves per candle",
+   "n": 1,
+   "es": "ATR 14 - cuánto se mueve este mercado por vela"
+  },
+  {
+   "key": "cci20DistanceFrom",
+   "raw": "'CCI 20 - distance from the average, in deviations'",
+   "en": "CCI 20 - distance from the average, in deviations",
+   "n": 1,
+   "es": "CCI 20 - distancia respecto al promedio, en desviaciones"
+  },
+  {
+   "key": "liquidationFuelWithin5",
+   "raw": "'Liquidation fuel within 5% of price, 0-100'",
+   "en": "Liquidation fuel within 5% of price, 0-100",
+   "n": 1,
+   "es": "Combustible de liquidación dentro del 5% del precio, 0-100"
+  },
+  {
+   "key": "whatPriceDidAfter",
+   "raw": "'What price did after the 25 most similar moments'",
+   "en": "What price did after the 25 most similar moments",
+   "n": 1,
+   "es": "Qué hizo el precio después de los 25 momentos más parecidos"
+  },
+  {
+   "key": "theDominantLiquidationPool",
+   "raw": "'The dominant liquidation pool pulling price'",
+   "en": "The dominant liquidation pool pulling price",
+   "n": 1,
+   "es": "El pool de liquidación dominante que atrae el precio"
+  },
+  {
+   "key": "bigLiquidationsOfThe",
+   "raw": "'Big liquidations of the last 24h, marked where they happened'",
+   "en": "Big liquidations of the last 24h, marked where they happened",
+   "n": 1,
+   "es": "Grandes liquidaciones de las últimas 24h, marcadas donde ocurrieron"
+  },
+  {
+   "key": "hasNoLiquidationFeed",
+   "raw": "' has no liquidation feed.'",
+   "en": " has no liquidation feed.",
+   "n": 2,
+   "es": " no tiene feed de liquidaciones."
+  },
+  {
+   "key": "anySetup",
+   "raw": "'Any setup'",
+   "en": "Any setup",
+   "n": 1,
+   "es": "Cualquier setup"
+  },
+  {
+   "key": "breakoutAndRetest",
+   "raw": "'Breakout and retest'",
+   "en": "Breakout and retest",
+   "n": 1,
+   "es": "Ruptura y retest"
+  },
+  {
+   "key": "supplyAndDemand",
+   "raw": "'Supply and demand'",
+   "en": "Supply and demand",
+   "n": 1,
+   "es": "Oferta y demanda"
+  },
+  {
+   "key": "swingWithHtfStructure",
+   "raw": "'Swing with HTF structure'",
+   "en": "Swing with HTF structure",
+   "n": 1,
+   "es": "Swing con estructura HTF"
+  },
+  {
+   "key": "stillOpen",
+   "raw": "' · still open'",
+   "en": " · still open",
+   "n": 1,
+   "es": " · sigue abierto"
+  },
+  {
+   "key": "analyzeThisTradeWas",
+   "raw": "'Analyze this trade - was the entry and the exit good?'",
+   "en": "Analyze this trade - was the entry and the exit good?",
+   "n": 1,
+   "es": "Analiza esta operación - ¿fueron buenos la entrada y la salida?"
+  }
+ ]
+}

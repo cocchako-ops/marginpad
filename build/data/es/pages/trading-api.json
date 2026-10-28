@@ -1,0 +1,490 @@
+{
+ "file": "trading-api/index.html",
+ "helper": "__esT_tradingapiindex",
+ "dict": "__esD_tradingapiindex",
+ "items": [
+  {
+   "key": "storeAnsweredIn",
+   "raw": "'store answered in '",
+   "en": "store answered in ",
+   "n": 1,
+   "es": "el store respondió en "
+  },
+  {
+   "key": "ofChecksSoFar",
+   "raw": "' of checks so far, '",
+   "en": " of checks so far, ",
+   "n": 1,
+   "es": " de las comprobaciones hasta ahora, "
+  },
+  {
+   "key": "statusIsMeasuredEvery",
+   "raw": "'status is measured every 10 minutes'",
+   "en": "status is measured every 10 minutes",
+   "n": 1,
+   "es": "el estado se mide cada 10 minutos"
+  },
+  {
+   "key": "notSignedInSign",
+   "raw": "'<b>Not signed in.</b> <a href=\"#akb\">Sign in</a> to see your plan, generate a key, or pick a plan.'",
+   "en": "<b>Not signed in.</b> <a href=\"#akb\">Sign in</a> to see your plan, generate a key, or pick a plan.",
+   "n": 1,
+   "es": "<b>No has iniciado sesión.</b> <a href=\"#akb\">Inicia sesión</a> para ver tu plan, generar una clave o elegir un plan."
+  },
+  {
+   "key": "youAreOnThe",
+   "raw": "'You are on the <b>free trial</b> of the engine. <span class=\"apdays\">'",
+   "en": "You are on the <b>free trial</b> of the engine. <span class=\"apdays\">",
+   "n": 1,
+   "es": "Estás en la <b>prueba gratis</b> del motor. <span class=\"apdays\">"
+  },
+  {
+   "key": "1DayLeft",
+   "raw": "'1 day left'",
+   "en": "1 day left",
+   "n": 1,
+   "es": "queda 1 día"
+  },
+  {
+   "key": "daysLeft",
+   "raw": "' days left</span>'",
+   "en": " days left</span>",
+   "n": 1,
+   "es": " días restantes</span>"
+  },
+  {
+   "key": "itEndsOn",
+   "raw": "' - it ends on '",
+   "en": " - it ends on ",
+   "n": 1,
+   "es": " - termina el "
+  },
+  {
+   "key": "afterThatTheEngine",
+   "raw": "'. After that the engine needs a plan; market data on <code>/api/v1/*</code> stays free and keyless.'",
+   "en": ". After that the engine needs a plan; market data on <code>/api/v1/*</code> stays free and keyless.",
+   "n": 1,
+   "es": ". Después de eso el motor necesita un plan; los datos de mercado en <code>/api/v1/*</code> siguen siendo gratis y sin clave."
+  },
+  {
+   "key": "yourFreeTrialOf",
+   "raw": "'Your <b>free trial</b> of the engine ended on '",
+   "en": "Your <b>free trial</b> of the engine ended on ",
+   "n": 1,
+   "es": "Tu <b>prueba gratis</b> del motor terminó el "
+  },
+  {
+   "key": "marketDataStaysFree",
+   "raw": "'. Market data stays free and keyless; the engine needs a plan below.'",
+   "en": ". Market data stays free and keyless; the engine needs a plan below.",
+   "n": 1,
+   "es": ". Los datos de mercado siguen siendo gratis y sin clave; el motor necesita un plan más abajo."
+  },
+  {
+   "key": "youAreOnFree",
+   "raw": "'You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.'",
+   "en": "You are on <b>Free</b> - 120 requests a minute, 3 keys, 50 open positions. Pick a plan below to raise it.",
+   "n": 1,
+   "es": "Estás en <b>Free</b> - 120 peticiones por minuto, 3 claves, 50 posiciones abiertas. Elige un plan más abajo para subir el límite."
+  },
+  {
+   "key": "youAreOnPro",
+   "raw": "'You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class=\"apdays\">'",
+   "en": "You are on <b>Pro</b>, free, because you were building on the API before plans existed. <span class=\"apdays\">",
+   "n": 1,
+   "es": "Estás en <b>Pro</b>, gratis, porque ya estabas construyendo sobre la API antes de que existieran los planes. <span class=\"apdays\">"
+  },
+  {
+   "key": "leftItEndsOn",
+   "raw": "' left</span> - it ends on '",
+   "en": " left</span> - it ends on ",
+   "n": 1,
+   "es": " restantes</span> - termina el "
+  },
+  {
+   "key": "youAreOn",
+   "raw": "'You are on <b>'",
+   "en": "You are on <b>",
+   "n": 1,
+   "es": "Estás en <b>"
+  },
+  {
+   "key": "grantedByMarginpad",
+   "raw": "' - granted by MarginPad.'",
+   "en": " - granted by MarginPad.",
+   "n": 1,
+   "es": " - otorgado por MarginPad."
+  },
+  {
+   "key": "signInFirstThen",
+   "raw": "'Sign in first, then pick a plan.'",
+   "en": "Sign in first, then pick a plan.",
+   "n": 3,
+   "es": "Inicia sesión primero y luego elige un plan."
+  },
+  {
+   "key": "doneApi",
+   "raw": "'Done - API '",
+   "en": "Done - API ",
+   "n": 1,
+   "es": "Hecho - API "
+  },
+  {
+   "key": "isActiveUntil",
+   "raw": "' is active until '",
+   "en": " is active until ",
+   "n": 1,
+   "es": " está activa hasta "
+  },
+  {
+   "key": "yourRewardsBalanceIs",
+   "raw": "'Your rewards balance is $'",
+   "en": "Your rewards balance is $",
+   "n": 1,
+   "es": "Tu saldo de recompensas es de $"
+  },
+  {
+   "key": "andThePlanIs",
+   "raw": "' and the plan is $'",
+   "en": " and the plan is $",
+   "n": 1,
+   "es": " y el plan cuesta $"
+  },
+  {
+   "key": "youAreAlreadyOn",
+   "raw": "'You are already on a bigger plan.'",
+   "en": "You are already on a bigger plan.",
+   "n": 1,
+   "es": "Ya tienes un plan más grande."
+  },
+  {
+   "key": "thatIsAlreadyGoing",
+   "raw": "'That is already going through - give it a few seconds.'",
+   "en": "That is already going through - give it a few seconds.",
+   "n": 1,
+   "es": "Eso ya se está procesando - dale unos segundos."
+  },
+  {
+   "key": "invoiceOpenInA",
+   "raw": "'Invoice open in a new tab. Your plan starts the moment the payment confirms.'",
+   "en": "Invoice open in a new tab. Your plan starts the moment the payment confirms.",
+   "n": 1,
+   "es": "La factura se abrió en una pestaña nueva. Tu plan empieza en cuanto se confirme el pago."
+  },
+  {
+   "key": "couldNotOpenAn",
+   "raw": "'Could not open an invoice. Try again in a minute, or write to support@marginpad.io.'",
+   "en": "Could not open an invoice. Try again in a minute, or write to support@marginpad.io.",
+   "n": 1,
+   "es": "No se pudo abrir la factura. Inténtalo de nuevo en un minuto, o escribe a support@marginpad.io."
+  },
+  {
+   "key": "couldNotOpenAn2",
+   "raw": "'Could not open an invoice. Try again in a minute.'",
+   "en": "Could not open an invoice. Try again in a minute.",
+   "n": 1,
+   "es": "No se pudo abrir la factura. Inténtalo de nuevo en un minuto."
+  },
+  {
+   "key": "paymentReceivedIfThe",
+   "raw": "'Payment received - if the plan is not showing yet, give the confirmation a minute and reload.'",
+   "en": "Payment received - if the plan is not showing yet, give the confirmation a minute and reload.",
+   "n": 1,
+   "es": "Pago recibido - si el plan todavía no aparece, dale un minuto a la confirmación y recarga la página."
+  },
+  {
+   "key": "notAvailableIn",
+   "raw": "'not available in '",
+   "en": "not available in ",
+   "n": 1,
+   "es": "no disponible en "
+  },
+  {
+   "key": "yourCountry",
+   "raw": "'your country'",
+   "en": "your country",
+   "n": 2,
+   "es": "tu país"
+  },
+  {
+   "key": "bybitDoesNotOnboard",
+   "raw": "'Bybit does not onboard traders in '",
+   "en": "Bybit does not onboard traders in ",
+   "n": 1,
+   "es": "Bybit no admite traders en "
+  },
+  {
+   "key": "insteadAVenueThat",
+   "raw": "'</b> instead - a venue that does, with a documented REST API.'",
+   "en": "</b> instead - a venue that does, with a documented REST API.",
+   "n": 1,
+   "es": "</b> en su lugar - un exchange que sí lo hace, con una API REST documentada."
+  },
+  {
+   "key": "justNow",
+   "raw": "'just now'",
+   "en": "just now",
+   "n": 1,
+   "es": "justo ahora"
+  },
+  {
+   "key": "freeMonth",
+   "raw": "' · <b style=\"color:#c2f64a\">free month: '",
+   "en": " · <b style=\"color:#c2f64a\">free month: ",
+   "n": 1,
+   "es": " · <b style=\"color:#c2f64a\">mes gratis: "
+  },
+  {
+   "key": "leftKeepProRarr",
+   "raw": "' left</b> <a href=\"#plans\">keep Pro &rarr;</a>'",
+   "en": " left</b> <a href=\"#plans\">keep Pro &rarr;</a>",
+   "n": 1,
+   "es": " restantes</b> <a href=\"#plans\">mantener Pro &rarr;</a>"
+  },
+  {
+   "key": "renewsIn",
+   "raw": "' · renews in '",
+   "en": " · renews in ",
+   "n": 1,
+   "es": " · se renueva en "
+  },
+  {
+   "key": "pro600Min10",
+   "raw": "' · <a href=\"#plans\">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>'",
+   "en": " · <a href=\"#plans\">Pro: 600/min, 10 keys, 200 positions, webhooks &rarr;</a>",
+   "n": 1,
+   "es": " · <a href=\"#plans\">Pro: 600/min, 10 claves, 200 posiciones, webhooks &rarr;</a>"
+  },
+  {
+   "key": "openPositions",
+   "raw": "' open positions'",
+   "en": " open positions",
+   "n": 1,
+   "es": " posiciones abiertas"
+  },
+  {
+   "key": "noKeysYetCreate",
+   "raw": "'<tr><td colspan=\"6\" style=\"color:var(--faint)\">No keys yet - create one below.</td></tr>'",
+   "en": "<tr><td colspan=\"6\" style=\"color:var(--faint)\">No keys yet - create one below.</td></tr>",
+   "n": 1,
+   "es": "<tr><td colspan=\"6\" style=\"color:var(--faint)\">Todavía no hay claves - crea una más abajo.</td></tr>"
+  },
+  {
+   "key": "usageHistoryKeptThey",
+   "raw": "' (usage history kept, they no longer authenticate)'",
+   "en": " (usage history kept, they no longer authenticate)",
+   "n": 1,
+   "es": " (se conserva el historial de uso, ya no autentican)"
+  },
+  {
+   "key": "youHoldTheMaximum",
+   "raw": "'You hold the maximum number of keys on this plan'",
+   "en": "You hold the maximum number of keys on this plan",
+   "n": 1,
+   "es": "Tienes el número máximo de claves en este plan"
+  },
+  {
+   "key": "revokeOneOrApi",
+   "raw": "' - revoke one, or API Pro raises it to 10.'",
+   "en": " - revoke one, or API Pro raises it to 10.",
+   "n": 1,
+   "es": " - revoca una, o con API Pro sube a 10."
+  },
+  {
+   "key": "yourUsageLast7",
+   "raw": "'<h4>Your usage · last 7 days</h4>'",
+   "en": "<h4>Your usage · last 7 days</h4>",
+   "n": 1,
+   "es": "<h4>Tu uso · últimos 7 días</h4>"
+  },
+  {
+   "key": "refused429ABot",
+   "raw": "' refused (429)</span> - a bot that hits the ceiling should use the WebSocket stream instead of polling'",
+   "en": " refused (429)</span> - a bot that hits the ceiling should use the WebSocket stream instead of polling",
+   "n": 1,
+   "es": " rechazadas (429)</span> - un bot que llega al límite debería usar el stream WebSocket en vez de hacer polling"
+  },
+  {
+   "key": "full30DaysPer",
+   "raw": "'. Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>'",
+   "en": ". Full 30 days per key: <code>GET /api/bot/v1/usage</code>.</div>",
+   "n": 1,
+   "es": ". Los 30 días completos por clave: <code>GET /api/bot/v1/usage</code>.</div>"
+  },
+  {
+   "key": "couldNotLoadYour",
+   "raw": "'Could not load your keys - try again shortly.'",
+   "en": "Could not load your keys - try again shortly.",
+   "n": 1,
+   "es": "No se pudieron cargar tus claves - inténtalo de nuevo en un momento."
+  },
+  {
+   "key": "networkErrorTryAgain",
+   "raw": "'Network error - try again.'",
+   "en": "Network error - try again.",
+   "n": 2,
+   "es": "Error de red - inténtalo de nuevo."
+  },
+  {
+   "key": "copyItNowAnd",
+   "raw": "'<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>'",
+   "en": "<small>Copy it now and keep it secret - anyone holding it can trade your paper account. The list below masks keys; use show to reveal one again.</small></div>",
+   "n": 1,
+   "es": "<small>Cópiala ahora y guárdala en secreto - quien la tenga puede operar en tu cuenta de simulado. La lista de abajo oculta las claves; usa mostrar para revelar una de nuevo.</small></div>"
+  },
+  {
+   "key": "makeYourFirstCall",
+   "raw": "'<h3>Make your first call now</h3>'",
+   "en": "<h3>Make your first call now</h3>",
+   "n": 1,
+   "es": "<h3>Haz tu primera llamada ahora</h3>"
+  },
+  {
+   "key": "thisIsAReal",
+   "raw": "'<p>This is a real request against your real account. Run it here, or paste it into a terminal - it is the same call.</p>'",
+   "en": "<p>This is a real request against your real account. Run it here, or paste it into a terminal - it is the same call.</p>",
+   "n": 1,
+   "es": "<p>Esta es una petición real contra tu cuenta real. Ejecútala aquí, o pégala en una terminal - es la misma llamada.</p>"
+  },
+  {
+   "key": "curlSHttpsMarginpad",
+   "raw": "'<pre><code>curl -s https://marginpad.io/api/bot/v2/account \\\\\\n  -H \"X-API-Key: '",
+   "en": "<pre><code>curl -s https://marginpad.io/api/bot/v2/account \\\\\\n  -H \"X-API-Key: ",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "runIt",
+   "raw": "'<div class=\"agb\"><button class=\"btn akb-sm\" type=\"button\" data-go=\"run\">Run it</button>'",
+   "en": "<div class=\"agb\"><button class=\"btn akb-sm\" type=\"button\" data-go=\"run\">Run it</button>",
+   "n": 1,
+   "es": "<div class=\"agb\"><button class=\"btn akb-sm\" type=\"button\" data-go=\"run\">Ejecutar</button>"
+  },
+  {
+   "key": "copyTheCurl",
+   "raw": "'<button class=\"btn akb-sm\" type=\"button\" data-go=\"copy\">Copy the curl</button></div>'",
+   "en": "<button class=\"btn akb-sm\" type=\"button\" data-go=\"copy\">Copy the curl</button></div>",
+   "n": 1,
+   "es": "<button class=\"btn akb-sm\" type=\"button\" data-go=\"copy\">Copiar el curl</button></div>"
+  },
+  {
+   "key": "curlSHttpsMarginpad2",
+   "raw": "'curl -s https://marginpad.io/api/bot/v2/account -H \"X-API-Key: '",
+   "en": "curl -s https://marginpad.io/api/bot/v2/account -H \"X-API-Key: ",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "copyTheCurl2",
+   "raw": "'Copy the curl'",
+   "en": "Copy the curl",
+   "n": 1,
+   "es": "Copiar el curl"
+  },
+  {
+   "key": "thatWasYourFirst",
+   "raw": "'That was your first API call. The same key works on every endpoint on this page.'",
+   "en": "That was your first API call. The same key works on every endpoint on this page.",
+   "n": 1,
+   "es": "Esa fue tu primera llamada a la API. La misma clave funciona en todos los endpoints de esta página."
+  },
+  {
+   "key": "theBodyAboveSays",
+   "raw": "' - the body above says why. Every refusal here names what to do instead.'",
+   "en": " - the body above says why. Every refusal here names what to do instead.",
+   "n": 1,
+   "es": " - el cuerpo de arriba explica por qué. Cada rechazo aquí indica qué hacer en su lugar."
+  },
+  {
+   "key": "runItAgain",
+   "raw": "'Run it again'",
+   "en": "Run it again",
+   "n": 1,
+   "es": "Ejecutar de nuevo"
+  },
+  {
+   "key": "theRequestCouldNot",
+   "raw": "'The request could not be made from this page. Copy the curl and run it in a terminal.'",
+   "en": "The request could not be made from this page. Copy the curl and run it in a terminal.",
+   "n": 1,
+   "es": "La petición no se pudo hacer desde esta página. Copia el curl y ejecútalo en una terminal."
+  },
+  {
+   "key": "keyLimitReachedOn",
+   "raw": "'Key limit reached on this plan.'",
+   "en": "Key limit reached on this plan.",
+   "n": 1,
+   "es": "Límite de claves alcanzado en este plan."
+  },
+  {
+   "key": "bookLimitReached",
+   "raw": "'Book limit reached: '",
+   "en": "Book limit reached: ",
+   "n": 1,
+   "es": "Límite de books alcanzado: "
+  },
+  {
+   "key": "freeAccountsGetOne",
+   "raw": "'free accounts get one book besides the main account, Premium five.'",
+   "en": "free accounts get one book besides the main account, Premium five.",
+   "n": 1,
+   "es": "las cuentas Free tienen un book además de la cuenta principal, Premium cinco."
+  },
+  {
+   "key": "revokeTheKeysOf",
+   "raw": "'revoke the keys of a book you no longer use.'",
+   "en": "revoke the keys of a book you no longer use.",
+   "n": 1,
+   "es": "revoca las claves de un book que ya no uses."
+  },
+  {
+   "key": "mainIsTheAccount",
+   "raw": "'\"main\" is the account itself - leave the book empty for it.'",
+   "en": "\"main\" is the account itself - leave the book empty for it.",
+   "n": 1,
+   "es": "\"main\" es la cuenta misma - deja el book vacío para ella."
+  },
+  {
+   "key": "signInFirst",
+   "raw": "'Sign in first.'",
+   "en": "Sign in first.",
+   "n": 1,
+   "es": "Inicia sesión primero."
+  },
+  {
+   "key": "couldNotCreateA",
+   "raw": "'Could not create a key - try again.'",
+   "en": "Could not create a key - try again.",
+   "n": 1,
+   "es": "No se pudo crear la clave - inténtalo de nuevo."
+  },
+  {
+   "key": "newNameForThis",
+   "raw": "'New name for this key:'",
+   "en": "New name for this key:",
+   "n": 1,
+   "es": "Nuevo nombre para esta clave:"
+  },
+  {
+   "key": "revokeThisKeyAny",
+   "raw": "'Revoke this key? Any bot using it stops working immediately.'",
+   "en": "Revoke this key? Any bot using it stops working immediately.",
+   "n": 1,
+   "es": "¿Revocar esta clave? Cualquier bot que la use dejará de funcionar de inmediato."
+  },
+  {
+   "key": "signInFirstThe",
+   "raw": "'Sign in first - the modal is open.'",
+   "en": "Sign in first - the modal is open.",
+   "n": 1,
+   "es": "Inicia sesión primero - el modal está abierto."
+  },
+  {
+   "key": "signInOnThe",
+   "raw": "'Sign in on the homepage first, then come back.'",
+   "en": "Sign in on the homepage first, then come back.",
+   "n": 1,
+   "es": "Inicia sesión en la página de inicio primero y luego vuelve."
+  }
+ ]
+}

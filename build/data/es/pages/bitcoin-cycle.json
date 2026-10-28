@@ -1,0 +1,224 @@
+{
+ "file": "bitcoin-cycle/index.html",
+ "helper": "__esT_bitcoincycleindex",
+ "dict": "__esD_bitcoincycleindex",
+ "items": [
+  {
+   "key": "aCrossOfThe",
+   "raw": "'A cross of the 111DMA above the 2×350DMA has marked cycle tops.'",
+   "en": "A cross of the 111DMA above the 2×350DMA has marked cycle tops.",
+   "n": 1,
+   "es": "Un cruce de la 111DMA por encima de la 2×350DMA ha marcado techos de ciclo."
+  },
+  {
+   "key": "heatingUp",
+   "raw": "'Heating up'",
+   "en": "Heating up",
+   "n": 1,
+   "es": "Calentando"
+  },
+  {
+   "key": "farFromTop",
+   "raw": "'Far from top'",
+   "en": "Far from top",
+   "n": 1,
+   "es": "Lejos del techo"
+  },
+  {
+   "key": "toTopLine",
+   "raw": "'<small>% to top line</small>'",
+   "en": "<small>% to top line</small>",
+   "n": 1,
+   "es": "<small>% hasta la línea superior</small>"
+  },
+  {
+   "key": "ofThe2350dma",
+   "raw": "'% of the 2×350DMA top line.'",
+   "en": "% of the 2×350DMA top line.",
+   "n": 1,
+   "es": "% de la línea superior 2×350DMA."
+  },
+  {
+   "key": "fromFireSaleBlue",
+   "raw": "'From fire-sale (blue) to maximum bubble (red).'",
+   "en": "From fire-sale (blue) to maximum bubble (red).",
+   "n": 1,
+   "es": "De liquidación forzosa (azul) a burbuja máxima (rojo)."
+  },
+  {
+   "key": "stillCheap",
+   "raw": "'Still cheap'",
+   "en": "Still cheap",
+   "n": 1,
+   "es": "Todavía barato"
+  },
+  {
+   "key": "wherePriceSitsOn",
+   "raw": "' - where price sits on the log-regression rainbow.'",
+   "en": " - where price sits on the log-regression rainbow.",
+   "n": 1,
+   "es": " - dónde se ubica el precio en el arcoíris de regresión logarítmica."
+  },
+  {
+   "key": "dailyMinerRevenueVs",
+   "raw": "'Daily miner revenue vs its 1-year average.'",
+   "en": "Daily miner revenue vs its 1-year average.",
+   "n": 1,
+   "es": "Ingreso diario de los mineros frente a su promedio de 1 año."
+  },
+  {
+   "key": "priceVs350dmaFib",
+   "raw": "'price vs 350DMA × Fib'",
+   "en": "price vs 350DMA × Fib",
+   "n": 1,
+   "es": "precio vs 350DMA × Fib"
+  },
+  {
+   "key": "priceAt16",
+   "raw": "'Price at 1.6×–2× the 350DMA has marked tops.'",
+   "en": "Price at 1.6×–2× the 350DMA has marked tops.",
+   "n": 1,
+   "es": "El precio en 1.6×–2× la 350DMA ha marcado techos."
+  },
+  {
+   "key": "priceAsAMultiple",
+   "raw": "'Price as a multiple of the 350-day moving average.'",
+   "en": "Price as a multiple of the 350-day moving average.",
+   "n": 1,
+   "es": "El precio como múltiplo de la media móvil de 350 días."
+  },
+  {
+   "key": "blendsPriceWithThe",
+   "raw": "'Blends price with the 200-day cost basis.'",
+   "en": "Blends price with the 200-day cost basis.",
+   "n": 1,
+   "es": "Combina el precio con la base de costo de 200 días."
+  },
+  {
+   "key": "2YearMaMultiplier",
+   "raw": "'2-Year MA multiplier'",
+   "en": "2-Year MA multiplier",
+   "n": 1,
+   "es": "Multiplicador de MA de 2 años"
+  },
+  {
+   "key": "5The2yMa",
+   "raw": "'5× the 2Y MA has marked tops; below it = value.'",
+   "en": "5× the 2Y MA has marked tops; below it = value.",
+   "n": 1,
+   "es": "5× la MA de 2 años ha marcado techos; por debajo = valor."
+  },
+  {
+   "key": "priceAsAMultiple2",
+   "raw": "'Price as a multiple of the 2-year moving average.'",
+   "en": "Price as a multiple of the 2-year moving average.",
+   "n": 1,
+   "es": "El precio como múltiplo de la media móvil de 2 años."
+  },
+  {
+   "key": "200WeekMa",
+   "raw": "'200-Week MA'",
+   "en": "200-Week MA",
+   "n": 1,
+   "es": "MA de 200 semanas"
+  },
+  {
+   "key": "touchingThe200wMa",
+   "raw": "'Touching the 200W MA has marked cycle bottoms.'",
+   "en": "Touching the 200W MA has marked cycle bottoms.",
+   "n": 1,
+   "es": "Tocar la MA de 200 semanas ha marcado suelos de ciclo."
+  },
+  {
+   "key": "priceAsAMultiple3",
+   "raw": "'Price as a multiple of the 200-week moving average.'",
+   "en": "Price as a multiple of the 200-week moving average.",
+   "n": 1,
+   "es": "El precio como múltiplo de la media móvil de 200 semanas."
+  },
+  {
+   "key": "altcoinSeason",
+   "raw": "'Altcoin Season'",
+   "en": "Altcoin Season",
+   "n": 1,
+   "es": "Temporada de altcoins"
+  },
+  {
+   "key": "bitcoinSeason",
+   "raw": "'Bitcoin season'",
+   "en": "Bitcoin season",
+   "n": 1,
+   "es": "Temporada de Bitcoin"
+  },
+  {
+   "key": "shareOfTopAlts",
+   "raw": "'Share of top alts outperforming BTC over 90 days.'",
+   "en": "Share of top alts outperforming BTC over 90 days.",
+   "n": 1,
+   "es": "Porcentaje de las principales altcoins que superan a BTC en 90 días."
+  },
+  {
+   "key": "btcShareOfMcap",
+   "raw": "'BTC share of mcap'",
+   "en": "BTC share of mcap",
+   "n": 1,
+   "es": "Participación de BTC en la capitalización"
+  },
+  {
+   "key": "risingBitcoinLeadingFallin",
+   "raw": "'Rising = Bitcoin leading; falling late-cycle precedes the alt blow-off.'",
+   "en": "Rising = Bitcoin leading; falling late-cycle precedes the alt blow-off.",
+   "n": 1,
+   "es": "Subiendo = Bitcoin liderando; cayendo en fase tardía del ciclo precede al estallido de las altcoins."
+  },
+  {
+   "key": "bitcoinSShareOf",
+   "raw": "'Bitcoin\\'s share of total crypto market cap.'",
+   "en": "Bitcoin\\'s share of total crypto market cap.",
+   "n": 1,
+   "es": "El porcentaje de Bitcoin en la capitalización total del mercado cripto."
+  },
+  {
+   "key": "heatingUpLateCycle",
+   "raw": "'Heating up - late cycle'",
+   "en": "Heating up - late cycle",
+   "n": 1,
+   "es": "Calentando - fase tardía del ciclo"
+  },
+  {
+   "key": "midCycleNoExtreme",
+   "raw": "'Mid-cycle - no extreme yet'",
+   "en": "Mid-cycle - no extreme yet",
+   "n": 1,
+   "es": "Mitad del ciclo - sin extremos todavía"
+  },
+  {
+   "key": "earlyCycleRoomTo",
+   "raw": "'Early cycle - room to run'",
+   "en": "Early cycle - room to run",
+   "n": 1,
+   "es": "Ciclo temprano - todavía hay margen"
+  },
+  {
+   "key": "severalModelsAreStretched",
+   "raw": "'Several models are stretched. This is the zone where cycle tops historically form - manage risk, not FOMO.'",
+   "en": "Several models are stretched. This is the zone where cycle tops historically form - manage risk, not FOMO.",
+   "n": 1,
+   "es": "Varios modelos están en tensión. Esta es la zona donde históricamente se forman los techos de ciclo - gestiona el riesgo, no el FOMO."
+  },
+  {
+   "key": "modelsAreNotAt",
+   "raw": "'Models are not at an extreme yet. The blend below is your early-warning system as they heat up.'",
+   "en": "Models are not at an extreme yet. The blend below is your early-warning system as they heat up.",
+   "n": 1,
+   "es": "Los modelos todavía no están en un extremo. La mezcla de abajo es tu sistema de alerta temprana mientras se calientan."
+  },
+  {
+   "key": "waitingForTheData",
+   "raw": "'Waiting for the data feed'",
+   "en": "Waiting for the data feed",
+   "n": 1,
+   "es": "Esperando el feed de datos"
+  }
+ ]
+}

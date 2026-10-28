@@ -1,0 +1,28 @@
+{
+ "file": "mp-nav.js",
+ "helper": "__esT_mpnav",
+ "dict": "__esD_mpnav",
+ "items": [
+  {
+   "key": "chartChartsCandlestickCand",
+   "raw": "'chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis bollinger vwap stochastic ichimoku supertrend market brain memory cascade magnet big liquidations volume profile bar replay compare'",
+   "en": "chart charts candlestick candles indicator indicators rsi macd ema moving average drawing timeframe tradingview technical analysis bollinger vwap stochastic ichimoku supertrend market brain memory cascade magnet big liquidations volume profile bar replay compare",
+   "n": 1,
+   "es": "gráfico gráficos velas vela indicador indicadores rsi macd ema media móvil medias móviles dibujo dibujar temporalidad tradingview análisis técnico bollinger vwap estocástico ichimoku supertrend market brain memoria cascada magnet liquidaciones grandes perfil de volumen repetición de barras comparar"
+  },
+  {
+   "key": "everyTermWithToday",
+   "raw": "'Every term, with today\\'s number in it'",
+   "en": "Every term, with today\\'s number in it",
+   "n": 1,
+   "es": "Cada término, con el número de hoy incluido"
+  },
+  {
+   "key": "signInToJoin",
+   "raw": "'<div class=\"ct-gate\" id=\"ctGate\"><p>Sign in to join the chat \\u2014 it\\u2019s free (just an email code). Please don\\u2019t post your email in the chat.</p><button id=\"ctSignin\" type=\"button\">Sign in to chat</button></div>'",
+   "en": "<div class=\"ct-gate\" id=\"ctGate\"><p>Sign in to join the chat \\u2014 it\\u2019s free (just an email code). Please don\\u2019t post your email in the chat.</p><button id=\"ctSignin\" type=\"button\">Sign in to chat</button></div>",
+   "n": 1,
+   "es": ""
+  }
+ ]
+}

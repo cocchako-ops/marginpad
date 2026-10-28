@@ -2,16 +2,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpscreener = {"loadingOnChainPools":"<div class=\"scr-loading\">Cargando pools on-chain…</div>","noPoolsRightNow":"<div class=\"scr-loading\">No hay pools por ahora - prueba la otra pestaña.</div>","technicalAnalysisNotAvaila":"<div class=\"scr-an-note\">El análisis técnico aún no está disponible para este par.</div>","openInt":"</b></div><div><span>Int. abierto</span><b>","noHighConvictionSetup":"<div class=\"scr-an-note\">Sin setup de alta convicción - zona neutral, espera confirmación.</div>","mostVolatile":"Más volátil","noPairsMatchClear":"Ningún par coincide - borra la búsqueda/filtro.","noDataRetryShortly":"Sin datos - vuelve a intentarlo en breve.","marketsUnavailableRetrySho":"<div class=\"scr-loading\">Mercados no disponibles - vuelve a intentarlo en breve.</div>","notIn":"No disponible en ","yourCountry":"tu país","tradeRarr":"Operar &rarr;","openInterest":"<div><span>Interés abierto</span><b>","liquidatedIn24hWatch":" liquidados en 24h - mira en vivo →</a>","loadingLiveDerivativesData":"<div class=\"scr-live-load\">Cargando datos de derivados en vivo…</div>",
-  "colCoin":"Moneda","colPrice":"Precio","colChg":"24h","colVol":"Vol 24h","colOi":"OI","colFund":"Funding","colOiChg":"OI Δ24h","colLiq":"Liq 24h","colRsi":"RSI","colTrend":"Tendencia","colSetup":"Setup",
-  "showAllPairs":"Ver los {n} pares","morePairs":"{n} más","bestLongSetup":"Mejor setup largo","bestShortSetup":"Mejor setup corto","score":"score","range4h":"rango · 4h",
-  "volumePairs":"Vol 24h","pairs":"pares","bullish":"Alcistas","bearish":"Bajistas","scored":"con score","avg":"media","liveExch":"bolsas en vivo",
-  "trendUp":"↗ Sube","trendDown":"↘ Baja","trendSide":"→ Lateral","up":"sube","down":"baja","side":"lateral",
-  "setupNote":"Si salta el stop pierdes el {p}% del margen · niveles por ATR 4h · simulación, no es un consejo",
-  "technicalScore4h":"score técnico · 4h","trend":"Tendencia","volatility":"Volatilidad","bullishW":"Alcista","bearishW":"Bajista","setupW":"setup",
-  "setPriceAlert":"Crear alerta de precio","openInPaperTrade":"Abrir en Paper Trade (demo)","notOnBybit":"No está en Bybit · solo ver","openChart":"Abrir en el gráfico",
-  "liveDerivatives":"Derivados en vivo","realTime":"· MarginPad · tiempo real","fundingRate":"Tasa de funding","liqLongs":"Liq 24h · largos","liqShorts":"Liq 24h · cortos","longPct":"Largos ","shortPct":" Cortos","tradeSym":"Operar ",
-  "aiBestSetups":"Mejores setups por IA","aiScanTease":"Los 3 setups más fuertes entre las grandes, ordenados por IA - toca para abrir y dibujar.","plusSp":"Premium AI+","confSp":"conf","openDrawChart":"Abrir y dibujar en el gráfico","justNow":"ahora mismo","agoSp":"atrás"};
+var __esD_mpscreener = {"loadingOnChainPools":"<div class=\"scr-loading\">Cargando pools on-chain…</div>","noPoolsRightNow":"<div class=\"scr-loading\">No hay pools por ahora - prueba la otra pestaña.</div>","technicalAnalysisNotAvaila":"<div class=\"scr-an-note\">El análisis técnico aún no está disponible para este par.</div>","openInt":"</b></div><div><span>Int. abierto</span><b>","noHighConvictionSetup":"<div class=\"scr-an-note\">Sin setup de alta convicción - zona neutral, espera confirmación.</div>","mostVolatile":"Más volátil","noPairsMatchClear":"Ningún par coincide - borra la búsqueda/filtro.","noDataRetryShortly":"Sin datos - vuelve a intentarlo en breve.","marketsUnavailableRetrySho":"<div class=\"scr-loading\">Mercados no disponibles - vuelve a intentarlo en breve.</div>","notIn":"No disponible en ","yourCountry":"tu país","tradeRarr":"Operar &rarr;","openInterest":"<div><span>Interés abierto</span><b>","liquidatedIn24hWatch":" liquidados en 24h - mira en vivo →</a>","loadingLiveDerivativesData":"<div class=\"scr-live-load\">Cargando datos de derivados en vivo…</div>","colCoin":"Moneda","colPrice":"Precio","colChg":"24h","colVol":"Vol 24h","colOi":"OI","colFund":"Funding","colOiChg":"OI Δ24h","colLiq":"Liq 24h","colRsi":"RSI","colTrend":"Tendencia","colSetup":"Setup","showAllPairs":"Ver los {n} pares","morePairs":"{n} más","bestLongSetup":"Mejor setup largo","bestShortSetup":"Mejor setup corto","score":"score","range4h":"rango · 4h","volumePairs":"Vol 24h","pairs":"pares","bullish":"Alcistas","bearish":"Bajistas","scored":"con score","avg":"media","liveExch":"bolsas en vivo","trendUp":"↗ Sube","trendDown":"↘ Baja","trendSide":"→ Lateral","up":"sube","down":"baja","side":"lateral","setupNote":"Si salta el stop pierdes el {p}% del margen · niveles por ATR 4h · simulación, no es un consejo","technicalScore4h":"score técnico · 4h","trend":"Tendencia","volatility":"Volatilidad","bullishW":"Alcista","bearishW":"Bajista","setupW":"setup","setPriceAlert":"Crear alerta de precio","openInPaperTrade":"Abrir en Paper Trade (demo)","notOnBybit":"No está en Bybit · solo ver","openChart":"Abrir en el gráfico","liveDerivatives":"Derivados en vivo","realTime":"· MarginPad · tiempo real","fundingRate":"Tasa de funding","liqLongs":"Liq 24h · largos","liqShorts":"Liq 24h · cortos","longPct":"Largos ","shortPct":" Cortos","tradeSym":"Operar ","aiBestSetups":"Mejores setups por IA","aiScanTease":"Los 3 setups más fuertes entre las grandes, ordenados por IA - toca para abrir y dibujar.","plusSp":"Premium AI+","confSp":"conf","openDrawChart":"Abrir y dibujar en el gráfico","justNow":"ahora mismo","agoSp":"atrás","notOnBybitView":"No está en Bybit · solo lectura","openOnTheChart":"Abrir en el gráfico","setAPriceAlert":"Configurar una alerta de precio","openDrawOnChart":"Abrir y dibujar en el gráfico","the3StrongestSetups":"Los 3 setups más fuertes entre las principales, clasificados por la IA - toca para abrir y dibujar."};
 function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpscreener[k] != null) return __esD_mpscreener[k]; } catch (e) {} return en; }
 /* Market Screener - live USDT-perp TABLE (multi-exchange via /api/screener: aggregated volume, venue count, median-price cross-check),
    sortable by every column header, with a per-coin action sheet. Runs only on /screener.
@@ -46,9 +37,9 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
         +(p.chg1!=null?'<span class="oc-box">1h <b class="'+(p.chg1>=0?'bs-b':'bs-s')+'">'+(p.chg1>=0?'+':'')+(+p.chg1).toFixed(1)+'%</b></span>':'')
       +'</span></a>';}
   function ocRender(){var el=document.getElementById('scrOcList');if(!el)return;
-    if(!OC){el.innerHTML=T("loadingOnChainPools",'<div class="scr-loading">Loading on-chain pools…</div>');return;}
+    if(!OC){el.innerHTML=T("loadingOnChainPools",__esT_mpscreener("loadingOnChainPools",'<div class="scr-loading">Loading on-chain pools…</div>'));return;}
     var list=(ocTab==='fresh'?OC.fresh:OC.trending)||[];
-    el.innerHTML=list.length?list.map(ocRow).join(''):T("noPoolsRightNow",'<div class="scr-loading">No pools right now - try the other tab.</div>');}
+    el.innerHTML=list.length?list.map(ocRow).join(''):T("noPoolsRightNow",__esT_mpscreener("noPoolsRightNow",'<div class="scr-loading">No pools right now - try the other tab.</div>'));}
   function ocLoad(){fetch('/api/onchain').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&(d.trending||d.fresh)){OC=d;ocRender();}}).catch(function(){});}
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   (function(){var mode=document.getElementById('scrMode'),oc=document.getElementById('scrOnchain');if(!mode||!oc)return;
@@ -77,9 +68,9 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
      a symbol nothing resolves keeps the letter - a wrong logo would be worse. */
   function icHtml(s){var src=LOGOS[s]||('/api/coinicon?v=2&sym='+encodeURIComponent(s));return '<span class="scr-ic" style="--c:'+symColor(s)+'">'+s.charAt(0)+'<img src="'+src+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"></span>';}
   function loadLogos(){fetch('/api/gecko/markets?slim=1',{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(a){if(!a||!a.length)return;a.forEach(function(c){var sym=(c.symbol||'').toUpperCase();if(sym){if(c.image)LOGOS[sym]=c.image;if(c.name)NAMES[sym]=c.name;}});if(DATA.length)render();}).catch(function(){});}
-  function anHtml(e){if(e.score==null)return T("technicalAnalysisNotAvaila",'<div class="scr-an-note">Technical analysis not available for this pair yet.</div>');
+  function anHtml(e){if(e.score==null)return T("technicalAnalysisNotAvaila",__esT_mpscreener("technicalAnalysisNotAvaila",'<div class="scr-an-note">Technical analysis not available for this pair yet.</div>'));
     var cls=scoreCls(e.score),h='<div class="scr-an"><div class="scr-an-top sc-'+cls+'"><div class="scr-an-num">'+e.score+'<small>/100</small></div><div class="scr-an-v"><b>'+(e.verdict||'')+'</b><span>'+T("technicalScore4h",'technical score · 4h')+'</span></div></div>';
-    h+='<div class="scr-an-grid"><div><span>'+T("trend",'Trend')+'</span><b>'+trendTxt(e.trend)+'</b></div><div><span>RSI</span><b>'+(e.rsi!=null?e.rsi:'-')+'</b></div><div><span>MACD</span><b>'+(e.macd==='bull'?T("bullishW",'Bullish'):e.macd==='bear'?T("bearishW",'Bearish'):'-')+'</b></div><div><span>Funding</span><b class="'+((e.f||0)>=0?'up':'dn')+'">'+fundTxt(e.f)+'</b></div><div><span>'+T("volatility",'Volatility')+'</span><b>'+(e.atrPct!=null?e.atrPct+'%':'-')+T("openInt",'</b></div><div><span>Open Int.</span><b>')+fmtBig(e.oi||0)+'</b></div></div>';
+    h+='<div class="scr-an-grid"><div><span>'+T("trend",'Trend')+'</span><b>'+trendTxt(e.trend)+'</b></div><div><span>RSI</span><b>'+(e.rsi!=null?e.rsi:'-')+'</b></div><div><span>MACD</span><b>'+(e.macd==='bull'?T("bullishW",'Bullish'):e.macd==='bear'?T("bearishW",'Bearish'):'-')+'</b></div><div><span>Funding</span><b class="'+((e.f||0)>=0?'up':'dn')+'">'+fundTxt(e.f)+'</b></div><div><span>'+T("volatility",'Volatility')+'</span><b>'+(e.atrPct!=null?e.atrPct+'%':'-')+T("openInt",__esT_mpscreener("openInt",'</b></div><div><span>Open Int.</span><b>'))+fmtBig(e.oi||0)+'</b></div></div>';
     if(e.sig&&e.sig.length)h+='<div class="scr-an-sig">'+e.sig.map(function(s){var pos=/bullish|golden|oversold|above 200|breakout|negative fund|at support|spike \(up/i.test(s),neg=/bearish|death|overbought|below 200|high positive|spike \(down/i.test(s);return '<span class="'+(pos?'pos':neg?'neg':'')+'">'+s+'</span>';}).join('')+'</div>';
     if(e.setup){var su=e.setup,L=su.dir==='long';
       /* `lev` and `levAgg` are the same number on every row the server has ever sent (worker: `levAgg: lev`), so this used to print "56–56×" */
@@ -87,7 +78,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
         /* what the stop costs at that leverage - the server computes slLossPct for every setup and nothing showed it; a reader
            picking 54x off this card should know it is sized so the stop takes about half the margin */
         +(su.slLossPct!=null?'<div class="scr-setup-n">'+T("setupNote",'If the stop hits you lose {p}% of margin · levels from 4h ATR · simulation, not advice').replace('{p}',Math.round(su.slLossPct*100))+'</div>':'')+'</div>';}
-    else h+=T("noHighConvictionSetup",'<div class="scr-an-note">No high-conviction setup - neutral zone, wait for confirmation.</div>');
+    else h+=T("noHighConvictionSetup",__esT_mpscreener("noHighConvictionSetup",'<div class="scr-an-note">No high-conviction setup - neutral zone, wait for confirmation.</div>'));
     return h+'</div>';}
   /* ---- sorting: one value function per column, nulls always last whichever direction ---- */
   function xo(e){return XTRA.oi&&XTRA.oi[e.s];}
@@ -135,7 +126,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
     function pk(tag,cls,e,stat){return e?'<button type="button" class="scr-pick '+cls+'" data-pick="'+e.s+'"><i>'+tag+'</i><b>'+icHtml(e.s)+e.s+'</b><span>'+stat+'</span></button>':'';}
     el.innerHTML=(L||S||V)?(pk(T("bestLongSetup",'Best long setup'),'pk-l',L,L?(T("score",'score')+' '+L.score+(L.setup.lev?' · '+L.setup.lev+'×':'')):'')
       +pk(T("bestShortSetup",'Best short setup'),'pk-s',S,S?(T("score",'score')+' '+S.score+(S.setup.lev?' · '+S.setup.lev+'×':'')):'')
-      +pk(T("mostVolatile",'Most volatile'),'pk-v',V,V?((V._vv).toFixed(1)+'% '+T("range4h",'range · 4h')):'')):'';}
+      +pk(T("mostVolatile",__esT_mpscreener("mostVolatile",'Most volatile')),'pk-v',V,V?((V._vv).toFixed(1)+'% '+T("range4h",'range · 4h')):'')):'';}
   var COLS=[
     {k:'score',l:'Score',c:'c-sc'},
     {k:'',l:T("colCoin",'Coin'),c:'c-coin'},
@@ -170,7 +161,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
       +'<td class="c-su">'+su+'</td>'
       +'</tr>';}
   function render(){var d=sorted();renderTop(d);renderPicks();
-    if(!d.length){listEl.innerHTML='<div class="scr-loading">'+((query||filterKey!=='all')?T("noPairsMatchClear",'No pairs match - clear the search/filter.'):T("noDataRetryShortly",'No data - retry shortly.'))+'</div>';return;}
+    if(!d.length){listEl.innerHTML='<div class="scr-loading">'+((query||filterKey!=='all')?T("noPairsMatchClear",__esT_mpscreener("noPairsMatchClear",'No pairs match - clear the search/filter.')):T("noDataRetryShortly",__esT_mpscreener("noDataRetryShortly",'No data - retry shortly.')))+'</div>';return;}
     var all=showAll||!!query||filterKey!=='all',shown=all?d:d.slice(0,LIMIT),rest=d.length-shown.length;
     listEl.innerHTML='<div class="scr-tw"><table class="scr-tbl">'+headHtml()+'<tbody>'+shown.map(rowHtml).join('')+'</tbody></table></div>'
       +(rest>0?'<button type="button" class="scr-more" id="scrMore">'+T("showAllPairs",'Show all {n} pairs').replace('{n}',d.length)+' <small>· '+T("morePairs",'{n} more').replace('{n}',rest)+'</small></button>':'');}
@@ -182,7 +173,7 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
       if(j&&j.rows&&j.rows.length){
         if(cg&&cg.coins&&cg.coins.length){var cm={};cg.coins.forEach(function(c){cm[c.s]=c;});j.rows.forEach(function(e){var c=cm[e.s];if(c){if(c.funding!=null&&isFinite(c.funding))e.f=c.funding;if(c.oiUsd!=null&&isFinite(c.oiUsd))e.oi=c.oiUsd;e.agg=true;}});}/* overlay funding + OI aggregated across all exchanges onto the majors - Bybit-only for the long tail */
         DATA=j.rows;render();
-      }else if(!DATA.length){listEl.innerHTML=T("marketsUnavailableRetrySho",'<div class="scr-loading">Markets unavailable - retry shortly.</div>');}});}
+      }else if(!DATA.length){listEl.innerHTML=T("marketsUnavailableRetrySho",__esT_mpscreener("marketsUnavailableRetrySho",'<div class="scr-loading">Markets unavailable - retry shortly.</div>'));}});}
   var CHIP={score:['score','desc'],gain:['chg','desc'],lose:['chg','asc'],vol:['vol','desc'],fund:['fundabs','desc'],oi:['oi','desc'],vol24:['vol24','desc']};
   function syncChips(){var fEl=document.getElementById('scrFilters');if(!fEl)return;fEl.querySelectorAll('[data-sort]').forEach(function(x){var c=CHIP[x.getAttribute('data-sort')];x.classList.toggle('on',!!c&&c[0]===sortKey&&c[1]===sortDir);});}
   function setSort(k,dir){sortKey=k;sortDir=dir;syncChips();render();track('sort:'+k+(dir==='asc'?':asc':''));}
@@ -227,12 +218,12 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
     var reg=(E&&cc)?E.region(cc):'';
     return '<div class="scr-exch-h">'+T("tradeSym",'Trade ')+sym+'USDT</div>'+list.map(function(x){
       var off=E?E.blocked(x.n,cc):false, href=(E&&E.url(x.n,sym))||x.u(sym);
-      return '<a class="scr-exch-a'+(off?' mp-ex-off':'')+'" href="'+href+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">'+(off?(T("notIn",'Not in ')+(reg||T("yourCountry",'your country'))):T("tradeRarr",'Trade &rarr;'))+'</span></a>';}).join('');}
+      return '<a class="scr-exch-a'+(off?' mp-ex-off':'')+'" href="'+href+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">'+(off?(T("notIn",'Not in ')+(reg||T("yourCountry",__esT_mpscreener("yourCountry",'your country')))):T("tradeRarr",__esT_mpscreener("tradeRarr",'Trade &rarr;')))+'</span></a>';}).join('');}
   function cgBn(x){if(x==null||!isFinite(x))return '-';var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function cgHtml(d){if(!d||d.error)return '';var fund=(d.funding!=null&&isFinite(d.funding))?((d.funding>=0?'+':'')+d.funding.toFixed(4)+'%'):'-';var oiCh=(d.oiChg24h!=null&&isFinite(d.oiChg24h))?((d.oiChg24h>=0?'+':'')+d.oiChg24h.toFixed(2)+'%'):'';var lp=(d.longPct!=null)?d.longPct:50,sp=(d.shortPct!=null)?d.shortPct:50;
  return '<div class="scr-live"><div class="scr-live-h">'+T("liveDerivatives",'Live derivatives')+' <span>'+T("realTime",'· MarginPad · real-time')+'</span></div>'
       +'<div class="scr-live-grid">'
-      +T("openInterest",'<div><span>Open interest</span><b>')+cgBn(d.oiUsd)+(oiCh?' <i class="'+(d.oiChg24h>=0?'up':'dn')+'">'+oiCh+'</i>':'')+'</b></div>'
+      +T("openInterest",__esT_mpscreener("openInterest",'<div><span>Open interest</span><b>'))+cgBn(d.oiUsd)+(oiCh?' <i class="'+(d.oiChg24h>=0?'up':'dn')+'">'+oiCh+'</i>':'')+'</b></div>'
       +'<div><span>'+T("fundingRate",'Funding rate')+'</span><b class="'+((d.funding||0)>=0?'up':'dn')+'">'+fund+'</b></div>'
       +'<div><span>'+T("liqLongs",'24h liq · longs')+'</span><b class="dn">'+cgBn(d.longLiq24h)+'</b></div>'
       +'<div><span>'+T("liqShorts",'24h liq · shorts')+'</span><b class="up">'+cgBn(d.shortLiq24h)+'</b></div>'
@@ -247,15 +238,15 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
     track((how||'sheet')+':'+sym);
     var _xl=xl(e),onBybit=(!window.mpIsBybit||window.mpIsBybit(sym));
     var ab=document.getElementById('scrActs');if(ab)ab.innerHTML=
-      (onBybit?'<a class="scr-act a-plan" data-act="paper" href="/paper-trade?coin='+sym+'">'+ICO.plan+T("openInPaperTrade",'Open in Paper Trade (demo)')+'</a>':'<span class="scr-act a-plan" style="opacity:.42;cursor:default" title="Not listed on Bybit - no live feed, so paper trade is unavailable for this token">'+ICO.plan+T("notOnBybit",'Not on Bybit · view only')+'</span>')
-      +(onBybit?'<a class="scr-act a-chart" data-act="chart" href="/charts?coin='+sym+'">'+ICO.chart+T("openChart",'Open on the chart')+'</a>':'')
-      +'<a class="scr-act a-alert" data-act="alert" href="/alerts/?coin='+sym+'">'+ICO.alert+T("setPriceAlert",'Set a price alert')+'</a>'
-      +(_xl&&_xl.liq>0?'<a class="scr-act a-rekt" data-act="rekt" href="/rekt/?coin='+sym+'">'+ICO.rekt+fmtBig(_xl.liq)+T("liquidatedIn24hWatch",' liquidated in 24h - watch live →</a>'):'');
+      (onBybit?'<a class="scr-act a-plan" data-act="paper" href="/paper-trade?coin='+sym+'">'+ICO.plan+T("openInPaperTrade",__esT_mpscreener("openInPaperTrade",'Open in Paper Trade (demo)'))+'</a>':'<span class="scr-act a-plan" style="opacity:.42;cursor:default" title="Not listed on Bybit - no live feed, so paper trade is unavailable for this token">'+ICO.plan+T("notOnBybit",__esT_mpscreener("notOnBybitView",'Not on Bybit · view only'))+'</span>')
+      +(onBybit?'<a class="scr-act a-chart" data-act="chart" href="/charts?coin='+sym+'">'+ICO.chart+T("openChart",__esT_mpscreener("openOnTheChart",'Open on the chart'))+'</a>':'')
+      +'<a class="scr-act a-alert" data-act="alert" href="/alerts/?coin='+sym+'">'+ICO.alert+T("setPriceAlert",__esT_mpscreener("setAPriceAlert",'Set a price alert'))+'</a>'
+      +(_xl&&_xl.liq>0?'<a class="scr-act a-rekt" data-act="rekt" href="/rekt/?coin='+sym+'">'+ICO.rekt+fmtBig(_xl.liq)+T("liquidatedIn24hWatch",__esT_mpscreener("liquidatedIn24hWatch",' liquidated in 24h - watch live →</a>')):'');
     // copy-trade prefill is intentionally OFF (owner's choice): just open the coin; the full setup (recommended leverage / SL / TP) stays visible on the screener sheet to read.
     var exb=document.getElementById('scrExch');if(exb)exb.innerHTML=exchHtml(sym);
     // the country lands within a few hundred ms on a first-ever visit; repaint the venue list once it does
     if(window.mpEx&&!window.mpEx.ccNow())try{window.mpEx.cc(function(){var b2=document.getElementById('scrExch');if(b2&&curRow===e)b2.innerHTML=exchHtml(sym);});}catch(e2){}
-    var lb=document.getElementById('scrLive');if(lb){lb.innerHTML=T("loadingLiveDerivativesData",'<div class="scr-live-load">Loading live derivatives data…</div>');fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
+    var lb=document.getElementById('scrLive');if(lb){lb.innerHTML=T("loadingLiveDerivativesData",__esT_mpscreener("loadingLiveDerivativesData",'<div class="scr-live-load">Loading live derivatives data…</div>'));fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
     sheet.classList.add('on');}
   function closeSheet(){if(sheet){sheet.classList.remove('on');curRow=null;}}
   function findRow(sym){for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym)return DATA[i];}return null;}
@@ -280,20 +271,20 @@ function __esT_mpscreener(k, en) { try { if ((document.documentElement.lang || "
       +'<div class="scr-ai-top"><span class="scr-ai-co">'+esc(s.coin)+'</span><span class="scr-ai-side '+side+'">'+side.toUpperCase()+'</span>'
       +'<span class="scr-ai-conf"><b>'+(+s.confidence||0)+'</b>% '+T("confSp","conf")+'</span></div>'
       +'<div class="scr-ai-th">'+esc(s.thesis||'')+'</div>'
-      +'<div class="scr-ai-go">'+T("openDrawChart","Open & draw on chart")+' &rarr;</div></button>';}
+      +'<div class="scr-ai-go">'+T("openDrawChart",__esT_mpscreener("openDrawOnChart","Open & draw on chart"))+' &rarr;</div></button>';}
   function renderAiScan(j){var el=document.getElementById('scrAiScan');if(!el)return;var setups=(j&&j.setups)||[];
     if(!setups.length){el.hidden=true;return;}
     var age=j.ts?Math.max(0,Math.round((Date.now()-j.ts)/60000)):0;
     el.innerHTML='<div class="scr-ai-h"><span class="ic"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.5L18 9l-4.3 1.5L12 15l-1.7-4.5L6 9l4.3-1.5z"/></svg></span>'
       +'<span class="t">'+T("aiBestSetups","AI best setups")+'</span><span class="pl">Plus</span>'
-      +'<span class="age">'+(age<1?T("justNow","just now"):(age+'m '+T("agoSp","ago")))+'</span></div>'
+      +'<span class="age">'+(age<1?T("justNow",__esT_mpscreener("justNow","just now")):(age+'m '+T("agoSp","ago")))+'</span></div>'
       +'<div class="scr-ai-grid">'+setups.map(aiScanCard).join('')+'</div>';
     el.hidden=false;}
   function renderAiLock(){var el=document.getElementById('scrAiScan');if(!el)return;
     el.className='scr-ai locked';
     el.innerHTML='<a class="scr-ai-lock" href="/premium/" onclick="try{window.__mpTrack&&window.__mpTrack(\'premview\',\'screener-aiscan\')}catch(e){}">'
       +'<span class="lk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>'
-      +'<span class="lx"><b>'+T("aiBestSetups","AI best setups")+'</b><i>'+T("aiScanTease","The 3 strongest setups across the majors, ranked by AI - tap to open and draw.")+'</i></span>'
+      +'<span class="lx"><b>'+T("aiBestSetups","AI best setups")+'</b><i>'+T("aiScanTease",__esT_mpscreener("the3StrongestSetups","The 3 strongest setups across the majors, ranked by AI - tap to open and draw."))+'</i></span>'
       +'<span class="cta">'+T("plusSp","Premium AI+")+'</span></a>';
     el.hidden=false;}
   function loadAiScan(){fetch('/api/ai/scan',{cache:'no-store'}).then(function(r){if(r.status===402||r.status===401){renderAiLock();return null;}return r.json();}).then(function(j){if(j)renderAiScan(j);}).catch(function(){});}

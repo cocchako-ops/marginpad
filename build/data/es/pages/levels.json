@@ -1,0 +1,28 @@
+{
+ "file": "levels/index.html",
+ "helper": "__esT_levelsindex",
+ "dict": "__esD_levelsindex",
+ "items": [
+  {
+   "key": "dayStreak",
+   "raw": "'-day streak'",
+   "en": "-day streak",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "listedByLifetimeXp",
+   "raw": "' listed, by lifetime XP'",
+   "en": " listed, by lifetime XP",
+   "n": 1,
+   "es": " en la lista, por XP total"
+  },
+  {
+   "key": "inADuelAnd",
+   "raw": "' in a duel and take their spot'",
+   "en": " in a duel and take their spot",
+   "n": 1,
+   "es": " en un duelo y ocupa su lugar"
+  }
+ ]
+}

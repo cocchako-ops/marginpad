@@ -1,0 +1,21 @@
+{
+ "file": "fundingcalc.js",
+ "helper": "__esT_fundingcalc",
+ "dict": "__esD_fundingcalc",
+ "items": [
+  {
+   "key": "youPayFunding",
+   "raw": "'You pay funding'",
+   "en": "You pay funding",
+   "n": 1,
+   "es": "Pagas funding"
+  },
+  {
+   "key": "youReceiveFunding",
+   "raw": "'You receive funding'",
+   "en": "You receive funding",
+   "n": 1,
+   "es": "Recibes funding"
+  }
+ ]
+}

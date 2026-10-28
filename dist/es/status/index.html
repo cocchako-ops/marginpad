@@ -118,7 +118,7 @@
 <h2>Fuentes de liquidación <small>en vivo desde el recolector</small></h2>
 <table><thead><tr><th>Plataforma</th><th>Socket</th><th>Última liquidación</th></tr></thead><tbody id="venues"><tr><td colspan="3" style="color:var(--faint)">Cargando…</td></tr></tbody></table>
 
-<p class="note">Each day shows the share of checks that passed. A day drawn pale is one where fewer checks ran than the every-10-minute schedule expects - the scheduler itself missed passes - so there is less evidence about that day; hover it for how many ran. We show it rather than hiding it, but a day whose every check passed is not counted against the service because we looked less often. <b>The price floor is not the price endpoints.</b> It is a cached copy of every price, rewritten once a minute, that a cold Cloudflare location serves instantly instead of waiting on the exchanges; a failed check means that rewrite stopped happening, so those requests paid the live round trip - slower, not unavailable. <code>GET /api/v1/price</code> answers either way, and its own latency is on the API page. Thin venues (dYdX, Bitfinex) legitimately go hours without a liquidation; a connected socket with an old last event is quiet, not broken. Machine-readable: <code>GET /api/status</code>, external monitors can use <code>GET /api/health</code> (200 while the scheduler is alive). Changes to the API: <a href="/api/changelog.xml">RSS</a>.</p>
+<p class="note">Cada día muestra la proporción de verificaciones que pasaron. Un día dibujado en un tono pálido es uno en el que se ejecutaron menos verificaciones de las que espera el programa cada 10 minutos - el propio programador se saltó pasadas - así que hay menos evidencia sobre ese día; pasa el cursor para ver cuántas se ejecutaron. Lo mostramos en lugar de ocultarlo, pero un día en el que pasaron todas las verificaciones no cuenta en contra del servicio solo porque miramos menos veces. <b>El precio base no son los endpoints de precio.</b> Es una copia en caché de cada precio, reescrita una vez por minuto, que una ubicación fría de Cloudflare entrega al instante en lugar de esperar a los exchanges; una verificación fallida significa que esa reescritura dejó de ocurrir, así que esas peticiones pagaron el viaje de ida y vuelta en vivo - más lento, no indisponible. <code>GET /api/v1/price</code> responde de cualquier forma, y su propia latencia está en la página de la API. Los exchanges con poco volumen (dYdX, Bitfinex) legítimamente pasan horas sin una liquidación; un socket conectado con un último evento antiguo está en silencio, no roto. Legible por máquinas: <code>GET /api/status</code>, los monitores externos pueden usar <code>GET /api/health</code> (200 mientras el programador esté activo). Cambios en la API: <a href="/api/changelog.xml">RSS</a>.</p>
 </div>
 <script>
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
@@ -161,7 +161,7 @@ function __esT_statusindex(k, en) { try { if ((document.documentElement.lang || 
 })();
 </script>
 <script defer src="/assets/sentry.js?v=43c384ca"></script>
-<script defer src="/assets/mp-auth.js?v=7dd1b8ac"></script>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-auth.js?v=353d3dd6"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>

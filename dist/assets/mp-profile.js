@@ -2,7 +2,7 @@
 /* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
    arrives would be English, which is the partial translation this exists to end. A top-level function
    declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_mpprofile = {"followT":"Seguir","followingT":"Siguiendo","friendsT":"Amigos - se siguen mutuamente","friendsPill":"Amigos","followBackT":"Te sigue - sigue de vuelta","squadBadge":"Insignia de escuadra","signInToFollow2":"Inicia sesión para seguir","portfolio":"Portafolio","demoSpot":"Demo Spot","noPortfolioYet":"Todavía no tiene portafolio en Demo Spot.","startYours":"Empieza el tuyo con $10,000","seasonL":"temporada","ofL":" de ","allInCash":"Todo en efectivo ahora mismo - no tiene monedas.","moreCoins":" monedas más · ","openDemoSpot":"Abrir Demo Spot","loadingPortfolio":"Cargando el portafolio…","couldNotLoadPortfolio":"No se pudo cargar el portafolio.","squadLeader":"Líder de escuadra","squadIn":"Escuadra","loadingTrader": "<div class=\"lbm-load\">Cargando trader…</div>", "noPublicProfileFor": "<div class=\"lbm-load\">Este trader aún no tiene un perfil público.</div>", "titleMessage": "\" title=\"Mensaje\">", "titleChallengeToA": "\" title=\"Retar a un duelo\">", "thisIsYou": "<div class=\"lbm-self\">Este eres tú</div>", "signInToFollow": "<button type=\"button\" class=\"lbm-follow\" data-auth-open>Inicia sesión para seguir</button>", "premiumMember": "MIEMBRO PREMIUM", "seasonBoardWin": " victoria en la tabla de temporada", "seasonWinner": "</svg><span>GANADOR DE TEMPORADA</span></div>", "followsYou": "<span class=\"lbm-fw\" title=\"Te sigue\">Te sigue</span>", "tradesSeason": "Operaciones · temporada", "winRate": "Tasa de acierto", "bestTrade": "Mejor operación", "tradesWk": " operaciones · sem", "thisSeason": "esta temporada", "biggestWin": "mayor ganancia", "inARow": " seguidas", "winStreak": "racha de victorias", "closesInADay": "cierres en un día", "couldNotLoadThis": "<div class=\"lbm-load\">No se pudo cargar este trader.</div>", "pctTo": "% para ", "maxTier": " · nivel máximo"};
+var __esD_mpprofile = {"followT":"Seguir","followingT":"Siguiendo","friendsT":"Amigos - se siguen mutuamente","friendsPill":"Amigos","followBackT":"Te sigue - sigue de vuelta","squadBadge":"Insignia de escuadra","signInToFollow2":"Inicia sesión para seguir","portfolio":"Portafolio","demoSpot":"Demo Spot","noPortfolioYet":"Todavía no tiene portafolio en Demo Spot.","startYours":"Empieza el tuyo con $10,000","seasonL":"temporada","ofL":" de ","allInCash":"Todo en efectivo ahora mismo - no tiene monedas.","moreCoins":" monedas más · ","openDemoSpot":"Abrir Demo Spot","loadingPortfolio":"Cargando el portafolio…","couldNotLoadPortfolio":"No se pudo cargar el portafolio.","squadLeader":"Líder de escuadra","squadIn":"Escuadra","loadingTrader":"<div class=\"lbm-load\">Cargando trader…</div>","noPublicProfileFor":"<div class=\"lbm-load\">Este trader aún no tiene un perfil público.</div>","titleMessage":"\" title=\"Mensaje\">","titleChallengeToA":"\" title=\"Retar a un duelo\">","thisIsYou":"<div class=\"lbm-self\">Este eres tú</div>","signInToFollow":"<button type=\"button\" class=\"lbm-follow\" data-auth-open>Inicia sesión para seguir</button>","premiumMember":"MIEMBRO PREMIUM","seasonBoardWin":" victoria en la tabla de temporada","seasonWinner":"</svg><span>GANADOR DE TEMPORADA</span></div>","followsYou":"<span class=\"lbm-fw\" title=\"Te sigue\">Te sigue</span>","tradesSeason":"Operaciones · temporada","winRate":"Tasa de acierto","bestTrade":"Mejor operación","tradesWk":" operaciones · sem","thisSeason":"esta temporada","biggestWin":"mayor ganancia","inARow":" seguidas","winStreak":"racha de victorias","closesInADay":"cierres en un día","couldNotLoadThis":"<div class=\"lbm-load\">No se pudo cargar este trader.</div>","pctTo":"% para ","maxTier":" · nivel máximo","greenDays":"Días en Verde","bestWinRate":"Mejor Tasa de Acierto","seasonXp":"XP de Temporada","friendsYouFollowEach":"Amigos - se siguen mutuamente","followingTapToUnfollow":"Siguiendo - toca para dejar de seguir","requestSentTapTo":"Solicitud enviada - toca para cancelar","followsYouAskTo":"Te sigue - pide seguirle también","askToFollow":"Pedir seguir"};
 function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_mpprofile[k] != null) return __esD_mpprofile[k]; } catch (e) {} return en; }
 /* Shared trader-profile card + Follow - click any [data-lbu="username"] to open a level-styled profile
    (same card as the homepage leaderboard). Self-contained: injects its own CSS, exposes window.mpOpenProfile.
@@ -159,9 +159,9 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
      a new board must never make a member's medal disappear. */
   var MED_BOARDS = {
     roe:   { n: 'Highest ROE',    a: '#ffd75a', b: '#b8860b', t: '#4a3608' },
-    green: { n: 'Green Days',     a: '#34d99a', b: '#116b4e', t: '#05291d' },
-    wr:    { n: 'Best Win Rate',  a: '#38bdf8', b: '#15618a', t: '#042536' },
-    xp:    { n: 'Season XP',      a: '#a06bff', b: '#4a2a8a', t: '#1b0e38' },
+    green: { n: __esT_mpprofile("greenDays",'Green Days'),     a: '#34d99a', b: '#116b4e', t: '#05291d' },
+    wr:    { n: __esT_mpprofile("bestWinRate",'Best Win Rate'),  a: '#38bdf8', b: '#15618a', t: '#042536' },
+    xp:    { n: __esT_mpprofile("seasonXp",'Season XP'),      a: '#a06bff', b: '#4a2a8a', t: '#1b0e38' },
     gold:  { n: 'The Gold Room',  a: '#ffb33a', b: '#8a5a0b', t: '#3a2403' },
     /* THE TWO REAL-MONEY BOARDS WEAR THEIR PARTNER'S OWN COLOURS (2026-10-18, owner: "treba da ima bybit ili
        moon logo ili bar njihove logo boje, tacne i precizne"). They were a generic orange and a pale blue -
@@ -271,11 +271,11 @@ function __esT_mpprofile(k, en) { try { if ((document.documentElement.lang || ""
     return 'none';
   }
   function folTitle(st, followsMe) {
-    if (st === 'friends') return __esT_mpprofile('friendsT', 'Friends - you follow each other');
-    if (st === 'follow') return __esT_mpprofile('followingT', 'Following - tap to unfollow');
-    if (st === 'requested') return __esT_mpprofile('requestedT', 'Request sent - tap to cancel');
-    if (st === 'guest') return __esT_mpprofile('signInToFollow2', 'Sign in to follow');
-    return followsMe ? __esT_mpprofile('askToFollowBackT', 'Follows you - ask to follow back') : __esT_mpprofile('askToFollowT', 'Ask to follow');
+    if (st === 'friends') return __esT_mpprofile('friendsT', __esT_mpprofile("friendsYouFollowEach",'Friends - you follow each other'));
+    if (st === 'follow') return __esT_mpprofile('followingT', __esT_mpprofile("followingTapToUnfollow",'Following - tap to unfollow'));
+    if (st === 'requested') return __esT_mpprofile('requestedT', __esT_mpprofile("requestSentTapTo",'Request sent - tap to cancel'));
+    if (st === 'guest') return __esT_mpprofile('signInToFollow2', __esT_mpprofile("signInToFollow",'Sign in to follow'));
+    return followsMe ? __esT_mpprofile('askToFollowBackT', __esT_mpprofile("followsYouAskTo",'Follows you - ask to follow back')) : __esT_mpprofile('askToFollowT', __esT_mpprofile("askToFollow",'Ask to follow'));
   }
   /* The pill beside the name says the same thing in words and is painted from the same state - it used to be
      inserted and removed by hand inside the click handler, with its own copy of the wording. */

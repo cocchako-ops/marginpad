@@ -1,0 +1,616 @@
+{
+ "file": "mp-auth.js",
+ "helper": "__esT_mpauth",
+ "dict": "__esD_mpauth",
+ "items": [
+  {
+   "key": "lettersNumbersOr",
+   "raw": "' letters, numbers or _'",
+   "en": " letters, numbers or _",
+   "n": 2,
+   "es": " letras, números o _"
+  },
+  {
+   "key": "unlockTheFullArena",
+   "raw": "'<div class=\"mpa-ups\"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, Tick stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type=\"button\" id=\"mpaDuUps\">Go Premium</button></div>'",
+   "en": "<div class=\"mpa-ups\"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, Tick stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type=\"button\" id=\"mpaDuUps\">Go Premium</button></div>",
+   "n": 1,
+   "es": "<div class=\"mpa-ups\"><b>Desbloquea toda la arena</b><p>Premium abre 4 formatos de duelo más, apuestas en Ticks hasta 2,000, rondas de 1h/24h/3 días, y hasta 10 duelos a la vez.</p><button type=\"button\" id=\"mpaDuUps\">Hazte Premium</button></div>"
+  },
+  {
+   "key": "profilePicture",
+   "raw": "'<div class=\"mpa-avttl\">Profile picture</div>'",
+   "en": "<div class=\"mpa-avttl\">Profile picture</div>",
+   "n": 1,
+   "es": "<div class=\"mpa-avttl\">Foto de perfil</div>"
+  },
+  {
+   "key": "squareWorksBestJpg",
+   "raw": "'<div class=\"mpa-avsub\">Square works best. JPG, PNG or WebP.</div>'",
+   "en": "<div class=\"mpa-avsub\">Square works best. JPG, PNG or WebP.</div>",
+   "n": 1,
+   "es": "<div class=\"mpa-avsub\">Una imagen cuadrada funciona mejor. JPG, PNG o WebP.</div>"
+  },
+  {
+   "key": "saveCard",
+   "raw": "'Save card'",
+   "en": "Save card",
+   "n": 1,
+   "es": "Guardar tarjeta"
+  },
+  {
+   "key": "onYourCard",
+   "raw": "'On your card'",
+   "en": "On your card",
+   "n": 1,
+   "es": "En tu tarjeta"
+  },
+  {
+   "key": "onlyTheClassicFrame",
+   "raw": "'<div class=\"mpa-frnone\">Only the Classic frame so far. Rank up, go Premium or open MP Shop to unlock more - switch to ALL to see what is out there.</div>'",
+   "en": "<div class=\"mpa-frnone\">Only the Classic frame so far. Rank up, go Premium or open MP Shop to unlock more - switch to ALL to see what is out there.</div>",
+   "n": 1,
+   "es": "<div class=\"mpa-frnone\">De momento solo tienes el marco Classic. Sube de nivel, hazte Premium o abre MP Shop para desbloquear más - cambia a TODOS para ver qué hay.</div>"
+  },
+  {
+   "key": "isOnYourCard",
+   "raw": "' is on your card.</span>'",
+   "en": " is on your card.</span>",
+   "n": 1,
+   "es": " está en tu tarjeta.</span>"
+  },
+  {
+   "key": "onYourCard2",
+   "raw": "'on your card'",
+   "en": "on your card",
+   "n": 1,
+   "es": "en tu tarjeta"
+  },
+  {
+   "key": "youDoNotOwn",
+   "raw": "'You do not own that frame yet.'",
+   "en": "You do not own that frame yet.",
+   "n": 1,
+   "es": "Todavía no tienes ese marco."
+  },
+  {
+   "key": "couldNotEquipThat",
+   "raw": "'Could not equip that frame - try again.'",
+   "en": "Could not equip that frame - try again.",
+   "n": 1,
+   "es": "No se pudo equipar ese marco - inténtalo de nuevo."
+  },
+  {
+   "key": "networkErrorTryAgain",
+   "raw": "'<span style=\"color:#ffb347\">Network error - try again.</span>'",
+   "en": "<span style=\"color:#ffb347\">Network error - try again.</span>",
+   "n": 2,
+   "es": "<span style=\"color:#ffb347\">Error de red - inténtalo de nuevo.</span>"
+  },
+  {
+   "key": "couldNotSaveTry",
+   "raw": "'Could not save - try again.'",
+   "en": "Could not save - try again.",
+   "n": 2,
+   "es": "No se pudo guardar - inténtalo de nuevo."
+  },
+  {
+   "key": "savedYourTraderCard",
+   "raw": "'<span style=\"color:#34d99a\">Saved. Your trader card is updated.</span>'",
+   "en": "<span style=\"color:#34d99a\">Saved. Your trader card is updated.</span>",
+   "n": 1,
+   "es": "<span style=\"color:#34d99a\">Guardado. Tu tarjeta de trader está actualizada.</span>"
+  },
+  {
+   "key": "couldNotLoadThe",
+   "raw": "'<div class=\"mpa-xp-empty\">Could not load the boards. Try again in a moment.</div>'",
+   "en": "<div class=\"mpa-xp-empty\">Could not load the boards. Try again in a moment.</div>",
+   "n": 2,
+   "es": "<div class=\"mpa-xp-empty\">No se pudieron cargar las tablas. Inténtalo de nuevo en un momento.</div>"
+  },
+  {
+   "key": "needsGold",
+   "raw": "'Needs Gold - '",
+   "en": "Needs Gold - ",
+   "n": 1,
+   "es": "Necesita Gold - "
+  },
+  {
+   "key": "xpYouHave",
+   "raw": "' XP. You have '",
+   "en": " XP. You have ",
+   "n": 1,
+   "es": " XP. Tienes "
+  },
+  {
+   "key": "registerTheUidOf",
+   "raw": "'Register the UID of a Bybit account opened through MarginPad.'",
+   "en": "Register the UID of a Bybit account opened through MarginPad.",
+   "n": 1,
+   "es": "Registra el UID de una cuenta de Bybit abierta a través de MarginPad."
+  },
+  {
+   "key": "yourMoonSignUp",
+   "raw": "'Your Moon sign-up is being reviewed.'",
+   "en": "Your Moon sign-up is being reviewed.",
+   "n": 1,
+   "es": "Tu registro en Moon está en revisión."
+  },
+  {
+   "key": "claimTheMoonSign",
+   "raw": "'Claim the Moon sign-up bonus - that is what registers you.'",
+   "en": "Claim the Moon sign-up bonus - that is what registers you.",
+   "n": 1,
+   "es": "Reclama el bono de registro de Moon - eso es lo que te registra."
+  },
+  {
+   "key": "callWhereBtcCloses",
+   "raw": "'Call where BTC closes today - one call a day, before 20:00 UTC, on the season page.'",
+   "en": "Call where BTC closes today - one call a day, before 20:00 UTC, on the season page.",
+   "n": 1,
+   "es": "Predice dónde cierra el BTC hoy - una predicción al día, antes de las 20:00 UTC, en la página de temporada."
+  },
+  {
+   "key": "buyAndHoldA",
+   "raw": "'Buy and hold a coin on Demo Spot - a position this season puts you on it; profit decides the order.'",
+   "en": "Buy and hold a coin on Demo Spot - a position this season puts you on it; profit decides the order.",
+   "n": 1,
+   "es": "Compra y mantén una moneda en Demo Spot - una posición esta temporada te pone en la tabla; el beneficio decide el orden."
+  },
+  {
+   "key": "startADemoSpot",
+   "raw": "'Start a Demo Spot account ($10,000 of demo cash) and buy a coin - season profit decides the order.'",
+   "en": "Start a Demo Spot account ($10,000 of demo cash) and buy a coin - season profit decides the order.",
+   "n": 1,
+   "es": "Abre una cuenta de Demo Spot ($10,000 de dinero demo) y compra una moneda - el beneficio de la temporada decide el orden."
+  },
+  {
+   "key": "closeOneTradeThis",
+   "raw": "'Close one trade this season and you are on it.'",
+   "en": "Close one trade this season and you are on it.",
+   "n": 1,
+   "es": "Cierra una operación esta temporada y ya estás en la tabla."
+  },
+  {
+   "key": "claimTheMoonBonus",
+   "raw": "'<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/rewards/#moonCard\">Claim the Moon bonus</a></span>'",
+   "en": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/rewards/#moonCard\">Claim the Moon bonus</a></span>",
+   "n": 1,
+   "es": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/rewards/#moonCard\">Reclamar el bono de Moon</a></span>"
+  },
+  {
+   "key": "openATrade",
+   "raw": "'<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/paper-trade\">Open a trade</a></span>'",
+   "en": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/paper-trade\">Open a trade</a></span>",
+   "n": 1,
+   "es": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/paper-trade\">Abrir una operación</a></span>"
+  },
+  {
+   "key": "makeTodaySCall",
+   "raw": "'<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/season/#boards\">Make today\\'s call</a></span>'",
+   "en": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/season/#boards\">Make today\\'s call</a></span>",
+   "n": 1,
+   "es": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/season/#boards\">Haz tu predicción de hoy</a></span>"
+  },
+  {
+   "key": "openDemoSpot",
+   "raw": "'<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/spot/\">Open Demo Spot</a></span>'",
+   "en": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/spot/\">Open Demo Spot</a></span>",
+   "n": 1,
+   "es": "<span class=\"mpa-cpr-a\"><a class=\"mpa-cpb\" href=\"/spot/\">Abrir Demo Spot</a></span>"
+  },
+  {
+   "key": "youAreIn",
+   "raw": "'you are in'",
+   "en": "you are in",
+   "n": 1,
+   "es": "estás dentro"
+  },
+  {
+   "key": "notYet",
+   "raw": "'not yet'",
+   "en": "not yet",
+   "n": 1,
+   "es": "todavía no"
+  },
+  {
+   "key": "andGrowing",
+   "raw": "' and growing'",
+   "en": " and growing",
+   "n": 1,
+   "es": " y sigue creciendo"
+  },
+  {
+   "key": "yourPlaceOnThis",
+   "raw": "'Your place on this board right now'",
+   "en": "Your place on this board right now",
+   "n": 1,
+   "es": "Tu posición en esta tabla ahora mismo"
+  },
+  {
+   "key": "onTheBoardOpen",
+   "raw": "'On the board - open it to see the standings'",
+   "en": "On the board - open it to see the standings",
+   "n": 1,
+   "es": "En la tabla - ábrela para ver la clasificación"
+  },
+  {
+   "key": "openTheBoard",
+   "raw": "'Open the board'",
+   "en": "Open the board",
+   "n": 1,
+   "es": "Abrir la tabla"
+  },
+  {
+   "key": "boardsYouAreOn",
+   "raw": "'</b><span>boards you are on right now</span></div>'",
+   "en": "</b><span>boards you are on right now</span></div>",
+   "n": 1,
+   "es": "</b><span>tablas en las que estás ahora mismo</span></div>"
+  },
+  {
+   "key": "anythingYouWinCan",
+   "raw": "'<b>Anything you win can be withdrawn.</b> No level needed - every board pays every account.'",
+   "en": "<b>Anything you win can be withdrawn.</b> No level needed - every board pays every account.",
+   "n": 1,
+   "es": "<b>Todo lo que ganes se puede retirar.</b> No se necesita nivel - cada tabla paga a todas las cuentas."
+  },
+  {
+   "key": "freeToEnter",
+   "raw": "'Free to enter'",
+   "en": "Free to enter",
+   "n": 3,
+   "es": "Entrada gratis"
+  },
+  {
+   "key": "oneBtcCallA",
+   "raw": "'one BTC call a day'",
+   "en": "one BTC call a day",
+   "n": 1,
+   "es": "una predicción de BTC al día"
+  },
+  {
+   "key": "freeButGoldOnly",
+   "raw": "'Free, but Gold only'",
+   "en": "Free, but Gold only",
+   "n": 1,
+   "es": "Gratis, pero solo Gold"
+  },
+  {
+   "key": "tradeForReal",
+   "raw": "'Trade for real'",
+   "en": "Trade for real",
+   "n": 1,
+   "es": "Trading real"
+  },
+  {
+   "key": "yourOwnExchangeAccount",
+   "raw": "'your own exchange account'",
+   "en": "your own exchange account",
+   "n": 1,
+   "es": "tu propia cuenta de exchange"
+  },
+  {
+   "key": "everyBoardPaysOut",
+   "raw": "'<p class=\"mpa-cpfoot\">Every board pays out at the end of the season. Tap a board to open its standings. <a href=\"/leaderboards/\">All boards</a></p>'",
+   "en": "<p class=\"mpa-cpfoot\">Every board pays out at the end of the season. Tap a board to open its standings. <a href=\"/leaderboards/\">All boards</a></p>",
+   "n": 1,
+   "es": "<p class=\"mpa-cpfoot\">Cada tabla paga al final de la temporada. Toca una tabla para ver su clasificación. <a href=\"/leaderboards/\">Todas las tablas</a></p>"
+  },
+  {
+   "key": "enterTheUidOf",
+   "raw": "'<span style=\"color:#ffb347\">Enter the UID of your Bybit account.</span>'",
+   "en": "<span style=\"color:#ffb347\">Enter the UID of your Bybit account.</span>",
+   "n": 1,
+   "es": "<span style=\"color:#ffb347\">Introduce el UID de tu cuenta de Bybit.</span>"
+  },
+  {
+   "key": "registeredYouAreOn",
+   "raw": "'<span style=\"color:#34d99a\">Registered. You are on the Bybit board.</span>'",
+   "en": "<span style=\"color:#34d99a\">Registered. You are on the Bybit board.</span>",
+   "n": 1,
+   "es": "<span style=\"color:#34d99a\">Registrado. Ya estás en la tabla de Bybit.</span>"
+  },
+  {
+   "key": "thatUidIsNot",
+   "raw": "'That UID is not on our affiliate list. Only an account opened through our link counts - open one below, then come back.'",
+   "en": "That UID is not on our affiliate list. Only an account opened through our link counts - open one below, then come back.",
+   "n": 1,
+   "es": "Ese UID no está en nuestra lista de afiliados. Solo cuenta una cuenta abierta a través de nuestro enlace - abre una abajo y vuelve después."
+  },
+  {
+   "key": "thatUidIsAlready",
+   "raw": "'That UID is already registered to another account.'",
+   "en": "That UID is already registered to another account.",
+   "n": 1,
+   "es": "Ese UID ya está registrado en otra cuenta."
+  },
+  {
+   "key": "thatDoesNotLook",
+   "raw": "'That does not look like a Bybit UID.'",
+   "en": "That does not look like a Bybit UID.",
+   "n": 1,
+   "es": "Eso no parece un UID de Bybit."
+  },
+  {
+   "key": "registeringIsNotOpen",
+   "raw": "'Registering is not open to this account yet.'",
+   "en": "Registering is not open to this account yet.",
+   "n": 1,
+   "es": "El registro todavía no está disponible para esta cuenta."
+  },
+  {
+   "key": "couldNotRegisterThat",
+   "raw": "'Could not register that UID. Try again in a moment.'",
+   "en": "Could not register that UID. Try again in a moment.",
+   "n": 1,
+   "es": "No se pudo registrar ese UID. Inténtalo de nuevo en un momento."
+  },
+  {
+   "key": "dayStreak",
+   "raw": "'-day streak</span>'",
+   "en": "-day streak</span>",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "changeYourUsernameYours",
+   "raw": "'Change your username <span style=\"color:#5c656f\">(yours is '",
+   "en": "Change your username <span style=\"color:#5c656f\">(yours is ",
+   "n": 1,
+   "es": "Cambia tu nombre de usuario <span style=\"color:#5c656f\">(el tuyo es "
+  },
+  {
+   "key": "charactersTheLimitIs",
+   "raw": "' characters, the limit is '",
+   "en": " characters, the limit is ",
+   "n": 1,
+   "es": " caracteres, el límite es "
+  },
+  {
+   "key": "thisChangeIsFree",
+   "raw": "' - this change is free and you keep '",
+   "en": " - this change is free and you keep ",
+   "n": 1,
+   "es": " - este cambio es gratis y conservas "
+  },
+  {
+   "key": "untilYouPickA",
+   "raw": "' until you pick a new one)</span>'",
+   "en": " until you pick a new one)</span>",
+   "n": 1,
+   "es": " hasta que elijas uno nuevo)</span>"
+  },
+  {
+   "key": "pickAUsernamePublic",
+   "raw": "'Pick a username <span style=\"color:#5c656f\">(public, permanent, required)</span>'",
+   "en": "Pick a username <span style=\"color:#5c656f\">(public, permanent, required)</span>",
+   "n": 1,
+   "es": "Elige un nombre de usuario <span style=\"color:#5c656f\">(público, permanente, obligatorio)</span>"
+  },
+  {
+   "key": "yourCard",
+   "raw": "'Your card'",
+   "en": "Your card",
+   "n": 1,
+   "es": "Tu tarjeta"
+  },
+  {
+   "key": "enterYourEmailAnd",
+   "raw": "\"Enter your email and we'll send a 6-digit code. Then we take you straight to checkout.\"",
+   "en": "Enter your email and we'll send a 6-digit code. Then we take you straight to checkout.",
+   "n": 1,
+   "es": "Introduce tu correo y te enviaremos un código de 6 dígitos. Luego te llevamos directo al pago."
+  },
+  {
+   "key": "yourPremiumNeedsAn",
+   "raw": "'Your Premium needs an account to land on. No password, and we never store a card.'",
+   "en": "Your Premium needs an account to land on. No password, and we never store a card.",
+   "n": 1,
+   "es": "Tu Premium necesita una cuenta donde aplicarse. Sin contraseña, y nunca guardamos una tarjeta."
+  },
+  {
+   "key": "dayStreak2",
+   "raw": "'-day streak · '",
+   "en": "-day streak · ",
+   "n": 1,
+   "es": ""
+  },
+  {
+   "key": "openTheTicket",
+   "raw": "'open the ticket'",
+   "en": "open the ticket",
+   "n": 1,
+   "es": "abre el ticket"
+  },
+  {
+   "key": "nailedIt",
+   "raw": "'Nailed it'",
+   "en": "Nailed it",
+   "n": 1,
+   "es": "Clavado"
+  },
+  {
+   "key": "loveIt",
+   "raw": "'Love it'",
+   "en": "Love it",
+   "n": 1,
+   "es": "Me encanta"
+  },
+  {
+   "key": "openSharedTicket",
+   "raw": "'Open shared ticket'",
+   "en": "Open shared ticket",
+   "n": 1,
+   "es": "Abrir ticket compartido"
+  },
+  {
+   "key": "youAreAlreadyBronze",
+   "raw": "'<b>You are already Bronze</b> - your first level badge is on your card; Silver pays bigger faucet claims.'",
+   "en": "<b>You are already Bronze</b> - your first level badge is on your card; Silver pays bigger faucet claims.",
+   "n": 1,
+   "es": "<b>Ya eres Bronze</b> - tu primera insignia de nivel está en tu tarjeta; con Silver los reclamos del faucet pagan más."
+  },
+  {
+   "key": "moreXpToReach",
+   "raw": "' more XP to reach Bronze</b>'",
+   "en": " more XP to reach Bronze</b>",
+   "n": 1,
+   "es": " XP más para llegar a Bronze</b>"
+  },
+  {
+   "key": "youHave",
+   "raw": "' (you have '",
+   "en": " (you have ",
+   "n": 1,
+   "es": " (tienes "
+  },
+  {
+   "key": "yourFirstLevelBadge",
+   "raw": "' - your first level badge. Every Academy lesson pays 25 XP, so about '",
+   "en": " - your first level badge. Every Academy lesson pays 25 XP, so about ",
+   "n": 1,
+   "es": " - tu primera insignia de nivel. Cada lección de la Academia paga 25 XP, así que con unas "
+  },
+  {
+   "key": "doesItAndEvery",
+   "raw": "' does it, and every trade and daily check-in adds to it.'",
+   "en": " does it, and every trade and daily check-in adds to it.",
+   "n": 1,
+   "es": " bastan, y cada operación y cada check-in diario suman."
+  },
+  {
+   "key": "onlyYouSeeThis",
+   "raw": "'<div class=\"ct-welc-h\"><span class=\"ct-welc-eye\">ONLY YOU SEE THIS</span><b>Hey @'",
+   "en": "<div class=\"ct-welc-h\"><span class=\"ct-welc-eye\">ONLY YOU SEE THIS</span><b>Hey @",
+   "n": 1,
+   "es": "<div class=\"ct-welc-h\"><span class=\"ct-welc-eye\">SOLO TÚ VES ESTO</span><b>Hola @"
+  },
+  {
+   "key": "threeThingsThatGet",
+   "raw": "'<p>Three things that get you going here:</p>'",
+   "en": "<p>Three things that get you going here:</p>",
+   "n": 1,
+   "es": "<p>Tres cosas para empezar aquí:</p>"
+  },
+  {
+   "key": "openYourFirstPaper",
+   "raw": "'<li><b>Open your first paper trade.</b> $10,000 of practice money on real live prices - nothing to lose, and every close counts for XP. <a href=\"/paper-trade\">Paper Trade</a></li>'",
+   "en": "<li><b>Open your first paper trade.</b> $10,000 of practice money on real live prices - nothing to lose, and every close counts for XP. <a href=\"/paper-trade\">Paper Trade</a></li>",
+   "n": 1,
+   "es": "<li><b>Abre tu primera operación de paper trading.</b> $10,000 de dinero de práctica sobre precios reales en vivo - no hay nada que perder, y cada cierre cuenta para tu XP. <a href=\"/paper-trade\">Paper Trade</a></li>"
+  },
+  {
+   "key": "theMoneyIsOpen",
+   "raw": "'<li><b>The money is open from day one:</b> the free USDT faucet, daily missions, withdrawals and a seat on the season boards - no level needed. <a href=\"/rewards/\">Rewards</a> · <a href=\"/season/\">Season</a></li>'",
+   "en": "<li><b>The money is open from day one:</b> the free USDT faucet, daily missions, withdrawals and a seat on the season boards - no level needed. <a href=\"/rewards/\">Rewards</a> · <a href=\"/season/\">Season</a></li>",
+   "n": 1,
+   "es": "<li><b>El dinero está disponible desde el primer día:</b> el faucet gratis de USDT, las misiones diarias, los retiros y un lugar en las tablas de temporada - sin necesidad de nivel. <a href=\"/rewards/\">Recompensas</a> · <a href=\"/season/\">Temporada</a></li>"
+  },
+  {
+   "key": "thisRoomIsFor",
+   "raw": "'<p>This room is for newcomers - say hi, ask anything. Trade talk lives in <b>All</b>, and a trade you share from any ticket lands there as a card.</p>'",
+   "en": "<p>This room is for newcomers - say hi, ask anything. Trade talk lives in <b>All</b>, and a trade you share from any ticket lands there as a card.</p>",
+   "n": 1,
+   "es": "<p>Esta sala es para los que acaban de llegar - saluda, pregunta lo que quieras. Las conversaciones sobre trading están en <b>Todos</b>, y una operación que compartas desde cualquier ticket llega allí como una tarjeta.</p>"
+  },
+  {
+   "key": "gotIt",
+   "raw": "'<button type=\"button\" class=\"ct-welc-x\" data-welcx>Got it</button>'",
+   "en": "<button type=\"button\" class=\"ct-welc-x\" data-welcx>Got it</button>",
+   "n": 1,
+   "es": "<button type=\"button\" class=\"ct-welc-x\" data-welcx>Entendido</button>"
+  },
+  {
+   "key": "8597MoveTabPick",
+   "raw": "'<div class=\"mpac-l\"></div><div class=\"mpac-f\"><span class=\"mpac-k\">&#8597;</span><span>move</span><span class=\"mpac-k\">tab</span><span>pick</span><span class=\"mpac-k\">esc</span><span>close</span></div>'",
+   "en": "<div class=\"mpac-l\"></div><div class=\"mpac-f\"><span class=\"mpac-k\">&#8597;</span><span>move</span><span class=\"mpac-k\">tab</span><span>pick</span><span class=\"mpac-k\">esc</span><span>close</span></div>",
+   "n": 1,
+   "es": "<div class=\"mpac-l\"></div><div class=\"mpac-f\"><span class=\"mpac-k\">&#8597;</span><span>mover</span><span class=\"mpac-k\">tab</span><span>elegir</span><span class=\"mpac-k\">esc</span><span>cerrar</span></div>"
+  },
+  {
+   "key": "nobodyHasTradedYet",
+   "raw": "'Nobody has traded yet today'",
+   "en": "Nobody has traded yet today",
+   "n": 1,
+   "es": "Todavía nadie ha operado hoy"
+  },
+  {
+   "key": "bringSomeoneInAnd",
+   "raw": "'Bring someone in and their trades show here'",
+   "en": "Bring someone in and their trades show here",
+   "n": 1,
+   "es": "Invita a alguien y sus operaciones aparecerán aquí"
+  },
+  {
+   "key": "showLess",
+   "raw": "'Show less'",
+   "en": "Show less",
+   "n": 1,
+   "es": "Mostrar menos"
+  },
+  {
+   "key": "showMore",
+   "raw": "'Show more'",
+   "en": "Show more",
+   "n": 1,
+   "es": "Mostrar más"
+  },
+  {
+   "key": "keyboardCheckTry",
+   "raw": "'Keyboard check: try '",
+   "en": "Keyboard check: try ",
+   "n": 1,
+   "es": "Comprobación del teclado: prueba "
+  },
+  {
+   "key": "didNotHelpRecorded",
+   "raw": "' did not help - recorded, tap once more'",
+   "en": " did not help - recorded, tap once more",
+   "n": 1,
+   "es": " no ayudó - registrado, toca una vez más"
+  },
+  {
+   "key": "didNotHelp",
+   "raw": "' did not help'",
+   "en": " did not help",
+   "n": 1,
+   "es": " no ayudó"
+  },
+  {
+   "key": "noKeyboard",
+   "raw": "'no keyboard'",
+   "en": "no keyboard",
+   "n": 1,
+   "es": "sin teclado"
+  },
+  {
+   "key": "recordedTapTheField",
+   "raw": "' - recorded, tap the field again'",
+   "en": " - recorded, tap the field again",
+   "n": 1,
+   "es": " - registrado, toca el campo de nuevo"
+  },
+  {
+   "key": "chatSettings",
+   "raw": "'Chat settings'",
+   "en": "Chat settings",
+   "n": 4,
+   "es": "Ajustes del chat"
+  },
+  {
+   "key": "sharedTrades",
+   "raw": "'Shared trades'",
+   "en": "Shared trades",
+   "n": 1,
+   "es": "Operaciones compartidas"
+  },
+  {
+   "key": "savedOnThisDevice",
+   "raw": "'Saved on this device. The link look is how shared trades appeared before the cards.'",
+   "en": "Saved on this device. The link look is how shared trades appeared before the cards.",
+   "n": 1,
+   "es": "Guardado en este dispositivo. El estilo de enlace es como se veían las operaciones compartidas antes de las tarjetas."
+  }
+ ]
+}

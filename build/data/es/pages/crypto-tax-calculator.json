@@ -1,0 +1,126 @@
+{
+ "file": "crypto-tax-calculator/index.html",
+ "helper": "__esT_cryptotaxcalculatorindex",
+ "dict": "__esD_cryptotaxcalculatorindex",
+ "items": [
+  {
+   "key": "estimatedTaxOnShort",
+   "raw": "'Estimated tax on short-term'",
+   "en": "Estimated tax on short-term",
+   "n": 1,
+   "es": "Impuesto estimado sobre el corto plazo"
+  },
+  {
+   "key": "estimatedTaxOnLong",
+   "raw": "'Estimated tax on long-term'",
+   "en": "Estimated tax on long-term",
+   "n": 1,
+   "es": "Impuesto estimado sobre el largo plazo"
+  },
+  {
+   "key": "federalEstimateOnlyExclude",
+   "raw": "'Federal estimate only. Excludes state income tax, the 3.8% net investment income tax, deductions and loss carry-forwards. Uses representative 2026 brackets - confirm current figures.'",
+   "en": "Federal estimate only. Excludes state income tax, the 3.8% net investment income tax, deductions and loss carry-forwards. Uses representative 2026 brackets - confirm current figures.",
+   "n": 1,
+   "es": "Solo estimación federal. No incluye el impuesto estatal sobre la renta, el 3.8% de impuesto sobre la renta neta de inversión, deducciones ni pérdidas compensables de ejercicios anteriores. Usa tramos representativos de 2026 - confirma las cifras vigentes."
+  },
+  {
+   "key": "estimatedFederalTaxOn",
+   "raw": "'Estimated federal tax on gains'",
+   "en": "Estimated federal tax on gains",
+   "n": 1,
+   "es": "Impuesto federal estimado sobre las ganancias"
+  },
+  {
+   "key": "federalEstimateOnlyProvinc",
+   "raw": "'Federal estimate only - provincial tax (roughly another 5–21% marginal) is NOT included, so your real total is higher. Uses the 50% inclusion rate and representative 2025-26 federal brackets. Not tax advice.'",
+   "en": "Federal estimate only - provincial tax (roughly another 5–21% marginal) is NOT included, so your real total is higher. Uses the 50% inclusion rate and representative 2025-26 federal brackets. Not tax advice.",
+   "n": 1,
+   "es": "Solo estimación federal - el impuesto provincial (aproximadamente otro 5–21% marginal) NO está incluido, así que tu total real es mayor. Usa la tasa de inclusión del 50% y tramos federales representativos de 2025-26. No es asesoramiento fiscal."
+  },
+  {
+   "key": "taxedAt18Within",
+   "raw": "'Taxed at 18% (within basic band)'",
+   "en": "Taxed at 18% (within basic band)",
+   "n": 1,
+   "es": "Tributa al 18% (dentro del tramo básico)"
+  },
+  {
+   "key": "taxedAt24Higher",
+   "raw": "'Taxed at 24% (higher band)'",
+   "en": "Taxed at 24% (higher band)",
+   "n": 1,
+   "es": "Tributa al 24% (tramo superior)"
+  },
+  {
+   "key": "estimateUsing202425",
+   "raw": "'Estimate using 2024-25-style CGT rates (18%/24%) and a £3,000 annual exempt amount. Excludes Scottish variations, losses and allowances. Not tax advice.'",
+   "en": "Estimate using 2024-25-style CGT rates (18%/24%) and a £3,000 annual exempt amount. Excludes Scottish variations, losses and allowances. Not tax advice.",
+   "n": 1,
+   "es": "Estimación con tasas de CGT al estilo 2024-25 (18%/24%) y un mínimo exento anual de £3,000. No incluye variaciones escocesas, pérdidas ni deducciones. No es asesoramiento fiscal."
+  },
+  {
+   "key": "effectiveRateOnGains",
+   "raw": "'Effective rate on gains'",
+   "en": "Effective rate on gains",
+   "n": 1,
+   "es": "Tasa efectiva sobre las ganancias"
+  },
+  {
+   "key": "afterTaxProfit",
+   "raw": "'After-tax profit'",
+   "en": "After-tax profit",
+   "n": 1,
+   "es": "Beneficio después de impuestos"
+  },
+  {
+   "key": "allOfThisIs",
+   "raw": "'All of this is short-term, taxed as ordinary income - the highest rate you pay. Holding a position past one year would move it to long-term rates ('",
+   "en": "All of this is short-term, taxed as ordinary income - the highest rate you pay. Holding a position past one year would move it to long-term rates (",
+   "n": 1,
+   "es": "Todo esto es a corto plazo y tributa como renta ordinaria - la tasa más alta que pagas. Mantener una posición más de un año la llevaría a las tasas de largo plazo ("
+  },
+  {
+   "key": "hereThatGapIs",
+   "raw": "' here). That gap is why long-term holders keep more of the same gain.'",
+   "en": " here). That gap is why long-term holders keep more of the same gain.",
+   "n": 1,
+   "es": " aquí). Esa diferencia es la razón por la que quien mantiene a largo plazo se queda con más de la misma ganancia."
+  },
+  {
+   "key": "taxIsTakingA",
+   "raw": "'Tax is taking a large bite ('",
+   "en": "Tax is taking a large bite (",
+   "n": 1,
+   "es": "El impuesto se está llevando una parte grande ("
+  },
+  {
+   "key": "ofYourGainsBefore",
+   "raw": "' of your gains). Before sizing real trades, remember your true edge is the after-tax number - smaller than the raw P&L. Test strategies free in paper trading first.'",
+   "en": " of your gains). Before sizing real trades, remember your true edge is the after-tax number - smaller than the raw P&L. Test strategies free in paper trading first.",
+   "n": 1,
+   "es": " de tus ganancias). Antes de dimensionar operaciones reales, recuerda que tu ventaja real es la cifra después de impuestos - menor que el P&L bruto. Prueba estrategias gratis en paper trading primero."
+  },
+  {
+   "key": "thisIsGeneralInformation",
+   "raw": "' This is general information, not tax advice.'",
+   "en": " This is general information, not tax advice.",
+   "n": 1,
+   "es": " Esto es información general, no asesoramiento fiscal."
+  },
+  {
+   "key": "noClosedTradesFound",
+   "raw": "'No closed trades found in your journal yet. Open a free paper-trade account, close a few trades, then import.'",
+   "en": "No closed trades found in your journal yet. Open a free paper-trade account, close a few trades, then import.",
+   "n": 1,
+   "es": "Todavía no hay operaciones cerradas en tu diario. Abre una cuenta gratuita de paper trading, cierra unas cuantas operaciones y luego impórtalas."
+  },
+  {
+   "key": "closedTradesPaperTrades",
+   "raw": "' closed trades (paper trades owe no real tax - this is an educational estimate). Short-term '",
+   "en": " closed trades (paper trades owe no real tax - this is an educational estimate). Short-term ",
+   "n": 1,
+   "es": " operaciones cerradas (las operaciones en paper no pagan impuestos reales - esto es una estimación educativa). Corto plazo "
+  }
+ ]
+}

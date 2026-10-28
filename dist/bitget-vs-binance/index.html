@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
+/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
+   arrives would be English, which is the partial translation this exists to end. A top-level function
+   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
+var __esD_bitgetvsbinanceindex = {"baseTakerFeesAre":"Las comisiones taker base son idénticas en estos dos.","youSave":"Ahorras","perMonth":"(al mes)","ourCollectorDidNot":"<p class=\"vstat-wait\">Nuestro recolector no registró liquidaciones en ninguno de los dos exchanges en las últimas 24 horas.</p>","noLiquidationsRecordedIn":"</b><span class=\"vs-none\">sin liquidaciones registradas en 24h</span></div>","ofAllEightVenues":"% de los ocho exchanges</span>","xMoreThan":"x más que ","roughlyTheSameAs":"aproximadamente lo mismo que ","overTheLast24":" en las últimas 24 horas.</p>","liveVenueFiguresAre":"<p class=\"vstat-wait\">Las cifras en vivo de los exchanges no están disponibles ahora mismo.</p>","measuredByTheMarginpad":"<p class=\"vs-src\">Medido por el recolector de MarginPad en ocho websockets de exchanges &middot; ventana de 24h &middot; "};
+function __esT_bitgetvsbinanceindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_bitgetvsbinanceindex[k] != null) return __esD_bitgetvsbinanceindex[k]; } catch (e) {} return en; }
+
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -131,8 +137,8 @@
       w.querySelector('.feec-rt[data-x=a]').textContent=money(ra);w.querySelector('.feec-rt[data-x=b]').textContent=money(rb);
       w.querySelector('.feec-mo[data-x=a]').textContent=money(ma);w.querySelector('.feec-mo[data-x=b]').textContent=money(mb);
       var v=w.querySelector('.feec-verdict');
-      if(at===bt){v.textContent="Base taker fees are identical on these two.";v.className='feec-verdict';}
-      else{var cheap=at<bt?an:bn,diff=Math.abs(ma-mb);v.innerHTML='<b>'+cheap+'</b> '+"cheaper"+' - '+"You save"+' <b>'+money(diff)+'</b> '+"on"+' '+cheap+' '+"(per month)"+'.';v.className='feec-verdict on';}
+      if(at===bt){v.textContent=__esT_bitgetvsbinanceindex("baseTakerFeesAre","Base taker fees are identical on these two.");v.className='feec-verdict';}
+      else{var cheap=at<bt?an:bn,diff=Math.abs(ma-mb);v.innerHTML='<b>'+cheap+'</b> '+"cheaper"+' - '+__esT_bitgetvsbinanceindex("youSave","You save")+' <b>'+money(diff)+'</b> '+"on"+' '+cheap+' '+__esT_bitgetvsbinanceindex("perMonth","(per month)")+'.';v.className='feec-verdict on';}
     }
     pos.addEventListener('input',calc);n.addEventListener('input',calc);calc();
   })();</script>
@@ -184,12 +190,12 @@
     var d=res.data||res,vs=d.venues||[];
     function find(k){for(var i=0;i<vs.length;i++){if(vs[i].venue===k)return vs[i];}return null;}
     var A=find(ak),B=find(bk);
-    if(!A&&!B){box.innerHTML='<p class="vstat-wait">Our collector did not record liquidations on either venue in the last 24 hours.</p>';return;}
+    if(!A&&!B){box.innerHTML=__esT_bitgetvsbinanceindex("ourCollectorDidNot",'<p class="vstat-wait">Our collector did not record liquidations on either venue in the last 24 hours.</p>');return;}
     function row(n,v){
-      if(!v)return '<div class="vs-col"><b>'+n+'</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
+      if(!v)return '<div class="vs-col"><b>'+n+__esT_bitgetvsbinanceindex("noLiquidationsRecordedIn",'</b><span class="vs-none">no liquidations recorded in 24h</span></div>');
       return '<div class="vs-col"><b>'+n+'</b>'
         +'<span class="vs-big">'+usd(v.total)+'</span>'
-        +'<span class="vs-sub">'+v.share+'% of all eight venues</span>'
+        +'<span class="vs-sub">'+v.share+__esT_bitgetvsbinanceindex("ofAllEightVenues",'% of all eight venues</span>')
         +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
         +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
     }
@@ -197,11 +203,11 @@
     if(A&&B){
       var big=A.total>=B.total?A:B,bigN=A.total>=B.total?an:bn,smallN=A.total>=B.total?bn:an;
       var ratio=(Math.min(A.total,B.total)>0)?(big.total/Math.min(A.total,B.total)):0;
-      lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+'x more than '+smallN):('roughly the same as '+smallN))+' over the last 24 hours.</p>';
+      lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+__esT_bitgetvsbinanceindex("xMoreThan",'x more than ')+smallN):(__esT_bitgetvsbinanceindex("roughlyTheSameAs",'roughly the same as ')+smallN))+__esT_bitgetvsbinanceindex("overTheLast24",' over the last 24 hours.</p>');
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
-  }).catch(function(){box.innerHTML='<p class="vstat-wait">Live venue figures are unavailable right now.</p>';});
+      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+  }).catch(function(){box.innerHTML=__esT_bitgetvsbinanceindex("liveVenueFiguresAre",'<p class="vstat-wait">Live venue figures are unavailable right now.</p>');});
 })();
 </script>  </article>
   <section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case - they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: 2026-09-25</b> (page regenerated on this date). Terms change - confirm on the exchange before depositing.</li></ul></section>
@@ -210,6 +216,6 @@
     <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
-<script defer src="/assets/mp-nav.js?v=3b1d9450"></script>
+<script defer src="/assets/mp-nav.js?v=cd4a2960"></script>
 </body>
 </html>
