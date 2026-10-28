@@ -310,6 +310,10 @@ async function pollOnce() {
     for (const u of [...acctByUser.keys()]) if (!posByUser.has(u)) acctByUser.delete(u);
     state.wallets = {};
     for (const u of onBoard) { const a = acctByUser.get(u); if (a) state.wallets[u] = a; }
+    /* the age of EVERY position held by a wallet that is on the board, not only of the forty rows we
+       publish: a reader opens a whale and asks how long it has held each of them. Measured ~250 entries. */
+    state.since = {};
+    for (const [k, v] of sinceByKey) if (onBoard.has(k.slice(0, k.indexOf('|')))) state.since[k] = [v.ts, v.exact ? 1 : 0];
     state.posN = found.length;
     state.pos429 = pos429;
     state.rotN = rotN;

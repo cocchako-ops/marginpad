@@ -4120,7 +4120,7 @@ async function handleCgHyper(url, env) {
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
  // positions >= $1M) - the chain is the primary source, no aggregator in between.
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
- const ck = new Request('https://marginpad.io/__whales_v6'); // bumped 2026-10-28: every row carries the exchange's own entry, its margin type and its ROE, and the account behind it
+ const ck = new Request('https://marginpad.io/__whales_v7'); // bumped 2026-10-28 (2): a position carries how long it has stood there (since/sinceX) and a close carries the leverage it had while open (lev/levAt)
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { ts: Date.now(), active: false };
   try {
@@ -4219,6 +4219,15 @@ async function handleWhaleProfile(url, env) {
 
   if (ours) {
     out.trades = (ours.fills || []).filter(f => String(f.user || '').toLowerCase() === a).slice(0, 25);
+    /* HOW LONG EACH OPEN POSITION HAS STOOD THERE. The exchange publishes no open time, so the only source
+       is our own position poll's memory: `since` is when the position first stood in front of us and the
+       flag says whether we watched it appear (exact) or merely found it there (a floor). Joined here, on
+       the server, so the page has one reading of it. */
+    const sinceMap = (ours.since && typeof ours.since === 'object') ? ours.since : null;
+    if (sinceMap && out.pos) for (const p of out.pos) {
+      const s = sinceMap[a + '|' + p.sym];
+      if (Array.isArray(s) && s[0]) { p.since = +s[0]; p.sinceX = s[1] ? 1 : 0; }
+    }
     const pr = (ours.perf || {})[a] || (ours.perf || {})[Object.keys(ours.perf || {}).find(k => k.toLowerCase() === a) || ''];
     if (pr) out.perf = pr;
     out.tracked = (ours.perf || {}).hasOwnProperty(a) || !!pr;
