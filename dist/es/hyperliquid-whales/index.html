@@ -4,13 +4,7 @@
 <meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
-<script>
-/* Spanish for this file. Inline, not the lazy i18n pack: a string that fires before a pack
-   arrives would be English, which is the partial translation this exists to end. A top-level function
-   declaration so every IIFE in the file can see it (see the mp-nav cookie-bar incident, 2026-09-19). */
-var __esD_hyperliquidwhalesindex = {"notAvailableIn":"no disponible en ","theUs":"EE. UU.","yourCountry":"tu país","inOneGo":"de una vez","timesAre":"Los horarios son ","yourLocalClock":"tu hora local (","largestAccountsOnHyperliqu":" cuentas más grandes de Hyperliquid, operaciones desde $","noTradeMatchesThat":"<div class=\"wl-empty\">Ninguna operación coincide con ese filtro.<br><b>Bórralo</b> para ver las ","noTradeOver":"<div class=\"wl-empty\">Ninguna operación por encima de <b>$","kRecordedYetThe":"k</b> registrada todavía.<br>El feed se llena a medida que las ballenas operan — adrede no se muestra nada más pequeño.</div>","flippedTo":"pasó a","positionNow":"posición ahora ","noPositionChangeRecorded":"Todavía no se registró ningún cambio de posición - la primera revisión después de que una ballena se mueva llenará esta lista.","nothingMatchesThatFilter":"<div class=\"wl-empty\">Nada coincide con ese filtro.<br><b>Bórralo</b> para ver las ","trackedPositions":" posiciones rastreadas.</div>","fromEntry":"desde la entrada","theMarketBreakdownIs":"<div class=\"wl-empty\">El desglose por mercado se construye con la revisión de posiciones cada cuatro minutos.<br>Aparecerá con la próxima.</div>","theMonthBoardIs":"<div class=\"wl-empty\">La tabla del mes se lee de la clasificación de Hyperliquid, que se actualiza cada hora.<br>Aparecerá con la próxima actualización.</div>","hyperliquidReturnedNothing":"<div class=\"wl-empty\">Hyperliquid no devolvió nada para esta dirección en este momento.<br>Puede que no tenga ninguna posición de futuros abierta.</div>","trackRecordRealisedFrom":"<div class=\"wd-h3\">Historial (realizado, de Hyperliquid)</div><div class=\"wd-rec\">","accountValue":"<div class=\"c\"><div class=\"k\">VALOR DE LA CUENTA</div><div class=\"v\">","positionSize":"<div class=\"c\"><div class=\"k\">TAMAÑO DE POSICIÓN</div><div class=\"v\">","marginFree":"<div class=\"c\"><div class=\"k\">MARGEN LIBRE</div><div class=\"v\">","accountValueLast30":"<div class=\"wd-h3\">Valor de la cuenta, últimos 30 días</div><div class=\"wd-curve\">","openPositions":"<div class=\"wd-h3\">Posiciones abiertas","flatRightNowNo":"<div class=\"wl-empty\">Plana ahora mismo - sin posición de perpetuos abierta.</div>","recentExecutionsWeRecorded":"<div class=\"wd-h3\">Ejecuciones recientes que registramos</div>","tradeThisSetupRisk":"<a class=\"go\" href=\"/paper-trade\">Opera este setup sin riesgo →</a>","targetBlankRelNoopener":"\" target=\"_blank\" rel=\"noopener\">Abrir en Hyperliquid</a>","copyAddress":"\">Copiar dirección</button></div>","trackedWhaleAccount":"ballena rastreada · cuenta ","readingTheChain":"leyendo la blockchain…","atRisk":" en riesgo","showThesePositions":"Mostrar estas posiciones","theMarketBreakdownAppears":"El desglose por mercado aparece con la próxima revisión de posiciones.","noTradeOver2":"<div class=\"wl-empty\">Ninguna operación por encima de $","bySize":"por tamaño","nearestLiquidationFirst":"liquidación más cercana primero","byLeverage":"por apalancamiento","allMarkets":"Todos los mercados","openedClosed":"Abiertas y cerradas","filterTrades":"Filtrar operaciones","filterPositions":"Filtrar posiciones","noChartFor":"<div class=\"none\">No hay gráfico para ","notAMarketOur":" - no es un mercado que cubra nuestro feed de precios.</div>","thisWindow":" esta ventana</text>","dotEntryLevelOpened":"punto = nivel de entrada (abierta antes de nuestro feed)","tradeItOnPaper":"\">Opérala en simulado →</a></div>","fromLiquidation":"de la liquidación","positionsOver1m":"posiciones por encima de $1M","positionsAsOf":"posiciones al","tradesAsOf":"operaciones al","sweepEvery4Min":"barrido cada 4 min · on-chain"};
-function __esT_hyperliquidwhalesindex(k, en) { try { if ((document.documentElement.lang || "").slice(0, 2).toLowerCase() === "es" && __esD_hyperliquidwhalesindex[k] != null) return __esD_hyperliquidwhalesindex[k]; } catch (e) {} return en; }
-window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Rastreador de Ballenas de Hyperliquid - Las Mayores Posiciones en Vivo | MarginPad</title>
 <meta name="description" content="Sigue las mayores posiciones de ballenas en Hyperliquid en tiempo real: exposición long vs short, apalancamiento, entrada, precio de liquidación y P&L no realizado en vivo para cada ballena. Gratis, sin registro." />
@@ -33,10 +27,6 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" data-fontpre />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" data-fontpre />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2" data-fontpre />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/spacemono/v17/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.woff2" data-fontpre />
 <link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
@@ -251,7 +241,7 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
-  @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
+  @media(max-width:560px){.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
   /* filters live in ONE sheet (2026-09-17, owner: the inline chip strip was "scattered all over the screen" on a phone) */
   .wl-fbar{display:flex;align-items:center;gap:10px;margin:0 0 12px;min-width:0}
   .wl-fbtn{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;letter-spacing:.04em;padding:8px 13px;border-radius:9px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink);cursor:pointer;flex:0 0 auto;min-height:38px}
@@ -314,12 +304,66 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
   .wl-pulse{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.02em}
   .wl-pulse b{color:var(--ink-dim);font-weight:700}
   .wl-pulse i{font-style:normal;width:6px;height:6px;border-radius:50%;background:var(--wh);display:inline-block;margin-right:6px;vertical-align:1px;box-shadow:0 0 8px var(--wh)}
-  .wl-thd,.wl-pr{grid-template-columns:20px 1.3fr 56px 86px 86px 92px 96px}
-  .wl-ent{font-family:'Space Mono',monospace;font-size:11px;text-align:right;color:var(--ink-dim)}
-  .wl-ent small{display:block;font-size:9px;color:var(--ink-faint)}
-  .wl-pnl small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint)}
+  /* ── THE BOARD IS DENSE, AND THE WIDTH CARRIES INFORMATION (2026-10-28, owner: "mnogo treba da se skrola bez
+     nekog razloga ... da prostor bude maksimalno iskoriscen"). MEASURED before: a row was 89px and 120 of them
+     were a 10,477px wall - 86% of the whole page - while on a 1440px screen roughly 600px of every row was
+     empty gutter, because the whale column was 1.3fr and ate the slack. Now every column is fixed, the slack
+     goes to COLUMNS THAT SAY SOMETHING (the market of its own, the mark, the account behind the position), and
+     a row is one line. */
+  .wl-thd,.wl-pr{grid-template-columns:26px minmax(118px,1fr) 112px 44px 84px 82px 82px 104px 110px 96px;gap:9px}
+  .wl-pr{padding:0 11px;min-height:38px;border-radius:0;border:0;border-bottom:1px solid var(--line);background:none;align-items:center}
+  .wl-pr:first-child{border-top:1px solid var(--line)}
+  .wl-pr:hover{background:rgba(94,198,255,.05);border-color:var(--line)}
+  .wl-tbl{gap:0}
+  .wl-thd{position:sticky;top:0;z-index:2;background:var(--bg);padding:7px 11px 6px;border-bottom:1px solid var(--line-bright)}
+  .wl-thd span{cursor:default}
+  .wl-thd span[data-sort]{cursor:pointer;user-select:none}
+  .wl-thd span[data-sort]:hover{color:var(--ink)}
+  .wl-thd span[data-sort].on{color:var(--lime)}
+  .wl-who{min-width:0;display:flex;align-items:center;gap:6px;overflow:hidden}
+  .wl-mk{display:flex;align-items:center;gap:6px;min-width:0;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink);text-decoration:none}
+  .wl-mk:hover .wl-mkn{color:var(--wh);text-decoration:underline}
+  .wl-mk img{width:15px;height:15px;border-radius:50%;flex:0 0 auto}
+  .wl-mkn{font-weight:700}
+  .wl-ent,.wl-mark{font-family:'Space Mono',monospace;font-size:11px;text-align:right;color:var(--ink-dim)}
+  .wl-ent small{display:block;font-size:9px;color:var(--ink-faint);line-height:1.15}
+  .wl-pnl small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);line-height:1.15}
   .wl-pnl.up small{color:var(--grn)}.wl-pnl.dn small{color:var(--red)}
-  @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-tiles{grid-template-columns:1fr 1fr}.wl-tile:first-child{grid-column:1/-1}}
+  .wl-liq small{line-height:1.15}
+  .wl-liq a{color:inherit;text-decoration:none}.wl-liq a:hover{text-decoration:underline;color:var(--wh)}
+  /* the account behind the row: on cross margin it is what decides where this position liquidates */
+  .wl-acc{font-family:'Space Mono',monospace;font-size:10.5px;text-align:right;color:var(--ink-dim)}
+  .wl-acc small{display:block;font-size:9px;color:var(--ink-faint);line-height:1.15}
+  .wl-xm{display:inline-block;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:800;padding:1px 4px;border-radius:4px;background:rgba(94,198,255,.16);color:var(--wh);letter-spacing:.04em;cursor:help}
+  .wl-30{display:inline;font-size:9px;margin:0}
+  .wl-more{display:block;width:100%;margin-top:10px;padding:10px;border:1px dashed var(--line-bright);border-radius:10px;background:none;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em}
+  .wl-more:hover{border-color:var(--wh);color:var(--wh)}
+  /* THE COLUMNS LEAVE IN THE ORDER A READER CAN SPARE THEM: the account first, then the entry and the mark,
+     and on a phone the row folds into two lines rather than losing the market or the liquidation. A column
+     hidden by CSS while the grid still counts it is what makes a row wrap and double its height - every
+     breakpoint below declares exactly as many tracks as it shows. */
+  @media(max-width:1180px){.wl-thd,.wl-pr{grid-template-columns:22px minmax(96px,1fr) 100px 42px 78px 78px 78px 98px 104px}.wl-thd .x2,.wl-pr .x2{display:none}}
+  @media(max-width:980px){.wl-thd,.wl-pr{grid-template-columns:20px minmax(84px,1fr) 94px 40px 76px 92px 94px}.wl-thd .x1,.wl-pr .x1{display:none}}
+  @media(max-width:620px){
+    .wl-thd{display:none}
+    .wl-pr{grid-template-columns:minmax(0,1fr) 72px 98px;grid-template-areas:"who val pnl" "mk liq pnl";row-gap:2px;min-height:50px;padding:7px 10px;align-items:center}
+    .wl-rk,.wl-lev,.wl-ent,.wl-mark,.wl-acc{display:none}
+    .wl-who{grid-area:who}.wl-mk{grid-area:mk}.wl-val{grid-area:val}.wl-liq{grid-area:liq;text-align:left}.wl-pnl{grid-area:pnl;align-self:center}
+    /* 76px cannot hold "$3,788 62.4% away" on one line, and the DISTANCE is the half a phone reader is after -
+       the price itself stays one tap away in the drawer and in the cell's own title */
+    .wl-liq{font-size:10.5px;white-space:nowrap}
+    .wl-liq a{display:none}
+    .wl-liq small{display:inline;margin-left:0}
+    /* the address and its 30-day record cannot share 142px without wrapping, and a wrapped line here costs
+       more than the record is worth on a phone - it is in the wallet drawer one tap away */
+    .wl-who{flex-wrap:nowrap}
+    .wl-adr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:100%}
+    .wl-30{display:none}
+    .wl-pnl{white-space:nowrap}
+    .wl-pnl small{display:inline;margin-left:4px;white-space:nowrap}
+  }
+  .wl-more{box-sizing:border-box}
+  @media(max-width:560px){.wl-tiles{grid-template-columns:1fr 1fr}.wl-tile:first-child{grid-column:1/-1}}
   /* position changes (the collector's alerts: opened / closed / flipped / increased / reduced - forwarded since day one, never drawn) */
   .wl-alh{margin:18px 0 8px}
   .wl-al .t1 .k{font-weight:800}.wl-al.l .t1 .k{color:var(--grn)}.wl-al.s .t1 .k{color:var(--red)}
@@ -338,47 +382,6 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Qué es un rastreador de ballenas de Hyperliquid?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid es un exchange de perpetuos descentralizado donde cada posición es on-chain y pública. Un rastreador de ballenas muestra las mayores posiciones abiertas - su tamaño, dirección, apalancamiento, entrada, precio de liquidación y ganancia o pérdida no realizada en vivo - para que puedas ver exactamente en qué están apostando los traders más grandes en tiempo real."}},{"@type":"Question","name":"¿Por qué vigilar las posiciones de las ballenas?","acceptedAnswer":{"@type":"Answer","text":"Las posiciones grandes pueden mover los mercados, y sus niveles de liquidación suelen actuar como imanes para el precio. Vigilar si las ballenas están netas en long o en short, y dónde se agrupan sus precios de liquidación, aporta un contexto que las tasas de funding y el interés abierto por sí solos no dan."}},{"@type":"Question","name":"¿Los datos de ballenas son en vivo?","acceptedAnswer":{"@type":"Answer","text":"Sí. Las posiciones y las acciones recientes de las ballenas se leen de la API pública on-chain de Hyperliquid mediante el rastreador de ballenas de MarginPad, y se actualizan cada pocos minutos. Como Hyperliquid es on-chain, los tamaños, el apalancamiento y los precios de liquidación son valores reales, no estimaciones."}}]}</script>
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<link rel="alternate" type="application/rss+xml" title="MarginPad" href="https://marginpad.io/feed.xml" />
-<link rel="alternate" type="application/feed+json" title="MarginPad" href="https://marginpad.io/feed.json" />
-
-<script defer src="/assets/sentry.js?v=43c384ca"></script>
-<!-- ADD TO HOME SCREEN FROM ANY PAGE (2026-10-22): iOS reads these from the page the reader is STANDING ON, so while only the app shell carried them, saving from anywhere else produced a bookmark rather than an app. -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="MarginPad" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
-<style id="mp-xr-css">
-.mp-xr{margin:38px auto 6px;max-width:1080px;padding:0 20px;box-sizing:border-box}
-.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
-.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
-.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
-.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
-.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
-.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
-.mp-xr-c:hover{background:#12161c}
-.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
-.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
-.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
-.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
-.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
-@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
-</style>
-<style id="mp-hl-css">.mp-hl{--hl:#5ee6c8;position:relative;margin:30px 0 14px;padding:22px 24px;border-radius:18px;border:1px solid rgba(94,230,200,.32);background:radial-gradient(120% 140% at 100% 0%,rgba(94,230,200,.13),transparent 55%),linear-gradient(180deg,#0e1614,#0a0e0d);color:#e6efec;overflow:hidden;font-family:'Familjen Grotesk',system-ui,sans-serif}
-.mp-hl::after{content:'HL';position:absolute;right:-8px;bottom:-34px;font:800 118px/1 'Bricolage Grotesque',sans-serif;letter-spacing:-8px;color:rgba(94,230,200,.07);pointer-events:none}
-.mp-hl-e{display:inline-flex;align-items:center;gap:8px;font:700 10px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--hl);margin:0 0 12px}.mp-hl-e i{width:7px;height:7px;border-radius:50%;background:var(--hl);box-shadow:0 0 9px var(--hl)}
-.mp-hl-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
-.mp-hl-main{flex:1 1 300px;min-width:0}.mp-hl-t{font:800 22px/1.15 'Bricolage Grotesque',sans-serif;letter-spacing:-.01em;color:#f2fbf8;margin:0 0 8px}.mp-hl-t b{color:var(--hl)}
-.mp-hl-w{margin:0 0 14px;color:#a6b8b2;font-size:14px;line-height:1.6}
-.mp-hl-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:210px}
-.mp-hl-off{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(94,230,200,.08);border:1px solid rgba(94,230,200,.28)}.mp-hl-off b{font:800 34px/1 'Bricolage Grotesque',sans-serif;color:var(--hl);letter-spacing:-.02em}.mp-hl-off span{font-size:12.5px;line-height:1.3;color:#cfe3dd}
-.mp-hl-code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;border:1px dashed rgba(94,230,200,.45);font:700 12px/1 'Space Mono',ui-monospace,monospace;color:#cfe3dd}.mp-hl-code b{color:#f2fbf8;letter-spacing:.12em}
-.mp-hl-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:11px;background:var(--hl);color:#062a24;font:800 13.5px/1 'Bricolage Grotesque',sans-serif;text-decoration:none;letter-spacing:.01em}.mp-hl-cta:hover{filter:brightness(1.06)}
-.mp-hl-d{position:relative;z-index:1;margin:14px 0 0;font-size:11px;line-height:1.5;color:#6f8079}
-.mp-hl.mp-ex-off{opacity:.55;filter:saturate(.35)}.mp-hl .mp-ex-na{margin-top:8px}
-@media(max-width:640px){.mp-hl{padding:18px 16px}.mp-hl-t{font-size:19px}.mp-hl-side{width:100%}.mp-hl-cta{width:100%}}</style>
-<style id="mpHdrCrit">@media(max-width:720px){body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}header .nav{display:none !important;}body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 12px) !important;padding-bottom:10px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}html.mp-ckbar body>.wrap>header,html.mp-ckbar body>header{padding-top:12px !important;}body>.wrap>header .brand,body>header .brand{margin-left:0;}}body>.wrap:has(>header:first-child){padding-top:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){display:flex !important;align-items:center;justify-content:space-between;gap:0 14px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;position:relative;top:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .mark b{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu span:nth-child(2){width:13px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{display:flex;align-items:center;gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.5;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hlink svg{flex-shrink:0;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot{color:#7cc4ff;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hrwd,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{color:#c2f64a;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}@media(max-width:720px){:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hbot,:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hjr{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth span{display:none;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hauth{padding:7px;min-width:36px;min-height:36px;display:inline-flex;align-items:center;justify-content:center;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .hnav{gap:5px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))) .lang{max-width:64px;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){box-sizing:border-box;min-height:calc(env(safe-area-inset-top) + 59px);padding-left:18px !important;padding-right:10px !important;}html.mp-ckbar :is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){min-height:59px;}}@media(min-width:721px){html{overflow-x:clip;}:is(header.mpnav-hdr,body>.wrap>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"])),body>header:not(:has(.hbot,input,form,canvas,table,.tabs,[role="tablist"]))){width:100vw;height:56px;margin-left:calc(50% - 50vw);padding:12px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.96);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}header .hlink.hauth svg,header .hauth svg{width:15px !important;height:15px !important}header .lang{-webkit-appearance:none;-moz-appearance:none;appearance:none !important;width:29px !important;min-width:29px !important;max-width:29px !important;height:27px;padding:0 !important;color:transparent !important;text-shadow:none !important;background-color:transparent !important;border:1px solid transparent !important;border-radius:8px;background-repeat:no-repeat !important;background-position:center !important;background-size:17px 17px !important;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27%23aab3bf%27%20stroke-width%3D%271.7%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%279%27%2F%3E%3Cline%20x1%3D%273%27%20y1%3D%2712%27%20x2%3D%2721%27%20y2%3D%2712%27%2F%3E%3Cpath%20d%3D%27M12%203a15%2015%200%200%201%200%2018%2015%2015%200%200%201%200-18%27%2F%3E%3C%2Fsvg%3E") !important;cursor:pointer}header .lang option{color:#e7ecf2;background:#12161c}header.mpnav-hdr{contain:none !important}header:has(.hsoc-m){contain:none !important}header .hnav{overflow:visible !important}header .hsoc{position:relative;display:inline-flex;align-items:center;margin:0}header .hsocb{width:27px !important;min-width:27px !important;height:27px !important;padding:0 !important;margin:0;border-radius:8px !important;display:inline-flex !important;align-items:center;justify-content:center;color:#aab3bf !important;background:none !important;border:none !important;box-shadow:none !important;box-sizing:border-box;cursor:pointer;transition:color .15s,transform .12s,filter .18s;-webkit-tap-highlight-color:transparent}header .hsocb svg{display:block;width:17px;height:17px}header .hsocb:active{transform:scale(.88);transition-duration:.06s}header .hsoc.on .hsocb{color:#c2f64a !important;filter:drop-shadow(0 0 6px rgba(194,246,74,.55))}@media(hover:hover){header .hsocb:hover{color:#f2f4f7 !important;filter:drop-shadow(0 0 5px rgba(194,246,74,.3))}}header .hsoc-m{position:absolute;top:calc(100% + 9px);right:-2px;min-width:216px;padding:6px;border-radius:15px;background:rgba(13,16,21,.985);border:1px solid rgba(255,255,255,.11);box-shadow:0 20px 48px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),0 0 28px rgba(194,246,74,.05);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);z-index:60;transform-origin:top right;text-align:left}header .hsoc-m[hidden]{display:none !important}header .hsoc-m::before{content:"";position:absolute;top:-5px;right:11px;width:9px;height:9px;background:rgba(13,16,21,.985);border-left:1px solid rgba(255,255,255,.11);border-top:1px solid rgba(255,255,255,.11);transform:rotate(45deg)}header .hsoc-i{--c:#9aa3ad;display:flex;align-items:center;gap:11px;padding:7px 9px;border-radius:11px;text-decoration:none;color:#c9d1da;transition:background .14s,transform .12s;-webkit-tap-highlight-color:transparent}header .hsoc-i+.hsoc-i{margin-top:2px}header .hsoc-i:active{transform:scale(.97)}header .hsoc-ic{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--c);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:box-shadow .18s,background .14s,border-color .14s}header .hsoc-ic svg{display:block;width:16px;height:16px}header .hsoc-t{display:flex;flex-direction:column;line-height:1.15;text-transform:none;letter-spacing:0}header .hsoc-t b{font-family:'Familjen Grotesk',sans-serif;font-size:13.5px;font-weight:600;color:#eef1f5}header .hsoc-t i{font-family:'Familjen Grotesk',sans-serif;font-style:normal;font-weight:500;font-size:11.5px;letter-spacing:0;color:#8a939f;margin-top:1px;font-variant-ligatures:none}header .hsoc-i.tg{--c:#3bb0e8}header .hsoc-i.ig{--c:#ff6aa8}header .hsoc-i.x{--c:#f2f4f7}@media(hover:hover){header .hsoc-i:hover{background:rgba(255,255,255,.05)}header .hsoc-i.tg:hover .hsoc-ic{border-color:rgba(59,176,232,.5);background:rgba(34,158,217,.12);box-shadow:0 0 14px rgba(34,158,217,.32)}header .hsoc-i.ig:hover .hsoc-ic{border-color:rgba(255,106,168,.5);background:rgba(255,106,168,.1);box-shadow:0 0 14px rgba(255,106,168,.3)}header .hsoc-i.x:hover .hsoc-ic{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.1);box-shadow:0 0 14px rgba(255,255,255,.22)}}header .hsoc+.hjr{margin-left:2px}</style>
 </head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
@@ -389,8 +392,7 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
       <a href="/es/" class="mark" aria-label="MarginPad - inicio">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
-      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><div class="hsoc"><button type="button" class="hlink hsocb" aria-label="Seguir a MarginPad" title="Seguir a MarginPad" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-4.2M8.4 13.3l7.2 4.2"/></svg></button><div class="hsoc-m" role="menu" hidden><a class="hsoc-i tg" role="menuitem" href="https://t.me/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span><span class="hsoc-t"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class="hsoc-i ig" role="menuitem" href="https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="hsoc-t"><b>Instagram</b><i>@marginpad</i></span></a><a class="hsoc-i x" role="menuitem" href="https://x.com/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span class="hsoc-t"><b>X</b><i>@marginpad</i></span></a></div></div>
-      <a href="/es/rewards/" class="hlink hrwd" title="USDT gratis - reclama cada 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Recompensas</a> <a href="/es/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mis operaciones</a>
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a> <a href="/es/rewards/" class="hlink hrwd" title="Free USDT - claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a> <a href="/es/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Iniciar sesión"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Iniciar sesión</span></button>
     </nav>
   </header>
@@ -438,10 +440,14 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
     <section class="wl-view" id="vPos">
       <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros</button><span class="wl-fsum" id="wlFsumPos">Todos los mercados &middot; Long y short &middot; por tamaño</span></div>
       <div class="wl-tbl">
-        <div class="wl-thd"><span></span><span>Ballena / mercado</span><span class="cl" style="text-align:center">Apalanc.</span><span class="r">Tamaño</span><span class="cl r">Entrada</span><span class="cl r">Precio liq.</span><span class="r">No realizado</span></div>
+        <div class="wl-thd"><span></span><span>Ballena</span><span>Mercado</span><span style="text-align:center">Apal.</span><span class="r" data-sort="val">Tamaño</span><span class="x1 r" data-sort="ent">Entrada</span><span class="x1 r">Marca</span><span class="r" data-sort="liq">Precio de liq.</span><span class="r" data-sort="pnl">No realizado</span><span class="x2 r" data-sort="acc">Cuenta</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">Haz clic en cualquier fila para abrir esa wallet: todo su libro, su historial de los últimos 30 días y cada ejecución que hemos registrado.</p>
+      <p class="wl-note">Haz clic en cualquier fila para abrir esa cartera: todo su libro, su historial de 30 días y cada ejecución que tenemos registrada. El <b>mercado</b> filtra el tablero por esa moneda, el <b>precio de liquidación</b> abre el mapa de liquidaciones de ese mercado, y cualquier <b>encabezado de columna</b> ordena.</p>
+      <!-- THE QUESTION THE PAGE KEPT PROVOKING (owner 2026-10-28: "pise da je pozicija long otvorena na npr $30
+           a likvidacija je na $69 sto nema nikakvog smisla"). It does make sense, and the reason is one word -
+           so the page says it where the reader meets it rather than leaving two numbers that look impossible. -->
+      <p class="wl-note" id="wlXnote" hidden>Algunas parecen imposibles: un long cuyo precio de liquidación está <i>por encima</i> de su entrada. Eso es <b>margen cruzado</b>, marcado con <span class="wl-xm">X</span>: el exchange fija la liquidación con el patrimonio de <b>toda la cuenta</b>, no con esa posición, así que alguien que está corto en otros cinco mercados puede ver cómo un long en ganancia se liquida mientras el precio sube. <span id="wlXcnt"></span> La entrada, la marca, el precio de liquidación y el retorno se leen de Hyperliquid, no se derivan.</p>
     </section>
 
     <!-- TRADES -->
@@ -482,23 +488,7 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
     <p>Una posición grande es una apuesta, no una garantía - las ballenas también se liquidan (mira el P&amp;L no realizado agregado). Usa esta tabla como usarías el <a href="/es/open-interest/">interés abierto</a> y el <a href="/es/funding/">funding</a>: para entender el posicionamiento y dónde están los puntos de dolor, no como motivo para copiar a ciegas. Cuando muchos shorts grandes se acumulan justo por encima del precio, un short squeeze al alza se vuelve más probable; cuando muchos longs se amontonan con liquidaciones ajustadas por debajo, una caída puede convertirse en cascada.</p>
 
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Datos de ballenas leídos on-chain de Hyperliquid por el rastreador de ballenas de MarginPad. Solo con fines informativos - no es asesoramiento financiero.</p>
-  
-<div class="mp-hl" data-ex="Hyperliquid" id="mp-hl">
-<div class="mp-hl-e"><i></i>OPERA EN EL MISMO LIBRO QUE LAS BALLENAS</div>
-<div class="mp-hl-row">
-<div class="mp-hl-main"><div class="mp-hl-t">Hyperliquid - perpetuos <b>on-chain</b>, con un descuento en comisiones de nuestra parte.</div><p class="mp-hl-w">Cada posición de esta página está en Hyperliquid, completamente on-chain y visible para cualquiera - incluida la tuya, en cuanto tengas una.</p></div>
-<div class="mp-hl-side"><div class="mp-hl-off"><b>4%</b><span>de descuento en comisiones<br>para cuentas referidas</span></div><div class="mp-hl-code"><span>usa el código</span><b>MARGINPAD</b></div><a class="mp-hl-cta" href="https://app.hyperliquid.xyz/join/MARGINPAD" target="_blank" rel="sponsored noopener noreferrer" data-mpex="Hyperliquid" data-ex="Hyperliquid">Únete a Hyperliquid &rarr;</a></div>
-</div>
-<p class="mp-hl-d">Enlace de referido - MarginPad puede ganar una comisión si abres una cuenta. El descuento del 4% en comisiones es el descuento de referidos de Hyperliquid; nunca pagas más de lo que pagarías yendo directo. No disponible para personas de EE. UU. según los términos de Hyperliquid.</p>
-</div>
-<script>(function(){function dim(c){try{var el=document.getElementById('mp-hl');if(!el||el.querySelector('.mp-ex-na'))return;el.classList.add('mp-ex-off');var s=document.createElement('span');s.className='mp-ex-na';s.textContent=__esT_hyperliquidwhalesindex("notAvailableIn",'not available in ')+(c==='US'?__esT_hyperliquidwhalesindex("theUs",'the US'):__esT_hyperliquidwhalesindex("yourCountry",'your country'));el.querySelector('.mp-hl-main').appendChild(s);}catch(e){}}
-/* mp-auth.js (window.mpEx) is not on every page this card lands on; when it is absent after 8 s, ask /api/geo directly (cached a day in mp_cc, the same key mpEx uses) - Hyperliquid's terms exclude US persons, so a US reader sees it dimmed either way */
-function geo(cb){try{var v=JSON.parse(localStorage.getItem('mp_cc')||'null');if(v&&v.cc&&Date.now()-(+v.ts||0)<864e5){cb(v.cc);return;}}catch(e){}try{fetch('/api/geo',{credentials:'omit'}).then(function(r){return r.json();}).then(function(d){var c=(d&&d.cc)||'';try{localStorage.setItem('mp_cc',JSON.stringify({cc:c,ts:Date.now()}));}catch(e){}cb(c);}).catch(function(){});}catch(e){}}
-var usGeo=function(){geo(function(c){if(String(c||'').toUpperCase()==='US')dim('US');});};
-if(!document.querySelector('script[src*="mp-auth"]')){usGeo();return;} /* the bundle is not on this page at all: no point waiting for it */
-var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(iv);window.mpEx.cc(function(c){if(c&&window.mpEx.blocked('Hyperliquid',c))dim(c);});return;}if(++n>80){clearInterval(iv);usGeo();}},100);})();</script>
-<div class="mp-xr"><div class="mp-xr-t">OPERA CON ESTOS DATOS</div><p class="mp-xr-w">El funding, el interés abierto y la base solo valen algo si tienes posición en el venue que los paga.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://partner.bybit.com/b/162071" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Enlaces de afiliado. Ganamos una comisión si te registras; tú pagas lo mismo de cualquier forma.</p></div>
-</article>
+  </article>
 
   <!-- one sheet for every filter (owner 2026-09-17): opened from the Filters button on the Positions and Trades views -->
   <div class="wl-fdim" id="wlFdim" hidden></div>
@@ -562,7 +552,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var t=TZ==='utc'?[dt.getUTCDate(),dt.getUTCMonth()]:[dt.getDate(),dt.getMonth()];
     return t[0]+' '+mo[t[1]];
   }
-  function took(a,b){ var s=Math.round((b-a)/1000); if(s<=1)return __esT_hyperliquidwhalesindex("inOneGo",'in one go');
+  function took(a,b){ var s=Math.round((b-a)/1000); if(s<=1)return 'in one go';
     if(s<60)return 'over '+s+'s'; var m=Math.floor(s/60); return 'over '+m+'m'+(s%60?' '+(s%60)+'s':''); }
   /* a builder-deployed market is listed as "xyz:GOLD" on the chain - show the market, keep the builder in the title */
   function mkt(sym){ var i=String(sym||'').indexOf(':'); return i>0?String(sym).slice(i+1):String(sym||''); }
@@ -585,22 +575,22 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     fsum();
     var note=document.getElementById('wlTrNote');
     if(note)note.textContent=tr.length||d.fillWatch
-      ? __esT_hyperliquidwhalesindex("timesAre",'Times are ')+(TZ==='utc'?'UTC':__esT_hyperliquidwhalesindex("yourLocalClock",'your local clock (')+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution - a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+__esT_hyperliquidwhalesindex("largestAccountsOnHyperliqu",' largest accounts on Hyperliquid, trades from $')+Math.round((d.fillMin||250000)/1000)+'k up.'
+      ? 'Times are '+(TZ==='utc'?'UTC':'your local clock ('+zoneAbbr()+(ZONE?' · '+ZONE:'')+')')+'. Each row is one execution - a whale fills a large order in many small slices, so the fills of a wallet in the same market and direction are grouped and the row shows when it started and how long it took. Watching the '+(d.fillWatch||60)+' largest accounts on Hyperliquid, trades from $'+Math.round((d.fillMin||250000)/1000)+'k up.'
       : '';
     if(!tr.length){
       box.innerHTML=all.length
-        ? __esT_hyperliquidwhalesindex("noTradeMatchesThat",'<div class="wl-empty">No trade matches that filter.<br><b>Clear it</b> to see all ')+all.length+' recorded executions.</div>'
-        : __esT_hyperliquidwhalesindex("noTradeOver",'<div class="wl-empty">No trade over <b>$')+Math.round((d.fillMin||250000)/1000)+__esT_hyperliquidwhalesindex("kRecordedYetThe",'k</b> recorded yet.<br>The feed fills as the whales trade — nothing smaller is shown, on purpose.</div>');
+        ? '<div class="wl-empty">No trade matches that filter.<br><b>Clear it</b> to see all '+all.length+' recorded executions.</div>'
+        : '<div class="wl-empty">No trade over <b>$'+Math.round((d.fillMin||250000)/1000)+'k</b> recorded yet.<br>The feed fills as the whales trade — nothing smaller is shown, on purpose.</div>';
       return; }
     box.innerHTML=tr.slice(0,28).map(function(t){
-      var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':__esT_hyperliquidwhalesindex("flippedTo",'flipped to')));
+      var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       var side=t.long?'long':'short';
       var m=esc(mkt(t.sym));
       var lev=t.lev?'<span class="wl-lev">'+t.lev+'x</span>':'';
       var l1='<b>'+esc(shorta(t.user))+'</b> <span class="act">'+act+'</span> <b>'+m+'</b> '+side+lev;
       var l2=[ 'avg '+px(t.px), (t.n>1?t.n+' fills '+took(t.ts,t.tsEnd):'single fill'),
                (t.act==='close'&&t.pnl?(t.pnl>0?'booked ':'lost ')+spnl(Math.abs(t.pnl)).replace(/^[+-]/,''):''),
-               (t.posUsd?__esT_hyperliquidwhalesindex("positionNow",'position now ')+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
+               (t.posUsd?'position now '+usd(t.posUsd):''), ago(t.tsEnd) ].filter(Boolean).join(' · ');
       return '<div class="wl-tr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+esc(t.sym)+' · '+esc(t.dir)+' - open this wallet">'
         +'<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'
         +'<span class="say"><span class="l1">'+l1+'</span><span class="l2">'+esc(l2)+'</span></span>'
@@ -614,7 +604,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var es=((document.documentElement.lang||'').slice(0,2)==='es');
     var al=(d.alerts||[]).filter(function(a){ if(TF.sym&&a.sym!==TF.sym)return false; return true; }).slice(0,14);
     if(nn)nn.textContent='';
-    if(!al.length){ box.innerHTML='<div class="wl-empty">'+(es?'Sin cambios de posición registrados todavía.':__esT_hyperliquidwhalesindex("noPositionChangeRecorded",'No position change recorded yet - the first sweep after a whale moves fills this list.'))+'</div>'; return; }
+    if(!al.length){ box.innerHTML='<div class="wl-empty">'+(es?'Sin cambios de posición registrados todavía.':'No position change recorded yet - the first sweep after a whale moves fills this list.')+'</div>'; return; }
     var K=es?{opened:'abrió',closed:'cerró',flipped:'giró',increased:'aumentó',reduced:'redujo'}:{opened:'opened',closed:'closed',flipped:'flipped',increased:'increased',reduced:'reduced'};
     box.innerHTML=al.map(function(a){ var k=a.kind||'changed';
       return '<div class="wl-al '+(a.long?'l':'s')+'" data-w="'+esc(a.user)+'" role="button" tabindex="0">'
@@ -637,9 +627,11 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   function fund8(f){ if(f==null)return '-'; var p=f*100; return (p>=0?'+':'')+p.toFixed(4)+'%'; }
 
   /* ── POSITIONS ─────────────────────────────────────────────────────────────────────────────── */
+  var POS_CAP=30, POS_ALL=false, WAL={};   // a screenful of rows, and the account totals behind them
   function paintPos(d){
     var box=document.getElementById('wlPos'); if(!box)return;
     var all=d.positions||[], perf=d.perf||{};
+    WAL=d.wallets||{};
     /* the market chips are built from what is actually held, so they never offer an empty filter */
     var counts={}; all.forEach(function(p){counts[p.sym]=(counts[p.sym]||0)+1;});
     var syms=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,9);
@@ -656,32 +648,66 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       return true;
     });
     var liqD=function(p){return (p.mark&&p.liq)?Math.abs(p.mark-p.liq)/p.mark*100:null;};
+    var entMove=function(p){ var e=(p.ent>0)?p.ent:null; return (e&&p.mark)?Math.abs((p.mark-e)/e):-1; };
+    var accEq=function(p){ var a=(d.wallets||{})[p.user]; return a?(+a.eq||0):-1; };
     rows.sort(function(a,b){
       if(F.sort==='pnl')return (b.pnl||0)-(a.pnl||0);
       if(F.sort==='lev')return (b.lev||0)-(a.lev||0);
+      if(F.sort==='ent')return entMove(b)-entMove(a);          // the biggest move since the entry, either way
+      if(F.sort==='acc')return accEq(b)-accEq(a);              // the deepest account behind the position
       if(F.sort==='liq'){var x=liqD(a),y=liqD(b); if(x==null)return 1; if(y==null)return -1; return x-y;}
       return b.val-a.val;
     });
+    try{ var hd=document.querySelector('#vPos .wl-thd'); if(hd)[].forEach.call(hd.querySelectorAll('span[data-sort]'),function(s){ s.classList.toggle('on', s.getAttribute('data-sort')===F.sort); }); }catch(_){ }
     fsum();
-    if(!rows.length){ box.innerHTML=__esT_hyperliquidwhalesindex("nothingMatchesThatFilter",'<div class="wl-empty">Nothing matches that filter.<br><b>Clear it</b> to see all ')+all.length+__esT_hyperliquidwhalesindex("trackedPositions",' tracked positions.</div>'); return; }
-    box.innerHTML=rows.map(function(p,i){
+    if(!rows.length){ box.innerHTML='<div class="wl-empty">Nothing matches that filter.<br><b>Clear it</b> to see all '+all.length+' tracked positions.</div>'; return; }
+    /* 120 rows was a 10,477px wall nobody asked to scroll. The board shows a screenful and says how many are
+       behind it - the same answer the screener reached in October. */
+    var cap=POS_ALL?rows.length:Math.min(POS_CAP,rows.length);
+    var ES=(document.documentElement.lang||'').slice(0,2)==='es';
+    box.innerHTML=rows.slice(0,cap).map(function(p,i){
       var dd=liqD(p), near=(dd!=null&&dd<8);
       var pr=perf[p.user]||perf[String(p.user).toLowerCase()];
       var rec='';
-      if(pr&&pr.m&&pr.m.vlm>0){ var mp=pr.m.pnl; rec='<span class="wl-30 '+(mp>=0?'up':'dn')+'">30d '+spnl(mp)+'</span>'; }
+      if(pr&&pr.m&&pr.m.vlm>0){ var mp=pr.m.pnl; rec='<span class="wl-30 '+(mp>=0?'up':'dn')+'" title="'+(ES?'resultado de 30 dias de esta cartera':'this wallet’s 30-day result')+'">'+spnl(mp)+'</span>'; }
+      /* THE ENTRY IS THE EXCHANGE'S OWN NOW (2026-10-28). It used to be derived as mark x (1 -/+ pnl/value);
+         measured against Hyperliquid's entryPx on six live wallets that was accurate to 0.17%, so the old
+         figure was sound - what it could not do was explain itself. the ent field comes straight off the chain, and
+         the fallback keeps the derivation for a row the collector has not refreshed yet. */
+      var ent=(p.ent>0)?p.ent:((p.mark>0&&p.val>0&&p.pnl!=null)?(p.long?p.mark*(1-p.pnl/p.val):p.mark*(1+p.pnl/p.val)):null);
+      var mv=(ent&&p.mark)?((p.mark-ent)/ent*100):null;          // what price has done since the entry
+      var roe=(p.roe!=null)?p.roe*100:((p.lev>0&&p.val>0)?p.pnl/(p.val/p.lev)*100:null);
+      var acc=WAL[p.user]||WAL[String(p.user).toLowerCase()];
+      /* A LONG WHOSE LIQUIDATION SITS ABOVE ITS ENTRY IS NOT A BUG, IT IS CROSS MARGIN (the owner's report).
+         The liquidation price is then a function of the WHOLE account's equity, not of this position - 117 of
+         120 tracked positions are cross - so the row says so instead of leaving the reader with two numbers
+         that look impossible together. */
+      var odd=(p.x&&ent&&p.liq)&&(p.long?p.liq>ent:p.liq<ent);
+      var xm=p.x?'<span class="wl-xm" title="'+(ES?'Margen cruzado: el precio de liquidacion lo fija el patrimonio de TODA la cuenta, no esta posicion - por eso puede quedar por encima de la entrada de un long.':'Cross margin: the liquidation price is set by the WHOLE account’s equity, not by this position - which is why it can sit above a long’s entry.')+'">X</span>':'';
+      var coin=mkt(p.sym);
       return '<div class="wl-pr" data-w="'+esc(p.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
-        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+
-          '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(mkt(p.sym))+'</span>'+rec+'</span>'+
-        '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'-')+'</span>'+
+        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+rec+'</span>'+
+        '<span class="wl-mk" data-coin="'+esc(coin)+'" title="'+esc(coin)+' '+(p.long?'long':'short')+(p.sz?' · '+(+p.sz).toLocaleString('en-US',{maximumFractionDigits:4})+' '+esc(coin):'')+'">'+
+          '<img src="/api/coinicon?sym='+encodeURIComponent(coin)+'&v=2" alt="" loading="lazy" onerror="this.remove()">'+
+          '<span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'L':'S')+'</span><span class="wl-mkn">'+esc(coin)+'</span></span>'+
+        '<span class="wl-lev" style="text-align:center">'+(p.lev?p.lev+'×':'-')+'</span>'+
         '<span class="wl-val">'+usd(p.val)+'</span>'+
-        /* entry is not on the board rows (the collector keeps it only in the per-wallet profile) but follows from two figures that are:
-           unrealized = size x (mark - entry) and value = size x mark, so entry = mark x (1 -/+ pnl/value). A derived figure, labelled so. */
-        '<span class="wl-ent cl">'+((p.mark>0&&p.val>0&&p.pnl!=null)?px(p.long?p.mark*(1-p.pnl/p.val):p.mark*(1+p.pnl/p.val))+'<small>'+(p.pnl>=0?'+':'-')+(Math.abs(p.pnl/p.val)*100).toFixed(1)+'% '+(((document.documentElement.lang||'').slice(0,2)==='es')?'desde entrada':__esT_hyperliquidwhalesindex("fromEntry",'from entry'))+'</small>':'-')+'</span>'+
-        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away')+'</small>':'')+'</span>'+
-        '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+((p.lev>0&&p.val>0)?'<small>'+fmtPct(p.pnl/(p.val/p.lev)*100)+' ROE</small>':'')+'</span>'+
+        '<span class="wl-ent x1">'+(ent?px(ent):'-')+(mv!=null?'<small>'+(mv>=0?'+':'')+mv.toFixed(1)+'%</small>':'')+'</span>'+
+        '<span class="wl-mark x1">'+px(p.mark)+'</span>'+
+        '<span class="wl-liq '+(near?'near':'')+'" title="'+(ES?'liquidacion ':'liquidation ')+px(p.liq)+'">'+(p.liq?'<a href="/'+esc(coin.toLowerCase())+'-liquidation-map/" title="'+(ES?'mapa de liquidaciones de ':'liquidation map for ')+esc(coin)+'">'+px(p.liq)+'</a>':'-')+
+          (dd!=null?'<small'+(odd?' title="'+(ES?'Margen cruzado: lo fija toda la cuenta':'Cross margin: set by the whole account')+'"':'')+'>'+dd.toFixed(1)+(ES?'% de distancia':'% away')+(odd?' '+xm:'')+'</small>':'')+'</span>'+
+        '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(roe!=null?'<small>'+fmtPct(roe)+' ROE</small>':'')+'</span>'+
+        '<span class="wl-acc x2">'+(acc&&acc.eq?usd(acc.eq)+'<small>'+(acc.n||1)+(ES?((acc.n||1)===1?' posicion':' posiciones'):((acc.n||1)===1?' position':' positions'))+'</small>':'<small>-</small>')+'</span>'+
       '</div>';
-    }).join('');
+    }).join('')+((!POS_ALL&&rows.length>cap)?'<button type="button" class="wl-more" id="wlMore">'+(ES?'Ver las '+rows.length+' posiciones':'Show all '+rows.length+' positions')+'</button>':'');
+    /* the note is shown only when the board actually carries a row that looks impossible, and it states
+       the measured share rather than a claim */
+    try{ var xn=document.getElementById('wlXnote'), xc=document.getElementById('wlXcnt');
+      var nx=all.filter(function(q){return q.x;}).length, od=rows.filter(function(q){ var e=(q.ent>0)?q.ent:null; return q.x&&e&&q.liq&&(q.long?q.liq>e:q.liq<e); }).length;
+      if(xn){ xn.hidden=!od; if(xc)xc.textContent=(ES?('Ahora mismo '+nx+' de '+all.length+' posiciones seguidas usan margen cruzado.'):('Right now '+nx+' of the '+all.length+' tracked positions are cross margin.')); } }catch(_){ }
+    var mb=document.getElementById('wlMore');
+    if(mb)mb.onclick=function(){POS_ALL=true;paintPos(window.__wlLast||d);};
   }
 
   /* ── BY MARKET ─────────────────────────────────────────────────────────────────────────────── */
@@ -689,7 +715,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var box=document.getElementById('wlCoins'); if(!box)return;
     var cs=d.coins||[];
     cs=cs.slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);});
-    if(!cs.length){ box.innerHTML=__esT_hyperliquidwhalesindex("theMarketBreakdownIs",'<div class="wl-empty">The market breakdown is built on the four-minute position sweep.<br>It appears with the next one.</div>'); return; }
+    if(!cs.length){ box.innerHTML='<div class="wl-empty">The market breakdown is built on the four-minute position sweep.<br>It appears with the next one.</div>'; return; }
     box.innerHTML=cs.map(function(c){
       var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100;
       var fd=c.fundDay;
@@ -709,7 +735,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   function paintBest(d){
     var box=document.getElementById('wlBest'); if(!box)return;
     var bs=d.best||[];
-    if(!bs.length){ box.innerHTML=__esT_hyperliquidwhalesindex("theMonthBoardIs",'<div class="wl-empty">The month board is read from the Hyperliquid leaderboard, refreshed hourly.<br>It appears with the next refresh.</div>'); return; }
+    if(!bs.length){ box.innerHTML='<div class="wl-empty">The month board is read from the Hyperliquid leaderboard, refreshed hourly.<br>It appears with the next refresh.</div>'; return; }
     var perf=d.perf||{};
     box.innerHTML=bs.map(function(b,i){
       var pr=perf[b.user]||perf[String(b.user).toLowerCase()]; var wk=(pr&&pr.w&&pr.w.vlm>0)?pr.w.pnl:null; /* 7 days, known only for the wallets we track by size */
@@ -751,28 +777,28 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
   }
   function wdRender(j){
     var body=document.getElementById('wdBody'); if(!body)return;
-    if(!j||!j.ok){ body.innerHTML=__esT_hyperliquidwhalesindex("hyperliquidReturnedNothing",'<div class="wl-empty">Hyperliquid returned nothing for this address right now.<br>It may hold no open perp position.</div>'); return; }
+    if(!j||!j.ok){ body.innerHTML='<div class="wl-empty">Hyperliquid returned nothing for this address right now.<br>It may hold no open perp position.</div>'; return; }
     var H='';
-    H+=__esT_hyperliquidwhalesindex("trackRecordRealisedFrom",'<div class="wd-h3">Track record (realised, from Hyperliquid)</div><div class="wd-rec">')+
+    H+='<div class="wd-h3">Track record (realised, from Hyperliquid)</div><div class="wd-rec">'+
       recCell('24H',j.day)+recCell('7D',j.week)+recCell('30D',j.month)+recCell('ALL TIME',j.allTime)+'</div>';
     if(j.equity){
       H+='<div class="wd-tiles">'+
-        __esT_hyperliquidwhalesindex("accountValue",'<div class="c"><div class="k">ACCOUNT VALUE</div><div class="v">')+usd(j.equity)+'</div></div>'+
-        __esT_hyperliquidwhalesindex("positionSize",'<div class="c"><div class="k">POSITION SIZE</div><div class="v">')+usd(j.ntl||0)+'</div></div>'+
-        __esT_hyperliquidwhalesindex("marginFree",'<div class="c"><div class="k">MARGIN FREE</div><div class="v">')+usd(j.free||0)+'</div></div></div>';
+        '<div class="c"><div class="k">ACCOUNT VALUE</div><div class="v">'+usd(j.equity)+'</div></div>'+
+        '<div class="c"><div class="k">POSITION SIZE</div><div class="v">'+usd(j.ntl||0)+'</div></div>'+
+        '<div class="c"><div class="k">MARGIN FREE</div><div class="v">'+usd(j.free||0)+'</div></div></div>';
     }
     var curve=j.month&&j.month.av&&j.month.av.length>2?j.month.av:(j.week&&j.week.av||null);
     if(curve&&curve.length>2){
       var f=curve[0][1], l=curve[curve.length-1][1], dp=f>0?((l-f)/f*100):0;
-      H+=__esT_hyperliquidwhalesindex("accountValueLast30",'<div class="wd-h3">Account value, last 30 days</div><div class="wd-curve">')+spark(curve,300,84)+
+      H+='<div class="wd-h3">Account value, last 30 days</div><div class="wd-curve">'+spark(curve,300,84)+
         '<div class="wd-cfoot"><span>'+usd(f)+'</span><span>'+fmtPct(dp)+'</span><span>'+usd(l)+'</span></div></div>'+
         /* the curve can climb while the 30-day P&L above is negative: account value moves with deposits
            and withdrawals too, and a reader comparing the two without this line reads it as a contradiction */
         '<p class="wl-note" style="margin:6px 0 0">Account value moves with deposits and withdrawals as well as trading. The P&amp;L above is trading only.</p>';
     }
     var pos=j.pos||[], trs=j.trades||[];
-    H+=__esT_hyperliquidwhalesindex("openPositions",'<div class="wd-h3">Open positions')+(pos.length?' ('+pos.length+')':'')+'</div>';
-    if(!pos.length) H+=__esT_hyperliquidwhalesindex("flatRightNowNo",'<div class="wl-empty">Flat right now - no open perpetual position.</div>');
+    H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
+    if(!pos.length) H+='<div class="wl-empty">Flat right now - no open perpetual position.</div>';
     else H+=pos.map(function(p){
       var ot=0; for(var q=0;q<trs.length;q++){ var tq=trs[q]; if(tq&&tq.act==='open'&&tq.sym===p.sym&&!!tq.long===!!p.long){ ot=+tq.ts||0; break; } }
       var mark=null; /* the profile does not carry a mark; the liq bar is drawn from entry vs liq */
@@ -795,8 +821,8 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     }).join('');
     var tr=j.trades||[];
     if(tr.length){
-      H+=__esT_hyperliquidwhalesindex("recentExecutionsWeRecorded",'<div class="wd-h3">Recent executions we recorded</div>')+tr.slice(0,10).map(function(t){
-        var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':__esT_hyperliquidwhalesindex("flippedTo",'flipped to')));
+      H+='<div class="wd-h3">Recent executions we recorded</div>'+tr.slice(0,10).map(function(t){
+        var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
         return '<div class="wl-tr '+(t.long?'l':'s')+'" style="margin-bottom:6px">'+
           '<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'+
           '<span class="say"><span class="l1"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' <span class="wl-lev2">'+t.lev+'x</span>':'')+'</span>'+
@@ -805,9 +831,9 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       }).join('');
     }
     H+='<div class="wd-lnk">'+
-      __esT_hyperliquidwhalesindex("tradeThisSetupRisk",'<a class="go" href="/es/paper-trade">Trade this setup risk-free →</a>')+
-      '<a href="'+HL+esc(j.a)+__esT_hyperliquidwhalesindex("targetBlankRelNoopener",'" target="_blank" rel="noopener">Open on Hyperliquid</a>')+
-      '<button type="button" data-copy="'+esc(j.a)+__esT_hyperliquidwhalesindex("copyAddress",'">Copy address</button></div>');
+      '<a class="go" href="/es/paper-trade">Trade this setup risk-free →</a>'+
+      '<a href="'+HL+esc(j.a)+'" target="_blank" rel="noopener">Open on Hyperliquid</a>'+
+      '<button type="button" data-copy="'+esc(j.a)+'">Copy address</button></div>';
     body.innerHTML=H;
     try{ wdCharts(body,j); }catch(e){}
   }
@@ -820,11 +846,11 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var ad=document.getElementById('wdAdr'); if(ad)ad.textContent=a;
     var sub=document.getElementById('wdSub');
     var d=window.__wlLast||{}, pr=(d.perf||{})[a];
-    if(sub)sub.textContent=pr?(__esT_hyperliquidwhalesindex("trackedWhaleAccount",'tracked whale · account ')+usd(pr.v)):__esT_hyperliquidwhalesindex("readingTheChain",'reading the chain…');
+    if(sub)sub.textContent=pr?('tracked whale · account '+usd(pr.v)):'reading the chain…';
     var body=document.getElementById('wdBody'); if(body)body.innerHTML='<div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>';
     fetch('/api/whale/profile?a='+a).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!WD.open||WD.a!==a)return;   /* the reader moved on before this landed */
-      if(sub&&j&&j.equity)sub.textContent='account '+usd(j.equity)+(j.ntl?' · '+usd(j.ntl)+__esT_hyperliquidwhalesindex("atRisk",' at risk'):'');
+      if(sub&&j&&j.equity)sub.textContent='account '+usd(j.equity)+(j.ntl?' · '+usd(j.ntl)+' at risk':'');
       wdRender(j);
     }).catch(function(){ wdRender(null); });
   }
@@ -842,6 +868,12 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     if(cp){ var v=cp.getAttribute('data-copy');
       try{navigator.clipboard.writeText(v);}catch(_){}
       var o=cp.textContent; cp.textContent='Copied'; setTimeout(function(){cp.textContent=o;},1200); return; }
+    /* EVERY CELL GOES SOMEWHERE (owner 2026-10-28: "sto vise opcija za klick"). The market cell opens that
+       coin rather than the wallet drawer, so it has to be taken before the row handler below. */
+    var mk=t.closest&&t.closest('.wl-mk[data-coin]');
+    if(mk){ e.preventDefault(); var c=mk.getAttribute('data-coin'); if(c){ F.sym=F.sym===c?'':c; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); } return; }
+    var hs=t.closest&&t.closest('.wl-thd span[data-sort]');
+    if(hs){ var k=hs.getAttribute('data-sort'); F.sort=(F.sort===k&&k!=='val')?'val':k; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
     var row=t.closest&&t.closest('[data-w]');
     if(row&&!t.closest('a')){ wdOpen(row.getAttribute('data-w')); return; }
     var cr=t.closest&&t.closest('.wl-cr[data-sym]');
@@ -857,25 +889,25 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     var mb=document.getElementById('wlNowM'), tb=document.getElementById('wlNowT'); if(!mb||!tb)return;
     var cs=(d.coins||[]).slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);}).slice(0,5);
     if(cs.length){ mb.innerHTML=cs.map(function(c){ var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100, net=c.longUsd-c.shortUsd;
-      return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="'+(((document.documentElement.lang||'').slice(0,2)==='es')?'Ver estas posiciones':__esT_hyperliquidwhalesindex("showThesePositions",'Show these positions'))+'">'+
+      return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="'+(((document.documentElement.lang||'').slice(0,2)==='es')?'Ver estas posiciones':'Show these positions')+'">'+
         '<b>'+esc(mkt(c.sym))+'<small>'+px(c.mark)+(c.chg==null?'':' · '+fmtPct(c.chg))+'</small></b>'+
         '<span><span class="nb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span><span class="nl"><span>'+lp.toFixed(0)+'% long</span><span>'+(100-lp).toFixed(0)+'% short</span></span></span>'+
         '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en long':'net long'):(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en short':'net short'))+'<small>'+usd(Math.abs(net))+(((document.documentElement.lang||'').slice(0,2)==='es')?' de ':' of ')+usd(tot)+'</small></span></div>'; }).join(''); }
-    else mb.innerHTML='<div class="wl-empty">'+(((document.documentElement.lang||'').slice(0,2)==='es')?'El desglose por mercado aparece con el próximo barrido de posiciones.':__esT_hyperliquidwhalesindex("theMarketBreakdownAppears",'The market breakdown appears with the next position sweep.'))+'</div>';
+    else mb.innerHTML='<div class="wl-empty">'+(((document.documentElement.lang||'').slice(0,2)==='es')?'El desglose por mercado aparece con el próximo barrido de posiciones.':'The market breakdown appears with the next position sweep.')+'</div>';
     var fl=(d.fills||[]).slice(0,4);
-    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':__esT_hyperliquidwhalesindex("flippedTo",'flipped to')));
+    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
       return '<div class="wl-nt '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="Open this wallet">'+
         '<span class="ck">'+clock(t.ts).slice(0,5)+'</span>'+
         '<span class="tx"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' '+t.lev+'x':'')+' · '+esc(shorta(t.user))+'</span>'+
         '<span class="am">'+usd(t.usd)+'</span></div>'; }).join(''); }
-    else tb.innerHTML=__esT_hyperliquidwhalesindex("noTradeOver2",'<div class="wl-empty">No trade over $')+Math.round((d.fillMin||250000)/1000)+'k recorded yet.</div>';
+    else tb.innerHTML='<div class="wl-empty">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k recorded yet.</div>';
   }
   /* ── the filter sheet ──────────────────────────────────────────────────────────────────────── */
   var FS={open:false,view:'pos'};
   function fsum(){
-    var SORT=((document.documentElement.lang||'').slice(0,2)==='es')?{val:'por tamaño',pnl:'por P&L',liq:'liquidación más cercana primero',lev:'por apalancamiento'}:{val:__esT_hyperliquidwhalesindex("bySize",'by size'),pnl:'by P&L',liq:__esT_hyperliquidwhalesindex("nearestLiquidationFirst",'nearest liquidation first'),lev:__esT_hyperliquidwhalesindex("byLeverage",'by leverage')};
-    var a=document.getElementById('wlFsumPos'); if(a)a.textContent=[F.sym?mkt(F.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':__esT_hyperliquidwhalesindex("allMarkets",'All markets')),F.side==='l'?'Longs':F.side==='s'?'Shorts':(((document.documentElement.lang||'').slice(0,2)==='es')?'Long y short':'Long & short'),SORT[F.sort]||SORT.val].join(' · ');
-    var b=document.getElementById('wlFsumTr'); if(b)b.textContent=[TF.sym?mkt(TF.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':__esT_hyperliquidwhalesindex("allMarkets",'All markets')),TF.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas':'Opened'):TF.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Cerradas':'Closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas y cerradas':__esT_hyperliquidwhalesindex("openedClosed",'Opened & closed')),TZ==='utc'?'UTC':'local time'].join(' · ');
+    var SORT=((document.documentElement.lang||'').slice(0,2)==='es')?{val:'por tamaño',pnl:'por P&L',liq:'liquidación más cercana primero',lev:'por apalancamiento'}:{val:'by size',pnl:'by P&L',liq:'nearest liquidation first',lev:'by leverage'};
+    var a=document.getElementById('wlFsumPos'); if(a)a.textContent=[F.sym?mkt(F.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':'All markets'),F.side==='l'?'Longs':F.side==='s'?'Shorts':(((document.documentElement.lang||'').slice(0,2)==='es')?'Long y short':'Long & short'),SORT[F.sort]||SORT.val].join(' · ');
+    var b=document.getElementById('wlFsumTr'); if(b)b.textContent=[TF.sym?mkt(TF.sym):(((document.documentElement.lang||'').slice(0,2)==='es')?'Todos los mercados':'All markets'),TF.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas':'Opened'):TF.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'Cerradas':'Closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'Abiertas y cerradas':'Opened & closed'),TZ==='utc'?'UTC':'local time'].join(' · ');
     var pb=document.querySelector('.wl-fbtn[data-fopen="pos"]'); if(pb)pb.classList.toggle('on',!!(F.sym||F.side||F.sort!=='val'));
     var tbn=document.querySelector('.wl-fbtn[data-fopen="trades"]'); if(tbn)tbn.classList.toggle('on',!!(TF.sym||TF.act));
   }
@@ -883,7 +915,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     FS.open=true; FS.view=v;
     var sh=document.getElementById('wlFilt'), dim=document.getElementById('wlFdim'); if(!sh)return;
     [].forEach.call(sh.querySelectorAll('.wl-fg'),function(g){g.hidden=g.getAttribute('data-for')!==v;});
-    var t=document.getElementById('wlFiltT'); if(t)t.textContent=v==='trades'?__esT_hyperliquidwhalesindex("filterTrades",'Filter trades'):__esT_hyperliquidwhalesindex("filterPositions",'Filter positions');
+    var t=document.getElementById('wlFiltT'); if(t)t.textContent=v==='trades'?'Filter trades':'Filter positions';
     sh.hidden=false; if(dim)dim.hidden=false; document.documentElement.style.overflow='hidden';
     try{ navigator.sendBeacon('/api/track?t=whfilt&e='+v+'&p=/hyperliquid-whales/'); }catch(e){}
   }
@@ -914,7 +946,7 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
     [].forEach.call(body.querySelectorAll('.wd-chart[data-sym]'),function(el){
       var sym=el.getAttribute('data-sym'), entry=+el.getAttribute('data-entry')||0, liq=+el.getAttribute('data-liq')||0, isL=el.getAttribute('data-long')==='1', ots=+el.getAttribute('data-ts')||0;
       klines(sym).then(function(bars){
-        if(!bars){ el.innerHTML=__esT_hyperliquidwhalesindex("noChartFor",'<div class="none">No chart for ')+esc(sym)+__esT_hyperliquidwhalesindex("notAMarketOur",' - not a market our price feed carries.</div>'); return; }
+        if(!bars){ el.innerHTML='<div class="none">No chart for '+esc(sym)+' - not a market our price feed carries.</div>'; return; }
         var n=bars.length, from=n-96; /* four days of 1h candles by default; reach back to the open when we know it */
         if(ots){ var oi=-1; for(var i=0;i<n;i++){ if(bars[i].time*1000>=ots){oi=i;break;} } if(oi>0) from=Math.min(from,Math.max(0,oi-12)); }
         from=Math.max(0,from); var b=bars.slice(from), last=+b[b.length-1].close;
@@ -934,12 +966,12 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
           s+='<text x="'+(W-PR+4)+'" y="'+(ey+3).toFixed(1)+'" fill="'+col+'" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">ENTRY '+esc(px(entry).replace('$',''))+'</text>'; }
         if(liq>0){ if(liqIn){ var ly=Y(liq); s+='<line x1="'+PL+'" y1="'+ly.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ly.toFixed(1)+'" stroke="#ff5a4d" stroke-width="1.4" stroke-dasharray="5 4"/>';
             s+='<text x="'+(W-PR+4)+'" y="'+(ly+3).toFixed(1)+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq).replace('$',''))+'</text>'; }
-          else { var ay=isL?H-PB:PT+6; s+='<text x="'+PL+'" y="'+ay+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq))+' · '+(isL?'far below':'far above')+__esT_hyperliquidwhalesindex("thisWindow",' this window</text>'); } }
+          else { var ay=isL?H-PB:PT+6; s+='<text x="'+PL+'" y="'+ay+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq))+' · '+(isL?'far below':'far above')+' this window</text>'; } }
         var cy=Y(last); s+='<circle cx="'+(W-PR-2).toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="2.5" fill="#fff"/>';
         s+='</svg>';
         var dist=(liq>0&&last>0)?Math.abs(last-liq)/last*100:null;
-        var cap='<div class="cap"><span>1h candles · '+(ots?'dot = opened '+dayOf(ots)+' '+clock(ots).slice(0,5):__esT_hyperliquidwhalesindex("dotEntryLevelOpened",'dot = entry level (opened before our feed)'))+(dist!=null?' · liq '+dist.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away'):'')+'</span>'+
-          '<a href="/es/paper-trade?coin='+encodeURIComponent(sym)+'&side='+(isL?'long':'short')+(el.getAttribute('data-lev')?'&lev='+encodeURIComponent(el.getAttribute('data-lev')):'')+__esT_hyperliquidwhalesindex("tradeItOnPaper",'">Trade it on paper →</a></div>');
+        var cap='<div class="cap"><span>1h candles · '+(ots?'dot = opened '+dayOf(ots)+' '+clock(ots).slice(0,5):'dot = entry level (opened before our feed)')+(dist!=null?' · liq '+dist.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away'):'')+'</span>'+
+          '<a href="/es/paper-trade?coin='+encodeURIComponent(sym)+'&side='+(isL?'long':'short')+(el.getAttribute('data-lev')?'&lev='+encodeURIComponent(el.getAttribute('data-lev')):'')+'">Trade it on paper →</a></div>';
         el.innerHTML=s+cap;
       });
     });
@@ -992,18 +1024,18 @@ var n=0,iv=setInterval(function(){if(window.mpEx&&window.mpEx.cc){clearInterval(
       document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
       document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
       document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
-      var bigP=(d.positions||[]).slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0]; var bigEl=document.getElementById('wlBig'); if(bigEl&&bigP){ bigEl.textContent=esc(mkt(bigP.sym))+' '+(bigP.long?'long':'short')+' '+usd(bigP.val); bigEl.className='v '+(bigP.long?'up':'dn'); }
+      var bigP=(d.positions||[]).slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0]; var bigEl=document.getElementById('wlBig'); if(bigEl&&bigP){ bigEl.textContent=esc(mkt(bigP.sym))+' '+(bigP.long?'long':'short')+' '+usd(bigP.val); bigEl.className='v '+(bigP.long?'up':'dn'); bigEl.setAttribute('data-w',bigP.user); bigEl.setAttribute('role','button'); bigEl.setAttribute('tabindex','0'); bigEl.style.cursor='pointer'; bigEl.title=((document.documentElement.lang||'').slice(0,2)==='es')?'abrir esta cartera':'open this wallet'; }
       var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
       var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
       /* the position closest to its liquidation price (2026-10-05): the one figure a reader of this page is really after */
       var nearP=null,nearD=null;(d.positions||[]).forEach(function(p){ if(!(p.mark>0&&p.liq>0))return; var dd=Math.abs(p.mark-p.liq)/p.mark*100; if(nearD==null||dd<nearD){nearD=dd;nearP=p;} });
-      var nEl=document.getElementById('wlNear'); if(nEl){ if(nearP){ nEl.innerHTML=esc(mkt(nearP.sym))+' '+(nearP.long?'long':'short')+' '+usd(nearP.val)+'<small>'+nearD.toFixed(1)+'% '+(((document.documentElement.lang||'').slice(0,2)==='es')?'hasta la liquidación':__esT_hyperliquidwhalesindex("fromLiquidation",'from liquidation'))+' · '+(nearP.lev?nearP.lev+'× · ':'')+esc(shorta(nearP.user))+'</small>'; nEl.className='v '+(nearD<5?'dn':''); nEl.setAttribute('data-w',nearP.user); nEl.style.cursor='pointer'; } else { nEl.textContent='-'; } }
+      var nEl=document.getElementById('wlNear'); if(nEl){ if(nearP){ nEl.innerHTML=esc(mkt(nearP.sym))+' '+(nearP.long?'long':'short')+' '+usd(nearP.val)+'<small>'+nearD.toFixed(1)+'% '+(((document.documentElement.lang||'').slice(0,2)==='es')?'hasta la liquidación':'from liquidation')+' · '+(nearP.lev?nearP.lev+'× · ':'')+esc(shorta(nearP.user))+'</small>'; nEl.className='v '+(nearD<5?'dn':''); nEl.setAttribute('data-w',nearP.user); nEl.style.cursor='pointer'; } else { nEl.textContent='-'; } }
       /* the hero numbers count up to their value on the first paint (WAAPI-free: a 500 ms rAF tween, the owner's machine has animation effects off) */
       if(!window.__wlPainted){ window.__wlPainted=1; [['wlLongV',lo,usd],['wlShortV',sh,usd]].forEach(function(t){ var el=document.getElementById(t[0]); if(!el)return; var t0=performance.now(); (function step(now){ var k=Math.min(1,(now-t0)/600); var e=1-Math.pow(1-k,3); el.textContent=t[2](t[1]*e); if(k<1)requestAnimationFrame(step); })(t0); }); }
     }
     /* the pulse line: what this page is built from and how old it is - the figures used to stand with no "as of" */
     var pl=document.getElementById('wlPulse'); if(pl){ var es=((document.documentElement.lang||'').slice(0,2)==='es'); var hhmm=function(ts){ if(!ts)return '-'; var dt=new Date(ts); return String(TZ==='utc'?dt.getUTCHours():dt.getHours()).padStart(2,'0')+':'+String(TZ==='utc'?dt.getUTCMinutes():dt.getMinutes()).padStart(2,'0'); };
-      pl.innerHTML='<span><i></i><b>'+(d.tracked||0)+'</b> '+(es?'carteras seguidas':'wallets tracked')+'</span><span><b>'+((d.agg||{}).count||0)+'</b> '+(es?'posiciones sobre $1M':__esT_hyperliquidwhalesindex("positionsOver1m",'positions over $1M'))+'</span><span>'+(es?'posiciones a las':__esT_hyperliquidwhalesindex("positionsAsOf",'positions as of'))+' <b>'+hhmm(d.ts)+'</b></span><span>'+(es?'operaciones a las':__esT_hyperliquidwhalesindex("tradesAsOf",'trades as of'))+' <b>'+hhmm(d.fillTs)+'</b></span><span>'+(es?'barrido cada 4 min · on-chain':__esT_hyperliquidwhalesindex("sweepEvery4Min",'sweep every 4 min · on-chain'))+'</span>'; }
+      pl.innerHTML='<span><i></i><b>'+(d.tracked||0)+'</b> '+(es?'carteras seguidas':'wallets tracked')+'</span><span><b>'+((d.agg||{}).count||0)+'</b> '+(es?'posiciones sobre $1M':'positions over $1M')+'</span><span>'+(es?'posiciones a las':'positions as of')+' <b>'+hhmm(d.ts)+'</b></span><span>'+(es?'operaciones a las':'trades as of')+' <b>'+hhmm(d.fillTs)+'</b></span><span>'+(es?'barrido cada 4 min · on-chain':'sweep every 4 min · on-chain')+'</span>'; }
     paintNow(d);
     if(d.positions&&d.positions.length)paintPos(d);
     paintTrades(d);

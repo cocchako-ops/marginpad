@@ -224,7 +224,7 @@ const PAGES = [
     kind: 'big',
     h1: 'What is the biggest crypto liquidation today?',
     title: 'Biggest Crypto Liquidation Today - Live Single Largest Forced Close | MarginPad',
-    desc: 'The single largest crypto liquidation of the last 24 hours: which coin, which exchange, which side and how much, observed live from nine exchange feeds. Free, updated continuously.',
+    desc: 'The single largest crypto liquidation of the last 24 hours: which coin, which exchange, which side and how much, observed live from eight exchange feeds. Free, updated continuously.',
     lead: 'The single largest forced close our collector has seen in the last 24 hours, with the venue and the side it was on.',
     dataset: ['Largest single crypto liquidation (24h)', 'The largest individual forced-liquidation event observed across nine derivatives venues in a rolling 24-hour window, with its venue, symbol, side and dollar notional.', 'https://marginpad.io/api/v1/liquidations'],
     body: [

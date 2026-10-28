@@ -14,7 +14,7 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 
 const URL = 'https://marginpad.io/liquidations/';
 const TITLE = 'Crypto Liquidations Today - Live Liquidation Tracker';
-const DESC = 'Live crypto futures liquidations: total 24h liquidations, longs vs shorts, the most-liquidated coins and exchanges right now. Measured from nine exchange feeds, free, no signup.';
+const DESC = 'Live crypto futures liquidations: total 24h liquidations, longs vs shorts, the most-liquidated coins and exchanges right now. Measured from eight exchange feeds, free, no signup.';
 const KW = 'crypto liquidations, liquidation tracker, liquidations today, btc liquidations, eth liquidations, long short liquidations, futures liquidations, liquidation data';
 
 // per-coin pages a row can deep-link to (read from dist at build time, so a link is never guessed)
@@ -185,7 +185,7 @@ ${FAQ}
     <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
     <nav class="nav"><a href="/markets/">Markets</a><a href="/liquidations/">Liquidations</a><a href="/funding/">Funding</a><a href="/open-interest/">Open Interest</a><a href="/long-short/">Long/Short</a><a href="/screener">Screener</a></nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / Liquidations <span class="crumb-upd"><i></i>Live · nine exchange feeds</span></div>
+  <div class="crumb"><a href="/">Home</a> / Liquidations <span class="crumb-upd"><i></i>Live · eight exchange feeds</span></div>
   <article>
     <h1>Crypto Liquidations Today</h1>
     <p class="lead">Every forced close on eight perpetual-futures exchanges, counted by MarginPad's own collector as it happens: how much was wiped out in 24 hours, which side paid, which coins and which venues.</p>
@@ -233,7 +233,7 @@ ${FAQ}
       <p>Exchanges publish forced closes at different granularity - some stream every fill, some batch a cascade into one event, and feeds throttle under exactly the load that produces the most liquidations. A tracker that models the gaps reports more than one that counts what it observed. MarginPad counts observed events and nothing else, so these totals sit at the conservative end; a figure several times larger on a violent day is usually estimation, not coverage.</p>
       <h2>What this number does not include</h2>
       <p>Perpetual-futures liquidations on the venues we subscribe to, and nothing else: no stop-losses or manual closes (never forced, never on a feed), no options or dated futures, no on-chain lending liquidations on Aave or Maker, and no venue without a public liquidation stream. Read it as leveraged perp positioning being wiped out, not every forced sale in crypto.</p>
-      <p class="fine">Measured by MarginPad's collector from nine exchange websockets. For information only - not financial advice. Trade responsibly.</p>
+      <p class="fine">Measured by MarginPad's collector from eight exchange websockets. For information only - not financial advice. Trade responsibly.</p>
     </section>
   </article>
   <footer>

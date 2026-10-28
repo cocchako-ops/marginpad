@@ -439,7 +439,7 @@
   <!-- FIRST FRAME = FINAL FRAME (2026-10-27, layout shift): a guest meets the real guest view before any script runs
        (render() writes the identical markup over it), a browser holding the mp_li cookie meets a skeleton of the
        member card's size. The two blocks are switched by html.mp-li in CSS; the script replaces both. -->
-  <div class="card sq-g"><h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Inicia sesión para crear un escuadrón</h2><p style="margin:0 0 13px;color:var(--dim);font-size:14px">Un escuadrón necesita una cuenta para que tu logo acompañe tu nombre por todo el sitio. Es gratis y solo necesita un correo.</p><button class="btn p" data-auth-open type="button">Iniciar sesión</button></div>
+  <div class="card sq-g"><h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Inicia sesión para crear un escuadrón</h2><p style="margin:0 0 13px;color:var(--dim);font-size:14px">' + __esT_squadsindex("squadNeedsAccount","A squad needs an account so your logo can follow your name around the site. It is free and takes an email.") + '</p><button class="btn p" data-auth-open type="button">Iniciar sesión</button></div>
   <div class="card sq-m"><div class="skel" style="width:40%"></div><div class="skel" style="width:70%;margin-top:9px"></div><div class="skel" style="width:55%;margin-top:9px"></div></div>
   <div class="sect"><h2>Escuadrones en busca de gente</h2><p class="sub">Escuadrones abiertos a los que puedes unirte en cuanto inicies sesión.</p><div class="dir" id="dir"><div class="empty">Cargando…</div></div></div>
 </div>
@@ -588,7 +588,7 @@ function __esT_squadsindex(k, en) { try { if ((document.documentElement.lang || 
   /* ── views ──────────────────────────────────────────────────────────────────────────────── */
   function guestView() {
     return '<div class="card"><h2 style="font-size:20px;font-weight:800;margin-bottom:6px">Sign in to start a squad</h2>'
-      + '<p style="margin:0 0 13px;color:var(--dim);font-size:14px">' + __esT_squadsindex("squadNeedsAccount","A squad needs an account so your logo can follow your name around the site. It is free and takes an email.") + '</p>'
+      + '<p style="margin:0 0 13px;color:var(--dim);font-size:14px">A squad needs an account so your logo can follow your name around the site. It is free and takes an email.</p>'
       + __esT_squadsindex("signIn",'<button class="btn p" data-auth-open type="button">Sign in</button></div>')
       + __esT_squadsindex("squadsLookingForPeople",'<div class="sect"><h2>Squads looking for people</h2><p class="sub">Open squads you could walk into once you are signed in.</p><div class="dir" id="dir"><div class="empty">Loading…</div></div></div>');
   }

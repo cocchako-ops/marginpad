@@ -4120,7 +4120,7 @@ async function handleCgHyper(url, env) {
  // collector, which reads Hyperliquid's public info API directly (leaderboard top accounts,
  // positions >= $1M) - the chain is the primary source, no aggregator in between.
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
- const ck = new Request('https://marginpad.io/__whales_v5'); // bumped 2026-10-11: 1,000 wallets, every position now carries its own age
+ const ck = new Request('https://marginpad.io/__whales_v6'); // bumped 2026-10-28: every row carries the exchange's own entry, its margin type and its ROE, and the account behind it
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { ts: Date.now(), active: false };
   try {
@@ -4148,6 +4148,9 @@ async function handleCgHyper(url, env) {
  // 2026-10-11: the tracked set went 150 -> 1,000 and the poll rotates, so a reader has to be able to see
  // how many positions stand behind the published slice and how old the oldest observation can be
  out.posN = +j.posN || j.positions.length; out.core = +j.core || 0; out.sweepMin = +j.sweepMin || 0;
+ // the account behind each published row: equity, the whole book's notional, margin used, free margin and how
+ // many positions it holds at ANY size. On cross margin that book is what decides where the row liquidates.
+ if (j.wallets && typeof j.wallets === 'object') out.wallets = j.wallets;
       out.active = true;
     }
     }

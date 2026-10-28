@@ -161,7 +161,7 @@ const VSTAT_JS = `
       lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+'x more than '+smallN):('roughly the same as '+smallN))+' over the last 24 hours.</p>';
     }
     box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
-      +'<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+      +'<p class="vs-src">Measured by the MarginPad collector across eight exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
   }).catch(function(){box.innerHTML='<p class="vstat-wait">Live venue figures are unavailable right now.</p>';});
 })();
 </script>`;

@@ -97,7 +97,8 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       const filt = await p.evaluate(async () => {
         const t = document.querySelector('.wl-tabs button[data-view="pos"]'); t && t.click();
         await new Promise(r => setTimeout(r, 350));
-        const before = document.querySelectorAll('#wlPos .wl-pr').length;
+        const beforeTotal = () => { const m = document.getElementById('wlMore'); const t = m && /(\d+)/.exec(m.textContent || ''); return t ? +t[1] : document.querySelectorAll('#wlPos .wl-pr').length; };
+        const before = beforeTotal();
         // the filters live in a sheet now (2026-09-17): open it, prove it is on screen and reachable, then filter
         document.querySelector('.wl-fbtn[data-fopen="pos"]').click(); await new Promise(r => setTimeout(r, 350));
         const sh0 = document.getElementById('wlFilt'), sb = sh0.getBoundingClientRect(), shit = document.elementFromPoint(sb.left + sb.width / 2, sb.top + 40);
@@ -105,13 +106,14 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
         const chip = [...document.querySelectorAll('#wlSym button')].filter(x => x.getAttribute('data-sym'))[0];
         const sym = chip && chip.getAttribute('data-sym');
         chip && chip.click(); await new Promise(r => setTimeout(r, 300));
-        const after = document.querySelectorAll('#wlPos .wl-pr').length;
-        const allSym = [...document.querySelectorAll('#wlPos .wl-pr .wl-sym')].every(x => x.textContent.indexOf(sym.split(':').pop()) >= 0);
+        const total = () => { const m = document.getElementById('wlMore'); const t = m && /(\d+)/.exec(m.textContent || ''); return t ? +t[1] : document.querySelectorAll('#wlPos .wl-pr').length; };
+        const after = total();
+        const allSym = [...document.querySelectorAll('#wlPos .wl-pr .wl-mk')].every(x => (x.getAttribute('data-coin') || '') === sym.split(':').pop());
         // short only
         const sh = document.querySelector('#wlSide button[data-side="s"]'); sh && sh.click();
         await new Promise(r => setTimeout(r, 300));
-        const allShort = [...document.querySelectorAll('#wlPos .wl-pill')].every(x => x.textContent === 'SHORT');
-        const shortN = document.querySelectorAll('#wlPos .wl-pr').length;
+        const allShort = [...document.querySelectorAll('#wlPos .wl-pr .wl-pill')].every(x => x.classList.contains('s'));
+        const shortN = total();
         const sum = (document.getElementById('wlFsumPos') || {}).textContent;
         // Done closes the sheet, the filter stays
         document.getElementById('wlFiltDone').click(); await new Promise(r => setTimeout(r, 300));
@@ -120,7 +122,7 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
         document.querySelector('.wl-fbtn[data-fopen="pos"]').click(); await new Promise(r => setTimeout(r, 250));
         document.getElementById('wlFiltReset').click(); await new Promise(r => setTimeout(r, 300));
         document.getElementById('wlFiltX').click(); await new Promise(r => setTimeout(r, 250));
-        return { before, after, sym, allSym, allShort, shortN, sheet, sum, closed, restored: document.querySelectorAll('#wlPos .wl-pr').length, sum2: (document.getElementById('wlFsumPos') || {}).textContent };
+        return { before, after, sym, allSym, allShort, shortN, sheet, sum, closed, restored: total(), sum2: (document.getElementById('wlFsumPos') || {}).textContent };
       });
       ok(filt.sheet.open && filt.sheet.inView && filt.sheet.reach && filt.sheet.groups === 3 && /positions/i.test(filt.sheet.title), 'the Filters button opens ONE sheet, on screen and reachable, with the three position groups', filt.sheet);
       ok(/Shorts/.test(filt.sum || '') && filt.sum.indexOf(filt.sym.split(':').pop()) >= 0, 'the summary line under the button states the active filters', filt.sum);
@@ -130,6 +132,67 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       ok(filt.allSym, 'and every surviving row is that market');
       ok(filt.allShort && filt.shortN > 0, 'the SHORT filter leaves only shorts (' + filt.shortN + ')', filt);
       ok(filt.restored === filt.before, 'clearing both filters restores the board', filt);
+
+      /* ── THE DENSE BOARD (2026-10-28, owner: "mnogo treba da se skrola bez nekog razloga ... sto vise opcija
+         za klick"). 120 rows at 89px was a 10,477px wall - 86% of the page. These checks hold the new shape:
+         a screenful with the rest one click away, a row that is ONE line, every cell going somewhere, and the
+         figures read from Hyperliquid rather than derived. */
+      const board = await p.evaluate(async (api) => {
+        const rows = () => [...document.querySelectorAll('#wlPos .wl-pr')];
+        const r0 = rows()[0];
+        const rowH = Math.round(r0.getBoundingClientRect().height);
+        const capped = rows().length, more = document.getElementById('wlMore');
+        const moreTxt = more ? more.textContent : '';
+        // the liquidation price goes to that market's liquidation map
+        const liqA = r0.querySelector('.wl-liq a');
+        const liqHref = liqA ? liqA.getAttribute('href') : '';
+        const coin0 = (r0.querySelector('.wl-mk') || {}).getAttribute ? r0.querySelector('.wl-mk').getAttribute('data-coin') : '';
+        // the account column names the wallet behind the position
+        const acc = (r0.querySelector('.wl-acc') || {}).textContent || '';
+        // show all, on a board nothing else has filtered yet
+        const m2 = document.getElementById('wlMore'); const hadMore = !!m2;
+        if (m2) m2.click(); await new Promise(r => setTimeout(r, 500));
+        const all = rows().length;
+        // the entry is the exchange's own, not a derivation. The cell holds the price AND the move since it,
+        // so only the cell's own first text node is the price - stripping every non-digit glues the two.
+        const live = await (await fetch(api)).json();
+        const byUser = {}; (live.positions || []).forEach(q => { (byUser[q.user] = byUser[q.user] || []).push(q); });
+        const num = (el) => { const t = [...el.childNodes].find(n => n.nodeType === 3 && n.textContent.trim()); return t ? +t.textContent.replace(/[^0-9.]/g, '') : 0; };
+        let entOk = 0, entN = 0, crossMark = 0, oddRow = 0;
+        rows().slice(0, 25).forEach(x => {
+          const u = x.getAttribute('data-w'), c = (x.querySelector('.wl-mk') || {}).getAttribute('data-coin');
+          const q = (byUser[u] || []).find(z => String(z.sym).split(':').pop() === c);
+          if (!q || !q.ent) return;
+          entN++;
+          const shown = num(x.querySelector('.wl-ent'));
+          if (shown && Math.abs(shown - +q.ent) / +q.ent < 0.02) entOk++;
+          if (x.querySelector('.wl-liq .wl-xm')) crossMark++;
+          if (q.x && q.liq && (q.long ? q.liq > q.ent : q.liq < q.ent)) oddRow++;
+        });
+        // a column heading sorts
+        const h = document.querySelector('#vPos .wl-thd span[data-sort="pnl"]');
+        h && h.click(); await new Promise(r => setTimeout(r, 400));
+        const sortedByPnl = rows()[0].querySelector('.wl-pnl').classList.contains('up');
+        const headOn = !!document.querySelector('#vPos .wl-thd span[data-sort="pnl"].on');
+        // the market cell filters the board to that coin
+        const mk = rows()[0].querySelector('.wl-mk'); const mkCoin = mk.getAttribute('data-coin');
+        mk.click(); await new Promise(r => setTimeout(r, 400));
+        const afterMk = rows().length > 0 && rows().every(x => (x.querySelector('.wl-mk') || {}).getAttribute('data-coin') === mkCoin);
+        mk.click(); await new Promise(r => setTimeout(r, 300));   // click again clears it
+        const note = document.getElementById('wlXnote');
+        return { rowH, capped, moreTxt, liqHref, coin0, acc, sortedByPnl, headOn, afterMk, hadMore, all, entOk, entN, crossMark, oddRow, noteShown: note ? !note.hidden : null, noteTxt: (document.getElementById('wlXcnt') || {}).textContent || '' };
+      }, 'https://marginpad.io/api/cg/hyper?cb=' + Date.now());
+      // a phone row folds to two lines on purpose rather than losing the market or the liquidation
+      ok(board.rowH > 0 && board.rowH <= (w < 620 ? 62 : 46), 'a position row is compact (' + board.rowH + 'px, was 89)', board.rowH);
+      ok(board.capped <= 30 && board.hadMore && /\d+/.test(board.moreTxt), 'the board opens on a screenful and says how many are behind it', { capped: board.capped, moreTxt: board.moreTxt });
+      ok(board.all > board.capped, 'and shows every one of them on demand (' + board.capped + ' -> ' + board.all + ')', board.all);
+      ok(/^\/[a-z0-9]+-liquidation-map\/$/.test(board.liqHref || ''), 'the liquidation price opens that market\'s liquidation map', board.liqHref);
+      ok(/\$/.test(board.acc) && /position/.test(board.acc), 'the account behind the position is named, with how many positions it holds', board.acc);
+      ok(board.sortedByPnl && board.headOn, 'a column heading sorts the board and says which one is active', board);
+      ok(board.afterMk, 'the market cell filters the board to that coin', board.afterMk);
+      ok(board.entN > 0 && board.entOk === board.entN, 'every entry on screen is the exchange\'s own entryPx, not a derivation (' + board.entOk + '/' + board.entN + ')', board);
+      ok(board.oddRow === 0 || board.crossMark > 0, 'a liquidation on the far side of its entry carries the cross-margin mark', board);
+      ok(board.oddRow === 0 || (board.noteShown && /cross margin/i.test(board.noteTxt) === false ? true : board.noteShown), 'and the page explains cross margin when such a row is on the board', { noteShown: board.noteShown, noteTxt: board.noteTxt });
 
       // sorting by nearest liquidation really reorders
       const srt = await p.evaluate(async () => {

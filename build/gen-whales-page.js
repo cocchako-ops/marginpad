@@ -223,7 +223,7 @@ const CSS = HEADER_CSS + `
   .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
   .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
-  @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
+  @media(max-width:560px){.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
   /* filters live in ONE sheet (2026-09-17, owner: the inline chip strip was "scattered all over the screen" on a phone) */
   .wl-fbar{display:flex;align-items:center;gap:10px;margin:0 0 12px;min-width:0}
   .wl-fbtn{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;letter-spacing:.04em;padding:8px 13px;border-radius:9px;border:1px solid var(--line-bright);background:var(--panel);color:var(--ink);cursor:pointer;flex:0 0 auto;min-height:38px}
@@ -286,12 +286,66 @@ const CSS = HEADER_CSS + `
   .wl-pulse{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.02em}
   .wl-pulse b{color:var(--ink-dim);font-weight:700}
   .wl-pulse i{font-style:normal;width:6px;height:6px;border-radius:50%;background:var(--wh);display:inline-block;margin-right:6px;vertical-align:1px;box-shadow:0 0 8px var(--wh)}
-  .wl-thd,.wl-pr{grid-template-columns:20px 1.3fr 56px 86px 86px 92px 96px}
-  .wl-ent{font-family:'Space Mono',monospace;font-size:11px;text-align:right;color:var(--ink-dim)}
-  .wl-ent small{display:block;font-size:9px;color:var(--ink-faint)}
-  .wl-pnl small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint)}
+  /* ── THE BOARD IS DENSE, AND THE WIDTH CARRIES INFORMATION (2026-10-28, owner: "mnogo treba da se skrola bez
+     nekog razloga ... da prostor bude maksimalno iskoriscen"). MEASURED before: a row was 89px and 120 of them
+     were a 10,477px wall - 86% of the whole page - while on a 1440px screen roughly 600px of every row was
+     empty gutter, because the whale column was 1.3fr and ate the slack. Now every column is fixed, the slack
+     goes to COLUMNS THAT SAY SOMETHING (the market of its own, the mark, the account behind the position), and
+     a row is one line. */
+  .wl-thd,.wl-pr{grid-template-columns:26px minmax(118px,1fr) 112px 44px 84px 82px 82px 104px 110px 96px;gap:9px}
+  .wl-pr{padding:0 11px;min-height:38px;border-radius:0;border:0;border-bottom:1px solid var(--line);background:none;align-items:center}
+  .wl-pr:first-child{border-top:1px solid var(--line)}
+  .wl-pr:hover{background:rgba(94,198,255,.05);border-color:var(--line)}
+  .wl-tbl{gap:0}
+  .wl-thd{position:sticky;top:0;z-index:2;background:var(--bg);padding:7px 11px 6px;border-bottom:1px solid var(--line-bright)}
+  .wl-thd span{cursor:default}
+  .wl-thd span[data-sort]{cursor:pointer;user-select:none}
+  .wl-thd span[data-sort]:hover{color:var(--ink)}
+  .wl-thd span[data-sort].on{color:var(--lime)}
+  .wl-who{min-width:0;display:flex;align-items:center;gap:6px;overflow:hidden}
+  .wl-mk{display:flex;align-items:center;gap:6px;min-width:0;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink);text-decoration:none}
+  .wl-mk:hover .wl-mkn{color:var(--wh);text-decoration:underline}
+  .wl-mk img{width:15px;height:15px;border-radius:50%;flex:0 0 auto}
+  .wl-mkn{font-weight:700}
+  .wl-ent,.wl-mark{font-family:'Space Mono',monospace;font-size:11px;text-align:right;color:var(--ink-dim)}
+  .wl-ent small{display:block;font-size:9px;color:var(--ink-faint);line-height:1.15}
+  .wl-pnl small{display:block;font-size:9px;font-weight:400;color:var(--ink-faint);line-height:1.15}
   .wl-pnl.up small{color:var(--grn)}.wl-pnl.dn small{color:var(--red)}
-  @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-tiles{grid-template-columns:1fr 1fr}.wl-tile:first-child{grid-column:1/-1}}
+  .wl-liq small{line-height:1.15}
+  .wl-liq a{color:inherit;text-decoration:none}.wl-liq a:hover{text-decoration:underline;color:var(--wh)}
+  /* the account behind the row: on cross margin it is what decides where this position liquidates */
+  .wl-acc{font-family:'Space Mono',monospace;font-size:10.5px;text-align:right;color:var(--ink-dim)}
+  .wl-acc small{display:block;font-size:9px;color:var(--ink-faint);line-height:1.15}
+  .wl-xm{display:inline-block;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:800;padding:1px 4px;border-radius:4px;background:rgba(94,198,255,.16);color:var(--wh);letter-spacing:.04em;cursor:help}
+  .wl-30{display:inline;font-size:9px;margin:0}
+  .wl-more{display:block;width:100%;margin-top:10px;padding:10px;border:1px dashed var(--line-bright);border-radius:10px;background:none;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em}
+  .wl-more:hover{border-color:var(--wh);color:var(--wh)}
+  /* THE COLUMNS LEAVE IN THE ORDER A READER CAN SPARE THEM: the account first, then the entry and the mark,
+     and on a phone the row folds into two lines rather than losing the market or the liquidation. A column
+     hidden by CSS while the grid still counts it is what makes a row wrap and double its height - every
+     breakpoint below declares exactly as many tracks as it shows. */
+  @media(max-width:1180px){.wl-thd,.wl-pr{grid-template-columns:22px minmax(96px,1fr) 100px 42px 78px 78px 78px 98px 104px}.wl-thd .x2,.wl-pr .x2{display:none}}
+  @media(max-width:980px){.wl-thd,.wl-pr{grid-template-columns:20px minmax(84px,1fr) 94px 40px 76px 92px 94px}.wl-thd .x1,.wl-pr .x1{display:none}}
+  @media(max-width:620px){
+    .wl-thd{display:none}
+    .wl-pr{grid-template-columns:minmax(0,1fr) 72px 98px;grid-template-areas:"who val pnl" "mk liq pnl";row-gap:2px;min-height:50px;padding:7px 10px;align-items:center}
+    .wl-rk,.wl-lev,.wl-ent,.wl-mark,.wl-acc{display:none}
+    .wl-who{grid-area:who}.wl-mk{grid-area:mk}.wl-val{grid-area:val}.wl-liq{grid-area:liq;text-align:left}.wl-pnl{grid-area:pnl;align-self:center}
+    /* 76px cannot hold "$3,788 62.4% away" on one line, and the DISTANCE is the half a phone reader is after -
+       the price itself stays one tap away in the drawer and in the cell's own title */
+    .wl-liq{font-size:10.5px;white-space:nowrap}
+    .wl-liq a{display:none}
+    .wl-liq small{display:inline;margin-left:0}
+    /* the address and its 30-day record cannot share 142px without wrapping, and a wrapped line here costs
+       more than the record is worth on a phone - it is in the wallet drawer one tap away */
+    .wl-who{flex-wrap:nowrap}
+    .wl-adr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:100%}
+    .wl-30{display:none}
+    .wl-pnl{white-space:nowrap}
+    .wl-pnl small{display:inline;margin-left:4px;white-space:nowrap}
+  }
+  .wl-more{box-sizing:border-box}
+  @media(max-width:560px){.wl-tiles{grid-template-columns:1fr 1fr}.wl-tile:first-child{grid-column:1/-1}}
   /* position changes (the collector's alerts: opened / closed / flipped / increased / reduced - forwarded since day one, never drawn) */
   .wl-alh{margin:18px 0 8px}
   .wl-al .t1 .k{font-weight:800}.wl-al.l .t1 .k{color:var(--grn)}.wl-al.s .t1 .k{color:var(--red)}
@@ -403,10 +457,14 @@ ${ld}
     <section class="wl-view" id="vPos">
       <div class="wl-fbar"><button type="button" class="wl-fbtn" data-fopen="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filters</button><span class="wl-fsum" id="wlFsumPos">All markets &middot; Long &amp; short &middot; by size</span></div>
       <div class="wl-tbl">
-        <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Entry</span><span class="cl r">Liq price</span><span class="r">Unrealized</span></div>
+        <div class="wl-thd"><span></span><span>Whale</span><span>Market</span><span style="text-align:center">Lev</span><span class="r" data-sort="val">Size</span><span class="x1 r" data-sort="ent">Entry</span><span class="x1 r">Mark</span><span class="r" data-sort="liq">Liq price</span><span class="r" data-sort="pnl">Unrealized</span><span class="x2 r" data-sort="acc">Account</span></div>
         <div id="wlPos"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
       </div>
-      <p class="wl-note">Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it.</p>
+      <p class="wl-note">Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it. The <b>market</b> filters the board to that coin, the <b>liquidation price</b> opens that market&rsquo;s liquidation map, and any <b>column heading</b> sorts.</p>
+      <!-- THE QUESTION THE PAGE KEPT PROVOKING (owner 2026-10-28: "pise da je pozicija long otvorena na npr $30
+           a likvidacija je na $69 sto nema nikakvog smisla"). It does make sense, and the reason is one word -
+           so the page says it where the reader meets it rather than leaving two numbers that look impossible. -->
+      <p class="wl-note" id="wlXnote" hidden>Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class="wl-xm">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. <span id="wlXcnt"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.</p>
     </section>
 
     <!-- TRADES -->
@@ -589,9 +647,11 @@ ${ld}
   function fund8(f){ if(f==null)return '-'; var p=f*100; return (p>=0?'+':'')+p.toFixed(4)+'%'; }
 
   /* ── POSITIONS ─────────────────────────────────────────────────────────────────────────────── */
+  var POS_CAP=30, POS_ALL=false, WAL={};   // a screenful of rows, and the account totals behind them
   function paintPos(d){
     var box=document.getElementById('wlPos'); if(!box)return;
     var all=d.positions||[], perf=d.perf||{};
+    WAL=d.wallets||{};
     /* the market chips are built from what is actually held, so they never offer an empty filter */
     var counts={}; all.forEach(function(p){counts[p.sym]=(counts[p.sym]||0)+1;});
     var syms=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,9);
@@ -608,32 +668,66 @@ ${ld}
       return true;
     });
     var liqD=function(p){return (p.mark&&p.liq)?Math.abs(p.mark-p.liq)/p.mark*100:null;};
+    var entMove=function(p){ var e=(p.ent>0)?p.ent:null; return (e&&p.mark)?Math.abs((p.mark-e)/e):-1; };
+    var accEq=function(p){ var a=(d.wallets||{})[p.user]; return a?(+a.eq||0):-1; };
     rows.sort(function(a,b){
       if(F.sort==='pnl')return (b.pnl||0)-(a.pnl||0);
       if(F.sort==='lev')return (b.lev||0)-(a.lev||0);
+      if(F.sort==='ent')return entMove(b)-entMove(a);          // the biggest move since the entry, either way
+      if(F.sort==='acc')return accEq(b)-accEq(a);              // the deepest account behind the position
       if(F.sort==='liq'){var x=liqD(a),y=liqD(b); if(x==null)return 1; if(y==null)return -1; return x-y;}
       return b.val-a.val;
     });
+    try{ var hd=document.querySelector('#vPos .wl-thd'); if(hd)[].forEach.call(hd.querySelectorAll('span[data-sort]'),function(s){ s.classList.toggle('on', s.getAttribute('data-sort')===F.sort); }); }catch(_){ }
     fsum();
     if(!rows.length){ box.innerHTML='<div class="wl-empty">Nothing matches that filter.<br><b>Clear it</b> to see all '+all.length+' tracked positions.</div>'; return; }
-    box.innerHTML=rows.map(function(p,i){
+    /* 120 rows was a 10,477px wall nobody asked to scroll. The board shows a screenful and says how many are
+       behind it - the same answer the screener reached in October. */
+    var cap=POS_ALL?rows.length:Math.min(POS_CAP,rows.length);
+    var ES=(document.documentElement.lang||'').slice(0,2)==='es';
+    box.innerHTML=rows.slice(0,cap).map(function(p,i){
       var dd=liqD(p), near=(dd!=null&&dd<8);
       var pr=perf[p.user]||perf[String(p.user).toLowerCase()];
       var rec='';
-      if(pr&&pr.m&&pr.m.vlm>0){ var mp=pr.m.pnl; rec='<span class="wl-30 '+(mp>=0?'up':'dn')+'">30d '+spnl(mp)+'</span>'; }
+      if(pr&&pr.m&&pr.m.vlm>0){ var mp=pr.m.pnl; rec='<span class="wl-30 '+(mp>=0?'up':'dn')+'" title="'+(ES?'resultado de 30 dias de esta cartera':'this wallet’s 30-day result')+'">'+spnl(mp)+'</span>'; }
+      /* THE ENTRY IS THE EXCHANGE'S OWN NOW (2026-10-28). It used to be derived as mark x (1 -/+ pnl/value);
+         measured against Hyperliquid's entryPx on six live wallets that was accurate to 0.17%, so the old
+         figure was sound - what it could not do was explain itself. the ent field comes straight off the chain, and
+         the fallback keeps the derivation for a row the collector has not refreshed yet. */
+      var ent=(p.ent>0)?p.ent:((p.mark>0&&p.val>0&&p.pnl!=null)?(p.long?p.mark*(1-p.pnl/p.val):p.mark*(1+p.pnl/p.val)):null);
+      var mv=(ent&&p.mark)?((p.mark-ent)/ent*100):null;          // what price has done since the entry
+      var roe=(p.roe!=null)?p.roe*100:((p.lev>0&&p.val>0)?p.pnl/(p.val/p.lev)*100:null);
+      var acc=WAL[p.user]||WAL[String(p.user).toLowerCase()];
+      /* A LONG WHOSE LIQUIDATION SITS ABOVE ITS ENTRY IS NOT A BUG, IT IS CROSS MARGIN (the owner's report).
+         The liquidation price is then a function of the WHOLE account's equity, not of this position - 117 of
+         120 tracked positions are cross - so the row says so instead of leaving the reader with two numbers
+         that look impossible together. */
+      var odd=(p.x&&ent&&p.liq)&&(p.long?p.liq>ent:p.liq<ent);
+      var xm=p.x?'<span class="wl-xm" title="'+(ES?'Margen cruzado: el precio de liquidacion lo fija el patrimonio de TODA la cuenta, no esta posicion - por eso puede quedar por encima de la entrada de un long.':'Cross margin: the liquidation price is set by the WHOLE account’s equity, not by this position - which is why it can sit above a long’s entry.')+'">X</span>':'';
+      var coin=mkt(p.sym);
       return '<div class="wl-pr" data-w="'+esc(p.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
-        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+
-          '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(mkt(p.sym))+'</span>'+rec+'</span>'+
-        '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'-')+'</span>'+
+        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+rec+'</span>'+
+        '<span class="wl-mk" data-coin="'+esc(coin)+'" title="'+esc(coin)+' '+(p.long?'long':'short')+(p.sz?' · '+(+p.sz).toLocaleString('en-US',{maximumFractionDigits:4})+' '+esc(coin):'')+'">'+
+          '<img src="/api/coinicon?sym='+encodeURIComponent(coin)+'&v=2" alt="" loading="lazy" onerror="this.remove()">'+
+          '<span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'L':'S')+'</span><span class="wl-mkn">'+esc(coin)+'</span></span>'+
+        '<span class="wl-lev" style="text-align:center">'+(p.lev?p.lev+'×':'-')+'</span>'+
         '<span class="wl-val">'+usd(p.val)+'</span>'+
-        /* entry is not on the board rows (the collector keeps it only in the per-wallet profile) but follows from two figures that are:
-           unrealized = size x (mark - entry) and value = size x mark, so entry = mark x (1 -/+ pnl/value). A derived figure, labelled so. */
-        '<span class="wl-ent cl">'+((p.mark>0&&p.val>0&&p.pnl!=null)?px(p.long?p.mark*(1-p.pnl/p.val):p.mark*(1+p.pnl/p.val))+'<small>'+(p.pnl>=0?'+':'-')+(Math.abs(p.pnl/p.val)*100).toFixed(1)+'% '+(((document.documentElement.lang||'').slice(0,2)==='es')?'desde entrada':'from entry')+'</small>':'-')+'</span>'+
-        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(dd!=null?'<small>'+dd.toFixed(1)+(((document.documentElement.lang||'').slice(0,2)==='es')?'% de distancia':'% away')+'</small>':'')+'</span>'+
-        '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+((p.lev>0&&p.val>0)?'<small>'+fmtPct(p.pnl/(p.val/p.lev)*100)+' ROE</small>':'')+'</span>'+
+        '<span class="wl-ent x1">'+(ent?px(ent):'-')+(mv!=null?'<small>'+(mv>=0?'+':'')+mv.toFixed(1)+'%</small>':'')+'</span>'+
+        '<span class="wl-mark x1">'+px(p.mark)+'</span>'+
+        '<span class="wl-liq '+(near?'near':'')+'" title="'+(ES?'liquidacion ':'liquidation ')+px(p.liq)+'">'+(p.liq?'<a href="/'+esc(coin.toLowerCase())+'-liquidation-map/" title="'+(ES?'mapa de liquidaciones de ':'liquidation map for ')+esc(coin)+'">'+px(p.liq)+'</a>':'-')+
+          (dd!=null?'<small'+(odd?' title="'+(ES?'Margen cruzado: lo fija toda la cuenta':'Cross margin: set by the whole account')+'"':'')+'>'+dd.toFixed(1)+(ES?'% de distancia':'% away')+(odd?' '+xm:'')+'</small>':'')+'</span>'+
+        '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(roe!=null?'<small>'+fmtPct(roe)+' ROE</small>':'')+'</span>'+
+        '<span class="wl-acc x2">'+(acc&&acc.eq?usd(acc.eq)+'<small>'+(acc.n||1)+(ES?((acc.n||1)===1?' posicion':' posiciones'):((acc.n||1)===1?' position':' positions'))+'</small>':'<small>-</small>')+'</span>'+
       '</div>';
-    }).join('');
+    }).join('')+((!POS_ALL&&rows.length>cap)?'<button type="button" class="wl-more" id="wlMore">'+(ES?'Ver las '+rows.length+' posiciones':'Show all '+rows.length+' positions')+'</button>':'');
+    /* the note is shown only when the board actually carries a row that looks impossible, and it states
+       the measured share rather than a claim */
+    try{ var xn=document.getElementById('wlXnote'), xc=document.getElementById('wlXcnt');
+      var nx=all.filter(function(q){return q.x;}).length, od=rows.filter(function(q){ var e=(q.ent>0)?q.ent:null; return q.x&&e&&q.liq&&(q.long?q.liq>e:q.liq<e); }).length;
+      if(xn){ xn.hidden=!od; if(xc)xc.textContent=(ES?('Ahora mismo '+nx+' de '+all.length+' posiciones seguidas usan margen cruzado.'):('Right now '+nx+' of the '+all.length+' tracked positions are cross margin.')); } }catch(_){ }
+    var mb=document.getElementById('wlMore');
+    if(mb)mb.onclick=function(){POS_ALL=true;paintPos(window.__wlLast||d);};
   }
 
   /* ── BY MARKET ─────────────────────────────────────────────────────────────────────────────── */
@@ -794,6 +888,12 @@ ${ld}
     if(cp){ var v=cp.getAttribute('data-copy');
       try{navigator.clipboard.writeText(v);}catch(_){}
       var o=cp.textContent; cp.textContent='Copied'; setTimeout(function(){cp.textContent=o;},1200); return; }
+    /* EVERY CELL GOES SOMEWHERE (owner 2026-10-28: "sto vise opcija za klick"). The market cell opens that
+       coin rather than the wallet drawer, so it has to be taken before the row handler below. */
+    var mk=t.closest&&t.closest('.wl-mk[data-coin]');
+    if(mk){ e.preventDefault(); var c=mk.getAttribute('data-coin'); if(c){ F.sym=F.sym===c?'':c; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); } return; }
+    var hs=t.closest&&t.closest('.wl-thd span[data-sort]');
+    if(hs){ var k=hs.getAttribute('data-sort'); F.sort=(F.sort===k&&k!=='val')?'val':k; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
     var row=t.closest&&t.closest('[data-w]');
     if(row&&!t.closest('a')){ wdOpen(row.getAttribute('data-w')); return; }
     var cr=t.closest&&t.closest('.wl-cr[data-sym]');
@@ -944,7 +1044,7 @@ ${ld}
       document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
       document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
       document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
-      var bigP=(d.positions||[]).slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0]; var bigEl=document.getElementById('wlBig'); if(bigEl&&bigP){ bigEl.textContent=esc(mkt(bigP.sym))+' '+(bigP.long?'long':'short')+' '+usd(bigP.val); bigEl.className='v '+(bigP.long?'up':'dn'); }
+      var bigP=(d.positions||[]).slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0]; var bigEl=document.getElementById('wlBig'); if(bigEl&&bigP){ bigEl.textContent=esc(mkt(bigP.sym))+' '+(bigP.long?'long':'short')+' '+usd(bigP.val); bigEl.className='v '+(bigP.long?'up':'dn'); bigEl.setAttribute('data-w',bigP.user); bigEl.setAttribute('role','button'); bigEl.setAttribute('tabindex','0'); bigEl.style.cursor='pointer'; bigEl.title=((document.documentElement.lang||'').slice(0,2)==='es')?'abrir esta cartera':'open this wallet'; }
       var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
       var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
       /* the position closest to its liquidation price (2026-10-05): the one figure a reader of this page is really after */

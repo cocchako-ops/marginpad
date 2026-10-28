@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-28T14:43:14.682Z",
+  "generated": "2026-10-28T17:24:42.294Z",
   "pages": 386,
-  "occurrences": 27897,
+  "occurrences": 27880,
   "unique": 14493,
-  "words": 272742,
-  "untranslated": 0,
-  "untranslatedWords": 0,
-  "merged": "2026-10-28T14:43:32.482Z"
+  "words": 272807,
+  "untranslated": 2,
+  "untranslatedWords": 26,
+  "merged": "2026-10-28T17:24:56.323Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -575,7 +575,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 33,
+   "n": 32,
    "w": 6
   },
   "6tBMzjk8aD": {
@@ -590,7 +590,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 198,
+   "n": 197,
    "w": 15
   },
   "DXzxMSnuDb": {
@@ -683,7 +683,7 @@
     "/20x-liquidation-calculator/",
     "/25x-liquidation-calculator/"
    ],
-   "n": 1929,
+   "n": 1926,
    "w": 1
   },
   "yYmy0T2Fa5": {
@@ -11449,7 +11449,7 @@
     "/defi/",
     "/etf-flows/"
    ],
-   "n": 10,
+   "n": 9,
    "w": 1
   },
   "4vZ0c5CpM-": {
@@ -11464,7 +11464,7 @@
     "/calendar/",
     "/defi/"
    ],
-   "n": 11,
+   "n": 10,
    "w": 5
   },
   "QFwW0TOIo2": {
@@ -15035,7 +15035,7 @@
     "/calendar/",
     "/defi/"
    ],
-   "n": 22,
+   "n": 20,
    "w": 2
   },
   "ibhqsOZvUn": {
@@ -26094,7 +26094,7 @@
     "/coinglass-alternative/",
     "/coins/"
    ],
-   "n": 11,
+   "n": 10,
    "w": 3
   },
   "CSJxbR5tsS": {
@@ -26109,7 +26109,7 @@
     "/coinglass-alternative/",
     "/coins/"
    ],
-   "n": 11,
+   "n": 10,
    "w": 19
   },
   "xvw_Ba3yKv": {
@@ -29720,10 +29720,9 @@
    "ctx": [
     "/bitcoin-cycle/",
     "/defi/",
-    "/etf-flows/",
-    "/hyperliquid-whales/"
+    "/etf-flows/"
    ],
-   "n": 4,
+   "n": 3,
    "w": 3
   },
   "bjAzHnCdsW": {
@@ -81263,7 +81262,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 8
   },
   "t5ZAk3UKyo": {
@@ -81290,7 +81289,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 7
   },
   "YLSW-kY2V1": {
@@ -81305,7 +81304,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 3
   },
   "jAYNamQ-dW": {
@@ -81320,7 +81319,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 2
   },
   "DIvuQj17qc": {
@@ -81335,7 +81334,7 @@
     "/funding/",
     "/hyperliquid-liquidation-calculator/"
    ],
-   "n": 8,
+   "n": 7,
    "w": 36
   },
   "oxq_v3iDNq": {
@@ -116930,6 +116929,19 @@
    "n": 1,
    "w": 8
   },
+  "gg4PoU9f0X": {
+   "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a> <a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
+   "es": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a> <a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 4,
+   "leaf": true
+  },
   "6w9RHkvpE9": {
    "en": "<a href=\"/\">Home</a> / Hyperliquid whales",
    "es": "<a href=\"/\">Inicio</a> / Ballenas de Hyperliquid",
@@ -117159,9 +117171,9 @@
    "n": 1,
    "w": 6
   },
-  "QNoCuhf-hF": {
-   "en": "<span></span><span>Whale / market</span><span class=\"cl\" style=\"text-align:center\">Lev</span><span class=\"r\">Size</span><span class=\"cl r\">Entry</span><span class=\"cl r\">Liq price</span><span class=\"r\">Unrealized</span>",
-   "es": "<span></span><span>Ballena / mercado</span><span class=\"cl\" style=\"text-align:center\">Apalanc.</span><span class=\"r\">Tamaño</span><span class=\"cl r\">Entrada</span><span class=\"cl r\">Precio liq.</span><span class=\"r\">No realizado</span>",
+  "1zjp8JlkTk": {
+   "en": "<span></span><span>Whale</span><span>Market</span><span style=\"text-align:center\">Lev</span><span class=\"r\" data-sort=\"val\">Size</span><span class=\"x1 r\" data-sort=\"ent\">Entry</span><span class=\"x1 r\">Mark</span><span class=\"r\" data-sort=\"liq\">Liq price</span><span class=\"r\" data-sort=\"pnl\">Unrealized</span><span class=\"x2 r\" data-sort=\"acc\">Account</span>",
+   "es": "<span></span><span>Ballena</span><span>Mercado</span><span style=\"text-align:center\">Apal.</span><span class=\"r\" data-sort=\"val\">Tamaño</span><span class=\"x1 r\" data-sort=\"ent\">Entrada</span><span class=\"x1 r\">Marca</span><span class=\"r\" data-sort=\"liq\">Precio de liq.</span><span class=\"r\" data-sort=\"pnl\">No realizado</span><span class=\"x2 r\" data-sort=\"acc\">Cuenta</span>",
    "kind": [
     "html"
    ],
@@ -117169,11 +117181,11 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 8
+   "w": 10
   },
-  "PWvBQtrpR0": {
-   "en": "Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it.",
-   "es": "Haz clic en cualquier fila para abrir esa wallet: todo su libro, su historial de los últimos 30 días y cada ejecución que hemos registrado.",
+  "-Vv69wa61L": {
+   "en": "Click any row to open that wallet: its whole book, its track record over 30 days, and every execution we have recorded for it. The <b>market</b> filters the board to that coin, the <b>liquidation price</b> opens that market&rsquo;s liquidation map, and any <b>column heading</b> sorts.",
+   "es": "Haz clic en cualquier fila para abrir esa cartera: todo su libro, su historial de 30 días y cada ejecución que tenemos registrada. El <b>mercado</b> filtra el tablero por esa moneda, el <b>precio de liquidación</b> abre el mapa de liquidaciones de ese mercado, y cualquier <b>encabezado de columna</b> ordena.",
    "kind": [
     "html"
    ],
@@ -117181,7 +117193,19 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 24
+   "w": 45
+  },
+  "JI08DauT6l": {
+   "en": "Some of these look impossible - a long whose liquidation price sits <i>above</i> its entry. That is <b>cross margin</b>, marked <span class=\"wl-xm\">X</span>: the exchange sets the liquidation from the <b>whole account&rsquo;s</b> equity, not from that one position, so a trader who is short five other markets can have a profitable long liquidate on the way up. <span id=\"wlXcnt\"></span> The entry, mark, liquidation price and return are read from Hyperliquid itself, not derived.",
+   "es": "Algunas parecen imposibles: un long cuyo precio de liquidación está <i>por encima</i> de su entrada. Eso es <b>margen cruzado</b>, marcado con <span class=\"wl-xm\">X</span>: el exchange fija la liquidación con el patrimonio de <b>toda la cuenta</b>, no con esa posición, así que alguien que está corto en otros cinco mercados puede ver cómo un long en ganancia se liquida mientras el precio sube. <span id=\"wlXcnt\"></span> La entrada, la marca, el precio de liquidación y el retorno se leen de Hyperliquid, no se derivan.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 64
   },
   "_s6LXNgBnr": {
    "en": "<span class=\"wl-fsum\" id=\"wlFsumTr\">All markets &middot; Opened &amp; closed &middot; local time</span>",
@@ -117338,30 +117362,6 @@
    ],
    "n": 1,
    "w": 17
-  },
-  "LS4bpOwE0m": {
-   "en": "<i></i>TRADE THE SAME BOOK AS THE WHALES",
-   "es": "<i></i>OPERA EN EL MISMO LIBRO QUE LAS BALLENAS",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 7
-  },
-  "CXWDvw6QmP": {
-   "en": "Every position on this page is on Hyperliquid, fully on-chain and readable by anyone - including yours, once you have one.",
-   "es": "Cada posición de esta página está en Hyperliquid, completamente on-chain y visible para cualquiera - incluida la tuya, en cuanto tengas una.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 20
   },
   "NyNVX9pAIV": {
    "en": "<b id=\"wlFiltT\">Filter positions</b>",
@@ -154889,9 +154889,9 @@
    "n": 1,
    "w": 5
   },
-  "iD4ClSZJVC": {
-   "en": "A squad needs an account so your logo can follow your name around the site. It is free and takes an email.",
-   "es": "Un escuadrón necesita una cuenta para que tu logo acompañe tu nombre por todo el sitio. Es gratis y solo necesita un correo.",
+  "HMN2vRsxnX": {
+   "en": "' + __esT_squadsindex(\"squadNeedsAccount\",\"A squad needs an account so your logo can follow your name around the site. It is free and takes an email.\") + '",
+   "es": "' + __esT_squadsindex(\"squadNeedsAccount\",\"A squad needs an account so your logo can follow your name around the site. It is free and takes an email.\") + '",
    "kind": [
     "html"
    ],
@@ -154899,7 +154899,8 @@
     "/squads/"
    ],
    "n": 1,
-   "w": 21
+   "w": 22,
+   "leaf": true
   },
   "Tp7p3YkLQW": {
    "en": "Squads looking for people",
