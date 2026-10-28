@@ -4217,6 +4217,11 @@ async function handleWhaleProfile(url, env) {
         pnl: Math.round(+p.unrealizedPnl || 0),
         roe: +p.returnOnEquity ? +(+p.returnOnEquity * 100).toFixed(1) : null,
         fund: Math.round(+((p.cumFunding || {}).sinceOpen) || 0),   // what holding it has cost so far
+        /* HOW MUCH OF THEIR OWN MONEY IS IN IT - published by the exchange on the same response and
+           dropped until now. On cross margin the notional says nothing about commitment: a $212M BTC
+           short at 5x is $42M of margin, and that is the number that decides what a move costs them. */
+        marg: Math.round(+p.marginUsed || 0),
+        maxLev: +p.maxLeverage || null,
       };
     }).filter(x => x.val > 0).sort((x, y) => y.val - x.val);
   }
