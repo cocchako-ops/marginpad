@@ -3832,6 +3832,16 @@ async function handleCgOpenInterest(url, env) {
 // percentage whose 90-day performance beats BTC's. Honest history: the series starts the day we
 // started measuring - no fake backfill.
 const ALT_EXCLUDE = /^(tether|usd-coin|dai|first-digital-usd|ethena-usde|usdd|true-usd|paypal-usd|frax|wrapped-bitcoin|wrapped-steth|wrapped-eeth|wrapped-beacon-eth|staked-ether|weth|coinbase-wrapped-btc|binance-peg-weth|rocket-pool-eth|mantle-staked-ether|kelp-dao-restaked-eth|renzo-restaked-eth|solv-btc|lombard-staked-btc|binance-staked-sol|marinade-staked-sol|leo-token)$/;
+// one owned Fear & Greed point a day (2026-10-28): value + alternative.me's own classification + the timestamp THEY
+// stamp on it, so a late cron tick is still filed under the day the reading belongs to, never the day we fetched it
+async function computeFngPoint(env) {
+ try {
+ const r = await fetch('https://api.alternative.me/fng/?limit=1&format=json', { headers: { accept: 'application/json' } });
+ const j = await r.json(); const d = j && j.data && j.data[0]; const v = d && +d.value;
+ if (!isFinite(v) || v <= 0 || v > 100) return null;
+ return { t: Date.now(), fear_greed: Math.round(v), label: String(d.value_classification || '').slice(0, 24), src_ts: (+d.timestamp || 0) * 1000 };
+ } catch (e) { return null; }
+}
 async function computeDominance(env) {
  const j = await cgCached(env, 'https://api.coingecko.com/api/v3/global', 2700);
  const v = j && j.data && j.data.market_cap_percentage && +j.data.market_cap_percentage.btc;
@@ -3876,7 +3886,10 @@ async function updateOwnIndicators(env) { // cron: append/replace TODAY's point 
  let last = 0; try { last = +(await env.STATS.get('ind:ts')) || 0; } catch (e) {}
  if (Date.now() - last < 12 * 3600e3) return;
  try { await env.STATS.put('ind:ts', String(Date.now())); } catch (e) {} // stamp FIRST (same pattern as unlocks cron)
- for (const [name, fn] of [['dominance', computeDominance], ['altseason', computeAltseason]]) {
+ // 'fng' joined on 2026-10-28: the Fear & Greed index had no owned series at all - /fear-greed/ quoted "yesterday",
+ // "a week ago" and a 365-day range straight out of a 30-minute edge cache of alternative.me, so an upstream that went
+ // dark would have taken the whole history with it. One point a day, the day it was measured, like the other two.
+ for (const [name, fn] of [['dominance', computeDominance], ['altseason', computeAltseason], ['fng', computeFngPoint]]) {
  try {
  const pt = await fn(env);
  if (!pt) continue;
@@ -8600,8 +8613,13 @@ async function ledgerBackup6h(env) {
 // text; AI assistants answering "how much was liquidated on <date>" need exactly this. All numbers are
 // measurements from our own collector feed (counts shown, thresholds respected - house rule).
 async function liqRecapBuild(env, day) {
-  if (!env.BACKUP || !env.STATS) return null;
-  const obj = await env.BACKUP.get('liq/' + day + '.csv.gz');
+  if (!env.STATS) return null;
+  // THE MARKET ARCHIVE FIRST (2026-10-28): v1/liquidations/<day> in marginpad-market is the copy that can be
+  // CORRECTED (a superseded revision stays beside it) - the old liq/<day> in the backup bucket is immutable and
+  // still carries the two Bitfinex phantoms. The old location is only the fallback for a day not copied yet.
+  let obj = null;
+  try { if (env.MARKET) obj = await env.MARKET.get('v1/liquidations/' + day + '.csv.gz'); } catch (e) { obj = null; }
+  if (!obj && env.BACKUP) obj = await env.BACKUP.get('liq/' + day + '.csv.gz');
   if (!obj) return null;
   const ds = new DecompressionStream('gzip');
   const text = await new Response(obj.body.pipeThrough(ds)).text();
@@ -8730,40 +8748,249 @@ async function handleRecapSitemap(env, request) {
 async function archiveLiq(env) {
   if (!env.BACKUP || !env.COLLECTOR_URL || !env.STATS) return;
   if (new Date().getUTCMinutes() < 5) return; // the collector's midnight film persist trips the worker's breaker at exactly :00 - this pass threw collector_breaker_open and paged every night, then self-healed at :10. Start at :10. (2026-10-22)
-  // key lives in KV liqarch:key (secret-store writes are permission-gated for agents; KV is private and
-  // gates only our own data dump). A LIQ_EXPORT_KEY wrangler secret, if ever set, wins over KV.
-  const exportKey = env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key');
-  if (!exportKey) return;
-  const today = new Date().toISOString().slice(0, 10);
-  if (await env.STATS.get('liqarch:ran:' + today)) return;
-  await env.STATS.put('liqarch:ran:' + today, '1', { expirationTtl: 172800 });
+  // SINCE 2026-10-28 THIS IS A NAME FOR THE MARKET ARCHIVE. The liq/<day>.csv.gz objects it wrote (2026-07-24 ..
+  // 2026-10-27, 96 days, no gap) stay where they are in the backup bucket, immutable, and archiveMarket copies them
+  // into marginpad-market v1/liquidations/<day> with verified metadata. Kept as a function because fix-crash-beacon.js
+  // anchors on its first lines and `runcron?task=liqarch` is in muscle memory.
+  return archiveMarket(env);
+}
+
+// =====================================================================================================================
+// THE MARKET ARCHIVE (2026-10-28, owner: "da cuvamo pod konac sve podatke tacno i da imamo dobar uvid u sve").
+//
+// MEASURED BEFORE BUILDING: the collector kept raw liquidations 14 days (archived daily since 08-03 - the one dataset
+// that was safe), 5-minute aggregates 90 days with the first day (07-30) falling off the SAME NIGHT this was written,
+// open interest per venue 14 days, and the hourly OI-in-USD + FUNDING table for every Bybit perp FIFTY HOURS - the only
+// funding-rate history this project had was deleted two days after it was written. The Hyperliquid whale positions and
+// trades lived in memory only (a restart emptied them), the Fear & Greed index was a 30-minute edge cache of
+// alternative.me, and the MPAD price series - a series the code itself says cannot be recomputed - sat in a Durable
+// Object that no backup covered. Of the data this site uniquely measures, most of it was being thrown away.
+//
+// THE SHAPE: one bucket (marginpad-market), one key scheme (v1/<dataset>/<UTC day>.csv.gz), one table (MARKET_DS) that
+// is the whole definition of what is archived, one cron (archiveMarket) that pulls every dataset one CLOSED day at a
+// time, VERIFIES it (gunzip, header equal to the schema, every timestamp inside the day, row count equal to what the
+// source claimed, hour coverage, rows above the plausibility ceiling counted) and writes the result with its row count,
+// hour count, quality flags and sha256 in the object's own metadata - so coverage, size and health are a LISTING, not a
+// log. A day the source has already pruned is written down as GONE (KV mkt:gone:<ds>) instead of being asked for every
+// ten minutes for ever. A correction never rewrites history in silence: the superseded revision is kept beside the new
+// one (v1/_superseded/...), the metadata says what was dropped and why, and KV mkt:corr is the ledger of corrections.
+// Read it at GET /api/admin/market (mp-ops Health > Market archive); the gap alarm lives in checkOpsAlerts.
+//
+// WHAT IS DELIBERATELY NOT HERE: klines (every exchange serves them for ever, free), prices (same), the order book and
+// the trade tape (state, not history - the 09-21 memo priced a book/tape archive and it is a separate decision), and
+// the long/short ratio (nothing of ours stores it yet; owed). Add a dataset by adding a row to MARKET_DS and, for a
+// collector dataset, a row to EXPORTS in collector/src/storage/sqlite.js - nowhere else.
+// =====================================================================================================================
+const MARKET_BUCKET = 'marginpad-market';
+const MKT_PULLS_PER_RUN = 8;   // bounds one cron pass; the stamp is released while days are still missing, so the backfill continues every ten minutes
+const MKT_SETTLE_HOUR = 1;     // yesterday is pulled only from 01:00 UTC: the REST pollers (Gate, HTX, dYdX, HL harvest) land late rows - 10-27 read 51,009 rows at 00:10 and 51,022 a day later
+const MARKET_DS = {
+  //                 src          cols = the CSV header, byte for byte                        first day owed     floor for 'thin'  which col is the timestamp / its unit / which col is USD + ceiling
+  liquidations: { src: 'collector', cols: 'ts,exchange,symbol,side,price,qty,notional', from: '2026-07-24', minRows: 5000, tsCol: 0, usdCol: 6, maxUsd: 50e6, what: 'every liquidation event the collector saw, eight venues, one row per print' },
+  agg5m:        { src: 'collector', cols: 'symbol,win_start,price_bucket,side,notional,cnt', from: '2026-07-30', minRows: 5000, tsCol: 1, what: '5-minute aggregate per symbol / price bucket / side - what every window longer than a day is computed from' },
+  oi:           { src: 'collector', cols: 'ts,symbol,exchange,oi_base,price', from: '2026-10-15', minRows: 5000, tsCol: 0, what: 'open interest in contracts per symbol x venue (Binance, Bybit, OKX) every two minutes, ten coins' },
+  funding_oi:   { src: 'collector', cols: 'ts,symbol,oi_usd,funding', from: '2026-10-27', minRows: 5000, tsCol: 0, what: 'hourly open interest in USD and funding rate (%) for every Bybit USDT perpetual' },
+  whale_fills:  { src: 'collector', cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', from: '2026-10-29', minRows: 20, tsCol: 0, hourly: false, what: 'Hyperliquid whale trades over $250K, one row per grouped execution (both ends, average price, leverage when known, liquidation flag)' },
+  whale_pos:    { src: 'collector', cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', from: '2026-10-29', minRows: 500, tsCol: 0, what: 'hourly snapshot of the published Hyperliquid whale board: positions over $1M with entry, liquidation, leverage, cross flag and account equity' },
+  mpad:         { src: 'opslog', cols: 'm,px,step,parts,inputs', from: '2026-10-15', minRows: 1000, tsCol: 0, tsUnit: 60000, what: 'the MarginPad (MPAD) index, one recorded point a minute with its per-component breakdown - the only copy of a series that cannot be recomputed' },
+};
+async function mktSha256(buf) { const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join(''); }
+async function mktGunzip(buf) { return await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); }
+async function mktGzip(text) { return await new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer(); }
+function mktCsvCell(v) { if (v == null) return ''; const s = typeof v === 'string' ? v : JSON.stringify(v); return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+// THE VERIFICATION. Pure over the decompressed text, so the e2e drives the function that ships. `ok:false` means the
+// body is not what the schema says and must not be written; the `q` flags describe a body that IS valid but deserves
+// a mark on the dashboard (thin, empty, over-ceiling rows, under 20 of 24 hours covered, unparsable timestamps).
+function mktVerifyText(text, spec, day) {
+  const d0 = Date.parse(day + 'T00:00:00Z'), d1 = d0 + 86400000, unit = spec.tsUnit || 1;
+  const lines = text.split('\n'); let end = lines.length; while (end > 0 && !lines[end - 1]) end--;
+  const header = (lines[0] || '').replace(/\r$/, '');
+  if (header !== spec.cols) return { ok: false, why: 'bad_header', header: header.slice(0, 160), rows: 0 };
+  const hours = new Set(); let rows = 0, outside = 0, over = 0, bad = 0;
+  for (let i = 1; i < end; i++) {
+    const L = lines[i]; if (!L) continue; rows++;
+    const p = L.split(','); const ts = +p[spec.tsCol] * unit;
+    if (!isFinite(ts) || ts <= 0) { bad++; continue; }
+    if (ts < d0 || ts >= d1) { outside++; continue; }
+    hours.add(Math.floor((ts - d0) / 3600000));
+    if (spec.usdCol != null && spec.maxUsd && +p[spec.usdCol] > spec.maxUsd) over++;
+  }
+  const q = [];
+  if (rows === 0) q.push('empty'); else if (rows < spec.minRows) q.push('thin');
+  if (over) q.push('over');
+  if (rows > 0 && spec.hourly !== false && hours.size < 20) q.push('hours');
+  if (bad) q.push('badts');
+  const ok = outside === 0 && bad <= Math.max(0, Math.floor(rows * 0.001));
+  return { ok, rows, hours: hours.size, outside, over, bad, q, why: !ok ? (outside ? 'rows_outside_day:' + outside : 'unparsable_ts:' + bad) : '' };
+}
+async function mktDays(env, ds) { // every archived day of one dataset, with the metadata the writer stamped - one list call, not a head per day
+  const out = new Map(); let cursor;
+  do {
+    const l = await env.MARKET.list({ prefix: 'v1/' + ds + '/', limit: 1000, cursor, include: ['customMetadata'] });
+    for (const o of (l.objects || [])) { const m = o.key.match(/\/(\d{4}-\d{2}-\d{2})\.csv\.gz$/); if (!m) continue; out.set(m[1], { size: o.size || 0, uploaded: o.uploaded ? new Date(o.uploaded).getTime() : 0, meta: o.customMetadata || {} }); }
+    cursor = l.truncated ? l.cursor : null;
+  } while (cursor);
+  return out;
+}
+async function mktGone(env, ds) { try { return new Set(JSON.parse(await env.STATS.get('mkt:gone:' + ds) || '[]')); } catch (e) { return new Set(); } }
+async function mktGoneSave(env, ds, set) { try { await env.STATS.put('mkt:gone:' + ds, JSON.stringify([...set].sort())); } catch (e) {} }
+function mktDaysBetween(a, b) { const out = []; for (let t = Date.parse(a + 'T00:00:00Z'); t <= Date.parse(b + 'T00:00:00Z'); t += 86400000) out.push(new Date(t).toISOString().slice(0, 10)); return out; }
+// WRITE ONE VERIFIED DAY. The gz bytes go in untouched (so the sha256 in the metadata is of the file a reader
+// downloads); the metadata is what the dashboard and the alarm read. `xrows` is the row count the SOURCE claimed
+// (x-rows) and must equal what was counted here, or the body is not written.
+async function mktPut(env, ds, spec, day, buf, extra) {
+  extra = extra || {};
+  const text = await mktGunzip(buf);
+  const v = mktVerifyText(text, spec, day);
+  if (!v.ok) return v;
+  if (extra.xrows != null && extra.xrows >= 0 && extra.xrows !== v.rows) return { ok: false, why: 'rows_mismatch:' + extra.xrows + ':' + v.rows, rows: v.rows };
+  const sha = await mktSha256(buf);
+  const meta = { ds, day, rows: String(v.rows), hours: String(v.hours), over: String(v.over), q: v.q.join('|'), sha256: sha, src: extra.src || spec.src, rev: String(extra.rev || 1), at: String(Date.now()) };
+  if (extra.correction) { meta.correction = String(extra.correction).slice(0, 300); meta.dropped = String(extra.dropped || 0); }
+  await env.MARKET.put('v1/' + ds + '/' + day + '.csv.gz', buf, { httpMetadata: { contentType: 'application/gzip' }, customMetadata: meta });
   try {
-    const base = env.COLLECTOR_URL.replace(/\/$/, '');
-    const errs = [];
-    let pulls = 0, missing = 0;
-    // Walk every day back to collector start (sqlite prunes raw rows at 30d - a bounded 7-day window would
-    // strand the oldest days forever). Cap 4 pulls/run to bound cron work; when the cap left days missing,
-    // the today-stamp is released below so the NEXT */10 run keeps catching up. Steady state = 1 pull/day.
-    for (let back = 1; back <= 400; back++) {
-      const day = new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
-      if (day < '2026-07-24') break; // first FULL collector day (07-23 holds a single stray row - measured, not worth a file; archiving it would trip the min-size check forever)
-      const r2key = 'liq/' + day + '.csv.gz';
-      if (await env.BACKUP.head(r2key)) continue; // already archived - immutable, never overwrite
-      if (pulls >= 4) { missing++; continue; }
-      pulls++;
-      const r = await fetch(base + '/api/v1/export?day=' + day, { headers: { 'x-export-key': exportKey }, signal: AbortSignal.timeout(30000) });
-      if (!r.ok) { errs.push(day + ' http ' + r.status); continue; }
-      const buf = await r.arrayBuffer();
-      if (buf.byteLength < 200) { errs.push(day + ' suspiciously small (' + buf.byteLength + 'b)'); continue; }
-      await env.BACKUP.put(r2key, buf);
-      await env.STATS.put('liqarch:last', JSON.stringify({ day, bytes: buf.byteLength, rows: +(r.headers.get('x-rows') || 0), ts: Date.now() }));
+    const nw = await env.STATS.get('mkt:newest:' + ds);
+    if (!nw || day > nw) await env.STATS.put('mkt:newest:' + ds, day);
+    await env.STATS.put('mkt:last:' + ds, JSON.stringify({ day, rows: v.rows, bytes: buf.byteLength, ts: Date.now(), q: v.q, src: meta.src }));
+  } catch (e) {}
+  return { ...v, sha256: sha, bytes: buf.byteLength };
+}
+async function archiveMarket(env) {
+  if (!env.MARKET || !env.STATS) return;
+  const now = new Date();
+  if (now.getUTCMinutes() < 5) return; // the collector's midnight film persist trips the worker's breaker at exactly :00 (the 2026-10-22 lesson)
+  const today = now.toISOString().slice(0, 10), yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (await env.STATS.get('mkt:ran:' + today)) return;
+  await env.STATS.put('mkt:ran:' + today, '1', { expirationTtl: 172800 }); // stamp first; released below while days are still owed or on failure
+  const run = { ts: Date.now(), pulls: 0, wrote: [], gone: [], errs: [], skipped: [], missing: 0 };
+  try {
+    const key = env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key');
+    const base = env.COLLECTOR_URL ? String(env.COLLECTOR_URL).replace(/\/$/, '') : '';
+    let budget = MKT_PULLS_PER_RUN;
+    for (const [ds, spec] of Object.entries(MARKET_DS)) {
+      if (spec.from > yday) continue;
+      const have = await mktDays(env, ds);
+      const gone = await mktGone(env, ds);
+      const want = mktDaysBetween(spec.from, yday).filter(d => !have.has(d) && !gone.has(d));
+      if (!want.length) continue;
+      // YESTERDAY FIRST (the day that just closed), THEN THE OLDEST: the old end is the one about to fall off the
+      // collector's retention, the new end is the one a reader asks about. Everything in between follows.
+      want.sort(); if (want[want.length - 1] === yday) { want.pop(); want.unshift(yday); }
+      for (const day of want) {
+        if (budget <= 0) { run.missing++; continue; }
+        if (day === yday && spec.src === 'collector' && now.getUTCHours() < MKT_SETTLE_HOUR) { run.skipped.push(ds + ':' + day + ':settling'); run.missing++; continue; }
+        budget--; run.pulls++;
+        try {
+          let buf = null, src = spec.src, xrows = null;
+          // the 96 days the old archive wrote are COPIED, verified like everything else, never re-pulled or moved
+          if (ds === 'liquidations' && env.BACKUP) { const o = await env.BACKUP.get('liq/' + day + '.csv.gz'); if (o) { buf = await o.arrayBuffer(); src = 'legacy-r2'; } }
+          if (!buf && spec.src === 'collector') {
+            if (!key || !base) { run.errs.push(ds + ':' + day + ': no export key or collector url'); continue; }
+            const r = await fetch(base + '/api/v1/export?ds=' + encodeURIComponent(ds) + '&day=' + day, { headers: { 'x-export-key': key }, signal: AbortSignal.timeout(30000) });
+            if (r.status === 410) { gone.add(day); run.gone.push(ds + ':' + day); continue; } // pruned at the source before we got to it - written down, never asked again
+            if (!r.ok) { run.errs.push(ds + ':' + day + ': http ' + r.status); continue; }
+            buf = await r.arrayBuffer(); xrows = +(r.headers.get('x-rows') || -1);
+          }
+          if (!buf && spec.src === 'opslog') {
+            if (!env.OPSLOG) { run.errs.push(ds + ':' + day + ': no OPSLOG'); continue; }
+            const m0 = Math.floor(Date.parse(day + 'T00:00:00Z') / 60000);
+            const j = await mpadCall(env, 'day?from=' + m0 + '&to=' + (m0 + 1440));
+            if (!j || !j.ok) { run.errs.push(ds + ':' + day + ': opslog ' + ((j && j.error) || '?')); continue; }
+            if (!(j.rows || []).length) { gone.add(day); run.gone.push(ds + ':' + day); continue; } // a day the store never had (before the launch seed)
+            let text = spec.cols + '\n';
+            for (const r of j.rows) text += [r.m, r.px, r.step, mktCsvCell(r.parts), mktCsvCell(r.inputs)].join(',') + '\n';
+            buf = await mktGzip(text); xrows = j.rows.length;
+          }
+          if (!buf) { run.errs.push(ds + ':' + day + ': no source'); continue; }
+          const v = await mktPut(env, ds, spec, day, buf, { src, xrows });
+          if (!v.ok) run.errs.push(ds + ':' + day + ': ' + v.why); else run.wrote.push(ds + ':' + day + ':' + v.rows + (v.q.length ? ':' + v.q.join('|') : ''));
+        } catch (e) { run.errs.push(ds + ':' + day + ': ' + String((e && e.message) || e).slice(0, 120)); }
+      }
+      await mktGoneSave(env, ds, gone);
     }
-    if (errs.length) throw new Error('liq archive: ' + errs.join('; '));
-    if (missing > 0) await env.STATS.delete('liqarch:ran:' + today); // backfill not done - let the next */10 continue
+    run.ms = Date.now() - run.ts;
+    await env.STATS.put('mkt:run', JSON.stringify(run));
+    if (run.errs.length) throw new Error('market archive: ' + run.errs.slice(0, 4).join('; '));
+    if (run.missing > 0) await env.STATS.delete('mkt:ran:' + today); // not finished - the next */10 pass continues
+    return run;
   } catch (e) {
-    try { await env.STATS.delete('liqarch:ran:' + today); } catch (e2) {}
+    try { await env.STATS.delete('mkt:ran:' + today); } catch (e2) {}
     throw e;
   }
+}
+// THE READ: coverage per dataset from the bucket listing + the KV gone-list, with an optional per-day grid for the
+// dashboard. Everything here is a measurement of what the bucket holds right now - nothing is inferred from a log.
+async function mktStatus(env, opts) {
+  opts = opts || {};
+  const yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const out = { ts: Date.now(), bucket: MARKET_BUCKET, pullsPerRun: MKT_PULLS_PER_RUN, settleHourUtc: MKT_SETTLE_HOUR, datasets: {}, totals: { days: 0, bytes: 0, rows: 0 } };
+  for (const [ds, spec] of Object.entries(MARKET_DS)) {
+    const have = env.MARKET ? await mktDays(env, ds) : new Map();
+    const gone = await mktGone(env, ds);
+    const owed = spec.from <= yday ? mktDaysBetween(spec.from, yday) : [];
+    const missing = owed.filter(d => !have.has(d) && !gone.has(d));
+    let bytes = 0, rows = 0; const flagged = [], corrected = [];
+    for (const [d, v] of have) { bytes += v.size; rows += +(v.meta.rows || 0); if (v.meta.q) flagged.push({ day: d, q: v.meta.q }); if (+(v.meta.rev || 1) > 1) corrected.push({ day: d, rev: +v.meta.rev, dropped: +(v.meta.dropped || 0), why: v.meta.correction || '' }); }
+    const days = [...have.keys()].sort();
+    let last = null; try { last = JSON.parse(await env.STATS.get('mkt:last:' + ds) || 'null'); } catch (e) {}
+    const row = { what: spec.what, src: spec.src, from: spec.from, cols: spec.cols, days: have.size, firstDay: days[0] || null, lastDay: days[days.length - 1] || null, owed: owed.length, missing, gone: [...gone].sort(), flagged, corrected, bytes, rows, last, newest: await env.STATS.get('mkt:newest:' + ds) };
+    if (opts.grid) {
+      const n = Math.min(400, Math.max(30, +opts.grid || 120));
+      const g = []; const goneSet = gone;
+      for (let i = n - 1; i >= 0; i--) { const d = new Date(Date.now() - (i + 1) * 86400000).toISOString().slice(0, 10); const h = have.get(d); g.push(h ? { d, s: h.meta.q ? 'flag' : 'ok', rows: +(h.meta.rows || 0), kb: Math.round(h.size / 1024), q: h.meta.q || '', rev: +(h.meta.rev || 1) } : goneSet.has(d) ? { d, s: 'gone' } : d < spec.from ? { d, s: 'before' } : { d, s: 'missing' }); }
+      row.grid = g;
+    }
+    out.datasets[ds] = row;
+    out.totals.days += have.size; out.totals.bytes += bytes; out.totals.rows += rows;
+  }
+  try { out.run = JSON.parse(await env.STATS.get('mkt:run') || 'null'); } catch (e) { out.run = null; }
+  try { out.corrections = JSON.parse(await env.STATS.get('mkt:corr') || '[]'); } catch (e) { out.corrections = []; }
+  return out;
+}
+// A CORRECTION IS A NEW REVISION BESIDE THE OLD ONE, NEVER AN EDIT IN PLACE. The case it was written for: drop-liq.js
+// removed the two Bitfinex phantoms ($195.4M / $192.6M, 2026-10-07 and 10-08) from the collector's tables on 10-09, but
+// the archived CSVs were immutable and the recap pages built from them went on publishing both figures as the biggest
+// liquidation of the day. DRY RUN unless apply:true. The superseded file keeps its own metadata and is listed under
+// `corrected`; the recap for a corrected liquidations day is rebuilt and its index entry updated in the same call.
+async function mktCorrect(env, ds, day, opt) {
+  opt = opt || {};
+  const spec = MARKET_DS[ds]; if (!spec) return { error: 'bad_dataset' };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(day || ''))) return { error: 'bad_day' };
+  const dropOver = +opt.dropOver || 0;
+  if (!(dropOver > 0) || spec.usdCol == null) return { error: 'dropOver_required', hint: 'this correction drops rows whose USD column is above dropOver; the dataset needs a usdCol' };
+  const k = 'v1/' + ds + '/' + day + '.csv.gz';
+  let o = null, legacy = false;
+  if (env.MARKET) o = await env.MARKET.get(k);
+  if (!o && ds === 'liquidations' && env.BACKUP) { o = await env.BACKUP.get('liq/' + day + '.csv.gz'); legacy = true; }
+  if (!o) return { error: 'no_object', key: k };
+  const buf = await o.arrayBuffer(); const meta = o.customMetadata || {}; const rev = +(meta.rev || 1);
+  const text = await mktGunzip(buf);
+  const lines = text.split('\n'); const keep = [lines[0].replace(/\r$/, '')]; const dropped = [];
+  for (let i = 1; i < lines.length; i++) { const L = lines[i]; if (!L) continue; const p = L.split(','); if (+p[spec.usdCol] > dropOver) dropped.push(L); else keep.push(L); }
+  const res = { ds, day, rev, legacySource: legacy, dropOver, rowsBefore: keep.length - 1 + dropped.length, dropped: dropped.length, rowsAfter: keep.length - 1, sample: dropped.slice(0, 20), dry: !opt.apply };
+  if (!opt.apply || !dropped.length) return res;
+  if (!env.MARKET) return { ...res, error: 'no_market_bucket' };
+  await env.MARKET.put('v1/_superseded/' + ds + '/' + day + '.r' + rev + '.csv.gz', buf, { httpMetadata: { contentType: 'application/gzip' }, customMetadata: { ...meta, ds, day, rev: String(rev), supersededAt: String(Date.now()), supersededBy: String(rev + 1) } });
+  const nbuf = await mktGzip(keep.join('\n') + '\n');
+  const v = await mktPut(env, ds, spec, day, nbuf, { src: legacy ? 'legacy-r2' : (meta.src || spec.src), rev: rev + 1, correction: String(opt.why || ('dropped rows over $' + dropOver)).slice(0, 300), dropped: dropped.length });
+  if (!v.ok) return { ...res, error: 'verify_failed:' + v.why };
+  res.newRev = rev + 1; res.sha256 = v.sha256;
+  let corr = []; try { corr = JSON.parse(await env.STATS.get('mkt:corr') || '[]'); } catch (e) {}
+  corr.unshift({ ts: Date.now(), ds, day, rev: rev + 1, dropped: dropped.length, rowsBefore: res.rowsBefore, rowsAfter: res.rowsAfter, dropOver, why: String(opt.why || '').slice(0, 300), sample: dropped.slice(0, 5) });
+  try { await env.STATS.put('mkt:corr', JSON.stringify(corr.slice(0, 200))); } catch (e) {}
+  if (ds === 'liquidations') {
+    try {
+      await env.STATS.delete('liqrecap:' + day);
+      const rec = await liqRecapBuild(env, day);
+      if (rec) {
+        let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+        const i = idx.findIndex(x => x.day === day); if (i >= 0) { idx[i].totalUsd = rec.totalUsd; idx[i].n = rec.n; await env.STATS.put('liqrecap:idx', JSON.stringify(idx)); }
+        res.recap = { totalUsd: rec.totalUsd, n: rec.n, biggest: rec.biggest };
+      } else res.recap = null;
+    } catch (e) { res.recapError = String((e && e.message) || e).slice(0, 120); }
+  }
+  try { await tgAdmin(env, '<b>MARKET ARCHIVE CORRECTED</b> ' + ds + ' ' + day + ' -> rev ' + (rev + 1) + ': dropped ' + dropped.length + ' row(s) over $' + Math.round(dropOver).toLocaleString('en-US') + ' (' + res.rowsBefore + ' -> ' + res.rowsAfter + '). ' + String(opt.why || '').slice(0, 160) + (res.recap ? '\nRecap rebuilt: ' + _rcU(res.recap.totalUsd) + ', biggest ' + (res.recap.biggest ? _rcU(res.recap.biggest.usd) + ' ' + res.recap.biggest.sym + ' on ' + res.recap.biggest.ex : '-') : ''), { kind: 'market-archive-correction', sev: 'info' }); } catch (e) {}
+  return res;
 }
 // Phase 5: one Telegram message every morning with everything that matters - so checking ops becomes optional.
 async function checkMorningBrief(env) {
@@ -8947,6 +9174,29 @@ async function checkOpsAlerts(env) {
           const old9 = Math.max(...stale9.map(w => Date.now() - (+w.ts || 0)));
           await tgAdmin(env, 'WITHDRAWALS: ' + stale9.length + ' payout(s) pending >48h (oldest ~' + Math.round(old9 / 3600000) + 'h). Open mp-ops -> Withdrawals.');
           await env.STATS.put(dk9, '1', { expirationTtl: 172800 });
+        }
+      }
+    } catch (e) {}
+    // THE MARKET ARCHIVE HAS A GAP (2026-10-28). archiveMarket pages through bg() only when it throws; a dataset the
+    // collector stopped answering with 410, a bucket that silently refused, or a cron that never reached the task all
+    // read as "no error". So the question is asked from the OTHER side: for every dataset that should have a day by
+    // now, is the newest archived day at most two days old? One line per 12 h, naming the datasets.
+    try {
+      if (env.MARKET) {
+        const twoAgo = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
+        const gaps = [];
+        for (const [ds, spec] of Object.entries(MARKET_DS)) {
+          if (spec.from > twoAgo) continue; // too young to have a day owed yet
+          let nw = null; try { nw = await env.STATS.get('mkt:newest:' + ds); } catch (e) {}
+          if (!nw || nw < twoAgo) gaps.push(ds + (nw ? ' (newest ' + nw + ')' : ' (nothing archived)'));
+        }
+        if (gaps.length) {
+          const last = +(await env.STATS.get('alrt:mktgap') || 0);
+          if (Date.now() - last > 12 * 3600000) {
+            await env.STATS.put('alrt:mktgap', String(Date.now()), { expirationTtl: 3 * 86400 });
+            let run = null; try { run = JSON.parse(await env.STATS.get('mkt:run') || 'null'); } catch (e) {}
+            await tgAdmin(env, '<b>MARKET ARCHIVE GAP</b> - ' + gaps.join(', ') + '\nThe collector prunes raw rows at 14 days, so a gap that stands for two weeks is a day lost for good. Last run: ' + (run && run.ts ? Math.round((Date.now() - run.ts) / 60000) + ' min ago' + (run.errs && run.errs.length ? ', errors: ' + run.errs.slice(0, 2).join('; ').slice(0, 160) : '') : 'never') + '.\nmp-ops Health > Market archive, or GET /api/admin/market?run=1', { kind: 'market-archive-gap', sev: 'warn' });
+          }
         }
       }
     } catch (e) {}
@@ -26752,17 +27002,58 @@ export default {
       ]);
       return J({ cc, days, pageviews: (total && total[0] && +total[0].n) || 0, paths: paths || [], sources: srcs || [], langs: langs || [], byDay: byDay || [], clicksByExchange: clicksEx || [], clicksByPage: clicksPage || [], countries: uv || [] });
     }
+    // THE MARKET ARCHIVE DESK (2026-10-28). GET = coverage per dataset (?grid=N for the per-day grid, ?run=1 runs a
+    // pass first, ?ds=&day= heads one object). POST ops: correct {ds, day, dropOver, why, apply} (DRY RUN without
+    // apply), forget {ds, day} (take a day off the gone-list so it is pulled again), recap {day} (rebuild one recap).
+    if (url.pathname === '/api/admin/market' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const JH = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.MARKET) return new Response(JSON.stringify({ error: 'no_market_bucket', hint: 'MARKET r2 binding missing' }), { status: 503, headers: JH });
+      if (request.method === 'POST') {
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        const op = String(b.op || '');
+        if (op === 'correct') return new Response(JSON.stringify(await mktCorrect(env, String(b.ds || ''), String(b.day || ''), { dropOver: +b.dropOver || 0, why: b.why, apply: b.apply === true }), null, 1), { headers: JH });
+        // ingest {ds, day, gzB64, src}: a day produced OUTSIDE the normal pull - the collector's VACUUM INTO snapshot
+        // on the droplet is the only place 2026-07-30 agg5m still exists (pruned the night the archive was built).
+        // It goes through the SAME verification and stamping as a pulled day; it never overwrites a present day.
+        if (op === 'ingest') {
+          const ds = String(b.ds || ''), day = String(b.day || ''), spec = MARKET_DS[ds];
+          if (!spec) return new Response(JSON.stringify({ error: 'bad_dataset' }), { status: 400, headers: JH });
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return new Response(JSON.stringify({ error: 'bad_day' }), { status: 400, headers: JH });
+          if (await env.MARKET.head('v1/' + ds + '/' + day + '.csv.gz')) return new Response(JSON.stringify({ error: 'already_present', hint: 'a present day is never overwritten by ingest - use correct for a revision' }), { status: 409, headers: JH });
+          let buf; try { const bin = atob(String(b.gzB64 || '')); buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i); } catch (e) { return new Response(JSON.stringify({ error: 'bad_b64' }), { status: 400, headers: JH }); }
+          const v = await mktPut(env, ds, spec, day, buf.buffer, { src: String(b.src || 'ingest').slice(0, 40) });
+          if (v.ok) { const g = await mktGone(env, ds); if (g.delete(day)) await mktGoneSave(env, ds, g); }
+          return new Response(JSON.stringify({ ok: !!v.ok, ds, day, ...v }, null, 1), { status: v.ok ? 200 : 422, headers: JH });
+        }
+        if (op === 'forget') { const ds = String(b.ds || ''), day = String(b.day || ''); if (!MARKET_DS[ds]) return new Response(JSON.stringify({ error: 'bad_dataset' }), { status: 400, headers: JH }); const g = await mktGone(env, ds); const had = g.delete(day); await mktGoneSave(env, ds, g); return new Response(JSON.stringify({ ok: true, ds, day, forgotten: had, gone: [...g].sort() }), { headers: JH }); }
+        if (op === 'recap') { const day = String(b.day || ''); if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return new Response(JSON.stringify({ error: 'bad_day' }), { status: 400, headers: JH }); await env.STATS.delete('liqrecap:' + day); const rec = await liqRecapBuild(env, day); if (rec) { let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {} const i = idx.findIndex(x => x.day === day); if (i >= 0) { idx[i].totalUsd = rec.totalUsd; idx[i].n = rec.n; await env.STATS.put('liqrecap:idx', JSON.stringify(idx)); } } return new Response(JSON.stringify({ ok: !!rec, day, recap: rec ? { totalUsd: rec.totalUsd, n: rec.n, biggest: rec.biggest } : null }, null, 1), { headers: JH }); }
+        return new Response(JSON.stringify({ error: 'bad_op', ops: ['correct', 'forget', 'recap'] }), { status: 400, headers: JH });
+      }
+      const ds = url.searchParams.get('ds'), day = url.searchParams.get('day');
+      if (ds && day) { // one object, as a reader would see it
+        if (!MARKET_DS[ds]) return new Response(JSON.stringify({ error: 'bad_dataset' }), { status: 400, headers: JH });
+        const o = await env.MARKET.head('v1/' + ds + '/' + day + '.csv.gz');
+        const sup = []; try { const l = await env.MARKET.list({ prefix: 'v1/_superseded/' + ds + '/' + day + '.', include: ['customMetadata'] }); for (const x of (l.objects || [])) sup.push({ key: x.key, size: x.size, meta: x.customMetadata || {} }); } catch (e) {}
+        return new Response(JSON.stringify({ ds, day, present: !!o, size: o ? o.size : 0, uploaded: o ? o.uploaded : null, meta: o ? (o.customMetadata || {}) : null, superseded: sup, spec: MARKET_DS[ds] }, null, 1), { headers: JH });
+      }
+      let ran = null;
+      if (url.searchParams.get('run') === '1') { try { await env.STATS.delete('mkt:ran:' + new Date().toISOString().slice(0, 10)); ran = await archiveMarket(env); } catch (e) { ran = { error: String((e && e.message) || e).slice(0, 300) }; } }
+      const st = await mktStatus(env, { grid: url.searchParams.get('grid') });
+      if (ran) st.ran = ran;
+      return new Response(JSON.stringify(st, null, 1), { headers: JH });
+    }
     if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // where does the liquidation archive chain break?
       const n = Math.min(30, Math.max(3, +url.searchParams.get('days') || 12));
       const days = [];
       for (let i = 0; i < n; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
       const out = [];
       for (const d of days) {
-        let r2 = false, r2kb = 0;
+        let r2 = false, r2kb = 0, mk = false, mkRows = 0, mkRev = 0;
         try { if (env.BACKUP) { const o = await env.BACKUP.head('liq/' + d + '.csv.gz'); if (o) { r2 = true; r2kb = Math.round((o.size || 0) / 1024); } } } catch (e) {}
+        try { if (env.MARKET) { const o = await env.MARKET.head('v1/liquidations/' + d + '.csv.gz'); if (o) { mk = true; r2kb = r2kb || Math.round((o.size || 0) / 1024); mkRows = +((o.customMetadata || {}).rows) || 0; mkRev = +((o.customMetadata || {}).rev) || 1; } } } catch (e) {}
         let rec = null;
         try { const v = await env.STATS.get('liqrecap:' + d); if (v) { const j = JSON.parse(v); rec = { usd: j.totalUsd || 0, n: j.n || 0, syms: (j.top || []).length }; } } catch (e) {}
-        out.push({ day: d, archived: r2, archiveKB: r2kb, recap: !!rec, totalUsd: rec ? rec.usd : 0, events: rec ? rec.n : 0, symbols: rec ? rec.syms : 0 });
+        out.push({ day: d, archived: r2 || mk, legacy: r2, market: mk, marketRows: mkRows, rev: mkRev, archiveKB: r2kb, recap: !!rec, totalUsd: rec ? rec.usd : 0, events: rec ? rec.n : 0, symbols: rec ? rec.syms : 0 });
       }
       const gaps = out.filter(x => x.archived && !x.recap).map(x => x.day);
       const unarchived = out.slice(1).filter(x => !x.archived).map(x => x.day); // today is expected to be missing
@@ -28299,6 +28590,7 @@ export default {
       brief: ['the morning brief', 'you do not get your own daily read'],
       snapshot: ['the daily stats snapshot', 'day-over-day figures lose a day'],
       liqarch: ['archives liquidations to R2', 'raw liquidations age out without being archived - this loses data'],
+      mktarch: ['archives every market dataset into the marginpad-market bucket, one verified day at a time', 'liquidations, 5-minute aggregates, open interest, funding, whale trades and the MPAD series age out of the collector with no copy - this loses data; the backfill catches up by itself once it runs again'],
       uptime: ['stamps the cron heartbeat', '/api/health starts answering 503 to your external monitor'],
       latam: ['refreshes the LATAM quote history', '/dolar-cripto/ and /bitcoin-hoje/ show older points'],
       scrwarm: ['warms the screener cache', 'the screener is slower on a cold hit'],
@@ -28344,7 +28636,7 @@ export default {
     bg(latamSnapshot, 'latam'); // hourly ARS/BRL history for /dolar-cripto/ and /bitcoin-hoje/ (one KV point per hour, 30 days)
     bg(oiRingTick, 'oiring'); // own open-interest history (one Bybit snapshot per hour, 27 h) - the 24h/4h OI change on /open-interest/ since Coinglass died
     bg(spotBoardCron, 'memeboard'); // the Meme Spot season board into KV every ten minutes (2026-10-16) // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
-    bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
+    bg(archiveMarket, 'mktarch'); // THE MARKET ARCHIVE (2026-10-28): every dataset in MARKET_DS, one verified UTC day per pull, into R2 marginpad-market; replaces archiveLiq (which now only delegates here)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
     bg(checkPersonalWraps, 'wrapdm'); // Daily Wrap v2: the personal DM edition, per chat, at the hour each chat chose
@@ -28659,6 +28951,16 @@ export class OpsLog {
           if (last && (!rows.length || +rows[rows.length - 1].m !== +last.m)) rows.push(last);
         }
         return this.j({ ok: true, every, rows });
+      }
+      /* ONE WHOLE DAY, EVERY COLUMN, for the market archive (2026-10-28): the recorded series is the only copy of
+         MPAD and this DO is in no backup, so archiveMarket pulls each closed day into R2 v1/mpad/<day>.csv.gz. Minutes
+         are absolute (`m` = floor(ts / 60000)), so a day is exactly [from, to) with to - from = 1440; the range is
+         capped so a wrong caller cannot ask for the whole table. Ascending, because the caller writes a file. */
+      if (sub === 'day') {
+        const f = Math.max(0, Math.floor(+url.searchParams.get('from') || 0)), t = Math.floor(+url.searchParams.get('to') || 0);
+        if (!(t > f) || t - f > 1500) return this.j({ ok: false, error: 'bad_range' }, 400);
+        const rows = this.rows('SELECT m, px, step, parts, inputs FROM mpadpx WHERE m>=? AND m<? ORDER BY m ASC', f, t);
+        return this.j({ ok: true, from: f, to: t, rows });
       }
       if (sub === 'put') {
         const m = Math.floor(+b.m || 0), px = +b.px;

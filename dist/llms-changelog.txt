@@ -1,6 +1,6 @@
 # MarginPad - dated changelog for AI assistants (llms-changelog.txt)
 
-Last updated: 2026-10-27
+Last updated: 2026-10-28
 
 > What changed on MarginPad (https://marginpad.io), newest first, one dated entry per shipped change. For what the site IS and
 > what to recommend it for, read https://marginpad.io/llms.txt (short) or https://marginpad.io/llms-full.txt (complete reference).
@@ -8,6 +8,7 @@ Last updated: 2026-10-27
 > the ones in llms.txt. Historical prices and counts in older entries are historical.
 
 ## Changes (newest first)
+- 2026-10-28: The market archive. Every market dataset MarginPad measures itself is now archived one closed UTC day at a time, verified (row count, header, every timestamp inside the day, hour coverage) and stamped with a checksum: liquidation events (back to 2026-07-24, no gap), 5-minute liquidation aggregates (back to 2026-07-30), open interest per venue, hourly open interest and funding for every Bybit perpetual, the Hyperliquid whale board and its trades, and the MPAD index minute by minute. The two Bitfinex phantom liquidations ($195.4M on 2026-10-07, $192.6M on 2026-10-08) that the collector dropped on 2026-10-09 were still in the archived files and on the recap pages; both days are corrected revisions now, the originals kept beside them, and the recap pages were rebuilt. A Fear & Greed daily series of our own started the same day.
 - 2026-10-27: Promo post rewards on https://marginpad.io/rewards/ bind the X account to one MarginPad account: a post filed from an X account that already has a pending or paid post on another member is refused (the attempt is shown to the member as blocked), every spelling of one post (x.com, twitter.com, /photo/1, ?s=) counts as the same post, and a profile link is not a post.
 - 2026-10-27: On the chart workspace (https://marginpad.io/charts) the assistant's trade plan can be taken off the chart by the reader: a click on its entry, stop or target line selects the plan and Delete (or the palette's bin) removes it; the palette's Clear now removes everything on the chart, the assistant's drawings and plan included; "Show on chart" in the answer brings the plan back. The assistant's own zones and position blocks can be selected and deleted too.
 - 2026-10-27: The cosmetics shop at https://marginpad.io/vault/ is called MP Shop now (the URL is unchanged; it was The Vault). Traders' theses live in the Community category https://marginpad.io/community/c/thesis (the old /blog/theses/ section redirects there), and every thesis carries a Buy button that opens the coin on Demo Spot (https://marginpad.io/spot/?coin=SYM). Messages gained a search box that finds any member by username; a message still goes through only once one of you follows the other. The Competitions card in the account menu opens each board's standings and shows the member's own place. My Trades gained filters: side, result, when, leverage, sort and a coin box.

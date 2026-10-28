@@ -64,6 +64,14 @@ id = "0bf59a5bf3d148cd9af4b2d3741c1077"
 binding = "BACKUP"
 bucket_name = "marginpad-backup"
 
+# R2 — THE MARKET ARCHIVE (2026-10-28): every market dataset the collector and the worker produce, one immutable
+# gz CSV per UTC day under v1/<dataset>/<day>.csv.gz, written and verified by archiveMarket (worker.js, MARKET_DS is
+# the table). Its own bucket so the restore-critical user backups above never share a quota, a lifecycle or a
+# listing with history that grows for ever. The old liq/<day>.csv.gz objects in BACKUP are copied in, never moved.
+[[r2_buckets]]
+binding = "MARKET"
+bucket_name = "marginpad-market"
+
 # Analytics Engine — scale-safe event capture (no KV write-quota, no read-modify-write races).
 # Written alongside KV for now; the dashboard can migrate to query this once an account API token is set.
 [[analytics_engine_datasets]]
@@ -178,6 +186,10 @@ dataset = "marginpad_events_staging"       # SEPARATE dataset — never pollute 
 [[env.staging.r2_buckets]]
 binding = "BACKUP"
 bucket_name = "marginpad-backup-staging"   # separate bucket (backup cron is off on staging anyway)
+
+[[env.staging.r2_buckets]]
+binding = "MARKET"
+bucket_name = "marginpad-backup-staging"   # staging never archives (crons off); the binding only has to exist
 
 [[env.staging.durable_objects.bindings]]
 name = "CHAT"

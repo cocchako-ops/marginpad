@@ -84,7 +84,7 @@
     { id: 'people', title: 'People', views: [{ id: 'squads', title: 'Squads' }, { id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account' }, { id: 'retention', title: 'Retention' }, { id: 'journeys', title: 'Journey map' }, { id: 'activity', title: 'Activity' }, { id: 'online', title: 'Here now' }] },
     { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades' }, { id: 'orders', title: 'Limit orders' }, { id: 'botapi', title: 'Bot API' }, { id: 'spot', title: 'Demo Spot' }] },
     { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO' }, { id: 'ai', title: 'AI traffic' }, { id: 'funnel', title: 'Funnel' }, { id: 'guests', title: 'Guests' }, { id: 'community', title: 'Community' }] },
-    { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }] },
+    { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance' }, { id: 'market', title: 'Market archive' }] },
     { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config' }, { id: 'codes', title: 'Codes' }] }
   ];
   var VIEWS = {}; // 'section/view' -> { render(el), refresh() }
@@ -732,6 +732,50 @@
       });
     }
     paint(); every(60000, paint);
+  } };
+
+  // ---------- HEALTH / MARKET ARCHIVE (2026-10-28) ----------
+  // What the market archive holds, as a LISTING of the bucket: one row of dots per dataset (a dot per day), the
+  // gaps named, the quality flags named, the corrections ledger, and the two levers (run a pass now; a correction
+  // that drops rows over a ceiling - dry run first, apply through confirmed()). Nothing here is inferred from a log.
+  VIEWS['health/market'] = { render: function (el) {
+    var DOT = { ok: '#7ddc9b', flag: '#ffc371', missing: '#ff8a80', gone: '#5c656f', before: 'transparent' };
+    var corr = { ds: 'liquidations', day: '', over: '50000000', why: '' };
+    function kb(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB'; }
+    function paint() {
+      J('/api/admin/market?grid=120').then(function (d) {
+        if (!d || d.error) { el.innerHTML = card('Market archive', '<div class="empty">' + esc((d && d.error) || 'could not load') + '</div>'); return; }
+        var names = Object.keys(d.datasets || {}); var missing = 0, flagged = 0;
+        names.forEach(function (k) { missing += (d.datasets[k].missing || []).length; flagged += (d.datasets[k].flagged || []).length; });
+        var run = d.run || {};
+        var tiles = '<div class="grid g4">' + tile(N(d.totals.days), 'day-files archived', 'dim', names.length + ' datasets') + tile(kb(d.totals.bytes), 'in the bucket', 'dim', esc(d.bucket)) + tile(N(missing), 'days owed and missing', missing ? 'red' : 'dim', 'excludes days pruned before an archive existed') + tile(run.ts ? agoT(run.ts) + '<small>ago</small>' : '?', 'last archive pass', run.errs && run.errs.length ? 'amber' : 'dim', run.ts ? N(run.pulls) + ' pulls · ' + N((run.wrote || []).length) + ' written' + (run.missing ? ' · ' + N(run.missing) + ' still owed' : '') : '') + '</div>';
+        var rows = names.map(function (k) {
+          var x = d.datasets[k]; var g = x.grid || [];
+          var dots = g.map(function (c) { return '<i style="display:inline-block;width:6px;height:14px;margin-right:1px;border-radius:1px;background:' + (DOT[c.s] || DOT.missing) + (c.s === 'before' ? ';opacity:.15;background:#5c656f' : '') + '" title="' + esc(c.d + (c.s === 'ok' || c.s === 'flag' ? ' · ' + N(c.rows) + ' rows · ' + c.kb + ' KB' + (c.q ? ' · ' + c.q : '') + (c.rev > 1 ? ' · rev ' + c.rev : '') : ' · ' + (c.s === 'gone' ? 'pruned at the source before it was archived' : c.s === 'before' ? 'before this dataset existed' : 'MISSING'))) + '"></i>'; }).join('');
+          var miss = (x.missing || []).length ? '<span style="color:#ff8a80">' + N(x.missing.length) + ' missing' + (x.missing.length <= 4 ? ': ' + x.missing.join(', ') : ' (' + x.missing[0] + ' .. ' + x.missing[x.missing.length - 1] + ')') + '</span>' : '<span style="color:#7ddc9b">complete</span>';
+          var gone = (x.gone || []).length ? ' · ' + N(x.gone.length) + ' pruned before archive' : '';
+          var fl = (x.flagged || []).length ? ' · <span style="color:#ffc371">' + N(x.flagged.length) + ' flagged</span>' : '';
+          var cr = (x.corrected || []).length ? ' · ' + x.corrected.map(function (c) { return '<span class="mono" title="' + esc(c.why) + '">' + c.day + ' rev' + c.rev + '</span>'; }).join(' ') : '';
+          return '<div style="margin:0 0 14px"><div class="line" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span><b class="mono">' + esc(k) + '</b> <span class="meta" style="color:var(--dim)">' + esc(x.what) + '</span></span><span class="mono" style="color:var(--dim)">' + N(x.days) + ' days · ' + N(x.rows) + ' rows · ' + kb(x.bytes) + (x.lastDay ? ' · ' + x.firstDay + ' .. ' + x.lastDay : '') + '</span></div><div style="line-height:0;margin:4px 0 3px;overflow-x:auto;white-space:nowrap">' + dots + '</div><div class="line" style="font-size:12px">' + miss + gone + fl + cr + ' · <span class="mono" style="color:var(--faint)">' + esc(x.cols) + '</span></div></div>';
+        }).join('');
+        var legend = '<div class="line" style="font-size:12px;color:var(--dim)">a dot is one UTC day, newest on the right · <span style="color:#7ddc9b">archived and verified</span> · <span style="color:#ffc371">archived with a flag</span> (thin / empty / rows over the ceiling / under 20 hours covered) · <span style="color:#ff8a80">owed and missing</span> · <span style="color:#8b95a1">pruned at the source before an archive existed</span></div>';
+        var errs = (run.errs || []).length ? '<div class="line" style="color:#ff8a80;font-size:12px">last pass errors: ' + esc(run.errs.slice(0, 4).join(' · ')) + '</div>' : '';
+        var skip = (run.skipped || []).length ? '<div class="line" style="font-size:12px;color:var(--dim)">skipped: ' + esc(run.skipped.join(' · ')) + '</div>' : '';
+        var cl = (d.corrections || []);
+        var corrH = cl.length ? '<div class="tblwrap"><table class="tbl"><thead><tr><th>when</th><th>dataset</th><th>day</th><th class="r">rev</th><th class="r">dropped</th><th class="r">rows</th><th>why</th></tr></thead><tbody>' + cl.map(function (c) { return '<tr><td class="mono">' + esc(dt(c.ts)) + '</td><td class="mono">' + esc(c.ds) + '</td><td class="mono">' + esc(c.day) + '</td><td class="r mono">' + c.rev + '</td><td class="r mono">' + N(c.dropped) + '</td><td class="r mono">' + N(c.rowsBefore) + ' → ' + N(c.rowsAfter) + '</td><td>' + esc(c.why || '') + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="empty">no corrections - every file is its first revision</div>';
+        var dsChips = names.filter(function (k) { return d.datasets[k].cols.indexOf('notional') >= 0 || d.datasets[k].cols.indexOf('usd') >= 0; }).map(function (k) { return '<button class="btn sm' + (corr.ds === k ? ' on' : '') + '" data-cds="' + esc(k) + '">' + esc(k) + '</button>'; }).join(' ');
+        var corrForm = '<div class="line">A correction drops every row whose USD column is above a ceiling, keeps the original beside it as a superseded revision, and (for liquidations) rebuilds that day\'s recap page. Dry run first - it names what it would drop.</div>'
+          + '<div class="bar" style="margin-top:8px;flex-wrap:wrap;gap:6px">' + dsChips + ' <input id="mkDay" class="in" placeholder="YYYY-MM-DD" value="' + esc(corr.day) + '" style="width:120px"> <input id="mkOver" class="in" placeholder="drop rows over $" value="' + esc(corr.over) + '" style="width:130px"> <input id="mkWhy" class="in" placeholder="why (goes into the file metadata and the ledger)" value="' + esc(corr.why) + '" style="width:300px"> <button class="btn sm" id="mkDry">Dry run</button> <button class="btn sm warn" id="mkApply">Apply correction</button></div><div id="mkOut" class="line mono" style="font-size:12px;white-space:pre-wrap;margin-top:6px"></div>';
+        el.innerHTML = tiles + card('Datasets', rows + legend + errs + skip, 'what the bucket ' + esc(d.bucket) + ' holds right now, one dot per UTC day', '<button class="btn sm" id="mkRun">Run a pass now</button>') + card('Corrections', corrH + corrForm, 'the ledger of every revision that replaced a file, and the lever that makes one');
+        $('mkRun').onclick = function () { this.disabled = true; toast('archive pass running (up to ' + d.pullsPerRun + ' pulls)...'); J('/api/admin/market?run=1').then(function (x) { var r = x && x.ran; toast(r ? (r.error ? 'pass failed: ' + r.error : 'pass done: ' + N(r.pulls) + ' pulls, ' + N((r.wrote || []).length) + ' written' + (r.missing ? ', ' + N(r.missing) + ' still owed' : '')) : 'done'); paint(); }); };
+        el.querySelectorAll('[data-cds]').forEach(function (b) { b.onclick = function () { corr.ds = b.getAttribute('data-cds'); corr.day = $('mkDay').value; corr.over = $('mkOver').value; corr.why = $('mkWhy').value; paint(); }; });
+        function body(apply) { corr.day = $('mkDay').value.trim(); corr.over = $('mkOver').value.trim(); corr.why = $('mkWhy').value.trim(); return { op: 'correct', ds: corr.ds, day: corr.day, dropOver: +corr.over, why: corr.why, apply: !!apply }; }
+        $('mkDry').onclick = function () { $('mkOut').textContent = 'checking...'; post('/api/admin/market', body(false)).then(function (x) { $('mkOut').textContent = JSON.stringify(x, null, 1); }); };
+        $('mkApply').onclick = function () { if (!confirmed('Apply this correction? The current file becomes a superseded revision and the recap page is rebuilt.')) return; $('mkOut').textContent = 'applying...'; post('/api/admin/market', body(true)).then(function (x) { $('mkOut').textContent = JSON.stringify(x, null, 1); toast(x && x.error ? 'refused: ' + x.error : 'corrected - rev ' + (x && x.newRev)); if (!(x && x.error)) setTimeout(paint, 1500); }); };
+        stamp();
+      });
+    }
+    paint(); every(120000, paint);
   } };
 
   // ---------- SETTINGS / SWITCHES ----------
