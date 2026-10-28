@@ -8544,7 +8544,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0c9ad8db" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=3b1d9450" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -12983,7 +12983,28 @@ const MPAD = {
   start: 17,                    // the launch price the owner set
   seed: 73109,
   dayLaunch: '2026-10-28',
-  fineAmp: 0.0022,              // the bound on the sub-minute wiggle, in log space (~0.22%)
+  fineAmp: 0.0022,              // the smooth part of the sub-minute wiggle, in log space (~0.22%)
+  /* IT HAS TO MOVE LIKE A MARKET, AND THAT WAS MEASURED (2026-10-28, owner: "nekako mi se vestacki krece ... jel moze
+     da se napravi da mu pomeranje cene bude mnogo vise prirodnije"). Our own 1m candles were compared with BTC, SOL
+     and HYPE on identical arithmetic (scratchpad/mpad-feel.js, mpad-feel2.js) and two of the three faults were
+     glaring while the rest of the signature was already right:
+       per-second autocorrelation of returns 0.962 with 8.2% direction changes - the live price GLIDED along a drawn
+         curve instead of ticking, which is exactly what a reader watching the number sees;
+       15m autocorrelation +0.273 at 36% direction changes (BTC 0.007 / 52%) - candles marched in runs, because the
+         sleeve's only octaves were 45 / 240 / 1440 minutes and a smooth level glides (its own step ac1 is 0.998).
+     `tick` is a near-tick-scale layer on the sub-minute path and `mid` one modest octave inside the level; both
+     amplitudes come from a grid search scored against those real markets (scratchpad/mpad-search.js), because they
+     pull against each other: roughness is what stops the glide and it is ALSO what turns a candle into a pure wick,
+     so the pair was chosen on measured body/range rather than by eye. Measured over 14 days, chosen against live:
+     seconds ac1 0.96 -> 0.14 and flips 8% -> 46%; 15m ac1 0.58 -> 0.00 and flips 28% -> 48%; 1m volatility, body
+     against range (0.55, HYPE reads 0.557) and the 14-day swing all stay where they were.
+     STILL SHORT OF A REAL TAPE, and left that way on purpose: volatility clustering reads 0.02 against 0.07-0.14.
+     Buying it costs 1m autocorrelation (0.15 -> 0.31) and direction changes (46% -> 42%), and runs of same-coloured
+     candles are far more visible than clustering - so the trade was refused rather than taken quietly. */
+  tick: 0.00025,                // the rough layer: what makes the seconds tick instead of glide
+  mid: [0.12, 14],              // [amplitude, scale in minutes] - the octave that stops 15m candles running
+  modFloor: 0.15, modScale: 700, // the fine octave's size BREATHES: clustering done inside the bounded level
+  tickFloor: 0.3, tickScale: 240,
   /* THE RANDOM SLEEVE IS A BOUNDED LEVEL, NOT A WALK, AND THE MULTIPLIER IS WHAT MADE THAT UNTRUE. `randAmp` is the
      sleeve's whole amplitude in log space, so the cumulative random contribution telescopes to
      w * (level(now) - level(launch)) * randAmp and can never run away. The first cut multiplied the per-minute
@@ -13018,9 +13039,30 @@ function _mpH(a, b) { // counter-based integer hash -> [0,1)
 function _mpNoise(seed, x) { const i = Math.floor(x), f = x - i, a = _mpH(seed, i), b = _mpH(seed, i + 1); return (a + (b - a) * (f * f * (3 - 2 * f))) * 2 - 1; }
 // the random sleeve as a LEVEL in log space; its step is the difference between two minutes, so it trends instead
 // of jittering, and it is deterministic, so the sleeve costs no storage at all
-function mpadRandLevel(minute) { return 0.55 * _mpNoise(MPAD.seed + 1440, minute / 1440) + 0.30 * _mpNoise(MPAD.seed + 240, minute / 240) + 0.15 * _mpNoise(MPAD.seed + 45, minute / 45); }
+/* THE SLEEVE KEEPS ITS BOUND, WHICH IS WHY CLUSTERING IS DONE THIS WAY AND NOT BY SCALING THE STEP. The level is a
+   weighted sum of octaves divided by its own weights, so it stays inside [-1,1] however many octaves it grows and the
+   cumulative price contribution still telescopes to w*(level(now)-level(launch))*randAmp. Multiplying the STEP by a
+   volatility factor would have been the obvious way to make the size breathe and it is wrong here: a weighted walk
+   has unbounded total variation, i.e. the 2026-10-28 runaway drift all over again. Modulating a fine octave INSIDE
+   the level buys the same breathing with the bound intact. */
+function mpadRandLevel(minute) {
+  const mod = MPAD.modFloor + (1 - MPAD.modFloor) * (0.5 + 0.5 * _mpNoise(MPAD.seed + 909, minute / MPAD.modScale));
+  return (0.55 * _mpNoise(MPAD.seed + 1440, minute / 1440)
+    + 0.30 * _mpNoise(MPAD.seed + 240, minute / 240)
+    + 0.15 * _mpNoise(MPAD.seed + 45, minute / 45)
+    + mod * MPAD.mid[0] * _mpNoise(MPAD.seed + 311, minute / MPAD.mid[1])) / (1 + MPAD.mid[0]);
+}
 // the sub-minute wiggle: continuous in absolute seconds and bounded, so a 1m candle built from it is exact
-function mpadFine(tSec) { const a = 0.55 * _mpNoise(MPAD.seed + 7, tSec / 180) + 0.30 * _mpNoise(MPAD.seed + 11, tSec / 40) + 0.15 * _mpNoise(MPAD.seed + 13, tSec / 11); return MPAD.fineAmp * a; }
+/* A SMOOTH ARC PLUS A TICK LAYER. The arc is the within-minute drift; the tick layer is what makes the number a
+   reader is watching move like a tape instead of sliding. Both are deterministic in ABSOLUTE seconds, so a 1m candle
+   is still the exact aggregate of its own sixty and recomputes from the stored anchor alone - the property the
+   settlement sweep depends on. The whole wiggle is bounded by fineAmp + tick. */
+function mpadFine(tSec) {
+  const a = 0.55 * _mpNoise(MPAD.seed + 7, tSec / 180) + 0.30 * _mpNoise(MPAD.seed + 11, tSec / 40) + 0.15 * _mpNoise(MPAD.seed + 13, tSec / 11);
+  const tm = MPAD.tickFloor + (1 - MPAD.tickFloor) * (0.5 + 0.5 * _mpNoise(MPAD.seed + 707, tSec / MPAD.tickScale));
+  const tk = tm * (0.62 * _mpNoise(MPAD.seed + 17, tSec / 2.6) + 0.38 * _mpNoise(MPAD.seed + 19, tSec / 0.85));
+  return MPAD.fineAmp * a + MPAD.tick * tk;
+}
 function mpadRound(p) { const m = Math.pow(10, MPAD.dp); return Math.round(p * m) / m; }
 function mpadPxAt(anchor, tSec) { return mpadRound(anchor * Math.exp(mpadFine(tSec))); }
 /* THE ONE STEP, PURE so a test can drive the function that ships. `cur`/`prev` carry the raw input levels; a
@@ -19946,7 +19988,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = 'd7a12a90';
+const ASSET_V = '7dd1b8ac';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });

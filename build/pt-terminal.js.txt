@@ -15,7 +15,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var U = function (s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); };
   function cls(s) { try { return window.mpAssetClass ? window.mpAssetClass(s) : 'crypto'; } catch (e) { return 'crypto'; } }
-  function nameOf(s) { try { return (window.mpMarketName && window.mpMarketName(s)) || ''; } catch (e) { return ''; } }
+  function nameOf(s) { try { if (RNGNM[s]) return RNGNM[s]; return (window.mpMarketName && window.mpMarketName(s)) || ''; } catch (e) { return ''; } }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var SV = function (p, w) { return '<svg viewBox="0 0 24 24" width="' + (w || 14) + '" height="' + (w || 14) + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
 
@@ -77,10 +77,18 @@
   /* THE RNG GROUP (2026-10-28). It sits last because it is a MarginPad-native market, not an exchange one, and the
      list that feeds this window is gated on window.mpIsBybit - so an RNG symbol can only reach it from the server's
      own catalogue, which is also the single source of its base price, decimals, leverage cap and fee. */
-  var RNGS = [];
+  var RNGS = [], RNGNM = {};
+  /* READ BOTH SHAPES OF THE CATALOGUE. It answered `{coins:[...]}` while the section held several coins and answers
+     ONE coin at the top level since the MarginPad engine replaced it - so a reader opened the RNG tab and found it
+     EMPTY: the tab was there, its only market was not. Taking either shape also means a second coin, if the table
+     ever grows one, needs no edit here. The NAME comes from the server too (`mpMarketName` is a baked table that
+     cannot know a house market), so the row reads MPAD / MarginPad from one source. */
   try { fetch('/api/mpad', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
-    RNGS = ((d && d.coins) || []).map(function (c) { return String(c.symbol || '').toUpperCase(); }).filter(Boolean);
+    var list = (d && d.coins && d.coins.length) ? d.coins : ((d && d.symbol) ? [d] : []);
+    RNGS = list.map(function (c) { var s = String(c.symbol || '').toUpperCase(); if (s && c.name) RNGNM[s] = String(c.name); return s; }).filter(Boolean);
     RNGS.forEach(function (s) { try { window.mpRngSyms[s] = 1; } catch (e) {} });   // keep mpAssetClass in step with the server
+    // the picker may already be open: the catalogue is async, so without this the group stays empty until a repaint
+    try { if (RNGS.length && document.getElementById('ptMkList')) mkRender(); } catch (e) {}
   }).catch(function () {}); } catch (e) {}
   var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['house', T('mkRng', 'RNG')]];
   var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;

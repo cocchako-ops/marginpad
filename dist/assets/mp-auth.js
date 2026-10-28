@@ -3605,6 +3605,15 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       // the rest of that day, which is the whole point of the X.
       if (Date.now() - x < 864e5) return '';
       var sym = U(t.sym); if (!sym) return '';
+      /* NEVER OFFER A MARKET THAT DOES NOT EXIST (2026-10-28, owner: "Video sam reklamu ispod trade terminala
+         'Trade MPAD on Moon' - LOL, to ne sme da se desava. To jednostavno ne postoji.").
+         This line offers the SAME pair on a real venue, so it is only honest for a market a venue actually lists.
+         MPAD is the house market - no exchange lists it and no deep link can exist - and the same is true of a
+         forex pair or an index on a crypto venue. The gate is therefore the asset class, exactly the rule the MEXC
+         fee line has carried since 2026-09-14 for the same reason: a link that cannot resolve is worse than no
+         link, and an advert for a market that does not exist is worse than both. */
+      var klass = 'crypto'; try { if (window.mpAssetClass) klass = window.mpAssetClass(sym); } catch (e) {}
+      if (klass !== 'crypto') return '';
       var name = mpEx.best(sym), p = P[name]; if (!p) return '';
       var roe = (+t.pnl) / (+t.margin) * 100;
       var pct = (roe >= 100 ? Math.round(roe) : roe.toFixed(1)) + '%';
@@ -3665,6 +3674,12 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       + '.mpxp{position:relative;display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;background:linear-gradient(180deg,#141821,#0e1117);border:1px solid var(--lc-line,#2a3550);border-left:3px solid var(--xc,#c2f64a);border-radius:11px;padding:8px 11px;box-shadow:0 10px 28px rgba(0,0,0,.5),0 0 0 1px var(--lc-glow,transparent);font-family:"Familjen Grotesk",system-ui,sans-serif;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;pointer-events:none}'
       + '.mpxp.on{transform:none;opacity:1}'
       + '.mpxp.out{transform:translateX(120%);opacity:0}'
+      /* THE RENDERER MUST STYLE THE CLASS IT SETS (found 2026-10-28). `paint()` adds `.mpxp-live` to any card
+         carrying a button, and the only `pointer-events:auto` rule for it lived in the XP module's OWN stylesheet -
+         so on a page where that module never injected its CSS, every button on a notice was dead: the X could not
+         dismiss, the Reload on "you are running an old version" could not be pressed. The card itself stays
+         `pointer-events:none` so a notice over the Open button can never swallow the click. */
+      + '.mpxp.mpxp-live{pointer-events:auto}'
       + '.mpxp::after{content:"";position:absolute;inset:0;border-radius:10px;background:linear-gradient(100deg,var(--lc-tint,transparent),transparent 68%);pointer-events:none}'
       + '.mpxp b{font-family:ui-monospace,Consolas,monospace;color:var(--xc,#c2f64a);font-size:13px;font-weight:800;flex:none;letter-spacing:-.01em}'
       + '.mpxp span,.mpxp .mpxp-msg{font-family:"Familjen Grotesk",system-ui,sans-serif;font-size:12.5px;color:#dfe4ec;line-height:1.4;min-width:0;overflow-wrap:anywhere}'
@@ -3717,15 +3732,58 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
   }
   window.mpToastHost = host; // the XP module re-themes the stack the moment the level is known
   var last = {};
-  var MAXN = 4; // more than four at once is noise; the oldest leaves early
+  /* ONE CARD AT A TIME, THE REST WAIT THEIR TURN (2026-10-28, owner: "ne moze vise od jedne notifikacije da izadje,
+     ako ima vise nek cekaju dok ta pre njih ne bude sklonjena ili se ne skloni sama, tad ide sledeca").
+
+     It used to show four and drop the OLDEST to make room, so in a burst a notice could be replaced before it had
+     been read - the opposite of a queue. Now exactly one is on screen and `pump()` renders the next when the current
+     one leaves, by any of its three exits: the auto-timeout, the X, or an action button.
+
+     Three rules the bare instruction needs, or a burst becomes a two-minute slideshow - a "Claim all" on the season
+     pass grants a tier at a time and every grant toasts:
+       - SAME KEY ALREADY WAITING = one entry, replaced in place. It keeps its position in the queue and carries the
+         newest content, so forty identical XP grants are one card rather than forty in a row.
+       - THE QUEUE IS BOUNDED (QMAX). Full, the OLDEST pending is dropped: it has waited longest and is the most
+         likely to be about something the reader has moved on from.
+       - A CARD THAT HAS WAITED PAST QTTL IS DROPPED WHEN ITS TURN COMES. A notice is about now; printing one half a
+         minute after its own event is worse than not printing it.
+     The 600 ms de-dupe by key is unchanged and still runs first, so a double call never reaches the queue at all. */
+  var QMAX = 8, QTTL = 25000;
+  var Q = [], cur = null, tick = null;
+  function qdrop() { if (!Q.length && tick) { clearInterval(tick); tick = null; } }
+  function pump() {
+    try {
+      // `cur` can also leave without our kill() - a host cleared by something else, a node removed elsewhere
+      if (cur && cur.isConnected) return;
+      cur = null;
+      var now = Date.now();
+      while (Q.length) {
+        var it = Q.shift();
+        if (now - it.at > QTTL) continue;          // stale: its moment has passed
+        paint(it.o); qdrop(); return;
+      }
+      qdrop();
+    } catch (e) {}
+  }
   /* opts: {msg | html, mark, kind, col, ms, action:{label,href,onClick}, key, dismissible} */
   window.mpToast = function (opts) {
     try {
       opts = (typeof opts === 'string') ? { msg: opts } : (opts || {});
       var key = opts.key || opts.msg || '';
       var now = Date.now(); if (key && now - (last[key] || 0) < 600) return null; if (key) last[key] = now;
+      if (cur && cur.isConnected) {
+        if (key) { for (var qi = 0; qi < Q.length; qi++) if (Q[qi].k === key) { Q[qi].o = opts; Q[qi].at = now; return null; } }
+        Q.push({ o: opts, k: key, at: now });
+        while (Q.length > QMAX) Q.shift();
+        if (!tick) tick = setInterval(pump, 500);  // only while something is waiting; cleared when the queue drains
+        return null;                               // nothing is on screen yet - the de-dupe path has always returned null
+      }
+      return paint(opts);
+    } catch (e) { return null; }
+  };
+  function paint(opts) {
+    try {
       var h = host();
-      while (h.children.length >= MAXN) { var old = h.firstChild; h.removeChild(old); }
       var el = document.createElement('div'); el.className = 'mpxp';
       el.style.setProperty('--xc', opts.col || KIND[opts.kind] || KIND.info);
       var inner = '';
@@ -3736,15 +3794,24 @@ function __esT_mpauth(k, en) { try { if ((document.documentElement.lang || "").s
       el.innerHTML = inner;
       if (/mpxp-act|mpxp-x/.test(inner)) el.classList.add('mpxp-live');
       h.appendChild(el);
+      cur = el;
       requestAnimationFrame(function () { el.classList.add('on'); });
-      var kill = function () { el.classList.remove('on'); el.classList.add('out'); setTimeout(function () { try { el.remove(); } catch (e) {} }, 420); };
+      /* kill() is the ONE exit and it is idempotent - the X and the auto-timeout both reach it, and the next card is
+         rendered only once the node is really gone, so the reader sees one leave before the next arrives. */
+      var dead = false;
+      var kill = function () {
+        if (dead) return; dead = true;
+        el.classList.remove('on'); el.classList.add('out');
+        setTimeout(function () { try { el.remove(); } catch (e) {} if (cur === el) cur = null; pump(); }, 420);
+      };
       var x = el.querySelector('.mpxp-x'); if (x) x.addEventListener('click', kill);
       var act = el.querySelector('button.mpxp-act');
       if (act && opts.action && typeof opts.action.onClick === 'function') act.addEventListener('click', function () { try { opts.action.onClick(); } catch (e) {} kill(); });
       setTimeout(kill, Math.max(1200, +opts.ms || 4200));
       return el;
     } catch (e) { return null; }
-  };
+  }
+  window.mpToastQueue = function () { return { showing: !!(cur && cur.isConnected), waiting: Q.length }; }; // read-only, for a probe
   // keep the stack off the bar when the viewport changes (rotation, keyboard, a bar that appears late)
   try { addEventListener('resize', function () { var h = document.getElementById(HOST); if (h) h.style.bottom = baseBottom() + 'px'; }); } catch (e) {}
 })();

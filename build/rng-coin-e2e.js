@@ -91,7 +91,12 @@ function lift(fns, consts) {
   const shipped = drift(m => (E.mpadRandLevel(m) - E.mpadRandLevel(m - 1)) * M.randAmp);
   const retired = drift(m => (E.mpadRandLevel(m) - E.mpadRandLevel(m - 1)) * 0.0040 * 1440);
   ok(shipped.clipped === 0, 'the random sleeve never reaches the input clamp over 14 days (' + shipped.clipped + ' of 20160 minutes)');
-  ok(shipped.worst < 0.01, 'its worst single minute is under 1% before the weight (' + (shipped.worst * 100).toFixed(3) + '%)');
+  /* THE GUARANTEE IS ABOUT THE PRICE, so that is what is asserted. The old wording was "under 1% before the weight",
+     written when the sleeve had only its three slow octaves; the mid octave added on 2026-10-28 to stop 15m candles
+     marching takes the worst raw minute to 1.47%, which is 0.22% ON THE PRICE after the 15% weight - about four
+     times the measured median minute, where a real tape's worst minute is twenty times its own median. Nothing is
+     clamped and the drift stays bounded, so the step is not what needed tightening; the claim was. */
+  ok(shipped.worst * w('rand') < 0.005, 'its worst single minute moves the price under 0.5% (' + (shipped.worst * w('rand') * 100).toFixed(3) + '%)');
   ok(shipped.span < 0.25, 'chance alone moves the price by under 25% over 14 days (' + (shipped.span * 100).toFixed(1) + '%)');
   ok(retired.clipped > 1000 && retired.span > 1, 'and the retired walk form would fail all three (' + retired.clipped + ' clamped, ' + (retired.span * 100).toFixed(0) + '% span) - so these checks can fail');
 
@@ -106,7 +111,10 @@ function lift(fns, consts) {
     for (let s = 0; s < 60; s++) { const p = E.mpadPxAt(anchor, mm + s); tot++; if (p >= lo - 1e-9 && p <= hi + 1e-9) inside++; }
   }
   ok(inside === tot, 'every second of 400 minutes lies inside that minute\'s own high/low (' + inside + '/' + tot + ')');
-  ok(maxDev <= M.fineAmp + 1e-9, 'the wiggle never leaves its declared bound of ' + (M.fineAmp * 100).toFixed(2) + '% (worst ' + (maxDev * 100).toFixed(3) + '%)');
+  // the bound is the SMOOTH arc plus the tick layer since 2026-10-28 - both are declared amplitudes, so it is still
+  // one number and still provable, which is what caught `_mpH` returning negatives in the first place
+  const BOUND = M.fineAmp + (M.tick || 0);
+  ok(maxDev <= BOUND + 1e-9, 'the wiggle never leaves its declared bound of ' + (BOUND * 100).toFixed(2) + '% (worst ' + (maxDev * 100).toFixed(3) + '%)');
   ok(E.mpadPxAt(anchor, t0) === E.mpadPxAt(anchor, t0), 'the same anchor and second recompute identically');
   let joins = 0;
   for (let s = t0; s < t0 + 300; s++) { if (Math.abs(E.mpadPxAt(anchor, s + 1) - E.mpadPxAt(anchor, s)) / anchor < 0.0006) joins++; }

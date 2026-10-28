@@ -65,9 +65,13 @@ const rgbOf = (hex) => { const h = hex.replace('#', ''); return 'rgb(' + parseIn
             // a bottom-centre card: horizontally centred and in the lower half
             return Math.abs((r.left + r.right) / 2 - innerWidth / 2) < 40 && r.top > innerHeight * 0.45 && !/mpbn|mpCkBar|chatFab|mterm/.test(n.className + ' ' + n.id);
           }).map(function (n) { return (n.id || n.className || n.tagName) + ':' + Math.round(n.getBoundingClientRect().top); });
-          return { cards: host ? host.children.length : 0, loose: loose };
+          const q = window.mpToastQueue ? window.mpToastQueue() : null;
+          return { cards: host ? host.children.length : 0, loose: loose, waiting: q ? q.waiting : -1 };
         });
-        chk('PHONE: three different notices all render in the ONE side stack', fired.cards >= 3, fired);
+        /* ONE CARD AT A TIME SINCE 2026-10-28, so "all three are in the stack" is now "one is drawn and the other two
+           are WAITING for it" - which is the stronger statement: it proves none of the three was dropped AND none of
+           them rendered loose. The old form (cards >= 3) describes the retired four-at-once renderer. */
+        chk('PHONE: three different notices are all in the ONE channel, one drawn and the rest queued', fired.cards === 1 && fired.waiting === 2, fired);
         chk('PHONE: no bottom-centre popup is left anywhere (nothing lands on the trade form)', Array.isArray(fired.loose) && fired.loose.length === 0, fired.loose);
         const geom = await EV(() => {
           const host = document.getElementById('mpxpT'), bar = document.querySelector('.mpbn');
@@ -113,31 +117,59 @@ const rgbOf = (hex) => { const h = hex.replace('#', ''); return 'rgb(' + parseIn
         }
         // A notice floats over the trade panel on a wide screen. It may cover the Open button for a few seconds,
         // but it must never EAT the click - the host is see-through and only a card with a button takes events.
+        /* TWO CARDS, ONE AT A TIME. Only one is ever on screen now, so each half is measured on the card that is
+           actually drawn: the plain one must let the Open button through, and the one carrying a button must take
+           events. Firing both at once would queue the second and measure pointer-events on a node nobody can see. */
         const clicks = await EV(async () => {
+          const h = document.getElementById('mpxpT');
+          /* WAIT FOR THE CORNER TO BE EMPTY FIRST. The checks above leave cards on screen, and with one card at a
+             time this block's own notice would be QUEUED behind one of them - so it measured pointer-events on an
+             older card that has no button and reported the feature broken. */
+          for (var w = 0; w < 60 && (h.children.length || (window.mpToastQueue && window.mpToastQueue().waiting)); w++) {
+            Array.prototype.slice.call(h.children).forEach(function (c) { try { c.remove(); } catch (e) {} });
+            await new Promise(r0 => setTimeout(r0, 250));
+          }
           window.mpToast({ msg: 'plain notice', ms: 9000, key: 'p1' });
-          window.mpToast({ msg: 'with a button', ms: 9000, key: 'p2', dismissible: true });
           await new Promise(r => setTimeout(r, 600));
           const go = document.getElementById('planSave'); const r = go.getBoundingClientRect();
           const under = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-          const h = document.getElementById('mpxpT');
-          const plain = h.firstElementChild, live = h.lastElementChild;
-          const pr = plain.getBoundingClientRect();
+          const plain = h.firstElementChild, pr = plain.getBoundingClientRect();
           const overPlain = document.elementFromPoint(pr.left + 6, pr.top + pr.height / 2);
-          return { openReachable: !!(under && (under === go || go.contains(under))), covering: !(r.right <= h.getBoundingClientRect().left || h.getBoundingClientRect().right <= r.left || r.bottom <= h.getBoundingClientRect().top || h.getBoundingClientRect().bottom <= r.top), plainClickThrough: !(overPlain && plain.contains(overPlain)), liveTakesClicks: getComputedStyle(live).pointerEvents === 'auto' };
+          const out = { openReachable: !!(under && (under === go || go.contains(under))), covering: !(r.right <= h.getBoundingClientRect().left || h.getBoundingClientRect().right <= r.left || r.bottom <= h.getBoundingClientRect().top || h.getBoundingClientRect().bottom <= r.top), plainClickThrough: !(overPlain && plain.contains(overPlain)) };
+          try { plain.remove(); } catch (e) {}
+          await new Promise(r2 => setTimeout(r2, 700));            // the queue's own watchdog notices and moves on
+          window.mpToast({ msg: 'with a button', ms: 9000, key: 'p2', dismissible: true });
+          await new Promise(r2 => setTimeout(r2, 600));
+          const live = h.lastElementChild;
+          out.liveTakesClicks = !!live && getComputedStyle(live).pointerEvents === 'auto';
+          try { live.remove(); } catch (e) {}
+          return out;
         });
         chk('a notice over the Open button never swallows the click', clicks.openReachable === true && clicks.plainClickThrough === true, clicks);
         chk('a notice that HAS a button still accepts clicks', clicks.liveTakesClicks === true, { liveTakesClicks: clicks.liveTakesClicks });
         const burst = await EV(async () => {
-          for (var i = 0; i < 9; i++) window.mpToast({ msg: 'burst ' + i, key: 'b' + i });
+          for (var i = 0; i < 9; i++) window.mpToast({ msg: 'burst ' + i, ms: 1200, key: 'b' + i });
           await new Promise(r => setTimeout(r, 600));
           const h = document.getElementById('mpxpT');
-          return { cards: h.children.length, widest: Math.max.apply(null, Array.prototype.map.call(h.children, function (c) { return Math.round(c.getBoundingClientRect().width); })) };
+          const q = window.mpToastQueue ? window.mpToastQueue() : null;
+          return { cards: h.children.length, waiting: q ? q.waiting : -1, widest: Math.max.apply(null, Array.prototype.map.call(h.children, function (c) { return Math.round(c.getBoundingClientRect().width); })) };
         });
-        chk('a burst of nine notices is capped, not a wall of cards', burst.cards <= 4 && burst.widest <= 330, burst);
+        chk('a burst of nine notices draws ONE card and queues the rest', burst.cards === 1 && burst.waiting > 0 && burst.waiting <= 8 && burst.widest <= 330, burst);
         const dedupe = await EV(async () => { const h = document.getElementById('mpxpT'); const before = h.children.length; window.mpToast({ msg: 'same', key: 'dd' }); window.mpToast({ msg: 'same', key: 'dd' }); await new Promise(r => setTimeout(r, 300)); return { before, after: h.children.length }; });
         chk('the same notice fired twice in a row shows once', dedupe.after - dedupe.before <= 1, dedupe);
-        const gone = await EV(async () => { await new Promise(r => setTimeout(r, 6000)); const h = document.getElementById('mpxpT'); return { left: h.children.length }; });
-        chk('notices clear themselves', gone.left === 0, gone);
+        /* They clear themselves one after another now, so this WAITS for the channel to drain instead of sampling at
+           a fixed six seconds - and the thing being proved is that nothing is ever left behind, queue included. */
+        const gone = await EV(async () => {
+          const h = document.getElementById('mpxpT');
+          for (var i = 0; i < 120; i++) {
+            const q = window.mpToastQueue ? window.mpToastQueue() : { waiting: 0 };
+            if (!h.children.length && !q.waiting) return { left: 0, waited: i * 250 };
+            await new Promise(r => setTimeout(r, 250));
+          }
+          const q2 = window.mpToastQueue ? window.mpToastQueue() : { waiting: -1 };
+          return { left: h.children.length, waiting: q2.waiting, waited: 30000 };
+        });
+        chk('notices clear themselves, card and queue alike', gone.left === 0, gone);
         chk('DESKTOP: no page errors', errs.length === 0, errs.slice(0, 4));
         await page.screenshot({ path: 'D:/part1/money-mission/build/pt-shots/toast-desktop.png' });
         await ctx.close();
