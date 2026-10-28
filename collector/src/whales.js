@@ -47,6 +47,14 @@ const FILL_TICK_MS = 30e3;  // … every 30 s = 36 wallets/min. userFillsByTime 
 const GROUP_MS = 120e3;     // fills of one wallet+coin+direction closer together than this are ONE trade
 const MIN_TRADE_USD = 250e3; // measured floor: ~14 trades/hour per twelve wallets (see the note above)
 const MAX_FILLS = 120;      // published ring
+/* THE RING IS THE SITE'S LAST COUPLE OF HOURS, AND A PROFILE IS ABOUT ONE WALLET (2026-10-28, measured:
+   15 groups spanning 18 minutes from 3 distinct wallets, i.e. ~50 groups an hour, so the 120-row ring is
+   about 2.4 hours of the WHOLE market). Filtering that ring by address is why a profile opened at nine in
+   the evening showed nothing for a wallet that traded at noon - not a polling gap, a retention one. Each
+   wallet keeps its own last HIST_N groups for HIST_MS, which is what the Closed tab actually asks for. */
+const HIST_N = 14;
+const HIST_MS = 24 * 3600 * 1000;
+const histByUser = new Map();   // user -> that wallet's own published groups, newest first
 const FILL_LOOKBACK_MS = 15 * 60e3; // first sight of a wallet: how far back we read
 
 const state = { tracked: [], positions: [], alerts: [], fills: [], perf: {}, best: [], coins: [], ts: 0, lbTs: 0, fillTs: 0, lastErr: '', fillErr: '' };
@@ -396,6 +404,13 @@ async function drainPending() {
       if (m && Date.now() - m.ts < LEV_MEM_MS) { r.lev = m.lev; r.levAt = m.ts; }
     }
   }
+  for (const r of rows) {
+    const h = histByUser.get(r.user) || [];
+    h.unshift(r);
+    const cut = Date.now() - HIST_MS;
+    histByUser.set(r.user, h.filter((x) => x.ts > cut).slice(0, HIST_N));
+  }
+  if (histByUser.size > FILL_TRACK_N * 4) { const keep = new Set(fillUniverse()); for (const u of histByUser.keys()) if (!keep.has(u)) histByUser.delete(u); }
   for (const r of rows) state.fills.push(r);
   state.fills.sort((a, b) => b.ts - a.ts);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
@@ -503,6 +518,13 @@ function perfShown() {
   const out = {};
   for (const u of want) if (state.perf[u]) out[u] = state.perf[u];
   return out;
+}
+/* ONE WALLET'S OWN TRADES, asked for by the profile route alone - never folded into /api/v1/whales, which
+   every page load fetches and which is already 122 KB. */
+export function getWhaleOne(addr) {
+  const a = String(addr || '').toLowerCase();
+  const cut = Date.now() - HIST_MS;
+  return { a, ts: Date.now(), fills: (histByUser.get(a) || []).filter((x) => x.ts > cut), min: MIN_TRADE_USD, keep: HIST_N, watched: fillUniverse().indexOf(a) >= 0 };
 }
 export function getWhales() {
   return {

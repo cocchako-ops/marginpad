@@ -3,7 +3,7 @@
 import express from 'express';
 import { config } from '../../config.js';
 import { log } from '../logger.js';
-import { getWhales } from '../whales.js';
+import { getWhales, getWhaleOne } from '../whales.js';
 
 // ---- tiny in-memory rate limiter (per IP per minute) ----
 const hits = new Map();
@@ -349,7 +349,17 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // Hyperliquid whale tracker (phase D): biggest open positions + recent changes, from src/whales.js
   app.get('/api/v1/whales', (req, res) => {
     try { res.set('Cache-Control', 'public, max-age=60'); res.json(getWhales()); }
+    catch (e) { res.status(500).json({ error: 'server' });
+
+  // ONE WALLET'S OWN TRADES (2026-10-28). The ring above is the whole market's last couple of hours, so
+  // filtering it by address answers "nothing" for a wallet that traded this morning - a retention gap,
+  // not a polling one. This is per-wallet history, asked for only by the profile route.
+  app.get('/api/v1/whale', (req, res) => {
+    const a = String(req.query.a || '').toLowerCase();
+    if (!/^0x[0-9a-f]{40}$/.test(a)) return res.status(400).json({ error: 'bad_address' });
+    try { res.set('Cache-Control', 'public, max-age=30'); res.json(getWhaleOne(a)); }
     catch (e) { res.status(500).json({ error: 'server' }); }
+  }); }
   });
 
   // ORDER BOOK (2026-09-21). Live only - nothing is stored yet, by design. A book that cannot be proven

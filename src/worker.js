@@ -4178,10 +4178,14 @@ async function handleWhaleProfile(url, env) {
 
   const out = { a, ts: Date.now() };
   const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
-  const [pf, st, ours] = await Promise.all([
+  const [pf, st, ours, mine] = await Promise.all([
     hl({ type: 'portfolio', user: a }),
     hl({ type: 'clearinghouseState', user: a }),
     base ? fetch(base + '/api/v1/whales', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 60 } }).then(r => r.json()).catch(() => null) : null,
+    /* THIS WALLET'S OWN TRADES. The site-wide ring is about two hours of the whole market (measured: ~50
+       publishable groups an hour against a 120-row ring), so filtering it by address answered "nothing" for
+       a wallet that traded this morning - which is what made the Closed tab look empty. */
+    base ? fetch(base + '/api/v1/whale?a=' + a, { signal: AbortSignal.timeout(6000), cf: { cacheTtl: 30 } }).then(r => r.ok ? r.json() : null).catch(() => null) : null,
   ]);
 
   if (Array.isArray(pf)) {
@@ -4218,7 +4222,15 @@ async function handleWhaleProfile(url, env) {
   }
 
   if (ours) {
-    out.trades = (ours.fills || []).filter(f => String(f.user || '').toLowerCase() === a).slice(0, 25);
+    // the wallet's own history when the collector kept one, the site-wide ring as the fallback - and a
+    // merge, so a trade that happened seconds ago (still only in the ring) is not lost while we show it
+    const own = (mine && Array.isArray(mine.fills)) ? mine.fills : [];
+    const ring = (ours.fills || []).filter(f => String(f.user || '').toLowerCase() === a);
+    const seen = new Set();
+    out.trades = own.concat(ring)
+      .filter(f => { const k = f.sym + '|' + f.dir + '|' + f.ts; if (seen.has(k)) return false; seen.add(k); return true; })
+      .sort((x, y) => y.ts - x.ts).slice(0, 25);
+    out.tradesKept = mine ? { n: own.length, hours: 24, watched: !!mine.watched, min: mine.min } : null;
     /* HOW LONG EACH OPEN POSITION HAS STOOD THERE. The exchange publishes no open time, so the only source
        is our own position poll's memory: `since` is when the position first stood in front of us and the
        flag says whether we watched it appear (exact) or merely found it there (a floor). Joined here, on
