@@ -7973,6 +7973,11 @@ async function checkTapePrints(env) {
 const ZONE_ALERT_COINS = HM_COINS;                 // the ten the model is accumulated for - there is no map for anything else
 const ZONEALERT_DEF = { on: 0, rel: 2, dist: 0.6, swept: 1, coins: ['BTC'] };
 const ZONE_ALERT_MAX_COINS = 3;                    // one KV read per coin per run; three keeps the cron honest
+// WHALE ALERTS (2026-10-28): a member follows named Hyperliquid wallets and is told when one of them opens,
+// closes or flips a position. The whole cron reads ONE already-cached feed (/api/cg/hyper) whatever the
+// number of watchers, so the only thing a cap protects is the member's own inbox.
+const WHALE_WATCH_MAX = 10;
+const WHALE_ALERT_DEDUPE_H = 6;                    // one line per wallet per execution; a retry cannot repeat it
 const ZONE_ALERT_MIN_W = 500000;                   // the weight the sweep ring itself logs at - below it a sweep is noise
 function zoneAlertCfg(v) {
   let c = {}; try { c = (typeof v === 'string') ? JSON.parse(v || '{}') : (v || {}); } catch (e) { c = {}; }
@@ -8165,6 +8170,74 @@ async function checkPositionAlerts(env) {
         const subs = (r && r.subs) || [];
         const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
         for (const f of fired) { for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, { title: f.title, body: f.body, url: 'https://marginpad.io/paper-trade?ref=push' }); } catch (e) {} } }
+      } catch (e) {}
+    }
+    await stamp({ watched: watch.length, premium: live.length, fired: fired.length });
+    return { watched: watch.length, premium: live.length, fired: fired.length };
+  } catch (e) {}
+}
+// WHALE ALERTS (2026-10-28, owner: "opcijom da se preko premiuma aktivira alerts za taj profil"). The whole
+// pass reads ONE feed - the same edge-cached /api/cg/hyper the page itself reads - whatever the number of
+// watchers, so following a wallet costs nothing per member. The member is told what the WALLET did; nothing
+// here is advice and nothing is a position of ours.
+// The CALLSIGN is derived from the address by the same rule the page uses, or the notification would name a
+// wallet the reader has never seen under that name.
+const WH_A_S = ['Quiet','Patient','Iron','Silver','Midnight','Cold','Lucky','Steady','Hidden','Golden','Restless','Narrow','Deep','Swift','Blunt','Crimson','Pale','Hungry','Calm','Sharp','Distant','Early','Heavy','Light','Wild','Stubborn','Gentle','Rough','Sober','Clever','Silent','Bright','Dark','Fast','Slow','Lone','Bold','Grim','Keen','Rusty','Clean','Loose','Tight','Odd','Brave','Polar','Amber','Velvet'];
+const WH_N_S = ['Marlin','Heron','Otter','Falcon','Badger','Lynx','Raven','Perch','Mantis','Jackal','Osprey','Walrus','Pelican','Ferret','Condor','Gannet','Tapir','Civet','Vulture','Caiman','Grouper','Kestrel','Weasel','Narwhal','Bison','Hornet','Ibis','Shrike','Cobra','Pike','Puffin','Stoat','Tern','Gazelle','Wombat','Dingo','Lemur','Mako','Krill','Manta','Orca','Seal','Crane','Gull','Hawk','Heron','Egret','Ray'];
+function whHash(a, salt) { let h = 2166136261 >>> 0; const s = String(salt || '') + String(a || '').toLowerCase();
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
+function whaleName(a) { return WH_A_S[whHash(a) % WH_A_S.length] + ' ' + WH_N_S[whHash(a, 'n') % WH_N_S.length] + ' ' + (10 + (whHash(a, 'x') % 90)); }
+// NAMED checkWhaleFollow, not checkWhaleAlerts: that symbol is taken by the 2026-08 Telegram-bot alert on a
+// symbol's aggregate whale exposure, which is gated on the dead Coinglass key and does nothing today.
+async function checkWhaleFollow(env) {
+  try {
+    if (!env.USERS || !env.STATS) return;
+    const stamp = (o) => { try { return env.STATS.put('whalealert:last', JSON.stringify(Object.assign({ ts: Date.now() }, o)), { expirationTtl: 3600 }); } catch (e) {} };
+    let watch = []; try { const r = await usersDO(env, '/whalealertwatch', {}); watch = (r && r.watch) || []; } catch (e) { await stamp({ watched: 0, premium: 0, fired: 0, err: 1 }); return; }
+    if (!watch.length) { await stamp({ watched: 0, premium: 0, fired: 0 }); return; }
+    const allow = new Set(PREM_FOUNDERS);
+    try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
+    const now = Date.now();
+    const live = [];
+    for (const w of watch) { if (await premLiveRow(env, allow, w, now)) live.push(w); }
+    if (!live.length) { await stamp({ watched: watch.length, premium: 0, fired: 0 }); return; }
+    // ONE read of the feed the page already caches - never one request per watcher.
+    let feed = null;
+    try { feed = await (await handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env)).json(); } catch (e) {}
+    const fills = (feed && Array.isArray(feed.fills)) ? feed.fills : [];
+    if (!fills.length) { await stamp({ watched: watch.length, premium: live.length, fired: 0, fills: 0 }); return; }
+    const byAddr = {};
+    fills.forEach(f => { const u = String(f.user || '').toLowerCase(); if (u) (byAddr[u] = byAddr[u] || []).push(f); });
+    const fired = [];
+    for (const w of live) {
+      for (const a of (w.addrs || []).slice(0, WHALE_WATCH_MAX)) {
+        const list = byAddr[String(a || '').toLowerCase()] || [];
+        for (const f of list.slice(0, 3)) {
+          // one line per wallet per execution: the feed republishes the same trade for hours
+          const key = 'whal:' + w.uid + ':' + String(a).slice(2, 10) + ':' + (f.ts || 0) + ':' + (f.sym || '');
+          let seen = null; try { seen = await env.STATS.get(key); } catch (e) {}
+          if (seen) continue;
+          try { await env.STATS.put(key, '1', { expirationTtl: WHALE_ALERT_DEDUPE_H * 3600 }); } catch (e) {}
+          const act = f.act === 'close' ? 'closed' : (f.act === 'flip' ? 'flipped to' : 'opened');
+          const side = f.long ? 'long' : 'short';
+          const title = whaleName(a) + ' ' + act + ' ' + String(f.sym || '') + ' ' + side;
+          const body = _aUsd(+f.usd || 0) + (f.lev ? ' at ' + f.lev + 'x' : '') + ' - average ' + (+f.px || 0) +
+                       (f.pnl ? ' - realised ' + (f.pnl >= 0 ? '+' : '') + _aUsd(Math.abs(+f.pnl)) : '');
+          fired.push({ uid: w.uid, title, body });
+          if (w.tg && env.TELEGRAM_TOKEN) {
+            try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: w.tg, parse_mode: 'HTML', disable_web_page_preview: true,
+              text: '<b>' + title + '</b>\n' + body + '\n\n<a href="https://marginpad.io/hyperliquid-whales/">Open the whale board</a>' }); } catch (e) {}
+          }
+        }
+      }
+    }
+    if (fired.length && env.VAPID_JWK) {
+      try {
+        const uids = [...new Set(fired.map(f => f.uid))];
+        const r = await usersDO(env, '/push/byuid', { uids });
+        const subs = (r && r.subs) || [];
+        const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
+        for (const f of fired) { for (const s of (byUid[f.uid] || [])) { try { await sendWebPush(env, s, { title: f.title, body: f.body, url: 'https://marginpad.io/hyperliquid-whales/?ref=push' }); } catch (e) {} } }
       } catch (e) {}
     }
     await stamp({ watched: watch.length, premium: live.length, fired: fired.length });
@@ -20123,6 +20196,41 @@ async function handleAlerts(url, env, request) {
     try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'zonealert', v: JSON.stringify(zcfg) }) })); } catch (e) { return jr({ error: 'unavailable' }, 503); }
     return jr({ ok: true, cfg: zcfg });
   }
+  // WHALE ALERTS (2026-10-28, owner: "opcijom da se preko premiuma aktivira alerts za taj profil"). One
+  // member watches up to WHALE_WATCH_MAX wallets; the row IS the index the cron walks, exactly as posalert's
+  // is. A GET answers for anybody signed in, because the profile has to know whether its bell is already lit.
+  if (sub === '/whale') {
+    const pf = await premiumFor(env, request);
+    if (!pf || !pf.uid) return jr({ error: 'login_required' }, 401);
+    const readCfg = async () => {
+      try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, keys: ['whalewatch'] }) }));
+        const d = await r.json(); const v = d && d.prefs && d.prefs.whalewatch ? d.prefs.whalewatch.v : null;
+        const c = v ? JSON.parse(v) : null; return (c && Array.isArray(c.addrs)) ? c : { addrs: [] };
+      } catch (e) { return { addrs: [] }; }
+    };
+    if (request.method === 'GET') {
+      const cur = await readCfg();
+      // lastRun comes back for the same reason zonealert's does: a stamp nobody can read is not a measurement.
+      let last = null; try { last = JSON.parse(await env.STATS.get('whalealert:last') || 'null'); } catch (e) {}
+      return jr({ ok: true, premium: !!pf.premium, addrs: cur.addrs, max: WHALE_WATCH_MAX, dedupeHours: WHALE_ALERT_DEDUPE_H, lastRun: last && last.ts ? last.ts : null });
+    }
+    let wb = {}; try { wb = await request.json(); } catch (e) {}
+    const addr = String(wb.addr || '').toLowerCase();
+    if (!/^0x[0-9a-f]{40}$/.test(addr)) return jr({ error: 'bad_address' }, 400);
+    const on = wb.on !== false;
+    // Turning it ON is the Premium action; turning it OFF never is, or a lapsed member keeps a bell they
+    // cannot put out (the cron already skips them - the page would simply say "on" for ever).
+    if (on && !pf.premium) return jr({ error: 'premium_required', upgrade: 'https://marginpad.io/premium/' }, 402);
+    const cur = await readCfg();
+    let list = cur.addrs.filter(x => x !== addr);
+    if (on) {
+      if (list.length >= WHALE_WATCH_MAX) return jr({ error: 'too_many', max: WHALE_WATCH_MAX }, 409);
+      list.push(addr);
+    }
+    try { await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: pf.uid, k: 'whalewatch', v: JSON.stringify({ addrs: list }) }) })); }
+    catch (e) { return jr({ error: 'unavailable' }, 503); }
+    return jr({ ok: true, on, addrs: list, max: WHALE_WATCH_MAX });
+  }
   if (request.method === 'GET') { const r = await stub.fetch(new Request('https://do/alerts/list?token=' + encodeURIComponent(tok))); return jr(await r.json()); }
   let b = {}; try { b = await request.json(); } catch (e) {}
   if (sub === '/delete') { const r = await stub.fetch(new Request('https://do/alerts/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, id: b.id }) })); return jr(await r.json()); }
@@ -26939,7 +27047,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, liqarch: archiveLiq, liqrecap: liqRecapDaily, memeboard: spotBoardCron, rrscan: (e9) => rrScan(e9, true) }; // rrscan is passed force:true here - by hand means now, not "if the hour has turned"
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, raids: settleRaids, squadmvp: squadMvpWeekly, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, posalerts: checkPositionAlerts, tapealerts: checkTapePrints, zonealerts: checkZoneAlerts, whalefollow: checkWhaleFollow, liqarch: archiveLiq, liqrecap: liqRecapDaily, memeboard: spotBoardCron, rrscan: (e9) => rrScan(e9, true) }; // rrscan is passed force:true here - by hand means now, not "if the hour has turned"
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) - manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -28230,6 +28338,7 @@ export default {
     bg(checkAccountAlerts, 'acctalerts');
     bg(checkTapePrints, 'tapealerts'); // the tape filter a reader set, delivered to Telegram
     bg(checkPositionAlerts, 'posalerts'); // Premium: your own liq / SL / TP / resting-order levels getting close
+    bg(checkWhaleFollow, 'whalefollow'); // Premium: a followed Hyperliquid wallet opened, closed or flipped a position
     bg(checkZoneAlerts, 'zonealerts'); // Premium: the heatmap's heavy bands - price closing in on one, or one being taken out
     bg(payWeeklyPrizes, 'prizes');
     bg(payBybitPrizes, 'bybitprizes');
@@ -32476,6 +32585,20 @@ export class UserStore {
         const u = this.rows('SELECT tg_chat, username FROM users WHERE id=?', r.user_id)[0] || {};
         if (!u.tg_chat) continue;   // no Telegram, nothing to send to
         out.push({ uid: r.user_id, cfg, tg: u.tg_chat, username: u.username || '' });
+      }
+      return this.j({ watch: out });
+    }
+    // WHALE ALERTS: the uprefs row IS the index, so an account that never followed a wallet is never walked.
+    if (path === '/whalealertwatch') {
+      const out = [];
+      let rows = []; try { rows = this.rows("SELECT user_id, v FROM uprefs WHERE k='whalewatch' LIMIT 4000"); } catch (e) { return this.j({ watch: [] }); }
+      for (const r of rows) {
+        let cfg = null; try { cfg = JSON.parse(r.v || '{}'); } catch (e) {}
+        if (!cfg || !Array.isArray(cfg.addrs) || !cfg.addrs.length) continue;
+        const u = this.rows('SELECT tg_chat, username, premium FROM users WHERE id=?', r.user_id)[0] || {};
+        let push = 0; try { push = (this.rows('SELECT COUNT(*) n FROM psubs WHERE uid=?', r.user_id)[0] || {}).n || 0; } catch (e) { push = 0; }
+        if (!u.tg_chat && !push) continue;   // nowhere to send it
+        out.push({ uid: r.user_id, addrs: cfg.addrs.slice(0, 20), tg: u.tg_chat || '', push: +push || 0, username: u.username || '', prem: +u.premium || 0 });
       }
       return this.j({ watch: out });
     }

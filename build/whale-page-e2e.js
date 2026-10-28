@@ -63,13 +63,35 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       // 2026-09-17 (owner): no counts on tabs, chips or tiles; a glance block says what whales are buying
       const gl = await p.evaluate(() => {
         const tabs = [...document.querySelectorAll('.wl-tabs button')].map(b => b.textContent.trim());
-        const nm = [...document.querySelectorAll('#wlNowM .wl-nm')], nt = [...document.querySelectorAll('#wlNowT .wl-nt')];
+        const nm = [...document.querySelectorAll('#wlNowM .wl-nm')], nt = [...document.querySelectorAll('#wlFeed .wl-fr')];
         const reach = el => { if (!el) return false; el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect(); const h = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!(h && el.contains(h)); };
-        return { tabs, digits: tabs.filter(t => /\d/.test(t)).length, nm: nm.length, nt: nt.length, nmReach: reach(nm[0]), ntReach: reach(nt[0]), big: (document.getElementById('wlBig') || {}).textContent, chipDigits: [...document.querySelectorAll('#wlSym button, #wlTrSym button')].filter(b => /\s\d+$/.test(b.textContent.trim())).length, /* "1000PEPE" is a market, "PEPE 12" was a count */ bars: document.querySelectorAll('.wl-bar2').length, fbtn: document.querySelectorAll('.wl-fbtn').length };
+        const bigRow = document.getElementById('wlBigRow');
+        return { tabs, digits: tabs.filter(t => /\d/.test(t)).length, nm: nm.length, nt: nt.length, nmReach: reach(nm[0]), ntReach: reach(nt[0]), big: (document.getElementById('wlBig') || {}).textContent,
+          bigSub: bigRow && bigRow.querySelector('small') ? bigRow.querySelector('small').textContent : '',
+          tenRows: document.querySelectorAll('#wlTop .wl-t10').length,
+          tenValued: [...document.querySelectorAll('#wlTop .wl-t10 .v')].filter(v => (v.textContent || '').trim().length > 1 && v.textContent.trim() !== '-').length,
+          tenInside: [...document.querySelectorAll('#wlTop .wl-t10')].every(b => b.getBoundingClientRect().right <= window.innerWidth + 1),
+          feedWho: document.querySelectorAll('#wlFeed .wl-fr .wh-nm').length,
+          feedAv: document.querySelectorAll('#wlFeed .wl-fr svg.wh-av').length,
+          noCrumb: !document.querySelector('.crumb'), noEyebrow: !document.querySelector('.wl-eyebrow'),
+          h1: ((document.querySelector('h1') || {}).textContent || '').trim(),
+          h1px: document.querySelector('h1') ? Math.round(parseFloat(getComputedStyle(document.querySelector('h1')).fontSize)) : 0,
+          segs: document.querySelectorAll('.wl-sect').length, chipDigits: [...document.querySelectorAll('#wlSym button, #wlTrSym button')].filter(b => /\s\d+$/.test(b.textContent.trim())).length, /* "1000PEPE" is a market, "PEPE 12" was a count */ bars: document.querySelectorAll('.wl-bar2').length, fbtn: document.querySelectorAll('.wl-fbtn').length };
       });
       ok(gl.digits === 0 && gl.chipDigits === 0, 'no count printed on any tab or market chip', gl.tabs);
-      ok(gl.nm >= 3 && gl.nmReach && gl.nt >= 1 && gl.ntReach, 'the glance block names the top markets and the latest big moves, reachable', gl);
-      ok(/\$/.test(gl.big || '') && /(long|short)/.test(gl.big || ''), 'the hero names the biggest open bet instead of a wallet count', gl.big);
+      ok(gl.nm >= 3 && gl.nmReach, 'the markets segment names the top markets, reachable', gl);
+      /* ROUND TWO (2026-10-28, owner: "prvi prozor da budu 10 najbitnijih informacija ... novcanici kao ljudi
+         ... live feed"). The second glance card became the LIVE FEED and the four hero tiles became four of
+         ten clickable lines - these checks describe THAT page, not the one they were written for. */
+      ok(gl.nt >= 3 && gl.ntReach, 'the live feed carries rows and the first one is reachable', gl);
+      ok(gl.feedWho >= 3 && gl.feedAv >= 3, 'every live row carries a derived callsign and its own mark', gl);
+      ok(gl.noCrumb && gl.noEyebrow, 'no breadcrumb and no eyebrow stand above the data', gl);
+      ok(/whale/i.test(gl.h1) && gl.h1px <= 14, 'the h1 survives for a crawler but is a label, never a hero', gl);
+      ok(gl.segs >= 4, 'the page is split into segments', gl.segs);
+      ok(gl.tenRows === 10 && gl.tenValued >= 8, 'ten lines, and at least eight carry a figure', gl);
+      ok(gl.tenInside, 'no line pushes its figure off the right edge of the screen', gl);
+      ok(/\$/.test(gl.big || ''), 'the biggest-bet line states a size', gl.big);
+      ok(/(long|short)/.test(gl.bigSub || ''), 'and names the market and the side under it', gl.bigSub);
       ok(gl.bars === 0 && gl.fbtn === 2, 'the inline filter strips are gone; one Filters button per filterable view', gl);
 
       for (const v of ['pos', 'trades', 'coins', 'best']) {
@@ -194,6 +216,27 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       ok(board.oddRow === 0 || board.crossMark > 0, 'a liquidation on the far side of its entry carries the cross-margin mark', board);
       ok(board.oddRow === 0 || (board.noteShown && /cross margin/i.test(board.noteTxt) === false ? true : board.noteShown), 'and the page explains cross margin when such a row is on the board', { noteShown: board.noteShown, noteTxt: board.noteTxt });
 
+      /* THE BOARD NAMES THE PERSON (owner 2026-10-28: "novcanici treba da budu predstavljeni kao ljudi") and
+         prints the wallet beside it - a callsign on its own could be read as a known identity. On a phone the
+         second line was already measured full, so there the row keeps the wallet and the identity is one tap
+         away in the drawer; that is a deliberate difference, so it is asserted per viewport. */
+      const idn = await p.evaluate(() => {
+        const rows = [...document.querySelectorAll('#wlPos .wl-pr')].slice(0, 12);
+        const vis = (el) => !!(el && el.getBoundingClientRect().width > 0);
+        const txt = (el) => ((el || {}).textContent || '').trim();
+        return { n: rows.length,
+          ppl: rows.filter(r => vis(r.querySelector('.wl-ppl'))).length,
+          named: rows.filter(r => /^[A-Z][a-z]+ [A-Z][a-z]+ \d\d$/.test(txt(r.querySelector('.wl-ppl b')))).length,
+          av: rows.filter(r => r.querySelector('.wl-ppl svg')).length,
+          adr: rows.filter(r => /0x[0-9a-f]{3}/i.test(txt(r.querySelector('.wl-adr')))).length };
+      });
+      if (w >= 620) {
+        ok(idn.n > 0 && idn.ppl === idn.n && idn.named === idn.n && idn.av === idn.n, 'every board row is a person - a mark and a callsign, derived from the address', idn);
+        ok(idn.adr === idn.n, 'and the wallet is printed beside the name, never replaced by it', idn);
+      } else {
+        ok(idn.n > 0 && idn.ppl === 0 && idn.adr === idn.n, 'on a phone the row keeps the wallet - a callsign there would cost a third line', idn);
+      }
+
       // sorting by nearest liquidation really reorders
       const srt = await p.evaluate(async () => {
         document.querySelector('.wl-fbtn[data-fopen="pos"]').click(); await new Promise(r => setTimeout(r, 250));
@@ -244,7 +287,34 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       ok(dr.curve, 'and a 30-day equity curve');
       ok(dr.links >= 3, 'and the links out (' + dr.links + ')', dr);
       ok(/ENTRY|LIQUIDATION/.test(dr.text.toUpperCase()), 'each position names its entry and liquidation', dr.text);
-      ok(dr.chartSlots === dr.pos && dr.charts >= 1 && dr.chartLink, 'every position has a chart slot and at least one drew price, the entry dot and the liquidation line, linking a paper trade of the same setup', { slots: dr.chartSlots, charts: dr.charts, none: dr.chartNone, link: dr.chartLink });
+      ok(dr.chartSlots === dr.pos, 'every position carries a chart slot', { slots: dr.chartSlots, pos: dr.pos });
+      /* ROUND TWO: the profile is TWO TABS of COLLAPSED rows (owner: "2 opcije da se selektuju (open i closed
+         positions) i za obe da ima vise informacija na klik"). A chart is fetched when its row is OPENED, so
+         "at least one chart drew" is now a statement about the expansion, not about the first paint. */
+      const px = await p.evaluate(async () => {
+        const tabs = [...document.querySelectorAll('.wd-tabs button')].map(b => b.textContent.trim());
+        const before = [...document.querySelectorAll('#wdOpenL .wd-chart svg')].length;
+        const rows = document.querySelectorAll('#wdOpenL .wd-row').length;
+        const closedRows = document.querySelectorAll('#wdClosedL .wd-row').length;
+        const rh = document.querySelector('#wdOpenL .wd-rh'); if (rh) rh.click();
+        await new Promise(r => setTimeout(r, 4000));
+        const rw = document.querySelector('#wdOpenL .wd-row'), bd = rw && rw.querySelector('.wd-rb');
+        const ct = bd ? bd.querySelector('.wd-chart') : null;
+        // and the other tab really switches what is shown
+        const ct2 = document.querySelector('.wd-tabs button[data-wtab="closed"]'); if (ct2) ct2.click();
+        await new Promise(r => setTimeout(r, 300));
+        return { tabs, rows, closedRows, before,
+          opened: !!(rw && rw.classList.contains('open')), shown: !!(bd && !bd.hidden),
+          drew: !!(ct && ct.querySelector('svg path') && ct.querySelector('svg circle') && /LIQ/.test(ct.textContent)),
+          link: !!(ct && [...ct.querySelectorAll('.cap a')].some(a => /\/paper-trade\?coin=/.test(a.getAttribute('href')))),
+          openHidden: (document.getElementById('wdOpenL') || {}).hidden, closedShown: !((document.getElementById('wdClosedL') || {}).hidden) };
+      });
+      ok(px.tabs.length === 2 && /Open/.test(px.tabs[0]) && /Closed/.test(px.tabs[1]), 'the profile offers Open and Closed', px.tabs);
+      ok(px.before === 0, 'a collapsed row fetches no candles - the profile opens as a list, not as a wall', px);
+      ok(px.opened && px.shown, 'a row opens on a click', px);
+      ok(px.drew && px.link, 'and then draws price, the entry dot and the liquidation line, linking the same setup', px);
+      ok(px.openHidden === true && px.closedShown === true, 'the Closed tab switches the list', px);
+      ok(px.closedRows >= 0, 'the closed list is built from the executions we recorded (' + px.closedRows + ')', px);
 
       const cl = await p.evaluate(async () => {
         document.getElementById('wdX').click();

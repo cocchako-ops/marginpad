@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-10-28T18:23:31.577Z",
+  "generated": "2026-10-28T19:29:34.234Z",
   "pages": 386,
-  "occurrences": 27889,
-  "unique": 14501,
-  "words": 272871,
+  "occurrences": 27896,
+  "unique": 14508,
+  "words": 272965,
   "untranslated": 0,
   "untranslatedWords": 0,
-  "merged": "2026-10-28T18:24:05.420Z"
+  "merged": "2026-10-28T19:30:44.923Z"
  },
  "items": {
   "WoSdEAxlcr": {
@@ -116931,7 +116931,7 @@
   },
   "gg4PoU9f0X": {
    "en": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a> <a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
-   "es": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a> <a href=\"/rewards/\" class=\"hlink hrwd\" title=\"Free USDT - claim every 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Rewards</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>My Trades</a>",
+   "es": "<a href=\"https://t.me/MarginPadBot\" target=\"_blank\" rel=\"noopener\" class=\"hlink hbot\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z\"/></svg>Bot</a> <a href=\"/rewards/\" class=\"hlink hrwd\" title=\"USDT gratis - reclama cada 5 min\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 12 20 22 4 22 4 12\"/><rect x=\"2\" y=\"7\" width=\"20\" height=\"5\"/><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"7\"/><path d=\"M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z\"/></svg>Recompensas</a> <a href=\"/paper-trade?trades=1\" class=\"hlink hjr\"><svg viewBox=\"0 0 24 24\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"/></svg>Mis operaciones</a>",
    "kind": [
     "html"
    ],
@@ -116941,9 +116941,9 @@
    "n": 1,
    "w": 4
   },
-  "6w9RHkvpE9": {
-   "en": "<a href=\"/\">Home</a> / Hyperliquid whales",
-   "es": "<a href=\"/\">Inicio</a> / Ballenas de Hyperliquid",
+  "ZxZWhG8lqK": {
+   "en": "Hyperliquid whales",
+   "es": "Ballenas de Hyperliquid",
    "kind": [
     "html"
    ],
@@ -116951,43 +116951,7 @@
     "/hyperliquid-whales/"
    ],
    "n": 1,
-   "w": 3
-  },
-  "ZO-6wzMfct": {
-   "en": "<i></i>Live · Hyperliquid on-chain",
-   "es": "<i></i>En vivo · Hyperliquid on-chain",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "N9ph43wb7C": {
-   "en": "Hyperliquid Whale Tracker",
-   "es": "Rastreador de Ballenas de Hyperliquid",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "GNE4d1boKi": {
-   "en": "See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perp exchange, every whale position is public - real size, real leverage, real liquidation price. Below: net long vs short exposure, the largest open positions with live P&amp;L, and a feed of the latest whale moves. Free, no signup.",
-   "es": "Mira en qué están apostando de verdad los traders más grandes. Como Hyperliquid es un exchange de perpetuos totalmente on-chain, cada posición de ballena es pública - tamaño real, apalancamiento real, precio de liquidación real. Abajo: exposición neta long vs short, las mayores posiciones abiertas con P&amp;L en vivo, y un feed de los últimos movimientos de las ballenas. Gratis, sin registro.",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 51
+   "w": 2
   },
   "iQc3t9nQy5": {
    "en": "<span>Whale data is <b>refreshing</b> - one moment.</span>",
@@ -117000,6 +116964,18 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "hVVfCJ_wBg": {
+   "en": "<span class=\"t\">Right now</span><span class=\"s\">ten things worth knowing &middot; <b>tap any line</b></span>",
+   "es": "<span class=\"t\">Ahora mismo</span><span class=\"s\">diez datos que importan &middot; <b>toca cualquier línea</b></span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 9
   },
   "ROE_0LQNrM": {
    "en": "Whales long",
@@ -117025,57 +117001,9 @@
    "n": 1,
    "w": 2
   },
-  "DEVg_66Kfx": {
-   "en": "Biggest bet right now",
-   "es": "La apuesta más grande ahora mismo",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 4
-  },
-  "nxDn793ieS": {
-   "en": "Net exposure",
-   "es": "Exposición neta",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 2
-  },
-  "JuXEiw2Yw0": {
-   "en": "Unrealized P&amp;L",
-   "es": "P&amp;L no realizado",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 1
-  },
-  "aZpqKG7rbu": {
-   "en": "Closest to liquidation",
-   "es": "Más cerca de la liquidación",
-   "kind": [
-    "html"
-   ],
-   "ctx": [
-    "/hyperliquid-whales/"
-   ],
-   "n": 1,
-   "w": 3
-  },
-  "HXRNDcmANU": {
-   "en": "Where whale money sits <span class=\"sub\">top markets by whale exposure</span>",
-   "es": "Dónde está el dinero de las ballenas <span class=\"sub\">principales mercados por exposición de ballenas</span>",
+  "ncUoi1X5qV": {
+   "en": "<span class=\"n\">01</span><span class=\"lab\"><b>Net whale exposure</b><small>long minus short, by notional</small></span><span class=\"v\" id=\"wlNet\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">01</span><span class=\"lab\"><b>Exposición neta de las ballenas</b><small>long menos short, por nocional</small></span><span class=\"v\" id=\"wlNet\">-</span><span class=\"ch\">&rsaquo;</span>",
    "kind": [
     "html"
    ],
@@ -117085,9 +117013,81 @@
    "n": 1,
    "w": 9
   },
-  "Qowc7Ht7DF": {
-   "en": "Latest big moves <span class=\"sub\">executions, newest first</span>",
-   "es": "Últimos grandes movimientos <span class=\"sub\">ejecuciones, más recientes primero</span>",
+  "8yS9wGy0Mi": {
+   "en": "<span class=\"n\">02</span><span class=\"lab\"><b>Biggest bet on the board</b><small>the single largest open position</small></span><span class=\"v\" id=\"wlBig\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">02</span><span class=\"lab\"><b>La mayor apuesta del tablero</b><small>la posición abierta más grande</small></span><span class=\"v\" id=\"wlBig\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "81AW3yW5LE": {
+   "en": "<span class=\"n\">03</span><span class=\"lab\"><b>Closest to liquidation</b><small>the position the market is nearest to taking</small></span><span class=\"v\" id=\"wlNear\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">03</span><span class=\"lab\"><b>Más cerca de la liquidación</b><small>la posición que el mercado está más cerca de tomar</small></span><span class=\"v\" id=\"wlNear\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 12
+  },
+  "7p_KXVzoqk": {
+   "en": "<span class=\"n\">04</span><span class=\"lab\"><b>Whales are up or down</b><small>unrealized P&amp;L across every tracked position</small></span><span class=\"v\" id=\"wlUpnl\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">04</span><span class=\"lab\"><b>Las ballenas ganan o pierden</b><small>P&amp;L no realizado de todas las posiciones seguidas</small></span><span class=\"v\" id=\"wlUpnl\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 11
+  },
+  "fNkaLWv6CU": {
+   "en": "<span class=\"n\">05</span><span class=\"lab\"><b>Most crowded market</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">05</span><span class=\"lab\"><b>El mercado más concurrido</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 4
+  },
+  "znSKPk_ksv": {
+   "en": "<span class=\"n\">06</span><span class=\"lab\"><b>Biggest move in the last hour</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">06</span><span class=\"lab\"><b>El mayor movimiento de la última hora</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 7
+  },
+  "u9-uAKCuU5": {
+   "en": "<span class=\"n\">07</span><span class=\"lab\"><b>Best trader this month</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">07</span><span class=\"lab\"><b>El mejor trader de este mes</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "6n-4NT09oT": {
+   "en": "<span class=\"n\">08</span><span class=\"lab\"><b>Most leverage on the board</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">08</span><span class=\"lab\"><b>El mayor apalancamiento del tablero</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
    "kind": [
     "html"
    ],
@@ -117096,6 +117096,78 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "gxLl2OLsEs": {
+   "en": "<span class=\"n\">09</span><span class=\"lab\"><b>Whales who moved today</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">09</span><span class=\"lab\"><b>Ballenas que se movieron hoy</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "CaJ2dVE5Wd": {
+   "en": "<span class=\"n\">10</span><span class=\"lab\"><b>What the crowded side pays</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "es": "<span class=\"n\">10</span><span class=\"lab\"><b>Lo que paga el lado concurrido</b><small>&nbsp;</small></span><span class=\"v\">-</span><span class=\"ch\">&rsaquo;</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "9txKIMhw0Q": {
+   "en": "<span class=\"t\">Live</span><span class=\"s\" id=\"wlLiveS\">executions over $250k, newest first</span>",
+   "es": "<span class=\"t\">En vivo</span><span class=\"s\" id=\"wlLiveS\">ejecuciones de más de $250k, las más recientes primero</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 6
+  },
+  "DJcgkoAPpW": {
+   "en": "See every trade we recorded",
+   "es": "Ver todas las operaciones que registramos",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 5
+  },
+  "G4hQx1SVH6": {
+   "en": "<span class=\"t\">Where the money sits</span><span class=\"s\">top markets by whale exposure</span>",
+   "es": "<span class=\"t\">Dónde está el dinero</span><span class=\"s\">principales mercados por exposición de ballenas</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 9
+  },
+  "IhM7rBEJn_": {
+   "en": "<span class=\"t\">The board</span><span class=\"s\">every position, trade and market we track</span>",
+   "es": "<span class=\"t\">El tablero</span><span class=\"s\">cada posición, operación y mercado que seguimos</span>",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 9
   },
   "zUaD-t9wBe": {
    "en": "Positions",
@@ -117397,6 +117469,18 @@
    ],
    "n": 1,
    "w": 6
+  },
+  "kk8VmYojo2": {
+   "en": "See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perpetual exchange, every whale position is public - real size, real leverage, real liquidation price. This page carries net long versus short exposure, the ten figures that move first, a live feed of executions over $250,000, the largest open positions with live P&amp;L, and a profile for every wallet. Free, no signup.",
+   "es": "Mira en qué están apostando de verdad los traders más grandes. Como Hyperliquid es un exchange de perpetuos totalmente on-chain, cada posición de una ballena es pública: tamaño real, apalancamiento real, precio de liquidación real. Esta página reúne la exposición neta long frente a short, las diez cifras que se mueven primero, un feed en vivo de ejecuciones de más de $250,000, las mayores posiciones abiertas con P&amp;L en vivo, y un perfil para cada cartera. Gratis, sin registro.",
+   "kind": [
+    "html"
+   ],
+   "ctx": [
+    "/hyperliquid-whales/"
+   ],
+   "n": 1,
+   "w": 63
   },
   "Erftp74OLs": {
    "en": "<strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data - no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style=\"color:var(--grn)\">net long</span> or <span style=\"color:var(--red)\">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile - if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.",

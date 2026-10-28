@@ -272,7 +272,9 @@
   .wl-nowc{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:13px 14px;min-width:0}
   .wl-nowc .wl-h2{margin:0 0 6px}
   .wl-nowc .wl-h2 .sub{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-faint);margin-left:auto;font-size:10px;text-align:right}
-  .wl-nm{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);cursor:pointer}
+  /* the first track is AUTO, not 62px: the market's own price and 24h move live in that cell, and at a
+     fixed 62px "$81,131 · +1.4%" was cut mid-figure by the cell's own overflow (measured on a desktop) */
+  .wl-nm{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.05);cursor:pointer}
   .wl-nm:first-child{border-top:0}
   .wl-nm:hover b{color:var(--lime)}
   .wl-nm b{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -304,6 +306,111 @@
   .wl-pulse{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.02em}
   .wl-pulse b{color:var(--ink-dim);font-weight:700}
   .wl-pulse i{font-style:normal;width:6px;height:6px;border-radius:50%;background:var(--wh);display:inline-block;margin-right:6px;vertical-align:1px;box-shadow:0 0 8px var(--wh)}
+
+  /* ===== ROUND TWO, 2026-10-28 (owner: "ovaj naslov i ovo home, live, hyperliquid whales ... nista od teksta
+     tu ne treba ... prvi prozor da budu 10 najbitnijih informacija izlistane u redovima ... podeljen lepo u
+     segmente ... novcanici treba da budu predstavljeni kao ljudi ... takodje treba da ima live feed") =====
+     NO BACKTICKS ANYWHERE IN THIS COMMENT OR BELOW - one ends the CSS template and drops every rule after it. */
+  .wl-mast{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 16px;padding:0 0 9px;border-bottom:1px solid var(--line)}
+  .wl-mast h1{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--ink);margin:0;line-height:1}
+  .wl-mast .dot{width:7px;height:7px;border-radius:50%;background:var(--wh);box-shadow:0 0 9px var(--wh);flex:0 0 auto}
+  .wl-mast .mm{margin-left:auto;display:flex;gap:4px 13px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.02em}
+  .wl-mast .mm b{color:var(--ink-dim);font-weight:700}
+
+  /* a segment: one rule, one heading, one job */
+  .wl-sect{margin:0 0 22px}
+  .wl-sh{display:flex;align-items:baseline;gap:10px;margin:0 0 2px;padding:0 0 7px;border-bottom:1px solid var(--line-bright)}
+  .wl-sh .t{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin:0}
+  .wl-sh .s{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);letter-spacing:.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-sh .s b{color:var(--ink-dim);font-weight:700}
+
+  /* TEN LINES. Two columns on a desktop so the block is one screen, one column on a phone. */
+  .wl-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 26px}
+  .wl-t10{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);
+    padding:9px 6px;cursor:pointer;color:inherit;font:inherit;transition:background .12s,padding .12s}
+  .wl-t10:hover{background:rgba(94,198,255,.06);padding-left:10px}
+  .wl-t10 .n{flex:0 0 18px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--ink-faint)}
+  .wl-t10 .lab{min-width:0;flex:1 1 auto}
+  .wl-t10 .lab b{display:block;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--ink);letter-spacing:.01em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wl-t10 .lab small{display:block;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* the figure never takes more than its share: a value that grows past this ellipsises instead of pushing
+     itself off the right edge of the row (measured on a phone - three of ten values were not on screen) */
+  /* AND IT IS THE LABEL THAT GIVES WAY, NEVER THE FIGURE: with the value allowed to shrink too, a flex row
+     took it from both of them in proportion and a four-character "3.4%" was ellipsised to "3." on a phone
+     while the row still had room (measured). The cap stays - a freak value is cut rather than pushing the
+     chevron off the screen - but the figure keeps its own width up to it. */
+  .wl-t10 .v{flex:0 0 auto;min-width:0;max-width:52%;overflow:hidden;text-overflow:ellipsis;
+    font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink);text-align:right;white-space:nowrap}
+  .wl-t10 .v.up{color:var(--grn)}.wl-t10 .v.dn{color:var(--red)}
+  .wl-t10 .ch{flex:0 0 auto;color:var(--ink-faint);opacity:.5;transition:transform .12s,opacity .12s}
+  .wl-t10:hover .ch{opacity:1;transform:translateX(2px);color:var(--lime)}
+  .wl-t10 .sk{height:11px;border-radius:4px;background:linear-gradient(90deg,#11151b,#171c23,#11151b);flex:1 1 auto}
+
+  /* A WALLET IS A PERSON. The callsign and the mark are DERIVED from the address (deterministic), so the
+     same wallet is the same face on every surface, and the address itself is always printed beside it -
+     nothing here claims to know who anybody is. */
+  .wh{display:inline-flex;align-items:center;gap:7px;min-width:0}
+  .wh-av{flex:0 0 auto;border-radius:7px;display:block;background:#0a0c0f}
+  .wh-id{min-width:0;display:flex;flex-direction:column;gap:1px}
+  .wh-nm{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--ink);letter-spacing:.01em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wh-ad{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);letter-spacing:.02em}
+
+  /* LIVE FEED: what is happening right now, newest first, with the person who did it */
+  .wl-feed{display:flex;flex-direction:column}
+  .wl-fr{display:flex;align-items:center;gap:10px;padding:8px 8px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+  .wl-fr:hover{background:rgba(94,198,255,.06)}
+  .wl-fr .ck{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--ink-dim);width:42px}
+  .wl-fr .ck small{display:block;font-size:8.5px;font-weight:400;color:var(--ink-faint)}
+  .wl-fr .wh{flex:1 1 auto}
+  .wl-fr .did{color:var(--ink-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:100%}
+  .wl-fr .did b{font-weight:700}
+  .wl-fr .did em{font-style:normal;color:var(--ink-faint)}
+  .wl-fr.l .did b{color:var(--grn)}.wl-fr.s .did b{color:var(--red)}
+  .wl-fr .amt{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:12px;font-weight:800;white-space:nowrap}
+  .wl-fr.l .amt{color:var(--grn)}.wl-fr.s .amt{color:var(--red)}
+  .wl-fr.new{animation:none}
+  .wl-feed .wl-sk{margin:6px 0}
+
+  /* THE PROFILE: identity + four figures, then two tabs, then rows that open on a click */
+  /* it is a SIBLING of .wd-body, not a child, so it carries the drawer's own gutter - without it the bell
+     sat flush against the right edge of the screen (measured 390px drawer, button clipped) */
+  .wd-prof{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--line-bright);min-width:0;flex:0 0 auto}
+  .wd-prof .wh-nm{font-size:16px;letter-spacing:0}
+  .wd-prof .wh-ad{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wd-bell{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.34);
+    color:var(--lime);border-radius:9px;padding:7px 11px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.04em;cursor:pointer;text-transform:uppercase;transition:.14s}
+  .wd-bell:hover{background:rgba(194,246,74,.2)}
+  .wd-bell.on{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  .wd-bell.lock{background:rgba(255,255,255,.04);border-color:var(--line-bright);color:var(--ink-faint)}
+  .wd-bell svg{width:13px;height:13px;flex:0 0 auto}
+  .wd-tabs{display:flex;gap:6px;margin:16px 0 0}
+  .wd-tabs button{flex:1 1 0;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    background:rgba(255,255,255,.03);border:1px solid var(--line-bright);color:var(--ink-dim);border-radius:9px;padding:9px 6px;cursor:pointer;transition:.14s}
+  .wd-tabs button i{font-style:normal;opacity:.6;margin-left:4px}
+  .wd-tabs button:hover{color:var(--ink);border-color:var(--lime)}
+  .wd-tabs button.on{background:var(--lime);border-color:var(--lime);color:#0a0b0d}
+  .wd-tabs button.on i{opacity:.75}
+  .wd-list{margin-top:10px}
+  .wd-row{border-bottom:1px solid var(--line)}
+  .wd-rh{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;
+    padding:10px 4px;cursor:pointer;transition:background .12s}
+  .wd-rh:hover{background:rgba(94,198,255,.06)}
+  .wd-rh .sd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:5px;
+    background:rgba(46,189,133,.15);color:var(--grn)}
+  .wd-rh .sd.s{background:rgba(255,90,77,.15);color:var(--red)}
+  .wd-rh .mk{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;color:var(--ink)}
+  .wd-rh .me{min-width:0;flex:1 1 auto;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wd-rh .fg{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:12px;font-weight:800;white-space:nowrap}
+  .wd-rh .fg.up{color:var(--grn)}.wd-rh .fg.dn{color:var(--red)}
+  .wd-rh .cv{flex:0 0 auto;color:var(--ink-faint);transition:transform .16s}
+  .wd-row.open .wd-rh .cv{transform:rotate(90deg);color:var(--lime)}
+  .wd-rb{padding:2px 4px 14px}
+  .wd-empty{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);padding:16px 4px}
   /* ── THE BOARD IS DENSE, AND THE WIDTH CARRIES INFORMATION (2026-10-28, owner: "mnogo treba da se skrola bez
      nekog razloga ... da prostor bude maksimalno iskoriscen"). MEASURED before: a row was 89px and 120 of them
      were a 10,477px wall - 86% of the whole page - while on a 1440px screen roughly 600px of every row was
@@ -321,6 +428,15 @@
   .wl-thd span[data-sort]:hover{color:var(--ink)}
   .wl-thd span[data-sort].on{color:var(--lime)}
   .wl-who{min-width:0;display:flex;align-items:center;gap:6px;overflow:hidden}
+  /* The board names the PERSON and prints the wallet beside it, never one without the other: a callsign on
+     its own could be mistaken for a known identity, and an address on its own is what made this page read
+     as a list of hashes. On a phone there is no room for both, so the row keeps the address and the
+     identity is one tap away in the drawer. */
+  .wl-ppl{display:inline-flex;align-items:center;gap:6px;min-width:0;flex:0 1 auto}
+  .wl-ppl b{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-pr:hover .wl-ppl b{color:var(--wh)}
+  .wl-ppl svg{flex:0 0 auto}
+  .wl-who .wl-ppl + .wl-adr{font-size:9.5px;font-weight:400;color:var(--ink-faint)}
   .wl-mk{display:flex;align-items:center;gap:6px;min-width:0;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink);text-decoration:none}
   .wl-mk:hover .wl-mkn{color:var(--wh);text-decoration:underline}
   .wl-mk img{width:15px;height:15px;border-radius:50%;flex:0 0 auto}
@@ -394,6 +510,10 @@
     .wl-mkn{font-size:12.5px}
     .wl-adr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:100%}
     .wl-who{flex-wrap:nowrap}
+    /* the callsign is the one thing on this row that is longer than what it replaces - the second line was
+       already measured at 101px of room against 132px of content, so the phone keeps the wallet */
+    .wl-ppl{display:none!important}
+    .wl-who .wl-adr{font-size:9px;font-weight:700;color:var(--ink)}
   }
   .wl-swipe{display:none;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);padding:4px 2px 0}
   /* the sort chips: always on screen, because the column headings slide away with the board */
@@ -418,6 +538,23 @@
      "AGGREGATE UNREALIZE…", "BTC long $26…". A figure a reader cannot finish reading is not a figure. */
   @media(max-width:620px){
     .wl-hero{padding:14px 14px 12px;border-radius:16px;margin:12px 0 10px}
+    /* the ten lines are ONE column on a phone - two columns of 11px type is two columns of ellipsis */
+    /* minmax(0,1fr), NEVER 1fr: a bare 1fr track takes the item's max-content as its minimum, so the ten
+       rows widened the document by 10px and the whole page scrolled sideways (measured 400 against 390) */
+    .wl-top{grid-template-columns:minmax(0,1fr);gap:0}
+    .wl-t10{padding:8px 4px;gap:8px}
+    .wl-t10 .lab b{font-size:11px}
+    .wl-t10 .v{font-size:12px}
+    /* the masthead is ONE line on a phone: five provenance items wrapped to three rows and 90px of chrome
+       above the first number, which is the wall this round exists to remove */
+    .wl-mast{gap:7px;margin-bottom:12px}
+    .wl-mast .mm{flex-basis:100%;margin-left:0;flex-wrap:nowrap;overflow:hidden}
+    .wl-mast .mm>span:nth-child(n+3){display:none}
+    .wl-fr{padding:7px 4px;gap:8px}
+    .wl-fr .ck{width:46px}               /* "18m ago" wrapped onto a second line at 36 and made the row 58px */
+    .wl-fr .did em.ad{display:none}      /* the address is one tap away in the profile; the action is not */
+    .wd-prof{gap:9px}
+    .wd-prof .wh-nm{font-size:14px}
     .wl-tiles{grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
     /* every tile is the same box whether its label takes one line or two - a 2x2 grid stretches within a ROW,
        so without a floor the first row is two lines tall and the second three, which reads as broken alignment */
@@ -484,45 +621,68 @@
       <a href="/" class="mark" aria-label="MarginPad - home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
-      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><div class="hsoc"><button type="button" class="hlink hsocb" aria-label="Follow MarginPad" title="Follow MarginPad" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.7"/><circle cx="6" cy="12" r="2.7"/><circle cx="18" cy="19" r="2.7"/><path d="M8.4 10.7l7.2-4.2M8.4 13.3l7.2 4.2"/></svg></button><div class="hsoc-m" role="menu" hidden><a class="hsoc-i tg" role="menuitem" href="https://t.me/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></span><span class="hsoc-t"><b>Telegram</b><i>t.me/marginpad</i></span></a><a class="hsoc-i ig" role="menuitem" href="https://www.instagram.com/marginpad?rpxt=dHloa25vbmkyejBu&utm_source=website" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></span><span class="hsoc-t"><b>Instagram</b><i>@marginpad</i></span></a><a class="hsoc-i x" role="menuitem" href="https://x.com/marginpad" target="_blank" rel="noopener"><span class="hsoc-ic"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span class="hsoc-t"><b>X</b><i>@marginpad</i></span></a></div></div>
       <a href="/rewards/" class="hlink hrwd" title="Free USDT - claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
       <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / Hyperliquid whales</div>
   <article>
-    <div class="wl-eyebrow"><i></i>Live · Hyperliquid on-chain</div>
-    <h1>Hyperliquid Whale Tracker</h1>
-    <p class="lead">See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perp exchange, every whale position is public - real size, real leverage, real liquidation price. Below: net long vs short exposure, the largest open positions with live P&amp;L, and a feed of the latest whale moves. Free, no signup.</p>
+    <!-- ── NO WALL OF TEXT AT THE TOP (owner 2026-10-28: "ovaj naslov i ovo home, live, hyperliquid whales,
+         on chain itd. Nista od teksta tu ne treba"). The breadcrumb, the eyebrow and the lead paragraph are
+         gone; the h1 stays as the masthead's own 11px label, because a page with no h1 is a page search and
+         every assistant reads as a shell (the 2026-09-14 sweep proved 0 of 838 pages without one), and the
+         lead's sentences live in the crawlable fold at the foot with the rest of the prose. ─────────────── -->
+    <div class="wl-mast">
+      <span class="dot"></span>
+      <h1>Hyperliquid whales</h1>
+      <div class="wl-pulse mm" id="wlPulse"></div>
+    </div>
 
     <div class="wl-wait" id="wlWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Whale data is <b>refreshing</b> - one moment.</span></div>
 
-    <div class="wl-hero" id="wlHero">
-      <div class="wl-htop">
-        <div class="wl-side l"><div class="lab">Whales long</div><div class="v" id="wlLongV">-</div></div>
-        <div class="wl-side s"><div class="lab">Whales short</div><div class="v" id="wlShortV">-</div></div>
+    <!-- ── SEGMENT 1: TEN LINES. Every row is a measurement and every row goes somewhere - the four hero
+         tiles this replaced carried four of them and could not be clicked. ──────────────────────────── -->
+    <section class="wl-sect" id="sTop">
+      <div class="wl-sh"><span class="t">Right now</span><span class="s">ten things worth knowing &middot; <b>tap any line</b></span></div>
+      <div class="wl-hero" id="wlHero">
+        <div class="wl-htop">
+          <div class="wl-side l"><div class="lab">Whales long</div><div class="v" id="wlLongV">-</div></div>
+          <div class="wl-side s"><div class="lab">Whales short</div><div class="v" id="wlShortV">-</div></div>
+        </div>
+        <div class="wl-bar"><div class="lg" id="wlBarL" style="width:50%"></div><div class="sh" id="wlBarS" style="width:50%"></div></div>
+        <div class="wl-pct"><span class="l" id="wlPctL">-</span><span class="s" id="wlPctS">-</span></div>
       </div>
-      <div class="wl-bar"><div class="lg" id="wlBarL" style="width:50%"></div><div class="sh" id="wlBarS" style="width:50%"></div></div>
-      <div class="wl-pct"><span class="l" id="wlPctL">-</span><span class="s" id="wlPctS">-</span></div>
-      <div class="wl-tiles">
-        <div class="wl-tile"><div class="k">Biggest bet right now</div><div class="v" id="wlBig">-</div></div>
-        <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">-</div></div>
-        <div class="wl-tile"><div class="k">Unrealized P&amp;L</div><div class="v" id="wlUpnl">-</div></div>
-        <div class="wl-tile"><div class="k">Closest to liquidation</div><div class="v" id="wlNear">-</div></div>
+      <div class="wl-top" id="wlTop">
+        <button type="button" class="wl-t10" id="wlNetRow" data-go="coins"><span class="n">01</span><span class="lab"><b>Net whale exposure</b><small>long minus short, by notional</small></span><span class="v" id="wlNet">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" data-go="wallet" id="wlBigRow"><span class="n">02</span><span class="lab"><b>Biggest bet on the board</b><small>the single largest open position</small></span><span class="v" id="wlBig">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" data-go="wallet" id="wlNearRow"><span class="n">03</span><span class="lab"><b>Closest to liquidation</b><small>the position the market is nearest to taking</small></span><span class="v" id="wlNear">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlUpnlRow" data-go="sort:pnl"><span class="n">04</span><span class="lab"><b>Whales are up or down</b><small>unrealized P&amp;L across every tracked position</small></span><span class="v" id="wlUpnl">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx1"><span class="n">05</span><span class="lab"><b>Most crowded market</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx2"><span class="n">06</span><span class="lab"><b>Biggest move in the last hour</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx3"><span class="n">07</span><span class="lab"><b>Best trader this month</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx4"><span class="n">08</span><span class="lab"><b>Most leverage on the board</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx5"><span class="n">09</span><span class="lab"><b>Whales who moved today</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
+        <button type="button" class="wl-t10" id="wlTx6"><span class="n">10</span><span class="lab"><b>What the crowded side pays</b><small>&nbsp;</small></span><span class="v">-</span><span class="ch">&rsaquo;</span></button>
       </div>
-      <div class="wl-pulse" id="wlPulse"></div>
-    </div>
+    </section>
 
-    <!-- the glance (owner 2026-09-17): what whales are buying, before any table -->
-    <div class="wl-now" id="wlNow">
-      <div class="wl-nowc"><div class="wl-h2">Where whale money sits <span class="sub">top markets by whale exposure</span></div><div id="wlNowM"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div></div>
-      <div class="wl-nowc"><div class="wl-h2">Latest big moves <span class="sub">executions, newest first</span></div><div id="wlNowT"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div></div>
-    </div>
+    <!-- ── SEGMENT 2: THE LIVE FEED (owner: "takodje treba da ima live feed sta se desava uzivo") ────── -->
+    <section class="wl-sect" id="sLive">
+      <div class="wl-sh"><span class="t">Live</span><span class="s" id="wlLiveS">executions over $250k, newest first</span></div>
+      <div class="wl-feed" id="wlFeed"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+      <button type="button" class="wl-more" id="wlFeedMore" data-go="trades" hidden>See every trade we recorded</button>
+    </section>
 
-    <!-- ── four views, one at a time. The page used to stack every panel on top of the reader at once
-         (owner 2026-09-14: "sad kad otvoris stranicu sve je nabacano i nista se ne vidi lepo"), and an
-         empty right-hand column sat there saying "No recent moves". ─────────────────────────────── -->
+    <!-- ── SEGMENT 3: where the money sits ─────────────────────────────────────────────────────────── -->
+    <section class="wl-sect" id="sMkt">
+      <div class="wl-sh"><span class="t">Where the money sits</span><span class="s">top markets by whale exposure</span></div>
+      <div id="wlNowM"><div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div></div>
+    </section>
+
+    <!-- ── SEGMENT 4: the full board, one view at a time ───────────────────────────────────────────── -->
+    <section class="wl-sect" id="sBoard">
+      <div class="wl-sh"><span class="t">The board</span><span class="s">every position, trade and market we track</span></div>
     <div class="wl-tabs" role="tablist" aria-label="Whale views">
       <button type="button" role="tab" data-view="pos" class="on">Positions</button>
       <button type="button" role="tab" data-view="trades">Trades</button>
@@ -584,6 +744,8 @@
       <p class="wl-note">Ranked by realised profit over the last thirty days across the <b>whole</b> Hyperliquid leaderboard, not only the accounts we track by size - the best trader of a month is usually not the biggest one. Click a row for the full book. <a href="/season/#boards">MarginPad runs its own season boards</a> if you would rather be measured than watched.</p>
     </section>
 
+    </section>
+
     <div class="wl-cta">
       <a class="go" href="/paper-trade">Practice trading - free, no signup →</a>
       <a href="/liquidations/">Liquidations</a>
@@ -596,6 +758,7 @@
          crawler and an assistant read it exactly as before, and a reader opens it only if they want it. -->
     <details class="wl-read"><summary>How to read this board <span>what the numbers mean, and what they do not</span></summary>
     <h2>How to read the whale board</h2>
+    <p>See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perpetual exchange, every whale position is public - real size, real leverage, real liquidation price. This page carries net long versus short exposure, the ten figures that move first, a live feed of executions over $250,000, the largest open positions with live P&amp;L, and a profile for every wallet. Free, no signup.</p>
     <p><strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data - no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style="color:var(--grn)">net long</span> or <span style="color:var(--red)">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile - if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.</p>
     <h2>Whales are context, not a signal</h2>
     <p>A big position is a bet, not a guarantee - whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
@@ -628,6 +791,7 @@
       </div>
       <button type="button" class="wd-x" id="wdX" aria-label="Close">&#10005;</button>
     </div>
+    <div class="wd-prof" id="wdProf" hidden></div>
     <div class="wd-body" id="wdBody">
       <div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>
     </div>
@@ -748,6 +912,7 @@
   /* MEASURED on a 390px phone: the Trades view ran 5.4 screens and By market 8.9, both with no end in sight.
      Every view opens at a screenful and says how many more there are, exactly as the board already did. */
   var NARROW=innerWidth<620, TR_ALL=false, CO_ALL=false, BE_ALL=false;
+  var FEED_N=NARROW?8:12;   /* the live feed is a glance, not the Trades view - the board below holds them all */
   function paintPos(d){
     var box=document.getElementById('wlPos'); if(!box)return;
     var all=d.positions||[], perf=d.perf||{};
@@ -807,7 +972,7 @@
       var coin=mkt(p.sym);
       return '<div class="wl-pr" data-w="'+esc(p.user)+'" role="button" tabindex="0">'+
         '<span class="wl-rk">'+(i+1)+'</span>'+
-        '<span class="wl-who"><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+rec+'</span>'+
+        '<span class="wl-who"><span class="wl-ppl">'+whoAv(p.user,17)+'<b>'+esc(whoName(p.user))+'</b></span><span class="wl-adr">'+esc(shorta(p.user))+'</span>'+rec+'</span>'+
         '<span class="wl-mk" data-coin="'+esc(coin)+'" title="'+esc(coin)+' '+(p.long?'long':'short')+(p.sz?' · '+(+p.sz).toLocaleString('en-US',{maximumFractionDigits:4})+' '+esc(coin):'')+'">'+
           '<img src="/api/coinicon?sym='+encodeURIComponent(coin)+'&v=2" alt="" loading="lazy" onerror="this.remove()">'+
           '<span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'L':'S')+'</span><span class="wl-mkn">'+esc(coin)+'</span></span>'+
@@ -901,8 +1066,50 @@
     return '<div class="c"><div class="k">'+k+'</div><div class="v '+(v>=0?'up':'dn')+'">'+(v==null?'-':spnl(v))+'</div>'+
       '<div class="r">'+(w.vlm?usd(w.vlm)+' vol':'')+'</div></div>';
   }
+  /* ── THE PROFILE HEAD: who this is, what the account is worth, and the one paid action on this page.
+     The bell is a PREMIUM feature (owner: "opcijom da se preko premiuma aktivira alerts za taj profil") and
+     the gate is the SERVER's - the button only ever asks; a guest is sent to sign in, a free member to the
+     price. The standing is read from the server on the first open, so an unknown one shows the neutral
+     state rather than telling a paying member they cannot have it. NO BACKTICKS IN HERE. */
+  var BELL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+  function wdProf(j){
+    var el=document.getElementById('wdProf'); if(!el)return;
+    var a=WD.a||'';
+    var on=WDW.has(a);
+    el.hidden=false;
+    /* the NAME lives in the drawer head (one identity, never two that can disagree); this row is the mark,
+       the real address and the one paid action */
+    el.innerHTML=whoAv(a,46)+
+      '<div class="wh-id" style="flex:1 1 auto;min-width:0">'+
+        '<span class="wh-ad" style="font-size:10px">'+esc(shorta(a))+'</span>'+
+        '<span class="wh-ad" style="color:var(--ink-dim)">'+(j&&j.tracked?'tracked by size':'read from the chain')+'</span>'+
+      '</div>'+
+      '<button type="button" class="wd-bell'+(on?' on':'')+'" id="wdBell" title="'+(on?'Alerts on for this whale':'Get told when this whale moves')+'">'+BELL+'<span>'+(on?'Alerts on':'Alert me')+'</span></button>';
+  }
+  /* the detail behind an open position - drawn only when its row is opened, never for all six at once */
+  function wdPosBody(p,trs){
+    var ot=0; for(var q=0;q<(trs||[]).length;q++){ var tq=trs[q]; if(tq&&tq.act==='open'&&tq.sym===p.sym&&!!tq.long===!!p.long){ ot=+tq.ts||0; break; } }
+    var room=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
+    var bar=room!=null?Math.max(3,Math.min(100,room)):0;
+    var hot=room==null?'':(room<8?'hot':(room<20?'warn':''));
+    return '<div class="wd-p '+(p.long?'l':'s')+'" style="border:0;background:none;padding:0;margin:0">'+
+      '<div class="g">'+
+        '<div><div class="k">ENTRY</div><div class="v">'+px(p.entry)+'</div></div>'+
+        '<div><div class="k">LIQUIDATION</div><div class="v">'+px(p.liq)+'</div></div>'+
+        '<div><div class="k">UNREALIZED</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
+        '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
+        '<div><div class="k">SIZE</div><div class="v">'+usd(p.val)+'</div></div>'+
+        '<div><div class="k">MARGIN MODE</div><div class="v">'+(p.cross?'Cross':'Isolated')+(p.lev?' '+p.lev+'x':'')+'</div></div>'+
+      '</div>'+
+      (room!=null?'<div class="lqb"><i class="'+hot+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
+      '<div class="wd-chart" data-sym="'+esc(mkt(p.sym))+'" data-entry="'+(+p.entry||0)+'" data-liq="'+(+p.liq||0)+'" data-long="'+(p.long?1:0)+'" data-lev="'+(p.lev||'')+'" data-ts="'+ot+'"><div class="wl-sk" style="height:120px"></div></div>'+
+      (p.cross?'<p class="wl-note" style="margin:8px 0 0">Cross margin: the liquidation price is set by this account&rsquo;s whole equity, not by this position alone.</p>':'')+
+    '</div>';
+  }
   function wdRender(j){
     var body=document.getElementById('wdBody'); if(!body)return;
+    WD.j=j;
+    wdProf(j);
     if(!j||!j.ok){ body.innerHTML='<div class="wl-empty">Hyperliquid returned nothing for this address right now.<br>It may hold no open perp position.</div>'; return; }
     var H='';
     H+='<div class="wd-h3">Track record (realised, from Hyperliquid)</div><div class="wd-rec">'+
@@ -923,56 +1130,99 @@
         '<p class="wl-note" style="margin:6px 0 0">Account value moves with deposits and withdrawals as well as trading. The P&amp;L above is trading only.</p>';
     }
     var pos=j.pos||[], trs=j.trades||[];
-    H+='<div class="wd-h3">Open positions'+(pos.length?' ('+pos.length+')':'')+'</div>';
-    if(!pos.length) H+='<div class="wl-empty">Flat right now - no open perpetual position.</div>';
-    else H+=pos.map(function(p){
-      var ot=0; for(var q=0;q<trs.length;q++){ var tq=trs[q]; if(tq&&tq.act==='open'&&tq.sym===p.sym&&!!tq.long===!!p.long){ ot=+tq.ts||0; break; } }
-      var mark=null; /* the profile does not carry a mark; the liq bar is drawn from entry vs liq */
-      var room=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
-      var bar=room!=null?Math.max(3,Math.min(100,room)):0;
-      var cls=room==null?'':(room<8?'hot':(room<20?'warn':''));
-      return '<div class="wd-p '+(p.long?'l':'s')+'">'+
-        '<div class="t"><b>'+esc(mkt(p.sym))+'</b><span class="sd">'+(p.long?'LONG':'SHORT')+'</span>'+
-          (p.lev?'<span class="sd" style="background:rgba(194,246,74,.14);color:var(--lime)">'+p.lev+'×'+(p.cross?' CROSS':' ISO')+'</span>':'')+
-          '<span class="sz">'+usd(p.val)+'</span></div>'+
-        '<div class="g">'+
-          '<div><div class="k">ENTRY</div><div class="v">'+px(p.entry)+'</div></div>'+
-          '<div><div class="k">LIQUIDATION</div><div class="v">'+px(p.liq)+'</div></div>'+
-          '<div><div class="k">UNREALIZED</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
-          '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
-        '</div>'+
-        (room!=null?'<div class="lqb"><i class="'+cls+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
-        '<div class="wd-chart" data-sym="'+esc(mkt(p.sym))+'" data-entry="'+(+p.entry||0)+'" data-liq="'+(+p.liq||0)+'" data-long="'+(p.long?1:0)+'" data-lev="'+(p.lev||'')+'" data-ts="'+ot+'"><div class="wl-sk" style="height:120px"></div></div>'+
-      '</div>';
+    /* ── TWO TABS, ROWS THAT OPEN (owner 2026-10-28: "dole da imaju 2 opcije da se selektuju (open i closed
+       positions) i za obe da ima vise informacija na klik"). Every open position used to be rendered in full
+       with its own chart, so a wallet with six positions was a 2,000px scroll before the executions. ──── */
+    var cls=trs.filter(function(t){ return t&&(t.act==='close'||t.act==='flip'); });
+    H+='<div class="wd-tabs" role="tablist"><button type="button" data-wtab="open" class="on">Open<i>'+pos.length+'</i></button>'+
+       '<button type="button" data-wtab="closed">Closed<i>'+cls.length+'</i></button></div>';
+    H+='<div class="wd-list" id="wdOpenL">';
+    if(!pos.length) H+='<div class="wd-empty">Flat right now - no open perpetual position.</div>';
+    else H+=pos.map(function(p,pi){
+      var room0=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
+      return '<div class="wd-row" data-wr="o'+pi+'">'+
+        '<button type="button" class="wd-rh"><span class="sd '+(p.long?'':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+
+          '<span class="mk">'+esc(mkt(p.sym))+'</span>'+
+          '<span class="me">'+usd(p.val)+(p.lev?' &middot; '+p.lev+'x'+(p.cross?' cross':' iso'):'')+
+            (room0!=null?' &middot; '+room0.toFixed(1)+'% from liq':'')+'</span>'+
+          '<span class="fg '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
+          '<span class="cv">&rsaquo;</span></button>'+
+        '<div class="wd-rb" hidden>'+wdPosBody(p,trs)+'</div></div>';
     }).join('');
-    var tr=j.trades||[];
-    if(tr.length){
-      H+='<div class="wd-h3">Recent executions we recorded</div>'+tr.slice(0,10).map(function(t){
-        var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
-        return '<div class="wl-tr '+(t.long?'l':'s')+'" style="margin-bottom:6px">'+
-          '<span class="clock">'+clock(t.ts)+'<small>'+dayOf(t.ts)+'</small></span>'+
-          '<span class="say"><span class="l1"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' <span class="wl-lev2">'+t.lev+'x</span>':'')+'</span>'+
-            '<span class="l2">avg '+px(t.px)+' · '+t.n+' fill'+(t.n===1?'':'s')+' · '+ago(t.tsEnd)+'</span></span>'+
-          '<span class="amt">'+usd(t.usd)+'</span></div>';
-      }).join('');
-    }
+    H+='</div>';
+    H+='<div class="wd-list" id="wdClosedL" hidden>';
+    if(!cls.length) H+='<div class="wd-empty">No close we recorded yet. We keep every execution over '+usd(250000)+' from the wallets we track.</div>';
+    else H+=cls.map(function(t,ci){
+      var pn=(t.pnl==null?null:+t.pnl);
+      return '<div class="wd-row" data-wr="c'+ci+'">'+
+        '<button type="button" class="wd-rh"><span class="sd '+(t.long?'':'s')+'">'+(t.long?'LONG':'SHORT')+'</span>'+
+          '<span class="mk">'+esc(mkt(t.sym))+'</span>'+
+          '<span class="me">'+usd(t.usd)+' &middot; '+clock(t.ts)+' '+dayOf(t.ts)+'</span>'+
+          '<span class="fg '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?usd(t.usd):spnl(pn))+'</span>'+
+          '<span class="cv">&rsaquo;</span></button>'+
+        '<div class="wd-rb" hidden>'+
+          '<div class="g" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:4px">'+
+            '<div><div class="k">AVERAGE PRICE</div><div class="v">'+px(t.px)+'</div></div>'+
+            '<div><div class="k">REALISED</div><div class="v '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?'not recorded':spnl(pn))+'</div></div>'+
+            '<div><div class="k">FILLS</div><div class="v">'+(t.n||1)+'</div></div>'+
+            '<div><div class="k">LEVERAGE</div><div class="v">'+(t.lev?t.lev+'x':'-')+'</div></div>'+
+          '</div>'+
+          '<p class="wl-note" style="margin:8px 0 0">Executed over '+Math.max(1,Math.round(((t.tsEnd||t.ts)-t.ts)/1000))+'s, '+ago(t.tsEnd||t.ts)+'. '+
+            (pn==null?'Hyperliquid reports realised P&amp;L on the fills themselves; a group we recorded before that field was kept carries none.':'Realised P&amp;L is what the exchange itself booked on these fills.')+'</p>'+
+        '</div></div>';
+    }).join('');
+    H+='</div>';
     H+='<div class="wd-lnk">'+
       '<a class="go" href="/paper-trade">Trade this setup risk-free →</a>'+
       '<a href="'+HL+esc(j.a)+'" target="_blank" rel="noopener">Open on Hyperliquid</a>'+
       '<button type="button" data-copy="'+esc(j.a)+'">Copy address</button></div>';
-    body.innerHTML=H;
-    try{ wdCharts(body,j); }catch(e){}
+    body.innerHTML=H;   /* no charts here: a collapsed row has nothing to draw, and they load as rows open */
+  }
+  /* ── WHALE ALERTS. The list of watched wallets is the member's own; it is read once per page and the
+     server is the only thing that decides whether a member may have one. ─────────────────────────────── */
+  var WDW=(function(){ var s={}; return { has:function(a){return !!s[String(a||'').toLowerCase()];},
+    set:function(a,on){ a=String(a||'').toLowerCase(); if(on)s[a]=1; else delete s[a]; },
+    load:function(l){ s={}; (l||[]).forEach(function(a){ s[String(a||'').toLowerCase()]=1; }); },
+    all:function(){ return Object.keys(s); } }; })();
+  var WDP={prem:null,loaded:false};
+  function wdWatchLoad(){
+    if(WDP.loaded)return; WDP.loaded=true;
+    fetch('/api/alerts/whale',{cache:'no-store',credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      if(!j)return; WDP.prem=!!j.premium; WDW.load(j.addrs||[]);
+      if(WD.open)wdProf(WD.j||null);
+    }).catch(function(){});
+  }
+  function wdBellClick(btn){
+    var a=WD.a; if(!a)return;
+    var on=!WDW.has(a);
+    btn.disabled=true;
+    fetch('/api/alerts/whale',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',
+      body:JSON.stringify({addr:a,on:on})}).then(function(r){return r.json().then(function(j){ j._s=r.status; return j; });}).then(function(j){
+      btn.disabled=false;
+      if(j&&j.ok){ WDW.set(a,on); WDP.prem=true; wdProf(WD.j||null);
+        try{ if(window.mpToast)window.mpToast({msg:on?('Alerts on for '+whoName(a)+' - we will tell you when they open, close or flip a position.'):('Alerts off for '+whoName(a)+'.'),kind:on?'good':'info',key:'whalewatch'}); }catch(_){ }
+        return; }
+      var why=(j&&j.error)||'';
+      if(why==='login_required'){ try{ if(window.mpAuth&&window.mpAuth.open)return window.mpAuth.open('buy'); }catch(_){ } location.href='/rewards/'; return; }
+      if(why==='premium_required'){ btn.classList.add('lock'); btn.querySelector('span').textContent='Premium';
+        try{ if(window.mpToast)window.mpToast({html:'Whale alerts are a <b>Premium</b> feature.',kind:'warn',key:'whaleprem',action:{label:'See Premium',href:'/premium/'}}); }catch(_){ location.href='/premium/'; }
+        return; }
+      if(why==='too_many'){ try{ if(window.mpToast)window.mpToast({msg:'You are already watching '+(j.max||10)+' whales - turn one off first.',kind:'warn',key:'whalemax'}); }catch(_){ } return; }
+      try{ if(window.mpToast)window.mpToast({msg:'Could not save that just now - try again in a moment.',kind:'warn',key:'whaleerr'}); }catch(_){ }
+    }).catch(function(){ btn.disabled=false; });
   }
   function wdOpen(a){
     a=String(a||'').toLowerCase(); if(!/^0x[0-9a-f]{40}$/.test(a))return;
+    wdWatchLoad();
     WD.open=true; WD.a=a;
     var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
     if(dim)dim.hidden=false; if(dr)dr.hidden=false;
     document.documentElement.style.overflow='hidden';
-    var ad=document.getElementById('wdAdr'); if(ad)ad.textContent=a;
+    var ad=document.getElementById('wdAdr'); if(ad)ad.textContent=whoName(a);
     var sub=document.getElementById('wdSub');
     var d=window.__wlLast||{}, pr=(d.perf||{})[a];
     if(sub)sub.textContent=pr?('tracked whale · account '+usd(pr.v)):'reading the chain…';
+    WD.j=null; wdProf(null);
     var body=document.getElementById('wdBody'); if(body)body.innerHTML='<div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>';
     fetch('/api/whale/profile?a='+a).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!WD.open||WD.a!==a)return;   /* the reader moved on before this landed */
@@ -990,6 +1240,19 @@
     var t=e.target;
     if(t.closest&&t.closest('#wdX'))return wdClose();
     if(t.closest&&t.closest('#wdDim'))return wdClose();
+    var bl=t.closest&&t.closest('#wdBell'); if(bl){ wdBellClick(bl); return; }
+    /* the profile's two tabs and the rows that open under them */
+    var wt=t.closest&&t.closest('.wd-tabs button[data-wtab]');
+    if(wt){ var k=wt.getAttribute('data-wtab');
+      [].forEach.call(wt.parentNode.children,function(x){x.classList.toggle('on',x===wt);});
+      var o=document.getElementById('wdOpenL'), c=document.getElementById('wdClosedL');
+      if(o)o.hidden=k!=='open'; if(c)c.hidden=k!=='closed'; return; }
+    var rh=t.closest&&t.closest('.wd-rh');
+    if(rh){ var rw=rh.parentNode, bd=rw.querySelector('.wd-rb'), opn=rw.classList.toggle('open');
+      if(bd){ bd.hidden=!opn;
+        /* the candles are fetched when the row is OPENED, never for every position at once */
+        if(opn&&!bd.getAttribute('data-charted')){ bd.setAttribute('data-charted','1'); try{ wdCharts(bd,WD.j||{}); }catch(_){ } } }
+      return; }
     var cp=t.closest&&t.closest('[data-copy]');
     if(cp){ var v=cp.getAttribute('data-copy');
       try{navigator.clipboard.writeText(v);}catch(_){}
@@ -1002,6 +1265,15 @@
     if(sc){ F.sort=sc.getAttribute('data-s'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
     var hs=t.closest&&t.closest('.wl-thd span[data-sort]');
     if(hs){ var k=hs.getAttribute('data-sort'); F.sort=(F.sort===k&&k!=='val')?'val':k; if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); return; }
+    /* EVERY ONE OF THE TEN LINES GOES SOMEWHERE (owner: "interaktivne, da vode na opsirniji sadrzaj").
+       Taken BEFORE the generic [data-w] row handler, because a line that names a wallet carries both. */
+    var go=t.closest&&t.closest('[data-go]');
+    if(go){ var k=go.getAttribute('data-go')||'', w=go.getAttribute('data-w');
+      if(k==='wallet'&&w){ wdOpen(w); return; }
+      if(k==='sym'){ var sy=go.getAttribute('data-tsym')||''; F.sym=sy; F.sort='val'; setView('pos'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); jumpBoard(); return; }
+      if(k.indexOf('sort:')===0){ F.sym=''; F.sort=k.slice(5); setView('pos'); if(window.__wlLast)paintPos(window.__wlLast); syncChips(); fsum(); jumpBoard(); return; }
+      if(k==='trades'||k==='coins'||k==='best'||k==='pos'){ setView(k); jumpBoard(); return; }
+    }
     var row=t.closest&&t.closest('[data-w]');
     if(row&&!t.closest('a')){ wdOpen(row.getAttribute('data-w')); return; }
     var cr=t.closest&&t.closest('.wl-cr[data-sym]');
@@ -1012,9 +1284,102 @@
     if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.getAttribute&&e.target.getAttribute('data-w')){ e.preventDefault(); wdOpen(e.target.getAttribute('data-w')); }
   });
 
+  /* ── A WALLET IS A PERSON (owner 2026-10-28: "novcanici treba da budu predstavljeni kao ljudi ... nesto
+     univerzalno ali isto tako unikatno, sa nekom random profil ikonicom"). The callsign and the mark are
+     DERIVED from the address, so one wallet wears one face on every surface and nothing has to be stored;
+     the real address is printed beside it everywhere, so a nickname can never be mistaken for an identity
+     we actually know. 48 x 48 x 90 = 207,360 callsigns against about 1,000 tracked wallets. ───────────── */
+  var WH_A=['Quiet','Patient','Iron','Silver','Midnight','Cold','Lucky','Steady','Hidden','Golden','Restless','Narrow','Deep','Swift','Blunt','Crimson','Pale','Hungry','Calm','Sharp','Distant','Early','Heavy','Light','Wild','Stubborn','Gentle','Rough','Sober','Clever','Silent','Bright','Dark','Fast','Slow','Lone','Bold','Grim','Keen','Rusty','Clean','Loose','Tight','Odd','Brave','Polar','Amber','Velvet'];
+  var WH_N=['Marlin','Heron','Otter','Falcon','Badger','Lynx','Raven','Perch','Mantis','Jackal','Osprey','Walrus','Pelican','Ferret','Condor','Gannet','Tapir','Civet','Vulture','Caiman','Grouper','Kestrel','Weasel','Narwhal','Bison','Hornet','Ibis','Shrike','Cobra','Pike','Puffin','Stoat','Tern','Gazelle','Wombat','Dingo','Lemur','Mako','Krill','Manta','Orca','Seal','Crane','Gull','Hawk','Heron','Egret','Ray'];
+  var _wSeq=0;
+  function wHash(a,salt){ var h=2166136261>>>0; a=String(salt||'')+String(a||'').toLowerCase();
+    for(var i=0;i<a.length;i++){ h^=a.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h>>>0; }
+  function whoName(a){ return WH_A[wHash(a)%WH_A.length]+' '+WH_N[wHash(a,'n')%WH_N.length]+' '+(10+(wHash(a,'x')%90)); }
+  function whoAv(a,s){
+    var h=wHash(a), hue=h%360, hue2=(hue+40+(h>>>9)%70)%360, seed=wHash(a,'p');
+    var cells='';
+    for(var y=0;y<5;y++)for(var x=0;x<3;x++){
+      if(!((seed>>>((y*3+x)%29))&1))continue;
+      cells+='<rect x="'+(x*20)+'" y="'+(y*20)+'" width="20" height="20"/>';
+      if(x<2)cells+='<rect x="'+((4-x)*20)+'" y="'+(y*20)+'" width="20" height="20"/>';
+    }
+    /* the gradient id is unique per RENDER - two marks sharing one id both take whichever was parsed first,
+       and the moment that one leaves the DOM the rest render empty (the medal lesson, 2026-10-17) */
+    var gid='wa'+(++_wSeq);
+    return '<svg class="wh-av" width="'+s+'" height="'+s+'" viewBox="0 0 100 100" aria-hidden="true">'+
+      '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1">'+
+      '<stop offset="0" stop-color="hsl('+hue+',64%,58%)"/><stop offset="1" stop-color="hsl('+hue2+',56%,36%)"/></linearGradient></defs>'+
+      '<rect width="100" height="100" rx="20" fill="#0c1016"/>'+
+      '<g fill="url(#'+gid+')" opacity=".93">'+cells+'</g></svg>';
+  }
+  function whoHtml(a,s){ return '<span class="wh">'+whoAv(a,s||22)+'<span class="wh-id"><span class="wh-nm">'+esc(whoName(a))+'</span><span class="wh-ad">'+esc(shorta(a))+'</span></span></span>'; }
+  window.__wlWho=whoName;   /* read-only mirror for the E2E */
+
+  /* ── TEN LINES (owner 2026-10-28: "prvi prozor da budu 10 najbitnijih informacija na tu temu izlistane u
+     redovima, pregledne, citljive, interaktivne"). Rows 1-4 are painted by the hero code above (they reuse
+     its four ids), rows 5-10 here. Every one is a measurement off data already on the page. ───────────── */
+  /* a line that changes the board must TAKE THE READER to the board, or the tap reads as nothing happening */
+  function jumpBoard(){ try{ var s=document.getElementById('sBoard'); if(s)s.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){ } }
+  function t10(id,val,cls,sub,act){
+    var b=document.getElementById(id); if(!b)return;
+    var v=b.querySelector('.v'), s=b.querySelector('small');
+    if(v){ v.textContent=val==null?'-':val; v.className='v'+(cls?' '+cls:''); }
+    if(s)s.innerHTML=sub||'&nbsp;';
+    if(act){ b.setAttribute('data-go',act.go||''); if(act.w)b.setAttribute('data-w',act.w); else b.removeAttribute('data-w');
+             if(act.sym)b.setAttribute('data-tsym',act.sym); }
+  }
+  function paintTop(d){
+    var ES2=((document.documentElement.lang||'').slice(0,2)==='es');
+    var cs=(d.coins||[]), ps=(d.positions||[]), fl=(d.fills||[]), bs=(d.best||[]);
+    /* ROWS 01-04 ARE REPAINTED HERE, after the hero block has written them. They were written as TILE text
+       ("BTC long $27.0M" plus a sub-line inside the value), which on a row is 240px of nowrap that pushes
+       itself off the right edge - measured on a phone, three of the four values were not on screen at all.
+       A row is a short figure on the right and the sentence on the left, always. */
+    var g=d.agg||{}, lo=+g.longUsd||0, sh=+g.shortUsd||0, net=lo-sh;
+    if(lo||sh) t10('wlNetRow',(net>=0?'+':'-')+usd(Math.abs(net)).replace('-',''),net>=0?'up':'dn',
+      (net>=0?(ES2?'neto en long':'net long'):(ES2?'neto en short':'net short'))+' &middot; '+usd(lo+sh)+(ES2?' en total':' on the board'),{go:'coins'});
+    var bigP=ps.slice().sort(function(a,b){return (b.val||0)-(a.val||0);})[0];
+    if(bigP) t10('wlBigRow',usd(bigP.val),bigP.long?'up':'dn',
+      whoName(bigP.user)+' &middot; '+mkt(bigP.sym)+' '+(bigP.long?'long':'short')+(bigP.lev?' '+bigP.lev+'x':''),{go:'wallet',w:bigP.user});
+    var nearP=null,nearD=null; ps.forEach(function(p){ if(!(p.mark>0&&p.liq>0))return; var dd=Math.abs(p.mark-p.liq)/p.mark*100; if(nearD==null||dd<nearD){nearD=dd;nearP=p;} });
+    if(nearP) t10('wlNearRow',nearD.toFixed(1)+'%',nearD<5?'dn':'',
+      whoName(nearP.user)+' &middot; '+mkt(nearP.sym)+' '+(nearP.long?'long':'short')+' '+usd(nearP.val)+(ES2?' &middot; hasta la liquidacion':' &middot; from liquidation'),{go:'wallet',w:nearP.user});
+    var up=+g.upnl||0;
+    if(lo||sh) t10('wlUpnlRow',spnl(up),up>=0?'up':'dn',
+      (ES2?'sobre ':'across ')+(g.count||ps.length||0)+(ES2?' posiciones seguidas':' tracked positions'),{go:'sort:pnl'});
+    /* 05 - the most one-sided market by dollars, which is where a squeeze starts */
+    var cw=null; cs.forEach(function(c){ var n=Math.abs((c.longUsd||0)-(c.shortUsd||0)); if(!cw||n>cw._n){ cw=c; cw._n=n; } });
+    if(cw){ var tot=(cw.longUsd||0)+(cw.shortUsd||0)||1, lp=(cw.longUsd||0)/tot*100, lg=(cw.longUsd||0)>=(cw.shortUsd||0);
+      t10('wlTx1',mkt(cw.sym)+' '+(lg?lp.toFixed(0):(100-lp).toFixed(0))+'% '+(lg?'long':'short'),lg?'up':'dn',
+        usd(cw._n)+(ES2?' en un lado de ':' on one side of ')+usd(tot),{go:'sym',sym:cw.sym}); }
+    /* 06 - the biggest single execution we recorded, with the window it was the biggest OF */
+    var big=null,oldest=0; fl.forEach(function(t){ if(!big||t.usd>big.usd)big=t; if(!oldest||t.ts<oldest)oldest=t.ts; });
+    if(big){ var hrs=oldest?Math.max(1,Math.round((Date.now()-oldest)/3600e3)):24;
+      t10('wlTx2',usd(big.usd),big.long?'up':'dn',
+        whoName(big.user)+' '+(big.act==='close'?(ES2?'cerro':'closed'):(ES2?'abrio':'opened'))+' '+mkt(big.sym)+' '+(big.long?'long':'short')+
+        (ES2?' &middot; lo mayor en '+hrs+' h':' &middot; biggest in '+hrs+'h'),{go:'wallet',w:big.user}); }
+    /* 07 - the best realised month on the whole Hyperliquid leaderboard, not only the wallets we track */
+    if(bs.length){ var b0=bs[0];
+      t10('wlTx3',spnl(b0.pnl),b0.pnl>=0?'up':'dn',
+        (b0.name?esc(b0.name):whoName(b0.user))+(b0.roi!=null?' &middot; '+fmtPct(b0.roi*100)+(ES2?' de retorno':' return'):''),
+        {go:'wallet',w:b0.user}); }
+    /* 08 - the most leveraged open position: the one a small move takes out */
+    var lv=null; ps.forEach(function(p){ if(p.lev>0&&(!lv||p.lev>lv.lev))lv=p; });
+    if(lv) t10('wlTx4',lv.lev+'x',lv.lev>=20?'dn':'',
+      whoName(lv.user)+' &middot; '+mkt(lv.sym)+' '+(lv.long?'long':'short')+' '+usd(lv.val),{go:'wallet',w:lv.user});
+    /* 09 - how many different wallets actually moved, which is the honest measure of a busy day */
+    var seen={},n=0; fl.forEach(function(t){ if(t.user&&!seen[t.user]){seen[t.user]=1;n++;} });
+    t10('wlTx5',String(n),n?'':'',(fl.length+(ES2?' operaciones sobre ':' trades over ')+usd(d.fillMin||250000)),{go:'trades'});
+    /* 10 - what positioning COSTS: the market whose crowded side pays the most funding in a day */
+    var fw=null; cs.forEach(function(c){ if(c.fundDay==null)return; if(!fw||Math.abs(c.fundDay)>Math.abs(fw.fundDay))fw=c; });
+    if(fw) t10('wlTx6',spnl(fw.fundDay),fw.fundDay>=0?'up':'dn',
+      mkt(fw.sym)+' &middot; '+(fw.fundDay<0?(ES2?'el lado lleno paga':'the crowded side pays'):(ES2?'el lado lleno cobra':'the crowded side collects'))+
+      (fw.fund!=null?' &middot; '+fund8(fw.fund)+'/h':''),{go:'coins'});
+  }
+
   /* ── the glance: what whales are buying right now (2026-09-17) ─────────────────────────────── */
   function paintNow(d){
-    var mb=document.getElementById('wlNowM'), tb=document.getElementById('wlNowT'); if(!mb||!tb)return;
+    var mb=document.getElementById('wlNowM'), tb=document.getElementById('wlFeed'); if(!mb||!tb)return;
     var cs=(d.coins||[]).slice().sort(function(a,b){return (b.longUsd+b.shortUsd)-(a.longUsd+a.shortUsd);}).slice(0,5);
     if(cs.length){ mb.innerHTML=cs.map(function(c){ var tot=c.longUsd+c.shortUsd||1, lp=c.longUsd/tot*100, net=c.longUsd-c.shortUsd;
       return '<div class="wl-nm" data-sym="'+esc(c.sym)+'" role="button" tabindex="0" title="'+(((document.documentElement.lang||'').slice(0,2)==='es')?'Ver estas posiciones':'Show these positions')+'">'+
@@ -1022,13 +1387,28 @@
         '<span><span class="nb"><i class="l" style="width:'+lp.toFixed(1)+'%"></i><i class="s" style="width:'+(100-lp).toFixed(1)+'%"></i></span><span class="nl"><span>'+lp.toFixed(0)+'% long</span><span>'+(100-lp).toFixed(0)+'% short</span></span></span>'+
         '<span class="nv '+(net>=0?'up':'dn')+'">'+(net>=0?(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en long':'net long'):(((document.documentElement.lang||'').slice(0,2)==='es')?'neto en short':'net short'))+'<small>'+usd(Math.abs(net))+(((document.documentElement.lang||'').slice(0,2)==='es')?' de ':' of ')+usd(tot)+'</small></span></div>'; }).join(''); }
     else mb.innerHTML='<div class="wl-empty">'+(((document.documentElement.lang||'').slice(0,2)==='es')?'El desglose por mercado aparece con el próximo barrido de posiciones.':'The market breakdown appears with the next position sweep.')+'</div>';
-    var fl=(d.fills||[]).slice(0,4);
-    if(fl.length){ tb.innerHTML=fl.map(function(t){ var act=t.act==='open'?(((document.documentElement.lang||'').slice(0,2)==='es')?'abrió':'opened'):(t.act==='close'?(((document.documentElement.lang||'').slice(0,2)==='es')?'cerró':'closed'):(((document.documentElement.lang||'').slice(0,2)==='es')?'giró a':'flipped to'));
-      return '<div class="wl-nt '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="Open this wallet">'+
-        '<span class="ck">'+clock(t.ts).slice(0,5)+'</span>'+
-        '<span class="tx"><span class="act">'+act+'</span> <b>'+esc(mkt(t.sym))+'</b> '+(t.long?'long':'short')+(t.lev?' '+t.lev+'x':'')+' · '+esc(shorta(t.user))+'</span>'+
-        '<span class="am">'+usd(t.usd)+'</span></div>'; }).join(''); }
-    else tb.innerHTML='<div class="wl-empty">No trade over $'+Math.round((d.fillMin||250000)/1000)+'k recorded yet.</div>';
+    /* THE LIVE FEED (owner 2026-10-28): the same executions, but the row leads with the PERSON who made it
+       and the clock, so the segment reads as something happening rather than as a fourth table. */
+    var ES3=((document.documentElement.lang||'').slice(0,2)==='es');
+    var fl=(d.fills||[]).slice(0,FEED_N);
+    if(fl.length){ tb.innerHTML=fl.map(function(t){
+      var act=t.act==='open'?(ES3?'abrio':'opened'):(t.act==='close'?(ES3?'cerro':'closed'):(ES3?'giro a':'flipped to'));
+      /* WHAT THEY DID SITS UNDER THE NAME, not in a column of its own: on a phone that column had to be
+         hidden and the row then said only that somebody moved money, never whether it was in or out. */
+      return '<div class="wl-fr '+(t.long?'l':'s')+'" data-w="'+esc(t.user)+'" role="button" tabindex="0" title="'+(ES3?'Abrir esta cartera':'Open this wallet')+'">'+
+        '<span class="ck">'+clock(t.ts).slice(0,5)+'<small>'+ago(t.tsEnd)+'</small></span>'+
+        '<span class="wh">'+whoAv(t.user,26)+'<span class="wh-id">'+
+          '<span class="wh-nm">'+esc(whoName(t.user))+'</span>'+
+          '<span class="wh-ad did">'+act+' <b>'+esc(mkt(t.sym))+' '+(t.long?'long':'short')+'</b>'+(t.lev?' '+t.lev+'x':'')+
+            '<em class="ad">&middot; '+esc(shorta(t.user))+'</em></span>'+
+        '</span></span>'+
+        '<span class="amt">'+usd(t.usd)+'</span></div>'; }).join('');
+      var ls=document.getElementById('wlLiveS');
+      if(ls)ls.innerHTML=(ES3?'ejecuciones sobre ':'executions over ')+usd(d.fillMin||250000)+' &middot; <b>'+fl.length+'</b> '+(ES3?'mas recientes':'newest first');
+    }
+    else tb.innerHTML='<div class="wl-empty">'+(ES3?'Todavia no hay operaciones sobre ':'No trade over ')+usd(d.fillMin||250000)+(ES3?' registradas.':' recorded yet.')+'</div>';
+    var mo=document.getElementById('wlFeedMore');
+    if(mo)mo.hidden=!((d.fills||[]).length>FEED_N);
   }
   /* ── the filter sheet ──────────────────────────────────────────────────────────────────────── */
   var FS={open:false,view:'pos'};
@@ -1167,6 +1547,7 @@
     /* the pulse line: what this page is built from and how old it is - the figures used to stand with no "as of" */
     var pl=document.getElementById('wlPulse'); if(pl){ var es=((document.documentElement.lang||'').slice(0,2)==='es'); var hhmm=function(ts){ if(!ts)return '-'; var dt=new Date(ts); return String(TZ==='utc'?dt.getUTCHours():dt.getHours()).padStart(2,'0')+':'+String(TZ==='utc'?dt.getUTCMinutes():dt.getMinutes()).padStart(2,'0'); };
       pl.innerHTML='<span><i></i><b>'+(d.tracked||0)+'</b> '+(es?'carteras seguidas':'wallets tracked')+'</span><span><b>'+((d.agg||{}).count||0)+'</b> '+(es?'posiciones sobre $1M':'positions over $1M')+'</span><span>'+(es?'posiciones a las':'positions as of')+' <b>'+hhmm(d.ts)+'</b></span><span>'+(es?'operaciones a las':'trades as of')+' <b>'+hhmm(d.fillTs)+'</b></span><span>'+(es?'barrido cada 4 min · on-chain':'sweep every 4 min · on-chain')+'</span>'; }
+    try{ paintTop(d); }catch(_){ }
     paintNow(d);
     if(d.positions&&d.positions.length)paintPos(d);
     paintTrades(d);
