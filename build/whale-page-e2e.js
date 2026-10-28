@@ -105,8 +105,14 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
           let hit = false;
           if (first) { first.scrollIntoView({ block: 'center' }); const bb = first.getBoundingClientRect();
             const el = document.elementFromPoint(bb.left + bb.width / 2, bb.top + bb.height / 2); hit = !!(el && first.contains(el)); }
+          /* AN EMPTY SUB-LIST IS NOT AN EMPTY VIEW. This read any `.wl-empty` anywhere in the view, and the
+             Trades view carries a SECOND list under the trades - the position changes - which is empty for
+             the first minutes after every collector restart (the first poll has nothing to diff against)
+             and whenever no whale has moved. Eight real rows were being failed because of it. The invariant
+             is an empty notice standing WHERE THE ROWS SHOULD BE. */
+          const list = rows[0] ? rows[0].parentElement : null;
           return { shown: shown.length, id: sec && sec.id, rows: rows.length, hit,
-                   empty: !!(sec && sec.querySelector('.wl-empty')),
+                   empty: !!(list ? list.querySelector(':scope > .wl-empty') : (sec && sec.querySelector('.wl-empty'))),
                    over: document.documentElement.scrollWidth > window.innerWidth + 1 };
         }, v);
         ok(r.shown === 1, '[' + v + '] exactly one view is on screen', r);
