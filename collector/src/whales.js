@@ -53,6 +53,7 @@ const posByUser = new Map(); // user -> { rows, ts } - the last time we actually
 let timers = [];
 const fillSeen = new Map();   // user -> ms of the newest fill we have already read
 const openGroup = new Map();  // "user|coin|dir" -> the group still collecting fills
+const acctByUser = new Map();  // user -> account totals (equity, whole book, free margin), kept across cycles
 let levByKey = new Map();     // "user|coin" -> leverage, filled by the position poll
 let fillCursor = 0;           // where the rotation stands
 let fill429 = 0;
@@ -152,16 +153,37 @@ async function pollOnce() {
     const universe = core.concat(slice);
     const polledNow = new Set(universe);
     const seen = [];
+    const acctNow = new Map();   // user -> account totals, replaced for the wallets this cycle reached
     let hit429 = 0;
     for (const user of universe) {
       try {
         const st = await post({ type: 'clearinghouseState', user });
+        /* THE ACCOUNT BEHIND THE POSITION. A $25M long means one thing in a $30M book and another in a $400M
+           one, and on cross margin the whole book is what decides where that position liquidates - so the
+           account totals travel with the rows. Free: the same response already carries them. */
+        const ms = st.marginSummary || {};
+        acctNow.set(user, {
+          eq: Math.round(+ms.accountValue || 0),          // what the account is worth
+          book: Math.round(+ms.totalNtlPos || 0),         // notional across every position, ours and the small ones
+          used: Math.round(+ms.totalMarginUsed || 0),
+          free: Math.round(+st.withdrawable || 0),
+          n: (st.assetPositions || []).length,            // positions of EVERY size, not just the ones we publish
+        });
         for (const ap of (st.assetPositions || [])) {
           const p = ap.position || {};
           const val = Math.abs(+p.positionValue || 0);
           if (val < MIN_POS_USD) continue;
           const szi = +p.szi || 0;
           if (!szi) continue;
+          /* THE EXCHANGE ALREADY SAYS ALL OF THIS - we were throwing it away and the page was deriving it
+             (2026-10-28, owner: "pise da je pozicija long otvorena na npr $30 a likvidacija je na $69 sto nema
+             nikakvog smisla"). Three facts settle that complaint and cost NOTHING: this response is already
+             fetched, so `entryPx`, the margin TYPE and the exchange's own return-on-equity are free.
+               The entry was being derived as mark x (1 -/+ pnl/value) - measured against entryPx on six live
+             wallets it is accurate to 0.17%, so the derivation was sound; what was missing is WHY a long's
+             liquidation can sit above its entry. It is CROSS margin: the liquidation price is a function of the
+             whole account's equity, not of this position, and 100% of the positions we track are cross. A reader
+             cannot know that from two numbers, so the flag travels with them. */
           seen.push({
             user, sym: String(p.coin || ''), long: szi > 0,
             lev: +((p.leverage || {}).value) || null,
@@ -169,6 +191,10 @@ async function pollOnce() {
             liq: +p.liquidationPx || null,
             mark: +mids[p.coin] || null,
             pnl: Math.round(+p.unrealizedPnl || 0),
+            ent: +p.entryPx || null,                            // the exchange's own entry, never derived
+            x: ((p.leverage || {}).type === 'cross') ? 1 : 0,   // cross: the liq is set by the whole account
+            roe: (+p.returnOnEquity === 0 || +p.returnOnEquity) ? Math.round(+p.returnOnEquity * 1e4) / 1e4 : null,
+            sz: Math.abs(szi) || null,                          // coins held, so a row can be read in units too
           });
         }
       } catch (e) { if (String(e).includes('429')) hit429++; /* one whale failing must not sink the poll */ }
@@ -246,6 +272,13 @@ async function pollOnce() {
     if (hit429) log.warn('[whales] positions rate limited', { n: hit429, of: universe.length, rotN });
 
     state.positions = found.slice(0, TOP_POSITIONS);
+    // the account totals for the wallets that are actually on the board, and nothing else - a map of 1,000
+    // wallets would be most of the payload for rows nobody can see
+    const onBoard = new Set(state.positions.map(p => p.user));
+    for (const [u, v] of acctNow) acctByUser.set(u, v);
+    for (const u of [...acctByUser.keys()]) if (!posByUser.has(u)) acctByUser.delete(u);
+    state.wallets = {};
+    for (const u of onBoard) { const a = acctByUser.get(u); if (a) state.wallets[u] = a; }
     state.posN = found.length;
     state.pos429 = pos429;
     state.rotN = rotN;
@@ -408,6 +441,7 @@ export function getWhales() {
     ts: state.ts, lbTs: state.lbTs, tracked: state.tracked.length, positions: state.positions, alerts: state.alerts,
     fills: state.fills, fillTs: state.fillTs, fillWatch: Math.min(FILL_TRACK_N, state.tracked.length), fillMin: MIN_TRADE_USD,
     coins: state.coins, best: state.best, perf: perfShown(),
+    wallets: state.wallets || {},
     posN: state.posN || 0, core: Math.min(CORE_N, state.tracked.length),
     pos429: state.pos429 || 0, rotN: state.rotN != null ? state.rotN : ROTATE_N,
     sweepMin: state.tracked.length > CORE_N ? Math.round(((state.tracked.length - CORE_N) / Math.max(1, ROTATE_N)) * 4) : 0,
