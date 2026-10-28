@@ -177,28 +177,47 @@ const CSS = HEADER_CSS + `
   .wl-dim{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:2147483000}
   .wl-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:#0d0f12;border-left:1px solid var(--line-bright);
     z-index:2147483001;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
-  @media(max-width:620px){.wl-drawer{width:100vw;top:auto;height:92vh;border-left:0;border-top:1px solid var(--line-bright);border-radius:16px 16px 0 0}}
-  .wd-h{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--line-bright);flex:0 0 auto}
-  .wd-id{min-width:0;flex:1}
-  .wd-adr{display:block;font-family:'Space Mono',monospace;font-size:14px;font-weight:800;color:var(--ink);word-break:break-all;line-height:1.35}
-  .wd-sub{display:block;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-top:4px}
-  .wd-x{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);font-size:13px;cursor:pointer}
+  /* THE COOKIE NOTICE WINS OVER THE DRAWER, WHATEVER THE DRAWER'S z-index SAYS (found 2026-10-28 by looking):
+     the bar is in flow at the top of the BODY, the drawer lives inside .wrap, and .wrap is its own stacking
+     context - so the drawer's 2147483001 is compared as .wrap's. Measured on a desktop with the notice up,
+     elementFromPoint at the close button answered #mpCkOk and at the bell answered #mpCkBar: a first-time
+     reader could neither close the profile nor arm an alert. The drawer starts below the bar instead, keyed
+     on the class mp-nav puts on the root, so it corrects itself the moment the notice is accepted. */
+  @media(min-width:621px){ html.mp-ckbar .wl-drawer{top:46px} }
+  @media(max-width:620px){
+    .wl-drawer{width:100vw;top:auto;height:92vh;border-left:0;border-top:1px solid var(--line-bright);border-radius:16px 16px 0 0}
+    body.wd-on .mpbn{display:none!important}
+    /* the safe area is still the phone's, bar or no bar */
+    .wd-body{padding-bottom:calc(env(safe-area-inset-bottom) + 22px)}
+  }
+  /* ONE IDENTITY ROW, NOT TWO (2026-10-28, owner: "prostor mora da se optimizuje ... neiskorisceno moze da
+     se skrati"). The head said the name and the row under it said the address and carried the bell - 138px
+     of a 776px phone drawer, 18% of it, for one identity. #wdProf is display:contents now, so the mark
+     it draws and the bell it owns become items of THIS row and wdProf() keeps writing exactly what it
+     wrote. Measured 138 -> 62px. */
+  .wd-h{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid var(--line-bright);flex:0 0 auto}
+  .wd-id{min-width:0;flex:1 1 auto;order:2}
+  .wd-adr{display:block;font-family:'Space Mono',monospace;font-size:14px;font-weight:800;color:var(--ink);line-height:1.3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wd-sub{display:block;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wd-x{order:4;flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line-bright);background:transparent;color:var(--ink-faint);font-size:13px;cursor:pointer}
   .wd-x:hover{color:var(--ink);border-color:var(--lime)}
-  .wd-body{flex:1;overflow-y:auto;padding:14px 16px 30px}
-  .wd-h3{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ink-faint);text-transform:uppercase;margin:18px 0 8px}
+  .wd-body{flex:1;overflow-y:auto;padding:12px 14px 26px}
+  .wd-h3{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ink-faint);text-transform:uppercase;margin:13px 0 6px}
   .wd-h3:first-child{margin-top:0}
   .wd-rec{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-  .wd-rec .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 8px;text-align:center;min-width:0}
+  .wd-rec .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:6px 6px;text-align:center;min-width:0}
   .wd-rec .k{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);letter-spacing:.06em}
-  .wd-rec .v{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+  .wd-rec .v{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;margin-top:2px;overflow:hidden;text-overflow:ellipsis}
   .wd-rec .v.up{color:var(--grn)}.wd-rec .v.dn{color:var(--red)}
   .wd-rec .r{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);margin-top:2px}
   .wd-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:7px}
-  .wd-tiles .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:9px 10px}
+  .wd-tiles .c{background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:6px 9px}
   .wd-tiles .k{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint)}
-  .wd-tiles .v{font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink);margin-top:2px}
-  .wd-curve{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px}
-  .wd-curve svg{display:block;width:100%;height:84px}
+  .wd-tiles .v{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;color:var(--ink);margin-top:1px}
+  .wd-curve{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:8px}
+  .wd-curve svg{display:block;width:100%;height:68px}
   .wd-cfoot{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:6px}
   .wd-p{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;margin-bottom:7px;border-left:3px solid var(--line-bright)}
   .wd-p.l{border-left-color:var(--grn)}.wd-p.s{border-left-color:var(--red)}
@@ -359,9 +378,10 @@ const CSS = HEADER_CSS + `
   /* THE PROFILE: identity + four figures, then two tabs, then rows that open on a click */
   /* it is a SIBLING of .wd-body, not a child, so it carries the drawer's own gutter - without it the bell
      sat flush against the right edge of the screen (measured 390px drawer, button clipped) */
-  .wd-prof{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--line-bright);min-width:0;flex:0 0 auto}
-  .wd-prof .wh-nm{font-size:16px;letter-spacing:0}
-  .wd-prof .wh-ad{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* it is no longer a row of its own: its children ARE the head's items (see .wd-h above) */
+  .wd-prof{display:contents}
+  .wd-prof>svg{order:1;flex:0 0 auto}
+  .wd-prof>.wd-bell{order:3}
   .wd-bell{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.34);
     color:var(--lime);border-radius:9px;padding:7px 11px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
     letter-spacing:.04em;cursor:pointer;text-transform:uppercase;transition:.14s}
@@ -369,7 +389,7 @@ const CSS = HEADER_CSS + `
   .wd-bell.on{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
   .wd-bell.lock{background:rgba(255,255,255,.04);border-color:var(--line-bright);color:var(--ink-faint)}
   .wd-bell svg{width:13px;height:13px;flex:0 0 auto}
-  .wd-tabs{display:flex;gap:6px;margin:16px 0 0}
+  .wd-tabs{display:flex;gap:6px;margin:13px 0 0;position:sticky;top:0;z-index:3;background:#0d0f12;padding:3px 0}
   .wd-tabs button{flex:1 1 0;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
     background:rgba(255,255,255,.03);border:1px solid var(--line-bright);color:var(--ink-dim);border-radius:9px;padding:9px 6px;cursor:pointer;transition:.14s}
   .wd-tabs button i{font-style:normal;opacity:.6;margin-left:4px}
@@ -379,7 +399,7 @@ const CSS = HEADER_CSS + `
   .wd-list{margin-top:10px}
   .wd-row{border-bottom:1px solid var(--line)}
   .wd-rh{display:flex;align-items:center;gap:9px;width:100%;background:none;border:0;color:inherit;font:inherit;text-align:left;
-    padding:10px 4px;cursor:pointer;transition:background .12s}
+    padding:8px 4px;cursor:pointer;transition:background .12s}
   .wd-rh:hover{background:rgba(94,198,255,.06)}
   .wd-rh .sd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:5px;
     background:rgba(46,189,133,.15);color:var(--grn)}
@@ -391,8 +411,29 @@ const CSS = HEADER_CSS + `
   .wd-rh .fg.up{color:var(--grn)}.wd-rh .fg.dn{color:var(--red)}
   .wd-rh .cv{flex:0 0 auto;color:var(--ink-faint);transition:transform .16s}
   .wd-row.open .wd-rh .cv{transform:rotate(90deg);color:var(--lime)}
+  /* ── THE CARD INSIDE AN OPENED ROW (2026-10-28, owner: "nekim karticama su razbijene forme, tekst je malo
+     poludeo i nalazi se posvuda"). The OPEN body's grid was styled as .wd-p .g and the CLOSED body wrote
+     the same markup with no .wd-p around it - so its labels and figures fell back to the page's own type
+     and rendered at 17-20px, two per row, with the whole card twice as tall as it needed to be. The rule is
+     anchored on .wd-rb now, which is what both bodies really have in common; .wd-p .g stays for the
+     card. FOUR columns do not fit 358px either, so a phone gets two and the figures stop being cut. */
   .wd-rb{padding:2px 4px 14px}
+  .wd-rb .g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 10px;margin-top:6px}
+  .wd-rb .g>div{min-width:0}
+  .wd-rb .g .k{font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-faint);text-transform:uppercase}
+  .wd-rb .g .v{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:800;color:var(--ink);margin-top:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wd-rb .g .v.up{color:var(--grn)}.wd-rb .g .v.dn{color:var(--red)}
+  .wd-rb .g .v small{display:block;font-size:8.5px;font-weight:400;color:var(--ink-faint);margin-top:1px}
+  @media(max-width:620px){.wd-rb .g{grid-template-columns:repeat(2,minmax(0,1fr))}}
   .wd-empty{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);padding:16px 4px}
+  .wd-row.wd-more{display:none}
+  .wd-list.all .wd-row.wd-more{display:block}
+  .wd-list.all .wd-showall{display:none}
+  .wd-showall{display:block;width:100%;margin:9px 0 0;padding:9px;background:rgba(255,255,255,.03);border:1px dashed var(--line-bright);
+    border-radius:9px;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;cursor:pointer}
+  .wd-showall:hover{color:var(--ink);border-color:var(--lime)}
   /* ── THE BOARD IS DENSE, AND THE WIDTH CARRIES INFORMATION (2026-10-28, owner: "mnogo treba da se skrola bez
      nekog razloga ... da prostor bude maksimalno iskoriscen"). MEASURED before: a row was 89px and 120 of them
      were a 10,477px wall - 86% of the whole page - while on a 1440px screen roughly 600px of every row was
@@ -810,13 +851,16 @@ ${ld}
   <div class="wl-dim" id="wdDim" hidden></div>
   <aside class="wl-drawer" id="wdDrawer" hidden role="dialog" aria-modal="true" aria-label="Whale profile">
     <div class="wd-h">
+      <!-- #wdProf is display:contents, so the mark it draws and the bell it owns are items of THIS row.
+           It has to BE in the row for that: as a sibling its children became drawer-level items and the
+           bell was laid out full-width under the position list (caught by looking, 2026-10-28). -->
+      <div class="wd-prof" id="wdProf" hidden></div>
       <div class="wd-id">
         <span class="wd-adr" id="wdAdr">-</span>
         <span class="wd-sub" id="wdSub"></span>
       </div>
       <button type="button" class="wd-x" id="wdX" aria-label="Close">&#10005;</button>
     </div>
-    <div class="wd-prof" id="wdProf" hidden></div>
     <div class="wd-body" id="wdBody">
       <div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>
     </div>
@@ -833,6 +877,19 @@ ${ld}
   function px(v){var a=+v||0;if(!a)return '-';if(a>=1000)return '$'+a.toLocaleString('en-US',{maximumFractionDigits:0});if(a>=1)return '$'+a.toFixed(2);return '$'+a.toPrecision(4);}
   function shorta(a){a=String(a||'');return a.length>10?a.slice(0,6)+'…'+a.slice(-4):a;}
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+  /* ONE READING OF THE PAGE'S LANGUAGE for the drawer, which is built entirely in JS and so is outside what
+     gen-pages can translate. The page already asks this question in five places inline; new strings go
+     through T() instead of growing a sixth. */
+  var ESP=(document.documentElement.lang||'').slice(0,2)==='es';
+  function T(en,es){ return (ESP&&es)?es:en; }
+  /* HOW LONG, in two units at most - "3d 4h" reads, "76h" does not (owner 2026-10-28: "koliko dugo je drzao") */
+  function dur(ms){ var s=Math.max(0,Math.round((+ms||0)/1000)); if(s<60)return s+'s';
+    var m=Math.floor(s/60); if(m<60)return m+'m'+(s%60?' '+(s%60)+'s':'');
+    var h=Math.floor(m/60); if(h<48)return h+'h'+(m%60?' '+(m%60)+'m':'');
+    var d=Math.floor(h/24); return d+'d'+(h%24?' '+(h%24)+'h':''); }
+  /* a dust position sits millions of percent from its liquidation, and the row printed every digit of it
+     (measured: "15032395.8% from liq" on a $744 position) - past 999% the exact figure says nothing */
+  function pctAway(v){ return v==null?'':(v>999?'999%+':(v>=100?v.toFixed(0):v.toFixed(1))+'%'); }
   var HL='https://hypurrscan.io/address/';
   /* ── whale trades (2026-09-14, owner: "da izbacuje da je neko kupio 200k BTC long po tom i tom leverage
      u to i to vreme sa vremenskom zonom"). Every row is ONE execution: the collector groups the fills the
@@ -1104,27 +1161,46 @@ ${ld}
     el.hidden=false;
     /* the NAME lives in the drawer head (one identity, never two that can disagree); this row is the mark,
        the real address and the one paid action */
-    el.innerHTML=whoAv(a,46)+
-      '<div class="wh-id" style="flex:1 1 auto;min-width:0">'+
-        '<span class="wh-ad" style="font-size:10px">'+esc(shorta(a))+'</span>'+
-        '<span class="wh-ad" style="color:var(--ink-dim)">'+(j&&j.tracked?'tracked by size':'read from the chain')+'</span>'+
-      '</div>'+
+    /* the mark and the bell are the only things this row owns now - the name is in the head above and the
+       address rides in the sub-line beside it, so one identity is drawn once (see .wd-prof{display:contents}) */
+    el.innerHTML=whoAv(a,38)+
       '<button type="button" class="wd-bell'+(on?' on':'')+'" id="wdBell" title="'+(on?'Alerts on for this whale':'Get told when this whale moves')+'">'+BELL+'<span>'+(on?'Alerts on':'Alert me')+'</span></button>';
+  }
+  /* A LIST OPENS ON A SCREENFUL AND SAYS HOW MANY ARE BEHIND IT - the same rule the board follows. Twenty
+     open positions were 981px of drawer before the reader reached anything else. */
+  function WD_CAP(){ return innerWidth<620?7:12; }
+  /* ONE READING OF "WHEN DID THIS POSITION START", for the row and for the body. An execution of ours is
+     exact; the poll's since is a floor unless sinceX says we watched the key appear. */
+  function wdOpenedAt(p,ot){
+    if(ot) return { ts:ot, exact:true };
+    /* A FLOOR IS ONLY WORTH PRINTING WHEN IT IS LONG. The poll's memory starts when the collector does, so
+       minutes after a restart every position on the chain reads "at least 50s" - true, useless, and it
+       looks like a position opened fifty seconds ago. Under an hour we say nothing at all, which is what we
+       actually know. */
+    if(p&&p.since&&(p.sinceX||Date.now()-(+p.since)>3600000)) return { ts:+p.since, exact:!!p.sinceX };
+    return { ts:0, exact:false };
   }
   /* the detail behind an open position - drawn only when its row is opened, never for all six at once */
   function wdPosBody(p,trs){
     var ot=0; for(var q=0;q<(trs||[]).length;q++){ var tq=trs[q]; if(tq&&tq.act==='open'&&tq.sym===p.sym&&!!tq.long===!!p.long){ ot=+tq.ts||0; break; } }
+    /* WHEN IT WAS OPENED, AND HOW LONG IT HAS STOOD (owner 2026-10-28). Two sources, and they are not the
+       same claim: an execution we recorded is the exact minute the position was opened; the position poll's
+       own memory is only "it already stood here when we first looked", which is a FLOOR and says so. A
+       position with neither is published with neither. */
+    var op=wdOpenedAt(p,ot), now=Date.now();
     var room=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
     var bar=room!=null?Math.max(3,Math.min(100,room)):0;
     var hot=room==null?'':(room<8?'hot':(room<20?'warn':''));
     return '<div class="wd-p '+(p.long?'l':'s')+'" style="border:0;background:none;padding:0;margin:0">'+
       '<div class="g">'+
-        '<div><div class="k">ENTRY</div><div class="v">'+px(p.entry)+'</div></div>'+
-        '<div><div class="k">LIQUIDATION</div><div class="v">'+px(p.liq)+'</div></div>'+
-        '<div><div class="k">UNREALIZED</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
-        '<div><div class="k">'+(p.fund<0?'FUNDING EARNED':'FUNDING PAID')+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
-        '<div><div class="k">SIZE</div><div class="v">'+usd(p.val)+'</div></div>'+
-        '<div><div class="k">MARGIN MODE</div><div class="v">'+(p.cross?'Cross':'Isolated')+(p.lev?' '+p.lev+'x':'')+'</div></div>'+
+        '<div><div class="k">'+T('ENTRY','ENTRADA')+'</div><div class="v">'+px(p.entry)+'</div></div>'+
+        '<div><div class="k">'+T('LIQUIDATION','LIQUIDACIÓN')+'</div><div class="v">'+px(p.liq)+'</div></div>'+
+        '<div><div class="k">'+T('UNREALIZED','NO REALIZADO')+'</div><div class="v '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+(p.roe!=null?' ('+fmtPct(p.roe)+')':'')+'</div></div>'+
+        '<div><div class="k">'+(p.fund<0?T('FUNDING EARNED','FUNDING GANADO'):T('FUNDING PAID','FUNDING PAGADO'))+'</div><div class="v '+(p.fund<=0?'up':'dn')+'">'+(p.fund?usd(Math.abs(p.fund)):'-')+'</div></div>'+
+        '<div><div class="k">'+T('SIZE','TAMAÑO')+'</div><div class="v">'+usd(p.val)+'</div></div>'+
+        '<div><div class="k">'+T('MARGIN MODE','MODO DE MARGEN')+'</div><div class="v">'+(p.cross?T('Cross','Cruzado'):T('Isolated','Aislado'))+(p.lev?' '+p.lev+'x':'')+'</div></div>'+
+        '<div><div class="k">'+(op.exact?T('OPENED','ABIERTA'):T('FIRST SEEN','VISTA POR PRIMERA VEZ'))+'</div><div class="v">'+(op.ts?clock(op.ts)+'<small>'+dayOf(op.ts)+'</small>':'-<small>'+T('before our window','antes de nuestra ventana')+'</small>')+'</div></div>'+
+        '<div><div class="k">'+T('HELD','MANTENIDA')+'</div><div class="v">'+(op.ts?(op.exact?'':'&ge; ')+dur(now-op.ts)+'<small>'+(op.exact?T('since it was opened','desde que se abrió'):T('already standing then','ya estaba abierta entonces'))+'</small>':'-<small>'+T('opened before our feed','abierta antes de nuestro feed')+'</small>')+'</div></div>'+
       '</div>'+
       (room!=null?'<div class="lqb"><i class="'+hot+'" style="width:'+bar.toFixed(0)+'%"></i></div>':'')+
       '<div class="wd-chart" data-sym="'+esc(mkt(p.sym))+'" data-entry="'+(+p.entry||0)+'" data-liq="'+(+p.liq||0)+'" data-long="'+(p.long?1:0)+'" data-lev="'+(p.lev||'')+'" data-ts="'+ot+'"><div class="wl-sk" style="height:120px"></div></div>'+
@@ -1165,37 +1241,61 @@ ${ld}
     if(!pos.length) H+='<div class="wd-empty">Flat right now - no open perpetual position.</div>';
     else H+=pos.map(function(p,pi){
       var room0=(p.entry&&p.liq)?Math.abs(p.entry-p.liq)/p.entry*100:null;
-      return '<div class="wd-row" data-wr="o'+pi+'">'+
+      var op0=wdOpenedAt(p,0);
+      /* the sub-line is one line and it was being cut mid-word on every row (measured: 19 of them at 390px).
+         It carries what decides a read - size, leverage, how far the liquidation is - and the WORDS around
+         them are what went: "60.5% from liq" is "liq 60.5%" and a dust position says "999%+" instead of
+         fifteen million percent. */
+      return '<div class="wd-row'+(pi>=WD_CAP()?' wd-more':'')+'" data-wr="o'+pi+'">'+
         '<button type="button" class="wd-rh"><span class="sd '+(p.long?'':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+
           '<span class="mk">'+esc(mkt(p.sym))+'</span>'+
-          '<span class="me">'+usd(p.val)+(p.lev?' &middot; '+p.lev+'x'+(p.cross?' cross':' iso'):'')+
-            (room0!=null?' &middot; '+room0.toFixed(1)+'% from liq':'')+'</span>'+
+          '<span class="me">'+usd(p.val)+(p.lev?' &middot; '+p.lev+'x':'')+
+            (room0!=null?' &middot; liq '+pctAway(room0):'')+
+            (op0.ts?' &middot; '+(op0.exact?'':'&ge;')+dur(Date.now()-op0.ts):'')+'</span>'+
           '<span class="fg '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
           '<span class="cv">&rsaquo;</span></button>'+
         '<div class="wd-rb" hidden>'+wdPosBody(p,trs)+'</div></div>';
     }).join('');
+    if(pos.length>WD_CAP()) H+='<button type="button" class="wd-showall" data-wshow="wdOpenL">'+T('Show all ','Ver las ')+pos.length+T(' positions',' posiciones')+'</button>';
     H+='</div>';
     H+='<div class="wd-list" id="wdClosedL" hidden>';
     if(!cls.length) H+='<div class="wd-empty">No close we recorded yet. We keep every execution over '+usd(250000)+' from the wallets we track.</div>';
     else H+=cls.map(function(t,ci){
       var pn=(t.pnl==null?null:+t.pnl);
-      return '<div class="wd-row" data-wr="c'+ci+'">'+
+      /* WHEN IT WAS OPENED, AND FOR HOW LONG IT WAS HELD (owner 2026-10-28: "mozemo da damo informacije o
+         vremenu, kad je otvoren trejd, kad zatvoren, koliko dugo je drzao"). The close is ours to the
+         second; the OPEN is known when we also recorded the execution that opened it, which is a plain
+         search of this wallet's own feed for the newest open of the same market and side before it. When
+         that is not there the row says so - a hold time we did not measure is never printed. */
+      var op=0; for(var z=0;z<trs.length;z++){ var o=trs[z];
+        if(o&&o.act==='open'&&o.sym===t.sym&&!!o.long===!!t.long&&o.ts<t.ts){ op=+o.ts||0; break; } }
+      var held=op?(t.ts-op):0;
+      var exN=Math.max(1,Math.round(((t.tsEnd||t.ts)-t.ts)/1000));
+      return '<div class="wd-row'+(ci>=WD_CAP()?' wd-more':'')+'" data-wr="c'+ci+'">'+
         '<button type="button" class="wd-rh"><span class="sd '+(t.long?'':'s')+'">'+(t.long?'LONG':'SHORT')+'</span>'+
           '<span class="mk">'+esc(mkt(t.sym))+'</span>'+
-          '<span class="me">'+usd(t.usd)+' &middot; '+clock(t.ts)+' '+dayOf(t.ts)+'</span>'+
+          '<span class="me">'+usd(t.usd)+(t.lev?' &middot; '+t.lev+'x':'')+(held?' &middot; '+T('held ','dur. ')+dur(held):'')+' &middot; '+ago(t.tsEnd||t.ts)+'</span>'+
           '<span class="fg '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?usd(t.usd):spnl(pn))+'</span>'+
           '<span class="cv">&rsaquo;</span></button>'+
         '<div class="wd-rb" hidden>'+
-          '<div class="g" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:4px">'+
-            '<div><div class="k">AVERAGE PRICE</div><div class="v">'+px(t.px)+'</div></div>'+
-            '<div><div class="k">REALISED</div><div class="v '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?'not recorded':spnl(pn))+'</div></div>'+
-            '<div><div class="k">FILLS</div><div class="v">'+(t.n||1)+'</div></div>'+
-            '<div><div class="k">LEVERAGE</div><div class="v">'+(t.lev?t.lev+'x':'-')+'</div></div>'+
+          '<div class="g">'+
+            '<div><div class="k">'+T('OPENED','ABIERTA')+'</div><div class="v">'+(op?clock(op)+'<small>'+dayOf(op)+'</small>':'-<small>'+T('not in our feed','no está en nuestro feed')+'</small>')+'</div></div>'+
+            '<div><div class="k">'+T('CLOSED','CERRADA')+'</div><div class="v">'+clock(t.tsEnd||t.ts)+'<small>'+dayOf(t.tsEnd||t.ts)+'</small></div></div>'+
+            '<div><div class="k">'+T('HELD','MANTENIDA')+'</div><div class="v">'+(held?dur(held)+'<small>'+T('open to close','de apertura a cierre')+'</small>':'-<small>'+T('open not recorded','apertura sin registrar')+'</small>')+'</div></div>'+
+            '<div><div class="k">'+T('LEVERAGE','APALANCAMIENTO')+'</div><div class="v">'+(t.lev?t.lev+'x'+(t.levAt?'<small>'+T('as last seen','última lectura')+'</small>':'<small>'+T('at the close','en el cierre')+'</small>'):'-<small>'+T('not published once closed','no se publica al cerrar')+'</small>')+'</div></div>'+
+            '<div><div class="k">'+T('SIZE','TAMAÑO')+'</div><div class="v">'+usd(t.usd)+'</div></div>'+
+            '<div><div class="k">'+T('AVERAGE PRICE','PRECIO MEDIO')+'</div><div class="v">'+px(t.px)+'</div></div>'+
+            '<div><div class="k">'+T('FILLS','EJECUCIONES')+'</div><div class="v">'+(t.n||1)+'<small>'+T('over ','en ')+dur(exN*1000)+'</small></div></div>'+
+            '<div><div class="k">'+T('REALISED','REALIZADO')+'</div><div class="v '+(pn==null?'':(pn>=0?'up':'dn'))+'">'+(pn==null?'-':spnl(pn))+'<small>'+(pn==null?T('not recorded','sin registrar'):T('booked by the exchange','contabilizado por el exchange'))+'</small></div></div>'+
           '</div>'+
-          '<p class="wl-note" style="margin:8px 0 0">Executed over '+Math.max(1,Math.round(((t.tsEnd||t.ts)-t.ts)/1000))+'s, '+ago(t.tsEnd||t.ts)+'. '+
-            (pn==null?'Hyperliquid reports realised P&amp;L on the fills themselves; a group we recorded before that field was kept carries none.':'Realised P&amp;L is what the exchange itself booked on these fills.')+'</p>'+
+          '<p class="wl-note" style="margin:8px 0 0">'+
+            (pn==null?T('Hyperliquid reports realised P&amp;L on the fills themselves; a group we recorded before that field was kept carries none. ','Hyperliquid informa el P&amp;L realizado en las propias ejecuciones; un grupo que registramos antes de guardar ese campo no lo lleva. '):'')+
+            (t.levAt?T('The leverage is the last reading taken while the position was still open (','El apalancamiento es la última lectura tomada mientras la posición seguía abierta (')+ago(t.levAt)+T('), because a closed position no longer reports one. ','), porque una posición cerrada ya no lo publica. '):'')+
+            (op?'':T('We record executions over ','Registramos ejecuciones de más de ')+usd(250000)+T(', so a position opened in smaller pieces - or before this wallet was tracked - has no open on our side. ',', así que una posición abierta en trozos más pequeños - o antes de seguir esta cartera - no tiene apertura de nuestro lado. '))+
+            T('Times are ','Horas en ')+zoneAbbr()+'.</p>'+
         '</div></div>';
     }).join('');
+    if(cls.length>WD_CAP()) H+='<button type="button" class="wd-showall" data-wshow="wdClosedL">'+T('Show all ','Ver los ')+cls.length+T(' closes',' cierres')+'</button>';
     H+='</div>';
     H+='<div class="wd-lnk">'+
       '<a class="go" href="/paper-trade">Trade this setup risk-free →</a>'+
@@ -1243,15 +1343,21 @@ ${ld}
     var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
     if(dim)dim.hidden=false; if(dr)dr.hidden=false;
     document.documentElement.style.overflow='hidden';
+    /* the drawer is the whole screen on a phone, so the site's own tab bar is a dimmed shape behind it
+       doing nothing - and it was covering the last rows of the list (measured: five elements under it).
+       Hidden while the drawer is open, exactly as the Browse drawer and the Spot sheets do it. */
+    try{ document.body.classList.add('wd-on'); }catch(_){ }
     var ad=document.getElementById('wdAdr'); if(ad)ad.textContent=whoName(a);
     var sub=document.getElementById('wdSub');
     var d=window.__wlLast||{}, pr=(d.perf||{})[a];
-    if(sub)sub.textContent=pr?('tracked whale · account '+usd(pr.v)):'reading the chain…';
+    if(sub)sub.textContent=shorta(a)+(pr?(' · account '+usd(pr.v)):' · reading the chain…');
     WD.j=null; wdProf(null);
     var body=document.getElementById('wdBody'); if(body)body.innerHTML='<div class="wl-sk"></div><div class="wl-sk"></div><div class="wl-sk"></div>';
     fetch('/api/whale/profile?a='+a).then(function(r){return r.ok?r.json():null;}).then(function(j){
       if(!WD.open||WD.a!==a)return;   /* the reader moved on before this landed */
-      if(sub&&j&&j.equity)sub.textContent='account '+usd(j.equity)+(j.ntl?' · '+usd(j.ntl)+' at risk':'');
+      /* the account's notional is already a tile of its own below, so the narrow sub-line stops at the
+         account value rather than ellipsising the words off the end of it */
+      if(sub&&j&&j.equity)sub.textContent=shorta(a)+' · '+usd(j.equity)+((j.ntl&&innerWidth>=620)?' · '+usd(j.ntl)+' at risk':'');
       wdRender(j);
     }).catch(function(){ wdRender(null); });
   }
@@ -1259,6 +1365,7 @@ ${ld}
     WD.open=false;
     var dim=document.getElementById('wdDim'), dr=document.getElementById('wdDrawer');
     if(dim)dim.hidden=true; if(dr)dr.hidden=true;
+    try{ document.body.classList.remove('wd-on'); }catch(_){ }
     if(!FS.open)document.documentElement.style.overflow='';
   }
   document.addEventListener('click',function(e){
@@ -1272,6 +1379,8 @@ ${ld}
       [].forEach.call(wt.parentNode.children,function(x){x.classList.toggle('on',x===wt);});
       var o=document.getElementById('wdOpenL'), c=document.getElementById('wdClosedL');
       if(o)o.hidden=k!=='open'; if(c)c.hidden=k!=='closed'; return; }
+    var sa=t.closest&&t.closest('.wd-showall');
+    if(sa){ var lst=document.getElementById(sa.getAttribute('data-wshow')); if(lst)lst.classList.add('all'); return; }
     var rh=t.closest&&t.closest('.wd-rh');
     if(rh){ var rw=rh.parentNode, bd=rw.querySelector('.wd-rb'), opn=rw.classList.toggle('open');
       if(bd){ bd.hidden=!opn;
@@ -1496,9 +1605,11 @@ ${ld}
         if(entry>0){ var ey=Y(entry); s+='<line x1="'+PL+'" y1="'+ey.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ey.toFixed(1)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/>';
           var ex=W-PR-2; if(ots){ for(var k=0;k<b.length;k++){ if(b[k].time*1000>=ots){ex=X(k);break;} } }
           s+='<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="4.5" fill="'+col+'" stroke="#0a0c0f" stroke-width="1.5"/>';
-          s+='<text x="'+(W-PR+4)+'" y="'+(ey+3).toFixed(1)+'" fill="'+col+'" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">ENTRY '+esc(px(entry).replace('$',''))+'</text>'; }
+          /* ANCHORED TO THE EDGE, NOT TO THE GUTTER'S LEFT: a six-figure price ran 5px past the viewBox and was
+             cut on the right (measured on BTC at 390px). Ending the text at the edge cannot overflow at any price. */
+          s+='<text x="'+(W-2)+'" y="'+(ey+3).toFixed(1)+'" text-anchor="end" fill="'+col+'" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">ENTRY '+esc(px(entry).replace('$',''))+'</text>'; }
         if(liq>0){ if(liqIn){ var ly=Y(liq); s+='<line x1="'+PL+'" y1="'+ly.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ly.toFixed(1)+'" stroke="#ff5a4d" stroke-width="1.4" stroke-dasharray="5 4"/>';
-            s+='<text x="'+(W-PR+4)+'" y="'+(ly+3).toFixed(1)+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq).replace('$',''))+'</text>'; }
+            s+='<text x="'+(W-2)+'" y="'+(ly+3).toFixed(1)+'" text-anchor="end" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq).replace('$',''))+'</text>'; }
           else { var ay=isL?H-PB:PT+6; s+='<text x="'+PL+'" y="'+ay+'" fill="#ff5a4d" font-size="8.5" font-family="Space Mono,monospace" font-weight="700">LIQ '+esc(px(liq))+' · '+(isL?'far below':'far above')+' this window</text>'; } }
         var cy=Y(last); s+='<circle cx="'+(W-PR-2).toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="2.5" fill="#fff"/>';
         s+='</svg>';

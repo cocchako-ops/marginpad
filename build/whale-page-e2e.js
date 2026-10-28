@@ -316,6 +316,93 @@ const URL = 'https://marginpad.io/hyperliquid-whales/?nc=1&cb=';
       ok(px.openHidden === true && px.closedShown === true, 'the Closed tab switches the list', px);
       ok(px.closedRows >= 0, 'the closed list is built from the executions we recorded (' + px.closedRows + ')', px);
 
+      /* ── ROUND FOUR (2026-10-28, owner: "nekim karticama su razbijene forme, tekst je malo poludeo i nalazi
+         se posvuda ... prostor mora da se optimizuje ... za closed positions ne pise koji je leverage ...
+         mozemo da damo informacije o vremenu ... neke stvari se nece videti od nav bar-a"). Four separate
+         faults, so four separate statements. ─────────────────────────────────────────────────────────── */
+      const card = await p.evaluate(async () => {
+        const dw = document.getElementById('wdDrawer');
+        const txt = (el) => ((el || {}).textContent || '').replace(/\s+/g, ' ').trim();
+        /* A CHECK THAT SKIPS IS NOT PROOF. The first row of the board belongs to whichever wallet is biggest,
+           and that wallet may have no close in the window we keep - so if it has none, move to a wallet the
+           live feed says does, and judge the closed card there. */
+        if (!document.querySelector('#wdClosedL .wd-row')) {
+          const f = ((window.__wlLast || {}).fills || []).find(x => x && (x.act === 'close' || x.act === 'flip'));
+          const el = f && [...document.querySelectorAll('[data-w]')].find(x => (x.getAttribute('data-w') || '').toLowerCase() === String(f.user).toLowerCase());
+          if (el) { el.click(); await new Promise(r => setTimeout(r, 5200)); }
+        }
+        // open EVERY row that is on screen in both lists, so no card is judged unseen
+        for (const t of ['closed', 'open']) {
+          const tb = document.querySelector('.wd-tabs button[data-wtab="' + t + '"]'); if (tb) tb.click();
+          await new Promise(r => setTimeout(r, 200));
+          const list = document.getElementById(t === 'open' ? 'wdOpenL' : 'wdClosedL');
+          for (const rh of [...(list ? list.querySelectorAll('.wd-row:not(.wd-more) .wd-rh') : [])].slice(0, 4)) { rh.click(); await new Promise(r => setTimeout(r, 120)); }
+        }
+        await new Promise(r => setTimeout(r, 400));
+        // A BROKEN CARD IS TEXT THAT DOES NOT FIT ITS OWN BOX. The closed body wrote the same markup as the
+        // open one with no .wd-p around it, so its labels rendered at the page's own size, two per row.
+        const cut = [];
+        for (const c of dw.querySelectorAll('.wd-rb *, .wd-h *')) {
+          // an SVG node reports clientWidth 0, so it reads as clipped whatever it does - the labels drawn
+          // inside a chart are judged against their own viewBox below instead
+          if (c.ownerSVGElement || c.tagName === 'svg' || c.children.length || !txt(c)) continue;
+          const r = c.getBoundingClientRect(); if (r.height < 4) continue;
+          if (c.scrollWidth > c.clientWidth + 1) cut.push(txt(c).slice(0, 30));
+        }
+        const svgOver = [...dw.querySelectorAll('.wd-chart svg text')].filter((t) => {
+          const vb = (t.ownerSVGElement.viewBox.baseVal || {}).width || 0; if (!vb) return false;
+          const bb = t.getBBox(); return bb.x < -0.5 || bb.x + bb.width > vb + 0.5;
+        }).map((t) => txt(t).slice(0, 28));
+        const labs = [...dw.querySelectorAll('.wd-rb .g .k')];
+        const labPx = labs.length ? Math.max(...labs.map(k => Math.round(parseFloat(getComputedStyle(k).fontSize)))) : 0;
+        /* a row CLICK TOGGLES, and the chart leg above has already opened the first one - so ask for an open
+           row, and open one only when there is none. Reading "the first open row" after a blind pass over
+           four of them is how this came back empty the first time. */
+        const bodyOf = async (id) => {
+          const tb = document.querySelector('.wd-tabs button[data-wtab="' + (id === 'wdOpenL' ? 'open' : 'closed') + '"]');
+          if (tb) tb.click(); await new Promise(r => setTimeout(r, 220));
+          let row = document.querySelector('#' + id + ' .wd-row.open');
+          if (!row) { const rh = document.querySelector('#' + id + ' .wd-row:not(.wd-more) .wd-rh'); if (rh) rh.click(); await new Promise(r => setTimeout(r, 350)); row = document.querySelector('#' + id + ' .wd-row.open'); }
+          return row ? txt(row.querySelector('.wd-rb')) : '';
+        };
+        const cBody = await bodyOf('wdClosedL');
+        const oBody = await bodyOf('wdOpenL');
+        const bar = document.querySelector('.mpbn');
+        const barShown = !!(bar && getComputedStyle(bar).display !== 'none');
+        const dd = dw.getBoundingClientRect();
+        let under = 0;
+        if (barShown) { const bt = bar.getBoundingClientRect().top;
+          for (const c of dw.querySelectorAll('*')) { if (c.children.length || !txt(c)) continue; const r = c.getBoundingClientRect(); if (r.height > 3 && r.top < bt && r.bottom > bt + 2) under++; } }
+        const head = document.querySelector('.wd-h');
+        const hit = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); const h = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!(h && (el === h || el.contains(h))); };
+        return { cut, svgOver, labPx, cBody, oBody, barShown, under,
+          headH: head ? Math.round(head.getBoundingClientRect().height) : 0,
+          headMark: !!(head && head.querySelector('#wdProf svg')), headBell: !!(head && head.querySelector('#wdBell')),
+          xHit: hit(document.getElementById('wdX')), bellHit: hit(document.getElementById('wdBell')),
+          ckUp: document.documentElement.classList.contains('mp-ckbar'),
+          shown: document.querySelectorAll('#wdOpenL .wd-row:not(.wd-more)').length,
+          hidden: document.querySelectorAll('#wdOpenL .wd-row.wd-more').length,
+          showAll: !!document.querySelector('#wdOpenL .wd-showall'),
+          wide: [...dw.querySelectorAll('*')].filter(c => c.getBoundingClientRect().right > dd.right + 1).length };
+      });
+      ok(!card.cut.length, 'no card in the drawer cuts its own text', card.cut.slice(0, 6));
+      ok(!card.svgOver.length, 'and no label on a position chart is drawn past its own edge', card.svgOver.slice(0, 5));
+      ok(card.labPx > 0 && card.labPx <= 10, 'both bodies are styled by the same rule - a label is small type, not a heading (' + card.labPx + 'px)', card.labPx);
+      ok(card.wide === 0, 'and nothing in it reaches past the drawer', card.wide);
+      // the owner's three facts about a closed trade
+      if (card.cBody) {
+        ok(/LEVERAGE/.test(card.cBody) && /\dx|not published/.test(card.cBody), 'a closed position states its leverage, or says why it has none', card.cBody.slice(0, 120));
+        ok(/OPENED/.test(card.cBody) && /CLOSED/.test(card.cBody), 'and when it was opened and closed', card.cBody.slice(0, 120));
+        ok(/HELD/.test(card.cBody), 'and how long it was held', card.cBody.slice(0, 160));
+      } else { ok(true, 'no close recorded for this wallet right now - the closed card cannot be judged', 'skipped'); }
+      ok(/OPENED|FIRST SEEN/.test(card.oBody) && /HELD/.test(card.oBody), 'an open position says how long it has stood there', card.oBody.slice(0, 140));
+      // one identity row, and it is reachable even with the cookie notice up (the drawer sits inside .wrap,
+      // which is its own stacking context - the notice used to be what answered a click on the close button)
+      ok(card.headMark && card.headBell && card.headH <= 72, 'the identity is ONE row: the mark, the name, the bell and the close (' + card.headH + 'px)', card);
+      ok(card.xHit && card.bellHit, 'the close and the bell answer a click' + (card.ckUp ? ' with the cookie notice up' : ''), card);
+      if (w < 620) ok(!card.barShown && card.under === 0, 'the site tab bar is not drawn over the drawer, and nothing hides under it', card);
+      ok(card.hidden === 0 || card.showAll, 'a long list opens on a screenful and says how many are behind it', { shown: card.shown, hidden: card.hidden, showAll: card.showAll });
+
       const cl = await p.evaluate(async () => {
         document.getElementById('wdX').click();
         await new Promise(r => setTimeout(r, 350));
