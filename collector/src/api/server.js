@@ -4,6 +4,7 @@ import express from 'express';
 import { config } from '../../config.js';
 import { log } from '../logger.js';
 import { getWhales, getWhaleOne } from '../whales.js';
+import { EXPORTS } from '../storage/sqlite.js';
 
 // ---- tiny in-memory rate limiter (per IP per minute) ----
 const hits = new Map();
@@ -106,27 +107,47 @@ export function createApiServer({ storage, getStatus, bus, bookCols = [], tapeCo
   // Full-day raw dump for the R2 archive (worker cron, 1 call/day). Gated by EXPORT_KEY (droplet .env -
   // NOT in the repo, repo is public). Gzip CSV so a ~65k-row day ships as ~1MB. Completed UTC days only:
   // the archive must be immutable - a partial "today" would get overwritten logic on the worker side instead.
+  // ONE EXPORT FOR EVERY DATASET (2026-10-28): `ds` picks a row of EXPORTS (storage/sqlite.js) - liquidations
+  // (the default, byte-identical to the old export), agg5m, oi, funding_oi, whale_fills, whale_pos. A day older
+  // than that dataset's retention answers 410 `pruned` so the archive can write it down as gone instead of
+  // asking every ten minutes for ever; `x-rows`, `x-ds` and `x-cols` let the caller verify what it received.
+  // `GET /api/v1/export?list=1` publishes the table itself (no key) so the worker and the e2e read ONE definition.
+  const RET_DAYS = { raw: () => config.retentionDays, agg: () => config.aggRetentionDays || 90, hist: () => config.histRetentionDays || 14 };
   app.get('/api/v1/export', async (req, res) => {
+    if (req.query.list) {
+      const out = {}; for (const [k, v] of Object.entries(EXPORTS)) out[k] = { cols: v.cols, tsCol: v.tsCol, retentionDays: RET_DAYS[v.ret] ? RET_DAYS[v.ret]() : null };
+      res.set('Cache-Control', 'public, max-age=300'); return res.json({ datasets: out });
+    }
     const key = req.headers['x-export-key'] || '';
     if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) return res.status(403).json({ error: 'forbidden' });
+    const ds = String(req.query.ds || 'liquidations');
+    const spec = EXPORTS[ds];
+    if (!spec) return res.status(400).json({ error: 'bad_dataset', datasets: Object.keys(EXPORTS) });
     const day = String(req.query.day || '');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return res.status(400).json({ error: 'bad_day' });
     const d0 = Date.parse(day + 'T00:00:00Z');
     if (!isFinite(d0) || d0 + 86400000 > Date.now()) return res.status(400).json({ error: 'day_not_complete' });
+    const retDays = RET_DAYS[spec.ret] ? RET_DAYS[spec.ret]() : 0;
+    // the prune deletes rows older than NOW - retention, so a day whose START is past that line is already partial
+    if (retDays > 0 && d0 < Date.now() - retDays * 86400000) return res.status(410).json({ error: 'pruned', ds, day, retentionDays: retDays });
     try {
-      const rows = await storage.async.exportDay(d0, d0 + 86400000);
-      let csv = 'ts,exchange,symbol,side,price,qty,notional\n';
+      const rows = await storage.async.exportDs(ds, d0, d0 + 86400000);
+      const cols = spec.cols.split(',');
+      let csv = spec.cols + '\n';
       const chunks = [];
+      const cell = (v) => { if (v == null) return ''; const s = String(v); return /[,\n\r"]/.test(s) ? s.replace(/[,\n\r"]/g, ' ') : s; }; // no text column here legitimately carries a comma; a stray one must not shift the row
       for (const r of rows) {
-        csv += r.ts + ',' + r.exchange + ',' + r.symbol + ',' + r.side + ',' + r.price + ',' + r.qty + ',' + r.notional + '\n';
+        let line = '';
+        for (let i = 0; i < cols.length; i++) line += (i ? ',' : '') + cell(r[cols[i]]);
+        csv += line + '\n';
         if (csv.length > 1 << 20) { chunks.push(csv); csv = ''; } // bound peak string size
       }
       chunks.push(csv);
       const { gzipSync } = await import('node:zlib');
       const gz = gzipSync(Buffer.concat(chunks.map(c => Buffer.from(c))));
-      res.set({ 'Content-Type': 'application/gzip', 'Cache-Control': 'no-store', 'x-rows': String(rows.length) });
+      res.set({ 'Content-Type': 'application/gzip', 'Cache-Control': 'no-store', 'x-rows': String(rows.length), 'x-ds': ds, 'x-cols': spec.cols, 'x-retention-days': String(retDays) });
       res.send(gz);
-    } catch (e) { log.error('export failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+    } catch (e) { log.error('export failed', { ds, e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
   // aggregated liquidation market pulse (heatmap page bottom section): 1h/4h/12h/24h totals + per-coin + per-exchange

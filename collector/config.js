@@ -37,6 +37,13 @@ export const config = {
   maxEventUsd: Number(process.env.MP_MAX_EVENT_USD || 50_000_000),
   retentionDays: 14,         // raw events kept 14 days (live/feed/pulse read <=7d; every day is archived to R2 liq/<day>.csv.gz by the worker before it ages out). Was 30 until 2026-09-02: 743MB DB, 2M rows, aggregate queries stalling the socket thread.
   aggRetentionDays: 90,      // 5-min aggregates (histogram windows, max 30d) kept 90 days — were kept forever (196MB and growing)
+  // THE HISTORY TABLES (2026-10-28): oi_snap (hourly OI in USD + funding for every Bybit USDT perp) and the two
+  // whale tables (published trade groups, hourly position snapshots). oi_snap was pruned after 50 HOURS - the only
+  // funding-rate history this project had was thrown away two days after it was written. Everything in this class
+  // is exported to the market archive (R2 v1/<dataset>/<day>.csv.gz) by the worker before it ages out; the
+  // retention only has to outlive a missed archive run by a comfortable margin, and 14 days of oi_snap is ~300k
+  // small rows. The archive is where the history lives - this is the staging area.
+  histRetentionDays: 14,
   aggIntervalMs: 60_000,     // roll new raw rows into 5-min aggregates every 60s
   pruneIntervalMs: 6 * 3600_000,
   oiPollMs: 120_000,         // Phase 2: poll Open Interest per symbol every 2 min (staggered)

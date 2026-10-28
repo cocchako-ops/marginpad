@@ -334,6 +334,7 @@ async function pollOnce() {
     state.sweptAt = nowTs;
     state.ts = nowTs;
     state.lastErr = '';
+    recordPositions(nowTs); // hourly durable snapshot of the published board (008)
   } catch (e) { state.lastErr = 'poll: ' + String(e).slice(0, 120); log.warn('[whales] poll failed', { e: String(e).slice(0, 160) }); }
 }
 const alertOf = p => ({ user: p.user, sym: p.sym, long: p.long, liq: p.liq, val: p.val });
@@ -417,6 +418,7 @@ async function drainPending() {
   for (const r of rows) state.fills.push(r);
   state.fills.sort((a, b) => b.ts - a.ts);
   if (state.fills.length > MAX_FILLS) state.fills.length = MAX_FILLS;
+  recordFills(rows); // the durable copy, after the live publish (008)
 }
 
 // Fold one wallet's fills into the open groups. Fills arrive newest-first from the API; we walk them
@@ -491,7 +493,27 @@ async function pollFills() {
   } catch (e) { state.fillErr = String(e).slice(0, 120); log.warn('[whales] fills poll failed', { e: String(e).slice(0, 160) }); }
 }
 
-export function startWhales() {
+/* WHAT IS PUBLISHED IS WRITTEN DOWN (2026-10-28, migration 008). Everything above lives in memory on purpose
+   - the LIVE answer must not wait on a disk - but a restart emptied the whole feed and the 120-row ring held
+   about 2.4 hours of the entire market, so a whale's trade from noon was gone by evening. Two writes, both
+   AFTER the in-memory publish and both inside their own try: a published trade group goes into whale_fill
+   the moment it is published, and the published board goes into whale_pos once an hour. The store is handed
+   in by index.js; with none (tests, the e2e harness) nothing here changes. */
+let whaleStore = null;
+let lastPosSnap = 0;
+const POS_SNAP_MS = 3600e3;
+function recordFills(rows) {
+  if (!whaleStore || !whaleStore.insertWhaleFills || !rows.length) return;
+  try { const n = whaleStore.insertWhaleFills(rows); if (n) log.info('[whales] fills recorded', { n }); } catch (e) { log.warn('[whales] fills record failed', { e: String(e).slice(0, 120) }); }
+}
+function recordPositions(nowTs) {
+  if (!whaleStore || !whaleStore.insertWhalePos || !state.positions.length) return;
+  if (nowTs - lastPosSnap < POS_SNAP_MS) return;
+  lastPosSnap = nowTs;
+  try { const n = whaleStore.insertWhalePos(nowTs, state.positions, state.wallets || {}); log.info('[whales] positions snapshot', { n }); } catch (e) { log.warn('[whales] position snapshot failed', { e: String(e).slice(0, 120) }); }
+}
+export function startWhales(storage) {
+  whaleStore = storage || null;
   (async () => { await refreshLeaderboard(); await poll(); await pollFills(); })();
   timers.push(setInterval(refreshLeaderboard, 3600e3));
   timers.push(setInterval(poll, 240e3));

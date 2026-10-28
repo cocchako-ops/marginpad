@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Daily DB backup. Aggregates are IRREPLACEABLE (raw events are pruned after 30 days) — back them up.
+# Local whole-DB snapshot (optional). Since 2026-10-28 every table is archived day by day to R2 (marginpad-market,
+# v1/<dataset>/<day>.csv.gz) by the worker's archiveMarket cron - that archive is the system of record, not this file.
+# Raw events are pruned after 14 days, aggregates after 90 (collector/config.js).
 # Run from cron, e.g.:  0 4 * * *  cd /srv/collector && ./backup.sh >> logs/backup.log 2>&1
 set -euo pipefail
 

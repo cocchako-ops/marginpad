@@ -14,8 +14,14 @@ exchange websockets ──► collectors/{binance,bybit,okx}.js   (one adapter p
                               │  normalized event { ts, exchange, symbol, side, price, qty, notional }
                               ▼
                         storage (SQLite now → Postgres later)
-                          ├─ liquidations (raw, 30-day retention)
-                          └─ agg_5m (notional per symbol / 5-min / price-bucket / side — kept forever)
+                          ├─ liquidations (raw, 14-day retention - config.retentionDays)
+                          ├─ agg_5m (notional per symbol / 5-min / price-bucket / side - 90 days, config.aggRetentionDays)
+                          ├─ oi (OI per symbol x venue every 2 min, 14 days) · oi_snap (hourly OI USD + funding, every Bybit perp, 14 days)
+                          └─ whale_fill / whale_pos (what the Hyperliquid tracker publishes, 14 days - migration 008)
+                              │  every one of these is pulled day by day into the MARKET ARCHIVE (Cloudflare R2
+                              │  bucket marginpad-market, v1/<dataset>/<day>.csv.gz) by the worker's archiveMarket
+                              │  cron through GET /api/v1/export?ds=<dataset>&day=<UTC day> BEFORE it ages out here.
+                              │  The database is a two-week staging area; the archive is where the history lives.
                               ▼
                         read API  /api/v1/liquidations/{recent,live,stream}  +  /api/v1/status
                               ▲
@@ -97,9 +103,15 @@ Edit `config.js` → `symbols` (and optionally `bucketSize`). Restart. That's it
 
 ## Backups
 
-`./backup.sh` snapshots the DB (SQLite `.backup`, or `pg_dump` for Postgres) and prunes to 14 local copies.
-Add a daily cron and an **off-site copy to Cloudflare R2** (see the commented `rclone` line) — aggregates
-can't be regenerated once raw data is pruned.
+The durable copy of every table is the **market archive** in R2 (see Architecture): the worker pulls each
+dataset one UTC day at a time through `/api/v1/export?ds=&day=` (gated by `EXPORT_KEY` in `.env`), verifies the
+header, the row count and the hour coverage, and writes `v1/<dataset>/<day>.csv.gz` with the row count and a
+sha256 in the object's metadata. `GET /api/v1/export?list=1` publishes the dataset table (no key). Coverage and
+gaps are read at `https://marginpad.io/api/admin/market` (mp-ops Health > Market archive).
+
+`./backup.sh` is a LOCAL whole-database snapshot (SQLite `.backup`, needs the `sqlite3` CLI, which the droplet does
+not have - `VACUUM INTO` through `node:sqlite` does the same, see `backups/` on the box). It is a convenience, not
+the system of record: with the day-by-day archive in place nothing in this database is unrecoverable.
 
 ## Monitoring
 

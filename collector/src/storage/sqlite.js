@@ -6,6 +6,20 @@ import { dirname, join } from 'node:path';
 import { bucketSizeFor } from '../../config.js';
 import { log } from '../logger.js';
 
+// THE DATASETS THE MARKET ARCHIVE CAN PULL (2026-10-28). One UTC day per call, through /api/v1/export?ds=&day=.
+// `cols` IS the CSV header (the worker refuses a body whose first line differs), `sql` takes (dayStartMs,
+// dayEndMs), `ret` names the config retention class that decides when a day is pruned here - the export
+// answers 410 for a day older than that, so the archive can record "gone before it was archived" instead
+// of asking for ever. `tsCol` is the column the worker uses for hour coverage and the inside-the-day check.
+export const EXPORTS = {
+  liquidations: { cols: 'ts,exchange,symbol,side,price,qty,notional', sql: 'SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts', ret: 'raw', tsCol: 'ts' },
+  agg5m:        { cols: 'symbol,win_start,price_bucket,side,notional,cnt', sql: 'SELECT symbol,win_start,price_bucket,side,notional,cnt FROM agg_5m WHERE win_start>=? AND win_start<? ORDER BY win_start,symbol,price_bucket,side', ret: 'agg', tsCol: 'win_start' },
+  oi:           { cols: 'ts,symbol,exchange,oi_base,price', sql: 'SELECT ts,symbol,exchange,oi_base,price FROM oi WHERE ts>=? AND ts<? ORDER BY ts,symbol,exchange', ret: 'raw', tsCol: 'ts' },
+  funding_oi:   { cols: 'ts,symbol,oi_usd,funding', sql: 'SELECT ts,symbol,oi_usd,funding FROM oi_snap WHERE ts>=? AND ts<? ORDER BY ts,symbol', ret: 'hist', tsCol: 'ts' },
+  whale_fills:  { cols: 'ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd', sql: 'SELECT ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd FROM whale_fill WHERE ts>=? AND ts<? ORDER BY ts,user,sym', ret: 'hist', tsCol: 'ts' },
+  whale_pos:    { cols: 'ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq', sql: 'SELECT ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq FROM whale_pos WHERE ts>=? AND ts<? ORDER BY ts,val DESC', ret: 'hist', tsCol: 'ts' },
+};
+
 export function createSqliteStorage(path, opts = {}) {
   mkdirSync(dirname(path), { recursive: true });
   // readOnly: a second connection for the reader worker thread. WAL lets it read while the main thread
@@ -240,13 +254,33 @@ export function createSqliteStorage(path, opts = {}) {
   function pruneOi(days) { ensure(); return Number(db.prepare('DELETE FROM oi WHERE ts<?').run(Date.now() - days * 86400000).changes); }
 
   // ---- screener extra: hourly OI snapshots + per-symbol 24h liquidation aggregates ----
-  function saveOiSnap(rows) { ensure();
+  // `keepDays` was a hardcoded 50 HOURS until 2026-10-28: the one place this collector holds a FUNDING RATE
+  // history (every Bybit USDT perp, hourly) was thrown away two days after it was written, and nothing archived
+  // it. The screener's 24h delta only needs two days; the market archive (worker archiveMarket, R2
+  // v1/funding_oi/<day>) needs the day to still be here when it is pulled, so it is config.histRetentionDays now.
+  function saveOiSnap(rows, keepDays) { ensure();
     const st = db.prepare('INSERT INTO oi_snap(ts,symbol,oi_usd,funding) VALUES (?,?,?,?)');
     db.exec('BEGIN');
     try { for (const r of rows) st.run(r.ts, r.symbol, r.oi, (r.f != null && isFinite(r.f)) ? r.f : null); db.exec('COMMIT'); }
     catch (e) { db.exec('ROLLBACK'); throw e; } // node:sqlite has no .transaction() helper (that's better-sqlite3)
-    db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - 50 * 3600000); // keep ~2 days
+    db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - (Number(keepDays) > 0 ? Number(keepDays) * 86400000 : 50 * 3600000));
   }
+  // ---- whale tracker history (migration 008): what whales.js publishes, written down ----
+  function insertWhaleFills(rows) { ensure();
+    const st = db.prepare('INSERT OR IGNORE INTO whale_fill(ts,ts_end,user,sym,act,long,usd,sz,px,n,lev,pnl,liq,pos_usd) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    let n = 0; db.exec('BEGIN');
+    try { for (const r of rows) { const x = st.run(+r.ts || 0, +r.tsEnd || +r.ts || 0, String(r.user || '').toLowerCase(), String(r.sym || ''), r.act || null, r.long ? 1 : 0, +r.usd || 0, +r.sz || 0, +r.px || 0, +r.n || 0, r.lev > 0 ? +r.lev : null, +r.pnl || 0, r.liq > 0 ? +r.liq : null, r.posUsd > 0 ? +r.posUsd : null); n += Number(x.changes); } db.exec('COMMIT'); }
+    catch (e) { db.exec('ROLLBACK'); throw e; }
+    return n;
+  }
+  function insertWhalePos(ts, rows, wallets) { ensure();
+    const st = db.prepare('INSERT OR IGNORE INTO whale_pos(ts,user,sym,long,val,sz,lev,liq,mark,ent,pnl,x,eq) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    let n = 0; db.exec('BEGIN');
+    try { for (const p of rows) { const w = (wallets && wallets[p.user]) || null; const x = st.run(+ts, String(p.user || '').toLowerCase(), String(p.sym || ''), p.long ? 1 : 0, +p.val || 0, p.sz > 0 ? +p.sz : null, p.lev > 0 ? +p.lev : null, p.liq > 0 ? +p.liq : null, p.mark > 0 ? +p.mark : null, p.ent > 0 ? +p.ent : null, +p.pnl || 0, p.x ? 1 : 0, w && w.eq > 0 ? +w.eq : null); n += Number(x.changes); } db.exec('COMMIT'); }
+    catch (e) { db.exec('ROLLBACK'); throw e; }
+    return n;
+  }
+  function pruneWhale(days) { ensure(); const cut = Date.now() - days * 86400000; return Number(db.prepare('DELETE FROM whale_fill WHERE ts<?').run(cut).changes) + Number(db.prepare('DELETE FROM whale_pos WHERE ts<?').run(cut).changes); }
   function oi24h() { ensure(); return cached('oi24h', 60000, () => oi24hRaw()); }
   function oi24hRaw() {
     const last = db.prepare('SELECT MAX(ts) t FROM oi_snap').get();
@@ -296,10 +330,19 @@ export function createSqliteStorage(path, opts = {}) {
   function exportDay(d0, d1) { ensure();
     return db.prepare('SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts').all(d0, d1);
   }
+  // ONE DAY OF ONE DATASET, for the market archive (2026-10-28). `EXPORTS` (below, exported) is the single
+  // table of what can be archived: the column list is the CSV header the worker verifies against, and the
+  // retention class says which config figure decides when a day is gone. Add a dataset here and in
+  // MARKET_DS in the worker - nowhere else.
+  function exportDs(ds, d0, d1) { ensure();
+    const spec = EXPORTS[ds]; if (!spec) throw new Error('unknown dataset: ' + ds);
+    return db.prepare(spec.sql).all(d0, d1);
+  }
 
   return { migrate, insert, aggregateNew, histogram, series, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
-    saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay,
+    saveOiSnap, oi24h, liqBySymbol, pulse, liqSum, exportDay, exportDs,
+    insertWhaleFills, insertWhalePos, pruneWhale,
     saveState, loadState,
     close: () => db.close() };
 }

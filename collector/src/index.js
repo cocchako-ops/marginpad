@@ -253,7 +253,7 @@ function getStatus() {
 }
 
 function aggregateTick() { try { const n = storage.aggregateNew(); if (n) log.info('aggregated', { rows: n }); } catch (e) { log.error('aggregate failed', { e: String(e) }); } }
-function pruneTick() { try { const n = storage.prune(config.retentionDays); const oi = storage.pruneOi ? storage.pruneOi(config.retentionDays) : 0; const agg = storage.pruneAgg ? storage.pruneAgg(config.aggRetentionDays || 90) : 0; if (n || oi || agg) log.info('pruned', { raw: n, oi, agg }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
+function pruneTick() { try { const n = storage.prune(config.retentionDays); const oi = storage.pruneOi ? storage.pruneOi(config.retentionDays) : 0; const agg = storage.pruneAgg ? storage.pruneAgg(config.aggRetentionDays || 90) : 0; const wh = storage.pruneWhale ? storage.pruneWhale(config.histRetentionDays || 14) : 0; if (n || oi || agg || wh) log.info('pruned', { raw: n, oi, agg, whale: wh }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
 
 async function main() {
   log.info('starting collector', { symbols: config.symbols.length, exchanges: collectors.map((c) => c.name) });
@@ -271,7 +271,7 @@ async function main() {
     ringTimer = setInterval(() => { persistRings('timer').catch((e) => log.warn('ring persist failed', { e: String((e && e.message) || e) })); }, STATE_EVERY_MS);
     ringTimer.unref?.();
   } else log.info('book + tape disabled (MP_BOOK=0)');
-startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
+startWhales(storage); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/); writes what it publishes into whale_fill / whale_pos (008)
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
@@ -288,7 +288,7 @@ startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid
         const v = parseFloat(t.openInterestValue);
         if (v > 0) rows.push({ ts, symbol: String(t.symbol).replace(/USDT$/, ''), oi: v, f: parseFloat(t.fundingRate) * 100 }); // funding stored as % (e.g. 0.01)
       }
-      if (rows.length) { storage.saveOiSnap(rows); log.info('oi snapshot', { n: rows.length }); }
+      if (rows.length) { storage.saveOiSnap(rows, config.histRetentionDays || 14); log.info('oi snapshot', { n: rows.length }); }
     } catch (e) { log.error('oi snapshot failed', { e: String(e) }); }
   }
   oiSnapTick();
