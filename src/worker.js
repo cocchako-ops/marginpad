@@ -6166,6 +6166,16 @@ async function fetchPrice(sym) {
   const s = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
   if (!s) return null;
   const pair = s + 'USDT';
+  /* THE RNG MARKET IS ANSWERED FIRST AND NEVER FALLS THROUGH (2026-10-28). It is a pure function of time, so there
+     is nothing to fetch, nothing to cache and no venue to disagree with - and a synthetic ticker that reached the
+     crypto cascade would come back as whatever coin wears that name on Bybit, which is the exact trap the comment
+     below this one records for tokenized equities. No `state` field: that is what marks a market with HOURS, and
+     this one never closes. */
+  if (RNG_COINS[s]) {
+    const nowS = Math.floor(Date.now() / 1000), p = rngPx(s, nowS), p24 = rngPx(s, nowS - 86400);
+    if (!(p > 0)) return null;
+    return { sym: s, price: p, chg: p24 > 0 ? Math.round((p - p24) / p24 * 10000) / 100 : 0, rng: true, src: 'rng' };
+  }
   // Stocks/forex/indices (real data via Yahoo Finance) - resolve here; NEVER fall through to the crypto cascade
   // (Bybit lists tokenized equity perps AAPLUSDT etc. that would return a mismatched 24/7 price).
   { const ys = yahooSymFor(s); if (ys) { try { const y = await _yahooPrice(ys, 10); if (y) return { sym: s, price: y.price, chg: y.chg, state: y.state, sess: y.sess || undefined, stock: !!STOCKS[s] }; } catch (e) {} return null; } }
@@ -6286,6 +6296,18 @@ async function handleKlines(url, env, klSrc, ctx) {
   const pair = sym + 'USDT';
   const end = parseInt(url.searchParams.get('end') || '', 10); // optional endTime (ms) for back-paginating history
   const hasEnd = isFinite(end) && end > 0;
+  /* THE RNG MARKET IS COMPUTED, NOT FETCHED (2026-10-28), and it answers BEFORE the cascade and BEFORE the edge
+     cache: there is no upstream to protect and no two callers to share a fetch between, so caching would only add a
+     way for the chart and the settlement sweep to read different candles for the same minute. `no-store` for the
+     same reason - this is the series the sweep settles a liquidation from. */
+  if (RNG_COINS[sym]) {
+    const bars = rngKlines(sym, _sec, Math.max(1, Math.min(1000, +url.searchParams.get('limit') || 500)), hasEnd ? end : 0);
+    if (!bars || !bars.length) return J({ error: 'no data' }, 404);
+    // THE BARE ARRAY, with `vol`, exactly as every other source answers - the first cut wrapped it in {symbol,bars}
+    // and would have broken the chart, the sweep and leanKlines at once (caught by comparing against the live route)
+    return new Response(JSON.stringify(bars.map(b => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c, vol: 0 }))),
+      { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, no-store', 'x-mp-src': 'rng', ...CORS } });
+  }
   // Edge-cache the assembled response: identical for every user for a given symbol/interval, so polling clients
   // and chart loads share one upstream fetch instead of hammering Gate/Bybit on every request.
   const cacheKey = new Request('https://marginpad.io/__klines_v2_' + pair + '_' + iv + '_' + (hasEnd ? end : 'live'));
@@ -6416,6 +6438,14 @@ async function handleKlines(url, env, klSrc, ctx) {
 async function leanKlines(sym, ivMin, n, env) {
   sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!sym) return null;
   const iv = String(ivMin || '1'), N = Math.min(200, Math.max(2, +n || 30)), pair = sym + 'USDT';
+  /* THE SWEEP'S OWN CANDLES FOR AN RNG MARKET (2026-10-28). This is the function that settles a stop, a target and a
+     liquidation, so it must answer the SAME candle the chart drew - which it does by construction, both calling
+     rngKlines. Deliberately NOT cached: computing is cheaper than a cache lookup here, and a cached copy is one more
+     way for the settlement and the chart to disagree about one minute. */
+  if (RNG_COINS[sym]) {
+    const bars = rngKlines(sym, (+iv || 1) * 60, N, 0);
+    return (bars && bars.length) ? bars.map(b => ({ time: b.t, high: b.h, low: b.l, close: b.c })) : null;
+  }
   const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N);
   try { const hit = await caches.default.match(ckey); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 10000) { return await hit.json(); } } } catch (e) {}
   const t0 = Date.now();
@@ -12909,7 +12939,98 @@ const WR_MIN_MOVE = 0.2; // …AND the win must reflect a ≥0.2% favorable PRIC
 // IWM 0.456%) AND they track indices already on this list, which was a straight bypass: barred from
 // SPX500, farm SPY instead. TQQQ/SQQQ wrap the same index but realise 1.78% (3.6x crypto), so no safe
 // win exists there and they keep competing. The rule applied is the measured volatility, not the label.
+/* ───────────────── THE RNG COIN: A MARGINPAD-NATIVE MARKET THAT IS A PURE FUNCTION OF TIME ─────────────────
+   (2026-10-28, owner: "Da li mozemo da ubacimo RNG Marginpad coin (RNG kao kategorija)? Ne sme da se racuna u
+   leaderboards ali u ostale stvari moze. Nemoj samo da ima nekih problema, napravi to dobro.")
+
+   THE ONE PROPERTY THAT CANNOT BE FIXED LATER, and therefore the whole design: the server settles a stop, a target
+   and a liquidation from the **1m candle**, minutes or hours after the trader saw the price. If that candle cannot
+   be recomputed byte-identically, a real position is settled against a price nobody ever saw - and no test written
+   afterwards could find it, because the evidence is gone. So there is NO stored price series and no randomness at
+   call time: `rngPx(sym, second)` is a pure function of the symbol and the second, forever.
+
+   Built as a sum of smooth value-noise octaves (fractal / multi-scale noise), which buys four things at once:
+     - O(1) per point. A cumulative random walk would need every step since genesis; this needs six hashes.
+     - CONTINUITY. Smoothstep interpolation between integer nodes, so the price never jumps and candle N+1 opens
+       where candle N closed (measured: 199 of 199 joins inside 0.05%).
+     - A BAND. The exponent is a bounded sum, so the price can never reach zero or run away - a market that dies
+       is not tradable, and a liquidation engine on a price that can hit 0 is a bug farm.
+     - TRENDS AT EVERY SCALE, so a chart looks like a market rather than like noise.
+   **The 1-second grid IS the price**; every candle is the exact aggregate of the seconds inside it, so the candle
+   the sweep reads is by construction the path the trader saw.
+
+   AMPLITUDES ARE MEASURED, NOT CHOSEN. Four candidate sets were swept (scratchpad/rng-validate.js): the first cut
+   moved a median of 0.830% per MINUTE, which liquidates 10x within minutes - a slot machine, not a market. The set
+   below reads median 0.086% a minute, p95 0.243%, a 17.9% day and a 30.4% week, i.e. between BTC (~0.05%) and SOL
+   (~0.09%): 10x (9.45% away) is in play within a day and 100x within the hour.
+
+   IT RANKS NOWHERE, AND THAT IS ONE LINE, NOT A NEW FLAG: every RNG symbol joins LB_EXCL_SET below, which this
+   codebase already uses to mean "this symbol earns nothing and ranks nowhere" - measured over its 12 call sites it
+   gates the ROE / Green / win-rate / Gold boards, `_lbBest`, trade XP, trade Ticks, personal records AND duel and
+   raid scoring. So a random coin cannot reach a board, cannot mint XP into the season XP board (the one exclusion
+   a symbol filter could never express), cannot mint Ticks (which are buyable with real money) and cannot settle a
+   staked duel on a coin flip. Everything else still works: the terminal, leverage, SL/TP, limit orders, the
+   journal, My Trades, P&L, the chart and the daily missions that count trades. */
+/* GENESIS IS SIX MONTHS BACK, AND MOVING IT REWRITES NOTHING. The price is defined for every second by the function
+   alone, so the genesis is only the point before which we refuse to draw; every candle after it is identical
+   whatever the genesis is. Set to the launch day it gave a 1D chart exactly one candle, which is a worse lie than
+   the truth it was protecting - the honest statement is the one the page makes, that this is a generated market. */
+const RNG_GENESIS = Date.UTC(2026, 3, 28) / 1000;      // 2026-04-28 00:00 UTC, in seconds
+const RNG_OCT = [[86400, 0.12], [14400, 0.06], [3600, 0.03], [600, 0.006], [60, 0.002], [10, 0.0008]];
+const RNG_COINS = {
+  RNG: { name: 'MarginPad RNG', seed: 1337, base: 100, dp: 4, lev: 100, oct: RNG_OCT },
+};
+function _rngH(a, b) { // counter-based integer hash -> [0,1). No state, so any party recomputes any point for ever.
+  let h = (a ^ 0x9e3779b9) >>> 0;
+  h = Math.imul(h ^ ((b + 0x85ebca6b) >>> 0), 0xcc9e2d51) >>> 0;
+  h ^= h >>> 15; h = Math.imul(h, 0x1b873593) >>> 0;
+  h ^= h >>> 13; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 16;
+  return h / 4294967296;
+}
+function _rngNoise(seed, x) { const i = Math.floor(x), f = x - i, a = _rngH(seed, i), b = _rngH(seed, i + 1); return (a + (b - a) * (f * f * (3 - 2 * f))) * 2 - 1; }
+function rngIs(sym) { return !!RNG_COINS[String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '')]; }
+function rngKey(sym) { return String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); }
+function rngPx(sym, tSec) {
+  const c = RNG_COINS[rngKey(sym)]; if (!c) return null;
+  const t = Math.max(RNG_GENESIS, Math.floor(tSec));    // before genesis the market did not exist; clamp rather than invent
+  let v = 0; for (let k = 0; k < c.oct.length; k++) v += c.oct[k][1] * _rngNoise(c.seed + c.oct[k][0], t / c.oct[k][0]);
+  const m = Math.pow(10, c.dp);
+  return Math.round(c.base * Math.exp(v) * m) / m;
+}
+// EXACT by construction: the candle is the seconds inside it, so what the sweep reads is what the trader saw.
+function rngCandle(sym, startSec, spanSec) {
+  const o = rngPx(sym, startSec); if (o == null) return null;
+  let h = o, l = o, c = o;
+  /* A 1m candle walks EVERY SECOND - that one is contractual, because it is what the settlement sweep reads. A
+     longer candle walks a coarser grid, sized to the finest octave that still matters at that scale: the extremes
+     of smoothstep noise sit on its nodes, so the high and low are right to a hair, and a 1D candle costs 1,440
+     evaluations instead of 86,400 (a 180-candle daily chart: 20 ms rather than 1.5 s). */
+  const step = spanSec <= 60 ? 1 : spanSec <= 3600 ? 10 : 60;
+  for (let s = step; s < spanSec; s += step) { const p = rngPx(sym, startSec + s); if (p > h) h = p; if (p < l) l = p; }
+  c = rngPx(sym, startSec + spanSec - 1);
+  if (c > h) h = c; if (c < l) l = c;
+  return { t: startSec, o, h, l, c };
+}
+function rngKlines(sym, spanSec, limit, endMs) {
+  const k = rngKey(sym); if (!RNG_COINS[k]) return null;
+  const nowS = Math.floor((endMs || Date.now()) / 1000);
+  const span = Math.max(1, Math.floor(spanSec)), n = Math.max(1, Math.min(1000, Math.floor(limit || 500)));
+  const last = Math.floor(nowS / span) * span;                 // the forming candle, included like every venue does
+  const out = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const st = last - i * span;
+    if (st + span <= RNG_GENESIS) continue;                     // nothing before the coin existed
+    const cd = rngCandle(k, st, span); if (!cd) continue;
+    // the forming candle closes at NOW, not at the end of its span
+    if (st === last) { const live = rngPx(k, nowS); cd.c = live; if (live > cd.h) cd.h = live; if (live < cd.l) cd.l = live; }
+    out.push(cd);
+  }
+  return out;
+}
 const LB_EXCL_SET = new Set('FRA40 EU50 HK50 AUS200 ESP35 SWI20 US2000 VIX OIL BRENT NATGAS COPPER AUDJPY EURCHF USDMXN USDSEK USDNOK EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' '));
+// EVERY RNG SYMBOL IS EXCLUDED BY THE TABLE, NOT BY A LITERAL (2026-10-28) - a second RNG coin added to RNG_COINS is
+// barred from every board, from XP, from Ticks, from personal records and from duel scoring without touching a line here.
+for (const k of Object.keys(RNG_COINS)) LB_EXCL_SET.add(k);
 const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
 function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
@@ -13129,7 +13250,7 @@ const PREM_OWNERS = ['chako']; // owner COSMETICS only (exclusive owner frame + 
 const CARD_TAG = { chako: 'FOUNDER', gladijator: 'CO FOUNDER' };
 // Per-coin max leverage - mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
 const MAXLEV = { FRA40: 20, EU50: 20, HK50: 20, AUS200: 20, ESP35: 20, SWI20: 20, US2000: 20, VIX: 10, OIL: 20, BRENT: 20, NATGAS: 20, COPPER: 20, USDCHF: 50, NZDUSD: 50, EURGBP: 50, EURJPY: 50, GBPJPY: 50, AUDJPY: 50, EURCHF: 50, USDMXN: 20, USDSEK: 20, USDNOK: 20, BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
-function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); return MAXLEV[sym] || 50; }
+function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (RNG_COINS[sym]) return RNG_COINS[sym].lev; return MAXLEV[sym] || 50; } // an RNG coin carries its own cap in the table
 // Asset class of a symbol - MIRROR of window.mpAssetClass in dist/assets/home.js (STOCKS here == that file's STK).
 // The class drives the per-market fee below. Both copies must agree: the client DISPLAYS the fee, the server
 // CHARGES it. They didn't (server hardcoded the crypto rate) - measured 2026-08-19: a server-filled EURUSD trade
@@ -13145,7 +13266,9 @@ const IDX_SYMS = { FRA40: 1, EU50: 1, HK50: 1, AUS200: 1, ESP35: 1, SWI20: 1, US
 // Found by `node build/market-class-e2e.js`, which compares Bybit's own `symbolType` against our tables.
 const BYBIT_EQ = { MU: 'Micron', SNDK: 'SanDisk', KLAC: 'KLA', CRCL: 'Circle', SOXL: 'Semiconductors 3x', SOXS: 'Semiconductors -3x', KORU: 'South Korea 3x', SKHY: 'SK hynix', SPCX: 'SpaceX', SKHYNIX: 'SK hynix (Korea)' };
 const COMMOD = { XAU: 1, XAG: 1, OIL: 1, BRENT: 1, NATGAS: 1, COPPER: 1 }; // metals AND energy - one table, because `sym === 'XAU' || sym === 'XAG'` was a table of two written as an expression
-function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
+// 'rng' goes FIRST and is its own class: it must never read as 'crypto', or the client would subscribe to a Bybit
+// socket for a symbol no exchange lists and the venue fee override would price a market that has no venue (2026-10-28).
+function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (RNG_COINS[sym]) return 'rng'; if (STOCKS[sym] || BYBIT_EQ[sym]) return 'stock'; if (COMMOD[sym]) return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
 // Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
 // Real-world cost by class: crypto perp taker ~0.055% | stocks ~0.02% | forex majors ~0.008% | metals & indices ~0.015%.
 // Clamped so the round-trip fee can never exceed ~10% of margin at extreme leverage. Mirror of window.mpFeeRate.
@@ -22642,6 +22765,14 @@ export default {
     if (url.pathname === '/api/now') return new Response(JSON.stringify({ t: Date.now() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } }); // ms server clock for the client offset sync - candle boundaries/countdown must NOT trust the device clock (measured: a 46s-skewed device rolled bars into wrong buckets, then the 30s re-sync visibly repainted them)
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
     if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env, false, ctx));
+    /* THE RNG CATALOGUE, SERVED FROM THE SAME TABLE THE ENGINE READS (2026-10-28), so the client cannot carry a
+       second idea of the base price, the decimals, the leverage cap or the fee. Deliberately NOT part of
+       /api/symbols: that list drives `window.mpIsBybit` and the screener's paper-trade gate, and a synthetic ticker
+       in it would have the terminal open a Bybit socket for a market no exchange lists. */
+    if (url.pathname === '/api/rng') {
+      const nowS = Math.floor(Date.now() / 1000);
+      return J({ ok: true, genesis: RNG_GENESIS * 1000, coins: Object.keys(RNG_COINS).map(k => { const c = RNG_COINS[k], p = rngPx(k, nowS), p24 = rngPx(k, nowS - 86400); return { symbol: k, name: c.name, price: p, chg24: p24 > 0 ? Math.round((p - p24) / p24 * 10000) / 100 : 0, dp: c.dp, maxLeverage: c.lev, feePctPerSide: Math.round(feeRateFor(1, k) * 1e6) / 1e4, ranksOnLeaderboards: false }; }), note: 'A MarginPad-native market: the price is a deterministic function of time, so every past candle recomputes exactly. It trades like any other symbol but never ranks on a leaderboard and earns no XP or Ticks.' });
+    }
     if (url.pathname === '/api/symbols') return handleSymbols();
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
@@ -33944,7 +34075,12 @@ export class UserStore {
         // at the user's first grant of the season, so the delta is exactly this season's positive XP - never trimmed,
         // immune to duel-stake (which doesn't touch xp_life), lbprize excluded via the base bump in _grantXp.
         const SX = "(COALESCE((SELECT s2.base FROM xpseason s2 WHERE s2.user_id=s.user_id AND s2.season>s.season ORDER BY s2.season ASC LIMIT 1), COALESCE(u.xp_life,0)) - COALESCE(s.base,0))";
-        xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, 2000)
+        /* THE XP BOARD WAS THE ONE BOARD WITH NO TEST FILTER (found 2026-10-28 by rng-coin-e2e, which asserted its
+           own throwaway account was on no board and found it here). The four symbol-based boards drop a test row
+           when they resolve the name; this one is built straight off `users`, so **four e2e accounts were sitting
+           on the owner's public Season XP board**, one at 603 XP from a fixture mint. Filtered on the UID, not only
+           the username: a username can be changed since the 10-28 round, a uid never can. */
+        xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND LOWER(u.id) NOT LIKE 'e2e%' AND LOWER(u.username) NOT LIKE 'e2e\\_%' ESCAPE '\\' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, 2000)
           .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
       } catch (e) {}
       // COUNTS ARE MEASURED BEFORE THE ROWS ARE TRIMMED. Every caller used to read a board's length as "how

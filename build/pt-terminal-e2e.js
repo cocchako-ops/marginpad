@@ -123,7 +123,13 @@ async function open(browser, m, vp) {
          Over the whole 100-row list this is the lazy loader's settle time, not a product property: five in flight
          against an IntersectionObserver. A broken loader reads ~0 here, not 97. */
       ok(mk.priced >= Math.ceil(mk.n * 0.9), 'and a live price on ' + mk.priced + ' of ' + mk.n + ' rows');
-      ok(mk.tabs.length === 6, 'six groups: ' + mk.tabs.join(' / '));
+      /* ASSERT THE GROUPS BY NAME, NOT BY A COUNT (2026-10-28). This read `=== 6` and went red the day the RNG
+         market shipped a seventh - a test that describes the retired world is a test that is always red, and
+         bumping the literal to 7 would only move the same problem. Every group the shell declares must be THERE,
+         which fails if one disappears and does not fail when one is deliberately added. */
+      const wantTabs = ['Favourites', 'Crypto', 'Stocks', 'Forex', 'Metals', 'Indices', 'RNG'];
+      const missTabs = wantTabs.filter(w => !mk.tabs.some(t => String(t).indexOf(w) >= 0));
+      ok(missTabs.length === 0, 'every market group is present (' + mk.tabs.join(' / ') + (missTabs.length ? ' - MISSING ' + missTabs.join(',') : '') + ')');
       ok(!mk.tabClipped, 'the group chips are not squashed by the list under them');
       ok(mk.reach && mk.stars === mk.n, 'a row is clickable and every row has its own star');
 

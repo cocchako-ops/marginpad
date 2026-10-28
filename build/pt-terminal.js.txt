@@ -74,7 +74,15 @@
   function favHas(s) { return favs().indexOf(s) >= 0; }
   function favTog(s) { var a = favs(), i = a.indexOf(s); if (i >= 0) a.splice(i, 1); else a.unshift(s); favWrite(a); return a.indexOf(s) >= 0; }
 
-  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')]];
+  /* THE RNG GROUP (2026-10-28). It sits last because it is a MarginPad-native market, not an exchange one, and the
+     list that feeds this window is gated on window.mpIsBybit - so an RNG symbol can only reach it from the server's
+     own catalogue, which is also the single source of its base price, decimals, leverage cap and fee. */
+  var RNGS = [];
+  try { fetch('/api/rng', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+    RNGS = ((d && d.coins) || []).map(function (c) { return String(c.symbol || '').toUpperCase(); }).filter(Boolean);
+    RNGS.forEach(function (s) { try { window.mpRngSyms[s] = 1; } catch (e) {} });   // keep mpAssetClass in step with the server
+  }).catch(function () {}); } catch (e) {}
+  var TABS = [['fav', T('mkFav', 'Favourites')], ['crypto', T('mkCrypto', 'Crypto')], ['stock', T('mkStocks', 'Stocks')], ['forex', T('mkForex', 'Forex')], ['metal', T('mkMetals', 'Metals')], ['index', T('mkIndices', 'Indices')], ['rng', T('mkRng', 'RNG')]];
   var mkTab = 'crypto', mkQ = '', _scr = null, _scrAt = 0, _scrQ = 0;
   try { var _t0 = localStorage.getItem('mp_pt_tab'); if (_t0 && TABS.some(function (t) { return t[0] === _t0; })) mkTab = _t0; } catch (e) { }
 
@@ -150,7 +158,7 @@
     return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: d });
   }
   function listFor(tab, q) {
-    var all = (window.mpTokens || []).slice();
+    var all = (window.mpTokens || []).slice().concat(RNGS);   // the RNG markets are never in mpTokens (not a Bybit listing)
     if (!all.length) all = ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE'];
     var out;
     if (tab === 'fav') { var f = favs(); out = f.filter(function (s) { return all.indexOf(s) >= 0 || true; }); }
