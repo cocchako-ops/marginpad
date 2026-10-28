@@ -6573,6 +6573,17 @@ function adminKeyFrom(request, url) { try { return (request && request.headers.g
 
 const isAdminKey = (env, k) => !!k && k === adminKeyOf(env);
 const isStatsKey = (env, k) => !!k && (k === statsKeyOf(env) || k === adminKeyOf(env));
+/* A USERNAME IS TEN CHARACTERS, AND THE LONG ONES ALREADY OUT THERE GET ONE FREE CHANGE (2026-10-28, owner:
+   "username max lenght treba da bude fazon 10 karaktera. Svako ko ima duze, posalji mu da moze free da zameni").
+   MEASURED across 1,461 accounts first: 1,401 carry a username and **250 of them (17.8%) are over ten characters**,
+   the longest being twenty ("stickinmywalletdaddy", "HopeyouarealldoingOk"); 198 of those 250 have exactly one login
+   and will never see any notice, 52 come back. **Nobody is renamed FOR them.** A username here is an identity in the
+   room, on nine boards, inside a DM thread, on the profile card and in /community/u/<name>, so a forced rename would
+   break a reader's own history. The door is opened instead, and **it closes itself**: a change is allowed only while
+   the CURRENT name is over the limit, so the moment it fits there is nothing left to grant and no flag to keep.
+   ONE definition, built from ONE number - every caller reads UN_RE, never a literal, or a later change to the limit
+   collapses into whichever copy was forgotten (the lesson API_TIER_MAX already carries). */
+const UN_MIN = 3, UN_MAX = 10, UN_RE = new RegExp('^[a-zA-Z0-9_]{' + UN_MIN + ',' + UN_MAX + '}$');
 async function sha8(s) {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; }
 }
@@ -8489,7 +8500,7 @@ function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocal
 function _rcShell(title, desc, canon, body, extraHead) {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
     + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
-    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=351851d5" defer></script></body></html>';
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js?v=0c9ad8db" defer></script></body></html>';
 }
 async function handleLiqRecap(url, env) {
   const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
@@ -19710,7 +19721,7 @@ async function handleBot(url, request, env, ctx) {
 // The bundle version the site is CURRENTLY serving - build/bump-home-assets.js rewrites this on every deploy.
 // A page that was opened before a deploy keeps running the bundles it loaded then, forever; announce hands it the
 // current one so it can say so instead of quietly behaving like last week's build.
-const ASSET_V = '2634abfc';
+const ASSET_V = 'd7a12a90';
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -24298,6 +24309,19 @@ export default {
        POST {ban:[uid...]} is a DRY RUN unless apply:true; it only accepts an account that is a member of a cluster
        listed right now (never an arbitrary uid, never the owner's), bans BOTH books + the device through
        banEverywhere, rejects the account's pending posts, and pages the owner with the list. */
+    /* THE LONG USERNAMES, AND THE NOTICE THAT OFFERS THEM ONE FREE CHANGE (2026-10-28 - see UN_MAX). GET lists who is
+       over the limit with their login count, so the owner can see how many will ever read it; POST {notify:true}
+       sends the bell row, once per account ever. A DRY RUN by default, like every other desk here. */
+    if (url.pathname === '/api/admin/unrename' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
+      const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
+      const notify = bq.notify === true;
+      let d; try { d = await (await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/unlong', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ notify }) }))).json(); }
+      catch (e) { return J({ error: 'store_unavailable' }, 503); }
+      if (!d || !d.ok) return J({ error: 'store_error', detail: d && d.error }, 502);
+      const rows = d.rows || [];
+      const returning = rows.filter(r => (+r.logins || 0) >= 2).length;
+      return J({ ok: true, dry: !notify, max: d.max, over: rows.length, returning, oneLoginOnly: rows.length - returning, sent: d.sent || 0, alreadyNotified: d.already || 0, rows: rows.slice(0, 300), note: notify ? 'the bell row is sent once per account, ever' : 'DRY RUN - POST {notify:true} to send the bell row' });
+    }
     if (url.pathname === '/api/admin/promoabuse' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const bq = request.method === 'POST' ? await request.json().catch(() => ({})) : {};
       let ab; try { ab = await (await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/promo/abuse'))).json(); } catch (e) { return J({ error: 'ledger_unavailable' }, 503); }
@@ -33285,11 +33309,28 @@ export class UserStore {
       const s = this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', token, now)[0];
       if (!s) return this.j({ error: 'not_signed_in' });
       const cur = this.rows('SELECT username FROM users WHERE id=?', s.user_id)[0];
-      if (cur && cur.username) return this.j({ error: 'already_set', username: cur.username }); // usernames are permanent once chosen (admin can still override via /control)
-      if (!/^[a-zA-Z0-9_]{3,20}$/.test(uname)) return this.j({ error: 'bad_username' });
+      const curUn = (cur && cur.username) ? String(cur.username) : '';
+      // Permanent once chosen - EXCEPT while it is longer than today's limit (2026-10-28, see UN_MAX): that is the one
+      // free change, and the condition IS the grant, so it needs no flag and cannot be used twice.
+      if (curUn && curUn.length <= UN_MAX) return this.j({ error: 'already_set', username: curUn });
+      if (!UN_RE.test(uname)) return this.j({ error: 'bad_username', min: UN_MIN, max: UN_MAX });
       if (this.rows('SELECT id FROM users WHERE LOWER(username)=LOWER(?) AND id!=?', uname, s.user_id)[0]) return this.j({ error: 'taken' });
-      sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id); try { this._grantXp(String(s.user_id), 'username', 50, { once: true, note: 'set a username' }); } catch (ue) {}
-      return this.j({ ok: true, username: uname });
+      sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id);
+      // the 50 XP is for CHOOSING a name, not for changing one - `once` already guarantees a rename never pays again
+      try { this._grantXp(String(s.user_id), 'username', 50, { once: true, note: 'set a username' }); } catch (ue) {}
+      return this.j({ ok: true, username: uname, renamedFrom: curUn || undefined });
+    }
+    if (path === '/unlong') { // admin: every account whose username is over the limit, and the one-time notice offering the free change
+      const notify = b.notify === true;
+      const rows = this.rows("SELECT id, username, COALESCE(logins,0) logins, COALESCE(last_seen,0) last_seen FROM users WHERE username IS NOT NULL AND username!='' AND LENGTH(username)>? AND COALESCE(status,'active')='active' ORDER BY LENGTH(username) DESC, logins DESC", UN_MAX)
+        .filter(r => !/^e2e[_-]/i.test(String(r.username || '')));
+      let sent = 0, already = 0;
+      if (notify) for (const r of rows) {
+        // ONCE PER ACCOUNT, EVER: the bell is a 40-row ring per member and a repeated notice would push a real one out
+        if (this.rows("SELECT 1 FROM unotifs WHERE uid=? AND kind='username' LIMIT 1", String(r.id))[0]) { already++; continue; }
+        try { this._pushNotif(String(r.id), 'username', 'Usernames are ' + UN_MAX + ' characters now. Yours is ' + String(r.username).length + ', so you can change it once, free - open your account menu and pick a shorter one. Nothing happens to it until you do.', 'account'); sent++; } catch (e) {}
+      }
+      return this.j({ ok: true, max: UN_MAX, n: rows.length, sent, already, rows: rows.map(r => ({ uid: String(r.id), username: r.username, len: String(r.username).length, logins: +r.logins || 0, lastSeen: +r.last_seen || 0 })) });
     }
     if (path === '/setprofile') { // user edits their own public profile personalization (bio/avatar/coins)
       const token = String(b.token || '');
@@ -33339,7 +33380,8 @@ export class UserStore {
       else if (act === 'unmute') sql.exec('UPDATE users SET muted=0 WHERE id=?', u.id);
       else if (act === 'restrict') { const r = Array.isArray(b.restrictions) ? b.restrictions.filter(x => /^[a-z_]+$/.test(x)).slice(0, 10).join(',') : ''; sql.exec('UPDATE users SET restrictions=? WHERE id=?', r, u.id); }
       else if (act === 'note') sql.exec('UPDATE users SET note=? WHERE id=?', String(b.note || '').slice(0, 500), u.id);
-      else if (act === 'username') { const un = String(b.username || '').trim(); if (un && !/^[a-zA-Z0-9_]{3,20}$/.test(un)) return this.j({ error: 'bad_username' }); if (un && this.rows('SELECT id FROM users WHERE LOWER(username)=LOWER(?) AND id!=?', un, u.id)[0]) return this.j({ error: 'taken' }); sql.exec('UPDATE users SET username=? WHERE id=?', un || null, u.id); }
+      // the owner's override reads the SAME rule - nothing in the system may mint a name over the limit again
+      else if (act === 'username') { const un = String(b.username || '').trim(); if (un && !UN_RE.test(un)) return this.j({ error: 'bad_username', min: UN_MIN, max: UN_MAX }); if (un && this.rows('SELECT id FROM users WHERE LOWER(username)=LOWER(?) AND id!=?', un, u.id)[0]) return this.j({ error: 'taken' }); sql.exec('UPDATE users SET username=? WHERE id=?', un || null, u.id); }
       else if (act === 'logout_all') sql.exec('DELETE FROM sessions WHERE user_id=?', u.id);
       else if (act === 'revoke') sql.exec('DELETE FROM sessions WHERE user_id=? AND created=?', u.id, +b.created || 0);
       else if (act === 'delete') { for (const tb of ['users WHERE id', 'sessions WHERE user_id', 'uevents WHERE user_id', 'uclicks WHERE user_id', 'utrades WHERE user_id', 'udwell WHERE user_id']) sql.exec('DELETE FROM ' + tb + '=?', u.id); }

@@ -73,7 +73,13 @@ const WINS = {
       if (LOCAL && /\/assets\/mp-profile\.js/.test(u)) return req.respond({ status: 200, contentType: 'application/javascript; charset=utf-8', body: fs.readFileSync(path.join(A, 'mp-profile.js'), 'utf8') });
       req.continue();
     });
-    await page.goto(BASE + '/leaderboards/?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 90000 });
+    /* NEVER networkidle2 ON A PAGE THAT PRELOADS FONTS (2026-10-28). Since the 10-27 font-preload round every page
+       carries four gstatic <link rel=preload> plus the preloaded mp-nav.js, and puppeteer holds those as open
+       requests for ever - so this navigation timed out at 90 s on a page that renders perfectly. CLAUDE.md already
+       records the same failure on /charts; this is the second suite it reached. Wait for the DOM and then for the
+       thing the test actually needs. */
+    await page.goto(BASE + '/leaderboards/?cb=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 90000 });
+    await page.waitForFunction(() => !!document.querySelector('[data-lbu]'), { timeout: 45000 }).catch(() => {});
     await sleep(1200);
     // mp-profile.js is lazy: a real username click is what pulls it
     await page.evaluate(() => { const a = document.querySelector('[data-lbu]'); if (a) a.click(); });
