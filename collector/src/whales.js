@@ -37,13 +37,16 @@ const MAX_ALERTS = 60;
 
 // trade feed
 const FILL_TRACK_N = 120;   // the board's own wallets first, then the largest accounts (see fillUniverse)
-const FILL_SLICE = 18;      // wallets per tick …
-const FILL_TICK_MS = 30e3;  // … every 30 s = 36 wallets/min. userFillsByTime weighs 20 against the info
-                            // API's 1200/min per IP, so this is 720/min; the position poll (400 calls per
-                            // 4-minute cycle at weight 2) is 200/min beside it, 920 of 1200 with the 429
-                            // back-off below as the guard. A full sweep of the 120 takes 3m 20s - a trade
-                            // can surface later than it did at 60 wallets, and it is stamped with the
-                            // EXCHANGE's own time either way, so what is lost is latency and not truth.
+const FILL_SLICE = 15;      // wallets per tick, i.e. 30 a minute
+/* THE DOCUMENTED CEILING IS 1200 WEIGHT/MIN AND WE DO NOT GET IT. userFillsByTime weighs 20, so 30 wallets
+   a minute is 600, and the position poll (400 calls per 4-minute cycle at weight 2) is 200 beside it: 800.
+   MEASURED 2026-10-28: at 18 per tick (920/min) the collector was refused within thirteen minutes - fillErr
+   'rate limited x2' and 19 refused POSITION calls, which is the worse half, because a refused position call
+   means those wallets went unpolled and every row they own got older. The back-off recovered it by itself
+   and the cost was real. 800/min has been clean for weeks and is the operating point - raise it against a
+   MEASUREMENT, never against the published number. A full sweep of the 120 wallets takes 4 minutes, and a
+   row carries the EXCHANGE's own timestamp, so a slower sweep costs latency and not truth. */
+const FILL_TICK_MS = 30e3;
 const GROUP_MS = 120e3;     // fills of one wallet+coin+direction closer together than this are ONE trade
 const MIN_TRADE_USD = 250e3; // measured floor: ~14 trades/hour per twelve wallets (see the note above)
 const MAX_FILLS = 120;      // published ring
